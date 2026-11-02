@@ -24,7 +24,7 @@ Depurar con evidencia significa tres cosas en orden: reproducir el fallo con el 
 
 1. **Print debugging:** Agrega `print()` antes y después de cada función clave. ¿Dónde se detiene?
 2. **Debugger interactivo:** Usa `import pdb; pdb.set_trace()`. ¿Ventajas vs `print()`?
-3.
+3. **Stack trace:** Provoca un `ValueError` en una función llamada por otra. ¿Qué líneas del traceback te llevan desde el error hasta la llamada en tu código?
 4. **Producción:** ¿Logging (permanente) vs `print()` (transitorio)?
 
 **Escribe tu respuesta:**
@@ -32,6 +32,7 @@ Depurar con evidencia significa tres cosas en orden: reproducir el fallo con el 
 ```
 Función donde se detiene: _________
 Print vs pdb: _________ (¿cuál usas?)
+Línea que origina el ValueError y línea que lo llamó: _________
 Logs en producción: _________
 ```
 
@@ -39,7 +40,11 @@ Logs en producción: _________
 <summary>SOLUCIÓN — Lee solo después de intentar</summary>
 
 > **Respuesta esperada:**
-> Prints en dev para ritmo rápido. pdb para inspeccionar estado. Logging permanente en producción, no prints.
+> `print()` permite una comprobación rápida; `pdb` deja inspeccionar variables y avanzar sin editar el programa.
+>
+> En el traceback, empieza por la última línea para identificar el tipo y mensaje del error; después localiza la primera línea de tu propio código para hallar dónde se lanzó y sigue las llamadas anteriores para reconstruir el recorrido.
+>
+> En producción usa logging con niveles y contexto útil, sin secretos; deja los `print()` como comprobaciones temporales de desarrollo.
 
 </details>
 
@@ -85,8 +90,6 @@ Partí de una carpeta vacía y reproducí un bug real de filtrado de tareas:
 ```bash
 mkdir depuracion-tareas
 cd depuracion-tareas
-python3 -m venv .venv
-source .venv/bin/activate  # Windows PowerShell: .venv\Scripts\Activate.ps1
 ```
 Guardá `tareas.py` con un defecto deliberado: la función promete "pendientes" pero filtra por el estado contrario.
 
@@ -103,7 +106,11 @@ tareas = [
 print(listar_pendientes(tareas))
 ```
 
-Ejecutá `python3 tareas.py`. **Resultado esperado del defecto:** imprime `[{'descripcion': 'pagar luz', 'estado': 'hecho'}]` — la única tarea YA HECHA, justo lo opuesto de lo que el nombre `listar_pendientes` promete. Ese caso de tres tareas es tu reproducción mínima; con ella podés formular la hipótesis por escrito: "la comparación usa 'hecho' donde debería usar 'pendiente'". **Fallo deliberado (pista falsa):** antes de tocar esa línea, probá "arreglarlo" ordenando la lista con `tareas.sort(key=lambda t: t["descripcion"])` antes del `return`. Volvé a ejecutar: el resultado sigue siendo la tarea hecha — ordenar no tocó la condición que causa el bug, así que el síntoma no cambió en absoluto. Recién ahora hacés el único cambio que ataca la hipótesis: `t["estado"] == "pendiente"`. Ejecutá de nuevo: aparecen las dos tareas pendientes, confirmando la hipótesis original.
+Ejecuta el archivo desde `depuracion-tareas`:
+```bash
+python3 tareas.py
+```
+En Windows, usa `py tareas.py`. **Resultado esperado del defecto:** imprime `[{'descripcion': 'pagar luz', 'estado': 'hecho'}]` — la única tarea YA HECHA, justo lo opuesto de lo que el nombre `listar_pendientes` promete. Ese caso de tres tareas es tu reproducción mínima; con ella podés formular la hipótesis por escrito: "la comparación usa 'hecho' donde debería usar 'pendiente'". **Fallo deliberado (pista falsa):** antes de tocar esa línea, probá "arreglarlo" ordenando la lista con `tareas.sort(key=lambda t: t["descripcion"])` antes del `return`. Volvé a ejecutar: el resultado sigue siendo la tarea hecha — ordenar no tocó la condición que causa el bug, así que el síntoma no cambió en absoluto. Recién ahora hacés el único cambio que ataca la hipótesis: `t["estado"] == "pendiente"`. Ejecutá de nuevo: aparecen las dos tareas pendientes, confirmando la hipótesis original.
 
 #### Paso 5 · Práctica guiada
 Pista: antes de declarar "arreglado", volvé a correr EXACTAMENTE el mismo caso de tres tareas del Paso 4 y compará la salida con la que esperabas por escrito — si solo "se ve mejor" pero no coincide con tu hipótesis, todavía no terminaste.
@@ -204,11 +211,14 @@ Partí de una carpeta vacía y construí las dos capas que el Módulo 4 ya dejó
 mkdir pruebas-tareas
 cd pruebas-tareas
 python3 -m venv .venv
-source .venv/bin/activate  # Windows PowerShell: .venv\Scripts\Activate.ps1
-python3 -m pip install pytest
-mkdir src tests
 ```
-Guardá `src/tareas.py`:
+En Windows crea el entorno con `py -m venv .venv`. Actívalo con `source .venv/bin/activate` en macOS/Linux o `.\.venv\Scripts\Activate.ps1` en PowerShell. A continuación, instala pytest y crea las carpetas:
+```bash
+python -m pip install pytest
+mkdir src
+mkdir tests
+```
+Crea también un archivo vacío `src/__init__.py`; así `src` es un paquete Python explícito. Guardá `src/tareas.py`:
 ```python
 def contar_pendientes(tareas):
     return len([t for t in tareas if t["estado"] == "pendiente"])
@@ -236,7 +246,7 @@ class ConexionFalsa:
 def test_contar_pendientes_bd_con_fake():
     assert contar_pendientes_bd(ConexionFalsa()) == 2
 ```
-Ejecutá `python3 -m pytest -q`. **Resultado esperado:** `2 passed` — ambas pruebas están en verde. **Fallo deliberado:** rompé la consulta real en `src/tareas.py` cambiando `WHERE estado = 'pendiente'` por `WHERE estado = 'completada'` (un valor que no existe) y volvé a correr `pytest -q`: el fake sigue dando `2 passed`, porque `ConexionFalsa.execute` ignora por completo el texto de la consulta y siempre devuelve `(2,)` — la prueba no detecta que la base real ahora devolvería `0`. Agregá entonces una prueba de integración real con SQLite en memoria:
+Ejecutá `python -m pytest -q`. **Resultado esperado:** `2 passed` — ambas pruebas están en verde. **Fallo deliberado:** rompé la consulta real en `src/tareas.py` cambiando `WHERE estado = 'pendiente'` por `WHERE estado = 'completada'` (un valor que no existe) y volvé a correr `python -m pytest -q`: el fake sigue dando `2 passed`, porque `ConexionFalsa.execute` ignora por completo el texto de la consulta y siempre devuelve `(2,)` — la prueba no detecta que la base real ahora devolvería `0`. Agregá entonces una prueba de integración real con SQLite en memoria:
 ```python
 def test_contar_pendientes_bd_integracion():
     conexion = sqlite3.connect(":memory:")
@@ -348,10 +358,18 @@ Desde una **carpeta vacía**, reproducí el problema de un mensaje de commit in�
 ```bash
 mkdir historial-tareas
 cd historial-tareas
-git init
+git init -b main
 git config user.name "Estudiante"
 git config user.email "estudiante@example.com"
-printf 'ESTADO_INICIAL = "pendiente"\n' > tareas.py
+```
+Crea `tareas.py` con un editor y guarda esta línea:
+```python
+ESTADO_INICIAL = "pendiente"
+```
+La rama inicial se llama `main`, como espera el comando de integración posterior; este ejemplo requiere Git 2.28 o posterior.
+
+Registra el archivo y genera el commit deliberadamente poco informativo:
+```bash
 git add tareas.py
 git commit -m "fix"
 git log --oneline
@@ -360,8 +378,13 @@ git log --oneline
 **Comprueba el repositorio:** ejecuta `git status --short`. Tras el commit no debe listar cambios pendientes. No necesitas ejecutar un archivo Python para inspeccionar el historial.
 
 **Resultado esperado:** `git log --oneline` muestra una sola línea con el hash y la palabra `fix` — nada más. **Fallo deliberado:** imaginá que pasaron tres semanas y necesitás saber por qué existe ese commit. Ejecutá `git show --stat HEAD`: ves qué archivo cambió, pero ni el mensaje ni el comando te dicen si "fix" arreglaba un typo, una regresión de `contar_pendientes` o algo urgente. El diagnóstico es que el único lugar donde el motivo podía sobrevivir —el mensaje del commit— nunca lo registró; el código ya está ahí, pero el porqué se perdió para siempre. Corregí el hábito con un commit nuevo que sí explica la decisión:
+
+Abre `tareas.py` en el editor, reemplaza su contenido por la línea siguiente y guarda:
+```python
+ESTADO_INICIAL = "pendiente"  # valor por defecto al crear una tarea sin estado explícito
+```
+Luego registra el cambio:
 ```bash
-printf 'ESTADO_INICIAL = "pendiente"  # valor por defecto al crear una tarea sin estado explícito\n' > tareas.py
 git add tareas.py
 git commit -m "Documenta por qué una tarea nueva arranca en 'pendiente'
 
@@ -375,7 +398,7 @@ Ahora `git log --oneline` muestra dos líneas: la vieja `fix` sigue siendo tan i
 Pista: leé tu propio `git log --oneline` de los últimos días. Si no podés explicar, solo con el mensaje y sin abrir el diff, por qué se hizo cada commit, ese mensaje no está cumpliendo su función.
 
 #### Paso 6 · Práctica independiente
-Elegí 3 commits reales de tu proyecto (de este módulo o de uno anterior) y reescribí sus mensajes como si los fuera a leer alguien dentro de un año: qué cambió y por qué, no solo qué archivo. Si alguno dice "fix", "cambios" o "wip", es tu candidato prioritario.
+Elegí tres commits de un repositorio de práctica (no reescribas mensajes de commits compartidos) y redacta mensajes alternativos como si alguien los fuera a leer dentro de un año: qué cambió y por qué, no solo qué archivo. Si alguno dice "fix", "cambios" o "wip", es un buen candidato para mejorar en un ejercicio nuevo.
 
 #### Paso 7 · Cierre
 Entregá el commit con mensaje inútil del Paso 4, la dificultad real de diagnosticarlo tres semanas después, y el commit de reemplazo con mensaje que explica el motivo; como siguiente paso, en el Tema 4 vas a automatizar en CI los controles de calidad que hasta ahora corriste a mano. Errores comunes: escribir "fix" o "cambios" confiando en que "ya se entiende"; mezclar en un commit un refactor con una corrección de bug, lo que oscurece cuál de las dos cosas motivó el cambio; reescribir con `git commit --amend` un commit que ya compartiste con otra persona. Fuentes oficiales: https://git-scm.com/book/es/v2 y https://docs.github.com/es/pull-requests.
@@ -384,7 +407,7 @@ Entregá el commit con mensaje inútil del Paso 4, la dificultad real de diagnos
 ### Tema 4: Calidad estática, revisión e integración continua
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a usar Ruff para detectar un error antes de ejecutar el código, y vas a reproducir en carne propia la trampa de "funciona en mi máquina": una prueba que pasa localmente solo porque depende de un archivo que quedó de una corrida manual anterior, y que falla en cuanto corre en un entorno limpio como el que usa CI. **Prerrequisitos:** `tareas.py` del Módulo 1; `python3 -m pip install ruff pytest`.
+Al finalizar vas a usar Ruff para detectar un error antes de ejecutar el código, y vas a reproducir en carne propia la trampa de "funciona en mi máquina": una prueba que pasa localmente solo porque depende de un archivo que quedó de una corrida manual anterior, y que falla en cuanto corre en un entorno limpio como el que usa CI. **Prerrequisitos:** `tareas.py` del Módulo 1; con el entorno virtual activado, instala las herramientas mediante `python -m pip install ruff pytest`.
 
 #### Paso 2 · Contexto y caso real
 El proyecto Fundamentos ya tiene pruebas (Tema 2) e historial con buenos mensajes (Tema 3). Lo único que falta es que esos controles corran solos en cada cambio, en un entorno limpio, no solo en la máquina de quien escribió el código — porque "en mi máquina pasa" y "va a pasar en CI" no son la misma afirmación.
@@ -476,11 +499,14 @@ Desde una **carpeta vacía**, reproducí primero un catch de análisis estático
 mkdir calidad-tareas
 cd calidad-tareas
 python3 -m venv .venv
-source .venv/bin/activate  # Windows PowerShell: .venv\Scripts\Activate.ps1
-python3 -m pip install ruff pytest
-mkdir src tests
 ```
-Guardá `src/tareas.py`:
+En Windows crea el entorno con `py -m venv .venv`. Actívalo con `source .venv/bin/activate` en macOS/Linux o `.\.venv\Scripts\Activate.ps1` en PowerShell. A continuación, instala las herramientas y crea las carpetas:
+```bash
+python -m pip install ruff pytest
+mkdir src
+mkdir tests
+```
+Crea también un archivo vacío `src/__init__.py`; así Ruff y Python identifican `src` como paquete local del proyecto. Guardá `src/tareas.py`:
 ```python
 import os  # defecto: queda sin usar
 
@@ -489,28 +515,41 @@ def contar_pendientes(tareas):
 ```
 Ejecutá `ruff check .` ANTES de correr nada. **Resultado esperado:** Ruff informa `F401 'os' imported but unused`, sin haber ejecutado una sola línea del programa. Quitá el import y confirmá que `ruff check .` ya no reporta nada.
 
-Ahora guardá `tests/test_tareas.py` dependiendo de un archivo que vos mismo vas a crear "a mano", simulando una exploración manual previa:
-```bash
-printf '[{"estado":"pendiente"},{"estado":"pendiente"},{"estado":"hecho"}]' > tareas_prueba.json
+Ahora crea `tareas_prueba.json` en la raíz del proyecto con un editor y guarda este contenido. La prueba dependerá deliberadamente de este archivo no generado por ella:
+```json
+[
+  {"estado": "pendiente"},
+  {"estado": "pendiente"},
+  {"estado": "hecho"}
+]
 ```
+Guarda también el siguiente contenido como `tests/test_tareas.py`:
 ```python
 import json
+
 from src.tareas import contar_pendientes
+
 
 def test_contar_pendientes_desde_archivo():
     with open("tareas_prueba.json") as f:
         tareas = json.load(f)
     assert contar_pendientes(tareas) == 2
 ```
-Ejecutá `python3 -m pytest -q` en esta misma carpeta. **Resultado esperado:** `1 passed` — funciona, porque `tareas_prueba.json` está ahí. **Fallo deliberado:** copiá SOLO `src/` y `tests/` (sin `tareas_prueba.json`) a una carpeta nueva y corré `python3 -m pytest -q` ahí — esto es exactamente lo que hace CI al clonar el repositorio: arranca limpio, sin tus archivos manuales. El resultado es `FileNotFoundError: [Errno 2] No such file or directory: 'tareas_prueba.json'`. El mismo código, la misma prueba, un resultado distinto — porque "pasar" dependía de un archivo que nadie commiteó y que solo existía porque lo creaste una vez a mano. La corrección real es que la prueba cree sus propios datos en lugar de depender de algo externo:
+Ejecutá `python -m pytest -q` en esta misma carpeta. **Resultado esperado:** `1 passed` — funciona, porque `tareas_prueba.json` está ahí. **Fallo deliberado:** copiá SOLO `src/` y `tests/` (sin `tareas_prueba.json`) a una carpeta nueva y corré `python -m pytest -q` ahí — esto es exactamente lo que hace CI al clonar el repositorio: arranca limpio, sin tus archivos manuales. El resultado es `FileNotFoundError: [Errno 2] No such file or directory: 'tareas_prueba.json'`. El mismo código, la misma prueba, un resultado distinto — porque "pasar" dependía de un archivo que nadie commiteó y que solo existía porque lo creaste una vez a mano. La corrección real es que la prueba cree sus propios datos en lugar de depender de algo externo:
+Reemplaza el contenido de `tests/test_tareas.py` por esta versión autocontenida:
 ```python
 import json
+
 from src.tareas import contar_pendientes
+
 
 def test_contar_pendientes_desde_archivo(tmp_path):
     archivo = tmp_path / "tareas_prueba.json"
-    archivo.write_text('[{"estado":"pendiente"},{"estado":"pendiente"},{"estado":"hecho"}]')
-    tareas = json.loads(archivo.read_text())
+    archivo.write_text(
+        '[{"estado":"pendiente"},{"estado":"pendiente"},{"estado":"hecho"}]',
+        encoding="utf-8",
+    )
+    tareas = json.loads(archivo.read_text(encoding="utf-8"))
     assert contar_pendientes(tareas) == 2
 ```
 Con `tmp_path` (una carpeta temporal que pytest crea y destruye por prueba), el test pasa igual en tu máquina y en cualquier clon limpio, porque ya no depende de nada que no haya creado él mismo.

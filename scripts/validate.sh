@@ -197,6 +197,7 @@ python3 scripts/validate_markdown_fences.py
 python3 scripts/audit_topic_learning_quality.py --check --require-practicable --min-practicable 1141
 python3 scripts/audit_seven_step_methodology.py --check
 python3 scripts/audit_lesson_substance.py --check --strict
+python3 scripts/audit_subtopic_depth.py --check --max-pending 1143
 python3 scripts/audit_code_visual_quality.py --check
 python3 scripts/rebuild_topic_source_review.py --check
 python3 scripts/build_editorial_backlog.py --check

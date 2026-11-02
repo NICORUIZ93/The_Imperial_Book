@@ -2,7 +2,7 @@
   {
     "track": "foundations",
     "module": 3,
-    "title": "HTML semántico y CSS responsive desde un archivo vacío",
+    "title": "Tema 5: Proyecto integrador — sitio de seguimiento accesible",
     "path": "web/public/content/foundations/modulo-3.md",
     "examples": [
       "examples/professional-bridges/foundations/index.html"

@@ -29,7 +29,111 @@ Si aparece «comando no encontrado» o «no se reconoce», cierra y vuelve a abr
 
 ## Aprende construyendo
 
-### Tema 1: Del hardware al programa en ejecución
+### Tema 1: Computador, sistema operativo, programa y proceso · Básico · 90 min
+
+#### Paso 1 · Objetivo y preparación
+
+Al finalizar podrás distinguir CPU, memoria, almacenamiento, periféricos, sistema operativo, programa, intérprete y proceso; además observarás desde un archivo real qué sistema ejecuta Python y qué identificador recibe cada ejecución. **Prerrequisitos:** ninguno de programación; sólo la instalación y comprobación de Python descritas al inicio del módulo.
+
+#### Paso 2 · Contexto y caso real
+
+**¿Por qué es importante?** Cuando una aplicación se congela, pierde datos o no encuentra un archivo, necesitas distinguir si el problema pertenece al código, al proceso activo, a la memoria, al almacenamiento o al sistema operativo. RutaFlow terminará ejecutándose como procesos que leen archivos, usan memoria y solicitan recursos al sistema; primero construiremos ese vocabulario con evidencia observable.
+
+#### Paso 3 · Teoría, modelo mental y mapa de subtemas
+
+| Subtema crítico | Papel | Evidencia observable |
+|---|---|---|
+| CPU, núcleo y CPU lógica | Fundamento | `os.cpu_count()` informa capacidad lógica visible, no velocidad |
+| RAM frente a almacenamiento | Fundamento | una variable vive durante el proceso; el archivo permanece después |
+| Entrada y salida | Fundamento | teclado/archivo aportan datos; terminal/archivo reciben resultados |
+| Sistema operativo | Núcleo | `platform.system()` identifica la plataforma que ofrece servicios |
+| Programa y archivo fuente | Núcleo | `entorno.py` permanece guardado antes y después de ejecutarse |
+| Intérprete | Núcleo | `sys.executable` muestra qué Python ejecuta el archivo |
+| Proceso y PID | Núcleo | dos ejecuciones pueden recibir identificadores distintos |
+| Memoria virtual y aislamiento | Límite | un PID no permite leer directamente variables de otro proceso |
+| Arquitectura y bits | Variante | `platform.machine()` describe la máquina reportada, no su rendimiento |
+| Recursos, concurrencia y planificación | Profundización | tener varias CPU lógicas no vuelve paralelo cualquier programa |
+| Código de salida | Diagnóstico | `0` indica terminación normal; otro valor comunica un fallo |
+
+La **CPU** ejecuta instrucciones; sus núcleos y procesadores lógicos permiten trabajo concurrente, pero el sistema operativo decide cuándo se ejecuta cada hilo. La **RAM** mantiene instrucciones y datos del trabajo activo y es volátil. El **almacenamiento** conserva archivos sin energía. SSD y RAM no son intercambiables: difieren en persistencia, latencia, capacidad y función.
+
+El **sistema operativo** administra procesos, memoria, dispositivos, archivos, permisos y red, y ofrece interfaces que los programas utilizan. Un **programa** es el conjunto persistente de instrucciones y recursos; un **proceso** es una instancia activa con PID, memoria y recursos propios. Ejecutar dos veces el mismo archivo crea ejecuciones distintas aunque el programa guardado sea uno.
+
+Python es aquí el **intérprete**: abre el archivo fuente, analiza su sintaxis y ejecuta sus instrucciones dentro de un proceso. Esto no significa que cada línea se traduzca ingenuamente una sola vez ni que Python ignore compilación interna; por ahora la distinción útil es archivo persistente frente a proceso activo.
+
+**Analogía con límite:** el programa es una partitura guardada, el proceso es una interpretación concreta y el sistema operativo organiza el escenario. La analogía no describe memoria virtual, planificación ni permisos; esos mecanismos pertenecen al sistema y deben observarse con herramientas reales.
+
+```mermaid
+flowchart LR
+    A["entorno.py<br/>almacenamiento"] --> B["Intérprete Python"]
+    SO["Sistema operativo"] -->|crea y administra| P["Proceso Python<br/>PID + memoria"]
+    B --> P
+    P --> CPU["CPU<br/>ejecuta instrucciones"]
+    P <--> RAM["RAM<br/>datos activos"]
+    P --> IO["Terminal / archivos<br/>entrada y salida"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Crea una carpeta `fundamentos-entorno` y dentro el archivo `entorno.py`:
+
+```python
+import os
+import platform
+import sys
+
+mensaje_temporal = "Este valor existe mientras vive el proceso"
+
+print(f"sistema={platform.system()}")
+print(f"arquitectura={platform.machine()}")
+print(f"python={sys.executable}")
+print(f"pid={os.getpid()}")
+print(f"cpu_logicas={os.cpu_count()}")
+print(f"memoria_proceso={mensaje_temporal}")
+```
+
+Ejecuta desde `fundamentos-entorno`:
+
+```bash
+python3 entorno.py
+python3 entorno.py
+```
+
+En Windows sustituye `python3` por `py`. **Resultado esperado:** ambas ejecuciones muestran sistema, arquitectura, ruta del intérprete, PID, CPU lógicas y el mensaje. El PID puede cambiar; no prometas un número concreto. `os.cpu_count()` puede devolver `None` si el sistema no puede determinarlo y no mide velocidad ni núcleos físicos.
+
+**Explicación causal:** `sys.executable` identifica el ejecutable que inició el proceso; `os.getpid()` consulta al sistema operativo el identificador de la ejecución actual; `platform` informa propiedades declaradas por la plataforma. `mensaje_temporal` desaparece al terminar el proceso porque nunca se escribió a almacenamiento.
+
+**Fallo deliberado:** cambia `os.getpid()` por `os.getpid(1)`. Python produce `TypeError` porque la función no acepta argumentos. Lee el tipo, archivo y línea; restaura la llamada vacía. El fallo pertenece al contrato de la función, no a la cantidad de CPU ni al sistema operativo.
+
+Después de una ejecución normal comprueba el código de salida: `echo $?` en macOS/Linux o `$LASTEXITCODE` en PowerShell. Debe ser `0`. Tras el `TypeError` debe ser distinto de cero. El valor exacto puede variar entre lanzadores y sistemas.
+
+#### Paso 5 · Práctica guiada
+
+Añade `print(f"carpeta={os.getcwd()}")`. Predice la ruta, ejecuta desde la carpeta del proyecto y luego desde su carpeta superior pasando `fundamentos-entorno/entorno.py`. **Pista:** cambia la carpeta de trabajo del proceso, no la ubicación del archivo fuente.
+
+#### Paso 6 · Práctica independiente
+
+Crea `informe_equipo.py` sin copiar el ejemplo completo. Debe producir un informe con sistema, arquitectura, intérprete, PID, carpeta y CPU lógicas. Ejecútalo dos veces y registra en `README.md` qué valores permanecen, cuáles pueden cambiar y por qué. Incluye un error de contrato distinto y su diagnóstico.
+
+Transfiere el modelo al **proyecto integrador**: dibuja qué partes de un futuro gestor de tareas estarán en almacenamiento, cuáles existirán sólo en RAM y qué proceso ejecutará el código.
+
+#### Paso 7 · Cierre
+
+**Checklist de salida**
+
+- [ ] Distingues hardware, sistema operativo, programa, intérprete y proceso.
+- [ ] Explicas por qué RAM y almacenamiento no son sinónimos.
+- [ ] Identificas PID, ejecutable, carpeta y código de salida con evidencia.
+- [ ] No interpretas CPU lógicas como velocidad o paralelismo garantizado.
+- [ ] Conservas `informe_equipo.py`, resultados y fallo diagnosticado.
+
+**Cuándo este modelo no basta:** diagnosticar consumo real de memoria, hilos, E/S o rendimiento requiere perfiladores y herramientas del sistema; este tema sólo establece el modelo verificable inicial.
+
+**Fuentes oficiales revisadas el 2026-11-01:** [Python `os`](https://docs.python.org/3/library/os.html), [Python `platform`](https://docs.python.org/3/library/platform.html), [Python `sys`](https://docs.python.org/3/library/sys.html) y [uso del intérprete](https://docs.python.org/3/tutorial/interpreter.html).
+
+**Registro de ejecución:** pendiente de ejecutar como lote editorial independiente; la presencia de comandos y resultados esperados no se contabiliza como ejecución.
+
+### Tema 2: Del archivo fuente al programa en ejecución
 
 #### El primer resultado que puedes repetir
 
@@ -94,7 +198,7 @@ Crea `README.md` en `primera-sesion`. Registra el sistema operativo, el comando 
 
 **Fuentes oficiales consultadas el 2026-11-01:** [Ejecución con el intérprete Python](https://docs.python.org/3/tutorial/interpreter.html), [ejecutar Python en VS Code](https://code.visualstudio.com/docs/python/run) y [descargas oficiales de Python](https://www.python.org/downloads/).
 
-### Tema 2: Archivos, carpetas y rutas sin perderse
+### Tema 3: Archivos, carpetas y rutas sin perderse
 
 #### Paso 1 · Objetivo y preparación
 
@@ -151,7 +255,7 @@ En el proyecto integrador revisarás primero la carpeta y la ruta cuando falte u
 
 **Fuentes oficiales:** [Python: línea de comandos](https://docs.python.org/3/using/cmdline.html) y [terminal integrada de VS Code](https://code.visualstudio.com/docs/terminal/basics).
 
-### Tema 3: Cómo leer un comando antes de ejecutarlo
+### Tema 4: Cómo leer un comando antes de ejecutarlo
 
 #### Paso 1 · Objetivo y preparación
 
@@ -208,7 +312,7 @@ Esto te prepara para leer las instrucciones del proyecto integrador sin ejecutar
 
 **Fuente oficial:** [Opciones del intérprete Python](https://docs.python.org/3/using/cmdline.html).
 
-### Tema 4: Primer programa, primer error y primera evidencia
+### Tema 5: Primer programa, primer error y primera evidencia
 
 #### Paso 1 · Objetivo y preparación
 

@@ -507,7 +507,131 @@ Entrega `Tarea.kt`, el test verde, el fallo de nulabilidad reproducido y el mode
 **Transferencia al proyecto integrador «RutaFlow»:** `Envio` será un valor inmutable que el ViewModel reemplaza con `copy`; esa sustitución produce un estado nuevo observable por Compose. **Errores comunes:** creer que `copy` muta el original, propagar `String?` sin motivo y usar `!!` para silenciar al compilador.
 
 **Fuentes oficiales:** [Android Basics with Compose](https://developer.android.com/courses/android-basics-compose/course), [Kotlin — sintaxis básica](https://kotlinlang.org/docs/basic-syntax.html), [null safety](https://kotlinlang.org/docs/null-safety.html) y [data classes](https://kotlinlang.org/docs/data-classes.html).
-### Tema 5: Coroutines — asincronía sin bloquear la UI
+### Tema 5: Lambdas y funciones de orden superior en Kotlin — contratos, captura y receptores · Intermedio · 120 min
+
+#### Paso 1 · Objetivo y preparación
+
+Al finalizar podrás leer y escribir tipos función, explicar cómo el contexto determina parámetros y retorno, distinguir una lambda de una conversión SAM, razonar sobre captura y receptores, elegir una referencia callable y diagnosticar retornos o sobrecargas ambiguas. **Prerrequisitos:** Tema 4 terminado, nulabilidad y `data class`; JDK y proyecto Gradle funcionando.
+
+#### Paso 2 · Contexto y caso real
+
+**¿Por qué es importante?** Compose, coroutines, Flow y las APIs de Android reciben comportamiento: `onClick`, transformaciones, validadores y constructores de UI. Copiar `{ it.id }` sin conocer su tipo funciona hasta que una sobrecarga, un receptor implícito o un retorno no local cambia el significado. En RutaFlow construiremos una tubería tipada que valida envíos y produce etiquetas sin esconder estado mutable.
+
+#### Paso 3 · Teoría, mapa de subtemas y decisiones
+
+| Subtema crítico | Tipo | Evidencia que debes producir |
+|---|---|---|
+| `(A) -> B`, `() -> Unit` y `suspend (A) -> B` | Núcleo | declarar, asignar e invocar cada contrato |
+| Sintaxis, `it`, trailing lambda y última expresión | Variante | reescribir una llamada en formas equivalentes |
+| Tipo esperado e inferencia | Núcleo | mostrar por qué una lambda necesita contexto suficiente |
+| Captura y cierre | Diagnóstico | comparar captura de `val` con estado mutable compartido |
+| `this`, lambda con receptor y etiquetas | Límite | identificar cada receptor sin depender de intuición |
+| Referencias `::funcion`, `Tipo::miembro`, `instancia::miembro`, `::Constructor` | Variante | escribir su tipo función equivalente |
+| `fun interface` y conversión SAM Java/Kotlin | Interoperabilidad | separar interfaz funcional de tipo función |
+| Sobrecarga y lambda ambigua | Diagnóstico | reproducir y resolver con variable tipada |
+| Retorno local, etiquetado y no local | Límite | demostrar qué función abandona cada `return` |
+| `inline`, `noinline` y `crossinline` | Profundización | justificar control de flujo y almacenamiento, no decorar |
+| Identidad/estabilidad en Compose | Decisión | evitar usar una lambda recreada como estado de dominio |
+
+Kotlin representa comportamiento con tipos como `(Envio) -> Boolean`. Los paréntesis contienen parámetros y la flecha conduce al retorno; `Unit` no se omite. Una función de orden superior recibe o devuelve otra función. La lambda `{ envio -> envio.peso <= 25 }` toma su tipo del destino o del parámetro que la recibe. `it` sólo existe cuando hay exactamente un parámetro inferible.
+
+Una lambda captura nombres visibles. Capturar un `val` inmutable es predecible; capturar y modificar una colección mutable introduce estado compartido aunque la referencia sea `val`. En concurrencia esa mutación necesita propietario y sincronización, no sólo sintaxis corta.
+
+`RutaBuilder.() -> Unit` es un tipo función con receptor: dentro del bloque, `this` es el `RutaBuilder`. Si hay receptores anidados, usa etiquetas como `this@ruta` o nombres explícitos. Esto es distinto de una lambda ordinaria, que conserva el `this` del contexto exterior.
+
+Una `fun interface` declara un SAM y sirve como contrato nominal e interoperable. `(Envio) -> Boolean` es un tipo función estructural. No son sinónimos: el primero puede expresar identidad de API y documentación propia; el segundo compone directamente con utilidades funcionales.
+
+Las funciones `inline` pueden permitir retornos no locales y reducir la creación de objetos de función en puntos concretos. `noinline` permite almacenar o reenviar una lambda; `crossinline` prohíbe el retorno no local cuando la invocación ocurre en otro contexto. No marques una función `inline` sin una razón de control de flujo o una medición.
+
+**Modelo mental y analogía con límite:** el tipo función es un enchufe que declara entradas y salida; la lambda es una implementación conectable. La analogía no resuelve receptores, sobrecargas ni retornos: para eso debes escribir el tipo completo y seguir las reglas del compilador.
+
+#### Paso 4 · Demostración guiada desde cero
+
+Crea `app/src/test/java/com/academia/lambdas/LambdasTest.kt`:
+
+```kotlin
+package com.academia.lambdas
+
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
+import org.junit.Test
+
+data class Envio(val id: String, val peso: Int)
+fun interface ReglaEnvio { fun acepta(envio: Envio): Boolean }
+
+class RutaBuilder {
+    private val pasos = mutableListOf<String>()
+    fun paso(valor: String) { pasos += valor }
+    fun resultado(): List<String> = pasos.toList()
+}
+
+fun ruta(configurar: RutaBuilder.() -> Unit): List<String> =
+    RutaBuilder().apply(configurar).resultado()
+
+fun normalizar(id: String): String = id.trim().uppercase()
+
+class LambdasTest {
+    @Test fun contratos_captura_referencias_sam_y_receptor_son_observables() {
+        val maximo = 25
+        val ligera: (Envio) -> Boolean = { envio -> envio.peso <= maximo }
+        val etiqueta: (Envio) -> String = { "${normalizar(it.id)}:${it.peso}" }
+        val referencia: (String) -> String = ::normalizar
+        val sam = ReglaEnvio { it.peso <= maximo }
+        val pasos = ruta {
+            paso("validar")
+            paso("etiquetar")
+        }
+
+        assertTrue(ligera(Envio(" rf-1 ", 10)))
+        assertFalse(sam.acepta(Envio("RF-2", 30)))
+        assertEquals("RF-1:10", etiqueta(Envio(" rf-1 ", 10)))
+        assertEquals("RF-3", referencia(" rf-3 "))
+        assertEquals(listOf("validar", "etiquetar"), pasos)
+    }
+}
+```
+
+Ejecuta desde la raíz del proyecto:
+
+```bash
+./gradlew :app:testDebugUnitTest --tests com.academia.lambdas.LambdasTest
+```
+
+**Resultado esperado:** `BUILD SUCCESSFUL` y cinco aserciones verdes. `maximo` queda capturado; `ligera` y `sam` tienen contratos distintos aunque sus cuerpos se parezcan; `::normalizar` es una referencia callable; dentro de `ruta`, `this` es el builder.
+
+**Fallo deliberado 1 — contexto insuficiente:** agrega `val invalida = { valor -> valor.toString() }`. El compilador no puede inferir el tipo de `valor`. Corrige declarando `val valida: (Int) -> String = { valor -> valor.toString() }`.
+
+**Fallo deliberado 2 — sobrecarga:** declara dos funciones `elegir`, una que reciba `(Envio) -> Boolean` y otra que reciba `ReglaEnvio`; llama `elegir { it.peso > 0 }`. Si la llamada resulta ambigua, crea `val regla: (Envio) -> Boolean` o instancia `ReglaEnvio` y pasa el contrato elegido.
+
+**Fallo deliberado 3 — retorno:** dentro de `listOf(1, 2).forEach { if (it == 1) return }`, el `return` puede abandonar la función contenedora porque `forEach` es `inline`. Usa `return@forEach` para salir sólo de esa iteración. En una lambda almacenada o `crossinline`, un retorno no local no está permitido.
+
+#### Paso 5 · Práctica guiada
+
+Añade referencias ligada y no ligada: `val ligada: () -> String = " rf-4 "::trim` y `val noLigada: (String) -> String = String::trim`. Predice sus parámetros antes de probarlas. Después reescríbelas como lambdas y comprueba la misma salida.
+
+#### Paso 6 · Práctica independiente
+
+Crea `PoliticaRuta.kt` con un `typealias Validador = (Envio) -> Boolean`, composición de tres validadores, una `fun interface` para comunicar el resultado y un builder con receptor para configurar pasos. Incluye un fallo de inferencia, otro de retorno y una captura mutable; corrige los tres explicando el mecanismo. En Compose, pasa `onEnvioSeleccionado: (String) -> Unit` a un composable sin guardar la lambda como estado persistente.
+
+**Transferencia al proyecto integrador RutaFlow:** conecta `PoliticaRuta` con el flujo real `evento de UI → ViewModel → caso de uso`. El composable entrega intenciones mediante lambdas, pero el estado y las reglas de dominio permanecen en objetos con nombre y pruebas propias.
+
+#### Paso 7 · Cierre
+
+**Checklist de salida**
+
+- [ ] Puedes escribir el tipo completo de cada lambda sin mirar su cuerpo.
+- [ ] Distingues tipo función, `fun interface` y conversión SAM.
+- [ ] Explicas qué captura la lambda y quién posee cualquier estado mutable.
+- [ ] Identificas `this`, receptores y retornos etiquetados.
+- [ ] Resuelves una sobrecarga ambigua mediante un contrato explícito.
+- [ ] Justificas `inline`, `noinline` o `crossinline` por su semántica.
+
+**Fuentes oficiales revisadas el 2026-11-01:** [Kotlin — Higher-order functions and lambdas](https://kotlinlang.org/docs/lambdas.html), [Kotlin — Java interop y SAM](https://kotlinlang.org/docs/java-interop.html), [Kotlin — Inline functions](https://kotlinlang.org/docs/inline-functions.html) y [Android Developers — Kotlin para Jetpack Compose](https://developer.android.com/develop/ui/compose/kotlin).
+
+**Estado de ejecución:** contenido contrastado con documentación primaria; el entorno de revisión no tiene `kotlinc` ni un proyecto Android generado, por lo que la prueba Gradle queda pendiente y no se acredita como ejecutada.
+
+### Tema 6: Coroutines — asincronía sin bloquear la UI
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás distinguir suspensión de bloqueo, ejecutar dos operaciones con concurrencia estructurada, cancelar trabajo cooperativamente y decidir qué dispatcher corresponde. **Prerrequisitos:** Tema 4 y su suite verde.

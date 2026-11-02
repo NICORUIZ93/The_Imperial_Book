@@ -1,16 +1,16 @@
 {
   "tracks": {
     "foundations": {
-      "topics": 99,
-      "code": 99,
-      "commentedCode": 93,
-      "mermaid": 70,
+      "topics": 100,
+      "code": 100,
+      "commentedCode": 94,
+      "mermaid": 71,
       "archifyVisual": 6,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
-      "filePath": 98,
-      "runCommand": 99,
-      "officialSource": 99
+      "filePath": 99,
+      "runCommand": 100,
+      "officialSource": 100
     },
     "cloud": {
       "topics": 156,
@@ -51,8 +51,8 @@
     "node": {
       "topics": 77,
       "code": 77,
-      "commentedCode": 23,
-      "mermaid": 26,
+      "commentedCode": 25,
+      "mermaid": 28,
       "archifyVisual": 0,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
@@ -85,22 +85,22 @@
       "officialSource": 58
     },
     "java": {
-      "topics": 95,
-      "code": 95,
+      "topics": 98,
+      "code": 98,
       "commentedCode": 55,
-      "mermaid": 35,
+      "mermaid": 40,
       "archifyVisual": 3,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
-      "filePath": 95,
-      "runCommand": 95,
-      "officialSource": 95
+      "filePath": 98,
+      "runCommand": 98,
+      "officialSource": 98
     },
     "spring-boot": {
       "topics": 91,
       "code": 91,
       "commentedCode": 77,
-      "mermaid": 54,
+      "mermaid": 55,
       "archifyVisual": 4,
       "asciiVisual": 17,
       "misleadingDiagramLabel": 0,
@@ -121,16 +121,16 @@
       "officialSource": 56
     },
     "android": {
-      "topics": 73,
-      "code": 73,
+      "topics": 74,
+      "code": 74,
       "commentedCode": 65,
       "mermaid": 27,
       "archifyVisual": 0,
       "asciiVisual": 40,
       "misleadingDiagramLabel": 0,
-      "filePath": 71,
-      "runCommand": 70,
-      "officialSource": 72
+      "filePath": 72,
+      "runCommand": 71,
+      "officialSource": 73
     },
     "ios": {
       "topics": 56,
@@ -147,8 +147,8 @@
     "flutter": {
       "topics": 63,
       "code": 63,
-      "commentedCode": 48,
-      "mermaid": 51,
+      "commentedCode": 50,
+      "mermaid": 53,
       "archifyVisual": 0,
       "asciiVisual": 14,
       "misleadingDiagramLabel": 0,
@@ -201,7 +201,7 @@
     {
       "track": "foundations",
       "module": 3,
-      "topic": "Tema 5: HTML semántico y CSS responsive desde un archivo vacío",
+      "topic": "Tema 5: Proyecto integrador — sitio de seguimiento accesible",
       "missingCode": false,
       "missingComments": true
     },
@@ -844,20 +844,6 @@
     },
     {
       "track": "node",
-      "module": 0,
-      "topic": "Tema 3: process, global y módulos core · Básico · 75 min",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "node",
-      "module": 0,
-      "topic": "Tema 4: Event-driven architecture y non-blocking I/O · Intermedio · 75 min",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "node",
       "module": 1,
       "topic": "Tema 1: package.json y semver · Básico · 50 min",
       "missingCode": false,
@@ -1481,15 +1467,22 @@
     },
     {
       "track": "java",
-      "module": 2,
-      "topic": "Tema 3: Comparable vs Comparator, e iteración · Intermedio · 50 min",
+      "module": 20,
+      "topic": "Tema 1: Lambdas a fondo — tipo objetivo, captura y referencias a métodos · Intermedio · 120 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 20,
-      "topic": "Tema 2: Componer sin anidar: andThen, compose, negate y reglas encadenadas · Intermedio · 75 min",
+      "topic": "Tema 3: Componer sin anidar: andThen, compose, negate y reglas encadenadas · Intermedio · 75 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 3,
+      "topic": "Tema 1: Checked vs unchecked exceptions · Básico · 40 min",
       "missingCode": false,
       "missingComments": true
     },
@@ -1511,6 +1504,20 @@
       "track": "java",
       "module": 4,
       "topic": "Tema 2: Optional — evitar null explícitamente · Intermedio · 40 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 4,
+      "topic": "Tema 3: Streams paralelos y referencias a métodos · Intermedio · 45 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 4,
+      "topic": "Tema 4: Stream Gatherers (Java 24) · Avanzado · 50 min",
       "missingCode": false,
       "missingComments": true
     },
@@ -1811,7 +1818,14 @@
     {
       "track": "android",
       "module": 0,
-      "topic": "Tema 5: Coroutines — asincronía sin bloquear la UI",
+      "topic": "Tema 5: Lambdas y funciones de orden superior en Kotlin — contratos, captura y receptores · Intermedio · 120 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "android",
+      "module": 0,
+      "topic": "Tema 6: Coroutines — asincronía sin bloquear la UI",
       "missingCode": false,
       "missingComments": true
     },
@@ -1966,20 +1980,6 @@
       "track": "ios",
       "module": 7,
       "topic": "Tema 2: Operadores: debounce y combineLatest",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "flutter",
-      "module": 0,
-      "topic": "Tema 2: Clases y mixins",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "flutter",
-      "module": 0,
-      "topic": "Tema 3: Futures, async/await y colecciones funcionales",
       "missingCode": false,
       "missingComments": true
     },

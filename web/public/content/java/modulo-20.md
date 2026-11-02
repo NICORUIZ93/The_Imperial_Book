@@ -1,10 +1,258 @@
-# Módulo 20: Java funcional — interfaces que componen comportamiento
+# Módulo 20: Lambdas y Java funcional — comportamiento con tipo
 
 ## Aprende construyendo
 
 Cada tema parte de una carpeta vacía y se compila con `javac` para observar el comportamiento y los errores reales. Crearás manualmente todos los archivos, sin depender de proyectos prefabricados ni código de otros temas.
 
-### Tema 1: Las cuatro formas: Predicate, Function, Consumer y Supplier · Básico · 75 min
+### Tema 1: Lambdas a fondo — tipo objetivo, captura y referencias a métodos · Intermedio · 120 min
+
+#### Aprende
+
+**Prerrequisitos:** métodos, interfaces y clases anónimas; JDK 27 y `javac`/`java` en el `PATH`. Comprueba `java -version` y `javac -version`.
+
+**Al terminar podrás:** crear una interfaz funcional propia, explicar de dónde obtiene tipo una lambda, usar las cuatro clases de referencias a métodos, diagnosticar captura no efectivamente final y sobrecargas ambiguas, adaptar una excepción checked y elegir una especialización primitiva cuando el boxing sea relevante.
+
+**Por qué importa:** `valor -> valor + 1` no tiene tipo por sí sola. Su significado depende del contrato que la recibe. Sin comprender ese contrato, una persona puede copiar lambdas en Streams, callbacks o concurrencia, pero no puede explicar errores de compilación, efectos capturados ni por qué una sobrecarga deja de resolverse.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Tipo | Evidencia propia |
+|---|---|---|
+| Interfaz funcional y método SAM | Núcleo | `@FunctionalInterface` acepta un solo método abstracto y rechaza un segundo |
+| Sintaxis de parámetros y cuerpo | Variante | convertir expresión ↔ bloque con `return` y conservar resultado |
+| Tipo objetivo e inferencia | Núcleo | la misma forma se asigna a contratos compatibles distintos |
+| Captura y variable efectivamente final | Diagnóstico | mutar la variable capturada produce error de compilación |
+| Alcance de `this` | Límite | comparar lambda con clase anónima |
+| Referencias estática, ligada, no ligada y constructor | Variante | ejecutar las cuatro y explicar sus argumentos implícitos |
+| Sobrecarga ambigua | Diagnóstico | reproducir ambigüedad y resolverla con tipo o cast explícito |
+| Excepciones checked | Límite | adaptar `IOException` sin ocultar la causa |
+| Especializaciones primitivas | Decisión | usar `IntUnaryOperator` para evitar `Integer` en una ruta numérica |
+| Identidad y serialización | Límite | no usar `==`, monitor ni serialización como contrato de una lambda |
+
+Una **interfaz funcional** tiene un único método abstracto, llamado SAM (*single abstract method*). Puede tener métodos `default`, `static` y métodos heredados de `Object` sin dejar de ser funcional. `@FunctionalInterface` no crea esa propiedad: hace que el compilador la verifique y evita agregar accidentalmente un segundo método abstracto.
+
+Una lambda implementa el SAM del **tipo objetivo**. El compilador obtiene ese tipo de una asignación, un argumento, un retorno o un cast. Por eso `texto -> texto.isBlank()` puede representar `Predicate<String>` o `Function<String, Boolean>` según el contexto; la lambda aislada no es una función sin tipo ni puede asignarse a `var` sin contexto objetivo.
+
+La sintaxis cambia según la cantidad de parámetros y el cuerpo:
+
+```java
+() -> "turno"                         // cero parámetros, expresión
+texto -> texto.trim()                  // un parámetro inferido
+(String a, String b) -> a + b          // tipos explícitos en todos los parámetros
+(a, b) -> {                            // bloque: return obligatorio si el SAM devuelve valor
+    String unidos = a + b;
+    return unidos.toUpperCase();
+}
+```
+
+No mezcles parámetros inferidos y explícitos en la misma lista. `var` puede usarse para anotar parámetros, pero debe aparecer en todos: `(var a, var b) -> a + b`.
+
+La **captura** permite leer variables locales externas sólo si son `final` o efectivamente finales: se asignan una vez y después no se modifican. Los campos del objeto sí pueden cambiar, porque la lambda captura `this`, no una copia inmutable de cada campo. En una lambda, `this` conserva el significado del contexto exterior; en una clase anónima, `this` es la instancia anónima.
+
+Las referencias a métodos son lambdas cuya única operación ya tiene nombre:
+
+| Forma | Referencia | Lambda equivalente |
+|---|---|---|
+| Estática | `Texto::normalizar` | `s -> Texto.normalizar(s)` |
+| Instancia ligada | `prefijo::concat` | `s -> prefijo.concat(s)` |
+| Instancia no ligada | `String::length` | `s -> s.length()` |
+| Constructor | `ArrayList::new` | `() -> new ArrayList<>()` |
+
+La referencia no “guarda un método sin tipo”: el tipo objetivo decide qué sobrecarga y constructor corresponden. Si dos sobrecargas aceptan interfaces funcionales compatibles, la llamada puede ser ambigua y necesita una variable tipada o un cast.
+
+Las interfaces estándar como `Function<T,R>` no declaran excepciones checked. Si el cuerpo llama una API que lanza `IOException`, debes manejarla, propagarla mediante una interfaz propia que declare `throws`, o convertirla conscientemente conservando la causa, por ejemplo con `UncheckedIOException`. No la captures con un `catch` vacío.
+
+Para rutas numéricas intensivas existen `IntPredicate`, `IntFunction`, `IntUnaryOperator`, `ToIntFunction` y otras especializaciones. Evitan convertir repetidamente entre `int` e `Integer`; no hacen que toda lambda genérica sea lenta, así que mide antes de optimizar.
+
+Finalmente, la especificación no garantiza identidad estable para una lambda. No dependas de `lambda1 == lambda2`, no la uses como monitor y no la serialices como contrato persistente. Guarda datos y reconstruye el comportamiento desde código versionado.
+
+**Analogía con límite:** el tipo objetivo es el enchufe que determina qué aparato puede conectarse: la forma externa de dos conectores puede parecer similar, pero sus contactos —parámetros, retorno y excepciones— deben coincidir. La analogía no explica resolución de sobrecargas ni captura; esas reglas las decide el compilador mediante el SAM y el contexto.
+
+#### Practica
+
+**Desde cero:** crea un laboratorio independiente.
+
+```bash
+mkdir java-lambdas-fundamentos
+cd java-lambdas-fundamentos
+mkdir src
+```
+
+Crea `src/LambdasFundamentos.java`:
+
+```java
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
+import java.util.function.IntUnaryOperator;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+
+public final class LambdasFundamentos {
+    @FunctionalInterface
+    interface Regla<T, R> {
+        R aplicar(T valor); // SAM
+
+        default String nombre() {
+            return "regla";
+        }
+    }
+
+    private final String prefijo = "ENV-";
+
+    static String normalizar(String texto) {
+        return texto.trim().toUpperCase();
+    }
+
+    String etiquetar(String numero) {
+        return prefijo + numero;
+    }
+
+    void ejecutar() {
+        int incremento = 2; // efectivamente final
+        Regla<Integer, Integer> sumar = valor -> valor + incremento;
+
+        Predicate<String> noVacio = texto -> !texto.isBlank();
+        Function<String, Boolean> noVacioComoFuncion = texto -> !texto.isBlank();
+
+        Function<String, String> estatica = LambdasFundamentos::normalizar;
+        Function<String, String> ligada = this::etiquetar;
+        Function<String, Integer> noLigada = String::length;
+        Supplier<List<String>> constructor = ArrayList::new;
+        IntUnaryOperator duplicar = valor -> valor * 2;
+
+        Runnable lambda = () -> System.out.println("lambda this=" + this.getClass().getSimpleName());
+        Runnable anonima = new Runnable() {
+            @Override public void run() {
+                System.out.println("anonima this=" + this.getClass().getName());
+            }
+        };
+
+        Function<Path, String> leer = ruta -> {
+            try {
+                return Files.readString(ruta);
+            } catch (IOException error) {
+                throw new UncheckedIOException("No se pudo leer " + ruta, error);
+            }
+        };
+
+        System.out.println("sumar=" + sumar.aplicar(5));
+        System.out.println("objetivos=" + noVacio.test("ok") + "/" + noVacioComoFuncion.apply("ok"));
+        System.out.println("referencias=" + estatica.apply("  ab ") + "/" + ligada.apply("7") + "/" + noLigada.apply("ruta"));
+        System.out.println("constructor vacío=" + constructor.get().isEmpty());
+        System.out.println("primitiva=" + duplicar.applyAsInt(4));
+        lambda.run();
+        anonima.run();
+
+        try {
+            leer.apply(Path.of("no-existe.txt"));
+        } catch (UncheckedIOException error) {
+            System.out.println("causa=" + error.getCause().getClass().getSimpleName());
+        }
+    }
+
+    public static void main(String[] args) {
+        new LambdasFundamentos().ejecutar();
+    }
+}
+```
+
+Compila y ejecuta desde `java-lambdas-fundamentos/`:
+
+```bash
+javac -d out src/LambdasFundamentos.java
+java -cp out LambdasFundamentos
+```
+
+**Resultado esperado:**
+
+```text
+sumar=7
+objetivos=true/true
+referencias=AB/ENV-7/4
+constructor vacío=true
+primitiva=8
+lambda this=LambdasFundamentos
+anonima this=LambdasFundamentos$1
+causa=NoSuchFileException
+```
+
+**Explicación por subtema:** `Regla` demuestra el SAM y que un método `default` no rompe el contrato. Las dos variables `noVacio` demuestran que el contexto decide el tipo objetivo. Las cuatro referencias muestran qué receptor o constructor queda implícito. `incremento` demuestra captura por valor efectivamente final. Las dos implementaciones de `Runnable` muestran el alcance distinto de `this`. `leer` conserva `IOException` como causa de `UncheckedIOException`. `IntUnaryOperator` evita el contrato genérico `Function<Integer,Integer>` en el cálculo primitivo.
+
+**Fallo deliberado 1 — captura:** después de declarar `sumar`, agrega `incremento++;` y recompila.
+
+```text
+local variables referenced from a lambda expression must be final or effectively final
+```
+
+No se corrige envolviendo el entero en un arreglo mutable sólo para engañar al compilador. Decide si el valor debe fijarse antes de crear la regla o si el estado mutable pertenece a un objeto con nombre y sincronización explícita.
+
+**Fallo deliberado 2 — segundo método abstracto:** agrega `boolean activa();` a `Regla`. `@FunctionalInterface` provoca `Unexpected @FunctionalInterface annotation` porque ya existen dos métodos abstractos. Elimina el segundo método o modela otro contrato.
+
+**Fallo deliberado 3 — sobrecarga ambigua:** crea `src/Ambigua.java`:
+
+```java
+import java.util.function.Function;
+import java.util.function.Predicate;
+
+final class Ambigua {
+    static void elegir(Predicate<String> regla) {}
+    static void elegir(Function<String, Boolean> regla) {}
+
+    public static void main(String[] args) {
+        elegir(texto -> !texto.isBlank());
+    }
+}
+```
+
+`javac -d out src/Ambigua.java` informa que la referencia a `elegir` es ambigua. Resuélvela declarando primero `Predicate<String> noVacio = texto -> !texto.isBlank();` y llamando `elegir(noVacio)`, o usando un cast explícito cuando el contrato sea inequívoco.
+
+**Práctica guiada:** reemplaza cada referencia a método por su lambda equivalente y predice la salida antes de ejecutar. Después vuelve a las referencias sólo cuando la lambda se limite a delegar. Cambia `IntUnaryOperator` por `Function<Integer,Integer>` y explica dónde aparecen boxing y unboxing, sin afirmar una mejora de rendimiento que no hayas medido.
+
+**Pista:** en `String::length`, el `String` que recibe `Function<String,Integer>` se convierte en el receptor del método; no es un argumento escrito dentro de los paréntesis de `length()`.
+
+#### Aplica
+
+**Ejercicio independiente:** crea `src/PoliticaTarifa.java` con:
+
+- una interfaz funcional propia `Tarifa` que reciba peso y devuelva centavos;
+- una captura efectivamente final para el recargo configurado al inicio;
+- una referencia estática para normalizar una zona;
+- una referencia de constructor para crear el resultado;
+- un `IntUnaryOperator` para aplicar un porcentaje entero;
+- una lectura de archivo que conserve la causa cuando falle;
+- dos políticas con el mismo cuerpo lambda pero tipos objetivos distintos, explicando por qué no son intercambiables automáticamente.
+
+Ejecuta tres casos: tarifa normal, recargo y archivo ausente. Provoca después un error de captura y una sobrecarga ambigua diferentes de los ejemplos guiados.
+
+```bash
+javac -d out src/PoliticaTarifa.java
+java -cp out PoliticaTarifa
+```
+
+**Criterio de éxito:** entregas el archivo, salida de tres casos, mensajes de los dos errores, correcciones y una explicación propia que conecte cada resultado con SAM, tipo objetivo y captura.
+
+**Checklist de salida**
+
+- [ ] El programa compila y muestra los tres casos pedidos.
+- [ ] Cada lambda tiene un tipo objetivo identificable y justificas por qué ese contrato es funcional.
+- [ ] La captura permanece efectivamente final y explicas el error provocado.
+- [ ] Las referencias a métodos se comparan con su lambda equivalente.
+- [ ] La excepción conserva su causa y la sobrecarga ambigua queda diagnosticada y corregida.
+
+**Cuándo no usar lambdas:** usa una clase con nombre cuando el comportamiento tenga estado mutable, varias operaciones públicas, ciclo de vida, configuración extensa, identidad de dominio o necesite documentación y pruebas que una expresión anónima volvería opacas.
+
+**Errores comunes:** creer que una lambda tiene tipo independiente; agregar `@FunctionalInterface` pensando que convierte cualquier interfaz; mutar contenedores capturados para eludir `effectively final`; confundir `this` con la instancia lambda; escoger una referencia a método menos legible; envolver checked exceptions perdiendo la causa; usar lambdas como claves por identidad o como formato serializado.
+
+**Fuentes oficiales revisadas el 2026-11-01:** [Dev.java — Lambda Expressions](https://dev.java/learn/language/fp/lambdas/), [Dev.java — Method References](https://dev.java/learn/language/fp/lambdas/method-references/), [JLS 27 — Lambda Expressions](https://docs.oracle.com/javase/specs/jls/se27/html/jls-15.html#jls-15.27), [JLS 27 — Functional Interfaces](https://docs.oracle.com/javase/specs/jls/se27/html/jls-9.html#jls-9.8) y [Java SE 27 — java.util.function](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/function/package-summary.html).
+
+**Registro de ejecución (2026-11-01, Java 27.0.1):** el ejemplo principal compiló y produjo las ocho líneas esperadas. Se reprodujeron por separado los errores de variable no efectivamente final, interfaz con dos métodos abstractos y sobrecarga ambigua. El ejercicio independiente permanece como evidencia que debe producir el estudiante; no se contabiliza como ejecutado por esta revisión.
+
+### Tema 2: Las cuatro formas: Predicate, Function, Consumer y Supplier · Básico · 75 min
 
 #### Aprende
 
@@ -131,7 +379,7 @@ Construye las reglas de revisión del **[Proyecto integrador: motor funcional de
 
 **Fuentes oficiales:** [java.util.function](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/package-summary.html) y [lambdas en el tutorial de Java](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html).
 
-### Tema 2: Componer sin anidar: andThen, compose, negate y reglas encadenadas · Intermedio · 75 min
+### Tema 3: Componer sin anidar: andThen, compose, negate y reglas encadenadas · Intermedio · 75 min
 
 #### Aprende
 
@@ -240,7 +488,7 @@ En el **[Proyecto integrador: validación ordenada de solicitudes](#proyecto-20-
 
 **Fuentes oficiales:** [Predicate](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Predicate.html) y [Function](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Function.html).
 
-### Tema 3: Streams como composición: pereza, orden y efectos que se esconden · Intermedio · 90 min
+### Tema 4: Streams como composición: pereza, orden y efectos que se esconden · Intermedio · 90 min
 
 #### Aprende
 

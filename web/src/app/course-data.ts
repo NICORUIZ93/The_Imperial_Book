@@ -875,7 +875,7 @@ export const TRACKS: Track[] = [
   { id: 'node', name: 'Node.js: fundamentos de backend', shortName: 'Node.js', tagline: 'Backend en JavaScript: APIs, bases de datos y operación de servicios.', color: '#4d7c0f', icon: 'server', modules: NODE_MODULES },
   { id: 'angular', name: 'Angular — última versión y migraciones', shortName: 'Angular', tagline: 'Componentes, signals y arquitectura moderna sin NgModules.', color: '#be123c', icon: 'shield', modules: ANGULAR_MODULES },
   { id: 'react', name: 'React: fundamentos y aplicaciones', shortName: 'React', tagline: 'Hooks, estado, datos y frameworks full-stack con React.', color: '#1d6a6a', icon: 'atom', modules: REACT_MODULES },
-  { id: 'java', name: 'Java: fundamentos y temas avanzados', shortName: 'Java', tagline: 'POO, concurrencia y JVM moderna, de Java 8 a Java 25.', color: '#92400e', icon: 'coffee', modules: JAVA_MODULES },
+  { id: 'java', name: 'Java: fundamentos y temas avanzados', shortName: 'Java', tagline: 'POO, concurrencia y JVM moderna, de Java 8 a Java 27.', color: '#92400e', icon: 'coffee', modules: JAVA_MODULES },
   { id: 'spring-boot', name: 'Spring Boot', shortName: 'Spring Boot', tagline: 'APIs, persistencia, seguridad y microservicios con Spring.', color: '#4d7c0f', icon: 'leaf', modules: SPRING_BOOT_MODULES },
   { id: 'kotlin-multiplatform', name: 'Kotlin Multiplatform', shortName: 'Kotlin MP', tagline: 'Lógica compartida entre Android e iOS con Kotlin.', color: '#7c3aed', icon: 'layers', modules: KOTLIN_MULTIPLATFORM_MODULES },
   { id: 'android', name: 'Android con Jetpack Compose', shortName: 'Android', tagline: 'Apps Android nativas modernas con Compose y Kotlin.', color: '#15803d', icon: 'smartphone', modules: ANDROID_MODULES },

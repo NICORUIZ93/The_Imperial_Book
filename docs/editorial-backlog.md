@@ -8,29 +8,29 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 
 | Criterio | Cubierto | Pendiente |
 |---|---:|---:|
-| Explicación | 1141 | 0 |
-| Código | 1141 | 0 |
-| Ruta | 1141 | 0 |
-| Ejecución | 1141 | 0 |
-| Resultado | 1141 | 0 |
-| Modificación | 1141 | 0 |
-| Conexión con un proyecto | 1141 | 0 |
-| Modelo mental | 1141 | 0 |
-| Límites | 1141 | 0 |
-| **Perfil de criterios detectado** | **1141** | **0** |
+| Explicación | 1146 | 0 |
+| Código | 1146 | 0 |
+| Ruta | 1146 | 0 |
+| Ejecución | 1146 | 0 |
+| Resultado | 1146 | 0 |
+| Modificación | 1146 | 0 |
+| Conexión con un proyecto | 1145 | 1 |
+| Modelo mental | 1146 | 0 |
+| Límites | 1146 | 0 |
+| **Perfil de criterios detectado** | **1145** | **1** |
 
 ## Prioridad por track
 
 | Track | Temas | Sin código | Sin ruta | Sin ejecución | Sin resultado | Sin modificación | Sin proyecto | Sin límites |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| android | 73 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| android | 74 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | angular | 71 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | cloud | 156 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | devops | 129 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | flutter | 63 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| foundations | 99 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| foundations | 100 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ios | 56 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| java | 95 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| java | 98 | 0 | 0 | 0 | 0 | 0 | 1 | 0 |
 | javascript | 88 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | kotlin-multiplatform | 56 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | node | 77 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -40,7 +40,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 
 ## Pendientes por tema
 
-No hay criterios pendientes en esta auditoría de presencia editorial.
+- [java · módulo 20](../web/public/content/java/modulo-20.md) · Tema 1: Lambdas a fondo — tipo objetivo, captura y referencias a métodos · Intermedio · 120 min: conexión con un proyecto.
 
 ## Regla de cierre
 

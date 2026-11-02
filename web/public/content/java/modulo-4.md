@@ -7,17 +7,54 @@
 
 ### Tema 1: Stream API — map, filter, reduce, collect · Básico · 45 min
 
-**Prerrequisito:** JDK 27 y un editor. Comprueba `java --version`.
+**Paso 1 · Objetivo y preparación**
 
-**Al terminar podrás:** reemplazar un bucle manual con acumulador por un pipeline declarativo de `filter`/`map`/`collect`.
+**Prerrequisito:** Módulo 2 (colecciones) y lambdas; JDK 27 o posterior. Comprueba `java --version` y `javac --version`.
+
+**Al finalizar podrás:** comparar un bucle con un pipeline de `filter`/`map`/`collect`; usar `Collectors` y `reduce`; aprovechar streams primitivos; acotar un stream infinito; y explicar la pereza, el consumo único y la pureza.
 
 #### Aprende
 
-Un reporte necesita los nombres de todas las entregas activas de una lista, y el total de tarifas cobradas; escribirlo con bucles manuales y variables acumuladoras oculta la intención detrás de la mecánica de iteración.
+**Paso 2 · Contexto y caso profesional**
+
+**Caso profesional (escenario de RutaFlow):** un reporte necesita enumerar las entregas activas y sumar tarifas. La implementación debe dejar claro qué elementos selecciona y qué calcula, sin esconder efectos secundarios en el pipeline.
+
+**Paso 3 · Teoría, modelo mental y analogía**
 
 **¿Por qué es importante?** El estilo declarativo de Streams describe qué transformación se desea en vez de los detalles mecánicos de iteración manual, y su evaluación perezosa (solo disparada por la operación terminal) evita crear colecciones intermedias innecesarias entre cada paso de la cadena.
 
 `filter`/`map` son operaciones intermedias perezosas; `collect`/`sum` son terminales y disparan la ejecución completa en una única pasada.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia del tema |
+|---|---|---|
+| pipeline declarativo frente a bucle | Núcleo | el mismo cálculo con `for` y con `stream()` |
+| intermedias frente a terminales | Núcleo | `filter`/`map` no hacen nada sin una terminal |
+| pereza y consumo único | Diagnóstico | reutilizar un stream lanza `IllegalStateException` |
+| `Collectors` (`toList`/`groupingBy`/`joining`/`summingDouble`) | Variante | recolectar en lista, agrupar, unir y sumar |
+| `reduce` con identidad | Variante | combinar en un valor con un acumulador asociativo |
+| streams primitivos (`IntStream`) | Variante | `sum`/`summaryStatistics` sin boxing |
+| `iterate`/`generate` + `limit` | Límite | acotar un stream potencialmente infinito |
+| pureza y efectos secundarios | Diagnóstico | no mutar estado externo dentro de `map`/`filter` |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Pipeline declarativo frente a bucle (núcleo).** Un stream expresa *qué* transformación quieres (`filter` → `map` → `collect`) en vez de *cómo* iterar y acumular. Comunica la intención, pero solo es más claro si no esconde efectos; para lógica con cortes a mitad o condiciones muy entrelazadas, un `for` puede seguir siendo mejor.
+
+**Intermedias frente a terminales (núcleo).** `filter`, `map`, `sorted` son **intermedias**: devuelven otro stream y no ejecutan nada por sí solas. `collect`, `reduce`, `sum`, `count`, `forEach` son **terminales**: disparan el pipeline, procesando cada elemento una sola vez a través de toda la cadena (no se materializa una lista entre `filter` y `map`).
+
+**Pereza y consumo único (diagnóstico).** Como las intermedias son perezosas, nada ocurre hasta la terminal. Además, un stream se consume **una sola vez**: volver a usarlo tras una operación terminal lanza `IllegalStateException: stream has already been operated upon or closed`. Si necesitas recorrer dos veces, crea dos streams desde la fuente.
+
+**`Collectors` (variante).** `collect(...)` acepta recolectores reutilizables: `toList()`, `groupingBy(clasificador)` (con downstream como `mapping`/`counting`/`summingDouble`), `joining(sep, prefijo, sufijo)` para unir texto, `toMap(clave, valor)`. Son la forma estándar de transformar un stream en una estructura de datos concreta.
+
+**`reduce` con identidad (variante).** `reduce(identidad, acumulador)` combina los elementos en un solo valor: `reduce(0.0, Double::sum)`. La **identidad** es el valor neutro (0 para sumar, 1 para multiplicar) y el acumulador debe ser **asociativo** para que el resultado sea el mismo en serie o en paralelo.
+
+**Streams primitivos (variante).** `IntStream`/`LongStream`/`DoubleStream` evitan el boxing de los wrappers y ofrecen operaciones numéricas directas: `IntStream.rangeClosed(1,5).sum()`, `summaryStatistics()` (count/sum/min/max/average en una pasada). Usa `mapToInt`/`mapToDouble` para pasar de objetos a un stream primitivo.
+
+**`iterate`/`generate` + `limit` (límite).** `Stream.iterate(semilla, f)` y `Stream.generate(sup)` producen streams **potencialmente infinitos**; debes acotarlos con `limit(n)` (o una condición en el `iterate` de 3 argumentos) o el pipeline no termina. Útil para generar secuencias.
+
+**Pureza y efectos secundarios (diagnóstico).** Las funciones de `map`/`filter` deben ser **puras**: no mutar una variable externa ni producir efectos observables. Hacerlo (acumular en una lista de fuera, escribir en consola dentro de `map`) rompe la pereza y falla en paralelo. Para "acumular", usa `collect`/`reduce`, no un efecto lateral.
 
 Un stream describe una secuencia de operaciones a aplicar sobre una colección de forma declarativa: `personas.stream().filter(p -> p.getEdad() >= 18).map(Persona::getNombre).collect(Collectors.toList())` expresa directamente "filtra las personas mayores de edad, transforma cada una a su nombre, y recolecta el resultado en una lista", en vez de escribir manualmente un bucle imperativo con una lista auxiliar acumulando resultados paso a paso, un estilo que se enfoca en describir qué transformación se desea, no en los detalles mecánicos de cómo iterar y acumular.
 
@@ -47,6 +84,8 @@ Reemplazar bucles manuales por pipelines de Streams es el estilo que usarás en 
 **Implicación práctica:** Un pipeline declarativo solo es más claro que un bucle manual si de verdad describe la transformación sin ocultar efectos secundarios dentro de un `map` o `filter` que debería ser una función pura.
 
 #### Practica
+
+**Paso 4 · Demostración guiada desde cero**
 
 **Desde cero:** parte de una carpeta vacía y prepara la estructura.
 
@@ -110,48 +149,142 @@ java -cp out academia.streams.ReporteEntregas
 
 **Resultado esperado:** las dos versiones imprimen la misma lista de entregas activas (`E-001`, `E-003`, `E-004`) y el mismo total (`33.25`); la tarifa negativa aparece sumada en ambos casos.
 
-**Fallo deliberado:** agrega deliberadamente un elemento con tarifa negativa para provocar un fallo de expectativa en el total; confirma que ambas versiones (bucle y stream) lo suman igual, y decide si el filtro debería excluir tarifas inválidas.
+**Paso 5 · Práctica guiada**
+
+**Fallo deliberado:** elimina `.filter(Entrega::activa)` del pipeline y ejecuta de nuevo. La lista ahora incluye `E-002`, aunque el reporte pide entregas activas; restaura el filtro y confirma que ambas implementaciones usan la misma condición.
 
 **Pista:** el resultado de `filter` no se materializa en una lista hasta que el pipeline encuentra su operación terminal; si colocas un punto de interrupción en el `filter`, verás que no se ejecuta hasta llegar a `collect` o `sum`.
 
-**Si falla.** Si las dos versiones muestran listas distintas, el predicado del stream no coincide con la condición del `for`. Si `Collectors` no se resuelve, falta `import java.util.stream.Collectors;`. Si el total del stream difiere del bucle, revisa que `mapToDouble` recorra la misma lista completa y no solo las activas.
+Ahora cierra los subtemas de `Collectors`, `reduce`, streams primitivos y consumo único. Crea `src/main/java/academia/streams/Demo.java`:
+
+```java
+package academia.streams;
+import java.util.*;
+import java.util.stream.*;
+
+public final class Demo {
+    record Entrega(String id, boolean activa, double tarifa, String zona) {}
+    public static void main(String[] args) {
+        List<Entrega> e = List.of(
+            new Entrega("E1", true, 12.5, "Norte"),
+            new Entrega("E2", false, 8.0, "Sur"),
+            new Entrega("E3", true, 15.75, "Norte"));
+
+        var porEstado = e.stream().collect(Collectors.groupingBy(
+            Entrega::activa, Collectors.mapping(Entrega::id, Collectors.toList())));
+        System.out.println("groupingBy=" + porEstado);
+        System.out.println("joining=" + e.stream().map(Entrega::id).collect(Collectors.joining(", ", "[", "]")));
+        System.out.println("summingDouble=" + e.stream().collect(
+            Collectors.groupingBy(Entrega::zona, Collectors.summingDouble(Entrega::tarifa))));
+        System.out.println("reduce=" + e.stream().map(Entrega::tarifa).reduce(0.0, Double::sum));
+        System.out.println("IntStream.sum=" + IntStream.rangeClosed(1, 5).sum());
+        System.out.println("iterate+limit=" + Stream.iterate(0, n -> n + 2).limit(4).toList());
+
+        var s = e.stream();
+        s.count();
+        try { s.count(); }
+        catch (IllegalStateException ex) { System.out.println("consumo unico: IllegalStateException"); }
+    }
+}
+```
+
+```bash
+javac -d out src/main/java/academia/streams/Demo.java
+java -cp out academia.streams.Demo
+```
+
+**Salida esperada (verificada con Temurin 27.0.1):**
+
+```text
+groupingBy={false=[E2], true=[E1, E3]}
+joining=[E1, E2, E3]
+summingDouble={Sur=8.0, Norte=28.25}
+reduce=36.25
+IntStream.sum=15
+iterate+limit=[0, 2, 4, 6]
+consumo unico: IllegalStateException
+```
+
+`groupingBy` con downstream `mapping` agrupó por estado; `joining` unió con separador y corchetes; `summingDouble` sumó por zona; `reduce(0.0, Double::sum)` igualó el total; `IntStream` sumó sin boxing; `iterate(...).limit(4)` acotó un stream infinito; y reutilizar el stream lanzó `IllegalStateException`.
+
+**Si falla.** Si las dos versiones del `for`/stream muestran listas distintas, el predicado no coincide. Si reutilizar el stream no falla, lo estás recreando desde la fuente. Si `iterate` no termina, falta el `limit`. Si `Collectors` no resuelve, importa `java.util.stream.Collectors`.
 
 #### Aplica
 
+**Paso 6 · Práctica independiente**
+
 Agrega `Collectors.groupingBy` para agrupar las entregas por estado, y `reduce` para calcular el total de tarifas sin usar `sum()`; confirma que el resultado de `reduce` coincide con el de `mapToDouble().sum()`.
+
+**Paso 7 · Cierre**
 
 **Checklist de salida.**
 
-- [ ] `ReporteEntregas.java` compila sin advertencias con `javac -d out`.
-- [ ] La versión con bucle y la versión con stream imprimen la misma lista de activas.
-- [ ] Los dos totales coinciden, incluida la tarifa negativa.
-- [ ] `groupingBy` separa las entregas activas de las inactivas.
-- [ ] `reduce` produce el mismo total que `mapToDouble().sum()`.
-- [ ] Explicas por qué el pipeline no crea una lista intermedia entre `filter` y `map`.
+- [ ] `ReporteEntregas.java` compila; bucle y stream imprimen la misma lista de activas y el mismo total.
+- [ ] `groupingBy` separa activas de inactivas; `joining` y `summingDouble` producen su salida.
+- [ ] `reduce(0.0, Double::sum)` coincide con `mapToDouble().sum()`.
+- [ ] `IntStream.rangeClosed(1,5).sum()` da `15` sin boxing.
+- [ ] `Stream.iterate(...).limit(4)` acota el stream infinito a `[0, 2, 4, 6]`.
+- [ ] Reutilizar un stream ya consumido lanza `IllegalStateException`.
 
-**Si falla.** Si `groupingBy` devuelve un mapa con claves inesperadas, revisa que la función de clasificación devuelva `entrega.activa()` y no el objeto completo. Si `reduce` da un tipo distinto de `Double`, usa `reduce(0.0, Double::sum)` como forma explícita.
+**Si falla.** Si `groupingBy` da claves inesperadas, la función de clasificación devuelve el objeto, no `activa()`. Si reutilizar el stream no falla, lo recreas desde la fuente. Si `iterate` no termina, falta `limit`.
 
 Guarda ambas versiones (bucle y stream), la comparación de resultados y el agrupamiento por estado.
 
+**Antes del siguiente tema:** explica por qué las operaciones intermedias no se ejecutan hasta que hay una terminal y cuándo un bucle explícito sería más fácil de entender.
+
 **Errores comunes:** mutar una variable externa al stream desde dentro de un `map`/`forEach` (efecto secundario oculto), reutilizar el mismo stream dos veces (lanza `IllegalStateException`, un stream solo se consume una vez), y usar `forEach` con lógica compleja cuando `collect`/`reduce` expresarían mejor la intención.
 
-**Fuente oficial:** [dev.java: Streams](https://dev.java/learn/api/streams/) y [Java API: Stream](https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html).
+**Fuentes oficiales revisadas el 2026-11-01:** [dev.java: Streams](https://dev.java/learn/api/streams/), [`Stream` (API Java SE 27)](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/stream/Stream.html) y [`Collectors` (API Java SE 27)](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/stream/Collectors.html).
 
 ---
 
 ### Tema 2: Optional — evitar null explícitamente · Intermedio · 40 min
 
-**Prerrequisito:** JDK 27 y un editor. Comprueba `java --version`.
+**Paso 1 · Objetivo y preparación**
 
-**Al terminar podrás:** reemplazar un método que devuelve `null` por uno que devuelve `Optional`, forzando al llamador a decidir explícitamente qué hacer ante la ausencia.
+**Prerrequisito:** Tema 1 de este módulo (Streams), lambdas y excepciones; JDK 27 o posterior. Comprueba `java --version` y `javac --version`.
+
+**Al finalizar podrás:** representar la ausencia con `Optional` como retorno; crearlo con `of`/`ofNullable`; transformarlo con `map`/`filter`; distinguir `orElse` de `orElseGet`; y evitar `get()` sin comprobar.
 
 #### Aprende
 
-Buscar una entrega por id en una lista puede no encontrar ninguna coincidencia; devolver `null` en ese caso deja que cualquier consumidor olvide verificarlo y provoque un `NullPointerException` mucho más adelante, lejos de la causa real.
+**Paso 2 · Contexto y caso profesional**
+
+**Caso profesional (escenario de RutaFlow):** buscar una entrega por id puede no encontrar coincidencia. El contrato de retorno debe hacer visible esa ausencia para que cada consumidor decida si mostrarla, usar un valor alternativo o tratarla como error.
+
+**Paso 3 · Teoría, modelo mental y analogía**
 
 **¿Por qué es importante?** `Optional` obliga, en el propio tipo de retorno, a que el código que llama considere explícitamente el caso de ausencia de valor, reemplazando con ventaja la práctica de devolver `null` directamente y confiar en que se verifique manualmente sin ninguna garantía del compilador.
 
 `Optional<T>` como tipo de retorno obliga, en el propio sistema de tipos, a considerar el caso "no hay valor" antes de compilar.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia del tema |
+|---|---|---|
+| `Optional` como tipo de retorno | Núcleo | hace visible la ausencia en la firma |
+| creación (`of`/`ofNullable`/`empty`) | Fundamento | `of` no admite null; `ofNullable` sí |
+| `map`/`flatMap`/`filter` | Variante | transformar sin desenvolver manualmente |
+| `orElse` frente a `orElseGet` | Diagnóstico | `orElse` evalúa siempre; `orElseGet` solo si vacío |
+| `orElseThrow` / `ifPresent` | Núcleo | decidir explícitamente ante la ausencia |
+| `get()` sin comprobar | Diagnóstico | lanza `NoSuchElementException` si está vacío |
+| dónde NO usar `Optional` | Decisión | no como campo ni parámetro |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`Optional` como tipo de retorno (núcleo).** Devolver `Optional<T>` en vez de `T` (que podría ser `null`) hace que la **ausencia sea parte del contrato**: quien llama ve en la firma que puede no haber valor y el compilador lo empuja a decidir, en lugar de descubrirlo con un `NullPointerException` en producción.
+
+**Creación (fundamento).** `Optional.of(x)` envuelve un valor **no nulo** (lanza `NullPointerException` si le pasas `null`); `Optional.ofNullable(x)` acepta `null` y produce un vacío; `Optional.empty()` es el vacío explícito. Usa `ofNullable` al envolver un valor que podría faltar.
+
+**`map`/`flatMap`/`filter` (variante).** Transformas el contenido **sin** desenvolverlo: `opt.map(Persona::email)` devuelve `Optional<String>`; `filter` lo vacía si no cumple un predicado; `flatMap` se usa cuando la función ya devuelve otro `Optional` (evita `Optional<Optional<...>>`). Encadenar es más seguro que `if (opt.isPresent()) opt.get()...`.
+
+**`orElse` frente a `orElseGet` (diagnóstico).** Diferencia sutil y real: `orElse(valor)` **evalúa su argumento siempre**, incluso si el Optional tiene valor (trabajo desperdiciado si construir el default es caro); `orElseGet(() -> ...)` solo invoca el supplier **cuando está vacío**. Para un default costoso o con efectos, usa `orElseGet`.
+
+**`orElseThrow` / `ifPresent` (núcleo).** `orElseThrow(() -> new ...)` lanza una excepción clara si falta el valor; `ifPresent(v -> ...)` ejecuta una acción solo si hay valor. Son las formas de **decidir explícitamente** qué hacer ante la ausencia, frente a confiar en un chequeo manual de `null`.
+
+**`get()` sin comprobar (diagnóstico).** `opt.get()` devuelve el valor, pero si el Optional está vacío lanza `NoSuchElementException`. Llamar `get()` sin haber comprobado `isPresent()` reintroduce el mismo problema que el `null`: evítalo, usa `orElse*`/`ifPresent`/`map`.
+
+**Dónde NO usar `Optional` (decisión).** `Optional` está diseñado para **tipos de retorno**. Usarlo como **campo** de una clase o como **parámetro** de un método es un antipatrón (añade envoltura y no aporta): para un parámetro opcional, usa sobrecargas o `@Nullable`; para un campo ausente, modela el dominio.
 
 `Optional<Persona> buscarPorId(int id) { return personas.stream().filter(p -> p.getId() == id).findFirst(); }` devuelve un `Optional<Persona>` en vez de devolver directamente `Persona` (que podría ser `null` si no se encuentra ningún resultado): esta diferencia en el tipo de retorno obliga, en el propio sistema de tipos, a que cualquier código que invoque este método considere explícitamente el caso "no hay valor", en vez de descubrir esa ausencia únicamente en producción mediante un `NullPointerException` inesperado al intentar usar un valor que resultó ser `null` sin haberlo verificado previamente.
 
@@ -177,6 +310,8 @@ Cada búsqueda que puede no encontrar resultado en el proyecto integrador de est
 **Implicación práctica:** `Optional` como tipo de retorno obliga, en el propio sistema de tipos, a que el código que llama considere explícitamente el caso de ausencia antes de compilar, en vez de descubrirlo en producción con un `NullPointerException`.
 
 #### Practica
+
+**Paso 4 · Demostración guiada desde cero**
 
 **Desde cero:** parte de una carpeta vacía y prepara la estructura.
 
@@ -233,48 +368,131 @@ java -cp out academia.busqueda.Main
 
 **Resultado esperado:** el id 1 imprime la entrega con destino `Centro`; el id 99 imprime `Id 99: No encontrado` desde el `catch`, sin terminar el programa con una traza.
 
+**Paso 5 · Práctica guiada**
+
 **Fallo deliberado:** cambia deliberadamente la firma a que devuelva `Entrega` directamente (pudiendo ser `null`); invoca un método sobre el resultado sin verificar y observa el `NullPointerException`.
 
 **Pista:** el compilador no distingue entre un `Entrega` válido y uno `null`; solo `Optional` obliga a escribir qué hacer cuando no hay valor.
 
-**Si falla.** Si `buscarPorId(1)` lanza `NoSuchElementException`, compara el id buscado con el que guarda el registro. Si el `catch` no se ejecuta para el id 99, revisa que la búsqueda realmente no encuentre coincidencias. Si el compilador rechaza `orElseThrow` con un proveedor, confirma que el lambda devuelve una excepción y no un valor.
+Ahora cierra los subtemas de creación, `map`/`filter`, el antipatrón `get()` y la diferencia `orElse`/`orElseGet`. Crea `src/main/java/academia/busqueda/Demo.java`:
+
+```java
+package academia.busqueda;
+import java.util.*;
+
+public final class Demo {
+    static String calcular(String quien) { System.out.println("  [calcular invocado por " + quien + "]"); return "default"; }
+    public static void main(String[] args) {
+        System.out.println("of=" + Optional.of("x"));
+        System.out.println("ofNullable(null)=" + Optional.ofNullable(null));
+        System.out.println("map=" + Optional.of("a@x.com").map(String::toUpperCase).orElse("-"));
+        System.out.println("filter=" + Optional.of("a@x.com").filter(s -> s.endsWith(".org")).isPresent());
+
+        Optional<String> presente = Optional.of("valor-real");
+        System.out.println("orElse=" + presente.orElse(calcular("orElse")));          // evalúa aunque haya valor
+        System.out.println("orElseGet=" + presente.orElseGet(() -> calcular("orElseGet"))); // NO invoca
+
+        try { Optional.empty().get(); }
+        catch (NoSuchElementException e) { System.out.println("get() vacio: NoSuchElementException"); }
+    }
+}
+```
+
+```bash
+javac -d out src/main/java/academia/busqueda/Demo.java
+java -cp out academia.busqueda.Demo
+```
+
+**Salida esperada (verificada con Temurin 27.0.1):**
+
+```text
+of=Optional[x]
+ofNullable(null)=Optional.empty
+map=A@X.COM
+filter=false
+  [calcular invocado por orElse]
+orElse=valor-real
+orElseGet=valor-real
+get() vacio: NoSuchElementException
+```
+
+Fíjate en el punto clave: **aunque `presente` tiene valor**, `orElse(calcular(...))` **sí invocó** `calcular` (se ve el mensaje `[calcular invocado por orElse]`), mientras `orElseGet(() -> ...)` **no lo invocó**. Esa es la diferencia: `orElse` evalúa su argumento siempre; `orElseGet` solo si está vacío. Y `get()` sobre un vacío reintrodujo el problema del `null` como `NoSuchElementException`.
+
+**Si falla.** Si no ves `[calcular invocado por orElse]`, tu Optional estaba vacío (usa uno presente). Si `get()` no lanza, el Optional tenía valor. Si `ofNullable(null)` lanza, confundiste `of` con `ofNullable`.
 
 #### Aplica
 
+**Paso 6 · Práctica independiente**
+
 Agrega `orElse(entregaPorDefecto)` y `orElseGet(() -> calcularAlternativa())` como dos formas adicionales de manejar la ausencia, y explica en qué caso usarías cada una de las tres.
+
+**Paso 7 · Cierre**
 
 **Checklist de salida.**
 
-- [ ] `RepositorioEntregas.java` compila y se ejecuta con `java -cp out academia.busqueda.Main`.
-- [ ] Un id existente devuelve la entrega correspondiente sin excepción.
-- [ ] Un id inexistente se maneja de forma explícita con un mensaje claro.
-- [ ] `orElse` y `orElseGet` están implementados y producen el valor esperado.
-- [ ] Provocaste el `NullPointerException` al devolver `null` directamente.
-- [ ] Explicas por qué `Optional` no debería usarse como tipo de campo.
+- [ ] `RepositorioEntregas.java` compila; un id existente devuelve su entrega y uno inexistente se maneja.
+- [ ] `of` rechaza `null` y `ofNullable(null)` produce `Optional.empty`.
+- [ ] `map`/`filter` transforman sin desenvolver manualmente.
+- [ ] Con un Optional **presente**, `orElse(...)` evalúa su argumento y `orElseGet(...)` no.
+- [ ] `get()` sobre un vacío lanza `NoSuchElementException`.
+- [ ] Explicas por qué `Optional` no debería usarse como campo ni parámetro.
 
-**Si falla.** Si `orElseGet` se evalúa aunque el valor esté presente, revisa que reciba un `Supplier` y no una llamada ya ejecutada. Si el `NullPointerException` no aparece al devolver `null`, estás usando todavía la versión con `Optional`.
+**Si falla.** Si no ves la diferencia `orElse`/`orElseGet`, usa un Optional con valor. Si `get()` no lanza, el Optional tenía valor. Si `ofNullable(null)` lanza, confundiste `of` con `ofNullable`.
 
 Guarda el repositorio, las tres formas de manejar ausencia y el `NullPointerException` provocado al usar `null`.
 
+**Antes del siguiente tema:** diferencia una búsqueda única opcional de una búsqueda con varios resultados y explica qué decisión debe tomar quien llama.
+
 **Errores comunes:** llamar `.get()` sobre un `Optional` sin verificar `isPresent()` antes (lanza `NoSuchElementException` igual que un `null` no verificado lanzaría `NullPointerException`), usar `Optional` como tipo de un campo o parámetro en vez de como tipo de retorno, y envolver en `Optional` un valor que en realidad nunca debería estar ausente.
 
-**Fuente oficial:** [dev.java: Streams](https://dev.java/learn/api/streams/) y [Java API: Stream](https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html).
+**Fuentes oficiales revisadas el 2026-11-01:** [`Optional` (API Java SE 27)](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/Optional.html) y [dev.java: Optional](https://dev.java/learn/api/optional/).
 
 ---
 
 ### Tema 3: Streams paralelos y referencias a métodos · Intermedio · 45 min
 
-**Prerrequisito:** JDK 27 y un editor. Comprueba `java --version`.
+**Paso 1 · Objetivo y preparación**
 
-**Al terminar podrás:** medir si `parallelStream()` realmente mejora el rendimiento frente a `stream()` en un caso concreto, en vez de asumirlo.
+**Prerrequisito:** Temas 1–2 de este módulo (Streams); JDK 27 o posterior. Comprueba `java --version` y `javac --version`.
+
+**Al finalizar podrás:** comparar resultado secuencial y paralelo exigiendo igualdad antes que velocidad; explicar el overhead y las condiciones de carrera; y medir el costo en tu equipo sin asumir que paralelo siempre gana.
 
 #### Aprende
 
-Verificar si un número grande es primo para una lista de un millón de candidatos es CPU-intensivo y sin efectos secundarios compartidos; es exactamente el tipo de operación donde vale la pena medir si paralelizar realmente ayuda.
+**Paso 2 · Contexto y caso profesional**
+
+**Caso profesional (experimento aislado para RutaFlow):** un cálculo de clasificación por lotes es CPU-intensivo y no modifica estado compartido. Antes de incorporarlo al servicio hay que comprobar resultados equivalentes y medir en el entorno objetivo.
+
+**Paso 3 · Teoría, modelo mental y analogía**
 
 **¿Por qué es importante?** Un stream paralelo solo mejora el rendimiento con datasets grandes y operaciones CPU-intensivas sin efectos secundarios compartidos; usarlo indiscriminadamente en casos pequeños o simples puede empeorar el rendimiento por el overhead de coordinación.
 
 `parallelStream()` divide el trabajo entre varios hilos gestionados por `ForkJoinPool.commonPool()`; el overhead de dividir y recombinar solo se justifica con datasets grandes y operaciones CPU-intensivas.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia del tema |
+|---|---|---|
+| `parallelStream()` y `ForkJoinPool` | Núcleo | divide el trabajo en el pool común |
+| correctitud antes que velocidad | Diagnóstico | los conteos secuencial y paralelo deben coincidir |
+| overhead de paralelización | Límite | con datos pequeños, paralelo suele ser más lento |
+| estado compartido y condiciones de carrera | Diagnóstico | mutar estado compartido en paralelo corrompe el resultado |
+| referencias a métodos | Variante | `Clase::metodo` como lambda que solo delega |
+| medición informal frente a JMH | Decisión | `nanoTime` observa; no decide rendimiento |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`parallelStream()` y `ForkJoinPool` (núcleo).** `parallelStream()` (o `.parallel()` sobre un stream) reparte los elementos entre varios hilos del `ForkJoinPool.commonPool()`, procesa en paralelo y recombina. El número de hilos depende de los núcleos disponibles (y de los límites del contenedor).
+
+**Correctitud antes que velocidad (diagnóstico).** La regla de oro: **primero** verifica que el resultado paralelo es **idéntico** al secuencial; solo entonces compara tiempos. Si los conteos difieren, hay un bug (operación no asociativa, estado compartido), no una optimización.
+
+**Overhead de paralelización (límite).** Dividir, coordinar hilos y recombinar tiene un coste fijo. Para colecciones pequeñas o operaciones baratas, ese coste supera cualquier ganancia y el paralelo resulta **más lento**. Solo compensa con datasets grandes y trabajo por elemento genuinamente caro (CPU-bound).
+
+**Estado compartido y condiciones de carrera (diagnóstico).** Si el pipeline muta estado compartido mutable (acumular en una lista externa, un contador), en paralelo aparecen **condiciones de carrera** y resultados corruptos o no deterministas. Las operaciones deben ser sin efectos; para acumular usa `collect`/`reduce` con combinador asociativo (concurrencia en detalle en el Módulo 5).
+
+**Referencias a métodos (variante).** `ContarPrimos::esPrimo` es la lambda `n -> ContarPrimos.esPrimo(n)` cuando solo delega en un método existente; más legible. No cambia el rendimiento, solo la expresividad (las cuatro clases de referencia se vieron a fondo en el Módulo 20).
+
+**Medición informal frente a JMH (decisión).** `System.nanoTime()` sirve para **observar** órdenes de magnitud, pero no controla calentamiento de la JVM, JIT ni ruido; no decide rendimiento. Para una conclusión fiable usa JMH, y repite varias veces antes de concluir.
 
 `numeros.parallelStream().filter(this::esPrimo).count()` divide el procesamiento del stream entre múltiples hilos automáticamente gestionados por el framework de streams (usando internamente el mismo pool de hilos compartido `ForkJoinPool.commonPool()`), apropiado específicamente para datasets grandes combinados con operaciones genuinamente intensivas en CPU y sin efectos secundarios compartidos entre los elementos procesados (dado que la paralelización introduce el riesgo de condiciones de carrera si las operaciones del stream modifican estado compartido mutable, Módulo 5).
 
@@ -289,10 +507,13 @@ Las referencias a métodos (`Persona::getNombre`, equivalente exacto a la lambda
 **Código del ejemplo:**
 
 ```java
-long conteo = numeros.parallelStream().filter(this::esPrimo).count();
-// Útil solo para datasets grandes y operaciones CPU-intensivas sin efectos secundarios
+long conteo = numeros.parallelStream()
+    .filter(ContarPrimos::esPrimo)
+    .count();
 
-.map(Persona::getNombre)   // equivalente a .map(p -> p.getNombre())
+List<String> nombres = personas.stream()
+    .map(Persona::getNombre) // equivalente a .map(persona -> persona.getNombre())
+    .toList();
 ```
 
 Antes de paralelizar cualquier procesamiento pesado del proyecto integrador de este track, medirás igual que aquí si el dataset y la operación justifican el overhead de `parallelStream()`.
@@ -302,6 +523,8 @@ Antes de paralelizar cualquier procesamiento pesado del proyecto integrador de e
 **Implicación práctica:** El beneficio de `parallelStream()` depende del tamaño real del dataset y del costo de la operación, nunca es automático — medir con datos reales es la única forma confiable de saber si realmente ayuda en un caso concreto.
 
 #### Practica
+
+**Paso 4 · Demostración guiada desde cero**
 
 **Desde cero:** parte de una carpeta vacía y prepara la estructura.
 
@@ -365,17 +588,25 @@ javac -d out src/main/java/academia/paralelo/ContarPrimos.java
 java -cp out academia.paralelo.ContarPrimos
 ```
 
-**Resultado esperado:** ambos conteos son iguales (`148 933` primos hasta 2 000 000) y, en una máquina con varios núcleos, la línea `parallelStream` suele mostrar un tiempo menor que `stream`; la diferencia exacta depende del hardware.
+**Resultado esperado:** ambos conteos son iguales (`148 933` primos hasta 2 000 000). El tiempo puede ser mayor o menor según hardware, carga, calentamiento y límites del proceso; esta medición didáctica no sustituye un benchmark con JMH.
 
-**Fallo deliberado:** repite la misma medición con un rango pequeño (2 a 100) para provocar un fallo de expectativa; en ese caso `parallelStream()` puede ser igual de lento o más lento que `stream()`.
+**Paso 5 · Práctica guiada**
+
+Repite la comparación con el rango 2 a 100 y contrasta primero los conteos y luego los tiempos. Registra el resultado real de tu equipo, sin asumir cuál variante ganará.
 
 **Pista:** el tiempo de la primera ejecución incluye la inicialización de la JVM; ejecuta el programa dos o tres veces antes de sacar conclusiones de la comparación.
+
+**Fallo deliberado:** cambia el límite inferior solo en la llamada paralela, de `desde` a `desde + 1`. Los conteos ya no coincidirán. Diagnostica el error comparando primero los argumentos de ambas llamadas y restáuralos antes de medir rendimiento.
 
 **Si falla.** Si los dos conteos difieren, el predicado o el rango cambian entre llamadas. Si `parallelStream` siempre tarda más incluso con 2 000 000, comprueba cuántos núcleos tiene la máquina y si el contenedor limita el paralelismo. Si la compilación falla en `LongStream.rangeClosed`, revisa que el import sea `java.util.stream.LongStream`.
 
 #### Aplica
 
-Reemplaza las lambdas `n -> esPrimo(n)` por la referencia a método `this::esPrimo`, y confirma que el comportamiento y el tiempo medido no cambian, solo la legibilidad del código.
+**Paso 6 · Práctica independiente**
+
+Reemplaza `ContarPrimos::esPrimo` temporalmente por la lambda `n -> ContarPrimos.esPrimo(n)` y vuelve a la referencia de método. Confirma que el conteo no cambia; no esperes una diferencia de rendimiento medible por este cambio de sintaxis.
+
+**Paso 7 · Cierre**
 
 **Checklist de salida.**
 
@@ -388,29 +619,62 @@ Reemplaza las lambdas `n -> esPrimo(n)` por la referencia a método `this::esPri
 
 **Si falla.** Si `this::esPrimo` no compila desde `main`, recuerda que `esPrimo` es estático y la referencia correcta es `ContarPrimos::esPrimo`. Si el tiempo varía demasiado entre ejecuciones, repite la medición y compara el orden de magnitud, no el milisegundo exacto.
 
-Guarda ambas mediciones (rango grande y pequeño) y la conclusión sobre cuándo paraleliza realmente.
+Guarda ambos conteos, las mediciones repetidas (rango grande y pequeño) y la conclusión limitada a tu equipo y condiciones de ejecución.
+
+**Antes del siguiente tema:** explica por qué la igualdad del resultado es requisito antes de comparar tiempo y qué limitaciones tiene esta medición con `System.nanoTime()`.
 
 **Errores comunes:** asumir que `parallelStream()` siempre es más rápido sin medir, paralelizar un pipeline con efectos secundarios sobre estado compartido mutable (introduce condiciones de carrera reales), y paralelizar una colección pequeña donde el overhead de coordinación supera cualquier beneficio.
 
-**Fuente oficial:** [dev.java: Streams](https://dev.java/learn/api/streams/) y [Java API: Stream](https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html).
+**Fuentes oficiales revisadas el 2026-11-01:** [`Stream` (API Java SE 27)](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/stream/Stream.html), [`ForkJoinPool` (API Java SE 27)](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/ForkJoinPool.html) y [OpenJDK JMH](https://openjdk.org/projects/code-tools/jmh/).
 
 ---
 
 ### Tema 4: Stream Gatherers (Java 24) · Avanzado · 50 min
 
-**Prerrequisito:** JDK 24+ y el Tema 1 de este módulo. Comprueba `java --version`.
+**Paso 1 · Objetivo y preparación**
 
-**Al terminar podrás:** usar `Stream.gather()` con `Gatherers.windowSliding(3)` para detectar 3 entregas consecutivas atrasadas en un stream de registros de entrega, algo que `filter`/`map` no pueden expresar porque solo ven un elemento a la vez.
+**Prerrequisito:** Temas 1–3 de este módulo (Streams); JDK 24 o posterior (verificado con JDK 27). Comprueba `java --version` y `javac --version`.
+
+**Al finalizar podrás:** usar `Stream.gather()` con `Gatherers.windowSliding(3)` para detectar tres entregas atrasadas consecutivas; distinguir `windowSliding` de `windowFixed`; y explicar por qué un filtro elemento a elemento no expresa esa relación.
 
 #### Aprende
 
-El equipo quiere alertar cuando un conductor acumula 3 entregas atrasadas consecutivas (no 3 atrasadas en cualquier orden); `filter(this::estaAtrasada)` solo puede filtrar elementos individuales, perdiendo por completo la relación de orden/vecindad entre ellos.
+**Paso 2 · Contexto y caso profesional**
+
+**Caso profesional (escenario de RutaFlow):** un monitor de lotes debe alertar tras tres entregas consecutivas atrasadas, no por tres elementos aislados. El orden de llegada forma parte de la regla.
+
+**Paso 3 · Teoría, modelo mental y analogía**
 
 **¿Por qué es importante?** Porque una transformación declarativa puede hacer visible la regla, pero solo si la operación elegida puede expresar genuinamente la relación entre elementos que el caso real requiere.
 
-`Stream.gather()` (finalizado en Java 24) permite definir operaciones intermedias personalizadas con estado propio entre elementos, algo que `map`/`filter`/`reduce` no permiten porque procesan cada elemento de forma aislada; `Gatherers.windowSliding(n)` agrupa cada `n` elementos consecutivos en una ventana deslizante.
+`Stream.gather()` (finalizado en Java 24, disponible en Java 27) permite definir operaciones intermedias personalizadas con estado entre elementos. `map` y `filter` transforman o seleccionan cada elemento por separado; `reduce` puede acumular estado, pero es una operación terminal y no emite una secuencia de ventanas para continuar el pipeline. `Gatherers.windowSliding(n)` emite ventanas consecutivas de tamaño `n`.
 
-`Stream.gather()` completa la API de Streams agregando la capacidad de definir operaciones intermedias con estado propio entre elementos consecutivos; `Gatherers` (la clase utilitaria con implementaciones estándar) incluye `windowSliding(n)` para ventanas deslizantes de tamaño fijo, `windowFixed(n)` para ventanas no superpuestas, y `fold` para una reducción con estado acumulado explícito paso a paso.
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia del tema |
+|---|---|---|
+| límite de `map`/`filter` (sin memoria) | Prerrequisito | no expresan relación entre vecinos |
+| `Stream.gather()` | Núcleo | operación intermedia con estado |
+| `Gatherers.windowSliding(n)` | Núcleo | ventanas deslizantes solapadas |
+| `Gatherers.windowFixed(n)` | Variante | ventanas no superpuestas (última parcial) |
+| gatherer frente a `reduce` | Decisión | intermedio que sigue el pipeline vs terminal |
+| cuándo basta `map`/`filter` | Límite | si no hay relación de vecindad, no uses gatherer |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Límite de `map`/`filter` (prerrequisito).** `map`/`filter` miran cada elemento **aislado**, sin memoria de los anteriores. Una regla como "tres atrasos **consecutivos**" depende de la relación entre vecinos, y no se puede expresar con un filtro elemento a elemento sin hacks con estado externo (que rompe la pereza y el paralelo).
+
+**`Stream.gather()` (núcleo).** Es una operación **intermedia** que puede mantener **estado entre elementos** y emitir cero, uno o varios resultados por elemento, siguiendo el pipeline. Acepta un `Gatherer` (propio o de la clase `Gatherers`). Llena el hueco entre `map`/`filter` (sin estado) y `reduce`/`collect` (terminales).
+
+**`Gatherers.windowSliding(n)` (núcleo).** Emite **ventanas deslizantes** de tamaño `n` que avanzan de uno en uno y se **solapan**: para `[E1..E5]` con `n=3` produce `[E1,E2,E3]`, `[E2,E3,E4]`, `[E3,E4,E5]`. Filtrar esas ventanas con `allMatch(estaAtrasada)` detecta la racha consecutiva.
+
+**`Gatherers.windowFixed(n)` (variante).** Divide en ventanas **no superpuestas** de tamaño `n`: `[1..5]` con `n=2` da `[1,2]`, `[3,4]`, `[5]` (la última parcial). Útil para procesar en lotes de tamaño fijo, a diferencia del solape de `windowSliding`.
+
+**Gatherer frente a `reduce` (decisión).** `reduce`/`collect` producen un **único valor terminal** y cierran el stream; un gatherer produce una **secuencia intermedia** que sigue alimentando el pipeline (puedes `filter`/`map` las ventanas después). Usa gatherer cuando necesites seguir transformando; `reduce` cuando solo quieras el agregado final.
+
+**Cuándo basta `map`/`filter` (límite).** Si la transformación es elemento a elemento sin relación de orden o vecindad, `map`/`filter` son más simples y claros. No introduzcas un gatherer donde no hay estado entre elementos que justifique su complejidad.
+
+`Gatherers` (la clase utilitaria con implementaciones estándar) incluye `windowSliding(n)` para ventanas deslizantes de tamaño fijo, `windowFixed(n)` para ventanas no superpuestas y `fold` para acumular estado dentro de una operación intermedia. Elige la operación según si necesitas producir resultados intermedios que sigan alimentando el pipeline o solo un valor final.
 
 **Analogía:** procesar un stream con `filter`/`map` es como revisar una fila de personas de una en una sin memoria de quién pasó antes; un gatherer como `windowSliding` es como mirar siempre a las últimas 3 personas juntas, permitiendo detectar un patrón que depende genuinamente de la relación entre elementos vecinos.
 
@@ -431,9 +695,11 @@ Cada regla de negocio del proyecto integrador de este track que dependa de la re
 
 **Diagrama:** [Ventanas deslizantes con Stream Gatherers](../../visuals/temas/java/modulo-4-tema-4-gatherers-window-sliding.html)
 
-**Implicación práctica:** `Stream.gather()` permite expresar declarativamente operaciones que dependen de la relación entre elementos consecutivos, algo que `map`/`filter`/`reduce` no pueden expresar por sí solos.
+**Implicación práctica:** `Stream.gather()` permite producir ventanas intermedias que continúan por el pipeline. Aunque `reduce` puede acumular estado para calcular un resultado terminal, no reemplaza esa salida de ventanas como operación intermedia.
 
 #### Practica
+
+**Paso 4 · Demostración guiada desde cero**
 
 **Desde cero:** parte de una carpeta vacía y prepara la estructura.
 
@@ -486,24 +752,25 @@ java -cp out academia.streams.DetectorAtrasos
 
 **Resultado esperado:** se imprime una única ventana, `[E2, E3, E4]`: las tres entregas atrasadas consecutivas. La racha no incluye `E1` ni `E5`, que están a tiempo.
 
-**Alternativa con Maven o Gradle:**
+**Paso 5 · Práctica guiada**
 
-```bash
-# Maven
-mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-cd app && mvn test
-# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
-```
+Cambia la última entrega `E5` de puntual a atrasada y ejecuta de nuevo. Predice cuántas ventanas consecutivas cumplen la regla y cuáles son sus ids; luego compara con la salida.
 
-**Fallo deliberado:** reemplaza `gather(Gatherers.windowSliding(3))` por un simple `filter(Entrega::estaAtrasada)` "para simplificar". Ahora el pipeline detecta cualquier entrega atrasada individual, sin importar si forma parte de una racha consecutiva o es un caso aislado entre entregas a tiempo, generando alertas de "racha de 3 atrasos" para conductores que en realidad tuvieron un solo atraso ocasional.
+**Pista:** las ventanas se solapan y cada una avanza una posición. Con `E2`, `E3`, `E4` y `E5` atrasadas, hay dos ventanas de tres: `[E2, E3, E4]` y `[E3, E4, E5]`.
 
-**Pista:** con la secuencia `E1 a tiempo, E2–E4 atrasadas, E5 a tiempo`, el pipeline correcto devuelve una sola ventana; el `filter` simplificado devuelve tres elementos sueltos y pierde la noción de racha.
+**Fallo deliberado:** reemplaza `gather(Gatherers.windowSliding(3))` por un simple `filter(Entrega::estaAtrasada)`. El pipeline devuelve elementos atrasados sueltos, no ventanas; si el consumidor los interpreta como rachas, clasifica incorrectamente incluso atrasos aislados.
+
+**Pista:** con la secuencia `E1 a tiempo, E2–E4 atrasadas, E5 a tiempo`, el pipeline correcto devuelve una ventana; el `filter` simplificado devuelve tres entregas individuales y pierde la noción de racha.
 
 **Si falla.** Si `Gatherers` no se resuelve, estás compilando con un JDK anterior a 24. Si la ventana esperada no aparece, comprueba que las tres entregas consecutivas tengan `atrasada` en `true` y que el orden de la lista sea el de llegada. Si el `record` no compila, revisa que el archivo se llame como la clase pública y que el JDK sea 17 o superior.
 
 #### Aplica
 
-Corrige el paso anterior restaurando `gather(Gatherers.windowSliding(3))`, y agrega una prueba con una secuencia mixta (a tiempo, atrasada, a tiempo, atrasada, atrasada, atrasada) confirmando que solo se detecta la racha real de 3 consecutivas al final.
+**Paso 6 · Práctica independiente**
+
+Agrega una prueba con una secuencia mixta (a tiempo, atrasada, a tiempo, atrasada, atrasada, atrasada) y confirma que solo se detecta la ventana correspondiente a las tres últimas entregas; conserva el orden de entrada.
+
+**Paso 7 · Cierre**
 
 **Checklist de salida.**
 
@@ -516,7 +783,9 @@ Corrige el paso anterior restaurando `gather(Gatherers.windowSliding(3))`, y agr
 
 **Si falla.** Si la secuencia mixta produce más de una ventana, revisa que `allMatch` exija las tres entregas atrasadas y no solo una. Si el diagrama no carga, verifica la ruta `../../visuals/temas/java/modulo-4-tema-4-gatherers-window-sliding.html` desde el módulo.
 
-Entrega el pipeline con `Gatherers.windowSliding` del paso de práctica, la detección de atrasos aislados sin relación de orden del fallo deliberado, y la prueba con secuencia mixta; explica qué tipo de lógica (que depende de la relación entre elementos vecinos) `filter`/`map` no pueden expresar pero un gatherer sí.
+Entrega el pipeline con `Gatherers.windowSliding`, las ventanas solapadas cuando la racha tiene cuatro elementos y la prueba con secuencia mixta; explica por qué un gatherer intermedio puede emitir ventanas y `reduce` solo devuelve la agregación final.
+
+**Antes del siguiente tema:** explica qué aporta la ventana deslizante, cuál es el requisito de versión del JDK y cuándo `filter`/`map` son suficientes.
 
 **Errores comunes:** intentar resolver lógica de ventana/vecindad con filter/map puro, usar gather() para transformaciones simples que map ya resuelve, y no considerar el costo de materializar cada ventana como una lista nueva.
 

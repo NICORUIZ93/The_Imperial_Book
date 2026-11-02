@@ -306,7 +306,7 @@ El comando `tarea listar --estado pendiente` del proyecto integrador Fundamentos
 #### Paso 3 · Teoría, modelo mental y analogía
 Un índice es una estructura auxiliar ordenada que SQLite mantiene junto a la tabla para localizar filas por el valor de una columna sin recorrerlas todas. `EXPLAIN QUERY PLAN` muestra, sin ejecutar realmente la consulta sobre los datos, qué estrategia usaría el motor: `SCAN TABLE` significa "voy a revisar cada fila una por una"; `SEARCH TABLE ... USING INDEX` significa "voy directo a las filas que coinciden". Un índice no es gratis: ocupa espacio en disco y SQLite debe actualizarlo en cada `INSERT`/`UPDATE`/`DELETE` sobre esa columna, no solo en cada lectura. La analogía: buscar un apellido en una guía telefónica ordenada alfabéticamente (índice) es muy distinto de buscarlo en una pila de fichas sueltas sin orden (`SCAN`) — pero si alguien agrega una ficha nueva, mantener la guía ordenada cuesta más trabajo que agregar la ficha al final de la pila.
 
-**Cuándo NO usar:** No crees índice en una columna con solo 2 valores (booleano). No indexas todas las columnas; solo las que filtran frecuentemente. No indexas una columna que rara vez se consulta porque ralentiza INSERT.
+**Cuándo NO usar:** No agregues un índice sin una consulta que lo justifique. Una columna con pocos valores distintos suele ser poco selectiva, pero una distribución muy desigual puede hacer útil el índice; confirma el plan con datos representativos. Cada índice ocupa espacio y añade trabajo a `INSERT`, `UPDATE` y `DELETE`.
 
 #### Profundización · Diseño: Plan de consulta cuando el índice no acelera
 
@@ -335,13 +335,13 @@ Número de índices que ralentiza INSERT: _________
 
 > **Respuesta esperada:**
 >
-> **Selectividad:** Indexar solo `urgente` filtra ~50% de filas. Luego debe recorrer todas para verificar `prioridad>5` (O(n)).
+> **Selectividad:** No se deduce solo del nombre de la columna: mide la distribución. Si aproximadamente la mitad de las filas tiene `urgente=1`, ese filtro por sí solo puede descartar poco trabajo.
 >
-> **Índice compuesto:** `(urgente, prioridad)`. Sí, el orden importa: primero columna más selectiva o que usas en igualdad.
+> **Índice compuesto:** Para `urgente=1 AND prioridad>5`, `(urgente, prioridad)` permite usar primero la igualdad y después el rango. El orden importa por el prefijo izquierdo; otra consulta puede requerir otro índice.
 >
-> **Plan:** Antes: `SCAN TABLE tarea`. Después: `SEARCH tarea USING INDEX idx_urgente_prioridad`.
+> **Plan:** Compara `EXPLAIN QUERY PLAN` con estadísticas y datos representativos. El optimizador puede preferir `SCAN` si el filtro devuelve muchas filas; no hay una salida universal para todo volumen y distribución.
 >
-> **Trade-off:** Cada índice ralentiza INSERT/UPDATE. 2-3 índices = negligible; 10+ = significante. Balance con frecuencia de consulta.
+> **Trade-off:** Cada índice añade coste de escritura y almacenamiento. No existe un número universal a partir del cual sea “demasiado”: mide consultas y escrituras del caso real.
 
 </details>
 
@@ -390,25 +390,44 @@ flowchart LR
 mkdir -p ejemplo-indice && cd ejemplo-indice
 ```
 
-Crea `tareas.db` y la tabla con este comando:
-```bash
-sqlite3 tareas.db "CREATE TABLE tareas (id INTEGER PRIMARY KEY, titulo TEXT, categoria_id INTEGER, estado TEXT NOT NULL DEFAULT 'pendiente'); INSERT INTO tareas (titulo, categoria_id) VALUES ('revisar stock', 1), ('enviar pedido', 2);"
-```
+Crea `indice.py`:
+```python
+import sqlite3
 
-Crea `indice.sql` con este contenido completo:
-```sql
-EXPLAIN QUERY PLAN SELECT titulo FROM tareas WHERE estado='pendiente';
+conexion = sqlite3.connect(":memory:")
+conexion.execute(
+    "CREATE TABLE tareas (id INTEGER PRIMARY KEY, titulo TEXT NOT NULL, estado TEXT NOT NULL)"
+)
+conexion.executemany(
+    "INSERT INTO tareas(titulo, estado) VALUES (?, ?)",
+    (
+        (f"Tarea {numero}", "pendiente" if numero % 100 == 0 else "completada")
+        for numero in range(10_000)
+    ),
+)
+conexion.commit()
 
-CREATE INDEX idx_tareas_estado ON tareas(estado);
+def mostrar_plan(etiqueta):
+    print(etiqueta)
+    plan = conexion.execute(
+        "EXPLAIN QUERY PLAN SELECT titulo FROM tareas WHERE estado = ?",
+        ("pendiente",),
+    )
+    for fila in plan:
+        print(f"  {fila[3]}")
 
-EXPLAIN QUERY PLAN SELECT titulo FROM tareas WHERE estado='pendiente';
+mostrar_plan("Antes del índice:")
+conexion.execute("CREATE INDEX idx_tareas_estado ON tareas(estado)")
+conexion.execute("ANALYZE")
+mostrar_plan("Después del índice:")
+conexion.close()
 ```
 
 **Ejecuta el ejemplo** (desde `ejemplo-indice`):
 ```bash
-sqlite3 tareas.db < indice.sql
+python3 indice.py
 ```
-**Resultado esperado:** el primer `EXPLAIN QUERY PLAN` muestra `SCAN tareas`; el segundo, después de crear el índice, muestra `SEARCH tareas USING INDEX idx_tareas_estado (estado=?)`. **Fallo deliberado:** ejecutá de nuevo `CREATE INDEX idx_tareas_estado ON tareas(estado);` sin borrar el anterior; SQLite responde `index idx_tareas_estado already exists` y la migración se detiene ahí. Corregilo con `CREATE INDEX IF NOT EXISTS idx_tareas_estado ON tareas(estado);`, que no falla si el índice ya fue creado por una ejecución anterior de la misma migración.
+**Resultado esperado:** antes del índice se muestra `SCAN tareas`; después de `ANALYZE`, `SEARCH tareas USING INDEX idx_tareas_estado (estado=?)`. La muestra tiene 10 000 filas y solo 1 % está pendiente para que el filtro sea selectivo. Con otra distribución o volumen SQLite puede elegir otro plan: eso es una decisión del optimizador, no una garantía del índice. **Fallo deliberado:** ejecutá de nuevo `conexion.execute("CREATE INDEX idx_tareas_estado ON tareas(estado)")`; SQLite responde que el índice ya existe. Para una migración repetible, usa `CREATE INDEX IF NOT EXISTS idx_tareas_estado ON tareas(estado)`.
 
 #### Paso 5 · Práctica guiada
 Pista: repetí el experimento filtrando por dos columnas (`WHERE estado='pendiente' AND categoria_id=1`): con el índice simple en `estado`, mirá en el `EXPLAIN QUERY PLAN` si SQLite igual necesita revisar filas de más; después creá un índice compuesto `CREATE INDEX idx_tareas_estado_categoria ON tareas(estado, categoria_id);` y compará el plan otra vez.
@@ -481,23 +500,32 @@ Una transacción agrupa operaciones como unidad. Transferir stock entre ubicacio
 import sqlite3
 
 def mover_stock(conexion, origen, destino, cantidad):
+    if cantidad <= 0:
+        raise ValueError("La cantidad debe ser positiva")
+    if origen == destino:
+        raise ValueError("El origen y el destino deben ser distintos")
+
     try:
         conexion.execute("BEGIN")
-        conexion.execute(
+        filas_origen = conexion.execute(
             "UPDATE productos SET stock = stock - ? WHERE id = ? AND stock >= ?",
             (cantidad, origen, cantidad),
-        )
-        if conexion.total_changes == 0:
-            raise ValueError("Stock insuficiente")
-        conexion.execute(
+        ).rowcount
+        if filas_origen != 1:
+            raise ValueError("El origen no existe o no tiene stock suficiente")
+        filas_destino = conexion.execute(
             "UPDATE productos SET stock = stock + ? WHERE id = ?",
             (cantidad, destino),
-        )
+        ).rowcount
+        if filas_destino != 1:
+            raise ValueError("El destino no existe")
         conexion.commit()
     except Exception:
         conexion.rollback()
         raise
 ```
+
+`rowcount` comprueba cada `UPDATE` por separado. Si el destino no existe, la excepción revierte también la resta del origen; `conexion.total_changes` sería acumulado y no sirve para comprobar solo la última sentencia.
 
 Atomicidad significa todo o nada. Consistencia conserva reglas. Aislamiento controla interferencia entre transacciones concurrentes. Durabilidad conserva un commit confirmado. Los niveles y detalles varían por motor; “ACID” no elimina la necesidad de conocer bloqueos y concurrencia.
 
@@ -631,7 +659,7 @@ CREATE VIEW resumen_mensajero AS
 SELECT m.nombre, m.zona, COUNT(e.id) AS total,
        SUM(e.estado = 'entregada') AS entregadas
 FROM mensajero m LEFT JOIN entrega e ON e.mensajero_id = m.id
-GROUP BY m.id;
+GROUP BY m.id, m.nombre, m.zona;
 
 -- Trigger de auditoría: se ejecuta solo, después de cada cambio de estado
 CREATE TRIGGER auditar_estado AFTER UPDATE OF estado ON entrega
@@ -653,19 +681,19 @@ def mostrar(titulo, sql):
         print("  ", fila)
 
 mostrar("Subconsulta en WHERE: entregas más pesadas que el promedio",
-        "SELECT id, kilos FROM entrega WHERE kilos > (SELECT AVG(kilos) FROM entrega)")
+        "SELECT id, kilos FROM entrega WHERE kilos > (SELECT AVG(kilos) FROM entrega) ORDER BY id")
 mostrar("Subconsulta correlacionada en SELECT: entregas por mensajero",
-        "SELECT nombre, (SELECT COUNT(*) FROM entrega e WHERE e.mensajero_id = m.id) FROM mensajero m")
+        "SELECT nombre, (SELECT COUNT(*) FROM entrega e WHERE e.mensajero_id = m.id) FROM mensajero m ORDER BY nombre")
 mostrar("Subconsulta en FROM: zonas con efectividad",
         """SELECT zona, ROUND(100.0 * SUM(entregadas) / SUM(total)) AS efectividad
-           FROM (SELECT * FROM resumen_mensajero) GROUP BY zona""")
+           FROM (SELECT * FROM resumen_mensajero) GROUP BY zona ORDER BY zona""")
 mostrar("Función de ventana: ranking de kilos dentro de cada mensajero",
         """SELECT mensajero_id, id, kilos,
                   RANK() OVER (PARTITION BY mensajero_id ORDER BY kilos DESC) AS puesto
-           FROM entrega""")
+           FROM entrega ORDER BY mensajero_id, puesto""")
 
 db.execute("UPDATE entrega SET estado = 'entregada' WHERE id = 14")
-mostrar("Auditoría generada por el trigger", "SELECT * FROM auditoria")
+mostrar("Auditoría generada por el trigger", "SELECT * FROM auditoria ORDER BY entrega_id")
 try:
     db.execute("UPDATE entrega SET estado = 'fallida' WHERE id = 10")
 except sqlite3.IntegrityError as error:
@@ -812,9 +840,10 @@ END $$;
 **Ejecuta el ejemplo:**
 
 ```bash
-docker run -d --name pg-academia -e POSTGRES_PASSWORD=dev -p 5432:5432 postgres:17
-docker cp plpgsql.sql pg-academia:/tmp/
-docker exec pg-academia psql -U postgres -q -X -f /tmp/plpgsql.sql
+docker run -d --rm --name pg-fundamentos-m4 -e POSTGRES_PASSWORD=dev -p 127.0.0.1:5432:5432 postgres:17
+docker cp plpgsql.sql pg-fundamentos-m4:/tmp/
+until docker exec pg-fundamentos-m4 pg_isready -U postgres; do sleep 1; done
+docker exec pg-fundamentos-m4 psql -U postgres -q -X -f /tmp/plpgsql.sql
 ```
 
 **Resultado esperado:**
@@ -841,7 +870,7 @@ psql:plpgsql.sql:42: NOTICE:  cierre de beto: 2 entregas, 8.25 kg
 psql:plpgsql.sql:51: NOTICE:  error controlado: kilos debe ser positivo: 0
 ```
 
-Los dos primeros avisos solo aparecen la primera vez, porque las tablas aún no existían. Con `docker rm -f pg-academia` borras el contenedor al terminar.
+La contraseña `dev` y el contenedor son solo para este laboratorio desechable; el puerto queda limitado a tu equipo. Al terminar, usa `docker stop pg-fundamentos-m4`; `--rm` elimina el contenedor al detenerlo. Si el nombre ya existe, elige otro en los comandos; no borres un contenedor existente que pueda tener datos.
 
 **Fallo deliberado:** Ejecuta `docker exec pg-academia psql -U postgres -c "SELECT cerrar_dia();"`. PostgreSQL responde `ERROR:  cerrar_dia() is a procedure` con la pista de usar `CALL`. Funciones y procedimientos no son intercambiables: elige según si necesitas un valor o ejecutar un proceso.
 

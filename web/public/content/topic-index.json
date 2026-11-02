@@ -18,8 +18,12 @@
         "fragment": "tema-4-kotlin-esencial-para-android-lo-que-usaras-en-cada-pantalla"
       },
       {
+        "title": "Lambdas y funciones de orden superior en Kotlin — contratos, captura y receptores",
+        "fragment": "tema-5-lambdas-y-funciones-de-orden-superior-en-kotlin-contratos-captura-y-receptores"
+      },
+      {
         "title": "Coroutines — asincronía sin bloquear la UI",
-        "fragment": "tema-5-coroutines-asincronia-sin-bloquear-la-ui"
+        "fragment": "tema-6-coroutines-asincronia-sin-bloquear-la-ui"
       }
     ],
     "1": [
@@ -2200,20 +2204,24 @@
   "foundations": {
     "0": [
       {
-        "title": "Del hardware al programa en ejecución",
-        "fragment": "tema-1-del-hardware-al-programa-en-ejecucion"
+        "title": "Computador, sistema operativo, programa y proceso",
+        "fragment": "tema-1-computador-sistema-operativo-programa-y-proceso"
+      },
+      {
+        "title": "Del archivo fuente al programa en ejecución",
+        "fragment": "tema-2-del-archivo-fuente-al-programa-en-ejecucion"
       },
       {
         "title": "Archivos, carpetas y rutas sin perderse",
-        "fragment": "tema-2-archivos-carpetas-y-rutas-sin-perderse"
+        "fragment": "tema-3-archivos-carpetas-y-rutas-sin-perderse"
       },
       {
         "title": "Cómo leer un comando antes de ejecutarlo",
-        "fragment": "tema-3-como-leer-un-comando-antes-de-ejecutarlo"
+        "fragment": "tema-4-como-leer-un-comando-antes-de-ejecutarlo"
       },
       {
         "title": "Primer programa, primer error y primera evidencia",
-        "fragment": "tema-4-primer-programa-primer-error-y-primera-evidencia"
+        "fragment": "tema-5-primer-programa-primer-error-y-primera-evidencia"
       },
       {
         "title": "VS Code, comandos y atajos comprobables",
@@ -2490,8 +2498,8 @@
         "fragment": "tema-4-css-layout-responsive-y-accesibilidad-verificable"
       },
       {
-        "title": "HTML semántico y CSS responsive desde un archivo vacío",
-        "fragment": "tema-5-html-semantico-y-css-responsive-desde-un-archivo-vacio"
+        "title": "Proyecto integrador — sitio de seguimiento accesible",
+        "fragment": "tema-5-proyecto-integrador-sitio-de-seguimiento-accesible"
       }
     ],
     "4": [
@@ -3080,6 +3088,14 @@
       {
         "title": "Tokens, validación y límites de seguridad",
         "fragment": "tema-2-tokens-validacion-y-limites-de-seguridad"
+      },
+      {
+        "title": "Sockets TCP y UDP — la red que hay debajo de HttpClient",
+        "fragment": "tema-3-sockets-tcp-y-udp-la-red-que-hay-debajo-de-httpclient"
+      },
+      {
+        "title": "Seguridad defensiva — hash, HMAC, firma y cifrado",
+        "fragment": "tema-4-seguridad-defensiva-hash-hmac-firma-y-cifrado"
       }
     ],
     "19": [
@@ -3128,16 +3144,20 @@
     ],
     "20": [
       {
+        "title": "Lambdas a fondo — tipo objetivo, captura y referencias a métodos",
+        "fragment": "tema-1-lambdas-a-fondo-tipo-objetivo-captura-y-referencias-a-metodos"
+      },
+      {
         "title": "Las cuatro formas: Predicate, Function, Consumer y Supplier",
-        "fragment": "tema-1-las-cuatro-formas-predicate-function-consumer-y-supplier"
+        "fragment": "tema-2-las-cuatro-formas-predicate-function-consumer-y-supplier"
       },
       {
         "title": "Componer sin anidar: andThen, compose, negate y reglas encadenadas",
-        "fragment": "tema-2-componer-sin-anidar-andthen-compose-negate-y-reglas-encadenadas"
+        "fragment": "tema-3-componer-sin-anidar-andthen-compose-negate-y-reglas-encadenadas"
       },
       {
         "title": "Streams como composición: pereza, orden y efectos que se esconden",
-        "fragment": "tema-3-streams-como-composicion-pereza-orden-y-efectos-que-se-esconden"
+        "fragment": "tema-4-streams-como-composicion-pereza-orden-y-efectos-que-se-esconden"
       }
     ],
     "21": [

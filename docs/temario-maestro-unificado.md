@@ -2,12 +2,12 @@
 
 > Conserva todos los temas actuales y todos los encabezados únicos recuperados. Una entrada candidata aún requiere revisión curricular y pedagógica antes de publicarse como lección.
 
-- Temas actuales conservados: 1141
+- Temas actuales conservados: 1146
 - Temas actuales con evidencia exacta en libros: 3
 - Temas adicionales únicos de libros: 73027
 - Temas candidatos provenientes de cursos: 18
 - Cursos externos inventariados: 1
-- Total unificado provisional: 74186
+- Total unificado provisional: 74191
 - Libros pendientes de OCR: 109
 - Regla de fusión: Sólo se fusionan coincidencias exactas normalizadas dentro del mismo stack.
 
@@ -20,15 +20,16 @@
 
 ## Stack: foundations
 
-Total provisional: 2421 temas.
+Total provisional: 2422 temas.
 
 ### Módulo actual 0
 
-1. **Del hardware al programa en ejecución** — `actual`
-2. **Archivos, carpetas y rutas sin perderse** — `actual`
-3. **Cómo leer un comando antes de ejecutarlo** — `actual`
-4. **Primer programa, primer error y primera evidencia** — `actual`
-5. **VS Code, comandos y atajos comprobables** — `actual`
+1. **Computador, sistema operativo, programa y proceso** — `actual`
+2. **Del archivo fuente al programa en ejecución** — `actual`
+3. **Archivos, carpetas y rutas sin perderse** — `actual`
+4. **Cómo leer un comando antes de ejecutarlo** — `actual`
+5. **Primer programa, primer error y primera evidencia** — `actual`
+6. **VS Code, comandos y atajos comprobables** — `actual`
 
 ### Módulo actual 1
 
@@ -55,7 +56,7 @@ Total provisional: 2421 temas.
 2. **HTTP como contrato observable** — `actual`
 3. **HTML semántico, formularios y el DOM** — `actual`
 4. **CSS, layout responsive y accesibilidad verificable** — `actual`
-5. **HTML semántico y CSS responsive desde un archivo vacío** — `actual`
+5. **Proyecto integrador — sitio de seguimiento accesible** — `actual`
 
 ### Módulo actual 4
 
@@ -14172,7 +14173,7 @@ Total provisional: 950 temas.
 
 ## Stack: java
 
-Total provisional: 3079 temas.
+Total provisional: 3082 temas.
 
 ### Módulo actual 0
 
@@ -14305,6 +14306,8 @@ Total provisional: 3079 temas.
 
 1. **HttpClient, REST, timeouts y fallos** — `actual`
 2. **Tokens, validación y límites de seguridad** — `actual`
+3. **Sockets TCP y UDP — la red que hay debajo de HttpClient** — `actual`
+4. **Seguridad defensiva — hash, HMAC, firma y cifrado** — `actual`
 
 ### Módulo actual 19
 
@@ -14318,9 +14321,10 @@ Total provisional: 3079 temas.
 
 ### Módulo actual 20
 
-1. **Las cuatro formas: Predicate, Function, Consumer y Supplier** — `actual`
-2. **Componer sin anidar: andThen, compose, negate y reglas encadenadas** — `actual`
-3. **Streams como composición: pereza, orden y efectos que se esconden** — `actual`
+1. **Lambdas a fondo — tipo objetivo, captura y referencias a métodos** — `actual`
+2. **Las cuatro formas: Predicate, Function, Consumer y Supplier** — `actual`
+3. **Componer sin anidar: andThen, compose, negate y reglas encadenadas** — `actual`
+4. **Streams como composición: pereza, orden y efectos que se esconden** — `actual`
 
 ### Módulo actual 21
 
@@ -26725,7 +26729,7 @@ Total provisional: 2467 temas.
 
 ## Stack: android
 
-Total provisional: 1873 temas.
+Total provisional: 1874 temas.
 
 ### Módulo actual 0
 
@@ -26733,7 +26737,8 @@ Total provisional: 1873 temas.
 2. **Recursos externalizados** — `actual`
 3. **AndroidManifest.xml y módulos Gradle** — `actual`
 4. **Kotlin esencial para Android — lo que usarás en cada pantalla** — `actual`
-5. **Coroutines — asincronía sin bloquear la UI** — `actual`
+5. **Lambdas y funciones de orden superior en Kotlin — contratos, captura y receptores** — `actual`
+6. **Coroutines — asincronía sin bloquear la UI** — `actual`
 
 ### Módulo actual 1
 

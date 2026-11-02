@@ -917,6 +917,25 @@ Compensar es ejecutar una nueva acción de negocio; no retrocede el tiempo. Se n
 
 **Analogía:** devolver un paquete requiere registrar que la devolución ocurrió, no solo enviar una orden y olvidarla. El límite es que múltiples bases y un broker no comparten la transacción SQLite de este ejercicio. No se demuestra atomicidad entre Kafka y una base de datos.
 
+**Flujo serial del laboratorio:** el efecto sobre stock y la marca `HECHA` se confirman juntos en SQLite. El diagrama no representa dos consumidores concurrentes ni una transacción con Kafka.
+
+```mermaid
+flowchart TD
+  solicitud["compensar(id=liberar-42)"] --> leer["Lee estado en SQLite"]
+  leer --> hecha{"¿estado = HECHA?"}
+  hecha -->|sí| salida["Retorna sin cambiar stock"]
+  hecha -->|no| falla{"¿falla = true?"}
+  falla -->|sí| pendiente["ConnectionError; sigue PENDIENTE"]
+  pendiente --> reintento["Reinicio y reintento con el mismo id"]
+  reintento --> leer
+  falla -->|no| transaccion["Transacción local SQLite"]
+  transaccion --> stock["Suma 1 al stock"]
+  stock --> marca["Marca la compensación HECHA"]
+  marca --> commit["Commit de ambas escrituras"]
+  commit --> repetida["Otra llamada con el mismo id"]
+  repetida --> leer
+```
+
 #### Practica
 
 Parte de una carpeta vacía y crea manualmente los dos archivos del ejercicio en la raíz de `ejemplo-compensacion`:

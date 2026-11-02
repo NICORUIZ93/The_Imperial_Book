@@ -1,22 +1,22 @@
 {
   "summary": {
     "android": {
-      "topics": 73,
-      "objective": 72,
-      "prerequisites": 73,
-      "context": 72,
-      "theoryAnalogy": 72,
-      "guidedDemo": 72,
-      "codeExplanation": 73,
-      "execution": 73,
-      "expectedResult": 73,
-      "deliberateFailure": 73,
+      "topics": 74,
+      "objective": 73,
+      "prerequisites": 74,
+      "context": 73,
+      "theoryAnalogy": 73,
+      "guidedDemo": 73,
+      "codeExplanation": 74,
+      "execution": 74,
+      "expectedResult": 74,
+      "deliberateFailure": 74,
       "guidedPractice": 72,
-      "independentPractice": 72,
+      "independentPractice": 73,
       "closure": 72,
       "commonErrors": 73,
-      "resources": 73,
-      "standaloneExample": 73,
+      "resources": 74,
+      "standaloneExample": 74,
       "complete": 72
     },
     "angular": {
@@ -96,21 +96,21 @@
       "complete": 63
     },
     "foundations": {
-      "topics": 99,
-      "objective": 98,
-      "prerequisites": 99,
-      "context": 98,
-      "theoryAnalogy": 98,
-      "guidedDemo": 98,
-      "codeExplanation": 99,
-      "execution": 99,
-      "expectedResult": 99,
-      "deliberateFailure": 98,
-      "guidedPractice": 97,
-      "independentPractice": 98,
+      "topics": 100,
+      "objective": 99,
+      "prerequisites": 100,
+      "context": 99,
+      "theoryAnalogy": 99,
+      "guidedDemo": 99,
+      "codeExplanation": 100,
+      "execution": 100,
+      "expectedResult": 100,
+      "deliberateFailure": 99,
+      "guidedPractice": 98,
+      "independentPractice": 99,
       "closure": 98,
       "commonErrors": 99,
-      "resources": 98,
+      "resources": 99,
       "standaloneExample": 99,
       "complete": 95
     },
@@ -134,23 +134,23 @@
       "complete": 56
     },
     "java": {
-      "topics": 95,
-      "objective": 0,
-      "prerequisites": 95,
-      "context": 0,
-      "theoryAnalogy": 0,
-      "guidedDemo": 0,
-      "codeExplanation": 95,
-      "execution": 95,
-      "expectedResult": 94,
-      "deliberateFailure": 94,
-      "guidedPractice": 0,
-      "independentPractice": 0,
-      "closure": 0,
-      "commonErrors": 85,
-      "resources": 86,
-      "standaloneExample": 79,
-      "complete": 0
+      "topics": 98,
+      "objective": 36,
+      "prerequisites": 98,
+      "context": 36,
+      "theoryAnalogy": 36,
+      "guidedDemo": 36,
+      "codeExplanation": 98,
+      "execution": 98,
+      "expectedResult": 97,
+      "deliberateFailure": 97,
+      "guidedPractice": 28,
+      "independentPractice": 35,
+      "closure": 35,
+      "commonErrors": 88,
+      "resources": 89,
+      "standaloneExample": 82,
+      "complete": 28
     },
     "javascript": {
       "topics": 88,
@@ -371,7 +371,32 @@
       },
       {
         "module": 0,
-        "topic": "Tema 5: Coroutines — asincronía sin bloquear la UI",
+        "topic": "Tema 5: Lambdas y funciones de orden superior en Kotlin — contratos, captura y receptores · Intermedio · 120 min",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": true,
+          "closure": false,
+          "commonErrors": false,
+          "resources": true,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 12,
+          "complete": false
+        }
+      },
+      {
+        "module": 0,
+        "topic": "Tema 6: Coroutines — asincronía sin bloquear la UI",
         "criteria": {
           "objective": true,
           "prerequisites": true,
@@ -12581,7 +12606,32 @@
     "foundations": [
       {
         "module": 0,
-        "topic": "Tema 1: Del hardware al programa en ejecución",
+        "topic": "Tema 1: Computador, sistema operativo, programa y proceso · Básico · 90 min",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": false,
+          "commonErrors": false,
+          "resources": true,
+          "standaloneExample": false
+        },
+        "classification": {
+          "stepsPassed": 12,
+          "complete": false
+        }
+      },
+      {
+        "module": 0,
+        "topic": "Tema 2: Del archivo fuente al programa en ejecución",
         "criteria": {
           "objective": false,
           "prerequisites": true,
@@ -12606,7 +12656,7 @@
       },
       {
         "module": 0,
-        "topic": "Tema 2: Archivos, carpetas y rutas sin perderse",
+        "topic": "Tema 3: Archivos, carpetas y rutas sin perderse",
         "criteria": {
           "objective": true,
           "prerequisites": true,
@@ -12631,7 +12681,7 @@
       },
       {
         "module": 0,
-        "topic": "Tema 3: Cómo leer un comando antes de ejecutarlo",
+        "topic": "Tema 4: Cómo leer un comando antes de ejecutarlo",
         "criteria": {
           "objective": true,
           "prerequisites": true,
@@ -12656,7 +12706,7 @@
       },
       {
         "module": 0,
-        "topic": "Tema 4: Primer programa, primer error y primera evidencia",
+        "topic": "Tema 5: Primer programa, primer error y primera evidencia",
         "criteria": {
           "objective": true,
           "prerequisites": true,
@@ -14281,7 +14331,7 @@
       },
       {
         "module": 3,
-        "topic": "Tema 5: HTML semántico y CSS responsive desde un archivo vacío",
+        "topic": "Tema 5: Proyecto integrador — sitio de seguimiento accesible",
         "criteria": {
           "objective": true,
           "prerequisites": true,
@@ -16462,24 +16512,24 @@
         "module": 0,
         "topic": "Tema 1: Del código fuente a la JVM · Básico · 35 min",
         "criteria": {
-          "objective": false,
+          "objective": true,
           "prerequisites": true,
-          "context": false,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
-          "independentPractice": false,
-          "closure": false,
+          "independentPractice": true,
+          "closure": true,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 8,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -16487,24 +16537,24 @@
         "module": 0,
         "topic": "Tema 2: public static void main — qué significa cada palabra · Básico · 30 min",
         "criteria": {
-          "objective": false,
+          "objective": true,
           "prerequisites": true,
-          "context": false,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
-          "independentPractice": false,
-          "closure": false,
+          "independentPractice": true,
+          "closure": true,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 8,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -16512,24 +16562,24 @@
         "module": 0,
         "topic": "Tema 3: JDK, JRE y JVM · Básico · 30 min",
         "criteria": {
-          "objective": false,
+          "objective": true,
           "prerequisites": true,
-          "context": false,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
-          "independentPractice": false,
-          "closure": false,
+          "independentPractice": true,
+          "closure": true,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 8,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -16537,24 +16587,24 @@
         "module": 0,
         "topic": "Tema 4: Tipos primitivos vs referencias · Básico · 40 min",
         "criteria": {
-          "objective": false,
+          "objective": true,
           "prerequisites": true,
-          "context": false,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
-          "independentPractice": false,
-          "closure": false,
+          "independentPractice": true,
+          "closure": true,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 8,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -16562,49 +16612,49 @@
         "module": 0,
         "topic": "Tema 5: Variables, conversiones y `String` · Intermedio · 45 min",
         "criteria": {
-          "objective": false,
+          "objective": true,
           "prerequisites": true,
-          "context": false,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": false,
-          "independentPractice": false,
-          "closure": false,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 8,
-          "complete": false
+          "stepsPassed": 15,
+          "complete": true
         }
       },
       {
         "module": 0,
         "topic": "Tema 6: Operadores, precedencia y control de flujo · Intermedio · 45 min",
         "criteria": {
-          "objective": false,
+          "objective": true,
           "prerequisites": true,
-          "context": false,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
-          "independentPractice": false,
-          "closure": false,
+          "independentPractice": true,
+          "closure": true,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 8,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -16612,124 +16662,124 @@
         "module": 0,
         "topic": "Tema 7: Arreglos, wrappers y paso de argumentos · Intermedio · 45 min",
         "criteria": {
-          "objective": false,
+          "objective": true,
           "prerequisites": true,
-          "context": false,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": false,
-          "independentPractice": false,
-          "closure": false,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 8,
-          "complete": false
+          "stepsPassed": 15,
+          "complete": true
         }
       },
       {
         "module": 0,
         "topic": "Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`) · Intermedio · 50 min",
         "criteria": {
-          "objective": false,
+          "objective": true,
           "prerequisites": true,
-          "context": false,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": false,
-          "independentPractice": false,
-          "closure": false,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 8,
-          "complete": false
+          "stepsPassed": 15,
+          "complete": true
         }
       },
       {
         "module": 1,
         "topic": "Tema 1: Clases, objetos, constructores y encapsulación · Básico · 40 min",
         "criteria": {
-          "objective": false,
+          "objective": true,
           "prerequisites": true,
-          "context": false,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": false,
-          "independentPractice": false,
-          "closure": false,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 8,
-          "complete": false
+          "stepsPassed": 15,
+          "complete": true
         }
       },
       {
         "module": 1,
         "topic": "Tema 2: Herencia y sobreescritura · Intermedio · 1 h",
         "criteria": {
-          "objective": false,
+          "objective": true,
           "prerequisites": true,
-          "context": false,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": false,
-          "independentPractice": false,
-          "closure": false,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 8,
-          "complete": false
+          "stepsPassed": 15,
+          "complete": true
         }
       },
       {
         "module": 1,
         "topic": "Tema 3: Interfaces, clases abstractas y cuándo usar cada una · Intermedio · 50 min",
         "criteria": {
-          "objective": false,
+          "objective": true,
           "prerequisites": true,
-          "context": false,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
-          "independentPractice": false,
-          "closure": false,
+          "independentPractice": true,
+          "closure": true,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 8,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -16737,24 +16787,24 @@
         "module": 1,
         "topic": "Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso · Intermedio · 55 min",
         "criteria": {
-          "objective": false,
+          "objective": true,
           "prerequisites": true,
-          "context": false,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
-          "independentPractice": false,
-          "closure": false,
+          "independentPractice": true,
+          "closure": true,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 8,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -17559,6 +17609,56 @@
         }
       },
       {
+        "module": 18,
+        "topic": "Tema 3: Sockets TCP y UDP — la red que hay debajo de HttpClient · Avanzado · 2 h",
+        "criteria": {
+          "objective": false,
+          "prerequisites": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 8,
+          "complete": false
+        }
+      },
+      {
+        "module": 18,
+        "topic": "Tema 4: Seguridad defensiva — hash, HMAC, firma y cifrado · Avanzado · 2 h 30 min",
+        "criteria": {
+          "objective": false,
+          "prerequisites": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 8,
+          "complete": false
+        }
+      },
+      {
         "module": 19,
         "topic": "Tema 1: Reflexión y anotaciones en tiempo de ejecución · Intermedio · 90 min",
         "criteria": {
@@ -17737,55 +17837,80 @@
         "module": 2,
         "topic": "Tema 1: List, Set, Map y sus implementaciones · Básico · 45 min",
         "criteria": {
-          "objective": false,
+          "objective": true,
           "prerequisites": true,
-          "context": false,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": false,
-          "independentPractice": false,
-          "closure": false,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 8,
-          "complete": false
+          "stepsPassed": 15,
+          "complete": true
         }
       },
       {
         "module": 2,
         "topic": "Tema 2: Genéricos, wildcards y type erasure · Intermedio · 45 min",
         "criteria": {
-          "objective": false,
+          "objective": true,
           "prerequisites": true,
-          "context": false,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": false,
-          "independentPractice": false,
-          "closure": false,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 8,
-          "complete": false
+          "stepsPassed": 15,
+          "complete": true
         }
       },
       {
         "module": 2,
         "topic": "Tema 3: Comparable vs Comparator, e iteración · Intermedio · 50 min",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 15,
+          "complete": true
+        }
+      },
+      {
+        "module": 20,
+        "topic": "Tema 1: Lambdas a fondo — tipo objetivo, captura y referencias a métodos · Intermedio · 120 min",
         "criteria": {
           "objective": false,
           "prerequisites": true,
@@ -17810,7 +17935,7 @@
       },
       {
         "module": 20,
-        "topic": "Tema 1: Las cuatro formas: Predicate, Function, Consumer y Supplier · Básico · 75 min",
+        "topic": "Tema 2: Las cuatro formas: Predicate, Function, Consumer y Supplier · Básico · 75 min",
         "criteria": {
           "objective": false,
           "prerequisites": true,
@@ -17835,7 +17960,7 @@
       },
       {
         "module": 20,
-        "topic": "Tema 2: Componer sin anidar: andThen, compose, negate y reglas encadenadas · Intermedio · 75 min",
+        "topic": "Tema 3: Componer sin anidar: andThen, compose, negate y reglas encadenadas · Intermedio · 75 min",
         "criteria": {
           "objective": false,
           "prerequisites": true,
@@ -17860,7 +17985,7 @@
       },
       {
         "module": 20,
-        "topic": "Tema 3: Streams como composición: pereza, orden y efectos que se esconden · Intermedio · 90 min",
+        "topic": "Tema 4: Streams como composición: pereza, orden y efectos que se esconden · Intermedio · 90 min",
         "criteria": {
           "objective": false,
           "prerequisites": true,
@@ -18137,511 +18262,511 @@
         "module": 3,
         "topic": "Tema 1: Checked vs unchecked exceptions · Básico · 40 min",
         "criteria": {
-          "objective": false,
+          "objective": true,
           "prerequisites": true,
-          "context": false,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": false,
-          "independentPractice": false,
-          "closure": false,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 8,
-          "complete": false
+          "stepsPassed": 15,
+          "complete": true
         }
       },
       {
         "module": 3,
         "topic": "Tema 2: try-with-resources · Básico · 40 min",
         "criteria": {
-          "objective": false,
+          "objective": true,
           "prerequisites": true,
-          "context": false,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": false,
-          "independentPractice": false,
-          "closure": false,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 8,
-          "complete": false
+          "stepsPassed": 15,
+          "complete": true
         }
       },
       {
         "module": 3,
         "topic": "Tema 3: Excepciones personalizadas y no tragar excepciones · Intermedio · 45 min",
         "criteria": {
-          "objective": false,
+          "objective": true,
           "prerequisites": true,
-          "context": false,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": false,
-          "independentPractice": false,
-          "closure": false,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 8,
-          "complete": false
+          "stepsPassed": 15,
+          "complete": true
         }
       },
       {
         "module": 4,
         "topic": "Tema 1: Stream API — map, filter, reduce, collect · Básico · 45 min",
         "criteria": {
-          "objective": false,
+          "objective": true,
           "prerequisites": true,
-          "context": false,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": false,
-          "independentPractice": false,
-          "closure": false,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 8,
-          "complete": false
+          "stepsPassed": 15,
+          "complete": true
         }
       },
       {
         "module": 4,
         "topic": "Tema 2: Optional — evitar null explícitamente · Intermedio · 40 min",
         "criteria": {
-          "objective": false,
+          "objective": true,
           "prerequisites": true,
-          "context": false,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": false,
-          "independentPractice": false,
-          "closure": false,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 8,
-          "complete": false
+          "stepsPassed": 15,
+          "complete": true
         }
       },
       {
         "module": 4,
         "topic": "Tema 3: Streams paralelos y referencias a métodos · Intermedio · 45 min",
         "criteria": {
-          "objective": false,
+          "objective": true,
           "prerequisites": true,
-          "context": false,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": false,
-          "independentPractice": false,
-          "closure": false,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 8,
-          "complete": false
+          "stepsPassed": 15,
+          "complete": true
         }
       },
       {
         "module": 4,
         "topic": "Tema 4: Stream Gatherers (Java 24) · Avanzado · 50 min",
         "criteria": {
-          "objective": false,
+          "objective": true,
           "prerequisites": true,
-          "context": false,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": false,
-          "independentPractice": false,
-          "closure": false,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 8,
-          "complete": false
+          "stepsPassed": 15,
+          "complete": true
         }
       },
       {
         "module": 5,
         "topic": "Tema 1: ExecutorService y gestión de hilos · Intermedio · 50 min",
         "criteria": {
-          "objective": false,
+          "objective": true,
           "prerequisites": true,
-          "context": false,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": false,
-          "independentPractice": false,
-          "closure": false,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 8,
-          "complete": false
+          "stepsPassed": 15,
+          "complete": true
         }
       },
       {
         "module": 5,
         "topic": "Tema 2: CompletableFuture · Intermedio · 45 min",
         "criteria": {
-          "objective": false,
+          "objective": true,
           "prerequisites": true,
-          "context": false,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": false,
-          "independentPractice": false,
-          "closure": false,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 8,
-          "complete": false
+          "stepsPassed": 15,
+          "complete": true
         }
       },
       {
         "module": 5,
         "topic": "Tema 3: Virtual threads · Intermedio · 50 min",
         "criteria": {
-          "objective": false,
+          "objective": true,
           "prerequisites": true,
-          "context": false,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": false,
-          "independentPractice": false,
-          "closure": false,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 8,
-          "complete": false
+          "stepsPassed": 15,
+          "complete": true
         }
       },
       {
         "module": 5,
         "topic": "Tema 4: Condiciones de carrera y sincronización · Intermedio · 50 min",
         "criteria": {
-          "objective": false,
+          "objective": true,
           "prerequisites": true,
-          "context": false,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": false,
-          "independentPractice": false,
-          "closure": false,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 8,
-          "complete": false
+          "stepsPassed": 15,
+          "complete": true
         }
       },
       {
         "module": 5,
         "topic": "Tema 5: Structured Concurrency (StructuredTaskScope, preview en JDK 27) · Avanzado · 55 min",
         "criteria": {
-          "objective": false,
+          "objective": true,
           "prerequisites": true,
-          "context": false,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": false,
-          "independentPractice": false,
-          "closure": false,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 8,
-          "complete": false
+          "stepsPassed": 15,
+          "complete": true
         }
       },
       {
         "module": 5,
         "topic": "Tema 6: Scoped Values frente a ThreadLocal (Java 25) · Avanzado · 50 min",
         "criteria": {
-          "objective": false,
+          "objective": true,
           "prerequisites": true,
-          "context": false,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": false,
-          "independentPractice": false,
-          "closure": false,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 8,
-          "complete": false
+          "stepsPassed": 15,
+          "complete": true
         }
       },
       {
         "module": 5,
         "topic": "Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos · Avanzado · 45 min",
         "criteria": {
-          "objective": false,
+          "objective": true,
           "prerequisites": true,
-          "context": false,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": false,
-          "independentPractice": false,
-          "closure": false,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 8,
-          "complete": false
+          "stepsPassed": 15,
+          "complete": true
         }
       },
       {
         "module": 6,
         "topic": "Tema 1: NIO.2 — Path y Files · Intermedio · 45 min",
         "criteria": {
-          "objective": false,
+          "objective": true,
           "prerequisites": true,
-          "context": false,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": false,
-          "independentPractice": false,
-          "closure": false,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 8,
-          "complete": false
+          "stepsPassed": 15,
+          "complete": true
         }
       },
       {
         "module": 6,
         "topic": "Tema 2: Serialización con Jackson · Intermedio · 50 min",
         "criteria": {
-          "objective": false,
+          "objective": true,
           "prerequisites": true,
-          "context": false,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": false,
-          "independentPractice": false,
-          "closure": false,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 8,
-          "complete": false
+          "stepsPassed": 15,
+          "complete": true
         }
       },
       {
         "module": 6,
         "topic": "Tema 3: Archivos grandes y recursos del classpath · Intermedio · 45 min",
         "criteria": {
-          "objective": false,
+          "objective": true,
           "prerequisites": true,
-          "context": false,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": false,
-          "independentPractice": false,
-          "closure": false,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 8,
-          "complete": false
+          "stepsPassed": 15,
+          "complete": true
         }
       },
       {
         "module": 7,
         "topic": "Tema 1: record — modelos inmutables sin boilerplate · Básico · 45 min",
         "criteria": {
-          "objective": false,
+          "objective": true,
           "prerequisites": true,
-          "context": false,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": false,
-          "independentPractice": false,
-          "closure": false,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 8,
-          "complete": false
+          "stepsPassed": 15,
+          "complete": true
         }
       },
       {
         "module": 7,
         "topic": "Tema 2: sealed — jerarquías cerradas y exhaustividad · Intermedio · 45 min",
         "criteria": {
-          "objective": false,
+          "objective": true,
           "prerequisites": true,
-          "context": false,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": false,
-          "independentPractice": false,
-          "closure": false,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 8,
-          "complete": false
+          "stepsPassed": 15,
+          "complete": true
         }
       },
       {
         "module": 7,
         "topic": "Tema 3: Pattern matching exhaustivo y para instanceof · Intermedio · 45 min",
         "criteria": {
-          "objective": false,
+          "objective": true,
           "prerequisites": true,
-          "context": false,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": false,
-          "independentPractice": false,
-          "closure": false,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 8,
-          "complete": false
+          "stepsPassed": 15,
+          "complete": true
         }
       },
       {
         "module": 7,
         "topic": "Tema 4: Unnamed variables y patterns (_, Java 22) · Avanzado · 50 min",
         "criteria": {
-          "objective": false,
+          "objective": true,
           "prerequisites": true,
-          "context": false,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
@@ -18654,7 +18779,7 @@
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 8,
+          "stepsPassed": 12,
           "complete": false
         }
       },

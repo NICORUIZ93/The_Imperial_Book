@@ -1677,7 +1677,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "7c9bc3fa671c0d232e8db4336fdb118472c42c9a830f85b97715e70e7588e02b",
+    "fingerprint": "d5d871538d58fe7cc829d7d086449afa9eb00be4e8b2ea8b2dcaf64fb00160da",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
@@ -1686,7 +1686,7 @@
     },
     "modules": 254,
     "modulesWithLegacySections": 179,
-    "topics": 1141,
+    "topics": 1146,
     "topicsWithIssues": 0
   },
   "topics": {
@@ -1722,8 +1722,15 @@
       {
         "issues": [],
         "module": 0,
+        "tailWords": 146,
+        "topic": "Tema 5: Lambdas y funciones de orden superior en Kotlin — contratos, captura y receptores · Intermedio · 120 min",
+        "words": 1203
+      },
+      {
+        "issues": [],
+        "module": 0,
         "tailWords": 186,
-        "topic": "Tema 5: Coroutines — asincronía sin bloquear la UI",
+        "topic": "Tema 6: Coroutines — asincronía sin bloquear la UI",
         "words": 1007
       },
       {
@@ -4714,14 +4721,14 @@
         "module": 0,
         "tailWords": 117,
         "topic": "Tema 2: Clases y mixins",
-        "words": 1059
+        "words": 1096
       },
       {
         "issues": [],
         "module": 0,
-        "tailWords": 114,
+        "tailWords": 123,
         "topic": "Tema 3: Futures, async/await y colecciones funcionales",
-        "words": 1005
+        "words": 1082
       },
       {
         "issues": [],
@@ -5148,29 +5155,36 @@
       {
         "issues": [],
         "module": 0,
+        "tailWords": 146,
+        "topic": "Tema 1: Computador, sistema operativo, programa y proceso · Básico · 90 min",
+        "words": 1046
+      },
+      {
+        "issues": [],
+        "module": 0,
         "tailWords": 0,
-        "topic": "Tema 1: Del hardware al programa en ejecución",
-        "words": 755
+        "topic": "Tema 2: Del archivo fuente al programa en ejecución",
+        "words": 756
       },
       {
         "issues": [],
         "module": 0,
         "tailWords": 96,
-        "topic": "Tema 2: Archivos, carpetas y rutas sin perderse",
+        "topic": "Tema 3: Archivos, carpetas y rutas sin perderse",
         "words": 587
       },
       {
         "issues": [],
         "module": 0,
         "tailWords": 83,
-        "topic": "Tema 3: Cómo leer un comando antes de ejecutarlo",
+        "topic": "Tema 4: Cómo leer un comando antes de ejecutarlo",
         "words": 514
       },
       {
         "issues": [],
         "module": 0,
         "tailWords": 129,
-        "topic": "Tema 4: Primer programa, primer error y primera evidencia",
+        "topic": "Tema 5: Primer programa, primer error y primera evidencia",
         "words": 599
       },
       {
@@ -5596,37 +5610,37 @@
       {
         "issues": [],
         "module": 3,
-        "tailWords": 151,
+        "tailWords": 166,
         "topic": "Tema 1: De una URL al servidor: red, DNS, IP y puertos",
-        "words": 1224
+        "words": 1453
       },
       {
         "issues": [],
         "module": 3,
-        "tailWords": 160,
+        "tailWords": 164,
         "topic": "Tema 2: HTTP como contrato observable",
-        "words": 1237
+        "words": 1345
       },
       {
         "issues": [],
         "module": 3,
         "tailWords": 172,
         "topic": "Tema 3: HTML semántico, formularios y el DOM",
-        "words": 1361
+        "words": 1380
       },
       {
         "issues": [],
         "module": 3,
-        "tailWords": 153,
+        "tailWords": 175,
         "topic": "Tema 4: CSS, layout responsive y accesibilidad verificable",
-        "words": 1524
+        "words": 1586
       },
       {
         "issues": [],
         "module": 3,
         "tailWords": 107,
-        "topic": "Tema 5: HTML semántico y CSS responsive desde un archivo vacío",
-        "words": 671
+        "topic": "Tema 5: Proyecto integrador — sitio de seguimiento accesible",
+        "words": 682
       },
       {
         "issues": [],
@@ -5647,28 +5661,28 @@
         "module": 4,
         "tailWords": 144,
         "topic": "Tema 3: Índices, restricciones y planes de consulta",
-        "words": 1310
+        "words": 1416
       },
       {
         "issues": [],
         "module": 4,
         "tailWords": 145,
         "topic": "Tema 4: Transacciones, concurrencia y elección SQL/NoSQL",
-        "words": 1414
+        "words": 1488
       },
       {
         "issues": [],
         "module": 4,
         "tailWords": 218,
         "topic": "Tema 5: SQL avanzado: subconsultas, vistas, triggers y funciones de ventana",
-        "words": 1179
+        "words": 1199
       },
       {
         "issues": [],
         "module": 4,
         "tailWords": 186,
         "topic": "Tema 6: Procedimientos almacenados, funciones y cursores con PL/pgSQL",
-        "words": 1034
+        "words": 1081
       },
       {
         "issues": [],
@@ -5682,28 +5696,28 @@
         "module": 5,
         "tailWords": 146,
         "topic": "Tema 1: Depurar con evidencia, no con cambios aleatorios",
-        "words": 1201
+        "words": 1293
       },
       {
         "issues": [],
         "module": 5,
         "tailWords": 140,
         "topic": "Tema 2: Pruebas con propósito y niveles adecuados",
-        "words": 1346
+        "words": 1389
       },
       {
         "issues": [],
         "module": 5,
         "tailWords": 149,
         "topic": "Tema 3: Git como historial de decisiones y colaboración",
-        "words": 1236
+        "words": 1299
       },
       {
         "issues": [],
         "module": 5,
         "tailWords": 162,
         "topic": "Tema 4: Calidad estática, revisión e integración continua",
-        "words": 1434
+        "words": 1517
       },
       {
         "issues": [],
@@ -6237,86 +6251,86 @@
       {
         "issues": [],
         "module": 0,
-        "tailWords": 275,
+        "tailWords": 470,
         "topic": "Tema 1: Del código fuente a la JVM · Básico · 35 min",
-        "words": 1174
+        "words": 2114
       },
       {
         "issues": [],
         "module": 0,
-        "tailWords": 276,
+        "tailWords": 419,
         "topic": "Tema 2: public static void main — qué significa cada palabra · Básico · 30 min",
-        "words": 1064
+        "words": 2026
       },
       {
         "issues": [],
         "module": 0,
-        "tailWords": 290,
+        "tailWords": 375,
         "topic": "Tema 3: JDK, JRE y JVM · Básico · 30 min",
-        "words": 1033
+        "words": 1933
       },
       {
         "issues": [],
         "module": 0,
-        "tailWords": 259,
+        "tailWords": 387,
         "topic": "Tema 4: Tipos primitivos vs referencias · Básico · 40 min",
-        "words": 1036
+        "words": 2168
       },
       {
         "issues": [],
         "module": 0,
-        "tailWords": 223,
+        "tailWords": 380,
         "topic": "Tema 5: Variables, conversiones y `String` · Intermedio · 45 min",
-        "words": 815
+        "words": 2006
       },
       {
         "issues": [],
         "module": 0,
-        "tailWords": 221,
+        "tailWords": 321,
         "topic": "Tema 6: Operadores, precedencia y control de flujo · Intermedio · 45 min",
-        "words": 929
+        "words": 2089
       },
       {
         "issues": [],
         "module": 0,
-        "tailWords": 271,
+        "tailWords": 374,
         "topic": "Tema 7: Arreglos, wrappers y paso de argumentos · Intermedio · 45 min",
-        "words": 1020
+        "words": 1912
       },
       {
         "issues": [],
         "module": 0,
-        "tailWords": 218,
+        "tailWords": 354,
         "topic": "Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`) · Intermedio · 50 min",
-        "words": 804
+        "words": 2029
       },
       {
         "issues": [],
         "module": 1,
-        "tailWords": 253,
+        "tailWords": 357,
         "topic": "Tema 1: Clases, objetos, constructores y encapsulación · Básico · 40 min",
-        "words": 846
+        "words": 1923
       },
       {
         "issues": [],
         "module": 1,
-        "tailWords": 211,
+        "tailWords": 307,
         "topic": "Tema 2: Herencia y sobreescritura · Intermedio · 1 h",
-        "words": 1541
+        "words": 2626
       },
       {
         "issues": [],
         "module": 1,
-        "tailWords": 212,
+        "tailWords": 280,
         "topic": "Tema 3: Interfaces, clases abstractas y cuándo usar cada una · Intermedio · 50 min",
-        "words": 1081
+        "words": 1579
       },
       {
         "issues": [],
         "module": 1,
-        "tailWords": 217,
+        "tailWords": 309,
         "topic": "Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso · Intermedio · 55 min",
-        "words": 1121
+        "words": 1880
       },
       {
         "issues": [],
@@ -6531,16 +6545,30 @@
       {
         "issues": [],
         "module": 18,
-        "tailWords": 182,
+        "tailWords": 191,
         "topic": "Tema 1: HttpClient, REST, timeouts y fallos · Intermedio · 2 h",
-        "words": 1001
+        "words": 1010
       },
       {
         "issues": [],
         "module": 18,
-        "tailWords": 198,
+        "tailWords": 205,
         "topic": "Tema 2: Tokens, validación y límites de seguridad · Avanzado · 2 h",
-        "words": 1130
+        "words": 1137
+      },
+      {
+        "issues": [],
+        "module": 18,
+        "tailWords": 256,
+        "topic": "Tema 3: Sockets TCP y UDP — la red que hay debajo de HttpClient · Avanzado · 2 h",
+        "words": 1664
+      },
+      {
+        "issues": [],
+        "module": 18,
+        "tailWords": 261,
+        "topic": "Tema 4: Seguridad defensiva — hash, HMAC, firma y cifrado · Avanzado · 2 h 30 min",
+        "words": 1663
       },
       {
         "issues": [],
@@ -6594,43 +6622,50 @@
       {
         "issues": [],
         "module": 2,
-        "tailWords": 207,
+        "tailWords": 290,
         "topic": "Tema 1: List, Set, Map y sus implementaciones · Básico · 45 min",
-        "words": 1226
+        "words": 2336
       },
       {
         "issues": [],
         "module": 2,
-        "tailWords": 196,
+        "tailWords": 273,
         "topic": "Tema 2: Genéricos, wildcards y type erasure · Intermedio · 45 min",
-        "words": 1143
+        "words": 1972
       },
       {
         "issues": [],
         "module": 2,
-        "tailWords": 227,
+        "tailWords": 290,
         "topic": "Tema 3: Comparable vs Comparator, e iteración · Intermedio · 50 min",
-        "words": 1195
+        "words": 2008
+      },
+      {
+        "issues": [],
+        "module": 20,
+        "tailWords": 444,
+        "topic": "Tema 1: Lambdas a fondo — tipo objetivo, captura y referencias a métodos · Intermedio · 120 min",
+        "words": 1880
       },
       {
         "issues": [],
         "module": 20,
         "tailWords": 164,
-        "topic": "Tema 1: Las cuatro formas: Predicate, Function, Consumer y Supplier · Básico · 75 min",
+        "topic": "Tema 2: Las cuatro formas: Predicate, Function, Consumer y Supplier · Básico · 75 min",
         "words": 765
       },
       {
         "issues": [],
         "module": 20,
         "tailWords": 159,
-        "topic": "Tema 2: Componer sin anidar: andThen, compose, negate y reglas encadenadas · Intermedio · 75 min",
+        "topic": "Tema 3: Componer sin anidar: andThen, compose, negate y reglas encadenadas · Intermedio · 75 min",
         "words": 676
       },
       {
         "issues": [],
         "module": 20,
         "tailWords": 162,
-        "topic": "Tema 3: Streams como composición: pereza, orden y efectos que se esconden · Intermedio · 90 min",
+        "topic": "Tema 4: Streams como composición: pereza, orden y efectos que se esconden · Intermedio · 90 min",
         "words": 723
       },
       {
@@ -6706,177 +6741,177 @@
       {
         "issues": [],
         "module": 3,
-        "tailWords": 208,
+        "tailWords": 271,
         "topic": "Tema 1: Checked vs unchecked exceptions · Básico · 40 min",
-        "words": 1145
+        "words": 1942
       },
       {
         "issues": [],
         "module": 3,
-        "tailWords": 217,
+        "tailWords": 301,
         "topic": "Tema 2: try-with-resources · Básico · 40 min",
-        "words": 1052
+        "words": 1700
       },
       {
         "issues": [],
         "module": 3,
-        "tailWords": 224,
+        "tailWords": 284,
         "topic": "Tema 3: Excepciones personalizadas y no tragar excepciones · Intermedio · 45 min",
-        "words": 1163
+        "words": 1874
       },
       {
         "issues": [],
         "module": 4,
-        "tailWords": 226,
+        "tailWords": 289,
         "topic": "Tema 1: Stream API — map, filter, reduce, collect · Básico · 45 min",
-        "words": 1184
+        "words": 2049
       },
       {
         "issues": [],
         "module": 4,
-        "tailWords": 221,
-        "topic": "Tema 2: Optional — evitar null explícitamente · Intermedio · 40 min",
-        "words": 1104
-      },
-      {
-        "issues": [],
-        "module": 4,
-        "tailWords": 213,
-        "topic": "Tema 3: Streams paralelos y referencias a métodos · Intermedio · 45 min",
-        "words": 1134
-      },
-      {
-        "issues": [],
-        "module": 4,
-        "tailWords": 260,
-        "topic": "Tema 4: Stream Gatherers (Java 24) · Avanzado · 50 min",
-        "words": 1046
-      },
-      {
-        "issues": [],
-        "module": 5,
-        "tailWords": 227,
-        "topic": "Tema 1: ExecutorService y gestión de hilos · Intermedio · 50 min",
-        "words": 762
-      },
-      {
-        "issues": [],
-        "module": 5,
-        "tailWords": 216,
-        "topic": "Tema 2: CompletableFuture · Intermedio · 45 min",
-        "words": 939
-      },
-      {
-        "issues": [],
-        "module": 5,
-        "tailWords": 277,
-        "topic": "Tema 3: Virtual threads · Intermedio · 50 min",
-        "words": 1223
-      },
-      {
-        "issues": [],
-        "module": 5,
-        "tailWords": 205,
-        "topic": "Tema 4: Condiciones de carrera y sincronización · Intermedio · 50 min",
-        "words": 1141
-      },
-      {
-        "issues": [],
-        "module": 5,
-        "tailWords": 330,
-        "topic": "Tema 5: Structured Concurrency (StructuredTaskScope, preview en JDK 27) · Avanzado · 55 min",
-        "words": 1141
-      },
-      {
-        "issues": [],
-        "module": 5,
-        "tailWords": 270,
-        "topic": "Tema 6: Scoped Values frente a ThreadLocal (Java 25) · Avanzado · 50 min",
-        "words": 944
-      },
-      {
-        "issues": [],
-        "module": 5,
-        "tailWords": 199,
-        "topic": "Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos · Avanzado · 45 min",
-        "words": 635
-      },
-      {
-        "issues": [],
-        "module": 6,
-        "tailWords": 218,
-        "topic": "Tema 1: NIO.2 — Path y Files · Intermedio · 45 min",
-        "words": 1137
-      },
-      {
-        "issues": [],
-        "module": 6,
-        "tailWords": 214,
-        "topic": "Tema 2: Serialización con Jackson · Intermedio · 50 min",
-        "words": 1105
-      },
-      {
-        "issues": [],
-        "module": 6,
-        "tailWords": 207,
-        "topic": "Tema 3: Archivos grandes y recursos del classpath · Intermedio · 45 min",
-        "words": 1167
-      },
-      {
-        "issues": [],
-        "module": 7,
-        "tailWords": 216,
-        "topic": "Tema 1: record — modelos inmutables sin boilerplate · Básico · 45 min",
-        "words": 1161
-      },
-      {
-        "issues": [],
-        "module": 7,
-        "tailWords": 205,
-        "topic": "Tema 2: sealed — jerarquías cerradas y exhaustividad · Intermedio · 45 min",
-        "words": 1118
-      },
-      {
-        "issues": [],
-        "module": 7,
-        "tailWords": 217,
-        "topic": "Tema 3: Pattern matching exhaustivo y para instanceof · Intermedio · 45 min",
-        "words": 1051
-      },
-      {
-        "issues": [],
-        "module": 7,
-        "tailWords": 321,
-        "topic": "Tema 4: Unnamed variables y patterns (_, Java 22) · Avanzado · 50 min",
-        "words": 1401
-      },
-      {
-        "issues": [],
-        "module": 8,
-        "tailWords": 199,
-        "topic": "Tema 1: pom.xml vs build.gradle.kts · Básico · 45 min",
-        "words": 1072
-      },
-      {
-        "issues": [],
-        "module": 8,
-        "tailWords": 194,
-        "topic": "Tema 2: Ciclo de vida de build y scopes · Intermedio · 45 min",
-        "words": 1157
-      },
-      {
-        "issues": [],
-        "module": 8,
-        "tailWords": 194,
-        "topic": "Tema 3: Proyectos multi-módulo · Intermedio · 50 min",
-        "words": 1182
-      },
-      {
-        "issues": [],
-        "module": 8,
         "tailWords": 249,
+        "topic": "Tema 2: Optional — evitar null explícitamente · Intermedio · 40 min",
+        "words": 1795
+      },
+      {
+        "issues": [],
+        "module": 4,
+        "tailWords": 293,
+        "topic": "Tema 3: Streams paralelos y referencias a métodos · Intermedio · 45 min",
+        "words": 1636
+      },
+      {
+        "issues": [],
+        "module": 4,
+        "tailWords": 274,
+        "topic": "Tema 4: Stream Gatherers (Java 24) · Avanzado · 50 min",
+        "words": 1447
+      },
+      {
+        "issues": [],
+        "module": 5,
+        "tailWords": 259,
+        "topic": "Tema 1: ExecutorService y gestión de hilos · Intermedio · 50 min",
+        "words": 1527
+      },
+      {
+        "issues": [],
+        "module": 5,
+        "tailWords": 248,
+        "topic": "Tema 2: CompletableFuture · Intermedio · 45 min",
+        "words": 1609
+      },
+      {
+        "issues": [],
+        "module": 5,
+        "tailWords": 328,
+        "topic": "Tema 3: Virtual threads · Intermedio · 50 min",
+        "words": 1664
+      },
+      {
+        "issues": [],
+        "module": 5,
+        "tailWords": 268,
+        "topic": "Tema 4: Condiciones de carrera y sincronización · Intermedio · 50 min",
+        "words": 1686
+      },
+      {
+        "issues": [],
+        "module": 5,
+        "tailWords": 348,
+        "topic": "Tema 5: Structured Concurrency (StructuredTaskScope, preview en JDK 27) · Avanzado · 55 min",
+        "words": 1685
+      },
+      {
+        "issues": [],
+        "module": 5,
+        "tailWords": 267,
+        "topic": "Tema 6: Scoped Values frente a ThreadLocal (Java 25) · Avanzado · 50 min",
+        "words": 1278
+      },
+      {
+        "issues": [],
+        "module": 5,
+        "tailWords": 217,
+        "topic": "Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos · Avanzado · 45 min",
+        "words": 1061
+      },
+      {
+        "issues": [],
+        "module": 6,
+        "tailWords": 285,
+        "topic": "Tema 1: NIO.2 — Path y Files · Intermedio · 45 min",
+        "words": 1988
+      },
+      {
+        "issues": [],
+        "module": 6,
+        "tailWords": 272,
+        "topic": "Tema 2: Serialización con Jackson · Intermedio · 50 min",
+        "words": 1770
+      },
+      {
+        "issues": [],
+        "module": 6,
+        "tailWords": 298,
+        "topic": "Tema 3: Archivos grandes y recursos del classpath · Intermedio · 45 min",
+        "words": 1847
+      },
+      {
+        "issues": [],
+        "module": 7,
+        "tailWords": 288,
+        "topic": "Tema 1: record — modelos inmutables sin boilerplate · Básico · 45 min",
+        "words": 2096
+      },
+      {
+        "issues": [],
+        "module": 7,
+        "tailWords": 245,
+        "topic": "Tema 2: sealed — jerarquías cerradas y exhaustividad · Intermedio · 45 min",
+        "words": 1662
+      },
+      {
+        "issues": [],
+        "module": 7,
+        "tailWords": 279,
+        "topic": "Tema 3: Pattern matching exhaustivo y para instanceof · Intermedio · 45 min",
+        "words": 1835
+      },
+      {
+        "issues": [],
+        "module": 7,
+        "tailWords": 329,
+        "topic": "Tema 4: Unnamed variables y patterns (_, Java 22) · Avanzado · 50 min",
+        "words": 1686
+      },
+      {
+        "issues": [],
+        "module": 8,
+        "tailWords": 243,
+        "topic": "Tema 1: pom.xml vs build.gradle.kts · Básico · 45 min",
+        "words": 1554
+      },
+      {
+        "issues": [],
+        "module": 8,
+        "tailWords": 229,
+        "topic": "Tema 2: Ciclo de vida de build y scopes · Intermedio · 45 min",
+        "words": 1524
+      },
+      {
+        "issues": [],
+        "module": 8,
+        "tailWords": 213,
+        "topic": "Tema 3: Proyectos multi-módulo · Intermedio · 50 min",
+        "words": 1535
+      },
+      {
+        "issues": [],
+        "module": 8,
+        "tailWords": 254,
         "topic": "Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas · Avanzado · 50 min",
-        "words": 1005
+        "words": 1347
       },
       {
         "issues": [],
@@ -7932,14 +7967,14 @@
         "module": 0,
         "tailWords": 168,
         "topic": "Tema 3: process, global y módulos core · Básico · 75 min",
-        "words": 757
+        "words": 827
       },
       {
         "issues": [],
         "module": 0,
         "tailWords": 152,
         "topic": "Tema 4: Event-driven architecture y non-blocking I/O · Intermedio · 75 min",
-        "words": 755
+        "words": 872
       },
       {
         "issues": [],
@@ -9324,7 +9359,7 @@
         "module": 15,
         "tailWords": 221,
         "topic": "Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar · Experto · 1 h 15 min",
-        "words": 853
+        "words": 962
       },
       {
         "issues": [],

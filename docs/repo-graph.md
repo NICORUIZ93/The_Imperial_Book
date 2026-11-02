@@ -1,6 +1,6 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-11-02 00:53 UTC
+Generated: 2026-11-02 05:46 UTC
 Root: `Academia_Floci`
 Indexed files: 1038
 Import edges: 61
@@ -53,7 +53,7 @@ For automated lookups, use `docs/repo-graph.json`.
 
 - `README.md` (369 lines, documentation)
   - headings: # The_Imperial_Book, ## Cómo empezar, ## Requisitos del sistema, ## Levantar Floci, # 1. Levantar todos los servicios
-- `scripts/validate.sh` (213 lines, automation-script)
+- `scripts/validate.sh` (214 lines, automation-script)
 - `scripts/build_repo_graph.py` (477 lines, automation-script)
   - symbols: FileNode, repo_files, read_text, classify, parse_ts_symbols, parse_ts_imports, parse_python_symbols, parse_python_imports, parse_markdown_headings, unique
 - `web/src/app/app.ts` (11 lines, angular-app)
@@ -206,7 +206,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/public/content/ATRIBUCION.md` (39 lines) - headings: # Atribucion y licencia, ## Fuentes consultadas para la ampliacion de DevOps
 - `web/public/content/LICENCIA-CONTENIDO.md` (44 lines) - headings: # Licencia del contenido original, ## Exclusiones y avisos, ## Inventario de recursos de terceros de la aplicación
 - `web/public/content/LICENSE-FLOCI.txt` (21 lines)
-- `web/public/content/android/modulo-0.md` (663 lines) - headings: # Módulo 0: Kotlin aplicado a Android, ## Antes de comenzar: instala Android Studio y un dispositivo de prueba, ## Aprende construyendo, ### Tema 1: Estructura de un proyecto Android Studio
+- `web/public/content/android/modulo-0.md` (787 lines) - headings: # Módulo 0: Kotlin aplicado a Android, ## Antes de comenzar: instala Android Studio y un dispositivo de prueba, ## Aprende construyendo, ### Tema 1: Estructura de un proyecto Android Studio
 - `web/public/content/android/modulo-1.md` (343 lines) - headings: # Módulo 1: Ciclo de vida: Activities y ViewModel, ## Aprende construyendo, ### Tema 1: Ciclo de vida de una Activity, #### Paso 1 · Objetivo y preparación
 - `web/public/content/android/modulo-10.md` (408 lines) - headings: # Módulo 10: Performance, Material 3 y accesibilidad, ## Aprende construyendo, ### Tema 1: Detectar y corregir recomposición innecesaria, #### Paso 1 · Objetivo y preparación
 - `web/public/content/android/modulo-11.md` (343 lines) - headings: # Módulo 11: Publicación en Google Play, ## Aprende construyendo, ### Tema 1: Firma de la app, #### Paso 1 · Objetivo y preparación
@@ -225,7 +225,7 @@ For automated lookups, use `docs/repo-graph.json`.
 
 ### documentation
 
-- `AGENTS.md` (47 lines) - headings: # The Imperial Book: trabajo con contenido y experiencia de estudio, ## Skills para el objetivo de la academia, ## Contrato de estudio desde cero, ## Verificación
+- `AGENTS.md` (92 lines) - headings: # The Imperial Book: trabajo con contenido y experiencia de estudio, ## Skills para el objetivo de la academia, ## Contrato de estudio desde cero, ### Profundidad obligatoria de temas y subtemas
 - `CHANGELOG.md` (17 lines) - headings: # Changelog, ## Unreleased, ## 2026-10-13
 - `CLAUDE.md` (119 lines) - headings: # CLAUDE.md, ## What this is, ## First step for any repo exploration, ## Commands
 - `CODE_OF_CONDUCT.md` (25 lines) - headings: # Código de conducta, ## Compromiso, ## Conducta esperada, ## Aplicación
@@ -237,10 +237,10 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/ESTANDAR-DE-CODIGO.md` (56 lines) - headings: # Estándar transversal de código y diseño, ## Prioridades, ## Clean Code con criterio, ## SOLID cuando aporta valor
 - `docs/INVENTARIO-CURSOS-TEMAS-SUBTEMAS.md` (11995 lines) - headings: # Inventario completo: cursos, módulos, temas y subtemas, ## 1. RutaFlow — Proyecto integrador logístico, ### Módulo 0 · RutaFlow desde cero: producto, entorno y dominio, #### Tema 1: El proceso logístico como sistema
 - `docs/MATRIZ-CURRICULAR.md` (73 lines) - headings: # Matriz curricular auditable, ## Progresión de competencia, ## Cobertura por módulo, ## Método de evaluación
-- `docs/METODOLOGIA-DE-APRENDIZAJE.md` (45 lines) - headings: # Metodología Aprende construyendo, ## Ciclo de cada capítulo, ## Tamaño de las experiencias, ## Regla para mostrar soluciones
+- `docs/METODOLOGIA-DE-APRENDIZAJE.md` (72 lines) - headings: # Metodología Aprende construyendo, ## Ciclo de cada capítulo, ## Tamaño de las experiencias, ## Profundidad de los subtemas
 - `docs/PLAN-TOTAL-DE-CAMBIO.md` (388 lines) - headings: # Plan total de mejora de profundidad, ## Diagnóstico, ## Objetivo de salida — todavía no acreditado, ## Fases
 - `docs/PLANTILLA-LECCION.md` (109 lines) - headings: # Plantilla de Lección — Prompt Maestro para Claude / Codex, ## PROMPT MAESTRO (copiar desde aquí), ## DATOS DE LA LECCIÓN, ## REGLAS DE ESTILO
-- `docs/PROMPT-MAESTRO-METODOLOGIA-EDUCATIVA.md` (188 lines) - headings: # Prompt maestro para transformar el temario en formación desde cero hasta nivel profesional y experto, ## Aplicación editorial
+- `docs/PROMPT-MAESTRO-METODOLOGIA-EDUCATIVA.md` (290 lines) - headings: # Prompt maestro para transformar el temario en formación desde cero hasta nivel profesional y experto, ## Aplicación editorial
 - `docs/PROMPTS-FORMACION.md` (30 lines) - headings: # Prompts de formación profesional a partir de merged.pdf, ## Tutor paso a paso (página 1), ## Ruta de 30 pasos (página 21), ## Revisión profesional (página 55)
 - `docs/RUNBOOKS-CLOUD.md` (1633 lines) - headings: # Cloud Runbooks — Troubleshooting Operacional, ## Runbook 1: DynamoDB Throttling, ### Síntomas, ### Diagnosis
 - ... 55 more files
@@ -288,7 +288,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/browser-course-review.json` (2712 lines)
 - `docs/code-visual-quality.json` (2093 lines)
 - `docs/course-curriculum-inventory.json` (53 lines)
-- `docs/course-depth-review.json` (13991 lines)
+- `docs/course-depth-review.json` (14051 lines)
 - `docs/curriculum-matrix.json` (394 lines)
 - `docs/floci-official-curriculum.json` (14 lines)
 - ... 49 more files

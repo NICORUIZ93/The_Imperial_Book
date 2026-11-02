@@ -1,11 +1,11 @@
 {
   "summary": {
-    "currentTopics": 1141,
+    "currentTopics": 1146,
     "currentTopicsWithExactBookEvidence": 3,
     "additionalUniqueBookTopics": 73027,
     "additionalCourseTopics": 18,
     "courses": 1,
-    "unifiedTopics": 74186,
+    "unifiedTopics": 74191,
     "booksRequiringOcr": 109,
     "rule": "Sólo se fusionan coincidencias exactas normalizadas dentro del mismo stack."
   },
@@ -17,12 +17,23 @@
           "kind": "current",
           "topics": [
             {
-              "title": "Del hardware al programa en ejecución",
+              "title": "Computador, sistema operativo, programa y proceso",
               "status": "actual",
               "current": {
                 "module": "0",
                 "order": 1,
-                "fragment": "tema-1-del-hardware-al-programa-en-ejecucion"
+                "fragment": "tema-1-computador-sistema-operativo-programa-y-proceso"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Del archivo fuente al programa en ejecución",
+              "status": "actual",
+              "current": {
+                "module": "0",
+                "order": 2,
+                "fragment": "tema-2-del-archivo-fuente-al-programa-en-ejecucion"
               },
               "bookSources": [],
               "courseSources": []
@@ -32,8 +43,8 @@
               "status": "actual",
               "current": {
                 "module": "0",
-                "order": 2,
-                "fragment": "tema-2-archivos-carpetas-y-rutas-sin-perderse"
+                "order": 3,
+                "fragment": "tema-3-archivos-carpetas-y-rutas-sin-perderse"
               },
               "bookSources": [],
               "courseSources": []
@@ -43,8 +54,8 @@
               "status": "actual",
               "current": {
                 "module": "0",
-                "order": 3,
-                "fragment": "tema-3-como-leer-un-comando-antes-de-ejecutarlo"
+                "order": 4,
+                "fragment": "tema-4-como-leer-un-comando-antes-de-ejecutarlo"
               },
               "bookSources": [],
               "courseSources": []
@@ -54,8 +65,8 @@
               "status": "actual",
               "current": {
                 "module": "0",
-                "order": 4,
-                "fragment": "tema-4-primer-programa-primer-error-y-primera-evidencia"
+                "order": 5,
+                "fragment": "tema-5-primer-programa-primer-error-y-primera-evidencia"
               },
               "bookSources": [],
               "courseSources": []
@@ -65,7 +76,7 @@
               "status": "actual",
               "current": {
                 "module": "0",
-                "order": 5,
+                "order": 6,
                 "fragment": "tema-complementario-vs-code-comandos-y-atajos-comprobables"
               },
               "bookSources": [],
@@ -277,12 +288,12 @@
               "courseSources": []
             },
             {
-              "title": "HTML semántico y CSS responsive desde un archivo vacío",
+              "title": "Proyecto integrador — sitio de seguimiento accesible",
               "status": "actual",
               "current": {
                 "module": "3",
                 "order": 5,
-                "fragment": "tema-5-html-semantico-y-css-responsive-desde-un-archivo-vacio"
+                "fragment": "tema-5-proyecto-integrador-sitio-de-seguimiento-accesible"
               },
               "bookSources": [],
               "courseSources": []
@@ -99260,6 +99271,28 @@
               },
               "bookSources": [],
               "courseSources": []
+            },
+            {
+              "title": "Sockets TCP y UDP — la red que hay debajo de HttpClient",
+              "status": "actual",
+              "current": {
+                "module": "18",
+                "order": 3,
+                "fragment": "tema-3-sockets-tcp-y-udp-la-red-que-hay-debajo-de-httpclient"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Seguridad defensiva — hash, HMAC, firma y cifrado",
+              "status": "actual",
+              "current": {
+                "module": "18",
+                "order": 4,
+                "fragment": "tema-4-seguridad-defensiva-hash-hmac-firma-y-cifrado"
+              },
+              "bookSources": [],
+              "courseSources": []
             }
           ]
         },
@@ -99351,12 +99384,23 @@
           "kind": "current",
           "topics": [
             {
-              "title": "Las cuatro formas: Predicate, Function, Consumer y Supplier",
+              "title": "Lambdas a fondo — tipo objetivo, captura y referencias a métodos",
               "status": "actual",
               "current": {
                 "module": "20",
                 "order": 1,
-                "fragment": "tema-1-las-cuatro-formas-predicate-function-consumer-y-supplier"
+                "fragment": "tema-1-lambdas-a-fondo-tipo-objetivo-captura-y-referencias-a-metodos"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Las cuatro formas: Predicate, Function, Consumer y Supplier",
+              "status": "actual",
+              "current": {
+                "module": "20",
+                "order": 2,
+                "fragment": "tema-2-las-cuatro-formas-predicate-function-consumer-y-supplier"
               },
               "bookSources": [],
               "courseSources": []
@@ -99366,8 +99410,8 @@
               "status": "actual",
               "current": {
                 "module": "20",
-                "order": 2,
-                "fragment": "tema-2-componer-sin-anidar-andthen-compose-negate-y-reglas-encadenadas"
+                "order": 3,
+                "fragment": "tema-3-componer-sin-anidar-andthen-compose-negate-y-reglas-encadenadas"
               },
               "bookSources": [],
               "courseSources": []
@@ -99377,8 +99421,8 @@
               "status": "actual",
               "current": {
                 "module": "20",
-                "order": 3,
-                "fragment": "tema-3-streams-como-composicion-pereza-orden-y-efectos-que-se-esconden"
+                "order": 4,
+                "fragment": "tema-4-streams-como-composicion-pereza-orden-y-efectos-que-se-esconden"
               },
               "bookSources": [],
               "courseSources": []
@@ -184916,12 +184960,23 @@
               "courseSources": []
             },
             {
-              "title": "Coroutines — asincronía sin bloquear la UI",
+              "title": "Lambdas y funciones de orden superior en Kotlin — contratos, captura y receptores",
               "status": "actual",
               "current": {
                 "module": "0",
                 "order": 5,
-                "fragment": "tema-5-coroutines-asincronia-sin-bloquear-la-ui"
+                "fragment": "tema-5-lambdas-y-funciones-de-orden-superior-en-kotlin-contratos-captura-y-receptores"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Coroutines — asincronía sin bloquear la UI",
+              "status": "actual",
+              "current": {
+                "module": "0",
+                "order": 6,
+                "fragment": "tema-6-coroutines-asincronia-sin-bloquear-la-ui"
               },
               "bookSources": [],
               "courseSources": []

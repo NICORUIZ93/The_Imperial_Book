@@ -7,31 +7,70 @@
 
 ### Tema 1: record — modelos inmutables sin boilerplate · Básico · 45 min
 
-**Prerrequisito:** JDK 27 y un editor. Comprueba `java --version`.
+**Paso 1 · Objetivo y preparación**
 
-**Al terminar podrás:** modelar una entidad inmutable con `record`, con constructor compacto que valida sus invariantes.
+**Prerrequisito:** Módulos 0–2 de Java (clases, `equals`/`hashCode`); JDK 27 o posterior (records estables desde Java 16). Comprueba `java --version`.
+
+**Al finalizar podrás:** modelar con un `record`, validar en el constructor compacto, proteger un componente mutable con copia defensiva, comparar por valor, y "actualizar" creando una instancia nueva.
 
 #### Aprende
+
+**Paso 2 · Contexto y caso profesional**
+
+**Caso profesional:** el servicio de entregas necesita intercambiar guías y destinatarios como valores comparables; cambiar el peso debe producir una guía nueva, no alterar una instancia que otra parte del sistema ya conserva.
+
+**Paso 3 · Teoría, modelo mental y analogía**
 
 Una guía de entrega (número, peso, estado) no debería cambiar sus datos una vez creada; cualquier "actualización" real debería producir una nueva instancia, nunca mutar la existente en un lugar donde otro código todavía la referencia.
 
 **¿Por qué es importante?** `record` elimina el boilerplate que una clase POJO tradicional requeriría para constructor, getters, `equals`, `hashCode` y `toString`, mientras impone inmutabilidad estructural como parte del diseño del lenguaje.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia del tema |
+|---|---|---|
+| declaración y qué genera | Núcleo | `record Punto(int x, int y)` da constructor, accesores, equals/hashCode/toString |
+| accesores sin `get` | Variante | `p.x()`, no `getX()` |
+| `equals`/`hashCode`/`toString` por valor | Núcleo | dos records con los mismos componentes son iguales |
+| componentes `final` e inmutabilidad superficial | Límite | el record no muta, pero un componente mutable sí |
+| constructor compacto | Núcleo | validar/normalizar sin repetir la asignación |
+| constructor canónico y copia defensiva | Diagnóstico | `List.copyOf` aísla una lista mutable |
+| "wither" para actualizar | Variante | crear una instancia nueva en vez de mutar |
+| cuándo NO usar record | Decisión | entidad que genuinamente muta (ORM) |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Declaración y qué genera (núcleo).** `record Punto(int x, int y) {}` declara en una línea una clase inmutable completa: el compilador genera el **constructor canónico**, los **accesores**, y sobreescribe `equals`, `hashCode` y `toString` a partir de **todos** los componentes. Reemplaza el POJO con getters/setters manuales (o Lombok).
+
+**Accesores sin `get` (variante).** El método para leer un componente se llama como el componente: `p.x()`, `p.y()` (no `getX()`). Es la convención de records; no hay setters, porque un record no cambia tras construirse.
+
+**`equals`/`hashCode`/`toString` por valor (núcleo).** Dos records son **iguales** si todos sus componentes lo son, aunque sean instancias distintas; su `hashCode` coincide y `toString` muestra los componentes (`Punto[x=3, y=4]`). Esto los hace ideales como claves de mapa y como DTOs comparables por valor.
+
+**Componentes `final` e inmutabilidad superficial (límite).** Los campos de los componentes son `final`: no hay forma de reasignarlos. Pero la inmutabilidad es **superficial**: si un componente referencia un objeto mutable (una `List`), ese objeto todavía puede cambiar desde fuera. Un record con solo `String`/primitivos es inmutable de verdad; con una colección, necesitas protegerla (ver copia defensiva).
+
+**Constructor compacto (núcleo).** `Guia { ... }` (sin lista de parámetros ni asignaciones) es el **constructor compacto**: se ejecuta antes de asignar los campos, ideal para **validar** invariantes (`numero` no vacío, `pesoKg` positivo) y **normalizar**. No repites la asignación `this.x = x`; el compilador la hace al final.
+
+**Constructor canónico y copia defensiva (diagnóstico).** Para cerrar la inmutabilidad superficial, en el constructor compacto reasigna el parámetro mutable a una copia inmutable: `paradas = List.copyOf(paradas)`. Así mutar la lista original desde fuera no afecta al record, y la lista del record rechaza modificaciones (`UnsupportedOperationException`). Es la defensa estándar para componentes de colección.
+
+**"Wither" para actualizar (variante).** Como un record no muta, "actualizar" un valor es **crear una instancia nueva** con un método tipo `conPeso(nuevo)` / `conParada(p)` que reutiliza el resto de componentes. El original queda intacto, lo que es seguro para datos compartidos entre hilos.
+
+**Cuándo NO usar record (decisión).** Un record no sirve para una entidad que **genuinamente muta** su estado en el tiempo (una entidad JPA cuyos campos actualiza el ORM). Para eso usa una clase tradicional con campos mutables. El record es para datos de valor inmutables (DTOs, claves, eventos).
+
 `record Punto(int x, int y) {}` declara una clase inmutable completa en una única línea: el compilador genera automáticamente un constructor que acepta ambos componentes, métodos de acceso con el mismo nombre que cada componente (`p.x()`, `p.y()`, en vez de la convención `getX()`/`getY()` de una clase tradicional), y sobreescribe `equals()`, `hashCode()` y `toString()` basándose en el valor de todos los componentes declarados, reemplazando por completo el boilerplate que una clase POJO (Plain Old Java Object) tradicional requeriría escribir manualmente (o generar con un IDE, o delegar a una librería externa como Lombok) para lograr exactamente el mismo resultado.
 
-Los componentes de un record son inherentemente inmutables (no existe ningún método generado automáticamente para modificar `x` o `y` después de construir el `Punto`), reflejando la intención de diseño de que un record modele datos que, una vez creados, no cambian — cualquier "modificación" real requiere construir una nueva instancia del record con los valores actualizados, en vez de mutar la instancia existente, el mismo principio de inmutabilidad estudiado de forma más general para signals en el Módulo 2 del track de Angular, aquí aplicado como una característica estructural del propio lenguaje Java para modelar datos.
+Los campos que corresponden a los componentes de un record son `final`: no hay un método generado para reasignar `x` o `y` después de construir `Punto`. Esto da **inmutabilidad superficial**, no profunda: si un componente referencia una lista mutable, esa lista aún podría cambiar. En `Guia`, los componentes son `String`, un `double` y otro record cuyos componentes también son `String`, así que el ejemplo no expone una referencia mutable.
 
 **Analogía:** un record es como un formulario impreso con campos ya fijados en tinta permanente en el momento de imprimirse: puedes leer cualquier campo cuantas veces quieras, pero no puedes tachar y reescribir un valor existente; si necesitas datos distintos, imprimes un formulario completamente nuevo con los valores correctos, en vez de modificar el existente.
 
 `record Guia(String numero, double pesoKg) {}` genera automáticamente constructor, getters (`numero()`, `pesoKg()`), `equals`/`hashCode`/`toString`, sin boilerplate manual. La analogía: un formulario impreso con campos en tinta permanente — para datos distintos, imprimes uno nuevo, no tachas el existente.
 
-**Conceptos clave:** generación automática de constructor/getters/equals/hashCode/toString, inmutabilidad.
+**Conceptos clave:** generación automática de constructor, accesores (`numero()`, no `getNumero()`), `equals`/`hashCode`/`toString` e inmutabilidad superficial.
 
 Cada entidad de solo-datos del proyecto integrador de este track (una guía, una tarifa, una dirección) que no necesite identidad mutable debería modelarse como `record`, no como una clase tradicional con getters/setters manuales.
 
 **Cuándo no usarlo:** un `record` no es apropiado para una entidad que genuinamente necesita mutar su estado a lo largo del tiempo (por ejemplo, una entidad gestionada por un ORM que actualiza campos en la base de datos); para esos casos, una clase tradicional con campos mutables sigue siendo la herramienta correcta.
 
-**Implicación práctica:** `record` elimina el boilerplate de constructor/getters/`equals`/`hashCode`/`toString` mientras impone inmutabilidad estructural, de modo que "cambiar" un dato siempre significa construir una instancia nueva, nunca mutar la existente en un lugar donde otro código ya la referencia.
+**Implicación práctica:** `record` elimina el boilerplate de constructor/accesores/`equals`/`hashCode`/`toString` y evita reasignar sus componentes. Si los componentes contienen objetos mutables, protégelos por separado; "actualizar" una guía de este ejemplo significa construir otra instancia.
 
 **Código del ejemplo:**
 
@@ -44,6 +83,8 @@ p.x(); // 3
 ```
 
 #### Practica
+
+**Paso 4 · Demostración guiada desde cero**
 
 **Desde cero:** parte de una carpeta vacía y prepara la estructura.
 
@@ -67,10 +108,14 @@ record Guia(String numero, double pesoKg, Destinatario destinatario) {
         if (numero == null || numero.isBlank()) {
             throw new IllegalArgumentException("El número de guía es obligatorio");
         }
-        if (pesoKg <= 0) {
+        if (!Double.isFinite(pesoKg) || pesoKg <= 0) {
             throw new IllegalArgumentException("El peso debe ser positivo: " + pesoKg);
         }
         Objects.requireNonNull(destinatario, "El destinatario es obligatorio");
+    }
+
+    Guia conPeso(double nuevoPesoKg) {
+        return new Guia(numero(), nuevoPesoKg, destinatario());
     }
 }
 
@@ -82,6 +127,8 @@ final class Main {
 
         System.out.println(original);
         System.out.println("Iguales: " + original.equals(copia));
+        System.out.println("Peso original: " + original.pesoKg());
+        System.out.println("Peso nuevo: " + original.conPeso(10).pesoKg());
 
         try {
             new Guia("", 12.5, ana);
@@ -99,50 +146,146 @@ javac -d out src/main/java/academia/records/Guia.java
 java -cp out academia.records.Main
 ```
 
-**Resultado esperado:** imprime `Guia[numero=G-001, pesoKg=12.5, destinatario=Destinatario[nombre=Ana, telefono=555-0101]]`, luego `Iguales: true` y finalmente `Rechazada: El número de guía es obligatorio`. La igualdad es por valor: las dos instancias son objetos distintos en memoria pero `equals()` devuelve `true` porque todos sus componentes coinciden.
+**Resultado esperado:** imprime la guía, `Iguales: true`, `Peso original: 12.5`, `Peso nuevo: 10.0` y finalmente `Rechazada: El número de guía es obligatorio`. La guía nueva tiene otro peso; la original conserva `12.5`. Las dos guías iniciales son instancias distintas, pero `equals()` devuelve `true` porque coinciden todos sus componentes.
 
-**Fallo deliberado:** intenta asignar directamente `guia.pesoKg = 10` dentro del `main` y recompila.
+**Paso 5 · Práctica guiada**
+
+Antes de ejecutar, predice qué valores imprimirán `original.pesoKg()` y `original.conPeso(10).pesoKg()`. Ejecuta el programa y compáralos con la salida esperada.
+
+**Fallo deliberado:** intenta asignar directamente `original.pesoKg = 10` dentro del `main` y recompila.
 
 **Pista:** los componentes de un record no tienen setters y el compilador rechaza la asignación con `pesoKg has private access in Guia`, porque el acceso generado solo permite leer. **Resultado esperado:** confirmas que la única forma de "cambiar" un valor es construir una nueva instancia.
 
-**Si falla.** Si el compilador no acepta la declaración del constructor compacto, revisa que no repitas la lista de parámetros ni la asignación de campos dentro de él. Si `equals()` devuelve `false`, alguno de los componentes difiere aunque parezca el mismo dato. Si el record no se puede ejecutar como clase principal, recuerda que `Main` debe declarar `public static void main(String[] args)`.
+Ahora cierra los subtemas de igualdad por valor, copia defensiva y wither. Crea `src/main/java/academia/records/Demo.java`:
+
+```java
+package academia.records;
+import java.util.*;
+
+public class Demo {
+    record Punto(int x, int y) {}
+    record Ruta(String nombre, List<String> paradas) {
+        Ruta {                                    // compacto: valida y protege
+            Objects.requireNonNull(nombre);
+            paradas = List.copyOf(paradas);       // copia defensiva → inmutabilidad real
+        }
+        Ruta conParada(String p) {                // "wither": instancia nueva
+            var nuevas = new ArrayList<>(paradas); nuevas.add(p);
+            return new Ruta(nombre, nuevas);
+        }
+    }
+    public static void main(String[] args) {
+        Punto a = new Punto(3, 4), b = new Punto(3, 4);
+        System.out.println("equals=" + a.equals(b) + " hashCode iguales=" + (a.hashCode() == b.hashCode()));
+        System.out.println("toString=" + a + " accesor x=" + a.x());
+
+        var paradas = new ArrayList<>(List.of("A", "B"));
+        var r = new Ruta("R1", paradas);
+        paradas.add("C");                          // mutar la original NO afecta al record
+        System.out.println("paradas record=" + r.paradas());
+        try { r.paradas().add("X"); }
+        catch (UnsupportedOperationException e) { System.out.println("record list inmutable"); }
+        System.out.println("conParada=" + r.conParada("Z").paradas());
+    }
+}
+```
+
+```bash
+javac -d out src/main/java/academia/records/Demo.java
+java -cp out academia.records.Demo
+```
+
+**Salida esperada (verificada con Temurin 27.0.1):**
+
+```text
+equals=true hashCode iguales=true
+toString=Punto[x=3, y=4] accesor x=3
+paradas record=[A, B]
+record list inmutable
+conParada=[A, B, Z]
+```
+
+Dos `Punto` con los mismos componentes son iguales y comparten `hashCode`; `toString` muestra los componentes y el accesor se llama `x()`; la **copia defensiva** hizo que añadir `C` a la lista original no afecte al record, y la lista del record es inmutable; el "wither" `conParada` produjo una instancia nueva sin tocar la original.
+
+**Si falla.** Si añadir a la lista original cambia el record, falta `List.copyOf` en el compacto. Si `r.paradas().add` no lanza, no protegiste la colección. Si el compilador no acepta el compacto, no repitas la lista de parámetros ni las asignaciones dentro de él.
 
 #### Aplica
 
-Agrega un segundo record `Destinatario` y anídalo dentro de `Guia`; escribe una prueba que confirme que dos `Guia` con el mismo `Destinatario` (mismos valores) son `equals()`, aunque sean instancias distintas.
+**Paso 6 · Práctica independiente**
+
+Extiende `Guia` con `conNumero(String nuevoNumero)`, que devuelva otra guía y reutilice el destinatario. Comprueba que la guía nueva tiene el número actualizado, la original conserva `G-001` y dos destinatarios con los mismos valores se comparan por valor.
+
+**Paso 7 · Cierre**
 
 **Checklist de salida.**
 
 - [ ] `Guia.java` compila con `javac -d out` sin setters.
 - [ ] El constructor compacto rechaza un número vacío con `IllegalArgumentException`.
-- [ ] El constructor compacto rechaza un peso no positivo.
+- [ ] El constructor compacto rechaza un peso cero, negativo, `NaN` o infinito.
 - [ ] Dos `Guia` con los mismos valores imprimen `Iguales: true`.
-- [ ] El record anidado `Destinatario` también se compara por valor.
+- [ ] `conPeso` devuelve otra guía y deja intacto el peso de la original.
+- [ ] Una copia defensiva (`List.copyOf`) aísla un componente de colección mutable.
+- [ ] El record `Destinatario` también se compara por valor.
 - [ ] Explicas cómo se "actualiza" una guía sin mutar la instancia original.
 
-**Si falla.** Si la prueba de igualdad falla con un `Destinatario` anidado, compara los dos objetos impresos con `toString()` antes de cambiar el modelo. Si el constructor compacto no valida, confirma que la comprobación está dentro del bloque `Guia { ... }` y no en un constructor auxiliar.
+**Si falla.** Si la prueba de igualdad falla con un `Destinatario`, compara los dos objetos impresos con `toString()` antes de cambiar el modelo. Si el constructor compacto no valida, confirma que la comprobación está dentro del bloque `Guia { ... }` y no en un constructor auxiliar.
 
 Guarda `Guia`, la validación del constructor compacto y la prueba de igualdad por valor; como siguiente paso estudia sealed interfaces.
 
-**Errores comunes:** usar un `record` para una entidad que genuinamente necesita mutar su estado (un ORM que actualiza campos), intentar agregar un setter a un componente del record, y validar invariantes fuera del constructor compacto en vez de dentro de él.
+**Errores comunes:** asumir que un record hace inmutables también los objetos mutables que referencia (usa copia defensiva); usarlo para una entidad que genuinamente muta su estado (por ejemplo, una entidad gestionada por un ORM); intentar agregar un setter a un componente; y validar invariantes fuera del constructor compacto.
 
-**Fuente oficial:** [dev.java: Records](https://dev.java/learn/classes-objects/records/) y [JEP 409: Sealed Classes](https://openjdk.org/jeps/409).
+**Fuentes oficiales revisadas el 2026-11-01:** [dev.java: Records](https://dev.java/learn/classes-objects/records/), [`Record` (API Java SE 27)](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/Record.html) y [JEP 395: Records](https://openjdk.org/jeps/395).
 
 ---
 
 ### Tema 2: sealed — jerarquías cerradas y exhaustividad · Intermedio · 45 min
 
-**Prerrequisito:** JDK 27 y un editor. Comprueba `java --version`.
+**Paso 1 · Objetivo y preparación**
 
-**Al terminar podrás:** cerrar una jerarquía de estados con `sealed`/`permits`, de modo que agregar un estado nuevo sin actualizar el código existente falle en compilación.
+**Prerrequisito:** Tema 1 de este módulo (records); JDK 27 o posterior (`sealed`/`permits` estables desde JDK 17). Comprueba `java --version`.
+
+**Al finalizar podrás:** limitar con `sealed`/`permits` las implementaciones; declarar cada subtipo `final`/`sealed`/`non-sealed`; modelar un ADT con sealed + records; y comprobar que agregar un caso rompe la compilación de los `switch` exhaustivos.
 
 #### Aprende
+
+**Paso 2 · Contexto y caso profesional**
+
+**Caso profesional:** el servicio de entregas procesa estados conocidos; si se incorpora `Cancelada`, toda decisión que clasifique una entrega debe revisarse antes de compilar el cambio.
+
+**Paso 3 · Teoría, modelo mental y analogía**
 
 Una entrega tiene un conjunto fijo de estados posibles (creada, en tránsito, entregada); si el código que procesa esos estados no se entera cuando alguien agrega un estado nuevo (cancelada), el nuevo estado queda silenciosamente sin manejar en producción.
 
 **¿Por qué es importante?** `sealed` permite que el compilador verifique exhaustividad en un switch sin necesidad de una rama `default`, detectando en tiempo de compilación cualquier caso nuevo agregado a la jerarquía que se haya olvidado cubrir en algún switch existente.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia del tema |
+|---|---|---|
+| `sealed` y `permits` | Núcleo | solo los tipos listados pueden implementar |
+| `final`/`sealed`/`non-sealed` en subtipos | Núcleo | cada hoja declara si se puede extender |
+| exhaustividad en `switch` sin `default` | Diagnóstico | añadir un caso rompe la compilación de los switch |
+| sealed + records = ADT | Variante | tipos de dato algebraicos (suma de casos) |
+| alcance de `permits` (mismo módulo/paquete) | Límite | los subtipos deben ser accesibles a la base |
+| cuándo NO sellar | Decisión | jerarquía abierta a extensión de terceros |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`sealed` y `permits` (núcleo).** `sealed interface Forma permits Circulo, Cuadrado {}` restringe, verificado por el compilador, **exactamente** qué tipos pueden implementar/extender `Forma`. Ningún otro código puede crear una implementación no listada, a diferencia de una interfaz normal que cualquiera implementa.
+
+**`final`/`sealed`/`non-sealed` en subtipos (núcleo).** Cada subtipo permitido **debe** declarar si a su vez se puede extender: `final` (hoja cerrada, lo son los records implícitamente), `sealed` (vuelve a restringir con su propio `permits`) o `non-sealed` (reabre la extensión). Esto mantiene la jerarquía bajo control nivel a nivel.
+
+**Exhaustividad en `switch` sin `default` (diagnóstico).** Como el compilador conoce **todo** el conjunto cerrado, un `switch` sobre la sealed cubre todos los casos sin `default`. Si añades un subtipo a `permits` y olvidas su rama en algún switch, **la compilación falla** señalando dónde, en vez de ser un bug silencioso en producción.
+
+**Sealed + records = ADT (variante).** Combinar una `sealed interface` con `record` que la implementan modela un **tipo de dato algebraico** (una suma de casos: `EstadoEntrega` = `Creada | EnTransito | Entregada`). Es el patrón idiomático moderno para modelar un dominio con un número fijo y conocido de formas, y encaja de lleno con el pattern matching del Tema 3.
+
+**Alcance de `permits` (límite).** Los subtipos de `permits` deben ser **accesibles** desde la clase sellada: en el mismo módulo (si hay módulos) o el mismo paquete si no. No puedes sellar hacia tipos de otro módulo sin exportarlos. Es una restricción de encapsulación, no un capricho.
+
+**Cuándo NO sellar (decisión).** No selles una jerarquía **genuinamente abierta** a extensión externa (un contrato de plugin que terceros implementan): ahí una interfaz normal es lo correcto. `sealed` es para conjuntos cerrados que tú controlas y quieres que el compilador vigile.
+
 `sealed interface Forma permits Circulo, Cuadrado {}` declara explícitamente, mediante la cláusula `permits`, exactamente qué clases o interfaces tienen permitido implementar o extender `Forma`, una restricción verificada por el compilador: ningún otro código, en ningún otro lugar del proyecto, puede crear una implementación adicional no listada en esa cláusula `permits`, a diferencia de una interfaz normal sin `sealed`, que cualquier clase en cualquier lugar puede implementar libremente sin ninguna restricción del compilador.
+
+Cada subtipo permitido debe declararse `final`, `sealed` o `non-sealed`. Los records de este ejemplo son `final` implícitamente, así que las hojas de la jerarquía no se pueden extender; una rama `non-sealed`, en cambio, volvería a permitir subtipos.
 
 Esta restricción deliberada habilita una capacidad adicional en el pattern matching de switch (Tema 3): dado que el compilador conoce exactamente el conjunto completo y cerrado de implementaciones posibles de una sealed interface, puede verificar en tiempo de compilación que un switch sobre esa interfaz cubre absolutamente todos los casos posibles, sin necesidad de una rama `default` como red de seguridad — si en el futuro se agrega una nueva implementación a la lista `permits` pero se olvida agregar su caso correspondiente en algún switch existente en el código, el compilador falla inmediatamente en ese punto, señalando exactamente dónde falta cubrir el nuevo caso, en vez de dejar ese olvido como un bug silencioso que solo se manifestaría en producción cuando efectivamente se procese un objeto de ese nuevo tipo no contemplado.
 
@@ -167,6 +310,8 @@ record Cuadrado(double lado) implements Forma {}
 ```
 
 #### Practica
+
+**Paso 4 · Demostración guiada desde cero**
 
 **Desde cero:** parte de una carpeta vacía y prepara la estructura.
 
@@ -215,6 +360,10 @@ java -cp out academia.estados.Main
 
 **Resultado esperado:** `Creada E-001`, `En tránsito E-002 (4.5 km)` y `Entregada E-003 a Ana`. El `switch` no tiene `default` y compila porque el compilador sabe que `permits` agota exactamente esos tres tipos.
 
+**Paso 5 · Práctica guiada**
+
+Predice qué debe ocurrir si la jerarquía gana otro estado y ejecuta el cambio controlado:
+
 **Fallo deliberado:** agrega un cuarto record `Cancelada implements EstadoEntrega` a la cláusula `permits` sin actualizar el `switch` existente y recompila.
 
 **Pista:** el compilador señala exactamente qué switch no cubre el caso nuevo, con un mensaje del tipo `the switch expression does not cover all possible input values`. **Resultado esperado:** agregar la rama faltante restaura la compilación.
@@ -223,7 +372,11 @@ java -cp out academia.estados.Main
 
 #### Aplica
 
-Intenta declarar una quinta implementación de `EstadoEntrega` en otro archivo sin agregarla a `permits`; confirma que el compilador la rechaza inmediatamente.
+**Paso 6 · Práctica independiente**
+
+En una copia del ejemplo, agrega `Devuelta(String numero, String motivo)` a `permits`. Primero confirma que el `switch` deja de compilar; después incorpora la rama que describe el motivo y verifica la salida. En otro archivo, intenta implementar `EstadoEntrega` sin incluir el tipo en `permits` y confirma que el compilador lo rechaza.
+
+**Paso 7 · Cierre**
 
 **Checklist de salida.**
 
@@ -240,23 +393,56 @@ Guarda la jerarquía sellada, el error de compilación al agregar un estado nuev
 
 **Errores comunes:** declarar una jerarquía abierta (sin `sealed`) cuando el conjunto de casos es en realidad fijo y conocido, agregar una implementación nueva a `permits` sin revisar qué switches existentes dejaron de ser exhaustivos, y usar `sealed` para un conjunto de tipos que legítimamente terceros deberían poder extender.
 
-**Fuente oficial:** [dev.java: Records](https://dev.java/learn/classes-objects/records/) y [JEP 409: Sealed Classes](https://openjdk.org/jeps/409).
+**Fuente oficial:** [JEP 409: Sealed Classes](https://openjdk.org/jeps/409) y [dev.java: Sealed Classes](https://dev.java/learn/classes-objects/sealed-classes/).
 
 ---
 
 ### Tema 3: Pattern matching exhaustivo y para instanceof · Intermedio · 45 min
 
-**Prerrequisito:** JDK 27 y un editor. Comprueba `java --version`.
+**Paso 1 · Objetivo y preparación**
 
-**Al terminar podrás:** calcular si una entrega puede reprogramarse según su estado sellado usando pattern matching, sin casteo manual.
+**Prerrequisito:** Temas 1–2 de este módulo (records, sealed); JDK 27 o posterior (pattern matching en `switch` y record patterns estables desde Java 21). Comprueba `java --version`.
+
+**Al finalizar podrás:** usar `instanceof` con binding, type patterns y record patterns en `switch`, guardas `when`, exhaustividad sin `default` y `case null`, sin casteo manual.
 
 #### Aprende
+
+**Paso 2 · Contexto y caso profesional**
+
+**Caso profesional:** una operación de reprogramación debe aceptar entregas creadas o en tránsito y rechazar las ya entregadas; si aparece otro estado, el compilador debe señalar que falta decidir cómo tratarlo.
+
+**Paso 3 · Teoría, modelo mental y analogía**
 
 Calcular si una entrega puede reprogramarse depende de su estado exacto (no se puede reprogramar una ya `Entregada`); expresar esa lógica con casteos manuales anidados es más verboso y propenso a errores que un switch con pattern matching.
 
 **¿Por qué es importante?** El pattern matching exhaustivo garantiza, verificado por el compilador, que ningún caso posible de una sealed interface quede sin cubrir; el pattern matching para instanceof elimina la redundancia y el riesgo del casteo manual clásico.
 
 Un `switch` con pattern matching extrae directamente el valor ya tipado de cada rama, y el compilador verifica exhaustividad contra la jerarquía `sealed` (Tema 2), sin necesitar `default`. La analogía: verificar la identidad de alguien y recibir simultáneamente su credencial ya lista para usar, sin un paso adicional redundante.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia del tema |
+|---|---|---|
+| `instanceof` con binding | Núcleo | `if (o instanceof String s)` evita el cast |
+| type pattern en `switch` | Núcleo | cada rama recibe el valor ya tipado |
+| record patterns (deconstrucción) | Variante | `case Rect(double a, double h)` extrae componentes |
+| guardas `when` | Variante | refinar una rama con una condición |
+| exhaustividad sobre sealed | Diagnóstico | sin `default`, cubrir todos los casos |
+| `case null` | Límite | el `switch` es hostil a `null` salvo que lo añadas |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`instanceof` con binding (núcleo).** `if (o instanceof String s)` comprueba el tipo **y** vincula la variable ya casteada `s` en una sola expresión. Sustituye el patrón clásico `if (o instanceof String) { String s = (String) o; ... }`, eliminando el cast redundante y su riesgo de `ClassCastException`.
+
+**Type pattern en `switch` (núcleo).** Un `switch` puede ramificar por **tipo**: `case Circulo c -> ...` recibe `c` ya tipado como `Circulo`. Reemplaza cadenas de `if/else if` con `instanceof` por una estructura legible donde cada rama trabaja con el tipo concreto sin castear.
+
+**Record patterns (deconstrucción) (variante).** Sobre un record puedes **deconstruir** sus componentes en el propio patrón: `case Rect(double a, double h) -> a * h` extrae `a` y `h` directamente, sin llamar `rect.ancho()`/`rect.alto()`. Se anidan para estructuras compuestas (`case Pedido(Cliente(var nombre), var total))`).
+
+**Guardas `when` (variante).** Una rama puede refinarse con una condición: `case Circulo c when c.radio() > 10 -> "grande"`. La guarda se evalúa tras encajar el patrón; permite distinguir casos del mismo tipo (círculo grande vs normal, rectángulo cuadrado vs no). El orden importa: las ramas más específicas van primero.
+
+**Exhaustividad sobre sealed (diagnóstico).** Si el `switch` es sobre un tipo `sealed`, el compilador exige cubrir **todos** los casos y no necesita `default`. Añadir un subtipo a la jerarquía y olvidar su rama rompe la compilación (lo viste en el Tema 2). Evita el `default` "por si acaso": anula esa protección.
+
+**`case null` (límite).** Un `switch` tradicional lanza `NullPointerException` ante `null`. Con pattern matching, el `switch` sigue siendo hostil a `null` **salvo** que añadas explícitamente `case null ->`. La exhaustividad de la jerarquía no hace que `null` sea un caso válido: decídelo tú.
 
 ```java
 double area(Forma forma) {
@@ -267,7 +453,7 @@ double area(Forma forma) {
 }
 ```
 
-Este switch combina pattern matching (extrayendo directamente `c`/`q` ya tipados correctamente según cada caso, sin casteo manual explícito) con la verificación de exhaustividad habilitada por `sealed` (Tema 2): el compilador verifica que este switch efectivamente cubre absolutamente todos los casos posibles de la sealed interface `Forma` (`Circulo` y `Cuadrado`, y ningún otro caso posible dado que `permits` los restringe exactamente a esos dos), permitiendo omitir por completo una rama `default`, dado que no existe ningún caso adicional posible que esa rama tendría que cubrir.
+Este switch combina pattern matching (extrayendo directamente `c`/`q` ya tipados correctamente según cada caso, sin casteo manual explícito) con la verificación de exhaustividad habilitada por `sealed` (Tema 2): el compilador verifica que cubra todos los casos de la jerarquía. El `switch` sigue siendo hostil a `null` salvo que se añada explícitamente `case null`; la exhaustividad de la jerarquía no hace que `null` sea un estado válido.
 
 ```java
 if (obj instanceof Circulo c) {
@@ -288,6 +474,8 @@ Cada regla de negocio del proyecto integrador de este track que dependa del esta
 **Implicación práctica:** Un switch exhaustivo sin `default`, verificado contra una jerarquía `sealed`, convierte un estado nuevo sin manejar en un error de compilación inmediato, mientras que un `default` oculta ese mismo olvido dejándolo pasar en silencio.
 
 #### Practica
+
+**Paso 4 · Demostración guiada desde cero**
 
 **Desde cero:** parte de una carpeta vacía y prepara la estructura.
 
@@ -336,15 +524,81 @@ java -cp out academia.patrones.CalculadoraReprogramacion
 
 **Resultado esperado:** `Creada: true`, `En tránsito: true` y `Entregada: false`, sin ningún `default` y sin ningún casteo manual.
 
+**Paso 5 · Práctica guiada**
+
+Antes de ejecutar, predice el resultado de cada estado. Luego agrega el estado faltante de forma controlada:
+
 **Fallo deliberado:** agrega el estado `Cancelada` (del Tema 2) a la jerarquía sin actualizar este switch y recompila.
 
 **Pista:** el compilador señala que `puedeReprogramarse` no cubre `Cancelada`. **Resultado esperado:** agregar esa rama restaura la compilación exhaustiva.
 
-**Si falla.** Si el switch compila con `Cancelada` sin agregar su rama, existe un `default` que debes eliminar para recuperar la verificación. Si el patrón `case Entregada e` no compila, confirma que `Entregada` es un record accesible desde el mismo paquete.
+Ahora cierra los subtemas de record patterns, guardas `when` y `case null`. Crea `src/main/java/academia/patrones/Demo.java`:
+
+```java
+package academia.patrones;
+
+public class Demo {
+    sealed interface Forma permits Circulo, Rect {}
+    record Circulo(double radio) implements Forma {}
+    record Rect(double ancho, double alto) implements Forma {}
+
+    static String describir(Object o) {
+        if (o instanceof String s) return "texto len=" + s.length();   // instanceof con binding
+        return "otro";
+    }
+    static String clasificar(Forma f) {
+        return switch (f) {
+            case Circulo c when c.radio() > 10 -> "circulo grande";    // guarda when
+            case Circulo c -> "circulo r=" + c.radio();
+            case Rect(double a, double h) when a == h -> "cuadrado " + a; // record pattern + guarda
+            case Rect(double a, double h) -> "rect " + a + "x" + h;       // deconstrucción
+        };
+    }
+    static String conNull(Forma f) {
+        return switch (f) {
+            case null -> "nulo";                                       // case null explícito
+            case Circulo c -> "circulo";
+            case Rect r -> "rect";
+        };
+    }
+    public static void main(String[] args) {
+        System.out.println(describir("hola"));
+        System.out.println(clasificar(new Circulo(20)));
+        System.out.println(clasificar(new Circulo(3)));
+        System.out.println(clasificar(new Rect(5, 5)));
+        System.out.println(clasificar(new Rect(5, 8)));
+        System.out.println(conNull(null));
+    }
+}
+```
+
+```bash
+javac -d out src/main/java/academia/patrones/Demo.java
+java -cp out academia.patrones.Demo
+```
+
+**Salida esperada (verificada con Temurin 27.0.1):**
+
+```text
+texto len=4
+circulo grande
+circulo r=3.0
+cuadrado 5.0
+rect 5.0x8.0
+nulo
+```
+
+`instanceof String s` vinculó sin cast; la guarda `when` separó el círculo grande del normal; el **record pattern** `Rect(double a, double h)` deconstruyó los componentes y la guarda `a == h` detectó el cuadrado; y `case null` manejó el `null` que de otro modo lanzaría `NullPointerException`.
+
+**Si falla.** Si el switch compila con `Cancelada` sin agregar su rama, existe un `default` que debes eliminar. Si el record pattern no compila, revisa que el tipo deconstruido sea un record y los tipos de los componentes coincidan. Si `conNull(null)` lanza excepción, falta el `case null`.
 
 #### Aplica
 
-Reescribe una comprobación equivalente usando el patrón clásico (`instanceof` + casteo manual) y compara la legibilidad con la versión de pattern matching; documenta en una frase cuál preferirías mantener.
+**Paso 6 · Práctica independiente**
+
+En `main`, crea un `Object candidato = new EnTransito("E-004", 2.0)` y usa `instanceof EnTransito enTransito` para imprimir su número y avance sin casteo manual. Ejecuta y verifica `Detalle: E-004 a 2.0 km`. Después escribe la variante clásica con `instanceof` y cast, confirma que da la misma salida y explica cuál versión conservarías.
+
+**Paso 7 · Cierre**
 
 **Checklist de salida.**
 
@@ -361,33 +615,59 @@ Guarda ambas versiones (pattern matching y casteo clásico) y el error de exhaus
 
 **Errores comunes:** agregar una rama `default` "por si acaso" a un switch exhaustivo sobre una sealed interface (anula la verificación de exhaustividad que `sealed` habilita), usar el casteo manual clásico (`instanceof` + cast) donde pattern matching ya elimina esa redundancia, y olvidar que un switch con pattern matching debe cubrir la jerarquía completa para omitir `default`.
 
-**Fuente oficial:** [dev.java: Records](https://dev.java/learn/classes-objects/records/) y [JEP 409: Sealed Classes](https://openjdk.org/jeps/409).
+**Fuentes oficiales revisadas el 2026-11-01:** [JEP 441: Pattern Matching for switch](https://openjdk.org/jeps/441), [JEP 440: Record Patterns](https://openjdk.org/jeps/440), [JEP 394: Pattern Matching for instanceof](https://openjdk.org/jeps/394) y [dev.java: Pattern Matching](https://dev.java/learn/pattern-matching/).
 
 ---
 
 ### Tema 4: Unnamed variables y patterns (_, Java 22) · Avanzado · 50 min
 
-**Prerrequisito:** JDK 22+ (el ejemplo se compila con JDK 27) y Tema 2 de este módulo. Comprueba `java --version`.
+**Paso 1 · Objetivo y preparación**
 
-**Al terminar podrás:** usar el patrón `_` (unnamed variables, Java 22) para descartar explícitamente un componente de un record pattern que no necesitas, y en un bloque `catch` que no necesita la excepción.
+**Prerrequisito:** Temas 1–3 de este módulo; JDK 27 o posterior (`_` estable desde Java 22). Comprueba `java --version`.
+
+**Al finalizar podrás:** usar `_` para descartar un componente de un record pattern, una excepción en `catch` y una variable de bucle; distinguir el descarte explícito de un nombre sin usar; y comprobar la sangría de un text block.
 
 #### Aprende
 
-Al deconstruir un record `Paquete(Dimensiones dim, String destino)` con pattern matching, un método solo necesita `destino`; nombrar la parte que no usas con un identificador real genera una advertencia de "variable no utilizada" que el equipo aprendió a ignorar — y esa misma advertencia ignorada por costumbre ocultó, en un cambio reciente, una variable genuinamente olvidada en otro método completamente distinto.
+**Paso 2 · Contexto y caso profesional**
 
-**¿Por qué es importante?** Porque el lenguaje puede hacer que estados imposibles sean difíciles de representar, y también que lo deliberadamente ignorado sea indistinguible de lo olvidado si no existe una sintaxis reservada para expresar esa intención.
+**Caso profesional:** al generar un resumen de paquete solo se necesita el destino, no las dimensiones; el patrón `_` permite indicar en el código que ese componente se descarta intencionalmente.
 
-Las unnamed patterns (`_`, finalizadas en Java 22) permiten descartar explícitamente un binding de un pattern match (record pattern, catch, o lambda) que no se va a usar, dejando una sintaxis reservada exclusivamente para "esto es deliberado", distinta de cualquier variable nombrada. La analogía: una casilla de formulario marcada "N/A" frente a una casilla vacía — nadie puede distinguir si la dejaron vacía a propósito o si se olvidaron de completarla.
+**Paso 3 · Teoría, modelo mental y analogía**
+
+**¿Por qué es importante?** `_` distingue un valor descartado de un binding con nombre que podría usarse por accidente. Es una señal del lenguaje; `javac` no suele advertir sobre variables locales sin uso, y el comportamiento de linters depende de su configuración.
+
+Las unnamed variables y patterns (`_`) se finalizaron en Java 22. Permiten descartar explícitamente un binding que la sintaxis exige declarar, como un componente de record pattern o el parámetro de un `catch`. `_` no es una variable: no se puede leer ni reutilizar como identificador.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia del tema |
+|---|---|---|
+| `_` en record pattern | Núcleo | descartar un componente que no se usa |
+| `_` en `catch` | Variante | capturar sin nombrar la excepción |
+| `_` en bucles y recursos | Variante | descartar el elemento o el recurso |
+| `_` no es una variable | Límite | no se lee ni se reutiliza; repetirlo sí se permite |
+| descarte explícito frente a nombre sin usar | Decisión | `_` comunica intención; `javac` no advierte de locales sin uso |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`_` en record pattern (núcleo).** Al deconstruir un record, `_` descarta un componente que no necesitas: `case Paquete(Dimensiones _, String destino)` toma solo el destino. Evita nombrar `dim` y no usarlo, que invita a errores y ensucia la lectura.
+
+**`_` en `catch` (variante).** Cuando capturas una excepción cuyo objeto no vas a inspeccionar, `catch (NumberFormatException _)` lo deja claro: te importa el **tipo** del fallo, no sus datos. Antes había que declarar un `e` sin usar.
+
+**`_` en bucles y recursos (variante).** También vale como variable de un for-each (`for (var _ : lista)` cuando solo cuentas iteraciones) o en un try-with-resources donde el recurso se cierra pero no se usa por nombre. En todos los casos la sintaxis exige declarar algo; `_` dice "a propósito, nada".
+
+**`_` no es una variable (límite).** No puedes **leer** `_` ni usarlo como identificador normal; el compilador lo rechaza. Sí puedes usar `_` varias veces en el mismo ámbito (dos componentes descartados), algo imposible con un nombre real. Es un marcador de descarte, no un dato.
+
+**Descarte explícito frente a nombre sin usar (decisión).** `_` **comunica intención**: "este valor se descarta a propósito". Un nombre sin usar (`dim` que nadie lee) no distingue el descarte deliberado del olvido, y `javac` normalmente **no advierte** de variables locales sin uso (depende de linters). Usa `_` cuando la sintaxis te obligue a declarar algo que no vas a usar.
 
 ```java
 try {
-    return Integer.parseInt(texto);
+    return OptionalInt.of(Integer.parseInt(texto));
 } catch (NumberFormatException _) {
-    return 0; // no necesitamos el detalle de la excepción, solo saber que ocurrió
+    return OptionalInt.empty(); // la ausencia comunica que el texto no era un entero
 }
 ```
-
-Esta sintaxis también aplica a bloques `catch`, lambdas con parámetros no usados, y bucles `for` tradicionales con un índice no usado; en todos los casos, `_` deja una señal explícita e inconfundible de que ese binding es deliberadamente ignorado, distinta de cualquier variable nombrada (que el compilador y los linters tratan como potencialmente usada en otra parte).
 
 **Analogía:** `_` es como una casilla de formulario marcada explícitamente "N/A"; una variable nombrada sin usar es como una casilla vacía — nadie puede distinguir con certeza si fue dejada vacía a propósito o si simplemente se olvidó completarla.
 
@@ -397,7 +677,7 @@ Cada deconstrucción del proyecto integrador de este track que no necesite todos
 
 **Cuándo no usarlo:** si existe cualquier posibilidad de que el binding se use más adelante en el mismo bloque, nómbralo normalmente; `_` no es una variable y el compilador rechaza cualquier intento de leerlo.
 
-**Implicación práctica:** `_` elimina la ambigüedad entre "deliberadamente ignorado" y "olvidado", reduciendo el ruido de advertencias de variables no utilizadas que puede ocultar advertencias legítimas.
+**Implicación práctica:** `_` hace imposible referirse accidentalmente al binding descartado y deja clara la intención. No garantiza por sí solo una advertencia concreta de un linter; esas comprobaciones dependen de la herramienta y su configuración.
 
 **Código del ejemplo:**
 
@@ -418,7 +698,9 @@ flowchart LR
 
 #### Practica
 
-**Desde cero:** parte de una carpeta vacía y prepara la estructura.
+**Paso 4 · Demostración guiada desde cero**
+
+Parte de una carpeta vacía y prepara la estructura.
 
 ```bash
 mkdir ejemplo-unnamed-patterns
@@ -431,6 +713,8 @@ mkdir -p src/main/java/academia/patrones
 ```java
 package academia.patrones;
 
+import java.util.OptionalInt;
+
 record Dimensiones(double ancho, double alto) {}
 
 record Paquete(Dimensiones dim, String destino) {}
@@ -442,17 +726,18 @@ public final class ExtractorDestino {
         };
     }
 
-    static int entero(String texto) {
+    static OptionalInt entero(String texto) {
         try {
-            return Integer.parseInt(texto);
+            return OptionalInt.of(Integer.parseInt(texto));
         } catch (NumberFormatException _) {
-            return 0;
+            return OptionalInt.empty();
         }
     }
 
     public static void main(String[] args) {
         System.out.println(resumen(new Paquete(new Dimensiones(30, 20), "Centro")));
-        System.out.println("Entero: " + entero("42") + " / " + entero("abc"));
+        System.out.println("Entero válido: " + entero("42").orElseThrow());
+        System.out.println("Texto inválido reconocido: " + entero("abc").isEmpty());
 
         String consulta = """
             SELECT numero, estado
@@ -460,6 +745,7 @@ public final class ExtractorDestino {
             WHERE estado = 'EN_RUTA'
             """;
         System.out.println(consulta);
+        System.out.println(consulta.lines().map(linea -> "[" + linea + "]").toList());
     }
 }
 ```
@@ -517,7 +803,7 @@ Entregá el record pattern con `_` de la demostración, el text block de la cons
 
 **Errores comunes:** nombrar bindings descartados con nombres reales que generan ruido de lint, usar `_` para un binding que SÍ se usa más adelante (no compila), asumir que `_` es una variable utilizable (es un marcador, no un identificador), y desalinear la comilla de cierre de un text block esperando que la sangría se ajuste sola.
 
-**Fuente oficial:** [JEP 456: Unnamed Variables & Patterns](https://openjdk.org/jeps/456) y [Unnamed Variables and Patterns](https://docs.oracle.com/en/java/javase/22/language/unnamed-variables-and-patterns.html).
+**Fuentes oficiales revisadas el 2026-11-01:** [JEP 456: Unnamed Variables & Patterns](https://openjdk.org/jeps/456) y [Unnamed Variables and Patterns (Java SE 27)](https://docs.oracle.com/en/java/javase/27/language/unnamed-variables-and-patterns.html).
 
 ---
 

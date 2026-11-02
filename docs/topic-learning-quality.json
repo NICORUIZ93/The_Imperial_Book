@@ -13,18 +13,18 @@
   ],
   "summary": {
     "android": {
-      "topics": 73,
-      "explanation": 73,
-      "code": 73,
+      "topics": 74,
+      "explanation": 74,
+      "code": 74,
       "visual": 67,
-      "filePath": 73,
-      "runCommand": 73,
-      "expectedResult": 73,
-      "practice": 73,
-      "project": 73,
-      "modelMental": 73,
-      "limitsDecision": 73,
-      "practicable": 73,
+      "filePath": 74,
+      "runCommand": 74,
+      "expectedResult": 74,
+      "practice": 74,
+      "project": 74,
+      "modelMental": 74,
+      "limitsDecision": 74,
+      "practicable": 74,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
@@ -80,7 +80,7 @@
       "topics": 63,
       "explanation": 63,
       "code": 63,
-      "visual": 52,
+      "visual": 54,
       "filePath": 63,
       "runCommand": 63,
       "expectedResult": 63,
@@ -93,18 +93,18 @@
       "repeatedDemo": 0
     },
     "foundations": {
-      "topics": 99,
-      "explanation": 99,
-      "code": 99,
-      "visual": 74,
-      "filePath": 99,
-      "runCommand": 99,
-      "expectedResult": 99,
-      "practice": 99,
-      "project": 99,
-      "modelMental": 99,
-      "limitsDecision": 99,
-      "practicable": 99,
+      "topics": 100,
+      "explanation": 100,
+      "code": 100,
+      "visual": 75,
+      "filePath": 100,
+      "runCommand": 100,
+      "expectedResult": 100,
+      "practice": 100,
+      "project": 100,
+      "modelMental": 100,
+      "limitsDecision": 100,
+      "practicable": 100,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
@@ -125,18 +125,18 @@
       "repeatedDemo": 0
     },
     "java": {
-      "topics": 95,
-      "explanation": 95,
-      "code": 95,
-      "visual": 38,
-      "filePath": 95,
-      "runCommand": 95,
-      "expectedResult": 95,
-      "practice": 95,
-      "project": 95,
-      "modelMental": 95,
-      "limitsDecision": 95,
-      "practicable": 95,
+      "topics": 98,
+      "explanation": 98,
+      "code": 98,
+      "visual": 43,
+      "filePath": 98,
+      "runCommand": 98,
+      "expectedResult": 98,
+      "practice": 98,
+      "project": 97,
+      "modelMental": 98,
+      "limitsDecision": 98,
+      "practicable": 97,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
@@ -176,7 +176,7 @@
       "topics": 77,
       "explanation": 77,
       "code": 77,
-      "visual": 30,
+      "visual": 32,
       "filePath": 77,
       "runCommand": 77,
       "expectedResult": 77,
@@ -224,7 +224,7 @@
       "topics": 91,
       "explanation": 91,
       "code": 91,
-      "visual": 73,
+      "visual": 74,
       "filePath": 91,
       "runCommand": 91,
       "expectedResult": 91,
@@ -329,7 +329,29 @@
       },
       {
         "module": 0,
-        "topic": "Tema 5: Coroutines — asincronía sin bloquear la UI",
+        "topic": "Tema 5: Lambdas y funciones de orden superior en Kotlin — contratos, captura y receptores · Intermedio · 120 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 0,
+        "topic": "Tema 6: Coroutines — asincronía sin bloquear la UI",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -9713,7 +9735,7 @@
         "criteria": {
           "explanation": true,
           "code": true,
-          "visual": false,
+          "visual": true,
           "filePath": true,
           "runCommand": true,
           "expectedResult": true,
@@ -9723,7 +9745,7 @@
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 14,
+          "rubricScore": 16,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -9735,7 +9757,7 @@
         "criteria": {
           "explanation": true,
           "code": true,
-          "visual": false,
+          "visual": true,
           "filePath": true,
           "runCommand": true,
           "expectedResult": true,
@@ -9745,7 +9767,7 @@
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 14,
+          "rubricScore": 16,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -11075,7 +11097,29 @@
     "foundations": [
       {
         "module": 0,
-        "topic": "Tema 1: Del hardware al programa en ejecución",
+        "topic": "Tema 1: Computador, sistema operativo, programa y proceso · Básico · 90 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 0,
+        "topic": "Tema 2: Del archivo fuente al programa en ejecución",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -11097,7 +11141,7 @@
       },
       {
         "module": 0,
-        "topic": "Tema 2: Archivos, carpetas y rutas sin perderse",
+        "topic": "Tema 3: Archivos, carpetas y rutas sin perderse",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -11119,7 +11163,7 @@
       },
       {
         "module": 0,
-        "topic": "Tema 3: Cómo leer un comando antes de ejecutarlo",
+        "topic": "Tema 4: Cómo leer un comando antes de ejecutarlo",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -11141,7 +11185,7 @@
       },
       {
         "module": 0,
-        "topic": "Tema 4: Primer programa, primer error y primera evidencia",
+        "topic": "Tema 5: Primer programa, primer error y primera evidencia",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -12571,7 +12615,7 @@
       },
       {
         "module": 3,
-        "topic": "Tema 5: HTML semántico y CSS responsive desde un archivo vacío",
+        "topic": "Tema 5: Proyecto integrador — sitio de seguimiento accesible",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -14559,7 +14603,7 @@
         "criteria": {
           "explanation": true,
           "code": true,
-          "visual": false,
+          "visual": true,
           "filePath": true,
           "runCommand": true,
           "expectedResult": true,
@@ -14569,7 +14613,7 @@
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 14,
+          "rubricScore": 16,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -14581,7 +14625,7 @@
         "criteria": {
           "explanation": true,
           "code": true,
-          "visual": false,
+          "visual": true,
           "filePath": true,
           "runCommand": true,
           "expectedResult": true,
@@ -14591,7 +14635,7 @@
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 14,
+          "rubricScore": 16,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -14603,7 +14647,7 @@
         "criteria": {
           "explanation": true,
           "code": true,
-          "visual": false,
+          "visual": true,
           "filePath": true,
           "runCommand": true,
           "expectedResult": true,
@@ -14613,7 +14657,7 @@
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 14,
+          "rubricScore": 16,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -14625,7 +14669,7 @@
         "criteria": {
           "explanation": true,
           "code": true,
-          "visual": false,
+          "visual": true,
           "filePath": true,
           "runCommand": true,
           "expectedResult": true,
@@ -14635,7 +14679,7 @@
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 14,
+          "rubricScore": 16,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -14647,7 +14691,7 @@
         "criteria": {
           "explanation": true,
           "code": true,
-          "visual": false,
+          "visual": true,
           "filePath": true,
           "runCommand": true,
           "expectedResult": true,
@@ -14657,7 +14701,7 @@
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 14,
+          "rubricScore": 16,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -15456,6 +15500,50 @@
         }
       },
       {
+        "module": 18,
+        "topic": "Tema 3: Sockets TCP y UDP — la red que hay debajo de HttpClient · Avanzado · 2 h",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 18,
+        "topic": "Tema 4: Seguridad defensiva — hash, HMAC, firma y cifrado · Avanzado · 2 h 30 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 19,
         "topic": "Tema 1: Reflexión y anotaciones en tiempo de ejecución · Intermedio · 90 min",
         "criteria": {
@@ -15677,7 +15765,29 @@
       },
       {
         "module": 20,
-        "topic": "Tema 1: Las cuatro formas: Predicate, Function, Consumer y Supplier · Básico · 75 min",
+        "topic": "Tema 1: Lambdas a fondo — tipo objetivo, captura y referencias a métodos · Intermedio · 120 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 12,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 20,
+        "topic": "Tema 2: Las cuatro formas: Predicate, Function, Consumer y Supplier · Básico · 75 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -15699,7 +15809,7 @@
       },
       {
         "module": 20,
-        "topic": "Tema 2: Componer sin anidar: andThen, compose, negate y reglas encadenadas · Intermedio · 75 min",
+        "topic": "Tema 3: Componer sin anidar: andThen, compose, negate y reglas encadenadas · Intermedio · 75 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -15721,7 +15831,7 @@
       },
       {
         "module": 20,
-        "topic": "Tema 3: Streams como composición: pereza, orden y efectos que se esconden · Intermedio · 90 min",
+        "topic": "Tema 4: Streams como composición: pereza, orden y efectos que se esconden · Intermedio · 90 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19801,7 +19911,7 @@
         "criteria": {
           "explanation": true,
           "code": true,
-          "visual": false,
+          "visual": true,
           "filePath": true,
           "runCommand": true,
           "expectedResult": true,
@@ -19811,7 +19921,7 @@
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 14,
+          "rubricScore": 16,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -19823,7 +19933,7 @@
         "criteria": {
           "explanation": true,
           "code": true,
-          "visual": false,
+          "visual": true,
           "filePath": true,
           "runCommand": true,
           "expectedResult": true,
@@ -19833,7 +19943,7 @@
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 14,
+          "rubricScore": 16,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -24163,7 +24273,7 @@
         "criteria": {
           "explanation": true,
           "code": true,
-          "visual": false,
+          "visual": true,
           "filePath": true,
           "runCommand": true,
           "expectedResult": true,
@@ -24173,7 +24283,7 @@
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 14,
+          "rubricScore": 16,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false

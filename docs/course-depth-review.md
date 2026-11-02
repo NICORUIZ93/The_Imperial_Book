@@ -6,14 +6,14 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 
 | Curso | Temas | Con señales | Prioridad de secuencia | Evidencia requerida |
 |---|---:|---:|---|---|
-| foundations | 99 | 13 | HTML/CSS antes de frameworks; archivos y ejecución antes de persistencia avanzada | Interfaz semántica operable por teclado, algoritmo con casos límite y SQL reproducible |
+| foundations | 100 | 13 | HTML/CSS antes de frameworks; archivos y ejecución antes de persistencia avanzada | Interfaz semántica operable por teclado, algoritmo con casos límite y SQL reproducible |
 | javascript | 88 | 6 | Formularios, DOM y errores de red antes de patrones avanzados | Cliente que conserva entrada, anuncia errores y distingue cancelación de fallo |
 | node | 77 | 7 | HTTP y validación antes de autenticación e integraciones | API con límites de carga, paginación estable, pruebas y cierre ordenado |
 | angular | 71 | 3 | HTML/CSS/TypeScript explícitos; RxJS y estado con ejemplos completos | Rutas, formularios, datos remotos y cambios sin guardar comprobados con navegador |
 | react | 58 | 46 | JSX y estado antes de efectos; proveedor, dependencias y API visibles | Carga, error, vacío y carrera de respuestas; caché observada, no supuesta |
-| java | 95 | 11 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
+| java | 98 | 11 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
 | spring-boot | 91 | 3 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
-| android | 73 | 1 | Kotlin antes de Compose; distinguir recomposición, recreación y muerte de proceso | App instalable con permisos, restauración, persistencia y pruebas en dispositivo |
+| android | 74 | 1 | Kotlin antes de Compose; distinguir recomposición, recreación y muerte de proceso | App instalable con permisos, restauración, persistencia y pruebas en dispositivo |
 | ios | 56 | 4 | Swift antes de SwiftUI; explicitar macOS/Xcode y destino | Cancelación, estados de red, persistencia y accesibilidad comprobados en simulador |
 | flutter | 63 | 4 | Dart antes de widgets; ejemplo con main y destino de ejecución | Restauración, red, pruebas de widget, integración y publicación por plataforma |
 | kotlin-multiplatform | 56 | 2 | Kotlin y source sets antes de interoperabilidad | Política común sin dependencias nativas; reloj controlado y pruebas por destino |
@@ -23,7 +23,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 
 ## Registro tema por tema
 
-Revisión humana firmada: 0/1141 temas. Pre-lectura registrada sin firma: 14. La pre-lectura no acredita ejecución, comprensión ni calidad pedagógica; consulta `docs/manual-review-log.md`.
+Revisión humana firmada: 0/1146 temas. Pre-lectura registrada sin firma: 14. La pre-lectura no acredita ejecución, comprensión ni calidad pedagógica; consulta `docs/manual-review-log.md`.
 Los laboratorios nuevos tienen una verificación técnica separada; la ejecución correcta tampoco demuestra comprensión.
 
 | Curso / módulo | Tema | Señales para revisar |
@@ -32,7 +32,8 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | android / 0 | [Tema 2: Recursos externalizados](../web/public/content/android/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | android / 0 | [Tema 3: AndroidManifest.xml y módulos Gradle](../web/public/content/android/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | android / 0 | [Tema 4: Kotlin esencial para Android — lo que usarás en cada pantalla](../web/public/content/android/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| android / 0 | [Tema 5: Coroutines — asincronía sin bloquear la UI](../web/public/content/android/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
+| android / 0 | [Tema 5: Lambdas y funciones de orden superior en Kotlin — contratos, captura y receptores · Intermedio · 120 min](../web/public/content/android/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
+| android / 0 | [Tema 6: Coroutines — asincronía sin bloquear la UI](../web/public/content/android/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | android / 1 | [Tema 1: Ciclo de vida de una Activity](../web/public/content/android/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
 | android / 1 | [Tema 2: ViewModel sobrevive a la rotación](../web/public/content/android/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
 | android / 1 | [Tema 3: SavedStateHandle](../web/public/content/android/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
@@ -520,10 +521,11 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | flutter / 9 | [Tema 1: Unit tests y widget tests](../web/public/content/flutter/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 9 | [Tema 2: Mocking con mocktail](../web/public/content/flutter/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 9 | [Tema 3: Integration tests](../web/public/content/flutter/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
-| foundations / 0 | [Tema 1: Del hardware al programa en ejecución](../web/public/content/foundations/modulo-0.md) | demostracion-no-delimitada |
-| foundations / 0 | [Tema 2: Archivos, carpetas y rutas sin perderse](../web/public/content/foundations/modulo-0.md) | ejemplo-breve-revisar-contexto |
-| foundations / 0 | [Tema 3: Cómo leer un comando antes de ejecutarlo](../web/public/content/foundations/modulo-0.md) | ejemplo-breve-revisar-contexto |
-| foundations / 0 | [Tema 4: Primer programa, primer error y primera evidencia](../web/public/content/foundations/modulo-0.md) | ejemplo-breve-revisar-contexto |
+| foundations / 0 | [Tema 1: Computador, sistema operativo, programa y proceso · Básico · 90 min](../web/public/content/foundations/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
+| foundations / 0 | [Tema 2: Del archivo fuente al programa en ejecución](../web/public/content/foundations/modulo-0.md) | demostracion-no-delimitada |
+| foundations / 0 | [Tema 3: Archivos, carpetas y rutas sin perderse](../web/public/content/foundations/modulo-0.md) | ejemplo-breve-revisar-contexto |
+| foundations / 0 | [Tema 4: Cómo leer un comando antes de ejecutarlo](../web/public/content/foundations/modulo-0.md) | ejemplo-breve-revisar-contexto |
+| foundations / 0 | [Tema 5: Primer programa, primer error y primera evidencia](../web/public/content/foundations/modulo-0.md) | ejemplo-breve-revisar-contexto |
 | foundations / 0 | [Tema complementario: VS Code, comandos y atajos comprobables](../web/public/content/foundations/modulo-0.md) | ejemplo-breve-revisar-contexto |
 | foundations / 1 | [Tema 1: Del problema al algoritmo y a los casos de prueba](../web/public/content/foundations/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 1 | [Tema 2: Variables, tipos, expresiones y cambios de estado](../web/public/content/foundations/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
@@ -588,17 +590,17 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | foundations / 3 | [Tema 2: HTTP como contrato observable](../web/public/content/foundations/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 3 | [Tema 3: HTML semántico, formularios y el DOM](../web/public/content/foundations/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 3 | [Tema 4: CSS, layout responsive y accesibilidad verificable](../web/public/content/foundations/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
-| foundations / 3 | [Tema 5: HTML semántico y CSS responsive desde un archivo vacío](../web/public/content/foundations/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
+| foundations / 3 | [Tema 5: Proyecto integrador — sitio de seguimiento accesible](../web/public/content/foundations/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 4 | [Tema 1: Del mundo real al modelo relacional](../web/public/content/foundations/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 4 | [Tema 2: SQL para definir, escribir, consultar y relacionar](../web/public/content/foundations/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
-| foundations / 4 | [Tema 3: Índices, restricciones y planes de consulta](../web/public/content/foundations/modulo-4.md) | ejemplo-breve-revisar-contexto |
+| foundations / 4 | [Tema 3: Índices, restricciones y planes de consulta](../web/public/content/foundations/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 4 | [Tema 4: Transacciones, concurrencia y elección SQL/NoSQL](../web/public/content/foundations/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 4 | [Tema 5: SQL avanzado: subconsultas, vistas, triggers y funciones de ventana](../web/public/content/foundations/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 4 | [Tema 6: Procedimientos almacenados, funciones y cursores con PL/pgSQL](../web/public/content/foundations/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 4 | [Tema 7: De SQL a Excel: reportes con tablas y fórmulas vivas](../web/public/content/foundations/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 5 | [Tema 1: Depurar con evidencia, no con cambios aleatorios](../web/public/content/foundations/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 5 | [Tema 2: Pruebas con propósito y niveles adecuados](../web/public/content/foundations/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
-| foundations / 5 | [Tema 3: Git como historial de decisiones y colaboración](../web/public/content/foundations/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
+| foundations / 5 | [Tema 3: Git como historial de decisiones y colaboración](../web/public/content/foundations/modulo-5.md) | ejemplo-breve-revisar-contexto |
 | foundations / 5 | [Tema 4: Calidad estática, revisión e integración continua](../web/public/content/foundations/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 6 | [Tema 1: Activos, amenazas, riesgos y límites de confianza](../web/public/content/foundations/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 6 | [Tema 2: Identidad, contraseñas, sesiones y autorización](../web/public/content/foundations/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
@@ -683,7 +685,7 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | java / 0 | [Tema 6: Operadores, precedencia y control de flujo · Intermedio · 45 min](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 0 | [Tema 7: Arreglos, wrappers y paso de argumentos · Intermedio · 45 min](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 0 | [Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`) · Intermedio · 50 min](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 1 | [Tema 1: Clases, objetos, constructores y encapsulación · Básico · 40 min](../web/public/content/java/modulo-1.md) | clase-java-no-visible |
+| java / 1 | [Tema 1: Clases, objetos, constructores y encapsulación · Básico · 40 min](../web/public/content/java/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 1 | [Tema 2: Herencia y sobreescritura · Intermedio · 1 h](../web/public/content/java/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 1 | [Tema 3: Interfaces, clases abstractas y cuándo usar cada una · Intermedio · 50 min](../web/public/content/java/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 1 | [Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso · Intermedio · 55 min](../web/public/content/java/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
@@ -719,6 +721,8 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | java / 17 | [Tema 2: Transacciones, ACID y aislamiento · Avanzado · 1 h 15 min](../web/public/content/java/modulo-17.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 18 | [Tema 1: HttpClient, REST, timeouts y fallos · Intermedio · 2 h](../web/public/content/java/modulo-18.md) | clase-java-no-visible |
 | java / 18 | [Tema 2: Tokens, validación y límites de seguridad · Avanzado · 2 h](../web/public/content/java/modulo-18.md) | clase-java-no-visible |
+| java / 18 | [Tema 3: Sockets TCP y UDP — la red que hay debajo de HttpClient · Avanzado · 2 h](../web/public/content/java/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 18 | [Tema 4: Seguridad defensiva — hash, HMAC, firma y cifrado · Avanzado · 2 h 30 min](../web/public/content/java/modulo-18.md) | clase-java-no-visible |
 | java / 19 | [Tema 1: Reflexión y anotaciones en tiempo de ejecución · Intermedio · 90 min](../web/public/content/java/modulo-19.md) | clase-java-no-visible |
 | java / 19 | [Tema 2: Expresiones regulares con Pattern y Matcher · Intermedio · 90 min](../web/public/content/java/modulo-19.md) | clase-java-no-visible |
 | java / 19 | [Tema 3: Dinero exacto con BigDecimal · Básico · 75 min](../web/public/content/java/modulo-19.md) | clase-java-no-visible |
@@ -729,9 +733,10 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | java / 2 | [Tema 1: List, Set, Map y sus implementaciones · Básico · 45 min](../web/public/content/java/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 2 | [Tema 2: Genéricos, wildcards y type erasure · Intermedio · 45 min](../web/public/content/java/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 2 | [Tema 3: Comparable vs Comparator, e iteración · Intermedio · 50 min](../web/public/content/java/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 20 | [Tema 1: Las cuatro formas: Predicate, Function, Consumer y Supplier · Básico · 75 min](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 20 | [Tema 2: Componer sin anidar: andThen, compose, negate y reglas encadenadas · Intermedio · 75 min](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 20 | [Tema 3: Streams como composición: pereza, orden y efectos que se esconden · Intermedio · 90 min](../web/public/content/java/modulo-20.md) | clase-java-no-visible |
+| java / 20 | [Tema 1: Lambdas a fondo — tipo objetivo, captura y referencias a métodos · Intermedio · 120 min](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 20 | [Tema 2: Las cuatro formas: Predicate, Function, Consumer y Supplier · Básico · 75 min](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 20 | [Tema 3: Componer sin anidar: andThen, compose, negate y reglas encadenadas · Intermedio · 75 min](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 20 | [Tema 4: Streams como composición: pereza, orden y efectos que se esconden · Intermedio · 90 min](../web/public/content/java/modulo-20.md) | clase-java-no-visible |
 | java / 21 | [Tema 1: Qué es la superficie pública de una API · Básico · 40 min](../web/public/content/java/modulo-21.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 21 | [Tema 2: Compatibilidad binaria frente a compatibilidad de fuente · Intermedio · 45 min](../web/public/content/java/modulo-21.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 21 | [Tema 3: Evolucionar sin romper: default methods, deprecación y retirada · Intermedio · 45 min](../web/public/content/java/modulo-21.md) | Sin señales de estos detectores; revisión pendiente |
