@@ -3,9 +3,9 @@
 > Las señales automáticas no prueban profundidad ni ausencia de ella. Un tema sólo queda revisado mediante el registro humano con mapa de subtemas críticos, evidencia y fuentes.
 
 - Temas inventariados: 1159
-- Revisados humanamente para subtemas: 94
-- Pendientes: 1065
-- Candidatos prioritarios por señales: 1022
+- Revisados humanamente para subtemas: 101
+- Pendientes: 1058
+- Candidatos prioritarios por señales: 1015
 
 ## Cobertura por track
 
@@ -18,7 +18,7 @@
 | flutter | 63 | 0 | 63 |
 | foundations | 100 | 0 | 100 |
 | ios | 56 | 0 | 56 |
-| java | 109 | 92 | 17 |
+| java | 109 | 99 | 10 |
 | javascript | 88 | 0 | 88 |
 | kotlin-multiplatform | 56 | 0 | 56 |
 | node | 77 | 0 | 77 |
@@ -654,13 +654,6 @@
 - `ios/modulo-9` — Tema 1: XCTest clásico y Swift Testing — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `ios/modulo-9` — Tema 2: Testing de código async — lista conceptos clave sin mapa interno verificable
 - `ios/modulo-9` — Tema 3: UI Tests con XCUITest — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `java/modulo-19` — Tema 1: Reflexión y anotaciones en tiempo de ejecución · Intermedio · 90 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `java/modulo-19` — Tema 2: Expresiones regulares con Pattern y Matcher · Intermedio · 90 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `java/modulo-19` — Tema 3: Dinero exacto con BigDecimal · Básico · 75 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `java/modulo-19` — Tema 4: Assertions y diseño por contrato · Intermedio · 75 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `java/modulo-19` — Tema 5: ServiceLoader: plugins sin acoplar implementaciones · Avanzado · 2 h — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `java/modulo-19` — Tema 6: Proxies dinámicos: así funcionan @Transactional y los mocks · Avanzado · 90 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `java/modulo-19` — Tema 7: Internacionalización: números, monedas, fechas y orden de texto · Intermedio · 90 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `java/modulo-21` — Tema 1: Qué es la superficie pública de una API · Básico · 40 min — lista conceptos clave sin mapa interno verificable
 - `java/modulo-21` — Tema 2: Compatibilidad binaria frente a compatibilidad de fuente · Intermedio · 45 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `java/modulo-21` — Tema 3: Evolucionar sin romper: default methods, deprecación y retirada · Intermedio · 45 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
@@ -1100,6 +1093,13 @@
 - `java/modulo-18` — Tema 2: Tokens, validación y límites de seguridad · Avanzado · 2 h — autenticación vs autorización por objeto; bearer en header Authorization, sin loguearlo; validar entrada en cada frontera; JWT/OAuth2/OIDC: qué resuelve cada uno; SSRF: validar esquema, host y DNS; parametrización != autorización; no criptografía propia
 - `java/modulo-18` — Tema 3: Sockets TCP y UDP — la red que hay debajo de HttpClient · Avanzado · 2 h — modelo cliente/servidor y puertos; ServerSocket y accept(); Socket y streams de I/O con charset explícito; TCP fiable, ordenado, orientado a conexión; UDP DatagramSocket/DatagramPacket; TCP frente a UDP; timeouts de socket (setSoTimeout); cierre de recursos y puerto ocupado; un cliente por hilo frente a virtual threads
 - `java/modulo-18` — Tema 4: Seguridad defensiva — hash, HMAC, firma y cifrado · Avanzado · 2 h 30 min — hash criptográfico (MessageDigest); comparación en tiempo constante (MessageDigest.isEqual); hash no sirve para contraseñas; HMAC (Mac); firma digital (Signature, par de claves); cifrado simétrico AES-GCM (Cipher); IV/nonce único y gestión de claves; hash vs HMAC vs firma vs cifrado
+- `java/modulo-19` — Tema 1: Reflexión y anotaciones en tiempo de ejecución · Intermedio · 90 min — Class<?> y descriptores (Field, Method); @Retention(RUNTIME) para ver anotaciones; isAnnotationPresent y getAnnotation; setAccessible(true) y opens (JPMS); invocar por nombre (Method.invoke); coste y optimización del acceso reflectivo; no usar reflexión en lógica de negocio
+- `java/modulo-19` — Tema 2: Expresiones regulares con Pattern y Matcher · Intermedio · 90 min — Pattern compilado una vez, reutilizable; clases, cuantificadores y límites (\b, {6}); grupos con nombre (?<ciudad>...); find() vs matches(); escapes en literal Java (\\d); replaceAll con referencias ${nombre}; ReDoS por backtracking catastrófico
+- `java/modulo-19` — Tema 3: Dinero exacto con BigDecimal · Básico · 75 min — double es binario inexacto para dinero; construir desde String, no double; escala y RoundingMode explícitos; HALF_UP comercial vs HALF_EVEN bancario; equals vs compareTo; reparto que cuadra al total; cuándo double sí sirve
+- `java/modulo-19` — Tema 4: Assertions y diseño por contrato · Intermedio · 75 min — precondición pública con excepción; invariante interna con assert; -ea activa las assertions (off por defecto); postcondición al final del método; localizar la invariante rota; assert nunca para datos externos; assert sin efectos secundarios necesarios
+- `java/modulo-19` — Tema 5: ServiceLoader: plugins sin acoplar implementaciones · Avanzado · 2 h — servicio = interfaz; proveedor = implementación; descriptor META-INF/services/<interfaz>; constructor público sin argumentos; ServiceLoader.load descubre e instancia perezoso; extender sin tocar el consumidor; descriptor ausente => 0 proveedores (sin error); uses/provides en JPMS
+- `java/modulo-19` — Tema 6: Proxies dinámicos: así funcionan @Transactional y los mocks · Avanzado · 90 min — Proxy.newProxyInstance genera una clase; InvocationHandler.invoke intercepta todo; delegar en el objeto real; desenvolver InvocationTargetException; proxy JDK solo con interfaces; auto-invocación no pasa por el proxy; cuándo un Decorator manual es mejor
+- `java/modulo-19` — Tema 7: Internacionalización: números, monedas, fechas y orden de texto · Intermedio · 90 min — Locale (idioma+región) con forLanguageTag/of; NumberFormat número y moneda por región; DateTimeFormatter.ofLocalizedDate; Collator ordena por idioma, no Unicode; MessageFormat con choice (plurales); ResourceBundle separa textos por idioma; localizar es presentación, no intercambio
 - `java/modulo-2` — Tema 1: List, Set, Map y sus implementaciones · Básico · 45 min — List y sus implementaciones (ArrayList/LinkedList); complejidad Big-O; Set y unicidad; equals/hashCode como contrato; orden de iteración por implementación; Map y sus implementaciones; colecciones inmutables (List.of); iteración y ConcurrentModificationException; medición informal vs benchmark
 - `java/modulo-2` — Tema 2: Genéricos, wildcards y type erasure · Intermedio · 45 min — clase genérica <T>; seguridad de tipos en compilación; método genérico; bounded type parameter; wildcard ? extends (productor); wildcard ? super (consumidor, PECS); type erasure; límites del erasure (new T[], instanceof); raw types
 - `java/modulo-2` — Tema 3: Comparable vs Comparator, e iteración · Intermedio · 50 min — Comparable y orden natural; contrato de compareTo; el bug de la resta (a-b); Comparator externo; Comparator.comparing y key extractor; encadenar thenComparing/reversed; orden con nulos (nullsFirst); consistencia compareTo/equals; iterar Map con entrySet()

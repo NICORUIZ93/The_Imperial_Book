@@ -117,6 +117,48 @@
         "https://formulae.brew.sh/cask/temurin"
       ]
     },
+    "java/modulo-19::Tema 1: Reflexión y anotaciones en tiempo de ejecución · Intermedio · 90 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: Reflexion lista campos de Envio con obligatorio=true/false por @Obligatorio(RUNTIME), valida por reflexión sin conocer la clase (reporta guia/destino obligatorios), e invoca toUpperCase por nombre (ENTREGADO). Sin @Retention(RUNTIME) todos darían false (documentado).",
+      "criticalSubtopics": ["Class<?> y descriptores (Field, Method)", "@Retention(RUNTIME) para ver anotaciones", "isAnnotationPresent y getAnnotation", "setAccessible(true) y opens (JPMS)", "invocar por nombre (Method.invoke)", "coste y optimización del acceso reflectivo", "no usar reflexión en lógica de negocio"],
+      "sources": ["https://dev.java/learn/reflection/", "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/reflect/package-summary.html"]
+    },
+    "java/modulo-19::Tema 2: Expresiones regulares con Pattern y Matcher · Intermedio · 90 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: Regex extrae guías con grupos con nombre (BO-004512/CA-998001), cuenta por ciudad {BO=1, CA=1}, rechaza bo-1 y ME-12345 (formato), valida correos con matches, y enmascara con replaceAll ${ciudad}-******. Se documenta ReDoS y el escape \\d en literal Java.",
+      "criticalSubtopics": ["Pattern compilado una vez, reutilizable", "clases, cuantificadores y límites (\\b, {6})", "grupos con nombre (?<ciudad>...)", "find() vs matches()", "escapes en literal Java (\\\\d)", "replaceAll con referencias ${nombre}", "ReDoS por backtracking catastrófico"],
+      "sources": ["https://dev.java/learn/regex/", "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/regex/Pattern.html"]
+    },
+    "java/modulo-19::Tema 3: Dinero exacto con BigDecimal · Básico · 75 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: Dinero confirma double 0.10*10=0.9999999999999999 != 1.0 vs BigDecimal 1.00; new BigDecimal(0.1) revela la cola binaria; divide con escala 2 y HALF_EVEN da 33333.33; equals (valor+escala) 2.0!=2.00 pero compareTo=0. Sin escala la división lanza ArithmeticException (documentado).",
+      "criticalSubtopics": ["double es binario inexacto para dinero", "construir desde String, no double", "escala y RoundingMode explícitos", "HALF_UP comercial vs HALF_EVEN bancario", "equals vs compareTo", "reparto que cuadra al total", "cuándo double sí sirve"],
+      "sources": ["https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/math/BigDecimal.html", "https://dev.java/learn/numbers-strings/"]
+    },
+    "java/modulo-19::Tema 4: Assertions y diseño por contrato · Intermedio · 75 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: Contratos imprime 'Assertions activas: false' sin -ea y 'true' con -ea; precondiciones públicas (kilos<=0, excede capacidad) lanzan excepciones en ambos modos; una invariante rota solo se detecta con -ea (AssertionError documentado).",
+      "criticalSubtopics": ["precondición pública con excepción", "invariante interna con assert", "-ea activa las assertions (off por defecto)", "postcondición al final del método", "localizar la invariante rota", "assert nunca para datos externos", "assert sin efectos secundarios necesarios"],
+      "sources": ["https://docs.oracle.com/javase/8/docs/technotes/guides/language/assert.html", "https://dev.java/learn/exceptions/"]
+    },
+    "java/modulo-19::Tema 5: ServiceLoader: plugins sin acoplar implementaciones · Avanzado · 2 h": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: Cotizador con ServiceLoader descubre 2 proveedores vía META-INF/services (Moto 14000, Camión 20000 COP) sin hacer new de ellos; compilado sin copiar META-INF descubre 0 proveedores sin lanzar excepción (diagnóstico de classpath).",
+      "criticalSubtopics": ["servicio = interfaz; proveedor = implementación", "descriptor META-INF/services/<interfaz>", "constructor público sin argumentos", "ServiceLoader.load descubre e instancia perezoso", "extender sin tocar el consumidor", "descriptor ausente => 0 proveedores (sin error)", "uses/provides en JPMS"],
+      "sources": ["https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/ServiceLoader.html", "https://dev.java/learn/modules/"]
+    },
+    "java/modulo-19::Tema 6: Proxies dinámicos: así funcionan @Transactional y los mocks · Avanzado · 90 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: Proxies confirma Proxy.isProxyClass=proxy dinámico; InvocationHandler registra [log] antes/después de delegar (cotizar=7400, moneda=COP); al fallar el método real, relanzar e.getCause() conserva IllegalArgumentException ('máximo 30 kg') en el llamador.",
+      "criticalSubtopics": ["Proxy.newProxyInstance genera una clase", "InvocationHandler.invoke intercepta todo", "delegar en el objeto real", "desenvolver InvocationTargetException", "proxy JDK solo con interfaces", "auto-invocación no pasa por el proxy", "cuándo un Decorator manual es mejor"],
+      "sources": ["https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/reflect/Proxy.html", "https://docs.spring.io/spring-framework/reference/core/aop/proxying.html"]
+    },
+    "java/modulo-19::Tema 7: Internacionalización: números, monedas, fechas y orden de texto · Intermedio · 90 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: Formatos muestra el mismo valor como 1.234.567,891 (es-CO), 1,234,567.891 (en-US); fechas '28 de octubre de 2026'/'October 28, 2026'/'28. Oktober 2026'; Collator ordena [Álamos, Bosa, ..., Ñuñoa, Usaquén] (frente a compareTo que deja Álamos/Ñuñoa al final); MessageFormat choice resuelve plurales 0/1/1500.",
+      "criticalSubtopics": ["Locale (idioma+región) con forLanguageTag/of", "NumberFormat número y moneda por región", "DateTimeFormatter.ofLocalizedDate", "Collator ordena por idioma, no Unicode", "MessageFormat con choice (plurales)", "ResourceBundle separa textos por idioma", "localizar es presentación, no intercambio"],
+      "sources": ["https://docs.oracle.com/en/java/javase/27/intl/internationalization-overview.html", "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/Locale.html"]
+    },
     "java/modulo-18::Tema 1: HttpClient, REST, timeouts y fallos · Intermedio · 2 h": {
       "status": "reviewed", "reviewDate": "2026-11-02",
       "execution": "Temurin 27.0.1: ServidorSalud (com.sun.net.httpserver) + ConsultaDireccion (java.net.http.HttpClient) ejecutados en procesos separados: health={\"estado\":\"ok\"} (200), missing=HTTP 404, slow=timeout acotado (HttpTimeoutException con timeout de solicitud < 5s de /slow). Transporte separado del cuerpo (valida statusCode antes de body).",
