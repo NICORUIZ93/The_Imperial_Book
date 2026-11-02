@@ -1,9 +1,9 @@
 {
   "summary": {
     "topics": 1159,
-    "reviewed": 82,
-    "pending": 1077,
-    "priorityCandidates": 1031,
+    "reviewed": 88,
+    "pending": 1071,
+    "priorityCandidates": 1028,
     "byTrack": {
       "android": {
         "topics": 74,
@@ -42,8 +42,8 @@
       },
       "java": {
         "topics": 109,
-        "reviewed": 80,
-        "pending": 29
+        "reviewed": 86,
+        "pending": 23
       },
       "javascript": {
         "topics": 88,
@@ -10983,69 +10983,171 @@
       "track": "java",
       "module": 15,
       "topic": "Tema 1: Maven avanzado · Avanzado · 55 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Temurin 27.0.1: verificado el núcleo ejecutable — reactor multi-módulo compila domain antes que app con dependencyManagement fijando versión sin añadir dependencia; dos rutas al mismo artefacto (directa y transitiva) confirmadas por classpath. Enforcer (requireJavaVersion/dependencyConvergence) es el plugin que detiene el build ante la divergencia que se reprodujo con versiones distintas; su activación requiere mvn (documentado).",
+        "criticalSubtopics": [
+          "reactor y orden de construcción",
+          "dependencyManagement fija versión sin añadir dependencia",
+          "BOM importado con scope import",
+          "convergencia de versiones transitivas",
+          "Enforcer requireJavaVersion",
+          "POM efectivo como fuente de verdad",
+          "perfiles solo para variantes de build, no secretos"
+        ],
+        "sources": [
+          "https://maven.apache.org/enforcer/maven-enforcer-plugin/",
+          "https://maven.apache.org/pom.html"
+        ]
+      }
     },
     {
       "id": "java/modulo-15::Tema 2: Gradle y builds reproducibles · Avanzado · 45 min",
       "track": "java",
       "module": 15,
       "topic": "Tema 2: Gradle y builds reproducibles · Avanzado · 45 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Temurin 27.0.1: dos empaquetados con 'jar --date=2026-01-01T00:00:00Z' producen SHA-256 idéntico (reproducible); sin --date los dos JAR difieren. Es el mecanismo subyacente que en Gradle expresan isPreserveFileTimestamps=false e isReproducibleFileOrder=true.",
+        "criticalSubtopics": [
+          "entradas no deterministas (timestamp, orden, ruta)",
+          "jar --date fija fechas",
+          "orden de entrada estable",
+          "equivalencia Gradle isPreserveFileTimestamps=false",
+          "wrapper y toolchain",
+          "dependency locking y verification metadata",
+          "caché solo fiable para tareas deterministas"
+        ],
+        "sources": [
+          "https://docs.gradle.org/current/userguide/build_cache.html",
+          "https://docs.oracle.com/en/java/javase/27/docs/specs/man/jar.html"
+        ]
+      }
     },
     {
       "id": "java/modulo-15::Tema 3: Proyectos multi-módulo sin ciclos · Experto · 1 h 15 min",
       "track": "java",
       "module": 15,
       "topic": "Tema 3: Proyectos multi-módulo sin ciclos · Experto · 1 h 15 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Temurin 27.0.1: reactor domain/application/infrastructure verificado — infra compila contra app+domain, pero domain con un import a infrastructure no compila ('package academia.infrastructure does not exist'): el build mismo impone la dirección. ArchUnit es la prueba adicional (sobre bytecode) que detecta la violación dentro de un módulo; su ejecución requiere mvn (documentado).",
+        "criticalSubtopics": [
+          "separación en capas domain/application/infrastructure/api",
+          "dirección de dependencias (infra->app)",
+          "puerto en application, adaptador en infrastructure",
+          "ArchUnit sobre bytecode detecta la violación real",
+          "freeOfCycles() entre slices",
+          "el build impide la dependencia inversa",
+          "un módulo por paquete es sobre-ingeniería"
+        ],
+        "sources": [
+          "https://www.archunit.org/",
+          "https://maven.apache.org/guides/mini/guide-multiple-modules.html"
+        ]
+      }
     },
     {
       "id": "java/modulo-15::Tema 4: JUnit 5, Mockito y assertions expresivas · Avanzado · 55 min",
       "track": "java",
       "module": 15,
       "topic": "Tema 4: JUnit 5, Mockito y assertions expresivas · Avanzado · 55 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Temurin 27.0.1 con JUnit 5 + Mockito + AssertJ (repo local .m2): ConfirmarEntregaTest pasa — fake en memoria con estado real + mock solo en la frontera de notificación; assertThat verifica estado de dominio (ENTREGADA) y verify confirma el contrato observable (notificacion.enviar).",
+        "criticalSubtopics": [
+          "fake con estado real vs mock de frontera",
+          "@ExtendWith(MockitoExtension) y @Mock",
+          "aserción de estado con AssertJ",
+          "verify del contrato observable",
+          "no mockear la clase bajo prueba",
+          "verifyNoMoreInteractions con criterio",
+          "ArgumentCaptor vs afirmar estado"
+        ],
+        "sources": [
+          "https://junit.org/junit5/docs/current/user-guide/",
+          "https://assertj.github.io/doc/"
+        ]
+      }
     },
     {
       "id": "java/modulo-15::Tema 5: Pruebas de integración reproducibles · Experto · 1 h",
       "track": "java",
       "module": 15,
       "topic": "Tema 5: Pruebas de integración reproducibles · Experto · 1 h",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Temurin 27.0.1 con PostgreSQL 17-alpine real (Docker) + driver JDBC 42.7.13 (repo local): el esquema guias se crea, el repositorio inserta y recupera, y los tipos NUMERIC(10,2)=1250.50 y DATE=2026-11-01 sobreviven ida y vuelta (monto preservado=true, fecha preservada=true). Testcontainers gestiona el ciclo del contenedor; el protocolo SQL/JDBC real es lo verificado.",
+        "criticalSubtopics": [
+          "Testcontainers inicia PostgreSQL versionado",
+          "Flyway crea el esquema con migración versionada",
+          "JDBC real con tipos NUMERIC/DATE",
+          "Surefire vs Failsafe (unit vs IT)",
+          "aislamiento de datos entre pruebas",
+          "esperar condición, no tiempo fijo",
+          "migración aplicada es inmutable"
+        ],
+        "sources": [
+          "https://java.testcontainers.org/",
+          "https://documentation.red-gate.com/flyway/"
+        ]
+      }
     },
     {
       "id": "java/modulo-15::Tema 6: SLF4J, Logback, MDC y logging estructurado · Avanzado · 55 min",
       "track": "java",
       "module": 15,
       "topic": "Tema 6: SLF4J, Logback, MDC y logging estructurado · Avanzado · 55 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Temurin 27.0.1 con slf4j-api 2.0.20 + logback 1.5 (repo local): con MDC.putCloseable el segundo evento NO hereda traceId (traceId=NONE); con MDC.put sin cerrar, en un pool de un solo hilo, el segundo evento SÍ hereda traceId=trace-A (contaminación del pool reproducida). El encoder JSON Logstash no estaba en el repo local; se verificó el mecanismo MDC con PatternLayout %X (documentado).",
+        "criticalSubtopics": [
+          "SLF4J fachada, Logback implementación",
+          "logging parametrizado {}",
+          "MDC asocia contexto al hilo",
+          "MDC.putCloseable restaura al cerrar",
+          "contaminación de MDC en pool reutilizado",
+          "encoder JSON para campos consultables",
+          "no registrar secretos ni duplicar stack traces"
+        ],
+        "sources": [
+          "https://logback.qos.ch/manual/mdc.html",
+          "https://www.slf4j.org/manual.html"
+        ]
+      }
     },
     {
       "id": "java/modulo-16::Tema 1: Entidades y relaciones JPA · Intermedio · 55 min",

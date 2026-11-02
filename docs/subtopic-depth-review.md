@@ -3,9 +3,9 @@
 > Las señales automáticas no prueban profundidad ni ausencia de ella. Un tema sólo queda revisado mediante el registro humano con mapa de subtemas críticos, evidencia y fuentes.
 
 - Temas inventariados: 1159
-- Revisados humanamente para subtemas: 82
-- Pendientes: 1077
-- Candidatos prioritarios por señales: 1031
+- Revisados humanamente para subtemas: 88
+- Pendientes: 1071
+- Candidatos prioritarios por señales: 1028
 
 ## Cobertura por track
 
@@ -18,7 +18,7 @@
 | flutter | 63 | 0 | 63 |
 | foundations | 100 | 0 | 100 |
 | ios | 56 | 0 | 56 |
-| java | 109 | 80 | 29 |
+| java | 109 | 86 | 23 |
 | javascript | 88 | 0 | 88 |
 | kotlin-multiplatform | 56 | 0 | 56 |
 | node | 77 | 0 | 77 |
@@ -654,9 +654,6 @@
 - `ios/modulo-9` — Tema 1: XCTest clásico y Swift Testing — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `ios/modulo-9` — Tema 2: Testing de código async — lista conceptos clave sin mapa interno verificable
 - `ios/modulo-9` — Tema 3: UI Tests con XCUITest — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `java/modulo-15` — Tema 2: Gradle y builds reproducibles · Avanzado · 45 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `java/modulo-15` — Tema 4: JUnit 5, Mockito y assertions expresivas · Avanzado · 55 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `java/modulo-15` — Tema 6: SLF4J, Logback, MDC y logging estructurado · Avanzado · 55 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `java/modulo-16` — Tema 1: Entidades y relaciones JPA · Intermedio · 55 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `java/modulo-16` — Tema 2: FetchType.LAZY, EAGER y el problema N+1 · Avanzado · 1 h — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `java/modulo-17` — Tema 1: JDBC, PreparedStatement y DAO · Intermedio · 1 h — título agrupa varios conceptos; menos de dos encabezados semánticos internos
@@ -1095,6 +1092,12 @@
 - `java/modulo-14` — Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo · Experto · 65 min — dead code elimination del JIT; consumir resultado: retorno vs Blackhole; warmup, forks e iteraciones; @State/@Setup/@Param; procesador de anotaciones genera BenchmarkList; Score vs Error (distribución); microbenchmark != latencia de usuario
 - `java/modulo-14` — Tema 3: Deserializar es permitir construcción y comportamiento · Experto · 60 min — deserialización ejecuta construcción, no solo lectura; allowlist por patrón terminada en !*; java.base/* necesario para tipos internos; límites maxdepth/maxrefs/maxbytes; el filtro no sustituye validación del DTO; preferir JSON con DTO cerrado; allowlist, no denylist de gadgets
 - `java/modulo-14` — Tema 4: El runtime es parte del artefacto y necesita ciclo de vida · Experto · 60 min — jdeps --print-module-deps descubre módulos; jlink enlaza una imagen autocontenida; módulo ausente => fallo en ejecución; detección estática no ve reflexión/ServiceLoader; -Xmx no cubre memoria no-heap; ciclo de vida: reconstruir ante parche del JDK
+- `java/modulo-15` — Tema 1: Maven avanzado · Avanzado · 55 min — reactor y orden de construcción; dependencyManagement fija versión sin añadir dependencia; BOM importado con scope import; convergencia de versiones transitivas; Enforcer requireJavaVersion; POM efectivo como fuente de verdad; perfiles solo para variantes de build, no secretos
+- `java/modulo-15` — Tema 2: Gradle y builds reproducibles · Avanzado · 45 min — entradas no deterministas (timestamp, orden, ruta); jar --date fija fechas; orden de entrada estable; equivalencia Gradle isPreserveFileTimestamps=false; wrapper y toolchain; dependency locking y verification metadata; caché solo fiable para tareas deterministas
+- `java/modulo-15` — Tema 3: Proyectos multi-módulo sin ciclos · Experto · 1 h 15 min — separación en capas domain/application/infrastructure/api; dirección de dependencias (infra->app); puerto en application, adaptador en infrastructure; ArchUnit sobre bytecode detecta la violación real; freeOfCycles() entre slices; el build impide la dependencia inversa; un módulo por paquete es sobre-ingeniería
+- `java/modulo-15` — Tema 4: JUnit 5, Mockito y assertions expresivas · Avanzado · 55 min — fake con estado real vs mock de frontera; @ExtendWith(MockitoExtension) y @Mock; aserción de estado con AssertJ; verify del contrato observable; no mockear la clase bajo prueba; verifyNoMoreInteractions con criterio; ArgumentCaptor vs afirmar estado
+- `java/modulo-15` — Tema 5: Pruebas de integración reproducibles · Experto · 1 h — Testcontainers inicia PostgreSQL versionado; Flyway crea el esquema con migración versionada; JDBC real con tipos NUMERIC/DATE; Surefire vs Failsafe (unit vs IT); aislamiento de datos entre pruebas; esperar condición, no tiempo fijo; migración aplicada es inmutable
+- `java/modulo-15` — Tema 6: SLF4J, Logback, MDC y logging estructurado · Avanzado · 55 min — SLF4J fachada, Logback implementación; logging parametrizado {}; MDC asocia contexto al hilo; MDC.putCloseable restaura al cerrar; contaminación de MDC en pool reutilizado; encoder JSON para campos consultables; no registrar secretos ni duplicar stack traces
 - `java/modulo-18` — Tema 3: Sockets TCP y UDP — la red que hay debajo de HttpClient · Avanzado · 2 h — modelo cliente/servidor y puertos; ServerSocket y accept(); Socket y streams de I/O con charset explícito; TCP fiable, ordenado, orientado a conexión; UDP DatagramSocket/DatagramPacket; TCP frente a UDP; timeouts de socket (setSoTimeout); cierre de recursos y puerto ocupado; un cliente por hilo frente a virtual threads
 - `java/modulo-18` — Tema 4: Seguridad defensiva — hash, HMAC, firma y cifrado · Avanzado · 2 h 30 min — hash criptográfico (MessageDigest); comparación en tiempo constante (MessageDigest.isEqual); hash no sirve para contraseñas; HMAC (Mac); firma digital (Signature, par de claves); cifrado simétrico AES-GCM (Cipher); IV/nonce único y gestión de claves; hash vs HMAC vs firma vs cifrado
 - `java/modulo-2` — Tema 1: List, Set, Map y sus implementaciones · Básico · 45 min — List y sus implementaciones (ArrayList/LinkedList); complejidad Big-O; Set y unicidad; equals/hashCode como contrato; orden de iteración por implementación; Map y sus implementaciones; colecciones inmutables (List.of); iteración y ConcurrentModificationException; medición informal vs benchmark
