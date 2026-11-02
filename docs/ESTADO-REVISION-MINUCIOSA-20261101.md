@@ -883,3 +883,41 @@ de official-topic-atlas.json. Cursos separados Maven/Gradle y JDBC quedan como P
 
 Siguiente prioridad del usuario: Spring Boot (23 módulos, 0 con mapa) → Microservicios
 (curso separado) → Docker/Kubernetes (curso separado) → Flutter → Node.
+
+## 27. Avance: Spring Boot — TRACK COMPLETO (módulos 0-22, 91 temas)
+
+Fecha: 2026-11-01. Entorno: Temurin **JDK 27.0.1**, baseline Spring Boot 4.1.
+
+Se insertó el **Mapa de subtemas críticos** (tabla Subtema/Papel/Evidencia + explicación
+individual por fila) en los **91 temas** de los 23 módulos del track, con el mismo patrón y
+nivel de profundidad que Java. Punto de inserción uniforme tras "¿Por qué es importante?".
+Las fuentes del track son `docs.spring.io` (sin número de versión), por lo que no requieren
+cambio de versión; se conservaron intactas junto con el bloque OFFICIAL-TOPIC-ATLAS de M13 y
+los términos requeridos (Spring Boot 4.1, Spring gRPC, InetAddressFilter).
+
+Cobertura por módulo (temas = mapas en todos): M0 IoC/DI (3), M1 Initializr/config/perfiles (3),
+M2 DTOs/validación/errores/Lombok/OpenAPI/paginación (6), M3 JPA/N+1/Flyway (3), M4 Security/JWT/
+CORS/SSRF/login (5), M5 ConfigurationProperties/fail-fast/ProblemDetail (3), M6 slices de testing
+(3), M7 Actuator/Micrometer/probes (3), M8 Kafka/DLQ/idempotencia/rebalanceo/RabbitMQ (5), M9
+Reactor/WebClient/WebFlux (3), M10 Cloud: ConfigServer/Gateway/Resilience4j/OAuth2/HTTP interfaces/
+gRPC/DDD/Temporal-Saga (8), M11 empaquetado/jlink-layers/GraalVM-AOT/probes K8s (3), M12 micro
+integrador (3), M13 @Transactional/idempotencia/contratos/observabilidad (4), M14 CRUD/espacial
+MySQL/JPA Spatial/JWT/STOMP/archivos (6), M15 backpressure/Testcontainers singleton/hexagonal
+ArchUnit/bulkhead/saga/event sourcing/clean arch (8), M16 relaciones JPA/N+1 (2), M17 JdbcTemplate/
+transacciones (2), M18 SecurityFilterChain/validación-CORS-SSRF (2), M19 Spring Batch job/chunk +
+restart/retry/skip (2), M20 scheduling/eventos/correo/caché/@Async/SOAP/Spring AI/RAG (8), M21
+Kafka producer-outbox/DLT-idempotencia/outbox transaccional (3), M22 hexagonal/C4/ADR (3).
+
+Trabajo realizado con sub-agentes `general-task-execution` en paralelo (instrucción idéntica:
+patrón exacto, 6-8 filas, evidencia observable del propio ejemplo, sin inventar APIs). Revisadas
+muestras (M11, M20 RAG, M0 hecho a mano): fieles al contenido, sin plantillas ni invenciones.
+
+Nota de verificación (AGENTS.md): los ejemplos de Spring Boot requieren `start.spring.io`,
+descarga de dependencias y Tomcat/Testcontainers, no reproducibles de forma ligera en este
+entorno; NO se ejecutaron. Lo verificado aquí es: estructura (91/91 mapas), fences balanceados,
+substancia estricta 0 defectos, `validate.sh` EXIT 0 y trinquete `--max-pending 1143`. Queda
+pendiente para revisión humana la ejecución de ejemplos y pruebas de navegador; no se presenta
+la detección de marcadores como formación verificada.
+
+Siguiente prioridad del usuario: Microservicios (curso separado, docs/PLAN-CURSO-MICROSERVICIOS.md)
+→ Docker/Kubernetes (curso separado) → Flutter → Node.

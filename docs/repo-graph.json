@@ -183,7 +183,7 @@
     },
     {
       "path": "docs/ESTADO-REVISION-MINUCIOSA-20261101.md",
-      "lines": 843,
+      "lines": 886,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1499,7 +1499,7 @@
     },
     {
       "path": "docs/topic-source-review.json",
-      "lines": 11269,
+      "lines": 11270,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -12386,7 +12386,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-0.md",
-      "lines": 453,
+      "lines": 537,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12407,7 +12407,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-1.md",
-      "lines": 395,
+      "lines": 488,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12428,7 +12428,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-10.md",
-      "lines": 1538,
+      "lines": 1786,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12449,7 +12449,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-11.md",
-      "lines": 470,
+      "lines": 563,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12470,7 +12470,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-12.md",
-      "lines": 598,
+      "lines": 691,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12491,7 +12491,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-13.md",
-      "lines": 668,
+      "lines": 792,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12512,7 +12512,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-14.md",
-      "lines": 941,
+      "lines": 1109,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12533,7 +12533,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-15.md",
-      "lines": 1213,
+      "lines": 1437,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12554,7 +12554,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-16.md",
-      "lines": 178,
+      "lines": 241,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12574,7 +12574,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-17.md",
-      "lines": 208,
+      "lines": 264,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12594,7 +12594,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-18.md",
-      "lines": 189,
+      "lines": 251,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12614,7 +12614,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-19.md",
-      "lines": 217,
+      "lines": 279,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12634,7 +12634,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-2.md",
-      "lines": 893,
+      "lines": 1061,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12655,7 +12655,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-20.md",
-      "lines": 822,
+      "lines": 1049,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12676,7 +12676,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-21.md",
-      "lines": 1107,
+      "lines": 1200,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12697,7 +12697,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-22.md",
-      "lines": 423,
+      "lines": 507,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12718,7 +12718,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-3.md",
-      "lines": 554,
+      "lines": 638,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12739,7 +12739,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-4.md",
-      "lines": 1066,
+      "lines": 1209,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12760,7 +12760,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-5.md",
-      "lines": 516,
+      "lines": 609,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12781,7 +12781,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-6.md",
-      "lines": 540,
+      "lines": 633,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12802,7 +12802,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-7.md",
-      "lines": 575,
+      "lines": 668,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12823,7 +12823,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-8.md",
-      "lines": 1062,
+      "lines": 1202,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12844,7 +12844,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-9.md",
-      "lines": 702,
+      "lines": 792,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

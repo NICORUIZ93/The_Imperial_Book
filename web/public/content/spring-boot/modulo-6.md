@@ -14,6 +14,37 @@ Cada tema declara su nivel, su duración y una verificación reproducible. Los t
 
 **¿Por qué es importante?** Una API de entregas necesita detectar rápido si el problema está en el controller (mapeo de rutas, serialización JSON, validación) sin necesitar que la base de datos real ni el servicio de negocio completo estén disponibles para esa prueba específica.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `@WebMvcTest(TareaController.class)` | Núcleo | Levanta solo la capa web y arranca en una fracción del tiempo de `@SpringBootTest` |
+| `@MockitoBean TareaService servicio` | Núcleo | Reemplaza el servicio real; sin él aparece `NoSuchBeanDefinitionException` |
+| Inyección por constructor del controller | Prerrequisito | `TareaController(TareaService servicio)` recibe la dependencia a mockear |
+| `MockMvc` y `post(...)` | Variante | `mockMvc.perform(post("/api/tareas"))` simula la petición HTTP completa |
+| `NoSuchBeanDefinitionException` al quitar `@MockitoBean` | Diagnóstico | El fallo deliberado confirma que el slice no escanea `@Service` |
+| Aserciones de código y cuerpo | Núcleo | `status().isCreated()` y `content().string("tarea-123")` |
+| Slice vs contexto completo | Decisión | Para probar las tres capas juntas se necesita `@SpringBootTest` (Tema 3) |
+| Serialización JSON del cuerpo | Error frecuente | El cuerpo `"\"Comprar leche\""` debe ir con `Content-Type` JSON |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`@WebMvcTest(TareaController.class)` (Núcleo).** Esta anotación carga únicamente el contexto necesario para la capa web: el controller, sus filtros y la infraestructura de serialización JSON, dejando fuera persistencia y configuración real. Por eso el "slice" arranca considerablemente más rápido que el contexto completo, un factor que importa cuando la suite crece a cientos de pruebas. Su límite es que no verifica la coordinación real entre capas.
+
+**`@MockitoBean TareaService servicio` (Núcleo).** El slice no instancia el `@Service` real, así que el controller necesita un sustituto para su dependencia; `@MockitoBean` provee ese doble y permite programar su comportamiento con `when(servicio.crear("Comprar leche")).thenReturn("tarea-123")`. Gracias a ese reemplazo, la implementación real (que lanza `UnsupportedOperationException`) nunca se ejecuta. Omitir la anotación rompe el arranque del contexto.
+
+**Inyección por constructor del controller (Prerrequisito).** `TareaController` recibe `TareaService` por su constructor, lo que hace que la dependencia sea explícita y fácil de sustituir en pruebas. Sin esta forma de inyección, el slice no tendría un punto limpio donde insertar el mock. Es el fundamento del Módulo 2 que habilita el patrón de este tema.
+
+**`MockMvc` y `post(...)` (Variante).** `mockMvc.perform(post("/api/tareas"))` ejercita el controller como si llegara una petición HTTP real, pasando por el mapeo de ruta y la deserialización, pero sin abrir un puerto de red. Es una variante de ejecución más ligera que un servidor embebido. Permite afirmar sobre la respuesta completa dentro del mismo proceso de test.
+
+**`NoSuchBeanDefinitionException` al quitar `@MockitoBean` (Diagnóstico).** El fallo deliberado consiste en borrar la anotación y volver a correr el test: Spring no puede resolver `TareaService` dentro del contexto parcial, porque `@WebMvcTest` no escanea `@Service` por diseño. El error observable confirma que `@MockitoBean` no es una conveniencia sino el mecanismo que satisface las dependencias del controller en el slice. Revertir el cambio restaura la prueba en verde.
+
+**Aserciones de código y cuerpo (Núcleo).** El test comprueba tanto el código de estado con `status().isCreated()` como el cuerpo con `content().string("tarea-123")`, cubriendo el contrato HTTP completo del endpoint. Verificar solo el código dejaría pasar errores de serialización o de tipo de retorno. La combinación de ambas aserciones es lo que hace confiable al slice.
+
+**Slice vs contexto completo (Decisión).** Un slice de solo la capa web es insuficiente para verificar que controller, servicio, repositorio y base de datos funcionan juntos de principio a fin. Esa garantía es el propósito de `@SpringBootTest` (Tema 3), más lento pero completo. La decisión profesional es usar slices para rapidez y reservar el contexto total para los pocos flujos críticos.
+
+**Serialización JSON del cuerpo (Error frecuente).** El cuerpo de la petición se envía como `"\"Comprar leche\""` con `contentType(MediaType.APPLICATION_JSON)`, porque el controller recibe un `String` JSON. Un error típico es que el cuerpo no coincida por un problema de serialización o de tipo de retorno del controller; cuando el código es correcto pero el cuerpo falla, ahí hay que mirar. El `Content-Type` adecuado es parte del contrato que se prueba.
+
 **Conceptos clave:** contexto parcial, más rápido que el contexto completo.
 
 `@WebMvcTest(TareaController.class)` levanta únicamente el contexto necesario para probar la capa web (el controller, sus filtros, la infraestructura de serialización JSON), mockeando automáticamente cualquier otra capa (`@MockitoBean TareaService servicio`), en vez de levantar la aplicación completa con persistencia y configuración real. Esta carga parcial ("slice", en la terminología de Spring Boot Test) arranca considerablemente más rápido que el contexto completo, un factor relevante cuando la suite crece a cientos de pruebas.
@@ -182,6 +213,37 @@ class TareaControllerTest {
 
 **¿Por qué es importante?** H2 puede comportarse de forma sutilmente distinta a PostgreSQL en aspectos específicos del dialecto SQL o tipos de datos particulares, produciendo pruebas que pasan contra H2 pero fallarían contra la base de datos real usada en producción.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `@DataJpaTest` | Prerrequisito | Slice de persistencia que inyecta `TareaRepository` para probar el repositorio |
+| `@Container static PostgreSQLContainer<?>` | Núcleo | Declara `new PostgreSQLContainer<>("postgres:16")` gestionado por Testcontainers |
+| `@DynamicPropertySource` | Núcleo | `registry.add("spring.datasource.url", postgres::getJdbcUrl)` apunta Spring al contenedor |
+| Campo `static` del contenedor | Error frecuente | La pista exige `static` para compartir el contenedor entre tests de la clase |
+| `gen_random_uuid()` falla en H2 | Diagnóstico | El fallo deliberado muestra la función de PostgreSQL que H2 no reproduce |
+| Cambio de imagen `postgres:16` → `postgres:15` | Variante | El ejercicio prueba el mismo test contra otra versión real |
+| Requisito de Docker activo | Límite | El comando indica que requiere Docker corriendo localmente |
+| H2 vs Testcontainers | Decisión | Para queries triviales H2 sigue siendo aceptable por su velocidad |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`@DataJpaTest` (Prerrequisito).** Este slice configura solo la capa de persistencia JPA y permite inyectar el repositorio bajo prueba con `@Autowired TareaRepository tareaRepository`. Es el fundamento sobre el que se monta Testcontainers en este tema, basado en entidades y repositorios del Módulo 3. Sin él, no habría un contexto de persistencia acotado donde ejecutar el test.
+
+**`@Container static PostgreSQLContainer<?>` (Núcleo).** La anotación `@Container` declara un contenedor Docker real de PostgreSQL que Testcontainers arranca antes de la suite y descarta al terminar. La imagen `postgres:16` fija el motor exacto a probar, idéntico al de producción. Este contenedor efímero es lo que elimina la discrepancia de comportamiento frente a una base simulada.
+
+**`@DynamicPropertySource` (Núcleo).** Este método inyecta la URL, el usuario y la contraseña reales del contenedor recién levantado (asignados dinámicamente por Docker) en las propiedades de Spring antes de que el contexto arranque, con `registry.add("spring.datasource.url", postgres::getJdbcUrl)` y sus equivalentes. Debe ejecutarse antes del contexto; si existe una URL fija en `application.properties`, la conexión podría usar H2 por error. Es el puente entre el contenedor y la configuración de Spring.
+
+**Campo `static` del contenedor (Error frecuente).** La pista del tema subraya que `@Container` debe ser `static` para que un único contenedor se comparta entre todos los tests de la clase. Si no se declara `static`, Testcontainers levanta un contenedor nuevo por cada método, incrementando innecesariamente el tiempo total de la suite. Es un error común que degrada el rendimiento sin cambiar el resultado.
+
+**`gen_random_uuid()` falla en H2 (Diagnóstico).** El fallo deliberado fuerza una query nativa `SELECT gen_random_uuid()`, una función propia de PostgreSQL: contra H2 falla con un error de función desconocida, mientras que contra el contenedor real funciona. Ese contraste observable confirma exactamente el riesgo que Testcontainers elimina, un detalle del dialecto que H2 no reproduce. Diagnosticarlo justifica el costo del contenedor.
+
+**Cambio de imagen `postgres:16` → `postgres:15` (Variante).** El ejercicio propone cambiar la versión de la imagen y comprobar que el mismo test sigue pasando, lo que ilustra que Testcontainers facilita probar contra distintas versiones reales del motor. Es una variante de bajo costo que da cobertura sobre compatibilidad de versiones. Permite anticipar regresiones al actualizar la base de datos.
+
+**Requisito de Docker activo (Límite).** El comando del tema advierte que la prueba requiere Docker corriendo localmente, porque Testcontainers lo usa para levantar el contenedor real. Si Docker no está activo o el puerto está bloqueado, el contenedor no arranca. Es un límite de entorno que distingue a esta suite de los slices que no dependen de infraestructura externa.
+
+**H2 vs Testcontainers (Decisión).** Para lógica de repositorio genuinamente independiente del motor (queries triviales sin funciones propietarias), H2 en memoria puede seguir siendo aceptable por su velocidad. La decisión profesional es reservar Testcontainers para cuando la fidelidad al motor real importa, asumiendo su mayor tiempo de arranque. Elegir mal el nivel cuesta velocidad o fidelidad.
+
 **Conceptos clave:** base de datos real desechable, comportamiento fiel frente a H2 en memoria.
 
 ```java
@@ -349,6 +411,37 @@ static void propiedades(DynamicPropertyRegistry registry) {
 #### Aprende
 
 **¿Por qué es importante?** Un flujo crítico de negocio (crear una tarea y confirmar que aparece en la lista de pendientes) involucra el controller, el servicio y el repositorio trabajando juntos; los tests de slice de los Temas 1 y 2 verifican cada capa por separado, pero ninguno confirma que las tres funcionen correctamente coordinadas.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `@SpringBootTest` | Núcleo | Levanta el contexto completo: controller, servicio y repositorio reales |
+| `@AutoConfigureMockMvc` | Prerrequisito | Habilita inyectar `MockMvc` sin abrir un servidor real |
+| Aserción directa contra el repositorio real | Núcleo | `assertThat(tareaRepository.findAll())` confirma persistencia, no solo el código HTTP |
+| Bug que el mock oculta | Diagnóstico | Quitar `save(...)` deja `201` pero la lista queda vacía |
+| Pirámide de tests | Decisión | Muchos unitarios, algunos slices, pocos `@SpringBootTest` |
+| Costo de arranque del contexto completo | Límite | El tiempo de `CrearTareaEndToEndTest` es mayor que el del slice |
+| `TareaService` real inyectando el repositorio | Variante | `save(new Tarea(titulo))` reemplaza la versión que lanzaba excepción |
+| Unitario con Mockito puro | Decisión | Para lógica aislada se prefiere sin contexto de Spring |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`@SpringBootTest` (Núcleo).** Sin especificar una clase concreta, esta anotación levanta absolutamente todo el contexto: el `TareaController` real, el `TareaService` real sin ningún mock y el `TareaRepository` real contra una base de datos H2 embebida. Es apropiado para tests end-to-end que verifican un flujo completo a través de múltiples capas reales. Su límite es ser el nivel más lento de arrancar de los tres disponibles.
+
+**`@AutoConfigureMockMvc` (Prerrequisito).** Esta anotación acompaña a `@SpringBootTest` para configurar e inyectar `MockMvc` dentro del contexto completo, permitiendo ejercitar el controller sin abrir un puerto de red real. Es la pieza que habilita `mockMvc.perform(post(...))` en un test de contexto total. Sin ella, no habría un `MockMvc` disponible para la petición.
+
+**Aserción directa contra el repositorio real (Núcleo).** Tras el POST, el test consulta `assertThat(tareaRepository.findAll()).extracting(Tarea::getTitulo).contains("Comprar leche")` contra el repositorio real, confirmando que la petición HTTP efectivamente persistió datos. Comprobar solo el `201` no demostraría que la fila existe. Esta verificación de punta a punta es lo que diferencia al end-to-end de un slice de la capa web.
+
+**Bug que el mock oculta (Diagnóstico).** El fallo deliberado cambia `repositorio.save(new Tarea(titulo))` por `new Tarea(titulo)` sin persistir: el controller sigue respondiendo `201`, pero `tareaRepository.findAll()` queda vacío y la aserción falla. Esto demuestra por qué un slice con el servicio mockeado (Tema 1) nunca habría detectado el bug, ya que el mock "funciona" según lo configurado. Solo un test con servicio y repositorio reales expone el problema.
+
+**Pirámide de tests (Decisión).** La estrategia recomendada balancea tres niveles: muchos tests unitarios rápidos, algunos de slice y pocos `@SpringBootTest` reservados para los flujos más críticos. El diagrama de texto del tema ordena esa distribución de abajo hacia arriba. La decisión profesional es no abusar del contexto completo ni prescindir de él por entero.
+
+**Costo de arranque del contexto completo (Límite).** `CrearTareaEndToEndTest` arranca notablemente más lento que `TareaControllerTest`; el tema propone confirmarlo con `mvn test -Dtest=TareaControllerTest,CrearTareaEndToEndTest` y comparar los tiempos reportados. Ese costo medido es evidencia directa de por qué el contexto total se reserva para pocos flujos. Ignorar el límite lleva a suites lentas si se usa `@SpringBootTest` para todo.
+
+**`TareaService` real inyectando el repositorio (Variante).** Esta versión del servicio reemplaza la del Tema 1 que lanzaba `UnsupportedOperationException`: ahora recibe `TareaRepository` por constructor y en `crear` ejecuta `repositorio.save(new Tarea(titulo))` devolviendo el id. Es la variante real necesaria para que el flujo end-to-end persista de verdad. Sin esta implementación, no habría nada que verificar contra el repositorio.
+
+**Unitario con Mockito puro (Decisión).** Para verificar lógica de negocio aislada sin ninguna dependencia de infraestructura real (cálculos, validaciones puras), un test unitario con Mockito puro y sin contexto de Spring es preferible por su velocidad. Usar `@SpringBootTest` para esa lógica sería mucho más lento sin ganar garantía. La decisión correcta coloca cada caso en el nivel más barato que lo cubre.
 
 **Conceptos clave:** contexto completo, muchos unitarios/pocos de integración completa.
 

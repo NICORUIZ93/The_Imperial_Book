@@ -5227,7 +5227,7 @@
         "https://start.spring.io/starter.zip"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 358,
+      "line": 420,
       "originalProseUrls": [
         "https://resilience4j.readme.io/docs/circuitbreaker",
         "https://start.spring.io/starter.zip"
@@ -5243,7 +5243,7 @@
         "https://martinfowler.com/bliki/DDD_Aggregate.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 1014,
+      "line": 1200,
       "originalProseUrls": [
         "https://martinfowler.com/bliki/DDD_Aggregate.html"
       ],
@@ -5260,7 +5260,7 @@
         "https://docs.temporal.io/develop/java/workflows/basics"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 1195,
+      "line": 1412,
       "originalProseUrls": [
         "https://central.sonatype.com/artifact/io.temporal/temporal-spring-boot-starter",
         "https://docs.temporal.io/design-patterns/saga-pattern",
@@ -5278,7 +5278,7 @@
         "https://start.spring.io/starter.zip"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 185,
+      "line": 213,
       "originalProseUrls": [
         "https://dev.mysql.com/doc/refman/8.0/en/spatial-type-overview.html",
         "https://start.spring.io/starter.zip"
@@ -5295,7 +5295,7 @@
         "https://start.spring.io/starter.zip"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 323,
+      "line": 379,
       "originalProseUrls": [
         "https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#spatial",
         "https://start.spring.io/starter.zip"
@@ -5326,7 +5326,7 @@
         "https://java.testcontainers.org/test_framework_integration/manual_lifecycle_control/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 126,
+      "line": 154,
       "originalProseUrls": [
         "https://java.testcontainers.org/test_framework_integration/manual_lifecycle_control/"
       ],
@@ -5341,7 +5341,7 @@
         "https://www.archunit.org/userguide/html/000_Index.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 256,
+      "line": 312,
       "originalProseUrls": [
         "https://www.archunit.org/userguide/html/000_Index.html"
       ],
@@ -5357,7 +5357,7 @@
         "https://resilience4j.readme.io/docs/ratelimiter"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 401,
+      "line": 485,
       "originalProseUrls": [
         "https://resilience4j.readme.io/docs/bulkhead",
         "https://resilience4j.readme.io/docs/ratelimiter"
@@ -5373,7 +5373,7 @@
         "https://microservices.io/patterns/data/saga.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 556,
+      "line": 668,
       "originalProseUrls": [
         "https://microservices.io/patterns/data/saga.html"
       ],
@@ -5388,7 +5388,7 @@
         "https://martinfowler.com/eaaDev/EventSourcing.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 733,
+      "line": 873,
       "originalProseUrls": [
         "https://martinfowler.com/eaaDev/EventSourcing.html"
       ],
@@ -5403,7 +5403,7 @@
         "https://microservices.io/patterns/data/saga.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 906,
+      "line": 1074,
       "originalProseUrls": [
         "https://microservices.io/patterns/data/saga.html"
       ],
@@ -5418,7 +5418,7 @@
         "https://jakarta.ee/specifications/bean-validation/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 128,
+      "line": 156,
       "originalProseUrls": [
         "https://jakarta.ee/specifications/bean-validation/"
       ],
@@ -5434,7 +5434,7 @@
         "https://projectlombok.org/features/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 346,
+      "line": 430,
       "originalProseUrls": [
         "https://mapstruct.org/documentation/stable/reference/html/",
         "https://projectlombok.org/features/"
@@ -5451,8 +5451,9 @@
         "https://springdoc.org/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 551,
+      "line": 663,
       "originalProseUrls": [
+        "http://localhost:puerto/v3/api-docs",
         "https://spec.openapis.org/oas/latest.html",
         "https://springdoc.org/"
       ],
@@ -5467,7 +5468,7 @@
         "https://www.w3.org/TR/soap12-part1/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 539,
+      "line": 682,
       "originalProseUrls": [
         "https://www.w3.org/TR/soap12-part1/"
       ],
@@ -5482,7 +5483,7 @@
         "https://c4model.com/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 153,
+      "line": 181,
       "originalProseUrls": [
         "https://c4model.com/",
         "https://mermaid.js.org/syntax/flowchart.html"
@@ -5498,7 +5499,7 @@
         "https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#fetching"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 196,
+      "line": 224,
       "originalProseUrls": [
         "https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#fetching"
       ],
@@ -5513,7 +5514,7 @@
         "https://documentation.red-gate.com/flyway/flyway-concepts/migrations"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 362,
+      "line": 418,
       "originalProseUrls": [
         "https://documentation.red-gate.com/flyway/flyway-concepts/migrations"
       ],
@@ -5528,7 +5529,7 @@
         "https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.1-Release-Notes"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 567,
+      "line": 654,
       "originalProseUrls": [
         "http://169.254.169.254/latest/meta-data/iam/security-credentials/",
         "https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.1-Release-Notes"
@@ -5544,7 +5545,7 @@
         "https://java.testcontainers.org/modules/databases/postgres/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 175,
+      "line": 206,
       "originalProseUrls": [
         "https://java.testcontainers.org/modules/databases/postgres/"
       ],
@@ -5559,7 +5560,7 @@
         "https://kafka.apache.org/documentation/#consumerconfigs"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 613,
+      "line": 697,
       "originalProseUrls": [
         "https://kafka.apache.org/documentation/#consumerconfigs"
       ],
@@ -5591,7 +5592,7 @@
         "https://projectreactor.io/docs/core/release/reference/faq.html#faq.wrap-blocking"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 516,
+      "line": 578,
       "originalProseUrls": [
         "https://projectreactor.io/docs/core/release/reference/faq.html#faq.wrap-blocking"
       ],

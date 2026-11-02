@@ -34,6 +34,34 @@ Visita `http://localhost:8080`. Un 404 significa que el servidor sí arrancó pe
 
 **¿Por qué es importante?** En una API de entregas, los servicios cambian de implementación entre pruebas y producción (un repositorio real contra la base de datos, uno falso en memoria para tests); el contenedor de Spring administra esas dependencias sin que el controlador que las usa conozca cómo se construyen ni de dónde vienen.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Acoplamiento con `new` vs IoC | Prerrequisito | `ServicioTareas` no hace `new RepositorioTareas()` |
+| El contenedor crea y conecta beans | Núcleo | `GET /status` responde sin escribir la conexión |
+| Estereotipo registra la clase como bean | Núcleo | Quitar `@Service` → `NoSuchBeanDefinitionException` |
+| Depender de la abstracción, no la implementación | Núcleo | Interfaz `RepositorioTareas` intercambiable |
+| Component scanning por paquete | Diagnóstico | Bean fuera del paquete no se detecta |
+| `@Primary`/`@Qualifier` ante varios candidatos | Variante | Dos repos → `NoUniqueBeanDefinitionException` sin desempate |
+| Cuándo IoC es ceremonia excesiva | Límite | Un script desechable no necesita contenedor |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Acoplamiento con `new` vs IoC (prerrequisito).** Cuando una clase hace `new RepositorioTareas()` queda atada a esa implementación concreta: sustituirla por una de prueba obliga a editar su código interno. La inversión de control invierte esa responsabilidad: la clase declara qué necesita y un contenedor externo se lo entrega, de modo que `ServicioTareas` nunca instancia a su colaborador.
+
+**El contenedor crea y conecta beans (núcleo).** El contenedor de Spring detecta las clases gestionadas, construye cada una y pasa automáticamente las dependencias al constructor. Por eso `GET /status` responde con datos del repositorio sin que ningún código de la aplicación escriba el `new` que une servicio y repositorio: esa conexión la resuelve el contenedor.
+
+**Estereotipo registra la clase como bean (núcleo).** Una clase solo entra al contenedor si lleva un estereotipo (`@Service`, `@Component`, etc.). Quitar `@Service` hace que la clase deje de ser gestionada: aunque compile, otro bean que dependa de ella falla al arrancar con `NoSuchBeanDefinitionException`, porque Spring no tiene un bean que satisfaga esa dependencia.
+
+**Depender de la abstracción, no la implementación (núcleo).** El servicio declara `RepositorioTareas` (idealmente una interfaz), no una clase concreta. Así el contenedor puede inyectar una implementación real en producción y una falsa en pruebas sin tocar el servicio: el consumidor depende del contrato, no de quién lo cumple.
+
+**Component scanning por paquete (diagnóstico).** Spring Boot escanea beans a partir del paquete de la clase principal hacia abajo. Un `@Service` o `@Controller` colocado fuera de ese árbol no se detecta y produce `NoSuchBeanDefinitionException` o un 404; el diagnóstico es revisar el paquete, no añadir más anotaciones.
+
+**`@Primary`/`@Qualifier` ante varios candidatos (variante).** Si hay dos beans que satisfacen el mismo tipo, Spring no sabe cuál inyectar y falla con `NoUniqueBeanDefinitionException`. `@Primary` marca uno como preferido por defecto y `@Qualifier` elige explícitamente por nombre; son los mecanismos para desambiguar sin acoplar el consumidor a una clase concreta.
+
+**Cuándo IoC es ceremonia excesiva (límite).** Para un script pequeño, de un solo uso y sin ciclo de vida de aplicación, levantar un contenedor completo añade más complejidad que beneficio. La inversión de control rinde cuando hay múltiples colaboradores, entornos distintos y necesidad de sustituir implementaciones.
+
 En código sin un contenedor de inversión de control, una clase que necesita colaboradores típicamente los crea ella misma directamente (`new RepositorioTareas()`), acoplándose fuertemente a una implementación concreta y haciendo que sustituirla (por ejemplo, por una versión de prueba durante los tests) requiera modificar el código interno de la propia clase que la crea. La **inversión de control** invierte esa responsabilidad: un contenedor externo (el contenedor de Spring) crea las dependencias centralizadamente y las "inyecta" en cada clase que las declara como necesarias, de modo que la clase consumidora solo declara qué necesita (típicamente a través de su constructor), sin saber ni importarle cómo esa dependencia concreta se construye.
 
 ```java
@@ -157,6 +185,34 @@ public class ServicioTareas {
 #### Aprende
 
 **¿Por qué es importante?** Escribir un test unitario de `ServicioTareas` sin levantar el contenedor completo de Spring (mucho más rápido que un test de integración) solo es directo si la dependencia se recibe por constructor; con inyección por campo no hay una forma simple de pasarle un mock sin reflexión o utilidades especiales de testing.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Inyección por constructor permite `final` | Núcleo | Campo `final` verificado por el compilador |
+| Test sin contenedor con `new` | Núcleo | `new ServicioTareas(mock)` pasa en verde |
+| Inyección por campo se asigna tras construir | Prerrequisito | `@Autowired` sobre campo privado |
+| `NullPointerException` al instanciar con `new` | Diagnóstico | Campo sin asignar al no usar contenedor |
+| Reflexión para testear campo privado | Límite | `Field.setAccessible(true)` obligado |
+| Pérdida de inmutabilidad con campo no-`final` | Error frecuente | Garantía del compilador perdida |
+| Constructor gigante → objeto de configuración | Decisión | No volver a inyección por campo |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Inyección por constructor permite `final` (núcleo).** Al recibir la dependencia como parámetro del constructor, el campo puede declararse `final`: el compilador garantiza que se asigna exactamente una vez y nunca queda nulo. Eso convierte la presencia de la dependencia en una invariante verificada, no en una esperanza sobre el orden de inicialización.
+
+**Test sin contenedor con `new` (núcleo).** Un test unitario basta con `new ServicioTareas(mock)` para construir el servicio con un doble pasado directamente, sin levantar Spring. Es rápido y explícito: no hay anotaciones ni contexto, solo el objeto bajo prueba y sus colaboradores controlados.
+
+**Inyección por campo se asigna tras construir (prerrequisito).** `@Autowired private RepositorioTareas repositorio;` no asigna el campo en el constructor: el contenedor lo rellena *después* de instanciar el objeto, por reflexión. Entre construir y asignar, el campo está nulo, y nada en la firma de la clase obliga a proveer la dependencia.
+
+**`NullPointerException` al instanciar con `new` (diagnóstico).** Si construyes la clase de inyección por campo con `new` (como en un test sin contenedor), el campo nunca se asigna y `repositorio.buscar()` lanza `NullPointerException`. El síntoma delata que la dependencia solo llega a través del contenedor, no del constructor.
+
+**Reflexión para testear campo privado (límite).** Para probar una clase con inyección por campo sin contenedor hay que forzar la asignación con `Field.setAccessible(true)`. Esa reflexión es exactamente la complejidad que la inyección por constructor elimina: el test deja de ser `new Clase(mock)` y pasa a manipular campos privados.
+
+**Pérdida de inmutabilidad con campo no-`final` (error frecuente).** Un campo `@Autowired` no puede ser `final`, así que se pierde la garantía del compilador de asignación única. Declarar dependencias no-`final` sin necesidad abre la puerta a reasignaciones accidentales y a objetos a medio inicializar.
+
+**Constructor gigante → objeto de configuración (decisión).** Si una clase acumula muchísimas dependencias opcionales, un constructor enorme es ilegible; la solución es agrupar en un objeto de configuración o builder, no volver a inyección por campo. El problema es el diseño de la clase, no el mecanismo de inyección.
 
 **Conceptos clave:** inmutabilidad (`final`), testabilidad sin el contenedor.
 
@@ -297,6 +353,34 @@ private ____ RepositorioTareas repositorio;
 #### Aprende
 
 **¿Por qué es importante?** Un contador compartido entre peticiones necesita ser `singleton` (una instancia por contenedor); un objeto temporal de una operación, como un builder de reporte, puede ser `prototype` (una instancia nueva cada vez que el contenedor lo resuelve). `prototype` no significa una instancia por petición HTTP; confundir esos alcances produce bugs de estado compartido accidental o de recreación innecesaria.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `@Component`/`@Service`/`@Repository` | Núcleo | Los tres registran bean; solo uno añade función |
+| `@Repository` traduce excepciones de persistencia | Variante | Jerarquía `DataAccessException` unificada |
+| `spring-boot-starter-web` autoconfigura | Núcleo | Tomcat embebido + Jackson + MVC sin XML |
+| `singleton` (default): una instancia por contenedor | Núcleo | Dos resoluciones → mismo `id()` |
+| `prototype`: instancia nueva por resolución | Núcleo | Dos resoluciones → `id()` distintos |
+| `prototype` ≠ una instancia por petición HTTP | Error frecuente | Confusión produce estado compartido |
+| Scope irrelevante sin estado mutable | Límite | Valor inmutable: mismo comportamiento |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`@Component`/`@Service`/`@Repository` (núcleo).** Las tres son especializaciones de `@Component` y todas registran la clase como bean. La diferencia es sobre todo semántica —documentan la intención de la capa— con una excepción funcional: `@Repository`. Elegir el estereotipo correcto comunica el rol sin cambiar el mecanismo de registro.
+
+**`@Repository` traduce excepciones de persistencia (variante).** Es el único estereotipo con comportamiento añadido: traduce automáticamente las excepciones específicas del proveedor de persistencia (JDBC, JPA) a la jerarquía `DataAccessException` de Spring. Así el código de capas superiores no se acopla a excepciones propietarias de la base de datos.
+
+**`spring-boot-starter-web` autoconfigura (núcleo).** Añadir este starter trae y configura un servidor Tomcat embebido, Jackson para JSON y Spring MVC con valores por defecto sensatos, sin la configuración XML extensa del Spring clásico. La autoconfiguración es lo que hace que un proyecto arranque un servidor web con cero configuración manual.
+
+**`singleton` (default): una instancia por contenedor (núcleo).** El scope por defecto crea una única instancia compartida en todo el contenedor. Resolver el bean dos veces devuelve el mismo objeto, por eso dos lecturas de `id()` de un `singleton` coinciden. Es adecuado para componentes sin estado o con estado compartido deliberado (un contador global).
+
+**`prototype`: instancia nueva por resolución (núcleo).** `@Scope("prototype")` hace que el contenedor cree una instancia nueva cada vez que el bean se resuelve. Dos resoluciones producen `id()` distintos, lo que sirve para objetos que acumulan estado de una sola operación, como un builder de reporte.
+
+**`prototype` ≠ una instancia por petición HTTP (error frecuente).** `prototype` cuenta resoluciones del contenedor, no peticiones web. Si un `singleton` inyecta un `prototype` una sola vez, esa instancia se reutiliza en todas las peticiones. Para "una por petición" existe el scope `request`; confundirlos produce estado compartido accidental.
+
+**Scope irrelevante sin estado mutable (límite).** Para un bean sin estado mutable entre resoluciones (un valor inmutable, un componente puramente funcional), discutir `singleton` vs `prototype` no cambia el comportamiento observable. El scope solo importa cuando el bean acumula o comparte estado.
 
 **Conceptos clave:** `@Component`/`@Service`/`@Repository`, autoconfiguración de starters, `singleton` vs `prototype`.
 

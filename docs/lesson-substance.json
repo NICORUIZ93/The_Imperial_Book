@@ -1677,7 +1677,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "3f7bde59844b2a9387eeaa9767c78049f75b4f105eabd9d1b63fac3e2797a80f",
+    "fingerprint": "1c58acd71ae51cbff13505137b6dfd84a471a649cb550edfe4517679dc959c15",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
@@ -9107,637 +9107,637 @@
         "module": 0,
         "tailWords": 288,
         "topic": "Tema 1: Inversión de control y el contenedor de Spring · Básico · 20 min",
-        "words": 1168
+        "words": 1620
       },
       {
         "issues": [],
         "module": 0,
         "tailWords": 256,
         "topic": "Tema 2: Inyección por constructor vs por campo · Básico · 20 min",
-        "words": 1045
+        "words": 1482
       },
       {
         "issues": [],
         "module": 0,
         "tailWords": 259,
         "topic": "Tema 3: Estereotipos, autoconfiguración y scopes · Intermedio · 25 min",
-        "words": 1000
+        "words": 1422
       },
       {
         "issues": [],
         "module": 1,
         "tailWords": 261,
         "topic": "Tema 1: Spring Initializr y starters · Básico · 20 min",
-        "words": 908
+        "words": 1558
       },
       {
         "issues": [],
         "module": 1,
         "tailWords": 243,
         "topic": "Tema 2: application.yml vs application.properties · Básico · 20 min",
-        "words": 927
+        "words": 1517
       },
       {
         "issues": [],
         "module": 1,
         "tailWords": 267,
         "topic": "Tema 3: Perfiles y estructura por capas · Intermedio · 30 min",
-        "words": 990
+        "words": 1615
       },
       {
         "issues": [],
         "module": 10,
         "tailWords": 332,
         "topic": "Tema 1: Config Server y service discovery · Intermedio · 45 min",
-        "words": 1510
+        "words": 2168
       },
       {
         "issues": [],
         "module": 10,
         "tailWords": 300,
         "topic": "Tema 2: Spring Cloud Gateway · Intermedio · 40 min",
-        "words": 1454
+        "words": 2088
       },
       {
         "issues": [],
         "module": 10,
         "tailWords": 256,
         "topic": "Tema 3: Circuit breaker con Resilience4j · Avanzado · 45 min",
-        "words": 1284
+        "words": 1888
       },
       {
         "issues": [],
         "module": 10,
         "tailWords": 301,
         "topic": "Tema 4: OAuth2/OIDC, Keycloak y Token Relay sin perder la frontera de autorización · Avanzado · 50 min",
-        "words": 1631
+        "words": 2285
       },
       {
         "issues": [],
         "module": 10,
         "tailWords": 317,
         "topic": "Tema 5: HTTP Interfaces, deadlines y descubrimiento según el entorno · Avanzado · 45 min",
-        "words": 1400
+        "words": 1998
       },
       {
         "issues": [],
         "module": 10,
         "tailWords": 335,
         "topic": "Tema 6: Spring gRPC para comunicación interna de alta frecuencia (Spring Boot 4.1) · Avanzado · 50 min",
-        "words": 1356
+        "words": 2002
       },
       {
         "issues": [],
         "module": 10,
         "tailWords": 295,
         "topic": "Tema 7: DDD para decidir límites y propiedad de datos · Avanzado · 45 min",
-        "words": 1388
+        "words": 1994
       },
       {
         "issues": [],
         "module": 10,
         "tailWords": 411,
         "topic": "Tema 8: Orquestación de microservicios con Temporal y Spring Boot · Experto · 60 min",
-        "words": 2139
+        "words": 2851
       },
       {
         "issues": [],
         "module": 11,
         "tailWords": 273,
         "topic": "Tema 1: Fat JAR vs capas de Docker · Intermedio · 45 min",
-        "words": 1212
+        "words": 1893
       },
       {
         "issues": [],
         "module": 11,
         "tailWords": 297,
         "topic": "Tema 2: GraalVM native image · Avanzado · 45 min",
-        "words": 1332
+        "words": 1980
       },
       {
         "issues": [],
         "module": 11,
         "tailWords": 294,
         "topic": "Tema 3: Health checks para Kubernetes · Intermedio · 40 min",
-        "words": 1351
+        "words": 1993
       },
       {
         "issues": [],
         "module": 12,
         "tailWords": 282,
         "topic": "Tema 1: Arquitectura del microservicio integrador · Experto · 3 h",
-        "words": 1485
+        "words": 2168
       },
       {
         "issues": [],
         "module": 12,
         "tailWords": 323,
         "topic": "Tema 2: Integrando seguridad, persistencia y observabilidad · Experto · 2 h 40 min",
-        "words": 1464
+        "words": 2120
       },
       {
         "issues": [],
         "module": 12,
         "tailWords": 304,
         "topic": "Tema 3: Cierre del track y próximos pasos · Experto · 1 h 20 min",
-        "words": 1064
+        "words": 1713
       },
       {
         "issues": [],
         "module": 13,
         "tailWords": 331,
         "topic": "Tema 1: `@Transactional` funciona en una frontera, no como encantamiento · Experto · 1 h 55 min",
-        "words": 1202
+        "words": 1790
       },
       {
         "issues": [],
         "module": 13,
         "tailWords": 353,
         "topic": "Tema 2: Recuperación implica duplicación segura · Experto · 2 h 35 min",
-        "words": 1442
+        "words": 2040
       },
       {
         "issues": [],
         "module": 13,
         "tailWords": 358,
         "topic": "Tema 3: Contratos ejecutables protegen despliegues independientes · Experto · 1 h 45 min",
-        "words": 1239
+        "words": 1841
       },
       {
         "issues": [],
         "module": 13,
         "tailWords": 358,
         "topic": "Tema 4: Observabilidad sirve a un objetivo y a una decisión · Experto · 1 h 45 min",
-        "words": 1254
+        "words": 1833
       },
       {
         "issues": [],
         "module": 14,
         "tailWords": 316,
         "topic": "Tema 1: CRUD API y contratos · Experto · 2 h 15 min",
-        "words": 1149
+        "words": 1710
       },
       {
         "issues": [],
         "module": 14,
         "tailWords": 305,
         "topic": "Tema 2: MySQL y datos espaciales · Experto · 1 h 45 min",
-        "words": 1246
+        "words": 1841
       },
       {
         "issues": [],
         "module": 14,
         "tailWords": 278,
         "topic": "Tema 3: JPA e Hibernate Spatial · Experto · 2 h 15 min",
-        "words": 1300
+        "words": 1885
       },
       {
         "issues": [],
         "module": 14,
         "tailWords": 332,
         "topic": "Tema 4: JWT Bearer y autorización por roles · Experto · 1 h 55 min",
-        "words": 1224
+        "words": 1761
       },
       {
         "issues": [],
         "module": 14,
         "tailWords": 299,
         "topic": "Tema 5: Tiempo real con STOMP · Experto · 2 h 15 min",
-        "words": 1353
+        "words": 1877
       },
       {
         "issues": [],
         "module": 14,
         "tailWords": 335,
         "topic": "Tema 6: Archivos y notificaciones push · Experto · 1 h 35 min",
-        "words": 1200
+        "words": 1760
       },
       {
         "issues": [],
         "module": 15,
         "tailWords": 316,
         "topic": "Tema 1: Backpressure real en WebFlux con reactor-test · Experto · 1 h 30 min",
-        "words": 1002
+        "words": 1564
       },
       {
         "issues": [],
         "module": 15,
         "tailWords": 298,
         "topic": "Tema 2: Contenedores Testcontainers reutilizados entre clases · Experto · 1 h 40 min",
-        "words": 1002
+        "words": 1528
       },
       {
         "issues": [],
         "module": 15,
         "tailWords": 293,
         "topic": "Tema 3: Arquitectura hexagonal verificada con ArchUnit · Experto · 1 h 50 min",
-        "words": 1148
+        "words": 1626
       },
       {
         "issues": [],
         "module": 15,
         "tailWords": 315,
         "topic": "Tema 4: Bulkhead y RateLimiter de Resilience4j · Experto · 1 h 55 min",
-        "words": 1163
+        "words": 1662
       },
       {
         "issues": [],
         "module": 15,
         "tailWords": 310,
         "topic": "Tema 5: Saga con compensación real · Experto · 2 h 10 min",
-        "words": 1184
+        "words": 1710
       },
       {
         "issues": [],
         "module": 15,
         "tailWords": 354,
         "topic": "Tema 6: Event Sourcing con replay real · Experto · 2 h",
-        "words": 1269
+        "words": 1793
       },
       {
         "issues": [],
         "module": 15,
         "tailWords": 221,
         "topic": "Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar · Experto · 1 h 15 min",
-        "words": 962
+        "words": 1518
       },
       {
         "issues": [],
         "module": 15,
         "tailWords": 312,
         "topic": "Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework · Experto · 1 h 50 min",
-        "words": 1085
+        "words": 1629
       },
       {
         "issues": [],
         "module": 16,
         "tailWords": 275,
         "topic": "Tema 1: Relaciones, lado propietario y ciclo de vida · Avanzado · 1 h 50 min",
-        "words": 843
+        "words": 1542
       },
       {
         "issues": [],
         "module": 16,
         "tailWords": 294,
         "topic": "Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso · Avanzado · 1 h 40 min",
-        "words": 887
+        "words": 1563
       },
       {
         "issues": [],
         "module": 17,
         "tailWords": 289,
         "topic": "Tema 1: DataSource, JdbcTemplate y DAO · Avanzado · 1 h 40 min",
-        "words": 863
+        "words": 1467
       },
       {
         "issues": [],
         "module": 17,
         "tailWords": 299,
         "topic": "Tema 2: `@Transactional`, rollback y límites de transacción · Avanzado · 1 h 20 min",
-        "words": 857
+        "words": 1394
       },
       {
         "issues": [],
         "module": 18,
         "tailWords": 296,
         "topic": "Tema 1: SecurityFilterChain y autorización · Avanzado · 1 h 30 min",
-        "words": 893
+        "words": 1556
       },
       {
         "issues": [],
         "module": 18,
         "tailWords": 322,
         "topic": "Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP · Avanzado · 1 h 20 min",
-        "words": 856
+        "words": 1497
       },
       {
         "issues": [],
         "module": 19,
         "tailWords": 351,
         "topic": "Tema 1: Job, Step, Tasklet y chunk processing · Avanzado · 1 h 40 min",
-        "words": 1129
+        "words": 1859
       },
       {
         "issues": [],
         "module": 19,
         "tailWords": 329,
         "topic": "Tema 2: Reinicio, JobParameters, retry, skip y listeners · Avanzado · 1 h 20 min",
-        "words": 936
+        "words": 1643
       },
       {
         "issues": [],
         "module": 2,
         "tailWords": 234,
         "topic": "Tema 1: Por qué DTOs en vez de entidades directamente · Intermedio · 30 min",
-        "words": 988
+        "words": 1554
       },
       {
         "issues": [],
         "module": 2,
         "tailWords": 231,
         "topic": "Tema 2: Validación con Bean Validation y ResponseEntity · Intermedio · 25 min",
-        "words": 832
+        "words": 1378
       },
       {
         "issues": [],
         "module": 2,
         "tailWords": 274,
         "topic": "Tema 3: Manejo centralizado de errores con @ControllerAdvice · Intermedio · 30 min",
-        "words": 874
+        "words": 1413
       },
       {
         "issues": [],
         "module": 2,
         "tailWords": 280,
         "topic": "Tema 4: Lombok y MapStruct sin exponer datos internos · Intermedio · 40 min",
-        "words": 1201
+        "words": 1779
       },
       {
         "issues": [],
         "module": 2,
         "tailWords": 250,
         "topic": "Tema 5: OpenAPI con springdoc: el contrato como prueba · Intermedio · 40 min",
-        "words": 1156
+        "words": 1734
       },
       {
         "issues": [],
         "module": 2,
         "tailWords": 274,
         "topic": "Tema 6: Paginación HTTP con validación y un límite de recursos explícito · Intermedio · 35 min",
-        "words": 949
+        "words": 1514
       },
       {
         "issues": [],
         "module": 20,
         "tailWords": 307,
         "topic": "Tema 1: Scheduling y tareas periódicas · Avanzado · 1 h 10 min",
-        "words": 859
+        "words": 1499
       },
       {
         "issues": [],
         "module": 20,
         "tailWords": 334,
         "topic": "Tema 2: Eventos locales, eventos transaccionales y mensajería · Avanzado · 1 h 20 min",
-        "words": 903
+        "words": 1517
       },
       {
         "issues": [],
         "module": 20,
         "tailWords": 279,
         "topic": "Tema 3: Correo con Spring Mail y entrega recuperable · Avanzado · 1 h 10 min",
-        "words": 838
+        "words": 1441
       },
       {
         "issues": [],
         "module": 20,
         "tailWords": 355,
         "topic": "Tema 4: Caché con Spring Cache, Caffeine y Redis · Avanzado · 1 h 20 min",
-        "words": 921
+        "words": 1495
       },
       {
         "issues": [],
         "module": 20,
         "tailWords": 386,
         "topic": "Tema 5: @Async y ejecutores: trabajo en segundo plano con límites · Avanzado · 1 h 40 min",
-        "words": 1207
+        "words": 1779
       },
       {
         "issues": [],
         "module": 20,
         "tailWords": 261,
         "topic": "Tema complementario: Integraciones empresariales, SOAP y fronteras de protocolo · Avanzado · 50 min",
-        "words": 718
+        "words": 1284
       },
       {
         "issues": [],
         "module": 20,
         "tailWords": 311,
         "topic": "Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo · Avanzado · 1 h 30 min",
-        "words": 986
+        "words": 1629
       },
       {
         "issues": [],
         "module": 20,
         "tailWords": 288,
         "topic": "Tema 7: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar · Avanzado · 1 h 10 min",
-        "words": 981
+        "words": 1553
       },
       {
         "issues": [],
         "module": 21,
         "tailWords": 447,
         "topic": "Tema 1: Productor, tópico, key y consumidor · Experto · 1 h 20 min",
-        "words": 2796
+        "words": 3499
       },
       {
         "issues": [],
         "module": 21,
         "tailWords": 454,
         "topic": "Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia · Experto · 1 h 50 min",
-        "words": 2390
+        "words": 3059
       },
       {
         "issues": [],
         "module": 21,
         "tailWords": 480,
         "topic": "Tema 3: Outbox transaccional y flujo de negocio · Experto · 1 h 50 min",
-        "words": 2347
+        "words": 3009
       },
       {
         "issues": [],
         "module": 22,
         "tailWords": 288,
         "topic": "Tema 1: Hexagonal: puertos que hablan el idioma del dominio · Experto · 1 h 10 min",
-        "words": 1054
+        "words": 1590
       },
       {
         "issues": [],
         "module": 22,
         "tailWords": 278,
         "topic": "Tema 2: C4: contexto, contenedores, componentes y código · Experto · 1 h 20 min",
-        "words": 1021
+        "words": 1554
       },
       {
         "issues": [],
         "module": 22,
         "tailWords": 325,
         "topic": "Tema 3: ADR: decisiones con contexto, alternativas y consecuencias · Experto · 1 h 10 min",
-        "words": 1081
+        "words": 1585
       },
       {
         "issues": [],
         "module": 3,
         "tailWords": 266,
         "topic": "Tema 1: Entidades y repositorios derivados · Intermedio · 35 min",
-        "words": 1216
+        "words": 1802
       },
       {
         "issues": [],
         "module": 3,
         "tailWords": 278,
         "topic": "Tema 2: El problema N+1 y su corrección · Avanzado · 50 min",
-        "words": 1171
+        "words": 1715
       },
       {
         "issues": [],
         "module": 3,
         "tailWords": 283,
         "topic": "Tema 3: Migraciones con Flyway · Intermedio · 35 min",
-        "words": 1114
+        "words": 1681
       },
       {
         "issues": [],
         "module": 4,
         "tailWords": 269,
         "topic": "Tema 1: SecurityFilterChain moderno · Intermedio · 40 min",
-        "words": 1248
+        "words": 1753
       },
       {
         "issues": [],
         "module": 4,
         "tailWords": 277,
         "topic": "Tema 2: Filtro JWT y autorización por rol · Avanzado · 55 min",
-        "words": 1598
+        "words": 2172
       },
       {
         "issues": [],
         "module": 4,
         "tailWords": 295,
         "topic": "Tema 3: CORS y CSRF · Intermedio · 35 min",
-        "words": 1292
+        "words": 1813
       },
       {
         "issues": [],
         "module": 4,
         "tailWords": 332,
         "topic": "Tema 4: Protección SSRF con InetAddressFilter (Spring Boot 4.1) · Experto · 50 min",
-        "words": 1645
+        "words": 2190
       },
       {
         "issues": [],
         "module": 4,
         "tailWords": 287,
         "topic": "Tema 5: Flujo de login completo — de `/api/auth/login` a una ruta protegida · Avanzado · 45 min",
-        "words": 1568
+        "words": 2069
       },
       {
         "issues": [],
         "module": 5,
         "tailWords": 274,
         "topic": "Tema 1: @ConfigurationProperties tipado · Intermedio · 35 min",
-        "words": 1212
+        "words": 1868
       },
       {
         "issues": [],
         "module": 5,
         "tailWords": 322,
         "topic": "Tema 2: Fallar rápido al arranque · Intermedio · 30 min",
-        "words": 1181
+        "words": 1792
       },
       {
         "issues": [],
         "module": 5,
         "tailWords": 303,
         "topic": "Tema 3: Manejo global de excepciones consistente entre entornos · Avanzado · 40 min",
-        "words": 1436
+        "words": 2067
       },
       {
         "issues": [],
         "module": 6,
         "tailWords": 272,
         "topic": "Tema 1: Slices de testing — @WebMvcTest · Intermedio · 35 min",
-        "words": 1285
+        "words": 1913
       },
       {
         "issues": [],
         "module": 6,
         "tailWords": 287,
         "topic": "Tema 2: @DataJpaTest con Testcontainers · Avanzado · 50 min",
-        "words": 1269
+        "words": 1882
       },
       {
         "issues": [],
         "module": 6,
         "tailWords": 309,
         "topic": "Tema 3: @SpringBootTest completo y estrategia de pirámide de tests · Avanzado · 45 min",
-        "words": 1323
+        "words": 1937
       },
       {
         "issues": [],
         "module": 7,
         "tailWords": 277,
         "topic": "Tema 1: Actuator y health checks personalizados · Intermedio · 35 min",
-        "words": 1343
+        "words": 1943
       },
       {
         "issues": [],
         "module": 7,
         "tailWords": 283,
         "topic": "Tema 2: Métricas de negocio con Micrometer · Avanzado · 45 min",
-        "words": 1234
+        "words": 1833
       },
       {
         "issues": [],
         "module": 7,
         "tailWords": 283,
         "topic": "Tema 3: Liveness vs readiness · Intermedio · 30 min",
-        "words": 1298
+        "words": 1861
       },
       {
         "issues": [],
         "module": 8,
         "tailWords": 337,
         "topic": "Tema 1: Producers y consumers con Spring Kafka · Avanzado · 50 min",
-        "words": 1518
+        "words": 2106
       },
       {
         "issues": [],
         "module": 8,
         "tailWords": 333,
         "topic": "Tema 2: Dead-letter queue · Avanzado · 45 min",
-        "words": 1473
+        "words": 2057
       },
       {
         "issues": [],
         "module": 8,
         "tailWords": 345,
         "topic": "Tema 3: Productor idempotente y transacciones (exactly-once) · Experto · 50 min",
-        "words": 1696
+        "words": 2303
       },
       {
         "issues": [],
         "module": 8,
         "tailWords": 308,
         "topic": "Tema 4: Rebalanceo de consumer groups y partition assignment · Avanzado · 45 min",
-        "words": 1587
+        "words": 2144
       },
       {
         "issues": [],
         "module": 8,
         "tailWords": 324,
         "topic": "Tema 5: Kafka frente a RabbitMQ · Intermedio · 35 min",
-        "words": 1491
+        "words": 2025
       },
       {
         "issues": [],
         "module": 9,
         "tailWords": 296,
         "topic": "Tema 1: Mono y Flux · Intermedio · 40 min",
-        "words": 1222
+        "words": 1956
       },
       {
         "issues": [],
         "module": 9,
         "tailWords": 306,
         "topic": "Tema 2: WebClient y composición no bloqueante · Avanzado · 45 min",
-        "words": 1353
+        "words": 2059
       },
       {
         "issues": [],
         "module": 9,
         "tailWords": 344,
         "topic": "Tema 3: Cuándo WebFlux vale la complejidad, y R2DBC · Avanzado · 40 min",
-        "words": 1425
+        "words": 2072
       }
     ]
   }

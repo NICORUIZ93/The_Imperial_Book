@@ -23,6 +23,37 @@ Cada noche se importa un archivo de pedidos. Cargarlo completo en una lista pued
 
 **¿Por qué es importante?** Un procesamiento por chunks acota memoria y hace que el punto de confirmación pueda observarse y recuperarse.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `JobParameters` estables | Prerrequisito | En el test se configura `inputFile=classpath:pedidos.csv` para lanzar el job mediante `JobLauncherTestUtils`. |
+| Modelo chunk (`chunk(2, transactionManager)`) | Núcleo | El step `importarPedidos` agrupa de a dos filas y confirma cada chunk dentro de la transacción. |
+| `ItemReader` / `ItemProcessor` / `ItemWriter` | Núcleo | `FlatFileItemReader` lee `pedidos.csv`, el processor filtra y `JdbcPedidoWriter` escribe el `Chunk`. |
+| `Tasklet` frente a step chunk | Variante | La consigna pide un `Tasklet` que registre el resumen final sin procesar filas, frente al step que procesa cada fila. |
+| Frontera transaccional del chunk | Límite | Un error en el writer revierte las escrituras de ese chunk, y `chunk(1, ...)` multiplica commits en el log. |
+| Processor que retorna `null` | Error frecuente | `RF-1002` con importe cero se filtra y aparecen menos filas escritas que leídas si no se cuenta el filtrado. |
+| Reader paginado (`JdbcPagingItemReader`) | Decisión | Se añade para leer desde una tabla sin materializar todos los resultados y mantener la memoria acotada. |
+| `JobRepository` y metadatos | Diagnóstico | Mantiene instancias y ejecuciones; el conteo de commits en el log confirma qué define el tamaño del chunk. |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`JobParameters` estables (prerrequisito).** Los parámetros identifican una ejecución lógica, por lo que deben incluir valores estables como la fecha de archivo y no una hora aleatoria. En el laboratorio se fija `inputFile=classpath:pedidos.csv` como JobParameter para que el test lance el job con `JobLauncherTestUtils` de forma reproducible. Sin parámetros estables no se puede reanudar una instancia, que es la base del Tema 2.
+
+**Modelo chunk (`chunk(2, transactionManager)`) (núcleo).** El modelo chunk lee, procesa y escribe un bloque dentro de límites transaccionales, de modo que cada chunk confirmado queda persistido. En el ejemplo el step `importarPedidos` usa `chunk(2, transactionManager)`, así que las filas se confirman de a dos dentro de la transacción del step. El tamaño del chunk define el grupo de escrituras que se confirma junto, y variar ese número cambia cuántas transacciones se abren.
+
+**`ItemReader` / `ItemProcessor` / `ItemWriter` (núcleo).** El reader obtiene registros, el processor transforma o filtra y el writer escribe el chunk. Aquí `FlatFileItemReader` lee `pedidos.csv` saltando la cabecera, el `ItemProcessor` descarta importes no positivos y `JdbcPedidoWriter` recorre el `Chunk<? extends PedidoImportado>` haciendo `insert` por fila. El writer corre dentro de la transacción del chunk, por lo que su éxito o fallo está ligado al límite transaccional.
+
+**`Tasklet` frente a step chunk (variante).** Un `Tasklet` sirve para una tarea acotada que se ejecuta de una sola vez, como marcar el inicio de la importación o registrar el resumen final. El tema pide implementar dos steps y comparar un `Tasklet` que registra el resumen con un step chunk que procesa cada fila. La distinción importa porque el `Tasklet` no itera elementos ni define el agrupamiento de confirmaciones.
+
+**Frontera transaccional del chunk (límite).** La transacción del step delimita qué escrituras se confirman o revierten juntas. El resultado esperado indica que un error en el writer debe revertir las escrituras de ese chunk, y el fallo deliberado compara commits y logs entre `chunk(1, ...)` y `chunk(2, ...)`. Ese límite es lo que hace observable y recuperable el punto de confirmación.
+
+**Processor que retorna `null` (error frecuente).** Un `ItemProcessor` que retorna `null` filtra intencionalmente el elemento y no debe confundirse con una fila que falló. En el ejemplo `RF-1002` con importe cero se filtra, de modo que solo `RF-1001` y `RF-1003` se guardan. Sin un listener que cuente los filtrados, el reporte de "filas escritas" no explica por qué hay menos que las leídas.
+
+**Reader paginado (`JdbcPagingItemReader`) (decisión).** Cuando el origen es una tabla grande, materializar todos los resultados agota memoria. El tema añade `JdbcPagingItemReader` para leer sin cargar toda la tabla y verificar que la memoria no crece linealmente con el total de filas. La decisión depende del tamaño de página y de que la consulta se resuelva contra la base de datos.
+
+**`JobRepository` y metadatos (diagnóstico).** El `JobRepository` mantiene metadatos de instancias y ejecuciones, que sirven para diagnosticar qué ocurrió en el lote. La pista del tema usa el conteo de confirmaciones en el log: si al subir el `chunkSize` por encima del total de filas válidas los commits bajan a uno, se confirma que es el tamaño del chunk —y no el `Tasklet`— lo que define cuántas filas se confirman juntas. Ese registro observable es la evidencia para diagnosticar la causa.
+
 Un `Job` coordina la ejecución; sus `Step`s separan fases. Un `Tasklet` sirve para una tarea acotada (por ejemplo, marcar inicio de importación). El modelo chunk lee elementos, los procesa y escribe un bloque dentro de límites transaccionales: cada chunk confirmado queda persistido.
 
 `ItemReader` obtiene registros; `ItemProcessor` transforma o filtra; `ItemWriter` escribe un chunk. `JobRepository` mantiene metadatos de instancias y ejecuciones. `JobParameters` identifican una ejecución lógica y deben incluir parámetros estables como fecha de archivo, no una hora aleatoria que impida reanudar.
@@ -146,6 +177,37 @@ Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el
 El job procesó 80 000 filas cuando el sistema perdió conectividad. Reiniciar desde cero puede duplicar efectos; saltar silenciosamente cualquier error hace que la conciliación sea imposible.
 
 **¿Por qué es importante?** Un lote reanudable evita repetir todo el trabajo y permite conciliar resultados cuando un proceso falla a mitad de camino.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Identidad de instancia (`JobParameters`) | Prerrequisito | El test reutiliza `inputFile=pedidos.csv` y `runDate=2026-10-13` para relanzar la misma instancia lógica. |
+| Reanudación desde el estado guardado | Núcleo | Tras forzar una falla en el primer chunk, el chunk confirmado no se duplica y el job completa al reanudar. |
+| `skip` acotado (`FlatFileParseException`) | Variante | `.skip(FlatFileParseException.class)` con `skipLimit(5)` excluye filas de parseo registrando referencia y causa. |
+| `retry` con límite (`TransientDataAccessException`) | Variante | `.retry(TransientDataAccessException.class)` con `retryLimit(3)` reintenta solo fallos transitorios. |
+| Idempotencia de efectos externos | Límite | Al reanudar tras marcar un email como "enviado", si se reenvía hace falta outbox o clave de idempotencia. |
+| `skip` mal aplicado a infraestructura | Error frecuente | Marcar una pérdida de conectividad como `skip` descarta filas recuperables que correspondían a `retry`. |
+| Nueva instancia por `run.id` cambiante | Diagnóstico | Generar un `run.id` nuevo en el segundo intento crea una instancia que vuelve a iniciar el archivo. |
+| Listener de auditoría del lote | Decisión | El listener reporta filas omitidas y filtradas por separado sin reemplazar transacciones ni manejo de errores. |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Identidad de instancia (`JobParameters`) (prerrequisito).** Una instancia de job se identifica por su nombre y sus parámetros de identificación, y sus ejecuciones registran estado y contexto. El laboratorio ejecuta el job con `inputFile=pedidos.csv` y `runDate=2026-10-13`, y relanza la misma instancia lógica tras forzar la falla. Si los parámetros de identificación cambian, la reanudación no apunta a la ejecución previa.
+
+**Reanudación desde el estado guardado (núcleo).** La reanudación aprovecha el estado persistido para no repetir el trabajo ya confirmado, siempre que reader/writer y efectos externos sean compatibles con reinicio. El test fuerza una falla tras el primer chunk y vuelve a lanzar la misma instancia; el resultado esperado es que el chunk confirmado no se duplique y el job complete. Ese comportamiento es lo que distingue reanudar de empezar de cero.
+
+**`skip` acotado (`FlatFileParseException`) (variante).** `skip` aplica a datos no recuperables dentro de un límite y debe registrar la fila excluida. En el código se limita con `.skip(FlatFileParseException.class)` y `skipLimit(5)`, y la consigna pide registrar referencia y causa sin almacenar datos sensibles. Es una variante del control de errores distinta de `retry`, pensada para filas inválidas que el negocio permite excluir.
+
+**`retry` con límite (`TransientDataAccessException`) (variante).** `retry` aplica a fallos transitorios con límite y backoff, no a cualquier excepción. El step lo acota con `.retry(TransientDataAccessException.class)` y `retryLimit(3)`, reservándolo para errores temporales de base. La consigna advierte explícitamente que no se debe clasificar toda excepción como retryable.
+
+**Idempotencia de efectos externos (límite).** Una transacción de base de datos no deshace un efecto externo ya emitido, así que un envío de email o evento debe ser idempotente para no duplicarse al reanudar. La pista simula marcar un email como "enviado" o publicar un evento y luego fuerza que la escritura del chunk falle justo después; si al reanudar el efecto se repite, ese es el caso que necesita outbox o una clave de idempotencia. Ese es el límite de lo que la transacción del chunk puede proteger.
+
+**`skip` mal aplicado a infraestructura (error frecuente).** Confundir un fallo de infraestructura con un dato inválido lleva a descartar filas que sí eran recuperables. El tema señala que una pérdida de conectividad marcada como `skip` debe clasificarse como `retry`, porque `skip` es para datos no recuperables. Aplicar `skip` a infraestructura rompe la conciliación al eliminar registros válidos.
+
+**Nueva instancia por `run.id` cambiante (diagnóstico).** Generar un `run.id` o parámetro distinto en cada reintento crea una instancia nueva en vez de reanudar la anterior. El fallo deliberado del tema produce exactamente ese síntoma: con un `run.id` nuevo se observa una instancia que vuelve a iniciar el archivo desde cero. Reconocer ese reinicio completo permite diagnosticar que los parámetros de identificación no se reutilizaron.
+
+**Listener de auditoría del lote (decisión).** El listener observa inicio y fin para métricas, pero no reemplaza transacciones ni el manejo de errores. En el laboratorio reporta filas omitidas y filtradas por separado, lo que permite auditar el resultado del lote. Decidir qué registra el listener es clave para que la conciliación distinga un `skip` de un filtrado del processor.
 
 Una instancia de job se identifica por nombre y parámetros de identificación; sus ejecuciones registran estado y contexto. La reanudación requiere que reader/writer y efectos externos sean compatibles con reinicio. `skip` aplica a datos no recuperables dentro de un límite y debe registrar la fila; `retry` aplica a fallos transitorios con límite/backoff. No clasifiques toda excepción como retryable.
 

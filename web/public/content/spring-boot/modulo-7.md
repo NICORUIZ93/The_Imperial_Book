@@ -14,6 +14,37 @@ Cada tema declara su nivel, su duración y una verificación reproducible. La sa
 
 **¿Por qué es importante?** Una plataforma de entregas necesita distinguir una aplicación viva de una instancia lista para recibir tráfico; sin señales operativas explícitas, un fallo se descubre por quejas de usuarios en vez de por evidencia observable.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Starter de Actuator | Prerrequisito | `curl ... -d dependencies=web,actuator` genera el proyecto con el starter que expone `/actuator/health` |
+| Exposición explícita de endpoints | Núcleo | `management.endpoints.web.exposure.include=health,metrics,info` en `application.properties` |
+| `HealthIndicator` personalizado | Núcleo | `ServicioExternoHealthIndicator implements HealthIndicator` devuelve `Health.up()`/`Health.down()` |
+| Nombre del bean como clave JSON | Variante | `@Component("servicioExterno")` aparece en `$.components.servicioExterno.status` |
+| Detalle de diagnóstico | Diagnóstico | `Health.down().withDetail("razon", ...)` visible con `show-details=always` |
+| Agregación al estado general | Límite | un solo indicador en `DOWN` degrada `$.status` a `DOWN` → `503` |
+| Señal falsamente positiva | Error frecuente | el fallo deliberado invierte la lógica y `/actuator/health` responde `UP` con la dependencia caída |
+| Fallback transparente sin alerta | Decisión | una dependencia con fallback automático no debería marcarse crítica para evitar alertas innecesarias |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Starter de Actuator (prerrequisito).** El comando `curl -fsSL https://start.spring.io/starter.zip -d dependencies=web,actuator` incorpora `spring-boot-starter-actuator`, que es lo que habilita automáticamente los endpoints estándar como `/actuator/health`. Sin ese starter en el classpath no existe ningún endpoint que exponer, por lo que es el punto de partida obligatorio antes de personalizar nada.
+
+**Exposición explícita de endpoints (núcleo).** La línea `management.endpoints.web.exposure.include=health,metrics,info` decide qué endpoints quedan accesibles por web, porque no todos deberían estar públicos por defecto. El mecanismo es una lista blanca: lo que no se nombra no se expone, y por eso los ejercicios proponen restringirla a lo necesario para no revelar configuración interna sensible.
+
+**`HealthIndicator` personalizado (núcleo).** `ServicioExternoHealthIndicator implements HealthIndicator` extiende el health check estándar devolviendo `Health.up().build()` o `Health.down()...build()` según `servicioExterno.estaDisponible()`. El mecanismo es que Actuator consulta cada `HealthIndicator` registrado y combina su resultado; así la disponibilidad real de una dependencia externa queda reflejada en la salud expuesta.
+
+**Nombre del bean como clave JSON (variante).** `@Component("servicioExterno")` registra el indicador bajo ese nombre exacto, que Actuator usa como clave dentro de `$.components.servicioExterno.status`. La variante sin nombre explícito deriva la clave del nombre del bean quitando el sufijo `HealthIndicator`, como señala la pista; consultar la clave equivocada hace que el test no encuentre el componente.
+
+**Detalle de diagnóstico (diagnóstico).** `Health.down().withDetail("razon", "servicio externo no responde")` adjunta información adicional que solo es visible cuando `management.endpoint.health.show-details=always`. El límite de este mecanismo es la configuración: con `show-details=never` el bloque `$.components` ya no aparece, como pide verificar el ejercicio 2, de modo que el detalle depende de una decisión explícita de exposición.
+
+**Agregación al estado general (límite).** Actuator combina todos los indicadores: un solo componente en `DOWN` hace que `$.status` global sea `DOWN` y `/actuator/health` responda `503 Service Unavailable`. Este comportamiento, verificado en `healthRespondeDownCuandoLaDependenciaNoEstaDisponible`, marca el límite de cómo interactúan varios indicadores, porque basta uno caído para degradar toda la señal.
+
+**Señal falsamente positiva (error frecuente).** El fallo deliberado cambia `Health.down()` por `Health.up()` en la rama de indisponibilidad, y entonces `/actuator/health` sigue respondiendo `UP` pese a haber llamado `marcarComoNoDisponible()`. El error es grave porque un `HealthIndicator` con lógica invertida esconde activamente un problema real tras una señal falsamente positiva, peor que no tener health check alguno.
+
+**Fallback transparente sin alerta (decisión).** La sección de límites decide no marcar como crítica una dependencia interna cuyo fallo la aplicación ya maneja de forma transparente, por ejemplo con un fallback automático sin degradación visible. La decisión evita generar alertas innecesarias por un problema que en realidad no afecta al servicio, reservando los indicadores para dependencias cuyo fallo sí importa al usuario.
+
 **Conceptos clave:** endpoints estándar de observabilidad, `HealthIndicator` propio.
 
 `spring-boot-starter-actuator`, agregado como dependencia, expone automáticamente endpoints estándar como `/actuator/health` (`{"status": "UP"}` o `"DOWN"`), configurables explícitamente en cuanto a qué endpoints exponer (`management.endpoints.web.exposure.include: health, metrics, info`), dado que no todos deberían estar públicamente expuestos por defecto. `@Component public class ServicioExternoHealthIndicator implements HealthIndicator { public Health health() { return servicioExterno.estaDisponible() ? Health.up().build() : Health.down().build(); } }` extiende el health check estándar para incorporar la disponibilidad real de dependencias externas críticas.
@@ -199,6 +230,37 @@ public Health health() {
 
 **¿Por qué es importante?** Las métricas técnicas genéricas que Actuator expone automáticamente (uso de CPU, latencia HTTP) no capturan tendencias de negocio; contar cuántos pedidos se crean por minuto le da valor directo al equipo de producto, no solo al de infraestructura.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `MeterRegistry` inyectado | Prerrequisito | el constructor `PedidoService(MeterRegistry registry)` recibe el registro por inyección |
+| Registro del `Counter` | Núcleo | `registry.counter("pedidos.creados")` crea u obtiene el contador por nombre |
+| Incremento del contador | Núcleo | `pedidosCreados.increment()` dentro de `crear(...)` sube el total en 1 |
+| Exposición en Actuator | Diagnóstico | `/actuator/metrics/pedidos.creados` muestra `$.measurements[0].value` |
+| Etiquetas y series distintas | Variante | `registry.counter("pedidos.creados", "region", "sur")` crea una serie separada |
+| Punto de incremento olvidado | Error frecuente | el fallo deliberado borra `increment()` y la aserción del valor `+2` falla |
+| Alta cardinalidad | Límite | usar un ID único como etiqueta genera explosión de series que degrada el monitoreo |
+| Evento sin valor analítico | Decisión | un evento sin impacto en ninguna decisión de negocio no justifica una métrica dedicada |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`MeterRegistry` inyectado (prerrequisito).** `PedidoService(MeterRegistry registry)` recibe por constructor el `MeterRegistry`, la fachada de métricas que Micrometer integra en Spring Boot Actuator. Sin ese registro no hay dónde dar de alta ni acumular métricas, por lo que obtenerlo por inyección es el paso previo a definir cualquier contador de dominio.
+
+**Registro del `Counter` (núcleo).** `registry.counter("pedidos.creados")` obtiene el contador si ya existe o lo crea bajo ese nombre, y se guarda en el campo `pedidosCreados` del servicio. El mecanismo liga un nombre de métrica a un objeto reutilizable, de modo que todas las invocaciones del servicio incrementan la misma serie acumulada desde el arranque.
+
+**Incremento del contador (núcleo).** `pedidosCreados.increment()` dentro de `crear(...)` sube el contador en 1 por cada llamada; el test confirma con el `MeterRegistry` real que tras dos invocaciones el valor es `valorInicial + 2`. El mecanismo es acumulativo: el contador solo refleja negocio real si el incremento se coloca exactamente en el punto donde ocurre el evento.
+
+**Exposición en Actuator (diagnóstico).** La misma cifra acumulada aparece en `/actuator/metrics/pedidos.creados`, y el test la verifica con `jsonPath("$.measurements[0].value")`. Esta es la ruta real que un sistema como Prometheus/Grafana consultaría en producción, por lo que sirve para diagnosticar si una métrica está realmente publicada y no solo registrada en memoria.
+
+**Etiquetas y series distintas (variante).** `registry.counter("pedidos.creados", "region", "sur")` añade una etiqueta y crea una serie de métrica distinta de la que no tiene etiquetas, aunque compartan el nombre base. La pista advierte que son series separadas internamente; el ejercicio 2 confirma que dos regiones se acumulan por separado y son consultables de forma independiente.
+
+**Punto de incremento olvidado (error frecuente).** El fallo deliberado elimina `pedidosCreados.increment();` dejando `crear(...)` vacío, y entonces la aserción `isEqualTo(valorInicial + 2)` falla porque el contador nunca sube. El error es silencioso y común: la métrica existe en el código pero su punto de incremento se olvida en un método concreto, dejando el dashboard sin movimiento sin ningún error visible que lo delate.
+
+**Alta cardinalidad (límite).** Usar un valor único por entidad —como el ID de cada pedido o de cada usuario— como etiqueta genera una explosión de series de métricas distintas que degrada el sistema de monitoreo. Este es el límite de las etiquetas: deben ser de baja cardinalidad (como la región), motivo por el que el ejercicio 3 pide justificar en una frase por qué el ID único sería un error.
+
+**Evento sin valor analítico (decisión).** La sección de límites decide no crear una métrica dedicada para un evento tan infrecuente o de tan bajo valor que ninguna decisión de negocio dependería de observarlo. La decisión reserva las métricas custom para eventos con valor de negocio real, evitando esfuerzo de instrumentación sin retorno operativo.
+
 **Conceptos clave:** métricas custom, valor para el equipo de producto, no solo infraestructura.
 
 Micrometer, la fachada de métricas integrada en Spring Boot Actuator, permite definir métricas custom específicas del dominio:
@@ -369,6 +431,37 @@ public void crear(String descripcion) {
 #### Aprende
 
 **¿Por qué es importante?** Una aplicación podría estar perfectamente viva (sin necesitar reiniciarse) pero temporalmente no lista para recibir tráfico —por ejemplo, durante el arranque mientras inicializa conexiones— un caso donde reiniciar el pod (liveness fallando) sería contraproducente, mientras sacarlo temporalmente de la rotación (readiness fallando) es el comportamiento correcto.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Habilitar las sondas | Prerrequisito | `management.endpoint.health.probes.enabled=true` y los flags de liveness/readiness |
+| Endpoint de liveness | Núcleo | `/actuator/health/liveness` responde `200`/`UP`: ¿debe reiniciarse el pod? |
+| Endpoint de readiness | Núcleo | `/actuator/health/readiness` responde `503`/`OUT_OF_SERVICE`: ¿recibe tráfico ahora? |
+| `AvailabilityChangeEvent` | Variante | `AvailabilityChangeEvent.publish(publisher, this, ReadinessState.REFUSING_TRAFFIC)` |
+| Independencia de las señales | Diagnóstico | el test confirma que marcar no-listo deja liveness en `UP` |
+| Sonda cruzada en despliegue | Error frecuente | apuntar liveness a `/readiness` provoca reinicios innecesarios en producción |
+| Estado interno sin el evento | Límite | cambiar estado sin `AvailabilityChangeEvent` no actualiza los endpoints de Actuator |
+| Despliegue sin orquestador | Decisión | sin un orquestador que use ambas sondas, un único `/actuator/health` basta |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Habilitar las sondas (prerrequisito).** Las tres propiedades `management.endpoint.health.probes.enabled=true`, `management.health.livenessstate.enabled=true` y `management.health.readinessstate.enabled=true` activan los grupos `liveness` y `readiness` como endpoints separados. Sin ellas los endpoints no existen, por lo que la sección «Si falla» indica confirmar que estén activas cuando readiness no responde.
+
+**Endpoint de liveness (núcleo).** `/actuator/health/liveness` responde a «¿está la aplicación tan rota que debería reiniciarse?»; un fallo dispara el reinicio del contenedor. En el test sigue respondiendo `200` con `UP` incluso tras marcar la aplicación como no lista, lo que demuestra que el proceso está sano y no necesita reinicio aunque no reciba tráfico.
+
+**Endpoint de readiness (núcleo).** `/actuator/health/readiness` responde a «¿está en condiciones de recibir tráfico ahora?»; un fallo saca el pod de la rotación sin reiniciarlo. Tras `POST /test/no-listo` el test lo ve responder `503` con `OUT_OF_SERVICE`, el estado correcto durante una recuperación temporal que no justifica un reinicio.
+
+**`AvailabilityChangeEvent` (variante).** `AvailabilityChangeEvent.publish(publisher, this, ReadinessState.REFUSING_TRAFFIC)` es el mecanismo real de Spring Boot para cambiar readiness sin tocar liveness, y `ReadinessState.ACCEPTING_TRAFFIC` es la variante que lo devuelve a la rotación. Es el mismo mecanismo que se usaría internamente durante un apagado ordenado o la recuperación temporal de una dependencia.
+
+**Independencia de las señales (diagnóstico).** `marcarNoListoAfectaSoloReadinessNoLiveness` comprueba que, tras forzar `REFUSING_TRAFFIC`, readiness cae a `OUT_OF_SERVICE` mientras liveness permanece en `UP`. Esta independencia es la distinción central del Tema y permite diagnosticar que la aplicación está viva pero temporalmente fuera de servicio, no rota.
+
+**Sonda cruzada en despliegue (error frecuente).** El fallo deliberado describe, sin tocar código, apuntar la sonda de liveness de Kubernetes a `/actuator/health/readiness`. Con esa configuración, una caída de readiness durante una recuperación temporal se interpreta como fallo de liveness y Kubernetes reinicia el pod innecesariamente en vez de esperar; es un error de configuración de infraestructura con reinicios reales en producción.
+
+**Estado interno sin el evento (límite).** La pista marca el límite: modificar directamente algún estado interno sin pasar por `AvailabilityChangeEvent` no actualizaría correctamente los endpoints de Actuator. Por eso el checklist exige que el apagado ordenado use el evento de disponibilidad y no un estado interno ad hoc, que quedaría invisible para las sondas.
+
+**Despliegue sin orquestador (decisión).** La sección de límites decide que, en un despliegue sin un orquestador que distinga ambas sondas (por ejemplo, un servidor tradicional sin Kubernetes), la separación liveness/readiness no tiene consumidor que la aproveche. En ese contexto un único `/actuator/health` sigue siendo suficiente, de modo que la distinción se introduce solo cuando hay quien la use.
 
 **Conceptos clave:** ¿debe reiniciarse el pod? vs ¿debe recibir tráfico ahora?
 

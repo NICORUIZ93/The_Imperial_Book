@@ -23,6 +23,37 @@ Un operador autenticado puede consultar envíos, pero solo un rol de administrac
 
 **¿Por qué es importante?** Una política explícita de denegación por defecto evita que un endpoint nuevo quede público por accidente.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Autenticación vs. autorización | Prerrequisito | 401 cuando falta/invalida la credencial; 403 cuando se autenticó pero no tiene permiso |
+| Declaración de `SecurityFilterChain` | Núcleo | El `@Bean` que encadena `authorizeHttpRequests(...)` y `.oauth2ResourceServer(...)` |
+| Orden y precedencia de `requestMatchers` | Núcleo | `/health` permitAll antes que `/api/admin/**` hasRole y `/api/**` authenticated |
+| Denegación por defecto `anyRequest().denyAll()` | Límite | El fallo deliberado cambia a `.anyRequest().permitAll()` y los tests de seguridad fallan |
+| Method security con `@PreAuthorize` | Variante | `@EnableMethodSecurity` + `@PreAuthorize("hasRole('ADMIN')")` en método de servicio |
+| Prefijo `ROLE_` y mapeo claim→authority | Error frecuente | Un usuario autenticado entra a la ruta admin si el prefijo no coincide |
+| Validación del token por el resource server | Decisión | Verifica emisor, firma, expiración y audiencia; no aceptar solo por decodificar el payload |
+| Autorización a nivel de objeto (propiedad) | Diagnóstico | `GET /api/envios/{id}` distingue propietario, otro usuario y operador de tenant |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Autenticación vs. autorización (prerrequisito).** Autenticar responde quién eres y autorizar responde a qué puedes acceder; son decisiones separadas. Por eso el tema distingue 401, que indica que falta o no es válida la autenticación, de 403, que significa que te autenticaste pero no tienes permiso. Confundirlas lleva a diagnósticos equivocados, como tratar un problema de permisos como si fuera de credenciales.
+
+**Declaración de `SecurityFilterChain` (núcleo).** El `@Bean SecurityFilterChain api(HttpSecurity http)` declara cómo se procesa cada request: encadena `authorizeHttpRequests(...)` con las reglas y `oauth2ResourceServer(oauth -> oauth.jwt(...))` para validar el bearer token. Un token válido identifica claims y las reglas convierten esos claims en autoridades. Sin este bean no hay política explícita y la cadena por defecto no refleja las reglas del dominio.
+
+**Orden y precedencia de `requestMatchers` (núcleo).** Las reglas se evalúan en el orden declarado: `/health` como `permitAll`, `/api/admin/**` con `hasRole("ADMIN")`, `/api/**` como `authenticated` y el resto `denyAll`. Colocar una regla más general antes que una específica dejaría la específica inalcanzable. El orden mostrado va de la ruta pública a la más restringida y termina cerrando todo lo no declarado.
+
+**Denegación por defecto `anyRequest().denyAll()` (límite).** El `denyAll()` final garantiza que cualquier endpoint no contemplado quede cerrado en lugar de abierto. El fallo deliberado lo demuestra: al cambiarlo a `.anyRequest().permitAll()` los tests de seguridad fallan, y restaurar la denegación los vuelve a pasar. Este límite convierte un olvido de configuración en un error visible en vez de una fuga silenciosa.
+
+**Method security con `@PreAuthorize` (variante).** Además de proteger rutas en la cadena, `@EnableMethodSecurity` habilita anotar métodos de servicio con `@PreAuthorize("hasRole('ADMIN')")`. Es una variante de aplicar la política a nivel de método en lugar de solo por URL. El tema advierte no duplicar en controller y servicio reglas incompatibles, porque dos políticas que se contradicen producen comportamiento ambiguo.
+
+**Prefijo `ROLE_` y mapeo claim→authority (error frecuente).** `hasRole("ADMIN")` espera la autoridad `ROLE_ADMIN`; por eso el test fija `new SimpleGrantedAuthority("ROLE_ADMIN")`. Si un usuario autenticado entra a la ruta admin, el prefijo `ROLE_` o el mapeo del claim del issuer a la autoridad no coinciden. Igualmente, si `@PreAuthorize` se ignora, suele faltar `@EnableMethodSecurity` o el método se invoca desde el mismo bean sin pasar por el proxy.
+
+**Validación del token por el resource server (decisión).** Un JWT firmado no es necesariamente secreto y decodificar su payload no lo valida. El resource server verifica emisor, firma, expiración y audiencia según la configuración del `issuer-uri`, que aquí se inyecta por `OIDC_ISSUER_URI`. La decisión es nunca aceptar un token solo por poder leer su contenido y no guardar tokens reales en el repositorio.
+
+**Autorización a nivel de objeto (propiedad) (diagnóstico).** Un rol general permite entrar a una clase de operación, pero no autoriza automáticamente cualquier objeto. Por eso `GET /api/envios/{id}` debe comprobar además que el recurso pertenece al usuario o tenant, con tests que distingan propietario, otro usuario y operador. El diagnóstico está en el checklist: si dos usuarios del mismo rol ven envíos ajenos, falta la comprobación de propiedad pese a tener token válido.
+
 `SecurityFilterChain` declara cómo procesar requests. Un bearer token válido identifica claims; las reglas convierten claims en autoridades. 401 indica que falta o no es válida la autenticación; 403 significa que se autenticó, pero no tiene permiso.
 
 Un JWT firmado no es necesariamente secreto. El resource server verifica emisor, firma, expiración y audiencia según la configuración; nunca aceptes un token solo por decodificar su payload.
@@ -124,6 +155,37 @@ Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el
 Una solicitud de envío contiene peso negativo y una dirección excesivamente larga. Si se persiste sin validar, el problema se propaga al cálculo y al proceso de entrega.
 
 **¿Por qué es importante?** Validar y limitar la entrada en el borde de la API reduce errores de dominio y superficie de ataque antes de tocar persistencia o servicios externos.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Restricciones Bean Validation en el DTO | Prerrequisito | `@NotBlank @Size(max = 80)` en `referencia` y `@Positive` en `pesoKg` |
+| Activación con `@Valid` en el controlador | Núcleo | `@Valid @RequestBody CrearEnvioRequest`: válida 201, peso negativo 400 |
+| DTO como contrato HTTP estable | Variante | El `record CrearEnvioRequest` separa el contrato de las entidades internas |
+| CORS y su límite de alcance | Límite | CORS controla orígenes del navegador; no bloquea clientes no-browser |
+| CORS `*` con credenciales | Error frecuente | El navegador rechaza `*` combinado con credenciales |
+| Cliente HTTP y protección SSRF | Núcleo | El test hacia `169.254.169.254` debe bloquearse antes de abrir la conexión |
+| Reintentos por clase de error | Decisión | 4xx fallo funcional, 5xx transitorio, reintento solo en operación idempotente |
+| Cuerpo de error estable (Problem Details) | Diagnóstico | Si el cuerpo cambia entre pruebas, centralizar el formato de error |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Restricciones Bean Validation en el DTO (prerrequisito).** `CrearEnvioRequest` declara las reglas con anotaciones: `@NotBlank @Size(max = 80)` sobre `referencia` y `@Positive` sobre `pesoKg`. Estas restricciones describen qué entrada es aceptable antes de que la lógica de negocio la toque. Son el prerrequisito de cualquier validación: sin ellas declaradas, `@Valid` no tiene qué evaluar.
+
+**Activación con `@Valid` en el controlador (núcleo).** Declarar las restricciones no basta; el controlador recibe `@Valid @RequestBody CrearEnvioRequest request` para que se evalúen en el borde. Una referencia válida responde 201 y un peso negativo responde 400 con cuerpo de error estable. El fallo deliberado lo confirma: al quitar `@Valid`, una entrada inválida alcanza al controlador o servicio, y restaurarlo recupera el 400.
+
+**DTO como contrato HTTP estable (variante).** El `record CrearEnvioRequest` actúa como contrato HTTP, separado de las entidades de persistencia. Esta variante protege el API de cambios internos de las entidades, de modo que modificar un modelo de dominio no rompa a los clientes. Mantener el DTO independiente evita acoplar el formato expuesto a la representación almacenada.
+
+**CORS y su límite de alcance (límite).** CORS controla qué orígenes web pueden leer respuestas desde un navegador, pero no bloquea clientes no-browser. Entender este límite evita tratar CORS como un control de autorización: un cliente que no es navegador ignora la política. CORS no es autenticación; delimita lectura cruzada de orígenes en el contexto del navegador.
+
+**CORS `*` con credenciales (error frecuente).** Un error típico es configurar CORS con origen `*` junto con credenciales habilitadas, combinación que el navegador rechaza y que además expondría la API a cualquier origen. El tema pide usar el origen exacto de desarrollo en lugar del comodín. Si el navegador rechaza CORS, se revisa que el origen sea exacto y que no se combine `*` con credenciales.
+
+**Cliente HTTP y protección SSRF (núcleo).** El `HttpClient` saliente necesita timeout, allowlist de hosts y protección SSRF, sin seguir redirecciones arbitrarias a destinos internos. La prueba apunta el cliente a `http://169.254.169.254/`: si la petición sale sin que la allowlist la rechace, el control de SSRF no está aplicado en el código. El destino debe bloquearse antes de abrir la conexión, no solo estar documentado como riesgo.
+
+**Reintentos por clase de error (decisión).** La decisión de reintentar depende de la clase de respuesta: los 4xx se tratan como fallo funcional y no se reintentan, los 5xx como potencialmente transitorios y solo se reintenta la operación idempotente. El tema advierte no agregar retry a escrituras sin idempotency key, porque repetir una operación no idempotente puede duplicar efectos. Así el reintento se limita a casos donde repetir es seguro.
+
+**Cuerpo de error estable (Problem Details) (diagnóstico).** Las respuestas de error deben usar un cuerpo estable con Problem Details, centralizado en lugar de un texto distinto por endpoint. El diagnóstico aparece cuando el cuerpo de error cambia entre pruebas: la señal es centralizar el formato de error. Un cuerpo consistente permite que los tests comprueben errores sin fijar textos ad hoc por ruta.
 
 Bean Validation declara restricciones de entrada (`@NotBlank`, `@Positive`, `@Size`) y `@Valid` activa su evaluación. DTOs protegen el contrato HTTP de cambios internos de las entidades. CORS controla qué orígenes web pueden leer respuestas desde un navegador; no bloquea clientes no-browser. CSRF importa cuando el navegador adjunta credenciales automáticamente, especialmente cookies.
 

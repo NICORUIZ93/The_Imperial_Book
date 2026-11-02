@@ -17,6 +17,37 @@ Cada tema demuestra su garantía (o su ausencia) con un test real que la ejercit
 
 **¿Por qué es importante?** En una plataforma de entregas, un fallo de base, red o consumidor puede ocurrir después de una escritura; una anotación `@Transactional` presente en el código puede no existir en runtime por self-invocation, una excepción capturada, o un método fuera del proxy — el fallo aparece como datos parcialmente comprometidos, no como un error obvio en el momento de escribir el código.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Proxy AOP como frontera transaccional | Prerrequisito | `transaccionActivaLlamandoAlProxy()` devuelve `true` en el test |
+| Self-invocation vía `this.` | Núcleo | `laSelfInvocationNoAtraviesaElProxyYLaTransaccionNoSeActiva` espera `false` |
+| `TransactionSynchronizationManager.isActualTransactionActive()` como diagnóstico | Diagnóstico | el booleano real que distingue ambos tests, no una afirmación teórica |
+| Rollback ante excepción unchecked vs checked | Límite | la excepción checked sin `rollbackFor` deja el commit |
+| `rollbackFor = Exception.class` | Variante | el mismo método revierte ante la excepción checked |
+| `REQUIRES_NEW` y conexión distinta | Variante | el reto pide un test con dos transacciones anidadas instrumentadas |
+| Excepción capturada dentro del boundary | Error frecuente | el fallo deliberado deja el primer `save` comprometido sin rollback |
+| Transacción abierta durante llamada HTTP remota | Decisión | mantiene locks/conexión mientras la dependencia incierta responde |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Proxy AOP como frontera transaccional (prerrequisito).** Spring envuelve el bean en un proxy y solo una llamada que entra por él activa `TransactionInterceptor`, que abre la transacción antes de ejecutar el método. El test `transaccionActivaLlamandoAlProxy()` lo demuestra devolviendo `true` cuando el método anotado se invoca a través del proxy. Sin entender esta frontera, cualquier razonamiento sobre dónde aplica `@Transactional` es incorrecto.
+
+**Self-invocation vía `this.` (núcleo).** Una llamada `this.metodoInternoAnotado()` no vuelve a cruzar el proxy, por lo que su anotación `@Transactional` no se activa en ese punto. El test `laSelfInvocationNoAtraviesaElProxyYLaTransaccionNoSeActiva` confirma esto esperando `false`. Es el mecanismo central del tema: la anotación presente en el código no implica transacción en runtime.
+
+**`TransactionSynchronizationManager.isActualTransactionActive()` como diagnóstico (diagnóstico).** Esta API real de Spring responde si hay una transacción activa en el thread actual sin inspeccionar logs ni adivinar por el comportamiento. Es el instrumento que convierte el tema en una demostración con un valor booleano real en vez de una afirmación. La pista del tema recomienda usarla también fuera de los tests, como herramienta de diagnóstico.
+
+**Rollback ante excepción unchecked vs checked (límite).** Spring revierte por defecto ante excepciones unchecked, no necesariamente ante checked. El reto 2 reproduce con un test que una excepción checked sin `rollbackFor` deja el commit igualmente, un comportamiento contraintuitivo para quien viene de otros lenguajes. Este es el límite exacto de la garantía por defecto.
+
+**`rollbackFor = Exception.class` (variante).** Añadir `rollbackFor = Exception.class` al mismo método hace que la excepción checked sí provoque rollback, como confirma el reto 3. Es la variante explícita que amplía el conjunto de excepciones que revierten, necesaria cuando la lógica de negocio señala fallos con excepciones comprobadas.
+
+**`REQUIRES_NEW` y conexión distinta (variante).** `REQUIRES_NEW` suspende la transacción exterior y usa recursos distintos, de modo que un commit interior permanece aunque la operación exterior falle. El reto 1 pide un test con dos transacciones anidadas instrumentadas que confirme que la interior usa una conexión distinta a la exterior. Elegir esta propagación es una decisión sobre qué debe sobrevivir a un fallo externo.
+
+**Excepción capturada dentro del boundary (error frecuente).** Capturar una excepción dentro del boundary transaccional y devolver éxito impide el rollback salvo que se marque el estado explícitamente. El fallo deliberado del tema muestra que, con dos guardados y una excepción entre ambos en un método sin transacción real activa, el primer `save` permanece comprometido en la base. Es la forma más silenciosa de perder atomicidad.
+
+**Transacción abierta durante llamada HTTP remota (decisión).** No se debe mantener una transacción abierta mientras se espera una llamada HTTP remota: sostiene locks y la conexión mientras una dependencia incierta responde, y además no puede revertir el sistema externo. La decisión correcta es persistir la intención y coordinar de forma asíncrona, no envolver la llamada remota en el boundary.
+
 **Conceptos clave:** proxy AOP, `TransactionInterceptor`, self-invocation, `REQUIRED`, `REQUIRES_NEW`, rollback rule.
 
 En el modo habitual, Spring envuelve el bean en un proxy. Una llamada que entra por el proxy activa `TransactionInterceptor`, obtiene una transacción y ejecuta el método. Una llamada `this.metodoInterno()` no cruza el proxy; su anotación puede no aplicar. `REQUIRED` participa en la transacción existente o crea una; `REQUIRES_NEW` suspende la exterior y usa recursos distintos, y un commit interno permanece aunque la operación exterior falle. Spring revierte por defecto ante excepciones unchecked, no necesariamente checked; capturar una excepción dentro del boundary y devolver éxito impide el rollback salvo que marques el estado explícitamente. No mantengas una transacción abierta durante una llamada HTTP remota: sostiene locks/conexión mientras una dependencia incierta responde, y no puede revertir el sistema externo.
@@ -158,6 +189,37 @@ Entender los límites de `@Transactional` es esencial antes de escalar el proyec
 #### Aprende
 
 **¿Por qué es importante?** Un timeout después del commit deja el resultado ambiguo desde la perspectiva del cliente: el cliente repite la petición, y el servidor debe reconocer que es la misma intención, no una segunda operación distinta. Reintentar mejora la disponibilidad, pero sin una identidad de operación explícita, multiplica los efectos.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Clave de idempotencia en la misma transacción | Prerrequisito | la clave se guarda con `saveAndFlush` dentro de `@Transactional` |
+| Restricción única como árbitro de la carrera | Núcleo | `@UniqueConstraint`/`@Column(unique = true)` sobre `clave` |
+| Carrera real de dos threads | Diagnóstico | `pool.invokeAll(...)` y el XOR `threadA ^ threadB` dan `true` |
+| `DataIntegrityViolationException` como señal de duplicado | Núcleo | el `catch` que devuelve `false` para el reintento |
+| `find` previo sin unicidad | Error frecuente | el fallo deliberado falla intermitentemente con 20 threads |
+| Transactional outbox vs `kafkaTemplate.send(...)` | Variante | el texto distingue outbox de una escritura no atómica a Kafka |
+| At-least-once y dedupe por `eventId` | Límite | el relay publica después y el consumidor deduplica |
+| Resultado guardado para reintentos | Decisión | el reto 3 devuelve el resultado almacenado, no `false` |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Clave de idempotencia en la misma transacción (prerrequisito).** La clave asociada a principal, operación y hash del request debe guardarse en la MISMA transacción del efecto de negocio, para que identidad y efecto sean atómicos. En el ejemplo, `crearConClave` es `@Transactional` y persiste el `RegistroIdempotencia` con `saveAndFlush`. Separar la clave del efecto rompería la garantía antes de empezar.
+
+**Restricción única como árbitro de la carrera (núcleo).** La `@UniqueConstraint` sobre `clave` (y `@Column(unique = true)`) es lo que decide atómicamente qué intento concurrente gana. Es el mecanismo central del tema: la base de datos, no el código de aplicación, resuelve la carrera cuando dos reintentos llegan a la vez. Sin ella, no hay punto de decisión atómico.
+
+**Carrera real de dos threads (diagnóstico).** El test usa un `ExecutorService` real y `pool.invokeAll(...)` para lanzar dos intentos genuinamente en paralelo con la misma clave. El operador XOR `threadA ^ threadB` confirma que exactamente uno obtuvo `true` y el otro `false`, nunca ambos ni ninguno. Es la evidencia observable de que la garantía se sostiene bajo concurrencia real.
+
+**`DataIntegrityViolationException` como señal de duplicado (núcleo).** Cuando la restricción única rechaza el segundo insert, Spring Data lanza `DataIntegrityViolationException`; el `catch` la interpreta como "este intento es un reintento duplicado" y devuelve `false`. El mecanismo convierte una violación de integridad en una decisión de negocio clara: esta llamada no debe procesar un pedido nuevo.
+
+**`find` previo sin unicidad (error frecuente).** Verificar con un `find` si la clave existe antes de insertar no basta, porque dos threads pueden pasar ese `find` antes de que cualquiera inserte. El fallo deliberado reemplaza la restricción única por un `find` previo y, con 20 threads, el test falla intermitentemente procesando el pedido dos veces. Es el error clásico que el tema insiste en descartar.
+
+**Transactional outbox vs `kafkaTemplate.send(...)` (variante).** Guardar la entidad y llamar `kafkaTemplate.send(...)` en pasos separados no es una transacción atómica entre PostgreSQL y Kafka. El patrón transactional outbox guarda el evento junto al agregado en la misma transacción y un relay separado lo publica después. Es la variante correcta cuando el efecto incluye publicar un evento.
+
+**At-least-once y dedupe por `eventId` (límite).** El outbox con relay garantiza entrega at-least-once, no exactly-once: el mensajero puede duplicar la entrega. El límite real es que el consumidor debe deduplicar por `eventId`, como ilustra la analogía del número de expediente. Ignorar esto traslada la duplicación al consumidor.
+
+**Resultado guardado para reintentos (decisión).** El reto 3 añade un campo `resultado` a `RegistroIdempotencia` para almacenar el resultado de la primera ejecución exitosa, de modo que un reintento posterior devuelva ese valor en vez de simplemente `false`. Es una decisión de diseño que distingue "ya procesado, aquí está tu resultado" de un rechazo opaco, mejorando la experiencia del cliente que reintenta.
 
 **Conceptos clave:** idempotency key, restricción única, transactional outbox, at-least-once.
 
@@ -351,6 +413,37 @@ La duplicación segura (idempotencia) de este tema es la que protegerá al proye
 
 **¿Por qué es importante?** Tests internos verdes no ejecutan código de consumidores desplegados por otros equipos, ni de dispositivos móviles que no se actualizan al mismo tiempo que el backend. Un cambio que parece inocuo desde dentro del servicio (renombrar un campo, agregar un valor a un enum) puede romper silenciosamente a un consumidor que no puede desplegarse en sincronía.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Contrato ejecutable con `MockMvc` contra el JSON real | Prerrequisito | `@WebMvcTest(PedidoController.class)` perfora el controller real |
+| Status HTTP exacto como parte del contrato | Núcleo | `status().isCreated()` exige 201, no 200 |
+| `jsonPath` sobre el valor textual del JSON | Núcleo | `jsonPath("$.status").value("ACCEPTED")` verifica el texto que viaja |
+| Renombrar un valor de enum | Error frecuente | el fallo deliberado `ACCEPTED`→`CONFIRMED` lanza `AssertionError` |
+| Cambio aditivo compatible | Variante | `estimatedDelivery` opcional no rompe el contrato existente |
+| Nuevo valor de enum y `switch` exhaustivo | Límite | agregar `PENDING` rompe a un consumidor con `switch` exhaustivo |
+| Problem Details (RFC 7807) para errores | Variante | `application/problem+json` con `type`, `title`, `status`, `detail` |
+| Contrato formal solo cuando aporta | Decisión | endpoint interno desplegado en conjunto puede no justificarlo |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Contrato ejecutable con `MockMvc` contra el JSON real (prerrequisito).** El test se anota con `@WebMvcTest(PedidoController.class)` y ejecuta una petición real contra el controller, verificando el JSON que produce y no una descripción de OpenAPI sin comprobar. Es el prerrequisito del tema: un contrato que no se ejecuta contra el tráfico real no garantiza nada, solo documenta una intención.
+
+**Status HTTP exacto como parte del contrato (núcleo).** `status().isCreated()` exige específicamente 201, porque el consumidor depende exactamente de ese código y no de un 200. El status forma parte del contrato tanto como el cuerpo; un cambio silencioso de 201 a 200 rompería a quien ramifica su lógica por el código de respuesta.
+
+**`jsonPath` sobre el valor textual del JSON (núcleo).** `jsonPath("$.status").value("ACCEPTED")` verifica el valor textual exacto que viaja por la red, no el nombre de la constante Java del enum. Como advierte la pista, si `@JsonProperty` o una serialización personalizada transforma ese valor, el contrato debe mirar el texto real; este es el mecanismo que distingue el objeto interno del JSON publicado.
+
+**Renombrar un valor de enum (error frecuente).** El fallo deliberado renombra `ACCEPTED` a `CONFIRMED`, un cambio que "suena" equivalente desde dentro del servicio, y el test lanza un `AssertionError` real porque `$.status` esperaba `"ACCEPTED"`. Diagnostica que un consumidor externo con un `switch` exhaustivo sobre `"ACCEPTED"` se rompería en producción, algo que ningún test interno detectaría sin este contrato.
+
+**Cambio aditivo compatible (variante).** El reto 1 agrega un campo opcional `estimatedDelivery` al `PedidoResponse` y confirma que el contrato existente sobre `id` y `status` sigue pasando sin modificación. Es la variante segura: un cambio aditivo real y verificado, no solo asumido seguro, que permite evolucionar la API sin romper consumidores.
+
+**Nuevo valor de enum y `switch` exhaustivo (límite).** Agregar un tercer valor como `PENDING` al enum `Estado` es el límite de la compatibilidad: un consumidor con un `switch` exhaustivo en Java, TypeScript o Kotlin que no se haya actualizado primero no sabría manejar el valor nuevo. El reto 2 pide documentar exactamente qué consumidor se rompería, marcando la frontera entre aditivo seguro e incompatible.
+
+**Problem Details (RFC 7807) para errores (variante).** Los errores se expresan con `application/problem+json` (RFC 7807), con `type`, `title`, `status`, `detail` e `instance`/correlation ID, sin exponer el stack trace interno. El reto 3 pide un test de contrato para el caso `400 Bad Request` con Problem Details, tratando la forma del error como parte verificable del contrato, no solo el caso feliz.
+
+**Contrato formal solo cuando aporta (decisión).** Para un endpoint interno consumido únicamente por el mismo equipo que lo mantiene y desplegado siempre en conjunto, la sobrecarga de un contrato formal versionado puede no justificarse frente a coordinar el cambio directamente. La decisión del tema es dimensionar el rigor del contrato al riesgo real de despliegues independientes.
+
 **Conceptos clave:** contract test, backward compatibility, additive change, Problem Details.
 
 OpenAPI documenta request, response, seguridad y errores, usando DTOs públicos (no entidades JPA directamente expuestas). `application/problem+json` (RFC 7807, ya usado en el Módulo 5) da errores consistentes con `type`, `title`, `status`, `detail` e `instance`/correlation ID, sin exponer el stack trace interno. Los cambios aditivos (campo opcional nuevo, endpoint nuevo) suelen ser más seguros, pero agregar un valor a un enum es un cambio frecuentemente incompatible para consumidores con un `switch` exhaustivo sobre ese enum, que no sabría manejar el valor nuevo.
@@ -480,6 +573,37 @@ Los contratos ejecutables de este tema son los que permitirán desplegar el proy
 #### Aprende
 
 **¿Por qué es importante?** Logs aislados no reconstruyen una operación que atraviesa HTTP, base de datos y Kafka; y retries sin un presupuesto de tiempo definido convierten una lentitud puntual en una saturación total del sistema. La observabilidad debe responder preguntas operativas concretas, no simplemente "llenar la cabina de luces".
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `Observation` sobre operación de negocio | Prerrequisito | `Observation.createNotStarted("order.create", registry)` |
+| Tag de baja cardinalidad | Núcleo | `lowCardinalityKeyValue("channel", canal)` con pocos valores |
+| `TestObservationRegistry` como verificación | Diagnóstico | `hasObservationWithNameEqualTo("order.create")` en verde |
+| `orderId` como label métrico | Error frecuente | el fallo deliberado crea una serie temporal por `orderId` |
+| Instrumentación automática vs de negocio | Límite | HTTP y repositorios ya están instrumentados; no duplicar |
+| Tag `result` para éxito/fallo | Variante | el reto 1 registra `success`/`failure` en ambos casos |
+| SLI/SLO y error budget | Decisión | "proporción de pedidos aceptados en menos de 500ms" |
+| `correlationId` de negocio vs trace/span ID | Variante | el reto 2 distingue correlation ID de un span de OpenTelemetry |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`Observation` sobre operación de negocio (prerrequisito).** El servicio instrumenta la operación con `Observation.createNotStarted("order.create", registry)` y la ejecuta con `.observe(...)`. Es el prerrequisito del tema: una observación nombrada que modela una operación de negocio concreta, colocada donde responde una pregunta específica y no de forma indiscriminada.
+
+**Tag de baja cardinalidad (núcleo).** `lowCardinalityKeyValue("channel", canal)` añade un tag cuyo dominio tiene pocos valores posibles (WEB, MOBILE, API). Es el mecanismo central: los tags de baja cardinalidad —resultado o tipo de operación— son los adecuados para labels métricos porque cada valor distinto multiplica las series temporales almacenadas.
+
+**`TestObservationRegistry` como verificación (diagnóstico).** El test usa la utilidad oficial `TestObservationRegistry` y `TestObservationRegistryAssert` para confirmar que la operación `order.create` se registró con `channel=WEB`. Es el instrumento de diagnóstico que convierte la teoría en una aserción real sobre el par nombre-valor que un dashboard de producción consultaría, sin inspeccionar manualmente el registro.
+
+**`orderId` como label métrico (error frecuente).** El fallo deliberado reemplaza `channel` por un `orderId` único como tag; el test de `TestObservationRegistry` seguiría pasando, pero en un sistema real como Prometheus cada `orderId` crearía una serie temporal nueva y, con miles de pedidos por día, degradaría o rechazaría la cardinalidad. Es el error que el tema marca como límite técnico real, no estilístico.
+
+**Instrumentación automática vs de negocio (límite).** Spring Boot ya instrumenta automáticamente HTTP y repositorios con Micrometer Observation, así que la observación de negocio debe agregarse solo donde responde una pregunta que la automática no cubre, evitando duplicarla. El límite es no instrumentar por instrumentar: cada observación debe justificar su existencia con una pregunta operativa.
+
+**Tag `result` para éxito/fallo (variante).** El reto 1 añade un segundo tag de baja cardinalidad `result` con valores `success`/`failure` y confirma con un test que tanto el caso de éxito como una excepción simulada registran el valor correcto. Es la variante que permite distinguir desenlaces sin inflar la cardinalidad, base para medir tasa de error.
+
+**SLI/SLO y error budget (decisión).** Un SLI se define desde la perspectiva del usuario (proporción de pedidos aceptados en menos de 500ms), el SLO lo evalúa sobre una ventana de tiempo y el error budget guía cuánto riesgo tomar. La decisión operativa es elegir qué medir y con qué objetivo; el reto 3 pide definir un SLI propio y el tag `result` que permitiría calcularlo a partir de las observaciones.
+
+**`correlationId` de negocio vs trace/span ID (variante).** El reto 2 pide documentar la diferencia entre un `correlationId` de negocio, que puede acompañar una traza, y un trace/span ID real generado por OpenTelemetry: el primero no reemplaza al segundo. Es la variante que evita confundir un identificador de dominio con la correlación técnica que une trazas a través de servicios.
 
 **Conceptos clave:** Observation, baja cardinalidad, SLI/SLO, error budget.
 

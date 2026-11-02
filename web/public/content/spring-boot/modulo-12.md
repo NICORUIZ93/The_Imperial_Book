@@ -15,6 +15,37 @@ Los tres temas construyen incrementalmente un único proyecto real, `demo-integr
 
 **¿Por qué es importante?** Un servicio de entregas real necesita integrar HTTP, base de datos, identidad, eventos y métricas sin esconder responsabilidades: la arquitectura por capas (controller → service → repository) hace explícito qué componente es dueño de cada responsabilidad, en vez de mezclar validación HTTP con lógica de negocio con acceso a datos en una única clase.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Separación controller/service/repository | Núcleo | `TareaController` traduce HTTP, `TareaService.crear(...)` decide y `TareaRepository extends JpaRepository` accede a datos, en paquetes distintos |
+| Migración Flyway versionada | Núcleo | `V1__crear_tarea.sql` crea la tabla `tarea` y el test pasa sin `ddl-auto` |
+| Testcontainers como verificación real | Prerrequisito | `@Container static PostgreSQLContainer<?> postgres` arranca un PostgreSQL efímero y `findById(...)` confirma la persistencia |
+| Inyección por constructor | Núcleo | `TareaService(TareaRepository repository)` y `TareaController(TareaService servicio)` reciben sus dependencias por constructor |
+| `@DynamicPropertySource` para apuntar al contenedor | Variante | `registry.add("spring.datasource.url", postgres::getJdbcUrl)` redirige el datasource al contenedor efímero |
+| Esquema sin `ddl-auto` | Límite | El fallo deliberado quita `V1__...` y Hibernate lanza `Schema-validation: missing table [tarea]` al arrancar |
+| Conflicto de versiones de Flyway | Error frecuente | El reto de dos migraciones `V2__...` produce un error real de versión duplicada al arrancar |
+| Capas vs. script de un solo uso | Decisión | "Cuándo no usarlo" señala que para un script efímero la separación completa es desproporcionada |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Separación controller/service/repository (núcleo).** El proyecto ubica cada responsabilidad en su propia clase y paquete: `TareaController` sólo traduce HTTP hacia/desde parámetros y códigos de estado, `TareaService` concentra la lógica de negocio sin conocer HTTP, y `TareaRepository` accede a datos vía Spring Data JPA. El mecanismo es la delegación en cadena (controller → service → repository); el error que previene es mezclar validación HTTP, decisión de negocio y acceso a datos en una sola clase, que vuelve imposible razonar sobre quién es dueño de cada cambio.
+
+**Migración Flyway versionada (núcleo).** `V1__crear_tarea.sql` define el esquema real de la tabla `tarea` con sus columnas y restricciones (`id BIGSERIAL PRIMARY KEY`, `NOT NULL`, `DEFAULT FALSE`), y Flyway lo aplica al arrancar sin depender de `ddl-auto`. El resultado observable es que el test persiste contra ese esquema concreto; la variante contraria —dejar que Hibernate genere el esquema— se descarta explícitamente para el proyecto final.
+
+**Testcontainers como verificación real (prerrequisito).** `@Container static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine")` arranca un PostgreSQL verdadero y efímero, no una base simulada, de modo que el test ejerce el mismo motor que producción. La evidencia es que `tareaRepository.findById(respuesta.getBody())` recupera el registro recién creado; su límite operativo es que requiere Docker activo, como recuerda la sección "Si falla".
+
+**Inyección por constructor (núcleo).** Tanto `TareaService(TareaRepository repository)` como `TareaController(TareaService servicio)` reciben sus colaboradores por constructor, dejando los campos `final`. El mecanismo hace las dependencias explícitas e inmutables y permite que Spring las resuelva al construir el contexto; el error que evita es el acoplamiento oculto de crear dependencias dentro de la clase.
+
+**`@DynamicPropertySource` para apuntar al contenedor (variante).** El método estático `propiedades(DynamicPropertyRegistry registry)` registra `spring.datasource.url`, `username` y `password` tomándolos de `postgres::getJdbcUrl` y similares. Es una variante necesaria frente a propiedades fijas porque el puerto del contenedor es dinámico: sin esta redirección la aplicación intentaría conectarse a un datasource que no existe en el entorno de test.
+
+**Esquema sin `ddl-auto` (límite).** El fallo deliberado borra `V1__crear_tarea.sql` sin añadir `ddl-auto`, y la aplicación se niega a arrancar con `org.hibernate.tool.schema.spi.SchemaManagementException: Schema-validation: missing table [tarea]`. Esto marca el límite del diseño: sin una migración versionada no existe ningún mecanismo que cree la tabla, y el fallo aparece al arrancar en vez de silenciosamente más tarde, lo que es el comportamiento deseado.
+
+**Conflicto de versiones de Flyway (error frecuente).** El reto 3 pide provocar dos migraciones con el mismo prefijo `V2__...`, lo que Flyway detecta como versión duplicada y reporta como error al arrancar. Documentar ese error enseña un fallo profesional frecuente: numerar mal las migraciones rompe el orden determinista que Flyway necesita para aplicar los scripts en secuencia.
+
+**Capas vs. script de un solo uso (decisión).** La sección "Cuándo no usarlo" reconoce que la separación completa en capas y las migraciones versionadas son una inversión desproporcionada para un script de un único uso sin evolución futura del esquema. La decisión profesional consiste en calibrar el coste estructural contra la vida esperada del código, no aplicar siempre la arquitectura máxima.
+
 **Conceptos clave:** capas completas del track combinadas, separación clara de responsabilidades.
 
 El proyecto integrador combina en una única aplicación todas las capas estudiadas: `controller/` (`TareaController`, traduce HTTP hacia/desde DTOs), `service/` (`TareaService`, lógica de negocio sin conocimiento de HTTP), `repository/` (`TareaRepository`, Spring Data JPA), con `db/migration/` conteniendo los scripts versionados de Flyway que gestionan el esquema real de la base de datos, sin `ddl-auto`.
@@ -256,6 +287,37 @@ Ya ensamblas una arquitectura por capas real, con esquema gestionado por Flyway 
 
 **¿Por qué es importante?** Un microservicio productivo no expone un endpoint de escritura sin protección: la seguridad, la validación, la persistencia y la observabilidad colaboran activamente en cada petición individual, cada una aportando su responsabilidad específica sin invadir la de las demás.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `@PreAuthorize("hasRole('USER')")` a nivel de método | Núcleo | La anotación sobre `crear(...)` y el test `sinAutenticacionElServidorResponde401` que espera `401` |
+| `@EnableMethodSecurity` como habilitador | Prerrequisito | `SecurityConfig` anota la clase con `@EnableMethodSecurity` para que `@PreAuthorize` surta efecto |
+| `Counter` de Micrometer en el servicio | Núcleo | `Counter.builder("tareas.creadas")...register(registry)` e `tareasCreadas.increment()` dentro de `crear(...)` |
+| Lectura real del contador antes/después | Diagnóstico | El test lee `meterRegistry.counter("tareas.creadas").count()` y comprueba `despues == antes + 1.0` |
+| `SecurityFilterChain` con reglas por ruta | Variante | `.requestMatchers("/actuator/health").permitAll()` y `.anyRequest().authenticated()` |
+| Autenticación general vs. rol específico | Límite | Quitar `@PreAuthorize` deja el endpoint en `201` aunque la cadena siga exigiendo autenticación |
+| Métrica en el punto de la operación | Error frecuente | "Si falla" indica incrementar la métrica en el método que persiste, no en el controlador |
+| Proteger o no un endpoint de solo lectura | Decisión | "Cuándo no usarlo" descarta auth y métricas dedicadas para lecturas sin datos sensibles |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`@PreAuthorize("hasRole('USER')")` a nivel de método (núcleo).** La anotación sobre `crear(...)` exige que el usuario autenticado posea el rol `USER` antes de ejecutar el método. El mecanismo es una comprobación de autorización declarativa a nivel de método, independiente de la autenticación general; su efecto observable es que el test `conRolUserSeCreaLaTareaYElContadorSeIncrementa` recibe `201` sólo cuando el `RequestPostProcessor` aporta `roles("USER")`.
+
+**`@EnableMethodSecurity` como habilitador (prerrequisito).** `SecurityConfig` lleva `@EnableMethodSecurity`, condición sin la cual las anotaciones `@PreAuthorize` serían ignoradas en silencio. Es un prerrequisito porque activa el aspecto que intercepta las llamadas a métodos anotados; omitirlo es un error sutil en el que la anotación existe pero nunca se evalúa, dejando el endpoint abierto a cualquier usuario autenticado.
+
+**`Counter` de Micrometer en el servicio (núcleo).** `TareaService` construye `Counter.builder("tareas.creadas").description(...).register(registry)` en el constructor y llama `tareasCreadas.increment()` dentro de `crear(...)`, justo después de `repository.save(...)`. El mecanismo liga el incremento al éxito de la operación de negocio; el resultado observable es la métrica `tareas.creadas` que crece exactamente una vez por tarea persistida.
+
+**Lectura real del contador antes/después (diagnóstico).** El test captura `antes = meterRegistry.counter("tareas.creadas").count()`, ejecuta la petición y comprueba `despues == antes + 1.0`, leyendo el valor real del mismo registro que usa la aplicación. Esta técnica diagnostica el comportamiento efectivo —no una suposición— y detecta tanto la falta de incremento como un doble incremento accidental.
+
+**`SecurityFilterChain` con reglas por ruta (variante).** El bean `filterChain(HttpSecurity http)` define que `/actuator/health` es público (`permitAll()`) mientras que `anyRequest().authenticated()` protege el resto, con `httpBasic` para simplificar el ejemplo. Es la capa de autorización por URL, una variante complementaria a la autorización por método: filtra por ruta antes de que `@PreAuthorize` evalúe el rol.
+
+**Autenticación general vs. rol específico (límite).** El fallo deliberado quita `@PreAuthorize` y el test deja de pasar porque el endpoint responde `201` a cualquier usuario autenticado: la regla `.anyRequest().authenticated()` sigue exigiendo credenciales, pero ya no comprueba el rol. El límite que revela es que la autenticación general y la autorización por rol son capas distintas, y proteger por rol depende de la anotación explícita a nivel de método.
+
+**Métrica en el punto de la operación (error frecuente).** La sección "Si falla" advierte que, si el contador no se incrementa, hay que incrementar la métrica en el mismo método que persiste la tarea, no en el controlador. El error frecuente es tratar la observabilidad como una idea tardía colocada lejos de la operación real; situar `increment()` junto a `save(...)` garantiza que la métrica refleje creaciones efectivamente persistidas.
+
+**Proteger o no un endpoint de solo lectura (decisión).** "Cuándo no usarlo" plantea que para un endpoint de solo lectura sin datos sensibles ni efecto de negocio medible, exigir autenticación y métricas dedicadas puede ser complejidad innecesaria. La decisión profesional pondera el valor de la protección y la medición contra el coste que añaden, en función de la sensibilidad y el impacto real del endpoint.
+
 **Conceptos clave:** autorización combinada con lógica de negocio, métrica de negocio incrementada en cada operación real.
 
 `@PreAuthorize("hasRole('USER')")` (Módulo 4) protege el endpoint según el rol del usuario autenticado; el servicio subyacente persiste la tarea (Módulo 3) e incrementa un `Counter` de Micrometer (Módulo 7) por cada creación exitosa, exponiendo esa métrica de negocio en `/actuator/metrics/tareas.creadas`. Ninguna de estas capas conoce los detalles internos de las demás: la seguridad no sabe cómo se persiste la tarea, la persistencia no sabe qué rol se requirió para llegar hasta ahí.
@@ -474,6 +536,37 @@ Integrar seguridad, persistencia y observabilidad en una sola pieza es exactamen
 #### Aprende
 
 **¿Por qué es importante?** Un microservicio Spring Boot "productivo" no se define únicamente por tener un CRUD funcional: es la combinación de seguridad declarativa, persistencia versionada, observabilidad desde el primer día y una suite de tests que da confianza real para desplegar sin temor. Un test que verifica automáticamente estas propiedades de configuración evita que alguien reintroduzca `ddl-auto=update` sin darse cuenta del riesgo.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Test de configuración como guardia | Núcleo | `ProduccionReadyTest.elProyectoNoUsaDdlAutoInseguroYFlywayEstaHabilitado()` falla si la configuración es insegura |
+| `@Value` con valor por defecto | Prerrequisito | `@Value("${spring.jpa.hibernate.ddl-auto:validate}")` inyecta el valor real o `validate` por defecto |
+| Valores seguros de `ddl-auto` | Núcleo | `assertThat(ddlAuto).isIn("validate", "none")` y nunca `update`/`create` |
+| Flyway habilitado | Núcleo | `@Value("${spring.flyway.enabled:true}")` y `assertThat(flywayHabilitado).isTrue()` |
+| Mensaje de fallo explícito | Diagnóstico | `withFailMessage("ddl-auto='%s' es inseguro para producción...", ddlAuto)` |
+| Regresión atrapada en CI | Límite | Añadir `ddl-auto=update` hace fallar el test antes de cualquier despliegue |
+| Microservicio productivo vs. CRUD funcional | Decisión | El diagrama distingue "productivo" (seguridad + versionado + observabilidad + tests) de un CRUD |
+| Guardia innecesaria en un experimento | Error frecuente | "Cuándo no usarlo" pospone la guardia para un experimento sin intención de desplegar |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Test de configuración como guardia (núcleo).** `ProduccionReadyTest` carga el contexto con `@SpringBootTest` y, en `elProyectoNoUsaDdlAutoInseguroYFlywayEstaHabilitado()`, comprueba dos propiedades reales de la configuración. El mecanismo convierte una convención de equipo ("no usar `ddl-auto` inseguro") en una regla verificada por CI en cada build; su efecto es que una regresión de configuración falla el build automáticamente en lugar de depender de la vista humana en una revisión de código.
+
+**`@Value` con valor por defecto (prerrequisito).** `@Value("${spring.jpa.hibernate.ddl-auto:validate}")` inyecta el valor realmente cargado por el contexto, o `validate` si la propiedad no está presente. Es el prerrequisito técnico que permite leer configuración como dato verificable dentro del test; el valor por defecto tras los dos puntos evita que una propiedad ausente provoque un fallo de inyección y mantiene el test determinista.
+
+**Valores seguros de `ddl-auto` (núcleo).** La aserción `assertThat(ddlAuto).isIn("validate", "none")` fija los únicos valores aceptables cuando el esquema lo gestiona Flyway, excluyendo `update` y `create` que alterarían la base sin revisión. El mecanismo es una lista blanca de valores; su resultado observable es que el test pasa sólo mientras el proyecto deja la generación de esquema en manos de las migraciones versionadas.
+
+**Flyway habilitado (núcleo).** `@Value("${spring.flyway.enabled:true}")` lee si Flyway está activo y `assertThat(flywayHabilitado).isTrue()` lo exige. Esto complementa a la comprobación de `ddl-auto`: no basta con desactivar la generación automática de Hibernate, también debe existir el mecanismo que efectivamente crea y versiona el esquema, pues deshabilitar Flyway dejaría la base sin ninguna fuente de verdad.
+
+**Mensaje de fallo explícito (diagnóstico).** `withFailMessage("ddl-auto='%s' es inseguro para producción; usa 'validate' o 'none' con Flyway", ddlAuto)` adjunta a la aserción un mensaje que nombra el valor ofensivo y la corrección. Su papel diagnóstico es que, cuando el test falla, quien lo lee entiende de inmediato qué propiedad rompió la regla y cómo arreglarla, sin tener que inspeccionar el stack trace.
+
+**Regresión atrapada en CI (límite).** El fallo deliberado añade `spring.jpa.hibernate.ddl-auto=update` a `application.yml` y el test falla con el mensaje real sobre valor inseguro. El límite que demuestra es el punto donde la guardia actúa: atrapa la regresión en CI, antes del despliegue, en lugar de descubrirla en producción cuando Hibernate alterase el esquema real en silencio.
+
+**Microservicio productivo vs. CRUD funcional (decisión).** El diagrama contrasta un "microservicio productivo" —seguridad declarativa, persistencia versionada, observabilidad desde el día 1 y tests reales— frente a un simple CRUD funcional, y enumera próximos pasos como Arquitectura Hexagonal/DDD, CQRS+Event Sourcing y OIDC. La decisión profesional es qué propiedades elevar a estándar verificado, entendiendo que "funciona" no equivale a "listo para producción".
+
+**Guardia innecesaria en un experimento (error frecuente).** "Cuándo no usarlo" admite que para un experimento de aprendizaje sin intención de desplegar, un test de guardia de configuración es una formalidad posponible. El error frecuente correlativo sería imponer esa ceremonia en todo contexto; la lección matiza que la guardia cobra valor cuando el proyecto efectivamente se dirige a producción.
 
 **Conceptos clave:** microservicio productivo frente a CRUD funcional, verificación de configuración como código.
 

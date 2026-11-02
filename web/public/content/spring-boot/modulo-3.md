@@ -14,6 +14,34 @@ Cada tema declara nivel, duración y una verificación real contra una base de d
 
 **¿Por qué es importante?** Una lista de tareas pendientes necesita persistirse en una base de datos real; escribir SQL manual para cada consulta simple (buscar por estado, por usuario) es repetitivo y propenso a errores tipográficos que solo se detectan en tiempo de ejecución.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Mapeo `@Entity` a tabla | Prerrequisito | La clase `Tarea` con `@Id @GeneratedValue` se persiste y recupera en `@DataJpaTest` |
+| Constructor protegido requerido por JPA | Núcleo | `protected Tarea() {}` permite reconstruir filas; su ausencia rompe la hidratación |
+| Query derivada del nombre del método | Núcleo | `findByCompletadaFalse()` devuelve las pendientes sin cuerpo escrito a mano |
+| `@Query` JPQL explícito | Variante | `@Query("SELECT t FROM Tarea t WHERE t.completada = false")` mantiene el test en verde |
+| Validación de propiedades en el arranque | Diagnóstico | `findByTituloo` lanza `PropertyReferenceException: No property 'tituloo' found` al iniciar |
+| Límite de la convención de nombres | Límite | Más de dos o tres condiciones encadenadas vuelven el nombre ilegible |
+| Elección derivado vs `@Query` | Decisión | Para joins o agregaciones se opta por `@Query` desde el principio |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Mapeo `@Entity` a tabla (prerrequisito).** Marcar la clase `Tarea` con `@Entity` indica a Hibernate que traduzca cada instancia a una fila y viceversa, usando `@Id @GeneratedValue` para delegar en la base la generación del identificador. Sin este mapeo no existe tabla contra la que consultar, por lo que es la base sobre la que se apoyan los repositorios del tema. El test `@DataJpaTest` lo confirma guardando y leyendo tareas reales en H2.
+
+**Constructor protegido requerido por JPA (núcleo).** `protected Tarea() {}` existe porque JPA necesita un constructor sin argumentos para reconstruir instancias al leer filas, mientras el constructor público controla la creación válida desde código. Si se elimina, la hidratación de entidades desde la base falla, de modo que ambos constructores cumplen papeles distintos y complementarios. La explicación línea por línea del tema lo señala explícitamente como requisito.
+
+**Query derivada del nombre del método (núcleo).** Spring Data parsea `findBy` + `Completada` + `False` en tiempo de arranque y genera la implementación SQL sin ningún cuerpo escrito a mano. Este mecanismo evita el SQL repetitivo y propenso a typos para consultas simples por convención. El test demuestra que `findByCompletadaFalse()` devuelve exactamente las tareas sin completar partiendo solo del nombre.
+
+**`@Query` JPQL explícito (variante).** Cuando la consulta es demasiado compleja para expresarse por convención de nombres, `@Query` con JPQL da control total sobre el SQL. El ejercicio reemplaza `findByCompletadaFalse()` por `@Query("SELECT t FROM Tarea t WHERE t.completada = false")` y confirma que el test original sigue pasando. Es la variante a usar cuando el nombre derivado dejaría de ser legible o posible.
+
+**Validación de propiedades en el arranque (diagnóstico).** Spring Data contrasta los nombres derivados contra las propiedades reales de la entidad al arrancar el contexto, no al ejecutar la query. El fallo deliberado renombra el método a `findByTituloo` y produce `PropertyReferenceException: No property 'tituloo' found for type 'Tarea'` antes de cualquier consulta. Esto adelanta el error mucho antes que un SQL manual con un typo que solo fallaría en tiempo de ejecución.
+
+**Límite de la convención de nombres (límite).** La derivación por nombre se vuelve forzada cuando se encadenan muchas condiciones: la pista del tema advierte que más de dos o tres condiciones hacen el nombre ilegible. Para agregaciones o joins específicos la convención se vuelve imposible de expresar. Ese límite marca la frontera donde conviene cambiar de mecanismo.
+
+**Elección derivado vs `@Query` (decisión).** La decisión profesional es usar métodos derivados donde la intención es legible y `@Query` donde la convención se vuelve ambigua, como recoge el reto abierto sobre la entidad `Envio`. Para joins específicos o lógica que no se expresa como secuencia de condiciones, el tema recomienda `@Query` desde el principio. Así se evita tanto el SQL innecesario como los nombres de método impronunciables.
+
 **Conceptos clave:** mapeo objeto-relacional (`@Entity`), query derivada del nombre del método, `@Query` explícito para casos complejos.
 
 ```java
@@ -203,6 +231,34 @@ public interface TareaRepository extends JpaRepository<Tarea, Long> {
 
 **¿Por qué es importante?** Iterar sobre una lista de usuarios accediendo a las tareas de cada uno, con una relación perezosa, dispara una query SQL separada por cada usuario: un problema de rendimiento que empeora con el tamaño de los datos y puede pasar desapercibido en desarrollo con pocos registros.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Relación `@OneToMany` perezosa | Prerrequisito | `@OneToMany(mappedBy = "usuario")` no carga `tareas` hasta `u.getTareas().size()` |
+| Medición real con `Statistics` | Núcleo | `stats.getQueryExecutionCount()` reporta exactamente `4` para 3 usuarios |
+| Patrón N+1 al iterar | Núcleo | 1 query de `findAll()` + 3 lazy = 4 queries totales |
+| Corrección con `JOIN FETCH` | Variante | `JOIN FETCH u.tareas` baja el conteo a `1L` |
+| `stats.clear()` antes de medir | Diagnóstico | Sin él, el conteo arrastra queries previas y deja de ser interpretable |
+| `EAGER` como falsa solución | Error frecuente | Usar `EAGER` indiscriminadamente carga datos innecesarios siempre |
+| `JOIN FETCH` vs acceso raro | Decisión | Para relaciones casi nunca accedidas, forzar `JOIN FETCH` traería datos de más |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Relación `@OneToMany` perezosa (prerrequisito).** `@OneToMany(mappedBy = "usuario") private List<Tarea> tareas;` declara una relación uno-a-muchos con carga perezosa por defecto, de modo que la colección no se materializa hasta acceder a ella con `u.getTareas().size()`. Esta pereza es justamente la condición que habilita el problema N+1. Sin entender que el acceso diferido dispara una query, el resto del tema no tiene sentido.
+
+**Medición real con `Statistics` (núcleo).** Activar `hibernate.generate_statistics=true` y leer `sessionFactory.getStatistics().getQueryExecutionCount()` reporta el número exacto de queries por sesión en lugar de una suposición. El test demuestra con tres usuarios que el contador da exactamente `4`. Medir es el núcleo del tema: convierte N+1 de una sospecha en un número observable.
+
+**Patrón N+1 al iterar (núcleo).** Al recorrer los usuarios de `findAll()` y tocar sus tareas, Hibernate ejecuta la query original más una adicional por cada usuario, resultando en N+1 queries. El test lo cuantifica: 1 de `findAll()` más 3 lazy igual a 4. Este es el mecanismo exacto que se reproduce para luego corregirlo con evidencia.
+
+**Corrección con `JOIN FETCH` (variante).** `@Query("SELECT u FROM Usuario u JOIN FETCH u.tareas") List<Usuario> buscarConTareas();` carga usuarios y tareas en una sola query con un JOIN real, y el conteo baja a `1L`. El tema propone `@EntityGraph(attributePaths = "tareas")` como alternativa declarativa que logra el mismo `1`. Ambas son variantes para colapsar las N queries adicionales en una.
+
+**`stats.clear()` antes de medir (diagnóstico).** Llamar a `stats.clear()` justo antes de la sección medida es imprescindible, porque de lo contrario el contador incluye queries previas (como los `save`) y deja de ser interpretable. La pista del tema lo marca como paso obligatorio. Si el conteo varía entre ejecuciones, la primera sospecha es que falta este reinicio.
+
+**`EAGER` como falsa solución (error frecuente).** Un error común documentado es usar `EAGER` indiscriminadamente como "solución" genérica, lo que carga datos innecesarios incluso cuando no se necesitan. La checklist exige explícitamente no usar `EAGER` de esa forma. Resuelve el síntoma aparente pero empeora el rendimiento en todas las consultas que ni siquiera usan la relación.
+
+**`JOIN FETCH` vs acceso raro (decisión).** La decisión profesional, según los límites del tema, es reservar `JOIN FETCH` para accesos donde se sabe que la relación se usará. Para una relación que casi nunca se accede junto con la entidad principal, forzar `JOIN FETCH` en todas las consultas cargaría datos innecesarios. El reto abierto pide comparar `JOIN FETCH`, `@EntityGraph` y una proyección DTO para un listado paginado y decidir en consecuencia.
+
 **Conceptos clave:** carga perezosa (`lazy`), una query adicional por cada elemento de una colección, `JOIN FETCH`.
 
 `@OneToMany(mappedBy = "usuario") private List<Tarea> tareas;` mapea una relación uno-a-muchos con carga perezosa por defecto: la lista de tareas no se carga hasta que se accede a ella (`u.getTareas().size()`). Al iterar sobre una colección de usuarios, Hibernate ejecuta una query separada por usuario para cargar sus tareas, resultando en N queries adicionales más la original — de ahí "N+1". `@Query("SELECT u FROM Usuario u JOIN FETCH u.tareas") List<Usuario> buscarConTareas();` corrige esto indicando que cargue usuarios y tareas en una única query con `JOIN` real.
@@ -368,6 +424,34 @@ List<Usuario> buscarConTareas();
 #### Aprende
 
 **¿Por qué es importante?** Un cambio de esquema aplicado automáticamente por Hibernate (`ddl-auto=update`) no queda registrado en ningún historial versionado ni revisable en un pull request; una migración de Flyway sí, y se aplica de forma idéntica y predecible en cada entorno.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Riesgo de `ddl-auto=update` | Prerrequisito | Hibernate podría inferir un cambio no pretendido, sin historial revisable |
+| Migración versionada `V1__...sql` | Núcleo | `V1__crear_tabla_tarea.sql` declara el esquema en SQL puro revisable |
+| `ddl-auto=validate` | Núcleo | Valida que las entidades coincidan con lo que Flyway creó, sin modificar |
+| Validación de esquema fallida | Diagnóstico | Un campo sin migración lanza `Schema-validation: missing column [descripcion]` |
+| Orden y unicidad de versiones | Límite | Flyway rechaza aplicar una versión ya registrada (`V1` duplicada) |
+| Edición manual de tablas | Error frecuente | Modificar tablas fuera de una migración pierde historial y reproducibilidad |
+| `create-drop` vs migraciones | Decisión | Para un prototipo descartable, `create-drop` sin Flyway basta |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Riesgo de `ddl-auto=update` (prerrequisito).** `hibernate.ddl-auto=update` deja que Hibernate genere y actualice el esquema a partir de las entidades, cómodo al inicio pero riesgoso en producción porque podría inferir un cambio distinto al pretendido sin quedar registrado en un historial revisable. Entender este riesgo es el punto de partida que motiva introducir Flyway. El tema lo contrapone directamente a una migración explícita y revisable en un pull request.
+
+**Migración versionada `V1__...sql` (núcleo).** `V1__crear_tabla_tarea.sql` (prefijo `V1`, `__` y descripción) declara el cambio de esquema en SQL puro, versionado en el repositorio y revisable antes de aplicarse. Flyway registra qué migraciones ya corrieron y ejecuta solo las pendientes, en orden. El test confirma que esa migración se aplicó antes de arrancar el contexto y que guardar y leer una fila funciona.
+
+**`ddl-auto=validate` (núcleo).** `spring.jpa.hibernate.ddl-auto=validate` indica a Hibernate que no genere ni modifique el esquema, solo que valide que las entidades coinciden con lo que Flyway creó. Si no coinciden, la aplicación falla al arrancar en vez de aplicar un cambio silencioso. Es el complemento de Flyway que convierte cualquier desalineación en un error visible y temprano.
+
+**Validación de esquema fallida (diagnóstico).** El fallo deliberado agrega `private String descripcion;` a `Tarea` sin crear la migración `V2` y produce `SchemaManagementException: Schema-validation: missing column [descripcion] in table [tarea]` al arrancar. Esto demuestra el propósito de `validate`: en lugar de que Hibernate agregue la columna silenciosamente, la aplicación se niega a arrancar hasta que exista una migración explícita. La reparación es crear `V2__agregar_columna_descripcion.sql` con el `ALTER TABLE` correspondiente.
+
+**Orden y unicidad de versiones (límite).** El prefijo de versión debe ser único y estrictamente creciente; Flyway rechaza aplicar una versión ya registrada. El ejercicio provoca este límite reutilizando `V1` para otra migración y observando el error ante la versión duplicada. Esta restricción es la que garantiza que cada entorno aplique exactamente la misma secuencia.
+
+**Edición manual de tablas (error frecuente).** Un error común es editar tablas manualmente en vez de a través de una migración, lo que pierde el historial y la reproducibilidad. La checklist exige que ninguna tabla se modifique fuera de una migración. Cada cambio hecho a mano rompe la garantía de que el esquema es idéntico y reconstruible en todos los entornos.
+
+**`create-drop` vs migraciones (decisión).** La decisión de uso del tema es que, para un prototipo local descartable sin datos que preservar, `ddl-auto=create-drop` sin Flyway es más simple y suficiente. Las migraciones versionadas se reservan para entornos compartidos o con datos que deban persistir. Elegir según el entorno evita tanto la ceremonia innecesaria como la pérdida de datos en producción.
 
 **Conceptos clave:** esquema versionado y revisable, riesgo de `ddl-auto` en producción, migraciones aplicadas en orden secuencial.
 

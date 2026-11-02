@@ -14,6 +14,34 @@ Cada tema parte de una carpeta vacía, produce un artefacto concreto y lo verifi
 
 **¿Por qué es importante?** Un puerto que devuelve `Page<ReservaEntity>` obliga al dominio a depender de Spring Data: el test del caso de uso levanta el contexto de Spring, tarda segundos y falla cuando cambia la versión de JPA. El síntoma aparece cuando alguien intenta probar una regla de negocio y descubre que necesita una base de datos. En el proyecto integrador, las reglas de asignación de envíos deben probarse sin infraestructura. Un puerto que habla el idioma del negocio es lo que hace posible esa prueba.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Separación dominio / aplicación / adaptadores | Prerrequisito | `record Reserva`, `interface ReservaRepository` y `class EnMemoria` viven en zonas distintas de `Hexagonal.java` |
+| Puerto con tipos del dominio | Núcleo | `ReservaRepository` declara `Optional<Reserva> buscar(ReservaId id)`, no entidades |
+| Adaptador en memoria | Variante | `EnMemoria implements ReservaRepository` con un `List<Reserva>` compila sin dependencias externas |
+| Dirección de dependencias | Núcleo | `java -cp out Hexagonal` imprime `reserva=RES-1 vehiculo=camion-1` sin Spring en el classpath |
+| Puerto que filtra por infraestructura | Error frecuente | el puerto con `Page<ReservaEntity>` provoca `package org.springframework.data.domain does not exist` |
+| Paginación en el adaptador, no en el puerto | Decisión | añadir `Pageable` al puerto rompe `javac`; `List<Reserva> buscarPorVehiculo` sigue compilando |
+| Cuándo NO usar hexagonal | Límite | en un CRUD sin reglas la separación «añade ceremonia sin beneficio» |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Separación dominio / aplicación / adaptadores (prerrequisito).** El ejemplo coloca en un mismo archivo los `record ReservaId`/`Reserva` (dominio), la clase `CrearReserva` (aplicación) y `EnMemoria` (adaptador), pero cada uno cumple un rol distinto. Entender esas tres zonas es condición previa: sin ella, el puerto se confunde con el repositorio concreto y la regla de negocio queda atada a la tecnología.
+
+**Puerto con tipos del dominio (núcleo).** La interfaz `ReservaRepository` declara `guardar(Reserva)` y `Optional<Reserva> buscar(ReservaId)`: habla solo el idioma del negocio. Ese es el mecanismo central de la arquitectura, porque permite que `CrearReserva` coordine la regla sin conocer dónde se persiste. La variante aparece al cambiar la implementación sin tocar el puerto.
+
+**Adaptador en memoria (variante).** `EnMemoria` implementa el puerto con una `List<Reserva>` y un `stream().filter(...).findFirst()`, demostrando que el caso de uso no distingue si detrás hay una lista o una base de datos. Es la variante más barata del adaptador y la que hace posible probar sin infraestructura; una versión JPA sería otra variante del mismo contrato.
+
+**Dirección de dependencias (núcleo).** El programa compila y corre con `javac -d out src/Hexagonal.java` y `java -cp out Hexagonal`, imprimiendo `reserva=RES-1 vehiculo=camion-1` sin mencionar Spring. La dependencia apunta del adaptador hacia el dominio, nunca al revés: por eso el test del caso de uso no necesita levantar contexto.
+
+**Puerto que filtra por infraestructura (error frecuente).** El fallo deliberado cambia el puerto a `Page<ReservaEntity>` y `javac` responde `package org.springframework.data.domain does not exist`. El diagnóstico clave es que no falta una dependencia en el `build.gradle`: el problema es de dirección, el dominio empezó a depender del framework. Corregir el puerto para devolver `Reserva` restablece la compilación.
+
+**Paginación en el adaptador, no en el puerto (decisión).** Añadir `List<Reserva> buscarPorVehiculo(String vehiculo)` compila, pero exigir `Pageable` en el puerto vuelve a romper la compilación. La decisión profesional es ubicar la paginación en el adaptador y que el puerto devuelva una lista del dominio, conservando la independencia frente a Spring Data.
+
+**Cuándo NO usar hexagonal (límite).** El tema advierte que hexagonal «no significa una carpeta por capa ni un puerto por tabla»: en un CRUD sin reglas la separación añade ceremonia sin beneficio. El límite marca la decisión de aplicarla solo donde existen reglas que deben probarse sin infraestructura, como la asignación de envíos del proyecto integrador.
+
 La arquitectura hexagonal separa tres zonas: el **dominio** (tipos y reglas), la **aplicación** (casos de uso que coordinan) y los **adaptadores** (HTTP, JPA, colas). El puerto es una interfaz declarada por la aplicación y hablada en tipos del dominio; el adaptador la implementa traduciendo desde su tecnología.
 
 **Analogía:** un enchufe no sabe qué aparato se conecta. El puerto fija la forma (dos patas, 220 V) y el adaptador es el cable del aparato concreto. Si el enchufe exigiera un tipo de cable propietario, cambiar de aparato obligaría a cambiar la pared.
@@ -160,6 +188,34 @@ Documentar el sistema completo con C4 es el siguiente paso. **Errores comunes:**
 
 **¿Por qué es importante?** Un diagrama que nadie puede contrastar se convierte en decoración. En el proyecto integrador, el diagrama de contenedores se usa para decidir dónde vive la cola y quién escribe en la base; si el diagrama muestra un worker que el código no tiene, la decisión se toma sobre una ficción.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Los cuatro niveles C4 | Prerrequisito | el validador exige `## Contexto`, `## Contenedores`, `## Componentes` y `## Código` |
+| Contenedores desplegables | Núcleo | la lista `['api', 'worker', 'base-datos', 'cola']` se busca en el texto del documento |
+| Relaciones verificables | Núcleo | el conteo de `/-->/g` debe ser al menos 12; `C4 OK: 4 niveles y 12 relaciones` |
+| Validación por script | Variante | `node validar-c4.mjs` falla con `process.exit(1)` si falta un nivel o contenedor |
+| Diagrama y código separados | Error frecuente | borrar `Cola --> Worker` da `Se esperaban al menos 12 relaciones y hay 11` |
+| Contar flechas de otro nivel | Diagnóstico | «cada nivel debe mantener sus propias relaciones» si el conteo sube sin mostrarse |
+| C4 no sustituye a un ADR | Límite | «C4 responde “qué hay” y el ADR responde “por qué”» |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Los cuatro niveles C4 (prerrequisito).** El documento `docs/c4/envios.md` debe contener exactamente `## Contexto`, `## Contenedores`, `## Componentes` y `## Código`, y el validador comprueba esos encabezados antes que nada. Cada nivel responde una pregunta distinta sin repetir la anterior; omitir uno provoca `Faltan niveles` y bloquea el resto de la verificación.
+
+**Contenedores desplegables (núcleo).** El validador define `const contenedores = ['api', 'worker', 'base-datos', 'cola']` y falla si alguno no aparece en el texto. Estos son las aplicaciones, colas y bases que se despliegan por separado, el mecanismo central del nivel de contenedores. La ausencia produce `Faltan contenedores en el C4: worker`, señal de que el diagrama dejó de reflejar el sistema real.
+
+**Relaciones verificables (núcleo).** Cada flecha `-->` debe corresponder a una llamada o dependencia real, y el script cuenta `(texto.match(/-->/g) ?? []).length` exigiendo al menos 12. El resultado `C4 OK: 4 niveles y 12 relaciones` reporta el número real; el umbral convierte el diagrama en algo contrastable en lugar de decoración.
+
+**Validación por script (variante).** `node validar-c4.mjs` es la variante automatizada de la revisión: lee el markdown, no Mermaid, y corta con `process.exit(1)` ante cualquier carencia. Permite que el documento tenga una prueba reproducible, por eso el tema crea primero el validador y luego el documento.
+
+**Diagrama y código separados (error frecuente).** El fallo deliberado borra `Cola --> Worker["worker de asignación"]` y el validador responde `Se esperaban al menos 12 relaciones y hay 11`; si además se borra el nodo, aparece `Faltan contenedores en el C4: worker`. El error típico es dibujar un contenedor que no existe o perder una relación: el validador detecta la ausencia, no la corrige.
+
+**Contar flechas de otro nivel (diagnóstico).** Al añadir el nivel de código de `CancelarEnvio` el contador debe subir a `C4 OK: 4 niveles y 13 relaciones`. Si sube sin que el diagrama muestre la flecha, el diagnóstico es que se está contando una relación de otro nivel; cada nivel debe mantener sus propias relaciones para que el conteo sea fiel.
+
+**C4 no sustituye a un ADR (límite).** C4 documenta estructura, no decisiones ni comportamiento en tiempo de ejecución. El tema fija la decisión: para una elección que cambia el costo futuro, el artefacto correcto es un ADR, porque «C4 responde “qué hay” y el ADR responde “por qué”». Usar C4 como sustituto de un ADR es uno de los errores comunes listados.
+
 C4 resuelve el problema de escala: no se dibuja todo en un solo nivel. Cada nivel responde una pregunta distinta y no repite la anterior. Los cuatro niveles son: **contexto** (el sistema y sus usuarios), **contenedores** (aplicaciones, colas y bases que se despliegan por separado), **componentes** (piezas dentro de un contenedor) y **código** (clases y relaciones). Cada flecha debe corresponder a una llamada o dependencia real.
 
 **Analogía:** es un mapa de escalas. El contexto es el mapa del país, los contenedores son las ciudades, los componentes son los barrios y el código son las calles. Un mapa de país con calles es ilegible; un mapa de calles que pretende explicar el país, también.
@@ -292,6 +348,34 @@ Registrar por qué se eligió esta arquitectura es el siguiente paso. **Errores 
 #### Aprende
 
 **¿Por qué es importante?** Dentro de un año, alguien preguntará por qué la asignación va por Kafka y no por una llamada directa. Sin un ADR, la respuesta se pierde y la decisión se revierte por moda. En el proyecto integrador, la elección de cola, base de datos y estrategia de reintentos debe poder revisarse sin depender de la memoria del equipo.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Las cinco secciones del ADR | Prerrequisito | el validador exige `## Contexto`, `## Decisión`, `## Alternativas`, `## Consecuencias`, `## Estado` |
+| Alternativas descartadas | Núcleo | se cuentan los patrones `^- \*\*` y se exigen al menos 2 por ADR |
+| Nomenclatura `NNNN-*.md` | Prerrequisito | el filtro `/^\d{4}-.+\.md$/` ignora archivos que no empiecen por cuatro dígitos |
+| Estado de la decisión | Variante | cambiar `0002` a `Reemplazada por 0004` conserva el historial y el validador pasa |
+| ADR sin alternativas | Error frecuente | borrar `## Alternativas` da `0003-reintentos-con-outbox.md: faltan ## Alternativas` |
+| Marcador equivocado de alternativa | Diagnóstico | una lista numerada no coincide con `- **` y produce `se esperaban al menos 2 alternativas` |
+| Cuándo escribir un ADR | Decisión | se justifica «cuando el costo de revertir es alto», no para decisiones baratas |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Las cinco secciones del ADR (prerrequisito).** Cada ADR debe contener `## Contexto`, `## Decisión`, `## Alternativas`, `## Consecuencias` y `## Estado`; el validador las lista en `const secciones` y corta con `faltan ...` si alguna no aparece. Son la estructura mínima que distingue una decisión registrada de una nota suelta, por eso el validador se escribe antes que los documentos.
+
+**Alternativas descartadas (núcleo).** El script cuenta `(texto.match(/^- \*\*/gm) ?? []).length` y exige al menos dos por ADR, como las entradas `- **MongoDB:**` y `- **SQLite:**` del ADR `0001`. Registrar lo que se descartó y por qué es el mecanismo que convierte el documento en una elección revisable y no en una orden.
+
+**Nomenclatura `NNNN-*.md` (prerrequisito).** El validador filtra `docs/adr` con `/^\d{4}-.+\.md$/` y exige tres archivos; nombres como `0001-postgresql-en-lugar-de-mongodb.md` cumplen el patrón. Un archivo que no empiece por cuatro dígitos no se cuenta y dispara `Se esperaban 3 ADR y hay N`, lo que obliga a numerar las decisiones de forma ordenada.
+
+**Estado de la decisión (variante).** El campo `## Estado` admite valores como `Aceptada el 2026-10-30` o `Reemplazada por 0004`. Cambiar `0002` a reemplazada y crear `0004` mantiene el historial explícito y el validador sigue pasando: una decisión reemplazada sigue siendo historia útil, no se borra.
+
+**ADR sin alternativas (error frecuente).** El fallo deliberado borra la sección `## Alternativas` del ADR `0003` y el validador responde `0003-reintentos-con-outbox.md: faltan ## Alternativas`. El diagnóstico es que un ADR sin alternativas no permite revisar la decisión: parece una orden. La corrección es reponer la sección con dos opciones reales.
+
+**Marcador equivocado de alternativa (diagnóstico).** El validador cuenta las alternativas por el patrón `- **` al inicio de línea, así que una lista numerada o con otro marcador no se contabiliza y aparece `se esperaban al menos 2 alternativas`. El diagnóstico fino es que las opciones están escritas como texto continuo en vez de lista con el marcador esperado.
+
+**Cuándo escribir un ADR (decisión).** Un ADR documenta una decisión, no garantiza que sea buena. La decisión profesional que fija el tema: si revertir es barato basta una línea en el commit, y el ADR se justifica cuando el costo de revertir es alto, para las decisiones que alguien querrá cuestionar dentro de un año.
 
 Un ADR no es un documento de diseño: es la memoria de una decisión concreta, con las alternativas que se descartaron y el costo que se aceptó. Tiene cinco partes: **contexto** (la fuerza que obliga a decidir), **decisión** (qué se eligió), **alternativas** (qué se descartó y por qué), **consecuencias** (qué se gana y qué se paga) y **estado** (propuesta, aceptada, reemplazada). El estado importa: una decisión reemplazada sigue siendo historia útil.
 

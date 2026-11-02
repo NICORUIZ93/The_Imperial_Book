@@ -220,6 +220,37 @@ Cada tema se practica por separado con su propia repetición progresiva y su pro
 
 **¿Por qué es importante?** Una API de entregas que combina ubicación, tarifa y disponibilidad necesita modelar explícitamente si cada operación espera cero-o-un resultado (`Mono`, como buscar una entrega por código) o cero-a-N resultados (`Flux`, como listar todas las entregas), sin bloquear un thread por cada espera de red o de base de datos.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `Mono` (cardinalidad 0..1) | Núcleo | `Mono<Delivery> entrega = repository.findByTrackingCode(codigo);` |
+| `Flux` (cardinalidad 0..N) | Núcleo | `Flux<Delivery> entregas = repository.findAll();` |
+| Evaluación perezosa | Núcleo | `assert !seEjecuto.get()` se cumple antes de suscribirse |
+| Suscripción como disparador | Prerrequisito | `StepVerifier.create(mono)` ejecuta la lambda y `seEjecuto` pasa a `true` |
+| Caso vacío y error como señal | Variante | ejercicios con `Mono.empty()` y `Flux.error(new RuntimeException("fallo"))` |
+| Verificación posicional con `StepVerifier` | Diagnóstico | `expected value: Factura pagada; actual value: Pagar factura` |
+| `.block()` dentro del flujo | Error frecuente | errores comunes: llamar `.block()` "para simplificar" anula lo no bloqueante |
+| Reactivo sin I/O real | Límite | envolver cálculos en memoria en un `Mono` solo añade complejidad |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`Mono` (cardinalidad 0..1) (núcleo).** `Mono<Delivery> entrega = repository.findByTrackingCode(codigo);` modela una operación que produce cero o un elemento, como buscar una entrega por su código único. El mecanismo es un `Publisher` tipado por cardinalidad: el tipo mismo comunica al lector y al compilador que a lo sumo llega un resultado. La decisión de diseño es elegir `Mono` cuando la semántica del dominio garantiza un único resultado opcional, evitando la ambigüedad de devolver una colección que podría tener más de un elemento.
+
+**`Flux` (cardinalidad 0..N) (núcleo).** `Flux<Delivery> entregas = repository.findAll();` modela un flujo de cero a N elementos, como listar todas las entregas. A diferencia del `Mono`, admite una secuencia completa y el test `unFluxEmiteExactamenteLosElementosDeclarados` confirma que emite exactamente los tres elementos declarados, en orden, antes de completar. La decisión es reservar `Flux` para operaciones cuya cardinalidad real puede superar uno, en lugar de forzar una colección dentro de un `Mono`.
+
+**Evaluación perezosa (núcleo).** Declarar un `Mono` o `Flux` no ejecuta su lógica productora: la aserción `assert !seEjecuto.get()` se cumple justo después de construir el `Mono.fromCallable(...)` y antes de cualquier suscripción. El mecanismo es que el `Publisher` solo describe el trabajo; ni siquiera la query contra la base de datos corre hasta que alguien se suscribe. El error típico es asumir que construir el publisher ya disparó su efecto, cuando nada ocurre sin suscripción.
+
+**Suscripción como disparador (prerrequisito).** La ejecución real comienza con la suscripción: `StepVerifier.create(mono)` se suscribe de verdad y provoca que `seEjecuto` pase a `true`, verificado por la segunda aserción del test. En un `@RestController` reactivo esa suscripción la realiza Spring automáticamente al devolver el publisher desde el endpoint. La variante importante es que el método final de la cadena (`.verifyComplete()`, `.verifyError()`) es el que dispara la suscripción en el test, no `create` por sí solo.
+
+**Caso vacío y error como señal (variante).** Un flujo reactivo puede completar sin emitir (`Mono.empty()`, verificado con `verifyComplete()` sin `expectNext`) o terminar en error como señal (`Flux.error(new RuntimeException("fallo"))`, verificado con `expectError(RuntimeException.class)`). El mecanismo clave es que el error viaja como una señal dentro del flujo, no como una excepción lanzada al construir. El límite que esto enseña es que `verifyComplete()` y `expectError(...)` son terminaciones mutuamente excluyentes de una misma secuencia.
+
+**Verificación posicional con `StepVerifier` (diagnóstico).** `StepVerifier` comprueba cada elemento en su posición exacta: al cambiar `expectNext("Pagar factura")` por `expectNext("Factura pagada")`, el fallo informa `expected value: Factura pagada; actual value: Pagar factura`. El mecanismo diagnóstico es que la herramienta suscribe de verdad y confronta señal por señal, no solo que "algo" fue emitido. Esto convierte una afirmación vaga sobre el orden en un contraste observable y reproducible.
+
+**`.block()` dentro del flujo (error frecuente).** Llamar `.block()` dentro de un flujo reactivo "para simplificar" el código anula por completo el beneficio no bloqueante, como advierte la sección de errores comunes del tema. El mecanismo del daño es que la espera sincrónica detiene el thread que debía quedar libre para otras peticiones. La decisión correcta es componer con operadores reactivos y dejar que la suscripción final ocurra en el borde (el `@RestController` o el `StepVerifier`), nunca bloquear en medio.
+
+**Reactivo sin I/O real (límite).** Para lógica puramente síncrona sin espera de I/O (cálculos en memoria), envolver el resultado en un `Mono` no aporta beneficio y solo añade complejidad de composición. El mecanismo es que el modelo reactivo rinde cuando libera threads durante esperas de red o base de datos; sin esa espera no hay nada que liberar. La decisión es reservar los tipos reactivos para operaciones con I/O real y evitar reactividad ceremonial donde un valor directo basta.
+
 **Conceptos clave:** 0 o 1 elemento frente a 0 a N elementos, evaluación perezosa con suscripción.
 
 `Mono<Delivery> entrega = repository.findByTrackingCode(codigo);` representa un flujo reactivo de cero o un elemento; `Flux<Delivery> entregas = repository.findAll();` representa un flujo de cero a N elementos. Ambos son perezosos por diseño: no ejecutan ninguna lógica productora (ni siquiera la query contra la base de datos) hasta que alguien efectivamente se suscribe, con Spring suscribiéndose automáticamente cuando un `@RestController` reactivo devuelve un `Mono`/`Flux` como resultado de un endpoint.
@@ -353,6 +384,37 @@ StepVerifier.create(flux)
 #### Aprende
 
 **¿Por qué es importante?** Calcular el costo total de una entrega puede requerir consultar primero la ubicación del destinatario y luego, con esa ubicación, consultar la tarifa correspondiente a esa zona — dos llamadas HTTP dependientes entre sí que no deberían bloquear un thread completo durante toda la espera combinada de ambas.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `WebClient` no bloqueante | Núcleo | `webClient.get().uri(...).retrieve().bodyToMono(String.class)` libera el thread |
+| `RestTemplate` como legado | Prerrequisito | errores comunes: usar `RestTemplate` (bloqueante y legado) en vez de `WebClient` |
+| Composición dependiente con `flatMap` | Núcleo | `obtenerUbicacion(trackingCode).flatMap(this::obtenerTarifa)` |
+| `flatMap` dispara I/O real | Diagnóstico | con una sola respuesta encolada el test falla por timeout |
+| `Mono.zip` para llamadas independientes | Variante | ejercicio: tres llamadas con `Mono.zip(...)` en paralelo |
+| Error HTTP como señal | Límite | `MockResponse.Builder().code(500)` se propaga con `verifyError()` |
+| Timeout explícito | Decisión | `.timeout(Duration.ofSeconds(2))` frente a `bodyDelay(3, TimeUnit.SECONDS)` |
+| Orden de `enqueue` en `MockWebServer` | Error frecuente | las respuestas se entregan en el orden recibido, no por ruta |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`WebClient` no bloqueante (núcleo).** `WebClient` emite peticiones HTTP salientes completamente no bloqueantes: `webClient.get().uri("/usuarios/{id}", id).retrieve().bodyToMono(Usuario.class)` inicia la petición y libera el thread actual para atender otras peticiones concurrentes. El mecanismo es que la respuesta llega como un `Mono` que se resuelve cuando el I/O concluye, sin dejar un thread detenido en la espera. La decisión que habilita es escalar muchas conexiones concurrentes con pocos threads.
+
+**`RestTemplate` como legado (prerrequisito).** `WebClient` reemplaza al histórico `RestTemplate`, hoy considerado legado y bloqueante, como señala la sección de errores comunes. El mecanismo de la diferencia es que `RestTemplate` detiene el thread hasta recibir la respuesta, mientras `WebClient` no. La decisión profesional es no mezclar `RestTemplate` en un flujo reactivo, porque reintroduce el bloqueo que todo el stack intenta evitar.
+
+**Composición dependiente con `flatMap` (núcleo).** `calcularTarifaCompleta` encadena dos llamadas donde la segunda depende del resultado de la primera: `obtenerUbicacion(trackingCode).flatMap(this::obtenerTarifa)`. El mecanismo es que `flatMap` aplana el `Mono` que produce la segunda llamada dentro del flujo de la primera, de forma análoga a `thenCompose` de `CompletableFuture`, sin bloquear en ningún punto. La decisión es usar `flatMap` precisamente cuando existe dependencia de datos entre las dos llamadas.
+
+**`flatMap` dispara I/O real (diagnóstico).** Encolar solo UNA respuesta en vez de dos hace que el test falle por timeout: la segunda llamada disparada por el `flatMap` espera una respuesta que `MockWebServer` no tiene. El mecanismo diagnóstico es que esto demuestra, con un servidor HTTP real, que `flatMap` lanza una SEGUNDA petición HTTP dependiente y no solo transforma un valor en memoria. El error que revela es asumir que la composición es puramente local cuando en realidad implica un segundo viaje de red.
+
+**`Mono.zip` para llamadas independientes (variante).** Cuando dos llamadas no dependen entre sí, el ejercicio propone combinarlas con `Mono.zip(...)` en lugar de `flatMap` encadenado, disparándolas en paralelo. El mecanismo es que `zip` suscribe ambas fuentes a la vez y combina sus resultados cuando las dos completan. La decisión es elegir `zip` para independencia (paralelismo) y `flatMap` para dependencia (secuencia), según la relación real entre las llamadas.
+
+**Error HTTP como señal (límite).** Un error HTTP real de la primera llamada, provocado con `MockResponse.Builder().code(500)`, se propaga como error en el `Mono` compuesto y se verifica con `StepVerifier...verifyError()`. El mecanismo es que el fallo viaja como señal de error a través de la composición, cortando el flujo en vez de lanzarse como excepción local. El límite que enseña es que, sin manejar ese error, el flujo completo queda interrumpido como advierte la sección de errores comunes.
+
+**Timeout explícito (decisión).** Agregar `.timeout(Duration.ofSeconds(2))` acota la espera: si una respuesta tarda más, simulado con `bodyDelay(3, TimeUnit.SECONDS)`, el `Mono` termina en error de timeout en vez de esperar indefinidamente. El mecanismo es que Reactor emite una señal de error al vencer la ventana. La decisión profesional es fijar siempre un límite temporal para no dejar el flujo colgado ante un servicio externo lento.
+
+**Orden de `enqueue` en `MockWebServer` (error frecuente).** `MockWebServer` entrega las respuestas encoladas en el orden en que las recibe, no según la ruta solicitada; por eso el orden de `servidor.enqueue(...)` debe coincidir con el orden real en que el código dispara las llamadas. El mecanismo es una cola FIFO de respuestas desacoplada del endpoint. El error frecuente es encolar las respuestas en orden inverso al de las llamadas y obtener valores cruzados o un cuelgue.
 
 **Conceptos clave:** thread libre mientras espera I/O, composición con `flatMap`.
 
@@ -522,6 +584,34 @@ public Mono<Double> calcularTarifaCompleta(String trackingCode) {
 #### Aprende
 
 **¿Por qué es importante?** WebFlux se justifica específicamente para alta concurrencia con recursos de threads limitados; para un CRUD simple, Spring MVC (o virtual threads de Java 21) suele ser suficiente y considerablemente más simple de razonar y depurar. Mezclar código bloqueante dentro de un pipeline reactivo puede agotar el pequeño pool de threads reactivos compartido.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Decisión WebFlux frente a MVC | Decisión | WebFlux para alta concurrencia; MVC/virtual threads para CRUD simple |
+| `.block()` sobre el event loop | Error frecuente | `Mono.just("dato").block()` en `@GetMapping("/test/bloqueo")` |
+| Detección activa de Reactor | Diagnóstico | `IllegalStateException: block()/blockFirst()/blockLast() are blocking` |
+| Verificación de extremo a extremo | Núcleo | `WebTestClient` espera `.expectStatus().is5xxServerError()` |
+| `boundedElastic` para bloqueo inevitable | Variante | ejercicio: `.publishOn(Schedulers.boundedElastic())` responde `200 OK` |
+| Restricción por tipo de thread | Límite | el mismo `.block()` desde un test JUnit normal NO lanza el error |
+| R2DBC sin ocultar JDBC | Prerrequisito | el acceso a datos usa R2DBC y no oculta JDBC bloqueante tras `Mono` |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Decisión WebFlux frente a MVC (decisión).** WebFlux brilla en sistemas con muchas conexiones concurrentes dominadas por I/O donde los threads son un recurso limitado; para CRUDs de concurrencia moderada, Spring MVC con stack traces lineales suele ser suficiente, un balance aún más relevante desde los virtual threads de Java 21. El mecanismo es que un thread reactivo atiende varias esperas, mientras MVC asigna un thread por petición. La decisión profesional se toma con criterios medibles —concurrencia esperada, tipo de I/O, costo de depuración— no por preferencia.
+
+**`.block()` sobre el event loop (error frecuente).** El endpoint `conBloqueoIndebido()` ejecuta `Mono.just("dato").block()` dentro de un handler reactivo, forzando al thread del event loop de Netty —diseñado para nunca bloquearse— a esperar sincrónicamente. El mecanismo del daño es que ocupa uno de los pocos threads del pool reactivo durante toda la operación, afectando a las demás peticiones concurrentes. Es el antipatrón central que el tema reproduce para observarlo en código, no solo describirlo.
+
+**Detección activa de Reactor (diagnóstico).** Reactor no permite el bloqueo silenciosamente: lanza `IllegalStateException: block()/blockFirst()/blockLast() are blocking, which is not supported in thread reactor-http-nio-...`. El mecanismo diagnóstico es que Reactor marca ciertos threads (los del event loop de Netty) como no-bloqueables y rechaza activamente `.block()` sobre ellos. Esto convierte un error latente de producción en una excepción inmediata y rastreable durante el desarrollo.
+
+**Verificación de extremo a extremo (núcleo).** `WebTestClient` ejercita el pipeline HTTP completo y confirma que la petición a `/test/bloqueo` falla con `.expectStatus().is5xxServerError()`. El mecanismo es que no se trata de un test unitario aislado, sino de la petición real procesada por WebFlux sobre un thread reactivo verdadero, único contexto donde se activa la detección. La decisión de probar así garantiza que el rechazo ocurre en el entorno de ejecución real, no en una simulación.
+
+**`boundedElastic` para bloqueo inevitable (variante).** El ejercicio propone `.publishOn(Schedulers.boundedElastic())` antes de un `.block()` interno, moviendo el bloqueo a un scheduler diseñado para tolerarlo, y ese endpoint SÍ responde `200 OK`. El mecanismo es que `boundedElastic` provee threads aptos para operaciones bloqueantes, aislados del event loop. La decisión correcta, cuando el bloqueo es inevitable, es desplazarlo a ese scheduler en lugar de ejecutarlo sobre el thread no bloqueable.
+
+**Restricción por tipo de thread (límite).** El error `block() ... not supported in thread reactor-http-nio-...` solo ocurre en threads que Reactor marca como no-bloqueables; el mismo `.block()` desde un test JUnit normal, fuera de un pipeline reactivo activo, NO lo lanza. El mecanismo es que la restricción vive en el thread, no en el método `.block()` en sí. El límite que enseña es que pasar un test aislado con `.block()` no garantiza que el código sea seguro dentro del event loop.
+
+**R2DBC sin ocultar JDBC (prerrequisito).** El acceso a datos debe usar R2DBC y no ocultar JDBC bloqueante detrás de un `Mono`, como exige el checklist de salida. El mecanismo es que R2DBC es un driver reactivo real de extremo a extremo, mientras envolver JDBC en `Mono` reintroduce el bloqueo que agota el pool reactivo. La decisión profesional es mantener toda la cadena no bloqueante y, si el bloqueo es inevitable, aislarlo explícitamente en `boundedElastic`.
 
 **Conceptos clave:** alta concurrencia con recursos limitados frente a CRUD simple, JDBC bloqueante en un pipeline reactivo.
 

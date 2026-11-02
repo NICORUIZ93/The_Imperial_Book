@@ -15,6 +15,34 @@ Cada tema se practica por separado con su propia repetición progresiva y su pro
 
 **¿Por qué es importante?** La asignación de un conductor y el envío de notificaciones no deben bloquear el request HTTP que crea una tarea; un evento desacopla al publicador de sus consumidores, permitiendo que la notificación se procese de forma independiente sin que el creador de la tarea espere por ella.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `KafkaTemplate.send` con topic | Núcleo | `kafka.send("tareas.creadas", evento.id(), evento)` publica sin conocer al consumidor |
+| `@KafkaListener` independiente | Núcleo | `@KafkaListener(topics = "tareas.creadas", groupId = "notificaciones")` registra un consumidor sin referencia al publicador |
+| Clave del mensaje y partición | Variante | usar `evento.id()` como clave: "mismo id -> misma partición" y orden por partición |
+| Consumo asíncrono | Límite | el test usa `Awaitility.await().atMost(Duration.ofSeconds(5))` porque la entrega no es inmediata |
+| Acoplamiento por nombre de topic | Error frecuente | el fallo deliberado cambia a `tareas.otro-topic` y el test queda sin recibir mensajes |
+| `@EmbeddedKafka` como broker real | Prerrequisito | `@EmbeddedKafka(partitions = 1, topics = "tareas.creadas")` levanta Kafka embebido sin Docker |
+| Varios `groupId` sobre el mismo topic | Decisión | el reto abierto añade `analytics` sin tocar el publicador |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`KafkaTemplate.send` con topic (Núcleo).** El publicador invoca `kafka.send("tareas.creadas", evento.id(), evento)` y entrega el evento al topic sin conocer ni referenciar a ningún consumidor. Ese envío es lo que convierte una llamada directa a `NotificacionService` en un punto de desacoplamiento: el `TareaService` ya no necesita que el consumidor esté disponible en el mismo instante. El mecanismo es asíncrono respecto al request HTTP que originó la tarea.
+
+**`@KafkaListener` independiente (Núcleo).** El consumidor se declara con `@KafkaListener(topics = "tareas.creadas", groupId = "notificaciones")` y Spring lo invoca automáticamente por cada mensaje del topic. No existe ninguna dependencia de compilación entre `EventoPublisher` y `NotificacionListener`: el único vínculo es el nombre del topic. Esto permite agregar o quitar consumidores sin modificar el publicador.
+
+**Clave del mensaje y partición (Variante).** Enviar con `evento.id()` como clave fija la partición de destino, de modo que todos los eventos de la misma tarea caen en la misma partición y se procesan en orden entre sí, como indica el comentario "clave estable: mismo id -> misma partición". Es una variante del envío básico que añade una garantía de orden parcial. El ejercicio 3 explora qué ocurre con un `id` nulo o vacío al enrutar.
+
+**Consumo asíncrono (Límite).** El listener no procesa el mensaje en el instante de `publicar(...)`; por eso el test espera activamente con `Awaitility.await().atMost(Duration.ofSeconds(5))` en vez de verificar de inmediato. Verificar sin espera produce tests intermitentes (flaky), como advierte la Pista. El límite es que el desacoplamiento asíncrono impide confirmar el efecto de forma síncrona.
+
+**Acoplamiento por nombre de topic (Error frecuente).** El fallo deliberado cambia el topic del listener a `tareas.otro-topic` y el test falla con `ConditionTimeoutException` tras los 5 segundos, porque el consumidor escucha un topic que nunca recibe mensajes. Esto revela que el acoplamiento no desaparece: se traslada al string del topic, que debe coincidir carácter por carácter. Un desajuste ahí es una desconexión silenciosa sin error de compilación.
+
+**`@EmbeddedKafka` como broker real (Prerrequisito).** El test se anota con `@EmbeddedKafka(partitions = 1, topics = "tareas.creadas")`, que levanta un broker Kafka real dentro del proceso de test sin necesitar Docker ni un Kafka externo. La propiedad `spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}` conecta la aplicación a ese broker. Sin este prerrequisito no habría forma de confirmar la entrega de extremo a extremo.
+
+**Varios `groupId` sobre el mismo topic (Decisión).** Al añadir un segundo `@KafkaListener` con un `groupId` distinto, ambos grupos reciben el mismo evento de forma independiente, como pide el ejercicio 1 y el reto abierto con `analytics`. La decisión de diseño es que sumar lectores no exige tocar al publicador. El diagrama ya anticipa ese grupo futuro "sin tocar el publicador".
+
 **Conceptos clave:** desacoplamiento vía topic, `@KafkaListener`.
 
 ```java
@@ -218,6 +246,34 @@ public void escuchar(TareaCreadaEvent evento) { }
 
 **¿Por qué es importante?** Un mensaje con un payload corrupto o una condición que el consumidor no puede manejar no debería bloquear indefinidamente el procesamiento de todos los mensajes válidos que llegan después de él en la misma partición.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `DefaultErrorHandler` explícito | Núcleo | el `@Bean errorHandler` combina recoverer y backoff; sin él no hay DLQ |
+| `DeadLetterPublishingRecoverer` | Núcleo | `new DeadLetterPublishingRecoverer(template)` republica el mensaje agotados los reintentos |
+| `FixedBackOff` (reintentos y espera) | Variante | `FixedBackOff(100L, 2)` declara 2 reintentos con 100ms; el ejercicio 2 prueba `FixedBackOff(100L, 0)` |
+| Convención de sufijo `.DLT` | Prerrequisito | el mensaje termina en `pedidos.procesar.DLT` por convención por defecto |
+| Verificación leyendo la DLQ | Diagnóstico | `KafkaTestUtils.getSingleRecord(..., "pedidos.procesar.DLT", ...)` confirma `"payload-invalido"` |
+| DLQ no es automática | Error frecuente | quitar el `@Bean` provoca timeout: nada llega a `.DLT` |
+| Cuándo NO usar DLQ | Decisión | para fallos que deben detener todo el flujo, diferir a una DLQ oculta el problema |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`DefaultErrorHandler` explícito (Núcleo).** El `@Bean errorHandler` crea un `DefaultErrorHandler` que combina el recoverer con la política de reintentos y es el que el contenedor de listeners usa para decidir qué hacer ante una excepción del consumidor. El fallo deliberado demuestra que, sin este bean, no existe dead-letter queue en absoluto. Es el punto donde se declara explícitamente el manejo de errores de mensajería.
+
+**`DeadLetterPublishingRecoverer` (Núcleo).** `new DeadLetterPublishingRecoverer(template)` intercepta la excepción después de agotados los reintentos y republica el mensaje original en el topic de destino. En el demo, `ListenerConFalloDeliberado.procesar` lanza `IllegalArgumentException` para `"payload-invalido"` y el recoverer lo envía a `pedidos.procesar.DLT` en vez de perderlo o bloquear la partición. El mecanismo transforma un fallo repetido en un mensaje trazable.
+
+**`FixedBackOff` (reintentos y espera) (Variante).** `FixedBackOff(100L, 2)` configura 2 reintentos con 100ms entre cada uno, valores reducidos a propósito para que el test corra rápido; el "Completa el código" pide la variante `FixedBackOff(1000L, 3)`. El ejercicio 2 usa `FixedBackOff(100L, 0)`, cero reintentos, y el mensaje llega a la DLQ tras el primer fallo. Variar estos dos números cambia cuántas veces se intenta y cuánto se espera antes de rendirse.
+
+**Convención de sufijo `.DLT` (Prerrequisito).** El `DeadLetterPublishingRecoverer` usa por defecto el nombre del topic original con el sufijo `.DLT` (Dead Letter Topic), por eso el mensaje inválido termina en `pedidos.procesar.DLT`. La Pista señala que mantener esta convención permite a cualquier desarrollador saber dónde buscar sin documentación extra. Conocer la convención es prerrequisito para declarar y consultar el topic correcto.
+
+**Verificación leyendo la DLQ (Diagnóstico).** El test abre un consumidor sobre `pedidos.procesar.DLT` y usa `KafkaTestUtils.getSingleRecord(consumidorDlq, "pedidos.procesar.DLT", Duration.ofSeconds(10))`, confirmando que `registroEnDlq.value()` es exactamente `"payload-invalido"`. Esto diagnostica que el mensaje quedó aislado y trazable, no perdido. El ejercicio 3 inspecciona además `registroEnDlq.headers()` para ver la información de la excepción original que Spring adjunta.
+
+**DLQ no es automática (Error frecuente).** El fallo deliberado quita el `@Bean errorHandler` completo y el test falla con timeout en `getSingleRecord(...)` porque ningún mensaje llega a la DLQ: con el manejo por defecto el mensaje se reintenta indefinidamente o se descarta, pero nunca va a `.DLT`. El error frecuente es asumir que Kafka envía solo a una dead-letter queue; en realidad exige configurar `DefaultErrorHandler` con `DeadLetterPublishingRecoverer`.
+
+**Cuándo NO usar DLQ (Decisión).** Los Límites señalan que para un consumidor donde cualquier fallo debe detener de inmediato todo el flujo hasta que un humano intervenga, reintentar y luego enviar en silencio a una DLQ puede ocultar un problema que requiere atención inmediata. La decisión es ponderar si diferir el fallo es aceptable o si conviene parar. El checklist refuerza esto exigiendo un dueño y un procedimiento para vaciar la DLQ.
+
 **Conceptos clave:** reintentos limitados, destino final para mensajes que fallan repetidamente.
 
 ```java
@@ -404,6 +460,34 @@ return new DefaultErrorHandler(recoverer, new ____(1000L, 3));
 #### Aprende
 
 **¿Por qué es importante?** Sin idempotencia, un timeout de red que en realidad SÍ se entregó en el broker hace que el productor reintente, publicando el mismo evento de negocio dos veces — un conductor podría recibir la misma notificación de "nueva entrega asignada" duplicada, o un pago podría registrarse dos veces si el evento dispara un cobro.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `enable.idempotence=true` | Núcleo | `config.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true)` activa la deduplicación del productor |
+| `acks=all` | Prerrequisito | `config.put(ProducerConfig.ACKS_CONFIG, "all")`; el ejercicio 1 muestra que solo da durabilidad |
+| Número de secuencia por partición | Núcleo | el broker "detecta seq=5 duplicado" y descarta el reintento interno |
+| Reintento del productor vs. de la aplicación | Límite | dos `send(...)` independientes SÍ producen dos registros reales en el topic |
+| Consumidor idempotente por id de negocio | Variante | `idsYaAplicados.add(evento.id())` devuelve `true` solo la primera vez |
+| Sin deduplicación en el consumidor | Error frecuente | el fallo deliberado deja `cobrosRealmenteAplicados` en `2` en vez de `1` |
+| Cuándo omitir la ceremonia | Decisión | para telemetría no crítica un duplicado ocasional puede tolerarse |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`enable.idempotence=true` (Núcleo).** `config.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true)` hace que el productor etiquete cada lote con un número de secuencia por partición, de modo que un reintento interno del cliente Kafka no escriba el mismo mensaje dos veces en el broker. El "Completa el código" confirma que esta es la clave que activa la deduplicación del productor. Es el mecanismo central contra duplicados por ack perdido.
+
+**`acks=all` (Prerrequisito).** `config.put(ProducerConfig.ACKS_CONFIG, "all")` exige que todas las réplicas confirmen la escritura antes de considerarla exitosa, lo que da durabilidad. El ejercicio 1 y los Errores comunes dejan claro que `acks=all` por sí solo no da idempotencia. Funciona como prerrequisito de configuración junto a la idempotencia, no como sustituto de ella.
+
+**Número de secuencia por partición (Núcleo).** El diagrama muestra el productor reenviando `seq=5` tras un ack perdido y el broker detectando el `seq=5` duplicado para descartarlo sin escribir dos veces. Ese número de secuencia por partición es el mecanismo concreto que implementa la deduplicación del lado del broker. Solo cubre reintentos del propio cliente, no llamadas independientes de la aplicación.
+
+**Reintento del productor vs. de la aplicación (Límite).** La Explicación línea por línea distingue el reintento INTERNO del cliente (que la idempotencia sí evita) de dos llamadas a `send(...)` hechas por la APLICACIÓN con el mismo evento, que SÍ producen dos registros reales en el topic. El test envía dos veces con `kafkaTemplatePagos.send(...)` para reproducir ese segundo caso. El límite es que la idempotencia del productor no alcanza al reenvío de la aplicación.
+
+**Consumidor idempotente por id de negocio (Variante).** La defensa que garantiza "exactamente una vez" de negocio es `idsYaAplicados.add(evento.id())`, que devuelve `true` solo la primera vez que ve ese id, por lo que `cobrosRealmenteAplicados` se incrementa una sola vez aunque lleguen varias copias. Es una variante de idempotencia que vive en el consumidor y usa una identidad de negocio estable, no el offset. El comentario aclara que en producción sería una columna UNIQUE o un Set persistido.
+
+**Sin deduplicación en el consumidor (Error frecuente).** El fallo deliberado quita el `if (idsYaAplicados.add(evento.id()))` e incrementa el contador para cada mensaje; entonces `cobrosRealmenteAplicados` queda en `2` en vez de `1` y el test falla. Esto demuestra que la idempotencia del productor nunca fue la responsable de evitar el cobro duplicado. La Pista añade que los reintentos del consumidor por offset no confirmado también necesitan este diseño.
+
+**Cuándo omitir la ceremonia (Decisión).** Los Límites indican que para eventos donde un duplicado ocasional es tolerable y barato de ignorar, como una métrica de telemetría no crítica, la ceremonia de productor idempotente y transaccional puede no justificar su costo de throughput. La decisión depende del costo real de un duplicado frente al rendimiento. El checklist pide además que la deduplicación sobreviva a un reinicio mediante almacén persistente u outbox.
 
 **Conceptos clave:** productor idempotente, ack perdido en la red (no el mensaje), deduplicación por el broker.
 
@@ -620,6 +704,34 @@ config.put(ProducerConfig.____, true);
 
 **¿Por qué es importante?** Cada vez que una instancia de un consumer group se une o abandona el grupo (incluyendo un simple restart de un pod en Kubernetes), Kafka reasigna TODAS las particiones entre TODAS las instancias restantes, deteniendo momentáneamente el consumo de todo el grupo — invisible en desarrollo con una sola instancia, pero costoso en producción con varias.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Rebalanceo al unirse/salir | Núcleo | al arrancar `contenedorB` el broker reparte las 2 particiones entre A y B |
+| `onPartitionsRevoked` / `onPartitionsAssigned` | Núcleo | los callbacks mantienen `particionesAsignadasActualmente` fiel al broker |
+| `group.instance.id` (static membership) | Variante | `GROUP_INSTANCE_ID_CONFIG, "notificaciones-1"` da identidad estable entre reinicios |
+| `CooperativeStickyAssignor` | Variante | minimiza cuántas particiones cambian de dueño en un rebalanceo |
+| Estado local obsoleto | Error frecuente | quitar `removeAll(particiones)` hace que la suma dé `3` en vez de `2` |
+| `session.timeout.ms` | Límite | un reinicio más largo que la ventana SÍ dispara rebalanceo (ejercicio 2) |
+| Cuándo no aplica static membership | Decisión | para un grupo de una sola instancia no hay rebalanceo que evitar |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Rebalanceo al unirse/salir (Núcleo).** El test arranca `contenedorA` solo, que recibe las 2 particiones, y al iniciar `contenedorB` en el mismo `groupId` el broker fuerza un rebalanceo genuino que reparte esas particiones entre ambas instancias. La aserción final verifica que la suma de particiones asignadas sigue siendo 2, sin perder ni duplicar ninguna. Es el mecanismo central: unirse o salir del grupo redistribuye el trabajo.
+
+**`onPartitionsRevoked` / `onPartitionsAssigned` (Núcleo).** `EstadoParticionRebalanceListener` implementa ambos callbacks reales del broker: `onPartitionsRevoked` quita particiones del estado local y cuenta revocaciones, `onPartitionsAssigned` las añade en la asignación inicial y tras cada rebalanceo. Juntos mantienen `particionesAsignadasActualmente` fiel a lo que el broker realmente asignó. El checklist exige implementar los dos, no solo uno.
+
+**`group.instance.id` (static membership) (Variante).** `config.put(ConsumerConfig.GROUP_INSTANCE_ID_CONFIG, "notificaciones-1")` da a la instancia una identidad estable: si se reinicia dentro de `session.timeout.ms`, el broker la trata como la misma instancia que regresa y no dispara un rebalanceo completo. El "Completa el código" confirma que esta es la configuración que da identidad estable entre reinicios. Es una variante del consumo básico pensada para reinicios breves y conocidos.
+
+**`CooperativeStickyAssignor` (Variante).** Configurado vía `PARTITION_ASSIGNMENT_STRATEGY_CONFIG`, minimiza cuántas particiones efectivamente cambian de dueño cuando un rebalanceo sí ocurre, en vez de reasignar todas desde cero. El ejercicio 1 propone contar cuántas particiones cambian con y sin este assignor usando 3 instancias. Es una variante de estrategia de asignación que reduce el costo del rebalanceo.
+
+**Estado local obsoleto (Error frecuente).** El fallo deliberado quita `particionesAsignadasActualmente.removeAll(particiones)` de `onPartitionsRevoked` y la aserción de la suma reporta `3` en vez de `2`, porque la primera instancia sigue creyendo que conserva una partición ya reasignada. Esto reproduce el bug real de estado obsoleto: una instancia podría servir, cachear o contar datos de una partición que ya no le pertenece. Ignorar la revocación es el error típico.
+
+**`session.timeout.ms` (Límite).** El ejercicio 2 configura un `session.timeout.ms` corto (por ejemplo 5 segundos) y confirma que un reinicio que tarde más que esa ventana SÍ dispara un rebalanceo incluso con static membership. La Pista precisa que static membership protege reinicios breves, no la pérdida permanente de una instancia. El límite es la duración de la ausencia tolerada.
+
+**Cuándo no aplica static membership (Decisión).** Los Límites indican que para un consumer group de una sola instancia, sin escalado horizontal, el rebalanceo no es un problema real a evitar y static membership solo agrega configuración sin beneficio. La decisión es aplicarlo únicamente cuando hay varias instancias y reinicios frecuentes. El ejercicio 3 también advierte sobre usar el mismo `group.instance.id` en dos instancias por error.
+
 **Conceptos clave:** consumer group, rebalanceo, partition assignment strategy, static membership.
 
 ```java
@@ -830,6 +942,34 @@ config.put(ConsumerConfig.____, "notificaciones-1");
 #### Aprende
 
 **¿Por qué es importante?** Elegir la tecnología de mensajería equivocada para el patrón de consumo real necesario (retención y relectura de historial vs. distribución simple de trabajo) genera complejidad innecesaria o limitaciones inesperadas más adelante.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `@RabbitListener` vs. `@KafkaListener` | Prerrequisito | `@RabbitListener(queues = "tareas.creadas")` es sintácticamente similar pero de modelo distinto |
+| Kafka como log retenido | Núcleo | retiene mensajes un período configurable aunque ya se hayan consumido |
+| RabbitMQ como broker de colas | Núcleo | el mensaje se entrega y se elimina de la cola una vez consumido |
+| Relectura del historial | Variante | varios grupos pueden releer el mismo stream completo, incluso eventos ya vistos |
+| Competencia de consumidores | Variante | en RabbitMQ un solo trabajador del pool recibe cada carta (punto-a-punto) |
+| `spring-boot-starter-amqp` y `Queue` | Diagnóstico | `new Queue("tareas.creadas.rabbit", true)` declara la cola equivalente del Tema 1 |
+| Elegir según patrón de consumo | Decisión | retención/relectura vs. distribución simple de trabajo guía la tecnología |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`@RabbitListener` vs. `@KafkaListener` (Prerrequisito).** `@RabbitListener(queues = "tareas.creadas")` se parece mucho a `@KafkaListener`, pero el modelo subyacente es distinto. Reconocer esa similitud superficial es prerrequisito para no asumir que ambas tecnologías se comportan igual bajo el mismo código. La demo monta el equivalente RabbitMQ del publicador/consumidor del Tema 1 para comparar directamente.
+
+**Kafka como log retenido (Núcleo).** Kafka es un log distribuido que retiene mensajes durante un período configurable con independencia de si ya fueron consumidos. Eso permite que múltiples consumidores, o el mismo releyendo desde un punto anterior, lean el stream completo. Es el mecanismo que distingue a Kafka de una cola tradicional y la base de la relectura de historial.
+
+**RabbitMQ como broker de colas (Núcleo).** RabbitMQ es un broker de colas tradicional donde un mensaje típicamente se entrega y se elimina de la cola una vez consumido, en un patrón punto-a-punto. El diagrama lo resume como "el mensaje se entrega y se elimina de la cola". Ese modelo es el contraste directo con la retención de Kafka.
+
+**Relectura del historial (Variante).** Como Kafka conserva los mensajes, varios grupos de consumidores pueden releer el mismo stream completo, incluso eventos ya consumidos, según el diagrama. Es una variante de consumo que RabbitMQ no ofrece de forma nativa porque elimina el mensaje tras entregarlo. Determina si se puede reprocesar historial.
+
+**Competencia de consumidores (Variante).** En RabbitMQ un solo trabajador del pool recibe cada carta, lo que el diagrama describe como competencia de consumidores. Es una variante de reparto punto-a-punto, distinta de los grupos de Kafka que leen el stream completo en paralelo. Encaja con la distribución simple de trabajo entre workers.
+
+**`spring-boot-starter-amqp` y `Queue` (Diagnóstico).** La demo agrega la dependencia real `spring-boot-starter-amqp` y declara `new Queue("tareas.creadas.rabbit", true)` en `RabbitConfig`, el equivalente RabbitMQ del flujo del Tema 1. Observar esa cola y su consumidor permite diagnosticar en qué se diferencia su entrega respecto a Kafka. El segundo argumento `true` marca la cola como durable.
+
+**Elegir según patrón de consumo (Decisión).** La importancia del tema está en que elegir la tecnología equivocada genera complejidad o limitaciones más adelante: retención y relectura de historial apuntan a Kafka, distribución simple de trabajo apunta a RabbitMQ. La decisión profesional parte del patrón de consumo real necesario, no de la familiaridad con la API. Ambas comparten una anotación parecida pero resuelven problemas distintos.
 
 **Conceptos clave:** log distribuido retenido frente a broker de colas tradicional.
 

@@ -15,6 +15,34 @@ Cada tema construye una pieza real del backend de un sistema de entregas (`gesti
 
 **¿Por qué es importante?** Crear, consultar, asignar, actualizar y cancelar envíos son casos de uso diferentes, no un controlador genérico que expone entidades. Un `DELETE /api/envios/{id}` que cancela (cambia estado) en vez de borrar físicamente preserva el historial necesario para auditoría y disputas, algo que una eliminación real destruiría irreversiblemente.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Idempotency-Key en creación/confirmación | Prerrequisito | El checklist exige que repetir la petición con la misma `Idempotency-Key` no duplique el efecto |
+| DELETE como cancelación de negocio | Núcleo | `envio.cancelar()` cambia `estado` a `CANCELADO` y el test exige `status 200` con `$.estado = CANCELADO` |
+| Fila preservada tras el DELETE | Núcleo | `assertThatFilaSiguePresente` verifica que `repository.findById(id)` sigue `isPresent()` |
+| Cancelación repetida idempotente | Variante | El ejercicio 2 pide un test donde cancelar un envío ya `CANCELADO` devuelve el mismo estado sin error |
+| DTO y Bean Validation en el contrato | Límite | El ejercicio 3 exige que una entrada inválida responda `400` con `Problem Details` |
+| DELETE físico destruye auditoría | Error frecuente | El fallo deliberado con `repository.delete(envio)` deja `findById` vacío y rompe `assertThatFilaSiguePresente` |
+| Cancelación lógica vs borrado físico | Decisión | "Cuándo no usarlo" admite borrado físico solo para datos transitorios sin valor de auditoría |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Idempotency-Key en creación/confirmación (Prerrequisito).** El tema parte del Módulo 13 y da por conocida la protección de reintentos: `Idempotency-Key` evita que crear o confirmar un envío dos veces produzca dos efectos. Sin ese prerrequisito, el contrato CRUD no distinguiría un reintento de red de una segunda operación legítima. El checklist lo exige explícitamente como condición de salida del tema.
+
+**DELETE como cancelación de negocio (Núcleo).** El método `cancelar()` de la entidad asigna `estado = "CANCELADO"` y el controller lo invoca en vez de borrar, devolviendo `ResponseEntity.ok(repository.save(envio))`. El test `deleteCambiaEstadoEnVezDeBorrarFisicamente` confirma `status 200` y `$.estado = CANCELADO`. Este es el mecanismo central: el verbo HTTP `DELETE` no dicta por sí mismo una eliminación física, la semántica la define el dominio.
+
+**Fila preservada tras el DELETE (Núcleo).** La evidencia observable de que la cancelación no destruyó el registro es `assertThatFilaSiguePresente(id)`, que afirma que `repository.findById(id)` sigue `isPresent()` después del `DELETE`. Esta comprobación contra la base de datos real, no contra el nombre del método HTTP, es lo que acredita la semántica de cancelación frente a borrado.
+
+**Cancelación repetida idempotente (Variante).** El ejercicio 2 pide confirmar con un test que cancelar un envío ya `CANCELADO` no lanza error y devuelve el mismo estado. Es una variante del flujo núcleo: la operación debe ser segura ante repetición porque el estado destino coincide con el actual. Si falla, la transición no es idempotente y lanza en lugar de devolver el estado vigente.
+
+**DTO y Bean Validation en el contrato (Límite).** El contrato público se define con DTO explícito, Bean Validation, Problem Details y OpenAPI, nunca exponiendo la entidad JPA directamente. El ejercicio 3 fija el límite observable: una entrada inválida con `@NotBlank` violado responde `400` con `Problem Details`. Ese es el borde entre entrada aceptable e inaceptable del contrato.
+
+**DELETE físico destruye auditoría (Error frecuente).** El fallo deliberado sustituye `envio.cancelar()` por `repository.delete(envio)`: el test entonces falla en `assertThatFilaSiguePresente` porque `findById` devuelve vacío. Esto diagnostica el error común de implementar un `DELETE` HTTP como eliminación física en un dominio auditable, destruyendo irreversiblemente el historial que el contrato debía preservar.
+
+**Cancelación lógica vs borrado físico (Decisión).** El cierre "Cuándo no usarlo" delimita la decisión profesional: para datos verdaderamente transitorios sin valor de auditoría (una sesión de caché temporal), la eliminación física simple es apropiada y la cancelación lógica sería complejidad innecesaria. La elección depende de si el historial tiene valor de auditoría o disputa.
+
 **Conceptos clave:** DTO explícito, DELETE como cancelación de negocio, Idempotency-Key.
 
 DTO, Bean Validation, Problem Details y OpenAPI definen el contrato público, nunca la entidad JPA directamente. `Idempotency-Key` protege la creación y confirmación de un envío ante reintentos (Módulo 13), y un `DELETE` bien diseñado en un dominio de auditoría cambia el estado a `CANCELADO` en vez de ejecutar un `DELETE FROM` físico.
@@ -192,6 +220,34 @@ El contrato CRUD que diseñes aquí sigue el mismo criterio de claridad que exig
 
 **¿Por qué es importante?** Filtrar conductores cercanos a una entrega requiere calcular distancias geográficas de forma eficiente; sin un índice espacial, cada consulta de cercanía escanearía la tabla completa, algo inviable con miles de posiciones activas simultáneas.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| MySQL 8 real vía Testcontainers | Prerrequisito | El test usa `new MySQLContainer<>("mysql:8.0")`, no un motor simulado |
+| `POINT SRID 4326` y columna espacial | Núcleo | `CREATE TABLE punto (... ubicacion POINT SRID 4326 NOT NULL, SPATIAL INDEX(ubicacion))` |
+| `ST_Distance_Sphere` en metros reales | Núcleo | La distancia Bogotá-Medellín se exige `isBetween(230_000.0, 250_000.0)` |
+| `EXPLAIN` confirma uso del índice | Diagnóstico | La columna `key` del `EXPLAIN` debe ser `"ubicacion"`, no un escaneo completo |
+| Orden longitud-antes-que-latitud en WKT | Error frecuente | Invertir `POINT(-74.08, 4.61)` saca la distancia del rango 230-250 km sin que MySQL rechace el INSERT |
+| Distancia esférica ≠ ruta vial real | Límite | El ejercicio 3 pide documentar que no considera calles, sentido único ni tráfico |
+| Cuándo prescindir del índice espacial | Decisión | "Cuándo no usarlo" lo descarta para volúmenes pequeños sin consultas de cercanía frecuentes |
+
+Cada fila tiene su explicación individual a continuación.
+
+**MySQL 8 real vía Testcontainers (Prerrequisito).** El tema exige el Módulo 6 (Testcontainers) y arranca `new MySQLContainer<>("mysql:8.0")` con `mysql.start()`. Las funciones espaciales como `ST_Distance_Sphere` y el índice `SPATIAL` son específicas del motor, así que un H2 o un mock no servirían: el prerrequisito es ejecutar contra un MySQL 8 real para que el comportamiento observado sea el de producción.
+
+**`POINT SRID 4326` y columna espacial (Núcleo).** La tabla define `ubicacion POINT SRID 4326 NOT NULL, SPATIAL INDEX(ubicacion)` y los INSERT usan `ST_SRID(POINT(...), 4326)`. SRID 4326 es el sistema de referencia estándar de coordenadas GPS; sin él, la columna y la geometría insertada quedarían en sistemas incompatibles. Es el fundamento sobre el que operan tanto el cálculo de distancia como el índice.
+
+**`ST_Distance_Sphere` en metros reales (Núcleo).** La consulta `SELECT ST_Distance_Sphere(...) AS metros` devuelve una distancia en metros que el test fija `isBetween(230_000.0, 250_000.0)`, correspondiente a los ~240 km reales entre Bogotá y Medellín. Este es el mecanismo central de filtrado de cercanía: produce metros reales sobre la superficie esférica, verificables contra una distancia conocida.
+
+**`EXPLAIN` confirma uso del índice (Diagnóstico).** El segundo test lee la columna `key` del resultado de `EXPLAIN` sobre una consulta con `MBRContains` y exige que valga `"ubicacion"`. Esa columna nombra el índice efectivamente usado, o `NULL` si ninguno. Leerla directamente —no inferir por el tiempo de ejecución— es la forma correcta de diagnosticar si MySQL aprovechó el índice `SPATIAL` o escaneó la tabla completa.
+
+**Orden longitud-antes-que-latitud en WKT (Error frecuente).** En WKT la longitud va ANTES que la latitud, el orden inverso al de muchas APIs de mapas. El fallo deliberado invierte `POINT(-74.08, 4.61)` a `POINT(4.61, -74.08)` y la distancia sale del rango 230-250 km. El error es silencioso: MySQL no rechaza el INSERT y solo se manifiesta como un cálculo de distancia incorrecto, por eso la teoría insiste en el orden.
+
+**Distancia esférica ≠ ruta vial real (Límite).** El ejercicio 3 pide documentar por qué `ST_Distance_Sphere` sirve para un filtro inicial de cercanía pero no para calcular una ruta real, que debe considerar calles, sentido único y tráfico. La teoría lo confirma: calcular una ruta real requiere un motor vial aparte. Es el límite del alcance de la función: distancia en línea recta, no trayecto transitable.
+
+**Cuándo prescindir del índice espacial (Decisión).** "Cuándo no usarlo" delimita la decisión: para un volumen pequeño de datos geográficos sin consultas de cercanía frecuentes, un índice espacial dedicado agrega complejidad sin beneficio medible. El índice se justifica cuando el escaneo completo de miles de posiciones activas sería inviable, no en todos los casos.
+
 **Conceptos clave:** `POINT` con SRID 4326, índice `SPATIAL`, `ST_Distance_Sphere`.
 
 MySQL 8 almacena `POINT` con SRID 4326 (el sistema de referencia estándar de coordenadas GPS) e índices `SPATIAL`. `ST_Distance_Sphere` permite filtros iniciales de cercanía en metros reales, mientras que calcular una ruta real requiere un motor vial aparte. En WKT (Well-Known Text), la longitud va ANTES que la latitud, el orden inverso al que la mayoría de APIs de mapas exponen por convención, una fuente común de errores silenciosos.
@@ -329,6 +385,34 @@ Los datos espaciales de este tema son un ejemplo de requisito de dominio especí
 #### Aprende
 
 **¿Por qué es importante?** JPA modela agregados y Hibernate traduce persistencia, pero no reemplaza entender SQL: Hibernate Spatial integra `Geometry`/`Point` como un tipo Java de primera clase, permitiendo que el código de dominio trabaje con coordenadas tipadas en vez de strings WKT crudos, mientras las migraciones Flyway siguen gestionando SRID, constraints e índices explícitamente.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| SRID 4326 coincidente columna/objeto | Prerrequisito | La columna es `POINT SRID 4326` y el objeto se crea con `new GeometryFactory(new PrecisionModel(), 4326)` |
+| Mapeo `Point` JTS vía Hibernate Spatial | Núcleo | El campo `private Point ubicacion` con `@Column(columnDefinition = "POINT SRID 4326")` persiste y se relee |
+| Persistencia sin pérdida de precisión | Núcleo | El test exige `getX()` = `-74.08` y `getY()` = `4.61` tras guardar y leer |
+| `@Version` y bloqueo optimista | Núcleo | `copiaB.saveAndFlush` lanza `ObjectOptimisticLockingFailureException` sobre versión obsoleta |
+| Pérdida silenciosa sin `@Version` | Error frecuente | Quitar `@Version` hace que `saveAndFlush(copiaB)` ya no lance y sobrescriba a `copiaA` |
+| N+1 al acceder a cada `.getUbicacion()` | Diagnóstico | El ejercicio 3 pide un test que dispare consultas adicionales al cargar 10 posiciones |
+| Optimista (detecta después) vs pesimista (previene antes) | Decisión | El ejercicio 2 contrasta `@Version` con `SELECT ... FOR UPDATE` |
+
+Cada fila tiene su explicación individual a continuación.
+
+**SRID 4326 coincidente columna/objeto (Prerrequisito).** La columna se declara `POINT SRID 4326` y el objeto JTS se construye con `new GeometryFactory(new PrecisionModel(), 4326)`. La pista advierte que construir un `Point` sin el SRID correcto puede producir un desajuste silencioso con la columna. El SRID coherente entre ambos lados es el prerrequisito para que la persistencia espacial funcione sin conflictos de sistema de referencia.
+
+**Mapeo `Point` JTS vía Hibernate Spatial (Núcleo).** La entidad declara `private Point ubicacion` con `@Column(columnDefinition = "POINT SRID 4326")`, y Hibernate Spatial traduce ese tipo `org.locationtech.jts.geom.Point` hacia y desde el WKT/WKB del driver. Este es el mecanismo central: el código de dominio trabaja con coordenadas tipadas en Java, no con strings WKT crudos, delegando la conversión a Hibernate Spatial.
+
+**Persistencia sin pérdida de precisión (Núcleo).** El test `elPuntoPersisteYSeLeeSinPerdidaDePrecision` guarda un punto en `(-74.08, 4.61)` y, tras releerlo, exige `getX()` igual a `-74.08` y `getY()` igual a `4.61`. La evidencia observable es que las coordenadas sobreviven un ciclo real de escritura y lectura contra MySQL sin degradarse, confirmando que la traducción espacial preserva los valores.
+
+**`@Version` y bloqueo optimista (Núcleo).** El campo `@Version private Long version` activa el bloqueo optimista. El test crea dos copias de la misma fila, guarda `copiaA` (que incrementa la versión real) y luego exige que `saveAndFlush(copiaB)` lance `ObjectOptimisticLockingFailureException` porque `copiaB` trae una versión ya obsoleta. Así se detecta una edición concurrente sobre una versión vencida de la fila.
+
+**Pérdida silenciosa sin `@Version` (Error frecuente).** El fallo deliberado quita el campo `@Version`: entonces `saveAndFlush(copiaB)` ya no lanza y simplemente sobrescribe los cambios de `copiaA`, que se pierden sin aviso. Esto diagnostica el error común de omitir `@Version` en entidades con actualizaciones concurrentes: `@Version` es lo único que convierte una condición de carrera silenciosa en un error explícito y manejable.
+
+**N+1 al acceder a cada `.getUbicacion()` (Diagnóstico).** El ejercicio 3 pide un test que cargue 10 `PosicionConductor` y acceda a `.getUbicacion()` de cada uno, disparando consultas adicionales, para contrastarlo con una proyección que evita ese costo. La teoría indica que los problemas N+1 se evitan mediante proyecciones o fetch explícito. Reproducir las consultas extra es la forma de diagnosticar el patrón N+1.
+
+**Optimista (detecta después) vs pesimista (previene antes) (Decisión).** El ejercicio 2 pide documentar la diferencia entre bloqueo optimista (`@Version`, detecta el conflicto DESPUÉS de intentar escribir) y bloqueo pesimista (`SELECT ... FOR UPDATE`, previene el conflicto ANTES bloqueando la fila). La decisión profesional depende de la frecuencia de contención: optimista cuando los conflictos son raros, pesimista cuando son frecuentes y costosos de reintentar.
 
 **Conceptos clave:** `Geometry`/`Point` de Hibernate Spatial, `@Version` para bloqueo optimista.
 
@@ -503,6 +587,34 @@ Mapear tipos espaciales con Hibernate Spatial es la misma disciplina de mapeo ob
 
 **¿Por qué es importante?** Spring Security valida `Authorization: Bearer` mediante resource server y firma asimétrica o simétrica real, nunca criptografía casera. `ROLE_DRIVER` permite el conjunto de acciones de conductor, pero un conductor autenticado con ese rol no debería poder modificar la jornada de OTRO conductor solo por tener el rol correcto.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Identidad autenticada vía `spring-security-test` | Prerrequisito | Los tests usan `@WithMockUser(username = "...", roles = "DRIVER")` para fijar la identidad |
+| `@PreAuthorize("hasRole('DRIVER')")` | Núcleo | El endpoint anota el rol requerido para actuar como conductor |
+| Verificación de propiedad (ownership) | Núcleo | `if (!auth.getName().equals(duenio))` responde `403` cuando la jornada es de otro |
+| Rol correcto sin propiedad recibe 403 | Diagnóstico | `conductor-B` con `ROLE_DRIVER` recibe `isForbidden()` sobre `jornada-1` |
+| Acceso horizontal al quitar el ownership | Error frecuente | Sin el `if`, `conductor-B` recibe `200` y puede tocar la jornada ajena |
+| Usuario sin el rol bloqueado antes de ownership | Límite | El ejercicio 2 confirma que `roles = "ADMIN"` recibe `403` por `@PreAuthorize` |
+| Recursos compartidos sin ownership | Decisión | "Cuándo no usarlo" admite solo `hasRole(...)` para un catálogo visible a todos los conductores |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Identidad autenticada vía `spring-security-test` (Prerrequisito).** Los tests fijan la identidad con `@WithMockUser(username = "conductor-A", roles = "DRIVER")`, una forma oficial de `spring-security-test`. La pista la presenta como alternativa más simple a `jwt()` cuando no se necesitan claims específicos del token. Sin una identidad autenticada estable, no habría forma de comparar el `sub` del token contra el dueño del recurso.
+
+**`@PreAuthorize("hasRole('DRIVER')")` (Núcleo).** El endpoint `actualizarPosicion` anota `@PreAuthorize("hasRole('DRIVER')")`, que habilita la CAPACIDAD de actuar como conductor. Es el primer control: sin `ROLE_DRIVER`, la petición se rechaza antes de ejecutar el método. Pero por diseño solo verifica el rol, no la identidad del dueño del recurso concreto.
+
+**Verificación de propiedad (ownership) (Núcleo).** Dentro del método, `if (!auth.getName().equals(duenio))` compara la identidad autenticada con el dueño real de la jornada y responde `403` si no coinciden. Este es el segundo control, complementario al rol: `DUENIO_DE_JORNADA` mapea `jornada-1` a `conductor-A`, y solo esa identidad pasa. Distingue "tiene el rol" de "es dueño de este recurso".
+
+**Rol correcto sin propiedad recibe 403 (Diagnóstico).** El test `unConductorConRolCorrectoPeroSinPropiedadRecibe403` usa `conductor-B` con el mismo `ROLE_DRIVER` válido y exige `status().isForbidden()` sobre `jornada-1`. La evidencia observable es que el rol correcto por sí solo no basta: el `403` diagnostica en código la distinción exacta entre autorización por rol y verificación de propiedad.
+
+**Acceso horizontal al quitar el ownership (Error frecuente).** El fallo deliberado quita el `if (!auth.getName().equals(duenio))` dejando solo `@PreAuthorize`: entonces `conductor-B` recibe `200` y el test falla. Esto diagnostica la vulnerabilidad real de acceso horizontal: cualquier conductor autenticado podría modificar la jornada de cualquier otro con solo tener el rol correcto.
+
+**Usuario sin el rol bloqueado antes de ownership (Límite).** El ejercicio 2 agrega un usuario con `roles = "ADMIN"` y confirma que recibe `403` por `@PreAuthorize` antes incluso de llegar a la comprobación de propiedad. Marca el orden de los controles: el rol es el límite exterior, y quien no lo tiene ni siquiera alcanza la verificación de ownership.
+
+**Recursos compartidos sin ownership (Decisión).** "Cuándo no usarlo" delimita la decisión: para recursos verdaderamente compartidos entre todos los usuarios de un rol —un catálogo de zonas de entrega visible para todos los conductores— la verificación de propiedad no aplica y `hasRole(...)` por sí solo es suficiente. El ownership se añade solo cuando el recurso tiene un dueño específico.
+
 **Conceptos clave:** resource server, `ROLE_DRIVER`, verificación de propiedad (ownership).
 
 `ROLE_DRIVER` habilita la CAPACIDAD de actuar como conductor; el caso de uso todavía debe verificar que la jornada específica solicitada pertenece al `sub` (subject) del token autenticado. Confundir "tiene el rol correcto" con "es dueño de este recurso específico" produce acceso horizontal entre usuarios del mismo rol.
@@ -651,6 +763,34 @@ Este laboratorio conserva la variante nativa de Spring con STOMP. Para seguir el
 #### Aprende
 
 **¿Por qué es importante?** Spring soporta WebSocket/STOMP de forma nativa; Socket.IO es un protocolo distinto que requeriría un servidor compatible o un gateway adicional fuera del ecosistema Spring. Para notificar la posición de un conductor en tiempo real a la app del cliente, STOMP sobre WebSocket es la opción que Spring implementa directamente y se puede probar de extremo a extremo sin infraestructura adicional.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `@EnableWebSocketMessageBroker` y broker simple | Prerrequisito | `StompConfig` habilita `enableSimpleBroker("/topic")` y registra el endpoint `/ws-entregas` |
+| Publicar con `SimpMessagingTemplate` | Núcleo | `template.convertAndSend("/topic/entregas/1", new PosicionEvento(...))` emite el evento |
+| Suscripción y entrega de extremo a extremo | Núcleo | `WebSocketStompClient` recibe el `PosicionEvento` y afirma `shipmentId = "SHP-1"`, `sequence = 1L` |
+| Enrutamiento estricto por nombre de topic | Error frecuente | Suscribir a `/topic/entregas/2` provoca `TimeoutException` en `recibido.get(3, SECONDS)` |
+| Deduplicación por `sequence` | Variante | El evento lleva `sequence` y el checklist exige deduplicar por ese campo |
+| STOMP ≠ Socket.IO | Límite | El ejercicio 2 pide explicar qué gateway añadir para interoperar con clientes Socket.IO |
+| Tiempo real vs polling periódico | Decisión | "Cuándo no usarlo" prefiere polling HTTP para actualizaciones que toleran segundos o minutos |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`@EnableWebSocketMessageBroker` y broker simple (Prerrequisito).** `StompConfig` anota `@EnableWebSocketMessageBroker`, habilita `registry.enableSimpleBroker("/topic")`, fija `setApplicationDestinationPrefixes("/app")` y registra `addEndpoint("/ws-entregas")`. Este broker STOMP simple embebido es el prerrequisito de infraestructura: enruta hacia los topics y permite probar de extremo a extremo sin un broker externo.
+
+**Publicar con `SimpMessagingTemplate` (Núcleo).** El backend publica con `template.convertAndSend("/topic/entregas/1", new PosicionEvento("SHP-1", 1L, "2026-07-21T10:00:00Z", 1))`. Ese es el mecanismo de emisión: un `PosicionEvento` —`record` con `shipmentId`, `sequence`, `occurredAt` y `schemaVersion`— se envía al topic y el broker lo distribuye a todos los suscriptores de ese destino.
+
+**Suscripción y entrega de extremo a extremo (Núcleo).** El test conecta un `WebSocketStompClient` real por `ws://localhost:<puerto>/ws-entregas`, se suscribe a `/topic/entregas/1` y completa un `CompletableFuture` en el callback; luego afirma `shipmentId = "SHP-1"` y `sequence = 1L`. La evidencia observable es la entrega real del publicador al suscriptor a través del broker, no una simulación.
+
+**Enrutamiento estricto por nombre de topic (Error frecuente).** El fallo deliberado cambia la suscripción a `/topic/entregas/2` mientras se publica en `/topic/entregas/1`, y `recibido.get(3, TimeUnit.SECONDS)` lanza `TimeoutException`. Esto diagnostica que el broker enruta por el nombre exacto del topic: una suscripción a un topic distinto nunca recibe el mensaje y lo hace silenciosamente, sin error explícito.
+
+**Deduplicación por `sequence` (Variante).** Cada `PosicionEvento` incluye `sequence`, y la teoría indica que los consumidores deduplican por ese campo para tolerar reenvíos de red sin procesar dos veces la misma actualización. El checklist exige que el consumidor deduplique por `sequence`. Es la variante de robustez frente a reentregas que el transporte en tiempo real puede producir.
+
+**STOMP ≠ Socket.IO (Límite).** El encabezado del tema y el ejercicio 2 subrayan que STOMP y Socket.IO no son intercambiables aunque ambos viajen sobre WebSocket; interoperar con clientes Socket.IO exigiría un servidor compatible o un gateway adicional fuera del ecosistema Spring. Es el límite del enfoque nativo: cubre clientes STOMP, no clientes Socket.IO existentes.
+
+**Tiempo real vs polling periódico (Decisión).** "Cuándo no usarlo" delimita la decisión: para actualizaciones que toleran un retraso de segundos o minutos (un resumen diario), el polling HTTP periódico simple basta y evita la complejidad operativa de mantener conexiones WebSocket persistentes. STOMP se justifica cuando la inmediatez de la notificación es un requisito real.
 
 **Conceptos clave:** STOMP sobre WebSocket, topic, secuencia, deduplicación.
 
@@ -821,6 +961,34 @@ STOMP sobre WebSocket es la opción que evaluarás si el proyecto integrador de 
 #### Aprende
 
 **¿Por qué es importante?** La base almacena metadatos y hash; las fotografías viven en almacenamiento de objetos con claves no predecibles y URLs firmadas. Confiar en la extensión del archivo (`.jpg`) o en el `Content-Type` declarado por el cliente para decidir si un archivo es realmente una imagen es una vulnerabilidad conocida: un atacante puede subir cualquier contenido con una extensión falsa.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Outbox tras commit (Módulo 13) | Prerrequisito | La notificación push se dispara con `TransactionSynchronizationManager.registerSynchronization(...)` tras el commit |
+| Detección de MIME por magic number | Núcleo | `guessContentTypeFromStream(in)` inspecciona los primeros bytes y compara con `"image/jpeg"` |
+| JPEG real detectado por sus bytes | Núcleo | `FF D8 FF E0 00 10 4A 46 49 46` se detecta `esJpegReal(...) == true` |
+| Contenido disfrazado rechazado | Diagnóstico | Texto plano convertido con `.getBytes()` da `esJpegReal(...) == false` |
+| Confiar solo en la extensión | Error frecuente | `nombreArchivo.endsWith(".jpg")` deja pasar `malware.jpg` que es texto plano |
+| Notificación dentro vs después del commit | Decisión | El ejercicio 3 contrasta anunciar un cambio que podría revertirse frente a `afterCommit` |
+| Límite de tamaño y formatos aceptados | Límite | Los ejercicios 1 y 2 piden rechazar un archivo que excede 5MB y aceptar JPEG/PNG rechazando un tercero |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Outbox tras commit (Módulo 13) (Prerrequisito).** El tema parte del transactional outbox del Módulo 13: la notificación push se dispara DESPUÉS del commit mediante `TransactionSynchronizationManager.registerSynchronization(...)`, el mecanismo real de Spring que garantiza que la notificación solo se envía si la transacción efectivamente se comprometió. Sin ese prerrequisito, una notificación podría anunciar un cambio que luego se revierte.
+
+**Detección de MIME por magic number (Núcleo).** `ValidadorMime.esJpegReal` abre el contenido en un `ByteArrayInputStream` y usa `java.net.URLConnection.guessContentTypeFromStream(in)`, comparando el resultado con `"image/jpeg"`. Este es el mecanismo central: la decisión se toma inspeccionando los primeros bytes reales —los magic numbers— no la extensión ni el `Content-Type` declarado por el cliente.
+
+**JPEG real detectado por sus bytes (Núcleo).** El test aporta `JPEG_REAL` con los bytes `FF D8 FF E0 00 10 4A 46 49 46`, el magic number de un JPEG válido, y exige `esJpegReal(JPEG_REAL)` igual a `true`. La evidencia observable es que un contenido con la firma binaria correcta se reconoce como `image/jpeg` independientemente de cualquier nombre de archivo.
+
+**Contenido disfrazado rechazado (Diagnóstico).** El test `textoPlanoDisfrazadoDeJpgSeRechazaPorSuContenidoReal` toma `"esto es solo texto plano..."`.getBytes()` y exige `esJpegReal(...)` igual a `false`. Aunque el nombre dijera `foto.jpg`, el contenido no miente: la ausencia del magic number de imagen hace que la validación lo rechace. Es el diagnóstico de que la detección opera sobre bytes, no sobre el nombre.
+
+**Confiar solo en la extensión (Error frecuente).** El fallo deliberado sustituye la validación por `nombreArchivo.endsWith(".jpg")`: un texto plano renombrado a `malware.jpg` pasaría, porque el nombre "miente" de forma consistente con lo que esa validación insegura verifica. Esto diagnostica el error común: la extensión es un dato controlado enteramente por quien sube el archivo, no una propiedad verificable del contenido.
+
+**Notificación dentro vs después del commit (Decisión).** El ejercicio 3 pide documentar, con `TransactionSynchronizationManager.registerSynchronization`, la diferencia entre publicar la notificación DENTRO de la transacción (arriesgado: podría anunciar algo que luego se revierte) y DESPUÉS del commit (seguro). La decisión profesional es moverla a `afterCommit` para que nunca se anuncie un cambio no confirmado.
+
+**Límite de tamaño y formatos aceptados (Límite).** El ejercicio 1 pide rechazar un archivo que excede 5MB independientemente de que su contenido sea un JPEG válido, y el ejercicio 2 pide aceptar JPEG y PNG (magic number `89 50 4E 47`) mientras un tercer formato no reconocido se rechaza. Estos marcan los límites del validador: el conjunto de formatos permitidos y el tamaño máximo tolerado.
 
 **Conceptos clave:** detección real de MIME, outbox para notificaciones tras commit.
 

@@ -14,6 +14,34 @@ Cada tema declara nivel, duración y una salida verificable. El módulo separa e
 
 **¿Por qué es importante?** Una API de paquetes recibe datos de clientes externos y no debe exponer columnas internas de la base de datos ni aceptar valores imposibles en la entrada; una frontera explícita entre el contrato público y el modelo interno protege ambos lados de ese cambio.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Entidad JPA vs DTO como capas distintas | Prerrequisito | `TareaController` recibe `CrearTareaRequest` y devuelve `TareaDTO`, nunca `Tarea` |
+| Método de traducción `from()` | Núcleo | `TareaDTO.from(tarea)` en el cuerpo de `crear` convierte la entidad al contrato |
+| Control de la superficie expuesta | Núcleo | La respuesta `201 Created` solo contiene los campos de `TareaDTO` |
+| DTO de entrada frente a DTO de salida | Variante | `CrearTareaRequest` entra y `TareaDTO` sale como dos tipos separados |
+| Serialización de relaciones `lazy` | Error frecuente | Devolver `Tarea` con `@ManyToOne(fetch = FetchType.LAZY)` produce `LazyInitializationException` |
+| Estabilidad del contrato ante renombres | Diagnóstico | Renombrar un campo de la entidad no cambia la respuesta si el DTO se mantiene |
+| Cuándo omitir el DTO | Decisión | Un proxy de solo lectura sin entidad relacional puede prescindir del DTO |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Entidad JPA vs DTO como capas distintas (prerrequisito).** El DTO modela el contrato de transporte HTTP mientras que la entidad modela la persistencia interna; por eso `TareaController` nunca toca `Tarea` en su firma pública. Confundir ambas capas es el error que todo el tema busca evitar, porque acopla el formato público al esquema interno. Mantenerlas separadas es la base sobre la que se apoyan el resto de los subtemas.
+
+**Método de traducción `from()` (núcleo).** La línea `TareaDTO.from(tarea)` es el punto único donde la entidad se convierte en contrato, de modo que la decisión de qué exponer queda concentrada y explícita. Si este método no copia un campo interno, ese campo simplemente no sale. Es el mecanismo que hace posible que agregar `costoInterno` a la entidad no filtre nada hacia el cliente.
+
+**Control de la superficie expuesta (núcleo).** La respuesta `201 Created` contiene únicamente los campos declarados en `TareaDTO`, lo que demuestra que el DTO —no la entidad— define lo que ve el cliente. Esto evita filtrar columnas que existen solo por el mapeo relacional. El checklist de salida verifica justamente que ningún endpoint devuelva una entidad directamente.
+
+**DTO de entrada frente a DTO de salida (variante).** El tema usa dos tipos distintos: `CrearTareaRequest` para lo que llega y `TareaDTO` para lo que se devuelve, porque el contrato de creación no tiene por qué coincidir con el de lectura. Esta separación permite, por ejemplo, aceptar campos en la entrada que nunca se devuelven. El reto abierto pide exactamente modelar un segundo DTO para creación.
+
+**Serialización de relaciones `lazy` (error frecuente).** Si el controller devuelve `Tarea` directamente y esta tiene una relación `@ManyToOne(fetch = FetchType.LAZY)`, Jackson intenta serializarla fuera de una sesión de Hibernate activa y lanza `LazyInitializationException`. El fallo deliberado reproduce este error en ejecución, mostrando que exponer entidades no es solo un problema de diseño. Volver al DTO elimina la causa.
+
+**Estabilidad del contrato ante renombres (diagnóstico).** Renombrar un campo de la entidad sin tocar el DTO no altera la respuesta, porque el `from()` sigue mapeando al mismo nombre público. Esto permite diagnosticar rápidamente que un cambio interno no debería romper a los consumidores. El ejercicio 2 pide comprobar justamente que el contrato público no cambia.
+
+**Cuándo omitir el DTO (decisión).** El tema delimita que para una API interna de solo lectura sin persistencia relacional —como un proxy que reenvía datos sin transformarlos— el DTO puede ser innecesario porque no hay una entidad que proteger. Es una decisión profesional: no se trata de aplicar DTOs siempre, sino cuando hay un modelo interno que aislar del contrato público.
+
 **Conceptos clave:** DTO (Data Transfer Object), desacoplar el contrato HTTP de la persistencia, relaciones `lazy`.
 
 Un DTO representa el contrato de transporte hacia/desde el cliente HTTP, mientras que una entidad JPA (Módulo 3) representa el modelo de persistencia interno. Separarlos evita dos problemas concretos. Primero, exponer entidades filtraría detalles internos de la persistencia hacia el contrato público (campos que existen solo por el mapeo relacional, o relaciones que no deberían ser visibles ni modificables desde fuera). Segundo, puede producir errores de serialización con relaciones `lazy`, donde Jackson intentaría serializar una relación que Hibernate todavía no cargó, produciendo una excepción en tiempo de ejecución. Los DTOs son una capa de traducción explícita: renombrar un campo interno no rompe el contrato público si el DTO permanece estable.
@@ -135,6 +163,34 @@ public ResponseEntity<TareaDTO> crear(@RequestBody CrearTareaRequest request) {
 
 **¿Por qué es importante?** Una API de paquetes no debe aceptar valores imposibles (un título vacío, una prioridad negativa); validar la entrada en la frontera evita que datos inválidos lleguen siquiera a la lógica de negocio.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Starter `validation` en el proyecto | Prerrequisito | El proyecto se genera con `-d dependencies=web,validation` |
+| Anotaciones declarativas sobre el DTO | Núcleo | `@NotBlank String titulo` y `@Min(1) int prioridad` en el `record` |
+| Activación con `@Valid` | Núcleo | La firma `crear(@Valid @RequestBody CrearTareaRequest request)` dispara la verificación |
+| Olvidar `@Valid` | Error frecuente | Sin `@Valid`, un `titulo` vacío se persiste y devuelve `201 Created` |
+| Código HTTP explícito con `ResponseEntity` | Variante | `ResponseEntity.status(HttpStatus.CREATED)` fija `201` en vez de un código inferido |
+| Rechazo automático con `400` | Diagnóstico | Un `titulo` vacío devuelve `400 Bad Request` sin código manual |
+| Cuándo la validación es redundante | Decisión | Un mensaje de cola ya validado en origen puede no requerir Bean Validation |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Starter `validation` en el proyecto (prerrequisito).** El proyecto se genera con `dependencies=web,validation`, porque las anotaciones de Bean Validation no se verifican si el starter no está en el classpath. La sección "Si falla" confirma que, si una restricción no actúa, puede faltar precisamente ese starter. Sin esta dependencia las anotaciones quedan inertes aunque estén bien escritas.
+
+**Anotaciones declarativas sobre el DTO (núcleo).** `@NotBlank String titulo` rechaza valores vacíos, nulos o solo con espacios, y `@Min(1) int prioridad` rechaza prioridades menores a 1, todo declarado en el `record` sin código imperativo. Este es el mecanismo central: la restricción vive junto al dato, no dispersa en `if` por cada endpoint. El ejercicio pide agregar `@Email` como una restricción declarativa más.
+
+**Activación con `@Valid` (núcleo).** La anotación `@Valid` en `crear(@Valid @RequestBody CrearTareaRequest request)` es lo que le indica a Spring que verifique las restricciones antes de ejecutar el cuerpo del método; si falla, lanza `MethodArgumentNotValidException`. Sin este disparador las anotaciones del DTO no hacen nada. Es la causa más común de validaciones que "no se aplican".
+
+**Olvidar `@Valid` (error frecuente).** El fallo deliberado quita `@Valid` y envía un `titulo` vacío: la petición llega sin ser rechazada y devuelve `201 Created` con el título vacío persistido. Esto demuestra que las anotaciones por sí solas no verifican nada. El diagnóstico profesional es revisar primero la presencia de `@Valid` en la firma antes de sospechar de las anotaciones.
+
+**Código HTTP explícito con `ResponseEntity` (variante).** `ResponseEntity.status(HttpStatus.CREATED)` fija deliberadamente `201` al crear, en vez de dejar que Spring infiera un código genérico, y permite elegir `404` cuando el recurso no existe. El ejercicio pide cambiarlo por `ResponseEntity.ok()` y documentar qué código cambia. Elegir el estado según el resultado real es parte del contrato de la API.
+
+**Rechazo automático con `400` (diagnóstico).** Una petición con `titulo` vacío devuelve `400 Bad Request` con un detalle legible del campo que falló, sin que el controller escriba ninguna verificación manual. Esto confirma que `@Valid` intercepta la petición antes del cuerpo del método. Si todo devuelve `200`, la pista del tema es revisar que se use `ResponseEntity` con el estado correcto.
+
+**Cuándo la validación es redundante (decisión).** El tema delimita que un DTO que transporta datos ya validados por otra capa —por ejemplo, un mensaje de una cola interna validado en origen— puede no necesitar duplicar la validación con Bean Validation. Es una decisión profesional sobre dónde poner la frontera de confianza. No toda entrada requiere revalidarse si ya fue garantizada aguas arriba.
+
 **Conceptos clave:** anotaciones declarativas (`@NotBlank`, `@Min`), `@Valid`, códigos de estado HTTP explícitos.
 
 Bean Validation declara restricciones sobre los campos del DTO mediante anotaciones (`@NotBlank`, `@Min`, `@Size`, `@Email`), verificadas automáticamente por Spring cuando el parámetro del controller se marca con `@Valid`, sin código imperativo repetido en cada endpoint. Si la validación falla, Spring lanza `MethodArgumentNotValidException` antes de que el cuerpo del método se ejecute. `ResponseEntity` permite controlar el código de estado según el resultado real (`201` al crear, `404` si el recurso no existe), en vez de que Spring infiera un único código genérico.
@@ -241,6 +297,34 @@ public ResponseEntity<TareaDTO> crear(@____ @RequestBody CrearTareaRequest reque
 #### Aprende
 
 **¿Por qué es importante?** Sin manejo centralizado, cada controller de una API con decenas de endpoints repetiría su lógica de traducción de excepciones a respuestas HTTP, arriesgando formatos de error inconsistentes entre endpoints de la misma API.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Excepción de validación del Tema 2 | Prerrequisito | El handler intercepta `MethodArgumentNotValidException` que produce `@Valid` |
+| Clase `@RestControllerAdvice` global | Núcleo | `GlobalExceptionHandler` se aplica a todos los controllers |
+| Mapeo por tipo con `@ExceptionHandler` | Núcleo | `@ExceptionHandler(RecursoNoEncontradoException.class)` traduce ese tipo a `404` |
+| Formato de error consistente | Variante | Tanto `400` como `404` devuelven la misma estructura `ErrorResponse` |
+| Excepción sin handler | Error frecuente | Quitar el handler deja propagar y Spring devuelve `500` fuera del formato |
+| Captura de `Exception` genérico | Diagnóstico | Capturar y serializar la excepción completa filtra stack traces al cliente |
+| Cuándo un try/catch local basta | Decisión | Un endpoint único con manejo no reutilizable puede resolverlo localmente |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Excepción de validación del Tema 2 (prerrequisito).** El handler `manejarValidacion` intercepta `MethodArgumentNotValidException`, exactamente la excepción que lanza `@Valid` cuando la entrada no cumple las restricciones del Tema 2. Este tema presupone que esa validación ya existe y produce esa excepción. Por eso la centralización de errores llega después de la validación en la secuencia del módulo.
+
+**Clase `@RestControllerAdvice` global (núcleo).** `@RestControllerAdvice` marca `GlobalExceptionHandler` como manejador aplicado a todos los controllers, de modo que una sola clase concentra la traducción de excepciones de toda la API. Esto evita repetir `try`/`catch` en cada controller. El ejercicio "Completa el código" pide justamente esta anotación para interceptar excepciones de todos los controllers.
+
+**Mapeo por tipo con `@ExceptionHandler` (núcleo).** Cada método `@ExceptionHandler(Tipo.class)` intercepta un tipo específico lanzado desde cualquier controller; `@ExceptionHandler(RecursoNoEncontradoException.class)` lo traduce a `404` con `ErrorResponse`. El mecanismo es el despacho por tipo de excepción. Agregar un tercer handler para una excepción de negocio nueva, como pide el ejercicio 1, extiende este mapeo sin tocar los controllers.
+
+**Formato de error consistente (variante).** Tanto un error de validación (`400`) como un recurso no encontrado (`404`) devuelven un cuerpo JSON con la misma estructura `ErrorResponse`, porque todos los handlers construyen ese mismo tipo. Esto garantiza que los consumidores parseen un único formato. El reto abierto pide un contrato de error con `codigo`, `mensaje`, `campo` y `momento` compartido por varias excepciones.
+
+**Excepción sin handler (error frecuente).** El fallo deliberado elimina el handler y deja propagar `RecursoNoEncontradoException`: Spring responde con su página genérica (`500 Internal Server Error`) que no sigue el formato `ErrorResponse`. Esto demuestra que, sin un `@ExceptionHandler` explícito, el cliente recibe una respuesta inconsistente con el contrato. La pista aclara que no existe un handler por defecto propio: la excepción cae en el comportamiento genérico de Spring.
+
+**Captura de `Exception` genérico (diagnóstico).** El tema advierte que capturar `Exception` genérico sin distinguir el tipo real, o serializar la excepción completa, filtra stack traces y rutas internas hacia el cliente. El diagnóstico es revisar el cuerpo del error: si contiene un stack trace, se está serializando la excepción entera. El checklist exige que el cuerpo del error no filtre stack traces ni rutas internas.
+
+**Cuándo un try/catch local basta (decisión).** El tema delimita que, para un endpoint verdaderamente único con un manejo muy específico y no reutilizable, un `try`/`catch` local puede ser más simple que un handler global de un solo uso. Es una decisión profesional sobre reutilización: centralizar tiene sentido cuando el formato se comparte, no cuando el manejo es irrepetible.
 
 **Conceptos clave:** `@RestControllerAdvice`, `@ExceptionHandler`, formato de error consistente.
 
@@ -352,6 +436,34 @@ public class GlobalExceptionHandler {
 #### Aprende
 
 **¿Por qué es importante?** El backend de entregas tenía clases de 200 líneas de getters y setters y mapeos manuales donde un campo nuevo se olvidaba con frecuencia. Además, un `toString()` generado imprimía el costo interno en los logs. Lombok y MapStruct son estándar de facto en proyectos Spring empresariales: un caso real que encontrarás en casi cualquier código existente.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Orden de procesadores con `lombok-mapstruct-binding` | Prerrequisito | El `pom.xml` agrega `lombok-mapstruct-binding` junto a los procesadores |
+| Lombok genera código repetitivo | Núcleo | `@Getter`, `@Setter`, `@Builder` permiten `Envio.builder()...build()` |
+| Mapeo generado por `@Mapper` | Núcleo | `EnvioMapper.aRespuesta` produce `EnvioRespuesta[guia=..., destino=..., kilos=...]` |
+| Renombrado de campos con `@Mapping` | Variante | `@Mapping(source = "ciudadDestino", target = "destino")` traduce el nombre |
+| Política `ERROR` para campo sin mapear | Límite | Borrar el `@Mapping` falla con `Unmapped target property: "destino"` |
+| `@Data` en entidades JPA | Error frecuente | `@Data` con relaciones bidireccionales puede causar `StackOverflowError` |
+| Exclusión de datos sensibles del log | Decisión | `@ToString(exclude = "costoInterno")` deja el log sin `4100.50` |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Orden de procesadores con `lombok-mapstruct-binding` (prerrequisito).** Como Lombok y MapStruct son ambos procesadores de anotaciones, Lombok debe correr primero para que los getters existan cuando MapStruct genere el mapeo; de eso se encarga `lombok-mapstruct-binding` en `annotationProcessorPaths`. Sin este binding en el orden correcto, MapStruct no vería los accesores generados. La sección "Si falla" remite a revisar precisamente ese orden.
+
+**Lombok genera código repetitivo (núcleo).** Lombok es un procesador de anotaciones que genera getters, setters, constructores y builder en el bytecode al compilar; por eso la prueba puede escribir `Envio.builder().id(7L)...build()` sin que esos métodos aparezcan en el fuente. Esto elimina las clases de 200 líneas de accesores manuales. El reto de memoria pide escribir una entidad con Lombok de este tipo.
+
+**Mapeo generado por `@Mapper` (núcleo).** MapStruct genera la implementación de la interfaz `@Mapper` con código Java normal, sin reflexión, y `componentModel = "spring"` la registra como bean inyectable; `mapper.aRespuesta(envio)` produce `EnvioRespuesta[guia=BO-004512, destino=Bogotá, kilos=3]`. El ejercicio 2 pide abrir `EnvioMapperImpl.java` generado para ver ese código. Es el mecanismo que convierte el modelo interno en contrato público en tiempo de compilación.
+
+**Renombrado de campos con `@Mapping` (variante).** Cuando el nombre del campo interno difiere del público, `@Mapping(source = "ciudadDestino", target = "destino")` indica la correspondencia explícita, y por eso `ciudadDestino` del `Envio` llega como `destino` en `EnvioRespuesta`. Es una variante del mapeo directo por nombre. El reto de memoria pide un mapper con un renombrado de campo de este tipo.
+
+**Política `ERROR` para campo sin mapear (límite).** Con `unmappedTargetPolicy = ReportingPolicy.ERROR`, borrar el `@Mapping` hace fallar la compilación con `Unmapped target property: "destino"`, porque el DTO tiene un campo que MapStruct no sabe llenar. El fallo deliberado muestra que con la política por defecto (`WARN`) solo habría una advertencia y la API devolvería `destino: null` en producción. Este límite convierte un olvido en un error de compilación, no en un bug silencioso.
+
+**`@Data` en entidades JPA (error frecuente).** El ejercicio 3 investiga por qué `@Data` en entidades JPA con relaciones bidireccionales puede causar `StackOverflowError` en `toString` y `hashCode`, porque genera esos métodos sobre todos los campos incluidas las relaciones, que se recorren mutuamente sin fin. Por eso el tema recomienda no usar `@Data` en entidades. El checklist de salida pide documentar en el README por qué se evitó.
+
+**Exclusión de datos sensibles del log (decisión).** `@ToString(exclude = "costoInterno")` hace que el log seguro sea `Envio(id=7, guia=BO-004512, ciudadDestino=Bogotá, kilos=3)` sin `4100.50`, evitando filtrar el costo interno hacia los registros. Es una decisión profesional de seguridad: el dato existe en el modelo pero nunca aparece ni en la respuesta ni en el log. La prueba lo verifica con `assertThat(envio.toString()).doesNotContain("4100.50")`.
 
 **Lombok** es un procesador de anotaciones: `@Getter`, `@Setter`, `@Builder` o `@ToString` generan código en el bytecode al compilar. **MapStruct** genera la implementación de una interfaz `@Mapper` con código Java normal (sin reflexión); `componentModel = "spring"` la registra como bean y `unmappedTargetPolicy = ERROR` convierte un campo sin mapear en error de compilación. Como ambos son procesadores de anotaciones, Lombok debe correr primero: de eso se encarga `lombok-mapstruct-binding`.
 
@@ -558,6 +670,34 @@ Las líneas de Maven se resumen: también verás el log de arranque de Spring y 
 
 **¿Por qué es importante?** El equipo móvil de RutaFlow descubría los cambios de la API cuando la app fallaba. Un contrato OpenAPI publicado y probado permite a otros equipos generar clientes, probar contra mocks y detectar cambios antes de desplegar.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Starter springdoc en el classpath | Prerrequisito | El `pom.xml` agrega `springdoc-openapi-starter-webmvc-ui` |
+| Documento generado en `/v3/api-docs` | Núcleo | La prueba lee `http://localhost:puerto/v3/api-docs` y recibe `200` |
+| Anotaciones que enriquecen el contrato | Núcleo | `@Operation`, `@ApiResponse`, `@Parameter`, `@Schema` en `EnvioController` |
+| Swagger UI interactivo | Variante | `swagger-ui.html` ejecuta `GET /api/envios/BO-004512` desde el navegador |
+| Contrato como prueba automatizada | Diagnóstico | La aserción exige `"/api/envios/{guia}"` y `"La guía no existe"` en el documento |
+| Documentación desfasada del comportamiento | Error frecuente | Borrar `@ApiResponse(404)` hace fallar la prueba aunque el endpoint siga dando 404 |
+| Cuándo un contrato formal es burocracia | Decisión | Una API interna de un solo consumidor que cambia a diario puede no necesitarlo |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Starter springdoc en el classpath (prerrequisito).** El `pom.xml` agrega `springdoc-openapi-starter-webmvc-ui` en su línea 3.x compatible con Spring Boot 4; sin él no hay documento ni interfaz. La sección "Si falla" confirma que, si `/v3/api-docs` devuelve 404, springdoc no está en el classpath o la versión no es compatible. Es el prerrequisito sobre el que operan la generación y la prueba de contrato.
+
+**Documento generado en `/v3/api-docs` (núcleo).** springdoc inspecciona los controladores en tiempo de ejecución y publica el documento OpenAPI en `/v3/api-docs`; la prueba lo lee con un `HttpClient` contra el puerto aleatorio y confirma `200`. Este documento es la fuente de verdad del contrato. El mecanismo es la introspección automática de las rutas y tipos reales del controlador.
+
+**Anotaciones que enriquecen el contrato (núcleo).** `@Operation`, `@ApiResponse`, `@Parameter` y `@Schema` agregan la información que el código no expresa por sí solo: resúmenes, ejemplos, valores permitidos y códigos de error. En `EnvioController`, `@Schema(example = "en ruta", allowableValues = {...})` y `@Operation(summary = ...)` enriquecen el documento. El reto de memoria pide escribir un controlador con `@Operation`, dos `@ApiResponse` y un esquema.
+
+**Swagger UI interactivo (variante).** springdoc también publica una interfaz en `swagger-ui.html` donde se puede ejecutar `GET /api/envios/BO-004512` directamente desde el navegador, sin escribir un cliente. Es una variante de consumo del mismo documento OpenAPI. El checklist de salida pide comprobar que Swagger UI abra en el navegador además de que `/v3/api-docs` responda.
+
+**Contrato como prueba automatizada (diagnóstico).** `ContratoOpenApiTest` levanta la app en un puerto aleatorio y asevera que el documento contiene `"/api/envios/{guia}"`, el resumen de la operación, `"La guía no existe"` y `"EstadoEnvio"`, convirtiendo la documentación en un contrato verificable. Esto permite diagnosticar en CI cualquier cambio del contrato. La sección "Si falla" aconseja endurecer la aserción si un cambio pasa inadvertido.
+
+**Documentación desfasada del comportamiento (error frecuente).** El fallo deliberado borra `@ApiResponse(responseCode = "404", description = "La guía no existe")`: el endpoint sigue devolviendo 404, pero el contrato ya no lo documenta y la prueba falla al no encontrar ese texto. Ese desfase entre comportamiento y documentación es exactamente lo que la prueba atrapa. Los errores comunes del tema advierten contra cambiar una anotación sin volver a correr la prueba.
+
+**Cuándo un contrato formal es burocracia (decisión).** El tema delimita que para APIs internas de un solo consumidor que cambian a diario, un contrato formal puede ser burocracia, aunque recomienda documentar igualmente los errores que se devuelven. Es una decisión profesional sobre el costo de mantener el contrato frente a su beneficio. No siempre se justifica el versionado y la prueba de `openapi.json`.
+
 **OpenAPI** es un formato estándar (JSON o YAML) que describe rutas, parámetros, respuestas y esquemas de una API HTTP. **springdoc** inspecciona tus controladores en tiempo de ejecución y publica el documento en `/v3/api-docs` y una interfaz en `/swagger-ui.html`. Las anotaciones `@Operation`, `@ApiResponse`, `@Parameter` y `@Schema` agregan la información que el código no expresa (resúmenes, ejemplos, códigos de error). Probar el documento convierte la documentación en un contrato verificable.
 
 **Analogía:** el contrato OpenAPI es el plano eléctrico de la casa: quien llega a instalar algo no necesita romper paredes para saber dónde están los cables.
@@ -735,6 +875,34 @@ La prueba levanta la aplicación en un puerto aleatorio y lee el contrato real. 
 #### Aprende
 
 **¿Por qué es importante?** El proyecto integrador muestra envíos en un panel. Devolver toda la colección carga el servidor y el navegador; el cliente no debería poder pedir un millón de elementos porque cambió un parámetro.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Starter `validation` para validar parámetros | Prerrequisito | El proyecto se genera con `dependencies=web,validation` |
+| Posición y tamaño de página | Núcleo | Los parámetros `page` y `size` con `defaultValue` definen el corte |
+| Corte con `skip`/`limit` | Núcleo | `data.stream().skip(offset).limit(size)` devuelve IDs 1-2 y luego 3-4 |
+| Límite máximo de recursos | Límite | `@Max(100)` sobre `size` rechaza `size=1000000` con `400` |
+| Tamaño inválido que no se degrada a 200 | Error frecuente | `size=0` debe devolver `400`, no una página vacía con `200` |
+| Orden estable con desempate único | Diagnóstico | Datos con el mismo estado exigen un desempate por ID documentado |
+| Offset vs cursor en recorridos grandes | Decisión | El offset puede desplazarse al cambiar los datos; el cursor es la alternativa |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Starter `validation` para validar parámetros (prerrequisito).** El proyecto se genera con `web,validation` porque las anotaciones `@Min`/`@Max` sobre los parámetros del controlador solo actúan si el starter de validación está presente. La sección "Si falla" confirma que, si un valor inválido devuelve 200, falta la validación en el parámetro o el starter. Es el prerrequisito que convierte los límites declarados en rechazos reales.
+
+**Posición y tamaño de página (núcleo).** Una página tiene posición y tamaño: `page` (con `defaultValue = "0"`) y `size` (con `defaultValue = "2"`) definen qué segmento se devuelve. Los `record Envio` y `Pagina` fijan el contrato de respuesta. Este es el mecanismo base de la paginación por offset que el resto de los subtemas restringe y ordena.
+
+**Corte con `skip`/`limit` (núcleo).** El corte se calcula como `data.stream().skip(offset).limit(size)` con `offset = page * size`, de modo que la primera página devuelve los IDs 1 y 2 y la segunda los IDs 3 y 4. `hasNext` se calcula con `offset + items.size() < data.size()`. La colección es en memoria para aislar el contrato HTTP de una consulta JPA real.
+
+**Límite máximo de recursos (límite).** `@Max(100)` sobre `size` y `@Max(1000)` sobre `page` acotan el trabajo solicitado: `size=1000000` produce `400` por validación de método del controlador, impidiendo que un cliente pida un millón de elementos. Este límite explícito protege al servidor antes de calcular el corte. El ejercicio 3 pide hacer ese máximo configurable por propiedad sin recompilar.
+
+**Tamaño inválido que no se degrada a 200 (error frecuente).** El fallo deliberado usa `size=0`, que el servidor debe rechazar con `400`; la pista advierte explícitamente no transformar un tamaño inválido en una respuesta vacía con estado 200. Confundir "inválido" con "página vacía válida" oculta el error al cliente. El checklist exige que los parámetros fuera de rango devuelvan `400`, no una página vacía.
+
+**Orden estable con desempate único (diagnóstico).** Un orden estable requiere un desempate único: ante datos con el mismo estado, sin un criterio adicional como el ID el orden puede variar entre peticiones. La sección "Si falla" diagnostica que, si el orden cambia entre peticiones, falta ese criterio de desempate. El reto abierto pide documentar por qué el orden necesita un desempate único.
+
+**Offset vs cursor en recorridos grandes (decisión).** El tema delimita que la paginación por offset puede desplazarse cuando cambian los datos, y que para recorridos grandes conviene considerar cursor y consistencia explícita. Es una decisión profesional sobre el método de paginación según el tamaño y la volatilidad de los datos. El reto abierto pide indicar cuándo pasarías a cursor.
 
 Una página tiene posición y tamaño. La validación restringe el trabajo solicitado antes de ejecutar la lógica. Un orden estable requiere un desempate único.
 

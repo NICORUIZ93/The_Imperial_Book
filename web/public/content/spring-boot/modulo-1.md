@@ -14,6 +14,37 @@ Cada tema declara nivel, duración y una verificación reproducible. La configur
 
 **¿Por qué es importante?** Un servicio de entregas que necesita exponer HTTP, persistir en PostgreSQL y validar entradas no debería requerir que el equipo investigue manualmente qué versiones de Tomcat, Hibernate y Jackson son compatibles entre sí para la versión de Spring Boot elegida.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Spring Initializr como generador | Prerrequisito | `curl -fsSL https://start.spring.io/starter.zip -d dependencies=web` produce el `.zip` del proyecto |
+| Starter como dependencia curada | Núcleo | `dependencies=web` trae Tomcat, Jackson y Spring MVC autoconfigurados |
+| BOM y resolución de versiones | Núcleo | `./mvnw dependency:tree` identifica Tomcat, Jackson y Spring MVC con versiones coherentes |
+| Starter `web` vs otros starters | Variante | agregar `validation` habilita `@NotBlank`/`@NotNull`; `data-jpa` trae Hibernate |
+| Anotación ausente sin el starter | Diagnóstico | la compilación falla porque `org.springframework.web.bind.annotation.RestController` no está en el classpath |
+| Dependencia suelta vs starter | Error frecuente | agregar dependencias sueltas arriesga incompatibilidades que el BOM evitaría |
+| Cuándo no usar starters | Límite | en una librería no ejecutable se usan dependencias de Spring Framework, no starters |
+| Starters mínimos del proyecto | Decisión | `entregas-api` se justifica con `web`, `data-jpa`, `validation` y `postgresql` |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Spring Initializr como generador (prerrequisito).** Antes de poder elegir starters hay que generar la estructura base del proyecto, y el tema lo hace con `curl` contra `https://start.spring.io/starter.zip` pasando `dependencies=web`. El mecanismo entrega un `.zip` con `pom.xml`, `mvnw` y el esqueleto de código ya listos para `./mvnw spring-boot:run`, de modo que la selección de capacidades ocurre en la generación y no después a mano.
+
+**Starter como dependencia curada (núcleo).** Un starter como `spring-boot-starter-web` no es una sola librería sino un conjunto coherente: al pasar `dependencies=web` el proyecto obtiene Tomcat embebido, Jackson y Spring MVC ya autoconfigurados, lo que permite que `@RestController` y `@GetMapping("/health")` respondan `200 OK` sin configurar el servidor. Ese empaquetado es el valor central frente a reunir piezas sueltas.
+
+**BOM y resolución de versiones (núcleo).** Spring Boot gestiona internamente qué versiones de cada dependencia son compatibles para una versión dada mediante su BOM, eliminando la matriz manual del "dependency hell". El resultado es observable con `./mvnw dependency:tree`, que muestra Tomcat, Jackson y Spring MVC con versiones resueltas coherentemente sin que el equipo las fije una por una.
+
+**Starter `web` vs otros starters (variante).** Cada capacidad tiene su propio starter: agregar `validation` deja disponibles `@NotBlank`/`@NotNull`, y `data-jpa` incorpora Hibernate y la infraestructura de Spring Data. La decisión de qué starter sumar depende de qué capacidad concreta necesita exponer el proyecto, no de agregar todo por si acaso.
+
+**Anotación ausente sin el starter (diagnóstico).** El fallo deliberado del tema genera un proyecto sin el starter `web` e intenta compilar el mismo `SaludController`: la compilación falla porque `org.springframework.web.bind.annotation.RestController` no existe en el classpath. Diagnosticar este caso enseña que sin el starter correspondiente ni las anotaciones básicas están disponibles, mucho antes de cualquier error en tiempo de ejecución.
+
+**Dependencia suelta vs starter (error frecuente).** Uno de los errores comunes del tema es agregar dependencias sueltas en vez del starter correspondiente, lo que reintroduce el riesgo de versiones incompatibles que el BOM habría evitado. El otro extremo —incluir starters que el proyecto no usa— aumenta el tiempo de arranque y la superficie de configuración, por lo que la pista recomienda verificar primero si un starter ya incluye la dependencia buscada.
+
+**Cuándo no usar starters (límite).** El propio tema delimita que para una librería que no es una aplicación ejecutable los starters de Spring Boot no aplican; en ese caso se usan dependencias de Spring Framework según lo que la librería necesite exponer. El límite evita forzar el modelo de starters donde no hay un artefacto ejecutable que autoconfigurar.
+
+**Starters mínimos del proyecto (decisión).** La transferencia al proyecto integrador fija una decisión profesional concreta: generar el microservicio con `web`, `data-jpa`, `validation` y `postgresql` desde el principio y conservar el `pom.xml` como evidencia de las versiones resueltas. Elegir el conjunto mínimo justificado y demostrarlo con `./mvnw dependency:tree` es la forma de cerrar el reto sin arrastrar dependencias innecesarias.
+
 **Conceptos clave:** starter, dependencias preconfiguradas, generación de estructura base.
 
 [start.spring.io](https://start.spring.io) genera la estructura base de un proyecto a partir de starters seleccionados (`web`, `data-jpa`, `security`, `postgresql`). Cada starter es un conjunto curado de dependencias preconfiguradas que trabajan juntas de forma coherente: `spring-boot-starter-web` trae lo necesario para exponer APIs HTTP; `spring-boot-starter-data-jpa` trae Hibernate y la infraestructura de Spring Data para persistencia. Esta curación es el valor añadido frente a agregar dependencias sueltas: Spring Boot gestiona internamente qué versiones son compatibles para una versión dada mediante su BOM, eliminando la matriz manual de compatibilidad (el "dependency hell").
@@ -118,6 +149,37 @@ public class SaludController {
 #### Aprende
 
 **¿Por qué es importante?** Una configuración con varios niveles de anidación (`spring.datasource.url`, `spring.datasource.username`, `spring.jpa.hibernate.ddl-auto`) se vuelve visualmente repetitiva en `.properties` (el prefijo `spring.` se repite en cada línea), mientras que en `.yml` se agrupa jerárquicamente una sola vez, sin que ninguna de las dos formas cambie qué configuración es posible expresar.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Pares clave-valor en `.properties` | Prerrequisito | `spring.datasource.url=jdbc:postgresql://localhost:5432/app` como línea plana |
+| Indentación jerárquica en `.yml` | Núcleo | `spring:`/`datasource:`/`url:` con dos espacios expresa la misma clave |
+| Equivalencia funcional de ambos formatos | Núcleo | arrancar con cada archivo da el mismo puerto `8080` y la misma URL |
+| Detección automática del archivo | Variante | Spring Boot lee `application.yml` en `src/main/resources` sin configuración extra |
+| Sensibilidad a la indentación de YAML | Límite | quitar un espacio a `url` provoca error de parseo o clave mal ubicada |
+| Error de indentación silencioso | Diagnóstico | contar los espacios exactos revela por qué la propiedad no se aplica |
+| Mezclar `.properties` y `.yml` | Error frecuente | tener ambos sin necesidad genera confusión de prioridades |
+| Elección de formato por legibilidad | Decisión | para una sola clave sin anidación cualquiera es igual de simple |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Pares clave-valor en `.properties` (prerrequisito).** El punto de partida es entender `application.properties` como pares clave-valor planos con notación de puntos, por ejemplo `spring.datasource.url=jdbc:postgresql://localhost:5432/app`. Esta forma repite el prefijo `spring.` en cada línea, lo que es la base sobre la que el tema contrasta la agrupación jerárquica.
+
+**Indentación jerárquica en `.yml` (núcleo).** `application.yml` expresa exactamente la misma configuración con indentación de dos espacios: `spring:`, luego `datasource:`, luego `url:`. El tema muestra que esa jerarquía representa la misma clave aplanada `spring.datasource.url`, agrupando visualmente las claves relacionadas bajo su nodo padre una sola vez.
+
+**Equivalencia funcional de ambos formatos (núcleo).** El mecanismo central del tema es que ambos formatos son interpretados por el mismo motor: al arrancar con `application.yml` y luego con `application.properties` (manteniendo solo uno presente), la aplicación escucha en el puerto `8080` y usa la misma URL de datasource. Esto confirma que la elección es de legibilidad, sin diferencia funcional.
+
+**Detección automática del archivo (variante).** Spring Boot detecta `application.yml` al arrancar sin configuración adicional siempre que esté en `src/main/resources`, y lo mismo vale para `application.properties`. La variante importa porque si el puerto no cambia, el tema indica verificar que el archivo esté en esa ruta y que no haya otro con mayor prioridad.
+
+**Sensibilidad a la indentación de YAML (límite).** El fallo deliberado consiste en desalinear la indentación de `url` quitándole un espacio respecto a `datasource:`; YAML es sensible a la indentación exacta, así que el parser ubica la línea en otro nivel y produce un error de parseo o una propiedad mal colocada. Ese es el costo que `.properties`, al ser plano, no tiene.
+
+**Error de indentación silencioso (diagnóstico).** El tema advierte que el error de indentación no siempre es obvio: la recomendación es contar los espacios exactos en vez de asumir que "se ve bien". Diagnosticar así explica por qué una clave aparentemente correcta no se aplica, y cómo detectarlo en un pipeline antes de desplegar.
+
+**Mezclar `.properties` y `.yml` (error frecuente).** Entre los errores comunes está mezclar ambos formatos sin necesidad, lo que genera confusión sobre qué archivo tiene prioridad. La demostración del tema mantiene siempre solo uno presente en cada prueba precisamente para que la comparación de puerto y URL sea inequívoca.
+
+**Elección de formato por legibilidad (decisión).** La decisión profesional es de legibilidad: el YAML gana cuanto más profunda es la jerarquía, pero para una sola clave sin anidación la diferencia es irrelevante y cualquiera es igual de simple. Por eso el checklist pide que el README indique qué formato eligió el equipo y por qué.
 
 **Conceptos clave:** configuración tipada, indentación jerárquica, equivalencia funcional.
 
@@ -236,6 +298,37 @@ ____:
 #### Aprende
 
 **¿Por qué es importante?** Desplegar exactamente el mismo artefacto compilado en desarrollo y producción, variando solo la URL de la base de datos y el nivel de logs, evita que el artefacto probado sea sutilmente distinto al desplegado.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Configuración base en `application.yml` | Prerrequisito | la base declara `server.port: 8080` y `spring.datasource.url` apuntando a `app` |
+| Perfil como sobreescritura parcial | Núcleo | `application-dev.yml` solo declara `spring.datasource.url` apuntando a `app_dev` |
+| Activación explícita del perfil | Núcleo | `--spring.profiles.active=dev` y el log `The following 1 profile is active: "dev"` |
+| Configuración fusionada efectiva | Variante | `/actuator/env` reporta `app_dev` para la URL y `8080` heredado para el puerto |
+| Perfil nunca activo por defecto | Diagnóstico | arrancar sin la bandera usa la URL base `app`, no `app_dev` |
+| Olvidar activar el perfil al desplegar | Error frecuente | el entorno equivocado surge de no pasar `--spring.profiles.active` |
+| Separación por capas controller/service/repository | Límite | el controller no contiene reglas de negocio; el service no conoce HTTP |
+| Perfiles solo cuando hay varios entornos | Decisión | con un único entorno fijo basta un `application.yml` sin perfiles |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Configuración base en `application.yml` (prerrequisito).** El tema parte de una base en `src/main/resources/application.yml` que declara `server.port: 8080` y `spring.datasource.url` apuntando a `app`. Esa base es el conjunto de valores que un perfil hereda y sobre el que solo se sobreescribe lo necesario, por lo que entenderla es requisito para trazar la configuración final.
+
+**Perfil como sobreescritura parcial (núcleo).** El mecanismo central es que `application-dev.yml` declara únicamente `spring.datasource.url` apuntando a `app_dev`, dejando intacto el resto de la base. Al activar el perfil, la aplicación se conecta a `app_dev` mientras `server.port` permanece en `8080` porque el perfil no lo menciona, demostrando la sobreescritura parcial.
+
+**Activación explícita del perfil (núcleo).** Un perfil se activa al arrancar con `java -jar target/*.jar --spring.profiles.active=dev`, sin recompilar para cada entorno. El log de arranque muestra `The following 1 profile is active: "dev"`, evidencia directa de qué archivo de perfil se cargó además de la base.
+
+**Configuración fusionada efectiva (variante).** Para ver la configuración ya fusionada el tema agrega el starter `actuator`, expone el endpoint `env` con `management.endpoints.web.exposure.include: env` y consulta `/actuator/env`. Esa variante reporta `spring.datasource.url` con el valor del perfil (`.../app_dev`) y `server.port` con el valor base `8080`, exponiendo la fusión sin inferencias.
+
+**Perfil nunca activo por defecto (diagnóstico).** El fallo deliberado consiste en arrancar sin `--spring.profiles.active=dev`: la aplicación usa la `spring.datasource.url` del `application.yml` base apuntando a `app`, no a `app_dev`. Diagnosticar esto deja claro que un perfil nunca se activa automáticamente y que olvidar la bandera es la causa típica de arrancar contra el entorno equivocado.
+
+**Olvidar activar el perfil al desplegar (error frecuente).** Entre los errores comunes está olvidar activar el perfil correcto al desplegar, lo que lleva al comportamiento base en un entorno donde se esperaba otro. La pista del tema recomienda verificar el log `The following N profile(s) are active` antes de desplegar en vez de asumir con qué perfil arrancó la aplicación.
+
+**Separación por capas controller/service/repository (límite).** El tema delimita responsabilidades: `controller/` traduce HTTP hacia y desde DTOs, `service/` tiene la lógica de negocio sin conocer HTTP y `repository/` accede a datos. El límite es que el controller no debe contener reglas de negocio ni el service conocer códigos de estado HTTP; si el controller acumula lógica, la decisión se mueve al service.
+
+**Perfiles solo cuando hay varios entornos (decisión).** La decisión profesional es no multiplicar perfiles sin necesidad: para una aplicación que siempre corre en un único entorno fijo, mantener varios perfiles agrega complejidad sin beneficio y basta un único `application.yml`. Cuando sí hay varios entornos, el reto pide tres perfiles (`dev`, `test`, `prod`) que cambien solo lo suyo sobre el mismo jar.
 
 **Conceptos clave:** perfil (`application-{perfil}.yml`), sobreescritura parcial, estructura por capas.
 

@@ -23,6 +23,34 @@ Un reporte de envíos requiere un `JOIN` y una agregación difícil de expresar 
 
 **¿Por qué es importante?** SQL explícito resulta útil para consultas especializadas, pero debe conservar parametrización, pruebas y límites de capa.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `DataSource` autoconfigurado | Prerrequisito | El comando con `dependencies=web` y la dependencia `jdbc`/`h2` dejan un pool listo sin configurar la conexión a mano |
+| `JdbcTemplate` como colaborador inyectado | Núcleo | El constructor `EnvioJdbcRepository(JdbcTemplate jdbc)` recibe el template que abre y libera la conexión |
+| Parámetros `?` para valores | Núcleo | `estadoDe` pasa `referencia` como argumento posicional de `select ... where referencia = ?` |
+| Mapeo de filas a resultado | Variante | El lambda `(rs, row) -> rs.getString("estado")` traduce cada fila y `findFirst()` devuelve `Optional` |
+| Identificadores vía allowlist | Límite | El `ORDER BY` concatena el nombre de columna solo si pertenece a una lista cerrada, nunca como `?` |
+| Separación DAO/servicio y DTO | Decisión | El reporte con `JOIN` mapea a un DTO y el checklist prohíbe devolver filas crudas al controlador |
+| Inyección SQL por concatenación | Error frecuente | El fallo deliberado concatena el valor con comilla y rompe el SQL hasta volver a `?` |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`DataSource` autoconfigurado (prerrequisito).** Spring Boot construye el `DataSource` a partir de la dependencia y las propiedades, de modo que al generar el proyecto con `jdbc` y `h2` ya existe un pool de conexiones. Sin este paso previo no habría conexión que `JdbcTemplate` pudiera obtener ni liberar. El límite es que esta autoconfiguración resuelve la tubería, pero no decide el SQL ni la capa de negocio.
+
+**`JdbcTemplate` como colaborador inyectado (núcleo).** El repositorio recibe `JdbcTemplate` por constructor y lo usa para `query` y `update`; ese objeto obtiene y libera conexiones, prepara statements y traduce excepciones JDBC a la jerarquía de Spring. El mecanismo evita gestionar recursos a mano. La decisión profesional es concentrar su uso en el DAO y no esparcirlo por el servicio o el controlador.
+
+**Parámetros `?` para valores (núcleo).** `estadoDe` y `crear` pasan `referencia` y `estado` como argumentos posicionales que rellenan los `?` del SQL, lo que conserva el valor como dato y no como fragmento ejecutable. El resultado observable es que `crear` devuelve `1` y la búsqueda recupera el estado insertado. El error asociado aparece si el valor se concatena en lugar de parametrizarse.
+
+**Mapeo de filas a resultado (variante).** El lambda `(rs, row) -> rs.getString("estado")` convierte cada fila del `ResultSet` en el tipo que el servicio espera, y `stream().findFirst()` entrega un `Optional` vacío cuando no hay coincidencia. Esta variante del acceso permite que una referencia desconocida retorne vacío en vez de error. El mismo patrón escala al reporte, donde el mapeo produce un DTO en lugar de una entidad gestionada.
+
+**Identificadores vía allowlist (límite).** Un `?` parametriza valores, no nombres de columna o tabla, por lo que el `ORDER BY` solo puede construirse concatenando un identificador validado contra una lista cerrada. El límite es real: pasar un nombre con espacio o punto y coma hace que el SQL falle o acepte un fragmento no pedido. Por eso el nombre de columna nunca viaja como `?` ni directo desde la petición.
+
+**Separación DAO/servicio y DTO (decisión).** El DAO contiene SQL y mapeo, el servicio expresa la operación de negocio, y el reporte con `JOIN` se mapea a un DTO antes de salir del repositorio. Esta decisión de capa evita filtrar filas crudas al controlador, como exige el checklist. La contraparte es no construir un framework DAO genérico sin necesidad real.
+
+**Inyección SQL por concatenación (error frecuente).** El fallo deliberado concatena directamente el valor recibido y prueba una entrada con comilla, lo que rompe el SQL y abre la puerta a inyección. La corrección es volver a pasar el valor como `?` e inspeccionar el test para confirmar que la cadena se conserva como dato. Este error resume por qué la parametrización es obligatoria para valores de usuario.
+
 Spring Boot configura un `DataSource` desde la dependencia y propiedades. `JdbcTemplate` obtiene/libera conexiones, prepara statements y traduce excepciones JDBC a la jerarquía de excepciones de Spring. Un DAO/repository contiene el SQL y mapeo; el servicio expresa la operación de negocio.
 
 `?` parametriza valores, no identificadores SQL. Para filtros opcionales, construye solo fragmentos elegidos de una allowlist y sigue usando parámetros para valores.
@@ -125,6 +153,34 @@ Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el
 El cobro se registra, pero falla la actualización del envío. Sin una transacción, queda dinero contabilizado para un pedido que sigue pendiente.
 
 **¿Por qué es importante?** El límite transaccional protege invariantes de negocio ante errores y concurrencia, no solo ante excepciones esperadas.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Método público del bean anotado | Prerrequisito | `liquidar` es público en `LiquidacionService` y se invoca desde fuera para que el proxy actúe |
+| Commit atómico de varias escrituras | Núcleo | `insert cobro` y `update envio` dentro de `@Transactional` se confirman juntos o ninguno |
+| Rollback ante unchecked | Núcleo | Forzar el fallo del segundo `update` deja ambas tablas sin cambios |
+| `rollbackFor` para checked | Variante | Una checked exception no revierte salvo `@Transactional(rollbackFor = TuExcepcionChecked.class)` |
+| Límite local de base de datos | Límite | La transacción no abarca HTTP ni Kafka; el checklist prohíbe esperas externas dentro de ella |
+| Deduplicación idempotente | Decisión | `operation_id` con restricción única hace que el segundo intento no duplique el cobro |
+| Self-invocation del proxy | Error frecuente | Mover `@Transactional` a una llamada interna privada muestra que el proxy no se aplica |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Método público del bean anotado (prerrequisito).** `@Transactional` actúa mediante un proxy de Spring que solo intercepta cuando el método gestionado se invoca desde fuera del objeto. Por eso `liquidar` debe ser público en `LiquidacionService` y llamarse desde otro bean. Sin esta condición previa, la anotación no establece ningún límite transaccional.
+
+**Commit atómico de varias escrituras (núcleo).** El método agrupa el `insert` en `cobro` y el `update` de `envio` bajo una misma transacción, de modo que ambos se confirman juntos. El mecanismo garantiza que no quede dinero contabilizado para un pedido que sigue pendiente. El resultado esperado es que ambas escrituras persistan o que ninguna permanezca tras un fallo.
+
+**Rollback ante unchecked (núcleo).** Por defecto, una excepción unchecked dentro del método provoca rollback automático de toda la transacción. Al forzar el fallo del segundo `update` en el test, no queda ningún `cobro` ni el envío cambia de estado. Este comportamiento es la protección base del invariante de negocio.
+
+**`rollbackFor` para checked (variante).** Las excepciones checked no revierten necesariamente: la pista muestra que una checked lanzada deja la fila confirmada pese a la excepción. La variante consiste en declarar `@Transactional(rollbackFor = TuExcepcionChecked.class)` para forzar el rollback también en ese caso. La decisión de qué excepciones revierten debe quedar documentada en la política.
+
+**Límite local de base de datos (límite).** La transacción es un límite local de la base de datos, no una transacción distribuida entre PostgreSQL, Kafka y un servicio HTTP. Mantenerla abierta durante una llamada HTTP o una espera humana extiende indebidamente ese límite. El checklist exige que ninguna transacción abarque HTTP, archivos o espera; para coordinar efectos externos se usa outbox o saga.
+
+**Deduplicación idempotente (decisión).** La liquidación de RutaFlow usa `operation_id` con restricción única para que un segundo envío de la misma operación no duplique el cobro. La decisión combina la restricción en base de datos con una lectura previa dentro de la misma transacción. Si falta la restricción o la lectura queda fuera de la transacción, el segundo intento duplica el cobro.
+
+**Self-invocation del proxy (error frecuente).** El fallo deliberado mueve `@Transactional` a una llamada interna privada y verifica que el proxy no se aplica como se esperaba. Anotar un método privado o invocarlo desde otro método del mismo bean (self-invocation) no activa la interceptación. La corrección es devolver el límite transaccional al método público del bean, invocado desde fuera.
 
 `@Transactional` se aplica mediante infraestructura/proxy de Spring al invocar un método gestionado. Por defecto, las excepciones unchecked provocan rollback; las checked no necesariamente. La anotación no surte el mismo efecto en una llamada interna al mismo objeto (self-invocation), ni debe cubrir llamadas lentas a sistemas externos.
 
