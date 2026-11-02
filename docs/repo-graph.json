@@ -1499,7 +1499,7 @@
     },
     {
       "path": "docs/topic-source-review.json",
-      "lines": 11212,
+      "lines": 11268,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -10622,7 +10622,7 @@
     },
     {
       "path": "web/public/content/java/modulo-14.md",
-      "lines": 499,
+      "lines": 620,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10643,7 +10643,7 @@
     },
     {
       "path": "web/public/content/java/modulo-15.md",
-      "lines": 1065,
+      "lines": 1233,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

@@ -4637,12 +4637,16 @@
       "path": "web/public/content/java/modulo-14.md",
       "topic": "Tema 1: Compartir memoria requiere orden y visibilidad",
       "providerCitations": [
-        "https://docs.oracle.com/javase/specs/jls/se21/html/jls-17.html"
+        "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/atomic/AtomicLong.html",
+        "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/atomic/LongAdder.html",
+        "https://docs.oracle.com/javase/specs/jls/se27/html/jls-17.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
       "line": 7,
       "originalProseUrls": [
-        "https://docs.oracle.com/javase/specs/jls/se21/html/jls-17.html"
+        "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/atomic/AtomicLong.html",
+        "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/atomic/LongAdder.html",
+        "https://docs.oracle.com/javase/specs/jls/se27/html/jls-17.html"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -4652,11 +4656,14 @@
       "path": "web/public/content/java/modulo-14.md",
       "topic": "Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo",
       "providerCitations": [
+        "https://maven.apache.org/plugins/maven-compiler-plugin/compile-mojo.html#annotationProcessorPaths",
         "https://openjdk.org/projects/code-tools/jmh/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 105,
+      "line": 133,
       "originalProseUrls": [
+        "https://github.com/openjdk/jmh/tree/master/jmh-samples/src/main/java/org/openjdk/jmh/samples",
+        "https://maven.apache.org/plugins/maven-compiler-plugin/compile-mojo.html#annotationProcessorPaths",
         "https://openjdk.org/projects/code-tools/jmh/"
       ],
       "recognitionStatus": "primary-domain-detected",
@@ -4667,12 +4674,14 @@
       "path": "web/public/content/java/modulo-14.md",
       "topic": "Tema 3: Deserializar es permitir construcción y comportamiento",
       "providerCitations": [
-        "https://docs.oracle.com/en/java/javase/25/core/serialization-filtering1.html"
+        "https://docs.oracle.com/en/java/javase/27/core/serialization-filtering1.html",
+        "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/io/ObjectInputFilter.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 225,
+      "line": 293,
       "originalProseUrls": [
-        "https://docs.oracle.com/en/java/javase/25/core/serialization-filtering1.html"
+        "https://docs.oracle.com/en/java/javase/27/core/serialization-filtering1.html",
+        "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/io/ObjectInputFilter.html"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -4683,13 +4692,15 @@
       "topic": "Tema 4: El runtime es parte del artefacto y necesita ciclo de vida",
       "providerCitations": [
         "https://docs.oracle.com/en/java/javase/25/",
-        "https://docs.oracle.com/en/java/javase/25/docs/specs/man/jlink.html"
+        "https://docs.oracle.com/en/java/javase/27/docs/specs/man/jdeps.html",
+        "https://docs.oracle.com/en/java/javase/27/docs/specs/man/jlink.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 356,
+      "line": 452,
       "originalProseUrls": [
         "https://docs.oracle.com/en/java/javase/25/",
-        "https://docs.oracle.com/en/java/javase/25/docs/specs/man/jlink.html"
+        "https://docs.oracle.com/en/java/javase/27/docs/specs/man/jdeps.html",
+        "https://docs.oracle.com/en/java/javase/27/docs/specs/man/jlink.html"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -4718,14 +4729,14 @@
       "providerCitations": [
         "https://docs.gradle.org/9.1.0/release-notes.html",
         "https://docs.gradle.org/current/userguide/build_cache.html",
-        "https://docs.oracle.com/en/java/javase/25/docs/specs/man/jar.html"
+        "https://docs.oracle.com/en/java/javase/27/docs/specs/man/jar.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 205,
+      "line": 233,
       "originalProseUrls": [
         "https://docs.gradle.org/9.1.0/release-notes.html",
         "https://docs.gradle.org/current/userguide/build_cache.html",
-        "https://docs.oracle.com/en/java/javase/25/docs/specs/man/jar.html"
+        "https://docs.oracle.com/en/java/javase/27/docs/specs/man/jar.html"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -4739,7 +4750,7 @@
         "https://www.archunit.org/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 295,
+      "line": 351,
       "originalProseUrls": [
         "https://maven.apache.org/guides/mini/guide-multiple-modules.html",
         "https://www.archunit.org/"
@@ -4756,7 +4767,7 @@
         "https://junit.org/junit5/docs/current/user-guide/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 544,
+      "line": 628,
       "originalProseUrls": [
         "https://assertj.github.io/doc/",
         "https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html",
@@ -4775,7 +4786,7 @@
         "https://wiremock.org/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 720,
+      "line": 832,
       "originalProseUrls": [
         "https://documentation.red-gate.com/flyway/",
         "https://java.testcontainers.org/",
@@ -4792,7 +4803,7 @@
         "https://logback.qos.ch/manual/mdc.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 918,
+      "line": 1058,
       "originalProseUrls": [
         "https://github.com/logfellow/logstash-logback-encoder",
         "https://logback.qos.ch/manual/mdc.html",
@@ -7109,15 +7120,6 @@
       "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
     },
     {
-      "url": "https://docs.oracle.com/en/java/javase/25/core/serialization-filtering1.html",
-      "status": 200,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/25/core/serialization-filtering1.html",
-      "contentType": "text/html",
-      "title": null,
-      "checkedAt": "2026-10-31T15:33:19.834387+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
       "url": "https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/Connection.html",
       "status": 200,
       "finalUrl": "https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/Connection.html",
@@ -7142,24 +7144,6 @@
       "contentType": "text/html",
       "title": null,
       "checkedAt": "2026-11-02T00:19:48.103975+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://docs.oracle.com/en/java/javase/25/docs/specs/man/jar.html",
-      "status": 200,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/25/docs/specs/man/jar.html",
-      "contentType": "text/html",
-      "title": null,
-      "checkedAt": "2026-11-02T00:19:48.106691+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://docs.oracle.com/en/java/javase/25/docs/specs/man/jlink.html",
-      "status": 200,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/25/docs/specs/man/jlink.html",
-      "contentType": "text/html",
-      "title": null,
-      "checkedAt": "2026-10-31T15:33:19.962492+00:00",
       "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
@@ -7190,6 +7174,15 @@
       "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
+      "url": "https://docs.oracle.com/en/java/javase/27/core/serialization-filtering1.html",
+      "status": 0,
+      "finalUrl": "https://docs.oracle.com/en/java/javase/27/core/serialization-filtering1.html",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
       "url": "https://docs.oracle.com/en/java/javase/27/core/structured-concurrency.html",
       "status": 200,
       "finalUrl": "https://docs.oracle.com/en/java/javase/27/core/structured-concurrency.html",
@@ -7197,6 +7190,15 @@
       "title": null,
       "checkedAt": "2026-11-02T00:19:48.107728+00:00",
       "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
+      "url": "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/io/ObjectInputFilter.html",
+      "status": 0,
+      "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/io/ObjectInputFilter.html",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
       "url": "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/ref/package-summary.html",
@@ -7235,6 +7237,24 @@
       "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
+      "url": "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/atomic/AtomicLong.html",
+      "status": 0,
+      "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/atomic/AtomicLong.html",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
+      "url": "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/atomic/LongAdder.html",
+      "status": 0,
+      "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/atomic/LongAdder.html",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
       "url": "https://docs.oracle.com/en/java/javase/27/docs/api/java.net.http/java/net/http/HttpClient.html",
       "status": 0,
       "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/api/java.net.http/java/net/http/HttpClient.html",
@@ -7247,6 +7267,15 @@
       "url": "https://docs.oracle.com/en/java/javase/27/docs/api/jdk.httpserver/com/sun/net/httpserver/HttpServer.html",
       "status": 0,
       "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/api/jdk.httpserver/com/sun/net/httpserver/HttpServer.html",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
+      "url": "https://docs.oracle.com/en/java/javase/27/docs/specs/man/jar.html",
+      "status": 0,
+      "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/specs/man/jar.html",
       "contentType": "",
       "title": null,
       "checkedAt": null,
@@ -7271,6 +7300,15 @@
       "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
+      "url": "https://docs.oracle.com/en/java/javase/27/docs/specs/man/jdeps.html",
+      "status": 0,
+      "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/specs/man/jdeps.html",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
       "url": "https://docs.oracle.com/en/java/javase/27/docs/specs/man/jfr.html",
       "status": 0,
       "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/specs/man/jfr.html",
@@ -7283,6 +7321,15 @@
       "url": "https://docs.oracle.com/en/java/javase/27/docs/specs/man/jhsdb.html",
       "status": 0,
       "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/specs/man/jhsdb.html",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
+      "url": "https://docs.oracle.com/en/java/javase/27/docs/specs/man/jlink.html",
+      "status": 0,
+      "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/specs/man/jlink.html",
       "contentType": "",
       "title": null,
       "checkedAt": null,
@@ -7316,13 +7363,13 @@
       "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
-      "url": "https://docs.oracle.com/javase/specs/jls/se21/html/jls-17.html",
-      "status": 200,
-      "finalUrl": "https://docs.oracle.com/javase/specs/jls/se21/html/jls-17.html",
-      "contentType": "text/html",
+      "url": "https://docs.oracle.com/javase/specs/jls/se27/html/jls-17.html",
+      "status": 0,
+      "finalUrl": "https://docs.oracle.com/javase/specs/jls/se27/html/jls-17.html",
+      "contentType": "",
       "title": null,
-      "checkedAt": "2026-10-31T15:33:20.003420+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
       "url": "https://docs.oracle.com/javase/specs/jvms/se27/html/jvms-4.html",
@@ -8588,6 +8635,15 @@
       "url": "https://maven.apache.org/guides/mini/guide-multiple-modules.html#reactor",
       "status": 0,
       "finalUrl": "https://maven.apache.org/guides/mini/guide-multiple-modules.html#reactor",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
+      "url": "https://maven.apache.org/plugins/maven-compiler-plugin/compile-mojo.html#annotationProcessorPaths",
+      "status": 0,
+      "finalUrl": "https://maven.apache.org/plugins/maven-compiler-plugin/compile-mojo.html#annotationProcessorPaths",
       "contentType": "",
       "title": null,
       "checkedAt": null,
@@ -11192,9 +11248,9 @@
     "additionalRecognizedTopics": 378,
     "remainingUnrecognizedTopics": 0,
     "applicabilityPendingTopics": 378,
-    "urlsChecked": 534,
-    "urlsReachable": 507,
-    "urlsPending": 27
+    "urlsChecked": 539,
+    "urlsReachable": 503,
+    "urlsPending": 36
   },
   "corrections": [
     {

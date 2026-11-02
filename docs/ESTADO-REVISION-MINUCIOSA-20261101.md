@@ -768,3 +768,47 @@ Fecha: 2026-11-01. Entorno: Temurin **JDK 27.0.1**.
 Versiones a Java 27. `validate.sh` EXIT 0. Sin marcar `reviewed`; trinquete 1.143 de 1.146.
 
 Acumulado cerrado: Java 0–13 y 20 + M18 T3/T4. Siguiente: `java/modulo-14.md` (Java en producción).
+
+## 24. Avance: Java módulos 14 (producción) y 15 (Java Master)
+
+Fecha: 2026-11-01. Entorno: Temurin **JDK 27.0.1** (Maven 3.10.0 con JDK 27 Homebrew).
+
+- **Módulo 14 (Java en producción, 4 temas):** compartir memoria (JMM, happens-before,
+  `volatile` vs atomicidad, `AtomicLong`/`LongAdder`, publicación segura, inmutabilidad
+  superficial vs profunda); benchmarks JMH (dead code elimination, consumo por retorno vs
+  `Blackhole`, warmup/forks/iteraciones, `@State`/`@Setup`/`@Param`, procesador de anotaciones,
+  `Score` vs `Error`, microbenchmark ≠ latencia); deserialización segura (`ObjectInputFilter`,
+  allowlist terminada en `!*`, `java.base/*` para tipos internos, `maxdepth`/`maxrefs`/`maxbytes`,
+  JSON cerrado para entradas nuevas, allowlist no denylist); runtime como artefacto
+  (`jdeps --print-module-deps`, `jlink`, módulo ausente ⇒ `NoClassDefFoundError`, límites de la
+  detección estática, `-Xmx` no cubre no-heap, ciclo de vida/reconstrucción ante parche).
+- **Módulo 15 (Java Master, 6 temas):** Maven avanzado (reactor, `dependencyManagement` vs
+  declarar, BOM `import`, convergencia, Enforcer `requireJavaVersion`, POM efectivo, perfiles no
+  para secretos); Gradle/JAR reproducible (`jar --date`, orden estable, equivalencias Gradle,
+  wrapper/toolchain, locking + verification metadata, caché solo determinista); multi-módulo sin
+  ciclos (capas, dirección de dependencias, puerto/adaptador, ArchUnit sobre bytecode,
+  `freeOfCycles`, build impide inversión, módulo-por-paquete = sobre-ingeniería); JUnit/Mockito/
+  AssertJ (fake vs mock de frontera, `@ExtendWith`, aserción de estado, `verify` del contrato, no
+  mockear SUT, `verifyNoMoreInteractions` con criterio, `ArgumentCaptor` vs estado);
+  Testcontainers (PostgreSQL versionado, Flyway, JDBC real con `NUMERIC`/`DATE`, Surefire vs
+  Failsafe, aislamiento con `truncate`, esperar condición, migración inmutable); SLF4J/Logback/MDC
+  (fachada vs impl, logging parametrizado, MDC por hilo, `putCloseable`, contaminación de pool,
+  encoder JSON, no secretos ni stack traces duplicados).
+
+Evidencia reproducida por mí en JDK 27: M14 T1 (`terminado=false` sin `volatile`), M14 T2 (tabla
+JMH real de 6 combinaciones; nota sobre *Compiler Blackholes* de la JVM 27), M14 T3 (`valido=…`,
+`sin-filtro=…Unexpected`, `con-filtro=InvalidClassException: REJECTED`, y rechazo al quitar
+`java.base/*`), M14 T4 (`jdeps` → `java.base,java.logging,java.net.http`, `jlink` 48 MB vs 296 MB,
+`cliente=HTTP_2`, fallo sin `java.logging` = `NoClassDefFoundError`), M15 T2 (dos SHA-256 iguales
+con `--date`, distintos sin él). Fuentes de temas actualizadas a `jls/se27` y API `javase/27`.
+
+Importante sobre el atlas: el enlace del bloque `OFFICIAL-TOPIC-ATLAS` de Java **se mantiene en
+`javase/25`** porque `docs/official-topic-atlas.json` y `validate_official_sources.py` lo exigen
+(la LTS 25 es la base documental global del track; el curso enseña en 27). No cambiar el atlas sin
+actualizar también ese JSON y el test `test_source_review_matches_current_markdown`.
+
+`validate.sh` EXIT 0. Trinquete `--max-pending 1143` OK (sin marcar nuevos `reviewed`).
+Orden de regeneración usado: topic_learning_quality → code_visual_quality → lesson_substance →
+rebuild_topic_source_review → editorial_backlog → course_depth → full_review → repo_graph.
+
+Acumulado cerrado: Java 0–15 y 20 + M18 T3/T4. Siguiente: `java/modulo-16.md` (JPA).

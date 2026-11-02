@@ -1677,7 +1677,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "815cd85664b62523c570e9f6d6bc5baa09dcb0ea37205e36f00574855ecea5b1",
+    "fingerprint": "b5f3f93ccd5640692146d4ffbe41498d45c7c9b18e1c06b1ae144915f1cfa6d4",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
@@ -6447,72 +6447,72 @@
       {
         "issues": [],
         "module": 14,
-        "tailWords": 178,
+        "tailWords": 224,
         "topic": "Tema 1: Compartir memoria requiere orden y visibilidad · Experto · 60 min",
-        "words": 673
+        "words": 1208
       },
       {
         "issues": [],
         "module": 14,
-        "tailWords": 166,
+        "tailWords": 207,
         "topic": "Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo · Experto · 65 min",
-        "words": 701
+        "words": 1408
       },
       {
         "issues": [],
         "module": 14,
-        "tailWords": 142,
+        "tailWords": 164,
         "topic": "Tema 3: Deserializar es permitir construcción y comportamiento · Experto · 60 min",
-        "words": 680
+        "words": 1189
       },
       {
         "issues": [],
         "module": 14,
-        "tailWords": 138,
+        "tailWords": 157,
         "topic": "Tema 4: El runtime es parte del artefacto y necesita ciclo de vida · Experto · 60 min",
-        "words": 635
+        "words": 1070
       },
       {
         "issues": [],
         "module": 15,
         "tailWords": 206,
         "topic": "Tema 1: Maven avanzado · Avanzado · 55 min",
-        "words": 1120
+        "words": 1604
       },
       {
         "issues": [],
         "module": 15,
-        "tailWords": 252,
+        "tailWords": 257,
         "topic": "Tema 2: Gradle y builds reproducibles · Avanzado · 45 min",
-        "words": 828
+        "words": 1291
       },
       {
         "issues": [],
         "module": 15,
         "tailWords": 199,
         "topic": "Tema 3: Proyectos multi-módulo sin ciclos · Experto · 1 h 15 min",
-        "words": 1338
+        "words": 1794
       },
       {
         "issues": [],
         "module": 15,
         "tailWords": 206,
         "topic": "Tema 4: JUnit 5, Mockito y assertions expresivas · Avanzado · 55 min",
-        "words": 984
+        "words": 1396
       },
       {
         "issues": [],
         "module": 15,
         "tailWords": 203,
         "topic": "Tema 5: Pruebas de integración reproducibles · Experto · 1 h",
-        "words": 1251
+        "words": 1673
       },
       {
         "issues": [],
         "module": 15,
         "tailWords": 202,
         "topic": "Tema 6: SLF4J, Logback, MDC y logging estructurado · Avanzado · 55 min",
-        "words": 862
+        "words": 1295
       },
       {
         "issues": [],
