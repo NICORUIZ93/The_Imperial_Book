@@ -1,6 +1,6 @@
 # Módulo 16: Mapear y optimizar persistencia con JPA e Hibernate
 
-**Entorno del módulo (verificado):** JDK 27, Maven, **Spring Boot 4.1.1** (trae Hibernate 7.4.5) y H2. Nota importante de Spring Boot 4: el slice de test de JPA cambió de paquete a `org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest` (antes `org.springframework.boot.test.autoconfigure.orm.jpa`). Todos los ejemplos usan ese import y declaran también `spring-boot-starter-test`.
+**Entorno del módulo (verificado):** JDK 27, Maven, **Spring Boot 4.1.1** (trae Hibernate 7.4.5) y H2. Nota importante de Spring Boot 4: el slice de test de JPA cambió de paquete a `org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest` (antes `org.springframework.boot.test.autoconfigure.orm.jpa`). Ese `@DataJpaTest` ya **no** viaja dentro de `spring-boot-starter-test`: vive en el artefacto `spring-boot-starter-data-jpa-test`, que los ejemplos declaran explícitamente con `scope test` **además** de `spring-boot-starter-test`. Todos los ejemplos usan ese import.
 
 **Proyecto del módulo:** aplicaciones Maven creadas desde carpetas vacías para persistir pedidos y pagos, medir las consultas de Hibernate y versionar el esquema. Escribirás cada entidad, configuración y prueba; ningún ejercicio depende de ejemplos o archivos prefabricados.
 
@@ -91,6 +91,7 @@ Escribe `pom.xml` con Spring Boot, JPA, H2 y pruebas; no uses un generador:
     <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-data-jpa</artifactId></dependency>
     <dependency><groupId>com.h2database</groupId><artifactId>h2</artifactId><scope>runtime</scope></dependency>
     <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-test</artifactId><scope>test</scope></dependency>
+    <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-data-jpa-test</artifactId><scope>test</scope></dependency>
   </dependencies>
 </project>
 ```
@@ -325,6 +326,7 @@ Escribe `pom.xml` completo:
     <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-data-jpa</artifactId></dependency>
     <dependency><groupId>com.h2database</groupId><artifactId>h2</artifactId><scope>runtime</scope></dependency>
     <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-test</artifactId><scope>test</scope></dependency>
+    <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-data-jpa-test</artifactId><scope>test</scope></dependency>
   </dependencies>
 </project>
 ```

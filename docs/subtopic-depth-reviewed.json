@@ -117,6 +117,18 @@
         "https://formulae.brew.sh/cask/temurin"
       ]
     },
+    "java/modulo-16::Tema 1: Entidades y relaciones JPA · Intermedio · 55 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Spring Boot 4.1.1 / Hibernate 7.4.5 / H2 sobre JDK 27 (Maven offline con repo local): @DataJpaTest RelacionPedidosTest pasa (Tests run: 1, BUILD SUCCESS); dos inserts de Pedido y count(*) confirman 2 claves foráneas cliente_id físicas. CORREGIDO BUG: el pom declaraba solo spring-boot-starter-test, pero en SB4 @DataJpaTest vive en spring-boot-starter-data-jpa-test; sin esa dependencia el import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest no compila. Añadida a ambos pom del módulo y corregida la nota del entorno.",
+      "criticalSubtopics": ["@Entity, @Id, @GeneratedValue", "lado propietario (@JoinColumn) vs inverso (mappedBy)", "sincronizar ambos lados en el agregado", "CascadeType.PERSIST no implica REMOVE", "@Enumerated(EnumType.STRING)", "unidireccional cuando solo navegas en un sentido", "no exponer setters generales"],
+      "sources": ["https://jakarta.ee/specifications/persistence/", "https://hibernate.org/orm/documentation/"]
+    },
+    "java/modulo-16::Tema 2: FetchType.LAZY, EAGER y el problema N+1 · Avanzado · 1 h": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Spring Boot 4.1.1 / Hibernate 7.4.5 / H2 sobre JDK 27 (Maven offline): ConsultasPedidoTest pasa (Tests run: 2) — accesoLazy mide exactamente 11 consultas (1+N para 10 clientes con getPrepareStatementCount) y joinFetch con distinct baja a 1 conservando 10 clientes. Medición con EntityManager.clear() para no falsear el contador con la caché L1.",
+      "criticalSubtopics": ["defaults de fetch (to-one EAGER, to-many LAZY)", "el problema N+1 medido", "JOIN FETCH resuelve en una consulta", "medir con contexto limpio (clear())", "EAGER != un único join", "paginar fetch de colección es en memoria", "proyección DTO para listados"],
+      "sources": ["https://jakarta.ee/specifications/persistence/", "https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#fetching"]
+    },
     "java/modulo-15::Tema 1: Maven avanzado · Avanzado · 55 min": {
       "status": "reviewed", "reviewDate": "2026-11-02",
       "execution": "Temurin 27.0.1: verificado el núcleo ejecutable — reactor multi-módulo compila domain antes que app con dependencyManagement fijando versión sin añadir dependencia; dos rutas al mismo artefacto (directa y transitiva) confirmadas por classpath. Enforcer (requireJavaVersion/dependencyConvergence) es el plugin que detiene el build ante la divergencia que se reprodujo con versiones distintas; su activación requiere mvn (documentado).",

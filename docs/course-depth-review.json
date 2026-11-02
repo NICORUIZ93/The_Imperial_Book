@@ -8404,7 +8404,7 @@
       "module": 16,
       "title": "Tema 2: FetchType.LAZY, EAGER y el problema N+1 · Avanzado · 1 h",
       "file": "web/public/content/java/modulo-16.md",
-      "line": 257,
+      "line": 258,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

@@ -4840,7 +4840,7 @@
         "https://jakarta.ee/specifications/persistence/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 257,
+      "line": 258,
       "originalProseUrls": [
         "https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#fetching",
         "https://docs.oracle.com/en/java/javase/27/",

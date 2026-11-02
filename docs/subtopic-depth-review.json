@@ -1,9 +1,9 @@
 {
   "summary": {
     "topics": 1159,
-    "reviewed": 88,
-    "pending": 1071,
-    "priorityCandidates": 1028,
+    "reviewed": 90,
+    "pending": 1069,
+    "priorityCandidates": 1026,
     "byTrack": {
       "android": {
         "topics": 74,
@@ -42,8 +42,8 @@
       },
       "java": {
         "topics": 109,
-        "reviewed": 86,
-        "pending": 23
+        "reviewed": 88,
+        "pending": 21
       },
       "javascript": {
         "topics": 88,
@@ -11154,26 +11154,60 @@
       "track": "java",
       "module": 16,
       "topic": "Tema 1: Entidades y relaciones JPA · Intermedio · 55 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Spring Boot 4.1.1 / Hibernate 7.4.5 / H2 sobre JDK 27 (Maven offline con repo local): @DataJpaTest RelacionPedidosTest pasa (Tests run: 1, BUILD SUCCESS); dos inserts de Pedido y count(*) confirman 2 claves foráneas cliente_id físicas. CORREGIDO BUG: el pom declaraba solo spring-boot-starter-test, pero en SB4 @DataJpaTest vive en spring-boot-starter-data-jpa-test; sin esa dependencia el import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest no compila. Añadida a ambos pom del módulo y corregida la nota del entorno.",
+        "criticalSubtopics": [
+          "@Entity, @Id, @GeneratedValue",
+          "lado propietario (@JoinColumn) vs inverso (mappedBy)",
+          "sincronizar ambos lados en el agregado",
+          "CascadeType.PERSIST no implica REMOVE",
+          "@Enumerated(EnumType.STRING)",
+          "unidireccional cuando solo navegas en un sentido",
+          "no exponer setters generales"
+        ],
+        "sources": [
+          "https://jakarta.ee/specifications/persistence/",
+          "https://hibernate.org/orm/documentation/"
+        ]
+      }
     },
     {
       "id": "java/modulo-16::Tema 2: FetchType.LAZY, EAGER y el problema N+1 · Avanzado · 1 h",
       "track": "java",
       "module": 16,
       "topic": "Tema 2: FetchType.LAZY, EAGER y el problema N+1 · Avanzado · 1 h",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Spring Boot 4.1.1 / Hibernate 7.4.5 / H2 sobre JDK 27 (Maven offline): ConsultasPedidoTest pasa (Tests run: 2) — accesoLazy mide exactamente 11 consultas (1+N para 10 clientes con getPrepareStatementCount) y joinFetch con distinct baja a 1 conservando 10 clientes. Medición con EntityManager.clear() para no falsear el contador con la caché L1.",
+        "criticalSubtopics": [
+          "defaults de fetch (to-one EAGER, to-many LAZY)",
+          "el problema N+1 medido",
+          "JOIN FETCH resuelve en una consulta",
+          "medir con contexto limpio (clear())",
+          "EAGER != un único join",
+          "paginar fetch de colección es en memoria",
+          "proyección DTO para listados"
+        ],
+        "sources": [
+          "https://jakarta.ee/specifications/persistence/",
+          "https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#fetching"
+        ]
+      }
     },
     {
       "id": "java/modulo-17::Tema 1: JDBC, PreparedStatement y DAO · Intermedio · 1 h",
