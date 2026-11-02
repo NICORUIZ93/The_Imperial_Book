@@ -23,6 +23,34 @@ La comprobación debe incluir timeout, límite de intentos, respuesta inválida 
 
 **Por qué importa:** el servicio de envíos consulta una API externa para validar direcciones. Si esa API no responde, los hilos pueden quedar ocupados y acumular solicitudes. Un timeout protege tu capacidad, pero no garantiza que el otro sistema no haya procesado la operación.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `HttpClient` reutilizable y su pool | Prerrequisito | Un cliente sirve varias solicitudes |
+| `HttpRequest`: método, headers, body | Núcleo | GET a `/health` devuelve 200 |
+| Timeout de conexión vs de solicitud | Núcleo | `/slow` produce `HttpTimeoutException` |
+| Separar transporte de cuerpo | Núcleo | Validar `statusCode()` antes de parsear body |
+| Diagnosticar 200 / 404 / timeout | Diagnóstico | Tres respuestas distintas observadas |
+| Reintento solo de idempotentes | Límite | POST no se reintenta a ciegas |
+| Backoff con jitter y límite | Variante | Espera creciente, no reintento infinito |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`HttpClient` reutilizable y su pool (prerrequisito).** `HttpClient` es caro de crear y está pensado para reutilizarse: administra un pool de conexiones y las mantiene vivas entre solicitudes (keep-alive). Crear uno por petición desperdicia conexiones y descriptores; se construye una vez y se comparte.
+
+**`HttpRequest`: método, headers, body (núcleo).** `HttpRequest.newBuilder(uri)` define el destino y permite fijar método (`GET()`, `POST(publisher)`), headers y el cuerpo. Es inmutable una vez construido, así que una misma plantilla no arrastra estado entre llamadas. El GET a `/health` devuelve `200` con el JSON del servidor.
+
+**Timeout de conexión vs de solicitud (núcleo).** Hay dos relojes distintos: el timeout de conexión (`HttpClient.connectTimeout`) acota establecer el socket; el timeout de solicitud (`HttpRequest.timeout`) acota la respuesta completa. El endpoint `/slow` duerme 5 s, así que con un timeout de solicitud menor se lanza `HttpTimeoutException` sin colgar el hilo indefinidamente.
+
+**Separar transporte de cuerpo (núcleo).** `HttpResponse` trae `statusCode()` (transporte) y `body()` (contenido). Parsear el cuerpo sin mirar antes el estado lleva a interpretar un error 404 como datos válidos. Primero se valida el código, luego se procesa el cuerpo según corresponda.
+
+**Diagnosticar 200 / 404 / timeout (diagnóstico).** Los tres resultados son distintos y requieren manejo distinto: 200 es éxito, 404 es un error de recurso que no mejora reintentando, y un timeout es un fallo transitorio donde no sabes si el servidor procesó la operación. El laboratorio produce los tres contra endpoints dedicados.
+
+**Reintento solo de idempotentes (límite).** Un GET es idempotente: repetirlo no cambia estado. Un POST que crea un cobro no lo es: si su respuesta se perdió, podría haberse aplicado igualmente. Reintentar ese POST a ciegas duplica la operación; por eso el reintento automático se limita a operaciones idempotentes o a POST protegidos por clave de idempotencia.
+
+**Backoff con jitter y límite (variante).** Reintentar inmediatamente y en bucle amplifica una caída (efecto estampida). Un backoff exponencial con jitter espaciando los intentos, más un número máximo, reparte la carga y evita sincronizar a todos los clientes golpeando el servicio al mismo tiempo.
+
 `HttpClient` reutilizable administra conexiones; `HttpRequest` define destino, método, headers y timeout; `HttpResponse` contiene estado y cuerpo. Reintenta únicamente fallos transitorios de operaciones idempotentes, con límite, espera creciente y jitter. No reintentes automáticamente un POST que podría haber sido aplicado aunque su respuesta se perdiera.
 
 **Analogía:** el timeout es el tiempo máximo que mantienes abierta una llamada telefónica. Colgar evita esperar para siempre, pero no demuestra que la otra oficina no haya anotado el pedido.
@@ -192,6 +220,34 @@ Lleva el cliente al **[Proyecto integrador: proveedor externo de RutaFlow](#proy
 **Al terminar podrás:** construir un cliente y un servidor locales que transporten un bearer sin registrarlo, validar entrada no confiable y demostrar que una identidad autenticada puede recibir 403 al pedir un recurso de otro tenant.
 
 **Por qué importa:** un token válido confirma una identidad, pero no demuestra que ese usuario pueda leer cualquier envío. TLS, autenticación y autorización por objeto resuelven amenazas diferentes.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Autenticación vs autorización por objeto | Núcleo | Token válido pero 403 por tenant ajeno |
+| Bearer en header `Authorization`, sin loguearlo | Núcleo | Header presente; nunca en logs |
+| Validar entrada en cada frontera | Núcleo | Guía `ENV-[0-9]+` o 400 |
+| JWT/OAuth2/OIDC: qué resuelve cada uno | Prerrequisito | Token fijo solo para ver el header |
+| SSRF: validar esquema, host y DNS | Diagnóstico | Rango privado bloqueado al conectar |
+| Parametrización ≠ autorización | Límite | SQL seguro aún necesita control por objeto |
+| No criptografía propia | Error frecuente | Validación delegada a componentes confiables |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Autenticación vs autorización por objeto (núcleo).** Autenticar responde "¿quién eres?"; autorizar por objeto responde "¿puedes tocar *este* recurso?". El servidor del laboratorio acepta un token válido (autenticado) pero devuelve 403 si el `X-Tenant` del usuario no coincide con el tenant del envío: la identidad es correcta, el permiso sobre ese objeto no.
+
+**Bearer en header `Authorization`, sin loguearlo (núcleo).** El token viaja en `Authorization: Bearer <token>`. Es una credencial: registrarlo en logs o URLs lo expone a cualquiera con acceso a esos registros. El cliente lo envía en el header y el código evita imprimirlo, redactándolo si acaso.
+
+**Validar entrada en cada frontera (núcleo).** Todo dato externo se valida al entrar: la guía debe cumplir `ENV-[0-9]+` o el servidor responde 400 antes de usarla. No se asume que un cliente "correcto" mandará datos bien formados; cada frontera revalida longitud, formato y rango.
+
+**JWT/OAuth2/OIDC: qué resuelve cada uno (prerrequisito).** JWT es un formato de claims firmado (no necesariamente cifrado); OAuth 2.0 es un marco de *autorización*; OpenID Connect añade *identidad* sobre OAuth2. En producción un componente confiable valida firma, emisor, audiencia y expiración; el laboratorio usa un token fijo solo para hacer visible el header, nunca para implementar criptografía casera.
+
+**SSRF: validar esquema, host y DNS (diagnóstico).** Si el servidor acepta una URL del usuario para llamarla, un atacante puede apuntar a servicios internos (metadata del cloud, `127.0.0.1`). La defensa valida esquema y host, resuelve el DNS y bloquea rangos privados/no enrutables *también en el momento de conectar*; una regex sobre la URL se burla con redirecciones o DNS rebinding.
+
+**Parametrización ≠ autorización (límite).** Las consultas parametrizadas evitan inyección SQL, pero no deciden si este usuario puede ver esta fila. Un query seguro que devuelve el envío de otro tenant sigue siendo una fuga: la autorización por objeto es una comprobación aparte, no un efecto de usar `PreparedStatement`.
+
+**No criptografía propia (error frecuente).** Verificar firmas, emisores y expiración de tokens a mano es una fuente clásica de vulnerabilidades (algoritmo `none`, comparación no constante). Se delega a bibliotecas y servidores de identidad probados; el curso muestra el mecanismo sin pretender sustituir esos componentes.
 
 JWT es un formato de claims firmado, no necesariamente cifrado. OAuth 2.0 es un marco de autorización y OpenID Connect añade identidad. En producción, un servidor valida firma, emisor, audiencia, expiración y permisos con componentes confiables; este laboratorio usa un token fijo exclusivamente para hacer visible el header, no para enseñar criptografía propia.
 

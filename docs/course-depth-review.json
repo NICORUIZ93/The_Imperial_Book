@@ -8392,7 +8392,7 @@
       "module": 16,
       "title": "Tema 2: FetchType.LAZY, EAGER y el problema N+1 · Avanzado · 1 h",
       "file": "web/public/content/java/modulo-16.md",
-      "line": 227,
+      "line": 255,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8404,7 +8404,7 @@
       "module": 17,
       "title": "Tema 1: JDBC, PreparedStatement y DAO · Intermedio · 1 h",
       "file": "web/public/content/java/modulo-17.md",
-      "line": 14,
+      "line": 22,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8416,7 +8416,7 @@
       "module": 17,
       "title": "Tema 2: Transacciones, ACID y aislamiento · Avanzado · 1 h 15 min",
       "file": "web/public/content/java/modulo-17.md",
-      "line": 201,
+      "line": 237,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8442,7 +8442,7 @@
       "module": 18,
       "title": "Tema 2: Tokens, validación y límites de seguridad · Avanzado · 2 h",
       "file": "web/public/content/java/modulo-18.md",
-      "line": 186,
+      "line": 214,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -8456,7 +8456,7 @@
       "module": 18,
       "title": "Tema 3: Sockets TCP y UDP — la red que hay debajo de HttpClient · Avanzado · 2 h",
       "file": "web/public/content/java/modulo-18.md",
-      "line": 355,
+      "line": 411,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8468,7 +8468,7 @@
       "module": 18,
       "title": "Tema 4: Seguridad defensiva — hash, HMAC, firma y cifrado · Avanzado · 2 h 30 min",
       "file": "web/public/content/java/modulo-18.md",
-      "line": 513,
+      "line": 569,
       "signals": [
         "clase-java-no-visible"
       ],

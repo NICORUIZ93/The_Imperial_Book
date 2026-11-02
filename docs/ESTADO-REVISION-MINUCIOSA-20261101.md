@@ -812,3 +812,31 @@ Orden de regeneración usado: topic_learning_quality → code_visual_quality →
 rebuild_topic_source_review → editorial_backlog → course_depth → full_review → repo_graph.
 
 Acumulado cerrado: Java 0–15 y 20 + M18 T3/T4. Siguiente: `java/modulo-16.md` (JPA).
+
+## 25. Avance: Java módulos 16 (JPA), 17 (JDBC) y 18 T1-T2 (HTTP/seguridad)
+
+Fecha: 2026-11-01. Entorno: Temurin **JDK 27.0.1**.
+
+- **Módulo 16 (JPA/Hibernate, 2 temas):** entidades y relaciones (`@Entity`/`@Id`/
+  `@GeneratedValue`, propietario vs inverso, sincronizar agregado, `CascadeType.PERSIST`
+  no implica `REMOVE`, `@Enumerated(STRING)`, unidireccional cuando aplica, no setters
+  generales); LAZY/EAGER/N+1 (defaults de fetch, N+1 medido con `getPrepareStatementCount`
+  = 11, `JOIN FETCH` + `distinct` = 1, medir con `clear()`, `EAGER` ≠ un join, paginar
+  fetch de colección es en memoria, DTO para listados).
+- **Módulo 17 (JDBC/DAO/transacciones, 2 temas):** DAO (`DataSource`, `PreparedStatement`
+  fija estructura, try-with-resources, encapsular SQL, parámetros no identificadores →
+  allowlist de orden, comprobar `executeUpdate`, no DAO genérico); transacciones (ACID,
+  `setAutoCommit(false)`+commit/rollback, una sola conexión por unidad, aislamiento y
+  anomalías, bloqueo optimista con `version`, idempotencia con `UNIQUE`, no transacción
+  durante HTTP → outbox/saga). Añadida nota de remisión al curso separado JDBC.
+- **Módulo 18 T1-T2:** T1 HttpClient (cliente reutilizable, `HttpRequest`, timeout de
+  conexión vs solicitud, separar transporte de cuerpo, 200/404/timeout, reintento solo
+  idempotentes, backoff con jitter); T2 tokens/seguridad (autenticación vs autorización
+  por objeto, bearer sin loguear, validar en cada frontera, JWT/OAuth2/OIDC, SSRF con
+  validación de DNS, parametrización ≠ autorización, no criptografía propia). T3 y T4 ya
+  cerrados en lote anterior.
+
+Fuentes de temas actualizadas a API `javase/27` (M16 Java SE 27, M17 PreparedStatement/
+DataSource/Connection JDK 27). `validate.sh` EXIT 0. Trinquete `--max-pending 1143` OK.
+
+Acumulado cerrado: Java 0–18 y 20 + M18 T3/T4. Siguiente: `java/modulo-19.md` (7 temas).

@@ -25,6 +25,34 @@ JPA define el contrato de persistencia; Hibernate traduce entidades y operacione
 
 **¿Por qué es importante?** Porque modificar solo una colección Java puede dar una impresión falsa: si el lado propietario queda nulo, la base de datos no refleja la relación y puede rechazar la escritura.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `@Entity`, `@Id`, `@GeneratedValue` | Prerrequisito | Tabla creada y clave generada |
+| Lado propietario (`@JoinColumn`) vs inverso (`mappedBy`) | Núcleo | FK `cliente_id` escrita por `Pedido` |
+| Sincronizar ambos lados en el agregado | Núcleo | `Cliente.agregar` fija colección y referencia |
+| `CascadeType.PERSIST` no implica `REMOVE` | Límite | Borrado de cliente con pedidos falla por FK |
+| `@Enumerated(EnumType.STRING)` | Variante | Estado persistido como texto, no ordinal |
+| Unidireccional cuando solo navegas en un sentido | Decisión | Menos invariantes que mantener |
+| No exponer setters generales | Error frecuente | Agregado sin camino a estado inconsistente |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`@Entity`, `@Id`, `@GeneratedValue` (prerrequisito).** `@Entity` marca una clase como persistente y la asocia a una tabla; `@Id` designa la clave primaria; `@GeneratedValue` delega la generación del identificador a la base o al proveedor. Sin estos tres, Hibernate no sabe cómo mapear ni identificar filas.
+
+**Lado propietario vs inverso (núcleo).** En una relación bidireccional, solo un lado escribe la clave foránea: el propietario, el que tiene `@JoinColumn`. El otro lado usa `mappedBy` y es un espejo de lectura. En este modelo `Pedido` es propietario (tiene `cliente_id`) y `Cliente.pedidos` es el inverso. Escribir solo el inverso no toca la FK.
+
+**Sincronizar ambos lados en el agregado (núcleo).** Como la base solo ve el lado propietario, `Cliente.agregar` debe hacer dos cosas: añadir el pedido a la colección *y* llamar a `pedido.asignarCliente(this)`. Si olvidas lo segundo, la colección Java se ve poblada pero `Pedido.cliente` queda nulo y la inserción falla o deja la FK vacía.
+
+**`CascadeType.PERSIST` no implica `REMOVE` (límite).** `cascade = PERSIST` propaga el `persist` del cliente a sus pedidos nuevos, pero no borra pedidos cuando borras el cliente. Intentar eliminar un cliente con pedidos sin una política explícita produce un error de clave foránea; el borrado en cascada es una decisión de ciclo de vida que se declara aparte (`REMOVE`, `orphanRemoval`) o se resuelve reasignando.
+
+**`@Enumerated(EnumType.STRING)` (variante).** Un enum persistido sin anotar usa `ORDINAL` (su posición), así que reordenar o insertar valores corrompe datos existentes. `@Enumerated(EnumType.STRING)` guarda el nombre, que es estable frente a cambios en el orden del enum.
+
+**Unidireccional cuando solo navegas en un sentido (decisión).** No toda relación necesita ser bidireccional. Si solo consultas los pedidos de un cliente y nunca el cliente desde un pedido fuera de la FK, una relación unidireccional elimina el invariante de mantener ambos lados sincronizados y reduce la superficie de error.
+
+**No exponer setters generales (error frecuente).** Si `Pedido` tuviera `setCliente` público, cualquier código podría romper el agregado dejando colección y FK en desacuerdo. Mantener la mutación dentro de métodos del agregado (`agregar`, `asignarCliente` con visibilidad de paquete) impide estados inconsistentes por construcción.
+
 **Analogía:** dos agendas pueden mostrar una amistad, pero solo una contiene el teléfono oficial. Cambiar la agenda inversa no actualiza el dato que se usa para contactar.
 
 `CascadeType.PERSIST` propaga la persistencia desde cliente a pedidos; no implica `REMOVE`. Las cascadas de borrado necesitan una regla de ciclo de vida explícita. Tampoco toda asociación debe ser bidireccional: si solo navegas en una dirección, una relación unidireccional reduce invariantes.
@@ -222,7 +250,7 @@ Como ejercicio independiente, modela `LineaPedido` en este mismo proyecto, con u
 
 **Errores comunes:** actualizar solo el lado inverso, convertir toda relación en bidireccional, añadir `REMOVE` sin una política de ciclo de vida y usar `@Enumerated` sin `EnumType.STRING`.
 
-Fuentes oficiales: [Jakarta Persistence](https://jakarta.ee/specifications/persistence/), [Hibernate ORM](https://hibernate.org/orm/documentation/) y [Java Documentation](https://docs.oracle.com/en/java/javase/25/).
+Fuentes oficiales revisadas el 2026-11-01: [Jakarta Persistence](https://jakarta.ee/specifications/persistence/), [Hibernate ORM](https://hibernate.org/orm/documentation/) y [Java SE 27 Documentation](https://docs.oracle.com/en/java/javase/27/).
 
 ### Tema 2: FetchType.LAZY, EAGER y el problema N+1 · Avanzado · 1 h
 
@@ -235,6 +263,34 @@ Fuentes oficiales: [Jakarta Persistence](https://jakarta.ee/specifications/persi
 `LAZY` difiere la asociación hasta acceder a ella; `EAGER` exige disponibilidad al devolver la entidad, pero el proveedor puede usar consultas adicionales. En JPA, `@ManyToOne` y `@OneToOne` son EAGER por defecto; `@OneToMany` y `@ManyToMany` son LAZY. Declara la intención, especialmente `LAZY` en asociaciones to-one.
 
 **¿Por qué es importante?** Porque una pantalla que consulta diez clientes y luego los pedidos de cada uno realiza 1+N viajes. Con más filas, el coste crece silenciosamente aunque cada consulta sea rápida.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Defaults de fetch (to-one EAGER, to-many LAZY) | Prerrequisito | `@ManyToOne` LAZY declarado explícito |
+| El problema N+1 medido | Núcleo | 11 `prepareStatement` para 10 clientes |
+| `JOIN FETCH` resuelve en una consulta | Núcleo | 1 `prepareStatement` + `distinct` |
+| Medir con contexto limpio (`clear()`) | Diagnóstico | Sin `clear` el contador se falsea |
+| `EAGER` ≠ un único join | Límite | SQL con consultas adicionales pese a EAGER |
+| Paginar fetch de colección es en memoria | Límite | Advertencia `firstResult/maxResults` |
+| Proyección DTO para listados | Decisión | `select new ClienteResumen(...)` |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Defaults de fetch (prerrequisito).** JPA fija por defecto `EAGER` en `@ManyToOne`/`@OneToOne` y `LAZY` en `@OneToMany`/`@ManyToMany`. Esos defaults rara vez coinciden con lo que un caso de uso necesita, por eso se declara la intención explícitamente, sobre todo `LAZY` en asociaciones to-one que de otro modo se cargarían siempre.
+
+**El problema N+1 medido (núcleo).** Cargar diez clientes con una consulta y luego acceder a `pedidos` de cada uno dispara una consulta por cliente: 1 + 10 = 11. La métrica `statistics.getPrepareStatementCount()` lo cuantifica. El síntoma es invisible con pocos datos y crece linealmente con las filas.
+
+**`JOIN FETCH` resuelve en una consulta (núcleo).** `select distinct c from Cliente c left join fetch c.pedidos` trae clientes y pedidos en un solo viaje. El `distinct` elimina los clientes duplicados que el join produce al multiplicar filas por pedido. El contador baja de 11 a 1 para la misma vista.
+
+**Medir con contexto limpio (diagnóstico).** La caché de primer nivel (el `EntityManager`) ya tiene las entidades tras el `flush` de preparación. Sin `entityManager.clear()`, acceder a `pedidos` no genera consultas nuevas y el contador miente. `clear()` antes de medir fuerza que los accesos vayan de verdad a la base.
+
+**`EAGER` ≠ un único join (límite).** `EAGER` solo garantiza que la asociación esté disponible al devolver la entidad, no *cómo* se carga. Hibernate puede emitir consultas adicionales (SELECT secundarios) en vez de un join. Por eso la evidencia es el SQL y el conteo observados, no la anotación: poner `EAGER` no cura N+1 ni asegura un join.
+
+**Paginar un fetch de colección es en memoria (límite).** Al hacer `JOIN FETCH` de una colección y pedir `setMaxResults(5)`, Hibernate avisa `firstResult/maxResults specified with collection fetch; applying in memory`: el join ya multiplicó las filas, así que la paginación se aplica tras traerlas todas, no en la base. Paginar listados exige otra estrategia (DTO o consulta de IDs + datos).
+
+**Proyección DTO para listados (decisión).** Un listado resumido no necesita entidades completas ni sus colecciones. `select new academia.ClienteResumen(c.nombre, count(p))` agrupado trae exactamente los campos de la vista en una consulta paginable, sin N+1 ni filas duplicadas. La entidad completa se reserva para el detalle, donde `@EntityGraph` carga justo lo necesario.
 
 **Analogía:** N+1 es pedir la lista de comensales y después caminar a la cocina una vez por cada plato; un pedido conjunto evita los viajes cuando realmente necesitas todos los platos.
 
@@ -440,7 +496,7 @@ Compara `LAZY` y `EAGER` cambiando temporalmente `Cliente.pedidos` a `FetchType.
 
 **Errores comunes:** activar EAGER como cura global, medir con la caché de primer nivel poblada, serializar entidades bidireccionales y paginar un fetch de colección en memoria sin advertirlo.
 
-Fuentes oficiales: [Jakarta Persistence](https://jakarta.ee/specifications/persistence/), [Hibernate ORM](https://hibernate.org/orm/documentation/) y [Java Documentation](https://docs.oracle.com/en/java/javase/25/).
+Fuentes oficiales revisadas el 2026-11-01: [Jakarta Persistence](https://jakarta.ee/specifications/persistence/), [Hibernate ORM: fetching](https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#fetching) y [Java SE 27 Documentation](https://docs.oracle.com/en/java/javase/27/).
 
 ## Construcción guiada del capítulo
 

@@ -4817,13 +4817,13 @@
       "path": "web/public/content/java/modulo-16.md",
       "topic": "Tema 1: Entidades y relaciones JPA",
       "providerCitations": [
-        "https://docs.oracle.com/en/java/javase/25/",
+        "https://docs.oracle.com/en/java/javase/27/",
         "https://jakarta.ee/specifications/persistence/"
       ],
       "applicabilityReview": "revisión manual pendiente",
       "line": 16,
       "originalProseUrls": [
-        "https://docs.oracle.com/en/java/javase/25/",
+        "https://docs.oracle.com/en/java/javase/27/",
         "https://hibernate.org/orm/documentation/",
         "https://jakarta.ee/specifications/persistence/"
       ],
@@ -4835,14 +4835,15 @@
       "path": "web/public/content/java/modulo-16.md",
       "topic": "Tema 2: FetchType.LAZY, EAGER y el problema N+1",
       "providerCitations": [
-        "https://docs.oracle.com/en/java/javase/25/",
+        "https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#fetching",
+        "https://docs.oracle.com/en/java/javase/27/",
         "https://jakarta.ee/specifications/persistence/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 227,
+      "line": 255,
       "originalProseUrls": [
-        "https://docs.oracle.com/en/java/javase/25/",
-        "https://hibernate.org/orm/documentation/",
+        "https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#fetching",
+        "https://docs.oracle.com/en/java/javase/27/",
         "https://jakarta.ee/specifications/persistence/"
       ],
       "recognitionStatus": "primary-domain-detected",
@@ -4853,14 +4854,14 @@
       "path": "web/public/content/java/modulo-17.md",
       "topic": "Tema 1: JDBC, PreparedStatement y DAO",
       "providerCitations": [
-        "https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/PreparedStatement.html",
-        "https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/javax/sql/DataSource.html"
+        "https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/PreparedStatement.html",
+        "https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/javax/sql/DataSource.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 14,
+      "line": 22,
       "originalProseUrls": [
-        "https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/PreparedStatement.html",
-        "https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/javax/sql/DataSource.html",
+        "https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/PreparedStatement.html",
+        "https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/javax/sql/DataSource.html",
         "https://h2database.com/html/main.html"
       ],
       "recognitionStatus": "primary-domain-detected",
@@ -4871,13 +4872,13 @@
       "path": "web/public/content/java/modulo-17.md",
       "topic": "Tema 2: Transacciones, ACID y aislamiento",
       "providerCitations": [
-        "https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/Connection.html",
+        "https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/Connection.html",
         "https://jakarta.ee/specifications/persistence/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 201,
+      "line": 237,
       "originalProseUrls": [
-        "https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/Connection.html",
+        "https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/Connection.html",
         "https://h2database.com/html/advanced.html#transaction_isolation",
         "https://jakarta.ee/specifications/persistence/"
       ],
@@ -4910,7 +4911,7 @@
         "https://docs.oracle.com/en/java/javase/27/docs/api/java.net.http/java/net/http/HttpClient.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 186,
+      "line": 214,
       "originalProseUrls": [
         "https://cheatsheetseries.owasp.org/",
         "https://docs.oracle.com/en/java/javase/27/docs/api/java.net.http/java/net/http/HttpClient.html",
@@ -7120,33 +7121,6 @@
       "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
     },
     {
-      "url": "https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/Connection.html",
-      "status": 200,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/Connection.html",
-      "contentType": "text/html",
-      "title": "Connection (Java SE 25 &amp; JDK 25)",
-      "checkedAt": "2026-10-31T15:07:23.407285+00:00",
-      "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
-    },
-    {
-      "url": "https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/PreparedStatement.html",
-      "status": 200,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/PreparedStatement.html",
-      "contentType": "text/html",
-      "title": "PreparedStatement (Java SE 25 &amp; JDK 25)",
-      "checkedAt": "2026-10-31T15:07:23.439935+00:00",
-      "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
-    },
-    {
-      "url": "https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/javax/sql/DataSource.html",
-      "status": 200,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/javax/sql/DataSource.html",
-      "contentType": "text/html",
-      "title": null,
-      "checkedAt": "2026-11-02T00:19:48.103975+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
       "url": "https://docs.oracle.com/en/java/javase/27/",
       "status": 0,
       "finalUrl": "https://docs.oracle.com/en/java/javase/27/",
@@ -7258,6 +7232,33 @@
       "url": "https://docs.oracle.com/en/java/javase/27/docs/api/java.net.http/java/net/http/HttpClient.html",
       "status": 0,
       "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/api/java.net.http/java/net/http/HttpClient.html",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
+      "url": "https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/Connection.html",
+      "status": 0,
+      "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/Connection.html",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
+      "url": "https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/PreparedStatement.html",
+      "status": 0,
+      "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/PreparedStatement.html",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
+      "url": "https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/javax/sql/DataSource.html",
+      "status": 0,
+      "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/javax/sql/DataSource.html",
       "contentType": "",
       "title": null,
       "checkedAt": null,
@@ -11249,8 +11250,8 @@
     "remainingUnrecognizedTopics": 0,
     "applicabilityPendingTopics": 378,
     "urlsChecked": 539,
-    "urlsReachable": 503,
-    "urlsPending": 36
+    "urlsReachable": 500,
+    "urlsPending": 39
   },
   "corrections": [
     {

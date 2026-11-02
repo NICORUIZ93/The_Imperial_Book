@@ -1677,7 +1677,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "b5f3f93ccd5640692146d4ffbe41498d45c7c9b18e1c06b1ae144915f1cfa6d4",
+    "fingerprint": "fe0f22d818077d3e008868d0596e9471aa974cb0b8aa7646a3a728f5967145ee",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
@@ -6517,44 +6517,44 @@
       {
         "issues": [],
         "module": 16,
-        "tailWords": 229,
+        "tailWords": 236,
         "topic": "Tema 1: Entidades y relaciones JPA · Intermedio · 55 min",
-        "words": 1112
+        "words": 1565
       },
       {
         "issues": [],
         "module": 16,
-        "tailWords": 221,
+        "tailWords": 236,
         "topic": "Tema 2: FetchType.LAZY, EAGER y el problema N+1 · Avanzado · 1 h",
-        "words": 1234
+        "words": 1714
       },
       {
         "issues": [],
         "module": 17,
-        "tailWords": 251,
+        "tailWords": 256,
         "topic": "Tema 1: JDBC, PreparedStatement y DAO · Intermedio · 1 h",
-        "words": 1130
+        "words": 1551
       },
       {
         "issues": [],
         "module": 17,
-        "tailWords": 268,
+        "tailWords": 273,
         "topic": "Tema 2: Transacciones, ACID y aislamiento · Avanzado · 1 h 15 min",
-        "words": 1245
+        "words": 1682
       },
       {
         "issues": [],
         "module": 18,
         "tailWords": 191,
         "topic": "Tema 1: HttpClient, REST, timeouts y fallos · Intermedio · 2 h",
-        "words": 1010
+        "words": 1436
       },
       {
         "issues": [],
         "module": 18,
         "tailWords": 205,
         "topic": "Tema 2: Tokens, validación y límites de seguridad · Avanzado · 2 h",
-        "words": 1137
+        "words": 1596
       },
       {
         "issues": [],
