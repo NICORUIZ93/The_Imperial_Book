@@ -4448,18 +4448,18 @@
       "path": "web/public/content/java/modulo-0.md",
       "topic": "Tema 1: Del código fuente a la JVM",
       "providerCitations": [
-        "https://docs.oracle.com/en/java/javase/27/docs/specs/man/java.html",
-        "https://docs.oracle.com/en/java/javase/27/docs/specs/man/javac.html",
-        "https://docs.oracle.com/javase/specs/jvms/se27/html/jvms-4.html",
-        "https://docs.oracle.com/javase/specs/jvms/se27/html/jvms-5.html"
+        "https://docs.oracle.com/en/java/javase/21/docs/specs/man/java.html",
+        "https://docs.oracle.com/en/java/javase/21/docs/specs/man/javac.html",
+        "https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html",
+        "https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-5.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 30,
+      "line": 158,
       "originalProseUrls": [
-        "https://docs.oracle.com/en/java/javase/27/docs/specs/man/java.html",
-        "https://docs.oracle.com/en/java/javase/27/docs/specs/man/javac.html",
-        "https://docs.oracle.com/javase/specs/jvms/se27/html/jvms-4.html",
-        "https://docs.oracle.com/javase/specs/jvms/se27/html/jvms-5.html"
+        "https://docs.oracle.com/en/java/javase/21/docs/specs/man/java.html",
+        "https://docs.oracle.com/en/java/javase/21/docs/specs/man/javac.html",
+        "https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html",
+        "https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-5.html"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -7095,6 +7095,24 @@
       "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
     },
     {
+      "url": "https://docs.oracle.com/en/java/javase/21/docs/specs/man/java.html",
+      "status": 0,
+      "finalUrl": "https://docs.oracle.com/en/java/javase/21/docs/specs/man/java.html",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
+      "url": "https://docs.oracle.com/en/java/javase/21/docs/specs/man/javac.html",
+      "status": 0,
+      "finalUrl": "https://docs.oracle.com/en/java/javase/21/docs/specs/man/javac.html",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
       "url": "https://docs.oracle.com/en/java/javase/24/core/stream-gatherers.html",
       "status": 200,
       "finalUrl": "https://docs.oracle.com/en/java/javase/24/core/stream-gatherers.html",
@@ -7284,24 +7302,6 @@
       "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
-      "url": "https://docs.oracle.com/en/java/javase/27/docs/specs/man/java.html",
-      "status": 0,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/specs/man/java.html",
-      "contentType": "",
-      "title": null,
-      "checkedAt": null,
-      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://docs.oracle.com/en/java/javase/27/docs/specs/man/javac.html",
-      "status": 0,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/specs/man/javac.html",
-      "contentType": "",
-      "title": null,
-      "checkedAt": null,
-      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
       "url": "https://docs.oracle.com/en/java/javase/27/docs/specs/man/jdeps.html",
       "status": 0,
       "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/specs/man/jdeps.html",
@@ -7383,18 +7383,18 @@
       "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
-      "url": "https://docs.oracle.com/javase/specs/jvms/se27/html/jvms-4.html",
+      "url": "https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html",
       "status": 0,
-      "finalUrl": "https://docs.oracle.com/javase/specs/jvms/se27/html/jvms-4.html",
+      "finalUrl": "https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html",
       "contentType": "",
       "title": null,
       "checkedAt": null,
       "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
-      "url": "https://docs.oracle.com/javase/specs/jvms/se27/html/jvms-5.html",
+      "url": "https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-5.html",
       "status": 0,
-      "finalUrl": "https://docs.oracle.com/javase/specs/jvms/se27/html/jvms-5.html",
+      "finalUrl": "https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-5.html",
       "contentType": "",
       "title": null,
       "checkedAt": null,

@@ -5,18 +5,28 @@ objetivo editorial —formato Aprende/Practica/Aplica, proyecto de cierre por
 módulo y capstone por track— y ajusta las cifras, el mapa de Spring Boot y la
 estrategia de identidad para no perder temas, progreso ni enlaces.
 
+## Reconstrucción activa — corte 2026-11-02
+
+La prioridad de tracks indicada para esta reconstrucción es **Java → Spring Boot → Angular → Flutter**. Esta secuencia gobierna el trabajo nuevo y reemplaza el orden de ejecución anterior de esta nota; los tracks restantes quedan pendientes, no descartados.
+
+El conteo repetido directamente sobre `web/public/content/<track>/modulo-N.md` confirma **14 tracks, 254 módulos y 1149 temas**. `docs/migration-status.json` conserva una línea base histórica de **252 módulos y 1133 temas**. El estado actual no se debe describir como una migración íntegra de 1149 temas: Java contiene 23 módulos y 99 temas frente a 21/85 originales más 10 temas en los módulos añadidos, dejando 4 temas por reconciliar; Spring Boot contiene 23/93 frente a 23/91, con 2 temas por reconciliar; Node.js coincide en 15/77. Hay 61 módulos marcados como migrados en Java, Spring Boot y Node.js.
+
+En esta edición, la verificación de contenido, los validadores pedagógicos y las **34/34 pruebas unitarias** pasaron; `validate_migration.py` también pasó con 61 módulos. La suite global se detuvo deliberadamente en el trinquete de profundidad: quedan **1144 temas pendientes**, uno más que el máximo permitido de 1143, porque T0 aún no tiene revisión humana. No se elevó el umbral ni se registró una aprobación ficticia. El inventario nuevo es de 1149 temas; la auditoría estructural marca 901/1149 y la editorial 1145/1149. Los marcadores automáticos no acreditan profundidad ni sustituyen esa revisión.
+
+El primer bloque sigue siendo **Java M0**. Ya se integró M0 T0, «Instalar Eclipse Temurin JDK 21 LTS en macOS, Windows y Ubuntu», con los siete pasos visibles, versión fijada, comandos por plataforma, salida y fallo diagnosticado. T1 aún lista diez subtemas críticos en una sesión rotulada de 35 minutos; T8 declara 50 minutos. El [mapa de reconstrucción](java-m0-reconstruction-map.md) registra el contenido y los pendientes: ejecutar T0 bajo JDK 21.0.13+9, revisar profundidad humana y comprobar las dependencias contra Java M1–M3. Ningún tema se dará por completo o publicable por pasar marcadores automáticos.
+
 ## Estado de las fases
 
 | Fase | Estado | Evidencia |
 |---|---|---|
-| 0 · Sincronización | Cerrada | Corte del cierre: 252 módulos, 1131 temas; `validate.sh` en verde |
-| 1 · Infraestructura | Cerrada | Registro de migración, validador por módulo y auditorías adaptadas |
-| 2 · Piloto Spring Boot | Cerrada | M0–M22 migrados: 91/91 temas y sus proyectos de cierre conservados |
-| 3 · Java + Node.js | En curso | Java: Módulos 0–22 migrados (95 temas); Node.js pendiente |
-| 4 · JavaScript + Angular + React | No iniciada | Depende del piloto |
+| 0 · Sincronización | En reconciliación | Archivos actuales: 254 módulos y 1149 temas; `migration-status.json` conserva 252/1133 como línea base histórica |
+| 1 · Infraestructura | Implementada; validación detenida por puerta humana | 34/34 pruebas pasan; `./scripts/validate.sh` llega al trinquete y detiene la ejecución porque hay 1144 pendientes frente al máximo 1143 |
+| 2 · Piloto Spring Boot previo | Migrado; cifras por reconciliar | 23 módulos y 93 temas actuales frente a 23/91 de la línea base registrada |
+| 3 · Java + Node.js previos | Migrados; Java por reconciliar | Java 23/99 frente a 21/85 más 10 temas declarados en módulos añadidos; Node.js 15/77 |
+| 4 · Angular | Pendiente; prioridad 3 | Se aborda después de Java y Spring Boot |
 | 5 · Cloud + DevOps | No iniciada | Depende del piloto |
-| 6 · KMP + Android + iOS + Flutter | No iniciada | Depende del piloto |
-| 7 · Fundamentos + RutaFlow | No iniciada | Depende del piloto |
+| 6 · KMP + Android + iOS + Flutter | Pendiente; Flutter tiene prioridad 4 | Se aborda después de Angular |
+| 7 · Fundamentos + RutaFlow | No iniciada | Queda fuera de la primera secuencia solicitada |
 | 8 · Huecos curriculares | No iniciada | Requiere fases 2–7 cerradas |
 
 El piloto migró sus veintitrés primeros módulos sin perder temas ni fragmentos. El
@@ -28,15 +38,16 @@ vocabulario de los siete pasos. Al migrar M17, un tema con práctica real pero s
 ese vocabulario dejó de contarse (1127/1141 frente a 1128/1141). Se corrigió el
 auditor para aceptar también una sección `#### Practica` con cuerpo accionable
 (código, comando o archivo); el umbral no se movió y la cifra volvió a 1141/1141.
+Estas cifras describen el corte anterior y no el inventario actual de 1148 temas.
 
 ## Contrato de correspondencia: siete pasos → Aprende/Practica/Aplica
 
-Decisión del 2026-10-31: el formato canónico de todo el sitio es
-Aprende/Practica/Aplica, el que ya usan Spring Boot M0–M22 y Java M0–M22. Los
-siete pasos no se borran: cada uno tiene un destino y su texto se mueve, se
-conserva y se completa.
+La decisión del 2026-10-31 sobre Aprende/Practica/Aplica describe la envoltura de
+presentación usada por los módulos ya migrados de Spring Boot y Java. Para la
+reconstrucción actual, esa envoltura no sustituye los siete pasos: cada tema debe
+mostrar los siete explícitamente y satisfacer el contenido mínimo de cada uno.
 
-| Paso legacy | Destino en el formato canónico |
+| Paso obligatorio | Ubicación de presentación compatible |
 |---|---|
 | 1 · Objetivo y preparación | `**Prerrequisito:**` y `**Al terminar podrás:**` al inicio del tema |
 | 2 · Contexto y caso real | `#### Aprende`, párrafo inicial «¿Por qué es importante?» |
@@ -46,9 +57,9 @@ conserva y se completa.
 | 6 · Práctica independiente | `#### Aplica`: reto abierto |
 | 7 · Cierre | `#### Aplica`: siguiente paso, errores comunes, límites o cuándo no usarlo, fuente oficial y transferencia al proyecto |
 
-El piloto Spring Boot M0–M22 sirve de referencia para cada fila; ningún paso
-queda sin destino. El formato canónico exige además contenido que el texto
-legacy puede no tener y que se redacta durante la migración, nunca se genera:
+La tabla indica dónde agrupar el contenido dentro de las secciones existentes;
+no convierte un paso en optativo ni permite reemplazarlo por una mención. El
+contenido que falte se redacta y revisa, no se genera automáticamente:
 
 - Título `### Tema N: … · [Nivel] · [Duración]`; el validador rechaza otro formato.
   La convención existente `### Tema complementario: … · [Nivel] · [Duración]` se
@@ -79,20 +90,21 @@ objetivo y prerrequisito al inicio, tres secciones y cierre con fuentes.
 
 ## Cifras corregidas
 
-El inventario real es 14 tracks, 254 módulos y 1141 temas: los 252/1131 del
-corte de sincronización más los Módulos 21 y 22 de Java (`APIs públicas,
-compatibilidad y evolución` y `El objeto por dentro`, 10 temas), abiertos el
-2026-10-31 con alcance abierto. No hay techo
-de módulos ni de temas: las cifras de la Fase 8 son un mínimo conocido, no una
-meta.
+El inventario actual medido es 14 tracks, 254 módulos y 1148 temas. La suma de la
+línea base de `migration-status.json` es 252 módulos y 1133 temas. El contenido
+actual supera esa línea base en 2 módulos y 15 temas: los módulos Java 21 y 22
+aportan 10 temas; quedan 3 temas adicionales en Java y 2 en Spring Boot por
+reconciliar contra los archivos antes de atribuirlos a una expansión autorizada.
+No se cambiará la línea base histórica hasta registrar esa correspondencia.
 
-La Fase 8 propone tres tracks nuevos de 15–18, 10–12 y 12–15 módulos, más diez
-módulos en tracks existentes. Eso suma 47–55 módulos nuevos, no 28:
+La propuesta anterior de Fase 8 añadía tres tracks de 15–18, 10–12 y 12–15
+módulos, más diez módulos en tracks existentes: 47–55 módulos nuevos. Si se
+mantuviera esa propuesta sobre el inventario actual, la suma sería:
 
-- Módulos finales: 252 + 47…55 = **299–307**, no ~280.
+- Módulos finales: 254 + 47…55 = **301–309**, no ~280.
 - Temas finales: no se pueden fijar en ~1250 sin el desglose de esos módulos.
   Con la densidad actual (4,49 temas por módulo) los módulos nuevos aportarían
-  ~211–247 temas y el total quedaría en ~1342–1378. La cifra definitiva se
+  ~211–247 temas y el total quedaría en ~1359–1395. La cifra definitiva se
   registra al escribir cada módulo; no se promete antes.
 - Capstones: 17 tracks menos Fundamentos y RutaFlow, que son especiales, dan
   **15 capstones**, como dice el plan.
@@ -179,7 +191,8 @@ rojo hasta terminar los 14 tracks.
 
 ## Próximo paso
 
-Continuar la Fase 3 con Node.js, sin renumerar ids todavía:
+Este paso de la migración anterior proponía continuar con Node.js; queda
+supersedido por la prioridad activa registrada al final de este documento.
 
 1. reescritura de cada tema al formato de tres bloques;
 2. proyecto de cierre por módulo;
@@ -192,3 +205,23 @@ se renumeran ids a mitad de la migración.
 
 La migración no se considera completada hasta cerrar los 91 temas y el
 capstone, con `docs/spring-boot-migration-log.md` indicando 91 → M (M ≥ 91).
+La condición anterior pertenece al piloto histórico de Spring Boot, no a la
+reconstrucción editorial actual.
+
+## Próximo paso vigente
+
+Empezar en el orden solicitado: **Java → Spring Boot → Angular → Flutter**. El
+primer bloque es Java M0:
+
+1. Mapear dependencias y subtemas críticos antes de editar las lecciones.
+2. Reconciliar los tres temas de Java y los dos de Spring Boot que exceden el
+   conteo histórico, conservando IDs, fragmentos y progreso.
+3. Reconstruir módulo por módulo con los siete pasos obligatorios, temas de
+   20–45 minutos, títulos de acción y prerrequisitos específicos.
+4. Registrar un bloque solo después de validadores aplicables y revisión humana
+   de profundidad; documentar cualquier comprobación que el entorno impida.
+
+El reordenamiento requiere un mapa de destinos completo y remapeo de IDs,
+fragmentos y progreso. No se renumeran ni eliminan temas a mitad del trabajo. La
+cobertura estructural, la ejecución de ejemplos y la revisión pedagógica humana
+se reportan por separado.

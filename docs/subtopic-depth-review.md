@@ -2,8 +2,8 @@
 
 > Las señales automáticas no prueban profundidad ni ausencia de ella. Un tema sólo queda revisado mediante el registro humano con mapa de subtemas críticos, evidencia y fuentes.
 
-- Temas inventariados: 1148
-- Revisados humanamente para subtemas: 5
+- Temas inventariados: 1149
+- Revisados humanamente para subtemas: 6
 - Pendientes: 1143
 - Candidatos prioritarios por señales: 1096
 
@@ -18,7 +18,7 @@
 | flutter | 63 | 0 | 63 |
 | foundations | 100 | 0 | 100 |
 | ios | 56 | 0 | 56 |
-| java | 98 | 3 | 95 |
+| java | 99 | 4 | 95 |
 | javascript | 88 | 0 | 88 |
 | kotlin-multiplatform | 56 | 0 | 56 |
 | node | 77 | 0 | 77 |
@@ -1127,6 +1127,7 @@
 
 ## Revisados
 
+- `java/modulo-0` — Tema 0: Instalar Eclipse Temurin JDK 27 en macOS, Windows y Ubuntu · Básico · 15 min — JDK frente a runtime; PATH frente a JAVA_HOME; Version, distribucion y arquitectura
 - `java/modulo-18` — Tema 3: Sockets TCP y UDP — la red que hay debajo de HttpClient · Avanzado · 2 h — modelo cliente/servidor y puertos; ServerSocket y accept(); Socket y streams de I/O con charset explícito; TCP fiable, ordenado, orientado a conexión; UDP DatagramSocket/DatagramPacket; TCP frente a UDP; timeouts de socket (setSoTimeout); cierre de recursos y puerto ocupado; un cliente por hilo frente a virtual threads
 - `java/modulo-18` — Tema 4: Seguridad defensiva — hash, HMAC, firma y cifrado · Avanzado · 2 h 30 min — hash criptográfico (MessageDigest); comparación en tiempo constante (MessageDigest.isEqual); hash no sirve para contraseñas; HMAC (Mac); firma digital (Signature, par de claves); cifrado simétrico AES-GCM (Cipher); IV/nonce único y gestión de claves; hash vs HMAC vs firma vs cifrado
 - `java/modulo-20` — Tema 1: Lambdas a fondo — tipo objetivo, captura y referencias a métodos · Intermedio · 120 min — Interfaz funcional y método SAM; Sintaxis de parámetros y cuerpo; Tipo objetivo e inferencia; Captura y variable efectivamente final; Alcance de this; Cuatro formas de referencias a métodos; Sobrecarga ambigua; Excepciones checked; Especializaciones primitivas; Identidad y serialización

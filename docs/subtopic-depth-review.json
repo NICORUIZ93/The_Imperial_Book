@@ -1,7 +1,7 @@
 {
   "summary": {
-    "topics": 1148,
-    "reviewed": 5,
+    "topics": 1149,
+    "reviewed": 6,
     "pending": 1143,
     "priorityCandidates": 1096,
     "byTrack": {
@@ -41,8 +41,8 @@
         "pending": 56
       },
       "java": {
-        "topics": 98,
-        "reviewed": 3,
+        "topics": 99,
+        "reviewed": 4,
         "pending": 95
       },
       "javascript": {
@@ -9968,6 +9968,33 @@
         "lista conceptos clave sin mapa interno verificable"
       ],
       "review": null
+    },
+    {
+      "id": "java/modulo-0::Tema 0: Instalar Eclipse Temurin JDK 27 en macOS, Windows y Ubuntu · Básico · 15 min",
+      "track": "java",
+      "module": 0,
+      "topic": "Tema 0: Instalar Eclipse Temurin JDK 27 en macOS, Windows y Ubuntu · Básico · 15 min",
+      "status": "reviewed",
+      "semanticHeadings": [],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "macOS con Temurin 27.0.1: java --version = openjdk 27.0.1.0.2, javac 27.0.1.0.2; /usr/libexec/java_home -v 27 resuelve el JDK; fallo deliberado de PATH (javac: command not found) reproducido. Comandos Windows/Ubuntu no ejecutados en este equipo (documentado).",
+        "criticalSubtopics": [
+          "JDK frente a runtime",
+          "PATH frente a JAVA_HOME",
+          "Version, distribucion y arquitectura"
+        ],
+        "sources": [
+          "https://adoptium.net/installation",
+          "https://adoptium.net/temurin/releases/?version=27",
+          "https://formulae.brew.sh/cask/temurin"
+        ]
+      }
     },
     {
       "id": "java/modulo-0::Tema 1: Del código fuente a la JVM · Básico · 35 min",

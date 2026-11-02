@@ -11,7 +11,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 | node | 77 | 7 | HTTP y validación antes de autenticación e integraciones | API con límites de carga, paginación estable, pruebas y cierre ordenado |
 | angular | 71 | 3 | HTML/CSS/TypeScript explícitos; RxJS y estado con ejemplos completos | Rutas, formularios, datos remotos y cambios sin guardar comprobados con navegador |
 | react | 58 | 46 | JSX y estado antes de efectos; proveedor, dependencias y API visibles | Carga, error, vacío y carrera de respuestas; caché observada, no supuesta |
-| java | 98 | 11 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
+| java | 99 | 11 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
 | spring-boot | 93 | 3 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
 | android | 74 | 1 | Kotlin antes de Compose; distinguir recomposición, recreación y muerte de proceso | App instalable con permisos, restauración, persistencia y pruebas en dispositivo |
 | ios | 56 | 4 | Swift antes de SwiftUI; explicitar macOS/Xcode y destino | Cancelación, estados de red, persistencia y accesibilidad comprobados en simulador |
@@ -23,7 +23,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 
 ## Registro tema por tema
 
-Revisión humana firmada: 0/1148 temas. Pre-lectura registrada sin firma: 14. La pre-lectura no acredita ejecución, comprensión ni calidad pedagógica; consulta `docs/manual-review-log.md`.
+Revisión humana firmada: 0/1149 temas. Pre-lectura registrada sin firma: 14. La pre-lectura no acredita ejecución, comprensión ni calidad pedagógica; consulta `docs/manual-review-log.md`.
 Los laboratorios nuevos tienen una verificación técnica separada; la ejecución correcta tampoco demuestra comprensión.
 
 | Curso / módulo | Tema | Señales para revisar |
@@ -677,6 +677,7 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | ios / 9 | [Tema 1: XCTest clásico y Swift Testing](../web/public/content/ios/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
 | ios / 9 | [Tema 2: Testing de código async](../web/public/content/ios/modulo-9.md) | ejemplo-breve-revisar-contexto |
 | ios / 9 | [Tema 3: UI Tests con XCUITest](../web/public/content/ios/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 0 | [Tema 0: Instalar Eclipse Temurin JDK 27 en macOS, Windows y Ubuntu · Básico · 15 min](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 0 | [Tema 1: Del código fuente a la JVM · Básico · 35 min](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 0 | [Tema 2: public static void main — qué significa cada palabra · Básico · 30 min](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 0 | [Tema 3: JDK, JRE y JVM · Básico · 30 min](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |

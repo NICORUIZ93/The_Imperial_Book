@@ -5,33 +5,161 @@
 
 ## Antes de comenzar: instala Java correctamente
 
-Necesitas un **JDK**, no solo “Java”. El JDK incluye el compilador `javac`, la JVM y herramientas de diagnóstico. Este módulo se verificó con **JDK 27** (Temurin 27.0.1), la línea actual; funciona también en JDK 21 LTS, y cuando un ejemplo deba fijar un objetivo anterior lo hará de forma explícita con `--release`. Usaremos Visual Studio Code con **Extension Pack for Java** y Git.
-
-| Sistema | Instalación | Nota importante |
-|---|---|---|
-| Windows | Instala Eclipse Temurin JDK 27 y VS Code; marca la opción de configurar `JAVA_HOME` | Abre una terminal nueva después de instalar |
-| macOS | `brew install --cask temurin` y `brew install git` | Comprueba que `java --version` muestre 27 o posterior |
-| Ubuntu/Debian | `sudo apt update && sudo apt install -y openjdk-21-jdk git` | Si tu repositorio no ofrece el 27, Temurin publica paquetes; no instales únicamente `jre` |
-
-Verifica con `java --version` y `javac --version`: ambas versiones deben coincidir. Crea una carpeta `hola-java`, abre allí VS Code y guarda:
-
-```java
-public class Hola {
-    public static void main(String[] args) {
-        System.out.println("Mi entorno Java funciona");
-    }
-}
-```
-
-Ejecuta `javac Hola.java` y luego `java Hola`. El primer comando produce `Hola.class`; el segundo lo ejecuta en la JVM. En Windows, si `javac` no se reconoce, revisa `JAVA_HOME` y que `%JAVA_HOME%\bin` esté en `Path`.
+**Entorno de Java M0:** usa JDK 27 (Temurin 27.0.1 a la fecha de esta lección; es el release más reciente de Java). Sigue M0 T0 para instalarlo y comprobar `java --version` y `javac --version`. Todo el track Java usa JDK 27; confirma siempre la versión indicada en el Paso 1 de cada tema. Nota: si necesitas una línea de soporte extendido (LTS), la LTS vigente es Java 25; este curso enseña sobre 27 para usar la plataforma más actual.
 
 ## Aprende construyendo
+
+### Tema 0: Instalar Eclipse Temurin JDK 27 en macOS, Windows y Ubuntu · Básico · 15 min
+
+#### Aprende
+
+**Paso 1 · Objetivo y preparación**
+
+**Prerrequisito:** ninguno; acceso a una cuenta de usuario y a una terminal. Para instalar paquetes del sistema necesitarás permisos de administrador. **Al finalizar podrás** instalar Eclipse Temurin JDK 27, comprobar que `java` y `javac` pertenecen a la misma versión 27 y explicar qué síntoma aparece cuando el ejecutable no está en `PATH`.
+
+**Paso 2 · Contexto y caso real**
+
+**Caso profesional (escenario didáctico del sector logístico):** un equipo prepara una estación nueva para corregir un servicio que calcula ventanas de entrega. La persona instala un runtime porque `java --version` responde, pero omite el JDK. Al compilar, la terminal muestra `javac: command not found`; el equipo no puede reproducir la compilación local ni entregar el artefacto que espera la integración continua. El problema no es el código ni el repositorio: el entorno carece del compilador o no lo encuentra. La consecuencia concreta es detener la validación hasta instalar el paquete correcto y abrir una terminal que cargue la configuración nueva. El escenario es didáctico; no atribuye el incidente a una empresa real.
+
+**Por qué importa:** distinguir ejecución de compilación evita culpar al repositorio o cambiar código cuando falta una herramienta local. La misma verificación permite reproducir builds en estaciones de desarrollo y en integración continua.
+
+**Paso 3 · Teoría**
+
+**JDK:** instala el kit de desarrollo, que incluye `javac` para compilar y `java` para iniciar la JVM. Un runtime puede ejecutar aplicaciones sin incluir el compilador; que `java --version` funcione no demuestra que puedas compilar.
+
+**Versión y distribución:** la lección fija Eclipse Temurin 27.0.1, el release más reciente de Java disponible al 2 de noviembre de 2026 (Java 27 se publicó el 15 de septiembre de 2026). Selecciona el paquete JDK, no JRE, y una arquitectura compatible con tu sistema. Adoptium publica Temurin para macOS, Windows y Linux; el MSI de Windows de esta guía es x64. Si el selector ofrece un parche posterior de Java 27, anota el número observado en vez de afirmar que instalaste 27.0.1. [Adoptium publica los paquetes Temurin](https://adoptium.net/temurin/releases/?version=27).
+
+**`PATH` y `JAVA_HOME`:** el shell consulta `PATH` para localizar `java` y `javac`. `JAVA_HOME` identifica la carpeta raíz del JDK para herramientas que la necesitan; por sí sola no agrega sus ejecutables al `PATH`. Por eso instalar bien y configurar mal puede producir el mismo “comando no encontrado”.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Función | Evidencia en este tema |
+|---|---|---|
+| JDK frente a runtime | Núcleo | `javac` compila; `java` ejecuta; probar uno no acredita el otro |
+| `PATH` frente a `JAVA_HOME` | Diagnóstico | `command -v` y el fallo deliberado distinguen ruta de instalación |
+| Versión, distribución y arquitectura | Decisión | la versión y la plataforma quedan registradas en el archivo de diagnóstico |
+
+**Analogía:** el JDK es una caja de herramientas; `javac` es la herramienta que fabrica el artefacto y `java` la que lo pone en marcha. `PATH` es el tablero que indica dónde buscar cada herramienta. La analogía no describe cómo la JVM carga clases ni sustituye la diferencia entre compilación y ejecución.
+
+**Fuentes oficiales de instalación:** [guía general de Temurin](https://adoptium.net/installation), [paquetes Linux](https://adoptium.net/installation/linux), [instalador Windows](https://adoptium.net/installation/windows) y [cask Homebrew temurin](https://formulae.brew.sh/cask/temurin). En Homebrew, el cask versionado `temurin@NN` solo existe para algunas versiones (por ejemplo `temurin@25`, la LTS); para Java 27 se usa el cask genérico `temurin`, que instala la versión más reciente.
+
+```mermaid
+flowchart LR
+    A[SO y arquitectura] --> B[Paquete JDK 27]
+    B --> C[Instalación]
+    C --> D[PATH encuentra java y javac]
+    C --> E[JAVA_HOME apunta al JDK]
+    D --> F[Verificar versiones]
+    E --> F
+```
+
+#### Practica
+
+**Paso 4 · Demostración guiada**
+
+En macOS, instala el cask de Java 27; en Windows x64 usa el MSI JDK 27.0.1 y activa `Add to PATH` y `JAVA_HOME`; en Ubuntu/Debian añade el repositorio oficial e instala `temurin-27-jdk`. Los comandos de cada plataforma van separados: ejecuta solo el bloque de tu sistema. El ejemplo independiente crea `~/java-lab/diagnostico-jdk.md` con versiones y rutas resueltas.
+
+```bash
+# macOS: instala Temurin 27 desde el cask oficial (genérico = versión más reciente).
+brew install --cask temurin
+export JAVA_HOME="$(/usr/libexec/java_home -v 27)"
+export PATH="$JAVA_HOME/bin:$PATH"
+# Verifica que el lanzador y el compilador respondan.
+java --version
+javac --version
+# Conserva las versiones y rutas en un archivo Markdown.
+mkdir -p "$HOME/java-lab"
+{
+  printf '%s\n\n' '# Diagnóstico del JDK'
+  java --version
+  javac --version
+  printf '\n%s\n' '## Rutas'
+  command -v java
+  command -v javac
+} | tee "$HOME/java-lab/diagnostico-jdk.md"
+```
+
+```bash
+# Ubuntu/Debian: añade la clave y el repositorio oficial.
+sudo apt update
+sudo apt install -y wget apt-transport-https gpg
+wget -qO - https://packages.adoptium.net/artifactory/api/gpg/key/public | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/adoptium.gpg > /dev/null
+echo "deb https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main" | sudo tee /etc/apt/sources.list.d/adoptium.list
+sudo apt update
+sudo apt install -y temurin-27-jdk
+# Comprueba el JDK recién instalado.
+java --version
+javac --version
+# Conserva las versiones y rutas en un archivo Markdown.
+mkdir -p "$HOME/java-lab"
+{
+  printf '%s\n\n' '# Diagnóstico del JDK'
+  java --version
+  javac --version
+  printf '\n%s\n' '## Rutas'
+  command -v java
+  command -v javac
+} | tee "$HOME/java-lab/diagnostico-jdk.md"
+```
+
+En Windows, después de instalar el MSI, crea el mismo registro en una ventana nueva de PowerShell:
+
+```powershell
+# Crea un registro nuevo en la carpeta del laboratorio.
+$lab = Join-Path $HOME 'java-lab'
+New-Item -ItemType Directory -Force $lab | Out-Null
+$file = Join-Path $lab 'diagnostico-jdk.md'
+'# Diagnóstico del JDK' | Set-Content -Encoding utf8 $file
+# Añade las versiones y las rutas que resolvió PowerShell.
+'## java --version' | Add-Content -Encoding utf8 $file
+java --version 2>&1 | Add-Content -Encoding utf8 $file
+'## javac --version' | Add-Content -Encoding utf8 $file
+javac --version 2>&1 | Add-Content -Encoding utf8 $file
+'## Rutas' | Add-Content -Encoding utf8 $file
+Get-Command java,javac | Select-Object Name,Source | Format-Table -AutoSize | Out-String | Add-Content -Encoding utf8 $file
+```
+
+**Salida esperada (verificada con Temurin 27.0.1 en macOS):** `javac --version` muestra `javac 27.0.1.0.2` (el sufijo del parche puede variar). La primera línea de `java --version` comienza con `openjdk 27.0.1`; en el entorno de referencia fue `openjdk 27.0.1.0.2 2026-10-21`. El archivo `~/java-lab/diagnostico-jdk.md` contiene las versiones y las rutas. Si un canal instala un parche más nuevo, registra el número exacto que aparece.
+
+**Explicación del bloque:** las órdenes de instalación agregan el JDK; el bloque de diagnóstico no altera el entorno, solo guarda qué ejecutables encontró el shell en `~/java-lab/diagnostico-jdk.md`.
+
+**Fallo deliberado:** en una terminal POSIX ejecuta `env PATH=/nonexistent /bin/sh -c 'javac --version'`.
+
+**Error esperado:** `/bin/sh: javac: command not found`.
+
+**Diagnóstico:** el comando ejecutó un shell con un `PATH` vacío de propósito. El JDK no se desinstaló; `javac` quedó invisible para esa búsqueda. Restablece la terminal normal y confirma `command -v javac`. No soluciones el síntoma instalando un segundo JDK sin revisar primero la ruta.
+
+**Errores comunes:** confundir `JAVA_HOME` con `PATH`, comprobarlo en una terminal abierta antes de instalar, o creer que `java` por sí solo demuestra que también existe `javac`.
+
+**Paso 5 · Práctica guiada**
+
+1. Ejecuta `java --version` y `javac --version`. **Pista:** compara el número mayor; en el entorno fijado ambos deben indicar 27.
+2. En macOS ejecuta `/usr/libexec/java_home -V` y luego `echo "$JAVA_HOME"`. **Pista:** una instalación puede existir aunque `JAVA_HOME` no esté definido en esta terminal.
+3. En Ubuntu ejecuta `command -v java`, `command -v javac` y `readlink -f "$(command -v javac)"`. **Pista:** sigue el enlace hasta el JDK Temurin, no hasta otra instalación anterior.
+4. En Windows abre una ventana nueva de PowerShell y ejecuta `Get-Command java,javac`. **Pista:** si solo aparece `java`, revisa la selección `FeatureEnvironment` y `FeatureJavaHome` del instalador.
+
+**Paso 6 · Práctica independiente**
+
+En tu sistema instala una sola distribución JDK 27 desde el proveedor elegido. Sin copiar los comandos del paso anterior, registra `java --version`, `javac --version`, la ruta que resuelve el shell y, si existe, el valor de `JAVA_HOME`. Entrega una explicación breve de qué comprobarías antes de concluir que hay un conflicto de versiones. No cambies la instalación de otra persona.
+
+#### Aplica
+
+**Paso 7 · Cierre**
+
+**Checklist de salida.**
+
+- [ ] Instalaste un paquete JDK, no solo un runtime.
+- [ ] `java` y `javac` resuelven desde la instalación esperada.
+- [ ] Ambos informan Java 27 y registraste el parche observado.
+- [ ] Puedes provocar y diagnosticar el fallo de `PATH`.
+
+El siguiente tema compila una clase Java y observa el archivo `.class`; lleva el registro de diagnóstico y la versión que verificaste. Si `java` y `javac` no coinciden, corrige el entorno antes de continuar.
 
 ### Tema 1: Del código fuente a la JVM · Básico · 35 min
 
 **Paso 1 · Objetivo y preparación**
 
-**Prerrequisito:** JDK 27 o posterior y un editor de texto o IDE. Comprueba `java --version` y `javac --version`. Los ejemplos de este módulo se verificaron con Temurin 27.0.1 y no dependen de funciones preview; si compilas para un objetivo anterior con `--release`, lo harás de forma explícita y sabiendo por qué.
+**Prerrequisito:** M0 T0 (Instalar Eclipse Temurin JDK 27 en macOS, Windows y Ubuntu) y un editor de texto o IDE. Comprueba `java --version` y `javac --version`; ambos deben indicar Java 27.0.1 o un parche posterior de Java 27.
 
 **Al finalizar podrás:** compilar un programa Java a bytecode, inspeccionar las instrucciones y la versión del `.class` con `javap`, ejecutar ese bytecode con la JVM, y distinguir con evidencia un `ClassNotFoundException` de un `NoClassDefFoundError`.
 
@@ -54,7 +182,7 @@ Ejecuta `javac Hola.java` y luego `java Hola`. El primer comando produce `Hola.c
 | bytecode y formato `.class` | Núcleo | `javap -c` expone `getstatic`, `ldc`, `invokevirtual` y `return` |
 | carga de clases y classpath | Diagnóstico | `-cp src` falla y `-cp out` carga la clase |
 | verificación, interpretación y JIT | Profundización | se distinguen como etapas de carga y ejecución, sin prometer una estrategia fija |
-| versión del class file | Compatibilidad | `--release 21` produce `major version 65`; Java 27 produce `71` |
+| versión del class file | Compatibilidad | Java 27 produce `major version 71`; `--release 25` produce `69` |
 | JDK de compilación frente a runtime | Límite | compilar con uno no garantiza ejecutar en cualquier versión anterior |
 | nombre binario, paquete y ruta | Diagnóstico | `com.rutaflow.app.App` se compila en `com/rutaflow/app/App.class` y se invoca con el nombre completo |
 | `ClassNotFoundException` frente a `NoClassDefFoundError` | Límite | la clase principal ausente lanza el primero; una dependencia que desaparece en runtime lanza el segundo |
@@ -72,9 +200,9 @@ corresponde, su fallo reproducible.
 
 **Verificación, interpretación y JIT (profundización).** Al cargar un `.class`, la JVM primero **verifica** que el bytecode es seguro y bien formado. Después lo **interpreta** instrucción por instrucción y, para el código que se ejecuta con frecuencia, un compilador **JIT** (just-in-time) lo traduce a código máquina nativo en caliente. Son etapas posibles, no una estrategia fija: no asumas que todo se interpreta ni que todo se compila. Para este tema basta saber que entre «cargar» y «ejecutar» hay verificación, y que el rendimiento mejora con el tiempo gracias al JIT.
 
-**Versión del class file (compatibilidad).** Cada `.class` graba una *major version* que identifica para qué Java se generó: Java 21 es `65` y Java 27 es `71`. `javac --release 21` fija tanto esa versión binaria como las APIs disponibles para ese objetivo. Lo comprobarás con `javap -v`. Un `.class` con una major version mayor que la JVM que intenta cargarlo produce un `UnsupportedClassVersionError`.
+**Versión del class file (compatibilidad).** Cada `.class` graba una *major version* que identifica para qué Java se generó: Java 27 es `71`, Java 25 (la LTS) es `69` y Java 21 es `65`. `javac --release 25` fija tanto esa versión binaria como las APIs disponibles para ese objetivo. Lo comprobarás con `javap -v`. Un `.class` con una major version mayor que la JVM que intenta cargarlo produce un `UnsupportedClassVersionError`.
 
-**JDK de compilación frente a runtime (límite).** Compilar con un JDK nuevo no garantiza poder ejecutar en una JVM anterior: hacia atrás no hay compatibilidad automática. Por eso, si tu destino es Java 21, compilas con `--release 21` aunque tengas el JDK 27 instalado. Hacia adelante sí: un `.class` de Java 21 se ejecuta en una JVM 27.
+**JDK de compilación frente a runtime (límite).** Compilar con un JDK nuevo no garantiza poder ejecutar en una JVM anterior: hacia atrás no hay compatibilidad automática. Por eso, si tu destino de despliegue es una JVM 25, compilas con `--release 25` aunque tengas el JDK 27 instalado. Hacia adelante sí: un `.class` de Java 25 se ejecuta en una JVM 27.
 
 **Analogía (con su límite):** el bytecode es como una partitura que distintos músicos interpretan en sus instrumentos, siempre que entiendan esa edición. Una edición demasiado nueva no se vuelve legible para un intérprete antiguo solo por ser la misma obra. La analogía explica la portabilidad y la compatibilidad de versión; no explica la verificación ni el JIT, que son decisiones internas de la JVM, no del "músico".
 
@@ -125,7 +253,7 @@ public final class Saludo {
 **Ejecuta el ejemplo** (compila, inspecciona la versión y el bytecode, y ejecuta):
 
 ```bash
-javac --release 21 -d out src/Saludo.java
+javac -d out src/Saludo.java
 javap -v -classpath out Saludo | grep -i "major version"
 javap -c -classpath out Saludo
 java -cp out Saludo
@@ -134,7 +262,7 @@ java -cp out Saludo
 **Resultado esperado** (verificado con Temurin 27.0.1):
 
 ```text
-  major version: 65
+  major version: 71
 ...
          0: getstatic     #7    // Field java/lang/System.out:Ljava/io/PrintStream;
          3: ldc           #13   // String Hola desde la JVM
@@ -144,7 +272,7 @@ java -cp out Saludo
 Hola desde la JVM
 ```
 
-La `major version: 65` confirma que, aunque tu JDK sea 27, el `.class` quedó fijado para Java 21 por `--release 21`. Repite sin `--release` y verás `71` (Java 27).
+Con el JDK 27 (sin `--release`), `major version: 71`. Si compilas con `javac --release 25 -d out25 src/Saludo.java` y repites `javap -v`, verás `69`: el mismo JDK 27 produce bytecode compatible con una JVM 25. Comprueba el contraste tú mismo; es la base de la compatibilidad hacia atrás.
 
 **Fallo deliberado 1 — classpath equivocado.** Ejecuta `java -cp src Saludo`:
 
@@ -176,7 +304,7 @@ public final class Ayudante {
 Compila ambas y ejecuta normalmente; después borra **solo** `out/Ayudante.class` y vuelve a ejecutar `Motor`:
 
 ```bash
-javac --release 21 -d out src/Motor.java src/Ayudante.java
+javac --release 25 -d out src/Motor.java src/Ayudante.java
 java -cp out Motor            # imprime: usa ayudante
 rm out/Ayudante.class
 java -cp out Motor
@@ -209,14 +337,14 @@ public final class App {
 }
 ```
 
-Compila con `javac --release 21 -d out2 src/App.java` y comprueba con `find out2 -name '*.class'` que el archivo quedó en `out2/com/rutaflow/app/App.class`: el paquete se traduce a carpetas. Ejecuta primero `java -cp out2 App` (falla con `ClassNotFoundException: App`) y después `java -cp out2 com.rutaflow.app.App` (imprime `binario=com.rutaflow.app.App`). Explica por qué la JVM solo encuentra la clase por su **nombre binario completo**, no por el nombre corto.
+Compila con `javac --release 25 -d out2 src/App.java` y comprueba con `find out2 -name '*.class'` que el archivo quedó en `out2/com/rutaflow/app/App.class`: el paquete se traduce a carpetas. Ejecuta primero `java -cp out2 App` (falla con `ClassNotFoundException: App`) y después `java -cp out2 com.rutaflow.app.App` (imprime `binario=com.rutaflow.app.App`). Explica por qué la JVM solo encuentra la clase por su **nombre binario completo**, no por el nombre corto.
 
 **Paso 7 · Cierre**
 
 **Checklist de salida.**
 
-- [ ] `javac --release 21 -d out src/Saludo.java` genera `out/Saludo.class`.
-- [ ] `javap -v` muestra `major version: 65` con `--release 21` y `71` sin él.
+- [ ] `javac -d out src/Saludo.java` genera `out/Saludo.class`.
+- [ ] Con JDK 27, `javap -v` muestra `major version: 71` sin `--release`; con `--release 25` produce `69`.
 - [ ] `javap -c -classpath out Saludo` muestra `getstatic`, `ldc`, `invokevirtual` y `return`.
 - [ ] `java -cp src Saludo` reproduce `ClassNotFoundException` (clase principal ausente).
 - [ ] Borrar `Ayudante.class` reproduce `NoClassDefFoundError` con `ClassNotFoundException` como causa.
@@ -230,13 +358,13 @@ Guarda los fuentes, los `.class`, la salida de `javap -v`, y ambos errores (`Cla
 
 **Errores comunes:** apuntar `-cp` a la carpeta de fuentes en vez de a la de salida; confundir `ClassNotFoundException` (no arrancó) con `NoClassDefFoundError` (arrancó y faltó una dependencia); olvidar recompilar tras modificar el `.java`; y asumir que `javac` ejecuta el programa en vez de solo compilarlo.
 
-**Fuentes oficiales revisadas el 2026-11-01:** [javac Java SE 27](https://docs.oracle.com/en/java/javase/27/docs/specs/man/javac.html), [java Java SE 27](https://docs.oracle.com/en/java/javase/27/docs/specs/man/java.html), [JVM Specification 27 — class file](https://docs.oracle.com/javase/specs/jvms/se27/html/jvms-4.html) y [JVM Specification 27 — loading, linking and initialization](https://docs.oracle.com/javase/specs/jvms/se27/html/jvms-5.html).
+**Fuentes oficiales revisadas el 2026-11-01:** [javac Java SE 21](https://docs.oracle.com/en/java/javase/21/docs/specs/man/javac.html), [java Java SE 21](https://docs.oracle.com/en/java/javase/21/docs/specs/man/java.html), [JVM Specification 21 — class file](https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html) y [JVM Specification 21 — loading, linking and initialization](https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-5.html).
 
 ### Tema 2: public static void main — qué significa cada palabra · Básico · 30 min
 
 **Paso 1 · Objetivo y preparación**
 
-**Prerrequisito:** Tema 1 de este módulo, JDK 27 o posterior y un editor de texto o IDE. Comprueba `java --version`.
+**Prerrequisito:** M0 T1 (Del código fuente a la JVM). JDK 27 o posterior y un editor de texto o IDE. Comprueba `java --version`.
 
 **Al finalizar podrás:** explicar qué significa cada palabra de `public static void main(String[] args)`, distinguir el `void` del retorno de un código de salida del proceso, usar `String... args`, diferenciar una sobrecarga de `main` del punto de entrada, elegir un entry point entre varios por su nombre binario, y ejecutar un fuente suelto con `java Archivo.java`.
 
@@ -398,13 +526,13 @@ Guarda los fuentes, la ejecución con argumento real, el intento sin `static`, y
 
 **Errores comunes:** usar un modificador de acceso distinto a `public`; omitir `static` esperando que Java cree una instancia; declarar `args` con un tipo distinto a `String[]`/`String...`; confundir una sobrecarga de `main` con el punto de entrada; y creer que `return` dentro de `main` fija el código de salida (lo fija `System.exit`).
 
-**Fuentes oficiales revisadas el 2026-11-01:** [El lanzador `java` (Java SE 27)](https://docs.oracle.com/en/java/javase/27/docs/specs/man/java.html), [`System.exit` (API Java SE 27)](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/System.html#exit(int)) y [dev.java: getting started](https://dev.java/learn/getting-started/).
+**Fuentes oficiales revisadas el 2026-11-01:** [El lanzador `java` (Java SE 21)](https://docs.oracle.com/en/java/javase/21/docs/specs/man/java.html), [`System.exit` (API Java SE 21)](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/System.html#exit(int)) y [dev.java: getting started](https://dev.java/learn/getting-started/).
 
 ### Tema 3: JDK, JRE y JVM · Básico · 30 min
 
 **Paso 1 · Objetivo y preparación**
 
-**Prerrequisito:** Tema 1 de este módulo, JDK 27 o posterior y un editor de texto o IDE. Comprueba `java --version` y `javac --version`.
+**Prerrequisito:** M0 T2 (public static void main — qué significa cada palabra). JDK 27 o posterior y un editor de texto o IDE. Comprueba `java --version` y `javac --version`.
 
 **Al finalizar podrás:** distinguir qué instala el JDK, qué incluye el JRE y qué ejecuta la JVM; decidir proveedor y versión (LTS frente a feature release) para un entorno; reconocer la arquitectura del binario (x64/ARM); y construir un runtime mínimo con `jlink`.
 
@@ -499,7 +627,7 @@ Lee **proveedor y arquitectura** de tu instalación real:
 java -XshowSettings:properties -version 2>&1 | grep -iE "java.vendor =|java.version =|os.arch =|java.home ="
 ```
 
-**Resultado esperado (ejemplo verificado en Apple Silicon con Temurin 27.0.1):**
+**Resultado esperado (verificado con Temurin 27.0.1; las rutas dependen de la instalación):**
 
 ```text
     java.home = .../temurin-27.jdk/Contents/Home
@@ -520,7 +648,7 @@ du -sh runtime-min
 ./runtime-min/bin/java -cp out Entorno
 ```
 
-**Resultado esperado:** el runtime pesa decenas de MB (unos 45M), `--list-modules` muestra solo `java.base@27…`, y `Entorno` imprime igual que con el JDK completo porque solo usa `java.base`.
+**Resultado esperado (verificado con Temurin 27.0.1):** el runtime pesa decenas de MB (unos 45M), `--list-modules` muestra solo `java.base@27…`, y `Entorno` imprime igual que con el JDK completo porque solo usa `java.base`.
 
 **Fallo deliberado:** haz que `Entorno` cargue una clase de `java.sql` **en runtime** (no una constante, que el compilador inlinearía). Añade a `main`:
 
@@ -565,13 +693,13 @@ Guarda la salida de `-XshowSettings`, el tamaño del runtime de `jlink` y su lis
 
 **Errores comunes:** recomendar "instala el JRE" cuando ya no se distribuye por separado; elegir una feature release para producción sin considerar el soporte; instalar un JDK con arquitectura equivocada (x64 en ARM); y creer que `jlink` reemplaza al JDK para desarrollar.
 
-**Fuentes oficiales revisadas el 2026-11-01:** [dev.java: la JVM](https://dev.java/learn/jvm/), [`jlink` (Java SE 27)](https://docs.oracle.com/en/java/javase/27/docs/specs/man/jlink.html) y [documentación Java SE 27](https://docs.oracle.com/en/java/javase/27/).
+**Fuentes oficiales revisadas el 2026-11-01:** [dev.java: la JVM](https://dev.java/learn/jvm/), [`jlink` (Java SE 21)](https://docs.oracle.com/en/java/javase/21/docs/specs/man/jlink.html) y [documentación Java SE 21](https://docs.oracle.com/en/java/javase/21/).
 
 ### Tema 4: Tipos primitivos vs referencias · Básico · 40 min
 
 **Paso 1 · Objetivo y preparación**
 
-**Prerrequisito:** Tema 1 de este módulo, JDK 27 o posterior y un editor de texto o IDE. Comprueba `java --version`.
+**Prerrequisito:** M0 T3 (JDK, JRE y JVM). JDK 27 o posterior y un editor de texto o IDE. Comprueba `java --version`.
 
 **Al finalizar podrás:** predecir, antes de ejecutar, si una variable copia un valor o comparte una referencia; distinguir identidad (`==`) de igualdad (`equals`); y explicar por qué Java pasa siempre por valor.
 
@@ -768,13 +896,13 @@ Guarda `ValoresYReferencias.java`, `Demo.java`, sus salidas, el error de la loca
 
 **Errores comunes:** comparar objetos (o `String`) con `==` en vez de `equals`; creer que Java pasa objetos "por referencia"; asumir que `final` congela el objeto; usar un wrapper `null` como primitivo sin validar; y memorizar el mito "primitivo=stack, objeto=heap".
 
-**Fuentes oficiales revisadas el 2026-11-01:** [JLS 4 — tipos, valores y variables (Java SE 27)](https://docs.oracle.com/javase/specs/jls/se27/html/jls-4.html), [`Integer` (API Java SE 27)](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/Integer.html) y [dev.java: language basics](https://dev.java/learn/language-basics/).
+**Fuentes oficiales revisadas el 2026-11-01:** [JLS 4 — tipos, valores y variables (Java SE 21)](https://docs.oracle.com/javase/specs/jls/se21/html/jls-4.html), [`Integer` (API Java SE 21)](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html) y [dev.java: language basics](https://dev.java/learn/language-basics/).
 
 ### Tema 5: Variables, conversiones y `String` · Intermedio · 45 min
 
 **Paso 1 · Objetivo y preparación**
 
-**Prerrequisito:** Tema 4 de este módulo, JDK 27 o posterior y un editor de texto o IDE. Comprueba `java --version`.
+**Prerrequisito:** M0 T4 (Tipos primitivos vs referencias). JDK 27 o posterior y un editor de texto o IDE. Comprueba `java --version`.
 
 **Al finalizar podrás:** declarar e inferir con `var`; convertir con widening/narrowing y detectar overflow; explicar la promoción numérica y la imprecisión de IEEE 754; elegir `BigDecimal` desde texto para dinero; y comparar texto con `equals`/`Objects.equals`.
 
@@ -972,13 +1100,13 @@ Guarda `Conversiones.java`, `Mas.java`, sus salidas, el `NumberFormatException` 
 
 **Antes del siguiente tema:** explica por qué el texto se valida en la frontera, cuándo `BigDecimal` desde `String`, qué hace la promoción numérica y en qué se diferencian `equals` y `Objects.equals`.
 
-**Fuentes oficiales revisadas el 2026-11-01:** [`BigDecimal` (API Java SE 27)](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/math/BigDecimal.html), [`Math.addExact` (API Java SE 27)](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/Math.html#addExact(int,int)) y [dev.java: language basics](https://dev.java/learn/language-basics/).
+**Fuentes oficiales revisadas el 2026-11-01:** [`BigDecimal` (API Java SE 21)](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/math/BigDecimal.html), [`Math.addExact` (API Java SE 21)](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Math.html#addExact(int,int)) y [dev.java: language basics](https://dev.java/learn/language-basics/).
 
 ### Tema 6: Operadores, precedencia y control de flujo · Intermedio · 45 min
 
 **Paso 1 · Objetivo y preparación**
 
-**Prerrequisito:** Tema 5 de este módulo, JDK 27 o posterior y un editor de texto o IDE. Comprueba `java --version`.
+**Prerrequisito:** M0 T5 (Variables, conversiones y `String`). JDK 27 o posterior y un editor de texto o IDE. Comprueba `java --version`.
 
 **Al finalizar podrás:** predecir el resultado de operadores (división entera, precedencia, incremento); explicar el cortocircuito de `&&`; escribir un `switch` exhaustivo sobre `enum`/`sealed` con pattern matching; y controlar ciclos con etiquetas sin esconder el flujo.
 
@@ -1194,13 +1322,13 @@ Guarda `ControlEntrega.java`, `Flujo.java`, sus salidas, y el error de exhaustiv
 
 **Antes del siguiente tema:** compara `&&` con `&` ante `null`, explica la precedencia de `2+3*4` y por qué un `switch` exhaustivo sobre `sealed` avisa de un caso nuevo.
 
-**Fuentes oficiales revisadas el 2026-11-01:** [JLS 14 — sentencias (Java SE 27)](https://docs.oracle.com/javase/specs/jls/se27/html/jls-14.html), [JLS 15 — expresiones (Java SE 27)](https://docs.oracle.com/javase/specs/jls/se27/html/jls-15.html) y [dev.java: switch expressions](https://dev.java/learn/language-basics/switch-expressions/).
+**Fuentes oficiales revisadas el 2026-11-01:** [JLS 14 — sentencias (Java SE 21)](https://docs.oracle.com/javase/specs/jls/se21/html/jls-14.html), [JLS 15 — expresiones (Java SE 21)](https://docs.oracle.com/javase/specs/jls/se21/html/jls-15.html) y [dev.java: switch expressions](https://dev.java/learn/language-basics/switch-expressions/).
 
 ### Tema 7: Arreglos, wrappers y paso de argumentos · Intermedio · 45 min
 
 **Paso 1 · Objetivo y preparación**
 
-**Prerrequisito:** Tema 4 de este módulo, JDK 27 o posterior y un editor de texto o IDE. Comprueba `java --version`.
+**Prerrequisito:** M0 T6 (Operadores, precedencia y control de flujo). JDK 27 o posterior y un editor de texto o IDE. Comprueba `java --version`.
 
 **Al finalizar podrás:** predecir qué modifica un método al recibir un arreglo; recorrer sin salirte de los límites; distinguir arreglos dentados, copia superficial, varargs, caché de wrappers y el boxing de `List<Integer>`.
 
@@ -1403,13 +1531,13 @@ Guarda `Argumentos.java`, `Arr.java`, sus salidas y el `ArrayIndexOutOfBoundsExc
 
 **Errores comunes:** decir que Java pasa objetos por referencia; usar `<=` sobre `length`; reasignar un parámetro arreglo esperando cambiar el del llamador; creer que `clone()`/`copyOf` hacen copia profunda; y sacar conclusiones de `Integer == Integer`.
 
-**Fuentes oficiales revisadas el 2026-11-01:** [JLS 15 — invocación de métodos (Java SE 27)](https://docs.oracle.com/javase/specs/jls/se27/html/jls-15.html#jls-15.12), [`Arrays` (API Java SE 27)](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/Arrays.html) y [dev.java: arrays](https://dev.java/learn/arrays/).
+**Fuentes oficiales revisadas el 2026-11-01:** [JLS 15 — invocación de métodos (Java SE 21)](https://docs.oracle.com/javase/specs/jls/se21/html/jls-15.html#jls-15.12), [`Arrays` (API Java SE 21)](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Arrays.html) y [dev.java: arrays](https://dev.java/learn/arrays/).
 
 ### Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`) · Intermedio · 50 min
 
 **Paso 1 · Objetivo y preparación**
 
-**Prerrequisito:** Tema 7 de este módulo, JDK 27 o posterior y un editor de texto o IDE. Comprueba `java --version`.
+**Prerrequisito:** M0 T7 (Arreglos, wrappers y paso de argumentos). JDK 27 o posterior y un editor de texto o IDE. Comprueba `java --version`.
 
 **Al finalizar podrás:** elegir entre `LocalDate`/`Instant`/`ZonedDateTime`/`OffsetDateTime`; distinguir `Duration` de `Period`; formatear con `DateTimeFormatter`; diagnosticar un hueco de DST; y rechazar una fecha imposible al recibirla.
 
@@ -1599,7 +1727,7 @@ Guarda `FechaEntrega.java`, `Tiempo.java`, sus salidas, la fecha imposible recha
 
 **Antes del siguiente tema:** decide si el caso es un día civil, una hora con zona o un instante, y explica por qué `LocalDate` no puede ordenar eventos por hora y qué pasa con una hora local en un hueco de DST.
 
-**Fuentes oficiales revisadas el 2026-11-01:** [paquete `java.time` (API Java SE 27)](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/time/package-summary.html), [`ZonedDateTime` (API Java SE 27)](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/time/ZonedDateTime.html) y [dev.java: date-time](https://dev.java/learn/date-time/).
+**Fuentes oficiales revisadas el 2026-11-01:** [paquete `java.time` (API Java SE 21)](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/package-summary.html), [`ZonedDateTime` (API Java SE 21)](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/ZonedDateTime.html) y [dev.java: date-time](https://dev.java/learn/date-time/).
 
 ## Ruta de proyecto progresivo desde carpeta vacía
 

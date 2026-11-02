@@ -2082,7 +2082,7 @@
       "track": "java",
       "module": 0,
       "position": 1,
-      "title": "Del código fuente a la JVM · Básico · 35 min",
+      "title": "Instalar Eclipse Temurin JDK 27 en macOS, Windows y Ubuntu · Básico · 15 min",
       "file": "web/public/content/java/modulo-0.md",
       "requires": []
     },
@@ -2091,7 +2091,7 @@
       "track": "java",
       "module": 0,
       "position": 2,
-      "title": "public static void main — qué significa cada palabra · Básico · 30 min",
+      "title": "Del código fuente a la JVM · Básico · 35 min",
       "file": "web/public/content/java/modulo-0.md",
       "requires": [
         "java:0:1"
@@ -2102,7 +2102,7 @@
       "track": "java",
       "module": 0,
       "position": 3,
-      "title": "JDK, JRE y JVM · Básico · 30 min",
+      "title": "public static void main — qué significa cada palabra · Básico · 30 min",
       "file": "web/public/content/java/modulo-0.md",
       "requires": [
         "java:0:2"
@@ -2113,7 +2113,7 @@
       "track": "java",
       "module": 0,
       "position": 4,
-      "title": "Tipos primitivos vs referencias · Básico · 40 min",
+      "title": "JDK, JRE y JVM · Básico · 30 min",
       "file": "web/public/content/java/modulo-0.md",
       "requires": [
         "java:0:3"
@@ -2124,7 +2124,7 @@
       "track": "java",
       "module": 0,
       "position": 5,
-      "title": "Variables, conversiones y `String` · Intermedio · 45 min",
+      "title": "Tipos primitivos vs referencias · Básico · 40 min",
       "file": "web/public/content/java/modulo-0.md",
       "requires": [
         "java:0:4"
@@ -2135,7 +2135,7 @@
       "track": "java",
       "module": 0,
       "position": 6,
-      "title": "Operadores, precedencia y control de flujo · Intermedio · 45 min",
+      "title": "Variables, conversiones y `String` · Intermedio · 45 min",
       "file": "web/public/content/java/modulo-0.md",
       "requires": [
         "java:0:5"
@@ -2146,7 +2146,7 @@
       "track": "java",
       "module": 0,
       "position": 7,
-      "title": "Arreglos, wrappers y paso de argumentos · Intermedio · 45 min",
+      "title": "Operadores, precedencia y control de flujo · Intermedio · 45 min",
       "file": "web/public/content/java/modulo-0.md",
       "requires": [
         "java:0:6"
@@ -2157,10 +2157,21 @@
       "track": "java",
       "module": 0,
       "position": 8,
-      "title": "Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`) · Intermedio · 50 min",
+      "title": "Arreglos, wrappers y paso de argumentos · Intermedio · 45 min",
       "file": "web/public/content/java/modulo-0.md",
       "requires": [
         "java:0:7"
+      ]
+    },
+    {
+      "id": "java:0:9",
+      "track": "java",
+      "module": 0,
+      "position": 9,
+      "title": "Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`) · Intermedio · 50 min",
+      "file": "web/public/content/java/modulo-0.md",
+      "requires": [
+        "java:0:8"
       ]
     },
     {
@@ -2171,7 +2182,7 @@
       "title": "Clases, objetos, constructores y encapsulación · Básico · 40 min",
       "file": "web/public/content/java/modulo-1.md",
       "requires": [
-        "java:0:8"
+        "java:0:9"
       ]
     },
     {

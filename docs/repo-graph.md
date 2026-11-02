@@ -1,8 +1,8 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-11-02 12:56 UTC
+Generated: 2026-11-02 14:15 UTC
 Root: `Academia_Floci`
-Indexed files: 1050
+Indexed files: 1051
 Import edges: 61
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -18,14 +18,14 @@ For automated lookups, use `docs/repo-graph.json`.
 - `angular-app`: 67 files
 - `automation-script`: 46 files
 - `course-content`: 290 files
-- `documentation`: 82 files
+- `documentation`: 83 files
 - `example`: 495 files
 - `local-infra`: 1 files
 - `project-file`: 69 files
 
 ## File Types
 
-- `.md`: 351
+- `.md`: 352
 - `.py`: 172
 - `.json`: 108
 - `.java`: 73
@@ -51,7 +51,7 @@ For automated lookups, use `docs/repo-graph.json`.
 
 ## High Signal Files
 
-- `README.md` (369 lines, documentation)
+- `README.md` (370 lines, documentation)
   - headings: # The_Imperial_Book, ## Cómo empezar, ## Requisitos del sistema, ## Levantar Floci, # 1. Levantar todos los servicios
 - `scripts/validate.sh` (214 lines, automation-script)
 - `scripts/build_repo_graph.py` (477 lines, automation-script)
@@ -230,7 +230,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `CLAUDE.md` (119 lines) - headings: # CLAUDE.md, ## What this is, ## First step for any repo exploration, ## Commands
 - `CODE_OF_CONDUCT.md` (25 lines) - headings: # Código de conducta, ## Compromiso, ## Conducta esperada, ## Aplicación
 - `CONTRIBUTING.md` (41 lines) - headings: # Contribuir a The Imperial Book, ## Idioma y commits, ## Antes de abrir un cambio, ## Licencias
-- `README.md` (369 lines) - headings: # The_Imperial_Book, ## Cómo empezar, ## Requisitos del sistema, ## Levantar Floci
+- `README.md` (370 lines) - headings: # The_Imperial_Book, ## Cómo empezar, ## Requisitos del sistema, ## Levantar Floci
 - `docs/ACADEMIA-EXPERIENCIA-DE-ESTUDIO.md` (66 lines) - headings: # Experiencia de estudio: contrato editorial y de interfaz, ## Principios de aprendizaje, ## Contrato de cada tema, ## Contrato del lector
 - `docs/ACADEMIA-PROTOTIPO-6-CONTEXTOS.md` (46 lines) - headings: # Prototipo editorial: seis contextos, ## Puerta de validación, ## Estado
 - `docs/AUDITORIA-COBERTURA-SPRING-20261101.md` (73 lines) - headings: # Auditoría de cobertura — Track Spring Boot vs temario profesional, ## Resumen de huecos confirmados, ### ALTA (prerrequisitos del núcleo / imprescindibles), ### MEDIA
@@ -243,7 +243,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/METODOLOGIA-DE-APRENDIZAJE.md` (72 lines) - headings: # Metodología Aprende construyendo, ## Ciclo de cada capítulo, ## Tamaño de las experiencias, ## Profundidad de los subtemas
 - `docs/PLAN-CURSO-BUILD-MAVEN-GRADLE.md` (161 lines) - headings: # Plan curricular verificable: Build Tools — Maven y Gradle de cero a experto, ## Motivo del curso separado, ## Frontera con el track Java, ## Secuencia completa
 - `docs/PLAN-CURSO-DOCKER-KUBERNETES.md` (287 lines) - headings: # Plan curricular verificable: Docker y Kubernetes, de cero a experto, ## Propósito, ## Bloque I · Fundamentos de contenedores y Docker, ### Módulo 0 · Linux necesario para comprender contenedores
-- ... 64 more files
+- ... 65 more files
 
 ### example
 
@@ -288,7 +288,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/browser-course-review.json` (2712 lines)
 - `docs/code-visual-quality.json` (2100 lines)
 - `docs/course-curriculum-inventory.json` (53 lines)
-- `docs/course-depth-review.json` (14075 lines)
+- `docs/course-depth-review.json` (14087 lines)
 - `docs/curriculum-matrix.json` (394 lines)
 - `docs/floci-official-curriculum.json` (14 lines)
 - ... 51 more files

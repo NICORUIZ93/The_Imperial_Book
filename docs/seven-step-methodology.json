@@ -134,23 +134,23 @@
       "complete": 56
     },
     "java": {
-      "topics": 98,
-      "objective": 36,
-      "prerequisites": 98,
-      "context": 36,
-      "theoryAnalogy": 36,
-      "guidedDemo": 36,
-      "codeExplanation": 98,
-      "execution": 98,
-      "expectedResult": 97,
-      "deliberateFailure": 97,
-      "guidedPractice": 28,
-      "independentPractice": 35,
-      "closure": 35,
-      "commonErrors": 88,
-      "resources": 89,
-      "standaloneExample": 82,
-      "complete": 28
+      "topics": 99,
+      "objective": 37,
+      "prerequisites": 99,
+      "context": 37,
+      "theoryAnalogy": 37,
+      "guidedDemo": 37,
+      "codeExplanation": 99,
+      "execution": 99,
+      "expectedResult": 98,
+      "deliberateFailure": 98,
+      "guidedPractice": 29,
+      "independentPractice": 36,
+      "closure": 36,
+      "commonErrors": 89,
+      "resources": 90,
+      "standaloneExample": 83,
+      "complete": 29
     },
     "javascript": {
       "topics": 88,
@@ -16508,6 +16508,31 @@
       }
     ],
     "java": [
+      {
+        "module": 0,
+        "topic": "Tema 0: Instalar Eclipse Temurin JDK 27 en macOS, Windows y Ubuntu · Básico · 15 min",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 15,
+          "complete": true
+        }
+      },
       {
         "module": 0,
         "topic": "Tema 1: Del código fuente a la JVM · Básico · 35 min",

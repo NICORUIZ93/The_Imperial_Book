@@ -9,7 +9,7 @@
 Academia en español para estudiar programación, desarrollo de software y cloud local. La
 experiencia oficial es una aplicación Angular con lecciones Markdown.
 
-La academia reúne 14 tracks, 254 módulos y 1148 temas editoriales en formato de
+La academia reúne 14 tracks, 254 módulos y 1149 temas editoriales en formato de
 libro. Esos 14 tracks son Fundamentos + RutaFlow + 12 rutas de especialización.
 La presencia de criterios editoriales y la completitud de los siete pasos
 se reportan por separado; ninguna métrica automática sustituye la revisión técnica
@@ -66,7 +66,7 @@ Si algo falla, consulta la [guía de solución de problemas](docs/troubleshootin
 - **Angular 21.2.** La aplicación usa `@angular/core` `^21.2.0` y se instala con `npm ci`; no requiere instalación global.
 - **Docker Engine con Compose v2.** Necesario para el stack `docker-compose.yml` y para Floci por contenedores.
 - **Python 3.11 o superior.** Lo usan los auditores, la validación y varios ejemplos (`python3 --version`).
-- **JDK 27 o superior (Temurin 27.0.1).** Los ejemplos Java se ejecutaron con JDK 27; los proyectos Spring Boot se compilaron y sus pruebas aisladas pasaron, salvo los laboratorios que exigen servicios externos. El JDK solo es necesario para esos tracks.
+- **JDK 27 o superior para el track Java completo (Temurin 27.0.1).** Java M0 añade una sesión independiente para instalar y verificar Temurin 21.0.13+9; los módulos posteriores pueden requerir una versión mayor. Los proyectos Spring Boot se compilaron y sus pruebas aisladas pasaron, salvo los laboratorios que exigen servicios externos.
 - **Floci.** El Compose fija el emulador `2.2.0`; la CLI `0.4.0` es la release observada y su versión mínima compatible sigue sin verificarse ([detalle](docs/floci.md)).
 - **Go y Rust (opcional).** Solo para los ejemplos de `examples/go` y `examples/rust`; el repositorio no fija versión en `go.mod` ni `Cargo.toml`, así que anota la toolchain que uses al ejecutarlos.
 - **Toolchains móviles (opcional).** Android, iOS, Flutter y Kotlin Multiplatform requieren su SDK y emulador o simulador propios; no son necesarios para la aplicación web.
@@ -199,7 +199,7 @@ El contrato editorial que debe alcanzar cada tema es:
 
 La versión Angular tiene su propio contenido, más amplio, en formato Markdown
 (`web/public/content/<track>/modulo-N.md`), organizado en 14 tracks, 254
-módulos y 1148 temas editoriales visibles. Cada módulo prioriza una secuencia de
+módulos y 1149 temas editoriales visibles. Cada módulo prioriza una secuencia de
 temas prácticos. El sílabo y el estándar de calidad viven en documentos
 centrales; las fuentes específicas permanecen junto al tema que sustentan. No
 existen rutas separadas de cuestionarios, rúbricas o laboratorios repetidos.
@@ -208,12 +208,13 @@ Los conteos se verifican contra los tracks y el Markdown desde
 `scripts/validate_learning_priorities.py`; la validación falla si README vuelve
 a quedar desincronizado. La auditoría de criterios editoriales informa presencia
 estructural detectada por heurísticas, no calidad ni ejecución: el corte
-versionado registra 1145/1148 temas con los nueve criterios detectados. El
+versionado registra 1145/1149 temas con los nueve criterios detectados. El
 criterio de práctica acepta tanto el vocabulario de los siete pasos como una
 sección `#### Practica` con cuerpo accionable. La
-auditoría independiente de metodología registra 900/1148 con sus marcadores de
-siete pasos: los módulos migrados a Aprende/Practica/Aplica, entre ellos los
-23 módulos de Spring Boot y los Módulos 0–22 de Java, ya no usan esos marcadores. Ninguno de esos resultados demuestra que las instrucciones sean
+auditoría independiente de metodología registra 901/1149 temas con sus
+marcadores de siete pasos. Los 61 módulos migrados usan la envoltura
+Aprende/Practica/Aplica y 193 conservan el formato anterior; ambos formatos
+pueden contener temas cuyos siete pasos se auditan por separado. Ninguno de esos resultados demuestra que las instrucciones sean
 correctas, que los ejemplos se ejecuten o que el tema enseñe de forma efectiva.
 El estado por tema y las señales adicionales están en
 [`docs/seven-step-methodology.md`](docs/seven-step-methodology.md),

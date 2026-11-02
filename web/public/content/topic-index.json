@@ -2894,6 +2894,10 @@
   "java": {
     "0": [
       {
+        "title": "Instalar Eclipse Temurin JDK 27 en macOS, Windows y Ubuntu",
+        "fragment": "tema-0-instalar-eclipse-temurin-jdk-27-en-macos-windows-y-ubuntu"
+      },
+      {
         "title": "Del código fuente a la JVM",
         "fragment": "tema-1-del-codigo-fuente-a-la-jvm"
       },

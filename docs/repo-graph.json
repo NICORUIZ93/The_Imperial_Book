@@ -92,7 +92,7 @@
     },
     {
       "path": "README.md",
-      "lines": 369,
+      "lines": 370,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -568,6 +568,16 @@
       "headings": []
     },
     {
+      "path": "docs/archivo/README.md",
+      "lines": 10,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Archivo hist\u00f3rico de documentos de proceso"
+      ]
+    },
+    {
       "path": "docs/archivo/auditoria-profundidad-cobertura.md",
       "lines": 235,
       "kind": "documentation",
@@ -954,7 +964,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 14075,
+      "lines": 14087,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -962,7 +972,7 @@
     },
     {
       "path": "docs/course-depth-review.md",
-      "lines": 1179,
+      "lines": 1180,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -995,7 +1005,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 50,
+      "lines": 51,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1113,7 +1123,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 9759,
+      "lines": 9766,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1214,12 +1224,13 @@
     },
     {
       "path": "docs/migration-plan.md",
-      "lines": 195,
+      "lines": 228,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
       "headings": [
         "# Plan de migraci\u00f3n editorial",
+        "## Reconstrucci\u00f3n activa \u2014 corte 2026-11-02",
         "## Estado de las fases",
         "## Contrato de correspondencia: siete pasos \u2192 Aprende/Practica/Aplica",
         "## Cifras corregidas",
@@ -1227,7 +1238,8 @@
         "## Identidad: m\u00f3dulos, fragmentos y progreso",
         "## Spring Boot: mapa corregido (91 temas, 17 m\u00f3dulos)",
         "## Validaci\u00f3n por m\u00f3dulo",
-        "## Pr\u00f3ximo paso"
+        "## Pr\u00f3ximo paso",
+        "## Pr\u00f3ximo paso vigente"
       ]
     },
     {
@@ -1283,7 +1295,7 @@
     },
     {
       "path": "docs/prerequisite-graph.json",
-      "lines": 12636,
+      "lines": 12647,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1402,7 +1414,7 @@
     },
     {
       "path": "docs/seven-step-methodology.json",
-      "lines": 29001,
+      "lines": 29026,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1452,7 +1464,7 @@
     },
     {
       "path": "docs/subtopic-depth-review.json",
-      "lines": 17120,
+      "lines": 17147,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1460,7 +1472,7 @@
     },
     {
       "path": "docs/subtopic-depth-review.md",
-      "lines": 1135,
+      "lines": 1136,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1473,7 +1485,7 @@
     },
     {
       "path": "docs/subtopic-depth-reviewed.json",
-      "lines": 107,
+      "lines": 122,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1541,7 +1553,7 @@
     },
     {
       "path": "docs/topic-learning-quality.json",
-      "lines": 25527,
+      "lines": 25549,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -10536,7 +10548,7 @@
     },
     {
       "path": "web/public/content/java/modulo-0.md",
-      "lines": 1648,
+      "lines": 1776,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10544,15 +10556,15 @@
         "# M\u00f3dulo 0: Sintaxis, tipos y el modelo de la JVM",
         "## Antes de comenzar: instala Java correctamente",
         "## Aprende construyendo",
-        "### Tema 1: Del c\u00f3digo fuente a la JVM \u00b7 B\u00e1sico \u00b7 35 min",
+        "### Tema 0: Instalar Eclipse Temurin JDK 27 en macOS, Windows y Ubuntu \u00b7 B\u00e1sico \u00b7 15 min",
         "#### Aprende",
         "#### Practica",
-        "#### Aplica",
-        "### Tema 2: public static void main \u2014 qu\u00e9 significa cada palabra \u00b7 B\u00e1sico \u00b7 30 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 3: JDK, JRE y JVM \u00b7 B\u00e1sico \u00b7 30 min"
+        "# macOS: instala Temurin 27 desde el cask oficial (gen\u00e9rico = versi\u00f3n m\u00e1s reciente).",
+        "# Verifica que el lanzador y el compilador respondan.",
+        "# Conserva las versiones y rutas en un archivo Markdown.",
+        "# Ubuntu/Debian: a\u00f1ade la clave y el repositorio oficial.",
+        "# Comprueba el JDK reci\u00e9n instalado.",
+        "# Conserva las versiones y rutas en un archivo Markdown."
       ]
     },
     {
@@ -12905,7 +12917,7 @@
     },
     {
       "path": "web/public/content/topic-index.json",
-      "lines": 5131,
+      "lines": 5135,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

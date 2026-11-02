@@ -85,15 +85,15 @@
       "officialSource": 58
     },
     "java": {
-      "topics": 98,
-      "code": 98,
-      "commentedCode": 55,
-      "mermaid": 40,
+      "topics": 99,
+      "code": 99,
+      "commentedCode": 56,
+      "mermaid": 41,
       "archifyVisual": 3,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
       "filePath": 98,
-      "runCommand": 98,
+      "runCommand": 99,
       "officialSource": 98
     },
     "spring-boot": {

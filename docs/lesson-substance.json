@@ -1677,7 +1677,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "5621b6a816bbd4114c4d9ebd3302fe2da7f6d2f831846f326817a0104ca0d4a1",
+    "fingerprint": "cbf8beac4199de818dfaac32e860a5bf68acebd40485b88136390b0ff1077280",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
@@ -1686,7 +1686,7 @@
     },
     "modules": 254,
     "modulesWithLegacySections": 179,
-    "topics": 1148,
+    "topics": 1149,
     "topicsWithIssues": 0
   },
   "topics": {
@@ -6251,58 +6251,65 @@
       {
         "issues": [],
         "module": 0,
-        "tailWords": 470,
+        "tailWords": 73,
+        "topic": "Tema 0: Instalar Eclipse Temurin JDK 27 en macOS, Windows y Ubuntu · Básico · 15 min",
+        "words": 1476
+      },
+      {
+        "issues": [],
+        "module": 0,
+        "tailWords": 471,
         "topic": "Tema 1: Del código fuente a la JVM · Básico · 35 min",
-        "words": 2114
+        "words": 2130
       },
       {
         "issues": [],
         "module": 0,
         "tailWords": 419,
         "topic": "Tema 2: public static void main — qué significa cada palabra · Básico · 30 min",
-        "words": 2026
+        "words": 2029
       },
       {
         "issues": [],
         "module": 0,
         "tailWords": 375,
         "topic": "Tema 3: JDK, JRE y JVM · Básico · 30 min",
-        "words": 1933
+        "words": 1946
       },
       {
         "issues": [],
         "module": 0,
         "tailWords": 387,
         "topic": "Tema 4: Tipos primitivos vs referencias · Básico · 40 min",
-        "words": 2168
+        "words": 2169
       },
       {
         "issues": [],
         "module": 0,
         "tailWords": 380,
         "topic": "Tema 5: Variables, conversiones y `String` · Intermedio · 45 min",
-        "words": 2006
+        "words": 2007
       },
       {
         "issues": [],
         "module": 0,
         "tailWords": 321,
         "topic": "Tema 6: Operadores, precedencia y control de flujo · Intermedio · 45 min",
-        "words": 2089
+        "words": 2090
       },
       {
         "issues": [],
         "module": 0,
         "tailWords": 374,
         "topic": "Tema 7: Arreglos, wrappers y paso de argumentos · Intermedio · 45 min",
-        "words": 1912
+        "words": 1915
       },
       {
         "issues": [],
         "module": 0,
         "tailWords": 354,
         "topic": "Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`) · Intermedio · 50 min",
-        "words": 2029
+        "words": 2032
       },
       {
         "issues": [],

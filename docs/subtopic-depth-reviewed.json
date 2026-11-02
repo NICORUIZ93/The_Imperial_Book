@@ -101,6 +101,21 @@
       "sources": [
         "https://docs.spring.io/spring-framework/reference/core/aop.html"
       ]
+    },
+    "java/modulo-0::Tema 0: Instalar Eclipse Temurin JDK 27 en macOS, Windows y Ubuntu · Básico · 15 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "macOS con Temurin 27.0.1: java --version = openjdk 27.0.1.0.2, javac 27.0.1.0.2; /usr/libexec/java_home -v 27 resuelve el JDK; fallo deliberado de PATH (javac: command not found) reproducido. Comandos Windows/Ubuntu no ejecutados en este equipo (documentado).",
+      "criticalSubtopics": [
+        "JDK frente a runtime",
+        "PATH frente a JAVA_HOME",
+        "Version, distribucion y arquitectura"
+      ],
+      "sources": [
+        "https://adoptium.net/installation",
+        "https://adoptium.net/temurin/releases/?version=27",
+        "https://formulae.brew.sh/cask/temurin"
+      ]
     }
   }
 }
