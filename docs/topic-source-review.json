@@ -5151,11 +5151,13 @@
       "path": "web/public/content/java/modulo-9.md",
       "topic": "Tema 1: JUnit 5 — anotaciones y ciclo de vida",
       "providerCitations": [
+        "https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/Assertions.html",
         "https://junit.org/junit5/docs/current/user-guide/"
       ],
       "applicabilityReview": "revisión manual pendiente",
       "line": 6,
       "originalProseUrls": [
+        "https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/Assertions.html",
         "https://junit.org/junit5/docs/current/user-guide/"
       ],
       "recognitionStatus": "primary-domain-detected",
@@ -5166,11 +5168,13 @@
       "path": "web/public/content/java/modulo-9.md",
       "topic": "Tema 2: Mockito — aislar dependencias",
       "providerCitations": [
+        "https://javadoc.io/doc/org.mockito/mockito-junit-jupiter/latest/org/mockito/junit/jupiter/MockitoExtension.html",
         "https://site.mockito.org/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 171,
+      "line": 196,
       "originalProseUrls": [
+        "https://javadoc.io/doc/org.mockito/mockito-junit-jupiter/latest/org/mockito/junit/jupiter/MockitoExtension.html",
         "https://site.mockito.org/"
       ],
       "recognitionStatus": "primary-domain-detected",
@@ -5185,8 +5189,9 @@
         "https://www.jacoco.org/jacoco/trunk/doc/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 362,
+      "line": 415,
       "originalProseUrls": [
+        "https://assertj.github.io/doc/",
         "https://junit.org/junit5/docs/current/user-guide/#writing-tests-parameterized-tests",
         "https://www.jacoco.org/jacoco/trunk/doc/"
       ],
@@ -8176,6 +8181,15 @@
       "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
+      "url": "https://javadoc.io/doc/org.mockito/mockito-junit-jupiter/latest/org/mockito/junit/jupiter/MockitoExtension.html",
+      "status": 0,
+      "finalUrl": "https://javadoc.io/doc/org.mockito/mockito-junit-jupiter/latest/org/mockito/junit/jupiter/MockitoExtension.html",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
       "url": "https://jotai.org/docs/introduction",
       "status": 200,
       "finalUrl": "https://jotai.org/docs",
@@ -8188,6 +8202,15 @@
       "url": "https://junit.org/",
       "status": 0,
       "finalUrl": "https://junit.org/",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
+      "url": "https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/Assertions.html",
+      "status": 0,
+      "finalUrl": "https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/Assertions.html",
       "contentType": "",
       "title": null,
       "checkedAt": null,
@@ -11116,9 +11139,9 @@
     "additionalRecognizedTopics": 378,
     "remainingUnrecognizedTopics": 0,
     "applicabilityPendingTopics": 378,
-    "urlsChecked": 527,
+    "urlsChecked": 529,
     "urlsReachable": 511,
-    "urlsPending": 16
+    "urlsPending": 18
   },
   "corrections": [
     {

@@ -5,15 +5,40 @@
 
 ### Tema 1: JUnit 5 — anotaciones y ciclo de vida · Básico · 45 min
 
-**Prerrequisito:** JDK 27, Maven y un editor. Verifica `java --version` y `mvn --version`.
+**Prerrequisito:** Módulo 8 (Maven/Gradle); JDK 27, Maven 3.9+ y un editor. Verifica `java --version` y `mvn --version`.
 
-**Al terminar podrás:** escribir un test con `@Test`/`@BeforeEach` y garantizar que dos pruebas de la misma clase no se contaminen entre sí por estado compartido.
+**Al terminar podrás:** escribir tests con `@Test` y aserciones (incluidas `assertThrows`/`assertAll`), usar el ciclo de vida (`@BeforeEach`/`@AfterEach`/`@BeforeAll`/`@AfterAll`), y garantizar que dos pruebas no se contaminen por estado compartido ni dependan del orden.
 
 #### Aprende
 
 Una suite de pruebas de la calculadora de tarifas empieza a fallar de forma intermitente solo cuando se ejecuta la suite completa (nunca al correr un test aislado); la causa es un campo de instancia compartido entre pruebas que una prueba anterior deja en un estado que la siguiente no esperaba.
 
 **¿Por qué es importante?** Porque sin `@BeforeEach` reiniciando el estado compartido, una prueba puede pasar o fallar según qué otra prueba se ejecutó antes, un tipo de fragilidad que solo se nota al correr la suite completa, nunca al correr una prueba aislada.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia del tema |
+|---|---|---|
+| `@Test` y aserciones | Núcleo | `assertEquals` compara esperado vs real |
+| ciclo de vida (`@BeforeEach`/`@AfterEach`) | Núcleo | se ejecutan antes/después de cada prueba |
+| `@BeforeAll`/`@AfterAll` | Variante | configuración costosa una sola vez |
+| instancia por prueba y `@TestInstance` | Diagnóstico | por defecto una instancia nueva por test |
+| aislamiento e independencia del orden | Diagnóstico | una prueba no debe depender de otra |
+| aserciones expresivas (`assertThrows`/`assertAll`) | Variante | verificar excepción y agrupar comprobaciones |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`@Test` y aserciones (núcleo).** `@Test` marca un método como caso de prueba que el runner ejecuta de forma independiente. Dentro, las **aserciones** (`assertEquals(esperado, real)`, `assertTrue`, `assertNotNull`) comprueban el resultado y fallan con un mensaje que muestra qué se esperaba y qué se obtuvo. El orden en `assertEquals` es **esperado primero, real después**.
+
+**Ciclo de vida `@BeforeEach`/`@AfterEach` (núcleo).** `@BeforeEach` corre **antes de cada** prueba (inicializa estado conocido); `@AfterEach` **después de cada** una (limpia recursos). Garantizan que cada prueba parta de un estado limpio sin depender de las anteriores.
+
+**`@BeforeAll`/`@AfterAll` (variante).** Para configuración **costosa** que solo debe hacerse una vez por clase (abrir una conexión, levantar un contenedor), no en cada prueba. Son `static` por defecto (o requieren `@TestInstance(PER_CLASS)`). Úsalos solo cuando el costo lo justifique.
+
+**Instancia por prueba y `@TestInstance` (diagnóstico).** Por defecto JUnit crea una **instancia nueva** de la clase de prueba para cada `@Test`, lo que aísla el estado automáticamente. Con `@TestInstance(Lifecycle.PER_CLASS)` se comparte una sola instancia, y entonces es `@BeforeEach` quien debe reiniciar los campos. Saber en qué modo estás explica por qué un campo "se contamina" entre pruebas.
+
+**Aislamiento e independencia del orden (diagnóstico).** Cada prueba debe poder ejecutarse en **cualquier orden** sin afectar ni verse afectada por otras. Un fallo que solo aparece al correr la suite completa (no aislado) delata estado compartido no reiniciado. La solución es reiniciar el estado, nunca fijar un orden de ejecución.
+
+**Aserciones expresivas (variante).** `assertThrows(Tipo.class, () -> ...)` verifica que un bloque **lanza** la excepción esperada y devuelve la instancia para inspeccionar su mensaje. `assertAll(...)` agrupa varias comprobaciones y **las ejecuta todas** aunque una falle, reportando todas las que fallaron a la vez (en vez de parar en la primera). Hacen las pruebas más precisas y legibles.
 
 `@Test` marca un método como un caso de prueba ejecutable independientemente por el runner de JUnit 5, dentro del cual las aserciones (`assertEquals(5, new Calculadora().sumar(2, 3))`) verifican que el resultado real coincide con el resultado esperado, fallando la prueba con un mensaje descriptivo si no coinciden; `@BeforeEach` marca un método que se ejecuta automáticamente antes de cada prueba individual de la clase, apropiado para inicializar objetos compartidos en un estado conocido y limpio antes de cada prueba, evitando que el estado dejado por una prueba anterior afecte accidentalmente el resultado de la siguiente (cada prueba debe ser independiente y capaz de ejecutarse en cualquier orden sin afectar ni verse afectada por otras).
 
@@ -164,21 +189,49 @@ Guarda el archivo de test, la salida verde y el fallo provocado con su correcci�
 
 **Errores comunes:** compartir estado mutable entre pruebas sin reiniciarlo en `@BeforeEach`, escribir aserciones débiles que pasan incluso con un resultado incorrecto, y depender del orden de ejecución entre pruebas que deberían ser independientes.
 
-**Fuente oficial:** [JUnit 5 — User Guide](https://junit.org/junit5/docs/current/user-guide/).
+**Fuentes oficiales revisadas el 2026-11-01:** [JUnit 5 — User Guide](https://junit.org/junit5/docs/current/user-guide/) y [`Assertions` (JUnit Jupiter API)](https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/Assertions.html).
 
 ---
 
 ### Tema 2: Mockito — aislar dependencias · Intermedio · 50 min
 
-**Prerrequisito:** JDK 27, Maven y un editor. Verifica `java --version` y `mvn --version`.
+**Prerrequisito:** Tema 1 de este módulo (JUnit 5); JDK 27, Maven 3.9+ y un editor. Verifica `java --version` y `mvn --version`.
 
-**Al terminar podrás:** sustituir una dependencia real (un repositorio con base de datos) por un mock de Mockito, probando la lógica de negocio sin levantar ninguna infraestructura externa.
+**Al terminar podrás:** sustituir una dependencia real por un mock (`@Mock`/`@InjectMocks`), configurar stubs (`when`/`thenReturn`/`thenThrow`), verificar interacciones (`verify`) con argument matchers, y decidir qué no mockear.
 
 #### Aprende
 
 Probar `ServicioPedidos.crear(...)` contra una base de datos real hace la suite lenta y frágil (depende de que la base esté disponible y en un estado conocido); la lógica de negocio que decide si un pedido es válido no necesita una base de datos real para verificarse, solo necesita que `RepositorioPedidos` responda de forma controlada.
 
 **¿Por qué es importante?** Mockear dependencias externas aísla la prueba de infraestructura real (bases de datos, servicios externos), haciendo la prueba más rápida, determinista y confiable, sin depender de la disponibilidad o el estado de sistemas externos.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia del tema |
+|---|---|---|
+| mock frente a dependencia real | Núcleo | el repositorio simulado no toca la base de datos |
+| `@Mock`/`@InjectMocks` | Núcleo | crear el mock e inyectarlo en el servicio |
+| stub: `when(...).thenReturn(...)` | Núcleo | controlar qué devuelve el mock |
+| `verify` sobre interacción | Diagnóstico | confirmar que el servicio llamó al mock |
+| argument matchers (`any`/`eq`) | Variante | igualar argumentos sin valores exactos |
+| `thenThrow` para simular fallos | Variante | probar la ruta de error del servicio |
+| cuándo NO mockear | Decisión | un objeto de valor real es más simple |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Mock frente a dependencia real (núcleo).** Un **mock** es un objeto simulado que reemplaza una dependencia real (un repositorio con base de datos) cuyo comportamiento controlas desde la prueba. Aísla la **lógica de negocio** del servicio de la infraestructura: la prueba corre en milisegundos, es determinista y no depende de que la base esté disponible.
+
+**`@Mock`/`@InjectMocks` (núcleo).** Con `@ExtendWith(MockitoExtension.class)`, `@Mock RepositorioPedidos repo` crea el mock y `@InjectMocks ServicioPedidos servicio` lo inyecta en una instancia **real** del servicio bajo prueba (por constructor). Así pruebas el servicio de verdad con una dependencia falsa.
+
+**Stub: `when(...).thenReturn(...)` (núcleo).** Un **stub** configura qué devuelve el mock ante una llamada: `when(repo.guardar(any())).thenReturn(new Pedido(1))`. Controlas la "respuesta" que recibe el servicio sin una implementación real. Solo stubea lo que la prueba necesita.
+
+**`verify` sobre interacción (diagnóstico).** `verify(repo).guardar(any())` no configura nada: **comprueba** que el servicio efectivamente invocó ese método durante la prueba. Es una aserción sobre **comportamiento** (que la delegación ocurrió), complementaria a la aserción sobre el valor de retorno. Puedes verificar veces (`times(2)`, `never()`).
+
+**Argument matchers (`any`/`eq`) (variante).** Cuando no quieres fijar el valor exacto del argumento, usas matchers: `any()`, `anyString()`, `eq(valor)`. Regla: si usas un matcher en un argumento, **todos** los argumentos de esa llamada deben ser matchers (mezclar un valor literal con un matcher es un error común).
+
+**`thenThrow` para simular fallos (variante).** `when(repo.guardar(any())).thenThrow(new RuntimeException(...))` hace que el mock **lance** una excepción, para probar la ruta de error del servicio (reintento, traducción a error de dominio) sin provocar un fallo real de infraestructura.
+
+**Cuándo NO mockear (decisión).** No mockees un objeto de **valor** simple (un `record` inmutable sin efectos): usar el real es más claro. Mockea en las **fronteras** (repositorios, clientes HTTP, relojes), no la lógica pura. Sobre-mockear acopla la prueba a la implementación y la vuelve frágil.
 
 Mockito permite reemplazar las dependencias reales de la clase bajo prueba por objetos simulados (mocks) cuyo comportamiento se controla completamente desde la propia prueba: `@Mock RepositorioPedidos repositorio; @InjectMocks ServicioPedidos servicio;` crea un mock de `RepositorioPedidos` y lo inyecta automáticamente en una instancia real de `ServicioPedidos`, permitiendo probar la lógica de negocio de `ServicioPedidos` de forma completamente aislada, sin depender de una base de datos real ni de ninguna otra infraestructura externa que `RepositorioPedidos` normalmente requeriría en producción.
 
@@ -355,21 +408,46 @@ Guarda el test, el fallo de `NullPointerException` provocado y su corrección; c
 
 **Errores comunes:** mockear la clase bajo prueba en vez de sus dependencias (deja de probar código real), confundir `when` (configurar comportamiento) con `verify` (comprobar que una interacción ocurrió), y mockear un objeto de valor simple que sería más claro usar real.
 
-**Fuente oficial:** [Mockito — documentación oficial](https://site.mockito.org/).
+**Fuentes oficiales revisadas el 2026-11-01:** [Mockito — documentación oficial](https://site.mockito.org/) y [Mockito — `MockitoExtension`](https://javadoc.io/doc/org.mockito/mockito-junit-jupiter/latest/org/mockito/junit/jupiter/MockitoExtension.html).
 
 ---
 
 ### Tema 3: Tests parametrizados y cobertura · Intermedio · 50 min
 
-**Prerrequisito:** JDK 27, Maven y un editor. Verifica `java --version` y `mvn --version`.
+**Prerrequisito:** Temas 1–2 de este módulo; JDK 27, Maven 3.9+ y un editor. Verifica `java --version` y `mvn --version`.
 
-**Al terminar podrás:** escribir una única prueba parametrizada que cubra varios casos de entrada, y usar un reporte de cobertura para identificar qué rama de código ningún test ejercita todavía.
+**Al terminar podrás:** escribir pruebas parametrizadas (`@ValueSource`/`@CsvSource`/`@MethodSource`), medir cobertura de líneas y ramas con JaCoCo, explicar qué no mide la cobertura, y usar aserciones fluidas.
 
 #### Aprende
 
 Verificar una función como "es Fibonacci" para cinco valores distintos copiando y pegando el mismo cuerpo de prueba cinco veces (cambiando solo el número) duplica la lógica de verificación; y sin un reporte de cobertura, nadie nota que una rama específica del código (por ejemplo, el caso de un número negativo) nunca se ejecutó en ninguna prueba.
 
 **¿Por qué es importante?** Los tests parametrizados evitan duplicar el mismo cuerpo de prueba para múltiples casos de datos; JaCoCo identifica visualmente qué partes del código de producción carecen de cobertura de pruebas, señalando riesgos potenciales no verificados.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia del tema |
+|---|---|---|
+| `@ParameterizedTest` + `@ValueSource` | Núcleo | una prueba corre una vez por valor |
+| `@CsvSource` (varios parámetros) | Variante | entrada→salida esperada por fila |
+| `@MethodSource` (datos complejos) | Variante | generar casos desde un método propio |
+| cobertura de líneas y ramas (JaCoCo) | Núcleo | reporte que marca lo no ejecutado |
+| qué NO mide la cobertura | Límite | 100% de líneas no prueba corrección |
+| aserciones fluidas (AssertJ) | Variante | `assertThat(x).isEqualTo(y)` legible |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`@ParameterizedTest` + `@ValueSource` (núcleo).** Reemplaza copiar el mismo test con distintos valores: `@ParameterizedTest @ValueSource(ints = {1,2,3,5,8}) void esFibonacci(int n)` ejecuta el cuerpo **una vez por valor**, cada uno como un caso independiente que pasa o falla por separado. Evita duplicar la lógica de verificación.
+
+**`@CsvSource` (variante).** Para métodos con **más de un parámetro**: cada fila CSV aporta una tupla entrada→salida esperada (`@CsvSource({"2,3,5", "10,5,15"})` → `a,b,esperado`). Ideal para tablas de casos de un cálculo.
+
+**`@MethodSource` (variante).** Cuando los datos son **demasiado complejos** para una anotación (objetos, colecciones), un método propio `static Stream<Arguments>` los genera. Da toda la potencia de Java para construir los casos.
+
+**Cobertura de líneas y ramas con JaCoCo (núcleo).** JaCoCo mide qué **porcentaje** del código de producción ejecutó la suite: líneas y, mejor aún, **ramas** (cada lado de un `if`). `mvn test jacoco:report` genera un HTML que resalta en rojo lo no ejecutado, señalando dónde falta prueba (p. ej. el caso de un número negativo que nadie probó).
+
+**Qué NO mide la cobertura (límite).** La cobertura mide qué se **ejecutó**, no si se **verificó** correctamente: puedes tener 100% de líneas con aserciones vacías o débiles y aun así no probar nada. Es una señal de **huecos** (lo que falta cubrir), no una prueba de corrección. No la persigas como número; úsala para encontrar ramas sin probar.
+
+**Aserciones fluidas (AssertJ) (variante).** `assertThat(resultado).isEqualTo(5)` (AssertJ) o Hamcrest ofrecen una sintaxis encadenada más legible y mensajes de fallo más ricos que las aserciones básicas, sobre todo para colecciones y objetos complejos (`assertThat(lista).contains(...).hasSize(3)`). Son opcionales pero mejoran la expresividad.
 
 `@ParameterizedTest @ValueSource(ints = {1, 2, 3, 5, 8}) void esFibonacci(int numero) { assertTrue(Fibonacci.esFibonacci(numero)); }` ejecuta la misma lógica de prueba una vez por cada valor proporcionado en la fuente de datos, evitando duplicar manualmente el mismo cuerpo de prueba una vez por cada caso individual que se desea verificar; `@CsvSource` permite proporcionar conjuntos de valores múltiples por ejecución (para probar métodos con más de un parámetro), y `@MethodSource` permite generar la fuente de datos mediante un método propio cuando los valores necesarios son demasiado complejos para expresarse directamente como una anotación simple; `@TestFactory` habilita la generación dinámica y programática de un conjunto variable de pruebas en tiempo de ejecución, para casos donde ni siquiera el número de pruebas necesarias se conoce de antemano de forma estática.
 
@@ -530,7 +608,7 @@ Guarda el test, el reporte HTML de JaCoCo antes y después de quitar el caso, y 
 
 **Errores comunes:** duplicar el mismo cuerpo de prueba por cada caso en vez de usar `@ParameterizedTest`, perseguir 100% de cobertura en código trivial (getters/setters) sin evaluar el riesgo real de cada rama, y tratar un alto porcentaje de cobertura como sinónimo de "bien probado" sin revisar la calidad de las aserciones.
 
-**Fuente oficial:** [JUnit 5 — Parameterized Tests](https://junit.org/junit5/docs/current/user-guide/#writing-tests-parameterized-tests) y [JaCoCo — documentación](https://www.jacoco.org/jacoco/trunk/doc/).
+**Fuentes oficiales revisadas el 2026-11-01:** [JUnit 5 — Parameterized Tests](https://junit.org/junit5/docs/current/user-guide/#writing-tests-parameterized-tests), [JaCoCo — documentación](https://www.jacoco.org/jacoco/trunk/doc/) y [AssertJ — core](https://assertj.github.io/doc/).
 
 ---
 

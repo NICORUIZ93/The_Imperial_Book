@@ -701,3 +701,28 @@ explicación individual + verificación con Maven 3.10.0:
 
 Acumulado cerrado: Java 0, 1, 2, 3, 4, 5, 6, 7, 8, 20 + M18 T3/T4 (nuevos). Siguiente: `java/modulo-9.md`
 (JUnit 5 y Mockito).
+
+---
+
+## 21. Avance: Java módulo 9 (testing: JUnit 5 y Mockito)
+
+Fecha: 2026-11-01. Entorno: Temurin **JDK 27.0.1**, Maven 3.10.0.
+
+Cerrados con mapa + explicación individual + evidencia los 3 temas:
+1. **JUnit 5:** `@Test`/aserciones, ciclo de vida (`@BeforeEach`/`@AfterEach`/`@BeforeAll`/`@AfterAll`),
+   instancia por prueba y `@TestInstance`, aislamiento/independencia del orden, aserciones expresivas
+   (`assertThrows`/`assertAll`, verificadas con Maven).
+2. **Mockito:** mock vs real, `@Mock`/`@InjectMocks`, stub `when/thenReturn`, `verify`, argument
+   matchers (`any`/`eq`), `thenThrow`, cuándo no mockear.
+3. **Parametrizados y cobertura:** `@ParameterizedTest`+`@ValueSource`/`@CsvSource`/`@MethodSource`,
+   cobertura de líneas y ramas con JaCoCo, **qué NO mide la cobertura** (100% líneas ≠ corrección),
+   aserciones fluidas (AssertJ).
+
+Primera tanda **subida al remoto**: rama `revision-minuciosa-java-20261101` (commit 65876fb7) con
+Java 0–8, 20 + M18 T3/T4 + planes de cursos separados. Este M9 va en el siguiente commit de la misma
+rama.
+
+`validate.sh` EXIT 0. Sin marcar `reviewed`; trinquete 1.143 de 1.146.
+
+Acumulado cerrado: Java 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 20 + M18 T3/T4. Siguiente: `java/modulo-10.md`
+(JPMS/módulos).
