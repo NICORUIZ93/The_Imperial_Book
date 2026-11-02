@@ -1,8 +1,8 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-11-02 12:05 UTC
+Generated: 2026-11-02 12:23 UTC
 Root: `Academia_Floci`
-Indexed files: 1048
+Indexed files: 1050
 Import edges: 61
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -18,14 +18,14 @@ For automated lookups, use `docs/repo-graph.json`.
 - `angular-app`: 67 files
 - `automation-script`: 46 files
 - `course-content`: 290 files
-- `documentation`: 80 files
+- `documentation`: 82 files
 - `example`: 495 files
 - `local-infra`: 1 files
 - `project-file`: 69 files
 
 ## File Types
 
-- `.md`: 349
+- `.md`: 351
 - `.py`: 172
 - `.json`: 108
 - `.java`: 73
@@ -233,6 +233,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `README.md` (369 lines) - headings: # The_Imperial_Book, ## Cómo empezar, ## Requisitos del sistema, ## Levantar Floci
 - `docs/ACADEMIA-EXPERIENCIA-DE-ESTUDIO.md` (66 lines) - headings: # Experiencia de estudio: contrato editorial y de interfaz, ## Principios de aprendizaje, ## Contrato de cada tema, ## Contrato del lector
 - `docs/ACADEMIA-PROTOTIPO-6-CONTEXTOS.md` (46 lines) - headings: # Prototipo editorial: seis contextos, ## Puerta de validación, ## Estado
+- `docs/AUDITORIA-COBERTURA-SPRING-20261101.md` (73 lines) - headings: # Auditoría de cobertura — Track Spring Boot vs temario profesional, ## Resumen de huecos confirmados, ### ALTA (prerrequisitos del núcleo / imprescindibles), ### MEDIA
 - `docs/CONTINUAR-7-PASOS.md` (76 lines) - headings: # Continuación de la metodología de siete pasos, ## Qué se corrigió en el auditor (no repetir), ## Regla de oro, ## Los 5 temas que faltaban (resueltos)
 - `docs/CONTINUIDAD-CHATGPT-PROMPTS-20261101.md` (172 lines) - headings: # Continuidad de ChatGPT: biblioteca, metodología y revisión de prompts, ## Punto exacto del repositorio, ## Qué ya está confirmado, ## Qué contiene la tanda local sin commit
 - `docs/ESTADO-REVISION-MINUCIOSA-20261101.md` (924 lines) - headings: # Estado verificable de la revisión minuciosa, ## 1. Objetivo obligatorio, ### Ejemplo normativo aportado por el usuario, ## 2. Fuentes persistentes de la regla
@@ -242,8 +243,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/METODOLOGIA-DE-APRENDIZAJE.md` (72 lines) - headings: # Metodología Aprende construyendo, ## Ciclo de cada capítulo, ## Tamaño de las experiencias, ## Profundidad de los subtemas
 - `docs/PLAN-CURSO-BUILD-MAVEN-GRADLE.md` (161 lines) - headings: # Plan curricular verificable: Build Tools — Maven y Gradle de cero a experto, ## Motivo del curso separado, ## Frontera con el track Java, ## Secuencia completa
 - `docs/PLAN-CURSO-DOCKER-KUBERNETES.md` (287 lines) - headings: # Plan curricular verificable: Docker y Kubernetes, de cero a experto, ## Propósito, ## Bloque I · Fundamentos de contenedores y Docker, ### Módulo 0 · Linux necesario para comprender contenedores
-- `docs/PLAN-CURSO-JDBC-BASES-DATOS.md` (159 lines) - headings: # Plan curricular verificable: Bases de datos con Java (JDBC) de cero a experto, ## Motivo del curso separado, ## Frontera con los tracks Java y Spring Boot, ## Secuencia completa
-- ... 62 more files
+- ... 64 more files
 
 ### example
 

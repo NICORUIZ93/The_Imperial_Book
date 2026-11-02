@@ -146,6 +146,25 @@
       ]
     },
     {
+      "path": "docs/AUDITORIA-COBERTURA-SPRING-20261101.md",
+      "lines": 73,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Auditor\u00eda de cobertura \u2014 Track Spring Boot vs temario profesional",
+        "## Resumen de huecos confirmados",
+        "### ALTA (prerrequisitos del n\u00facleo / imprescindibles)",
+        "### MEDIA",
+        "### BAJA",
+        "## Solapamientos a resolver",
+        "## Reparto de m\u00f3dulos entre tracks/cursos",
+        "## Estado de ejecuci\u00f3n del cierre de huecos",
+        "### Lote 1 (2026-11-01) \u2014 ALTA, fundamentos del n\u00facleo",
+        "### Pendiente (pr\u00f3ximos lotes)"
+      ]
+    },
+    {
       "path": "docs/CONTINUAR-7-PASOS.md",
       "lines": 76,
       "kind": "documentation",
@@ -477,6 +496,27 @@
         "## C\u00f3mo usar las skills en una revisi\u00f3n",
         "## L\u00edmites y estado inicial",
         "## Primera integraci\u00f3n verificable"
+      ]
+    },
+    {
+      "path": "docs/TEMARIO-REFERENCIA-SPRING-PROFESIONAL.md",
+      "lines": 166,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Temario de referencia profesional \u2014 Spring / Spring Boot",
+        "## Fundamentos y n\u00facleo",
+        "## Web",
+        "## Datos",
+        "## Seguridad",
+        "## Calidad / Observabilidad",
+        "## Mensajer\u00eda",
+        "## Reactivo y concurrencia",
+        "## Resiliencia y consistencia",
+        "## Arquitectura",
+        "## Integraciones",
+        "## Producci\u00f3n y despliegue"
       ]
     },
     {
