@@ -3,9 +3,9 @@
 > Las señales automáticas no prueban profundidad ni ausencia de ella. Un tema sólo queda revisado mediante el registro humano con mapa de subtemas críticos, evidencia y fuentes.
 
 - Temas inventariados: 1159
-- Revisados humanamente para subtemas: 48
-- Pendientes: 1111
-- Candidatos prioritarios por señales: 1064
+- Revisados humanamente para subtemas: 62
+- Pendientes: 1097
+- Candidatos prioritarios por señales: 1050
 
 ## Cobertura por track
 
@@ -18,7 +18,7 @@
 | flutter | 63 | 0 | 63 |
 | foundations | 100 | 0 | 100 |
 | ios | 56 | 0 | 56 |
-| java | 109 | 46 | 63 |
+| java | 109 | 60 | 49 |
 | javascript | 88 | 0 | 88 |
 | kotlin-multiplatform | 56 | 0 | 56 |
 | node | 77 | 0 | 77 |
@@ -699,20 +699,6 @@
 - `java/modulo-22` — Tema 3: Copia defensiva, copia superficial y clone · Intermedio · 40 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `java/modulo-22` — Tema 4: Enums de dominio: estado, código y comportamiento · Intermedio · 45 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `java/modulo-22` — Tema 5: Clases anidadas, this$0 y la referencia que retiene · Avanzado · 45 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `java/modulo-6` — Tema 1: NIO.2 — Path y Files · Intermedio · 45 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `java/modulo-6` — Tema 2: Serialización con Jackson · Intermedio · 50 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `java/modulo-6` — Tema 3: Archivos grandes y recursos del classpath · Intermedio · 45 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `java/modulo-7` — Tema 1: record — modelos inmutables sin boilerplate · Básico · 45 min — lista conceptos clave sin mapa interno verificable
-- `java/modulo-7` — Tema 2: sealed — jerarquías cerradas y exhaustividad · Intermedio · 45 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `java/modulo-7` — Tema 3: Pattern matching exhaustivo y para instanceof · Intermedio · 45 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `java/modulo-7` — Tema 4: Unnamed variables y patterns (_, Java 22) · Avanzado · 50 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `java/modulo-8` — Tema 1: pom.xml vs build.gradle.kts · Básico · 45 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `java/modulo-8` — Tema 2: Ciclo de vida de build y scopes · Intermedio · 45 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `java/modulo-8` — Tema 3: Proyectos multi-módulo · Intermedio · 50 min — lista conceptos clave sin mapa interno verificable
-- `java/modulo-8` — Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas · Avanzado · 50 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `java/modulo-9` — Tema 1: JUnit 5 — anotaciones y ciclo de vida · Básico · 45 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `java/modulo-9` — Tema 2: Mockito — aislar dependencias · Intermedio · 50 min — lista conceptos clave sin mapa interno verificable
-- `java/modulo-9` — Tema 3: Tests parametrizados y cobertura · Intermedio · 50 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `javascript/modulo-0` — Tema 1: Variables — `const`, `let` y `var` — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `javascript/modulo-0` — Tema 2: Tipos primitivos y `typeof` — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `javascript/modulo-0` — Tema 4: Template literals y mensajes seguros — título agrupa varios conceptos; menos de dos encabezados semánticos internos
@@ -1141,5 +1127,19 @@
 - `java/modulo-5` — Tema 5: Structured Concurrency (StructuredTaskScope, preview en JDK 27) · Avanzado · 55 min — estado preview en JDK 27; StructuredTaskScope.open y fork; join y Subtask.get(); Joiner (política allSuccessfulOrThrow); cancelación conjunta vs CompletableFuture suelto; scope acota ciclo de vida, no latencia
 - `java/modulo-5` — Tema 6: Scoped Values frente a ThreadLocal (Java 25) · Avanzado · 50 min — ScopedValue vs ThreadLocal; where(...).run(...) y get(); inmutabilidad del binding; herencia por subtareas estructuradas; liberación automática al salir; estado: ScopedValue estable, scope preview
 - `java/modulo-5` — Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos · Avanzado · 45 min — get(timeout) y TimeoutException; cancel(true) como señal; interrupción cooperativa; InterruptedException y restaurar la marca; dejar de esperar != detener el trabajo; terminación verificada del executor
+- `java/modulo-6` — Tema 1: NIO.2 — Path y Files · Intermedio · 45 min — Path vs clase File; operaciones de Files; createDirectories y jerarquía; Files.walk como stream; resolve vs normalize (orden importa); path traversal (..); enlaces simbólicos y toRealPath
+- `java/modulo-6` — Tema 2: Serialización con Jackson · Intermedio · 50 min — ObjectMapper y ciclo serializar/deserializar; records como modelo serializable; campos ausentes y valores por defecto; deserialización estricta (FAIL_ON_*); JsonNode/Map para JSON irregular; versión fija de la dependencia
+- `java/modulo-6` — Tema 3: Archivos grandes y recursos del classpath · Intermedio · 45 min — cargar todo vs streaming; BufferedReader/readLine; memoria por línea; Files.lines como stream; recurso del classpath (getResourceAsStream); classpath vs sistema de archivos
+- `java/modulo-7` — Tema 1: record — modelos inmutables sin boilerplate · Básico · 45 min — declaración y qué genera; accesores sin get; equals/hashCode/toString por valor; componentes final e inmutabilidad superficial; constructor compacto; constructor canónico y copia defensiva; wither para actualizar; cuándo NO usar record
+- `java/modulo-7` — Tema 2: sealed — jerarquías cerradas y exhaustividad · Intermedio · 45 min — sealed y permits; final/sealed/non-sealed en subtipos; exhaustividad en switch sin default; sealed + records = ADT; alcance de permits (mismo módulo/paquete); cuándo NO sellar
+- `java/modulo-7` — Tema 3: Pattern matching exhaustivo y para instanceof · Intermedio · 45 min — instanceof con binding; type pattern en switch; record patterns (deconstrucción); guardas when; exhaustividad sobre sealed; case null
+- `java/modulo-7` — Tema 4: Unnamed variables y patterns (_, Java 22) · Avanzado · 50 min — _ en record pattern; _ en catch; _ en bucles y recursos; _ no es una variable; descarte explícito vs nombre sin usar
+- `java/modulo-8` — Tema 1: pom.xml vs build.gradle.kts · Básico · 45 min — coordenadas (groupId:artifactId:version); declaración de dependencias; versión fija y reproducibilidad; repositorio y resolución; dependencias transitivas; XML declarativo vs DSL
+- `java/modulo-8` — Tema 2: Ciclo de vida de build y scopes · Intermedio · 45 min — fases del ciclo de vida; una fase implica las anteriores; binding fase->goal y plugins; scope de dependencia; el JAR plano no trae dependencias
+- `java/modulo-8` — Tema 3: Proyectos multi-módulo · Intermedio · 50 min — POM agregador (packaging pom) y módulos; herencia del padre; dependencia interna explícita; dirección de la dependencia; reactor y orden de build; ciclos entre módulos
+- `java/modulo-8` — Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas · Avanzado · 50 min — mismo problema, dos filosofías; equivalencia de comandos; el wrapper (gradlew/mvnw); estructura estándar compartida; cuál elegir (no los dos)
+- `java/modulo-9` — Tema 1: JUnit 5 — anotaciones y ciclo de vida · Básico · 45 min — @Test y aserciones; ciclo de vida (@BeforeEach/@AfterEach); @BeforeAll/@AfterAll; instancia por prueba y @TestInstance; aislamiento e independencia del orden; aserciones expresivas (assertThrows/assertAll)
+- `java/modulo-9` — Tema 2: Mockito — aislar dependencias · Intermedio · 50 min — mock vs dependencia real; @Mock/@InjectMocks; stub: when(...).thenReturn(...); verify sobre interacción; argument matchers (any/eq); thenThrow para simular fallos; cuándo NO mockear
+- `java/modulo-9` — Tema 3: Tests parametrizados y cobertura · Intermedio · 50 min — @ParameterizedTest + @ValueSource; @CsvSource (varios parámetros); @MethodSource (datos complejos); cobertura de líneas y ramas (JaCoCo); qué NO mide la cobertura; aserciones fluidas (AssertJ)
 - `spring-boot/modulo-0` — Tema 4: Ciclo de vida de un bean y BeanPostProcessor · Intermedio · 30 min — Orden de fases de inicializacion; @PostConstruct como hook estandar; InitializingBean.afterPropertiesSet; @PreDestroy / DisposableBean al cerrar; BeanPostProcessor envuelve todos los beans; Recursos de prototype no se destruyen solos; Abrir recurso en el constructor
 - `spring-boot/modulo-0` — Tema 5: AOP con @Aspect y @Around — preocupaciones transversales · Avanzado · 40 min — @Aspect + @EnableAspectJAutoProxy; @Around y ProceedingJoinPoint.proceed(); Pointcut execution(...); El advice conserva la excepcion original; El proxy es el mecanismo (igual que @Transactional); Auto-invocacion no pasa por el aspecto; Abusar de AOP oscurece el flujo

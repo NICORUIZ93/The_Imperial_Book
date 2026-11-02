@@ -1,9 +1,9 @@
 {
   "summary": {
     "topics": 1159,
-    "reviewed": 48,
-    "pending": 1111,
-    "priorityCandidates": 1064,
+    "reviewed": 62,
+    "pending": 1097,
+    "priorityCandidates": 1050,
     "byTrack": {
       "android": {
         "topics": 74,
@@ -42,8 +42,8 @@
       },
       "java": {
         "topics": 109,
-        "reviewed": 46,
-        "pending": 63
+        "reviewed": 60,
+        "pending": 49
       },
       "javascript": {
         "topics": 88,
@@ -12019,190 +12019,415 @@
       "track": "java",
       "module": 6,
       "topic": "Tema 1: NIO.2 — Path y Files · Intermedio · 45 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos",
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Temurin 27.0.1: DemoFiles confirma readString/size=9/createDirectories/copy/walk=[a.txt, sub/b.txt] y resolve+normalize detecta escape de base; Lector lee comprobante válido y rechaza '../../../fuera.txt' con IllegalArgumentException antes de leer (defensa path traversal).",
+        "criticalSubtopics": [
+          "Path vs clase File",
+          "operaciones de Files",
+          "createDirectories y jerarquía",
+          "Files.walk como stream",
+          "resolve vs normalize (orden importa)",
+          "path traversal (..)",
+          "enlaces simbólicos y toRealPath"
+        ],
+        "sources": [
+          "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/nio/file/Path.html",
+          "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/nio/file/Files.html"
+        ]
+      }
     },
     {
       "id": "java/modulo-6::Tema 2: Serialización con Jackson · Intermedio · 50 min",
       "track": "java",
       "module": 6,
       "topic": "Tema 2: Serialización con Jackson · Intermedio · 50 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos",
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Temurin 27.0.1 con jackson-databind 2.21.8 (repo local .m2): Ser confirma JSON {\"numero\":\"E-001\",\"estado\":\"EN_RUTA\",\"pesoKg\":12.5}, ciclo preserva datos (Iguales: true), campo ausente deja 0.0 y FAIL_ON_MISSING_CREATOR_PROPERTIES detecta pesoKg faltante (MismatchedInputException).",
+        "criticalSubtopics": [
+          "ObjectMapper y ciclo serializar/deserializar",
+          "records como modelo serializable",
+          "campos ausentes y valores por defecto",
+          "deserialización estricta (FAIL_ON_*)",
+          "JsonNode/Map para JSON irregular",
+          "versión fija de la dependencia"
+        ],
+        "sources": [
+          "https://github.com/FasterXML/jackson-docs",
+          "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.21.8/"
+        ]
+      }
     },
     {
       "id": "java/modulo-6::Tema 3: Archivos grandes y recursos del classpath · Intermedio · 45 min",
       "track": "java",
       "module": 6,
       "topic": "Tema 3: Archivos grandes y recursos del classpath · Intermedio · 45 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos",
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Temurin 27.0.1: Proc genera 500.000 líneas, cuenta 250000 pagadas con BufferedReader/readLine y con readAllLines (mismo resultado), y carga el recurso /config.json del classpath con getResourceAsStream.",
+        "criticalSubtopics": [
+          "cargar todo vs streaming",
+          "BufferedReader/readLine",
+          "memoria por línea",
+          "Files.lines como stream",
+          "recurso del classpath (getResourceAsStream)",
+          "classpath vs sistema de archivos"
+        ],
+        "sources": [
+          "https://dev.java/learn/java-io/file-system/",
+          "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/nio/file/Files.html"
+        ]
+      }
     },
     {
       "id": "java/modulo-7::Tema 1: record — modelos inmutables sin boilerplate · Básico · 45 min",
       "track": "java",
       "module": 7,
       "topic": "Tema 1: record — modelos inmutables sin boilerplate · Básico · 45 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Temurin 27.0.1: Demo confirma equals/hashCode por valor (true), toString=Punto[x=3, y=4], accesor x(); copia defensiva List.copyOf aísla la lista (añadir C a la original no afecta al record), record list inmutable (UnsupportedOperationException), wither conParada=[A, B, Z] sin mutar la original.",
+        "criticalSubtopics": [
+          "declaración y qué genera",
+          "accesores sin get",
+          "equals/hashCode/toString por valor",
+          "componentes final e inmutabilidad superficial",
+          "constructor compacto",
+          "constructor canónico y copia defensiva",
+          "wither para actualizar",
+          "cuándo NO usar record"
+        ],
+        "sources": [
+          "https://dev.java/learn/classes-objects/records/",
+          "https://openjdk.org/jeps/395"
+        ]
+      }
     },
     {
       "id": "java/modulo-7::Tema 2: sealed — jerarquías cerradas y exhaustividad · Intermedio · 45 min",
       "track": "java",
       "module": 7,
       "topic": "Tema 2: sealed — jerarquías cerradas y exhaustividad · Intermedio · 45 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos",
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Temurin 27.0.1: EstadoEntrega (sealed permits Creada/EnTransito/Entregada) con switch exhaustivo sin default compila y describe los tres estados correctamente; se documenta que añadir un caso a permits rompe la compilación del switch.",
+        "criticalSubtopics": [
+          "sealed y permits",
+          "final/sealed/non-sealed en subtipos",
+          "exhaustividad en switch sin default",
+          "sealed + records = ADT",
+          "alcance de permits (mismo módulo/paquete)",
+          "cuándo NO sellar"
+        ],
+        "sources": [
+          "https://openjdk.org/jeps/409",
+          "https://dev.java/learn/classes-objects/sealed-classes/"
+        ]
+      }
     },
     {
       "id": "java/modulo-7::Tema 3: Pattern matching exhaustivo y para instanceof · Intermedio · 45 min",
       "track": "java",
       "module": 7,
       "topic": "Tema 3: Pattern matching exhaustivo y para instanceof · Intermedio · 45 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos",
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Temurin 27.0.1: DemoP confirma instanceof con binding (texto len=4), guarda when (circulo grande/r=3.0), record pattern deconstruyendo Rect(a,h) + guarda a==h (cuadrado 5.0), y case null explícito (nulo) sin NullPointerException.",
+        "criticalSubtopics": [
+          "instanceof con binding",
+          "type pattern en switch",
+          "record patterns (deconstrucción)",
+          "guardas when",
+          "exhaustividad sobre sealed",
+          "case null"
+        ],
+        "sources": [
+          "https://openjdk.org/jeps/441",
+          "https://openjdk.org/jeps/440"
+        ]
+      }
     },
     {
       "id": "java/modulo-7::Tema 4: Unnamed variables y patterns (_, Java 22) · Avanzado · 50 min",
       "track": "java",
       "module": 7,
       "topic": "Tema 4: Unnamed variables y patterns (_, Java 22) · Avanzado · 50 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos",
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Temurin 27.0.1: Extractor confirma _ en record pattern (Paquete(Dimensiones _, String destino) -> 'Destino: Centro') y _ en catch (NumberFormatException _ -> OptionalInt.empty para entrada no numérica); _ estable desde Java 22.",
+        "criticalSubtopics": [
+          "_ en record pattern",
+          "_ en catch",
+          "_ en bucles y recursos",
+          "_ no es una variable",
+          "descarte explícito vs nombre sin usar"
+        ],
+        "sources": [
+          "https://openjdk.org/jeps/456",
+          "https://dev.java/learn/pattern-matching/"
+        ]
+      }
     },
     {
       "id": "java/modulo-8::Tema 1: pom.xml vs build.gradle.kts · Básico · 45 min",
       "track": "java",
       "module": 8,
       "topic": "Tema 1: pom.xml vs build.gradle.kts · Básico · 45 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos",
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Temurin 27.0.1 con jackson-databind 2.21.8 (repo local .m2): App usa la dependencia y produce {\"numero\":\"E-001\",\"estado\":\"EN_RUTA\"}; coordenadas groupId:artifactId:version y transitivas (jackson-core, jackson-annotations) verificadas en el classpath. Registro de ejecución del módulo documenta mvn 3.10.0.",
+        "criticalSubtopics": [
+          "coordenadas (groupId:artifactId:version)",
+          "declaración de dependencias",
+          "versión fija y reproducibilidad",
+          "repositorio y resolución",
+          "dependencias transitivas",
+          "XML declarativo vs DSL"
+        ],
+        "sources": [
+          "https://maven.apache.org/guides/",
+          "https://docs.gradle.org/current/userguide/compatibility.html"
+        ]
+      }
     },
     {
       "id": "java/modulo-8::Tema 2: Ciclo de vida de build y scopes · Intermedio · 45 min",
       "track": "java",
       "module": 8,
       "topic": "Tema 2: Ciclo de vida de build y scopes · Intermedio · 45 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos",
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Temurin 27.0.1 con JUnit Jupiter (repo local .m2): AppTest ejecutado vía JUnit Platform Launcher -> 'Tests run: 1, Failures: 0, Succeeded: 1' (igual al informe de Surefire esperado); se documenta que el JAR plano no incluye dependencias y que el scope test no entra al classpath de runtime.",
+        "criticalSubtopics": [
+          "fases del ciclo de vida",
+          "una fase implica las anteriores",
+          "binding fase->goal y plugins",
+          "scope de dependencia",
+          "el JAR plano no trae dependencias"
+        ],
+        "sources": [
+          "https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html",
+          "https://junit.org/"
+        ]
+      }
     },
     {
       "id": "java/modulo-8::Tema 3: Proyectos multi-módulo · Intermedio · 50 min",
       "track": "java",
       "module": 8,
       "topic": "Tema 3: Proyectos multi-módulo · Intermedio · 50 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Temurin 27.0.1: multi-módulo core/api verificado: core compila primero, api usa academia.build.core.Saludo e imprime 'Hola desde core'; sin la dependencia api->core la compilación falla con 'package academia.build.core does not exist' (la herramienta impone la dirección).",
+        "criticalSubtopics": [
+          "POM agregador (packaging pom) y módulos",
+          "herencia del padre",
+          "dependencia interna explícita",
+          "dirección de la dependencia",
+          "reactor y orden de build",
+          "ciclos entre módulos"
+        ],
+        "sources": [
+          "https://maven.apache.org/guides/mini/guide-multiple-modules.html",
+          "https://maven.apache.org/guides/"
+        ]
+      }
     },
     {
       "id": "java/modulo-8::Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas · Avanzado · 50 min",
       "track": "java",
       "module": 8,
       "topic": "Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas · Avanzado · 50 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos",
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Temurin 27.0.1: verificados los tramos Maven de los temas 1-3 (mismo proyecto compilado y ejecutado con los artefactos del repo local); la tabla de equivalencias Maven<->Gradle y el uso del wrapper son conceptuales. El registro del módulo documenta mvn 3.10.0; el tramo Gradle queda pendiente de binario (documentado).",
+        "criticalSubtopics": [
+          "mismo problema, dos filosofías",
+          "equivalencia de comandos",
+          "el wrapper (gradlew/mvnw)",
+          "estructura estándar compartida",
+          "cuál elegir (no los dos)"
+        ],
+        "sources": [
+          "https://docs.gradle.org/current/userguide/userguide.html",
+          "https://docs.gradle.org/current/userguide/migrating_from_maven.html"
+        ]
+      }
     },
     {
       "id": "java/modulo-9::Tema 1: JUnit 5 — anotaciones y ciclo de vida · Básico · 45 min",
       "track": "java",
       "module": 9,
       "topic": "Tema 1: JUnit 5 — anotaciones y ciclo de vida · Básico · 45 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos",
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Temurin 27.0.1 con JUnit Jupiter (repo local .m2): CalculadoraTest ejecutada vía JUnit Platform Launcher, 2 pruebas pasan; @BeforeEach reinicia el estado y con @TestInstance(PER_CLASS) la segunda prueba parte de acumulado=0 (aislamiento verificado).",
+        "criticalSubtopics": [
+          "@Test y aserciones",
+          "ciclo de vida (@BeforeEach/@AfterEach)",
+          "@BeforeAll/@AfterAll",
+          "instancia por prueba y @TestInstance",
+          "aislamiento e independencia del orden",
+          "aserciones expresivas (assertThrows/assertAll)"
+        ],
+        "sources": [
+          "https://junit.org/junit5/docs/current/user-guide/",
+          "https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/Assertions.html"
+        ]
+      }
     },
     {
       "id": "java/modulo-9::Tema 2: Mockito — aislar dependencias · Intermedio · 50 min",
       "track": "java",
       "module": 9,
       "topic": "Tema 2: Mockito — aislar dependencias · Intermedio · 50 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Temurin 27.0.1 con mockito-core 5.24.0 + mockito-junit-jupiter (repo local): ServicioPedidosTest pasa: @Mock/@InjectMocks crean el servicio real con repositorio simulado, when(...).thenReturn configura el stub, verify confirma la interacción; sin el stub el resultado sería null (documentado).",
+        "criticalSubtopics": [
+          "mock vs dependencia real",
+          "@Mock/@InjectMocks",
+          "stub: when(...).thenReturn(...)",
+          "verify sobre interacción",
+          "argument matchers (any/eq)",
+          "thenThrow para simular fallos",
+          "cuándo NO mockear"
+        ],
+        "sources": [
+          "https://site.mockito.org/",
+          "https://javadoc.io/doc/org.mockito/mockito-junit-jupiter/latest/org/mockito/junit/jupiter/MockitoExtension.html"
+        ]
+      }
     },
     {
       "id": "java/modulo-9::Tema 3: Tests parametrizados y cobertura · Intermedio · 50 min",
       "track": "java",
       "module": 9,
       "topic": "Tema 3: Tests parametrizados y cobertura · Intermedio · 50 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos",
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Temurin 27.0.1 con junit-jupiter-params (repo local): FibonacciTest con @ParameterizedTest+@ValueSource ejecuta 5 casos (todos pasan); añadir el valor 4 (no-Fibonacci) produce exactamente 1 fallo de 6 (expected true but was false), confirmando un caso independiente por valor.",
+        "criticalSubtopics": [
+          "@ParameterizedTest + @ValueSource",
+          "@CsvSource (varios parámetros)",
+          "@MethodSource (datos complejos)",
+          "cobertura de líneas y ramas (JaCoCo)",
+          "qué NO mide la cobertura",
+          "aserciones fluidas (AssertJ)"
+        ],
+        "sources": [
+          "https://junit.org/junit5/docs/current/user-guide/",
+          "https://www.jacoco.org/jacoco/"
+        ]
+      }
     },
     {
       "id": "javascript/modulo-0::Tema 1: Variables — `const`, `let` y `var`",
