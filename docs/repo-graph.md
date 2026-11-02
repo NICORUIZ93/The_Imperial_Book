@@ -1,8 +1,8 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-11-02 14:15 UTC
+Generated: 2026-11-02 14:24 UTC
 Root: `Academia_Floci`
-Indexed files: 1051
+Indexed files: 1053
 Import edges: 61
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -18,14 +18,14 @@ For automated lookups, use `docs/repo-graph.json`.
 - `angular-app`: 67 files
 - `automation-script`: 46 files
 - `course-content`: 290 files
-- `documentation`: 83 files
+- `documentation`: 85 files
 - `example`: 495 files
 - `local-infra`: 1 files
 - `project-file`: 69 files
 
 ## File Types
 
-- `.md`: 352
+- `.md`: 354
 - `.py`: 172
 - `.json`: 108
 - `.java`: 73
@@ -230,6 +230,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `CLAUDE.md` (119 lines) - headings: # CLAUDE.md, ## What this is, ## First step for any repo exploration, ## Commands
 - `CODE_OF_CONDUCT.md` (25 lines) - headings: # Código de conducta, ## Compromiso, ## Conducta esperada, ## Aplicación
 - `CONTRIBUTING.md` (41 lines) - headings: # Contribuir a The Imperial Book, ## Idioma y commits, ## Antes de abrir un cambio, ## Licencias
+- `MASTER-PROMPT.md` (129 lines) - headings: # MASTER PROMPT — THE IMPERIAL BOOK · RECONSTRUCCIÓN COMPLETA, ## PARTE 1 · METODOLOGÍA EDITORIAL, ### 1.1 Las 12 pautas innegociables, ### 1.2 Regla de preservación
 - `README.md` (370 lines) - headings: # The_Imperial_Book, ## Cómo empezar, ## Requisitos del sistema, ## Levantar Floci
 - `docs/ACADEMIA-EXPERIENCIA-DE-ESTUDIO.md` (66 lines) - headings: # Experiencia de estudio: contrato editorial y de interfaz, ## Principios de aprendizaje, ## Contrato de cada tema, ## Contrato del lector
 - `docs/ACADEMIA-PROTOTIPO-6-CONTEXTOS.md` (46 lines) - headings: # Prototipo editorial: seis contextos, ## Puerta de validación, ## Estado
@@ -242,8 +243,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/MATRIZ-CURRICULAR.md` (73 lines) - headings: # Matriz curricular auditable, ## Progresión de competencia, ## Cobertura por módulo, ## Método de evaluación
 - `docs/METODOLOGIA-DE-APRENDIZAJE.md` (72 lines) - headings: # Metodología Aprende construyendo, ## Ciclo de cada capítulo, ## Tamaño de las experiencias, ## Profundidad de los subtemas
 - `docs/PLAN-CURSO-BUILD-MAVEN-GRADLE.md` (161 lines) - headings: # Plan curricular verificable: Build Tools — Maven y Gradle de cero a experto, ## Motivo del curso separado, ## Frontera con el track Java, ## Secuencia completa
-- `docs/PLAN-CURSO-DOCKER-KUBERNETES.md` (287 lines) - headings: # Plan curricular verificable: Docker y Kubernetes, de cero a experto, ## Propósito, ## Bloque I · Fundamentos de contenedores y Docker, ### Módulo 0 · Linux necesario para comprender contenedores
-- ... 65 more files
+- ... 67 more files
 
 ### example
 

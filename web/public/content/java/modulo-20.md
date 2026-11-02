@@ -262,6 +262,34 @@ java -cp out PoliticaTarifa
 
 **Por qué importa:** RutaFlow aplica reglas por cliente: decidir si un envío requiere revisión, transformar una guía, registrar una decisión y proveer el turno. La forma correcta convierte cada regla en un valor que se pasa y se prueba por separado, en lugar de acumular condicionales sin nombres.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `Predicate<T>`: decidir un `boolean` | Núcleo | `requiereRevision.test(envio)` filtra el envío de 32 kg |
+| `Function<T,R>`: transformar | Núcleo | `etiqueta.apply(envio)` produce `ENV-2 -> Medellín` |
+| `Consumer<T>`: efecto sin retorno | Núcleo | `registrar.accept(...)` imprime `[log] ...` |
+| `Supplier<T>`: proveer sin argumentos | Núcleo | `turno.get()` devuelve `Turno AM` |
+| Métodos SAM (`test`/`apply`/`accept`/`get`) | Prerrequisito | Cada interfaz se invoca por su método abstracto |
+| Aridad de la lambda vs la interfaz | Diagnóstico | Dos parámetros en `Function` → `incompatible parameter types` |
+| Clase con nombre cuando hay estado/dominio | Decisión | Interfaz funcional no reemplaza el modelo de dominio |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`Predicate<T>`: decidir un `boolean` (núcleo).** `Predicate<T>` encapsula una decisión sí/no con el método `test(T)`. Convierte una condición (`pesoKg > 20`) en un valor que se pasa, se nombra y se prueba aisladamente. En el laboratorio, solo el envío de 32 kg supera el predicado y llega al registro.
+
+**`Function<T,R>`: transformar (núcleo).** `Function<T,R>` recibe un valor y devuelve otro con `apply(T)`. Aquí transforma un `Envio` en su etiqueta de texto (`ENV-2 -> Medellín`). Separa la transformación de la decisión y del efecto, de modo que cada paso se prueba por su cuenta.
+
+**`Consumer<T>`: efecto sin retorno (núcleo).** `Consumer<T>` recibe un valor y produce un efecto (imprimir, registrar) sin devolver nada, con `accept(T)`. Es el lugar correcto para los efectos secundarios: `registrar.accept(...)` emite la línea `[log] ...`. Mantener los efectos en el `Consumer` evita esconderlos dentro de una transformación.
+
+**`Supplier<T>`: proveer sin argumentos (núcleo).** `Supplier<T>` no recibe nada y provee un valor con `get()`. Difiere la obtención del valor hasta que se necesita (`turno.get()`), útil para valores perezosos o por defecto. Es la forma inversa del `Consumer`: uno entrega, el otro recibe.
+
+**Métodos SAM (prerrequisito).** Cada interfaz funcional tiene un único método abstracto (SAM): `test`, `apply`, `accept`, `get`. Una lambda implementa ese método; por eso la lambda debe coincidir en número y tipo de parámetros con la firma del SAM. Conocer el método de cada interfaz es condición para usarlas.
+
+**Aridad de la lambda vs la interfaz (diagnóstico).** Si la lambda declara dos parámetros pero la interfaz espera uno (`Function` es unaria), `javac` falla con `incompatible parameter types in lambda expression`. El diagnóstico es contar los parámetros del SAM: para dos entradas se usa `BiFunction`, no `Function`.
+
+**Clase con nombre cuando hay estado/dominio (decisión).** Una interfaz funcional describe comportamiento, no reemplaza el modelo de dominio. Si una regla necesita estado propio, más parámetros de los que expresa el SAM o vocabulario de negocio, una clase con nombre comunica mejor que una lambda anónima. La función es para comportamiento ligero y componible.
+
 `java.util.function` define cuatro formas base:
 
 - `Predicate<T>` recibe un valor y decide un `boolean`.
@@ -377,7 +405,7 @@ Construye las reglas de revisión del **[Proyecto integrador: motor funcional de
 
 **Límites y decisión de uso:** si una regla necesita estado propio, más parámetros de los que expresa la interfaz o vocabulario de dominio, una clase comunica mejor.
 
-**Fuentes oficiales:** [java.util.function](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/package-summary.html) y [lambdas en el tutorial de Java](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html).
+**Fuentes oficiales revisadas el 2026-11-02:** [java.util.function (API Java SE 27)](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/function/package-summary.html) y [Lambda Expressions (dev.java)](https://dev.java/learn/lambdas/).
 
 ### Tema 3: Componer sin anidar: andThen, compose, negate y reglas encadenadas · Intermedio · 75 min
 
@@ -388,6 +416,34 @@ Construye las reglas de revisión del **[Proyecto integrador: motor funcional de
 **Al terminar podrás:** encadenar reglas con `and`, `or`, `negate`, `andThen` y `compose`, y demostrar con una entrada concreta cómo cambiar el orden altera el resultado.
 
 **Por qué importa:** si RutaFlow valida antes de normalizar, un correo correcto con espacios se rechaza. El orden de composición es parte de la regla de negocio y debe quedar visible.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `Predicate.and`/`or`/`negate` | Núcleo | `noVacio.and(conArroba).negate()` → `sospechoso` |
+| `Function.andThen` (f luego g) | Núcleo | `normalizar.andThen(correo::test)` → `true` |
+| `Function.compose` (g sobre f) | Variante | `conMinusculas.compose(sinEspacios)` → `ana@academia.com` |
+| El orden de composición es la regla | Diagnóstico | Validar antes de normalizar rechaza un correo válido |
+| Referencias a método en la cadena | Prerrequisito | `correo::test`, `String::toLowerCase` como pasos |
+| Motivos de rechazo vs un solo `boolean` | Decisión | `Function<Envio,List<String>>` conserva todos los motivos |
+| Cadena legible vs tipo `Resultado` | Límite | Reglas dependientes piden un tipo, no una cadena |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`Predicate.and`/`or`/`negate` (núcleo).** Un `Predicate` se combina con otros sin escribir `if` anidados: `and` exige ambos, `or` cualquiera, `negate` invierte. En el laboratorio, `noVacio.and(conArroba).negate()` define "sospechoso" como "no es (no vacío y con arroba)", y se prueba con entradas límite (texto normal vs `"   "`).
+
+**`Function.andThen` (núcleo).** `f.andThen(g)` aplica primero `f` y luego `g` sobre su resultado. `normalizar.andThen(correo::test)` normaliza el texto y después valida, de modo que `  ANA@ACADEMIA.COM  ` pasa a `true`. Se lee de izquierda a derecha en el orden de ejecución.
+
+**`Function.compose` (variante).** `g.compose(f)` aplica primero `f` y luego `g` — el orden inverso de lectura a `andThen`. `conMinusculas.compose(sinEspacios)` recorta espacios y después pasa a minúsculas, devolviendo `ana@academia.com`. Ambas expresan el mismo orden lógico pero se leen en direcciones distintas; elegir una es cuestión de legibilidad.
+
+**El orden de composición es la regla (diagnóstico).** El fallo deliberado muestra que validar el correo crudo (sin normalizar) devuelve `false` aunque el correo sea válido: los espacios lo rechazan. El orden normalizar→validar no es un detalle técnico, es parte de la regla de negocio y debe quedar explícito en la composición.
+
+**Referencias a método en la cadena (prerrequisito).** Las referencias a método (`correo::test`, `String::toLowerCase`, `String::trim`) encajan como pasos de la cadena porque cumplen el SAM de la interfaz. Permiten componer sin escribir lambdas triviales, haciendo la cadena más legible.
+
+**Motivos de rechazo vs un solo `boolean` (decisión).** Cuando el usuario necesita entender *por qué* se rechazó algo, una `Function<Envio, List<String>>` que devuelve todos los motivos comunica más que un `Predicate` que solo dice sí/no. El ejercicio independiente lo exige: un envío con tres fallos muestra los tres, sin detenerse en el primero.
+
+**Cadena legible vs tipo `Resultado` (límite).** Componer funciona bien con reglas independientes. Si las reglas dependen unas de otras o el resultado debe explicarse, una cadena de predicados se vuelve opaca; un tipo `Resultado` explícito (éxito/errores) comunica mejor que encadenar `and`/`or` sin nombres.
 
 `Predicate` ofrece `and`, `or` y `negate`; `Function` ofrece `andThen` y `compose`. `f.andThen(g)` aplica `f` y luego `g`; `g.compose(f)` aplica primero `f` y después `g`. Ambas composiciones pueden expresar el mismo orden, pero se leen en direcciones distintas.
 
@@ -486,7 +542,7 @@ En el **[Proyecto integrador: validación ordenada de solicitudes](#proyecto-20-
 
 **Límites y decisión de uso:** componer funciona bien con reglas independientes. Si dependen entre sí o deben explicar el resultado, un tipo `Resultado` comunica mejor que una cadena de predicados.
 
-**Fuentes oficiales:** [Predicate](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Predicate.html) y [Function](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Function.html).
+**Fuentes oficiales revisadas el 2026-11-02:** [Predicate (API Java SE 27)](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/function/Predicate.html) y [Function (API Java SE 27)](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/function/Function.html).
 
 ### Tema 4: Streams como composición: pereza, orden y efectos que se esconden · Intermedio · 90 min
 
@@ -497,6 +553,34 @@ En el **[Proyecto integrador: validación ordenada de solicitudes](#proyecto-20-
 **Al terminar podrás:** demostrar que un Stream no ejecuta su pipeline hasta una operación terminal, depurar con `peek`, diagnosticar el consumo doble y calcular agregados sin esconder efectos.
 
 **Por qué importa:** un informe de miles de envíos puede duplicar registros o trabajo si se reutiliza un Stream o se mezclan efectos dentro de `map`. La pereza es útil solo cuando sabes dónde ocurre el trabajo.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Stream describe trabajo, no es colección | Prerrequisito | Sin operación terminal, el pipeline no corre |
+| Operaciones perezosas (`filter`/`map`/`peek`) | Núcleo | `peek` no imprime hasta que hay terminal |
+| Operaciones terminales disparan el recorrido | Núcleo | `count`/`collect`/`forEach`/`reduce` ejecutan |
+| Consumo único del Stream | Diagnóstico | Reutilizarlo lanza `IllegalStateException` |
+| `peek` es para depurar, no para lógica | Error frecuente | Efectos de negocio no van en `peek` |
+| Efectos escondidos en `map` | Error frecuente | `map` debe transformar, no producir efectos |
+| Agregar con `reduce`/`collect` sin efectos | Decisión | Total calculado sin mutar estado externo |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Stream describe trabajo, no es colección (prerrequisito).** Un Stream es una descripción de un pipeline, no un contenedor de datos. Declararlo (`lista.stream().filter(...).map(...)`) no ejecuta nada; solo arma el plan. Confundirlo con una colección lleva a esperar resultados que aún no se han calculado.
+
+**Operaciones perezosas (núcleo).** `filter`, `map` y `peek` son perezosas: registran la intención pero no se ejecutan al declararse. Lo compruebas porque un `peek` con `println` no imprime hasta que llega una operación terminal. La pereza permite que la JVM fusione pasos y evite trabajo innecesario.
+
+**Operaciones terminales disparan el recorrido (núcleo).** `count`, `collect`, `forEach` y `reduce` son terminales: recorren el pipeline y producen un resultado o efecto. Sin una terminal, ningún `map`/`filter` se ejecuta. La terminal es la que convierte el plan en trabajo real.
+
+**Consumo único del Stream (diagnóstico).** Un Stream se consume una sola vez: tras una operación terminal, reutilizar la misma referencia lanza `IllegalStateException: stream has already been operated upon or closed`. El diagnóstico es crear un Stream nuevo desde la fuente, no reutilizar el anterior.
+
+**`peek` es para depurar, no para lógica (error frecuente).** `peek` existe para observar los elementos que fluyen durante la depuración. Usarlo para implementar lógica de negocio (modificar estado, registrar de forma permanente) es frágil: su ejecución depende de la pereza y puede no correr si la terminal no consume todos los elementos.
+
+**Efectos escondidos en `map` (error frecuente).** `map` debe transformar un valor en otro, sin efectos secundarios. Esconder un `println`, una escritura o un contador dentro de `map` hace el pipeline impredecible, sobre todo con streams paralelos. Los efectos van en `forEach` (terminal) o en un `Consumer` explícito.
+
+**Agregar con `reduce`/`collect` sin efectos (decisión).** Para calcular un total o agrupar, `reduce` y `collect` producen el resultado sin mutar estado externo. Frente a acumular en una variable desde un `forEach`, la versión con `collect`/`reduce` es segura en paralelo y expresa la intención. Es la forma funcional de agregar.
 
 Un Stream describe trabajo; no es una colección. `filter`, `map` y `peek` son perezosas. `count`, `collect`, `forEach` y `reduce` son terminales y disparan el recorrido. Un Stream se consume una sola vez. `peek` sirve para observar durante depuración, no para implementar lógica de negocio.
 
@@ -606,7 +690,7 @@ Completa el informe del **[Proyecto integrador: agregación de envíos sin doble
 
 **Límites y decisión de uso:** un `for` suele ser más claro con índices, `break`, `continue` o efectos ordenados. No uses `parallelStream` sin medir ni escondas efectos en `map`.
 
-**Fuentes oficiales:** [Stream](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/stream/Stream.html) y [procesamiento de datos con Streams](https://docs.oracle.com/javase/tutorial/collections/streams/index.html).
+**Fuentes oficiales revisadas el 2026-11-02:** [Stream (API Java SE 27)](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/stream/Stream.html) y [Streams (dev.java)](https://dev.java/learn/api/streams/).
 
 ## Laboratorio práctico
 

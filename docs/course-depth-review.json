@@ -8652,7 +8652,7 @@
       "module": 20,
       "title": "Tema 3: Componer sin anidar: andThen, compose, negate y reglas encadenadas · Intermedio · 75 min",
       "file": "web/public/content/java/modulo-20.md",
-      "line": 382,
+      "line": 410,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8664,7 +8664,7 @@
       "module": 20,
       "title": "Tema 4: Streams como composición: pereza, orden y efectos que se esconden · Intermedio · 90 min",
       "file": "web/public/content/java/modulo-20.md",
-      "line": 491,
+      "line": 547,
       "signals": [
         "clase-java-no-visible"
       ],

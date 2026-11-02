@@ -4943,14 +4943,14 @@
       "path": "web/public/content/java/modulo-20.md",
       "topic": "Tema 2: Las cuatro formas: Predicate, Function, Consumer y Supplier",
       "providerCitations": [
-        "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/package-summary.html",
-        "https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html"
+        "https://dev.java/learn/lambdas/",
+        "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/function/package-summary.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
       "line": 255,
       "originalProseUrls": [
-        "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/package-summary.html",
-        "https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html"
+        "https://dev.java/learn/lambdas/",
+        "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/function/package-summary.html"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -4960,14 +4960,14 @@
       "path": "web/public/content/java/modulo-20.md",
       "topic": "Tema 3: Componer sin anidar: andThen, compose, negate y reglas encadenadas",
       "providerCitations": [
-        "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Function.html",
-        "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Predicate.html"
+        "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/function/Function.html",
+        "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/function/Predicate.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 382,
+      "line": 410,
       "originalProseUrls": [
-        "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Function.html",
-        "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Predicate.html"
+        "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/function/Function.html",
+        "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/function/Predicate.html"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -4977,14 +4977,14 @@
       "path": "web/public/content/java/modulo-20.md",
       "topic": "Tema 4: Streams como composición: pereza, orden y efectos que se esconden",
       "providerCitations": [
-        "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/stream/Stream.html",
-        "https://docs.oracle.com/javase/tutorial/collections/streams/index.html"
+        "https://dev.java/learn/api/streams/",
+        "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/stream/Stream.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 491,
+      "line": 547,
       "originalProseUrls": [
-        "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/stream/Stream.html",
-        "https://docs.oracle.com/javase/tutorial/collections/streams/index.html"
+        "https://dev.java/learn/api/streams/",
+        "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/stream/Stream.html"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -6692,9 +6692,27 @@
       "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
+      "url": "https://dev.java/learn/api/streams/",
+      "status": 0,
+      "finalUrl": "https://dev.java/learn/api/streams/",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
       "url": "https://dev.java/learn/concurrency/",
       "status": 0,
       "finalUrl": "https://dev.java/learn/concurrency/",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
+      "url": "https://dev.java/learn/lambdas/",
+      "status": 0,
+      "finalUrl": "https://dev.java/learn/lambdas/",
       "contentType": "",
       "title": null,
       "checkedAt": null,
@@ -7059,42 +7077,6 @@
       "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
     },
     {
-      "url": "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Function.html",
-      "status": 200,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Function.html",
-      "contentType": "text/html",
-      "title": "Function (Java SE 21 &amp; JDK 21)",
-      "checkedAt": "2026-10-31T15:07:22.383221+00:00",
-      "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
-    },
-    {
-      "url": "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Predicate.html",
-      "status": 200,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Predicate.html",
-      "contentType": "text/html",
-      "title": "Predicate (Java SE 21 &amp; JDK 21)",
-      "checkedAt": "2026-10-31T15:07:22.658305+00:00",
-      "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
-    },
-    {
-      "url": "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/package-summary.html",
-      "status": 200,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/package-summary.html",
-      "contentType": "text/html",
-      "title": "java.util.function (Java SE 21 &amp; JDK 21)",
-      "checkedAt": "2026-10-31T15:07:22.663998+00:00",
-      "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
-    },
-    {
-      "url": "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/stream/Stream.html",
-      "status": 200,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/stream/Stream.html",
-      "contentType": "text/html",
-      "title": "Stream (Java SE 21 &amp; JDK 21)",
-      "checkedAt": "2026-10-31T15:07:22.443795+00:00",
-      "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
-    },
-    {
       "url": "https://docs.oracle.com/en/java/javase/21/docs/specs/man/java.html",
       "status": 0,
       "finalUrl": "https://docs.oracle.com/en/java/javase/21/docs/specs/man/java.html",
@@ -7242,6 +7224,42 @@
       "url": "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/atomic/LongAdder.html",
       "status": 0,
       "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/atomic/LongAdder.html",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
+      "url": "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/function/Function.html",
+      "status": 0,
+      "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/function/Function.html",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
+      "url": "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/function/Predicate.html",
+      "status": 0,
+      "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/function/Predicate.html",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
+      "url": "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/function/package-summary.html",
+      "status": 0,
+      "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/function/package-summary.html",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
+      "url": "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/stream/Stream.html",
+      "status": 0,
+      "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/stream/Stream.html",
       "contentType": "",
       "title": null,
       "checkedAt": null,
@@ -7399,24 +7417,6 @@
       "title": null,
       "checkedAt": null,
       "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://docs.oracle.com/javase/tutorial/collections/streams/index.html",
-      "status": 200,
-      "finalUrl": "https://docs.oracle.com/javase/tutorial/collections/streams/index.html",
-      "contentType": "text/html",
-      "title": "Lesson: Aggregate Operations (The Java&trade; Tutorials &gt; Collections)",
-      "checkedAt": "2026-10-31T15:07:23.692651+00:00",
-      "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
-    },
-    {
-      "url": "https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html",
-      "status": 200,
-      "finalUrl": "https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html",
-      "contentType": "text/html",
-      "title": "Lambda Expressions (The Java&trade; Tutorials &gt; Learning the Java Language &gt; Classes and Objects)",
-      "checkedAt": "2026-10-31T15:07:23.560765+00:00",
-      "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
     },
     {
       "url": "https://docs.prisma.io/docs/cli/migrate/dev",
@@ -11251,8 +11251,8 @@
     "remainingUnrecognizedTopics": 0,
     "applicabilityPendingTopics": 378,
     "urlsChecked": 539,
-    "urlsReachable": 498,
-    "urlsPending": 41
+    "urlsReachable": 492,
+    "urlsPending": 47
   },
   "corrections": [
     {

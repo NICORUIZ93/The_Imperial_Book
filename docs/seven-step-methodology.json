@@ -143,7 +143,7 @@
       "codeExplanation": 99,
       "execution": 99,
       "expectedResult": 98,
-      "deliberateFailure": 98,
+      "deliberateFailure": 99,
       "guidedPractice": 29,
       "independentPractice": 36,
       "closure": 36,
@@ -17995,7 +17995,7 @@
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
-          "deliberateFailure": false,
+          "deliberateFailure": true,
           "guidedPractice": false,
           "independentPractice": false,
           "closure": false,
@@ -18004,7 +18004,7 @@
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 6,
+          "stepsPassed": 7,
           "complete": false
         }
       },

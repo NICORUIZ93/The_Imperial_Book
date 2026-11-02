@@ -91,6 +91,27 @@
       ]
     },
     {
+      "path": "MASTER-PROMPT.md",
+      "lines": 129,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# MASTER PROMPT \u2014 THE IMPERIAL BOOK \u00b7 RECONSTRUCCI\u00d3N COMPLETA",
+        "## PARTE 1 \u00b7 METODOLOG\u00cdA EDITORIAL",
+        "### 1.1 Las 12 pautas innegociables",
+        "### 1.2 Regla de preservaci\u00f3n",
+        "### 1.3 Formato de capstone",
+        "## PARTE 2 \u00b7 CURR\u00cdCULO COMPLETO \u2014 14 TRACKS",
+        "## PARTE 3 \u00b7 INSTRUCCIONES DE EJECUCI\u00d3N",
+        "### 3.1 Expandir cada tema al formato de 7 pasos",
+        "### 3.2 Orden de ejecuci\u00f3n por track",
+        "## PARTE 4 \u00b7 VALIDACI\u00d3N Y ENTREGABLES",
+        "### 4.1 Criterios por track",
+        "### 4.2 Criterios globales"
+      ]
+    },
+    {
       "path": "README.md",
       "lines": 370,
       "kind": "documentation",
@@ -1111,6 +1132,22 @@
         "## Primer lote aplicado: Android 0, temas 4\u20135",
         "## Segundo lote aplicado: Android 16, seis vac\u00edos de producci\u00f3n",
         "## Cola y regla de avance"
+      ]
+    },
+    {
+      "path": "docs/java-m0-reconstruction-map.md",
+      "lines": 58,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Java M0 \u2014 mapa de reconstrucci\u00f3n",
+        "## Criterios aplicados",
+        "## Trabajo ejecutado \u2014 2026-11-02",
+        "## Inventario del m\u00f3dulo actual",
+        "## Hallazgos de dependencia y alcance",
+        "## Secuencia de trabajo propuesta (provisional)",
+        "## Fuentes t\u00e9cnicas verificadas para el bloque de compilaci\u00f3n"
       ]
     },
     {
@@ -10821,7 +10858,7 @@
     },
     {
       "path": "web/public/content/java/modulo-20.md",
-      "lines": 659,
+      "lines": 743,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
