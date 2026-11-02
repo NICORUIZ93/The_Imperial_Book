@@ -2,8 +2,8 @@
 
 > Las señales automáticas no prueban profundidad ni ausencia de ella. Un tema sólo queda revisado mediante el registro humano con mapa de subtemas críticos, evidencia y fuentes.
 
-- Temas inventariados: 1146
-- Revisados humanamente para subtemas: 3
+- Temas inventariados: 1148
+- Revisados humanamente para subtemas: 5
 - Pendientes: 1143
 - Candidatos prioritarios por señales: 1096
 
@@ -24,7 +24,7 @@
 | node | 77 | 0 | 77 |
 | react | 58 | 0 | 58 |
 | rutaflow | 29 | 0 | 29 |
-| spring-boot | 91 | 0 | 91 |
+| spring-boot | 93 | 2 | 91 |
 
 ## Cola prioritaria
 
@@ -1130,3 +1130,5 @@
 - `java/modulo-18` — Tema 3: Sockets TCP y UDP — la red que hay debajo de HttpClient · Avanzado · 2 h — modelo cliente/servidor y puertos; ServerSocket y accept(); Socket y streams de I/O con charset explícito; TCP fiable, ordenado, orientado a conexión; UDP DatagramSocket/DatagramPacket; TCP frente a UDP; timeouts de socket (setSoTimeout); cierre de recursos y puerto ocupado; un cliente por hilo frente a virtual threads
 - `java/modulo-18` — Tema 4: Seguridad defensiva — hash, HMAC, firma y cifrado · Avanzado · 2 h 30 min — hash criptográfico (MessageDigest); comparación en tiempo constante (MessageDigest.isEqual); hash no sirve para contraseñas; HMAC (Mac); firma digital (Signature, par de claves); cifrado simétrico AES-GCM (Cipher); IV/nonce único y gestión de claves; hash vs HMAC vs firma vs cifrado
 - `java/modulo-20` — Tema 1: Lambdas a fondo — tipo objetivo, captura y referencias a métodos · Intermedio · 120 min — Interfaz funcional y método SAM; Sintaxis de parámetros y cuerpo; Tipo objetivo e inferencia; Captura y variable efectivamente final; Alcance de this; Cuatro formas de referencias a métodos; Sobrecarga ambigua; Excepciones checked; Especializaciones primitivas; Identidad y serialización
+- `spring-boot/modulo-0` — Tema 4: Ciclo de vida de un bean y BeanPostProcessor · Intermedio · 30 min — Orden de fases de inicializacion; @PostConstruct como hook estandar; InitializingBean.afterPropertiesSet; @PreDestroy / DisposableBean al cerrar; BeanPostProcessor envuelve todos los beans; Recursos de prototype no se destruyen solos; Abrir recurso en el constructor
+- `spring-boot/modulo-0` — Tema 5: AOP con @Aspect y @Around — preocupaciones transversales · Avanzado · 40 min — @Aspect + @EnableAspectJAutoProxy; @Around y ProceedingJoinPoint.proceed(); Pointcut execution(...); El advice conserva la excepcion original; El proxy es el mecanismo (igual que @Transactional); Auto-invocacion no pasa por el aspecto; Abusar de AOP oscurece el flujo

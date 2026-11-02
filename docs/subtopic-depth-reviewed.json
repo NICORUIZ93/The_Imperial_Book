@@ -66,6 +66,41 @@
         "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/security/Signature.html",
         "https://cheatsheetseries.owasp.org/cheatsheets/Cryptographic_Storage_Cheat_Sheet.html"
       ]
+    },
+    "spring-boot/modulo-0::Tema 4: Ciclo de vida de un bean y BeanPostProcessor · Intermedio · 30 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-01",
+      "execution": "Spring Boot 4.1.1 / Spring Framework 7.0.10 sobre JDK 27: LifecycleDemo ejecutado; orden constructor -> BPP before -> @PostConstruct -> afterPropertiesSet -> BPP after -> @PreDestroy -> destroy reproducido; prototype sin destruccion confirmado.",
+      "criticalSubtopics": [
+        "Orden de fases de inicializacion",
+        "@PostConstruct como hook estandar",
+        "InitializingBean.afterPropertiesSet",
+        "@PreDestroy / DisposableBean al cerrar",
+        "BeanPostProcessor envuelve todos los beans",
+        "Recursos de prototype no se destruyen solos",
+        "Abrir recurso en el constructor"
+      ],
+      "sources": [
+        "https://docs.spring.io/spring-framework/reference/core/beans/factory-nature.html",
+        "https://docs.spring.io/spring-framework/reference/core/beans/factory-extension.html"
+      ]
+    },
+    "spring-boot/modulo-0::Tema 5: AOP con @Aspect y @Around — preocupaciones transversales · Avanzado · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-01",
+      "execution": "Spring Boot 4.1.1 / Spring Framework 7.0.10 + aspectjweaver 1.9.24 sobre JDK 27: AopDemo ejecutado; @Around rodea exito y fallo, excepcion original conservada; sin @EnableAspectJAutoProxy el aspecto no se aplica.",
+      "criticalSubtopics": [
+        "@Aspect + @EnableAspectJAutoProxy",
+        "@Around y ProceedingJoinPoint.proceed()",
+        "Pointcut execution(...)",
+        "El advice conserva la excepcion original",
+        "El proxy es el mecanismo (igual que @Transactional)",
+        "Auto-invocacion no pasa por el aspecto",
+        "Abusar de AOP oscurece el flujo"
+      ],
+      "sources": [
+        "https://docs.spring.io/spring-framework/reference/core/aop.html"
+      ]
     }
   }
 }

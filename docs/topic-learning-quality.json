@@ -221,17 +221,17 @@
       "repeatedDemo": 0
     },
     "spring-boot": {
-      "topics": 91,
-      "explanation": 91,
-      "code": 91,
+      "topics": 93,
+      "explanation": 93,
+      "code": 93,
       "visual": 74,
-      "filePath": 91,
+      "filePath": 93,
       "runCommand": 91,
-      "expectedResult": 91,
-      "practice": 91,
-      "project": 91,
-      "modelMental": 91,
-      "limitsDecision": 91,
+      "expectedResult": 93,
+      "practice": 93,
+      "project": 93,
+      "modelMental": 93,
+      "limitsDecision": 93,
       "practicable": 91,
       "genericScaffold": 0,
       "repeatedDemo": 0
@@ -23537,6 +23537,50 @@
         "classification": {
           "rubricScore": 14,
           "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 0,
+        "topic": "Tema 4: Ciclo de vida de un bean y BeanPostProcessor · Intermedio · 30 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": false,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 12,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 0,
+        "topic": "Tema 5: AOP con @Aspect y @Around — preocupaciones transversales · Avanzado · 40 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": false,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 12,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }

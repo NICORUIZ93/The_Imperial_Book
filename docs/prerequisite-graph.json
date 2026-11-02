@@ -4034,6 +4034,28 @@
       ]
     },
     {
+      "id": "spring-boot:0:4",
+      "track": "spring-boot",
+      "module": 0,
+      "position": 4,
+      "title": "Ciclo de vida de un bean y BeanPostProcessor · Intermedio · 30 min",
+      "file": "web/public/content/spring-boot/modulo-0.md",
+      "requires": [
+        "spring-boot:0:3"
+      ]
+    },
+    {
+      "id": "spring-boot:0:5",
+      "track": "spring-boot",
+      "module": 0,
+      "position": 5,
+      "title": "AOP con @Aspect y @Around — preocupaciones transversales · Avanzado · 40 min",
+      "file": "web/public/content/spring-boot/modulo-0.md",
+      "requires": [
+        "spring-boot:0:4"
+      ]
+    },
+    {
       "id": "spring-boot:1:1",
       "track": "spring-boot",
       "module": 1,
@@ -4041,7 +4063,7 @@
       "title": "Spring Initializr y starters · Básico · 20 min",
       "file": "web/public/content/spring-boot/modulo-1.md",
       "requires": [
-        "spring-boot:0:3"
+        "spring-boot:0:5"
       ]
     },
     {

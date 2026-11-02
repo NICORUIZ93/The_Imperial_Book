@@ -3,14 +3,14 @@
   "totals": {
     "tracks": 14,
     "modules": 254,
-    "topics": 1146,
+    "topics": 1148,
     "topicsWithSignals": 104,
     "newLaboratories": 25
   },
   "humanPedagogicalReview": {
     "reviewed": 0,
     "preRead": 14,
-    "total": 1146,
+    "total": 1148,
     "date": "2026-10-31",
     "responsible": "persona revisora pendiente; pre-lectura de agente registrada",
     "evidence": "docs/manual-review-log.md"
@@ -12977,6 +12977,30 @@
       "title": "Tema 3: Estereotipos, autoconfiguración y scopes · Intermedio · 25 min",
       "file": "web/public/content/spring-boot/modulo-0.md",
       "line": 347,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "spring-boot",
+      "module": 0,
+      "title": "Tema 4: Ciclo de vida de un bean y BeanPostProcessor · Intermedio · 30 min",
+      "file": "web/public/content/spring-boot/modulo-0.md",
+      "line": 476,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "spring-boot",
+      "module": 0,
+      "title": "Tema 5: AOP con @Aspect y @Around — preocupaciones transversales · Avanzado · 40 min",
+      "file": "web/public/content/spring-boot/modulo-0.md",
+      "line": 640,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

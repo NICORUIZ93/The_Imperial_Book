@@ -4720,6 +4720,14 @@
       {
         "title": "Estereotipos, autoconfiguración y scopes",
         "fragment": "tema-3-estereotipos-autoconfiguracion-y-scopes"
+      },
+      {
+        "title": "Ciclo de vida de un bean y BeanPostProcessor",
+        "fragment": "tema-4-ciclo-de-vida-de-un-bean-y-beanpostprocessor"
+      },
+      {
+        "title": "AOP con @Aspect y @Around — preocupaciones transversales",
+        "fragment": "tema-5-aop-con-aspect-y-around-preocupaciones-transversales"
       }
     ],
     "1": [

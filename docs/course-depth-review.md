@@ -12,7 +12,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 | angular | 71 | 3 | HTML/CSS/TypeScript explícitos; RxJS y estado con ejemplos completos | Rutas, formularios, datos remotos y cambios sin guardar comprobados con navegador |
 | react | 58 | 46 | JSX y estado antes de efectos; proveedor, dependencias y API visibles | Carga, error, vacío y carrera de respuestas; caché observada, no supuesta |
 | java | 98 | 11 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
-| spring-boot | 91 | 3 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
+| spring-boot | 93 | 3 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
 | android | 74 | 1 | Kotlin antes de Compose; distinguir recomposición, recreación y muerte de proceso | App instalable con permisos, restauración, persistencia y pruebas en dispositivo |
 | ios | 56 | 4 | Swift antes de SwiftUI; explicitar macOS/Xcode y destino | Cancelación, estados de red, persistencia y accesibilidad comprobados en simulador |
 | flutter | 63 | 4 | Dart antes de widgets; ejemplo con main y destino de ejecución | Restauración, red, pruebas de widget, integración y publicación por plataforma |
@@ -23,7 +23,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 
 ## Registro tema por tema
 
-Revisión humana firmada: 0/1146 temas. Pre-lectura registrada sin firma: 14. La pre-lectura no acredita ejecución, comprensión ni calidad pedagógica; consulta `docs/manual-review-log.md`.
+Revisión humana firmada: 0/1148 temas. Pre-lectura registrada sin firma: 14. La pre-lectura no acredita ejecución, comprensión ni calidad pedagógica; consulta `docs/manual-review-log.md`.
 Los laboratorios nuevos tienen una verificación técnica separada; la ejecución correcta tampoco demuestra comprensión.
 
 | Curso / módulo | Tema | Señales para revisar |
@@ -1086,6 +1086,8 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | spring-boot / 0 | [Tema 1: Inversión de control y el contenedor de Spring · Básico · 20 min](../web/public/content/spring-boot/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 0 | [Tema 2: Inyección por constructor vs por campo · Básico · 20 min](../web/public/content/spring-boot/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 0 | [Tema 3: Estereotipos, autoconfiguración y scopes · Intermedio · 25 min](../web/public/content/spring-boot/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 0 | [Tema 4: Ciclo de vida de un bean y BeanPostProcessor · Intermedio · 30 min](../web/public/content/spring-boot/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 0 | [Tema 5: AOP con @Aspect y @Around — preocupaciones transversales · Avanzado · 40 min](../web/public/content/spring-boot/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 1 | [Tema 1: Spring Initializr y starters · Básico · 20 min](../web/public/content/spring-boot/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 1 | [Tema 2: application.yml vs application.properties · Básico · 20 min](../web/public/content/spring-boot/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 1 | [Tema 3: Perfiles y estructura por capas · Intermedio · 30 min](../web/public/content/spring-boot/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |

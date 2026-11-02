@@ -473,6 +473,321 @@ public class GeneradorReporte { /* ... */ }
 
 **Transferencia al proyecto integrador:** los estereotipos `@Service`, `@Repository` y `@Controller` organizan las clases del microservicio productivo.
 
+### Tema 4: Ciclo de vida de un bean y BeanPostProcessor · Intermedio · 30 min
+
+**Prerrequisito:** Temas 1-3 de este módulo (IoC, inyección por constructor, estereotipos).
+
+**Al terminar podrás:** ordenar las fases de inicialización y destrucción de un bean, elegir entre `@PostConstruct`, `InitializingBean` y un `BeanPostProcessor`, y liberar un recurso de forma determinista al cerrar el contexto.
+
+#### Aprende
+
+**¿Por qué es importante?** Un pool de conexiones o un cliente de mensajería no está listo cuando el constructor termina: sus dependencias ya están inyectadas, pero la apertura real del recurso y su cierre ordenado ocurren en fases posteriores. Abrir en el constructor o no cerrar al apagar produce fugas de conexiones y arranques que parecen sanos pero fallan en la primera petición.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Orden de fases de inicialización | Núcleo | La salida numera constructor → BPP before → `@PostConstruct` → `afterPropertiesSet` → BPP after |
+| `@PostConstruct` como hook estándar | Núcleo | `2. @PostConstruct: pool listo` tras el constructor |
+| `InitializingBean.afterPropertiesSet` | Variante | `3. afterPropertiesSet` corre después de `@PostConstruct` |
+| `@PreDestroy` / `DisposableBean` al cerrar | Núcleo | `5. @PreDestroy` y `6. destroy` al cerrar el contexto |
+| `BeanPostProcessor` envuelve todos los beans | Núcleo | BPP se ejecuta antes y después de la init de cada bean |
+| Recursos de `prototype` no se destruyen solos | Límite | Spring no llama `@PreDestroy` en beans `prototype` |
+| Abrir recurso en el constructor | Error frecuente | El recurso se abre antes de tiempo y sin orden de cierre |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Orden de fases de inicialización (núcleo).** Spring construye el bean (dependencias ya inyectadas), deja que cada `BeanPostProcessor` lo procese *antes* de inicializarlo, ejecuta los callbacks de inicialización (`@PostConstruct`, luego `afterPropertiesSet`) y finalmente deja que los `BeanPostProcessor` lo procesen *después*. La salida numerada del laboratorio hace visible ese orden exacto; entenderlo evita colocar lógica en la fase equivocada.
+
+**`@PostConstruct` como hook estándar (núcleo).** `@PostConstruct` (de `jakarta.annotation`) marca el método que Spring invoca una vez tras inyectar las dependencias y antes de poner el bean en servicio. Es el lugar correcto para abrir el recurso: en el laboratorio imprime `2. @PostConstruct: pool listo` justo después del constructor, confirmando que las dependencias ya están disponibles.
+
+**`InitializingBean.afterPropertiesSet` (variante).** Implementar `InitializingBean` ofrece el mismo punto de inicialización que `@PostConstruct` pero acoplado a una interfaz de Spring. Corre después de `@PostConstruct` (`3. afterPropertiesSet`). Se prefiere `@PostConstruct` por no atar el código a Spring; la interfaz solo conviene cuando necesitas evitar el procesamiento de anotaciones.
+
+**`@PreDestroy` / `DisposableBean` al cerrar (núcleo).** Al cerrar el contexto (`close()`), Spring invoca `@PreDestroy` y luego `destroy()` de `DisposableBean` para liberar recursos de forma ordenada: en el laboratorio imprimen `5` y `6`. Sin estos hooks, un pool de conexiones o un consumidor de mensajería quedaría abierto al apagar la aplicación.
+
+**`BeanPostProcessor` envuelve todos los beans (núcleo).** Un `BeanPostProcessor` intercepta la inicialización de *cada* bean del contenedor con `postProcessBeforeInitialization`/`postProcessAfterInitialization`. Es el mecanismo con el que el propio Spring aplica proxies (`@Transactional`, AOP) y resuelve `@Autowired`/`@PostConstruct`. En el laboratorio se observa que corre antes y después de la init del pool.
+
+**Recursos de `prototype` no se destruyen solos (límite).** Spring gestiona el ciclo de destrucción de beans `singleton`, pero para `prototype` solo controla la creación: no llama `@PreDestroy` al cerrar el contexto. Si un bean `prototype` tiene un recurso, el código que lo pidió es responsable de cerrarlo; asumir lo contrario produce fugas silenciosas.
+
+**Abrir recurso en el constructor (error frecuente).** Abrir una conexión o lanzar un hilo en el constructor ejecuta trabajo antes de que el bean esté completamente configurado y sin un punto simétrico de cierre. La apertura va en `@PostConstruct` y el cierre en `@PreDestroy`, para que arranque y apagado sean ordenados y verificables.
+
+**Analogía:** el constructor es contratar al empleado; `@PostConstruct` es su primer día cuando ya tiene credenciales y abre su estación; `@PreDestroy` es la entrevista de salida donde entrega llaves y cierra pendientes. Hacer el trabajo "el día de la contratación" es abrir el recurso en el constructor.
+
+#### Practica
+
+**Demo paso a paso.** Genera un proyecto con Spring Web (o reutiliza el del módulo) y crea `src/main/java/academia/lifecycle/LifecycleDemo.java`:
+
+```java
+package academia.lifecycle;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.stereotype.Component;
+
+public class LifecycleDemo {
+
+    @Component
+    static class ConexionPool implements InitializingBean, DisposableBean {
+        ConexionPool() {
+            System.out.println("1. constructor: dependencias inyectadas");
+        }
+
+        @PostConstruct
+        void abrir() {
+            System.out.println("2. @PostConstruct: pool listo");
+        }
+
+        @Override
+        public void afterPropertiesSet() {
+            System.out.println("3. afterPropertiesSet (InitializingBean)");
+        }
+
+        @PreDestroy
+        void cerrar() {
+            System.out.println("5. @PreDestroy: drenando conexiones");
+        }
+
+        @Override
+        public void destroy() {
+            System.out.println("6. destroy (DisposableBean)");
+        }
+    }
+
+    @Component
+    static class RegistroDeBeans implements BeanPostProcessor {
+        @Override
+        public Object postProcessBeforeInitialization(Object bean, String nombre) {
+            if (bean instanceof ConexionPool) {
+                System.out.println("   BPP antes de init: " + nombre);
+            }
+            return bean;
+        }
+
+        @Override
+        public Object postProcessAfterInitialization(Object bean, String nombre) {
+            if (bean instanceof ConexionPool) {
+                System.out.println("4. BPP después de init: " + nombre);
+            }
+            return bean;
+        }
+    }
+
+    public static void main(String[] args) {
+        try (var contexto = new AnnotationConfigApplicationContext(
+                ConexionPool.class, RegistroDeBeans.class)) {
+            contexto.getBean(ConexionPool.class);
+            System.out.println("-- contexto arriba, cerrando --");
+        }
+    }
+}
+```
+
+Ejecuta la clase (desde el IDE o con el classpath del proyecto).
+
+**Resultado esperado (verificado con Spring Boot 4.1.1 / Spring Framework 7.0.10 sobre JDK 27):**
+
+```text
+1. constructor: dependencias inyectadas
+   BPP antes de init: lifecycleDemo.ConexionPool
+2. @PostConstruct: pool listo
+3. afterPropertiesSet (InitializingBean)
+4. BPP después de init: lifecycleDemo.ConexionPool
+-- contexto arriba, cerrando --
+5. @PreDestroy: drenando conexiones
+6. destroy (DisposableBean)
+```
+
+El `try-with-resources` cierra el contexto al final del bloque, lo que dispara las fases 5 y 6. El orden confirma que `@PostConstruct` precede a `afterPropertiesSet` y que el `BeanPostProcessor` rodea toda la inicialización.
+
+**Explicación línea por línea:** el constructor corre primero porque las dependencias se inyectan al construir; el `BeanPostProcessor` recibe el bean antes de inicializarlo (fase "before"); `@PostConstruct` y luego `afterPropertiesSet` abren el recurso; el `BeanPostProcessor` recibe el bean ya inicializado (fase "after"), que es donde Spring devolvería un proxy si lo envolviera; al cerrar el contexto, `@PreDestroy` y `destroy` liberan el recurso.
+
+**Fallo deliberado:** cambia `@Scope("prototype")` sobre `ConexionPool` (añadiendo `@Scope` de `org.springframework.context.annotation`) y vuelve a ejecutar. Verás que al cerrar el contexto **no** aparecen las líneas 5 y 6: Spring no destruye beans `prototype`. Diagnostica confirmando que para un `prototype` con recursos debes cerrar manualmente; restaura `singleton` (quita `@Scope`) para recuperar el apagado ordenado.
+
+**Ejercicios.**
+
+1. Añade un segundo bean con `@PostConstruct` que dependa de `ConexionPool` y observa que su inicialización ocurre después de que el pool esté listo.
+2. Registra un `@Bean` con `initMethod`/`destroyMethod` en una clase `@Configuration` y compara con `@PostConstruct`/`@PreDestroy`.
+3. Lanza una excepción dentro de `@PostConstruct` y documenta cómo el contexto falla al arrancar en vez de quedar a medias.
+
+**Pista:** si necesitas que algo ocurra "cuando el bean ya está completo pero antes de recibir tráfico", ese punto es `@PostConstruct`, no el constructor.
+
+#### Aplica
+
+**Reto abierto.** Modela un `ClienteMensajeria` que abra una suscripción en `@PostConstruct` y la cierre en `@PreDestroy`, y demuestra con los logs de arranque y apagado que la suscripción se abre una sola vez y se cierra al detener la aplicación con `Ctrl+C` (apagado del contexto).
+
+**Checklist de salida.**
+
+- [ ] El recurso se abre en `@PostConstruct`, no en el constructor.
+- [ ] El recurso se cierra en `@PreDestroy` al cerrar el contexto.
+- [ ] Sabes el orden entre `@PostConstruct` y `afterPropertiesSet`.
+- [ ] Puedes explicar qué hace un `BeanPostProcessor` y por qué Spring lo usa para proxies.
+- [ ] Reprodujiste que un bean `prototype` no recibe `@PreDestroy`.
+
+**Si falla.** Si el recurso nunca se cierra, confirma que cierras el contexto (en una app Spring Boot, el apagado normal lo hace; en un `main` manual usa `try-with-resources`). Si `@PostConstruct` no se invoca, revisa que la dependencia `jakarta.annotation` esté presente y que la clase sea un bean gestionado.
+
+**Errores comunes:** abrir conexiones o lanzar hilos en el constructor; asumir que un `prototype` se destruye con el contexto; mezclar lógica de negocio en un `BeanPostProcessor` en vez de usarlo solo para preocupaciones transversales.
+
+**Límites y decisión de uso:** para un bean sin recursos externos (un servicio sin estado), no necesitas ningún hook de ciclo de vida; añadirlos sería ceremonia inútil.
+
+**Fuente oficial:** [Spring Framework — Customizing the Nature of a Bean](https://docs.spring.io/spring-framework/reference/core/beans/factory-nature.html) y [Container Extension Points (BeanPostProcessor)](https://docs.spring.io/spring-framework/reference/core/beans/factory-extension.html).
+
+**Transferencia al proyecto integrador:** el pool de conexiones y el cliente de mensajería del microservicio productivo abrirán y cerrarán sus recursos en `@PostConstruct`/`@PreDestroy` para un apagado ordenado.
+
+### Tema 5: AOP con @Aspect y @Around — preocupaciones transversales · Avanzado · 40 min
+
+**Prerrequisito:** Tema 4 de este módulo (`BeanPostProcessor` y proxies de Spring).
+
+**Al terminar podrás:** aplicar un comportamiento transversal (medición, logging, auditoría) a varios métodos sin tocarlos, con `@Aspect` y un advice `@Around`, y explicar por qué una auto-invocación no pasa por el aspecto.
+
+#### Aprende
+
+**¿Por qué es importante?** Medir tiempos, registrar auditoría o aplicar una política de seguridad en decenas de métodos copiando el mismo bloque en cada uno es frágil y ruidoso. AOP extrae esa preocupación transversal a un único lugar (un aspecto) que Spring aplica mediante el mismo mecanismo de proxy que ya usa `@Transactional`. Entender esto desmitifica anotaciones como `@Transactional`, `@Cacheable` o `@PreAuthorize`: todas son aspectos.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `@Aspect` + `@EnableAspectJAutoProxy` | Prerrequisito | Sin `@EnableAspectJAutoProxy` el aspecto no se aplica |
+| `@Around` y `ProceedingJoinPoint.proceed()` | Núcleo | `[aop] cotizar -> 7400` rodea la llamada real |
+| Pointcut `execution(...)` | Núcleo | El pointcut selecciona los métodos de `Cotizador` |
+| El advice conserva la excepción original | Diagnóstico | `fallo: maximo 30 kg` y el llamador recibe `IllegalArgumentException` |
+| El proxy es el mecanismo (igual que `@Transactional`) | Núcleo | AOP y `@Transactional` comparten el proxy del bean |
+| Auto-invocación no pasa por el aspecto | Límite | Una llamada `this.metodo()` interna no se intercepta |
+| Abusar de AOP oscurece el flujo | Error frecuente | Lógica de negocio escondida en aspectos |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`@Aspect` + `@EnableAspectJAutoProxy` (prerrequisito).** Una clase `@Aspect` declara los advices, pero Spring solo los aplica si el proxying de aspectos está habilitado: con `@EnableAspectJAutoProxy` (o automáticamente al incluir `spring-boot-starter-aop`). Sin esa activación, el aspecto es un bean normal que nunca intercepta nada.
+
+**`@Around` y `ProceedingJoinPoint.proceed()` (núcleo).** Un advice `@Around` recibe un `ProceedingJoinPoint` y decide cuándo ejecutar el método real con `proceed()`. Puede hacer trabajo antes y después (medir, loguear), como en la salida `[aop] cotizar -> 7400`. Es el advice más potente porque controla la invocación completa, incluido si se ejecuta o no.
+
+**Pointcut `execution(...)` (núcleo).** El pointcut es la expresión que selecciona a qué join points se aplica el advice; `execution(* academia.aop.AopDemo.Cotizador.*(..))` apunta a todos los métodos de `Cotizador`. Cambiar el pointcut cambia el alcance sin tocar ni el aspecto ni los métodos interceptados.
+
+**El advice conserva la excepción original (diagnóstico).** Cuando el método real lanza, el `@Around` puede observar la excepción en su `catch`/`finally` y relanzarla sin envolverla. En el laboratorio, `cotizar("Cali", 40)` falla, el aspecto imprime `fallo: maximo 30 kg` y el llamador recibe la `IllegalArgumentException` intacta: el aspecto no debe cambiar el contrato de excepciones.
+
+**El proxy es el mecanismo, igual que `@Transactional` (núcleo).** Spring implementa AOP generando un proxy del bean (JDK dynamic proxy si hay interfaz, CGLIB si no), exactamente el mismo mecanismo que aplica `@Transactional`. Por eso entender AOP explica el comportamiento de todas las anotaciones basadas en proxy del ecosistema.
+
+**Auto-invocación no pasa por el aspecto (límite).** Como el aspecto vive en el proxy, una llamada interna `this.otroMetodo()` dentro del mismo bean no atraviesa el proxy y, por tanto, no se intercepta. Es la misma razón por la que una auto-invocación no activa `@Transactional`; la solución es separar en otro bean o inyectarse a sí mismo por el proxy.
+
+**Abusar de AOP oscurece el flujo (error frecuente).** AOP es ideal para preocupaciones transversales (logging, métricas, seguridad, transacciones), no para lógica de negocio. Esconder reglas de negocio en aspectos hace el flujo invisible al leer el código del servicio; la regla se guarda en el servicio, el aspecto solo rodea.
+
+**Analogía:** un aspecto es el torno de entrada de un edificio: cada persona que pasa queda registrada y cronometrada sin que tenga que firmar un libro en cada oficina. Pero si decides *quién puede entrar al edificio* en el torno en lugar de en recepción, escondiste una regla de negocio en la infraestructura.
+
+#### Practica
+
+**Demo paso a paso.** Añade `spring-boot-starter-aop` al proyecto y crea `src/main/java/academia/aop/AopDemo.java`:
+
+```java
+package academia.aop;
+
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.stereotype.Component;
+
+public class AopDemo {
+
+    @Component
+    static class Cotizador {
+        public int cotizar(String ciudad, int kilos) {
+            if (kilos > 30) throw new IllegalArgumentException("maximo 30 kg");
+            return (ciudad.equals("Bogota") ? 5000 : 9000) + kilos * 1200;
+        }
+    }
+
+    @Aspect
+    @Component
+    static class Cronometro {
+        @Around("execution(* academia.aop.AopDemo.Cotizador.*(..))")
+        public Object medir(ProceedingJoinPoint pjp) throws Throwable {
+            long inicio = System.nanoTime();
+            try {
+                Object resultado = pjp.proceed();
+                System.out.printf("[aop] %s -> %s%n", pjp.getSignature().getName(), resultado);
+                return resultado;
+            } catch (RuntimeException e) {
+                System.out.printf("[aop] %s fallo: %s%n", pjp.getSignature().getName(), e.getMessage());
+                throw e;
+            } finally {
+                long us = (System.nanoTime() - inicio) / 1000;
+                System.out.printf("[aop] %s tomo %d us%n", pjp.getSignature().getName(), us);
+            }
+        }
+    }
+
+    @EnableAspectJAutoProxy
+    static class Config {}
+
+    public static void main(String[] args) {
+        try (var ctx = new AnnotationConfigApplicationContext(
+                Config.class, Cotizador.class, Cronometro.class)) {
+            Cotizador c = ctx.getBean(Cotizador.class);
+            System.out.println("Bogota 2kg = " + c.cotizar("Bogota", 2));
+            try {
+                c.cotizar("Cali", 40);
+            } catch (IllegalArgumentException e) {
+                System.out.println("el llamador recibe: " + e.getClass().getSimpleName());
+            }
+        }
+    }
+}
+```
+
+Ejecuta la clase.
+
+**Resultado esperado (verificado con Spring Boot 4.1.1 / Spring Framework 7.0.10 sobre JDK 27):**
+
+```text
+[aop] cotizar -> 7400
+[aop] cotizar tomo 1214 us
+Bogota 2kg = 7400
+[aop] cotizar fallo: maximo 30 kg
+[aop] cotizar tomo 226 us
+el llamador recibe: IllegalArgumentException
+```
+
+Los microsegundos variarán. Observa que el aspecto rodea tanto la llamada exitosa como la que falla, y que la `IllegalArgumentException` llega al llamador sin alterarse.
+
+**Explicación línea por línea:** `@EnableAspectJAutoProxy` activa el proxying; `@Aspect` marca la clase de advices; `@Around(execution(...))` aplica `medir` a cada método de `Cotizador`; `pjp.proceed()` ejecuta el método real; el `finally` mide siempre, haya éxito o excepción; relanzar `e` conserva el tipo original para el llamador.
+
+**Fallo deliberado:** quita `@EnableAspectJAutoProxy` (deja solo los beans) y vuelve a ejecutar. Las líneas `[aop] ...` desaparecen: sin el proxying habilitado el aspecto no se aplica aunque sea un bean. Diagnostica confirmando que un aspecto necesita el auto-proxy; restitúyelo.
+
+**Ejercicios.**
+
+1. Añade un advice `@Before` que registre los argumentos y compáralo con `@Around`.
+2. Restringe el pointcut a un solo método (`execution(* ...Cotizador.cotizar(..))`) y confirma que otros métodos ya no se interceptan.
+3. Llama a `cotizar` desde otro método del propio `Cotizador` (auto-invocación) y comprueba que esa llamada interna no genera línea `[aop]`.
+
+**Pista:** si un aspecto "no se aplica", revisa dos cosas antes que nada: que el auto-proxy esté habilitado y que la llamada no sea una auto-invocación dentro del mismo bean.
+
+#### Aplica
+
+**Reto abierto.** Crea una anotación propia `@Auditada` y un aspecto que registre quién y cuándo se invocó cada método anotado, sin tocar los servicios. Demuestra que añadir `@Auditada` a un método nuevo lo audita automáticamente y que quitarla lo excluye.
+
+**Checklist de salida.**
+
+- [ ] El aspecto se aplica solo con `@EnableAspectJAutoProxy` (o el starter aop) activo.
+- [ ] El `@Around` ejecuta `proceed()` y mide antes y después.
+- [ ] La excepción original llega al llamador sin envolverse.
+- [ ] Sabes explicar por qué AOP y `@Transactional` comparten el proxy.
+- [ ] Reprodujiste que una auto-invocación no atraviesa el aspecto.
+
+**Si falla.** Si el advice no corre, falta el auto-proxy o el pointcut no coincide con la firma real (revisa paquete y tipos). Si una llamada interna no se intercepta, es auto-invocación: extrae el método a otro bean. Si falta `org.aspectj.lang`, añade la dependencia `spring-boot-starter-aop`.
+
+**Errores comunes:** poner lógica de negocio en el aspecto; pointcuts demasiado amplios que interceptan más de lo previsto; esperar que una auto-invocación active el aspecto.
+
+**Límites y decisión de uso:** para una preocupación que afecta a un solo método o a muy pocos, un decorador o una llamada explícita es más claro que un aspecto; AOP rinde cuando la preocupación es transversal a muchos puntos.
+
+**Fuente oficial:** [Spring Framework — Aspect Oriented Programming with Spring](https://docs.spring.io/spring-framework/reference/core/aop.html).
+
+**Transferencia al proyecto integrador:** la auditoría y la medición de latencia por operación del microservicio productivo se aplicarán con un aspecto, no copiando código en cada servicio.
+
 ## Ruta de proyecto progresivo desde carpeta vacía
 
 No crees un proyecto desechable por módulo. Conserva un único repositorio que evoluciona durante todo el track y etiqueta cada hito (`git tag modulo-N`). Empieza generando `academia-spring` en `start.spring.io`, descomprímelo en una carpeta vacía y ejecuta `git init`. Ejecuta cada comando paso a paso, inspecciona los archivos generados y registra versiones y precondiciones en el README.

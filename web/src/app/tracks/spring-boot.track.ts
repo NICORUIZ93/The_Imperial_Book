@@ -1,9 +1,9 @@
 import { CourseModule, createModule as m } from '../course-module.model';
 
 export const SPRING_BOOT_MODULES: CourseModule[] = [
-  m(0, 'Fundamentos de Spring: IoC y DI', 'IoC y DI', 'Fundamentos', '2 h 30 min', '#6db33f',
+  m(0, 'Fundamentos de Spring: IoC y DI', 'IoC y DI', 'Fundamentos', '3 h 40 min', '#6db33f',
     'El contenedor de Spring gestiona el ciclo de vida de tus objetos. Entiende ese contrato antes de usar anotaciones a ciegas.',
-    ['Inversión de control y el contenedor de Spring', 'Inyección por constructor vs por campo', '@Component, @Service, @Repository', 'Autoconfiguración: qué hace realmente "Boot"', '@Scope: singleton, prototype, request, session', '@Qualifier y @Primary cuando hay varias implementaciones'],
+    ['Inversión de control y el contenedor de Spring', 'Inyección por constructor vs por campo', '@Component, @Service, @Repository', 'Autoconfiguración: qué hace realmente "Boot"', '@Scope: singleton, prototype, request, session', '@Qualifier y @Primary cuando hay varias implementaciones', 'Ciclo de vida del bean: @PostConstruct, @PreDestroy y BeanPostProcessor', 'AOP con @Aspect y @Around para preocupaciones transversales'],
     [
       'Crea un proyecto Spring Boot mínimo con start.spring.io y arráncalo con ./mvnw spring-boot:run',
       'Define un @Service y un @Repository, e inyecta el repositorio en el servicio usando inyección por constructor',

@@ -1677,7 +1677,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "1c58acd71ae51cbff13505137b6dfd84a471a649cb550edfe4517679dc959c15",
+    "fingerprint": "5621b6a816bbd4114c4d9ebd3302fe2da7f6d2f831846f326817a0104ca0d4a1",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
@@ -1686,7 +1686,7 @@
     },
     "modules": 254,
     "modulesWithLegacySections": 179,
-    "topics": 1146,
+    "topics": 1148,
     "topicsWithIssues": 0
   },
   "topics": {
@@ -9122,6 +9122,20 @@
         "tailWords": 259,
         "topic": "Tema 3: Estereotipos, autoconfiguración y scopes · Intermedio · 25 min",
         "words": 1422
+      },
+      {
+        "issues": [],
+        "module": 0,
+        "tailWords": 278,
+        "topic": "Tema 4: Ciclo de vida de un bean y BeanPostProcessor · Intermedio · 30 min",
+        "words": 1433
+      },
+      {
+        "issues": [],
+        "module": 0,
+        "tailWords": 255,
+        "topic": "Tema 5: AOP con @Aspect y @Around — preocupaciones transversales · Avanzado · 40 min",
+        "words": 1364
       },
       {
         "issues": [],

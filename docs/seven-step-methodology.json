@@ -248,21 +248,21 @@
       "complete": 29
     },
     "spring-boot": {
-      "topics": 91,
+      "topics": 93,
       "objective": 0,
-      "prerequisites": 91,
+      "prerequisites": 93,
       "context": 0,
       "theoryAnalogy": 0,
       "guidedDemo": 0,
-      "codeExplanation": 91,
+      "codeExplanation": 93,
       "execution": 91,
-      "expectedResult": 91,
-      "deliberateFailure": 91,
+      "expectedResult": 93,
+      "deliberateFailure": 93,
       "guidedPractice": 0,
       "independentPractice": 0,
       "closure": 0,
-      "commonErrors": 91,
-      "resources": 91,
+      "commonErrors": 93,
+      "resources": 93,
       "standaloneExample": 90,
       "complete": 0
     }
@@ -26742,6 +26742,56 @@
         },
         "classification": {
           "stepsPassed": 8,
+          "complete": false
+        }
+      },
+      {
+        "module": 0,
+        "topic": "Tema 4: Ciclo de vida de un bean y BeanPostProcessor · Intermedio · 30 min",
+        "criteria": {
+          "objective": false,
+          "prerequisites": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": false,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": false
+        },
+        "classification": {
+          "stepsPassed": 6,
+          "complete": false
+        }
+      },
+      {
+        "module": 0,
+        "topic": "Tema 5: AOP con @Aspect y @Around — preocupaciones transversales · Avanzado · 40 min",
+        "criteria": {
+          "objective": false,
+          "prerequisites": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": false,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": false
+        },
+        "classification": {
+          "stepsPassed": 6,
           "complete": false
         }
       },

@@ -8,16 +8,16 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 
 | Criterio | Cubierto | Pendiente |
 |---|---:|---:|
-| Explicación | 1146 | 0 |
-| Código | 1146 | 0 |
-| Ruta | 1146 | 0 |
-| Ejecución | 1146 | 0 |
-| Resultado | 1146 | 0 |
-| Modificación | 1146 | 0 |
-| Conexión con un proyecto | 1145 | 1 |
-| Modelo mental | 1146 | 0 |
-| Límites | 1146 | 0 |
-| **Perfil de criterios detectado** | **1145** | **1** |
+| Explicación | 1148 | 0 |
+| Código | 1148 | 0 |
+| Ruta | 1148 | 0 |
+| Ejecución | 1146 | 2 |
+| Resultado | 1148 | 0 |
+| Modificación | 1148 | 0 |
+| Conexión con un proyecto | 1147 | 1 |
+| Modelo mental | 1148 | 0 |
+| Límites | 1148 | 0 |
+| **Perfil de criterios detectado** | **1145** | **3** |
 
 ## Prioridad por track
 
@@ -36,11 +36,13 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | node | 77 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | react | 58 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | rutaflow | 29 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| spring-boot | 91 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| spring-boot | 93 | 0 | 0 | 2 | 0 | 0 | 0 | 0 |
 
 ## Pendientes por tema
 
 - [java · módulo 20](../web/public/content/java/modulo-20.md) · Tema 1: Lambdas a fondo — tipo objetivo, captura y referencias a métodos · Intermedio · 120 min: conexión con un proyecto.
+- [spring-boot · módulo 0](../web/public/content/spring-boot/modulo-0.md) · Tema 4: Ciclo de vida de un bean y BeanPostProcessor · Intermedio · 30 min: ejecución.
+- [spring-boot · módulo 0](../web/public/content/spring-boot/modulo-0.md) · Tema 5: AOP con @Aspect y @Around — preocupaciones transversales · Avanzado · 40 min: ejecución.
 
 ## Regla de cierre
 
