@@ -3,9 +3,9 @@
 > Las señales automáticas no prueban profundidad ni ausencia de ella. Un tema sólo queda revisado mediante el registro humano con mapa de subtemas críticos, evidencia y fuentes.
 
 - Temas inventariados: 1159
-- Revisados humanamente para subtemas: 75
-- Pendientes: 1084
-- Candidatos prioritarios por señales: 1037
+- Revisados humanamente para subtemas: 82
+- Pendientes: 1077
+- Candidatos prioritarios por señales: 1031
 
 ## Cobertura por track
 
@@ -18,7 +18,7 @@
 | flutter | 63 | 0 | 63 |
 | foundations | 100 | 0 | 100 |
 | ios | 56 | 0 | 56 |
-| java | 109 | 73 | 36 |
+| java | 109 | 80 | 29 |
 | javascript | 88 | 0 | 88 |
 | kotlin-multiplatform | 56 | 0 | 56 |
 | node | 77 | 0 | 77 |
@@ -654,12 +654,6 @@
 - `ios/modulo-9` — Tema 1: XCTest clásico y Swift Testing — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `ios/modulo-9` — Tema 2: Testing de código async — lista conceptos clave sin mapa interno verificable
 - `ios/modulo-9` — Tema 3: UI Tests con XCUITest — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `java/modulo-13` — Tema 2: Integrando concurrencia, modelado y testing · Experto · 60 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `java/modulo-13` — Tema 3: Build reproducible y cierre del track · Avanzado · 50 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `java/modulo-14` — Tema 1: Compartir memoria requiere orden y visibilidad · Experto · 60 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `java/modulo-14` — Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo · Experto · 65 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `java/modulo-14` — Tema 3: Deserializar es permitir construcción y comportamiento · Experto · 60 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `java/modulo-14` — Tema 4: El runtime es parte del artefacto y necesita ciclo de vida · Experto · 60 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `java/modulo-15` — Tema 2: Gradle y builds reproducibles · Avanzado · 45 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `java/modulo-15` — Tema 4: JUnit 5, Mockito y assertions expresivas · Avanzado · 55 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `java/modulo-15` — Tema 6: SLF4J, Logback, MDC y logging estructurado · Avanzado · 55 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
@@ -1094,6 +1088,13 @@
 - `java/modulo-12` — Tema 4: SOLID y cuándo NO aplicar un patrón · Avanzado · 60 min — SRP (responsabilidad única); OCP (abierto/cerrado); LSP (sustitución de Liskov); ISP (segregación de interfaces); DIP (inversión de dependencias); cuándo NO aplicar un patrón
 - `java/modulo-12` — Tema 5: Prototype — copiar configuración sin compartir estado mutable · Intermedio · 45 min — clonar una configuración existente; copia superficial vs profunda; campos mutables y copia defensiva; clone()/Cloneable y sus problemas; Prototype vs Builder/new
 - `java/modulo-12` — Tema 6: Patrones estructurales — elegir por intención · Avanzado · 65 min — Adapter: traducir una interfaz; Decorator: añadir responsabilidad; Proxy: controlar el acceso; Facade: simplificar un subsistema; Bridge: separar abstracción de implementación; elegir por intención, no por forma
+- `java/modulo-13` — Tema 1: Arquitectura por capas del proyecto integrador · Avanzado · 50 min — capas: dominio, servicio, aplicación; dirección de la dependencia; dominio sin infraestructura; puerto y adaptador (inversión); ensamblaje en el bootstrap; fitness function de la frontera
+- `java/modulo-13` — Tema 2: Integrando concurrencia, modelado y testing · Experto · 60 min — resultado explícito con sealed (Exito/Error); fallo esperado vs error interno; procesamiento concurrente del lote; reparto de éxitos y errores; prueba con dependencia simulada
+- `java/modulo-13` — Tema 3: Build reproducible y cierre del track · Avanzado · 50 min — orden única y documentada; build reproducible; project.build.outputTimestamp; comparación byte a byte; fijar entorno y versiones; fuente única de verdad
+- `java/modulo-14` — Tema 1: Compartir memoria requiere orden y visibilidad · Experto · 60 min — carrera de datos y resultado permitido por el JMM; volatile como happens-before write->read; otras aristas happens-before (monitor, start/join); volatile no da atomicidad en read-modify-write; AtomicLong/LongAdder; publicación segura de colecciones (copia defensiva); inmutabilidad superficial vs profunda en records
+- `java/modulo-14` — Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo · Experto · 65 min — dead code elimination del JIT; consumir resultado: retorno vs Blackhole; warmup, forks e iteraciones; @State/@Setup/@Param; procesador de anotaciones genera BenchmarkList; Score vs Error (distribución); microbenchmark != latencia de usuario
+- `java/modulo-14` — Tema 3: Deserializar es permitir construcción y comportamiento · Experto · 60 min — deserialización ejecuta construcción, no solo lectura; allowlist por patrón terminada en !*; java.base/* necesario para tipos internos; límites maxdepth/maxrefs/maxbytes; el filtro no sustituye validación del DTO; preferir JSON con DTO cerrado; allowlist, no denylist de gadgets
+- `java/modulo-14` — Tema 4: El runtime es parte del artefacto y necesita ciclo de vida · Experto · 60 min — jdeps --print-module-deps descubre módulos; jlink enlaza una imagen autocontenida; módulo ausente => fallo en ejecución; detección estática no ve reflexión/ServiceLoader; -Xmx no cubre memoria no-heap; ciclo de vida: reconstruir ante parche del JDK
 - `java/modulo-18` — Tema 3: Sockets TCP y UDP — la red que hay debajo de HttpClient · Avanzado · 2 h — modelo cliente/servidor y puertos; ServerSocket y accept(); Socket y streams de I/O con charset explícito; TCP fiable, ordenado, orientado a conexión; UDP DatagramSocket/DatagramPacket; TCP frente a UDP; timeouts de socket (setSoTimeout); cierre de recursos y puerto ocupado; un cliente por hilo frente a virtual threads
 - `java/modulo-18` — Tema 4: Seguridad defensiva — hash, HMAC, firma y cifrado · Avanzado · 2 h 30 min — hash criptográfico (MessageDigest); comparación en tiempo constante (MessageDigest.isEqual); hash no sirve para contraseñas; HMAC (Mac); firma digital (Signature, par de claves); cifrado simétrico AES-GCM (Cipher); IV/nonce único y gestión de claves; hash vs HMAC vs firma vs cifrado
 - `java/modulo-2` — Tema 1: List, Set, Map y sus implementaciones · Básico · 45 min — List y sus implementaciones (ArrayList/LinkedList); complejidad Big-O; Set y unicidad; equals/hashCode como contrato; orden de iteración por implementación; Map y sus implementaciones; colecciones inmutables (List.of); iteración y ConcurrentModificationException; medición informal vs benchmark

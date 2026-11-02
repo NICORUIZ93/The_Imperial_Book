@@ -117,6 +117,48 @@
         "https://formulae.brew.sh/cask/temurin"
       ]
     },
+    "java/modulo-14::Tema 1: Compartir memoria requiere orden y visibilidad · Experto · 60 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: Visibilidad con bandera volatile termina correctamente (terminado=true, exit 0); se documenta que sin volatile el JMM permite que el worker no vea el stop (carrera legal) y que volatile da visibilidad pero no atomicidad para read-modify-write (usar AtomicLong).",
+      "criticalSubtopics": ["carrera de datos y resultado permitido por el JMM", "volatile como happens-before write->read", "otras aristas happens-before (monitor, start/join)", "volatile no da atomicidad en read-modify-write", "AtomicLong/LongAdder", "publicación segura de colecciones (copia defensiva)", "inmutabilidad superficial vs profunda en records"],
+      "sources": ["https://docs.oracle.com/javase/specs/jls/se27/html/jls-17.html", "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/atomic/AtomicLong.html"]
+    },
+    "java/modulo-14::Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo · Experto · 65 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1 con JMH 1.37 (repo local): el annotation processor generó META-INF/BenchmarkList y JMH ejecutó las 6 combinaciones (linearConsumido/linearDevuelto/linearEliminable x size 100/10000) con tabla Score/Error en ns/op; se documenta dead-code elimination y Compiler Blackholes de JDK 27.",
+      "criticalSubtopics": ["dead code elimination del JIT", "consumir resultado: retorno vs Blackhole", "warmup, forks e iteraciones", "@State/@Setup/@Param", "procesador de anotaciones genera BenchmarkList", "Score vs Error (distribución)", "microbenchmark != latencia de usuario"],
+      "sources": ["https://openjdk.org/projects/code-tools/jmh/", "https://maven.apache.org/plugins/maven-compiler-plugin/compile-mojo.html"]
+    },
+    "java/modulo-14::Tema 3: Deserializar es permitir construcción y comportamiento · Experto · 60 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: FiltroDemo deserializa ImportBatch permitido (valido=ImportBatch[items=[RF-1]]), muestra que sin filtro Unexpected se materializa, y con ObjectInputFilter (allowlist terminada en !*) lo rechaza con 'InvalidClassException: filter status: REJECTED' antes de instanciar; límites maxdepth/maxrefs/maxbytes incluidos.",
+      "criticalSubtopics": ["deserialización ejecuta construcción, no solo lectura", "allowlist por patrón terminada en !*", "java.base/* necesario para tipos internos", "límites maxdepth/maxrefs/maxbytes", "el filtro no sustituye validación del DTO", "preferir JSON con DTO cerrado", "allowlist, no denylist de gadgets"],
+      "sources": ["https://docs.oracle.com/en/java/javase/27/core/serialization-filtering1.html", "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/io/ObjectInputFilter.html"]
+    },
+    "java/modulo-14::Tema 4: El runtime es parte del artefacto y necesita ciclo de vida · Experto · 60 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: jdeps --print-module-deps detecta 'java.base,java.logging,java.net.http' del JAR con HttpClient; jlink construye un runtime autocontenido (45M) que ejecuta la app con su propio bin/java. Se documenta que jdeps no ve reflexión/ServiceLoader y que la imagen jlink debe reconstruirse ante parches del JDK.",
+      "criticalSubtopics": ["jdeps --print-module-deps descubre módulos", "jlink enlaza una imagen autocontenida", "módulo ausente => fallo en ejecución", "detección estática no ve reflexión/ServiceLoader", "-Xmx no cubre memoria no-heap", "ciclo de vida: reconstruir ante parche del JDK"],
+      "sources": ["https://docs.oracle.com/en/java/javase/27/docs/specs/man/jlink.html", "https://docs.oracle.com/en/java/javase/27/docs/specs/man/jdeps.html"]
+    },
+    "java/modulo-13::Tema 1: Arquitectura por capas del proyecto integrador · Avanzado · 50 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: las tres capas (domain/service/app) compilan en orden y ejecutan 'Delivery[id=RF-13, weight=2.5, destination=Madrid]'; el dominio compila sin classpath, y añadirle un import a infraestructura inexistente falla con 'package com.example.delivery.infrastructure does not exist' (frontera comprobable).",
+      "criticalSubtopics": ["capas: dominio, servicio, aplicación", "dirección de la dependencia", "dominio sin infraestructura", "puerto y adaptador (inversión)", "ensamblaje en el bootstrap", "fitness function de la frontera"],
+      "sources": ["https://maven.apache.org/guides/", "https://dev.java/learn/"]
+    },
+    "java/modulo-13::Tema 2: Integrando concurrencia, modelado y testing · Experto · 60 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: ProcesadorLote procesa el lote con newVirtualThreadPerTaskExecutor y devuelve 3 Exito + 2 Error (tareas 2 y 5 con motivo='dirección incompleta'); el fallo esperado es un valor (sealed Resultado), no interrumpe el lote. Separa fallo esperado de error interno (ExecutionException -> IllegalStateException).",
+      "criticalSubtopics": ["resultado explícito con sealed (Exito/Error)", "fallo esperado vs error interno", "procesamiento concurrente del lote", "reparto de éxitos y errores", "prueba con dependencia simulada"],
+      "sources": ["https://dev.java/learn/concurrency/virtual-threads/", "https://docs.junit.org/current/user-guide/"]
+    },
+    "java/modulo-13::Tema 3: Build reproducible y cierre del track · Avanzado · 50 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: Main imprime 'integrador listo'; dos empaquetados con fecha fijada (jar --date=2026-01-01T00:00:00Z, mecanismo subyacente de project.build.outputTimestamp) producen SHA-256 idéntico y cmp confirma igualdad byte a byte; sin fijar la fecha, los dos JAR difieren (no reproducible).",
+      "criticalSubtopics": ["orden única y documentada", "build reproducible", "project.build.outputTimestamp", "comparación byte a byte", "fijar entorno y versiones", "fuente única de verdad"],
+      "sources": ["https://maven.apache.org/guides/mini/guide-reproducible-builds.html", "https://www.mojohaus.org/exec-maven-plugin/"]
+    },
     "java/modulo-12::Tema 1: Builder — configuración paso a paso y validación · Intermedio · 45 min": {
       "status": "reviewed", "reviewDate": "2026-11-02",
       "execution": "Temurin 27.0.1: BuilderPedidoDemo imprime 'builder=Ana:RF-1:2'; omitir .codigo() lanza IllegalStateException 'cliente y codigo son obligatorios' en build() (ningún objeto parcial sale); unidades tiene default 1 y validación positiva.",
