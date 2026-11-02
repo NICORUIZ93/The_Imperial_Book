@@ -4926,14 +4926,14 @@
       "path": "web/public/content/java/modulo-19.md",
       "topic": "Tema 7: Internacionalización: números, monedas, fechas y orden de texto",
       "providerCitations": [
-        "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Locale.html",
-        "https://docs.oracle.com/javase/tutorial/i18n/"
+        "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/Locale.html",
+        "https://docs.oracle.com/en/java/javase/27/intl/internationalization-overview.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 846,
+      "line": 1014,
       "originalProseUrls": [
-        "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Locale.html",
-        "https://docs.oracle.com/javase/tutorial/i18n/"
+        "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/Locale.html",
+        "https://docs.oracle.com/en/java/javase/27/intl/internationalization-overview.html"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -7058,15 +7058,6 @@
       "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
     },
     {
-      "url": "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Locale.html",
-      "status": 200,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Locale.html",
-      "contentType": "text/html",
-      "title": "Locale (Java SE 21 &amp; JDK 21)",
-      "checkedAt": "2026-10-31T15:07:22.562079+00:00",
-      "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
-    },
-    {
       "url": "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Function.html",
       "status": 200,
       "finalUrl": "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Function.html",
@@ -7178,6 +7169,15 @@
       "url": "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/ref/package-summary.html",
       "status": 0,
       "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/ref/package-summary.html",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
+      "url": "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/Locale.html",
+      "status": 0,
+      "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/Locale.html",
       "contentType": "",
       "title": null,
       "checkedAt": null,
@@ -7346,6 +7346,15 @@
       "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
+      "url": "https://docs.oracle.com/en/java/javase/27/intl/internationalization-overview.html",
+      "status": 0,
+      "finalUrl": "https://docs.oracle.com/en/java/javase/27/intl/internationalization-overview.html",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
       "url": "https://docs.oracle.com/en/java/javase/27/jfapi/",
       "status": 0,
       "finalUrl": "https://docs.oracle.com/en/java/javase/27/jfapi/",
@@ -7397,15 +7406,6 @@
       "contentType": "text/html",
       "title": "Lesson: Aggregate Operations (The Java&trade; Tutorials &gt; Collections)",
       "checkedAt": "2026-10-31T15:07:23.692651+00:00",
-      "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
-    },
-    {
-      "url": "https://docs.oracle.com/javase/tutorial/i18n/",
-      "status": 200,
-      "finalUrl": "https://docs.oracle.com/javase/tutorial/i18n/",
-      "contentType": "text/html",
-      "title": "Trail: Internationalization (The Java&trade; Tutorials)",
-      "checkedAt": "2026-10-31T15:07:23.928409+00:00",
       "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
     },
     {
@@ -11250,8 +11250,8 @@
     "remainingUnrecognizedTopics": 0,
     "applicabilityPendingTopics": 378,
     "urlsChecked": 539,
-    "urlsReachable": 500,
-    "urlsPending": 39
+    "urlsReachable": 498,
+    "urlsPending": 41
   },
   "corrections": [
     {

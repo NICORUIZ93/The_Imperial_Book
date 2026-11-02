@@ -8496,7 +8496,7 @@
       "module": 19,
       "title": "Tema 2: Expresiones regulares con Pattern y Matcher · Intermedio · 90 min",
       "file": "web/public/content/java/modulo-19.md",
-      "line": 150,
+      "line": 178,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -8510,7 +8510,7 @@
       "module": 19,
       "title": "Tema 3: Dinero exacto con BigDecimal · Básico · 75 min",
       "file": "web/public/content/java/modulo-19.md",
-      "line": 271,
+      "line": 327,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -8524,7 +8524,7 @@
       "module": 19,
       "title": "Tema 4: Assertions y diseño por contrato · Intermedio · 75 min",
       "file": "web/public/content/java/modulo-19.md",
-      "line": 390,
+      "line": 474,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -8538,7 +8538,7 @@
       "module": 19,
       "title": "Tema 5: ServiceLoader: plugins sin acoplar implementaciones · Avanzado · 2 h",
       "file": "web/public/content/java/modulo-19.md",
-      "line": 540,
+      "line": 652,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -8552,7 +8552,7 @@
       "module": 19,
       "title": "Tema 6: Proxies dinámicos: así funcionan @Transactional y los mocks · Avanzado · 90 min",
       "file": "web/public/content/java/modulo-19.md",
-      "line": 701,
+      "line": 841,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -8566,7 +8566,7 @@
       "module": 19,
       "title": "Tema 7: Internacionalización: números, monedas, fechas y orden de texto · Intermedio · 90 min",
       "file": "web/public/content/java/modulo-19.md",
-      "line": 846,
+      "line": 1014,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -8678,7 +8678,7 @@
       "module": 21,
       "title": "Tema 2: Compatibilidad binaria frente a compatibilidad de fuente · Intermedio · 45 min",
       "file": "web/public/content/java/modulo-21.md",
-      "line": 215,
+      "line": 243,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8690,7 +8690,7 @@
       "module": 21,
       "title": "Tema 3: Evolucionar sin romper: default methods, deprecación y retirada · Intermedio · 45 min",
       "file": "web/public/content/java/modulo-21.md",
-      "line": 374,
+      "line": 430,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8702,7 +8702,7 @@
       "module": 21,
       "title": "Tema 4: Genéricos, borrado y métodos puente en la superficie pública · Avanzado · 50 min",
       "file": "web/public/content/java/modulo-21.md",
-      "line": 617,
+      "line": 701,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8714,7 +8714,7 @@
       "module": 21,
       "title": "Tema 5: Verificar la compatibilidad en el build · Avanzado · 50 min",
       "file": "web/public/content/java/modulo-21.md",
-      "line": 797,
+      "line": 909,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8738,7 +8738,7 @@
       "module": 22,
       "title": "Tema 2: Claves mutables y el mapa que pierde entradas · Intermedio · 40 min",
       "file": "web/public/content/java/modulo-22.md",
-      "line": 219,
+      "line": 247,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8750,7 +8750,7 @@
       "module": 22,
       "title": "Tema 3: Copia defensiva, copia superficial y clone · Intermedio · 40 min",
       "file": "web/public/content/java/modulo-22.md",
-      "line": 380,
+      "line": 436,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8762,7 +8762,7 @@
       "module": 22,
       "title": "Tema 4: Enums de dominio: estado, código y comportamiento · Intermedio · 45 min",
       "file": "web/public/content/java/modulo-22.md",
-      "line": 634,
+      "line": 718,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8774,7 +8774,7 @@
       "module": 22,
       "title": "Tema 5: Clases anidadas, this$0 y la referencia que retiene · Avanzado · 45 min",
       "file": "web/public/content/java/modulo-22.md",
-      "line": 840,
+      "line": 952,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

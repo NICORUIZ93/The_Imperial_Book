@@ -1677,7 +1677,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "fe0f22d818077d3e008868d0596e9471aa974cb0b8aa7646a3a728f5967145ee",
+    "fingerprint": "3f7bde59844b2a9387eeaa9767c78049f75b4f105eabd9d1b63fac3e2797a80f",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
@@ -6573,51 +6573,51 @@
       {
         "issues": [],
         "module": 19,
-        "tailWords": 141,
+        "tailWords": 150,
         "topic": "Tema 1: Reflexión y anotaciones en tiempo de ejecución · Intermedio · 90 min",
-        "words": 742
+        "words": 1162
       },
       {
         "issues": [],
         "module": 19,
-        "tailWords": 146,
+        "tailWords": 155,
         "topic": "Tema 2: Expresiones regulares con Pattern y Matcher · Intermedio · 90 min",
-        "words": 758
+        "words": 1151
+      },
+      {
+        "issues": [],
+        "module": 19,
+        "tailWords": 154,
+        "topic": "Tema 3: Dinero exacto con BigDecimal · Básico · 75 min",
+        "words": 1120
+      },
+      {
+        "issues": [],
+        "module": 19,
+        "tailWords": 154,
+        "topic": "Tema 4: Assertions y diseño por contrato · Intermedio · 75 min",
+        "words": 1134
       },
       {
         "issues": [],
         "module": 19,
         "tailWords": 145,
-        "topic": "Tema 3: Dinero exacto con BigDecimal · Básico · 75 min",
-        "words": 714
-      },
-      {
-        "issues": [],
-        "module": 19,
-        "tailWords": 144,
-        "topic": "Tema 4: Assertions y diseño por contrato · Intermedio · 75 min",
-        "words": 730
-      },
-      {
-        "issues": [],
-        "module": 19,
-        "tailWords": 136,
         "topic": "Tema 5: ServiceLoader: plugins sin acoplar implementaciones · Avanzado · 2 h",
-        "words": 790
+        "words": 1180
       },
       {
         "issues": [],
         "module": 19,
-        "tailWords": 153,
+        "tailWords": 162,
         "topic": "Tema 6: Proxies dinámicos: así funcionan @Transactional y los mocks · Avanzado · 90 min",
-        "words": 781
+        "words": 1210
       },
       {
         "issues": [],
         "module": 19,
-        "tailWords": 146,
+        "tailWords": 164,
         "topic": "Tema 7: Internacionalización: números, monedas, fechas y orden de texto · Intermedio · 90 min",
-        "words": 820
+        "words": 1245
       },
       {
         "issues": [],
@@ -6671,72 +6671,72 @@
       {
         "issues": [],
         "module": 21,
-        "tailWords": 377,
+        "tailWords": 382,
         "topic": "Tema 1: Qué es la superficie pública de una API · Básico · 40 min",
-        "words": 1653
+        "words": 2179
       },
       {
         "issues": [],
         "module": 21,
-        "tailWords": 345,
+        "tailWords": 350,
         "topic": "Tema 2: Compatibilidad binaria frente a compatibilidad de fuente · Intermedio · 45 min",
-        "words": 1502
+        "words": 2020
       },
       {
         "issues": [],
         "module": 21,
-        "tailWords": 336,
+        "tailWords": 341,
         "topic": "Tema 3: Evolucionar sin romper: default methods, deprecación y retirada · Intermedio · 45 min",
-        "words": 1764
+        "words": 2245
       },
       {
         "issues": [],
         "module": 21,
-        "tailWords": 312,
+        "tailWords": 317,
         "topic": "Tema 4: Genéricos, borrado y métodos puente en la superficie pública · Avanzado · 50 min",
-        "words": 1458
+        "words": 1942
       },
       {
         "issues": [],
         "module": 21,
-        "tailWords": 348,
+        "tailWords": 353,
         "topic": "Tema 5: Verificar la compatibilidad en el build · Avanzado · 50 min",
-        "words": 1404
+        "words": 1887
       },
       {
         "issues": [],
         "module": 22,
-        "tailWords": 376,
+        "tailWords": 381,
         "topic": "Tema 1: El contrato de equals y hashCode · Básico · 35 min",
-        "words": 1614
+        "words": 2289
       },
       {
         "issues": [],
         "module": 22,
-        "tailWords": 343,
+        "tailWords": 348,
         "topic": "Tema 2: Claves mutables y el mapa que pierde entradas · Intermedio · 40 min",
-        "words": 1338
+        "words": 2003
       },
       {
         "issues": [],
         "module": 22,
-        "tailWords": 363,
+        "tailWords": 368,
         "topic": "Tema 3: Copia defensiva, copia superficial y clone · Intermedio · 40 min",
-        "words": 1609
+        "words": 2237
       },
       {
         "issues": [],
         "module": 22,
-        "tailWords": 370,
+        "tailWords": 375,
         "topic": "Tema 4: Enums de dominio: estado, código y comportamiento · Intermedio · 45 min",
-        "words": 1505
+        "words": 2079
       },
       {
         "issues": [],
         "module": 22,
-        "tailWords": 373,
+        "tailWords": 378,
         "topic": "Tema 5: Clases anidadas, this$0 y la referencia que retiene · Avanzado · 45 min",
-        "words": 1487
+        "words": 2116
       },
       {
         "issues": [],

@@ -15,6 +15,34 @@ El proyecto del módulo es una librería de dominio para RutaFlow: guías, cotiz
 
 **¿Por qué es importante?** Cada miembro `public` o `protected` y cada tipo que aparece en una firma pública es una promesa que otros equipos compilan dentro de sus aplicaciones. Si esa promesa incluye un tipo que el cliente no puede ver, el método existe pero es inutilizable: el compilador lo rechaza aunque la firma sea `public`. La superficie de una API no es lo que escribiste con la palabra `public`; es lo que un cliente real puede compilar y llamar.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Niveles de acceso frente a superficie real | Prerrequisito | `javap -public` lista solo tipos y miembros públicos de `Guia` |
+| Tipos expuestos en la firma | Núcleo | `detalle()` aparece devolviendo `io.academia.envios.DetalleInterno` en el volcado |
+| Constante `public static final` en línea | Variante | `Guia.MAX_BULTO` imprime `30` copiado dentro de `Cliente.class` |
+| Encapsulación por paquete y JPMS | Límite | `DetalleInterno` es package-private y no puede nombrarse desde `cliente` |
+| Error de tipo de retorno inaccesible | Error frecuente | `DetalleInterno.codigo() is defined in an inaccessible class or interface` |
+| `javap -public` como vista del cliente | Diagnóstico | la salida de `javap -public` reproduce exactamente lo que el cliente puede llamar |
+| Sacar el tipo interno de la firma | Decisión | la corrección devuelve datos de contrato en vez de hacer `public` a `DetalleInterno` |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Niveles de acceso frente a superficie real (prerrequisito).** Java tiene cuatro niveles de acceso, pero para un consumidor solo cuentan los tipos `public` de paquetes exportados y sus miembros `public` y `protected`. Por eso `javap -public` sobre `Guia` muestra el contrato que otro paquete puede compilar, no el código completo que escribiste. Sin distinguir visibilidad de superficie real, se promete de más.
+
+**Tipos expuestos en la firma (núcleo).** Cada parámetro, retorno y excepción declarada de un miembro público forma parte de la promesa. En el demo, `detalle()` filtra `DetalleInterno` en su firma y `javap -public` lo expone aunque el tipo no sea usable: la firma manda sobre la intención.
+
+**Constante `public static final` en línea (variante).** Una constante primitiva o `String` no se lee en ejecución: el compilador copia su valor dentro del cliente. `Guia.MAX_BULTO` imprime `30` porque ese literal quedó dentro de `Cliente.class`, no porque se consulte el campo, y eso anticipa el comportamiento que el Tema 2 convierte en trampa.
+
+**Encapsulación por paquete y JPMS (límite).** Un tipo package-private como `DetalleInterno` queda fuera de la superficie siempre que nadie lo exponga; JPMS refuerza ese límite exportando solo el paquete de contrato. El límite se rompe en cuanto ese tipo aparece en una firma pública, aunque la clase siga siendo interna.
+
+**Error de tipo de retorno inaccesible (error frecuente).** Al llamar `guia.detalle().codigo()` desde otro paquete, el compilador falla con `DetalleInterno.codigo() is defined in an inaccessible class or interface`: el método es `public` pero su tipo de retorno no, y Java exige que el tipo sea accesible para invocar sus miembros. Es una superficie rota a medias que parece funcionar.
+
+**`javap -public` como vista del cliente (diagnóstico).** El comando `javap -public` es la herramienta de diagnóstico que reproduce la vista del consumidor: lo que sale ahí es lo que se promete. Si aparece algo que no quieres mantener, el diseño de la API aún no está terminado aunque el código compile.
+
+**Sacar el tipo interno de la firma (decisión).** La corrección profesional no es hacer `public` a `DetalleInterno` —eso amplía la promesa— sino retirar el tipo interno de la firma: devolver datos primitivos o un tipo de contrato y dejar el detalle como método package-private. Así la superficie queda limpia sin ampliar el compromiso.
+
 **Conceptos clave:** superficie pública, firma, tipo expuesto, encapsulación de paquete, constante en línea.
 
 Un tipo en Java tiene cuatro niveles de acceso, pero para quien consume una librería solo cuentan tres puertas: los tipos `public` de paquetes exportados, los miembros `public` y `protected` de esos tipos, y los tipos que aparecen en sus firmas —parámetros, retorno y excepciones declaradas—. Un tipo `public` en un paquete de implementación sigue siendo accesible si nadie lo oculta con JPMS, por eso el Módulo 10 insiste en exportar solo el paquete de contrato y cerrar el resto.
@@ -208,7 +236,7 @@ javap ____ -cp envios-core-1.0.0.jar io.academia.envios.Guia
 
 **Límites y decisión de uso:** en una aplicación con un solo ejecutable y sin consumidores externos, la compatibilidad binaria no es una restricción y conviene refactorizar libremente. Este módulo aplica cuando la librería la consume otro equipo, otro servicio o el propio producto en versiones anteriores.
 
-**Fuente oficial:** [Java Language Specification, SE 25 — Chapter 6: Names, §6.6 Access Control](https://docs.oracle.com/javase/specs/jls/se25/html/jls-6.html).
+**Fuente oficial revisada el 2026-11-01:** [Java Language Specification, SE 27 — Chapter 6: Names, §6.6 Access Control](https://docs.oracle.com/javase/specs/jls/se27/html/jls-6.html).
 
 **Transferencia al proyecto integrador:** la separación entre el paquete de contrato y los paquetes de implementación de `envios-core` es la misma que aplicará el proyecto integrador del Módulo 13 cuando extraiga su dominio a una librería reutilizable.
 
@@ -220,6 +248,34 @@ javap ____ -cp envios-core-1.0.0.jar io.academia.envios.Guia
 #### Aprende
 
 **¿Por qué es importante?** Recompilar todo el mundo no es gratis ni siempre posible: hay servicios desplegados, aplicaciones móviles en tiendas y clientes que actualizan la librería sin tocar su código. Un cambio que rompe la compilación se detecta en el pipeline; un cambio que rompe el enlace binario se detecta en producción, en la primera petición que ejecuta ese método, y con una traza que no señala la línea que lo causó.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Compatibilidad de fuente frente a binaria | Prerrequisito | recompilar el cliente da error de compilación; ejecutarlo da `NoSuchMethodError` |
+| Enlace perezoso de la JVM | Núcleo | `Cliente` arranca y falla en la primera llamada a `codigo()` |
+| `NoSuchMethodError` con descriptor completo | Diagnóstico | `NoSuchMethodError: 'java.lang.String io.academia.envios.Guia.codigo()'` |
+| Constante en línea no se propaga | Variante | el cliente imprime `30` contra 2.0.0 y `50` solo tras recompilar |
+| Casos de ida y vuelta entre fuente y binario | Límite | renombrar rompe ambas; cambiar genérico rompe solo la fuente |
+| Confundir `NoClassDefFoundError` con `NoSuchMethodError` | Error frecuente | falta la clase entera da `NoClassDefFoundError`, falta el miembro da `NoSuchMethodError` |
+| Subir versión mayor con todos los consumidores | Decisión | romper compatibilidad exige recompilar a todos, imposible para una librería pública |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Compatibilidad de fuente frente a binaria (prerrequisito).** Son dos preguntas distintas: si el código antiguo vuelve a compilar (fuente) y si un `.class` antiguo se enlaza y ejecuta (binaria). El demo las separa: recompilar `Cliente.java` contra 2.0.0 da `cannot find symbol`, mientras que ejecutar el `.class` viejo da `NoSuchMethodError`. Confundirlas lleva a confiar en el pipeline para detectar algo que solo aparece en producción.
+
+**Enlace perezoso de la JVM (núcleo).** La JVM no verifica todos los enlaces al arrancar: los resuelve en el primer uso. Por eso `Cliente` compilado contra 1.0.0 arranca sin problema contra 2.0.0 y falla solo cuando invoca `codigo()`. Ese retardo explica por qué una ruptura binaria aparece horas después del despliegue.
+
+**`NoSuchMethodError` con descriptor completo (diagnóstico).** El error `NoSuchMethodError: 'java.lang.String io.academia.envios.Guia.codigo()'` incluye el descriptor binario completo, no solo el nombre. Ese descriptor es la firma que la JVM busca y no encuentra; leerlo entero permite ubicar el miembro exacto que desapareció.
+
+**Constante en línea no se propaga (variante).** Cambiar `MAX_BULTO` de 30 a 50 no lanza ningún error: el valor 30 ya está copiado dentro de `Cliente.class`. El mismo cliente imprime `30` contra 2.0.0 y solo pasa a `50` tras recompilarlo, demostrando que las constantes no viajan a los binarios ya compilados.
+
+**Casos de ida y vuelta entre fuente y binario (límite).** Un cambio puede ser binariamente compatible y romper la fuente, o al revés. Renombrar `codigo()` rompe ambas, pero cambiar `List<String>` por `List<CharSequence>` no altera el descriptor y solo rompe la compilación. El límite marca que ninguna de las dos compatibilidades implica la otra.
+
+**Confundir `NoClassDefFoundError` con `NoSuchMethodError` (error frecuente).** Si falta la clase completa en el classpath, la JVM lanza `NoClassDefFoundError`; si falta solo el miembro, `NoSuchMethodError`. Leer mal la traza lleva a buscar el problema en el lugar equivocado: uno es un artefacto ausente, el otro un contrato cambiado.
+
+**Subir versión mayor con todos los consumidores (decisión).** Romper compatibilidad es aceptable solo cuando controlas todos los despliegues y puedes recompilar a cada consumidor junto con la nueva versión mayor. Una librería pública o compartida entre equipos no puede hacerlo, y por eso acumula adaptadores en vez de renombrar a la ligera.
 
 **Conceptos clave:** compatibilidad de fuente, compatibilidad binaria, enlace perezoso, `NoSuchMethodError`, constante en línea.
 
@@ -367,7 +423,7 @@ java -cp "envios-core-2.0.0.jar:cliente-out" cliente.Cliente
 
 **Límites y decisión de uso:** mantener compatibilidad binaria tiene un coste: acumulas adaptadores, alias y métodos deprecados. Un proyecto interno que controla todos sus despliegues puede romper la compatibilidad y subir la versión mayor junto con todos sus consumidores; una librería pública o compartida entre equipos, no.
 
-**Fuente oficial:** [Java Language Specification, SE 25 — Chapter 13: Binary Compatibility](https://docs.oracle.com/javase/specs/jls/se25/html/jls-13.html).
+**Fuente oficial revisada el 2026-11-01:** [Java Language Specification, SE 27 — Chapter 13: Binary Compatibility](https://docs.oracle.com/javase/specs/jls/se27/html/jls-13.html).
 
 **Transferencia al proyecto integrador:** la matriz de compatibilidad es el documento que el proyecto integrador del Módulo 13 exige antes de extraer su dominio a una librería consumida por más de una aplicación.
 
@@ -379,6 +435,34 @@ java -cp "envios-core-2.0.0.jar:cliente-out" cliente.Cliente
 #### Aprende
 
 **¿Por qué es importante?** Las interfaces son el punto más delicado de la evolución de una API: miles de implementaciones viven fuera de tu repositorio y no puedes recompilarlas. Añadir un método abstracto parece inofensivo —una línea— y produce un `AbstractMethodError` en cada implementador antiguo que reciba la llamada. Los métodos `default` existen precisamente para que una interfaz pueda crecer sin obligar a todos sus implementadores a cambiar a la vez.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Método `default` como crecimiento seguro | Núcleo | `NotificadorConsola` hereda `enviarLote` sin recompilar e imprime `Para RF-001: En reparto` |
+| Delegación del `default` al método abstracto | Prerrequisito | `enviarLote` recorre la lista llamando al `enviar` original del implementador |
+| Método abstracto añadido rompe binarios | Error frecuente | la v3 con `soporta` lanza `AbstractMethodError` en el implementador antiguo |
+| `AbstractMethodError` frente a `NoSuchMethodError` | Diagnóstico | la traza nombra `app/NotificadorConsola.soporta(...)Z is abstract` |
+| Deprecación con `forRemoval` y `since` | Variante | el aviso aparece como `[removal]`, no `[deprecation]` |
+| Interfaz sellada cambia el cálculo | Límite | con `permits` cerrado puedes añadir abstractos porque actualizas a todos |
+| Documentar la política de retirada | Decisión | `-Xlint:deprecation` solo avisa al recompilar, por eso la retirada se escribe |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Método `default` como crecimiento seguro (núcleo).** Un método `default` aporta implementación, así que el implementador antiguo lo hereda sin recompilar. En el demo, `NotificadorConsola.class` compilado contra la v1 ejecuta `enviarLote` de la v2 e imprime `Para RF-001: En reparto`: la interfaz creció sin romper a nadie.
+
+**Delegación del `default` al método abstracto (prerrequisito).** El `default enviarLote` funciona porque recorre la lista y llama al `enviar` que el implementador ya define. Entender que un `default` puede apoyarse en los métodos abstractos existentes es lo que permite añadir comportamiento compuesto sin pedir código nuevo al consumidor.
+
+**Método abstracto añadido rompe binarios (error frecuente).** Añadir un método abstracto como `soporta` en la v3 crea una obligación que los `.class` antiguos no cumplen. El implementador congelado no lo define y la JVM lanza el error en la primera invocación: una línea aparentemente inofensiva rompe a todos los implementadores externos.
+
+**`AbstractMethodError` frente a `NoSuchMethodError` (diagnóstico).** La traza de la v3 dice `app/NotificadorConsola.soporta(Ljava/lang/String;)Z is abstract`: el método existe en la interfaz pero el implementador no lo concreta. Se distingue de `NoSuchMethodError`, donde el miembro ya no existe; aquí existe sin cuerpo en el binario antiguo.
+
+**Deprecación con `forRemoval` y `since` (variante).** `@Deprecated(forRemoval = true, since = "4.0")` no cambia el comportamiento: comunica intención. Al recompilar con `-Xlint:deprecation` el aviso sale como `[removal]`, no `[deprecation]`, distinguiendo «algún día» de «se elimina en la próxima mayor». No rompe el build, informa.
+
+**Interfaz sellada cambia el cálculo (límite).** Una `sealed interface` con `permits` cerrado invierte la regla: si el conjunto de implementadores vive en tu módulo y puedes actualizarlos todos, añadir un método abstracto deja de ser una ruptura. El límite es que todos los implementadores estén bajo tu control y declarados en `permits`.
+
+**Documentar la política de retirada (decisión).** `-Xlint:deprecation` solo avisa a quien recompila; una librería que solo crece en binario nunca verá el aviso. Por eso la decisión profesional es documentar la política de retirada —qué se añade, qué exige `default`, qué se depreca y cuándo se elimina— en vez de confiarla al compilador.
 
 **Conceptos clave:** método `default`, `@Deprecated(forRemoval = true, since = ...)`, retirada en dos fases, interfaz sellada, `AbstractMethodError`.
 
@@ -610,7 +694,7 @@ ____ void enviarLote(List<String> destinos, String mensaje) { ... }
 
 **Límites y decisión de uso:** si la interfaz solo la implementa tu equipo y el despliegue es conjunto, añadir métodos abstractos es más simple y honesto que acumular `default` vacíos que lanzan `UnsupportedOperationException`. La regla de compatibilidad aplica cuando hay implementadores que no controlas.
 
-**Fuente oficial:** [Java SE 25 API — java.lang.Deprecated](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Deprecated.html).
+**Fuente oficial revisada el 2026-11-01:** [Java SE 27 API — java.lang.Deprecated](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/Deprecated.html).
 
 **Transferencia al proyecto integrador:** la política de retirada documentada aquí es la que el proyecto integrador aplicará a su propia interfaz de repositorios antes de publicar la versión 2.0 del dominio.
 
@@ -622,6 +706,34 @@ ____ void enviarLote(List<String> destinos, String mensaje) { ... }
 #### Aprende
 
 **¿Por qué es importante?** Los genéricos existen en el compilador, no en la JVM: el bytecode trabaja con `Object` y con `List` a secas. Esa distancia produce tres efectos que aparecen justo en la superficie pública: dos sobrecargas que el fuente distingue y el bytecode no, métodos puente invisibles que aparecen en las trazas, y cambios de parámetro genérico que pasan el enlace binario pero rompen la compilación de los clientes.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Borrado de tipos en la JVM | Prerrequisito | `List<Guia>` y `List<String>` comparten el borrado `List` |
+| Choque de borrado en sobrecargas | Error frecuente | `name clash: registrar(List<String>) and registrar(List<Guia>) have the same erasure` |
+| Método puente sintético | Núcleo | `javap -p` muestra `Double cotizar` y `Number cotizar` en `CotizadorBase` |
+| Flags `ACC_BRIDGE` y `ACC_SYNTHETIC` | Diagnóstico | `javap -v` marca el segundo `cotizar` como puente generado |
+| Varianza binario-compatible, fuente-incompatible | Variante | `List<String>` a `List<CharSequence>` conserva el descriptor `(Ljava/util/List;)V` |
+| Información genérica ausente en ejecución | Límite | la JVM no conoce el argumento de tipo, solo el atributo `Signature` lo preserva |
+| Nombres distintos o varianza en vez de sobrecarga | Decisión | `registrarGuias` y `registrarCodigos` evitan el choque de borrado |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Borrado de tipos en la JVM (prerrequisito).** Los genéricos existen en el compilador, no en la JVM: el bytecode trabaja con `List` a secas. Por eso `List<Guia>` y `List<String>` son el mismo tipo en ejecución, y entender esa distancia es el punto de partida de los tres efectos que el tema demuestra.
+
+**Choque de borrado en sobrecargas (error frecuente).** Declarar `registrar(List<Guia>)` y `registrar(List<String>)` en la misma clase produce `name clash: ... have the same erasure`, porque para la JVM ambas firmas son `registrar(List)`. No es un fallo del compilador sino del diseño de la firma, que depende de una distinción que el bytecode no conserva.
+
+**Método puente sintético (núcleo).** Cuando `Cotizador` declara `Number cotizar(Guia)` y `CotizadorBase` devuelve `Double`, el compilador añade un método puente `Number cotizar(Guia)` que delega en el real. `javap -p` sobre `CotizadorBase` lista ambos: el puente es lo que hace funcionar el polimorfismo con firmas borradas.
+
+**Flags `ACC_BRIDGE` y `ACC_SYNTHETIC` (diagnóstico).** `javap -v` marca el segundo `cotizar` con `ACC_BRIDGE, ACC_SYNTHETIC`: la prueba de que no lo escribiste tú sino el compilador. Reconocer esos flags evita confundir el puente con un método duplicado al leer un volcado o una traza.
+
+**Varianza binario-compatible, fuente-incompatible (variante).** Cambiar un parámetro de `List<String>` a `List<CharSequence>` deja el descriptor idéntico (`(Ljava/util/List;)V`), así que un cliente ya compilado sigue enlazando, pero al recompilar con `List<String>` falla. Es el caso inverso al renombrado del Tema 2: binario compatible, fuente incompatible.
+
+**Información genérica ausente en ejecución (límite).** La JVM no conoce los argumentos de tipo; solo el atributo `Signature` del bytecode preserva la forma genérica para el compilador. El límite explica por qué un cast sin verificar compila con aviso y puede estallar como `ClassCastException` recién en ejecución.
+
+**Nombres distintos o varianza en vez de sobrecarga (decisión).** La corrección profesional ante un choque de borrado es usar nombres distintos como `registrarGuias` y `registrarCodigos`, o un único método con `List<? extends ...>` que decida dentro. La superficie pública no debe apoyarse en distinciones que el borrado elimina.
 
 **Conceptos clave:** borrado de tipos, descriptor, choque de borrado, método puente, varianza en firmas.
 
@@ -790,7 +902,7 @@ javap ____ -cp out io.academia.envios.CotizadorBase
 
 **Límites y decisión de uso:** si la API es interna y se recompila junto al consumidor, las distinciones de borrado importan poco; si publicas un JAR, cada firma genérica es una decisión que no puedes deshacer sin una versión mayor.
 
-**Fuente oficial:** [Java Language Specification, SE 25 — Chapter 15: Expressions, §15.12 Method Invocation](https://docs.oracle.com/javase/specs/jls/se25/html/jls-15.html).
+**Fuente oficial revisada el 2026-11-01:** [Java Language Specification, SE 27 — Chapter 15: Expressions, §15.12 Method Invocation](https://docs.oracle.com/javase/specs/jls/se27/html/jls-15.html).
 
 **Transferencia al proyecto integrador:** la API de exportación con varianza correcta es la que usará el proyecto integrador para generar informes sin acoplarse a un tipo concreto de colección.
 
@@ -802,6 +914,34 @@ javap ____ -cp out io.academia.envios.CotizadorBase
 #### Aprende
 
 **¿Por qué es importante?** La compatibilidad que no se verifica se rompe en silencio. Un cliente congelado —código fuente que se compila contra cada versión— convierte la promesa de la API en una prueba reproducible: si el cliente deja de compilar, el build falla y la ruptura nunca llega al repositorio. Es la única comprobación que mide lo que de verdad importa, porque compila código real de consumidor en vez de comparar nombres de métodos.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Cliente congelado como prueba reproducible | Núcleo | el verificador compila `Cliente.java` contra cada JAR en vez de comparar firmas |
+| `ToolProvider.getSystemJavaCompiler` | Prerrequisito | devuelve `null` bajo un JRE y el verificador sale con código 2 |
+| `DiagnosticCollector` y filtrado de errores | Diagnóstico | la salida lista `linea 8: cannot find symbol` solo para `Kind.ERROR` |
+| Código de salida como puerta de build | Decisión | `salida=1` ante la ruptura detiene el pipeline |
+| `getTask(...).call()` como señal de éxito | Variante | `call()` devuelve `Boolean.TRUE` solo si compiló sin errores |
+| Qué no detecta el verificador | Límite | no detecta cambios de comportamiento, rendimiento ni semántica |
+| Confundir exit 2 con incompatibilidad | Error frecuente | exit 2 significa error de uso o ausencia de compilador, no ruptura |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Cliente congelado como prueba reproducible (núcleo).** El cliente congelado es código fuente que se compila contra cada versión del JAR. En el demo, el verificador compila `Cliente.java` contra 1.0.0 (COMPATIBLE) y contra 2.0.0 (INCOMPATIBLE), midiendo lo que un consumidor real sufriría en vez de comparar nombres de métodos.
+
+**`ToolProvider.getSystemJavaCompiler` (prerrequisito).** `ToolProvider.getSystemJavaCompiler()` devuelve el compilador del JDK en uso, o `null` si se ejecuta sobre un JRE sin compilador. El verificador comprueba ese `null` y sale con código 2, por eso debe correr con un JDK y no con un JRE.
+
+**`DiagnosticCollector` y filtrado de errores (diagnóstico).** El `DiagnosticCollector` recoge todos los mensajes de la compilación; el verificador filtra solo los de `Kind.ERROR` para imprimir `linea 8: cannot find symbol` sin mezclar avisos. El diagnóstico procede del compilador real, no de una heurística sobre nombres.
+
+**Código de salida como puerta de build (decisión).** La decisión que convierte la verificación en puerta es `System.exit(1)` ante la ruptura: el `salida=1` del demo es lo que detiene un pipeline. Un build no puede declarar compatible algo que un cliente real no compila, y el código de salida traduce esa regla a automatización.
+
+**`getTask(...).call()` como señal de éxito (variante).** `getTask(null, archivos, diagnosticos, opciones, null, unidades).call()` devuelve un `Boolean`: `true` solo si compiló sin errores. Esa llamada es la variante central del patrón `javax.tools`, y su valor es la señal que el verificador traduce en COMPATIBLE o INCOMPATIBLE.
+
+**Qué no detecta el verificador (límite).** El verificador compila fuentes, así que detecta cualquier ruptura de compilación —incluidas las de origen genérico del Tema 4— pero no cambios de comportamiento, rendimiento ni semántica. Ese límite debe declararse: herramientas byte a byte como `japicmp` o `revapi` lo complementan, ninguna detecta un cambio semántico.
+
+**Confundir exit 2 con incompatibilidad (error frecuente).** El código 2 no significa ruptura: señala error de uso (argumentos incorrectos) o ausencia de compilador. Interpretarlo como incompatibilidad lleva a fallar el build por un motivo equivocado; solo el código 1 indica que el cliente congelado dejó de compilar.
 
 **Conceptos clave:** cliente congelado, `ToolProvider.getSystemJavaCompiler`, `DiagnosticCollector`, puerta de build.
 
@@ -955,7 +1095,7 @@ boolean compilo = Boolean.TRUE.equals(
 
 **Límites y decisión de uso:** si el proyecto no publica artefactos ni tiene consumidores externos, el verificador añade mantenimiento sin beneficio; si publica una librería compartida, es la comprobación de menor coste y mayor señal del pipeline. Las herramientas byte a byte (`japicmp`, `revapi`) cubren lo que el cliente congelado no ejercita, a cambio de una dependencia más.
 
-**Fuente oficial:** [Java SE 25 API — javax.tools.JavaCompiler](https://docs.oracle.com/en/java/javase/25/docs/api/java.compiler/javax/tools/JavaCompiler.html).
+**Fuente oficial revisada el 2026-11-01:** [Java SE 27 API — javax.tools.JavaCompiler](https://docs.oracle.com/en/java/javase/27/docs/api/java.compiler/javax/tools/JavaCompiler.html).
 
 **Transferencia al proyecto integrador:** este verificador es el paso de build que el proyecto integrador del Módulo 13 ejecutará antes de etiquetar la versión de su librería de dominio.
 

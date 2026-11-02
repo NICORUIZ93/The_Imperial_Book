@@ -840,3 +840,46 @@ Fuentes de temas actualizadas a API `javase/27` (M16 Java SE 27, M17 PreparedSta
 DataSource/Connection JDK 27). `validate.sh` EXIT 0. Trinquete `--max-pending 1143` OK.
 
 Acumulado cerrado: Java 0–18 y 20 + M18 T3/T4. Siguiente: `java/modulo-19.md` (7 temas).
+
+## 26. Avance: Java módulos 19, 21 y 22 — TRACK JAVA COMPLETO
+
+Fecha: 2026-11-01. Entorno: Temurin **JDK 27.0.1**.
+
+- **Módulo 19 (Java del día a día, 7 temas):** reflexión y anotaciones (`Class`/`Field`/
+  `Method`, `@Retention(RUNTIME)`, `setAccessible`+`opens`, invoke por nombre, coste,
+  no en negocio); regex (Pattern reutilizable, clases/cuantificadores/`\b`, grupos con
+  nombre, `find` vs `matches`, escapes `\\d`, `replaceAll` `${}`, ReDoS); BigDecimal
+  (double inexacto, construir desde String, escala+RoundingMode, HALF_UP/HALF_EVEN,
+  equals vs compareTo, reparto que cuadra, cuándo double); assertions/contrato
+  (precondición con excepción, invariante con assert, `-ea`, postcondición, localizar
+  invariante rota, no para datos externos, sin efectos secundarios); ServiceLoader
+  (servicio/proveedor, descriptor META-INF, constructor vacío, load perezoso, extender
+  sin tocar consumidor, descriptor ausente = 0, uses/provides JPMS); proxies dinámicos
+  (`newProxyInstance`, `InvocationHandler.invoke`, delegar, desenvolver
+  `InvocationTargetException`, solo interfaces, auto-invocación no pasa, Decorator manual);
+  i18n (Locale forLanguageTag/of, NumberFormat, DateTimeFormatter localizado, Collator vs
+  Unicode, MessageFormat choice, ResourceBundle, presentación ≠ intercambio).
+- **Módulo 21 (APIs públicas/compatibilidad, 5 temas):** superficie pública, compatibilidad
+  binaria vs fuente, evolución con default/deprecación, genéricos/borrado/puentes,
+  verificación de compatibilidad en el build. Mapas insertados vía sub-agente, revisados.
+- **Módulo 22 (el objeto por dentro, 5 temas):** equals/hashCode, claves mutables, copia
+  defensiva/clone, enums de dominio, clases anidadas/this$0. Mapas vía sub-agente, revisados.
+
+Evidencia reproducida por mí en JDK 27: M19 Dinero (0.999…, IVA 3563, BigDecimal(0.1) exacta,
+equals false/compareTo 0), M19 Formatos i18n (es-CO/en-US/de-DE, Collator), M19 Reflexion
+(obligatorio=true/false, ENTREGADO), M19 ServiceLoader (2 con descriptor, 0 sin él), M19
+Proxies (proxy dinámico, IllegalArgumentException conservada); M21 T1 `javap -public` (filtra
+DetalleInterno); M22 T1 equals/hashCode (roto size=2, bien size=1). Fuentes a jls/se27,
+API javase/27, i18n overview 27.
+
+`validate.sh` EXIT 0. Trinquete `--max-pending 1143` OK.
+
+**TRACK JAVA CERRADO CON MINUCIOSIDAD:** módulos 0–22 (no existe 23 en Java) + 2 temas nuevos
+insertados (M18 T3 sockets, T4 seguridad). Todos con mapa de subtemas críticos, explicación
+individual por fila, evidencia ejecutada en JDK 27 en los ejemplos reproducibles, prerrequisitos
+encadenados y fuentes oficiales a Java SE 27. Atlas global permanece en javase/25 por contrato
+de official-topic-atlas.json. Cursos separados Maven/Gradle y JDBC quedan como PLANES
+(docs/PLAN-CURSO-*), pendientes de construir módulo a módulo.
+
+Siguiente prioridad del usuario: Spring Boot (23 módulos, 0 con mapa) → Microservicios
+(curso separado) → Docker/Kubernetes (curso separado) → Flutter → Node.

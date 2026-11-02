@@ -36,4 +36,4 @@ señales detectadas tampoco acredita corrección ni comprensión.
 4. `--strict` compara contra `docs/lesson-substance-baseline.json`: ningún
    tema nuevo puede nacer con estas señales sin revisión.
 
-Huella del contenido: `fe0f22d818077d3e008868d0596e9471aa974cb0b8aa7646a3a728f5967145ee`
+Huella del contenido: `3f7bde59844b2a9387eeaa9767c78049f75b4f105eabd9d1b63fac3e2797a80f`
