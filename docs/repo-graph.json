@@ -183,7 +183,7 @@
     },
     {
       "path": "docs/ESTADO-REVISION-MINUCIOSA-20261101.md",
-      "lines": 729,
+      "lines": 751,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1499,7 +1499,7 @@
     },
     {
       "path": "docs/topic-source-review.json",
-      "lines": 11159,
+      "lines": 11203,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -10538,7 +10538,7 @@
     },
     {
       "path": "web/public/content/java/modulo-10.md",
-      "lines": 447,
+      "lines": 519,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10559,7 +10559,7 @@
     },
     {
       "path": "web/public/content/java/modulo-11.md",
-      "lines": 534,
+      "lines": 634,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

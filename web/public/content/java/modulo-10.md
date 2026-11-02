@@ -5,15 +5,40 @@
 
 ### Tema 1: module-info.java y encapsulación fuerte · Intermedio · 50 min
 
-**Prerrequisito:** JDK 27 y un editor. Comprueba `java --version` y `javac --version`.
+**Prerrequisito:** Módulo 1 (modificadores de acceso) y Módulo 8 (build); JDK 27 y un editor. Comprueba `java --version` y `javac --version`.
 
-**Al terminar podrás:** declarar un módulo JPMS con `exports` y confirmar que un paquete `public` pero no exportado permanece inaccesible desde fuera del módulo.
+**Al terminar podrás:** declarar un módulo con `module-info.java`, usar `exports`/`requires`, confirmar que un paquete `public` no exportado queda inaccesible, y distinguir module path de classpath.
 
 #### Aprende
 
 Un paquete interno con detalles de implementación (`academia.core.interno`) tiene clases `public` solo porque otras clases del mismo módulo las necesitan; sin JPMS, cualquier otro módulo de la aplicación también puede importarlas directamente, aunque nunca fue la intención exponerlas como API.
 
 **¿Por qué es importante?** JPMS agrega encapsulación fuerte a nivel de módulo, más allá de lo que los modificadores de acceso tradicionales `public`/`private` ofrecían por sí solos, permitiendo ocultar paquetes completos (incluso con clases `public`) del resto de la aplicación.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia del tema |
+|---|---|---|
+| `module-info.java` | Núcleo | declara el módulo y sus relaciones |
+| `exports` y encapsulación fuerte | Núcleo | un paquete `public` no exportado queda invisible |
+| `requires` | Núcleo | un módulo declara de qué depende |
+| `requires transitive` | Variante | reexportar una dependencia a quien te usa |
+| module path frente a classpath | Diagnóstico | `--module-path` aplica las reglas de módulo |
+| named/automatic/unnamed modules | Límite | un JAR sin `module-info` es módulo automático |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`module-info.java` (núcleo).** Es el descriptor del módulo: declara su **nombre** (`module academia.core`) y sus relaciones (`exports`, `requires`). Vive en la raíz del código fuente del módulo. Sin él, el código es parte del *unnamed module* (sin reglas de módulo).
+
+**`exports` y encapsulación fuerte (núcleo).** `exports paquete` hace que ese paquete sea visible para otros módulos. Un paquete **no** listado permanece **inaccesible desde fuera** aunque sus clases sean `public`: es la encapsulación fuerte que `public` por sí solo no daba. Intentar importarlo da `package ... is not visible` en compilación.
+
+**`requires` (núcleo).** `requires academia.core` declara que este módulo **depende** de otro para ver sus paquetes exportados. Es explícito y verificado: si usas un módulo sin requerirlo, no compila. Hace el grafo de dependencias visible en el descriptor, no escondido en el classpath.
+
+**`requires transitive` (variante).** `requires transitive X` reexporta `X` a quien requiera **tu** módulo: si tu API expone tipos de `X`, el consumidor los ve sin tener que declarar `requires X` por su cuenta. Úsalo solo cuando `X` forme parte de tu superficie pública; de lo contrario, `requires` normal.
+
+**Module path frente a classpath (diagnóstico).** Con `--module-path` (y `--module` para ejecutar) la JVM aplica las reglas de módulo (encapsulación, dependencias). Con `-cp` (classpath) esas reglas **no** aplican y todo es visible como antes de JPMS. No mezcles ambos en el mismo build cuando quieras verificar límites de módulo.
+
+**Named/automatic/unnamed modules (límite).** Un módulo con `module-info` es **named**; un JAR normal **sin** `module-info` puesto en el module path se vuelve **automatic module** (exporta todo, su nombre deriva del JAR); el código en el classpath es el **unnamed module**. Esta gradación permite la migración incremental (Tema 2): no todo tiene que ser modular a la vez.
 
 `module-info.java` es el archivo descriptor que declara explícitamente la identidad de un módulo JPMS y sus relaciones con otros módulos: `module com.miapp.core { exports com.miapp.core.dominio; }` declara que el módulo `com.miapp.core` existe, y que únicamente el paquete `com.miapp.core.dominio` está disponible para ser usado por otros módulos (`exports`), mientras cualquier otro paquete de ese mismo módulo que no aparezca explícitamente en una declaración `exports` permanece completamente inaccesible desde fuera del módulo, sin importar que sus clases individuales estén marcadas como `public`.
 
@@ -141,21 +166,43 @@ Guarda el árbol de ambos módulos, el `module-info.java` y el fallo de compilac
 
 **Errores comunes:** exportar todos los paquetes de un módulo sin necesidad, mezclar classpath y modulepath en el mismo build, y asumir que marcar una clase `public` basta sin declarar también `exports` sobre su paquete.
 
-**Fuente oficial:** [dev.java — Modules](https://dev.java/learn/modules/).
+**Fuentes oficiales revisadas el 2026-11-01:** [dev.java — Modules](https://dev.java/learn/modules/) y [`module-info` — JLS 7.7 (Java SE 27)](https://docs.oracle.com/javase/specs/jls/se27/html/jls-7.html#jls-7.7).
 
 ---
 
 ### Tema 2: Migración incremental y cuándo JPMS aporta valor · Avanzado · 55 min
 
-**Prerrequisito:** JDK 27, un editor y el Tema 1. Comprueba `javac --version`.
+**Prerrequisito:** Tema 1 de este módulo; JDK 27 y un editor. Comprueba `javac --version`.
 
-**Al terminar podrás:** modularizar incrementalmente un proyecto de varios módulos, empezando por el módulo «hoja» sin dependencias internas, y decidir si JPMS aporta valor real a un proyecto concreto.
+**Al terminar podrás:** modularizar bottom-up (hoja primero), usar automatic modules y `requires transitive` como puente, diagnosticar `module not found`, y decidir si JPMS aporta valor real a un proyecto concreto.
 
 #### Aprende
 
 Convertir de una sola vez un proyecto legacy grande (sin módulos) a JPMS arriesga romper decenas de dependencias implícitas simultáneamente; migrar primero el módulo sin dependencias internas, y subir progresivamente, permite verificar en cada paso que la migración parcial sigue funcionando.
 
 **¿Por qué es importante?** Migrar incrementalmente desde los módulos «hoja» acota el riesgo de cada paso de la migración; evaluar correctamente cuándo JPMS aporta valor real evita imponer su ceremonia adicional en proyectos donde esos límites arquitectónicos no son genuinamente necesarios.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia del tema |
+|---|---|---|
+| migración bottom-up (hoja primero) | Núcleo | `domain` antes que `application` |
+| automatic modules como puente | Variante | un JAR legacy en el module path sin `module-info` |
+| `requires transitive` en migración | Variante | reexportar un módulo que tu API expone |
+| `module not found` | Diagnóstico | una dependencia mal declarada rompe la compilación |
+| costo/beneficio de JPMS | Decisión | biblioteca grande sí, microservicio pequeño no |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Migración bottom-up (núcleo).** Modularizar un proyecto grande no es un cambio de golpe: empieza por los módulos **hoja** (sin dependencias internas), añade su `module-info` y sube por el árbol. Así verificas en cada paso que la migración parcial sigue funcionando, en vez de romper decenas de dependencias a la vez.
+
+**Automatic modules como puente (variante).** Durante la migración, un JAR legacy **sin** `module-info` puesto en el module path se convierte en *automatic module* (exporta todo, nombre derivado del JAR). Esto permite que un módulo ya modularizado dependa (`requires`) de una librería aún no modular, sin esperar a que el mundo entero tenga módulos.
+
+**`requires transitive` en migración (variante).** Si tu módulo `api` expone en su API pública tipos definidos en `core`, declara `requires transitive core`: así quien requiera `api` ve `core` automáticamente. No lo uses si `core` es solo un detalle interno; reexportar de más filtra dependencias que querías ocultar.
+
+**`module not found` (diagnóstico).** Una dependencia mal escrita o ausente del module path da `module not found: X` en compilación. Es un error **temprano y explícito** (a diferencia del classpath, donde el fallo aparecería en runtime). Revisa que el módulo exista en `--module-path` y que su nombre coincida.
+
+**Costo/beneficio de JPMS (decisión).** JPMS aporta valor en **bibliotecas grandes de larga vida** con muchos consumidores (el propio JDK lo usa) o sistemas con muchos equipos sobre una base común: límites verificados por el compilador. Para un **microservicio pequeño** o un proyecto de un equipo, la ceremonia de `module-info` por módulo suele ser complejidad sin beneficio proporcional; documenta la decisión de no usarlo.
 
 Migrar un proyecto legacy grande sin módulos hacia JPMS es un proceso incremental, no un cambio de una sola vez: comenzar por los módulos «hoja» del árbol de dependencias (aquellos sin dependencias internas propias hacia otras partes del mismo proyecto) agregándoles su `module-info.java` correspondiente, y subir progresivamente en el árbol de dependencias agregando módulos hasta cubrir eventualmente el proyecto completo, un enfoque que permite verificar en cada paso que la migración parcial hasta ese punto sigue funcionando correctamente, en vez de intentar convertir todo el proyecto de una sola vez con un riesgo mucho mayor de introducir errores difíciles de aislar.
 
@@ -261,21 +308,46 @@ Guarda los tres `module-info.java`, el orden de migración documentado y el fall
 
 **Errores comunes:** intentar migrar todo el proyecto a JPMS de una sola vez en vez de empezar por los módulos hoja, aplicar JPMS a un proyecto pequeño sin consumidores externos que lo justifiquen, y olvidar `requires transitive` cuando la API pública de un módulo expone tipos que en realidad vienen de otro.
 
-**Fuente oficial:** [JEP 261 — Module System](https://openjdk.org/jeps/261).
+**Fuentes oficiales revisadas el 2026-11-01:** [JEP 261 — Module System](https://openjdk.org/jeps/261) y [dev.java — Modules](https://dev.java/learn/modules/).
 
 ---
 
 ### Tema 3: `opens` para acceso reflexivo controlado de frameworks · Avanzado · 60 min
 
-**Prerrequisito:** JDK 27, Maven, un editor y el Tema 1. Comprueba `java --version`, `javac --version` y `mvn --version`.
+**Prerrequisito:** Temas 1–2 de este módulo y reflexión (Módulo 19); JDK 27, Maven 3.9+ y un editor. Comprueba `java --version`, `javac --version` y `mvn --version`.
 
-**Al terminar podrás:** diagnosticar y corregir un `InaccessibleObjectException` que ocurre solo en tiempo de ejecución, cuando un framework necesita reflexión profunda sobre un paquete que solo declaró `exports`.
+**Al terminar podrás:** distinguir `exports` de `opens`, diagnosticar y corregir un `InaccessibleObjectException` de runtime, acotar `opens ... to` a un framework, y decidir cuándo no abrir un paquete.
 
 #### Aprende
 
 Un módulo de dominio compila perfectamente y `exports` su paquete principal, pero al intentar serializar un objeto con un campo privado anotado con Jackson en tiempo de ejecución, la aplicación falla: `exports` permite la llamada directa de código, pero no el acceso reflexivo profundo que Jackson necesita para hacer accesible ese campo.
 
 **¿Por qué es importante?** Los frameworks de inyección de dependencias, serialización JSON y ORMs pueden depender de reflexión profunda sobre tus clases; cuando usan ese mecanismo, omitir `opens` permite que la aplicación compile y falle recién en tiempo de ejecución.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia del tema |
+|---|---|---|
+| `exports` frente a `opens` | Núcleo | compilación/llamada directa vs reflexión profunda |
+| `InaccessibleObjectException` | Diagnóstico | solo `exports` falla en runtime con un framework |
+| `opens ... to` acotado | Núcleo | abrir solo al módulo que lo necesita |
+| `exports ... to` cualificado | Variante | restringir el acceso de compilación a módulos concretos |
+| `open module` | Variante | abrir todo el módulo a reflexión (menos control) |
+| cuándo NO abrir | Decisión | sin reflexión, `exports` basta |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`exports` frente a `opens` (núcleo).** Son **dos autorizaciones distintas**: `exports` permite que otros módulos **llamen** directamente a tus clases públicas (acceso de compilación); `opens` permite **reflexión profunda** (acceder a miembros no públicos con `setAccessible`). Dar `exports` no incluye `opens`.
+
+**`InaccessibleObjectException` (diagnóstico).** Si un framework (Jackson, Hibernate, un contenedor DI) usa reflexión profunda sobre un paquete que solo tiene `exports`, el código **compila** pero **falla en runtime** con `InaccessibleObjectException`. Es el síntoma clásico de "me falta un `opens`"; no se detecta en compilación.
+
+**`opens ... to` acotado (núcleo).** `opens paquete to modulo.framework` concede reflexión **solo** a ese módulo, no a todo el mundo. Es la forma recomendada: abres lo mínimo al framework que de verdad lo necesita, conservando la encapsulación frente al resto.
+
+**`exports ... to` cualificado (variante).** Simétricamente, `exports paquete to modulo.consumidor` restringe el acceso de **compilación** a módulos concretos, no a cualquiera. Útil para API internas compartidas entre unos pocos módulos tuyos sin exponerlas a todos.
+
+**`open module` (variante).** `open module X { ... }` abre **todos** los paquetes a reflexión sin un `opens` por paquete. Es cómodo pero renuncia al control selectivo: úsalo solo cuando de verdad todo el módulo deba ser reflexivo (raro); normalmente prefiere `opens` acotados.
+
+**Cuándo NO abrir (decisión).** Si ningún framework hace reflexión sobre tus clases (todo es llamada directa), **no** declares `opens`: mantener solo `exports` conserva la encapsulación fuerte. No añadas `opens` por rutina; un `record` serializado por sus accesores públicos, por ejemplo, no necesita reflexión profunda.
 
 `exports` resuelve el acceso normal de compilación y llamada directa entre módulos, pero no basta cuando un framework necesita inspeccionar miembros no públicos de tus clases mediante reflexión profunda. Si un paquete solo está `exports`, ese acceso falla en tiempo de ejecución con `InaccessibleObjectException`, aunque el mismo paquete compile y funcione perfectamente con llamadas directas de código. `opens com.miapp.dominio;` concede acceso reflexivo; `opens com.miapp.dominio to com.fasterxml.jackson.databind;` lo restringe a un módulo específico, igual que `exports ... to ...` restringe el acceso de compilación a módulos concretos.
 
@@ -417,7 +489,7 @@ Guarda el `InaccessibleObjectException` provocado, el `module-info.java` corregi
 
 **Errores comunes:** confundir `exports` (acceso de compilación) con `opens` (acceso reflexivo), declarar `opens` sin acotar con `to` cuando bastaría abrirlo solo al framework específico, y olvidar que un módulo que compila bien puede de todas formas fallar en runtime por reflexión sin `opens`.
 
-**Fuente oficial:** [dev.java — Modules](https://dev.java/learn/modules/).
+**Fuentes oficiales revisadas el 2026-11-01:** [dev.java — Modules](https://dev.java/learn/modules/) y [JEP 261 — Module System](https://openjdk.org/jeps/261).
 
 ---
 

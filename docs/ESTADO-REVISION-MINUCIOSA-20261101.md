@@ -726,3 +726,25 @@ rama.
 
 Acumulado cerrado: Java 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 20 + M18 T3/T4. Siguiente: `java/modulo-10.md`
 (JPMS/módulos).
+
+---
+
+## 22. Avance: Java módulos 10 (JPMS) y 11 (JVM interna)
+
+Fecha: 2026-11-01. Entorno: Temurin **JDK 27.0.1**.
+
+- **Módulo 10 (JPMS):** `module-info`, `exports`/encapsulación fuerte, `requires`/`requires transitive`,
+  module path vs classpath, named/automatic/unnamed; migración bottom-up, automatic modules como
+  puente, costo/beneficio; `exports` vs `opens`, `InaccessibleObjectException`, `opens ... to` acotado,
+  `open module`. Evidencia JPMS ejecutada (paquete no exportado → `is not visible`).
+- **Módulo 11 (JVM interna):** generaciones y GC (hipótesis generacional, G1/ZGC, G1 default JDK 27
+  JEP 523, heap vs memoria nativa); JFR y JIT (bajo overhead, `jdk.ExecutionSample`, warm-up, inlining,
+  `-Xint`); referencias `Weak`/`Soft`/`Phantom`, OOM controlado, heap dump (dominators/retained);
+  **FFM** (`Linker`/`MethodHandle`/`Arena`/`MemorySegment`), verificado en JDK 27 (`strlen`=15,
+  `--enable-native-access`).
+
+Versiones a Java 27 (se eliminaron javase/25 y javase/22). `validate.sh` EXIT 0. Sin marcar
+`reviewed`; trinquete 1.143 de 1.146.
+
+Acumulado cerrado: Java 0,1,2,3,4,5,6,7,8,9,10,11,20 + M18 T3/T4. Siguiente: `java/modulo-12.md`
+(patrones de diseño).

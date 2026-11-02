@@ -1677,7 +1677,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "28ea64acb9fea4376aaf26ca917817890b317f10ec686b64eb1ae45b84c7567b",
+    "fingerprint": "498455b2bfd5bc606f049d4548ca99f1aac522d35e9235ce7edb4345bfc28a74",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
@@ -6335,51 +6335,51 @@
       {
         "issues": [],
         "module": 10,
-        "tailWords": 225,
+        "tailWords": 254,
         "topic": "Tema 1: module-info.java y encapsulación fuerte · Intermedio · 50 min",
-        "words": 1176
+        "words": 1593
       },
       {
         "issues": [],
         "module": 10,
-        "tailWords": 251,
+        "tailWords": 265,
         "topic": "Tema 2: Migración incremental y cuándo JPMS aporta valor · Avanzado · 55 min",
-        "words": 1147
+        "words": 1508
       },
       {
         "issues": [],
         "module": 10,
-        "tailWords": 252,
+        "tailWords": 267,
         "topic": "Tema 3: `opens` para acceso reflexivo controlado de frameworks · Avanzado · 60 min",
-        "words": 1236
+        "words": 1580
       },
       {
         "issues": [],
         "module": 11,
-        "tailWords": 231,
+        "tailWords": 253,
         "topic": "Tema 1: Generaciones de memoria y recolectores · Avanzado · 55 min",
-        "words": 1275
+        "words": 1703
       },
       {
         "issues": [],
         "module": 11,
-        "tailWords": 226,
+        "tailWords": 247,
         "topic": "Tema 2: Java Flight Recorder y JIT compilation · Avanzado · 55 min",
-        "words": 1202
+        "words": 1602
       },
       {
         "issues": [],
         "module": 11,
-        "tailWords": 255,
+        "tailWords": 289,
         "topic": "Tema 3: Referencias especiales y heap dumps · Avanzado · 60 min",
-        "words": 1233
+        "words": 1660
       },
       {
         "issues": [],
         "module": 11,
-        "tailWords": 236,
+        "tailWords": 244,
         "topic": "Tema 4: Foreign Function & Memory API (Java 22) · Experto · 55 min",
-        "words": 1037
+        "words": 1416
       },
       {
         "issues": [],
