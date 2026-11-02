@@ -117,6 +117,198 @@
         "https://formulae.brew.sh/cask/temurin"
       ]
     },
+    "java/modulo-5::Tema 1: ExecutorService y gestión de hilos · Intermedio · 50 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: Demo confirma invokeAll total=26000 en orden de lista, fallo llega como ExecutionException (causa IllegalStateException), shutdown+awaitTermination=true y newVirtualThreadPerTaskExecutor ejecuta con la misma API (vt result=ok).",
+      "criticalSubtopics": ["Runnable vs Callable", "submit y Future", "Future.get y ExecutionException", "invokeAll", "shutdown vs shutdownNow", "awaitTermination", "tipos de pool y cola no acotada"],
+      "sources": ["https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/ExecutorService.html", "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/Executors.html"]
+    },
+    "java/modulo-5::Tema 2: CompletableFuture · Intermedio · 45 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: Demo confirma thenApply=1250, thenCompose=30 (aplana), thenCombine=150, exceptionally=-1 (recupera), handle=valor:ok (recibe valor o error en un punto).",
+      "criticalSubtopics": ["supplyAsync/runAsync", "thenApply vs thenCompose", "thenCombine", "exceptionally vs handle", "CompletionException", "elegir el executor"],
+      "sources": ["https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/CompletableFuture.html", "https://dev.java/learn/concurrency/"]
+    },
+    "java/modulo-5::Tema 3: Virtual threads · Intermedio · 50 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: lanzadas 100.000 tareas con newVirtualThreadPerTaskExecutor, todas completadas (tareas completadas=100000) sin agotar recursos; se documenta que no aceleran CPU puro.",
+      "criticalSubtopics": ["platform thread vs virtual thread", "carrier thread y montado/desmontado", "I/O-bound vs CPU-bound", "newVirtualThreadPerTaskExecutor", "pinning y JEP 491", "backpressure"],
+      "sources": ["https://docs.oracle.com/en/java/javase/27/core/virtual-threads.html", "https://openjdk.org/jeps/491"]
+    },
+    "java/modulo-5::Tema 4: Condiciones de carrera y sincronización · Intermedio · 50 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: Demo reproduce la condición de carrera (sinSync=33624 < esperado=100000, perdió incrementos=true) mientras synchronized y AtomicInteger dan exactamente 100000; se documenta volatile da visibilidad no atomicidad.",
+      "criticalSubtopics": ["condición de carrera", "++ no es atómico", "synchronized", "AtomicInteger y CAS", "volatile: visibilidad != atomicidad", "primitivas de coordinación (ReentrantLock/Semaphore/CountDownLatch)", "deadlock"],
+      "sources": ["https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/atomic/AtomicInteger.html", "https://docs.oracle.com/javase/specs/jls/se27/html/jls-17.html"]
+    },
+    "java/modulo-5::Tema 5: Structured Concurrency (StructuredTaskScope, preview en JDK 27) · Avanzado · 55 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1 con --release 27 --enable-preview: CalculoTarifaEstructurado confirma cancelación conjunta (allSuccessfulOrThrow): al fallar la distancia ('ruta sin coordenadas') la hermana se cancela ('disponibilidad cancelada'), nunca aparece 'disponibilidad terminó'. API preview JEP 533.",
+      "criticalSubtopics": ["estado preview en JDK 27", "StructuredTaskScope.open y fork", "join y Subtask.get()", "Joiner (política allSuccessfulOrThrow)", "cancelación conjunta vs CompletableFuture suelto", "scope acota ciclo de vida, no latencia"],
+      "sources": ["https://openjdk.org/jeps/533", "https://docs.oracle.com/en/java/javase/27/core/structured-concurrency.html"]
+    },
+    "java/modulo-5::Tema 6: Scoped Values frente a ThreadLocal (Java 25) · Avanzado · 50 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1 con --enable-preview (scope estructurado): ContextoCorrelacion confirma que la subtarea forkeada hereda el ScopedValue ('procesado por req-...') y que fuera del run el binding se libera automáticamente (isBound()=false). ScopedValue estable desde Java 25.",
+      "criticalSubtopics": ["ScopedValue vs ThreadLocal", "where(...).run(...) y get()", "inmutabilidad del binding", "herencia por subtareas estructuradas", "liberación automática al salir", "estado: ScopedValue estable, scope preview"],
+      "sources": ["https://openjdk.org/jeps/506", "https://docs.oracle.com/en/java/javase/27/core/scoped-values.html"]
+    },
+    "java/modulo-5::Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos · Avanzado · 45 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: Plazo confirma get(50ms) lanza TimeoutException -> 'Plazo agotado', cancel(true) señala interrupción y shutdownNow+awaitTermination cierra ('Executor terminado') sin esperar los 10s de la tarea.",
+      "criticalSubtopics": ["get(timeout) y TimeoutException", "cancel(true) como señal", "interrupción cooperativa", "InterruptedException y restaurar la marca", "dejar de esperar != detener el trabajo", "terminación verificada del executor"],
+      "sources": ["https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/Future.html", "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/ExecutorService.html"]
+    },
+    "java/modulo-4::Tema 1: Stream API — map, filter, reduce, collect · Básico · 45 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: Demo confirma groupingBy+mapping={false=[E2],true=[E1,E3]}, joining=[E1, E2, E3], summingDouble por zona, reduce=36.25, IntStream.sum=15, iterate+limit=[0,2,4,6] y consumo único (IllegalStateException al reutilizar).",
+      "criticalSubtopics": ["pipeline declarativo vs bucle", "intermedias vs terminales", "pereza y consumo único", "Collectors (toList/groupingBy/joining/summingDouble)", "reduce con identidad", "streams primitivos (IntStream)", "iterate/generate + limit", "pureza y efectos secundarios"],
+      "sources": ["https://dev.java/learn/api/streams/", "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/stream/Collectors.html"]
+    },
+    "java/modulo-4::Tema 2: Optional — evitar null explícitamente · Intermedio · 40 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: Demo confirma of=Optional[x], ofNullable(null)=Optional.empty, map=A@X.COM, filter=false, y la diferencia clave orElse evalúa su argumento siempre (invoca calcular) mientras orElseGet no lo invoca si hay valor; get() vacío lanza NoSuchElementException.",
+      "criticalSubtopics": ["Optional como tipo de retorno", "creación (of/ofNullable/empty)", "map/flatMap/filter", "orElse vs orElseGet", "orElseThrow / ifPresent", "get() sin comprobar", "dónde NO usar Optional (ni campo ni parámetro)"],
+      "sources": ["https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/Optional.html", "https://dev.java/learn/api/optional/"]
+    },
+    "java/modulo-4::Tema 3: Streams paralelos y referencias a métodos · Intermedio · 45 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: ContarPrimos confirma conteos idénticos secuencial y paralelo (148933 primos hasta 2M, iguales=true); en este equipo paralelo 26ms vs secuencial 111ms, pero se verifica correctitud antes que velocidad.",
+      "criticalSubtopics": ["parallelStream() y ForkJoinPool", "correctitud antes que velocidad", "overhead de paralelización", "estado compartido y condiciones de carrera", "referencias a métodos", "medición informal vs JMH"],
+      "sources": ["https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/stream/Stream.html", "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/ForkJoinPool.html"]
+    },
+    "java/modulo-4::Tema 4: Stream Gatherers (Java 24) · Avanzado · 50 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: DetectorAtrasos con Gatherers.windowSliding(3) detecta exactamente la racha consecutiva [E2, E3, E4] de tres entregas atrasadas, sin incluir E1 ni E5; gather() disponible y estable en JDK 27.",
+      "criticalSubtopics": ["límite de map/filter (sin memoria)", "Stream.gather()", "Gatherers.windowSliding(n)", "Gatherers.windowFixed(n)", "gatherer vs reduce", "cuándo basta map/filter"],
+      "sources": ["https://openjdk.org/jeps/485", "https://docs.oracle.com/en/java/javase/24/core/stream-gatherers.html"]
+    },
+    "java/modulo-3::Tema 1: Checked vs unchecked exceptions · Básico · 40 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: Demo confirma catch específico (NoSuchFileException) gana al general, finally siempre corre, multicatch atrapa NumberFormatException y RuntimeException instanceof Exception=true; quitar throws IOException no compila.",
+      "criticalSubtopics": ["jerarquía Throwable/Error/Exception/RuntimeException", "checked y throws", "unchecked (RuntimeException)", "try/catch/finally", "orden de catch (específico antes que general)", "multicatch (A|B)", "Error y qué no capturar"],
+      "sources": ["https://dev.java/learn/exceptions/", "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/Throwable.html"]
+    },
+    "java/modulo-3::Tema 2: try-with-resources · Básico · 40 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: Rep cierra antes del catch (Abierto/Procesando/Cerrado/Capturado); DemoR confirma orden inverso de cierre (cierra B, cierra A) y suppressed exception (principal 'fallo en el cuerpo', suppressed 'fallo al cerrar').",
+      "criticalSubtopics": ["AutoCloseable y close()", "cierre garantizado ante excepción", "múltiples recursos y orden inverso", "suppressed exceptions", "try-with-resources vs finally manual"],
+      "sources": ["https://dev.java/learn/exceptions/", "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/AutoCloseable.html"]
+    },
+    "java/modulo-3::Tema 3: Excepciones personalizadas y no tragar excepciones · Intermedio · 45 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: Bill confirma catch vacío no deja rastro vs catch con registro 'Falló el retiro: Saldo: 100.0, monto: 150.0'; DemoC confirma wrap IOException->ConfigException conservando causa (getCause=NoSuchFileException).",
+      "criticalSubtopics": ["excepción de dominio propia", "checked vs unchecked para dominio", "encadenamiento de causa (cause)", "wrapping checked->unchecked", "no tragar: el catch vacío", "preservar el rastro al relanzar"],
+      "sources": ["https://dev.java/learn/exceptions/", "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/Throwable.html"]
+    },
+    "java/modulo-2::Tema 1: List, Set, Map y sus implementaciones · Básico · 45 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: Demo confirma record aporta equals/hashCode (Set size=1), HashSet/LinkedHashSet/TreeSet con sus órdenes, List.of inmutable (UnsupportedOperationException), ConcurrentModificationException al mutar en for-each y removeIf correcto [1,3,4].",
+      "criticalSubtopics": ["List y sus implementaciones (ArrayList/LinkedList)", "complejidad Big-O", "Set y unicidad", "equals/hashCode como contrato", "orden de iteración por implementación", "Map y sus implementaciones", "colecciones inmutables (List.of)", "iteración y ConcurrentModificationException", "medición informal vs benchmark"],
+      "sources": ["https://dev.java/learn/api/collections-framework/", "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/Object.html"]
+    },
+    "java/modulo-2::Tema 2: Genéricos, wildcards y type erasure · Intermedio · 45 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: Caja<String> y Caja<Integer> misma clase en runtime (erasure); guardar Integer en Caja<String> no compila; Demo confirma maximo=9 (cota Comparable), sumar=6.5 (? extends), agregarCeros=[0,0] (? super, PECS).",
+      "criticalSubtopics": ["clase genérica <T>", "seguridad de tipos en compilación", "método genérico", "bounded type parameter", "wildcard ? extends (productor)", "wildcard ? super (consumidor, PECS)", "type erasure", "límites del erasure (new T[], instanceof)", "raw types"],
+      "sources": ["https://docs.oracle.com/javase/tutorial/java/generics/", "https://dev.java/learn/generics/"]
+    },
+    "java/modulo-2::Tema 3: Comparable vs Comparator, e iteración · Intermedio · 50 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: Entrega orden natural por antigüedad y alternativo por destino (estable); Demo confirma thenComparing+reversed, nullsFirst=[null,a,b] sin lanzar, y bug de la resta MIN_VALUE-1=2147483647 vs Integer.compare=-1.",
+      "criticalSubtopics": ["Comparable y orden natural", "contrato de compareTo", "el bug de la resta (a-b)", "Comparator externo", "Comparator.comparing y key extractor", "encadenar thenComparing/reversed", "orden con nulos (nullsFirst)", "consistencia compareTo/equals", "iterar Map con entrySet()"],
+      "sources": ["https://docs.oracle.com/javase/tutorial/java/generics/wildcardGuidelines.html", "https://dev.java/learn/api/collections-framework/"]
+    },
+    "java/modulo-1::Tema 1: Clases, objetos, constructores y encapsulación · Básico · 40 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: Guia ejecutada, salida 'RF-1 12.5 | RF-2 1.0 / instancias creadas=2 / a==otra? false'; constructor sobrecargado delega con this(numero,1.0); invariantes rechazan '' y peso 0 con IllegalArgumentException; new Guia() no compila tras declarar constructor explícito.",
+      "criticalSubtopics": ["clase vs objeto/instancia", "campos de instancia y this", "constructor e invariantes", "constructor por defecto vs explícito", "sobrecarga de constructores y this(...)", "encapsulación private y final", "getters sin setters", "campos estáticos vs instancia", "identidad de objetos (==)", "cuándo NO imponer invariantes"],
+      "sources": ["https://dev.java/learn/classes-objects/", "https://docs.oracle.com/javase/specs/jls/se27/html/jls-8.html#jls-8.8"]
+    },
+    "java/modulo-1::Tema 2: Herencia y sobreescritura · Intermedio · 1 h": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: Main corregido imprime Guau; Demo confirma dispatch dinámico, toString override de Object, instanceof downcast ('cast=Fido busca') y ClassCastException al castear Gato a Perro; Auditable con @Retention(RUNTIME) da true, sin RUNTIME da false. CORREGIDO BUG: el Main.java del tema usaba 'new Perro()' sin argumento cuando Perro solo define Perro(String) — no compilaba; cambiado a new Perro(\"Fido\").",
+      "criticalSubtopics": ["extends y qué se hereda", "super(...) en el constructor", "sobreescritura y @Override", "polimorfismo de subtipo (dispatch dinámico)", "super.metodo()", "Object y sus métodos", "instanceof y downcasting", "final/sealed para limitar herencia", "@interface, @Target, @Retention", "retención y reflexión"],
+      "sources": ["https://dev.java/learn/classes-objects/", "https://docs.oracle.com/javase/specs/jls/se27/html/jls-8.html#jls-8.1.1.2"]
+    },
+    "java/modulo-1::Tema 3: Interfaces, clases abstractas y cuándo usar cada una · Intermedio · 50 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: Formas ejecutada, salida 'area=12.566370614359172 / puede volar y puede nadar / puede volar'; diamante resuelto con Interfaz.super; new Forma() no compila (abstract); quitar descripcion() en Pato no compila (diamante sin resolver).",
+      "criticalSubtopics": ["interfaz como contrato", "métodos default y static en interfaz", "implementación múltiple", "colisión de default (diamante)", "clase abstracta y método abstracto", "clase abstracta no instanciable", "interfaz vs clase abstracta", "herencia simple vs múltiples interfaces", "interfaz funcional"],
+      "sources": ["https://dev.java/learn/interfaces/", "https://docs.oracle.com/javase/specs/jls/se27/html/jls-9.html#jls-9.4"]
+    },
+    "java/modulo-1::Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso · Intermedio · 55 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: Tarifa resuelve sumar(int,int)=5 y sumar(double,double)=6.25; Demo confirma resolución de sobrecarga tipo(5)=int/tipo(5L)=long/tipo(\"x\")=Object y covarianza Sub.crear()=sub; campo private no accesible desde otra clase (has private access).",
+      "criticalSubtopics": ["sobrecarga: misma firma de nombre, distinta de parámetros", "resolución de sobrecarga en compilación", "sobreescritura (contraste)", "covarianza del tipo de retorno", "private", "package-private", "protected", "public", "mínimo privilegio"],
+      "sources": ["https://docs.oracle.com/javase/specs/jls/se27/html/jls-15.html#jls-15.12.2", "https://docs.oracle.com/javase/specs/jls/se27/html/jls-6.html#jls-6.6"]
+    },
+    "java/modulo-0::Tema 1: Del código fuente a la JVM · Básico · 35 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: Saludo compilado, javap major version 71 (JDK 27) y 69 con --release 25; java -cp src reproduce ClassNotFoundException; borrar Ayudante.class reproduce NoClassDefFoundError con ClassNotFoundException como causa. Citas de fuentes actualizadas de Java SE 21 a SE 27.",
+      "criticalSubtopics": ["archivo fuente .java y nombre de clase public", "compilación con javac y -d", "bytecode y formato .class", "verificación/interpretación/JIT", "major version del class file (71=27, 69=25)", "JDK de compilación vs runtime", "nombre binario, paquete y ruta", "ClassNotFoundException vs NoClassDefFoundError", "compilación manual vs build tool"],
+      "sources": ["https://docs.oracle.com/en/java/javase/27/docs/specs/man/javac.html", "https://docs.oracle.com/javase/specs/jvms/se27/html/jvms-4.html", "https://docs.oracle.com/javase/specs/jvms/se27/html/jvms-5.html"]
+    },
+    "java/modulo-0::Tema 2: public static void main — qué significa cada palabra · Básico · 30 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: PuntoEntrada imprime 'argumentos=1, primero=guia-123'; Salida sin args termina con código 3 vía System.exit; Sobrecarga demuestra main(int) no es entry point; java Varargs.java a b c imprime recibidos=3 (source-launch). Citas actualizadas a Java SE 27.",
+      "criticalSubtopics": ["firma de método", "public (accesible al launcher)", "static (sin instancia previa)", "void vs código de salida del proceso", "nombre main como contrato", "String[] args y String... args", "sobrecargas de main", "clases anidadas y múltiples entry points", "lanzamiento de fuente única", "errores de firma"],
+      "sources": ["https://docs.oracle.com/en/java/javase/27/docs/specs/man/java.html", "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/System.html#exit(int)"]
+    },
+    "java/modulo-0::Tema 3: JDK, JRE y JVM · Básico · 30 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: Entorno imprime VM y versión 27.0.1; -XshowSettings muestra vendor=Eclipse Adoptium, os.arch=aarch64; jlink produce runtime de 45M con solo java.base@27 que ejecuta Entorno; usar java.sql ausente reproduce ClassNotFoundException. Corregido: LTS vigente 21->25; citas a Java SE 27.",
+      "criticalSubtopics": ["JVM como máquina abstracta", "runtime y bibliotecas estándar", "JDK y herramientas", "JRE histórico vs runtime actual", "distribución, proveedor y licencia", "LTS vs feature release", "JAVA_HOME y PATH", "runtime personalizado con jlink", "arquitectura del binario", "verificación de instalación"],
+      "sources": ["https://dev.java/learn/jvm/", "https://docs.oracle.com/en/java/javase/27/docs/specs/man/jlink.html"]
+    },
+    "java/modulo-0::Tema 4: Tipos primitivos vs referencias · Básico · 40 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: ValoresYReferencias imprime '5 9 | 99 99'; Demo confirma caché Integer (127==127 true, 1000==1000 false), new String ==false/equals true, mutar vs reasignar (ambos 99 por paso por valor de referencia). Citas a Java SE 27.",
+      "criticalSubtopics": ["ocho tipos primitivos", "referencia, objeto y null", "copia de valor primitivo", "copia de referencia y aliasing", "identidad vs igualdad (== vs equals)", "campos, locales y valores por defecto", "paso por valor", "arrays como referencias", "memoria y GC (sin mito stack/heap)", "final vs inmutabilidad"],
+      "sources": ["https://docs.oracle.com/javase/specs/jls/se27/html/jls-4.html", "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/Integer.html"]
+    },
+    "java/modulo-0::Tema 5: Variables, conversiones y `String` · Intermedio · 45 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: Conversiones da 238.80 y true; Mas confirma narrowing (byte)300=44, overflow=-2147483648, addExact=integer overflow, promoción byte+byte=30, 0.1+0.2=0.30000000000000004 vs BigDecimal 0.3, Objects.equals(null,x)=false. Citas a Java SE 27.",
+      "criticalSubtopics": ["declaración, inicialización y var", "alcance y shadowing", "widening y narrowing", "overflow y underflow", "promoción numérica", "IEEE 754", "BigDecimal desde texto", "String inmutable y pool", "==/equals/Objects.equals", "StringBuilder y text blocks"],
+      "sources": ["https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/math/BigDecimal.html", "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/Math.html"]
+    },
+    "java/modulo-0::Tema 6: Operadores, precedencia y control de flujo · Intermedio · 45 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: ControlEntrega imprime 'Conductor en recorrido'; Flujo confirma 7/2=3, 2+3*4=14, post=8/pre=10, fall-through intencional, etiquetas break/continue afuera='00 01 02 10', pattern matching sealed='entrega 12kg'. Citas a Java SE 27.",
+      "criticalSubtopics": ["aritméticos y división entera", "relacionales, lógicos y cortocircuito", "asignación compuesta e incremento", "precedencia y asociatividad", "if y expresión condicional", "switch statement vs expression y fall-through", "exhaustividad con enum/sealed", "ciclos for/while/do-while", "break/continue y etiquetas", "pattern matching en decisiones"],
+      "sources": ["https://docs.oracle.com/javase/specs/jls/se27/html/jls-14.html", "https://docs.oracle.com/javase/specs/jls/se27/html/jls-15.html"]
+    },
+    "java/modulo-0::Tema 7: Arreglos, wrappers y paso de argumentos · Intermedio · 45 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: Argumentos imprime [99, 2, 3] (no [7]); Arr confirma dentado filas 3/1/2, alias[0]=99 vs copia[0]=1, clone superficial matriz[0][0]=77, varargs suma=10, List<Integer> unboxing primero=1. Citas a Java SE 27.",
+      "criticalSubtopics": ["declaración/creación/inicialización de array", "índices y longitud fija", "arrays multidimensionales y dentados", "copia superficial (clone/copyOf/arraycopy)", "varargs", "wrappers", "boxing/unboxing y null", "caché de wrappers", "genéricos y ausencia de primitivos", "paso por valor y mutación"],
+      "sources": ["https://docs.oracle.com/javase/specs/jls/se27/html/jls-15.html", "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/Arrays.html"]
+    },
+    "java/modulo-0::Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`) · Intermedio · 50 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: FechaEntrega acepta 2026-07-22 y rechaza 2026-02-31 (DateTimeParseException); Tiempo confirma Instant UTC->09:30-05:00 Bogotá, Duration PT2H30M vs Period P2M, formato 08/03/2026, hueco DST 02:30->03:30-04:00 en New York. Citas a Java SE 27.",
+      "criticalSubtopics": ["entrada por argumentos y Scanner", "parseo y validación", "LocalDate/LocalTime/LocalDateTime", "Instant", "ZoneId y ZonedDateTime", "OffsetDateTime", "Duration y Period", "DateTimeFormatter y locale", "DST, huecos y solapamientos", "Date/Calendar e interoperabilidad"],
+      "sources": ["https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/time/package-summary.html", "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/time/ZonedDateTime.html"]
+    },
+    "java/modulo-20::Tema 2: Las cuatro formas: Predicate, Function, Consumer y Supplier · Básico · 75 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: Formas ejecutado, salida '[log] Turno AM | ENV-2 -> Medellín' (el envío de 5,5 kg no supera el predicado); fallo deliberado de aridad reproducido con mensaje literal 'incompatible types: wrong number of parameters in lambda expression for functional interface Function' y texto de la lección corregido para coincidir.",
+      "criticalSubtopics": ["Predicate<T>: decidir un boolean", "Function<T,R>: transformar", "Consumer<T>: efecto sin retorno", "Supplier<T>: proveer sin argumentos", "Métodos SAM (test/apply/accept/get)", "Aridad de la lambda vs la interfaz", "Clase con nombre cuando hay estado o dominio"],
+      "sources": ["https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/function/package-summary.html", "https://dev.java/learn/lambdas/"]
+    },
+    "java/modulo-20::Tema 3: Componer sin anidar: andThen, compose, negate y reglas encadenadas · Intermedio · 75 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: Composicion ejecutado, salida 'normalizado: true / sospechoso: false / sospechoso vacío: true / compose: ana@academia.com'; fallo deliberado de validar sin normalizar (correo::test sobre texto crudo con espacios) devuelve false, reproducido.",
+      "criticalSubtopics": ["Predicate.and/or/negate", "Function.andThen (f luego g)", "Function.compose (g sobre f)", "El orden de composición es la regla de negocio", "Referencias a método en la cadena", "Motivos de rechazo vs un solo boolean", "Cadena legible vs tipo Resultado"],
+      "sources": ["https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/function/Predicate.html", "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/function/Function.html"]
+    },
+    "java/modulo-20::Tema 4: Streams como composición: pereza, orden y efectos que se esconden · Intermedio · 90 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: Pereza ejecutado, salida 'antes de la operación terminal... / filtrado ENV-2 / pesados=1' confirmando que el trabajo ocurre en count(); fallo deliberado de consumo doble reproducido con IllegalStateException: stream has already been operated upon or closed.",
+      "criticalSubtopics": ["Stream describe trabajo, no es colección", "Operaciones perezosas (filter/map/peek)", "Operaciones terminales disparan el recorrido", "Consumo único del Stream", "peek es para depurar, no para lógica", "Efectos escondidos en map", "Agregar con reduce/collect sin efectos"],
+      "sources": ["https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/stream/Stream.html", "https://dev.java/learn/api/streams/"]
+    },
     "java/modulo-20::Tema 5: Function y BiFunction — transformar con una o dos entradas · Básico · 30 min": {
       "status": "reviewed", "reviewDate": "2026-11-02",
       "execution": "Temurin 27.0.1: BiFun ejecutado, tarifa.andThen(aMoneda).apply(5000,3) = $8600; error de aridad con Function unaria reproducido.",

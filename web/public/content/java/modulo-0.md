@@ -358,7 +358,7 @@ Guarda los fuentes, los `.class`, la salida de `javap -v`, y ambos errores (`Cla
 
 **Errores comunes:** apuntar `-cp` a la carpeta de fuentes en vez de a la de salida; confundir `ClassNotFoundException` (no arrancó) con `NoClassDefFoundError` (arrancó y faltó una dependencia); olvidar recompilar tras modificar el `.java`; y asumir que `javac` ejecuta el programa en vez de solo compilarlo.
 
-**Fuentes oficiales revisadas el 2026-11-01:** [javac Java SE 21](https://docs.oracle.com/en/java/javase/21/docs/specs/man/javac.html), [java Java SE 21](https://docs.oracle.com/en/java/javase/21/docs/specs/man/java.html), [JVM Specification 21 — class file](https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html) y [JVM Specification 21 — loading, linking and initialization](https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-5.html).
+**Fuentes oficiales revisadas el 2026-11-02:** [javac Java SE 27](https://docs.oracle.com/en/java/javase/27/docs/specs/man/javac.html), [java Java SE 27](https://docs.oracle.com/en/java/javase/27/docs/specs/man/java.html), [JVM Specification 27 — class file](https://docs.oracle.com/javase/specs/jvms/se27/html/jvms-4.html) y [JVM Specification 27 — loading, linking and initialization](https://docs.oracle.com/javase/specs/jvms/se27/html/jvms-5.html).
 
 ### Tema 2: public static void main — qué significa cada palabra · Básico · 30 min
 
@@ -526,7 +526,7 @@ Guarda los fuentes, la ejecución con argumento real, el intento sin `static`, y
 
 **Errores comunes:** usar un modificador de acceso distinto a `public`; omitir `static` esperando que Java cree una instancia; declarar `args` con un tipo distinto a `String[]`/`String...`; confundir una sobrecarga de `main` con el punto de entrada; y creer que `return` dentro de `main` fija el código de salida (lo fija `System.exit`).
 
-**Fuentes oficiales revisadas el 2026-11-01:** [El lanzador `java` (Java SE 21)](https://docs.oracle.com/en/java/javase/21/docs/specs/man/java.html), [`System.exit` (API Java SE 21)](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/System.html#exit(int)) y [dev.java: getting started](https://dev.java/learn/getting-started/).
+**Fuentes oficiales revisadas el 2026-11-02:** [El lanzador `java` (Java SE 27)](https://docs.oracle.com/en/java/javase/27/docs/specs/man/java.html), [`System.exit` (API Java SE 27)](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/System.html#exit(int)) y [dev.java: getting started](https://dev.java/learn/getting-started/).
 
 ### Tema 3: JDK, JRE y JVM · Básico · 30 min
 
@@ -571,7 +571,7 @@ Las filas del mapa que no quedan cerradas con lo anterior tienen aquí su explic
 
 **Distribución, proveedor y licencia (decisión).** "Java" no es un único binario. Hay varias distribuciones que implementan la misma especificación: Eclipse Temurin (Adoptium), Oracle JDK, Amazon Corretto, Azul Zulu, Microsoft Build of OpenJDK, Red Hat, entre otras. Difieren en **licencia**, soporte comercial y plazos de actualización, no en el lenguaje. La decisión profesional es elegir según las condiciones del entorno objetivo: por ejemplo, Temurin y Corretto son gratuitas para producción; el Oracle JDK tiene su propia licencia que conviene leer antes de desplegar. Lo compruebas con la propiedad `java.vendor`.
 
-**LTS frente a feature release (decisión).** Java publica una versión nueva cada seis meses (*feature release*), pero solo algunas son **LTS** (*long-term support*): 8, 11, 17, 21 y la próxima línea LTS. Las LTS reciben actualizaciones durante años; una feature release deja de recibirlas en pocos meses. Para producción se elige normalmente una LTS (hoy, 21) y se prueba en la actual (27). La decisión no es "la más nueva", sino equilibrar funciones recientes con ventana de soporte del proveedor.
+**LTS frente a feature release (decisión).** Java publica una versión nueva cada seis meses (*feature release*), pero solo algunas son **LTS** (*long-term support*): 8, 11, 17, 21, 25 y la próxima línea LTS. Las LTS reciben actualizaciones durante años; una feature release deja de recibirlas en pocos meses. Para producción se elige normalmente una LTS (hoy, 25) y se prueba en la actual (27). La decisión no es "la más nueva", sino equilibrar funciones recientes con ventana de soporte del proveedor.
 
 **Runtime personalizado con `jlink` (profundización).** Como Java es modular (JPMS), puedes empaquetar solo los módulos que tu aplicación usa en un runtime a medida con `jlink`. Un runtime con únicamente `java.base` pesa decenas de MB en lugar de los cientos de un JDK completo, útil para imágenes de contenedor pequeñas. Su límite: incluye solo lo que declares; si tu código usa un módulo que no añadiste (por ejemplo `java.sql`), fallará al cargarlo. No reemplaza al JDK para desarrollar: sirve para distribuir.
 
@@ -693,7 +693,7 @@ Guarda la salida de `-XshowSettings`, el tamaño del runtime de `jlink` y su lis
 
 **Errores comunes:** recomendar "instala el JRE" cuando ya no se distribuye por separado; elegir una feature release para producción sin considerar el soporte; instalar un JDK con arquitectura equivocada (x64 en ARM); y creer que `jlink` reemplaza al JDK para desarrollar.
 
-**Fuentes oficiales revisadas el 2026-11-01:** [dev.java: la JVM](https://dev.java/learn/jvm/), [`jlink` (Java SE 21)](https://docs.oracle.com/en/java/javase/21/docs/specs/man/jlink.html) y [documentación Java SE 21](https://docs.oracle.com/en/java/javase/21/).
+**Fuentes oficiales revisadas el 2026-11-02:** [dev.java: la JVM](https://dev.java/learn/jvm/), [`jlink` (Java SE 27)](https://docs.oracle.com/en/java/javase/27/docs/specs/man/jlink.html) y [documentación Java SE 27](https://docs.oracle.com/en/java/javase/27/).
 
 ### Tema 4: Tipos primitivos vs referencias · Básico · 40 min
 
@@ -896,7 +896,7 @@ Guarda `ValoresYReferencias.java`, `Demo.java`, sus salidas, el error de la loca
 
 **Errores comunes:** comparar objetos (o `String`) con `==` en vez de `equals`; creer que Java pasa objetos "por referencia"; asumir que `final` congela el objeto; usar un wrapper `null` como primitivo sin validar; y memorizar el mito "primitivo=stack, objeto=heap".
 
-**Fuentes oficiales revisadas el 2026-11-01:** [JLS 4 — tipos, valores y variables (Java SE 21)](https://docs.oracle.com/javase/specs/jls/se21/html/jls-4.html), [`Integer` (API Java SE 21)](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html) y [dev.java: language basics](https://dev.java/learn/language-basics/).
+**Fuentes oficiales revisadas el 2026-11-01:** [JLS 4 — tipos, valores y variables (Java SE 27)](https://docs.oracle.com/javase/specs/jls/se27/html/jls-4.html), [`Integer` (API Java SE 27)](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/Integer.html) y [dev.java: language basics](https://dev.java/learn/language-basics/).
 
 ### Tema 5: Variables, conversiones y `String` · Intermedio · 45 min
 
@@ -1100,7 +1100,7 @@ Guarda `Conversiones.java`, `Mas.java`, sus salidas, el `NumberFormatException` 
 
 **Antes del siguiente tema:** explica por qué el texto se valida en la frontera, cuándo `BigDecimal` desde `String`, qué hace la promoción numérica y en qué se diferencian `equals` y `Objects.equals`.
 
-**Fuentes oficiales revisadas el 2026-11-01:** [`BigDecimal` (API Java SE 21)](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/math/BigDecimal.html), [`Math.addExact` (API Java SE 21)](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Math.html#addExact(int,int)) y [dev.java: language basics](https://dev.java/learn/language-basics/).
+**Fuentes oficiales revisadas el 2026-11-01:** [`BigDecimal` (API Java SE 27)](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/math/BigDecimal.html), [`Math.addExact` (API Java SE 27)](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/Math.html#addExact(int,int)) y [dev.java: language basics](https://dev.java/learn/language-basics/).
 
 ### Tema 6: Operadores, precedencia y control de flujo · Intermedio · 45 min
 
@@ -1322,7 +1322,7 @@ Guarda `ControlEntrega.java`, `Flujo.java`, sus salidas, y el error de exhaustiv
 
 **Antes del siguiente tema:** compara `&&` con `&` ante `null`, explica la precedencia de `2+3*4` y por qué un `switch` exhaustivo sobre `sealed` avisa de un caso nuevo.
 
-**Fuentes oficiales revisadas el 2026-11-01:** [JLS 14 — sentencias (Java SE 21)](https://docs.oracle.com/javase/specs/jls/se21/html/jls-14.html), [JLS 15 — expresiones (Java SE 21)](https://docs.oracle.com/javase/specs/jls/se21/html/jls-15.html) y [dev.java: switch expressions](https://dev.java/learn/language-basics/switch-expressions/).
+**Fuentes oficiales revisadas el 2026-11-01:** [JLS 14 — sentencias (Java SE 27)](https://docs.oracle.com/javase/specs/jls/se27/html/jls-14.html), [JLS 15 — expresiones (Java SE 27)](https://docs.oracle.com/javase/specs/jls/se27/html/jls-15.html) y [dev.java: switch expressions](https://dev.java/learn/language-basics/switch-expressions/).
 
 ### Tema 7: Arreglos, wrappers y paso de argumentos · Intermedio · 45 min
 
@@ -1531,7 +1531,7 @@ Guarda `Argumentos.java`, `Arr.java`, sus salidas y el `ArrayIndexOutOfBoundsExc
 
 **Errores comunes:** decir que Java pasa objetos por referencia; usar `<=` sobre `length`; reasignar un parámetro arreglo esperando cambiar el del llamador; creer que `clone()`/`copyOf` hacen copia profunda; y sacar conclusiones de `Integer == Integer`.
 
-**Fuentes oficiales revisadas el 2026-11-01:** [JLS 15 — invocación de métodos (Java SE 21)](https://docs.oracle.com/javase/specs/jls/se21/html/jls-15.html#jls-15.12), [`Arrays` (API Java SE 21)](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Arrays.html) y [dev.java: arrays](https://dev.java/learn/arrays/).
+**Fuentes oficiales revisadas el 2026-11-01:** [JLS 15 — invocación de métodos (Java SE 27)](https://docs.oracle.com/javase/specs/jls/se27/html/jls-15.html#jls-15.12), [`Arrays` (API Java SE 27)](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/Arrays.html) y [dev.java: arrays](https://dev.java/learn/arrays/).
 
 ### Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`) · Intermedio · 50 min
 
@@ -1727,7 +1727,7 @@ Guarda `FechaEntrega.java`, `Tiempo.java`, sus salidas, la fecha imposible recha
 
 **Antes del siguiente tema:** decide si el caso es un día civil, una hora con zona o un instante, y explica por qué `LocalDate` no puede ordenar eventos por hora y qué pasa con una hora local en un hueco de DST.
 
-**Fuentes oficiales revisadas el 2026-11-01:** [paquete `java.time` (API Java SE 21)](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/package-summary.html), [`ZonedDateTime` (API Java SE 21)](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/ZonedDateTime.html) y [dev.java: date-time](https://dev.java/learn/date-time/).
+**Fuentes oficiales revisadas el 2026-11-01:** [paquete `java.time` (API Java SE 27)](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/time/package-summary.html), [`ZonedDateTime` (API Java SE 27)](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/time/ZonedDateTime.html) y [dev.java: date-time](https://dev.java/learn/date-time/).
 
 ## Ruta de proyecto progresivo desde carpeta vacía
 

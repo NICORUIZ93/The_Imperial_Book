@@ -334,7 +334,7 @@ package academia.animales;
 
 final class Main {
     public static void main(String[] args) {
-        Animal animal = new Perro();
+        Animal animal = new Perro("Fido");
         System.out.println(animal.hablar());
     }
 }

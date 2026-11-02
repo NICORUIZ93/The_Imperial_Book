@@ -1501,7 +1501,7 @@
     },
     {
       "path": "docs/subtopic-depth-review.json",
-      "lines": 17428,
+      "lines": 18003,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1522,7 +1522,7 @@
     },
     {
       "path": "docs/subtopic-depth-reviewed.json",
-      "lines": 182,
+      "lines": 374,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -10753,12 +10753,12 @@
     },
     {
       "path": "web/public/content/java/modulo-16.md",
-      "lines": 509,
+      "lines": 511,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
       "headings": [
-        "# M\u00f3dulo 16: JPA, Hibernate y FetchType.LAZY vs EAGER",
+        "# M\u00f3dulo 16: Mapear y optimizar persistencia con JPA e Hibernate",
         "## Aprende construyendo",
         "### Dos ejemplos: primero visible, luego real",
         "### Tema 1: Entidades y relaciones JPA \u00b7 Intermedio \u00b7 55 min",

@@ -1,6 +1,8 @@
-# Módulo 16: JPA, Hibernate y FetchType.LAZY vs EAGER
+# Módulo 16: Mapear y optimizar persistencia con JPA e Hibernate
 
-**Proyecto del módulo:** dos aplicaciones Maven creadas desde carpetas vacías para persistir pedidos y medir las consultas de Hibernate. Escribirás cada entidad, configuración y prueba; ningún ejercicio depende de ejemplos o archivos prefabricados.
+**Entorno del módulo (verificado):** JDK 27, Maven, **Spring Boot 4.1.1** (trae Hibernate 7.4.5) y H2. Nota importante de Spring Boot 4: el slice de test de JPA cambió de paquete a `org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest` (antes `org.springframework.boot.test.autoconfigure.orm.jpa`). Todos los ejemplos usan ese import y declaran también `spring-boot-starter-test`.
+
+**Proyecto del módulo:** aplicaciones Maven creadas desde carpetas vacías para persistir pedidos y pagos, medir las consultas de Hibernate y versionar el esquema. Escribirás cada entidad, configuración y prueba; ningún ejercicio depende de ejemplos o archivos prefabricados.
 
 ## Aprende construyendo
 
@@ -80,7 +82,7 @@ Escribe `pom.xml` con Spring Boot, JPA, H2 y pruebas; no uses un generador:
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.5.7</version>
+    <version>4.1.1</version>
     <relativePath/>
   </parent>
   <groupId>academia</groupId><artifactId>jpa-relaciones</artifactId><version>1.0.0</version>
@@ -192,7 +194,7 @@ package academia.pedidos;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -316,7 +318,7 @@ Escribe `pom.xml` completo:
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <parent><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-parent</artifactId><version>3.5.7</version><relativePath/></parent>
+  <parent><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-parent</artifactId><version>4.1.1</version><relativePath/></parent>
   <groupId>academia</groupId><artifactId>jpa-consultas</artifactId><version>1.0.0</version>
   <properties><java.version>27</java.version></properties>
   <dependencies>
@@ -418,7 +420,7 @@ import org.hibernate.stat.Statistics;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest

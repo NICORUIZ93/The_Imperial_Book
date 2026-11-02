@@ -1677,7 +1677,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "af4e8f08bf08424938943f18bc16bde37ca39f3a2bc4c8254bb2c02ddc3a9cf3",
+    "fingerprint": "cb3a7d3fe949d7a14280b7951a5d1b7db7c93a84c38bf5c081b36e943fdf63d9",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
@@ -6274,7 +6274,7 @@
         "module": 0,
         "tailWords": 375,
         "topic": "Tema 3: JDK, JRE y JVM · Básico · 30 min",
-        "words": 1946
+        "words": 1947
       },
       {
         "issues": [],
@@ -6323,7 +6323,7 @@
         "module": 1,
         "tailWords": 307,
         "topic": "Tema 2: Herencia y sobreescritura · Intermedio · 1 h",
-        "words": 2626
+        "words": 2627
       },
       {
         "issues": [],
@@ -6659,7 +6659,7 @@
         "module": 20,
         "tailWords": 166,
         "topic": "Tema 2: Las cuatro formas: Predicate, Function, Consumer y Supplier · Básico · 75 min",
-        "words": 1220
+        "words": 1232
       },
       {
         "issues": [],
