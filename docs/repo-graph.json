@@ -1501,7 +1501,7 @@
     },
     {
       "path": "docs/subtopic-depth-review.json",
-      "lines": 18871,
+      "lines": 19041,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1522,7 +1522,7 @@
     },
     {
       "path": "docs/subtopic-depth-reviewed.json",
-      "lines": 692,
+      "lines": 752,
       "kind": "project-file",
       "symbols": [],
       "imports": [],

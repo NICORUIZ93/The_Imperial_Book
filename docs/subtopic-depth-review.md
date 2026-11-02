@@ -3,9 +3,9 @@
 > Las señales automáticas no prueban profundidad ni ausencia de ella. Un tema sólo queda revisado mediante el registro humano con mapa de subtemas críticos, evidencia y fuentes.
 
 - Temas inventariados: 1159
-- Revisados humanamente para subtemas: 101
-- Pendientes: 1058
-- Candidatos prioritarios por señales: 1015
+- Revisados humanamente para subtemas: 111
+- Pendientes: 1048
+- Candidatos prioritarios por señales: 1005
 
 ## Cobertura por track
 
@@ -18,7 +18,7 @@
 | flutter | 63 | 0 | 63 |
 | foundations | 100 | 0 | 100 |
 | ios | 56 | 0 | 56 |
-| java | 109 | 99 | 10 |
+| java | 109 | 109 | 0 |
 | javascript | 88 | 0 | 88 |
 | kotlin-multiplatform | 56 | 0 | 56 |
 | node | 77 | 0 | 77 |
@@ -654,16 +654,6 @@
 - `ios/modulo-9` — Tema 1: XCTest clásico y Swift Testing — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `ios/modulo-9` — Tema 2: Testing de código async — lista conceptos clave sin mapa interno verificable
 - `ios/modulo-9` — Tema 3: UI Tests con XCUITest — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `java/modulo-21` — Tema 1: Qué es la superficie pública de una API · Básico · 40 min — lista conceptos clave sin mapa interno verificable
-- `java/modulo-21` — Tema 2: Compatibilidad binaria frente a compatibilidad de fuente · Intermedio · 45 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `java/modulo-21` — Tema 3: Evolucionar sin romper: default methods, deprecación y retirada · Intermedio · 45 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `java/modulo-21` — Tema 4: Genéricos, borrado y métodos puente en la superficie pública · Avanzado · 50 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `java/modulo-21` — Tema 5: Verificar la compatibilidad en el build · Avanzado · 50 min — lista conceptos clave sin mapa interno verificable
-- `java/modulo-22` — Tema 1: El contrato de equals y hashCode · Básico · 35 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `java/modulo-22` — Tema 2: Claves mutables y el mapa que pierde entradas · Intermedio · 40 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `java/modulo-22` — Tema 3: Copia defensiva, copia superficial y clone · Intermedio · 40 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `java/modulo-22` — Tema 4: Enums de dominio: estado, código y comportamiento · Intermedio · 45 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `java/modulo-22` — Tema 5: Clases anidadas, this$0 y la referencia que retiene · Avanzado · 45 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `javascript/modulo-0` — Tema 1: Variables — `const`, `let` y `var` — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `javascript/modulo-0` — Tema 2: Tipos primitivos y `typeof` — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `javascript/modulo-0` — Tema 4: Template literals y mensajes seguros — título agrupa varios conceptos; menos de dos encabezados semánticos internos
@@ -1117,6 +1107,16 @@
 - `java/modulo-20` — Tema 12: Streams paralelos — cuándo ayudan y cuándo engañan · Avanzado · 30 min — parallel() divide el trabajo; Operacion asociativa y sin estado; Resultado correcto no siempre mas rapido; ForkJoinPool.commonPool compartido; Estado compartido rompe en paralelo; Medir antes de paralelizar
 - `java/modulo-20` — Tema 13: Pureza y efectos secundarios — razonar sobre funciones · Intermedio · 30 min — Funcion pura: determinista y sin efectos; Efecto secundario: I/O, estado, reloj; Transparencia referencial; Efectos en los bordes, nucleo puro; Impureza oculta rompe tests y paralelo; Pureza no significa sin estado nunca
 - `java/modulo-20` — Tema 14: Flow API — reactive streams en la biblioteca estándar · Avanzado · 30 min — Las cuatro interfaces Flow; SubmissionPublisher como publicador; onSubscribe/onNext/onComplete; Subscription.request(n) = demanda; Backpressure: el consumidor marca el ritmo; Flow es el contrato no una libreria reactiva
+- `java/modulo-21` — Tema 1: Qué es la superficie pública de una API · Básico · 40 min — niveles de acceso frente a superficie real; tipos expuestos en la firma; constante public static final en línea; encapsulación por paquete y JPMS; error de tipo de retorno inaccesible; javap -public como vista del cliente; sacar el tipo interno de la firma
+- `java/modulo-21` — Tema 2: Compatibilidad binaria frente a compatibilidad de fuente · Intermedio · 45 min — compatibilidad de fuente frente a binaria; enlace perezoso de la JVM; NoSuchMethodError con descriptor completo; constante en línea no se propaga; casos de ida y vuelta fuente/binario; confundir NoClassDefFoundError con NoSuchMethodError; subir versión mayor con todos los consumidores
+- `java/modulo-21` — Tema 3: Evolucionar sin romper: default methods, deprecación y retirada · Intermedio · 45 min — método default como crecimiento seguro; delegación del default al método abstracto; método abstracto añadido rompe binarios; AbstractMethodError frente a NoSuchMethodError; deprecación con forRemoval y since; interfaz sellada cambia el cálculo; documentar la política de retirada
+- `java/modulo-21` — Tema 4: Genéricos, borrado y métodos puente en la superficie pública · Avanzado · 50 min — borrado de tipos en la JVM; choque de borrado en sobrecargas; método puente sintético; flags ACC_BRIDGE y ACC_SYNTHETIC; varianza binario-compatible, fuente-incompatible; información genérica ausente en ejecución; nombres distintos o varianza en vez de sobrecarga
+- `java/modulo-21` — Tema 5: Verificar la compatibilidad en el build · Avanzado · 50 min — cliente congelado como prueba reproducible; ToolProvider.getSystemJavaCompiler; DiagnosticCollector y filtrado de errores; código de salida como puerta de build; getTask(...).call() como señal de éxito; qué no detecta el verificador; confundir exit 2 con incompatibilidad
+- `java/modulo-22` — Tema 1: El contrato de equals y hashCode · Básico · 35 min — reflexividad/simetría/transitividad de equals; coherencia equals-hashCode; hashCode distribuye en buckets; equals con getClass vs instanceof; campos incluidos en la identidad; objeto de valor inmutable como clave; romper hashCode rompe HashSet/HashMap
+- `java/modulo-22` — Tema 2: Claves mutables y el mapa que pierde entradas · Intermedio · 40 min — hashCode calculado al insertar; mutar la clave cambia su bucket; entrada huérfana (get=null, size=1); clave inmutable como solución; defensiva: copiar la clave al insertar; contrato: clave estable mientras esté en el mapa; no usar colecciones mutables como clave
+- `java/modulo-22` — Tema 3: Copia defensiva, copia superficial y clone · Intermedio · 40 min — copia superficial comparte referencias; constructor de copia defensiva; copiar colecciones internas (List.copyOf/new ArrayList); clone() superficial y Cloneable; inmutabilidad como alternativa a copiar; copiar en el getter frente a en el constructor; fuga de estado mutable por referencia compartida
+- `java/modulo-22` — Tema 4: Enums de dominio: estado, código y comportamiento · Intermedio · 45 min — campo propio y constructor privado; comportamiento por constante (método abstracto); ordinal inestable frente a código estable; switch exhaustivo sin default; values() devuelve arreglo nuevo; EnumMap/EnumSet con orden de declaración; serialización por nombre devuelve la misma instancia
+- `java/modulo-22` — Tema 5: Clases anidadas, this$0 y la referencia que retiene · Avanzado · 45 min — clase interna no estática y su exterior; campo sintético this$0; clase anidada static sin exterior; retención del exterior por la interna; this en clase anónima frente a lambda; interna inconstruible sin exterior; static por defecto como decisión de diseño
 - `java/modulo-3` — Tema 1: Checked vs unchecked exceptions · Básico · 40 min — jerarquía Throwable/Error/Exception/RuntimeException; checked y throws; unchecked (RuntimeException); try/catch/finally; orden de catch (específico antes que general); multicatch (A|B); Error y qué no capturar
 - `java/modulo-3` — Tema 2: try-with-resources · Básico · 40 min — AutoCloseable y close(); cierre garantizado ante excepción; múltiples recursos y orden inverso; suppressed exceptions; try-with-resources vs finally manual
 - `java/modulo-3` — Tema 3: Excepciones personalizadas y no tragar excepciones · Intermedio · 45 min — excepción de dominio propia; checked vs unchecked para dominio; encadenamiento de causa (cause); wrapping checked->unchecked; no tragar: el catch vacío; preservar el rastro al relanzar

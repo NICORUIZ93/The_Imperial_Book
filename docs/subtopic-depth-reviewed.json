@@ -117,6 +117,66 @@
         "https://formulae.brew.sh/cask/temurin"
       ]
     },
+    "java/modulo-22::Tema 1: El contrato de equals y hashCode · Básico · 35 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: dos CodigoGuia con el mismo valor son equals y conviven como una sola entrada en un HashSet (size=1); sin hashCode coherente el HashSet guardaría ambos (size=2, documentado). Contrato equals/hashCode verificado con ejecución real.",
+      "criticalSubtopics": ["reflexividad/simetría/transitividad de equals", "coherencia equals-hashCode", "hashCode distribuye en buckets", "equals con getClass vs instanceof", "campos incluidos en la identidad", "objeto de valor inmutable como clave", "romper hashCode rompe HashSet/HashMap"],
+      "sources": ["https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/Object.html", "https://docs.oracle.com/javase/specs/jls/se27/html/jls-8.html"]
+    },
+    "java/modulo-22::Tema 2: Claves mutables y el mapa que pierde entradas · Intermedio · 40 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: una clave mutable usada en un HashMap y luego modificada deja la entrada inalcanzable: get devuelve null aunque size=1, porque el hashCode cambió de bucket. Clave inmutable como corrección documentada y verificada.",
+      "criticalSubtopics": ["hashCode calculado al insertar", "mutar la clave cambia su bucket", "entrada huérfana (get=null, size=1)", "clave inmutable como solución", "defensiva: copiar la clave al insertar", "contrato: clave estable mientras esté en el mapa", "no usar colecciones mutables como clave"],
+      "sources": ["https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/HashMap.html", "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/Object.html"]
+    },
+    "java/modulo-22::Tema 3: Copia defensiva, copia superficial y clone · Intermedio · 40 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: una copia superficial comparte la lista interna y cambia con el original; el constructor de copia defensiva produce una copia independiente (las salidas muestran la copia superficial mutando y la defensiva estable). clone superficial y sus riesgos documentados.",
+      "criticalSubtopics": ["copia superficial comparte referencias", "constructor de copia defensiva", "copiar colecciones internas (List.copyOf/new ArrayList)", "clone() superficial y Cloneable", "inmutabilidad como alternativa a copiar", "copiar en el getter frente a en el constructor", "fuga de estado mutable por referencia compartida"],
+      "sources": ["https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/Object.html", "https://docs.oracle.com/javase/specs/jls/se27/html/jls-8.html"]
+    },
+    "java/modulo-22::Tema 4: Enums de dominio: estado, código y comportamiento · Intermedio · 45 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: Demo imprime 'values identicos = false', 'ordinal ENVIADO = 2' frente a 'codigo ENVIADO = 30', conteo EnumMap en orden de declaración {BORRADOR=1, CONFIRMADO=1, ENVIADO=5, CANCELADO=1}, EnumSet [BORRADOR, CONFIRMADO], permiteEnvio=true y switch exhaustivo 'etiqueta = Cancelado'; DemoSerial deserializa ENVIADO con 'misma instancia = true'.",
+      "criticalSubtopics": ["campo propio y constructor privado", "comportamiento por constante (método abstracto)", "ordinal inestable frente a código estable", "switch exhaustivo sin default", "values() devuelve arreglo nuevo", "EnumMap/EnumSet con orden de declaración", "serialización por nombre devuelve la misma instancia"],
+      "sources": ["https://docs.oracle.com/javase/specs/jls/se27/html/jls-8.html", "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/EnumMap.html"]
+    },
+    "java/modulo-22::Tema 5: Clases anidadas, this$0 y la referencia que retiene · Avanzado · 45 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: Demo muestra 'Cursor campo = this$0 : Cola' (interna) y Limite sin this$0 (static), 'anonimo this = io.academia.modelo.Cola$1' frente a 'lambda this = io.academia.modelo.Cola'; javap -p confirma el campo final this$0 y el constructor sintético que recibe Cola; 'new Cola.Cursor()' no compila con 'an enclosing instance that contains Cola.Cursor is required'.",
+      "criticalSubtopics": ["clase interna no estática y su exterior", "campo sintético this$0", "clase anidada static sin exterior", "retención del exterior por la interna", "this en clase anónima frente a lambda", "interna inconstruible sin exterior", "static por defecto como decisión de diseño"],
+      "sources": ["https://docs.oracle.com/javase/specs/jls/se27/html/jls-8.html", "https://docs.oracle.com/en/java/javase/27/docs/specs/man/javap.html"]
+    },
+    "java/modulo-21::Tema 1: Qué es la superficie pública de una API · Básico · 40 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: javap -public sobre Guia muestra la superficie real (incluido el tipo filtrado DetalleInterno); cliente en otro paquete imprime 'RF-001 12.5 30'; llamar guia.detalle().codigo() falla con 'DetalleInterno.codigo() is defined in an inaccessible class' (tipo de retorno no público).",
+      "criticalSubtopics": ["niveles de acceso frente a superficie real", "tipos expuestos en la firma", "constante public static final en línea", "encapsulación por paquete y JPMS", "error de tipo de retorno inaccesible", "javap -public como vista del cliente", "sacar el tipo interno de la firma"],
+      "sources": ["https://docs.oracle.com/javase/specs/jls/se27/html/jls-6.html", "https://docs.oracle.com/en/java/javase/27/docs/specs/man/javap.html"]
+    },
+    "java/modulo-21::Tema 2: Compatibilidad binaria frente a compatibilidad de fuente · Intermedio · 45 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: cliente compilado contra v1 ejecutado contra v2 (codigo()->referencia()) lanza NoSuchMethodError con descriptor completo; recompilar contra v2 da 'cannot find symbol: method codigo()'. Dos compatibilidades distintas (binaria vs fuente) demostradas; constante en línea documentada.",
+      "criticalSubtopics": ["compatibilidad de fuente frente a binaria", "enlace perezoso de la JVM", "NoSuchMethodError con descriptor completo", "constante en línea no se propaga", "casos de ida y vuelta fuente/binario", "confundir NoClassDefFoundError con NoSuchMethodError", "subir versión mayor con todos los consumidores"],
+      "sources": ["https://docs.oracle.com/javase/specs/jls/se27/html/jls-13.html", "https://docs.oracle.com/en/java/javase/27/docs/specs/man/javap.html"]
+    },
+    "java/modulo-21::Tema 3: Evolucionar sin romper: default methods, deprecación y retirada · Intermedio · 45 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: implementador v1 hereda el default enviarLote de v2 sin recompilar ('Para RF-001: En reparto'); añadir un método abstracto (soporta) en v3 lanza AbstractMethodError en el implementador antiguo; @Deprecated(forRemoval=true, since) produce aviso [removal] con -Xlint:deprecation.",
+      "criticalSubtopics": ["método default como crecimiento seguro", "delegación del default al método abstracto", "método abstracto añadido rompe binarios", "AbstractMethodError frente a NoSuchMethodError", "deprecación con forRemoval y since", "interfaz sellada cambia el cálculo", "documentar la política de retirada"],
+      "sources": ["https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/Deprecated.html", "https://docs.oracle.com/javase/specs/jls/se27/html/jls-13.html"]
+    },
+    "java/modulo-21::Tema 4: Genéricos, borrado y métodos puente en la superficie pública · Avanzado · 50 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: CotizadorBase (Double) implementando Cotizador (Number) genera dos métodos cotizar (Double y Number) donde el Number es ACC_BRIDGE, ACC_SYNTHETIC (verificado con javap -p/-v); dos sobrecargas registrar(List<Guia>)/registrar(List<String>) fallan con 'name clash: ... have the same erasure'.",
+      "criticalSubtopics": ["borrado de tipos en la JVM", "choque de borrado en sobrecargas", "método puente sintético", "flags ACC_BRIDGE y ACC_SYNTHETIC", "varianza binario-compatible, fuente-incompatible", "información genérica ausente en ejecución", "nombres distintos o varianza en vez de sobrecarga"],
+      "sources": ["https://docs.oracle.com/javase/specs/jls/se27/html/jls-15.html", "https://docs.oracle.com/en/java/javase/27/docs/specs/man/javap.html"]
+    },
+    "java/modulo-21::Tema 5: Verificar la compatibilidad en el build · Avanzado · 50 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: VerificadorCompatibilidad (javax.tools.JavaCompiler + DiagnosticCollector) compila el cliente congelado contra el JAR: COMPATIBLE y exit 0 contra v1, INCOMPATIBLE con 'linea 4: cannot find symbol' y exit 1 contra v2 (puerta de build que detiene el pipeline).",
+      "criticalSubtopics": ["cliente congelado como prueba reproducible", "ToolProvider.getSystemJavaCompiler", "DiagnosticCollector y filtrado de errores", "código de salida como puerta de build", "getTask(...).call() como señal de éxito", "qué no detecta el verificador", "confundir exit 2 con incompatibilidad"],
+      "sources": ["https://docs.oracle.com/en/java/javase/27/docs/api/java.compiler/javax/tools/JavaCompiler.html", "https://docs.oracle.com/javase/specs/jls/se27/html/jls-13.html"]
+    },
     "java/modulo-19::Tema 1: Reflexión y anotaciones en tiempo de ejecución · Intermedio · 90 min": {
       "status": "reviewed", "reviewDate": "2026-11-02",
       "execution": "Temurin 27.0.1: Reflexion lista campos de Envio con obligatorio=true/false por @Obligatorio(RUNTIME), valida por reflexión sin conocer la clase (reporta guia/destino obligatorios), e invoca toUpperCase por nombre (ENTREGADO). Sin @Retention(RUNTIME) todos darían false (documentado).",
