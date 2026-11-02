@@ -117,6 +117,30 @@
         "https://formulae.brew.sh/cask/temurin"
       ]
     },
+    "java/modulo-18::Tema 1: HttpClient, REST, timeouts y fallos · Intermedio · 2 h": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: ServidorSalud (com.sun.net.httpserver) + ConsultaDireccion (java.net.http.HttpClient) ejecutados en procesos separados: health={\"estado\":\"ok\"} (200), missing=HTTP 404, slow=timeout acotado (HttpTimeoutException con timeout de solicitud < 5s de /slow). Transporte separado del cuerpo (valida statusCode antes de body).",
+      "criticalSubtopics": ["HttpClient reutilizable y su pool", "HttpRequest: método, headers, body", "timeout de conexión vs de solicitud", "separar transporte de cuerpo", "diagnosticar 200/404/timeout", "reintento solo de idempotentes", "backoff con jitter y límite"],
+      "sources": ["https://docs.oracle.com/en/java/javase/27/docs/api/java.net.http/java/net/http/HttpClient.html", "https://docs.oracle.com/en/java/javase/27/docs/api/jdk.httpserver/com/sun/net/httpserver/HttpServer.html"]
+    },
+    "java/modulo-18::Tema 2: Tokens, validación y límites de seguridad · Avanzado · 2 h": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: ServidorEnvios + ClienteAutenticado: con el MISMO Bearer válido, tenant=A obtiene 'HTTP 200: guía=ENV-1, destino=Cali' pero tenant=B obtiene 'HTTP 403: el envío pertenece a otro tenant' — autenticación válida != autorización por objeto. El token viaja en Authorization y no se registra; la guía se valida con ENV-[0-9]+.",
+      "criticalSubtopics": ["autenticación vs autorización por objeto", "bearer en header Authorization, sin loguearlo", "validar entrada en cada frontera", "JWT/OAuth2/OIDC: qué resuelve cada uno", "SSRF: validar esquema, host y DNS", "parametrización != autorización", "no criptografía propia"],
+      "sources": ["https://docs.oracle.com/en/java/javase/27/docs/api/java.net.http/java/net/http/HttpClient.html", "https://cheatsheetseries.owasp.org/"]
+    },
+    "java/modulo-17::Tema 1: JDBC, PreparedStatement y DAO · Intermedio · 1 h": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1 con H2 2.4.240 + JUnit 5.11.4 (repo local): EnvioDaoTest pasa (3 tests) — PreparedStatement trata la referencia hostil ' OR '1'='1 como valor literal (Optional.empty, no altera la consulta), crear() exige 1 fila, y clave duplicada lanza SQLException. DAO inyecta DataSource (no DriverManager).",
+      "criticalSubtopics": ["DataSource como fuente de conexiones", "PreparedStatement fija estructura, enlaza valores", "try-with-resources cierra Connection/ResultSet", "DAO encapsula SQL y mapeo", "parámetros protegen valores, no identificadores", "comprobar executeUpdate()", "no crear un DAO genérico"],
+      "sources": ["https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/PreparedStatement.html", "https://h2database.com/html/main.html"]
+    },
+    "java/modulo-17::Tema 2: Transacciones, ACID y aislamiento · Avanzado · 1 h 15 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1 con H2 2.4.240 + JUnit 5.11.4 (repo local): LiquidacionDaoTest pasa (2 tests) — con setAutoCommit(false), la liquidación válida confirma cobro+estado juntos (commit); una referencia inexistente inserta el cobro, el UPDATE afecta 0 filas y lanza, y el rollback deja la tabla cobro vacía (atomicidad verificada en una sola conexión).",
+      "criticalSubtopics": ["ACID: atomicidad y durabilidad", "setAutoCommit(false) + commit/rollback", "una sola conexión para toda la unidad", "aislamiento y qué anomalías evita", "bloqueo optimista con version", "idempotencia con UNIQUE", "no abrir transacción durante HTTP"],
+      "sources": ["https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/Connection.html", "https://h2database.com/html/advanced.html#transaction_isolation"]
+    },
     "java/modulo-16::Tema 1: Entidades y relaciones JPA · Intermedio · 55 min": {
       "status": "reviewed", "reviewDate": "2026-11-02",
       "execution": "Spring Boot 4.1.1 / Hibernate 7.4.5 / H2 sobre JDK 27 (Maven offline con repo local): @DataJpaTest RelacionPedidosTest pasa (Tests run: 1, BUILD SUCCESS); dos inserts de Pedido y count(*) confirman 2 claves foráneas cliente_id físicas. CORREGIDO BUG: el pom declaraba solo spring-boot-starter-test, pero en SB4 @DataJpaTest vive en spring-boot-starter-data-jpa-test; sin esa dependencia el import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest no compila. Añadida a ambos pom del módulo y corregida la nota del entorno.",
