@@ -66,7 +66,7 @@ flowchart LR
 ```bash
 mkdir -p academia-spring
 cd academia-spring
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web,security -d javaVersion=25 -d artifactId=academia-security -o app.zip
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web,security -d javaVersion=25 -d artifactId=academia-security -o app.zip
 unzip -o app.zip
 mkdir -p src/main/java/com/academia/seguridad
 ```

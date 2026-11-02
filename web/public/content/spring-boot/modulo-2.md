@@ -65,7 +65,7 @@ flowchart LR
 # descarga el proyecto y ejecuta las pruebas Java con Maven
 mkdir ejemplo-spring-m2
 cd ejemplo-spring-m2
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web,validation -d javaVersion=25 -o app.zip
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web,validation -d javaVersion=25 -o app.zip
 unzip app.zip
 ./mvnw test
 ```
@@ -484,7 +484,7 @@ flowchart LR
 
 ```bash
 mkdir lombok-mapstruct && cd lombok-mapstruct
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web,lombok -d javaVersion=25 -o app.zip
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web,lombok -d javaVersion=25 -o app.zip
 unzip -q app.zip
 ```
 
@@ -719,7 +719,7 @@ flowchart LR
 
 ```bash
 mkdir springdoc && cd springdoc
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web -d javaVersion=25 -o app.zip
 unzip -q app.zip
 ```
 

@@ -68,7 +68,7 @@ Parte de una carpeta vacía y crea `src/test/java/io/academia/master/backpressur
 ```bash
 mkdir demo-backpressure
 cd demo-backpressure
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=webflux -d javaVersion=25 -o app.zip
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=webflux -d javaVersion=25 -o app.zip
 unzip app.zip
 mkdir -p src/test/java/io/academia/master/backpressure
 ```
@@ -211,7 +211,7 @@ Parte de una carpeta vacía y crea `src/test/java/io/academia/master/singleton/C
 ```bash
 mkdir demo-testcontainers-singleton
 cd demo-testcontainers-singleton
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=data-jpa -d javaVersion=25 -o app.zip
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=data-jpa -d javaVersion=25 -o app.zip
 unzip app.zip
 mkdir -p src/test/java/io/academia/master/singleton
 ```
@@ -369,7 +369,7 @@ Parte de una carpeta vacía, agrega `com.tngtech.archunit:archunit-junit5` al `p
 ```bash
 mkdir demo-hexagonal
 cd demo-hexagonal
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=data-jpa,h2 -d javaVersion=25 -o app.zip
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=data-jpa,h2 -d javaVersion=25 -o app.zip
 unzip app.zip
 mkdir -p src/main/java/io/academia/master/hexagonal/{domain,infrastructure}
 mkdir -p src/test/java/io/academia/master/hexagonal
@@ -542,7 +542,7 @@ Parte de una carpeta vacía, agrega `io.github.resilience4j:resilience4j-bulkhea
 ```bash
 mkdir demo-resilience-avanzado
 cd demo-resilience-avanzado
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web -d javaVersion=25 -o app.zip
 unzip app.zip
 mkdir -p src/test/java/io/academia/master/resilience
 ```
@@ -727,7 +727,7 @@ Parte de una carpeta vacía y crea `src/main/java/io/academia/master/saga/PasoSa
 ```bash
 mkdir demo-saga
 cd demo-saga
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web -d javaVersion=25 -o app.zip
 unzip app.zip
 mkdir -p src/main/java/io/academia/master/saga
 mkdir -p src/test/java/io/academia/master/saga
@@ -931,7 +931,7 @@ Parte de una carpeta vacía y crea `src/main/java/io/academia/master/eventsourci
 ```bash
 mkdir demo-event-sourcing
 cd demo-event-sourcing
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web -d javaVersion=25 -o app.zip
 unzip app.zip
 mkdir -p src/main/java/io/academia/master/eventsourcing
 mkdir -p src/test/java/io/academia/master/eventsourcing

@@ -64,7 +64,7 @@ Genera una app Spring Boot con `web` y `actuator`.
 **Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/main/java/academia/pedidos/PedidosScheduler.java` con el contenido de este tema.
 
 ```bash
-curl -fsSL https://start.spring.io/starter.zip -o ejemplo.zip && unzip -o ejemplo.zip -d ejemplo
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -o ejemplo.zip && unzip -o ejemplo.zip -d ejemplo
 ```
 
 **Crea** el archivo `src/main/java/academia/pedidos/PedidosScheduler.java` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
@@ -90,7 +90,7 @@ public class PedidosScheduler {
 **Ejecuta el ejemplo** (genera el proyecto con Spring Initializr, pega el código y corre las pruebas):
 
 ```bash
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
 ./mvnw test
 ```
 Equivalencias Maven/Gradle en el Módulo 1.
@@ -178,7 +178,7 @@ Kafka u otro broker ofrece entrega entre procesos, con garantías que dependen d
 **Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/main/java/academia/envios/EnvioCreado.java` con el contenido de este tema.
 
 ```bash
-curl -fsSL https://start.spring.io/starter.zip -o ejemplo.zip && unzip -o ejemplo.zip -d ejemplo
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -o ejemplo.zip && unzip -o ejemplo.zip -d ejemplo
 ```
 
 En `src/main/java/academia/envios/EnvioCreado.java` declara un evento inmutable; en el servicio transaccional:
@@ -190,7 +190,7 @@ publisher.publishEvent(new EnvioCreado(envioId));
 **Ejecuta el ejemplo** (genera el proyecto con Spring Initializr, pega el código y corre las pruebas):
 
 ```bash
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
 ./mvnw test
 ```
 Equivalencias Maven/Gradle en el Módulo 1.
@@ -289,7 +289,7 @@ La operación de negocio debe confirmar independientemente del canal de notifica
 **Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/main/java/academia/notificaciones/CorreoPedido.java` con el contenido de este tema.
 
 ```bash
-curl -fsSL https://start.spring.io/starter.zip -o ejemplo.zip && unzip -o ejemplo.zip -d ejemplo
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -o ejemplo.zip && unzip -o ejemplo.zip -d ejemplo
 ```
 
 Genera el proyecto con `mail` y configura `spring.mail.host`, puerto y credenciales por variables externas. En `src/main/java/academia/notificaciones/CorreoPedido.java`:
@@ -314,7 +314,7 @@ public class CorreoPedido {
 **Ejecuta el ejemplo** (genera el proyecto con Spring Initializr, pega el código y corre las pruebas):
 
 ```bash
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
 ./mvnw test
 ```
 Equivalencias Maven/Gradle en el Módulo 1.
@@ -401,7 +401,7 @@ Genera una app con `cache`; agrega Caffeine para el laboratorio.
 **Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/main/java/academia/tarifas/TarifaService.java` con el contenido de este tema.
 
 ```bash
-curl -fsSL https://start.spring.io/starter.zip -o ejemplo.zip && unzip -o ejemplo.zip -d ejemplo
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -o ejemplo.zip && unzip -o ejemplo.zip -d ejemplo
 ```
 
 **Crea** el archivo `src/main/java/academia/tarifas/TarifaService.java` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
@@ -431,7 +431,7 @@ public class TarifaService {
 **Ejecuta el ejemplo** (genera el proyecto con Spring Initializr, pega el código y corre las pruebas):
 
 ```bash
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
 ./mvnw test
 ```
 Equivalencias Maven/Gradle en el Módulo 1.
@@ -532,7 +532,7 @@ sequenceDiagram
 
 ```bash
 mkdir spring-async && cd spring-async
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web -d javaVersion=25 -o app.zip
 unzip -q app.zip
 ```
 
@@ -743,7 +743,7 @@ print(f"Consultar envío: {id_envio}")
 **Ejecuta el ejemplo** (genera el proyecto con Spring Initializr, pega el código y corre las pruebas):
 
 ```bash
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
 ./mvnw test
 ```
 Equivalencias Maven/Gradle en el Módulo 1.

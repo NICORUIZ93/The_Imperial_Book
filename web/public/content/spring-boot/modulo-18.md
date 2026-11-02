@@ -67,7 +67,7 @@ Genera una app con `web`, `security`, `oauth2-resource-server` y `validation`.
 **Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/main/java/academia/seguridad/SeguridadConfig.java` con el contenido de este tema.
 
 ```bash
-curl -fsSL https://start.spring.io/starter.zip -o ejemplo.zip && unzip -o ejemplo.zip -d ejemplo
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -o ejemplo.zip && unzip -o ejemplo.zip -d ejemplo
 ```
 
 **Crea** el archivo `src/main/java/academia/seguridad/SeguridadConfig.java` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
@@ -95,7 +95,7 @@ public class SeguridadConfig {
 **Ejecuta el ejemplo** (genera el proyecto con Spring Initializr, pega el código y corre las pruebas):
 
 ```bash
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
 ./mvnw test
 ```
 Equivalencias Maven/Gradle en el Módulo 1.
@@ -198,7 +198,7 @@ OAuth 2.0 y OIDC deben delegar emisión/rotación de credenciales a un proveedor
 **Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/main/java/academia/envios/CrearEnvioRequest.java` con el contenido de este tema.
 
 ```bash
-curl -fsSL https://start.spring.io/starter.zip -o ejemplo.zip && unzip -o ejemplo.zip -d ejemplo
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -o ejemplo.zip && unzip -o ejemplo.zip -d ejemplo
 ```
 
 En `src/main/java/academia/envios/CrearEnvioRequest.java`:
@@ -213,7 +213,7 @@ public record CrearEnvioRequest(
 **Ejecuta el ejemplo** (genera el proyecto con Spring Initializr, pega el código y corre las pruebas):
 
 ```bash
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
 ./mvnw test
 ```
 Equivalencias Maven/Gradle en el Módulo 1.

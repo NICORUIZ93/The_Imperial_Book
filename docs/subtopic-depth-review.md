@@ -3,9 +3,9 @@
 > Las señales automáticas no prueban profundidad ni ausencia de ella. Un tema sólo queda revisado mediante el registro humano con mapa de subtemas críticos, evidencia y fuentes.
 
 - Temas inventariados: 1159
-- Revisados humanamente para subtemas: 114
-- Pendientes: 1045
-- Candidatos prioritarios por señales: 1002
+- Revisados humanamente para subtemas: 117
+- Pendientes: 1042
+- Candidatos prioritarios por señales: 999
 
 ## Cobertura por track
 
@@ -24,7 +24,7 @@
 | node | 77 | 0 | 77 |
 | react | 58 | 0 | 58 |
 | rutaflow | 29 | 0 | 29 |
-| spring-boot | 93 | 5 | 88 |
+| spring-boot | 93 | 8 | 85 |
 
 ## Cola prioritaria
 
@@ -943,9 +943,6 @@
 - `rutaflow/modulo-7` — Tema 2: SLO y respuesta a incidentes — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `rutaflow/modulo-7` — Tema 3: Pruebas end-to-end del sistema completo (app ↔ backend) — lista conceptos clave sin mapa interno verificable
 - `rutaflow/modulo-7` — Tema 4: Continuidad, costes y proyecto final — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-1` — Tema 1: Spring Initializr y starters · Básico · 20 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-1` — Tema 2: application.yml vs application.properties · Básico · 20 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-1` — Tema 3: Perfiles y estructura por capas · Intermedio · 30 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `spring-boot/modulo-10` — Tema 1: Config Server y service discovery · Intermedio · 45 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `spring-boot/modulo-10` — Tema 2: Spring Cloud Gateway · Intermedio · 40 min — lista conceptos clave sin mapa interno verificable
 - `spring-boot/modulo-10` — Tema 3: Circuit breaker con Resilience4j · Avanzado · 45 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
@@ -1147,3 +1144,6 @@
 - `spring-boot/modulo-0` — Tema 3: Estereotipos, autoconfiguración y scopes · Intermedio · 25 min — @Component/@Service/@Repository; @Repository traduce excepciones de persistencia; spring-boot-starter-webmvc autoconfigura; singleton (default): una instancia por contenedor; prototype: instancia nueva por resolución; prototype ≠ una instancia por petición HTTP; scope irrelevante sin estado mutable
 - `spring-boot/modulo-0` — Tema 4: Ciclo de vida de un bean y BeanPostProcessor · Intermedio · 30 min — Orden de fases de inicializacion; @PostConstruct como hook estandar; InitializingBean.afterPropertiesSet; @PreDestroy / DisposableBean al cerrar; BeanPostProcessor envuelve todos los beans; Recursos de prototype no se destruyen solos; Abrir recurso en el constructor
 - `spring-boot/modulo-0` — Tema 5: AOP con @Aspect y @Around — preocupaciones transversales · Avanzado · 40 min — @Aspect + @EnableAspectJAutoProxy; @Around y ProceedingJoinPoint.proceed(); Pointcut execution(...); El advice conserva la excepcion original; El proxy es el mecanismo (igual que @Transactional); Auto-invocacion no pasa por el aspecto; Abusar de AOP oscurece el flujo
+- `spring-boot/modulo-1` — Tema 1: Spring Initializr y starters · Básico · 20 min — Spring Initializr como generador; Starter como dependencia curada; BOM y resolución de versiones; Starter web vs otros starters; Anotación ausente sin el starter; Dependencia suelta vs starter; Cuándo no usar starters; Starters mínimos del proyecto
+- `spring-boot/modulo-1` — Tema 2: application.yml vs application.properties · Básico · 20 min — Pares clave-valor en .properties; Indentación jerárquica en .yml; Equivalencia funcional de ambos formatos; Detección automática del archivo; Sensibilidad a la indentación de YAML; Error de indentación silencioso; Mezclar .properties y .yml; Elección de formato por legibilidad
+- `spring-boot/modulo-1` — Tema 3: Perfiles y estructura por capas · Intermedio · 30 min — Configuración base en application.yml; Perfil como sobreescritura parcial; Activación explícita del perfil; Configuración fusionada efectiva; Perfil nunca activo por defecto; Olvidar activar el perfil al desplegar; Separación por capas controller/service/repository; Perfiles solo cuando hay varios entornos

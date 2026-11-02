@@ -29,7 +29,7 @@ Cada tema declara su nivel, su duración y una verificación reproducible. La sa
 
 Cada fila tiene su explicación individual a continuación.
 
-**Starter de Actuator (prerrequisito).** El comando `curl -fsSL https://start.spring.io/starter.zip -d dependencies=web,actuator` incorpora `spring-boot-starter-actuator`, que es lo que habilita automáticamente los endpoints estándar como `/actuator/health`. Sin ese starter en el classpath no existe ningún endpoint que exponer, por lo que es el punto de partida obligatorio antes de personalizar nada.
+**Starter de Actuator (prerrequisito).** El comando `curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web,actuator` incorpora `spring-boot-starter-actuator`, que es lo que habilita automáticamente los endpoints estándar como `/actuator/health`. Sin ese starter en el classpath no existe ningún endpoint que exponer, por lo que es el punto de partida obligatorio antes de personalizar nada.
 
 **Exposición explícita de endpoints (núcleo).** La línea `management.endpoints.web.exposure.include=health,metrics,info` decide qué endpoints quedan accesibles por web, porque no todos deberían estar públicos por defecto. El mecanismo es una lista blanca: lo que no se nombra no se expone, y por eso los ejercicios proponen restringirla a lo necesario para no revelar configuración interna sensible.
 
@@ -68,7 +68,7 @@ flowchart LR
 ```bash
 mkdir -p academia-spring/src/main/java/com/academia/observabilidad
 cd academia-spring
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web,actuator -d javaVersion=25 -d artifactId=academia-observabilidad -o app.zip
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web,actuator -d javaVersion=25 -d artifactId=academia-observabilidad -o app.zip
 unzip -o app.zip
 cat >> src/main/resources/application.properties <<'EOF'
 management.endpoints.web.exposure.include=health,metrics,info

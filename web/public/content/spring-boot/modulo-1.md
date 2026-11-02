@@ -18,7 +18,7 @@ Cada tema declara nivel, duración y una verificación reproducible. La configur
 
 | Subtema | Papel | Evidencia |
 |---|---|---|
-| Spring Initializr como generador | Prerrequisito | `curl -fsSL https://start.spring.io/starter.zip -d dependencies=web` produce el `.zip` del proyecto |
+| Spring Initializr como generador | Prerrequisito | `curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web` produce el `.zip` del proyecto |
 | Starter como dependencia curada | Núcleo | `dependencies=web` trae Tomcat, Jackson y Spring MVC autoconfigurados |
 | BOM y resolución de versiones | Núcleo | `./mvnw dependency:tree` identifica Tomcat, Jackson y Spring MVC con versiones coherentes |
 | Starter `web` vs otros starters | Variante | agregar `validation` habilita `@NotBlank`/`@NotNull`; `data-jpa` trae Hibernate |
@@ -29,9 +29,9 @@ Cada tema declara nivel, duración y una verificación reproducible. La configur
 
 Cada fila tiene su explicación individual a continuación.
 
-**Spring Initializr como generador (prerrequisito).** Antes de poder elegir starters hay que generar la estructura base del proyecto, y el tema lo hace con `curl` contra `https://start.spring.io/starter.zip` pasando `dependencies=web`. El mecanismo entrega un `.zip` con `pom.xml`, `mvnw` y el esqueleto de código ya listos para `./mvnw spring-boot:run`, de modo que la selección de capacidades ocurre en la generación y no después a mano.
+**Spring Initializr como generador (prerrequisito).** Antes de poder elegir starters hay que generar la estructura base del proyecto, y el tema lo hace con `curl` contra `https://start.spring.io/starter.zip -d type=maven-project` pasando `dependencies=web`. El mecanismo entrega un `.zip` con `pom.xml`, `mvnw` y el esqueleto de código ya listos para `./mvnw spring-boot:run`, de modo que la selección de capacidades ocurre en la generación y no después a mano.
 
-**Starter como dependencia curada (núcleo).** Un starter como `spring-boot-starter-web` no es una sola librería sino un conjunto coherente: al pasar `dependencies=web` el proyecto obtiene Tomcat embebido, Jackson y Spring MVC ya autoconfigurados, lo que permite que `@RestController` y `@GetMapping("/health")` respondan `200 OK` sin configurar el servidor. Ese empaquetado es el valor central frente a reunir piezas sueltas.
+**Starter como dependencia curada (núcleo).** Un starter como `spring-boot-starter-webmvc` (llamado `spring-boot-starter-web` antes de Spring Boot 4) no es una sola librería sino un conjunto coherente: al pasar `dependencies=web` el proyecto obtiene Tomcat embebido, Jackson y Spring MVC ya autoconfigurados, lo que permite que `@RestController` y `@GetMapping("/health")` respondan `200 OK` sin configurar el servidor. Ese empaquetado es el valor central frente a reunir piezas sueltas.
 
 **BOM y resolución de versiones (núcleo).** Spring Boot gestiona internamente qué versiones de cada dependencia son compatibles para una versión dada mediante su BOM, eliminando la matriz manual del "dependency hell". El resultado es observable con `./mvnw dependency:tree`, que muestra Tomcat, Jackson y Spring MVC con versiones resueltas coherentemente sin que el equipo las fije una por una.
 
@@ -47,7 +47,7 @@ Cada fila tiene su explicación individual a continuación.
 
 **Conceptos clave:** starter, dependencias preconfiguradas, generación de estructura base.
 
-[start.spring.io](https://start.spring.io) genera la estructura base de un proyecto a partir de starters seleccionados (`web`, `data-jpa`, `security`, `postgresql`). Cada starter es un conjunto curado de dependencias preconfiguradas que trabajan juntas de forma coherente: `spring-boot-starter-web` trae lo necesario para exponer APIs HTTP; `spring-boot-starter-data-jpa` trae Hibernate y la infraestructura de Spring Data para persistencia. Esta curación es el valor añadido frente a agregar dependencias sueltas: Spring Boot gestiona internamente qué versiones son compatibles para una versión dada mediante su BOM, eliminando la matriz manual de compatibilidad (el "dependency hell").
+[start.spring.io](https://start.spring.io) genera la estructura base de un proyecto a partir de starters seleccionados (`web`, `data-jpa`, `security`, `postgresql`). Cada starter es un conjunto curado de dependencias preconfiguradas que trabajan juntas de forma coherente: `spring-boot-starter-webmvc` (llamado `spring-boot-starter-web` antes de Spring Boot 4) trae lo necesario para exponer APIs HTTP; `spring-boot-starter-data-jpa` trae Hibernate y la infraestructura de Spring Data para persistencia. Esta curación es el valor añadido frente a agregar dependencias sueltas: Spring Boot gestiona internamente qué versiones son compatibles para una versión dada mediante su BOM, eliminando la matriz manual de compatibilidad (el "dependency hell").
 
 **Analogía:** un starter es un kit de herramientas preensamblado para un propósito específico, donde todo lo incluido ya está verificado para trabajar junto, en vez de comprar cada herramienta por separado y comprobar manualmente su compatibilidad.
 
@@ -61,7 +61,7 @@ Cada fila tiene su explicación individual a continuación.
 # descarga y arranca con Maven el proyecto generado por Spring Initializr
 mkdir ejemplo-spring-m1
 cd ejemplo-spring-m1
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web -d javaVersion=25 -o app.zip
 unzip app.zip
 ./mvnw spring-boot:run
 ```
@@ -83,7 +83,7 @@ public class SaludController {
 }
 ```
 
-**Explicación línea por línea:** `dependencies=web` en la URL de Initializr selecciona el starter `spring-boot-starter-web`, que trae Tomcat embebido, Jackson y Spring MVC ya autoconfigurados; `@RestController` marca la clase como manejador de peticiones HTTP que serializa directamente los valores de retorno; `@GetMapping("/health")` mapea `GET /health` a este método.
+**Explicación línea por línea:** `dependencies=web` en la URL de Initializr selecciona el starter `spring-boot-starter-webmvc` (llamado `spring-boot-starter-web` antes de Spring Boot 4), que trae Tomcat embebido, Jackson y Spring MVC ya autoconfigurados; `@RestController` marca la clase como manejador de peticiones HTTP que serializa directamente los valores de retorno; `@GetMapping("/health")` mapea `GET /health` a este método.
 
 2. Guarda el archivo, reinicia la aplicación y confirma la respuesta:
 
