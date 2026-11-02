@@ -119,6 +119,32 @@
       "headings": []
     },
     {
+      "path": "docs/ACADEMIA-EXPERIENCIA-DE-ESTUDIO.md",
+      "lines": 66,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Experiencia de estudio: contrato editorial y de interfaz",
+        "## Principios de aprendizaje",
+        "## Contrato de cada tema",
+        "## Contrato del lector",
+        "## Prototipo y l\u00edmites de alcance"
+      ]
+    },
+    {
+      "path": "docs/ACADEMIA-PROTOTIPO-6-CONTEXTOS.md",
+      "lines": 46,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Prototipo editorial: seis contextos",
+        "## Puerta de validaci\u00f3n",
+        "## Estado"
+      ]
+    },
+    {
       "path": "docs/CONTINUAR-7-PASOS.md",
       "lines": 76,
       "kind": "documentation",
@@ -240,6 +266,17 @@
         "## \ud83c\udfaf Qu\u00e9 vas a lograr",
         "## \ud83d\udcd6 El concepto (el QU\u00c9 y el PORQU\u00c9)",
         "## \ud83d\udcbb Manos a la obra (el C\u00d3MO)"
+      ]
+    },
+    {
+      "path": "docs/PROMPT-MAESTRO-METODOLOGIA-EDUCATIVA.md",
+      "lines": 188,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Prompt maestro para transformar el temario en formaci\u00f3n desde cero hasta nivel profesional y experto",
+        "## Aplicaci\u00f3n editorial"
       ]
     },
     {
@@ -620,6 +657,14 @@
       ]
     },
     {
+      "path": "docs/book-curriculum-inventory.json",
+      "lines": 527350,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
       "path": "docs/browser-course-review.json",
       "lines": 2712,
       "kind": "project-file",
@@ -658,6 +703,14 @@
         "## Implementaci\u00f3n",
         "## Evidencia y l\u00edmites"
       ]
+    },
+    {
+      "path": "docs/course-curriculum-inventory.json",
+      "lines": 53,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
     },
     {
       "path": "docs/course-depth-review.json",
@@ -862,6 +915,27 @@
       ]
     },
     {
+      "path": "docs/listado-maestro-temas-libros.md",
+      "lines": 91345,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Listado maestro de temas extra\u00eddos de libros t\u00e9cnicos",
+        "## Resumen",
+        "## Stack: foundations",
+        "### Co\u0301digo limpio - Manual de estilo para el desarrollo a\u0301gil de software",
+        "### Construir software verde - Un enfoque sostenible para el desarrollo y la operacio\u0301n de software",
+        "### Desarrollo de microservicios con Python",
+        "### El gran libro de Kotlin para programadores de back end",
+        "### El gran libro de programacio\u0301n en C++",
+        "### Java a fondo - Curso de programacio\u0301n (5.\u00aa edicio\u0301n)",
+        "### JavaScript - Novice to Ninja (2nd edition)",
+        "### Kotlin y Jetpack Compose - Desarrollo de aplicaciones Android",
+        "### Node.js"
+      ]
+    },
+    {
       "path": "docs/manual-review-log.md",
       "lines": 44,
       "kind": "documentation",
@@ -872,6 +946,27 @@
         "## M\u00e9todo",
         "## Registro",
         "## Estado global"
+      ]
+    },
+    {
+      "path": "docs/mapa-integracion-temas-libros.md",
+      "lines": 483,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Mapa de integraci\u00f3n de temas obtenidos de los libros",
+        "## Cobertura del inventario",
+        "## Stacks actuales: m\u00f3dulos existentes y material localizado",
+        "### foundations",
+        "### javascript",
+        "### node",
+        "### angular",
+        "### react",
+        "### java",
+        "### spring-boot",
+        "### kotlin-multiplatform",
+        "### android"
       ]
     },
     {
@@ -1165,6 +1260,56 @@
       ]
     },
     {
+      "path": "docs/temario-maestro-unificado.json",
+      "lines": 1119545,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "docs/temario-maestro-unificado.md",
+      "lines": 162043,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Temario maestro unificado: academia + libros",
+        "## Estados",
+        "## Stack: foundations",
+        "### M\u00f3dulo actual 0",
+        "### M\u00f3dulo actual 1",
+        "### M\u00f3dulo actual 2",
+        "### M\u00f3dulo actual 3",
+        "### M\u00f3dulo actual 4",
+        "### M\u00f3dulo actual 5",
+        "### M\u00f3dulo actual 6",
+        "### M\u00f3dulo actual 7",
+        "### M\u00f3dulo actual 8"
+      ]
+    },
+    {
+      "path": "docs/temario-total-libros-por-stack.md",
+      "lines": 160024,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Temario total extra\u00eddo de los libros por stack",
+        "## Stack: foundations",
+        "### Correspondencia: flutter / m\u00f3dulo 1",
+        "### Correspondencia: flutter / m\u00f3dulo 15",
+        "### Correspondencia: java / m\u00f3dulo 12",
+        "### Correspondencia: javascript / m\u00f3dulo 1",
+        "### Correspondencia: javascript / m\u00f3dulo 3",
+        "### Correspondencia: javascript / m\u00f3dulo 6",
+        "### Correspondencia: node / m\u00f3dulo 14",
+        "### Correspondencia: react / m\u00f3dulo 0",
+        "### Temas por reorganizar en m\u00f3dulos",
+        "### Libros pendientes de OCR"
+      ]
+    },
+    {
       "path": "docs/temas-inventario.md",
       "lines": 1111,
       "kind": "documentation",
@@ -1195,7 +1340,7 @@
     },
     {
       "path": "docs/topic-source-review.json",
-      "lines": 11049,
+      "lines": 11059,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -6289,6 +6434,61 @@
       "headings": []
     },
     {
+      "path": "scripts/build_total_book_topics.py",
+      "lines": 129,
+      "kind": "automation-script",
+      "symbols": [
+        "normalized",
+        "main",
+        "render_item"
+      ],
+      "imports": [
+        "__future__",
+        "json",
+        "re",
+        "unicodedata",
+        "collections",
+        "pathlib"
+      ],
+      "headings": []
+    },
+    {
+      "path": "scripts/build_unified_curriculum.py",
+      "lines": 211,
+      "kind": "automation-script",
+      "symbols": [
+        "norm",
+        "main"
+      ],
+      "imports": [
+        "__future__",
+        "json",
+        "re",
+        "unicodedata",
+        "collections",
+        "pathlib"
+      ],
+      "headings": []
+    },
+    {
+      "path": "scripts/build_web_curriculum_catalog.py",
+      "lines": 191,
+      "kind": "automation-script",
+      "symbols": [
+        "build_assets",
+        "write_json",
+        "main"
+      ],
+      "imports": [
+        "__future__",
+        "json",
+        "collections",
+        "pathlib",
+        "typing"
+      ],
+      "headings": []
+    },
+    {
       "path": "scripts/build_web_topic_index.py",
       "lines": 81,
       "kind": "automation-script",
@@ -6369,6 +6569,37 @@
         "difflib",
         "pathlib",
         "audit_lesson_substance"
+      ],
+      "headings": []
+    },
+    {
+      "path": "scripts/extract_book_curriculum.py",
+      "lines": 388,
+      "kind": "automation-script",
+      "symbols": [
+        "normalized",
+        "technical_pdfs",
+        "stack_for",
+        "flatten_outline",
+        "clean_heading",
+        "useful_heading",
+        "headings_from_pages",
+        "language_for",
+        "academy_topics",
+        "topic_lookup",
+        "best_existing",
+        "main"
+      ],
+      "imports": [
+        "__future__",
+        "json",
+        "logging",
+        "os",
+        "re",
+        "unicodedata",
+        "collections",
+        "pathlib",
+        "pypdf"
       ],
       "headings": []
     },
@@ -6800,7 +7031,7 @@
     },
     {
       "path": "web/e2e/academy.spec.ts",
-      "lines": 615,
+      "lines": 677,
       "kind": "project-file",
       "symbols": [],
       "imports": [
@@ -8349,6 +8580,230 @@
       ]
     },
     {
+      "path": "web/public/content/curriculum-catalog.json",
+      "lines": 2,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/content/curriculum-stacks/android.json",
+      "lines": 2,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/content/curriculum-stacks/angular.json",
+      "lines": 2,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/content/curriculum-stacks/cloud.json",
+      "lines": 2,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/content/curriculum-stacks/cpp.json",
+      "lines": 2,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/content/curriculum-stacks/cybersecurity.json",
+      "lines": 2,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/content/curriculum-stacks/data-ai.json",
+      "lines": 2,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/content/curriculum-stacks/databases.json",
+      "lines": 2,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/content/curriculum-stacks/devops.json",
+      "lines": 2,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/content/curriculum-stacks/electronics.json",
+      "lines": 2,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/content/curriculum-stacks/flutter.json",
+      "lines": 2,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/content/curriculum-stacks/foundations.json",
+      "lines": 2,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/content/curriculum-stacks/game-development.json",
+      "lines": 2,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/content/curriculum-stacks/general-technical.json",
+      "lines": 2,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/content/curriculum-stacks/ios.json",
+      "lines": 2,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/content/curriculum-stacks/iot-embedded.json",
+      "lines": 2,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/content/curriculum-stacks/java.json",
+      "lines": 2,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/content/curriculum-stacks/javascript.json",
+      "lines": 2,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/content/curriculum-stacks/kotlin-multiplatform.json",
+      "lines": 2,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/content/curriculum-stacks/math-science.json",
+      "lines": 2,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/content/curriculum-stacks/node.json",
+      "lines": 2,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/content/curriculum-stacks/python.json",
+      "lines": 2,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/content/curriculum-stacks/quantum-computing.json",
+      "lines": 2,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/content/curriculum-stacks/react.json",
+      "lines": 2,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/content/curriculum-stacks/robotics-drones.json",
+      "lines": 2,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/content/curriculum-stacks/rutaflow.json",
+      "lines": 2,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/content/curriculum-stacks/spring-boot.json",
+      "lines": 2,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/content/curriculum-stacks/ui-ux.json",
+      "lines": 2,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
       "path": "web/public/content/devops/modulo-0.md",
       "lines": 1090,
       "kind": "course-content",
@@ -9209,7 +9664,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-0.md",
-      "lines": 313,
+      "lines": 324,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9230,7 +9685,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-1.md",
-      "lines": 646,
+      "lines": 692,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9377,7 +9832,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-2.md",
-      "lines": 934,
+      "lines": 1005,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -13046,12 +13501,13 @@
     },
     {
       "path": "web/src/app/app.routes.ts",
-      "lines": 29,
+      "lines": 37,
       "kind": "angular-app",
       "symbols": [],
       "imports": [
         "@angular/router",
         "./catalog/course-catalog",
+        "./catalog/curriculum-library",
         "./course/course-shell",
         "./course/track-overview",
         "./course/lesson-viewer"
@@ -13144,6 +13600,71 @@
         "../theme.service",
         "../topic-index.service"
       ],
+      "headings": []
+    },
+    {
+      "path": "web/src/app/catalog/curriculum-library.html",
+      "lines": 97,
+      "kind": "angular-app",
+      "symbols": [
+        "curriculum-title",
+        "stack-browser-title",
+        "implementation-title"
+      ],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/src/app/catalog/curriculum-library.scss",
+      "lines": 152,
+      "kind": "angular-app",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/src/app/catalog/curriculum-library.ts",
+      "lines": 218,
+      "kind": "angular-app",
+      "symbols": [
+        "CurriculumLibraryComponent",
+        "CurriculumStackComponent",
+        "query",
+        "scope",
+        "filteredStacks",
+        "topicScope",
+        "selectedModule",
+        "visibleCount",
+        "summary",
+        "stack",
+        "currentTrack",
+        "filteredTopics",
+        "visibleTopics",
+        "moduleOptions"
+      ],
+      "imports": [
+        "@angular/common",
+        "@angular/core",
+        "@angular/core/rxjs-interop",
+        "@angular/router",
+        "lucide-angular",
+        "rxjs",
+        "../course-data",
+        "../curriculum-library.service"
+      ],
+      "headings": []
+    },
+    {
+      "path": "web/src/app/catalog/curriculum-stack.html",
+      "lines": 154,
+      "kind": "angular-app",
+      "symbols": [
+        "stack-title",
+        "ocr-title",
+        "course-source-title",
+        "topic-browser-title"
+      ],
+      "imports": [],
       "headings": []
     },
     {
@@ -13502,6 +14023,33 @@
         "Track"
       ],
       "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/src/app/curriculum-library.service.ts",
+      "lines": 400,
+      "kind": "angular-app",
+      "symbols": [
+        "CurriculumLibraryService",
+        "CurriculumSource",
+        "CurriculumTopic",
+        "CurriculumModule",
+        "CurriculumBook",
+        "CurriculumCourse",
+        "CurriculumStack",
+        "CurriculumStackSummary",
+        "CurriculumCatalog",
+        "catalogSignal",
+        "stackSignals",
+        "catalogError",
+        "stackErrors",
+        "isLoadingCatalog",
+        "loadingStacks",
+        "totalTopics"
+      ],
+      "imports": [
+        "@angular/core"
+      ],
       "headings": []
     },
     {
@@ -13942,6 +14490,10 @@
     {
       "source": "web/src/app/app.routes.ts",
       "target": "web/src/app/catalog/course-catalog.ts"
+    },
+    {
+      "source": "web/src/app/app.routes.ts",
+      "target": "web/src/app/catalog/curriculum-library.ts"
     },
     {
       "source": "web/src/app/app.routes.ts",

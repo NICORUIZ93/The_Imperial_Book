@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baselineCommit": "07733a29",
-  "reviewedAt": "2026-11-01",
+  "reviewedAt": "2026-11-02",
   "method": "Inventario de los 378 temas sin dominio reconocido en la línea base; verificación HTTP de citas ya escritas para 19 proveedores documentales inequívocos.",
   "limits": "El éxito HTTP no prueba pertinencia, actualidad de versiones ni calidad pedagógica. Todos los temas conservan revisión manual pendiente.",
   "providerHostsReviewed": [
@@ -183,10 +183,11 @@
         "https://docs.python.org/3/tutorial/interpreter.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 30,
+      "line": 32,
       "originalProseUrls": [
         "https://code.visualstudio.com/docs/python/run",
-        "https://docs.python.org/3/tutorial/interpreter.html"
+        "https://docs.python.org/3/tutorial/interpreter.html",
+        "https://www.python.org/downloads/"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -200,7 +201,7 @@
         "https://docs.python.org/3/using/cmdline.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 95,
+      "line": 97,
       "originalProseUrls": [
         "https://code.visualstudio.com/docs/terminal/basics",
         "https://docs.python.org/3/using/cmdline.html"
@@ -216,7 +217,7 @@
         "https://docs.python.org/3/using/cmdline.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 152,
+      "line": 154,
       "originalProseUrls": [
         "https://docs.python.org/3/using/cmdline.html"
       ],
@@ -232,7 +233,7 @@
         "https://docs.python.org/3/tutorial/inputoutput.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 209,
+      "line": 211,
       "originalProseUrls": [
         "https://docs.python.org/3/library/functions.html",
         "https://docs.python.org/3/tutorial/inputoutput.html"
@@ -248,7 +249,7 @@
         "https://code.visualstudio.com/docs/configure/keybindings"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 277,
+      "line": 279,
       "originalProseUrls": [
         "https://code.visualstudio.com/docs/configure/keybindings"
       ],
@@ -260,14 +261,14 @@
       "path": "web/public/content/foundations/modulo-1.md",
       "topic": "Tema 1: Del problema al algoritmo y a los casos de prueba",
       "providerCitations": [
-        "https://docs.python.org/es/3/library/unittest.html",
-        "https://docs.python.org/es/3/tutorial/controlflow.html"
+        "https://docs.python.org/3/library/unittest.html",
+        "https://docs.python.org/3/tutorial/controlflow.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 6,
+      "line": 8,
       "originalProseUrls": [
-        "https://docs.python.org/es/3/library/unittest.html",
-        "https://docs.python.org/es/3/tutorial/controlflow.html"
+        "https://docs.python.org/3/library/unittest.html",
+        "https://docs.python.org/3/tutorial/controlflow.html"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -281,7 +282,7 @@
         "https://docs.python.org/es/3/reference/expressions.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 151,
+      "line": 179,
       "originalProseUrls": [
         "https://docs.python.org/es/3/library/stdtypes.html",
         "https://docs.python.org/es/3/reference/expressions.html"
@@ -298,7 +299,7 @@
         "https://docs.python.org/es/3/tutorial/controlflow.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 279,
+      "line": 308,
       "originalProseUrls": [
         "https://docs.python.org/es/3/library/stdtypes.html",
         "https://docs.python.org/es/3/tutorial/controlflow.html"
@@ -315,7 +316,7 @@
         "https://docs.python.org/es/3/tutorial/controlflow.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 415,
+      "line": 445,
       "originalProseUrls": [
         "https://docs.python.org/es/3/reference/compound_stmts.html",
         "https://docs.python.org/es/3/tutorial/controlflow.html"
@@ -1037,7 +1038,7 @@
         "https://docs.python.org/es/3/tutorial/datastructures.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 6,
+      "line": 7,
       "originalProseUrls": [
         "https://docs.python.org/es/3/library/stdtypes.html#dict",
         "https://docs.python.org/es/3/tutorial/datastructures.html"
@@ -1054,7 +1055,7 @@
         "https://docs.python.org/es/3/tutorial/datastructures.html#using-lists-as-stacks"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 128,
+      "line": 171,
       "originalProseUrls": [
         "https://docs.python.org/es/3/library/collections.html#collections.deque",
         "https://docs.python.org/es/3/tutorial/datastructures.html#using-lists-as-stacks"
@@ -1070,7 +1071,7 @@
         "https://docs.python.org/es/3/library/bisect.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 272,
+      "line": 316,
       "originalProseUrls": [
         "https://docs.python.org/es/3/library/bisect.html",
         "https://opendsa-server.cs.vt.edu/"
@@ -1087,7 +1088,7 @@
         "https://docs.python.org/es/3/library/time.html#time.perf_counter"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 420,
+      "line": 465,
       "originalProseUrls": [
         "https://docs.python.org/es/3/howto/sorting.html",
         "https://docs.python.org/es/3/library/time.html#time.perf_counter"
@@ -7145,30 +7146,30 @@
     },
     {
       "url": "https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/javax/sql/DataSource.html",
-      "status": 0,
+      "status": 200,
       "finalUrl": "https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/javax/sql/DataSource.html",
-      "contentType": "",
+      "contentType": "text/html",
       "title": null,
-      "checkedAt": null,
-      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+      "checkedAt": "2026-11-02T00:19:48.103975+00:00",
+      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
       "url": "https://docs.oracle.com/en/java/javase/25/docs/api/jdk.httpserver/com/sun/net/httpserver/HttpServer.html",
-      "status": 0,
+      "status": 200,
       "finalUrl": "https://docs.oracle.com/en/java/javase/25/docs/api/jdk.httpserver/com/sun/net/httpserver/HttpServer.html",
-      "contentType": "",
+      "contentType": "text/html",
       "title": null,
-      "checkedAt": null,
-      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+      "checkedAt": "2026-11-02T00:19:48.105463+00:00",
+      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
       "url": "https://docs.oracle.com/en/java/javase/25/docs/specs/man/jar.html",
-      "status": 0,
+      "status": 200,
       "finalUrl": "https://docs.oracle.com/en/java/javase/25/docs/specs/man/jar.html",
-      "contentType": "",
+      "contentType": "text/html",
       "title": null,
-      "checkedAt": null,
-      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+      "checkedAt": "2026-11-02T00:19:48.106691+00:00",
+      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
       "url": "https://docs.oracle.com/en/java/javase/25/docs/specs/man/java.html",
@@ -7226,12 +7227,12 @@
     },
     {
       "url": "https://docs.oracle.com/en/java/javase/27/core/structured-concurrency.html",
-      "status": 0,
+      "status": 200,
       "finalUrl": "https://docs.oracle.com/en/java/javase/27/core/structured-concurrency.html",
-      "contentType": "",
+      "contentType": "text/html",
       "title": null,
-      "checkedAt": null,
-      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+      "checkedAt": "2026-11-02T00:19:48.107728+00:00",
+      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
       "url": "https://docs.oracle.com/javase/specs/jls/se21/html/jls-17.html",
@@ -7423,6 +7424,24 @@
       "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
     },
     {
+      "url": "https://docs.python.org/3/library/unittest.html",
+      "status": 200,
+      "finalUrl": "https://docs.python.org/3/library/unittest.html",
+      "contentType": "text/html",
+      "title": null,
+      "checkedAt": "2026-11-02T00:19:48.108594+00:00",
+      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
+      "url": "https://docs.python.org/3/tutorial/controlflow.html",
+      "status": 200,
+      "finalUrl": "https://docs.python.org/3/tutorial/controlflow.html",
+      "contentType": "text/html",
+      "title": null,
+      "checkedAt": "2026-11-02T00:19:48.110025+00:00",
+      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
       "url": "https://docs.python.org/3/tutorial/inputoutput.html",
       "status": 200,
       "finalUrl": "https://docs.python.org/3/tutorial/inputoutput.html",
@@ -7529,15 +7548,6 @@
       "title": "time — Time access and conversions &#8212; documentación de Python - 3.15.2",
       "checkedAt": "2026-10-31T15:07:24.762796+00:00",
       "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
-    },
-    {
-      "url": "https://docs.python.org/es/3/library/unittest.html",
-      "status": 200,
-      "finalUrl": "https://docs.python.org/es/3/library/unittest.html",
-      "contentType": "text/html",
-      "title": null,
-      "checkedAt": "2026-10-31T15:33:20.136136+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
       "url": "https://docs.python.org/es/3/reference/compound_stmts.html",
@@ -7676,12 +7686,12 @@
     },
     {
       "url": "https://documentation.red-gate.com/flyway/",
-      "status": 0,
+      "status": 200,
       "finalUrl": "https://documentation.red-gate.com/flyway/",
-      "contentType": "",
+      "contentType": "text/html;charset=utf-8",
       "title": null,
-      "checkedAt": null,
-      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+      "checkedAt": "2026-11-02T00:19:48.111232+00:00",
+      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
       "url": "https://documentation.red-gate.com/flyway/flyway-concepts/migrations",
@@ -8054,12 +8064,12 @@
     },
     {
       "url": "https://java.testcontainers.org/",
-      "status": 0,
+      "status": 200,
       "finalUrl": "https://java.testcontainers.org/",
-      "contentType": "",
+      "contentType": "text/html; charset=UTF-8",
       "title": null,
-      "checkedAt": null,
-      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+      "checkedAt": "2026-11-02T00:19:48.112562+00:00",
+      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
       "url": "https://java.testcontainers.org/modules/databases/postgres/",
@@ -8108,12 +8118,12 @@
     },
     {
       "url": "https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html",
-      "status": 0,
+      "status": 200,
       "finalUrl": "https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html",
-      "contentType": "",
+      "contentType": "text/html; charset=UTF-8",
       "title": null,
-      "checkedAt": null,
-      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+      "checkedAt": "2026-11-02T00:19:48.242654+00:00",
+      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
       "url": "https://jotai.org/docs/introduction",
@@ -8144,12 +8154,12 @@
     },
     {
       "url": "https://kafka.apache.org/documentation/",
-      "status": 0,
+      "status": 200,
       "finalUrl": "https://kafka.apache.org/documentation/",
-      "contentType": "",
+      "contentType": "text/html",
       "title": null,
-      "checkedAt": null,
-      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+      "checkedAt": "2026-11-02T00:19:48.482136+00:00",
+      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
       "url": "https://kafka.apache.org/documentation/#consumerconfigs",
@@ -8306,12 +8316,12 @@
     },
     {
       "url": "https://maplibre.org/maplibre-gl-js/docs/API/classes/GeoJSONSource/",
-      "status": 0,
+      "status": 200,
       "finalUrl": "https://maplibre.org/maplibre-gl-js/docs/API/classes/GeoJSONSource/",
-      "contentType": "",
+      "contentType": "text/html; charset=utf-8",
       "title": null,
-      "checkedAt": null,
-      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+      "checkedAt": "2026-11-02T00:19:48.492162+00:00",
+      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
       "url": "https://mapstruct.org/documentation/stable/reference/html/",
@@ -8450,12 +8460,12 @@
     },
     {
       "url": "https://maven.apache.org/pom.html",
-      "status": 0,
+      "status": 200,
       "finalUrl": "https://maven.apache.org/pom.html",
-      "contentType": "",
+      "contentType": "text/html",
       "title": null,
-      "checkedAt": null,
-      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+      "checkedAt": "2026-11-02T00:19:48.492261+00:00",
+      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
       "url": "https://microservices.io/patterns/data/saga.html",
@@ -8702,21 +8712,21 @@
     },
     {
       "url": "https://nodejs.org/en/about/previous-releases",
-      "status": 0,
+      "status": 200,
       "finalUrl": "https://nodejs.org/en/about/previous-releases",
-      "contentType": "",
+      "contentType": "text/html; charset=utf-8",
       "title": null,
-      "checkedAt": null,
-      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+      "checkedAt": "2026-11-02T00:19:48.581836+00:00",
+      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
       "url": "https://nodejs.org/en/blog/release/v26.0.0",
-      "status": 0,
+      "status": 200,
       "finalUrl": "https://nodejs.org/en/blog/release/v26.0.0",
-      "contentType": "",
+      "contentType": "text/html; charset=utf-8",
       "title": null,
-      "checkedAt": null,
-      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+      "checkedAt": "2026-11-02T00:19:48.617587+00:00",
+      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
       "url": "https://nominatim.org/release-docs/latest/api/Search/",
@@ -8873,12 +8883,12 @@
     },
     {
       "url": "https://openjdk.org/jeps/533",
-      "status": 0,
+      "status": 200,
       "finalUrl": "https://openjdk.org/jeps/533",
-      "contentType": "",
+      "contentType": "text/html",
       "title": null,
-      "checkedAt": null,
-      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+      "checkedAt": "2026-11-02T00:19:48.645906+00:00",
+      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
       "url": "https://openjdk.org/projects/code-tools/jmh/",
@@ -11029,9 +11039,9 @@
     "additionalRecognizedTopics": 378,
     "remainingUnrecognizedTopics": 0,
     "applicabilityPendingTopics": 378,
-    "urlsChecked": 519,
-    "urlsReachable": 506,
-    "urlsPending": 13
+    "urlsChecked": 520,
+    "urlsReachable": 520,
+    "urlsPending": 0
   },
   "corrections": [
     {

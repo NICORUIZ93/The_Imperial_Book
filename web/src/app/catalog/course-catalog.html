@@ -1,7 +1,7 @@
 <div class="catalog-page">
   <header class="topbar">
     <a class="brand" routerLink="/"><span class="brand-mark"><lucide-icon [img]="icons.BookOpen" /></span><span class="brand-text"><strong>The Imperial Book<span class="brand-dot">.</span></strong><small>Academia técnica en español</small></span></a>
-    <nav class="top-links" aria-label="Navegación principal"><a href="#tracks-title">Cursos</a><a href="#beginner-title">Cómo estudiar</a></nav>
+    <nav class="top-links" aria-label="Navegación principal"><a href="#tracks-title">Cursos</a><a routerLink="/temario">Temario de libros</a><a href="#beginner-title">Cómo estudiar</a></nav>
     <div class="top-actions"><button class="global-search" (click)="palette.open()" aria-label="Buscar cursos, módulos y temas"><lucide-icon [img]="icons.Search" /><span>Buscar un tema</span><kbd>⌘K</kbd></button><button class="theme-toggle" (click)="themeService.toggle()" [attr.aria-label]="themeService.isDark() ? 'Activar modo claro' : 'Activar modo oscuro'"><lucide-icon [img]="themeService.isDark() ? icons.Sun : icons.Moon" /></button></div>
   </header>
   <div class="workspace">
@@ -13,7 +13,7 @@
     </aside>
     <main id="main-content" tabindex="-1">
       <section class="hero" aria-labelledby="catalog-title">
-        <div class="hero-intro"><p class="eyebrow"><span></span> Aprende con un propósito</p><h1 id="catalog-title">De la primera línea<br />a tu próximo <span>proyecto.</span></h1><p class="hero-copy">Elige una ruta, comprende cómo funciona y llévalo a la práctica. Programación, web, backend, móvil y cloud, en un solo espacio.</p><div class="hero-actions"><a class="btn btn-primary" routerLink="/curso/foundations/0">Empezar desde cero <lucide-icon [img]="icons.ArrowUpRight" /></a><a class="hero-secondary" href="#tracks-title">Explorar cursos →</a></div></div>
+        <div class="hero-intro"><p class="eyebrow"><span></span> Aprende con un propósito</p><h1 id="catalog-title">De la primera línea<br />a tu próximo <span>proyecto.</span></h1><p class="hero-copy">Elige una ruta, comprende cómo funciona y llévalo a la práctica. Programación, web, backend, móvil y cloud, en un solo espacio.</p><div class="hero-actions"><a class="btn btn-primary" routerLink="/curso/foundations/0">Empezar desde cero <lucide-icon [img]="icons.ArrowUpRight" /></a><a class="hero-secondary" href="#tracks-title">Explorar cursos →</a><a class="hero-secondary" routerLink="/temario">Consultar inventario bibliográfico provisional →</a></div></div>
         <aside class="first-session" aria-labelledby="first-session-title"><div class="session-label"><span>EL PUNTO DE PARTIDA</span><span>01</span></div><h2 id="first-session-title">Algo pequeño.<br />Que funciona de verdad.</h2><p>Tu primer programa, desde un archivo vacío hasta ver el resultado.</p><div class="session-example"><span>saludo.py</span><pre><code><span class="code-fn">print</span>("Hola, mundo")</code></pre><small><span>↳</span> Hola, mundo</small></div><a routerLink="/curso/foundations/0">Ver la primera práctica <span>→</span></a></aside>
         <dl class="hero-stats" aria-label="Contenido disponible"><div><dd>{{ cards().length }}</dd><dt>rutas de aprendizaje</dt></div><div><dd>{{ totalModules() }}</dd><dt>módulos</dt></div><div><dd>{{ topicIndex.totalTopics() || '—' }}</dd><dt>temas disponibles</dt></div></dl>
         <p *ngIf="topicIndex.loadError()" class="inline-error" role="alert">No se pudo cargar el índice de temas: {{ topicIndex.loadError() }} <button (click)="topicIndex.retry()">Reintentar</button></p>

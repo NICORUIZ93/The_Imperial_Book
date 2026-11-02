@@ -1,0 +1,153 @@
+<div class="curriculum-page">
+  <header class="curriculum-topbar">
+    <a class="curriculum-brand" routerLink="/" aria-label="The Imperial Book, catálogo principal">
+      <span class="brand-mark"><lucide-icon [img]="icons.BookOpen" /></span>
+      <span><strong>The Imperial Book.</strong><small>Academia técnica en español</small></span>
+    </a>
+    <nav aria-label="Navegación principal">
+      <a routerLink="/catalogo">Cursos</a>
+      <a routerLink="/temario" aria-current="page">Temario bibliográfico</a>
+    </nav>
+  </header>
+
+  <main class="curriculum-main">
+    <p class="breadcrumbs"><a routerLink="/temario"><lucide-icon [img]="icons.ArrowLeft" /> Todos los stacks</a><span aria-hidden="true">/</span>{{ stackName() }}</p>
+
+    <ng-container *ngIf="summary() as stackSummary; else unavailable">
+      <section class="stack-detail-hero" aria-labelledby="stack-title">
+        <p class="eyebrow">{{ stackSummary.hasCurrentTrack ? 'Ruta actual' : 'Stack propuesto' }} · inventario provisional</p>
+        <h1 id="stack-title">{{ stackName() }}</h1>
+        <p class="curriculum-intro">
+          Este índice conserva encabezados y trazabilidad bibliográfica. Los candidatos se agrupan
+          aparte como <strong>expansión editorial por organizar</strong>; no se inventan módulos,
+          prerrequisitos ni lecciones para acomodarlos.
+        </p>
+        <div class="curriculum-stats curriculum-stats-five" aria-label="Cobertura de esta área">
+          <div><strong>{{ number(stackSummary.topicCount) }}</strong><span>entradas en el índice</span></div>
+          <div><strong>{{ number(stackSummary.currentTopicCount) }}</strong><span>temas actuales</span></div>
+          <div><strong>{{ number(stackSummary.bookCandidateCount) }}</strong><span>candidatos pendientes</span></div>
+          <div><strong>{{ number(stackSummary.courseCandidateCount) }}</strong><span>temas anunciados en cursos</span></div>
+          <div><strong>{{ number(stackSummary.bookCount) }} · {{ number(stackSummary.courseCount) }}</strong><span>libros · cursos fuente</span></div>
+        </div>
+        <aside class="curriculum-caveat" role="note">
+          Los encabezados no certifican que el concepto sea correcto, esté explicado, tenga ejemplo
+          ejecutable o alcance profesional. La ubicación editorial y la revisión individual siguen pendientes.
+        </aside>
+      </section>
+
+      <section *ngIf="stackSummary.booksRequiringOcr" class="ocr-section" aria-labelledby="ocr-title">
+        <details>
+          <summary id="ocr-title">{{ stackSummary.booksRequiringOcr }} libro(s) de esta área requieren OCR</summary>
+          <ul *ngIf="stack() as loadedStack">
+            <li *ngFor="let book of loadedStack.booksRequiringOcr">{{ book.title }} <span *ngIf="book.pages">· {{ book.pages }} páginas</span></li>
+          </ul>
+        </details>
+      </section>
+
+      <ng-container *ngIf="stack() as loadedStack">
+        <section *ngIf="loadedStack.courses.length" class="course-source-section" aria-labelledby="course-source-title">
+          <p class="eyebrow">Referencia externa · contenido no verificado como lección</p>
+          <h2 id="course-source-title">Cursos técnicos inventariados</h2>
+          <article *ngFor="let course of loadedStack.courses" class="course-source-card">
+            <h3><a [href]="course.url" target="_blank" rel="noopener noreferrer">{{ course.title }} ↗</a></h3>
+            <p>{{ course.provider }} · {{ language(course.language) }}</p>
+            <p>{{ course.audience }}</p>
+            <p class="curriculum-caveat">{{ course.sourceNote }}</p>
+            <details>
+              <summary>Ver características anunciadas del proyecto final</summary>
+              <ul><li *ngFor="let feature of course.projectFeatures">{{ feature }}</li></ul>
+            </details>
+          </article>
+        </section>
+      </ng-container>
+
+      <section class="topic-browser" aria-labelledby="topic-browser-title">
+        <div class="section-heading">
+          <div><p class="eyebrow">Cobertura navegable</p><h2 id="topic-browser-title">Temas y evidencia de origen</h2></div>
+          <span aria-live="polite">{{ number(filteredTopics().length) }} resultados</span>
+        </div>
+        <label class="stack-search">
+          <lucide-icon [img]="icons.Search" aria-hidden="true" />
+          <span class="sr-only">Buscar temas en {{ stackName() }}</span>
+          <input type="search" placeholder="Busca un título dentro de esta área…" [value]="query()" (input)="updateQuery($event)" />
+        </label>
+
+        <div class="topic-filters" role="group" aria-label="Filtrar temas">
+          <button type="button" [class.active]="topicScope() === 'all'" [attr.aria-pressed]="topicScope() === 'all'" (click)="selectTopicScope('all')">Todos</button>
+          <button type="button" [class.active]="topicScope() === 'current'" [attr.aria-pressed]="topicScope() === 'current'" (click)="selectTopicScope('current')">Temas actuales</button>
+          <button type="button" [class.active]="topicScope() === 'book-candidates'" [attr.aria-pressed]="topicScope() === 'book-candidates'" (click)="selectTopicScope('book-candidates')">Candidatos de libros</button>
+          <button *ngIf="stackSummary.courseCandidateCount" type="button" [class.active]="topicScope() === 'course-candidates'" [attr.aria-pressed]="topicScope() === 'course-candidates'" (click)="selectTopicScope('course-candidates')">Temas de cursos externos</button>
+          <label class="module-filter" *ngIf="moduleOptions().length > 1">
+            <span>Grupo</span>
+            <select [value]="selectedModule()" (change)="selectModule($event)">
+              <option value="all">Todos los grupos</option>
+              <option *ngFor="let module of moduleOptions()" [value]="module.id">{{ module.label }} · {{ number(module.topicCount) }}</option>
+            </select>
+          </label>
+        </div>
+
+        <p *ngIf="library.stackErrors()[stackId()]" class="curriculum-error" role="alert">
+          {{ library.stackErrors()[stackId()] }}
+          <button type="button" (click)="retry()">Reintentar</button>
+        </p>
+        <p *ngIf="library.loadingStacks()[stackId()]" class="curriculum-loading" role="status">Cargando este stack…</p>
+        <ol class="topic-list" *ngIf="stack() as loadedStack">
+          <li *ngFor="let item of visibleTopics(); let index = index" class="topic-row">
+            <span class="topic-number" aria-hidden="true">{{ number(index + 1) }}</span>
+            <div class="topic-content">
+              <div class="topic-heading">
+                <h3>{{ item.topic.title }}</h3>
+                <span class="topic-status" [class.candidate]="!item.topic.current">{{ topicStatus(item.topic) }}</span>
+              </div>
+              <p class="topic-placement">
+                {{ item.topic.current ? moduleLabel(item.topic.current.module) : moduleLabel(item.moduleId) }}
+              </p>
+              <div class="topic-actions">
+                <a *ngIf="topicLink(item.topic) as link" [routerLink]="link">Abrir tema actual <span aria-hidden="true">↗</span></a>
+                <details *ngIf="item.topic.sources.length" class="source-details">
+                  <summary>{{ item.topic.sources.length }} referencia(s) bibliográfica(s)</summary>
+                  <ul>
+                    <li *ngFor="let source of item.topic.sources">
+                      <strong>{{ loadedStack.books[source.bookId].title }}</strong>
+                      <span> · {{ language(loadedStack.books[source.bookId].language) }}</span>
+                      <span *ngIf="source.page"> · p. {{ source.page }}</span>
+                    </li>
+                  </ul>
+                </details>
+                <details *ngIf="item.topic.courseSources.length" class="source-details">
+                  <summary>{{ item.topic.courseSources.length }} curso(s) fuente</summary>
+                  <ul>
+                    <li *ngFor="let source of item.topic.courseSources">
+                      <a [href]="loadedStack.courses[source.courseId].url" target="_blank" rel="noopener noreferrer">
+                        {{ loadedStack.courses[source.courseId].provider }} · {{ loadedStack.courses[source.courseId].title }}
+                      </a>
+                    </li>
+                  </ul>
+                </details>
+                <span *ngIf="!item.topic.sources.length && !item.topic.courseSources.length" class="no-book-source">Sin coincidencia exacta en este inventario</span>
+              </div>
+            </div>
+          </li>
+        </ol>
+        <p *ngIf="!library.loadingStacks()[stackId()] && !stack() && !library.stackErrors()[stackId()]" class="curriculum-loading" role="status">
+          Preparando la lista de temas…
+        </p>
+        <p *ngIf="stack() && !filteredTopics().length" class="empty-state">No encontramos temas con esos filtros.</p>
+        <div class="list-footer" *ngIf="visibleTopics().length < filteredTopics().length">
+          <p>Se muestran {{ number(visibleTopics().length) }} de {{ number(filteredTopics().length) }} entradas para mantener fluida la lectura.</p>
+          <button type="button" class="show-more" (click)="showMore()">Mostrar 80 más</button>
+        </div>
+      </section>
+    </ng-container>
+
+    <ng-template #unavailable>
+      <section class="unavailable" *ngIf="library.catalogError() || library.stackErrors()[stackId()]; else loading" role="alert">
+        <h1>No se pudo abrir esta área</h1>
+        <p>{{ library.catalogError() || library.stackErrors()[stackId()] }}</p>
+        <button type="button" class="show-more" (click)="library.retryCatalog()">Reintentar índice</button>
+        <a routerLink="/temario">Volver a todas las áreas</a>
+      </section>
+      <ng-template #loading><p class="curriculum-loading" role="status">Cargando índice y referencias de esta área…</p></ng-template>
+    </ng-template>
+  </main>
+</div>

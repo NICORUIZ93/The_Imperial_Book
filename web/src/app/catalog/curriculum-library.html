@@ -1,0 +1,96 @@
+<div class="curriculum-page">
+  <header class="curriculum-topbar">
+    <a class="curriculum-brand" routerLink="/" aria-label="The Imperial Book, catálogo principal">
+      <span class="brand-mark"><lucide-icon [img]="icons.BookOpen" /></span>
+      <span><strong>The Imperial Book.</strong><small>Academia técnica en español</small></span>
+    </a>
+    <nav aria-label="Navegación principal">
+      <a routerLink="/catalogo">Cursos</a>
+      <a routerLink="/temario" aria-current="page">Temario bibliográfico</a>
+    </nav>
+  </header>
+
+  <main class="curriculum-main">
+    <section class="curriculum-hero" aria-labelledby="curriculum-title">
+      <p class="eyebrow">Inventario curricular · cobertura con límites explícitos</p>
+      <h1 id="curriculum-title">Un índice de temas,<br /><span>no una colección de lecciones.</span></h1>
+      <p class="curriculum-intro">
+        Conservamos los temas que ya están en las rutas y hacemos consultables los encabezados
+        recuperados de libros y cursos externos. Una referencia todavía no es una explicación ni
+        una práctica de la academia.
+      </p>
+
+      <div *ngIf="catalog() as data" class="curriculum-stats curriculum-stats-five" aria-label="Cobertura del inventario">
+        <div><strong>{{ number(data.summary.provisionalTopics) }}</strong><span>entradas en el índice unificado</span></div>
+        <div><strong>{{ number(data.summary.currentTopics) }}</strong><span>temas en rutas actuales</span></div>
+        <div><strong>{{ number(data.summary.bookCandidates) }}</strong><span>candidatos de libros por revisar</span></div>
+        <div><strong>{{ number(data.summary.courseCandidates) }}</strong><span>temas anunciados en cursos</span></div>
+        <div><strong>{{ number(data.summary.booksRequiringOcr) }}</strong><span>libros pendientes de OCR</span></div>
+      </div>
+
+      <aside class="curriculum-caveat" role="note">
+        <strong>Estado real:</strong> los candidatos no se presentan como lecciones publicadas.
+        No tienen aún secuencia validada, explicación escrita para la academia, ejemplo ejecutado ni
+        revisión humana individual. Las referencias de cursos conservan el estado y las afirmaciones
+        de su ficha; no demuestran que los contenidos o resultados anunciados se hayan verificado.
+      </aside>
+      <p *ngIf="library.catalogError()" class="curriculum-error" role="alert">
+        {{ library.catalogError() }}
+        <button type="button" (click)="library.retryCatalog()">Reintentar</button>
+      </p>
+      <p *ngIf="library.isLoadingCatalog()" class="curriculum-loading" role="status">Cargando el índice del temario…</p>
+    </section>
+
+    <section class="stack-browser" aria-labelledby="stack-browser-title">
+      <div class="section-heading">
+        <div><p class="eyebrow">27 áreas consultables</p><h2 id="stack-browser-title">Elige una ruta o stack</h2></div>
+        <span *ngIf="catalog() as data">{{ number(data.stacks.length) }} áreas</span>
+      </div>
+
+      <label class="stack-search">
+        <lucide-icon [img]="icons.Search" aria-hidden="true" />
+        <span class="sr-only">Buscar en rutas y stacks</span>
+        <input type="search" placeholder="Busca Python, electrónica, fundamentos…" [value]="query()" (input)="updateQuery($event)" />
+      </label>
+
+      <div class="scope-tabs" role="group" aria-label="Filtrar las áreas del temario">
+        <button type="button" [class.active]="scope() === 'all'" [attr.aria-pressed]="scope() === 'all'" (click)="selectScope('all')">Todas</button>
+        <button type="button" [class.active]="scope() === 'current'" [attr.aria-pressed]="scope() === 'current'" (click)="selectScope('current')">Rutas actuales</button>
+        <button type="button" [class.active]="scope() === 'proposed'" [attr.aria-pressed]="scope() === 'proposed'" (click)="selectScope('proposed')">Stacks propuestos</button>
+      </div>
+
+      <p class="curriculum-error" *ngIf="!library.isLoadingCatalog() && !catalog() && !library.catalogError()" role="status">
+        El índice todavía no está disponible.
+      </p>
+      <div class="stack-list" *ngIf="catalog()">
+        <a class="stack-row" *ngFor="let stack of filteredStacks()" [routerLink]="['/temario', stack.id]">
+          <span class="stack-row-index" aria-hidden="true">{{ stack.id }}</span>
+          <span class="stack-row-main">
+            <strong>{{ stackName(stack.id) }}</strong>
+            <small>{{ stack.hasCurrentTrack ? 'Ruta actual' : 'Stack propuesto · pendiente de secuenciación' }}</small>
+          </span>
+          <span class="stack-row-counts">
+            <span>{{ number(stack.currentTopicCount) }} actuales</span>
+            <span>{{ number(stack.bookCandidateCount) }} candidatos</span>
+            <span *ngIf="stack.courseCandidateCount">{{ number(stack.courseCandidateCount) }} de cursos</span>
+            <span *ngIf="stack.booksRequiringOcr">{{ stack.booksRequiringOcr }} OCR pendiente(s)</span>
+          </span>
+          <lucide-icon [img]="icons.ArrowRight" aria-hidden="true" />
+        </a>
+        <p *ngIf="!filteredStacks().length" class="empty-state">No encontramos esa área. Prueba otro término.</p>
+      </div>
+    </section>
+
+    <section class="implementation-state" aria-labelledby="implementation-title">
+      <p class="eyebrow">Trabajo editorial, por separado</p>
+      <h2 id="implementation-title">Lo que este inventario no afirma</h2>
+      <ul>
+        <li>Que los títulos de libros ya estén explicados o practicables dentro de la academia.</li>
+        <li>Que una ubicación sugerida sea un prerrequisito o un orden de aprendizaje comprobado.</li>
+        <li>Que se hayan ejecutado ejemplos, probado todas las páginas o completado una revisión pedagógica humana.</li>
+        <li>Que marcar progreso en el navegador demuestre comprensión o desempeño profesional.</li>
+      </ul>
+      <p>En cada ruta puedes distinguir el contenido actual de los candidatos y consultar libro, curso fuente o página cuando esa evidencia existe.</p>
+    </section>
+  </main>
+</div>

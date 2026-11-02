@@ -25,6 +25,68 @@ test('catalogo: lista los tracks agrupados sin secciones de marketing', async ({
   await expect(page.locator('.group-title').first()).toBeVisible();
   await expect(page.locator('.card')).toHaveCount(14);
   await expect(page.locator('.hero-stats dd').nth(2)).not.toHaveText('—');
+  await expect(page.getByRole('link', { name: /Consultar inventario bibliográfico provisional/ })).toBeVisible();
+});
+
+test('temario bibliográfico: separa los temas actuales de los candidatos y conserva fuentes sin rutas privadas', async ({ page }) => {
+  await page.goto('/temario');
+
+  await expect(page.getByRole('heading', { name: /Un índice de temas, no una colección de lecciones/i })).toBeVisible();
+  await expect(page.locator('.curriculum-stats')).toContainText('74.186');
+  await expect(page.locator('.curriculum-stats')).toContainText('73.027');
+  await expect(page.locator('.curriculum-stats')).toContainText('18');
+  await expect(page.locator('.curriculum-caveat')).toContainText('no se presentan como lecciones publicadas');
+
+  await page.goto('/temario/foundations');
+  await expect(page.getByRole('heading', { name: 'Fundamentos de Ingeniería de Software' })).toBeVisible();
+  await expect(page.locator('.stack-detail-hero')).toContainText('2421');
+  await page.getByRole('button', { name: 'Candidatos de libros' }).click();
+  await expect(page.locator('.topic-list .topic-row').first()).toContainText('Candidato de libros');
+  await page.locator('.source-details summary').first().click();
+  await expect(page.locator('.source-details').first()).toContainText('p.');
+  await expect(page.locator('body')).not.toContainText('/Volumes/');
+
+  await page.goto('/temario/foundations');
+  await page.getByRole('button', { name: 'Temas actuales' }).click();
+  await page.getByRole('link', { name: 'Abrir tema actual' }).first().click();
+  await expect(page).toHaveURL(/\/curso\/foundations\/0\/tema\/tema-1$/);
+  await expect(page.locator('.topic-card').first()).toContainText('Del hardware al programa en ejecución');
+});
+
+test('temario Angular: incluye el curso de Udemy como fuente provisional y separada', async ({ page }) => {
+  await page.goto('/temario/angular');
+
+  const courseTitle = 'Angular Native: Crea apps nativas para Android y iOS desde cero usando Angular 22';
+  await expect(page.locator('.course-source-card')).toContainText(courseTitle);
+  await expect(page.locator('.course-source-card')).toContainText('no parte de cero absoluto');
+  await page.locator('.course-source-card details summary').click();
+  await expect(page.locator('.course-source-card')).toContainText('Row Level Security');
+
+  await page.getByRole('button', { name: 'Temas de cursos externos' }).click();
+  await expect(page.locator('.section-heading > span')).toContainText('18 resultados');
+  await expect(page.locator('.topic-list .topic-row').first()).toContainText('Angular Native');
+  await page.locator('.topic-list .source-details summary').first().click();
+  const courseLink = page.locator('.topic-list .source-details a').first();
+  await expect(courseLink).toHaveAttribute('href', /^https:\/\/www\.udemy\.com\/course\/angular-native-/);
+  await expect(courseLink).not.toHaveAttribute('href', /fbclid/);
+});
+
+test('Fundamentos módulo 1: muestra los estados inválidos y bytes UTF-8 en la lección', async ({ page }) => {
+  await page.goto('/curso/foundations/1');
+
+  const topics = page.locator('.topic-card');
+  await expect(topics).toHaveCount(5);
+  await expect(topics.nth(0)).toContainText('Tarea 2: estado no admitido: archivada');
+  await expect(topics.nth(4)).toContainText('4 bytes');
+});
+
+test('Fundamentos módulo 2: renderiza el ejemplo de identidad por id y sus resultados', async ({ page }) => {
+  await page.goto('/curso/foundations/2');
+
+  const topic = page.locator('.topic-card').first();
+  await expect(page.locator('.topic-card')).toHaveCount(8);
+  await expect(topic).toContainText('buscar_por_id_lista');
+  await expect(topic).toContainText('llamar al dentista');
 });
 
 test('ruta: presenta los niveles como orientación, no como certificación', async ({ page }) => {

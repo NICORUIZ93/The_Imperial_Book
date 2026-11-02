@@ -1,12 +1,14 @@
 # Módulo 1: Pensamiento computacional y programación
 
+**Entorno comprobado para esta revisión:** Python 3.9.6 en macOS 27.2. Los ejemplos no requieren paquetes externos. Las instrucciones para PowerShell y Linux no se ejecutaron en esos sistemas.
+
 
 ## Aprende construyendo
 
 ### Tema 1: Del problema al algoritmo y a los casos de prueba
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a convertir un problema informal ("¿cuántas tareas están pendientes?") en un algoritmo explícito, implementarlo en Python, y diseñar casos de prueba que incluyan el caso límite de la lista vacía. **Prerrequisitos:** Python instalado; comprueba `python3 --version` (o `py --version` en Windows).
+Al finalizar vas a convertir un problema informal ("¿cuántas tareas están pendientes?") en un algoritmo explícito, implementarlo en Python y diseñar casos que incluyan una lista vacía y un estado no admitido. **Prerrequisitos:** Python instalado; comprueba `python3 --version` (o `py --version` en Windows).
 
 #### Paso 2 · Contexto y caso real
 El gestor de tareas CLI (proyecto integrador Fundamentos) que vas a construir módulo a módulo necesita, desde el día uno, contestar una pregunta simple: de todas las tareas guardadas, ¿cuántas están pendientes? Parece trivial, pero si no definís el algoritmo antes de escribir código —¿qué devuelve si no hay ninguna tarea todavía?— vas a terminar adivinando el comportamiento en vez de poder explicarlo.
@@ -16,15 +18,18 @@ Un problema informal ("contar pendientes") esconde preguntas sin responder. Un a
 ```text
 CONTAR_PENDIENTES(tareas):
   contador = 0
-  PARA cada tarea en tareas:
+  estados_admitidos = {"pendiente", "hecho"}
+  PARA cada numero, tarea en tareas:
+    SI tarea.estado no está en estados_admitidos:
+      LANZAR ValueError con numero y estado
     SI tarea.estado es "pendiente": contador = contador + 1
   DEVOLVER contador
 ```
-Este algoritmo no dice nada todavía sobre Python: funciona igual si `tareas` tiene 0, 1 o 1000 elementos, y eso es justo lo que hay que comprobar con casos de prueba antes de confiar en la traducción a código. La analogía: diseñar un algoritmo sin pensar en sus bordes es como planear una ruta de reparto sin preguntar qué pasa si la lista de paradas viene vacía: el camión sale de todos modos, pero nadie sabe qué hace.
+Este algoritmo no dice nada todavía sobre Python: devuelve cero para una lista vacía, cuenta las tareas pendientes y rechaza explícitamente estados fuera del contrato. Esos comportamientos deben comprobarse antes de confiar en la traducción a código. La analogía: diseñar un algoritmo sin pensar en sus bordes es como planear una ruta de reparto sin preguntar qué pasa si la lista de paradas viene vacía o si una parada tiene una dirección imposible.
 
 **Cuándo NO usar:** No programes sin definir requisitos. No intentes casos límite sin pseudocódigo primero.
 
-**Conceptos clave:** problema, requisito, entrada, proceso, salida, algoritmo, precondición, caso normal, caso límite y caso inválido.
+**Conceptos clave:** problema, requisito, entrada, proceso, salida, algoritmo, contrato, caso normal, caso límite y caso inválido.
 
 Programar no comienza escribiendo sintaxis. Comienza definiendo con precisión qué problema se resolverá. “Haz una calculadora” es ambiguo: ¿qué operaciones admite?, ¿acepta decimales?, ¿qué ocurre si el usuario escribe texto?, ¿cómo se informa una división por cero? Un **requisito** elimina ambigüedad al describir comportamiento observable.
 
@@ -113,8 +118,12 @@ mkdir src
 ```python
 def contar_pendientes(tareas):
     contador = 0
-    for tarea in tareas:
-        if tarea["estado"] == "pendiente":
+    estados_admitidos = {"pendiente", "hecho"}
+    for numero, tarea in enumerate(tareas, start=1):
+        estado = tarea["estado"]
+        if estado not in estados_admitidos:
+            raise ValueError(f"Tarea {numero}: estado no admitido: {estado}")
+        if estado == "pendiente":
             contador += 1
     return contador
 
@@ -127,8 +136,9 @@ print(contar_pendientes(tareas))
 print(contar_pendientes([]))
 ```
 ```bash
-python src/pendientes.py
+python3 src/pendientes.py
 ```
+En Windows usa `py src/pendientes.py`.
 **Resultado esperado:** `2` y luego `0`; la lista vacía nunca entra al `for`, así que el contador queda en cero sin necesitar ningún caso especial. **Fallo deliberado:** agregá esta segunda función, que calcula qué porcentaje de las tareas están pendientes sin pensar en la lista vacía:
 ```python
 def porcentaje_pendientes(tareas):
@@ -137,15 +147,33 @@ def porcentaje_pendientes(tareas):
 print(porcentaje_pendientes([]))
 ```
 Python lanza `ZeroDivisionError: division by zero`: el conteo sobrevivió a la lista vacía, pero el porcentaje no, porque divide por `len(tareas)` sin comprobar que sea distinto de cero. Corregilo agregando `if not tareas: return 0.0` antes de dividir.
+```python
+def porcentaje_pendientes(tareas):
+    if not tareas:
+        return 0.0
+    return contar_pendientes(tareas) / len(tareas) * 100
+
+print(porcentaje_pendientes([]))
+```
+Ahora el resultado es `0.0`: la función define qué significa el porcentaje cuando no hay tareas antes de dividir.
 
 #### Paso 5 · Práctica guiada
-Pista: antes de escribir cualquier función sobre una lista de tareas, preguntate primero qué debería devolver con cero tareas; si no podés responder esa pregunta en una frase, todavía no terminaste de diseñar el algoritmo, mucho menos el código.
+Antes de escribir cualquier función sobre una lista de tareas, preguntate qué debería devolver con cero tareas; si no podés responder en una frase, todavía no terminaste de diseñar el algoritmo. Para comprobar el otro límite del contrato, cambia `"hecho"` por `"archivada"` en una tarea y vuelve a ejecutar: debe detenerse con `ValueError` e identificar su posición y estado. Si tu proyecto necesita más estados, agrégalos explícitamente a `estados_admitidos`.
 
 #### Paso 6 · Práctica independiente
-Escribí la tabla de casos de prueba para `contar_pendientes` ANTES de tocar el código: una lista con tareas mixtas (caso normal), una lista vacía (caso límite), una lista donde todas están pendientes, y una lista con un `estado` inesperado como `"archivada"` (caso inválido). Para cada fila anotá la entrada y la salida esperada, y después confirmá que el código las cumple todas.
+Escribí la tabla de casos de prueba para `contar_pendientes` ANTES de tocar el código:
+
+| Entrada de `tareas` | Resultado esperado |
+|---|---|
+| Pendiente, hecho, pendiente | `2` |
+| `[]` | `0` |
+| Pendiente, pendiente | `2` |
+| Pendiente, archivada | `ValueError: Tarea 2: estado no admitido: archivada` |
+
+Para cada fila anotá la entrada concreta y la salida o error esperado, y después confirma que el código cumple el contrato.
 
 #### Paso 7 · Cierre
-Entregá el algoritmo en pseudocódigo del Paso 3, la tabla de casos del Paso 6, el código de `contar_pendientes` y `porcentaje_pendientes`, y el `ZeroDivisionError` reproducido y corregido del Paso 4; explicá por qué una función puede ser correcta en el caso que probaste primero y romperse en un borde que nunca ejecutaste. Como siguiente paso, en el Tema 2 vas a ver qué pasa cuando esos mismos datos —por ejemplo, una prioridad escrita por el usuario— llegan con el tipo equivocado. Errores comunes: probar solo el caso feliz; dividir o indexar sin comprobar que la colección no esté vacía; escribir código antes de tener la tabla de casos. Fuentes oficiales: https://docs.python.org/es/3/tutorial/controlflow.html y https://docs.python.org/es/3/library/unittest.html.
+Entregá el algoritmo en pseudocódigo del Paso 3, la tabla de casos del Paso 6, el código de `contar_pendientes` y `porcentaje_pendientes`, y ambos fallos reproducidos: `ValueError` por estado inesperado y `ZeroDivisionError` por porcentaje de una lista vacía. Corrige el caso vacío antes de volver a ejecutar. Como siguiente paso, en el Tema 2 vas a ver qué pasa cuando esos mismos datos —por ejemplo, una prioridad escrita por el usuario— llegan con el tipo equivocado. Errores comunes: probar solo el caso feliz; dividir o indexar sin comprobar que la colección no esté vacía; contar silenciosamente un estado que el contrato no reconoce; escribir código antes de tener la tabla de casos. Fuentes oficiales consultadas el 2026-11-01: [control de flujo](https://docs.python.org/3/tutorial/controlflow.html) y [pruebas unitarias](https://docs.python.org/3/library/unittest.html).
 **Implicación práctica:** El conteo de pendientes funcionó a la primera con datos de ejemplo, y ese falso éxito es exactamente lo que oculta el bug hasta que un usuario real se queda sin tareas.
 
 ### Tema 2: Variables, tipos, expresiones y cambios de estado
@@ -256,8 +284,9 @@ prioridad_b = int("10")
 print(tarea_mas_urgente(prioridad_a, prioridad_b))
 ```
 ```bash
-python src/prioridad.py
+python3 src/prioridad.py
 ```
+En Windows usa `py src/prioridad.py`.
 **Resultado esperado:** `b`; la tarea con prioridad 10 es la más urgente, como corresponde numéricamente. **Fallo deliberado:** quitá los dos `int(...)` y dejá las prioridades como las entrega `input()`, es decir como texto:
 ```python
 prioridad_a = "9"
@@ -398,8 +427,9 @@ for i in range(len(tareas)):
         print(f"VENCIDA: {tarea['descripcion']}")
 ```
 ```bash
-python src/vencidas.py
+python3 src/vencidas.py
 ```
+En Windows usa `py src/vencidas.py`.
 **Resultado esperado:** imprime `VENCIDA: pagar luz` y `VENCIDA: llamar al dentista`: dos tareas vencidas sobre tres. **Fallo deliberado:** cambiá `range(len(tareas))` por `range(len(tareas) - 1)`. Ahora solo imprime `VENCIDA: pagar luz`; "llamar al dentista", que es el último elemento (índice 2), nunca se revisa, porque con 3 tareas `range(len(tareas) - 1)` genera `0, 1` y se detiene antes de llegar a `2`. No hay ningún error: la tarea vencida simplemente queda sin alertar. Corregilo devolviendo el límite a `range(len(tareas))`.
 
 #### Paso 5 · Práctica guiada
@@ -532,8 +562,9 @@ pendientes = filtrar_pendientes(tareas)
 print(contar(pendientes))
 ```
 ```bash
-python src/descomposicion.py
+python3 src/descomposicion.py
 ```
+En Windows usa `py src/descomposicion.py`.
 **Resultado esperado:** `1`. Cada función hace una sola cosa —`filtrar_pendientes` filtra, `contar` cuenta— y ninguna imprime ni modifica la lista original: `tareas` sigue teniendo sus 2 elementos después de llamarlas. **Fallo deliberado:** reemplazá `contar` por esta versión que "de paso" también vacía la lista:
 ```python
 def contar_pendientes(tareas):
@@ -567,14 +598,15 @@ Al finalizar podrás explicar cómo un número, una letra y un decimal se guarda
 Un día el gestor de tareas muestra un total de `0.30000000000000004` en vez de `0.3`, o un nombre con acento aparece como `JosÃ©`. No son bugs misteriosos: son consecuencias directas de cómo la máquina representa números y texto. Entender la representación te ahorra horas de confusión y es la base de todo lo demás.
 
 #### Paso 3 · Teoría, modelo mental y analogía
-La computadora solo almacena **bits** (0 o 1). Un número entero se guarda en **binario** (base 2): `1011` = 8+0+2+1 = 11. El texto se guarda asignando un número a cada carácter mediante una **codificación** (ASCII para el inglés básico, **UTF-8** para todos los idiomas y emojis). Los decimales usan **punto flotante** (IEEE 754), que representa fracciones en base 2 — y como `0.1` no tiene representación exacta en base 2 (igual que `1/3` no la tiene en base 10), aparecen pequeños errores de redondeo.
+La computadora almacena información como **bits** (0 o 1). El entero `11` puede escribirse en binario como `1011`, que representa `1×8 + 0×4 + 1×2 + 1×1`. El texto de Python contiene caracteres Unicode; para guardarlo o enviarlo hay que codificarlo como bytes. UTF-8 puede codificar el repertorio Unicode y usa entre uno y cuatro bytes por punto de código. Los valores `float` siguen IEEE 754 y representan fracciones en base 2: `0.1` no tiene una representación binaria finita, igual que `1/3` no tiene una representación decimal finita.
 
 **Analogía:** el binario es como un ábaco donde cada cuenta vale el doble que la anterior (1, 2, 4, 8...); el punto flotante es como escribir `1/3` en decimal: por más dígitos que pongas (`0.3333...`), nunca es exacto, así que la máquina corta en algún punto.
 
 #### Paso 4 · Demostración guiada desde cero
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `representacion.py` con el contenido de este tema.
+**Desde cero:** parte de una carpeta vacía, crea la carpeta de práctica y entra en ella con dos comandos separados, válidos en PowerShell, macOS y Linux:
 ```bash
-mkdir ejemplo && cd ejemplo
+mkdir ejemplo
+cd ejemplo
 ```
 
 Crea `representacion.py`:
@@ -586,8 +618,10 @@ print("0b1011 en decimal:", 0b1011)        # 11
 
 # Texto: cada carácter es un número (code point), codificado en bytes UTF-8
 print("Código de 'A':", ord("A"))          # 65
-print("'é' en bytes UTF-8:", "é".encode("utf-8"))   # b'\xc3\xa9' (2 bytes)
-print("'🚚' en bytes UTF-8:", "🚚".encode("utf-8"))  # 4 bytes
+acento_bytes = "é".encode("utf-8")
+print("'é' en bytes UTF-8:", acento_bytes, len(acento_bytes), "bytes")
+emoji_bytes = "🚚".encode("utf-8")
+print("'🚚' en bytes UTF-8:", emoji_bytes, len(emoji_bytes), "bytes")
 
 # Punto flotante: la suma NO es exacta
 resultado = 0.1 + 0.2
@@ -602,8 +636,21 @@ print("¿Casi igual?", abs(resultado - 0.3) < 1e-9)   # True
 ```bash
 python3 representacion.py
 ```
+En Windows usa `py representacion.py`.
 
-**Resultado esperado:** `11 en binario: 0b1011`, el acento `é` ocupa 2 bytes y el emoji 🚚 ocupa 4, y `0.1 + 0.2` da `0.30000000000000004` (distinto de `0.3`). **Fallo deliberado:** usa `if precio == 0.3:` para decidir algo en el gestor de tareas con un precio calculado como `0.1 + 0.2`; la condición será `False` y la lógica fallará sin error visible. Diagnostica por qué NUNCA se comparan decimales con `==` y por qué el dinero se maneja en centavos (enteros) o con el tipo `Decimal`.
+Salida esperada:
+```text
+11 en binario: 0b1011
+0b1011 en decimal: 11
+Código de 'A': 65
+'é' en bytes UTF-8: b'\xc3\xa9' 2 bytes
+'🚚' en bytes UTF-8: b'\xf0\x9f\x9a\x9a' 4 bytes
+0.1 + 0.2 = 0.30000000000000004
+¿Es igual a 0.3? False
+¿Casi igual? True
+```
+
+**Resultado esperado:** `11 en binario: 0b1011`, el acento `é` ocupa 2 bytes y el emoji 🚚 ocupa 4, y `0.1 + 0.2` da `0.30000000000000004` (distinto de `0.3`). **Fallo deliberado:** el ejemplo ya calcula `resultado = 0.1 + 0.2`; comprueba que `resultado == 0.3` es `False` y que una rama `if resultado == 0.3:` no se ejecutaría. No hay excepción: es un resultado incorrecto para una regla que esperaba igualdad exacta. Para dinero usa centavos enteros o `Decimal`; compara floats con tolerancia solo cuando el problema admite aproximación.
 
 #### Paso 5 · Práctica guiada
 Convierte a mano (y luego verifica con `bin()`) el número 42 a binario, y el binario `110100` a decimal. Pista: suma las potencias de 2 donde hay un 1.
@@ -612,14 +659,13 @@ Convierte a mano (y luego verifica con `bin()`) el número 42 a binario, y el bi
 Escribe una función que reciba un texto y devuelva cuántos **bytes** ocupa en UTF-8 (no cuántos caracteres), y pruébala con "hola", "ñandú" y "café ☕". Explica por qué bytes y caracteres no coinciden.
 
 #### Paso 7 · Cierre
-Entrega las conversiones binario↔decimal, el conteo de bytes UTF-8 y el fallo de comparación de decimales. **¿Por qué es importante?** casi todo principiante tropieza con el bug de `0.1 + 0.2` y con el texto "roto" por codificación. Entender binario, UTF-8 y punto flotante explica errores reales que verás en bases de datos, APIs y archivos, y es la base para entender tipos, memoria y redes. Fuentes: [IEEE 754 (Wikipedia)](https://es.wikipedia.org/wiki/IEEE_754) y [UTF-8 (Wikipedia)](https://es.wikipedia.org/wiki/UTF-8).
+Entrega las conversiones binario↔decimal, el conteo de bytes UTF-8 y el fallo de comparación de decimales. **¿Por qué es importante?** Casi todo principiante tropieza con el resultado visible de `0.1 + 0.2` y con el texto mal decodificado. Entender binario, UTF-8 y punto flotante ayuda a diagnosticar datos en archivos, bases de datos y redes. **Fuentes primarias consultadas el 2026-11-01:** [función `bin`](https://docs.python.org/3/library/functions.html#bin), [Unicode en Python](https://docs.python.org/3/howto/unicode.html), [aritmética de punto flotante](https://docs.python.org/3/tutorial/floatingpoint.html) y [aritmética decimal](https://docs.python.org/3/library/decimal.html).
 **Conceptos clave:** bit, binario/decimal, code point, codificación UTF-8, punto flotante y error de redondeo.
 **Cuándo no usarlo:** no necesitas convertir binario a mano en el día a día, pero sí entender por qué los decimales fallan: para dinero usa enteros (centavos) o `Decimal`, nunca `float`.
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** si el gestor maneja importes o presupuestos, guárdalos en centavos (enteros) y demuestra con una prueba que sumar `0.1 + 0.2` como `float` produce un total incorrecto frente a la versión en centavos.
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** comparar decimales con `==` (como `if precio == 0.3:`) en vez de usar una tolerancia o el tipo `Decimal`; y confundir `len("ñandú")` (cantidad de caracteres) con la cantidad real de bytes UTF-8 que ocupa ese mismo texto al guardarlo en un archivo o enviarlo por red.
-**Fuente oficial:** [documentación de fundamentos](https://developer.mozilla.org/es/).
+**Errores comunes:** comparar con `==` resultados de cálculos `float` que deberían ser iguales matemáticamente; usar tolerancia para dinero en lugar de una representación decimal definida; confundir cantidad de caracteres con bytes codificados. `len("ñandú")` cuenta puntos de código de la cadena, no bytes UTF-8.
 ## Construcción guiada del capítulo
 
 ### Proyecto 1: calculadora de presupuesto desde carpeta vacía

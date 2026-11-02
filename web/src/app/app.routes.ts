@@ -15,6 +15,14 @@ export const routes: Routes = [
     pathMatch: 'full',
   },
   {
+    path: 'temario',
+    loadComponent: () => import('./catalog/curriculum-library').then(m => m.CurriculumLibraryComponent),
+  },
+  {
+    path: 'temario/:stackId',
+    loadComponent: () => import('./catalog/curriculum-library').then(m => m.CurriculumStackComponent),
+  },
+  {
     path: 'curso/:trackId',
     loadComponent: () => import('./course/course-shell').then(m => m.CourseShellComponent),
     children: [

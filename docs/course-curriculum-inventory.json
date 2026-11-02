@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "courses": [
+    {
+      "id": "udemy-angular-native",
+      "provider": "Udemy",
+      "title": "Angular Native: Crea apps nativas para Android y iOS desde cero usando Angular 22",
+      "url": "https://www.udemy.com/course/angular-native-crea-apps-para-android-y-ios-desde-cero/?couponCode=E5490884292B3A88412F",
+      "stack": "angular",
+      "language": "es",
+      "audience": "La ficha indica que se requieren nociones básicas de programación; no parte de cero absoluto.",
+      "sourceNote": "Temario y proyecto final anunciados en la ficha comercial de Udemy. Las promesas de compatibilidad, pruebas y compilación no se verificaron de forma independiente.",
+      "topics": [
+        "Angular Native y su modelo de renderizado nativo",
+        "TypeScript aplicado a una app móvil",
+        "Tailwind CSS para estilos nativos",
+        "Node.js como entorno de desarrollo",
+        "Android Studio para desarrollo y depuración Android",
+        "Expo y su integración con Angular Native",
+        "Metro como empaquetador de Expo",
+        "Supabase: base de datos, autenticación, Row Level Security y Storage consumidos por REST con HttpClient",
+        "SQLite con expo-sqlite para almacenamiento local",
+        "Módulos Expo: cámara e image-picker, háptica, biometría, almacenamiento, red y sistema de archivos",
+        "Reanimated y react-native-gesture-handler",
+        "Hermes como motor JavaScript e inspección para depurar",
+        "Pangular Inspector",
+        "adb (Android Debug Bridge)",
+        "curl para inspeccionar solicitudes HTTP",
+        "Vite y @ng-native/web para previsualizar componentes en web",
+        "Angular CLI y Nx como alternativas para iniciar proyectos",
+        "EAS Build y distribución interna para Android e iOS"
+      ],
+      "projectFeatures": [
+        "Movimientos agrupados por fecha, actualización mediante gesto y filtros",
+        "Alta y edición de movimientos con formularios validados",
+        "Captura de recibos con cámara o galería y almacenamiento privado",
+        "Tres pestañas nativas, pila de navegación, cabecera nativa y enlaces profundos",
+        "Paleta propia, modo oscuro e iconos nativos",
+        "Cuentas y datos en Supabase con Row Level Security",
+        "Modo sin conexión con caché SQLite y cola de escrituras",
+        "Diálogos nativos y exportación mediante la hoja de compartir",
+        "Háptica y aviso de presupuesto con vibración",
+        "Bloqueo mediante huella",
+        "Animaciones y gesto para borrar",
+        "La ficha anuncia pruebas en verde; no se verificó su ejecución",
+        "Un módulo nativo propio de ahorro de datos",
+        "Vista previa web de componentes",
+        "Compilación release y EAS Build para Android e iOS, anunciadas por la ficha"
+      ]
+    }
+  ]
+}

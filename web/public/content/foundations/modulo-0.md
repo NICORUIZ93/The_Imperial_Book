@@ -23,6 +23,8 @@ Una **carpeta** reúne archivos. Un **archivo** guarda contenido con un nombre, 
 
 Si aparece «comando no encontrado» o «no se reconoce», cierra y vuelve a abrir la terminal después de instalar. En Windows prueba `python --version` si `py` no está disponible; si funciona, usa `python` en lugar de `py` durante el capítulo. Si aparece `>>>`, abriste Python en modo interactivo: escribe `exit()` y pulsa Enter para volver a la terminal. No avances hasta ver la versión.
 
+**Comprobación de esta edición (2026-11-01):** se verificó `Python 3.9.6` en macOS 27.2. Las instrucciones para PowerShell y Linux se contrastaron con la documentación oficial, pero no se ejecutaron en esos sistemas. Para una instalación nueva, usa la versión que Python.org indique como vigente y confirma el resultado con el comando de tu sistema.
+
 **Al terminar conservarás:** `saludo.py`, `presentacion.py` y un `README.md` con tus comandos, resultados y diagnóstico. Serán el primer registro de trabajo de tu futuro gestor de tareas por terminal. No necesitas construir ese gestor todavía.
 
 ## Aprende construyendo
@@ -90,7 +92,7 @@ Crea `README.md` en `primera-sesion`. Registra el sistema operativo, el comando 
 
 **Errores comunes:** guardar como `saludo.py.txt` (comprueba el nombre completo), ejecutar sin guardar (usa File → Save) o pegar el comando dentro del archivo (el comando va en la terminal). **Límites y decisión de uso:** `print` sirve para observar un valor; mostrarlo no lo guarda en un archivo de datos. En el siguiente tema localizarás tus archivos sin depender de que el editor haya abierto la carpeta correcta.
 
-**Fuentes oficiales:** [Ejecución con el intérprete Python](https://docs.python.org/3/tutorial/interpreter.html) y [ejecutar Python en VS Code](https://code.visualstudio.com/docs/python/run).
+**Fuentes oficiales consultadas el 2026-11-01:** [Ejecución con el intérprete Python](https://docs.python.org/3/tutorial/interpreter.html), [ejecutar Python en VS Code](https://code.visualstudio.com/docs/python/run) y [descargas oficiales de Python](https://www.python.org/downloads/).
 
 ### Tema 2: Archivos, carpetas y rutas sin perderse
 
@@ -177,7 +179,7 @@ cd ejemplo-comandos
 python3 --version
 ```
 
-En Windows reemplaza la última línea por `py --version`. Crea `ejemplo-comandos/mensaje.py` y guarda:
+En Windows reemplaza la última línea por `py --version`. Como la terminal ya está dentro de `ejemplo-comandos`, crea ahí el archivo `mensaje.py` y guarda:
 
 ```python
 # El argumento del comando seleccionará este archivo.
@@ -233,7 +235,7 @@ mkdir ejemplo-entrada
 cd ejemplo-entrada
 ```
 
-Crea `ejemplo-entrada/entrada.py` con este contenido completo:
+Como la terminal ya está dentro de `ejemplo-entrada`, crea ahí el archivo `entrada.py` con este contenido completo:
 
 ```python
 # Recibe texto y lo asocia al nombre de variable.
@@ -286,19 +288,28 @@ Al finalizar podrás abrir, guardar y localizar archivos usando comandos identif
 **Analogía:** el comando es una dirección y el atajo es una ruta rápida hacia ella. Puede cambiar la ruta sin cambiar la acción. VS Code resuelve contextos (`when`) y prioridades; extensiones o ajustes pueden cambiar qué recibe una tecla. Busca «Preferences: Open Keyboard Shortcuts» en la paleta y comprueba el nombre, binding y contexto.
 
 #### Paso 4 · Demostración guiada desde cero
-Crea `saludo.py` en una carpeta vacía, ábrelo desde File > Open Folder y guarda el archivo antes de ejecutar:
+Desde la carpeta del proyecto abierta en VS Code, usa la terminal para crear y abrir una carpeta de práctica:
+
+```bash
+mkdir practica-editor
+cd practica-editor
+```
+
+En el explorador de VS Code, crea `practica-editor/saludo.py` y guarda el archivo antes de ejecutar:
 
 ```python
 # La salida identifica la versión realmente guardada del archivo.
 print("Archivo guardado: versión 1")
 ```
 
+Desde la terminal integrada, situada en la carpeta que contiene `saludo.py`, comprueba el intérprete y ejecuta el archivo:
+
 ```bash
-mkdir -p practica-editor
+python3 --version
 python3 saludo.py
 ```
 
-Ejecuta la segunda línea desde la carpeta donde guardaste `saludo.py`; crear la carpeta no cambia automáticamente la ubicación. **Salida esperada:** `Archivo guardado: versión 1`. Abre la paleta por View > Command Palette; busca «Go to File» y luego «Go to Line». En Windows/Linux los valores predeterminados habituales son Ctrl+P y Ctrl+G; consulta los de tu instalación en lugar de trasladarlos a macOS.
+En Windows sustituye `python3` por `py` en ambos comandos. **Salida esperada del segundo comando:** `Archivo guardado: versión 1`. `mkdir` y `cd` se usan también en PowerShell, macOS y Linux. Abre la paleta por View > Command Palette; busca «Go to File» y luego «Go to Line». En Windows/Linux los valores predeterminados habituales son Ctrl+P y Ctrl+G; consulta los de tu instalación en lugar de trasladarlos a macOS.
 
 **Fallo deliberado:** cambia el texto a versión 2 y ejecuta sin guardar. Si Auto Save está desactivado sigue apareciendo versión 1; diagnostica el indicador de cambios del editor. Si Auto Save está activo, observa que guardar ocurre automáticamente y registra esa condición.
 

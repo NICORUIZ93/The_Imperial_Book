@@ -1,5 +1,6 @@
 # Módulo 2: Estructuras de datos, algoritmos y complejidad
 
+**Entorno comprobado:** Python 3.9.6 en macOS 27.2; se ejecutaron los ocho bloques Python de demostración. No se validaron los comandos de creación de carpetas ni las instrucciones para PowerShell/Linux.
 
 ## Aprende construyendo
 
@@ -12,7 +13,7 @@ Al finalizar vas a comparar guardar las tareas de tu gestor en una `list` contra
 El gestor de tareas CLI (proyecto integrador Fundamentos) necesita, desde el primer módulo, responder rápido a "¿existe la tarea con id 42?". Si guardás las tareas en una `list` y buscás por posición, cada eliminación desplaza los índices de todas las tareas que estaban después; un índice que guardaste antes de esa eliminación ya no es confiable, aunque Python no te avise.
 
 #### Paso 3 · Teoría, modelo mental y analogía
-Una `list` en Python es una secuencia: accedés rápido por posición (`lista[0]`), pero buscar por valor exige recorrerla elemento por elemento en el peor caso — es O(n). Un `dict` guarda pares clave-valor en una tabla hash: calcula dónde vive cada clave y accede casi siempre en O(1), sin importar cuántos elementos tenga. La diferencia de fondo es qué identifica a una tarea: en el diccionario, la clave (el id) es la identidad lógica de la tarea y no cambia; en la lista, la posición es solo un lugar físico que se corre cada vez que insertás o eliminás algo antes. La analogía es un archivador con carpetas rotuladas —vas directo a la etiqueta que buscás— contra una fila de cajas sin rotular, donde tenés que revisar caja por caja.
+Una `list` en Python es una secuencia: acceder por posición (`lista[0]`) es O(1), pero buscar un valor exige revisar elementos y en el peor caso es O(n). Un `dict` guarda pares clave-valor en una tabla hash: el acceso por clave es O(1) en promedio y puede degradarse a O(n) en el peor caso, por ejemplo ante muchas colisiones. La diferencia de fondo es qué identifica a una tarea: en el diccionario, la clave (el id) es la identidad lógica de la tarea; en la lista, la posición es solo un lugar físico que se desplaza al insertar o eliminar antes. La analogía es un archivador con carpetas rotuladas —vas directo a la etiqueta que buscás— contra una fila de cajas sin rotular, donde tenés que revisar caja por caja.
 
 **Conceptos clave:** lista, tupla, conjunto, diccionario, orden, duplicados, clave, acceso, inserción y mutabilidad.
 
@@ -108,21 +109,63 @@ def buscar_por_id_lista(tareas, id_buscado):
 por_id = {tarea["id"]: tarea for tarea in tareas}
 
 indice_guardado = 1  # "la tarea 2 está en la posición 1" — guardado para usar después
+print(buscar_por_id_lista(tareas, 2)["descripcion"])
+print(por_id[2]["descripcion"])
 print(tareas[indice_guardado]["descripcion"])
+print(buscar_por_id_lista(tareas, 99))
+print(por_id.get(99))
+
+del tareas[0]
+del por_id[1]
+print(tareas[indice_guardado]["descripcion"])
+print(por_id[2]["descripcion"])
 ```
 ```bash
-python src/tareas_estructura.py
+python3 src/tareas_estructura.py
 ```
-**Resultado esperado:** `pagar factura` — la tarea 2 vive en la posición 1, y tanto `buscar_por_id_lista(tareas, 2)` como `por_id[2]` devuelven lo mismo. **Fallo deliberado:** eliminá la tarea 1 con `del tareas[0]` (como si "comprar leche" se completara y se sacara de la lista) y volvé a ejecutar `print(tareas[indice_guardado]["descripcion"])` sin tocar `indice_guardado`. Ahora imprime `llamar al dentista`: el índice 1 sigue siendo válido pero ya no apunta a la tarea 2, porque la eliminación desplazó una posición a todo lo que estaba después — sin ningún error. `por_id[2]` sigue devolviendo la tarea correcta porque el diccionario no depende de la posición física. Corregí siempre buscando por `por_id[id]`, nunca guardando un índice de lista para usar después.
+En Windows usa `py src/tareas_estructura.py`.
+**Resultado esperado, en orden:** `pagar factura` tres veces, `None` dos veces, `llamar al dentista` y `pagar factura`. Las dos últimas líneas muestran el fallo y la corrección: después de quitar la primera tarea y su entrada del diccionario, el índice guardado `1` apunta a otra tarea, pero la clave `2` sigue identificando la correcta.
 
 #### Paso 5 · Práctica guiada
-Pista: después de cualquier `del tareas[i]`, cualquier índice que guardaste antes queda potencialmente inválido aunque no lance error — confirmalo guardando el índice de la última tarea antes y después de eliminar la primera, y compará qué tarea devuelve cada vez.
+Pista: antes de eliminar, anota que el índice guardado `1` y el id `2` encuentran `pagar factura`. Después elimina de ambas estructuras la tarea con id `1` y vuelve a comprobarlos. Explica por qué el índice sigue siendo válido como posición pero dejó de identificar a la misma tarea; la clave del diccionario conserva esa identidad.
 
 #### Paso 6 · Práctica independiente
-Agregá 50 tareas más a la lista y al diccionario (ids del 4 al 53), medí con `time.perf_counter()` cuánto tarda `buscar_por_id_lista` comparado con `por_id[53]` para el peor caso (el último id), y repetí con 5000 tareas. Anotá cómo crece el tiempo de la lista mientras el del diccionario se mantiene estable.
+Crea `src/medir_busqueda.py` para comparar el último id de una lista con el acceso a la clave en un diccionario. Repite 1.000 veces cada operación; los tiempos absolutos dependen del equipo, así que observa la tendencia y no presentes una ejecución como prueba formal de complejidad.
+```python
+from timeit import timeit
+
+def buscar_por_id_lista(tareas, id_buscado):
+    for tarea in tareas:
+        if tarea["id"] == id_buscado:
+            return tarea
+    return None
+
+for cantidad in (50, 5000):
+    tareas = [
+        {"id": numero, "descripcion": f"tarea {numero}"}
+        for numero in range(1, cantidad + 1)
+    ]
+    por_id = {tarea["id"]: tarea for tarea in tareas}
+    id_buscado = cantidad
+    repeticiones = 1000
+
+    tiempo_lista = timeit(
+        lambda: buscar_por_id_lista(tareas, id_buscado),
+        number=repeticiones,
+    )
+    tiempo_diccionario = timeit(
+        lambda: por_id[id_buscado],
+        number=repeticiones,
+    )
+    print(
+        f"{cantidad} tareas ({repeticiones} búsquedas): "
+        f"lista={tiempo_lista:.6f}s, diccionario={tiempo_diccionario:.6f}s"
+    )
+```
+Ejecuta `python3 src/medir_busqueda.py` (en Windows, `py src/medir_busqueda.py`). El tiempo de búsqueda en la lista debería crecer más al pasar de 50 a 5.000 tareas; el del diccionario suele variar menos. No esperes que los números sean iguales entre equipos ni que cada medición confirme por sí sola el orden O(n) u O(1).
 
 #### Paso 7 · Cierre
-Guardá el código con `buscar_por_id_lista`, el diccionario `por_id` y la demostración del índice desactualizado tras `del tareas[0]`; como siguiente paso, en el Tema 2 vas a usar pilas y colas para las funciones "deshacer" y "procesar en orden" del mismo gestor de tareas. Errores comunes: guardar un índice de lista y asumir que sigue apuntando a la misma tarea después de cualquier eliminación; elegir diccionario sin medir si en tu caso realmente hay más búsquedas que inserciones. Fuentes oficiales: https://docs.python.org/es/3/tutorial/datastructures.html y https://docs.python.org/es/3/library/stdtypes.html#dict.
+Guarda ambos archivos, reproduce el cambio de identidad aparente en la lista y compara la tendencia del benchmark. Como siguiente paso, en el Tema 2 vas a usar pilas y colas para las funciones "deshacer" y "procesar en orden" del mismo gestor de tareas. Errores comunes: guardar un índice de lista como identidad estable; olvidar mantener sincronizadas la lista y la tabla por id; tratar una medición puntual como demostración de complejidad. Fuentes oficiales: https://docs.python.org/es/3/tutorial/datastructures.html y https://docs.python.org/es/3/library/stdtypes.html#dict.
 **Implicación práctica:** Un id guardado en el lugar equivocado —una posición en vez de una clave— produce errores que no lanzan excepción: la tarea que "aparece" es simplemente otra.
 
 ### Tema 2: Pilas, colas y abstracciones de comportamiento
@@ -255,8 +298,9 @@ tiempo_deque = time.perf_counter() - inicio
 print(f"list.pop(0): {tiempo_lista:.4f}s | deque.popleft(): {tiempo_deque:.4f}s")
 ```
 ```bash
-python src/pila_cola.py
+python3 src/pila_cola.py
 ```
+En Windows usa `py src/pila_cola.py`.
 **Resultado esperado:** `deshacer: crear tarea 2` (deshace la acción más reciente primero), y dos tiempos donde `list.pop(0)` es notablemente más lento que `deque.popleft()` para vaciar las mismas 20 000 tareas. **Fallo deliberado:** usar `list.pop(0)` para una cola no lanza ningún error ni da un resultado incorrecto — el bug es de rendimiento oculto. Vaciar una cola con `list.pop(0)` cuesta O(n²) en total, porque cada `pop(0)` debe desplazar todos los elementos restantes una posición; `deque.popleft()` cuesta O(n) en total porque cada extracción es O(1). Con 20 000 elementos la diferencia ya es medible; en el Paso 6 vas a subir a 100 000 y la vas a ver crecer. Corregí usando `deque` desde el principio cuando la operación dominante sea sacar del frente.
 
 #### Paso 5 · Práctica guiada
@@ -403,8 +447,9 @@ def buscar_binaria_por_fecha(tareas, fecha_objetivo):
 print(buscar_binaria_por_fecha(tareas_por_fecha, "2026-03-01"))
 ```
 ```bash
-python src/busqueda.py
+python3 src/busqueda.py
 ```
+En Windows usa `py src/busqueda.py`.
 **Resultado esperado:** imprime la tarea con id 3 (`fecha: "2026-03-01"`) porque `tareas_por_fecha` está ordenada de la fecha más antigua a la más reciente — esa es la precondición de `buscar_binaria_por_fecha`. **Fallo deliberado:** desordená la lista a mano (por ejemplo, poné la tarea de id 3 primero) y volvé a buscar la misma fecha `"2026-03-01"`. La función devuelve `None` aunque la tarea EXISTE en la lista — sin ningún error, solo un resultado silenciosamente incorrecto, porque la mitad que descarta en cada paso ya no garantiza nada cuando el orden está roto. Corregí ordenando con `tareas_por_fecha.sort(key=lambda t: t["fecha"])` antes de buscar, o usando búsqueda lineal cuando no puedas garantizar el orden.
 
 #### Paso 5 · Práctica guiada
@@ -493,8 +538,8 @@ xychart-beta
 ```
 10M con O(n): _________ operaciones, ~_________ segundos
 10M con O(n²): _________ operaciones, ~_________ segundos (¿viable?)
-Punto inflexión (timeout 10s): N máximo = _________
-Medición: time.time() antes/después, imprime diferencia
+Punto de inflexión (timeout 10s): N máximo = _________
+Medición: time.perf_counter() antes/después, imprime diferencia
 ```
 
 <details>
@@ -502,20 +547,33 @@ Medición: time.time() antes/después, imprime diferencia
 
 > **Respuesta esperada:**
 >
-> **O(n):** 10M operaciones ≈ 0.01s (10ms).
+> **O(n):** 10M operaciones ≈ 0.01s (10ms) solo bajo el supuesto didáctico de 1 ns por operación; un bucle Python real suele costar más y depende del equipo.
 >
 > **O(n²):** (10M)² = (10⁷)² = 10¹⁴ operaciones. Con la misma tasa de 10⁻⁹ s/operación usada arriba: 10¹⁴ × 10⁻⁹ s = 10⁵ segundos ≈ **1.16 días**. Sigue siendo inviable para un gestor interactivo, pero la cifra correcta es días, no siglos.
 >
-> **Punto inflexión:** Resolviendo n² × 10⁻⁹ s/op ≈ 10s → N ≈ 100,000 items máximo para O(n²).
+> **Punto de inflexión bajo ese supuesto:** resolviendo n² × 10⁻⁹ s/op ≈ 10s → N ≈ 100,000 elementos. No es un umbral universal para Python.
 >
 > **Script:**
 > ```python
-> import time
-> n = 1000000
-> start = time.time()
-> # O(n): for i in range(n): pass
-> # O(n²): for i in range(n): for j in range(n): pass
-> print(f"Tiempo: {time.time() - start:.4f}s")
+> from timeit import timeit
+>
+> def lineal(n):
+>     total = 0
+>     for i in range(n):
+>         total += i
+>     return total
+>
+> def cuadratico(n):
+>     total = 0
+>     for i in range(n):
+>         for j in range(n):
+>             total += 1
+>     return total
+>
+> for n in (100, 1000):
+>     tiempo_lineal = timeit(lambda: lineal(n), number=3)
+>     tiempo_cuadratico = timeit(lambda: cuadratico(n), number=3)
+>     print(f"n={n}: O(n)={tiempo_lineal:.6f}s, O(n²)={tiempo_cuadratico:.6f}s")
 > ```
 
 </details>
@@ -544,6 +602,10 @@ def bubble_sort(valores):
 
 for tamano in (500, 1000, 2000):
     tareas = [random.random() for _ in range(tamano)]
+    resultado_sorted = sorted(tareas)
+    resultado_bubble = bubble_sort(tareas)
+    if resultado_sorted != resultado_bubble:
+        raise AssertionError("Los algoritmos no producen el mismo orden")
 
     inicio = time.perf_counter()
     sorted(tareas)
@@ -556,8 +618,9 @@ for tamano in (500, 1000, 2000):
     print(f"n={tamano}: sorted()={tiempo_sorted:.5f}s  bubble_sort()={tiempo_bubble:.5f}s")
 ```
 ```bash
-python src/medir.py
+python3 src/medir.py
 ```
+En Windows usa `py src/medir.py`.
 **Resultado esperado:** para n=500, 1000 y 2000, `sorted()` apenas crece, mientras que `bubble_sort()` crece mucho más rápido: al duplicar n, `sorted()` tarda un poco más del doble, pero `bubble_sort()` tarda aproximadamente CUATRO veces más, porque n² duplicado es (2n)² = 4n². **Fallo deliberado:** cambiá `tamano` a `20_000` sin tocar nada más. `bubble_sort()` pasa de tardar milisegundos a tardar varios segundos —la misma función que "andaba bien" con 500 elementos, usada sin medir antes con una entrada 40 veces más grande—. `sorted()` sigue siendo casi instantáneo. Corregí: para listas que pueden crecer, usá `sorted()`/`.sort()` (Timsort) y reservá una implementación manual como `bubble_sort` solo para fines didácticos.
 
 #### Paso 5 · Práctica guiada
@@ -600,7 +663,8 @@ graph TD
 #### Paso 4 · Demostración guiada desde cero
 **Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `bst.py` con el contenido de este tema.
 ```bash
-mkdir ejemplo && cd ejemplo
+mkdir ejemplo
+cd ejemplo
 ```
 
 Crea `bst.py`:
@@ -650,6 +714,7 @@ print("Buscar 99:", arbol.buscar(99))
 ```bash
 python3 bst.py
 ```
+En Windows usa `py bst.py`.
 
 **Resultado esperado:** `Buscar 60: 3 comparaciones` (raíz 50 → 70 → 60) y `Buscar 99: -1`. Con 7 nodos, hallar un elemento cuesta a lo sumo 3 pasos, no 7 — ahí se ve el O(log n). **Fallo deliberado:** inserta los valores ya ordenados (`[20, 30, 40, 50, 60, 70, 80]`) y vuelve a buscar 80: ahora cuesta 7 comparaciones, porque el árbol degeneró en una lista. Diagnostica por qué un BST sin equilibrar pierde su ventaja y por qué existen los árboles balanceados (AVL, rojo-negro).
 
@@ -684,7 +749,8 @@ Una tabla hash usa una **función hash** que transforma una clave en un índice 
 #### Paso 4 · Demostración guiada desde cero
 **Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `tabla_hash.py` con el contenido de este tema.
 ```bash
-mkdir ejemplo && cd ejemplo
+mkdir ejemplo
+cd ejemplo
 ```
 
 Crea `tabla_hash.py`:
@@ -725,6 +791,7 @@ print("Distribución:", [len(c) for c in tabla.cubetas])
 ```bash
 python3 tabla_hash.py
 ```
+En Windows usa `py tabla_hash.py`.
 
 **Resultado esperado:** `RF-4471 -> en ruta` y una distribución donde las dos claves caen en cubetas (idealmente distintas). **Fallo deliberado:** fija `capacidad=1`: todas las claves caen en la única cubeta, y `obtener` vuelve a ser O(n) porque debe recorrer la lista entera. Diagnostica por qué el tamaño de la tabla y una buena función hash son lo que mantiene el O(1); por eso los `dict` reales redimensionan automáticamente cuando se llenan.
 
@@ -770,7 +837,8 @@ graph LR
 #### Paso 4 · Demostración guiada desde cero
 **Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `grafos.py` con el contenido de este tema.
 ```bash
-mkdir ejemplo && cd ejemplo
+mkdir ejemplo
+cd ejemplo
 ```
 
 Crea `grafos.py`:
@@ -816,6 +884,7 @@ print("DFS:", dfs("Deposito"))
 ```bash
 python3 grafos.py
 ```
+En Windows usa `py grafos.py`.
 
 **Resultado esperado:** `BFS: ['Deposito', 'B', 'C', 'D', 'E']` (por niveles: primero B y C, luego D, luego E) y `DFS: ['Deposito', 'B', 'D', 'C', 'E']` (baja por un camino antes de retroceder). Observa cómo la **cola** produce exploración por niveles y la **recursión/pila** produce exploración en profundidad. **Fallo deliberado:** quita el conjunto `visitados` del BFS: con el ciclo Depósito↔B↔D↔C↔Depósito el programa entra en bucle infinito. Diagnostica por qué en un grafo (a diferencia de un árbol) SIEMPRE hay que marcar lo visitado.
 
@@ -850,7 +919,8 @@ La **programación dinámica (DP)** aplica a problemas con dos propiedades: subp
 #### Paso 4 · Demostración guiada desde cero
 **Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `dp.py` con el contenido de este tema.
 ```bash
-mkdir ejemplo && cd ejemplo
+mkdir ejemplo
+cd ejemplo
 ```
 
 Crea `dp.py`:
@@ -876,9 +946,9 @@ def fib_dp(n, memo=None):
     return memo[n]
 
 for etiqueta, fn in [("ingenuo", fib_ingenuo), ("con DP", fib_dp)]:
-    inicio = time.time()
+    inicio = time.perf_counter()
     resultado = fn(32)
-    print(f"fib(32) {etiqueta}: {resultado} en {time.time() - inicio:.3f}s")
+    print(f"fib(32) {etiqueta}: {resultado} en {time.perf_counter() - inicio:.3f}s")
 ```
 
 **Ejecuta el ejemplo:**
@@ -886,6 +956,7 @@ for etiqueta, fn in [("ingenuo", fib_ingenuo), ("con DP", fib_dp)]:
 ```bash
 python3 dp.py
 ```
+En Windows usa `py dp.py`.
 
 **Resultado esperado:** ambos dan `fib(32): 2178309`, pero el ingenuo tarda un tiempo perceptible (décimas de segundo o más) y el de DP es casi instantáneo. **Fallo deliberado:** sube a `fib_ingenuo(45)`: el programa se cuelga segundos o minutos, porque hace miles de millones de llamadas repetidas, mientras `fib_dp(45)` responde al instante. Diagnostica contando (con un contador global) cuántas veces se llama a cada función: ahí ves el crecimiento exponencial frente al lineal.
 

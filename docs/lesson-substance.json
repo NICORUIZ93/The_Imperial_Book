@@ -1677,7 +1677,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "2449277bdbdf761fdae5b573c6d487929a1f4551c7a12963777a357871def6a9",
+    "fingerprint": "7c9bc3fa671c0d232e8db4336fdb118472c42c9a830f85b97715e70e7588e02b",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
@@ -5150,7 +5150,7 @@
         "module": 0,
         "tailWords": 0,
         "topic": "Tema 1: Del hardware al programa en ejecución",
-        "words": 741
+        "words": 755
       },
       {
         "issues": [],
@@ -5164,56 +5164,56 @@
         "module": 0,
         "tailWords": 83,
         "topic": "Tema 3: Cómo leer un comando antes de ejecutarlo",
-        "words": 504
+        "words": 514
       },
       {
         "issues": [],
         "module": 0,
         "tailWords": 129,
         "topic": "Tema 4: Primer programa, primer error y primera evidencia",
-        "words": 589
+        "words": 599
       },
       {
         "issues": [],
         "module": 0,
         "tailWords": 57,
         "topic": "Tema complementario: VS Code, comandos y atajos comprobables",
-        "words": 472
+        "words": 519
       },
       {
         "issues": [],
         "module": 1,
-        "tailWords": 163,
+        "tailWords": 174,
         "topic": "Tema 1: Del problema al algoritmo y a los casos de prueba",
-        "words": 1400
+        "words": 1516
       },
       {
         "issues": [],
         "module": 1,
         "tailWords": 159,
         "topic": "Tema 2: Variables, tipos, expresiones y cambios de estado",
-        "words": 1214
+        "words": 1221
       },
       {
         "issues": [],
         "module": 1,
         "tailWords": 174,
         "topic": "Tema 3: Decisiones, repeticiones y trazado de ejecución",
-        "words": 1307
+        "words": 1314
       },
       {
         "issues": [],
         "module": 1,
         "tailWords": 161,
         "topic": "Tema 4: Funciones y descomposición de problemas",
-        "words": 1204
+        "words": 1211
       },
       {
         "issues": [],
         "module": 1,
-        "tailWords": 256,
+        "tailWords": 261,
         "topic": "Tema 5: Cómo la computadora representa los datos — binario, texto y decimales",
-        "words": 836
+        "words": 910
       },
       {
         "issues": [],
@@ -5540,58 +5540,58 @@
       {
         "issues": [],
         "module": 2,
-        "tailWords": 129,
+        "tailWords": 123,
         "topic": "Tema 1: Elegir estructuras según las operaciones",
-        "words": 1234
+        "words": 1352
       },
       {
         "issues": [],
         "module": 2,
         "tailWords": 135,
         "topic": "Tema 2: Pilas, colas y abstracciones de comportamiento",
-        "words": 1332
+        "words": 1339
       },
       {
         "issues": [],
         "module": 2,
         "tailWords": 137,
         "topic": "Tema 3: Búsqueda, precondiciones y demostración de corrección",
-        "words": 1251
+        "words": 1258
       },
       {
         "issues": [],
         "module": 2,
         "tailWords": 139,
         "topic": "Tema 4: Complejidad, medición, ordenamiento y recursión",
-        "words": 1363
+        "words": 1451
       },
       {
         "issues": [],
         "module": 2,
         "tailWords": 249,
         "topic": "Tema 5: Árboles y árboles binarios de búsqueda (BST)",
-        "words": 880
+        "words": 886
       },
       {
         "issues": [],
         "module": 2,
         "tailWords": 227,
         "topic": "Tema 6: Tablas hash — búsqueda en tiempo constante",
-        "words": 732
+        "words": 738
       },
       {
         "issues": [],
         "module": 2,
         "tailWords": 248,
         "topic": "Tema 7: Grafos y recorridos BFS/DFS",
-        "words": 778
+        "words": 784
       },
       {
         "issues": [],
         "module": 2,
         "tailWords": 232,
         "topic": "Tema 8: Programación dinámica — resolver una vez, recordar el resultado",
-        "words": 735
+        "words": 741
       },
       {
         "issues": [],
