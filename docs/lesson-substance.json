@@ -1677,7 +1677,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "498455b2bfd5bc606f049d4548ca99f1aac522d35e9235ce7edb4345bfc28a74",
+    "fingerprint": "815cd85664b62523c570e9f6d6bc5baa09dcb0ea37205e36f00574855ecea5b1",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
@@ -6384,65 +6384,65 @@
       {
         "issues": [],
         "module": 12,
-        "tailWords": 208,
+        "tailWords": 215,
         "topic": "Tema 1: Builder — configuración paso a paso y validación · Intermedio · 45 min",
-        "words": 1122
+        "words": 1484
       },
       {
         "issues": [],
         "module": 12,
         "tailWords": 189,
         "topic": "Tema 2: Factory Method y Strategy · Intermedio · 55 min",
-        "words": 1178
+        "words": 1530
       },
       {
         "issues": [],
         "module": 12,
         "tailWords": 207,
         "topic": "Tema 3: Abstract Factory y familias de productos compatibles · Avanzado · 50 min",
-        "words": 968
+        "words": 1290
       },
       {
         "issues": [],
         "module": 12,
         "tailWords": 213,
         "topic": "Tema 4: SOLID y cuándo NO aplicar un patrón · Avanzado · 60 min",
-        "words": 1168
+        "words": 1530
       },
       {
         "issues": [],
         "module": 12,
         "tailWords": 235,
         "topic": "Tema 5: Prototype — copiar configuración sin compartir estado mutable · Intermedio · 45 min",
-        "words": 993
+        "words": 1334
       },
       {
         "issues": [],
         "module": 12,
         "tailWords": 217,
         "topic": "Tema 6: Patrones estructurales — elegir por intención · Avanzado · 65 min",
-        "words": 1300
+        "words": 1640
       },
       {
         "issues": [],
         "module": 13,
-        "tailWords": 150,
+        "tailWords": 155,
         "topic": "Tema 1: Arquitectura por capas del proyecto integrador · Avanzado · 50 min",
-        "words": 706
+        "words": 1106
       },
       {
         "issues": [],
         "module": 13,
-        "tailWords": 174,
+        "tailWords": 179,
         "topic": "Tema 2: Integrando concurrencia, modelado y testing · Experto · 60 min",
-        "words": 847
+        "words": 1219
       },
       {
         "issues": [],
         "module": 13,
-        "tailWords": 187,
+        "tailWords": 192,
         "topic": "Tema 3: Build reproducible y cierre del track · Avanzado · 50 min",
-        "words": 720
+        "words": 1126
       },
       {
         "issues": [],

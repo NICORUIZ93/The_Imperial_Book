@@ -5,15 +5,40 @@
 
 ### Tema 1: Builder — configuración paso a paso y validación · Intermedio · 45 min
 
-**Prerrequisito:** JDK 27 y un editor. Comprueba `java --version`.
+**Prerrequisito:** Módulos 1 y 7 de Java (clases, records); JDK 27 y un editor. Comprueba `java --version`.
 
-**Al terminar podrás:** construir un objeto inmutable con campos obligatorios y opcionales, validar el resultado en `build()` y justificar cuándo no necesitas Builder.
+**Al terminar podrás:** construir un objeto inmutable con campos obligatorios y opcionales mediante encadenamiento fluido, concentrar la validación en `build()`, y justificar cuándo un constructor o un record son mejores que Builder.
 
 #### Aprende
 
 Un pedido puede requerir cliente y producto, pero incluir opciones variables como cantidad, instrucciones o ventana de entrega. Un constructor posicional largo obliga a pasar valores centinela y hace difícil revisar qué significa cada argumento.
 
 **¿Por qué es importante?** Porque los patrones son vocabulario para resolver problemas, no plantillas obligatorias. Builder ayuda cuando la cantidad de opciones y la validación justifican una construcción guiada.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia del tema |
+|---|---|---|
+| el problema del constructor telescópico | Prerrequisito | muchos parámetros posicionales confunden |
+| encadenamiento fluido | Núcleo | métodos con nombre, uno por campo |
+| validación en `build()` | Núcleo | ningún objeto parcial sale del builder |
+| campos obligatorios frente a opcionales | Variante | opcionales con valor por defecto |
+| producto inmutable con constructor privado | Núcleo | solo `build()` crea la instancia `final` |
+| Builder frente a record/constructor | Decisión | no usar Builder si hay pocos campos |
+
+Cada fila tiene su explicación individual a continuación.
+
+**El problema del constructor telescópico (prerrequisito).** `new Pedido("Ana","Laptop",2,null,true,false,...)` es ilegible y propenso a error: el orden posicional confunde (¿qué booleano es cuál?) y obliga a pasar `null`/centinelas para los opcionales. Es el dolor que Builder resuelve.
+
+**Encadenamiento fluido (núcleo).** Builder ofrece un método **con nombre** por campo que devuelve `this`, permitiendo encadenar en orden natural y omitir los opcionales: `.cliente("Ana").codigo("RF-1").unidades(2)`. El sitio de llamada se vuelve autoexplicativo sin consultar la firma.
+
+**Validación en `build()` (núcleo).** Las invariantes se concentran en `build()`: comprueba obligatorios y rangos, y lanza antes de crear el objeto. Así **ningún** consumidor recibe un `Pedido` a medio construir; el objeto o es completo y válido, o no existe.
+
+**Campos obligatorios frente a opcionales (variante).** Los obligatorios se validan en `build()`; los opcionales tienen un **valor por defecto** en el Builder (`unidades = 1`). Añadir una opción nueva no obliga a cambiar las llamadas existentes, porque su default la cubre.
+
+**Producto inmutable con constructor privado (núcleo).** El `Pedido` tiene campos `final` y **constructor privado** que recibe el Builder ya validado: solo `build()` puede crear la instancia. No se publica el Builder mutable como si fuera el producto; el producto terminado es inmutable y seguro de compartir.
+
+**Builder frente a record/constructor (decisión).** Para una clase con **pocos** campos obligatorios, un constructor normal o un `record` con constructor compacto (Módulo 7) es más simple. Builder solo compensa cuando hay muchas opciones y validación que justifican la construcción guiada. No lo apliques por rutina.
 
 Un constructor con muchos parámetros, varios de ellos opcionales (`new Pedido("Ana", "Laptop", 2, null, true, false, 15.5, ...)`), es propenso a errores de uso: es fácil confundir el orden de los argumentos posicionales, especialmente cuando varios comparten el mismo tipo (¿cuál booleano corresponde a qué opción específica?), y no queda ninguna indicación clara en el sitio de la llamada de qué representa cada valor individual sin consultar constantemente la firma del constructor. El patrón Builder (`Pedido pedido = Pedido.builder().cliente("Ana").producto("Laptop").cantidad(2).build();`) resuelve este problema encadenando llamadas a métodos con nombres descriptivos, uno por cada campo que se desea establecer, en el orden que resulte más natural para quien construye el objeto, omitiendo directamente cualquier campo opcional que no aplique en ese caso específico, sin necesidad de pasar `null` o valores por defecto explícitos como marcadores de posición para cada campo omitido.
 
@@ -156,21 +181,46 @@ Guarda `BuilderPedidoDemo.java` con su Builder, el fallo de validación provocad
 
 **Errores comunes:** compartir un Builder mutable entre hilos, omitir validación en `build()` y usar Builder para objetos con pocos campos obligatorios.
 
-**Fuentes:** [Builder — Refactoring Guru](https://refactoring.guru/design-patterns/builder) y [documentación de Java](https://docs.oracle.com/en/java/javase/25/).
+**Fuentes revisadas el 2026-11-01:** [Builder — Refactoring Guru](https://refactoring.guru/design-patterns/builder) y [documentación de Java SE 27](https://docs.oracle.com/en/java/javase/27/).
 
 ---
 
 ### Tema 2: Factory Method y Strategy · Intermedio · 55 min
 
-**Prerrequisito:** JDK 27, interfaces y un editor. Comprueba `java --version`.
+**Prerrequisito:** Tema 1 de este módulo e interfaces (Módulo 1); JDK 27 y un editor. Comprueba `java --version`.
 
-**Al terminar podrás:** distinguir una Factory simple del patrón GoF Factory Method y elegir entre Factory Method y Strategy según cambie la creación o el algoritmo.
+**Al terminar podrás:** distinguir Factory simple de Factory Method (GoF), encapsular un algoritmo con Strategy, inyectar la estrategia, y elegir el patrón según varíe la creación o el algoritmo.
 
 #### Aprende
 
 RutaFlow puede enviar avisos por más de un canal y calcular tarifas con políticas distintas. La creación del notificador y el cálculo de la tarifa son variaciones diferentes: centralizar la primera no debe convertir al consumidor en una cadena de condicionales.
 
 **¿Por qué es importante?** Distinguir selección de creación de selección de algoritmo evita condicionales dispersos y abstracciones que no responden a una variación real.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia del tema |
+|---|---|---|
+| Factory simple (`switch` central) | Prerrequisito | mapear una clave a una instancia |
+| Factory Method (GoF) | Núcleo | la subclase decide el producto |
+| producto común y creador | Núcleo | el flujo usa la abstracción, no el concreto |
+| Strategy (algoritmo intercambiable) | Núcleo | el consumidor ignora qué implementación corre |
+| inyección de la estrategia | Variante | se configura desde fuera, sin `if`/`switch` |
+| qué varía: creación o algoritmo | Diagnóstico | la pregunta que elige el patrón |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Factory simple (prerrequisito).** `crear("email")` → `EmailNotificador`; el consumidor solo ve la interfaz `Notificador`. Centraliza la selección en un `switch`, pero añadir una opción obliga a **editar** ese switch. Es suficiente cuando solo mapeas una clave a una instancia; no es el patrón GoF.
+
+**Factory Method (GoF) (núcleo).** Mueve la creación a un **método que una subclase concreta implementa**: `EmailFactory`/`SmsFactory` deciden el producto, mientras el método heredado ejecuta el flujo común. Extender significa **añadir** una subclase, no editar el flujo. Cuesta más tipos, pero respeta abierto/cerrado.
+
+**Producto común y creador (núcleo).** El flujo del creador trabaja contra la **abstracción** (`Notificador`), no contra un tipo concreto. Esa indirección es la que permite cambiar el producto sin tocar el código que lo usa. El punto de variación queda aislado en la fábrica.
+
+**Strategy (núcleo).** Encapsula un **algoritmo intercambiable** tras una interfaz (`CalculadoraDescuento.calcular(precio)`). El consumidor llama `estrategia.calcular(...)` **sin saber** cuál implementación corre; no tiene `if`/`switch` propio. Cambiar de algoritmo es cambiar la estrategia inyectada.
+
+**Inyección de la estrategia (variante).** La estrategia concreta se **inyecta** desde fuera (constructor, configuración), no se elige dentro del consumidor. Así el mismo código sirve con descuento navideño, de temporada o ninguno, decidido por quien compone el objeto.
+
+**Qué varía: creación o algoritmo (diagnóstico).** La pregunta que elige el patrón: si varía **qué producto se crea** dentro de un flujo → Factory Method; si varía **el algoritmo** que aplica un consumidor → Strategy; si solo mapeas clave→instancia → Factory simple. No introduzcas un patrón si no hay una variación real que lo justifique.
 
 En una Factory simple, `SimpleNotificadorFactory.crear("email")` puede devolver `EmailNotificador` y `crear("sms")` puede devolver `SmsNotificador`; el consumidor solo ve `Notificador`. Añadir una opción suele requerir editar la selección centralizada. Factory Method mueve la creación a un método que una subclase concreta implementa. En la práctica, `EmailFactory` y `SmsFactory` eligen el producto, mientras el método heredado `notificar` ejecuta el mismo flujo con la abstracción `Notificador`. La extensión evita editar ese flujo, aunque añade tipos y no elimina la necesidad de componer el creador adecuado en algún punto.
 
@@ -374,6 +424,31 @@ RutaFlow genera una etiqueta y una guía de transporte. El servicio puede trabaj
 
 **¿Por qué es importante?** Una configuración entrega objetos individualmente válidos, pero el diseño también debe preservar compatibilidad entre productos relacionados.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia del tema |
+|---|---|---|
+| familia de productos relacionados | Núcleo | etiqueta y guía que deben ser coherentes |
+| la interfaz de la fábrica abstracta | Núcleo | un método por producto de la familia |
+| fábricas concretas por familia | Núcleo | local e internacional producen su conjunto |
+| coherencia garantizada por la fábrica | Diagnóstico | mezclar productos de fábricas distintas es un bug de dominio |
+| selección en composición | Decisión | quién inyecta la familia, no el dominio |
+| Abstract Factory frente a Factory Method | Límite | familia de productos vs un solo producto |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Familia de productos relacionados (núcleo).** Abstract Factory se usa cuando varios productos deben ser **coherentes entre sí** (una etiqueta y una guía del mismo transportista). No es crear un objeto, sino crear un **conjunto** compatible.
+
+**La interfaz de la fábrica abstracta (núcleo).** `TransportistaFactory` declara **un método por producto** de la familia (`crearEtiqueta()`, `crearGuia()`), devolviendo contratos. El consumidor pide los productos a **la misma** fábrica, garantizando que pertenecen a la misma familia.
+
+**Fábricas concretas por familia (núcleo).** Cada familia tiene su implementación (`LocalFactory`, `InternacionalFactory`) que produce **todo su conjunto** coherente. Añadir una familia nueva es añadir una fábrica concreta, sin tocar al consumidor.
+
+**Coherencia garantizada por la fábrica (diagnóstico).** El error típico: combinar una etiqueta internacional con una guía local. Java no lo impide (ambos cumplen sus interfaces): es un **bug de dominio**, no de tipos. Abstract Factory lo previene obligando a pedir ambos a la misma fábrica; no "adivines" la pareja con condicionales en el producto.
+
+**Selección en composición (decisión).** Qué familia se usa se decide **al componer** (configuración, inyección), no dentro del dominio. El dominio no debe leer variables de entorno para elegir la familia; recibe la fábrica ya seleccionada.
+
+**Abstract Factory frente a Factory Method (límite).** Factory Method crea **un** producto; Abstract Factory crea una **familia** de productos relacionados. Usar Abstract Factory para un solo producto es sobreingeniería (muchas interfaces sin familias que mantener coherentes).
+
 Abstract Factory declara métodos para crear varios tipos de productos relacionados. Cada fábrica concreta representa una variante y produce productos de esa misma familia. El cliente usa interfaces de producto, no el nombre de la fábrica ni clases concretas. Se diferencia de Factory Method, que delega una decisión de creación de un producto en un método redefinido; Abstract Factory coordina una familia de productos. La factoría se selecciona al inicializar la aplicación según configuración, no en cada rama del caso de uso.
 
 | Rol | RutaFlow | Responsabilidad |
@@ -541,6 +616,33 @@ Un servicio de despacho puede validar una entrega, calcular su tarifa, guardar e
 
 **¿Por qué es importante?** Una solución debe admitir los cambios probables y conservar contratos, no acumular patrones por nombre.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia del tema |
+|---|---|---|
+| SRP (responsabilidad única) | Núcleo | una clase, una razón para cambiar |
+| OCP (abierto/cerrado) | Núcleo | extender sin modificar lo existente |
+| LSP (sustitución de Liskov) | Diagnóstico | una subclase no debe romper el contrato de la base |
+| ISP (segregación de interfaces) | Variante | interfaces pequeñas en vez de una enorme |
+| DIP (inversión de dependencias) | Núcleo | depender de abstracciones, no de concretos |
+| cuándo NO aplicar un patrón | Decisión | el patrón prematuro es coste sin beneficio |
+
+Cada fila tiene su explicación individual a continuación.
+
+**SRP — responsabilidad única (núcleo).** Una clase debe tener **una sola razón para cambiar**. Si mezcla cálculo de tarifa, persistencia y formato de salida, un cambio en cualquiera la toca y arriesga romper las demás. Separar responsabilidades reduce el acoplamiento accidental.
+
+**OCP — abierto/cerrado (núcleo).** El código debe estar **abierto a extensión, cerrado a modificación**: añadir un comportamiento nuevo (una tarifa, un canal) se hace **agregando** una clase, no editando un `switch` central. Strategy y Factory Method (Tema 2) son formas de lograrlo.
+
+**LSP — sustitución de Liskov (diagnóstico).** Una subclase debe poder usarse **donde se espera la base sin romper su contrato**: no debe lanzar excepciones nuevas inesperadas, endurecer precondiciones ni cambiar el significado. El ejemplo clásico (Rectángulo/Cuadrado) viola LSP porque el cuadrado rompe la expectativa de poder fijar ancho y alto por separado.
+
+**ISP — segregación de interfaces (variante).** Mejor **varias interfaces pequeñas** y cohesivas que una enorme que obliga a implementar métodos que no aplican. Un cliente no debe depender de métodos que no usa; interfaces finas facilitan implementaciones y mocks.
+
+**DIP — inversión de dependencias (núcleo).** Los módulos de alto nivel dependen de **abstracciones**, no de implementaciones concretas; la concreta se inyecta. Es lo que hace testeable el dominio (mockeas la abstracción, Módulo 9) y lo que desacopla la lógica de la infraestructura.
+
+**Cuándo NO aplicar un patrón (decisión).** SOLID y los patrones son herramientas para **cambios probables**, no reglas a cumplir por sí mismas. Un patrón aplicado "por si acaso" añade indirección y clases sin un cambio real que lo justifique: es coste sin beneficio. Primero el problema, luego el patrón.
+
+Un principio solo importa cuando un cambio probable lo pone a prueba.
+
 SOLID son cinco principios para gestionar razones de cambio y contratos; no son una receta para crear una interfaz por cada clase. Identifica qué varía, expresa ese comportamiento como contrato y compón las partes que realmente necesitas. Favorecer composición significa delegar una capacidad a un objeto colaborador cuando la relación es «usa», no crear una subclase solo para reutilizar código.
 
 | Principio | Pregunta para el servicio de entregas | Señal concreta |
@@ -692,6 +794,30 @@ Guarda la versión mezclada y la refactorizada, identifica dónde aplican OCP, L
 RutaFlow conserva una plantilla de paquete EXPRESS con etiquetas predeterminadas. Cada envío parte de esa plantilla y añade etiquetas propias. Reconstruir todos los campos repite configuración; compartir la misma lista permite que una etiqueta de un envío contamine los siguientes.
 
 **¿Por qué es importante?** Una copia superficial puede parecer correcta hasta que cambiar la copia modifica también el original. Prototype permite crear objetos desde una configuración existente, pero exige decidir qué referencias se comparten y cuáles se copian.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia del tema |
+|---|---|---|
+| clonar una configuración existente | Núcleo | partir de un prototipo en vez de reconstruir |
+| copia superficial frente a profunda | Diagnóstico | mutar la copia no debe tocar el original |
+| campos mutables y copia defensiva | Núcleo | copiar las colecciones del prototipo |
+| `clone()`/`Cloneable` y sus problemas | Límite | preferir un constructor de copia o un método propio |
+| Prototype frente a Builder/new | Decisión | cuándo partir de una plantilla aporta valor |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Clonar una configuración existente (núcleo).** Prototype crea un objeto nuevo **copiando** uno existente que ya tiene una configuración base, en vez de reconstruirlo desde cero con todos sus parámetros. Útil cuando preparar la configuración es costoso o hay muchas variantes a partir de una plantilla.
+
+**Copia superficial frente a profunda (diagnóstico).** Una copia **superficial** duplica el objeto pero **comparte** las referencias a sus campos mutables: mutar la copia también cambia el original (el bug clásico). Una copia **profunda** duplica también esos campos. El síntoma —"cambié la copia y se alteró el original"— delata una superficial donde hacía falta profunda.
+
+**Campos mutables y copia defensiva (núcleo).** Al clonar, copia explícitamente las colecciones y objetos mutables del prototipo (`new ArrayList<>(otro.lista)`, `List.copyOf`), igual que la copia defensiva de records (Módulo 7). Los campos inmutables (`String`, primitivos) pueden compartirse sin riesgo.
+
+**`clone()`/`Cloneable` y sus problemas (límite).** El `clone()` heredado de `Object` con `Cloneable` es problemático (protegido, sin constructor, copia superficial por defecto, contrato confuso). La práctica moderna prefiere un **constructor de copia** o un método `copia()` propio que controle explícitamente qué se copia. Conoce `clone()` para leer código ajeno, pero no lo uses de base.
+
+**Prototype frente a Builder/`new` (decisión).** Si construir desde cero con un constructor o Builder (Tema 1) es simple y barato, no necesitas Prototype. Aporta valor cuando partir de una **plantilla ya configurada** ahorra trabajo o cuando no conoces la clase concreta (clonas lo que te dieron). No lo apliques por rutina.
+
+Prototype crea un objeto desde una configuración existente clonándola, no reconstruyéndola.
 
 Prototype delega la copia al objeto mediante un contrato común. El cliente conoce `Prototype<T>`, no necesita inspeccionar campos privados ni decidir la clase concreta. En Java, copiar valores primitivos o referencias inmutables suele ser suficiente; una lista mutable necesita una colección nueva. Una copia profunda no significa duplicar indiscriminadamente recursos externos: conexiones, archivos o clientes de red requieren una política explícita.
 
@@ -860,6 +986,33 @@ Guarda `PrototypeDemo.java`, el fallo por referencia compartida, la corrección 
 RutaFlow debe integrar un etiquetador legado, añadir registro a notificaciones, simplificar la creación de un envío, representar paquetes anidados, controlar una cotización y combinar alertas con canales. Una sola clase «Helper» escondería las diferencias y acumularía razones de cambio.
 
 **¿Por qué es importante?** Adapter, Bridge, Decorator, Facade y Proxy pueden verse como objetos que delegan, pero resuelven problemas distintos. Elegir por la forma del diagrama produce clases parecidas con responsabilidades equivocadas; elegir por intención permite diagnosticar el cambio que cada patrón debe aislar.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia del tema |
+|---|---|---|
+| Adapter: traducir una interfaz | Núcleo | encajar una API ajena en el contrato esperado |
+| Decorator: añadir responsabilidad | Núcleo | envolver para sumar comportamiento sin herencia |
+| Proxy: controlar el acceso | Núcleo | interponer control (lazy, caché, seguridad) |
+| Facade: simplificar un subsistema | Variante | una entrada simple a muchas clases |
+| Bridge: separar abstracción de implementación | Variante | dos jerarquías que varían por separado |
+| elegir por intención, no por forma | Decisión | todos delegan; el problema que aíslan difiere |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Adapter — traducir una interfaz (núcleo).** Encaja una clase existente con una interfaz **incompatible** en el contrato que tu código espera, traduciendo las llamadas. Lo usas para integrar una librería o API ajena sin cambiar tu código ni el de ella.
+
+**Decorator — añadir responsabilidad (núcleo).** **Envuelve** un objeto para sumarle comportamiento (logging, compresión, cifrado) conservando su interfaz, de forma **componible** (varios decoradores apilados). Alternativa a una explosión de subclases; cada decorador aporta una responsabilidad.
+
+**Proxy — controlar el acceso (núcleo).** Interpone un objeto con la **misma interfaz** para controlar el acceso al real: carga perezosa, caché, control de permisos, o una llamada remota. El cliente no nota la diferencia. (Los proxies dinámicos del Módulo 19 son su forma reflexiva, p. ej. `@Transactional`.)
+
+**Facade — simplificar un subsistema (variante).** Ofrece una **entrada simple** a un subsistema complejo de muchas clases, ocultando su coordinación. No añade comportamiento ni traduce: reduce la superficie que el cliente debe conocer.
+
+**Bridge — separar abstracción de implementación (variante).** Separa **dos jerarquías** que varían independientemente (una abstracción y su implementación), conectadas por composición, para que crezcan sin multiplicarse en combinaciones. Útil cuando tienes, por ejemplo, formas × renderizadores.
+
+**Elegir por intención, no por forma (decisión).** Todos estos patrones "delegan en otro objeto" y se **parecen** en el diagrama, pero resuelven problemas distintos: Adapter traduce, Decorator añade, Proxy controla, Facade simplifica, Bridge desacopla. Elígelos por el **cambio que quieres aislar**, no por la forma; copiar la estructura sin la intención produce clases con la responsabilidad equivocada.
+
+Adapter traduce, Decorator añade, Proxy controla, Facade simplifica, Bridge desacopla.
 
 | Patrón | Intención en RutaFlow | Pregunta diagnóstica |
 |---|---|---|

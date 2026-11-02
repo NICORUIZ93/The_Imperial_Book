@@ -748,3 +748,23 @@ Versiones a Java 27 (se eliminaron javase/25 y javase/22). `validate.sh` EXIT 0.
 
 Acumulado cerrado: Java 0,1,2,3,4,5,6,7,8,9,10,11,20 + M18 T3/T4. Siguiente: `java/modulo-12.md`
 (patrones de diseño).
+
+---
+
+## 23. Avance: Java módulos 12 (patrones) y 13 (proyecto integrador)
+
+Fecha: 2026-11-01. Entorno: Temurin **JDK 27.0.1**.
+
+- **Módulo 12 (patrones de diseño, 6 temas):** Builder (telescópico, fluido, validación en `build`),
+  Factory simple/Factory Method/Strategy (qué varía), Abstract Factory (familia coherente), SOLID
+  (SRP/OCP/LSP/ISP/DIP + cuándo NO aplicar), Prototype (copia superficial/profunda, `clone` vs
+  constructor de copia), estructurales (Adapter/Decorator/Proxy/Facade/Bridge, elegir por intención).
+  Fuentes Refactoring Guru + libro Shvets del disco.
+- **Módulo 13 (proyecto integrador, 3 temas):** arquitectura por capas (dirección de dependencia,
+  dominio sin infraestructura, puerto/adaptador, fitness function); integración concurrencia+sealed
+  Exito/Error+testing (fallo esperado vs error interno); build reproducible (`outputTimestamp`,
+  comparación byte a byte, fijar entorno).
+
+Versiones a Java 27. `validate.sh` EXIT 0. Sin marcar `reviewed`; trinquete 1.143 de 1.146.
+
+Acumulado cerrado: Java 0–13 y 20 + M18 T3/T4. Siguiente: `java/modulo-14.md` (Java en producción).

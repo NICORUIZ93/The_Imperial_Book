@@ -4554,13 +4554,13 @@
       "path": "web/public/content/java/modulo-12.md",
       "topic": "Tema 1: Builder — configuración paso a paso y validación",
       "providerCitations": [
-        "https://docs.oracle.com/en/java/javase/25/",
+        "https://docs.oracle.com/en/java/javase/27/",
         "https://refactoring.guru/design-patterns/builder"
       ],
       "applicabilityReview": "revisión manual pendiente",
       "line": 6,
       "originalProseUrls": [
-        "https://docs.oracle.com/en/java/javase/25/",
+        "https://docs.oracle.com/en/java/javase/27/",
         "https://refactoring.guru/design-patterns/builder"
       ],
       "recognitionStatus": "primary-domain-detected",
@@ -4575,7 +4575,7 @@
         "https://refactoring.guru/design-patterns/strategy"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 163,
+      "line": 188,
       "originalProseUrls": [
         "https://refactoring.guru/design-patterns/factory-method",
         "https://refactoring.guru/design-patterns/strategy"
@@ -4591,7 +4591,7 @@
         "https://refactoring.guru/design-patterns/abstract-factory"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 365,
+      "line": 415,
       "originalProseUrls": [
         "https://refactoring.guru/design-patterns/abstract-factory"
       ],
@@ -4607,7 +4607,7 @@
         "https://refactoring.guru/files/design-patterns-es-demo.pdf"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 684,
+      "line": 786,
       "originalProseUrls": [
         "https://refactoring.guru/design-patterns/prototype",
         "https://refactoring.guru/files/design-patterns-es-demo.pdf"
@@ -4624,7 +4624,7 @@
         "https://refactoring.guru/design-patterns/structural-patterns"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 852,
+      "line": 978,
       "originalProseUrls": [
         "https://refactoring.guru/design-patterns/adapter",
         "https://refactoring.guru/design-patterns/structural-patterns"
@@ -7161,6 +7161,15 @@
       "title": null,
       "checkedAt": "2026-10-31T15:33:19.962492+00:00",
       "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
+      "url": "https://docs.oracle.com/en/java/javase/27/",
+      "status": 0,
+      "finalUrl": "https://docs.oracle.com/en/java/javase/27/",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
       "url": "https://docs.oracle.com/en/java/javase/27/core/foreign-function-and-memory-api.html",
@@ -11183,9 +11192,9 @@
     "additionalRecognizedTopics": 378,
     "remainingUnrecognizedTopics": 0,
     "applicabilityPendingTopics": 378,
-    "urlsChecked": 533,
+    "urlsChecked": 534,
     "urlsReachable": 507,
-    "urlsPending": 26
+    "urlsPending": 27
   },
   "corrections": [
     {
