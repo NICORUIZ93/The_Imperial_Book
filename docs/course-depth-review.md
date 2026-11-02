@@ -11,7 +11,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 | node | 77 | 7 | HTTP y validación antes de autenticación e integraciones | API con límites de carga, paginación estable, pruebas y cierre ordenado |
 | angular | 71 | 3 | HTML/CSS/TypeScript explícitos; RxJS y estado con ejemplos completos | Rutas, formularios, datos remotos y cambios sin guardar comprobados con navegador |
 | react | 58 | 46 | JSX y estado antes de efectos; proveedor, dependencias y API visibles | Carga, error, vacío y carrera de respuestas; caché observada, no supuesta |
-| java | 99 | 11 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
+| java | 109 | 11 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
 | spring-boot | 93 | 3 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
 | android | 74 | 1 | Kotlin antes de Compose; distinguir recomposición, recreación y muerte de proceso | App instalable con permisos, restauración, persistencia y pruebas en dispositivo |
 | ios | 56 | 4 | Swift antes de SwiftUI; explicitar macOS/Xcode y destino | Cancelación, estados de red, persistencia y accesibilidad comprobados en simulador |
@@ -23,7 +23,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 
 ## Registro tema por tema
 
-Revisión humana firmada: 0/1149 temas. Pre-lectura registrada sin firma: 14. La pre-lectura no acredita ejecución, comprensión ni calidad pedagógica; consulta `docs/manual-review-log.md`.
+Revisión humana firmada: 0/1159 temas. Pre-lectura registrada sin firma: 14. La pre-lectura no acredita ejecución, comprensión ni calidad pedagógica; consulta `docs/manual-review-log.md`.
 Los laboratorios nuevos tienen una verificación técnica separada; la ejecución correcta tampoco demuestra comprensión.
 
 | Curso / módulo | Tema | Señales para revisar |
@@ -738,6 +738,16 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | java / 20 | [Tema 2: Las cuatro formas: Predicate, Function, Consumer y Supplier · Básico · 75 min](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 20 | [Tema 3: Componer sin anidar: andThen, compose, negate y reglas encadenadas · Intermedio · 75 min](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 20 | [Tema 4: Streams como composición: pereza, orden y efectos que se esconden · Intermedio · 90 min](../web/public/content/java/modulo-20.md) | clase-java-no-visible |
+| java / 20 | [Tema 5: Function y BiFunction — transformar con una o dos entradas · Básico · 30 min](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 20 | [Tema 6: UnaryOperator y BinaryOperator — cuando entrada y salida comparten tipo · Básico · 20 min](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 20 | [Tema 7: Referencias a métodos — las cuatro formas · Básico · 25 min](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 20 | [Tema 8: Optional — ausencia explícita sin null · Intermedio · 30 min](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 20 | [Tema 9: Streams intermedios — map, filter, flatMap y sorted · Intermedio · 35 min](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 20 | [Tema 10: Streams terminales — collect, reduce, forEach y find · Intermedio · 35 min](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 20 | [Tema 11: Collectors — toList, toMap, groupingBy y joining · Intermedio · 35 min](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 20 | [Tema 12: Streams paralelos — cuándo ayudan y cuándo engañan · Avanzado · 30 min](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 20 | [Tema 13: Pureza y efectos secundarios — razonar sobre funciones · Intermedio · 30 min](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 20 | [Tema 14: Flow API — reactive streams en la biblioteca estándar · Avanzado · 30 min](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 21 | [Tema 1: Qué es la superficie pública de una API · Básico · 40 min](../web/public/content/java/modulo-21.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 21 | [Tema 2: Compatibilidad binaria frente a compatibilidad de fuente · Intermedio · 45 min](../web/public/content/java/modulo-21.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 21 | [Tema 3: Evolucionar sin romper: default methods, deprecación y retirada · Intermedio · 45 min](../web/public/content/java/modulo-21.md) | Sin señales de estos detectores; revisión pendiente |

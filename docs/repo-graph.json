@@ -958,7 +958,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 2100,
+      "lines": 2163,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -985,7 +985,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 14087,
+      "lines": 14207,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -993,7 +993,7 @@
     },
     {
       "path": "docs/course-depth-review.md",
-      "lines": 1180,
+      "lines": 1190,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1026,7 +1026,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 51,
+      "lines": 61,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1160,7 +1160,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 9766,
+      "lines": 9836,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1332,7 +1332,7 @@
     },
     {
       "path": "docs/prerequisite-graph.json",
-      "lines": 12647,
+      "lines": 12757,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1451,7 +1451,7 @@
     },
     {
       "path": "docs/seven-step-methodology.json",
-      "lines": 29026,
+      "lines": 29276,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1501,7 +1501,7 @@
     },
     {
       "path": "docs/subtopic-depth-review.json",
-      "lines": 17147,
+      "lines": 17428,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1509,7 +1509,7 @@
     },
     {
       "path": "docs/subtopic-depth-review.md",
-      "lines": 1136,
+      "lines": 1146,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1522,7 +1522,7 @@
     },
     {
       "path": "docs/subtopic-depth-reviewed.json",
-      "lines": 122,
+      "lines": 182,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1590,7 +1590,7 @@
     },
     {
       "path": "docs/topic-learning-quality.json",
-      "lines": 25549,
+      "lines": 25769,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -10858,7 +10858,7 @@
     },
     {
       "path": "web/public/content/java/modulo-20.md",
-      "lines": 743,
+      "lines": 1673,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12954,7 +12954,7 @@
     },
     {
       "path": "web/public/content/topic-index.json",
-      "lines": 5135,
+      "lines": 5175,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

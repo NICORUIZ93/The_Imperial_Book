@@ -1677,7 +1677,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "f7cd314be4258b0874a4800e5cd21c66e1b22dee5e5992664b6965c99cc12e06",
+    "fingerprint": "af4e8f08bf08424938943f18bc16bde37ca39f3a2bc4c8254bb2c02ddc3a9cf3",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
@@ -1686,7 +1686,7 @@
     },
     "modules": 254,
     "modulesWithLegacySections": 179,
-    "topics": 1149,
+    "topics": 1159,
     "topicsWithIssues": 0
   },
   "topics": {
@@ -6674,6 +6674,76 @@
         "tailWords": 165,
         "topic": "Tema 4: Streams como composición: pereza, orden y efectos que se esconden · Intermedio · 90 min",
         "words": 1154
+      },
+      {
+        "issues": [],
+        "module": 20,
+        "tailWords": 131,
+        "topic": "Tema 5: Function y BiFunction — transformar con una o dos entradas · Básico · 30 min",
+        "words": 809
+      },
+      {
+        "issues": [],
+        "module": 20,
+        "tailWords": 118,
+        "topic": "Tema 6: UnaryOperator y BinaryOperator — cuando entrada y salida comparten tipo · Básico · 20 min",
+        "words": 772
+      },
+      {
+        "issues": [],
+        "module": 20,
+        "tailWords": 116,
+        "topic": "Tema 7: Referencias a métodos — las cuatro formas · Básico · 25 min",
+        "words": 789
+      },
+      {
+        "issues": [],
+        "module": 20,
+        "tailWords": 103,
+        "topic": "Tema 8: Optional — ausencia explícita sin null · Intermedio · 30 min",
+        "words": 748
+      },
+      {
+        "issues": [],
+        "module": 20,
+        "tailWords": 101,
+        "topic": "Tema 9: Streams intermedios — map, filter, flatMap y sorted · Intermedio · 35 min",
+        "words": 732
+      },
+      {
+        "issues": [],
+        "module": 20,
+        "tailWords": 111,
+        "topic": "Tema 10: Streams terminales — collect, reduce, forEach y find · Intermedio · 35 min",
+        "words": 751
+      },
+      {
+        "issues": [],
+        "module": 20,
+        "tailWords": 112,
+        "topic": "Tema 11: Collectors — toList, toMap, groupingBy y joining · Intermedio · 35 min",
+        "words": 755
+      },
+      {
+        "issues": [],
+        "module": 20,
+        "tailWords": 109,
+        "topic": "Tema 12: Streams paralelos — cuándo ayudan y cuándo engañan · Avanzado · 30 min",
+        "words": 755
+      },
+      {
+        "issues": [],
+        "module": 20,
+        "tailWords": 133,
+        "topic": "Tema 13: Pureza y efectos secundarios — razonar sobre funciones · Intermedio · 30 min",
+        "words": 902
+      },
+      {
+        "issues": [],
+        "module": 20,
+        "tailWords": 123,
+        "topic": "Tema 14: Flow API — reactive streams en la biblioteca estándar · Avanzado · 30 min",
+        "words": 846
       },
       {
         "issues": [],

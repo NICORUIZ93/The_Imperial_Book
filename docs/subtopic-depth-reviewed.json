@@ -116,6 +116,66 @@
         "https://adoptium.net/temurin/releases/?version=27",
         "https://formulae.brew.sh/cask/temurin"
       ]
+    },
+    "java/modulo-20::Tema 5: Function y BiFunction — transformar con una o dos entradas · Básico · 30 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: BiFun ejecutado, tarifa.andThen(aMoneda).apply(5000,3) = $8600; error de aridad con Function unaria reproducido.",
+      "criticalSubtopics": ["Function<T,R>: una entrada", "BiFunction<T,U,R>: dos entradas", "BiFunction.andThen", "BiFunction no tiene compose", "Tres o mas entradas: objeto o currying", "Boxing en genericos de Function"],
+      "sources": ["https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/function/BiFunction.html", "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/function/package-summary.html"]
+    },
+    "java/modulo-20::Tema 6: UnaryOperator y BinaryOperator — cuando entrada y salida comparten tipo · Básico · 20 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: Operadores ejecutado, normalizar -> ENV-1, reduce(0,Integer::sum) = 60; error de identidad incorrecta reproducido.",
+      "criticalSubtopics": ["UnaryOperator<T> extiende Function<T,T>", "BinaryOperator<T> extiende BiFunction<T,T,T>", "Encaja con List.replaceAll/Stream.reduce", "minBy/maxBy como BinaryOperator", "El tipo se conserva", "Identidad correcta en reduce"],
+      "sources": ["https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/function/UnaryOperator.html", "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/function/BinaryOperator.html"]
+    },
+    "java/modulo-20::Tema 7: Referencias a métodos — las cuatro formas · Básico · 25 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: MethodRefs ejecutado, salida '42 E:G1 4 Envio[guia=G2]' con las cuatro formas; error de firma incompatible reproducido.",
+      "criticalSubtopics": ["Referencia estatica", "Instancia particular", "Instancia arbitraria", "Constructor Tipo::new", "Equivalencia con la lambda (SAM)", "Cuando la lambda es mas clara"],
+      "sources": ["https://dev.java/learn/lambdas/method-references/", "https://docs.oracle.com/javase/specs/jls/se27/html/jls-15.html#jls-15.13"]
+    },
+    "java/modulo-20::Tema 8: Optional — ausencia explícita sin null · Intermedio · 30 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: Opt ejecutado, ENVIO-OK y SIN DATOS; NoSuchElementException de get() sin valor reproducido.",
+      "criticalSubtopics": ["Optional.of/empty/ofNullable", "map transforma si hay valor", "orElse/orElseThrow", "flatMap evita Optional<Optional>", "Antipatron isPresent()+get()", "Optional no para campos ni parametros"],
+      "sources": ["https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/Optional.html", "https://dev.java/learn/api/optional/"]
+    },
+    "java/modulo-20::Tema 9: Streams intermedios — map, filter, flatMap y sorted · Intermedio · 35 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: StreamsOps ejecutado, flatMap+sorted = [a, b, c], filter+mapToInt sum = 6; error Stream<Stream<T>> con map reproducido.",
+      "criticalSubtopics": ["filter selecciona por predicado", "map transforma cada elemento", "flatMap aplana flujos anidados", "sorted ordena el flujo", "Son perezosas", "flatMap vs map con colecciones"],
+      "sources": ["https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/stream/Stream.html", "https://dev.java/learn/api/streams/"]
+    },
+    "java/modulo-20::Tema 10: Streams terminales — collect, reduce, forEach y find · Intermedio · 35 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: Terminales ejecutado, reduce = xyz, toList = [A, B], anyMatch = true; riesgo de forEach con estado compartido en paralelo documentado.",
+      "criticalSubtopics": ["toList/collect materializan", "reduce agrega a un valor", "forEach para efectos no para construir", "findFirst/anyMatch cortocircuitan", "La terminal cierra el Stream", "reduce necesita operacion asociativa"],
+      "sources": ["https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/stream/Stream.html", "https://dev.java/learn/api/streams/"]
+    },
+    "java/modulo-20::Tema 11: Collectors — toList, toMap, groupingBy y joining · Intermedio · 35 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: Colectores ejecutado, groupingBy+summingInt = {Cali=8, Bogotá=8}, joining = 'Bogotá, Cali'; IllegalStateException Duplicate key de toMap reproducido.",
+      "criticalSubtopics": ["toList/toSet", "toMap con clave y valor", "groupingBy agrupa por clasificador", "Colector posterior (summingInt)", "joining une cadenas", "toMap sin merge ante duplicados"],
+      "sources": ["https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/stream/Collectors.html", "https://dev.java/learn/api/streams/"]
+    },
+    "java/modulo-20::Tema 12: Streams paralelos — cuándo ayudan y cuándo engañan · Avanzado · 30 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: Paralelo ejecutado, iguales=true total=500000500000; corrupcion por estado compartido documentada.",
+      "criticalSubtopics": ["parallel() divide el trabajo", "Operacion asociativa y sin estado", "Resultado correcto no siempre mas rapido", "ForkJoinPool.commonPool compartido", "Estado compartido rompe en paralelo", "Medir antes de paralelizar"],
+      "sources": ["https://dev.java/learn/api/streams/parallel-streams/", "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/stream/Stream.html"]
+    },
+    "java/modulo-20::Tema 13: Pureza y efectos secundarios — razonar sobre funciones · Intermedio · 30 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: Pureza ejecutado, tarifa=8600, vigentePura=true; test no determinista por now() oculto documentado.",
+      "criticalSubtopics": ["Funcion pura: determinista y sin efectos", "Efecto secundario: I/O, estado, reloj", "Transparencia referencial", "Efectos en los bordes, nucleo puro", "Impureza oculta rompe tests y paralelo", "Pureza no significa sin estado nunca"],
+      "sources": ["https://dev.java/learn/api/streams/", "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/function/package-summary.html"]
+    },
+    "java/modulo-20::Tema 14: Flow API — reactive streams en la biblioteca estándar · Avanzado · 30 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Temurin 27.0.1: FlowDemo ejecutado, recibido=ENV-1/ENV-2 y completo; sin request(n) no llega ningun onNext reproducido.",
+      "criticalSubtopics": ["Las cuatro interfaces Flow", "SubmissionPublisher como publicador", "onSubscribe/onNext/onComplete", "Subscription.request(n) = demanda", "Backpressure: el consumidor marca el ritmo", "Flow es el contrato no una libreria reactiva"],
+      "sources": ["https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/Flow.html", "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/SubmissionPublisher.html"]
     }
   }
 }

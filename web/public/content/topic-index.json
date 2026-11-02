@@ -3162,6 +3162,46 @@
       {
         "title": "Streams como composición: pereza, orden y efectos que se esconden",
         "fragment": "tema-4-streams-como-composicion-pereza-orden-y-efectos-que-se-esconden"
+      },
+      {
+        "title": "Function y BiFunction — transformar con una o dos entradas",
+        "fragment": "tema-5-function-y-bifunction-transformar-con-una-o-dos-entradas"
+      },
+      {
+        "title": "UnaryOperator y BinaryOperator — cuando entrada y salida comparten tipo",
+        "fragment": "tema-6-unaryoperator-y-binaryoperator-cuando-entrada-y-salida-comparten-tipo"
+      },
+      {
+        "title": "Referencias a métodos — las cuatro formas",
+        "fragment": "tema-7-referencias-a-metodos-las-cuatro-formas"
+      },
+      {
+        "title": "Optional — ausencia explícita sin null",
+        "fragment": "tema-8-optional-ausencia-explicita-sin-null"
+      },
+      {
+        "title": "Streams intermedios — map, filter, flatMap y sorted",
+        "fragment": "tema-9-streams-intermedios-map-filter-flatmap-y-sorted"
+      },
+      {
+        "title": "Streams terminales — collect, reduce, forEach y find",
+        "fragment": "tema-10-streams-terminales-collect-reduce-foreach-y-find"
+      },
+      {
+        "title": "Collectors — toList, toMap, groupingBy y joining",
+        "fragment": "tema-11-collectors-tolist-tomap-groupingby-y-joining"
+      },
+      {
+        "title": "Streams paralelos — cuándo ayudan y cuándo engañan",
+        "fragment": "tema-12-streams-paralelos-cuando-ayudan-y-cuando-enganan"
+      },
+      {
+        "title": "Pureza y efectos secundarios — razonar sobre funciones",
+        "fragment": "tema-13-pureza-y-efectos-secundarios-razonar-sobre-funciones"
+      },
+      {
+        "title": "Flow API — reactive streams en la biblioteca estándar",
+        "fragment": "tema-14-flow-api-reactive-streams-en-la-biblioteca-estandar"
       }
     ],
     "21": [

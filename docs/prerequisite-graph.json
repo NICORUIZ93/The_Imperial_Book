@@ -3055,6 +3055,116 @@
       ]
     },
     {
+      "id": "java:20:5",
+      "track": "java",
+      "module": 20,
+      "position": 5,
+      "title": "Function y BiFunction — transformar con una o dos entradas · Básico · 30 min",
+      "file": "web/public/content/java/modulo-20.md",
+      "requires": [
+        "java:20:4"
+      ]
+    },
+    {
+      "id": "java:20:6",
+      "track": "java",
+      "module": 20,
+      "position": 6,
+      "title": "UnaryOperator y BinaryOperator — cuando entrada y salida comparten tipo · Básico · 20 min",
+      "file": "web/public/content/java/modulo-20.md",
+      "requires": [
+        "java:20:5"
+      ]
+    },
+    {
+      "id": "java:20:7",
+      "track": "java",
+      "module": 20,
+      "position": 7,
+      "title": "Referencias a métodos — las cuatro formas · Básico · 25 min",
+      "file": "web/public/content/java/modulo-20.md",
+      "requires": [
+        "java:20:6"
+      ]
+    },
+    {
+      "id": "java:20:8",
+      "track": "java",
+      "module": 20,
+      "position": 8,
+      "title": "Optional — ausencia explícita sin null · Intermedio · 30 min",
+      "file": "web/public/content/java/modulo-20.md",
+      "requires": [
+        "java:20:7"
+      ]
+    },
+    {
+      "id": "java:20:9",
+      "track": "java",
+      "module": 20,
+      "position": 9,
+      "title": "Streams intermedios — map, filter, flatMap y sorted · Intermedio · 35 min",
+      "file": "web/public/content/java/modulo-20.md",
+      "requires": [
+        "java:20:8"
+      ]
+    },
+    {
+      "id": "java:20:10",
+      "track": "java",
+      "module": 20,
+      "position": 10,
+      "title": "Streams terminales — collect, reduce, forEach y find · Intermedio · 35 min",
+      "file": "web/public/content/java/modulo-20.md",
+      "requires": [
+        "java:20:9"
+      ]
+    },
+    {
+      "id": "java:20:11",
+      "track": "java",
+      "module": 20,
+      "position": 11,
+      "title": "Collectors — toList, toMap, groupingBy y joining · Intermedio · 35 min",
+      "file": "web/public/content/java/modulo-20.md",
+      "requires": [
+        "java:20:10"
+      ]
+    },
+    {
+      "id": "java:20:12",
+      "track": "java",
+      "module": 20,
+      "position": 12,
+      "title": "Streams paralelos — cuándo ayudan y cuándo engañan · Avanzado · 30 min",
+      "file": "web/public/content/java/modulo-20.md",
+      "requires": [
+        "java:20:11"
+      ]
+    },
+    {
+      "id": "java:20:13",
+      "track": "java",
+      "module": 20,
+      "position": 13,
+      "title": "Pureza y efectos secundarios — razonar sobre funciones · Intermedio · 30 min",
+      "file": "web/public/content/java/modulo-20.md",
+      "requires": [
+        "java:20:12"
+      ]
+    },
+    {
+      "id": "java:20:14",
+      "track": "java",
+      "module": 20,
+      "position": 14,
+      "title": "Flow API — reactive streams en la biblioteca estándar · Avanzado · 30 min",
+      "file": "web/public/content/java/modulo-20.md",
+      "requires": [
+        "java:20:13"
+      ]
+    },
+    {
       "id": "java:21:1",
       "track": "java",
       "module": 21,
@@ -3062,7 +3172,7 @@
       "title": "Qué es la superficie pública de una API · Básico · 40 min",
       "file": "web/public/content/java/modulo-21.md",
       "requires": [
-        "java:20:4"
+        "java:20:14"
       ]
     },
     {

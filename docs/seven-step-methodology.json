@@ -134,21 +134,21 @@
       "complete": 56
     },
     "java": {
-      "topics": 99,
+      "topics": 109,
       "objective": 37,
-      "prerequisites": 99,
+      "prerequisites": 109,
       "context": 37,
       "theoryAnalogy": 37,
       "guidedDemo": 37,
-      "codeExplanation": 99,
-      "execution": 99,
-      "expectedResult": 98,
-      "deliberateFailure": 99,
+      "codeExplanation": 109,
+      "execution": 109,
+      "expectedResult": 108,
+      "deliberateFailure": 109,
       "guidedPractice": 29,
       "independentPractice": 36,
       "closure": 36,
       "commonErrors": 89,
-      "resources": 90,
+      "resources": 100,
       "standaloneExample": 83,
       "complete": 29
     },
@@ -18030,6 +18030,256 @@
         },
         "classification": {
           "stepsPassed": 7,
+          "complete": false
+        }
+      },
+      {
+        "module": 20,
+        "topic": "Tema 5: Function y BiFunction — transformar con una o dos entradas · Básico · 30 min",
+        "criteria": {
+          "objective": false,
+          "prerequisites": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": true,
+          "standaloneExample": false
+        },
+        "classification": {
+          "stepsPassed": 6,
+          "complete": false
+        }
+      },
+      {
+        "module": 20,
+        "topic": "Tema 6: UnaryOperator y BinaryOperator — cuando entrada y salida comparten tipo · Básico · 20 min",
+        "criteria": {
+          "objective": false,
+          "prerequisites": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": true,
+          "standaloneExample": false
+        },
+        "classification": {
+          "stepsPassed": 6,
+          "complete": false
+        }
+      },
+      {
+        "module": 20,
+        "topic": "Tema 7: Referencias a métodos — las cuatro formas · Básico · 25 min",
+        "criteria": {
+          "objective": false,
+          "prerequisites": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": true,
+          "standaloneExample": false
+        },
+        "classification": {
+          "stepsPassed": 6,
+          "complete": false
+        }
+      },
+      {
+        "module": 20,
+        "topic": "Tema 8: Optional — ausencia explícita sin null · Intermedio · 30 min",
+        "criteria": {
+          "objective": false,
+          "prerequisites": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": true,
+          "standaloneExample": false
+        },
+        "classification": {
+          "stepsPassed": 6,
+          "complete": false
+        }
+      },
+      {
+        "module": 20,
+        "topic": "Tema 9: Streams intermedios — map, filter, flatMap y sorted · Intermedio · 35 min",
+        "criteria": {
+          "objective": false,
+          "prerequisites": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": true,
+          "standaloneExample": false
+        },
+        "classification": {
+          "stepsPassed": 6,
+          "complete": false
+        }
+      },
+      {
+        "module": 20,
+        "topic": "Tema 10: Streams terminales — collect, reduce, forEach y find · Intermedio · 35 min",
+        "criteria": {
+          "objective": false,
+          "prerequisites": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": true,
+          "standaloneExample": false
+        },
+        "classification": {
+          "stepsPassed": 6,
+          "complete": false
+        }
+      },
+      {
+        "module": 20,
+        "topic": "Tema 11: Collectors — toList, toMap, groupingBy y joining · Intermedio · 35 min",
+        "criteria": {
+          "objective": false,
+          "prerequisites": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": true,
+          "standaloneExample": false
+        },
+        "classification": {
+          "stepsPassed": 6,
+          "complete": false
+        }
+      },
+      {
+        "module": 20,
+        "topic": "Tema 12: Streams paralelos — cuándo ayudan y cuándo engañan · Avanzado · 30 min",
+        "criteria": {
+          "objective": false,
+          "prerequisites": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": true,
+          "standaloneExample": false
+        },
+        "classification": {
+          "stepsPassed": 6,
+          "complete": false
+        }
+      },
+      {
+        "module": 20,
+        "topic": "Tema 13: Pureza y efectos secundarios — razonar sobre funciones · Intermedio · 30 min",
+        "criteria": {
+          "objective": false,
+          "prerequisites": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": true,
+          "standaloneExample": false
+        },
+        "classification": {
+          "stepsPassed": 6,
+          "complete": false
+        }
+      },
+      {
+        "module": 20,
+        "topic": "Tema 14: Flow API — reactive streams en la biblioteca estándar · Avanzado · 30 min",
+        "criteria": {
+          "objective": false,
+          "prerequisites": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": true,
+          "standaloneExample": false
+        },
+        "classification": {
+          "stepsPassed": 6,
           "complete": false
         }
       },

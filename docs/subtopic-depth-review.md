@@ -2,8 +2,8 @@
 
 > Las señales automáticas no prueban profundidad ni ausencia de ella. Un tema sólo queda revisado mediante el registro humano con mapa de subtemas críticos, evidencia y fuentes.
 
-- Temas inventariados: 1149
-- Revisados humanamente para subtemas: 6
+- Temas inventariados: 1159
+- Revisados humanamente para subtemas: 16
 - Pendientes: 1143
 - Candidatos prioritarios por señales: 1096
 
@@ -18,7 +18,7 @@
 | flutter | 63 | 0 | 63 |
 | foundations | 100 | 0 | 100 |
 | ios | 56 | 0 | 56 |
-| java | 99 | 4 | 95 |
+| java | 109 | 14 | 95 |
 | javascript | 88 | 0 | 88 |
 | kotlin-multiplatform | 56 | 0 | 56 |
 | node | 77 | 0 | 77 |
@@ -1131,5 +1131,15 @@
 - `java/modulo-18` — Tema 3: Sockets TCP y UDP — la red que hay debajo de HttpClient · Avanzado · 2 h — modelo cliente/servidor y puertos; ServerSocket y accept(); Socket y streams de I/O con charset explícito; TCP fiable, ordenado, orientado a conexión; UDP DatagramSocket/DatagramPacket; TCP frente a UDP; timeouts de socket (setSoTimeout); cierre de recursos y puerto ocupado; un cliente por hilo frente a virtual threads
 - `java/modulo-18` — Tema 4: Seguridad defensiva — hash, HMAC, firma y cifrado · Avanzado · 2 h 30 min — hash criptográfico (MessageDigest); comparación en tiempo constante (MessageDigest.isEqual); hash no sirve para contraseñas; HMAC (Mac); firma digital (Signature, par de claves); cifrado simétrico AES-GCM (Cipher); IV/nonce único y gestión de claves; hash vs HMAC vs firma vs cifrado
 - `java/modulo-20` — Tema 1: Lambdas a fondo — tipo objetivo, captura y referencias a métodos · Intermedio · 120 min — Interfaz funcional y método SAM; Sintaxis de parámetros y cuerpo; Tipo objetivo e inferencia; Captura y variable efectivamente final; Alcance de this; Cuatro formas de referencias a métodos; Sobrecarga ambigua; Excepciones checked; Especializaciones primitivas; Identidad y serialización
+- `java/modulo-20` — Tema 5: Function y BiFunction — transformar con una o dos entradas · Básico · 30 min — Function<T,R>: una entrada; BiFunction<T,U,R>: dos entradas; BiFunction.andThen; BiFunction no tiene compose; Tres o mas entradas: objeto o currying; Boxing en genericos de Function
+- `java/modulo-20` — Tema 6: UnaryOperator y BinaryOperator — cuando entrada y salida comparten tipo · Básico · 20 min — UnaryOperator<T> extiende Function<T,T>; BinaryOperator<T> extiende BiFunction<T,T,T>; Encaja con List.replaceAll/Stream.reduce; minBy/maxBy como BinaryOperator; El tipo se conserva; Identidad correcta en reduce
+- `java/modulo-20` — Tema 7: Referencias a métodos — las cuatro formas · Básico · 25 min — Referencia estatica; Instancia particular; Instancia arbitraria; Constructor Tipo::new; Equivalencia con la lambda (SAM); Cuando la lambda es mas clara
+- `java/modulo-20` — Tema 8: Optional — ausencia explícita sin null · Intermedio · 30 min — Optional.of/empty/ofNullable; map transforma si hay valor; orElse/orElseThrow; flatMap evita Optional<Optional>; Antipatron isPresent()+get(); Optional no para campos ni parametros
+- `java/modulo-20` — Tema 9: Streams intermedios — map, filter, flatMap y sorted · Intermedio · 35 min — filter selecciona por predicado; map transforma cada elemento; flatMap aplana flujos anidados; sorted ordena el flujo; Son perezosas; flatMap vs map con colecciones
+- `java/modulo-20` — Tema 10: Streams terminales — collect, reduce, forEach y find · Intermedio · 35 min — toList/collect materializan; reduce agrega a un valor; forEach para efectos no para construir; findFirst/anyMatch cortocircuitan; La terminal cierra el Stream; reduce necesita operacion asociativa
+- `java/modulo-20` — Tema 11: Collectors — toList, toMap, groupingBy y joining · Intermedio · 35 min — toList/toSet; toMap con clave y valor; groupingBy agrupa por clasificador; Colector posterior (summingInt); joining une cadenas; toMap sin merge ante duplicados
+- `java/modulo-20` — Tema 12: Streams paralelos — cuándo ayudan y cuándo engañan · Avanzado · 30 min — parallel() divide el trabajo; Operacion asociativa y sin estado; Resultado correcto no siempre mas rapido; ForkJoinPool.commonPool compartido; Estado compartido rompe en paralelo; Medir antes de paralelizar
+- `java/modulo-20` — Tema 13: Pureza y efectos secundarios — razonar sobre funciones · Intermedio · 30 min — Funcion pura: determinista y sin efectos; Efecto secundario: I/O, estado, reloj; Transparencia referencial; Efectos en los bordes, nucleo puro; Impureza oculta rompe tests y paralelo; Pureza no significa sin estado nunca
+- `java/modulo-20` — Tema 14: Flow API — reactive streams en la biblioteca estándar · Avanzado · 30 min — Las cuatro interfaces Flow; SubmissionPublisher como publicador; onSubscribe/onNext/onComplete; Subscription.request(n) = demanda; Backpressure: el consumidor marca el ritmo; Flow es el contrato no una libreria reactiva
 - `spring-boot/modulo-0` — Tema 4: Ciclo de vida de un bean y BeanPostProcessor · Intermedio · 30 min — Orden de fases de inicializacion; @PostConstruct como hook estandar; InitializingBean.afterPropertiesSet; @PreDestroy / DisposableBean al cerrar; BeanPostProcessor envuelve todos los beans; Recursos de prototype no se destruyen solos; Abrir recurso en el constructor
 - `spring-boot/modulo-0` — Tema 5: AOP con @Aspect y @Around — preocupaciones transversales · Avanzado · 40 min — @Aspect + @EnableAspectJAutoProxy; @Around y ProceedingJoinPoint.proceed(); Pointcut execution(...); El advice conserva la excepcion original; El proxy es el mecanismo (igual que @Transactional); Auto-invocacion no pasa por el aspecto; Abusar de AOP oscurece el flujo
