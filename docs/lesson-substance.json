@@ -1695,11 +1695,11 @@
     }
   ],
   "summary": {
-    "fingerprint": "87b47a6d8702f36955a10233e169923c2ccae4d6bfa012856f100f110d3a5fd7",
+    "fingerprint": "c3eaa1d17b53f030a6d2fe629c32124efca2694cbc8e7dc20608d4c233f2cffb",
     "issues": {
       "andamiaje-generico": 125,
-      "bloque-repetido": 212,
-      "cola-tras-cierre": 370,
+      "bloque-repetido": 211,
+      "cola-tras-cierre": 369,
       "parrafo-repetido": 5,
       "tema-breve": 2
     },
@@ -1711,7 +1711,7 @@
     "modules": 256,
     "modulesWithLegacySections": 181,
     "topics": 1185,
-    "topicsWithIssues": 461
+    "topicsWithIssues": 460
   },
   "topics": {
     "android": [
@@ -7583,14 +7583,11 @@
         "words": 783
       },
       {
-        "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 2,
-        "tailWords": 659,
+        "tailWords": 0,
         "topic": "Tema 2: Genéricos, wildcards y type erasure",
-        "words": 981
+        "words": 1017
       },
       {
         "issues": [

@@ -87,7 +87,7 @@
     "java": {
       "topics": 101,
       "code": 101,
-      "commentedCode": 50,
+      "commentedCode": 49,
       "mermaid": 32,
       "archifyVisual": 2,
       "asciiVisual": 0,
@@ -2064,6 +2064,13 @@
       "track": "java",
       "module": 2,
       "topic": "Tema 1: List, Set, Map y sus implementaciones",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 2,
+      "topic": "Tema 2: Genéricos, wildcards y type erasure",
       "missingCode": false,
       "missingComments": true
     },

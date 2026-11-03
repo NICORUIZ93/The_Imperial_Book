@@ -8082,7 +8082,7 @@
       "file": "web/public/content/java/modulo-2.md",
       "line": 148,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8093,7 +8093,7 @@
       "module": 2,
       "title": "Tema 3: Comparable vs Comparator, e iteración",
       "file": "web/public/content/java/modulo-2.md",
-      "line": 217,
+      "line": 328,
       "signals": [
         "clase-java-no-visible"
       ],

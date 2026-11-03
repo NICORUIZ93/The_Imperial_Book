@@ -51,10 +51,10 @@
     },
     "java": {
       "topics": 101,
-      "completeTopics": 8,
-      "topicsWith3to6Subtopics": 9,
-      "subtopics": 28,
-      "completeSubtopics": 27
+      "completeTopics": 9,
+      "topicsWith3to6Subtopics": 10,
+      "subtopics": 32,
+      "completeSubtopics": 31
     },
     "javascript": {
       "topics": 88,
@@ -5538,9 +5538,66 @@
       {
         "module": 2,
         "topic": "### Tema 2: Genéricos, wildcards y type erasure",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 4,
+        "subtopics": [
+          {
+            "id": "2.1",
+            "title": "#### Subtema 2.1: Crea una clase genérica segura · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "2.2",
+            "title": "#### Subtema 2.2: Lee una familia de tipos con extends · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "2.3",
+            "title": "#### Subtema 2.3: Escribe con super y conserva seguridad · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "2.4",
+            "title": "#### Subtema 2.4: Observa qué conserva type erasure · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 2,

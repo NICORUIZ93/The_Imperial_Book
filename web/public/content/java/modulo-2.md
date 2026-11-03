@@ -147,72 +147,183 @@ Agrega la guía RF-999, conserva la salida y explica qué significa que una clav
 
 ### Tema 2: Genéricos, wildcards y type erasure
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás escribir una clase genérica propia (`Caja<T>`) y explicar por qué su información de tipo desaparece en tiempo de ejecución. Prerrequisitos: JDK 25 y un editor. Comprueba java --version.
+**Duración estimada:** 40 min.
+**¿Por qué es importante?** Los genéricos hacen que el compilador detecte mezclas de tipos antes de ejecutar; los wildcards dejan aceptar familias de tipos sin perder esa seguridad.
+**Prerrequisitos:** M2 T1. Proyecto continuo: construir herramientas reutilizables para almacenar y procesar guías de distintos tipos.
 
-#### Paso 2 · Contexto y caso real
-Un almacén temporal necesita guardar y devolver un valor de cualquier tipo (una guía, un paquete, un conductor) sin duplicar la misma clase contenedora para cada tipo distinto, y sin perder verificación de tipos en tiempo de compilación.
+#### Subtema 2.1: Crea una clase genérica segura · 10 min
 
-#### Paso 3 · Teoría, modelo mental y analogía
-`<T>` es un parámetro de tipo verificado en compilación; el type erasure borra esa información específica del bytecode final, dejando una única clase compartida en tiempo de ejecución. La analogía: una plantilla de formulario que se ajusta según el tipo de dato durante el llenado, pero el archivo final guardado no conserva ninguna etiqueta indicando para qué tipo fue diseñada.
+**1. Contexto**
+El motor puede guardar una guía o su peso temporalmente sin copiar una clase contenedora para cada tipo.
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
-```bash
-mkdir ejemplo-genericos-caja
-cd ejemplo-genericos-caja
-mkdir -p src/main/java/academia/generico
-```
-Crea `Caja.java` con la clase genérica `Caja<T>` (código en "Código del ejemplo") y una clase `Main` que instancie `Caja<String>` y `Caja<Integer>`, imprimiendo `getClass()` de ambas instancias. Compila y ejecuta:
-```bash
-javac -d out src/main/java/academia/generico/Caja.java
-java -cp out academia.generico.Main
-```
-
-#### Paso 5 · Práctica guiada
-Pista: intenta guardar un `Integer` en una `Caja<String>` para provocar un fallo deliberado de compilación; el compilador lo rechaza aunque en tiempo de ejecución ambas cajas sean la misma clase `Caja`. Resultado esperado: confirmas que `getClass()` de `Caja<String>` y `Caja<Integer>` imprime el mismo nombre de clase.
-
-#### Paso 6 · Práctica independiente
-Escribe un método `mostrarTodos(List<? extends Number> lista)` usando un wildcard, y prueba que acepta tanto `List<Integer>` como `List<Double>` sin necesitar sobrecargas separadas para cada tipo.
-
-#### Paso 7 · Cierre y evidencia
-Guarda `Caja`, la prueba de `getClass()` idéntico y el error de compilación provocado; como siguiente paso estudia Comparable y Comparator. Errores comunes: usar raw types (`Caja` sin `<T>`) perdiendo toda verificación de tipos, y asumir que la información genérica está disponible por reflexión en runtime. Fuentes oficiales: https://dev.java/learn/api/collections-framework/ y https://docs.oracle.com/javase/tutorial/java/generics/.
-**¿Por qué es importante?** Porque el type erasure explica por qué `Caja<String>` y `Caja<Integer>` son la misma clase en tiempo de ejecución, una limitación real al diseñar APIs que necesiten inspeccionar tipos genéricos por reflexión, y una razón concreta para nunca usar raw types sin darse cuenta de que se pierde toda la verificación de tipos del compilador.
-**Evidencia de aprendizaje:** entrega `Caja<T>` genérica, la prueba de que `getClass()` imprime el mismo nombre para `Caja<String>` y `Caja<Integer>`, y el error de compilación al intentar guardar un `Integer` en una `Caja<String>`.
-**Conceptos clave:** `<T>`, seguridad de tipos en compilación, borrado de tipos en tiempo de ejecución.
-
-Escribir tipos genéricos propios como `Caja<T>` es la misma técnica que usarás para el repositorio genérico del proyecto integrador de este track.
-
-**Cuándo no usarlo:** si la clase siempre va a contener el mismo tipo concreto y nunca necesitará una segunda variante, hacerla genérica agrega un parámetro de tipo sin beneficio real; resérvalo para cuando genuinamente necesites la misma estructura con más de un tipo de contenido.
+**2. Hazlo tú**
+Crea java-motor-colecciones/src/GenericosDemo.java:
 
 ```java
-class Caja<T> {
-    private T contenido;
-    void guardar(T valor) { this.contenido = valor; }
+final class Caja<T> {
+    private final T contenido;
+
+    Caja(T contenido) { this.contenido = contenido; }
+
     T obtener() { return contenido; }
 }
-Caja<String> cajaTexto = new Caja<>();
+
+public class GenericosDemo {
+    public static void main(String[] args) {
+        Caja<String> guia = new Caja<>("RF-401");
+        Caja<Integer> peso = new Caja<>(12);
+        System.out.println(guia.obtener());
+        System.out.println(peso.obtener() + " kg");
+    }
+}
 ```
 
-Esta clase genérica `Caja<T>` puede almacenar y devolver un valor de cualquier tipo concreto que se especifique al instanciarla, con el compilador verificando en tiempo de compilación que solo se guarden y recuperen valores del tipo `String` para esa instancia específica, sin necesidad de castear manualmente el valor recuperado (como sí sería necesario si `Caja` almacenara internamente un `Object` genérico sin parametrizar).
+Desde java-motor-colecciones/, compila y ejecuta:
 
-Los wildcards (`List<? extends Number>`, aceptando una lista de `Number` o cualquier subtipo suyo, útil como parámetro de un método que solo lee elementos de la lista sin necesitar saber el tipo exacto) permiten mayor flexibilidad en las firmas de métodos que reciben colecciones genéricas, sin comprometer la seguridad de tipos. El type erasure es el mecanismo mediante el cual la información de tipo genérico (`<T>`, `<String>`, etc.) existe únicamente durante la compilación, para la verificación de tipos, pero se "borra" del bytecode final generado: en tiempo de ejecución, `Caja<String>` y `Caja<Integer>` son literalmente la misma clase `Caja` sin ninguna distinción de tipo genérico retenida, una decisión de diseño de Java tomada para preservar compatibilidad con código anterior a la introducción de genéricos (Java 5); `@SafeVarargs` suprime una advertencia del compilador relacionada específicamente con la combinación de varargs y genéricos, usada cuando el desarrollador garantiza manualmente que esa combinación específica es segura en ese caso concreto.
+```bash
+mkdir -p out
+javac -d out src/GenericosDemo.java
+java -cp out GenericosDemo
+```
 
-**Analogía:** los genéricos son como una plantilla de formulario que se ajusta automáticamente para verificar que solo se ingrese el tipo de dato correcto según el propósito específico de cada formulario concreto (uno para texto, otro para números); el type erasure es como que, una vez que el formulario ya fue completado y archivado, el archivo físico final no conserva ninguna etiqueta especial indicando para qué tipo de formulario fue diseñado originalmente, aunque esa verificación sí se aplicó estrictamente durante el proceso de llenado.
+**Resultado esperado:** RF-401 y 12 kg.
 
-**¿Por qué es importante?** Los genéricos proporcionan seguridad de tipos en tiempo de compilación sin necesidad de castear manualmente; el type erasure explica por qué esa información de tipo genérico no está disponible para inspección en tiempo de ejecución, una limitación relevante al usar reflexión o al diseñar ciertas APIs genéricas avanzadas.
+**Fallo deliberado:** cambia el argumento new Caja<>("RF-401") por new Caja<>(12) y deja la variable como Caja<String>. **Error esperado:** incompatible types o inference variable T has incompatible bounds. **Diagnóstico:** una Caja<String> solo puede contener texto; conserva el tipo de la variable y el del valor alineados.
 
-**Código del ejemplo:**
+**3. Entiende**
+T es un parámetro de tipo. Al escribir Caja<String>, el compilador comprueba que obtienes y guardas texto sin casts.
+
+**4. Cierra**
+Agrega una Caja<Double> para una tarifa y explica qué verifica el compilador.
+
+#### Subtema 2.2: Lee una familia de tipos con extends · 10 min
+
+**1. Contexto**
+Un reporte de peso acepta valores enteros o decimales; el método no necesita conocer qué tipo exacto de Number recibe.
+
+**2. Hazlo tú**
+Reemplaza java-motor-colecciones/src/GenericosDemo.java:
 
 ```java
-class Caja<T> {
-    private T contenido;
-    void guardar(T valor) { this.contenido = valor; }
+import java.util.List;
+
+public class GenericosDemo {
+    static double sumarPesos(List<? extends Number> pesos) {
+        double total = 0;
+        for (Number peso : pesos) {
+            total += peso.doubleValue();
+        }
+        return total;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(sumarPesos(List.of(2, 3, 4)));
+        System.out.println(sumarPesos(List.of(1.5, 2.5)));
+    }
+}
+```
+
+Compila y ejecuta con los comandos del subtema 2.1.
+
+**Resultado esperado:** 9.0 y 4.0.
+
+**Fallo deliberado:** dentro del ciclo, intenta pesos.add(5). **Error esperado:** el compilador rechaza el argumento porque no conoce el subtipo concreto de la lista. **Diagnóstico:** ? extends Number permite leer elementos como Number; no agregar valores arbitrarios.
+
+**3. Entiende**
+El límite extends Number acepta listas de Number y de sus subtipos. Como el método solo lee esos valores, los trata como Number de forma segura.
+
+**4. Cierra**
+Prueba una lista de Long y explica por qué el método no requiere una nueva sobrecarga.
+
+#### Subtema 2.3: Escribe con super y conserva seguridad · 10 min
+
+**1. Contexto**
+El motor genera códigos enteros para agregarlos a una colección que puede guardar Integer o alguno de sus tipos base.
+
+**2. Hazlo tú**
+Reemplaza java-motor-colecciones/src/GenericosDemo.java:
+
+```java
+import java.util.ArrayList;
+import java.util.List;
+
+public class GenericosDemo {
+    static void agregarCodigos(List<? super Integer> destino) {
+        destino.add(401);
+        destino.add(402);
+    }
+
+    public static void main(String[] args) {
+        List<Integer> codigos = new ArrayList<>();
+        List<Number> numeros = new ArrayList<>();
+        agregarCodigos(codigos);
+        agregarCodigos(numeros);
+        System.out.println(codigos);
+        System.out.println(numeros);
+    }
+}
+```
+
+Compila y ejecuta con los comandos del subtema 2.1.
+
+**Resultado esperado:** [401, 402] en ambas líneas.
+
+**Fallo deliberado:** cambia el parámetro a List<? super String> y llama agregarCodigos con List<Integer>. **Error esperado:** incompatible types. **Diagnóstico:** el límite de super Integer acepta Integer o un supertipo suyo, como Number u Object; String no pertenece a esa familia.
+
+**3. Entiende**
+? super Integer permite agregar Integer con seguridad. Cuando lees elementos de esa lista, el tipo útil común es Object; el wildcard se elige según si el método principalmente lee o agrega.
+
+**4. Cierra**
+Escribe qué tipo de lista es válido para el parámetro y por qué no acepta List<Double>.
+
+#### Subtema 2.4: Observa qué conserva type erasure · 10 min
+
+**1. Contexto**
+En ejecución, las variantes parametrizadas de Caja comparten la misma clase. Reconoce esta limitación antes de diseñar lógica que dependa de inspeccionar el tipo T.
+
+**2. Hazlo tú**
+Reemplaza java-motor-colecciones/src/GenericosDemo.java:
+
+```java
+final class Caja<T> {
+    private final T contenido;
+    Caja(T contenido) { this.contenido = contenido; }
     T obtener() { return contenido; }
 }
-Caja<String> cajaTexto = new Caja<>();
-// En tiempo de ejecución: type erasure borra <String>, solo queda Caja
+
+public class GenericosDemo {
+    public static void main(String[] args) {
+        Caja<String> texto = new Caja<>("RF-401");
+        Caja<Integer> numero = new Caja<>(401);
+        System.out.println(texto.getClass() == numero.getClass());
+        System.out.println(texto.obtener().getClass().getSimpleName());
+        System.out.println(numero.obtener().getClass().getSimpleName());
+    }
+}
 ```
+
+Compila y ejecuta con los comandos del subtema 2.1.
+
+**Resultado esperado:** true, String y Integer.
+
+**Fallo deliberado:** intenta escribir texto instanceof Caja<String>. **Error esperado:** el compilador indica que no puede comprobar una instancia parametrizada de ese modo. **Diagnóstico:** la clase concreta no conserva String o Integer como una distinción de runtime para esa prueba; usa instanceof Caja<?> y valida el contenido si hace falta.
+
+**3. Entiende**
+El borrado de tipos hace que Caja<String> y Caja<Integer> compartan la clase Caja en ejecución. Java mantiene cierta información genérica en firmas declaradas para herramientas de reflexión, pero no puedes inspeccionar el parámetro de tipo de un objeto común como si fuera una clase distinta.
+
+**4. Cierra**
+Entrega las tres líneas de salida y explica qué dato sí conserva el objeto, y qué parámetro genérico no se puede probar con instanceof.
+
+**Hito del tema:**
+
+- [ ] Construí Caja<T> y el compilador rechazó un valor de tipo equivocado.
+- [ ] Leí números de List<? extends Number>.
+- [ ] Agregué enteros a List<? super Integer> sin perder seguridad de tipos.
+- [ ] Comprobé que dos variantes de Caja comparten la clase en runtime.
+
+**Fuentes oficiales:** [genéricos en dev.java](https://dev.java/learn/generics/) y [genéricos en la especificación del lenguaje Java](https://docs.oracle.com/javase/specs/jls/se25/html/jls-4.html#jls-4.6).
+
+**Transferencia al proyecto integrador:** implementa un repositorio genérico que use tipos concretos seguros y consulta con wildcards cuando el consumidor solo necesite leer o agregar datos.
 
 ### Tema 3: Comparable vs Comparator, e iteración
 
