@@ -20,6 +20,7 @@ const STACK_NAMES: Record<string, string> = {
   react: 'React',
   java: 'Java',
   'spring-boot': 'Spring Boot',
+  microservices: 'Microservicios',
   'kotlin-multiplatform': 'Kotlin Multiplatform',
   android: 'Android',
   ios: 'iOS',

@@ -190,6 +190,25 @@
       "standaloneExample": 56,
       "complete": 56
     },
+    "microservices": {
+      "topics": 5,
+      "objective": 0,
+      "prerequisites": 2,
+      "context": 0,
+      "theoryAnalogy": 0,
+      "guidedDemo": 0,
+      "codeExplanation": 5,
+      "execution": 5,
+      "expectedResult": 4,
+      "deliberateFailure": 3,
+      "guidedPractice": 0,
+      "independentPractice": 0,
+      "closure": 0,
+      "commonErrors": 0,
+      "resources": 0,
+      "standaloneExample": 0,
+      "complete": 0
+    },
     "node": {
       "topics": 77,
       "objective": 0,
@@ -22835,6 +22854,133 @@
         "classification": {
           "stepsPassed": 15,
           "complete": true
+        }
+      }
+    ],
+    "microservices": [
+      {
+        "module": 0,
+        "topic": "Tema 1: Proceso, host, puerto, socket y DNS · Fundamentos · 70 min",
+        "criteria": {
+          "objective": false,
+          "prerequisites": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": false,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false
+        },
+        "classification": {
+          "stepsPassed": 4,
+          "complete": false
+        }
+      },
+      {
+        "module": 0,
+        "topic": "Tema 2: Latencia, deadline y timeouts por fase · Aplicación · 80 min",
+        "criteria": {
+          "objective": false,
+          "prerequisites": false,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": false,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false
+        },
+        "classification": {
+          "stepsPassed": 3,
+          "complete": false
+        }
+      },
+      {
+        "module": 0,
+        "topic": "Tema 3: Fallo parcial, resultado desconocido e idempotencia · Integración · 90 min",
+        "criteria": {
+          "objective": false,
+          "prerequisites": false,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false
+        },
+        "classification": {
+          "stepsPassed": 4,
+          "complete": false
+        }
+      },
+      {
+        "module": 0,
+        "topic": "Tema 4: Relojes, causalidad, concurrencia y orden · Integración · 80 min",
+        "criteria": {
+          "objective": false,
+          "prerequisites": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": false,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false
+        },
+        "classification": {
+          "stepsPassed": 4,
+          "complete": false
+        }
+      },
+      {
+        "module": 0,
+        "topic": "Tema 5: Serialización, evolución y falacias distribuidas · Experto · 100 min",
+        "criteria": {
+          "objective": false,
+          "prerequisites": false,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false
+        },
+        "classification": {
+          "stepsPassed": 4,
+          "complete": false
         }
       }
     ],

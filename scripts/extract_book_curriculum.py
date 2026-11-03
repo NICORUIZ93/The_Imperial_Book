@@ -27,13 +27,13 @@ OUT_MAP = ROOT / "docs" / "mapa-integracion-temas-libros.md"
 
 CURRENT_TRACKS = {
     "foundations", "javascript", "node", "angular", "react", "java",
-    "spring-boot", "kotlin-multiplatform", "android", "ios", "flutter",
+    "spring-boot", "microservices", "kotlin-multiplatform", "android", "ios", "flutter",
     "devops", "cloud", "rutaflow",
 }
 
 STACK_ORDER = [
     "foundations", "javascript", "node", "angular", "react", "java",
-    "spring-boot", "kotlin-multiplatform", "android", "ios", "flutter",
+    "spring-boot", "microservices", "kotlin-multiplatform", "android", "ios", "flutter",
     "devops", "cloud", "rutaflow", "python", "cpp", "data-ai",
     "cybersecurity", "databases", "iot-embedded", "robotics-drones",
     "ui-ux", "game-development", "quantum-computing", "electronics",

@@ -4,6 +4,7 @@
   "trackDependencies": {
     "node": "javascript",
     "spring-boot": "java",
+    "microservices": "spring-boot",
     "angular": "javascript",
     "react": "javascript",
     "android": "java",
@@ -5296,6 +5297,61 @@
       "file": "web/public/content/spring-boot/modulo-23.md",
       "requires": [
         "spring-boot:23:1"
+      ]
+    },
+    {
+      "id": "microservices:0:1",
+      "track": "microservices",
+      "module": 0,
+      "position": 1,
+      "title": "Proceso, host, puerto, socket y DNS · Fundamentos · 70 min",
+      "file": "web/public/content/microservices/modulo-0.md",
+      "requires": [
+        "spring-boot:23:2"
+      ]
+    },
+    {
+      "id": "microservices:0:2",
+      "track": "microservices",
+      "module": 0,
+      "position": 2,
+      "title": "Latencia, deadline y timeouts por fase · Aplicación · 80 min",
+      "file": "web/public/content/microservices/modulo-0.md",
+      "requires": [
+        "microservices:0:1"
+      ]
+    },
+    {
+      "id": "microservices:0:3",
+      "track": "microservices",
+      "module": 0,
+      "position": 3,
+      "title": "Fallo parcial, resultado desconocido e idempotencia · Integración · 90 min",
+      "file": "web/public/content/microservices/modulo-0.md",
+      "requires": [
+        "microservices:0:2"
+      ]
+    },
+    {
+      "id": "microservices:0:4",
+      "track": "microservices",
+      "module": 0,
+      "position": 4,
+      "title": "Relojes, causalidad, concurrencia y orden · Integración · 80 min",
+      "file": "web/public/content/microservices/modulo-0.md",
+      "requires": [
+        "microservices:0:3"
+      ]
+    },
+    {
+      "id": "microservices:0:5",
+      "track": "microservices",
+      "module": 0,
+      "position": 5,
+      "title": "Serialización, evolución y falacias distribuidas · Experto · 100 min",
+      "file": "web/public/content/microservices/modulo-0.md",
+      "requires": [
+        "microservices:0:4"
       ]
     },
     {

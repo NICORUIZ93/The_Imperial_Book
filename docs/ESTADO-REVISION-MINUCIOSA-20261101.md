@@ -951,3 +951,19 @@ Discrepancia de skills: el manifiesto declara `scope-and-sequence-designer`,
 `backwards-design-unit-planner` y `competency-unpacker`, pero sus `SKILL.md` no existen en las
 rutas instaladas declaradas. No se afirma que esas skills hayan sido ejecutadas; se aplicaron
 directamente los contratos pedagógicos versionados del repositorio.
+
+## 29. Microservicios publicado progresivamente — Módulo 0
+
+Fecha: 2026-11-02. Microservicios deja de ser únicamente un plan y entra como track real con un
+primer módulo terminado; los módulos 1–16 continúan sin publicarse hasta superar la misma puerta.
+El Módulo 0 contiene cinco temas: proceso/host/puerto/socket/DNS; latencia/deadline/timeouts;
+fallo parcial/resultado desconocido/idempotencia; relojes/causalidad/orden; y
+serialización/evolución/falacias distribuidas. Cada tema incluye mapa crítico, explicación,
+archivo, código, comando, resultado, fallo, límites y transferencia a RutaFlow Distribuido.
+
+Fuentes contrastadas: API Java 25 `HttpClient`, gRPC deadlines, especificación de contexto de
+OpenTelemetry y Azure Architecture Center. Se añadió navegación, catálogo, guía de entrada,
+bootstrap, proyecto progresivo, fuente oficial, icono y puente profesional trazado. Inventario
+actual: **15 tracks, 256 módulos y 1178 temas**. Los cinco temas nuevos permanecen pendientes de
+firma humana en el registro de profundidad; los detectores informan 1164/1178 practicables y la
+deuda editorial se mantiene en 14, por lo que el incremento no elevó esa deuda.

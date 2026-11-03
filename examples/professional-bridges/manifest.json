@@ -128,5 +128,14 @@
     "examples": [
       "examples/professional-bridges/spring-boot/EnviosController.java"
     ]
+  },
+  {
+    "track": "microservices",
+    "module": 0,
+    "title": "Proceso, host, puerto, socket y DNS",
+    "path": "web/public/content/microservices/modulo-0.md",
+    "examples": [
+      "examples/professional-bridges/microservices/Servidor.java"
+    ]
   }
 ]

@@ -8,6 +8,7 @@ Este inventario representa el orden mínimo verificable. La secuencia automátic
 flowchart LR
   javascript["javascript"] --> node["node"]
   java["java"] --> spring_boot["spring-boot"]
+  spring_boot["spring-boot"] --> microservices["microservices"]
   javascript["javascript"] --> angular["angular"]
   javascript["javascript"] --> react["react"]
   java["java"] --> android["android"]
@@ -26,6 +27,7 @@ flowchart LR
 | java | 109 |
 | node | 77 |
 | spring-boot | 107 |
+| microservices | 5 |
 | angular | 71 |
 | react | 58 |
 | kotlin-multiplatform | 56 |
@@ -36,4 +38,4 @@ flowchart LR
 | cloud | 156 |
 | rutaflow | 29 |
 
-**Total:** 1173 temas.
+**Total:** 1178 temas.

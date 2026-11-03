@@ -8,7 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CONTENT = ROOT / "web/public/content"
 TRACKS = (
     "foundations", "cloud", "devops", "javascript", "node", "angular", "react",
-    "java", "spring-boot", "kotlin-multiplatform", "android", "ios", "flutter", "rutaflow",
+    "java", "spring-boot", "microservices", "kotlin-multiplatform", "android", "ios", "flutter", "rutaflow",
 )
 TRACK_SOURCES = {
     "foundations": "web/src/app/tracks/foundations.track.ts",
@@ -20,6 +20,7 @@ TRACK_SOURCES = {
     "react": "web/src/app/tracks/react.track.ts",
     "java": "web/src/app/tracks/java.track.ts",
     "spring-boot": "web/src/app/tracks/spring-boot.track.ts",
+    "microservices": "web/src/app/tracks/microservices.track.ts",
     "kotlin-multiplatform": "web/src/app/tracks/kotlin-multiplatform.track.ts",
     "android": "web/src/app/tracks/android.track.ts",
     "ios": "web/src/app/tracks/ios.track.ts",
@@ -55,8 +56,8 @@ for track in TRACKS:
 
 viewer = (ROOT / "web/src/app/course/lesson-viewer.ts").read_text(encoding="utf-8")
 activities = (ROOT / "web/src/app/learning-activities.ts").read_text(encoding="utf-8")
-if activities.count("trackId: '") != 12:
-    errors.append("learning-activities.ts: deben existir exactamente 12 proyectos integradores")
+if activities.count("trackId: '") != 13:
+    errors.append("learning-activities.ts: deben existir exactamente 13 proyectos integradores")
 for requirement in ("addTopicTroubleshooting", "Errores comunes y cómo diagnosticarlos"):
     if requirement not in viewer:
         errors.append(f"lesson-viewer.ts: falta soporte global {requirement}")
@@ -73,7 +74,7 @@ if not re.search(rf"\b{len(TRACKS)} tracks\b", readme) or not re.search(rf"\b{mo
 track_labels = {
     "foundations": "Fundamentos", "cloud": "Cloud Local", "devops": "DevOps",
     "javascript": "JavaScript", "node": "Node.js", "angular": "Angular",
-    "react": "React", "java": "Java", "spring-boot": "Spring Boot",
+    "react": "React", "java": "Java", "spring-boot": "Spring Boot", "microservices": "Microservicios",
     "kotlin-multiplatform": "Kotlin Multiplatform", "android": "Android",
     "ios": "iOS", "flutter": "Flutter", "rutaflow": "RutaFlow",
 }

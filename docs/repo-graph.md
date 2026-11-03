@@ -1,6 +1,6 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-11-03 04:01 UTC
+Generated: 2026-11-03 04:14 UTC
 Root: `Academia_Floci`
 Indexed files: 1054
 Import edges: 61
@@ -51,20 +51,20 @@ For automated lookups, use `docs/repo-graph.json`.
 
 ## High Signal Files
 
-- `README.md` (370 lines, documentation)
+- `README.md` (371 lines, documentation)
   - headings: # The_Imperial_Book, ## Cómo empezar, ## Requisitos del sistema, ## Levantar Floci, # 1. Levantar todos los servicios
-- `scripts/validate.sh` (214 lines, automation-script)
+- `scripts/validate.sh` (215 lines, automation-script)
 - `scripts/build_repo_graph.py` (477 lines, automation-script)
   - symbols: FileNode, repo_files, read_text, classify, parse_ts_symbols, parse_ts_imports, parse_python_symbols, parse_python_imports, parse_markdown_headings, unique
 - `web/src/app/app.ts` (11 lines, angular-app)
   - symbols: App
-- `web/src/app/course-data.ts` (887 lines, angular-app)
+- `web/src/app/course-data.ts` (889 lines, angular-app)
   - symbols: ServiceGroup, CloudComparison, AltCloudGroup
 - `web/src/app/catalog/course-catalog.ts` (158 lines, angular-app)
   - symbols: CourseCatalogComponent, query, category, backupStatus, cards, featuredTracks, foundationTracks, mobileTracks, filteredCards, resumableTracks
 - `web/src/app/course/course-shell.ts` (83 lines, angular-app)
   - symbols: CourseShellComponent, track, officialPath, sidebarOpen, bookReading, trackLogo, percent
-- `web/src/app/course/lesson-viewer.ts` (1782 lines, angular-app)
+- `web/src/app/course/lesson-viewer.ts` (1783 lines, angular-app)
   - symbols: LessonViewerComponent, focusedTopicIndex, track, module, officialSource, courseGuide, trackProject, projectStep, projectProgress, showTrackProject
 
 ## Internal Import Graph
@@ -169,20 +169,20 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/src/app/catalog/course-catalog.ts` (158 lines) - symbols: CourseCatalogComponent, query, category, backupStatus, cards, featuredTracks, foundationTracks, mobileTracks; imports: @angular/common, @angular/core, @angular/router, lucide-angular, ../course-data, ../track-guides, ../command-palette.service, ../icon-registry
 - `web/src/app/catalog/curriculum-library.html` (97 lines) - symbols: curriculum-title, stack-browser-title, implementation-title
 - `web/src/app/catalog/curriculum-library.scss` (152 lines)
-- `web/src/app/catalog/curriculum-library.ts` (218 lines) - symbols: CurriculumLibraryComponent, CurriculumStackComponent, query, scope, filteredStacks, topicScope, selectedModule, visibleCount; imports: @angular/common, @angular/core, @angular/core/rxjs-interop, @angular/router, lucide-angular, rxjs, ../course-data, ../curriculum-library.service
+- `web/src/app/catalog/curriculum-library.ts` (219 lines) - symbols: CurriculumLibraryComponent, CurriculumStackComponent, query, scope, filteredStacks, topicScope, selectedModule, visibleCount; imports: @angular/common, @angular/core, @angular/core/rxjs-interop, @angular/router, lucide-angular, rxjs, ../course-data, ../curriculum-library.service
 - `web/src/app/catalog/curriculum-stack.html` (154 lines) - symbols: stack-title, ocr-title, course-source-title, topic-browser-title
 - `web/src/app/command-palette.html` (29 lines) - symbols: palette-title, palette-results
 - `web/src/app/command-palette.scss` (38 lines)
 - `web/src/app/command-palette.service.ts` (11 lines) - symbols: CommandPaletteService, isOpen; imports: @angular/core
 - `web/src/app/command-palette.ts` (130 lines) - symbols: CommandPaletteComponent, query, activeIndex, activeResultId, index, results; imports: @angular/common, @angular/core, @angular/forms, @angular/router, lucide-angular, ./course-data, ./command-palette.service, ./topic-index.service
 - `web/src/app/content.service.ts` (40 lines) - symbols: ContentService; imports: @angular/core, marked
-- `web/src/app/course-data.ts` (887 lines) - symbols: ServiceGroup, CloudComparison, AltCloudGroup; imports: ./course-module.model, ./tracks/devops.track, ./tracks/javascript.track, ./tracks/node.track, ./tracks/angular.track, ./tracks/react.track, ./tracks/java.track, ./tracks/spring-boot.track
+- `web/src/app/course-data.ts` (889 lines) - symbols: ServiceGroup, CloudComparison, AltCloudGroup; imports: ./course-module.model, ./tracks/devops.track, ./tracks/javascript.track, ./tracks/node.track, ./tracks/angular.track, ./tracks/react.track, ./tracks/java.track, ./tracks/spring-boot.track
 - ... 49 more files
 
 ### automation-script
 
 - `scripts/audit_code_visual_quality.py` (226 lines) - symbols: student_visible_content, structural_text, blocks, official_source_urls, evaluate, build, render, main; imports: __future__, argparse, json, re, collections, pathlib, urllib.parse, audit_topic_learning_quality
-- `scripts/audit_course_depth.py` (147 lines) - symbols: signals, human_review_status, build, markdown, main; imports: __future__, argparse, collections, json, pathlib, re, audit_topic_learning_quality
+- `scripts/audit_course_depth.py` (148 lines) - symbols: signals, human_review_status, build, markdown, main; imports: __future__, argparse, collections, json, pathlib, re, audit_topic_learning_quality
 - `scripts/audit_full.py` (278 lines) - symbols: Tema, structural_text, split_temas, evaluar, recolectar, shingles, detectar_duplicados, pct; imports: __future__, argparse, json, re, sys, collections, dataclasses, datetime
 - `scripts/audit_lesson_substance.py` (346 lines) - symbols: norm, paragraphs, count_words, evaluate_topic, module_level_sections, topic_key, build, render_markdown; imports: __future__, argparse, hashlib, json, re, sys, collections, pathlib
 - `scripts/audit_seven_step_methodology.py` (176 lines) - symbols: matches, evaluate, build, render_markdown, main; imports: __future__, argparse, json, re, collections, pathlib, audit_topic_learning_quality
@@ -190,7 +190,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `scripts/audit_topic_learning_quality.py` (259 lines) - symbols: student_visible_content, structural_text, topic_blocks, resolve_archify_visual_link, unresolved_archify_visual_links, canonical_practice, evaluate, classify; imports: __future__, argparse, json, re, collections, pathlib
 - `scripts/build_editorial_backlog.py` (99 lines) - symbols: render, main; imports: __future__, argparse, pathlib, audit_topic_learning_quality
 - `scripts/build_full_review.py` (175 lines) - symbols: total_field, topic_count, build, main; imports: __future__, argparse, json, pathlib, audit_code_visual_quality, audit_course_depth, audit_lesson_substance, audit_seven_step_methodology
-- `scripts/build_prerequisite_graph.py` (114 lines) - symbols: topics_for, build, render, main; imports: __future__, argparse, json, re, pathlib
+- `scripts/build_prerequisite_graph.py` (115 lines) - symbols: topics_for, build, render, main; imports: __future__, argparse, json, re, pathlib
 - `scripts/build_repo_graph.py` (477 lines) - symbols: FileNode, repo_files, read_text, classify, parse_ts_symbols, parse_ts_imports, parse_python_symbols, parse_python_imports; imports: __future__, argparse, ast, json, re, subprocess, collections, dataclasses
 - `scripts/build_total_book_topics.py` (129 lines) - symbols: normalized, main, render_item; imports: __future__, json, re, unicodedata, collections, pathlib
 - `scripts/build_unified_curriculum.py` (211 lines) - symbols: norm, main; imports: __future__, json, re, unicodedata, collections, pathlib
@@ -231,13 +231,13 @@ For automated lookups, use `docs/repo-graph.json`.
 - `CODE_OF_CONDUCT.md` (25 lines) - headings: # Código de conducta, ## Compromiso, ## Conducta esperada, ## Aplicación
 - `CONTRIBUTING.md` (41 lines) - headings: # Contribuir a The Imperial Book, ## Idioma y commits, ## Antes de abrir un cambio, ## Licencias
 - `MASTER-PROMPT.md` (129 lines) - headings: # MASTER PROMPT — THE IMPERIAL BOOK · RECONSTRUCCIÓN COMPLETA, ## PARTE 1 · METODOLOGÍA EDITORIAL, ### 1.1 Las 12 pautas innegociables, ### 1.2 Regla de preservación
-- `README.md` (370 lines) - headings: # The_Imperial_Book, ## Cómo empezar, ## Requisitos del sistema, ## Levantar Floci
+- `README.md` (371 lines) - headings: # The_Imperial_Book, ## Cómo empezar, ## Requisitos del sistema, ## Levantar Floci
 - `docs/ACADEMIA-EXPERIENCIA-DE-ESTUDIO.md` (66 lines) - headings: # Experiencia de estudio: contrato editorial y de interfaz, ## Principios de aprendizaje, ## Contrato de cada tema, ## Contrato del lector
 - `docs/ACADEMIA-PROTOTIPO-6-CONTEXTOS.md` (46 lines) - headings: # Prototipo editorial: seis contextos, ## Puerta de validación, ## Estado
 - `docs/AUDITORIA-COBERTURA-SPRING-20261101.md` (157 lines) - headings: # Auditoría de cobertura — Track Spring Boot vs temario profesional, ## Resumen de huecos confirmados, ### ALTA (prerrequisitos del núcleo / imprescindibles), ### MEDIA
 - `docs/CONTINUAR-7-PASOS.md` (76 lines) - headings: # Continuación de la metodología de siete pasos, ## Qué se corrigió en el auditor (no repetir), ## Regla de oro, ## Los 5 temas que faltaban (resueltos)
 - `docs/CONTINUIDAD-CHATGPT-PROMPTS-20261101.md` (172 lines) - headings: # Continuidad de ChatGPT: biblioteca, metodología y revisión de prompts, ## Punto exacto del repositorio, ## Qué ya está confirmado, ## Qué contiene la tanda local sin commit
-- `docs/ESTADO-REVISION-MINUCIOSA-20261101.md` (954 lines) - headings: # Estado verificable de la revisión minuciosa, ## 1. Objetivo obligatorio, ### Ejemplo normativo aportado por el usuario, ## 2. Fuentes persistentes de la regla
+- `docs/ESTADO-REVISION-MINUCIOSA-20261101.md` (970 lines) - headings: # Estado verificable de la revisión minuciosa, ## 1. Objetivo obligatorio, ### Ejemplo normativo aportado por el usuario, ## 2. Fuentes persistentes de la regla
 - `docs/ESTANDAR-DE-CODIGO.md` (56 lines) - headings: # Estándar transversal de código y diseño, ## Prioridades, ## Clean Code con criterio, ## SOLID cuando aporta valor
 - `docs/INVENTARIO-CURSOS-TEMAS-SUBTEMAS.md` (11995 lines) - headings: # Inventario completo: cursos, módulos, temas y subtemas, ## 1. RutaFlow — Proyecto integrador logístico, ### Módulo 0 · RutaFlow desde cero: producto, entorno y dominio, #### Tema 1: El proceso logístico como sistema
 - `docs/MATRIZ-CURRICULAR.md` (73 lines) - headings: # Matriz curricular auditable, ## Progresión de competencia, ## Cobertura por módulo, ## Método de evaluación
@@ -286,9 +286,9 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/biblioteca/imagenes.json` (577 lines)
 - `docs/book-curriculum-inventory.json` (527350 lines)
 - `docs/browser-course-review.json` (2712 lines)
-- `docs/code-visual-quality.json` (2184 lines)
+- `docs/code-visual-quality.json` (2231 lines)
 - `docs/course-curriculum-inventory.json` (53 lines)
-- `docs/course-depth-review.json` (14375 lines)
+- `docs/course-depth-review.json` (14441 lines)
 - `docs/curriculum-matrix.json` (394 lines)
 - `docs/floci-official-curriculum.json` (14 lines)
 - ... 51 more files

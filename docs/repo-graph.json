@@ -113,7 +113,7 @@
     },
     {
       "path": "README.md",
-      "lines": 370,
+      "lines": 371,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -224,7 +224,7 @@
     },
     {
       "path": "docs/ESTADO-REVISION-MINUCIOSA-20261101.md",
-      "lines": 954,
+      "lines": 970,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -959,7 +959,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 2184,
+      "lines": 2231,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -967,7 +967,7 @@
     },
     {
       "path": "docs/code-visual-quality.md",
-      "lines": 28,
+      "lines": 29,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -986,7 +986,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 14375,
+      "lines": 14441,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -994,7 +994,7 @@
     },
     {
       "path": "docs/course-depth-review.md",
-      "lines": 1204,
+      "lines": 1210,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1027,7 +1027,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 61,
+      "lines": 62,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1161,7 +1161,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 9939,
+      "lines": 9981,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1290,7 +1290,7 @@
     },
     {
       "path": "docs/official-learning-guides.json",
-      "lines": 22,
+      "lines": 23,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1333,7 +1333,7 @@
     },
     {
       "path": "docs/prerequisite-graph.json",
-      "lines": 12911,
+      "lines": 12967,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1341,7 +1341,7 @@
     },
     {
       "path": "docs/prerequisite-graph.md",
-      "lines": 40,
+      "lines": 42,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1452,7 +1452,7 @@
     },
     {
       "path": "docs/seven-step-methodology.json",
-      "lines": 29626,
+      "lines": 29772,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1460,7 +1460,7 @@
     },
     {
       "path": "docs/seven-step-methodology.md",
-      "lines": 32,
+      "lines": 33,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1502,7 +1502,7 @@
     },
     {
       "path": "docs/subtopic-depth-review.json",
-      "lines": 22007,
+      "lines": 22074,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1510,7 +1510,7 @@
     },
     {
       "path": "docs/subtopic-depth-review.md",
-      "lines": 1166,
+      "lines": 1171,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1591,7 +1591,7 @@
     },
     {
       "path": "docs/topic-learning-quality.json",
-      "lines": 26077,
+      "lines": 26205,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1599,7 +1599,7 @@
     },
     {
       "path": "docs/topic-learning-quality.md",
-      "lines": 26,
+      "lines": 27,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -6457,7 +6457,7 @@
     },
     {
       "path": "scripts/audit_course_depth.py",
-      "lines": 147,
+      "lines": 148,
       "kind": "automation-script",
       "symbols": [
         "signals",
@@ -6650,7 +6650,7 @@
     },
     {
       "path": "scripts/build_prerequisite_graph.py",
-      "lines": 114,
+      "lines": 115,
       "kind": "automation-script",
       "symbols": [
         "topics_for",
@@ -7090,7 +7090,7 @@
     },
     {
       "path": "scripts/validate.sh",
-      "lines": 214,
+      "lines": 215,
       "kind": "automation-script",
       "symbols": [],
       "imports": [],
@@ -7131,7 +7131,7 @@
     },
     {
       "path": "scripts/validate_learning_priorities.py",
-      "lines": 93,
+      "lines": 94,
       "kind": "automation-script",
       "symbols": [],
       "imports": [
@@ -12977,7 +12977,7 @@
     },
     {
       "path": "web/public/content/topic-index.json",
-      "lines": 5233,
+      "lines": 5257,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -13917,7 +13917,7 @@
     },
     {
       "path": "web/src/app/catalog/curriculum-library.ts",
-      "lines": 218,
+      "lines": 219,
       "kind": "angular-app",
       "symbols": [
         "CurriculumLibraryComponent",
@@ -14172,7 +14172,7 @@
     },
     {
       "path": "web/src/app/course/lesson-viewer.ts",
-      "lines": 1782,
+      "lines": 1783,
       "kind": "angular-app",
       "symbols": [
         "LessonViewerComponent",
@@ -14272,7 +14272,7 @@
     },
     {
       "path": "web/src/app/course-data.ts",
-      "lines": 887,
+      "lines": 889,
       "kind": "angular-app",
       "symbols": [
         "ServiceGroup",
@@ -14288,6 +14288,7 @@
         "./tracks/react.track",
         "./tracks/java.track",
         "./tracks/spring-boot.track",
+        "./tracks/microservices.track",
         "./tracks/kotlin-multiplatform.track",
         "./tracks/android.track",
         "./tracks/ios.track",
@@ -14347,7 +14348,7 @@
     },
     {
       "path": "web/src/app/icon-registry.ts",
-      "lines": 36,
+      "lines": 37,
       "kind": "angular-app",
       "symbols": [],
       "imports": [
@@ -14367,7 +14368,7 @@
     },
     {
       "path": "web/src/app/learning-activities.ts",
-      "lines": 28,
+      "lines": 29,
       "kind": "angular-app",
       "symbols": [
         "TrackProject",
@@ -14378,7 +14379,7 @@
     },
     {
       "path": "web/src/app/official-learning-paths.ts",
-      "lines": 31,
+      "lines": 32,
       "kind": "angular-app",
       "symbols": [
         "OfficialLearningPath"
@@ -14435,7 +14436,7 @@
     },
     {
       "path": "web/src/app/project-bootstrap.ts",
-      "lines": 143,
+      "lines": 152,
       "kind": "angular-app",
       "symbols": [
         "ProjectBootstrap",
@@ -14498,7 +14499,7 @@
     },
     {
       "path": "web/src/app/track-guides.ts",
-      "lines": 25,
+      "lines": 26,
       "kind": "angular-app",
       "symbols": [
         "TrackGuide"

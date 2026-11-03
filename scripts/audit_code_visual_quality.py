@@ -18,7 +18,7 @@ JSON_REPORT = ROOT / "docs/code-visual-quality.json"
 MD_REPORT = ROOT / "docs/code-visual-quality.md"
 TRACKS = (
     "foundations", "cloud", "devops", "javascript", "node", "angular", "react",
-    "java", "spring-boot", "kotlin-multiplatform", "android", "ios", "flutter", "rutaflow",
+    "java", "spring-boot", "microservices", "kotlin-multiplatform", "android", "ios", "flutter", "rutaflow",
 )
 EDITORIAL_MARKERS = ("DEFINITIVE-COMPLEMENTS", "SUPPLEMENTAL-COMPLEMENTS", "REQUESTED-PRACTICAL-EXAMPLES")
 OFFICIAL_SOURCE_HOSTS = frozenset({

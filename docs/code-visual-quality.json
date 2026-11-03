@@ -108,6 +108,18 @@
       "runCommand": 107,
       "officialSource": 107
     },
+    "microservices": {
+      "topics": 5,
+      "code": 5,
+      "commentedCode": 0,
+      "mermaid": 0,
+      "archifyVisual": 0,
+      "asciiVisual": 0,
+      "misleadingDiagramLabel": 0,
+      "filePath": 5,
+      "runCommand": 5,
+      "officialSource": 4
+    },
     "kotlin-multiplatform": {
       "topics": 56,
       "code": 56,
@@ -1819,6 +1831,41 @@
       "track": "spring-boot",
       "module": 9,
       "topic": "Tema 4: Virtual threads como alternativa a WebFlux · Avanzado · 35 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "microservices",
+      "module": 0,
+      "topic": "Tema 1: Proceso, host, puerto, socket y DNS · Fundamentos · 70 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "microservices",
+      "module": 0,
+      "topic": "Tema 2: Latencia, deadline y timeouts por fase · Aplicación · 80 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "microservices",
+      "module": 0,
+      "topic": "Tema 3: Fallo parcial, resultado desconocido e idempotencia · Integración · 90 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "microservices",
+      "module": 0,
+      "topic": "Tema 4: Relojes, causalidad, concurrencia y orden · Integración · 80 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "microservices",
+      "module": 0,
+      "topic": "Tema 5: Serialización, evolución y falacias distribuidas · Experto · 100 min",
       "missingCode": false,
       "missingComments": true
     },

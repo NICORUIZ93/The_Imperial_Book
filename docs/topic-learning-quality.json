@@ -172,6 +172,22 @@
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
+    "microservices": {
+      "topics": 5,
+      "explanation": 5,
+      "code": 5,
+      "visual": 0,
+      "filePath": 5,
+      "runCommand": 5,
+      "expectedResult": 5,
+      "practice": 5,
+      "project": 5,
+      "modelMental": 5,
+      "limitsDecision": 5,
+      "practicable": 5,
+      "genericScaffold": 0,
+      "repeatedDemo": 0
+    },
     "node": {
       "topics": 77,
       "explanation": 77,
@@ -20096,6 +20112,118 @@
         },
         "classification": {
           "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      }
+    ],
+    "microservices": [
+      {
+        "module": 0,
+        "topic": "Tema 1: Proceso, host, puerto, socket y DNS · Fundamentos · 70 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 0,
+        "topic": "Tema 2: Latencia, deadline y timeouts por fase · Aplicación · 80 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 0,
+        "topic": "Tema 3: Fallo parcial, resultado desconocido e idempotencia · Integración · 90 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 0,
+        "topic": "Tema 4: Relojes, causalidad, concurrencia y orden · Integración · 80 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 0,
+        "topic": "Tema 5: Serialización, evolución y falacias distribuidas · Experto · 100 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false

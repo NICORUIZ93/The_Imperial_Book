@@ -2,10 +2,10 @@
 
 > Las señales automáticas no prueban profundidad ni ausencia de ella. Un tema sólo queda revisado mediante el registro humano con mapa de subtemas críticos, evidencia y fuentes.
 
-- Temas inventariados: 1173
+- Temas inventariados: 1178
 - Revisados humanamente para subtemas: 350
-- Pendientes: 823
-- Candidatos prioritarios por señales: 782
+- Pendientes: 828
+- Candidatos prioritarios por señales: 786
 
 ## Cobertura por track
 
@@ -21,6 +21,7 @@
 | java | 109 | 109 | 0 |
 | javascript | 88 | 0 | 88 |
 | kotlin-multiplatform | 56 | 0 | 56 |
+| microservices | 5 | 0 | 5 |
 | node | 77 | 0 | 77 |
 | react | 58 | 0 | 58 |
 | rutaflow | 29 | 0 | 29 |
@@ -664,6 +665,10 @@
 - `kotlin-multiplatform/modulo-9` — Tema 1: kotlin.test en commonTest — lista conceptos clave sin mapa interno verificable
 - `kotlin-multiplatform/modulo-9` — Tema 2: Fakes en vez de mocks — lista conceptos clave sin mapa interno verificable
 - `kotlin-multiplatform/modulo-9` — Tema 3: runTest para coroutines — lista conceptos clave sin mapa interno verificable
+- `microservices/modulo-0` — Tema 1: Proceso, host, puerto, socket y DNS · Fundamentos · 70 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `microservices/modulo-0` — Tema 2: Latencia, deadline y timeouts por fase · Aplicación · 80 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `microservices/modulo-0` — Tema 4: Relojes, causalidad, concurrencia y orden · Integración · 80 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `microservices/modulo-0` — Tema 5: Serialización, evolución y falacias distribuidas · Experto · 100 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `node/modulo-0` — Tema 3: process, global y módulos core · Básico · 75 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `node/modulo-0` — Tema 4: Event-driven architecture y non-blocking I/O · Intermedio · 75 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `node/modulo-1` — Tema 1: package.json y semver · Básico · 50 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable

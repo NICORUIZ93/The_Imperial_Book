@@ -11,7 +11,7 @@ GUIDES = ROOT / "docs/official-learning-guides.json"
 UI = ROOT / "web/src/app/official-learning-paths.ts"
 TRACK_DIR = ROOT / "web/src/app/tracks"
 
-expected = {"foundations", "rutaflow", "javascript", "node", "angular", "react", "java", "spring-boot", "kotlin-multiplatform", "android", "ios", "flutter", "devops", "cloud"}
+expected = {"foundations", "rutaflow", "javascript", "node", "angular", "react", "java", "spring-boot", "microservices", "kotlin-multiplatform", "android", "ios", "flutter", "devops", "cloud"}
 valid_levels = {"Fundamentos", "Aplicación", "Integración", "Experto"}
 errors: list[str] = []
 

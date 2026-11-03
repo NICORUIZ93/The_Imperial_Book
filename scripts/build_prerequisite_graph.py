@@ -14,7 +14,7 @@ JSON_OUT = ROOT / "docs/prerequisite-graph.json"
 MD_OUT = ROOT / "docs/prerequisite-graph.md"
 
 TRACK_ORDER = [
-    "foundations", "javascript", "java", "node", "spring-boot", "angular",
+    "foundations", "javascript", "java", "node", "spring-boot", "microservices", "angular",
     "react", "kotlin-multiplatform", "android", "ios", "flutter", "devops",
     "cloud", "rutaflow",
 ]
@@ -22,6 +22,7 @@ TRACK_ORDER = [
 CROSS_TRACK = {
     "node": "javascript",
     "spring-boot": "java",
+    "microservices": "spring-boot",
     "angular": "javascript",
     "react": "javascript",
     "android": "java",

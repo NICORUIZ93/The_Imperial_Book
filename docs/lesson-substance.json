@@ -1305,6 +1305,11 @@
       "track": "kotlin-multiplatform"
     },
     {
+      "legacySections": [],
+      "module": 0,
+      "track": "microservices"
+    },
+    {
       "legacySections": [
         "## Ruta de proyecto progresivo desde carpeta vacía"
       ],
@@ -1682,16 +1687,16 @@
     }
   ],
   "summary": {
-    "fingerprint": "2a4d5a96746bb8b3084305e710dbcc61ec036a828730fa20291504f8e750eb87",
+    "fingerprint": "c820633023e94c1895fdce5c56e6584e6df10702db42554726e126439fc9d6f3",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
       "## Ruta de proyecto progresivo desde carpeta vacía": 12,
       "**Errores comunes y soluciones**": 173
     },
-    "modules": 255,
+    "modules": 256,
     "modulesWithLegacySections": 179,
-    "topics": 1173,
+    "topics": 1178,
     "topicsWithIssues": 0
   },
   "topics": {
@@ -8027,6 +8032,43 @@
         "tailWords": 156,
         "topic": "Tema 3: runTest para coroutines",
         "words": 941
+      }
+    ],
+    "microservices": [
+      {
+        "issues": [],
+        "module": 0,
+        "tailWords": 0,
+        "topic": "Tema 1: Proceso, host, puerto, socket y DNS · Fundamentos · 70 min",
+        "words": 547
+      },
+      {
+        "issues": [],
+        "module": 0,
+        "tailWords": 0,
+        "topic": "Tema 2: Latencia, deadline y timeouts por fase · Aplicación · 80 min",
+        "words": 510
+      },
+      {
+        "issues": [],
+        "module": 0,
+        "tailWords": 0,
+        "topic": "Tema 3: Fallo parcial, resultado desconocido e idempotencia · Integración · 90 min",
+        "words": 489
+      },
+      {
+        "issues": [],
+        "module": 0,
+        "tailWords": 0,
+        "topic": "Tema 4: Relojes, causalidad, concurrencia y orden · Integración · 80 min",
+        "words": 544
+      },
+      {
+        "issues": [],
+        "module": 0,
+        "tailWords": 0,
+        "topic": "Tema 5: Serialización, evolución y falacias distribuidas · Experto · 100 min",
+        "words": 586
       }
     ],
     "node": [

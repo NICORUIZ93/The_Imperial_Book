@@ -4013,6 +4013,30 @@
       }
     ]
   },
+  "microservices": {
+    "0": [
+      {
+        "title": "Proceso, host, puerto, socket y DNS · Fundamentos · 70 min",
+        "fragment": "tema-1-proceso-host-puerto-socket-y-dns-fundamentos-70-min"
+      },
+      {
+        "title": "Latencia, deadline y timeouts por fase · Aplicación · 80 min",
+        "fragment": "tema-2-latencia-deadline-y-timeouts-por-fase-aplicacion-80-min"
+      },
+      {
+        "title": "Fallo parcial, resultado desconocido e idempotencia · Integración · 90 min",
+        "fragment": "tema-3-fallo-parcial-resultado-desconocido-e-idempotencia-integracion-90-min"
+      },
+      {
+        "title": "Relojes, causalidad, concurrencia y orden · Integración · 80 min",
+        "fragment": "tema-4-relojes-causalidad-concurrencia-y-orden-integracion-80-min"
+      },
+      {
+        "title": "Serialización, evolución y falacias distribuidas",
+        "fragment": "tema-5-serializacion-evolucion-y-falacias-distribuidas"
+      }
+    ]
+  },
   "node": {
     "0": [
       {

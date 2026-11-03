@@ -6,6 +6,7 @@ import { ANGULAR_MODULES } from './tracks/angular.track';
 import { REACT_MODULES } from './tracks/react.track';
 import { JAVA_MODULES } from './tracks/java.track';
 import { SPRING_BOOT_MODULES } from './tracks/spring-boot.track';
+import { MICROSERVICES_MODULES } from './tracks/microservices.track';
 import { KOTLIN_MULTIPLATFORM_MODULES } from './tracks/kotlin-multiplatform.track';
 import { ANDROID_MODULES } from './tracks/android.track';
 import { IOS_MODULES } from './tracks/ios.track';
@@ -877,6 +878,7 @@ export const TRACKS: Track[] = [
   { id: 'react', name: 'React: fundamentos y aplicaciones', shortName: 'React', tagline: 'Hooks, estado, datos y frameworks full-stack con React.', color: '#1d6a6a', icon: 'atom', modules: REACT_MODULES },
   { id: 'java', name: 'Java: fundamentos y temas avanzados', shortName: 'Java', tagline: 'POO, concurrencia y JVM moderna, de Java 8 a Java 27.', color: '#92400e', icon: 'coffee', modules: JAVA_MODULES },
   { id: 'spring-boot', name: 'Spring Boot', shortName: 'Spring Boot', tagline: 'APIs, persistencia, seguridad y microservicios con Spring.', color: '#4d7c0f', icon: 'leaf', modules: SPRING_BOOT_MODULES },
+  { id: 'microservices', name: 'Microservicios: sistemas distribuidos', shortName: 'Microservicios', tagline: 'Diseña límites, contratos, datos, fallos y operación distribuida con evidencia.', color: '#0f766e', icon: 'network', modules: MICROSERVICES_MODULES },
   { id: 'kotlin-multiplatform', name: 'Kotlin Multiplatform', shortName: 'Kotlin MP', tagline: 'Lógica compartida entre Android e iOS con Kotlin.', color: '#7c3aed', icon: 'layers', modules: KOTLIN_MULTIPLATFORM_MODULES },
   { id: 'android', name: 'Android con Jetpack Compose', shortName: 'Android', tagline: 'Apps Android nativas modernas con Compose y Kotlin.', color: '#15803d', icon: 'smartphone', modules: ANDROID_MODULES },
   { id: 'ios', name: 'iOS con SwiftUI', shortName: 'iOS', tagline: 'Apps iOS nativas con Swift, SwiftUI y concurrencia moderna.', color: '#334155', icon: 'apple', modules: IOS_MODULES },

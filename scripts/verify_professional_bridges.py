@@ -17,6 +17,6 @@ for item in manifest:
     for name in item['examples']:
         code=(ROOT/name).read_text().strip()
         if code not in snippets:raise SystemExit(f'Archivo distinto de la lección: {name}')
-if len(manifest)!=14 or len(tracks)!=14:
-    raise SystemExit('Se requiere un laboratorio trazado por cada una de las 14 rutas.')
-print('Trazabilidad de laboratorios OK: 14 rutas; archivos iguales al Markdown. No implica ejecución ni revisión pedagógica.')
+if len(manifest)!=15 or len(tracks)!=15:
+    raise SystemExit('Se requiere un laboratorio trazado por cada una de las 15 rutas.')
+print('Trazabilidad de laboratorios OK: 15 rutas; archivos iguales al Markdown. No implica ejecución ni revisión pedagógica.')

@@ -1,9 +1,9 @@
 {
   "summary": {
-    "topics": 1173,
+    "topics": 1178,
     "reviewed": 350,
-    "pending": 823,
-    "priorityCandidates": 782,
+    "pending": 828,
+    "priorityCandidates": 786,
     "byTrack": {
       "android": {
         "topics": 74,
@@ -54,6 +54,11 @@
         "topics": 56,
         "reviewed": 0,
         "pending": 56
+      },
+      "microservices": {
+        "topics": 5,
+        "reviewed": 0,
+        "pending": 5
       },
       "node": {
         "topics": 77,
@@ -16902,6 +16907,68 @@
       ],
       "prioritySignals": [
         "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": null
+    },
+    {
+      "id": "microservices/modulo-0::Tema 1: Proceso, host, puerto, socket y DNS · Fundamentos · 70 min",
+      "track": "microservices",
+      "module": 0,
+      "topic": "Tema 1: Proceso, host, puerto, socket y DNS · Fundamentos · 70 min",
+      "status": "pending",
+      "semanticHeadings": [],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos"
+      ],
+      "review": null
+    },
+    {
+      "id": "microservices/modulo-0::Tema 2: Latencia, deadline y timeouts por fase · Aplicación · 80 min",
+      "track": "microservices",
+      "module": 0,
+      "topic": "Tema 2: Latencia, deadline y timeouts por fase · Aplicación · 80 min",
+      "status": "pending",
+      "semanticHeadings": [],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos"
+      ],
+      "review": null
+    },
+    {
+      "id": "microservices/modulo-0::Tema 3: Fallo parcial, resultado desconocido e idempotencia · Integración · 90 min",
+      "track": "microservices",
+      "module": 0,
+      "topic": "Tema 3: Fallo parcial, resultado desconocido e idempotencia · Integración · 90 min",
+      "status": "pending",
+      "semanticHeadings": [],
+      "prioritySignals": [],
+      "review": null
+    },
+    {
+      "id": "microservices/modulo-0::Tema 4: Relojes, causalidad, concurrencia y orden · Integración · 80 min",
+      "track": "microservices",
+      "module": 0,
+      "topic": "Tema 4: Relojes, causalidad, concurrencia y orden · Integración · 80 min",
+      "status": "pending",
+      "semanticHeadings": [],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos"
+      ],
+      "review": null
+    },
+    {
+      "id": "microservices/modulo-0::Tema 5: Serialización, evolución y falacias distribuidas · Experto · 100 min",
+      "track": "microservices",
+      "module": 0,
+      "topic": "Tema 5: Serialización, evolución y falacias distribuidas · Experto · 100 min",
+      "status": "pending",
+      "semanticHeadings": [],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos"
       ],
       "review": null
     },
