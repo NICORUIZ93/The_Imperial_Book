@@ -51,10 +51,10 @@
     },
     "java": {
       "topics": 101,
-      "completeTopics": 91,
-      "topicsWith3to6Subtopics": 91,
-      "subtopics": 277,
-      "completeSubtopics": 277
+      "completeTopics": 92,
+      "topicsWith3to6Subtopics": 92,
+      "subtopics": 280,
+      "completeSubtopics": 280
     },
     "javascript": {
       "topics": 88,
@@ -7980,9 +7980,52 @@
       {
         "module": 20,
         "topic": "### Tema 4: Function y BiFunction: transformar uno o dos datos",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "4.1",
+            "title": "#### Subtema 4.1: Transformar una entrada · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "4.2",
+            "title": "#### Subtema 4.2: Combinar dos entradas · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "4.3",
+            "title": "#### Subtema 4.3: Calcular un valor con ambos datos · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 20,

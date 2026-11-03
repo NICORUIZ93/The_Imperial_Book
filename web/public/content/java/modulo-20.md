@@ -543,11 +543,10 @@ Piensa en una función como una máquina: recibe lo que necesita y entrega un re
 
 #### Paso 4 · Ejercicio 1
 
-##### Subtema 4.1: Transformar una entrada · 5-10 min
+#### Subtema 4.1: Transformar una entrada · 10 min
+**1. Contexto** la vista debe convertir el peso de un envío a una etiqueta legible.
 
-**Contexto:** la vista debe convertir el peso de un envío a una etiqueta legible.
-
-**Hazlo tú:** desde la raíz del repositorio crea `java-funcional-t04/src/Peso.java`:
+**2. Hazlo tú** desde la raíz del repositorio crea `java-funcional-t04/src/Peso.java`:
 
 ```java
 import java.util.function.Function;
@@ -567,15 +566,20 @@ Ejecuta `cd java-funcional-t04 && java src/Peso.java`.
 
 **Fallo deliberado:** cambia `apply(8.5)` por `apply("8.5")`. **Error esperado:** el compilador indica que `String` no se puede convertir a `Double`. **Diagnóstico:** el tipo de entrada de `Function<Double, String>` es `Double`.
 
-**Entiende:** `apply` entrega un valor nuevo. El dato original no cambia si la función solo lo calcula.
+**3. Entiende** `apply` entrega un valor nuevo. El dato original no cambia si la función solo lo calcula.
+
+**Diagnóstico:** lee los tipos declarados en la interfaz funcional y compáralos, en orden, con los argumentos que pasaste.
+
+**4. Cierra**
+
+Anota la entrada, la salida y la firma funcional que permitió calcularla.
 
 #### Paso 5 · Ejercicio 2
 
-##### Subtema 4.2: Combinar dos entradas · 5-10 min
+#### Subtema 4.2: Combinar dos entradas · 10 min
+**1. Contexto** el código de envío necesita unir un prefijo con un número.
 
-**Contexto:** el código de envío necesita unir un prefijo con un número.
-
-**Hazlo tú:** crea `java-funcional-t04/src/Guia.java`:
+**2. Hazlo tú** crea `java-funcional-t04/src/Guia.java`:
 
 ```java
 import java.util.function.BiFunction;
@@ -594,15 +598,20 @@ Ejecuta `cd java-funcional-t04 && java src/Guia.java`.
 
 **Fallo deliberado:** reemplaza el segundo argumento por `"18"`. **Error esperado:** `String cannot be converted to Integer`. **Diagnóstico:** `BiFunction` tiene dos tipos de entrada y ambos deben respetarse.
 
-**Entiende:** los dos primeros parámetros genéricos son las entradas; el tercero es el resultado.
+**3. Entiende** los dos primeros parámetros genéricos son las entradas; el tercero es el resultado.
+
+**Diagnóstico:** lee los tipos declarados en la interfaz funcional y compáralos, en orden, con los argumentos que pasaste.
+
+**4. Cierra**
+
+Anota la entrada, la salida y la firma funcional que permitió calcularla.
 
 #### Paso 6 · Ejercicio 3
 
-##### Subtema 4.3: Calcular un valor con ambos datos · 5-10 min
+#### Subtema 4.3: Calcular un valor con ambos datos · 10 min
+**1. Contexto** una tarifa usa el precio por kilómetro y la distancia.
 
-**Contexto:** una tarifa usa el precio por kilómetro y la distancia.
-
-**Hazlo tú:** crea `java-funcional-t04/src/Tarifa.java`:
+**2. Hazlo tú** crea `java-funcional-t04/src/Tarifa.java`:
 
 ```java
 import java.math.BigDecimal;
@@ -623,7 +632,13 @@ Ejecuta `cd java-funcional-t04 && java src/Tarifa.java`.
 
 **Fallo deliberado:** cambia `multiplicar.apply` a `multiplicar.apply("1250", new BigDecimal("2.4"))`. **Error esperado:** argumento `String` no compatible con `BigDecimal`. **Diagnóstico:** crea valores decimales desde texto antes de pasarlos.
 
-**Entiende:** usa `BiFunction` cuando el resultado depende de dos valores; para dinero, representa ambos con `BigDecimal`.
+**3. Entiende** usa `BiFunction` cuando el resultado depende de dos valores; para dinero, representa ambos con `BigDecimal`.
+
+**Diagnóstico:** lee los tipos declarados en la interfaz funcional y compáralos, en orden, con los argumentos que pasaste.
+
+**4. Cierra**
+
+Anota la entrada, la salida y la firma funcional que permitió calcularla.
 
 #### Paso 7 · Cierre y evidencia
 

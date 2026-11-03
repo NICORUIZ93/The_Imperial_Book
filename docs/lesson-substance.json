@@ -1698,7 +1698,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "5580b5f2f786d620d5336f4390c46105ddd820fc41f3ab2480db26affe2e1288",
+    "fingerprint": "017c0623112a05af03ea5fe52b9016013339062143c983bea16bc86217391e63",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -7604,7 +7604,7 @@
         "module": 20,
         "tailWords": 72,
         "topic": "Tema 4: Function y BiFunction: transformar uno o dos datos",
-        "words": 626
+        "words": 728
       },
       {
         "issues": [],
