@@ -97,16 +97,16 @@
       "officialSource": 42
     },
     "spring-boot": {
-      "topics": 99,
-      "code": 99,
-      "commentedCode": 78,
+      "topics": 111,
+      "code": 111,
+      "commentedCode": 80,
       "mermaid": 54,
       "archifyVisual": 4,
       "asciiVisual": 20,
       "misleadingDiagramLabel": 0,
-      "filePath": 99,
-      "runCommand": 99,
-      "officialSource": 75
+      "filePath": 111,
+      "runCommand": 111,
+      "officialSource": 87
     },
     "kotlin-multiplatform": {
       "topics": 56,
@@ -2232,6 +2232,76 @@
       "track": "spring-boot",
       "module": 21,
       "topic": "Tema 3: Outbox transaccional y flujo de negocio",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 23,
+      "topic": "Tema 1: módulos y límites entre paquetes",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 23,
+      "topic": "Tema 3: documentación generada y mapa de dependencias",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 23,
+      "topic": "Tema 4: pruebas de integración por módulo",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 24,
+      "topic": "Tema 1: schema-first con tipos y consultas",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 24,
+      "topic": "Tema 3: mutations y subscriptions",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 24,
+      "topic": "Tema 4: pruebas GraphQL con GraphQlTester",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 25,
+      "topic": "Tema 1: bindings y destinations",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 25,
+      "topic": "Tema 2: binder Kafka y binder RabbitMQ",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 25,
+      "topic": "Tema 3: reintentos, error handler y dead-letter",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 25,
+      "topic": "Tema 4: test binder y límites de la prueba",
       "missingCode": false,
       "missingComments": true
     },

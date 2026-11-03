@@ -3,7 +3,7 @@
 Academia en español para estudiar desarrollo profesional y cloud local. La
 experiencia oficial es una aplicación Angular con lecciones Markdown.
 
-La academia reúne 14 rutas, 253 módulos y 1163 temas editoriales en formato de
+La academia reúne 14 rutas, 256 módulos y 1175 temas editoriales en formato de
 libro. La presencia de criterios editoriales y la completitud de los siete pasos
 se reportan por separado; ninguna métrica automática sustituye la revisión técnica
 ni demuestra por sí sola que un ejemplo se ejecutó.
@@ -147,8 +147,8 @@ El contrato editorial que debe alcanzar cada tema es:
 ## Tracks de la academia
 
 La versión Angular tiene su propio contenido, más amplio, en formato Markdown
-(`web/public/content/<track>/modulo-N.md`), organizado en 14 tracks, 253
-módulos y 1163 temas editoriales visibles. Cada módulo prioriza una secuencia de
+(`web/public/content/<track>/modulo-N.md`), organizado en 14 tracks, 256
+módulos y 1175 temas editoriales visibles. Cada módulo prioriza una secuencia de
 temas prácticos. El sílabo y el estándar de calidad viven en documentos
 centrales; las fuentes específicas permanecen junto al tema que sustentan. No
 existen rutas separadas de cuestionarios, rúbricas o laboratorios repetidos.
@@ -157,9 +157,9 @@ Los conteos se verifican contra los tracks y el Markdown desde
 `scripts/validate_learning_priorities.py`; la validación falla si README vuelve
 a quedar desincronizado. La auditoría de criterios editoriales informa presencia
 estructural detectada por heurísticas, no calidad ni ejecución: al corte actual
-registra 1157/1163 temas practicables según sus señales editoriales (la detección no
+registra 1169/1175 temas practicables según sus señales editoriales (la detección no
 demuestra que el ejemplo se haya ejecutado). La auditoría independiente de metodología
-de siete pasos registra 1154/1163 temas completos según sus marcadores
+de siete pasos registra 1166/1175 temas completos según sus marcadores
 (el auditor reconoce el andamiaje real de cada ecosistema: `npm create vite`, `create-next-app`,
 «Nuevo proyecto» de Xcode y `xcodebuild`, las CLIs de nube `aws`/`az`/`gcloud` que crean el
 recurso base del tema, y la evidencia concreta que entrega el artefacto de un paso, además de
@@ -216,7 +216,7 @@ como certificaciones.
 | Angular | 17 | Componentes, Signals, routing, SSR, zoneless |
 | React | 15 | Hooks, estado, data fetching, Next.js |
 | Java | 21 | POO, colecciones, concurrencia, JVM moderna, JDBC, JPA, HTTP y Java funcional |
-| Spring Boot | 23 | REST, JPA, seguridad, Batch, Kafka, microservicios y arquitectura (hexagonal, C4, ADR) |
+| Spring Boot | 26 | REST, JPA, seguridad, Batch, Kafka/Rabbit, Modulith, GraphQL, Cloud Stream y arquitectura |
 | Kotlin Multiplatform | 14 | Lógica compartida entre Android e iOS |
 | Android | 16 | Jetpack Compose, ciclo de vida, Room, Hilt |
 | iOS | 15 | SwiftUI, concurrencia moderna, SwiftData |

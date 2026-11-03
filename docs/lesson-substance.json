@@ -1632,6 +1632,21 @@
       "track": "spring-boot"
     },
     {
+      "legacySections": [],
+      "module": 23,
+      "track": "spring-boot"
+    },
+    {
+      "legacySections": [],
+      "module": 24,
+      "track": "spring-boot"
+    },
+    {
+      "legacySections": [],
+      "module": 25,
+      "track": "spring-boot"
+    },
+    {
       "legacySections": [
         "**Errores comunes y soluciones**"
       ],
@@ -1680,7 +1695,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "2efa4a3814f52ce6aefd2900dc9daee9f4477fd4672920ec515a65c5f3ac96b4",
+    "fingerprint": "142c62a79ec798eee8df4ee714c7dcd57bb0ba984618e42b27e08ebcb9fcdf8e",
     "issues": {
       "andamiaje-generico": 128,
       "bloque-repetido": 218,
@@ -1693,9 +1708,9 @@
       "## Ruta de proyecto progresivo desde carpeta vacía": 12,
       "**Errores comunes y soluciones**": 179
     },
-    "modules": 253,
+    "modules": 256,
     "modulesWithLegacySections": 181,
-    "topics": 1163,
+    "topics": 1175,
     "topicsWithIssues": 470
   },
   "topics": {
@@ -10862,6 +10877,90 @@
         "tailWords": 160,
         "topic": "Tema 3: ADR: decisiones con contexto, alternativas y consecuencias",
         "words": 902
+      },
+      {
+        "issues": [],
+        "module": 23,
+        "tailWords": 162,
+        "topic": "Tema 1: módulos y límites entre paquetes",
+        "words": 709
+      },
+      {
+        "issues": [],
+        "module": 23,
+        "tailWords": 163,
+        "topic": "Tema 2: eventos entre módulos sin importar implementación",
+        "words": 665
+      },
+      {
+        "issues": [],
+        "module": 23,
+        "tailWords": 146,
+        "topic": "Tema 3: documentación generada y mapa de dependencias",
+        "words": 510
+      },
+      {
+        "issues": [],
+        "module": 23,
+        "tailWords": 155,
+        "topic": "Tema 4: pruebas de integración por módulo",
+        "words": 568
+      },
+      {
+        "issues": [],
+        "module": 24,
+        "tailWords": 171,
+        "topic": "Tema 1: schema-first con tipos y consultas",
+        "words": 631
+      },
+      {
+        "issues": [],
+        "module": 24,
+        "tailWords": 144,
+        "topic": "Tema 2: data fetchers, relaciones y problema N+1",
+        "words": 617
+      },
+      {
+        "issues": [],
+        "module": 24,
+        "tailWords": 144,
+        "topic": "Tema 3: mutations y subscriptions",
+        "words": 592
+      },
+      {
+        "issues": [],
+        "module": 24,
+        "tailWords": 165,
+        "topic": "Tema 4: pruebas GraphQL con GraphQlTester",
+        "words": 564
+      },
+      {
+        "issues": [],
+        "module": 25,
+        "tailWords": 172,
+        "topic": "Tema 1: bindings y destinations",
+        "words": 591
+      },
+      {
+        "issues": [],
+        "module": 25,
+        "tailWords": 170,
+        "topic": "Tema 2: binder Kafka y binder RabbitMQ",
+        "words": 587
+      },
+      {
+        "issues": [],
+        "module": 25,
+        "tailWords": 176,
+        "topic": "Tema 3: reintentos, error handler y dead-letter",
+        "words": 537
+      },
+      {
+        "issues": [],
+        "module": 25,
+        "tailWords": 165,
+        "topic": "Tema 4: test binder y límites de la prueba",
+        "words": 584
       },
       {
         "issues": [],

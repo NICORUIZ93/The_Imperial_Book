@@ -515,15 +515,16 @@
         {
           "id": "SPRING-1",
           "level": "Fundamentos",
-          "statement": "Construir una API Spring Boot comprendiendo configuración, DI y contratos HTTP.",
+          "statement": "Construir APIs Spring Boot REST y GraphQL comprendiendo configuración, DI y contratos verificables.",
           "moduleIds": [
             0,
             1,
-            2
+            2,
+            24
           ],
           "evidence": [
-            "API ejecutable",
-            "pruebas de endpoints"
+            "API REST/GraphQL ejecutable",
+            "pruebas HTTP y GraphQlTester"
           ],
           "cs2023": [
             "NC",
@@ -571,7 +572,8 @@
             9,
             10,
             20,
-            21
+            21,
+            25
           ],
           "evidence": [
             "flujo outbox/Kafka idempotente con recuperación DLT",
@@ -614,13 +616,14 @@
         {
           "id": "SPRING-5",
           "level": "Experto",
-          "statement": "Separar dominio e infraestructura con puertos, documentar el sistema en cuatro niveles C4 y registrar cada decisión en un ADR revisable.",
+          "statement": "Separar dominio e infraestructura con puertos y módulos verificables, documentar límites y sistema con diagramas y decisiones revisables.",
           "moduleIds": [
-            22
+            22,
+            23
           ],
           "evidence": [
             "caso de uso compilado sin Spring",
-            "diagrama C4 validado",
+            "mapa Modulith y diagrama C4 validados",
             "tres ADR con alternativas y consecuencias"
           ],
           "cs2023": [

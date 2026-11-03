@@ -5068,6 +5068,138 @@
       ]
     },
     {
+      "id": "spring-boot:23:1",
+      "track": "spring-boot",
+      "module": 23,
+      "position": 1,
+      "title": "módulos y límites entre paquetes",
+      "file": "web/public/content/spring-boot/modulo-23.md",
+      "requires": [
+        "spring-boot:22:3"
+      ]
+    },
+    {
+      "id": "spring-boot:23:2",
+      "track": "spring-boot",
+      "module": 23,
+      "position": 2,
+      "title": "eventos entre módulos sin importar implementación",
+      "file": "web/public/content/spring-boot/modulo-23.md",
+      "requires": [
+        "spring-boot:23:1"
+      ]
+    },
+    {
+      "id": "spring-boot:23:3",
+      "track": "spring-boot",
+      "module": 23,
+      "position": 3,
+      "title": "documentación generada y mapa de dependencias",
+      "file": "web/public/content/spring-boot/modulo-23.md",
+      "requires": [
+        "spring-boot:23:2"
+      ]
+    },
+    {
+      "id": "spring-boot:23:4",
+      "track": "spring-boot",
+      "module": 23,
+      "position": 4,
+      "title": "pruebas de integración por módulo",
+      "file": "web/public/content/spring-boot/modulo-23.md",
+      "requires": [
+        "spring-boot:23:3"
+      ]
+    },
+    {
+      "id": "spring-boot:24:1",
+      "track": "spring-boot",
+      "module": 24,
+      "position": 1,
+      "title": "schema-first con tipos y consultas",
+      "file": "web/public/content/spring-boot/modulo-24.md",
+      "requires": [
+        "spring-boot:23:4"
+      ]
+    },
+    {
+      "id": "spring-boot:24:2",
+      "track": "spring-boot",
+      "module": 24,
+      "position": 2,
+      "title": "data fetchers, relaciones y problema N+1",
+      "file": "web/public/content/spring-boot/modulo-24.md",
+      "requires": [
+        "spring-boot:24:1"
+      ]
+    },
+    {
+      "id": "spring-boot:24:3",
+      "track": "spring-boot",
+      "module": 24,
+      "position": 3,
+      "title": "mutations y subscriptions",
+      "file": "web/public/content/spring-boot/modulo-24.md",
+      "requires": [
+        "spring-boot:24:2"
+      ]
+    },
+    {
+      "id": "spring-boot:24:4",
+      "track": "spring-boot",
+      "module": 24,
+      "position": 4,
+      "title": "pruebas GraphQL con GraphQlTester",
+      "file": "web/public/content/spring-boot/modulo-24.md",
+      "requires": [
+        "spring-boot:24:3"
+      ]
+    },
+    {
+      "id": "spring-boot:25:1",
+      "track": "spring-boot",
+      "module": 25,
+      "position": 1,
+      "title": "bindings y destinations",
+      "file": "web/public/content/spring-boot/modulo-25.md",
+      "requires": [
+        "spring-boot:24:4"
+      ]
+    },
+    {
+      "id": "spring-boot:25:2",
+      "track": "spring-boot",
+      "module": 25,
+      "position": 2,
+      "title": "binder Kafka y binder RabbitMQ",
+      "file": "web/public/content/spring-boot/modulo-25.md",
+      "requires": [
+        "spring-boot:25:1"
+      ]
+    },
+    {
+      "id": "spring-boot:25:3",
+      "track": "spring-boot",
+      "module": 25,
+      "position": 3,
+      "title": "reintentos, error handler y dead-letter",
+      "file": "web/public/content/spring-boot/modulo-25.md",
+      "requires": [
+        "spring-boot:25:2"
+      ]
+    },
+    {
+      "id": "spring-boot:25:4",
+      "track": "spring-boot",
+      "module": 25,
+      "position": 4,
+      "title": "test binder y límites de la prueba",
+      "file": "web/public/content/spring-boot/modulo-25.md",
+      "requires": [
+        "spring-boot:25:3"
+      ]
+    },
+    {
       "id": "angular:0:1",
       "track": "angular",
       "module": 0,

@@ -560,7 +560,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3171,
+      "lines": 3241,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -579,7 +579,7 @@
     },
     {
       "path": "docs/continuacion-material-rutaflow.md",
-      "lines": 138,
+      "lines": 140,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -596,7 +596,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13208,
+      "lines": 13340,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -604,7 +604,7 @@
     },
     {
       "path": "docs/course-depth-review.md",
-      "lines": 1193,
+      "lines": 1205,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -731,7 +731,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 11072,
+      "lines": 11171,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -820,7 +820,7 @@
     },
     {
       "path": "docs/prerequisite-graph.json",
-      "lines": 12801,
+      "lines": 12933,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -897,7 +897,7 @@
     },
     {
       "path": "docs/revision-cursos-prioritarios.md",
-      "lines": 128,
+      "lines": 129,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -950,7 +950,7 @@
     },
     {
       "path": "docs/seven-step-methodology.json",
-      "lines": 30553,
+      "lines": 30865,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -977,7 +977,7 @@
     },
     {
       "path": "docs/specialization-outcomes.json",
-      "lines": 1305,
+      "lines": 1308,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -985,7 +985,7 @@
     },
     {
       "path": "docs/topic-learning-quality.json",
-      "lines": 25857,
+      "lines": 26121,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -8345,6 +8345,48 @@
       ]
     },
     {
+      "path": "web/public/content/flutter/modulo-21.md",
+      "lines": 396,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 21: compras dentro de Flutter (IAP)",
+        "## Aprende construyendo",
+        "### Tema 1: cat\u00e1logo y flujo con `in_app_purchase`",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
+        "#### Paso 2 \u00b7 Contexto y caso real",
+        "#### \u00bfPor qu\u00e9 es importante?",
+        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
+        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
+        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
+        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "### Tema 2: suscripciones Android, planes base y cambios"
+      ]
+    },
+    {
+      "path": "web/public/content/flutter/modulo-22.md",
+      "lines": 471,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 22: anuncios y monetizaci\u00f3n en Flutter",
+        "## Aprende construyendo",
+        "### Tema 1: configurar AdMob y cargar el primer banner de prueba",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
+        "#### Paso 2 \u00b7 Contexto y caso real",
+        "#### \u00bfPor qu\u00e9 es importante?",
+        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
+        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
+        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
+        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "### Tema 2: elegir mediaci\u00f3n, bidding y waterfall"
+      ]
+    },
+    {
       "path": "web/public/content/flutter/modulo-3.md",
       "lines": 285,
       "kind": "course-content",
@@ -11496,7 +11538,7 @@
     },
     {
       "path": "web/public/content/topic-index.json",
-      "lines": 5189,
+      "lines": 5243,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12974,7 +13016,7 @@
     },
     {
       "path": "web/src/app/tracks/spring-boot.track.ts",
-      "lines": 315,
+      "lines": 351,
       "kind": "angular-app",
       "symbols": [],
       "imports": [

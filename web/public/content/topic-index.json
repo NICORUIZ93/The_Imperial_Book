@@ -5054,6 +5054,60 @@
         "fragment": "tema-3-adr-decisiones-con-contexto-alternativas-y-consecuencias"
       }
     ],
+    "23": [
+      {
+        "title": "módulos y límites entre paquetes",
+        "fragment": "tema-1-modulos-y-limites-entre-paquetes"
+      },
+      {
+        "title": "eventos entre módulos sin importar implementación",
+        "fragment": "tema-2-eventos-entre-modulos-sin-importar-implementacion"
+      },
+      {
+        "title": "documentación generada y mapa de dependencias",
+        "fragment": "tema-3-documentacion-generada-y-mapa-de-dependencias"
+      },
+      {
+        "title": "pruebas de integración por módulo",
+        "fragment": "tema-4-pruebas-de-integracion-por-modulo"
+      }
+    ],
+    "24": [
+      {
+        "title": "schema-first con tipos y consultas",
+        "fragment": "tema-1-schema-first-con-tipos-y-consultas"
+      },
+      {
+        "title": "data fetchers, relaciones y problema N+1",
+        "fragment": "tema-2-data-fetchers-relaciones-y-problema-n-1"
+      },
+      {
+        "title": "mutations y subscriptions",
+        "fragment": "tema-3-mutations-y-subscriptions"
+      },
+      {
+        "title": "pruebas GraphQL con GraphQlTester",
+        "fragment": "tema-4-pruebas-graphql-con-graphqltester"
+      }
+    ],
+    "25": [
+      {
+        "title": "bindings y destinations",
+        "fragment": "tema-1-bindings-y-destinations"
+      },
+      {
+        "title": "binder Kafka y binder RabbitMQ",
+        "fragment": "tema-2-binder-kafka-y-binder-rabbitmq"
+      },
+      {
+        "title": "reintentos, error handler y dead-letter",
+        "fragment": "tema-3-reintentos-error-handler-y-dead-letter"
+      },
+      {
+        "title": "test binder y límites de la prueba",
+        "fragment": "tema-4-test-binder-y-limites-de-la-prueba"
+      }
+    ],
     "3": [
       {
         "title": "Entidades y repositorios derivados",
