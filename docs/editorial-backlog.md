@@ -8,16 +8,16 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 
 | Criterio | Cubierto | Pendiente |
 |---|---:|---:|
-| Explicación | 1106 | 0 |
-| Código | 1106 | 0 |
-| Ruta | 1106 | 0 |
-| Ejecución | 1106 | 0 |
-| Resultado | 1103 | 3 |
-| Modificación | 1106 | 0 |
-| Conexión con un proyecto | 1105 | 1 |
-| Modelo mental | 1106 | 0 |
-| Límites | 1105 | 1 |
-| **Perfil de criterios detectado** | **1103** | **3** |
+| Explicación | 1112 | 0 |
+| Código | 1112 | 0 |
+| Ruta | 1112 | 0 |
+| Ejecución | 1112 | 0 |
+| Resultado | 1110 | 2 |
+| Modificación | 1112 | 0 |
+| Conexión con un proyecto | 1112 | 0 |
+| Modelo mental | 1112 | 0 |
+| Límites | 1111 | 1 |
+| **Perfil de criterios detectado** | **1110** | **2** |
 
 ## Prioridad por track
 
@@ -33,7 +33,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | java | 91 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | javascript | 88 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | kotlin-multiplatform | 56 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| node | 77 | 0 | 0 | 0 | 1 | 0 | 1 | 0 |
+| node | 83 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | react | 58 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | rutaflow | 29 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | spring-boot | 91 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -42,7 +42,6 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 
 - [cloud · módulo 0](../web/public/content/cloud/modulo-0.md) · Tema 4: Qué es Floci — definición, propósito y comparativa con LocalStack: resultado.
 - [cloud · módulo 0](../web/public/content/cloud/modulo-0.md) · Tema 5: Servicios que emula Floci — AWS, Azure y GCP: resultado, límites.
-- [node · módulo 14](../web/public/content/node/modulo-14.md) · Tema 3: Compensar una entrega cuando falla un paso: resultado, conexión con un proyecto.
 
 ## Regla de cierre
 

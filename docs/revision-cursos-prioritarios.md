@@ -18,15 +18,15 @@ Los conteos comparan elementos con duración enumerados en el prompt con encabez
 
 | Curso | Prompt | Web ahora | Diferencia observada | Señales de profundidad existentes* |
 |---|---:|---:|---:|---:|
-| Java | 21 módulos, 122 elementos cronometrados | 21 módulos, 85 temas | La granularidad difiere en M12, M16, M17, M19 y M20; los temas añadidos en M12 empiezan a separar conceptos agrupados | 46 al iniciar la revisión |
-| Node.js | 16 módulos, 75 elementos cronometrados | 15 módulos, 77 temas | Falta M15; el tema compuesto de saga/Kafka/RabbitMQ se empezó a separar | 15 |
+| Java | 21 módulos, 122 elementos cronometrados | 21 módulos, 91 temas | La granularidad difiere en M12, M16, M17, M19 y M20; M16 se amplió de 2 a 8 lecciones | 46 al iniciar la revisión |
+| Node.js | 16 módulos, 75 elementos cronometrados | 16 módulos, 83 temas | M15 ya existe; M14 separa saga, Kafka y RabbitMQ en lecciones diferentes | 15 |
 | Spring Boot | 26 módulos, 161 elementos cronometrados | 23 módulos, 91 temas | M23–M25 no tienen archivo; granularidad de M2–M22 por cotejar | 8 |
 | Flutter | 23 módulos, 155 elementos cronometrados | 16 módulos, 63 temas | M16–M22 no tienen archivo; granularidad de M0–M15 por cotejar | 6 |
 
 **Detalle de diferencias por módulo según cantidad de elementos cronometrados:**
 
 - **Java:** las diferencias de elementos por encabezados son M12 (+2 elementos), M16 (+15), M17 (+10), M19 (+5) y M20 (+10). El cotejo de contenido definirá cuáles son subtemas cubiertos dentro de una lección compuesta y cuáles requieren una lección propia.
-- **Node:** M15 no existe como módulo en la web; el prompt enumera 4 elementos para ese módulo. M14 se separó para que saga, Kafka y RabbitMQ no se confundan como una misma práctica; quedan las lecciones específicas de Kafka y RabbitMQ por crear.
+- **Node:** se añadió M15 con Deno, Bun, migración desde Node y criterio de elección. M14 separa saga, Kafka y RabbitMQ para comprobar clave/grupo/offset de Kafka y exchange/cola/ack/prefetch de RabbitMQ por separado; falta ejecutar los labs contra brokers reales.
 - **Spring Boot:** hay diferencias de granularidad que se revisarán por contenido en M2 (2), M3 (5), M4 (5), M6 (5), M7 (3), M8 (3), M9 (3), M10 (4), M11 (1), M16 (6), M17 (6), M18 (5), M19 (6), M20 (2), M21 (3), M22 (2). M23, M24 y M25 no tienen archivo en el contenido web; cada uno enumera 4 elementos en el prompt.
 - **Flutter:** hay diferencias de granularidad por cotejar en M0 (6), M1 (5), M2 (2), M3 (3), M4 (5), M5 (2), M6 (2), M7 (4), M8 (3), M9 (7), M10 (9), M11 (4), M12 (3), M13 (4), M14 (1), M15 (1). M16, M17, M18, M21 y M22 no tienen archivo en la web; enumeran 6, 6, 7, 6 y 6 elementos. El prompt describe M19 y M20 sin una lista cronometrada reconocible; su proyecto/capstone se revisará directamente.
 
@@ -78,5 +78,6 @@ El cierre de cada curso requerirá conteo de títulos preservados, matriz de req
 
 - **Java M12:** se añadieron las lecciones separadas de Prototype y patrones estructurales; el módulo pasa de 4 a 6 temas. Se amplió el ejemplo estructural para incluir Flyweight. Siguen pendientes las brechas de M17, M19 y M20.
 - **Java M16:** se expandió de 2 a 8 lecciones con el mapa completo de temas del prompt; los puntos que requieren laboratorio de integración real quedan identificados como parciales en la matriz. La cobertura de títulos/estructura no se presenta como ejecución completada.
-- **Node M14:** la lección que mezclaba “microservicios, Kafka, RabbitMQ y sagas” ahora enseña solo la saga. El código incompleto con funciones sin definir se reemplazó por una demostración ejecutable de pedido, reserva, fallo de pago y compensación. Kafka y RabbitMQ requieren lecciones propias aún pendientes.
+- **Node M14:** la saga ahora tiene objetivo, analogía, fallo y salida comprobable. Se añadieron lecciones separadas de Kafka y RabbitMQ con código de productor/consumidor, claves/grupos/offsets, exchange/routing, acknowledgements, prefetch, DLQ e idempotencia. Falta ejecutar ambos labs contra brokers disponibles.
+- **Node M15:** se creó la ruta de cuatro temas para Deno, Bun, migración y elección, basada en la documentación primaria actual. La matriz cubre estructura curricular; los ejemplos Deno/Bun aún no se ejecutaron en esos runtimes.
 - La auditoría de Java, Spring Boot, Flutter y Node no está cerrada. En particular, Flutter y Spring todavía no alcanzan el inventario modular del prompt.

@@ -2,9 +2,9 @@
   "method": "Lectura automática de todos los bloques visibles; alertas para revisión, no veredictos de corrección ni aprendizaje. Una demo breve puede ser suficiente. La ausencia de alertas no acredita ejecutabilidad.",
   "totals": {
     "tracks": 14,
-    "modules": 245,
-    "topics": 1106,
-    "topicsWithSignals": 152,
+    "modules": 246,
+    "topics": 1112,
+    "topicsWithSignals": 154,
     "newLaboratories": 25
   },
   "priorities": {
@@ -9985,7 +9985,7 @@
       "module": 14,
       "title": "Tema 4: Serverless multi-cloud",
       "file": "web/public/content/node/modulo-14.md",
-      "line": 199,
+      "line": 215,
       "signals": [
         "comprobar-script-test"
       ],
@@ -9998,7 +9998,7 @@
       "module": 14,
       "title": "Tema 5: Docker productivo con Node",
       "file": "web/public/content/node/modulo-14.md",
-      "line": 284,
+      "line": 300,
       "signals": [
         "comprobar-script-test"
       ],
@@ -10011,10 +10011,80 @@
       "module": 14,
       "title": "Tema 6: CI/CD y promoción de artefactos",
       "file": "web/public/content/node/modulo-14.md",
-      "line": 370,
+      "line": 386,
       "signals": [
         "comprobar-script-test"
       ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "node",
+      "module": 14,
+      "title": "Tema 7: Kafka desde Node: clave, grupo consumidor y offset",
+      "file": "web/public/content/node/modulo-14.md",
+      "line": 475,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "node",
+      "module": 14,
+      "title": "Tema 8: RabbitMQ desde Node: exchange, cola y confirmaciones",
+      "file": "web/public/content/node/modulo-14.md",
+      "line": 568,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "node",
+      "module": 15,
+      "title": "Tema 1: Deno y permisos explícitos",
+      "file": "web/public/content/node/modulo-15.md",
+      "line": 7,
+      "signals": [
+        "ejemplo-breve-revisar-contexto"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "node",
+      "module": 15,
+      "title": "Tema 2: Bun reúne runtime, paquetes, pruebas y bundler",
+      "file": "web/public/content/node/modulo-15.md",
+      "line": 68,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "node",
+      "module": 15,
+      "title": "Tema 3: Migrar un proyecto Node a Bun sin perder reproducibilidad",
+      "file": "web/public/content/node/modulo-15.md",
+      "line": 143,
+      "signals": [
+        "comprobar-script-test"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "node",
+      "module": 15,
+      "title": "Tema 4: Elegir entre Node, Deno y Bun",
+      "file": "web/public/content/node/modulo-15.md",
+      "line": 199,
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"

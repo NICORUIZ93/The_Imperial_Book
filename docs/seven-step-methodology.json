@@ -201,24 +201,24 @@
       "complete": 56
     },
     "node": {
-      "topics": 77,
-      "objective": 76,
-      "prerequisites": 76,
-      "context": 77,
-      "theoryAnalogy": 76,
-      "guidedDemo": 77,
-      "codeExplanation": 77,
-      "execution": 77,
-      "expectedResult": 76,
-      "deliberateFailure": 76,
-      "guidedPractice": 76,
-      "independentPractice": 77,
-      "closure": 76,
-      "commonErrors": 76,
-      "resources": 76,
-      "standaloneExample": 76,
-      "learningEvidence": 76,
-      "complete": 76
+      "topics": 83,
+      "objective": 83,
+      "prerequisites": 83,
+      "context": 83,
+      "theoryAnalogy": 83,
+      "guidedDemo": 83,
+      "codeExplanation": 83,
+      "execution": 83,
+      "expectedResult": 83,
+      "deliberateFailure": 83,
+      "guidedPractice": 83,
+      "independentPractice": 83,
+      "closure": 83,
+      "commonErrors": 83,
+      "resources": 83,
+      "standaloneExample": 83,
+      "learningEvidence": 83,
+      "complete": 83
     },
     "react": {
       "topics": 58,
@@ -23265,26 +23265,26 @@
         "module": 14,
         "topic": "Tema 3: Compensar una entrega cuando falla un paso",
         "criteria": {
-          "objective": false,
-          "prerequisites": false,
+          "objective": true,
+          "prerequisites": true,
           "context": true,
-          "theoryAnalogy": false,
+          "theoryAnalogy": true,
           "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
-          "expectedResult": false,
-          "deliberateFailure": false,
-          "guidedPractice": false,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
           "independentPractice": true,
-          "closure": false,
-          "commonErrors": false,
-          "resources": false,
-          "standaloneExample": false,
-          "learningEvidence": false
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 5,
-          "complete": false
+          "stepsPassed": 16,
+          "complete": true
         }
       },
       {
@@ -23342,6 +23342,162 @@
       {
         "module": 14,
         "topic": "Tema 6: CI/CD y promoción de artefactos",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 14,
+        "topic": "Tema 7: Kafka desde Node: clave, grupo consumidor y offset",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 14,
+        "topic": "Tema 8: RabbitMQ desde Node: exchange, cola y confirmaciones",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 15,
+        "topic": "Tema 1: Deno y permisos explícitos",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 15,
+        "topic": "Tema 2: Bun reúne runtime, paquetes, pruebas y bundler",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 15,
+        "topic": "Tema 3: Migrar un proyecto Node a Bun sin perder reproducibilidad",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 15,
+        "topic": "Tema 4: Elegir entre Node, Deno y Bun",
         "criteria": {
           "objective": true,
           "prerequisites": true,

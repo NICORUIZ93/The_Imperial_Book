@@ -8,7 +8,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 |---|---:|---:|---|---|
 | foundations | 99 | 8 | HTML/CSS antes de frameworks; archivos y ejecución antes de persistencia avanzada | Interfaz semántica operable por teclado, algoritmo con casos límite y SQL reproducible |
 | javascript | 88 | 6 | Formularios, DOM y errores de red antes de patrones avanzados | Cliente que conserva entrada, anuncia errores y distingue cancelación de fallo |
-| node | 77 | 14 | HTTP y validación antes de autenticación e integraciones | API con límites de carga, paginación estable, pruebas y cierre ordenado |
+| node | 83 | 16 | HTTP y validación antes de autenticación e integraciones | API con límites de carga, paginación estable, pruebas y cierre ordenado |
 | angular | 71 | 3 | HTML/CSS/TypeScript explícitos; RxJS y estado con ejemplos completos | Rutas, formularios, datos remotos y cambios sin guardar comprobados con navegador |
 | react | 58 | 46 | JSX y estado antes de efectos; proveedor, dependencias y API visibles | Carga, error, vacío y carrera de respuestas; caché observada, no supuesta |
 | java | 91 | 49 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
@@ -914,6 +914,12 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | node / 14 | [Tema 4: Serverless multi-cloud](../web/public/content/node/modulo-14.md) | comprobar-script-test |
 | node / 14 | [Tema 5: Docker productivo con Node](../web/public/content/node/modulo-14.md) | comprobar-script-test |
 | node / 14 | [Tema 6: CI/CD y promoción de artefactos](../web/public/content/node/modulo-14.md) | comprobar-script-test |
+| node / 14 | [Tema 7: Kafka desde Node: clave, grupo consumidor y offset](../web/public/content/node/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 14 | [Tema 8: RabbitMQ desde Node: exchange, cola y confirmaciones](../web/public/content/node/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 15 | [Tema 1: Deno y permisos explícitos](../web/public/content/node/modulo-15.md) | ejemplo-breve-revisar-contexto |
+| node / 15 | [Tema 2: Bun reúne runtime, paquetes, pruebas y bundler](../web/public/content/node/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 15 | [Tema 3: Migrar un proyecto Node a Bun sin perder reproducibilidad](../web/public/content/node/modulo-15.md) | comprobar-script-test |
+| node / 15 | [Tema 4: Elegir entre Node, Deno y Bun](../web/public/content/node/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 2 | [Tema 1: fs/promises frente a callbacks](../web/public/content/node/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 2 | [Tema 2: Streams básicos: Readable, Writable y Transform](../web/public/content/node/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 2 | [Tema 3: Backpressure: write() y el evento drain](../web/public/content/node/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |

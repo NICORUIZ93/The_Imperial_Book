@@ -6,9 +6,9 @@ defectos detectados tampoco acredita haber sido comprendida.
 
 | Métrica | Valor |
 |---|---:|
-| Temas analizados | 1106 |
+| Temas analizados | 1112 |
 | Temas con algún defecto | 470 |
-| Módulos con apéndices heredados | 183/245 |
+| Módulos con apéndices heredados | 183/246 |
 
 ## Defectos por tipo
 
@@ -81,4 +81,4 @@ defectos detectados tampoco acredita haber sido comprendida.
 4. `--strict` compara contra `docs/lesson-substance-baseline.json`: ningún
    tema nuevo puede nacer con estos defectos.
 
-Huella del contenido: `514a1edf804480dd9b2457e8d315f22a667e33265b0b54a83fafe63eabe06289`
+Huella del contenido: `6d6c209fcd1cba27bd7cfd89ce3e9630556353101934801f9c893e0d48012e1a`

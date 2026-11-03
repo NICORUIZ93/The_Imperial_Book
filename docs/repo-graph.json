@@ -596,7 +596,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 12557,
+      "lines": 12627,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -604,7 +604,7 @@
     },
     {
       "path": "docs/course-depth-review.md",
-      "lines": 1136,
+      "lines": 1142,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -637,7 +637,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 50,
+      "lines": 49,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -731,7 +731,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 10637,
+      "lines": 10684,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -820,7 +820,7 @@
     },
     {
       "path": "docs/prerequisite-graph.json",
-      "lines": 12174,
+      "lines": 12240,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -897,7 +897,7 @@
     },
     {
       "path": "docs/revision-cursos-prioritarios.md",
-      "lines": 83,
+      "lines": 84,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -948,7 +948,7 @@
     },
     {
       "path": "docs/seven-step-methodology.json",
-      "lines": 29071,
+      "lines": 29227,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -975,7 +975,7 @@
     },
     {
       "path": "docs/specialization-outcomes.json",
-      "lines": 1294,
+      "lines": 1295,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -983,7 +983,7 @@
     },
     {
       "path": "docs/topic-learning-quality.json",
-      "lines": 24603,
+      "lines": 24735,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -10213,7 +10213,7 @@
     },
     {
       "path": "web/public/content/node/modulo-14.md",
-      "lines": 458,
+      "lines": 642,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -11368,7 +11368,7 @@
     },
     {
       "path": "web/public/content/topic-index.json",
-      "lines": 4945,
+      "lines": 4971,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12816,7 +12816,7 @@
     },
     {
       "path": "web/src/app/tracks/node.track.ts",
-      "lines": 214,
+      "lines": 219,
       "kind": "angular-app",
       "symbols": [],
       "imports": [

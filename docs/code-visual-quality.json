@@ -49,16 +49,16 @@
       "officialSource": 68
     },
     "node": {
-      "topics": 77,
-      "code": 77,
-      "commentedCode": 36,
-      "mermaid": 22,
+      "topics": 83,
+      "code": 83,
+      "commentedCode": 42,
+      "mermaid": 29,
       "archifyVisual": 0,
       "asciiVisual": 13,
       "misleadingDiagramLabel": 0,
-      "filePath": 77,
-      "runCommand": 77,
-      "officialSource": 47
+      "filePath": 82,
+      "runCommand": 83,
+      "officialSource": 49
     },
     "angular": {
       "topics": 71,

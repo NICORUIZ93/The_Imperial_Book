@@ -3913,6 +3913,72 @@
       ]
     },
     {
+      "id": "node:14:7",
+      "track": "node",
+      "module": 14,
+      "position": 7,
+      "title": "Kafka desde Node: clave, grupo consumidor y offset",
+      "file": "web/public/content/node/modulo-14.md",
+      "requires": [
+        "node:14:6"
+      ]
+    },
+    {
+      "id": "node:14:8",
+      "track": "node",
+      "module": 14,
+      "position": 8,
+      "title": "RabbitMQ desde Node: exchange, cola y confirmaciones",
+      "file": "web/public/content/node/modulo-14.md",
+      "requires": [
+        "node:14:7"
+      ]
+    },
+    {
+      "id": "node:15:1",
+      "track": "node",
+      "module": 15,
+      "position": 1,
+      "title": "Deno y permisos explícitos",
+      "file": "web/public/content/node/modulo-15.md",
+      "requires": [
+        "node:14:8"
+      ]
+    },
+    {
+      "id": "node:15:2",
+      "track": "node",
+      "module": 15,
+      "position": 2,
+      "title": "Bun reúne runtime, paquetes, pruebas y bundler",
+      "file": "web/public/content/node/modulo-15.md",
+      "requires": [
+        "node:15:1"
+      ]
+    },
+    {
+      "id": "node:15:3",
+      "track": "node",
+      "module": 15,
+      "position": 3,
+      "title": "Migrar un proyecto Node a Bun sin perder reproducibilidad",
+      "file": "web/public/content/node/modulo-15.md",
+      "requires": [
+        "node:15:2"
+      ]
+    },
+    {
+      "id": "node:15:4",
+      "track": "node",
+      "module": 15,
+      "position": 4,
+      "title": "Elegir entre Node, Deno y Bun",
+      "file": "web/public/content/node/modulo-15.md",
+      "requires": [
+        "node:15:3"
+      ]
+    },
+    {
       "id": "spring-boot:0:1",
       "track": "spring-boot",
       "module": 0,

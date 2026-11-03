@@ -1304,6 +1304,11 @@
       "track": "node"
     },
     {
+      "legacySections": [],
+      "module": 15,
+      "track": "node"
+    },
+    {
       "legacySections": [
         "## Construcción guiada del capítulo",
         "**Errores comunes y soluciones**"
@@ -1644,7 +1649,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "514a1edf804480dd9b2457e8d315f22a667e33265b0b54a83fafe63eabe06289",
+    "fingerprint": "6d6c209fcd1cba27bd7cfd89ce3e9630556353101934801f9c893e0d48012e1a",
     "issues": {
       "andamiaje-generico": 128,
       "bloque-repetido": 218,
@@ -1657,9 +1662,9 @@
       "## Ruta de proyecto progresivo desde carpeta vacía": 12,
       "**Errores comunes y soluciones**": 181
     },
-    "modules": 245,
+    "modules": 246,
     "modulesWithLegacySections": 183,
-    "topics": 1106,
+    "topics": 1112,
     "topicsWithIssues": 470
   },
   "topics": {
@@ -8894,9 +8899,9 @@
       {
         "issues": [],
         "module": 14,
-        "tailWords": 117,
+        "tailWords": 197,
         "topic": "Tema 3: Compensar una entrega cuando falla un paso",
-        "words": 551
+        "words": 722
       },
       {
         "issues": [],
@@ -8918,6 +8923,48 @@
         "tailWords": 364,
         "topic": "Tema 6: CI/CD y promoción de artefactos",
         "words": 824
+      },
+      {
+        "issues": [],
+        "module": 14,
+        "tailWords": 176,
+        "topic": "Tema 7: Kafka desde Node: clave, grupo consumidor y offset",
+        "words": 866
+      },
+      {
+        "issues": [],
+        "module": 14,
+        "tailWords": 155,
+        "topic": "Tema 8: RabbitMQ desde Node: exchange, cola y confirmaciones",
+        "words": 768
+      },
+      {
+        "issues": [],
+        "module": 15,
+        "tailWords": 171,
+        "topic": "Tema 1: Deno y permisos explícitos",
+        "words": 630
+      },
+      {
+        "issues": [],
+        "module": 15,
+        "tailWords": 158,
+        "topic": "Tema 2: Bun reúne runtime, paquetes, pruebas y bundler",
+        "words": 620
+      },
+      {
+        "issues": [],
+        "module": 15,
+        "tailWords": 156,
+        "topic": "Tema 3: Migrar un proyecto Node a Bun sin perder reproducibilidad",
+        "words": 582
+      },
+      {
+        "issues": [],
+        "module": 15,
+        "tailWords": 144,
+        "topic": "Tema 4: Elegir entre Node, Deno y Bun",
+        "words": 659
       },
       {
         "issues": [],

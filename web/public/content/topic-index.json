@@ -3948,6 +3948,32 @@
       {
         "title": "CI/CD y promoción de artefactos",
         "fragment": "tema-6-ci-cd-y-promocion-de-artefactos"
+      },
+      {
+        "title": "Kafka desde Node: clave, grupo consumidor y offset",
+        "fragment": "tema-7-kafka-desde-node-clave-grupo-consumidor-y-offset"
+      },
+      {
+        "title": "RabbitMQ desde Node: exchange, cola y confirmaciones",
+        "fragment": "tema-8-rabbitmq-desde-node-exchange-cola-y-confirmaciones"
+      }
+    ],
+    "15": [
+      {
+        "title": "Deno y permisos explícitos",
+        "fragment": "tema-1-deno-y-permisos-explicitos"
+      },
+      {
+        "title": "Bun reúne runtime, paquetes, pruebas y bundler",
+        "fragment": "tema-2-bun-reune-runtime-paquetes-pruebas-y-bundler"
+      },
+      {
+        "title": "Migrar un proyecto Node a Bun sin perder reproducibilidad",
+        "fragment": "tema-3-migrar-un-proyecto-node-a-bun-sin-perder-reproducibilidad"
+      },
+      {
+        "title": "Elegir entre Node, Deno y Bun",
+        "fragment": "tema-4-elegir-entre-node-deno-y-bun"
       }
     ],
     "2": [

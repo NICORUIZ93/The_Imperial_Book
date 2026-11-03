@@ -145,18 +145,18 @@ Levantá ambos subgrafos con `node src/conductores/index.js` y `node src/pedidos
 ### Tema 3: Compensar una entrega cuando falla un paso
 
 #### Paso 1 · Objetivo y preparación
-Al terminar podrás ejecutar una operación con tres pasos y revertir los que ya se completaron cuando falla el cobro. Necesitas Node.js 24 LTS. Desde la raíz del proyecto crea `ejemplo-saga/` y copia allí `examples/node-sagas/saga.mjs`.
+Al finalizar podrás ejecutar una operación con tres pasos y revertir los que ya se completaron cuando falla el cobro. **Prerrequisitos:** funciones async de Node.js y manejo de errores. Comprueba `node --version`; desde la raíz crea una copia independiente del ejemplo.
 
 #### Paso 2 · Contexto y caso real
 Una entrega puede crear un pedido, reservar un conductor y cobrar. Si el cobro se rechaza, dejar el pedido abierto y el conductor ocupado confunde al equipo y al cliente. El programa debe saber qué hacer con lo que ya alcanzó a cambiar.
 
-#### Paso 3 · Explicación con una analogía
+#### Paso 3 · Teoría y analogía
 Una **saga** es una lista de pasos en la que cada paso tiene una acción para deshacerlo. Es parecido a reservar vuelo y hotel por separado: si la segunda reserva falla, cancelas la primera explícitamente. La base de datos de un servicio no puede deshacer por sí sola un cambio que hizo otro servicio.
 
 El archivo guarda tres estados simples y dos compensaciones: cancelar el pedido y liberar al conductor. `undo.reverse()` las ejecuta en orden inverso. Este ejemplo ayuda a entender la idea; todavía no se conecta a microservicios, Kafka ni RabbitMQ.
 
 #### Paso 4 · Demostración guiada
-El archivo `ejemplo-saga/saga.mjs` contiene el programa completo. Revisa estas acciones:
+Crea una copia independiente en `ejemplo-saga/saga.mjs` desde `examples/node-sagas/saga.mjs`; ese archivo contiene el programa. Revisa estas acciones para ver cómo cada paso registra la compensación que puede revertirlo:
 
 ```js
 async function createOrder() {
@@ -179,19 +179,35 @@ node ejemplo-saga/saga.mjs
 node ejemplo-saga/saga.mjs --fail-payment
 ```
 
-La primera ejecución muestra pedido creado, conductor reservado y pago aprobado. La segunda imprime `fallo=Pago rechazado | pedido:CANCELLED,conductor:FREE,pago:DECLINED`: el fallo de cobro activó las dos compensaciones.
+**Resultado esperado:** la primera ejecución muestra pedido creado, conductor reservado y pago aprobado. La segunda imprime `fallo=Pago rechazado | pedido:CANCELLED,conductor:FREE,pago:DECLINED`: el fallo de cobro activó las dos compensaciones.
 
 #### Paso 5 · Práctica guiada
+**Pista:** cada compensación debe corresponder a un paso que sí terminó; si el pago no se completó, no agregues una devolución ficticia.
 1. Antes de correr el segundo comando, predice qué estado tendrá el conductor.
 2. Cambia el orden de `undo.reverse()` por `undo` y vuelve a ejecutar. Anota en qué orden se revierten los cambios.
-3. Quita temporalmente la llamada a las compensaciones. El pedido queda `CREATED` y el conductor `RESERVED` después del rechazo. Restáurala.
+3. Quita temporalmente la llamada a las compensaciones. El pedido queda `CREATED` y el conductor `RESERVED` después del rechazo. **Ese es el fallo deliberado**; diagnostica qué estado quedó inconsistente y restáurala.
 4. Explica por qué un mensaje de error no cancela automáticamente los pasos previos.
 
 #### Paso 6 · Práctica independiente
 Agrega una etapa `notificarCliente` después del cobro. Define qué estado guardarías si falla la notificación y si ese fallo debería cancelar el pedido ya cobrado. Escribe una salida que permita comprobar tu decisión.
 
+```mermaid
+sequenceDiagram
+  participant O as Pedido
+  participant D as Conductor
+  participant P as Pago
+  O->>D: reservar
+  D-->>O: reservado
+  O->>P: cobrar
+  P-->>O: rechazo
+  O->>D: compensar y liberar
+  O->>O: cancelar pedido
+```
+
 #### Paso 7 · Cierre y evidencia
-Guarda las dos salidas y tu explicación de cuándo se ejecutan las compensaciones. En un sistema real, cada servicio conserva sus propios datos y el proceso puede reiniciarse a mitad de la operación: harían falta almacenamiento duradero, reintentos, idempotencia y alertas. La demostración actual solo enseña la secuencia en memoria. **Fuentes:** [Node.js: ejecución de programas](https://nodejs.org/en/learn/command-line/run-nodejs-scripts-from-the-command-line) y [patrón Saga](https://microservices.io/patterns/data/saga.html).
+Entrega las dos salidas del Paso 4, el fallo diagnosticado y tu explicación de cuándo se ejecutan las compensaciones. En un sistema real, cada servicio conserva sus propios datos y el proceso puede reiniciarse a mitad de la operación: harían falta almacenamiento duradero, reintentos, idempotencia y alertas. La demostración actual solo enseña la secuencia en memoria. **Proyecto integrador RutaFlow:** si el flujo pasa a microservicios, persiste el estado de la saga para que sobreviva a reinicios. **Errores comunes:** compensar en orden de avance, dar por hecho que una compensación siempre tendrá éxito y usar este ejemplo en memoria como si fuera persistente. **Fuentes oficiales:** [Node.js: ejecución de programas](https://nodejs.org/en/learn/command-line/run-nodejs-scripts-from-the-command-line) y [patrón Saga](https://microservices.io/patterns/data/saga.html). Próximo paso: escoger un broker para transportar eventos entre servicios.
+
+**Evidencia de aprendizaje:** entrega la salida de éxito, el fallo y la explicación de las dos compensaciones.
 
 **Idea clave:** una falla no deshace cambios de otros servicios; el diseño debe explicar cómo compensarlos.
 **¿Por qué es importante?** Si no defines la compensación, un pago rechazado puede dejar al conductor reservado y al pedido abierto.
@@ -455,3 +471,171 @@ Guarda este workflow como `.github/workflows/promocion.yml`; es el mismo patrón
 - **Docker con Node.js**: imagen reproducible y usuario no root.
 - **CI/CD con Node.js**: pruebas, artefactos y promoción.
 - **Microservicios Avanzado**: eventos, brokers y compensaciones.
+
+### Tema 7: Kafka desde Node: clave, grupo consumidor y offset
+
+#### Paso 1 · Objetivo y preparación
+
+Al finalizar publicarás y consumirás un evento JSON usando una clave estable y un grupo, y explicarás por qué repetir un mensaje puede repetir el efecto. **Prerrequisitos:** promesas, variables de entorno y eventos. Necesitas un cluster Kafka local o de desarrollo con acceso autorizado; no guardes credenciales en el repositorio.
+
+#### Paso 2 · Contexto y caso real
+
+RutaFlow registra cambios de estado de pedidos que varios servicios deben leer. Una cola de trabajos simple reparte cada tarea entre workers; un log Kafka conserva eventos por tópico y permite grupos independientes que leen su propio avance.
+
+#### Paso 3 · Teoría y analogía
+
+Un tópico se divide en particiones; la clave suele dirigir eventos relacionados a la misma partición para mantener su orden allí. Los consumidores con el mismo `group.id` reparten las particiones entre sí; otro grupo puede leer el mismo evento con un offset distinto. El offset es un marcador de lectura, no una transacción que confirme el efecto en PostgreSQL. Piensa en un cuaderno compartido: los grupos son lectores con marcadores propios, y las páginas de una misma clave se mantienen juntas.
+
+```mermaid
+flowchart LR
+  P[Producer] --> T[Tópico pedidos]
+  T --> X[Partición por clave pedidoId]
+  X --> G1[Grupo proyecciones]
+  X --> G2[Grupo notificaciones]
+  G1 --> O1[Offset propio]
+  G2 --> O2[Offset propio]
+```
+
+#### Paso 4 · Demostración guiada
+
+Crea `ejemplo-kafka/producer.js` y `consumer.js`; instala `@confluentinc/kafka-javascript`. Configura `bootstrap.servers` desde `KAFKA_BOOTSTRAP_SERVERS` y usa un tópico de desarrollo creado en tu cluster. El productor debe enviar `pedidoId` como `key` y JSON en `value`; el consumidor se conecta, se suscribe, fija `group.id` y registra tópico, partición, offset, clave y valor. Usa la API promisificada recomendada para proyectos nuevos. Ejemplo independiente desde cero: crea una carpeta separada y prepara sus archivos, sin copiar estado de otro módulo.
+
+`producer.js` publica un evento; `consumer.js` crea un lector del grupo. Sustituye el nombre de tópico por uno existente:
+
+```js
+// producer.js
+const { Kafka } = require("@confluentinc/kafka-javascript").KafkaJS;
+async function main() {
+  const kafka = new Kafka({ "bootstrap.servers": process.env.KAFKA_BOOTSTRAP_SERVERS });
+  const producer = kafka.producer();
+  await producer.connect();
+  await producer.send({ topic: "pedidos", messages: [{
+    key: "p-17", value: JSON.stringify({ eventId: "e-1", estado: "DESPACHADO" })
+  }] });
+  await producer.disconnect();
+}
+main().catch(console.error);
+```
+
+```js
+// consumer.js
+const { Kafka } = require("@confluentinc/kafka-javascript").KafkaJS;
+async function main() {
+  const kafka = new Kafka({ "bootstrap.servers": process.env.KAFKA_BOOTSTRAP_SERVERS });
+  const consumer = kafka.consumer({ "group.id": "proyeccion-pedidos" });
+  await consumer.connect();
+  await consumer.subscribe({ topics: ["pedidos"] });
+  consumer.run({ eachMessage: async ({ partition, message }) => {
+    console.log({ partition, offset: message.offset, key: message.key?.toString(),
+      value: message.value?.toString() });
+  } });
+}
+main().catch(console.error);
+```
+
+El bucle `run` continúa hasta terminar el proceso; para el laboratorio detenlo con Ctrl+C y añade cierre ordenado antes de desplegar.
+
+```bash
+mkdir -p ejemplo-kafka
+cd ejemplo-kafka
+npm init -y
+npm install @confluentinc/kafka-javascript
+export KAFKA_BOOTSTRAP_SERVERS=localhost:9092
+node producer.js
+node consumer.js
+```
+
+Antes de ejecutar, establece `KAFKA_BOOTSTRAP_SERVERS` con el host del cluster y confirma que el tópico `pedidos` existe y que la cuenta tiene permiso para leer/escribir.
+
+**Resultado esperado:** el consumidor registra el evento con la clave y la partición asignada. Cuando arranca una segunda instancia con el mismo grupo, el cluster reparte particiones entre instancias, no crea una copia para cada una.
+
+#### Paso 5 · Práctica guiada
+
+**Fallo deliberado:** publica una entrega dos veces con la misma clave y procesa ambas sin idempotencia. **Pista:** la clave ayuda a particionar y conservar orden por clave; no impide duplicados ni hace única una operación de negocio. Diagnostica el doble efecto y guarda `eventId` con restricción única en el consumidor.
+
+#### Paso 6 · Práctica independiente
+
+Apaga el proceso después de escribir a la base de datos pero antes de confirmar/registrar el offset. Reinícialo y observa la repetición. Luego compara qué pasa si confirmas antes de escribir: puedes perder el efecto. Diseña una tabla inbox con `eventId` y una transacción de base de datos, y registra la política para eventos inválidos, reintentos y dead letter topic. Prueba una clave ausente y predice cómo cambia la distribución.
+
+#### Paso 7 · Cierre y evidencia
+
+Entrega producer, consumer, salida con partición/offset y un caso de duplicado con efecto idempotente. **Proyecto integrador RutaFlow:** publica `PedidoDespachado` desde outbox, no después de un commit que podría perderse. Errores comunes: asumir exactly-once entre Kafka y una base arbitraria, asignar grupos distintos a réplicas que deberían repartirse el mismo trabajo y suponer que la clave ordena todo el tópico. Siguiente paso: compara este log con una cola/ruteo AMQP. Fuentes oficiales: [Confluent JavaScript client](https://docs.confluent.io/kafka-clients/javascript/current/overview.html), [API de consumers](https://docs.confluent.io/platform/current/clients/confluent-kafka-javascript/docs/KafkaJS.Consumer.html) y [Apache Kafka](https://kafka.apache.org/documentation/).
+
+**¿Por qué es importante?** El avance del grupo y el efecto de negocio son dos estados distintos; el consumidor debe cerrar esa brecha.
+**Evidencia de aprendizaje:** demuestra el duplicado, el caso de fallo entre escritura y offset, y la protección por `eventId`.
+**Cuándo no usar Kafka:** una cola de una sola tarea con borrado al completarse puede ser más directa con un broker de cola.
+
+### Tema 8: RabbitMQ desde Node: exchange, cola y confirmaciones
+
+#### Paso 1 · Objetivo y preparación
+
+Al finalizar crearás un exchange y una cola, procesarás una entrega con ack manual y limitarás mensajes en vuelo con prefetch. **Prerrequisitos:** promesas y manejo de errores. Instala Docker y Node; levanta RabbitMQ para el laboratorio.
+
+#### Paso 2 · Contexto y caso real
+
+Un worker de envíos procesa cada etiqueta una vez por intento. Si confirma recepción antes de guardar el resultado, una caída pierde el trabajo; si falla después de guardar pero antes del ack, RabbitMQ puede entregarlo otra vez.
+
+#### Paso 3 · Teoría y analogía
+
+Un publisher envía al exchange; el exchange enruta a colas según tipo y binding key. El consumidor confirma el trabajo con `ack` después de procesarlo. `prefetch` limita entregas pendientes; `nack` puede reencolar o mandar a dead-letter exchange. Publisher confirms confirman que el broker aceptó la publicación; consumer acknowledgements confirman procesamiento desde el punto de vista del consumidor: son señales independientes. Como una oficina de correo, el exchange clasifica sobres, la cola los guarda y el ack indica que el receptor terminó.
+
+```mermaid
+flowchart LR
+  P[Publisher] -->|routing key| E[Direct exchange]
+  E -->|binding| Q[Cola envios]
+  Q -->|prefetch limitado| C[Consumer]
+  C -->|ack tras persistir| Q
+  C -->|nack| DLQ[Dead-letter queue]
+```
+
+#### Paso 4 · Demostración guiada
+
+Ejemplo independiente desde cero: crea `ejemplo-rabbit/consumer.mjs` y `producer.mjs`; usa `amqplib`. Levanta un broker local, declara durable exchange y cola, crea binding y publica un mensaje persistente con una routing key. En el consumidor usa `prefetch(5)`, parsea JSON, ejecuta el efecto y solo entonces llama `ack`. Confirma publicaciones con un canal de confirmación y espera el callback de confirmación antes de informar éxito al llamador.
+
+Fragmento central del consumidor; `guardarUnaVez` debe usar `eventId` como clave única y confirmar solo después de guardar:
+
+El ejemplo del repositorio usa cola durable y enruta mensajes rechazados a una DLQ configurada. En el laboratorio crea `entregas` como exchange directo, enlaza `envios` con `label.ready`, y enlaza `envios.dlq` con `dead` en `entregas.dlx`.
+
+```js
+await channel.prefetch(5);
+await channel.consume("envios", async (msg) => {
+  if (!msg) return;
+  try {
+    const event = JSON.parse(msg.content.toString());
+    await guardarUnaVez(event.eventId, event);
+    channel.ack(msg);
+  } catch (error) {
+    channel.nack(msg, false, false); // Rechazo final: revisar DLQ.
+  }
+}, { noAck: false });
+```
+
+En el publisher, usa `createConfirmChannel()` y `await channel.waitForConfirms()` después de publicar. El confirm solo prueba que el broker aceptó el mensaje según su configuración; no confirma que el consumidor guardó el efecto.
+
+```bash
+mkdir -p ejemplo-rabbit
+cd ejemplo-rabbit
+npm init -y
+npm install amqplib
+docker run -d --name rabbit-lab -p 5672:5672 -p 15672:15672 rabbitmq:4.4-management
+node producer.mjs
+node consumer.mjs
+```
+
+**Resultado esperado:** el mensaje aparece en una sola cola asociada; el consumidor escribe su resultado y luego confirma. Detén el proceso antes del ack: la entrega vuelve a estar disponible al reconectar.
+
+#### Paso 5 · Práctica guiada
+
+**Fallo deliberado:** usa `noAck: true` y termina el proceso después de recibir el mensaje, antes de guardar el resultado. **Pista:** en modo auto-ack el broker considera entregado el mensaje antes de procesarlo. Vuelve a ack manual y agrega `eventId` para tolerar la redelivery que puede ocurrir tras persistir y antes de confirmar.
+
+#### Paso 6 · Práctica independiente
+
+Configura un dead-letter exchange y una cola de errores. Rechaza con `nack(msg, false, false)` un payload que no se puede procesar; verifica que cae en DLQ. Después reencola solo fallos transitorios con retraso controlado y número máximo de intentos: reencolar inmediatamente sin límite puede crear un ciclo caliente. Compara prefetch 1 y 5 observando trabajo en vuelo y memoria, no solo velocidad.
+
+#### Paso 7 · Cierre y evidencia
+
+Entrega exchange, binding, cola, salida del ack/confirm y el mensaje que fue a DLQ. **Proyecto integrador RutaFlow:** usa RabbitMQ para tareas de trabajo como generar etiquetas; persiste antes del ack y registra idempotencia. Errores comunes: confundir publisher confirm con consumer ack, confirmar antes de terminar el trabajo y configurar prefetch ilimitado para consumidores lentos. Siguiente paso: justifica broker y semántica según flujo. Fuentes oficiales: [tutorial JavaScript](https://www.rabbitmq.com/tutorials/tutorial-one-javascript), [confirms, acknowledgements y prefetch](https://www.rabbitmq.com/docs/confirms) y [colas](https://www.rabbitmq.com/docs/queues).
+
+**¿Por qué es importante?** Un ack temprano puede perder trabajo y un ack tardío puede repetirlo; ambos caminos deben tener un efecto seguro.
+**Evidencia de aprendizaje:** reproduce la redelivery y el dead-letter, y muestra que `eventId` evita duplicar el resultado.
+**Cuándo no usar RabbitMQ:** si varios equipos necesitan leer el mismo historial desde offsets independientes, evalúa un log particionado como Kafka.

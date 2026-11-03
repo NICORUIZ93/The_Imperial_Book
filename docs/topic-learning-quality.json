@@ -173,18 +173,18 @@
       "repeatedDemo": 0
     },
     "node": {
-      "topics": 77,
-      "explanation": 77,
-      "code": 77,
-      "visual": 26,
-      "filePath": 77,
-      "runCommand": 77,
-      "expectedResult": 76,
-      "practice": 77,
-      "project": 76,
-      "modelMental": 77,
-      "limitsDecision": 77,
-      "practicable": 76,
+      "topics": 83,
+      "explanation": 83,
+      "code": 83,
+      "visual": 33,
+      "filePath": 83,
+      "runCommand": 83,
+      "expectedResult": 83,
+      "practice": 83,
+      "project": 83,
+      "modelMental": 83,
+      "limitsDecision": 83,
+      "practicable": 83,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
@@ -19691,18 +19691,18 @@
         "criteria": {
           "explanation": true,
           "code": true,
-          "visual": false,
+          "visual": true,
           "filePath": true,
           "runCommand": true,
-          "expectedResult": false,
+          "expectedResult": true,
           "practice": true,
-          "project": false,
+          "project": true,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 10,
-          "practicable": false,
+          "rubricScore": 16,
+          "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -19754,6 +19754,138 @@
       {
         "module": 14,
         "topic": "Tema 6: CI/CD y promoción de artefactos",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 14,
+        "topic": "Tema 7: Kafka desde Node: clave, grupo consumidor y offset",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 14,
+        "topic": "Tema 8: RabbitMQ desde Node: exchange, cola y confirmaciones",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 15,
+        "topic": "Tema 1: Deno y permisos explícitos",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 15,
+        "topic": "Tema 2: Bun reúne runtime, paquetes, pruebas y bundler",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 15,
+        "topic": "Tema 3: Migrar un proyecto Node a Bun sin perder reproducibilidad",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 15,
+        "topic": "Tema 4: Elegir entre Node, Deno y Bun",
         "criteria": {
           "explanation": true,
           "code": true,
