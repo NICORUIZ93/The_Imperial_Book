@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 163,
+    "topicsWithSignals": 172,
     "newLaboratories": 25
   },
   "priorities": {
@@ -5050,7 +5050,9 @@
       "title": "Tema 1: estado de la jornada con Riverpod",
       "file": "web/public/content/flutter/modulo-19.md",
       "line": 9,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -5060,7 +5062,7 @@
       "module": 19,
       "title": "Tema 2: mapa y permiso de ubicación",
       "file": "web/public/content/flutter/modulo-19.md",
-      "line": 84,
+      "line": 91,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -5071,7 +5073,7 @@
       "module": 19,
       "title": "Tema 3: posiciones en tiempo real con Socket.IO",
       "file": "web/public/content/flutter/modulo-19.md",
-      "line": 154,
+      "line": 161,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -5082,7 +5084,7 @@
       "module": 19,
       "title": "Tema 4: animar el marcador sin saltos",
       "file": "web/public/content/flutter/modulo-19.md",
-      "line": 228,
+      "line": 235,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -5093,7 +5095,7 @@
       "module": 19,
       "title": "Tema 5: confirmaciones offline y sincronización",
       "file": "web/public/content/flutter/modulo-19.md",
-      "line": 295,
+      "line": 302,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -5104,7 +5106,7 @@
       "module": 19,
       "title": "Tema 6: carga de evidencia con Dio y notificaciones",
       "file": "web/public/content/flutter/modulo-19.md",
-      "line": 359,
+      "line": 366,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7380,7 +7382,9 @@
       "title": "Tema 1: Del código fuente a la JVM",
       "file": "web/public/content/java/modulo-0.md",
       "line": 28,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -7390,7 +7394,7 @@
       "module": 0,
       "title": "Tema 2: public static void main — qué significa cada palabra",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 101,
+      "line": 122,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7401,7 +7405,7 @@
       "module": 0,
       "title": "Tema 3: JDK, JRE y JVM",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 156,
+      "line": 177,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7412,7 +7416,7 @@
       "module": 0,
       "title": "Tema 4: Tipos primitivos vs referencias",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 214,
+      "line": 235,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7423,7 +7427,7 @@
       "module": 0,
       "title": "Tema 5: Variables, conversiones y `String`",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 287,
+      "line": 308,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7434,7 +7438,7 @@
       "module": 0,
       "title": "Tema 6: Operadores, precedencia y control de flujo",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 344,
+      "line": 365,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7445,7 +7449,7 @@
       "module": 0,
       "title": "Tema 7: Arreglos, wrappers y paso de argumentos",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 429,
+      "line": 450,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7456,7 +7460,7 @@
       "module": 0,
       "title": "Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`)",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 510,
+      "line": 531,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -10613,7 +10617,7 @@
       "file": "web/public/content/node/modulo-14.md",
       "line": 477,
       "signals": [
-        "ejemplo-breve-revisar-contexto"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -10624,8 +10628,10 @@
       "module": 14,
       "title": "Tema 8: RabbitMQ desde Node: exchange, cola y confirmaciones",
       "file": "web/public/content/node/modulo-14.md",
-      "line": 546,
-      "signals": [],
+      "line": 562,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -12921,8 +12927,10 @@
       "module": 21,
       "title": "Tema 1: Productor, tópico, key y consumidor",
       "file": "web/public/content/spring-boot/modulo-21.md",
-      "line": 14,
-      "signals": [],
+      "line": 9,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -12932,8 +12940,10 @@
       "module": 21,
       "title": "Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia",
       "file": "web/public/content/spring-boot/modulo-21.md",
-      "line": 192,
-      "signals": [],
+      "line": 91,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -12943,9 +12953,9 @@
       "module": 21,
       "title": "Tema 3: Outbox transaccional y flujo de negocio",
       "file": "web/public/content/spring-boot/modulo-21.md",
-      "line": 316,
+      "line": 173,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -13077,8 +13087,10 @@
       "module": 25,
       "title": "Tema 1: bindings y destinations",
       "file": "web/public/content/spring-boot/modulo-25.md",
-      "line": 9,
-      "signals": [],
+      "line": 11,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -13088,8 +13100,10 @@
       "module": 25,
       "title": "Tema 2: binder Kafka y binder RabbitMQ",
       "file": "web/public/content/spring-boot/modulo-25.md",
-      "line": 110,
-      "signals": [],
+      "line": 92,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -13100,7 +13114,9 @@
       "title": "Tema 3: reintentos, error handler y dead-letter",
       "file": "web/public/content/spring-boot/modulo-25.md",
       "line": 185,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -13110,8 +13126,10 @@
       "module": 25,
       "title": "Tema 4: test binder y límites de la prueba",
       "file": "web/public/content/spring-boot/modulo-25.md",
-      "line": 263,
-      "signals": [],
+      "line": 265,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"

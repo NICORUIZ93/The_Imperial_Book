@@ -476,142 +476,174 @@ Guarda este workflow como `.github/workflows/promocion.yml`; es el mismo patrón
 
 ### Tema 7: Kafka desde Node: clave, grupo consumidor y offset
 
-#### Paso 1 · Objetivo y preparación
+**Duración estimada:** 35 min.
+**¿Por qué es importante?** La key mantiene orden por pedido y el grupo registra el avance de cada proyector.
 
-Al finalizar publicarás y consumirás un evento JSON usando una clave estable y un grupo, y explicarás por qué repetir un mensaje puede repetir el efecto. **Prerrequisitos:** promesas, variables de entorno y eventos. Necesitas un cluster Kafka local o de desarrollo con acceso autorizado; no guardes credenciales en el repositorio.
+**Prerrequisitos:** Node M0 T2 (módulos) y Node M8 T3 (promesas y workers). Proyecto continuo: RutaFlow produce cambios de pedidos para proyecciones independientes.
 
-#### Paso 2 · Contexto y caso real
+#### Subtema 7.1: Envía un evento con la clave del pedido · 10 min
 
-RutaFlow registra cambios de estado de pedidos que varios servicios deben leer. Una cola de trabajos simple reparte cada tarea entre workers; un log Kafka conserva eventos por tópico y permite grupos independientes que leen su propio avance.
+**1. Contexto**
+La clave `pedidoId` mantiene los eventos de un pedido en la misma partición; no evita duplicados.
 
-#### Paso 3 · Teoría y analogía
-
-Un tópico se divide en particiones; la clave suele dirigir eventos relacionados a la misma partición para mantener su orden allí. Los consumidores con el mismo `group.id` reparten las particiones entre sí; otro grupo puede leer el mismo evento con un offset distinto. El offset es un marcador de lectura, no una transacción que confirme el efecto en PostgreSQL. Piensa en un cuaderno compartido: los grupos son lectores con marcadores propios, y las páginas de una misma clave se mantienen juntas.
-
-```mermaid
-flowchart LR
-  P[Producer] --> T[Tópico pedidos]
-  T --> X[Partición por clave pedidoId]
-  X --> G1[Grupo proyecciones]
-  X --> G2[Grupo notificaciones]
-  G1 --> O1[Offset propio]
-  G2 --> O2[Offset propio]
-```
-
-#### Paso 4 · Demostración guiada
-
-Abre `examples/node-messaging/kafka/producer.mjs` y `consumer.mjs`; instalan `@confluentinc/kafka-javascript`. El cliente KafkaJS de Confluent usa `kafkaJS.brokers` y `kafkaJS.groupId`; no mezcla esas opciones con la API nativa `bootstrap.servers`. Usa un tópico de desarrollo creado en tu cluster. El productor envía `pedidoId` como `key` y JSON en `value`; el consumidor registra tópico, partición, offset, clave y valor.
-
-El cliente y la configuración que usan ambos programas están en `examples/node-messaging/kafka/client.mjs`:
-
-```js
-import { KafkaJS } from "@confluentinc/kafka-javascript";
-const kafka = new KafkaJS.Kafka({
-  kafkaJS: { clientId: "rutaflow-node-lab", brokers: ["localhost:19092"] }
-});
-```
-
-El bucle `run` continúa hasta terminar el proceso; para el laboratorio detenlo con Ctrl+C y añade cierre ordenado antes de desplegar.
+**2. Hazlo tú**
+Abre `examples/node-messaging/kafka/producer.mjs` y desde `examples/node-messaging/` ejecuta:
 
 ```bash
-cd examples/node-messaging
 npm ci
-docker compose -f ../spring-kafka-rutaflow/compose.yaml up -d
-docker compose -f ../spring-kafka-rutaflow/compose.yaml exec kafka /opt/kafka/bin/kafka-topics.sh --create --if-not-exists --topic pedidos --bootstrap-server localhost:9092 --partitions 3 --replication-factor 1
-npm run kafka:consumer
-# En otra terminal, desde la misma carpeta:
-npm run kafka:producer
+npm test
 ```
 
-Antes de ejecutar, establece `KAFKA_BOOTSTRAP_SERVERS` con el host del cluster y confirma que el tópico `pedidos` existe y que la cuenta tiene permiso para leer/escribir.
+**Resultado esperado:** las pruebas locales pasan; el productor crea `eventId`, usa `pedidoId` como `key` y publica JSON en `pedidos`. Estas pruebas no conectan al broker.
 
-**Resultado esperado:** el consumidor registra el evento con la clave y la partición asignada. Cuando arranca una segunda instancia con el mismo grupo, el cluster reparte particiones entre instancias, no crea una copia para cada una.
+**Fallo deliberado:** cambia `key: event.pedidoId` a `key: event.eventId`. **Error esperado:** dos eventos del mismo pedido pueden usar claves distintas. **Diagnóstico:** el identificador único cambia en cada publicación; restaura `pedidoId` para ordenar por pedido.
 
-#### Paso 5 · Práctica guiada
+**3. Entiende**
+Kafka asigna cada clave a una partición. El orden que protege la clave es local a esa partición, no un orden global del tópico.
 
-**Fallo deliberado:** publica una entrega dos veces con la misma clave y procesa ambas sin idempotencia. **Pista:** la clave ayuda a particionar y conservar orden por clave; no impide duplicados ni hace única una operación de negocio. Diagnostica el doble efecto y guarda `eventId` con restricción única en el consumidor.
+**4. Cierra**
+Anota el tópico, la key y la partición observada en la práctica con broker.
 
-#### Paso 6 · Práctica independiente
+#### Subtema 7.2: Reparte particiones con un grupo · 10 min
 
-Apaga el proceso después de escribir a la base de datos pero antes de confirmar/registrar el offset. Reinícialo y observa la repetición. Luego compara qué pasa si confirmas antes de escribir: puedes perder el efecto. Diseña una tabla inbox con `eventId` y una transacción de base de datos, y registra la política para eventos inválidos, reintentos y dead letter topic. Prueba una clave ausente y predice cómo cambia la distribución.
+**1. Contexto**
+Las instancias del mismo proyector comparten el trabajo; otro servicio necesita su propio grupo para leer el flujo completo.
 
-#### Paso 7 · Cierre y evidencia
+**2. Hazlo tú**
+Abre `examples/node-messaging/kafka/consumer.mjs`; levanta Kafka según `examples/node-messaging/README.md` y ejecuta desde `examples/node-messaging/`:
 
-Entrega producer, consumer, salida con partición/offset y un caso de duplicado con efecto idempotente. **Proyecto integrador RutaFlow:** publica `PedidoDespachado` desde outbox, no después de un commit que podría perderse. Errores comunes: asumir exactly-once entre Kafka y una base arbitraria, asignar grupos distintos a réplicas que deberían repartirse el mismo trabajo y suponer que la clave ordena todo el tópico. Siguiente paso: compara este log con una cola/ruteo AMQP. Fuentes oficiales: [Confluent JavaScript client](https://docs.confluent.io/kafka-clients/javascript/current/overview.html), [API de consumers](https://docs.confluent.io/platform/current/clients/confluent-kafka-javascript/docs/KafkaJS.Consumer.html) y [Apache Kafka](https://kafka.apache.org/documentation/).
+```bash
+npm run kafka:consumer
+```
 
-**¿Por qué es importante?** El avance del grupo y el efecto de negocio son dos estados distintos; el consumidor debe cerrar esa brecha.
-**Evidencia de aprendizaje:** demuestra el duplicado, el caso de fallo entre escritura y offset, y la protección por `eventId`.
-**Cuándo no usar Kafka:** una cola de una sola tarea con borrado al completarse puede ser más directa con un broker de cola.
+En otra terminal, desde esa carpeta, ejecuta `npm run kafka:producer`.
+
+**Resultado esperado:** el consumidor imprime `topic`, `partition`, `offset`, `key` y `value` para el evento.
+
+**Fallo deliberado:** cambia `KAFKA_GROUP_ID` para la segunda instancia y compárala con la primera. **Resultado esperado:** ambas pueden leer el evento como grupos independientes. **Diagnóstico:** los grupos son cursores separados; devuelve a las réplicas del mismo proyector el mismo `groupId`.
+
+**3. Entiende**
+Dentro de un grupo, Kafka asigna particiones disponibles a sus miembros. Dos miembros no duplican la lectura de una misma partición mientras la asignación esté estable.
+
+**4. Cierra**
+Registra el `groupId` y cuántas particiones leyó cada instancia.
+
+#### Subtema 7.3: Reconoce redelivery e idempotencia · 15 min
+
+**1. Contexto**
+El offset identifica el avance del grupo; no confirma por sí solo que la base de datos guardó el efecto de negocio.
+
+**2. Hazlo tú**
+Abre `examples/node-messaging/kafka/consumer.mjs` y `examples/spring-kafka-rutaflow/src/main/java/academia/rutaflow/inbox/InboxProcessor.java`. Ejecuta desde `examples/spring-kafka-rutaflow/`:
+
+```bash
+./mvnw -Dtest=EnvioEventPublisherTest#inboxHaceIdempotenteElEfectoDeNegocio test
+```
+
+**Resultado esperado:** al entregar dos veces el mismo `eventId`, una sola proyección queda registrada.
+
+**Fallo deliberado:** quita la deduplicación de `InboxProcessor`. **Resultado esperado:** la prueba falla o la clave única rechaza la segunda escritura. **Diagnóstico:** protege el efecto con `eventId` en la misma transacción que actualiza la proyección.
+
+**3. Entiende**
+En producción una caída entre escribir el efecto y confirmar el offset puede repetir el mensaje. La inbox hace idempotente el cambio de negocio; no vuelve exactly-once a una base externa.
+
+**4. Cierra**
+Guarda la salida del test y explica qué estado comparte Kafka y cuál protege la inbox.
+
+**Hito del tema:**
+
+- [ ] Producer publica con `pedidoId` como key.
+- [ ] Consumer muestra partición y offset.
+- [ ] Distingo réplicas del mismo grupo de dos grupos independientes.
+- [ ] La inbox evita duplicar el efecto al repetir `eventId`.
+
+**Fuentes oficiales:** [Confluent JavaScript client](https://docs.confluent.io/kafka-clients/javascript/current/overview.html) y [Apache Kafka](https://kafka.apache.org/documentation/).
 
 ### Tema 8: RabbitMQ desde Node: exchange, cola y confirmaciones
 
-#### Paso 1 · Objetivo y preparación
+**Duración estimada:** 35 min.
+**¿Por qué es importante?** Las confirmaciones y la DLQ evitan perder trabajo o esconder mensajes que requieren diagnóstico.
 
-Al finalizar crearás un exchange y una cola, procesarás una entrega con ack manual y limitarás mensajes en vuelo con prefetch. **Prerrequisitos:** promesas y manejo de errores. Instala Docker y Node; levanta RabbitMQ para el laboratorio.
+**Prerrequisitos:** Node M0 T2 (módulos) y Node M8 T3 (promesas). Proyecto continuo: RutaFlow distribuye tareas para generar etiquetas.
 
-#### Paso 2 · Contexto y caso real
+#### Subtema 8.1: Enruta una etiqueta con exchange y binding · 10 min
 
-Un worker de envíos procesa cada etiqueta una vez por intento. Si confirma recepción antes de guardar el resultado, una caída pierde el trabajo; si falla después de guardar pero antes del ack, RabbitMQ puede entregarlo otra vez.
+**1. Contexto**
+RabbitMQ separa el destino lógico (exchange) de la cola que guarda trabajo pendiente.
 
-#### Paso 3 · Teoría y analogía
-
-Un publisher envía al exchange; el exchange enruta a colas según tipo y binding key. El consumidor confirma el trabajo con `ack` después de procesarlo. `prefetch` limita entregas pendientes; `nack` puede reencolar o mandar a dead-letter exchange. Publisher confirms confirman que el broker aceptó la publicación; consumer acknowledgements confirman procesamiento desde el punto de vista del consumidor: son señales independientes. Como una oficina de correo, el exchange clasifica sobres, la cola los guarda y el ack indica que el receptor terminó.
-
-```mermaid
-flowchart LR
-  P[Publisher] -->|routing key| E[Direct exchange]
-  E -->|binding| Q[Cola envios]
-  Q -->|prefetch limitado| C[Consumer]
-  C -->|ack tras persistir| Q
-  C -->|nack| DLQ[Dead-letter queue]
-```
-
-#### Paso 4 · Demostración guiada
-
-El laboratorio ejecutable está en `examples/node-messaging/rabbit/producer.mjs` y `worker.mjs`; `amqplib` conecta con RabbitMQ 4.4.0. El código declara exchange y colas durables, usa `prefetch(5)`, parsea JSON, llama `ack` después del trabajo y espera publisher confirms. La bandeja `Set` evita repetir un evento solo durante la vida de este proceso; para sobrevivir reinicios usa una tabla inbox persistente con `eventId` único.
-
-El ejemplo del repositorio crea `entregas` como exchange directo, enlaza `envios` con `label.ready`, y enlaza `envios.dlq` con `dead` en `entregas.dlx`. El punto clave del worker es validar el ID, completar el trabajo y luego confirmar:
-
-```js
-const event = JSON.parse(message.content.toString());
-if (typeof event.eventId !== "string" || !event.eventId) {
-  channel.nack(message, false, false); // Enruta al dead-letter exchange.
-} else {
-  if (processedInThisProcess.has(event.eventId)) {
-    console.log(`duplicado=${event.eventId}`);
-  } else {
-    console.log(`procesado=${JSON.stringify(event)}`);
-    processedInThisProcess.add(event.eventId);
-  }
-  channel.ack(message); // Solo después de completar el trabajo.
-}
-```
-
-En el publisher, usa `createConfirmChannel()` y `await channel.waitForConfirms()` después de publicar. El confirm solo prueba que el broker aceptó el mensaje según su configuración; no confirma que el consumidor guardó el efecto.
+**2. Hazlo tú**
+Abre `examples/node-messaging/rabbit/topology.mjs` y ejecuta desde `examples/node-messaging/`:
 
 ```bash
-cd examples/node-messaging
 npm ci
-docker compose -f compose.rabbit.yaml up -d --wait
-npm run rabbit:worker
-# En otra terminal, desde la misma carpeta:
-npm run rabbit:producer
+npm test
 ```
 
-**Resultado esperado:** el mensaje aparece en una sola cola asociada; el consumidor escribe su resultado y luego confirma. Detén el proceso antes del ack: la entrega vuelve a estar disponible al reconectar.
+**Resultado esperado:** `topology.test.mjs` comprueba el exchange directo `entregas`, la cola `envios` y el binding `label.ready`.
 
-#### Paso 5 · Práctica guiada
+**Fallo deliberado:** cambia la routing key del binding a `label.created`. **Resultado esperado:** el test compara valores distintos y falla. **Diagnóstico:** el productor publica con `label.ready`; restaura la misma key en el binding.
 
-**Fallo deliberado:** usa `noAck: true` y termina el proceso después de recibir el mensaje, antes de guardar el resultado. **Pista:** en modo auto-ack el broker considera entregado el mensaje antes de procesarlo. Vuelve a ack manual y agrega `eventId` para tolerar la redelivery que puede ocurrir tras persistir y antes de confirmar.
+**3. Entiende**
+El exchange no almacena mensajes. Enruta según tipo y binding key; la cola los conserva para que el worker los reciba.
 
-#### Paso 6 · Práctica independiente
+**4. Cierra**
+Dibuja `producer → exchange → binding → queue` y guarda el test verde.
 
-Configura un dead-letter exchange y una cola de errores. Rechaza con `nack(msg, false, false)` un payload que no se puede procesar; verifica que cae en DLQ. Después reencola solo fallos transitorios con retraso controlado y número máximo de intentos: reencolar inmediatamente sin límite puede crear un ciclo caliente. Compara prefetch 1 y 5 observando trabajo en vuelo y memoria, no solo velocidad.
+#### Subtema 8.2: Confirma una publicación y un procesamiento · 10 min
 
-#### Paso 7 · Cierre y evidencia
+**1. Contexto**
+La confirmación del productor y el `ack` del consumidor hablan de dos etapas diferentes.
 
-Entrega exchange, binding, cola, salida del ack/confirm y el mensaje que fue a DLQ. **Proyecto integrador RutaFlow:** usa RabbitMQ para tareas de trabajo como generar etiquetas; persiste antes del ack y registra idempotencia. Errores comunes: confundir publisher confirm con consumer ack, confirmar antes de terminar el trabajo y configurar prefetch ilimitado para consumidores lentos. Siguiente paso: justifica broker y semántica según flujo. Fuentes oficiales: [tutorial JavaScript](https://www.rabbitmq.com/tutorials/tutorial-one-javascript), [confirms, acknowledgements y prefetch](https://www.rabbitmq.com/docs/confirms) y [colas](https://www.rabbitmq.com/docs/queues).
+**2. Hazlo tú**
+Abre `examples/node-messaging/rabbit/producer.mjs` y `examples/node-messaging/rabbit/worker.mjs`. Desde `examples/node-messaging/` levanta RabbitMQ y corre el worker según `examples/node-messaging/README.md`:
 
-**¿Por qué es importante?** Un ack temprano puede perder trabajo y un ack tardío puede repetirlo; ambos caminos deben tener un efecto seguro.
-**Evidencia de aprendizaje:** reproduce la redelivery y el dead-letter, y muestra que `eventId` evita duplicar el resultado.
-**Cuándo no usar RabbitMQ:** si varios equipos necesitan leer el mismo historial desde offsets independientes, evalúa un log particionado como Kafka.
+```bash
+docker compose -f compose.rabbit.yaml up -d --wait
+npm run rabbit:worker
+```
+
+En otra terminal ejecuta `npm run rabbit:producer`.
+
+**Resultado esperado:** el productor imprime `confirmado=...`; el worker imprime `procesado=...`. `waitForConfirms()` no prueba que el worker guardó el efecto.
+
+**Fallo deliberado:** confirma el mensaje antes de terminar el efecto en el worker. **Resultado esperado:** si el proceso cae, RabbitMQ no lo vuelve a entregar. **Diagnóstico:** procesa y guarda primero; confirma después con `channel.ack(message)`.
+
+**3. Entiende**
+Publisher confirm muestra aceptación del broker. Consumer ack permite retirar una entrega tras el procesamiento. Ninguno garantiza por sí solo una transacción con tu base de datos.
+
+**4. Cierra**
+Registra dos evidencias separadas: confirm del productor y ack del worker.
+
+#### Subtema 8.3: Rechaza y enruta un mensaje inválido a la DLQ · 15 min
+
+**1. Contexto**
+Un mensaje sin `eventId` no puede deduplicarse ni procesarse con seguridad.
+
+**2. Hazlo tú**
+Abre `examples/node-messaging/rabbit/topology.mjs` y `examples/node-messaging/rabbit/worker.mjs`. Levanta RabbitMQ desde `examples/node-messaging/`:
+
+```bash
+docker compose -f compose.rabbit.yaml up -d --wait
+npm run rabbit:worker
+```
+
+Publica desde la consola local el JSON `{"pedidoId":"p-17"}` en `entregas` con routing key `label.ready`; revisa `envios.dlq` en `http://localhost:15672`.
+
+**Resultado esperado:** el worker registra mensaje inválido y la cola `envios.dlq` lo conserva mediante `entregas.dlx`.
+
+**Fallo deliberado:** cambia `channel.nack(message, false, false)` a `channel.nack(message, false, true)`. **Resultado esperado:** el mensaje vuelve a `envios` y se procesa repetidamente. **Diagnóstico:** el tercer argumento es `requeue`; `true` vuelve a encolar en vez de aplicar dead-letter routing.
+
+**3. Entiende**
+La cola de errores conserva una entrega para diagnóstico. El `Set` de este ejemplo solo vive en memoria; en producción reemplázalo por una inbox persistente con `eventId` único.
+
+**4. Cierra**
+Guarda el mensaje de error y el nombre del exchange y la cola que lo recibieron.
+
+**Hito del tema:**
+
+- [ ] La routing key llega a la cola esperada.
+- [ ] Distingo publisher confirm y consumer ack.
+- [ ] Un mensaje sin `eventId` se enruta a DLQ.
+- [ ] Registro el límite de idempotencia en memoria.
+
+**Fuentes oficiales:** [tutorial de Node.js](https://www.rabbitmq.com/tutorials/tutorial-one-javascript), [confirmaciones, acknowledgements y prefetch](https://www.rabbitmq.com/docs/confirms) y [colas](https://www.rabbitmq.com/docs/queues).

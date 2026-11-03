@@ -4,16 +4,26 @@ The Imperial Book utiliza una metodología propia de enseñanza práctica. Toma 
 
 No reproduce clases, guiones, ejercicios ni materiales de terceros, y no implica afiliación con ningún instructor o plataforma.
 
-## Ciclo de cada capítulo
+## Estructura de tema y subtema
 
-1. **Objetivo visible.** La persona conoce el resultado que podrá demostrar y los temas concretos de la sección.
-2. **Explicación breve.** Cada concepto responde qué es, cómo funciona, por qué importa y cuándo se utiliza.
-3. **Demostración ejecutable.** El código se predice, ejecuta, modifica y relaciona con una salida observable.
-4. **Construcción acumulativa.** El proyecto del track avanza en una rama por módulo; no se reemplaza por ejemplos desechables.
-5. **Tarea sin solución visible.** La persona intenta primero. Las soluciones permanecen plegadas y sirven para comparar razonamiento, no para copiar.
-6. **Punto de control.** Pruebas, comandos, capturas o mediciones demuestran que el incremento funciona.
-7. **Código alcanzado.** Un commit y una etiqueta por módulo permiten volver al estado correcto y comparar cambios.
-8. **Repaso activo.** La persona explica con sus palabras, responde preguntas y registra qué necesita reforzar.
+Un tema es una sesión de **20–45 minutos**. Si introduce más de tres conceptos nuevos, se separa en temas distintos. Cada tema tiene **3–6 subtemas de 5–15 minutos** y cierra con cuatro evidencias verificables.
+
+Cada subtema usa cuatro pasos, en este orden:
+
+1. **Contexto:** qué problema del proyecto resuelve y qué hace falta saber antes.
+2. **Hazlo tú:** en los primeros dos minutos se ejecuta o modifica algo. Incluye ruta exacta, código completo o archivo del laboratorio, comando, salida esperada y un fallo deliberado con su diagnóstico.
+3. **Entiende:** explica con palabras sencillas qué pasó, por qué funciona y un límite importante.
+4. **Cierra:** registra la evidencia producida y qué cambio queda listo para el siguiente subtema.
+
+Los cuatro pasos describen cada subtema, no cuatro secciones largas de teoría. La prueba, salida o artefacto es la evidencia; leer o marcar el tema no demuestra comprensión.
+
+### Hito al final de cada tema
+
+Usa una lista de cuatro comprobaciones observables, por ejemplo: ejecuté el código, vi la salida, provoqué y diagnostiqué el fallo, y expliqué la decisión con una limitación. No se añaden puntos, insignias ni cuestionarios generados.
+
+### Ruta del proyecto
+
+Cada track mantiene un proyecto que evoluciona. El ejemplo aislado enseña una acción; el subtema la incorpora al proyecto; el hito deja una salida reproducible. No se crea una aplicación nueva por tema si el proyecto existente puede avanzar.
 
 ## Tamaño de las experiencias
 

@@ -1695,11 +1695,11 @@
     }
   ],
   "summary": {
-    "fingerprint": "259631c982fcdda5ecaa96f76e0d83a40a12957fce62a47d15fa164551649f3d",
+    "fingerprint": "55566f20348717b7a23bc915f094159b9375990c9e9a18e10a66498f7f6ef6f8",
     "issues": {
       "andamiaje-generico": 125,
-      "bloque-repetido": 218,
-      "cola-tras-cierre": 376,
+      "bloque-repetido": 217,
+      "cola-tras-cierre": 375,
       "parrafo-repetido": 5,
       "tema-breve": 2
     },
@@ -1711,7 +1711,7 @@
     "modules": 256,
     "modulesWithLegacySections": 181,
     "topics": 1185,
-    "topicsWithIssues": 467
+    "topicsWithIssues": 466
   },
   "topics": {
     "android": [
@@ -5316,9 +5316,9 @@
       {
         "issues": [],
         "module": 19,
-        "tailWords": 177,
+        "tailWords": 0,
         "topic": "Tema 1: estado de la jornada con Riverpod",
-        "words": 524
+        "words": 590
       },
       {
         "issues": [],
@@ -7110,14 +7110,11 @@
     ],
     "java": [
       {
-        "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 0,
-        "tailWords": 599,
+        "tailWords": 0,
         "topic": "Tema 1: Del código fuente a la JVM",
-        "words": 1029
+        "words": 593
       },
       {
         "issues": [
@@ -9344,16 +9341,16 @@
       {
         "issues": [],
         "module": 14,
-        "tailWords": 176,
+        "tailWords": 0,
         "topic": "Tema 7: Kafka desde Node: clave, grupo consumidor y offset",
-        "words": 787
+        "words": 595
       },
       {
         "issues": [],
         "module": 14,
-        "tailWords": 155,
+        "tailWords": 0,
         "topic": "Tema 8: RabbitMQ desde Node: exchange, cola y confirmaciones",
-        "words": 758
+        "words": 622
       },
       {
         "issues": [],
@@ -10903,23 +10900,23 @@
       {
         "issues": [],
         "module": 21,
-        "tailWords": 176,
+        "tailWords": 0,
         "topic": "Tema 1: Productor, tópico, key y consumidor",
-        "words": 1529
+        "words": 543
       },
       {
         "issues": [],
         "module": 21,
-        "tailWords": 135,
+        "tailWords": 0,
         "topic": "Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia",
-        "words": 1241
+        "words": 566
       },
       {
         "issues": [],
         "module": 21,
-        "tailWords": 140,
+        "tailWords": 0,
         "topic": "Tema 3: Outbox transaccional y flujo de negocio",
-        "words": 1256
+        "words": 551
       },
       {
         "issues": [],
@@ -11001,30 +10998,30 @@
       {
         "issues": [],
         "module": 25,
-        "tailWords": 172,
+        "tailWords": 0,
         "topic": "Tema 1: bindings y destinations",
-        "words": 814
+        "words": 508
       },
       {
         "issues": [],
         "module": 25,
-        "tailWords": 170,
+        "tailWords": 0,
         "topic": "Tema 2: binder Kafka y binder RabbitMQ",
-        "words": 722
+        "words": 634
       },
       {
         "issues": [],
         "module": 25,
-        "tailWords": 176,
+        "tailWords": 0,
         "topic": "Tema 3: reintentos, error handler y dead-letter",
-        "words": 675
+        "words": 592
       },
       {
         "issues": [],
         "module": 25,
-        "tailWords": 165,
+        "tailWords": 0,
         "topic": "Tema 4: test binder y límites de la prueba",
-        "words": 719
+        "words": 500
       },
       {
         "issues": [],

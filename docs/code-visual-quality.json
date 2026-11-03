@@ -51,8 +51,8 @@
     "node": {
       "topics": 83,
       "code": 83,
-      "commentedCode": 42,
-      "mermaid": 29,
+      "commentedCode": 40,
+      "mermaid": 27,
       "archifyVisual": 0,
       "asciiVisual": 13,
       "misleadingDiagramLabel": 0,
@@ -87,9 +87,9 @@
     "java": {
       "topics": 101,
       "code": 101,
-      "commentedCode": 57,
+      "commentedCode": 56,
       "mermaid": 33,
-      "archifyVisual": 3,
+      "archifyVisual": 2,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
       "filePath": 101,
@@ -148,7 +148,7 @@
       "topics": 106,
       "code": 106,
       "commentedCode": 34,
-      "mermaid": 81,
+      "mermaid": 80,
       "archifyVisual": 0,
       "asciiVisual": 15,
       "misleadingDiagramLabel": 0,
@@ -1593,6 +1593,20 @@
     },
     {
       "track": "node",
+      "module": 14,
+      "topic": "Tema 7: Kafka desde Node: clave, grupo consumidor y offset",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "node",
+      "module": 14,
+      "topic": "Tema 8: RabbitMQ desde Node: exchange, cola y confirmaciones",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "node",
       "module": 3,
       "topic": "Tema 5: Paginación por cursor y límites de entrada comprobables",
       "missingCode": false,
@@ -1889,6 +1903,13 @@
       "track": "react",
       "module": 9,
       "topic": "Tema 4: useTransition, useDeferredValue y Fiber",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 0,
+      "topic": "Tema 1: Del código fuente a la JVM",
       "missingCode": false,
       "missingComments": true
     },

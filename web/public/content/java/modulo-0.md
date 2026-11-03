@@ -27,76 +27,97 @@ Ejecuta `javac Hola.java` y luego `java Hola`. El primer comando produce `Hola.c
 
 ### Tema 1: Del código fuente a la JVM
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás compilar un programa Java a bytecode, inspeccionar las instrucciones generadas con `javap` y ejecutar ese bytecode con la JVM, explicando qué hace cada herramienta. Prerrequisitos: JDK 25 instalado y un editor de texto o IDE. Comprueba `java --version` y `javac --version`.
+**Duración estimada:** 30 min.
+**¿Por qué es importante?** Entender fuente, bytecode y classpath permite diagnosticar por qué un programa que compila no inicia.
 
-#### Paso 2 · Contexto y caso real
-Un equipo de una plataforma de entregas reporta que "el programa no corre en el servidor aunque compiló bien en mi máquina"; la causa casi siempre está en confundir dónde quedó el bytecode compilado (`.class`) con dónde se le pide a la JVM que lo busque. Entender el ciclo `javac`/`java` evita ese diagnóstico a ciegas.
+**Prerrequisitos:** ninguno. Proyecto continuo del track: construir un motor de asignación de entregas. Usa JDK 21 o posterior y ejecuta `java --version` y `javac --version` antes de comenzar.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-`javac` traduce código fuente Java a bytecode (`.class`); `java` invoca la JVM, que carga ese bytecode y lo ejecuta. Son dos pasos separados y cada uno puede fallar por razones distintas. La analogía: `javac` es como imprimir un documento desde un procesador de texto, y `java` es como abrirlo después con un lector específico — si el lector busca el archivo impreso en la carpeta equivocada, no importa cuán bien se haya impreso.
+#### Subtema 1.1: Compila y ejecuta tu primera clase · 10 min
 
-#### Paso 4 · Demostración guiada desde cero
-Desde una **carpeta vacía**, crea `src/Saludo.java` y observa cada artefacto:
-```bash
-mkdir java-bytecode && cd java-bytecode
-mkdir src out
-```
+**1. Contexto**
+El código que escribes y el archivo que ejecuta Java tienen formatos distintos. Verás esa traducción en una clase pequeña.
+
+**2. Hazlo tú**
+Crea `java-motor/src/Saludo.java` con este contenido:
+
 ```java
 public final class Saludo {
     public static void main(String[] args) {
-        // javac convierte esta instrucción en bytecode dentro de Saludo.class.
         System.out.println("Hola desde la JVM");
     }
 }
 ```
+
+Desde la carpeta `java-motor/`, ejecuta:
+
 ```bash
 javac -d out src/Saludo.java
-find out -name '*.class'
-javap -c -classpath out Saludo
 java -cp out Saludo
 ```
-**Resultado esperado:** existe `out/Saludo.class`, `javap` muestra instrucciones como `getstatic` e `invokevirtual`, y la JVM imprime `Hola desde la JVM`. **Fallo deliberado:** ejecuta `java -cp src Saludo`; aparece `ClassNotFoundException` porque el bytecode está en `out`, no en `src`. Corrige el *classpath*.
 
-#### Paso 5 · Práctica guiada
-Pista: ejecuta `javap -c -classpath out Saludo` y localiza la instrucción `invokevirtual` que corresponde a `System.out.println`. Luego borra `out/Saludo.class` a mano y ejecuta `java -cp out Saludo` sin recompilar. Resultado esperado: la JVM informa `Error: Could not find or load main class Saludo`, porque el bytecode ya no existe; recompílalo con `javac -d out src/Saludo.java` para restaurarlo.
+**Resultado esperado:** la terminal muestra `Hola desde la JVM`; el archivo compilado queda en `out/Saludo.class`.
 
-#### Paso 6 · Práctica independiente
-Crea una segunda clase `Version.java` que imprima `System.getProperty("java.version")`. Compílala junto a `Saludo.class` dentro de `out` y ejecuta `javap -c -classpath out Version`; identifica cuál instrucción de bytecode corresponde a la llamada a `getProperty`.
+**Fallo deliberado:** cambia el nombre del archivo a `saludo.java` y vuelve a compilar. **Error esperado:** el compilador indica que la clase pública `Saludo` debe estar en `Saludo.java`. **Diagnóstico:** el nombre de un archivo con una clase pública distingue mayúsculas y debe coincidir con el nombre de la clase.
 
-#### Paso 7 · Cierre y evidencia
-Guarda `Saludo.java`, `out/Saludo.class`, la salida de `javap` y el `ClassNotFoundException` provocado junto a su corrección; como siguiente paso, en el Tema 2 identificarás exactamente qué significa cada palabra de la firma de `main` que la JVM buscó aquí. Errores comunes: ejecutar `java` apuntando con `-cp` a la carpeta del código fuente en vez de a la carpeta de salida compilada, olvidar recompilar después de modificar el `.java`, y asumir que `javac` ejecuta el programa en vez de solo compilarlo. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/docs/specs/man/javac.html y https://docs.oracle.com/en/java/javase/25/docs/specs/man/java.html.
-**¿Por qué es importante?** Porque diagnosticar un `ClassNotFoundException` o un `NoClassDefFoundError` en producción exige saber, sin adivinar, que la JVM busca bytecode compilado en un classpath explícito, no código fuente.
-**Evidencia de aprendizaje:** entrega `Saludo.java`, el `.class` generado, la salida de `javap -c` con al menos dos instrucciones identificadas, y el `ClassNotFoundException` provocado junto a su corrección.
-**Conceptos clave:** bytecode, portabilidad, `javac`/`java`.
+**3. Entiende**
+`javac` compila el archivo fuente `.java` y `java` ejecuta el bytecode `.class`. Compilar no ejecuta el programa.
 
-**Diagrama interactivo:** [Del código Java a la JVM](/visuals/temas/java/modulo-0-tema-1-bytecode.html).
+**4. Cierra**
+Guarda el fuente y anota qué archivo creó cada comando.
 
-Entender este ciclo `javac`/`java` es la base para diagnosticar cualquier error de compilación o de classpath que aparezca al construir el proyecto integrador de este track, mucho después de este tema.
+#### Subtema 1.2: Lee una instrucción del bytecode · 10 min
 
-**Cuándo no usarlo:** invocar `javac`/`java` manualmente como aquí es apropiado para entender el ciclo de compilación; en un proyecto real con múltiples clases y dependencias externas, Maven o Gradle (módulos posteriores) gestionan classpath y compilación automáticamente, evitando invocar el compilador archivo por archivo a mano.
+**1. Contexto**
+Si el programa compila pero falla en otro entorno, saber inspeccionar el artefacto ayuda a encontrar dónde se rompió el recorrido.
 
-Java no compila directamente a código máquina nativo específico de un procesador (como sí lo hacen C o C++), sino a bytecode: una representación intermedia (`Hola.class`) que no depende de ningún procesador específico, sino de una máquina virtual, la JVM (Java Virtual Machine), que interpreta o compila ese bytecode a código máquina real en el momento de la ejecución, específicamente para el procesador y sistema operativo donde esa JVM concreta se ejecuta. `javac Hola.java` realiza la compilación de código fuente a bytecode, generando el archivo `.class`; `java Hola` invoca la JVM, que carga ese archivo `.class` y lo ejecuta.
+**2. Hazlo tú**
+Abre `java-motor/src/Saludo.java` y, desde `java-motor/`, ejecuta:
 
-Esta arquitectura de dos pasos es la base del lema histórico de Java "write once, run anywhere" (escribe una vez, ejecuta en cualquier lugar): el mismo archivo `.class` compilado una única vez puede ejecutarse sin recompilar en cualquier sistema operativo o arquitectura de procesador que tenga una JVM disponible, dado que la JVM específica de cada plataforma es la responsable de traducir ese bytecode universal al código máquina específico de esa plataforma particular, en vez de que el desarrollador tenga que recompilar el código fuente por separado para cada plataforma de destino distinta (como sí sería necesario con un lenguaje que compila directamente a código máquina nativo).
-
-**Analogía:** el bytecode es como una partitura musical universal, escrita una única vez, que distintos músicos (las JVMs de cada plataforma) pueden interpretar correctamente en sus propios instrumentos específicos, sin que el compositor original tenga que reescribir la partitura para cada instrumento distinto.
-
-**¿Por qué es importante?** Compilar a bytecode en vez de código máquina nativo directamente es lo que permite que un mismo programa Java compilado una sola vez se ejecute sin recompilar en cualquier plataforma que tenga una JVM disponible.
-
-**Código del ejemplo:**
-
-```java
-public class Hola {
-    public static void main(String[] args) {
-        System.out.println("Hola Java");
-    }
-}
-```
 ```bash
-javac Hola.java   # compila a bytecode: genera Hola.class
-java Hola          # la JVM interpreta/compila el bytecode y lo ejecuta
+javap -c -classpath out Saludo
 ```
+
+**Resultado esperado:** aparece el método `main` y varias instrucciones de bytecode, entre ellas llamadas asociadas a `System.out.println`.
+
+**Fallo deliberado:** ejecuta `javap -c -classpath src Saludo`. **Error esperado:** no encuentra la clase. **Diagnóstico:** `javap` busca el `.class`; está en `out`, no en la carpeta `src`.
+
+**3. Entiende**
+El bytecode es un formato intermedio que la JVM puede ejecutar. `javap` lo muestra para inspección; no modifica el programa.
+
+**4. Cierra**
+Copia dos instrucciones que mostró `javap` y describe cuál llamada del programa ayudan a representar.
+
+#### Subtema 1.3: Diagnostica dónde busca la JVM · 10 min
+
+**1. Contexto**
+La JVM necesita saber en qué carpeta están las clases compiladas. Una ruta equivocada produce un error de carga aunque el archivo fuente esté bien.
+
+**2. Hazlo tú**
+Desde `java-motor/`, ejecuta el comando correcto y el comando con el directorio equivocado:
+
+```bash
+java -cp out Saludo
+java -cp src Saludo
+```
+
+**Resultado esperado:** el primero imprime `Hola desde la JVM`; el segundo falla con `Could not find or load main class Saludo` o `ClassNotFoundException`.
+
+**Fallo deliberado:** borra `out/Saludo.class` y vuelve a ejecutar `java -cp out Saludo`. **Error esperado:** no puede cargar la clase. **Diagnóstico:** el bytecode fue eliminado; recompila con `javac -d out src/Saludo.java`.
+
+**3. Entiende**
+`-cp` señala el classpath: las carpetas donde Java busca las clases. La carpeta del fuente no sustituye la carpeta que contiene el `.class`.
+
+**4. Cierra**
+Entrega la salida correcta, el error reproducido y la ruta que corregiste.
+
+**Hito del tema:**
+
+- [ ] Compilé y ejecuté `Saludo`.
+- [ ] Inspeccioné bytecode con `javap`.
+- [ ] Reproduje el error de classpath y lo corregí.
+- [ ] Conservé fuente, artefacto y salidas.
+
+**Fuentes oficiales:** [manual de `javac`](https://docs.oracle.com/en/java/javase/25/docs/specs/man/javac.html) y [manual de `java`](https://docs.oracle.com/en/java/javase/25/docs/specs/man/java.html).
 
 ### Tema 2: public static void main — qué significa cada palabra
 

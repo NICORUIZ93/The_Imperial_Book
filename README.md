@@ -4,17 +4,22 @@ Academia en español para estudiar desarrollo profesional y cloud local. La
 experiencia oficial es una aplicación Angular con lecciones Markdown.
 
 La academia reúne 14 rutas, 256 módulos y 1185 temas editoriales en formato de
-libro. La presencia de criterios editoriales y la completitud de los siete pasos
-se reportan por separado; ninguna métrica automática sustituye la revisión técnica
-ni demuestra por sí sola que un ejemplo se ejecutó.
+libro. El método vigente usa 3–6 subtemas y cuatro pasos por subtema. La migración
+sigue parcial; consulta [`docs/atomic-subtopics.md`](docs/atomic-subtopics.md).
+Ninguna métrica automática sustituye la revisión técnica ni demuestra por sí sola
+que un ejemplo se ejecutó.
 
 - [Material solicitado de Proyecto-RutaFlow y destinos](docs/rutaflow-source-index.md)
 - [Revisión de profundidad de todos los temas](docs/course-depth-review.md)
 - [Revisión de cobertura de cursos prioritarios](docs/revision-cursos-prioritarios.md)
-- [Temario Java completo y reporte de exhaustividad](docs/java-temario-completo.md)
+- [Temario Java y estado de expansión](docs/java-temario-completo.md)
+- [Temario Spring Boot y estado de expansión](docs/spring-boot-temario-completo.md)
+- [Temario Node.js y estado de expansión](docs/node-temario-completo.md)
+- [Temario Flutter y estado de expansión](docs/flutter-temario-completo.md)
 - [Plan total de cambio y estado](docs/PLAN-TOTAL-DE-CAMBIO.md)
 - [Sustancia de las lecciones: repetición, cola y andamiaje](docs/lesson-substance.md)
-- [Continuación de la metodología de siete pasos](docs/CONTINUAR-7-PASOS.md)
+- [Continuación de la metodología de cuatro pasos](docs/CONTINUAR-7-PASOS.md)
+- [Auditoría estructural de subtemas atómicos](docs/atomic-subtopics.md)
 - [Guia web](web/README.md)
 - [Mapa compacto del repo](docs/repo-graph.md)
 - [Índice de las 69 páginas e integración de merged.pdf](docs/merged-pdf-review.md)
@@ -156,20 +161,12 @@ existen rutas separadas de cuestionarios, rúbricas o laboratorios repetidos.
 
 Los conteos se verifican contra los tracks y el Markdown desde
 `scripts/validate_learning_priorities.py`; la validación falla si README vuelve
-a quedar desincronizado. La auditoría de criterios editoriales informa presencia
-estructural detectada por heurísticas, no calidad ni ejecución: al corte actual
-registra 1169/1185 temas practicables según sus señales editoriales (la detección no
-demuestra que el ejemplo se haya ejecutado). La auditoría independiente de metodología
-de siete pasos registra 1157/1185 temas completos según sus marcadores
-(el auditor reconoce el andamiaje real de cada ecosistema: `npm create vite`, `create-next-app`,
-«Nuevo proyecto» de Xcode y `xcodebuild`, las CLIs de nube `aws`/`az`/`gcloud` que crean el
-recurso base del tema, y la evidencia concreta que entrega el artefacto de un paso, además de
-`mkdir`, `ng new` o `flutter create`). Los temas aún incompletos permanecen como deuda editorial
-real —no detectable como falso negativo— y requieren reescritura específica. La
-diferencia y los
-criterios faltantes por tema permanecen visibles en
-[`docs/seven-step-methodology.md`](docs/seven-step-methodology.md) y
-[`docs/editorial-backlog.md`](docs/editorial-backlog.md).
+a quedar desincronizado. La auditoría de presencia editorial informa señales,
+no calidad ni ejecución. La auditoría vigente registra **11/1185** temas con
+3–6 subtemas y cuatro pasos completos; **1174 temas siguen pendientes**. Consulta
+los faltantes por track en [`docs/atomic-subtopics.md`](docs/atomic-subtopics.md).
+Las cifras de siete pasos en [`docs/seven-step-methodology.md`](docs/seven-step-methodology.md)
+son un registro histórico del formato anterior.
 
 ## Licencias
 
@@ -201,11 +198,10 @@ por track y módulo. El lector ofrece navegación anterior/siguiente entre temas
 y un glosario contextual accesible para términos técnicos; estas ayudas no se
 contabilizan como sustituto del contenido editorial específico.
 
-Las cifras de presencia editorial no equivalen a la completitud del contrato:
-la auditoría de siete pasos usa otra rúbrica y marcadores heurísticos, y no
-afirma que los ejemplos estén ejecutados ni que los temas sean pedagógicamente
-eficaces. Ambos reportes se deben leer como señales de trabajo editorial, no
-como certificaciones.
+Las señales editoriales no equivalen a completar el contrato vigente. Lee la
+auditoría de cuatro pasos como estado estructural; ejecución, revisión técnica,
+navegación del sitio y revisión pedagógica humana permanecen como evidencias
+independientes.
 
 | Track | Módulos | Enfoque |
 |---|---|---|

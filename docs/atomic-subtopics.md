@@ -1,0 +1,1240 @@
+# Auditoría de subtemas atómicos
+
+> Auditoría estructural. Un encabezado o criterio detectado no demuestra que el ejemplo se haya ejecutado ni que la explicación sea pedagógicamente suficiente.
+
+Temas conformes a cuatro pasos: **11/1185**. Tracks inventariados: **14**.
+
+| Track | Temas conformes | Temas inventariados | Subtemas detectados | Subtemas con estructura completa |
+|---|---:|---:|---:|---:|
+| android | 0 | 58 | 0 | 0 |
+| angular | 0 | 71 | 0 | 0 |
+| cloud | 0 | 156 | 0 | 0 |
+| devops | 0 | 113 | 0 | 0 |
+| flutter | 1 | 106 | 3 | 3 |
+| foundations | 0 | 99 | 0 | 0 |
+| ios | 0 | 56 | 0 | 0 |
+| java | 1 | 101 | 3 | 3 |
+| javascript | 0 | 88 | 0 | 0 |
+| kotlin-multiplatform | 0 | 56 | 0 | 0 |
+| node | 2 | 83 | 6 | 6 |
+| react | 0 | 58 | 0 | 0 |
+| rutaflow | 0 | 29 | 0 | 0 |
+| spring-boot | 7 | 111 | 21 | 21 |
+
+## Temas pendientes
+
+### android
+
+- M0 ### Tema 1: Estructura de un proyecto Android Studio: tiene 0 subtemas
+- M0 ### Tema 2: Recursos externalizados: tiene 0 subtemas
+- M0 ### Tema 3: AndroidManifest.xml y módulos Gradle: tiene 0 subtemas
+- M0 ### Tema 4: Kotlin esencial para Android — lo que usarás en cada pantalla: tiene 0 subtemas
+- M0 ### Tema 5: Coroutines — asincronía sin bloquear la UI: tiene 0 subtemas
+- M1 ### Tema 1: Ciclo de vida de una Activity: tiene 0 subtemas
+- M1 ### Tema 2: ViewModel sobrevive a la rotación: tiene 0 subtemas
+- M1 ### Tema 3: SavedStateHandle: tiene 0 subtemas
+- M10 ### Tema 1: Detectar y corregir recomposición innecesaria: tiene 0 subtemas
+- M10 ### Tema 2: Baseline Profiles y ciclo de efectos: tiene 0 subtemas
+- M10 ### Tema 3: Accesibilidad e interop con Views: tiene 0 subtemas
+- M11 ### Tema 1: Firma de la app: tiene 0 subtemas
+- M11 ### Tema 2: App Bundle vs APK: tiene 0 subtemas
+- M11 ### Tema 3: Versionado, tracks y políticas: tiene 0 subtemas
+- M12 ### Tema 1: Arquitectura MVVM completa con UDF: tiene 0 subtemas
+- M12 ### Tema 2: Inyección de dependencias en toda la app: tiene 0 subtemas
+- M12 ### Tema 3: Cierre del track y próximos pasos: tiene 0 subtemas
+- M13 ### Tema 1: El sistema operativo conecta tu app con entradas externas: tiene 0 subtemas
+- M13 ### Tema 2: Proteger datos exige conocer copias y ciclo de vida: tiene 0 subtemas
+- M13 ### Tema 3: Offline-first necesita un protocolo de cambios: tiene 0 subtemas
+- M13 ### Tema 4: La calidad se opera por dispositivo y versión: tiene 0 subtemas
+- M13 ### Tema 5: Del dispositivo al diagnóstico: SoC, memoria, límites térmicos y arranque verificado: tiene 0 subtemas
+- M14 ### Tema 1: ComposeTestRule ejecuta tu UI sin emulador visible: tiene 0 subtemas
+- M14 ### Tema 2: Finders, assertions y actions navegan el árbol semántico: tiene 0 subtemas
+- M14 ### Tema 3: Semantics y clearAndSetSemantics definen qué percibe la accesibilidad: tiene 0 subtemas
+- M14 ### Tema 4: AccessibilityService y TalkBack consumen el árbol semántico en producción: tiene 0 subtemas
+- M14 ### Tema 5: Animaciones de estado y visibilidad usan una especificación medible: tiene 0 subtemas
+- M14 ### Tema 6: AnimatedContent y AnimationSpec especifican transiciones completas: tiene 0 subtemas
+- M15 ### Tema 1: Intents implícitos y Activity Result API: tiene 0 subtemas
+- M15 ### Tema 2: BroadcastReceiver: reaccionar a eventos del sistema: tiene 0 subtemas
+- M15 ### Tema 3: Foreground Service de ubicación con FusedLocationProvider: tiene 0 subtemas
+- M15 ### Tema 4: Compartir archivos con FileProvider y content://: tiene 0 subtemas
+- M2 ### Tema 1: Composables y recomposición: tiene 0 subtemas
+- M2 ### Tema 2: State hoisting: tiene 0 subtemas
+- M2 ### Tema 3: remember, rememberSaveable y layout básico: tiene 0 subtemas
+- M3 ### Tema 1: NavHost y NavController: tiene 0 subtemas
+- M3 ### Tema 2: Argumentos tipados y deep links: tiene 0 subtemas
+- M3 ### Tema 3: Navegación anidada con stacks independientes: tiene 0 subtemas
+- M3 ### Tema 4: Predictive Back — gesto del sistema con preview animado: tiene 0 subtemas
+- M4 ### Tema 1: StateFlow en el ViewModel: tiene 0 subtemas
+- M4 ### Tema 2: collectAsStateWithLifecycle y UDF: tiene 0 subtemas
+- M4 ### Tema 3: SharedFlow para eventos de un solo uso: tiene 0 subtemas
+- M4 ### Tema 4: Restaurar un borrador tras recreación: remember no equivale a rememberSaveable: tiene 0 subtemas
+- M5 ### Tema 1: Retrofit con coroutines: tiene 0 subtemas
+- M5 ### Tema 2: Manejo de errores HTTP: tiene 0 subtemas
+- M5 ### Tema 3: Interceptores de OkHttp: tiene 0 subtemas
+- M6 ### Tema 1: Entities, DAOs y Database: tiene 0 subtemas
+- M6 ### Tema 2: Room + Flow reactivo, y migraciones: tiene 0 subtemas
+- M6 ### Tema 3: Estrategia offline-first: tiene 0 subtemas
+- M7 ### Tema 1: Configuración básica de Hilt: tiene 0 subtemas
+- M7 ### Tema 2: @Provides y @Binds: tiene 0 subtemas
+- M7 ### Tema 3: Scopes y testing con Hilt: tiene 0 subtemas
+- M8 ### Tema 1: CoroutineWorker y garantía de ejecución: tiene 0 subtemas
+- M8 ### Tema 2: Constraints y trabajo periódico: tiene 0 subtemas
+- M8 ### Tema 3: Notificaciones desde background work: tiene 0 subtemas
+- M9 ### Tema 1: Testing de ViewModels con fakes y runTest: tiene 0 subtemas
+- M9 ### Tema 2: Compose UI Testing: tiene 0 subtemas
+- M9 ### Tema 3: Testing end-to-end con Activity real, y fakes vs mocks: tiene 0 subtemas
+
+### angular
+
+- M0 ### Tema 1: El CLI ya no genera NgModules: tiene 0 subtemas
+- M0 ### Tema 2: Interpolación y property binding: tiene 0 subtemas
+- M0 ### Tema 3: TypeScript a fondo — unknown, any, never y utility types: tiene 0 subtemas
+- M0 ### Tema 4: Compilador AOT frente a JIT: tiene 0 subtemas
+- M1 ### Tema 1: input()/output() basados en signals: tiene 0 subtemas
+- M1 ### Tema 2: Control de flujo nativo — @if, @for, @switch: tiene 0 subtemas
+- M1 ### Tema 3: Content projection con ng-content: tiene 0 subtemas
+- M1 ### Tema 4: Ciclo de vida completo de un componente: tiene 0 subtemas
+- M1 ### Tema 5: Consultas signal y trabajo posterior al render: tiene 0 subtemas
+- M1 ### Tema 6: Directivas y pipes personalizados: tiene 0 subtemas
+- M1 ### Tema 7: Pipes puros e impuros, AsyncPipe y signals: tiene 0 subtemas
+- M10 ### Tema 1: TestBed y componentes standalone: tiene 0 subtemas
+- M10 ### Tema 2: Angular Testing Library: tiene 0 subtemas
+- M10 ### Tema 3: Mockear HttpClient y el nuevo builder basado en Vitest: tiene 0 subtemas
+- M10 ### Tema 4: Angular Material y CDK: componentes accesibles probados con harnesses: tiene 0 subtemas
+- M11 ### Tema 1: Server-Side Rendering: tiene 0 subtemas
+- M11 ### Tema 2: Hidratación: tiene 0 subtemas
+- M11 ### Tema 3: `@defer` — estados reales, incluyendo error: tiene 0 subtemas
+- M11 ### Tema 4: Zoneless: tiene 0 subtemas
+- M12 ### Tema 1: Reconocer la versión y la arquitectura de un proyecto: tiene 0 subtemas
+- M12 ### Tema 2: Leer la guía de actualización antes de modificar archivos: tiene 0 subtemas
+- M12 ### Tema 3: Migrar una versión mayor a la vez y verificar cada salto: tiene 0 subtemas
+- M13 ### Tema 1: Estructura del proyecto integrador: tiene 0 subtemas
+- M13 ### Tema 2: Integrando routing, store y formularios: tiene 0 subtemas
+- M13 ### Tema 3: TareasStore — combinando signals, computed y HttpClient: tiene 0 subtemas
+- M14 ### Tema 1: Accesibilidad es comportamiento, no una puntuación: tiene 0 subtemas
+- M14 ### Tema 2: La seguridad automática tiene fronteras explícitas: tiene 0 subtemas
+- M14 ### Tema 3: Internacionalizar implica significado, no reemplazo de texto: tiene 0 subtemas
+- M14 ### Tema 4: Rendimiento y actualización son contratos de experiencia: tiene 0 subtemas
+- M15 ### Tema 1: TestBed y ComponentFixture: tiene 0 subtemas
+- M15 ### Tema 2: Pruebas de Signals: tiene 0 subtemas
+- M15 ### Tema 3: Cypress y Playwright: tiene 0 subtemas
+- M15 ### Tema 4: Animaciones accesibles: tiene 0 subtemas
+- M15 ### Tema 5: SSR y TransferState: tiene 0 subtemas
+- M15 ### Tema 6: Hidratación y `provideServerRendering`: tiene 0 subtemas
+- M16 ### Tema 1: Qué renderiza Angular Native y por qué no es un WebView: tiene 0 subtemas
+- M16 ### Tema 2: Signals, estilos nativos compilados y el preset de Tailwind: tiene 0 subtemas
+- M16 ### Tema 3: Router nativo y servicios de Expo inyectados como servicios Angular: tiene 0 subtemas
+- M16 ### Tema 4: Evaluar la madurez de una tecnología alpha con criterio: tiene 0 subtemas
+- M2 ### Tema 1: signal(), computed() y effect(): tiene 0 subtemas
+- M2 ### Tema 2: Mutación frente a actualización inmutable: tiene 0 subtemas
+- M2 ### Tema 3: Signals frente a Observables: tiene 0 subtemas
+- M2 ### Tema 4: Hacia zoneless change detection: tiene 0 subtemas
+- M2 ### Tema 5: linkedSignal — estado derivado que el usuario puede sobrescribir: tiene 0 subtemas
+- M2 ### Tema 6: resource() y httpResource — datos asíncronos reactivos: tiene 0 subtemas
+- M3 ### Tema 1: @Injectable y providedIn: root: tiene 0 subtemas
+- M3 ### Tema 2: inject() frente a inyección por constructor: tiene 0 subtemas
+- M3 ### Tema 3: Jerarquía de inyectores: tiene 0 subtemas
+- M3 ### Tema 4: Tokens de inyección y decoradores de resolución: tiene 0 subtemas
+- M4 ### Tema 1: Router config con rutas standalone: tiene 0 subtemas
+- M4 ### Tema 2: Guards funcionales: tiene 0 subtemas
+- M4 ### Tema 3: Lazy loading con loadComponent: tiene 0 subtemas
+- M4 ### Tema 4: Parámetros de ruta, query params y capacidades avanzadas de routing: tiene 0 subtemas
+- M4 ### Tema 5: CanDeactivate: proteger un borrador sin confundir navegación con autorización: tiene 0 subtemas
+- M5 ### Tema 1: Reactive Forms — FormGroup y FormControl: tiene 0 subtemas
+- M5 ### Tema 2: Validadores asíncronos: tiene 0 subtemas
+- M5 ### Tema 3: FormArray para campos dinámicos: tiene 0 subtemas
+- M5 ### Tema 4: Template-driven forms — cuándo siguen siendo válidos: tiene 0 subtemas
+- M6 ### Tema 1: Observable frente a Promise: tiene 0 subtemas
+- M6 ### Tema 2: Operadores clave — debounceTime, distinctUntilChanged, switchMap, combineLatest: tiene 0 subtemas
+- M6 ### Tema 3: Manejo de suscripciones sin fugas de memoria: tiene 0 subtemas
+- M6 ### Tema 4: Subjects y operadores de aplanamiento avanzados: tiene 0 subtemas
+- M7 ### Tema 1: HttpClient con backend fetch: tiene 0 subtemas
+- M7 ### Tema 2: Interceptores funcionales: tiene 0 subtemas
+- M7 ### Tema 3: Registro de interceptores y centralización del manejo de errores: tiene 0 subtemas
+- M8 ### Tema 1: Bootstrap sin NgModules: tiene 0 subtemas
+- M8 ### Tema 2: Organización por feature: tiene 0 subtemas
+- M8 ### Tema 3: Migración desde NgModules: tiene 0 subtemas
+- M9 ### Tema 1: Store propio con signals: tiene 0 subtemas
+- M9 ### Tema 2: NgRx — actions, reducers y selectors: tiene 0 subtemas
+- M9 ### Tema 3: Cuándo NgRx justifica su complejidad: tiene 0 subtemas
+
+### cloud
+
+- M0 ### Tema 1: Fundamentos absolutos — qué es una terminal, un comando y un sistema operativo: tiene 0 subtemas
+- M0 ### Tema 2: Fundamentos de redes — direcciones IP, puertos, HTTP y APIs: tiene 0 subtemas
+- M0 ### Tema 3: Qué vas a aprender y cómo está estructurado el curso: tiene 0 subtemas
+- M0 ### Tema 4: Qué es Floci — definición, propósito y comparativa con LocalStack: tiene 0 subtemas
+- M0 ### Tema 5: Servicios que emula Floci — AWS, Azure y GCP: tiene 0 subtemas
+- M0 ### Tema 6: Ventajas y limitaciones de practicar con un emulador local: tiene 0 subtemas
+- M0 ### Tema 7: Metodología de estudio — teoría, laboratorio y evaluación en cada módulo: tiene 0 subtemas
+- M1 ### Tema 1: Virtualización vs contenedores: tiene 0 subtemas
+- M1 ### Tema 2: Imágenes y capas: tiene 0 subtemas
+- M1 ### Tema 3: Registros de contenedores (Docker Hub): tiene 0 subtemas
+- M1 ### Tema 4: Comandos esenciales de Docker: tiene 0 subtemas
+- M1 ### Tema 5: Docker Compose — servicios, redes y volúmenes: tiene 0 subtemas
+- M10 ### Tema 1: Secrets Manager y por qué no usar variables de entorno hardcodeadas: tiene 0 subtemas
+- M10 ### Tema 2: KMS y envelope encryption: tiene 0 subtemas
+- M10 ### Tema 3: SSM Parameter Store vs Secrets Manager: tiene 0 subtemas
+- M11 ### Tema 1: El patrón fan-out con SNS: tiene 0 subtemas
+- M11 ### Tema 2: EventBridge: bus de eventos con filtrado declarativo: tiene 0 subtemas
+- M11 ### Tema 3: SNS + SQS juntos, y Azure Event Hubs: tiene 0 subtemas
+- M12 ### Tema 1: Log groups, log streams y correlation ID: tiene 0 subtemas
+- M12 ### Tema 2: Metric filters y alarmas: tiene 0 subtemas
+- M12 ### Tema 3: Diagnóstico sistemático y X-Ray: tiene 0 subtemas
+- M13 ### Tema 1: RDS Instance y cuándo elegir SQL sobre NoSQL: tiene 0 subtemas
+- M13 ### Tema 2: Snapshots y restore: tiene 0 subtemas
+- M13 ### Tema 3: Migrations: tiene 0 subtemas
+- M14 ### Tema 1: ECR y por qué no basta con Docker Hub: tiene 0 subtemas
+- M14 ### Tema 2: Task Definition y ECS Cluster: tiene 0 subtemas
+- M14 ### Tema 3: Contenedores vs Lambda, y EKS: tiene 0 subtemas
+- M15 ### Tema 1: Stack, Template y por qué no crear recursos manualmente con la CLI: tiene 0 subtemas
+- M15 ### Tema 2: Change sets: tiene 0 subtemas
+- M15 ### Tema 3: Drift detection, Terraform/CDK, y compatibilidad multi-herramienta: tiene 0 subtemas
+- M16 ### Tema 1: State machine y Task states: tiene 0 subtemas
+- M16 ### Tema 2: Choice state, Retry y Catch: tiene 0 subtemas
+- M16 ### Tema 3: Express vs Standard, y cuándo EventBridge Pipes es suficiente: tiene 0 subtemas
+- M17 ### Tema 1: Streams vs colas: tiene 0 subtemas
+- M17 ### Tema 2: MSK (Kafka gestionado) y consumer groups: tiene 0 subtemas
+- M17 ### Tema 3: Kinesis Data Streams vs Firehose, y GCP Managed Kafka: tiene 0 subtemas
+- M18 ### Tema 1: Por qué no construir tu propio sistema de autenticación: tiene 0 subtemas
+- M18 ### Tema 2: Access Token, ID Token y Refresh Token: tiene 0 subtemas
+- M18 ### Tema 3: OAuth 2.0 y PKCE: tiene 0 subtemas
+- M19 ### Tema 1: Data lake y Glue Catalog: tiene 0 subtemas
+- M19 ### Tema 2: Glue Crawler y Athena: tiene 0 subtemas
+- M19 ### Tema 3: Parquet vs CSV, y partition pruning: tiene 0 subtemas
+- M2 ### Tema 1: Objetos, buckets y su nomenclatura: tiene 0 subtemas
+- M2 ### Tema 2: Claves y metadatos: tiene 0 subtemas
+- M2 ### Tema 3: Versionado y ciclo de vida: tiene 0 subtemas
+- M2 ### Tema 4: Transición entre capas de almacenamiento: tiene 0 subtemas
+- M2 ### Tema 5: Políticas de bucket, ACL y URLs pre-firmadas: tiene 0 subtemas
+- M20 ### Tema 1: Bedrock Runtime y respuestas stub deterministas: tiene 0 subtemas
+- M20 ### Tema 2: Textract y Transcribe: tiene 0 subtemas
+- M20 ### Tema 3: Stub vs mock, y qué probar localmente: tiene 0 subtemas
+- M21 ### Tema 1: El modelo de ejecución de EC2 — instancias que son contenedores Docker reales: tiene 0 subtemas
+- M21 ### Tema 2: AMIs, grupos de seguridad y claves SSH: tiene 0 subtemas
+- M21 ### Tema 3: UserData e IMDS — arranque automatizado y credenciales por instancia: tiene 0 subtemas
+- M21 ### Tema 4: Auto Scaling — configuraciones de lanzamiento y grupos: tiene 0 subtemas
+- M21 ### Tema 5: El reconciliador de capacidad y las políticas de escalado: tiene 0 subtemas
+- M21 ### Tema 6: VPC y redes — subredes, security groups y el flujo del tráfico: tiene 0 subtemas
+- M22 ### Tema 1: ELB v2 — balanceadores, grupos objetivo y reglas: tiene 0 subtemas
+- M22 ### Tema 2: ACM — certificados TLS con criptografía real: tiene 0 subtemas
+- M22 ### Tema 3: CloudFront — distribución de contenido y control de acceso al origen: tiene 0 subtemas
+- M22 ### Tema 4: Route53 — zonas alojadas y registros de recursos: tiene 0 subtemas
+- M22 ### Tema 5: Cómo se integran los cuatro servicios en una arquitectura de borde real: tiene 0 subtemas
+- M23 ### Tema 1: Qué resuelve un caché en memoria — y cuándo no ayuda: tiene 0 subtemas
+- M23 ### Tema 2: Arquitectura de ElastiCache en Floci — contenedores reales, no simulación: tiene 0 subtemas
+- M23 ### Tema 3: Creación de clústeres y conexión con clientes estándar: tiene 0 subtemas
+- M23 ### Tema 4: Autenticación IAM para el plano de datos de ElastiCache: tiene 0 subtemas
+- M24 ### Tema 1: CodeBuild — compilaciones reales dentro de contenedores Docker: tiene 0 subtemas
+- M24 ### Tema 2: buildspec.yml — fases y artefactos: tiene 0 subtemas
+- M24 ### Tema 3: CodeDeploy — aplicaciones, grupos y configuraciones predefinidas: tiene 0 subtemas
+- M24 ### Tema 4: Despliegue Blue/Green de Lambda — cambio de tráfico por alias: tiene 0 subtemas
+- M24 ### Tema 5: Despliegue Blue/Green de ECS — cambio de tráfico por listener ELB: tiene 0 subtemas
+- M25 ### Tema 1: AWS Config — rastrear reglas sobre tus recursos: tiene 0 subtemas
+- M25 ### Tema 2: AppConfig — desplegar configuración sin redeployar código: tiene 0 subtemas
+- M25 ### Tema 3: AppConfigData — el plano de datos que consume tu aplicación: tiene 0 subtemas
+- M25 ### Tema 4: AWS Backup — centralizar la política de respaldo de múltiples servicios: tiene 0 subtemas
+- M25 ### Tema 5: El ciclo de vida de un trabajo de respaldo: tiene 0 subtemas
+- M25 ### Tema 6: Simulacro de restauración: comprobar contenido, no solo la existencia del backup: tiene 0 subtemas
+- M26 ### Tema 1: Amazon Data Firehose — entrega gestionada sin consumidores propios: tiene 0 subtemas
+- M26 ### Tema 2: Firehose vs Kinesis Data Streams — quién consume los datos: tiene 0 subtemas
+- M26 ### Tema 3: EventBridge Pipes — conectar origen y destino sin código de pegamento: tiene 0 subtemas
+- M26 ### Tema 4: Cuándo usar Pipes frente a reglas EventBridge o Step Functions: tiene 0 subtemas
+- M27 ### Tema 1: AppSync — APIs GraphQL gestionadas: tiene 0 subtemas
+- M27 ### Tema 2: Fuentes de datos y resolvers: tiene 0 subtemas
+- M27 ### Tema 3: SES — identidades, envío y plantillas: tiene 0 subtemas
+- M27 ### Tema 4: El simulador de buzones y el punto de inspección local: tiene 0 subtemas
+- M28 ### Tema 1: Bases de datos de grafos — cuando las relaciones son el dato: tiene 0 subtemas
+- M28 ### Tema 2: Neptune en Floci — un servidor Gremlin real, no una simulación: tiene 0 subtemas
+- M28 ### Tema 3: OpenSearch — modo simulado y modo real: tiene 0 subtemas
+- M28 ### Tema 4: Eligiendo entre Neptune, OpenSearch y DynamoDB: tiene 0 subtemas
+- M29 ### Tema 1: Cost Explorer — costos sintetizados a partir de tu estado real: tiene 0 subtemas
+- M29 ### Tema 2: Pricing — catálogo de tarifas de referencia: tiene 0 subtemas
+- M29 ### Tema 3: BCM Data Exports — reportes de costo en formato estándar: tiene 0 subtemas
+- M29 ### Tema 4: Resource Groups Tagging API — descubrimiento centralizado por etiqueta: tiene 0 subtemas
+- M29 ### Tema 5: STS en profundidad — identidad temporal y aislamiento multi-cuenta: tiene 0 subtemas
+- M3 ### Tema 1: Colas, productores y consumidores: tiene 0 subtemas
+- M3 ### Tema 2: Ciclo de vida de un mensaje: tiene 0 subtemas
+- M3 ### Tema 3: Dead Letter Queues (DLQ): tiene 0 subtemas
+- M3 ### Tema 4: Colas FIFO vs Standard: tiene 0 subtemas
+- M30 ### Tema 1: Qué resuelve Transfer Family: tiene 0 subtemas
+- M30 ### Tema 2: Ciclo de vida del servidor y modelo de usuarios: tiene 0 subtemas
+- M30 ### Tema 3: Claves públicas SSH y autenticación de usuarios: tiene 0 subtemas
+- M30 ### Tema 4: Los límites de la Fase 1 — plano de gestión completo, plano de datos pendiente: tiene 0 subtemas
+- M31 ### Tema 1: Arquitectura multi-nube y portabilidad de conocimiento: tiene 0 subtemas
+- M31 ### Tema 2: Arquitectura interna de cloud local y su uso en CI/CD: tiene 0 subtemas
+- M31 ### Tema 3: Migración desde otros emuladores, y límites de un emulador: tiene 0 subtemas
+- M31 ### Tema 4: Testcontainers — pruebas de integración automatizadas: tiene 0 subtemas
+- M32 ### Tema 1: Una red segura empieza por flujos, no por subredes: tiene 0 subtemas
+- M32 ### Tema 2: Una landing zone convierte gobierno en una base repetible: tiene 0 subtemas
+- M32 ### Tema 3: Disponibilidad y recuperación responden preguntas distintas: tiene 0 subtemas
+- M32 ### Tema 4: Un backup solo existe operativamente después de restaurarlo: tiene 0 subtemas
+- M33 ### Tema 1: Terraform avanzado y CI/CD cloud: tiene 0 subtemas
+- M33 ### Tema 2: Kubernetes administrado, ECS y Service Mesh: tiene 0 subtemas
+- M33 ### Tema 3: EC2, VPC, RDS, S3 y DynamoDB avanzados: tiene 0 subtemas
+- M33 ### Tema 4: Lambda, API Gateway y observabilidad avanzada: tiene 0 subtemas
+- M33 ### Tema 5: Seguridad, auditoría y FinOps: tiene 0 subtemas
+- M33 ### Tema 6: Microservicios, Big Data, AI/ML y multi-cloud: tiene 0 subtemas
+- M34 ### Tema 1: Instalación en macOS, Linux y Windows: tiene 0 subtemas
+- M34 ### Tema 2: Modelo mental de la plataforma: tiene 0 subtemas
+- M34 ### Tema 3: AWS CLI y SDK, Azure CLI y SDK, GCP CLI y SDK: tiene 0 subtemas
+- M34 ### Tema 4: Configuración avanzada y ciclo de vida: tiene 0 subtemas
+- M34 ### Tema 5: Automatización, UI y agentes: tiene 0 subtemas
+- M34 ### Tema 6: Servicios AWS incorporados en la documentación actual: tiene 0 subtemas
+- M34 ### Tema 7: Servicios Azure que completan el recorrido: tiene 0 subtemas
+- M34 ### Tema 8: Servicios GCP que completan el recorrido: tiene 0 subtemas
+- M34 ### Tema 9: floci-ui — explorador visual multi-nube: tiene 0 subtemas
+- M34 ### Tema 10: Laboratorios oficiales reconstruidos en español: tiene 0 subtemas
+- M34 ### Tema 11: Límites y transferencia a producción: tiene 0 subtemas
+- M4 ### Tema 1: Qué es NoSQL y cuándo usarlo: tiene 0 subtemas
+- M4 ### Tema 2: Tablas, items y atributos: tiene 0 subtemas
+- M4 ### Tema 3: Tipos de datos — S, N, B, BOOL, NULL, L, M: tiene 0 subtemas
+- M4 ### Tema 4: Clave primaria simple (HASH) vs compuesta (HASH + RANGE): tiene 0 subtemas
+- M4 ### Tema 5: Índices secundarios globales (GSI) y locales (LSI): tiene 0 subtemas
+- M4 ### Tema 6: Query vs Scan: tiene 0 subtemas
+- M5 ### Tema 1: Qué es serverless — ventajas y desventajas: tiene 0 subtemas
+- M5 ### Tema 2: Estructura de una función Lambda: tiene 0 subtemas
+- M5 ### Tema 3: Runtimes — Node.js, Python, Java, Go: tiene 0 subtemas
+- M5 ### Tema 4: Payload de entrada y respuesta: tiene 0 subtemas
+- M5 ### Tema 5: Versionado y alias: tiene 0 subtemas
+- M5 ### Tema 6: Integración con S3, DynamoDB Streams y API Gateway: tiene 0 subtemas
+- M6 ### Tema 1: Qué es API Gateway y tipos de API — REST, HTTP, WebSocket: tiene 0 subtemas
+- M6 ### Tema 2: Recursos, métodos y stages: tiene 0 subtemas
+- M6 ### Tema 3: Integración con Lambda (proxy): tiene 0 subtemas
+- M6 ### Tema 4: Mapeo de entrada/salida y validación con modelos: tiene 0 subtemas
+- M6 ### Tema 5: Despliegue y variables de stage: tiene 0 subtemas
+- M7 ### Tema 1: Principio de mínimo privilegio: tiene 0 subtemas
+- M7 ### Tema 2: Modelo de responsabilidad compartida: tiene 0 subtemas
+- M7 ### Tema 3: Usuarios, grupos y roles: tiene 0 subtemas
+- M7 ### Tema 4: Estructura de una política — acciones, recursos y condiciones: tiene 0 subtemas
+- M7 ### Tema 5: Buenas prácticas — roles sobre usuarios, políticas restrictivas, rotación de credenciales: tiene 0 subtemas
+- M8 ### Tema 1: floci-az — Blob Storage, Queue Storage, Table Storage, Cosmos DB, Functions: tiene 0 subtemas
+- M8 ### Tema 2: floci-gcp — Cloud Storage, Pub/Sub, Firestore, Cloud Functions: tiene 0 subtemas
+- M8 ### Tema 3: Comparativa AWS vs Azure vs GCP por categoría de servicio: tiene 0 subtemas
+- M9 ### Tema 1: Arquitectura de la aplicación — frontend, backend y base de datos: tiene 0 subtemas
+- M9 ### Tema 2: CRUD de tareas sobre DynamoDB expuesto por Lambda: tiene 0 subtemas
+- M9 ### Tema 3: Archivos adjuntos en S3 y procesamiento en segundo plano con SQS: tiene 0 subtemas
+- M9 ### Tema 4: API Gateway e IAM de mínimo privilegio para el proyecto: tiene 0 subtemas
+- M9 ### Tema 5: Documentación de la API y guía de despliegue: tiene 0 subtemas
+
+### devops
+
+- M0 ### Tema 1: Sistema de archivos y permisos (chmod/chown): tiene 0 subtemas
+- M0 ### Tema 2: Procesos, señales y jobs en segundo plano: tiene 0 subtemas
+- M0 ### Tema 3: Pipes, redirección y filtros (grep, awk, sed): tiene 0 subtemas
+- M0 ### Tema 4: Variables de entorno y scripts bash robustos (set -euo pipefail): tiene 0 subtemas
+- M0 ### Tema 5: Cron y tareas programadas: tiene 0 subtemas
+- M0 ### Tema 6: Hardening básico — SSH sin contraseña, firewalls, SELinux/AppArmor: tiene 0 subtemas
+- M0 ### Tema 7: Redes — modelo OSI, TCP/IP, DNS y balanceadores de carga: tiene 0 subtemas
+- M0 ### Tema 8: Cultura DevOps y el ciclo Plan→Code→Build→Test→Release→Deploy→Operate→Monitor: tiene 0 subtemas
+- M0 ### Tema 9: NGINX y proxies desde cero: tiene 0 subtemas
+- M0 ### Tema 10: Usuarios, grupos, permisos compartidos y sudo con mínimo privilegio: tiene 0 subtemas
+- M0 ### Tema 11: systemd: servicios, timers y logs con journalctl: tiene 0 subtemas
+- M1 ### Tema 1: Trunk-based development vs GitFlow: tiene 0 subtemas
+- M1 ### Tema 2: Rebase interactivo vs merge: tiene 0 subtemas
+- M1 ### Tema 3: Bisect para encontrar regresiones: tiene 0 subtemas
+- M1 ### Tema 4: Hooks de Git y commits firmados: tiene 0 subtemas
+- M1 ### Tema 5: Monorepos vs polyrepos: tiene 0 subtemas
+- M1 ### Tema 6: git cherry-pick, git stash, git reset vs git revert: tiene 0 subtemas
+- M1 ### Tema 7: git reflog, git worktree y git submodule: tiene 0 subtemas
+- M10 ### Tema 1: Logging estructurado (JSON): tiene 0 subtemas
+- M10 ### Tema 2: Pipeline ELK/EFK: tiene 0 subtemas
+- M10 ### Tema 3: Loki + Grafana como alternativa ligera: tiene 0 subtemas
+- M10 ### Tema 4: Correlation ID a través de servicios: tiene 0 subtemas
+- M11 ### Tema 1: Escaneo de imágenes y dependencias (Trivy, Snyk): tiene 0 subtemas
+- M11 ### Tema 2: Integración en el pipeline: tiene 0 subtemas
+- M11 ### Tema 3: Gestión de secretos (Vault, SOPS): tiene 0 subtemas
+- M11 ### Tema 4: Menor privilegio en CI/CD: tiene 0 subtemas
+- M11 ### Tema 5: SBOM y supply chain security: tiene 0 subtemas
+- M11 ### Tema 6: SAST, DAST y SCA — diferencias y herramientas: tiene 0 subtemas
+- M11 ### Tema 7: Reconocimiento de tu propio laboratorio: escaneo de puertos y banners: tiene 0 subtemas
+- M12 ### Tema 1: De cloud local a un proveedor cloud real: tiene 0 subtemas
+- M12 ### Tema 2: Gestión de secretos cloud-native: tiene 0 subtemas
+- M12 ### Tema 3: IaC multi-nube: tiene 0 subtemas
+- M12 ### Tema 4: Checklist de salida a producción: tiene 0 subtemas
+- M12 ### Tema 5: GitOps con ArgoCD y FluxCD: tiene 0 subtemas
+- M12 ### Tema 6: Platform Engineering — Internal Developer Platforms (IDPs): tiene 0 subtemas
+- M13 ### Tema 1: El pipeline completo — de commit a producción verificada: tiene 0 subtemas
+- M13 ### Tema 2: Uniendo cada módulo del track en un solo flujo: tiene 0 subtemas
+- M13 ### Tema 3: Cierre del track — checklist final y reflexión: tiene 0 subtemas
+- M14 ### Tema 1: Confiabilidad es una expectativa cuantificada: tiene 0 subtemas
+- M14 ### Tema 2: Una alerta debe conducir a una acción: tiene 0 subtemas
+- M14 ### Tema 3: Construir una imagen no demuestra de dónde proviene: tiene 0 subtemas
+- M14 ### Tema 4: Una plataforma interna es un producto con límites: tiene 0 subtemas
+- M15 ### Tema 1: Docker y Compose avanzados: tiene 0 subtemas
+- M15 ### Tema 2: Kubernetes extensible y Helm avanzado: tiene 0 subtemas
+- M15 ### Tema 3: Service Mesh con Istio o Linkerd: tiene 0 subtemas
+- M15 ### Tema 4: GitOps con Argo CD y Flux: tiene 0 subtemas
+- M15 ### Tema 5: Ansible, inventarios, roles y Vault: tiene 0 subtemas
+- M15 ### Tema 6: DevSecOps y métricas DORA: tiene 0 subtemas
+- M16 ### Tema 1: Postman y Newman — tu primera colección contra una API real: tiene 0 subtemas
+- M16 ### Tema 2: Scripts y assertions — pruebas automatizadas sobre datos reales: tiene 0 subtemas
+- M16 ### Tema 3: Newman en profundidad — reportes y el contrato del código de salida: tiene 0 subtemas
+- M16 ### Tema 4: Jenkins — instalación, jobs y el linter real de pipelines declarativos: tiene 0 subtemas
+- M16 ### Tema 5: Integración completa — Newman dentro de un pipeline Jenkins: tiene 0 subtemas
+- M16 ### Tema complementario: Bruno y Postman, evaluar con el mismo contrato: tiene 0 subtemas
+- M17 ### Tema 1: El borde: balanceo, proxy inverso, CDN y límites de tasa: tiene 0 subtemas
+- M17 ### Tema 2: Datos que crecen: índices, réplicas, sharding y la elección SQL/NoSQL: tiene 0 subtemas
+- M17 ### Tema 3: CAP, consistencia e idempotencia: lo que se paga en cada decisión: tiene 0 subtemas
+- M17 ### Tema 4: Capacidad y observabilidad: latencia, throughput, SLO y pruebas de carga: tiene 0 subtemas
+- M18 ### Tema 1: Aprovisionar y endurecer: usuario, SSH, firewall y parches: tiene 0 subtemas
+- M18 ### Tema 2: Dominio, TLS y borde: DNS, Let's Encrypt y Cloudflare: tiene 0 subtemas
+- M18 ### Tema 3: Despliegue y rollback: systemd, nginx y artefactos versionados: tiene 0 subtemas
+- M18 ### Tema 4: Respaldos que se restauran: restic, RPO/RTO y simulacro: tiene 0 subtemas
+- M2 ### Tema 1: Dockerfile multi-stage: tiene 0 subtemas
+- M2 ### Tema 2: Capas e invalidación de caché: tiene 0 subtemas
+- M2 ### Tema 3: Imágenes base distroless/alpine: tiene 0 subtemas
+- M2 ### Tema 4: Volúmenes vs bind mounts: tiene 0 subtemas
+- M2 ### Tema 5: Redes en Docker: tiene 0 subtemas
+- M2 ### Tema 6: Registries — Docker Hub, AWS ECR, Azure Container Registry, Harbor: tiene 0 subtemas
+- M2 ### Tema 7: Operación diaria: inspect, stats, events y respaldo de volúmenes: tiene 0 subtemas
+- M3 ### Tema 1: Servicios, dependencias y healthchecks: tiene 0 subtemas
+- M3 ### Tema 2: Variables de entorno y .env: tiene 0 subtemas
+- M3 ### Tema 3: Redes y descubrimiento por nombre de servicio: tiene 0 subtemas
+- M3 ### Tema 4: Perfiles para distintos entornos: tiene 0 subtemas
+- M4 ### Tema 1: Jobs, steps y matrices de build: tiene 0 subtemas
+- M4 ### Tema 2: Caché de dependencias en CI: tiene 0 subtemas
+- M4 ### Tema 3: Artifacts y reportes de cobertura: tiene 0 subtemas
+- M4 ### Tema 4: Pipelines como código (GitHub Actions/GitLab CI): tiene 0 subtemas
+- M5 ### Tema 1: Blue-green deployment: tiene 0 subtemas
+- M5 ### Tema 2: Canary releases: tiene 0 subtemas
+- M5 ### Tema 3: Rolling updates: tiene 0 subtemas
+- M5 ### Tema 4: Feature flags vs branches por entorno: tiene 0 subtemas
+- M5 ### Tema 5: Rollback automático por métricas: tiene 0 subtemas
+- M5 ### Tema 7: A/B testing y shadow traffic: medir sin convertir usuarios en cobayas: tiene 0 subtemas
+- M5 ### Tema 6: Rollback ensayado y compatibilidad del artefacto anterior: tiene 0 subtemas
+- M6 ### Tema 1: Pod, ReplicaSet, Deployment: tiene 0 subtemas
+- M6 ### Tema 2: Service (ClusterIP, NodePort, LoadBalancer): tiene 0 subtemas
+- M6 ### Tema 3: ConfigMaps y Secrets: tiene 0 subtemas
+- M6 ### Tema 4: kubectl esencial: tiene 0 subtemas
+- M6 ### Tema 5: Namespaces: tiene 0 subtemas
+- M6 ### Tema 6: StatefulSets, DaemonSets, Jobs y CronJobs: tiene 0 subtemas
+- M6 ### Tema 7: Persistent Volumes, PVCs y StorageClasses: tiene 0 subtemas
+- M7 ### Tema 1: Helm charts y values: tiene 0 subtemas
+- M7 ### Tema 2: Ingress Controllers y reglas de enrutamiento: tiene 0 subtemas
+- M7 ### Tema 3: HorizontalPodAutoscaler: tiene 0 subtemas
+- M7 ### Tema 4: Probes de liveness y readiness: tiene 0 subtemas
+- M7 ### Tema 5: RBAC en Kubernetes: tiene 0 subtemas
+- M7 ### Tema 6: Service Mesh — Istio, Linkerd, Envoy y mTLS: tiene 0 subtemas
+- M7 ### Tema 7: Estrategias de despliegue — Recreate vs RollingUpdate: tiene 0 subtemas
+- M8 ### Tema 1: Providers, resources y data sources: tiene 0 subtemas
+- M8 ### Tema 2: State remoto y locking: tiene 0 subtemas
+- M8 ### Tema 3: Módulos reutilizables: tiene 0 subtemas
+- M8 ### Tema 4: terraform plan vs apply: tiene 0 subtemas
+- M8 ### Tema 5: Workspaces para múltiples entornos: tiene 0 subtemas
+- M8 ### Tema 6: Ansible — playbooks, roles, inventory y módulos: tiene 0 subtemas
+- M8 ### Tema 7: Pulumi como alternativa a HCL: tiene 0 subtemas
+- M8 ### Tema complementario: OpenTofu, plan y estado sin recursos cloud: tiene 0 subtemas
+- M9 ### Tema 1: Modelo de métricas de Prometheus — counter, gauge, histogram: tiene 0 subtemas
+- M9 ### Tema 2: PromQL esencial: tiene 0 subtemas
+- M9 ### Tema 3: Dashboards en Grafana: tiene 0 subtemas
+- M9 ### Tema 4: Alertmanager y reglas de alerta: tiene 0 subtemas
+- M9 ### Tema 5: SLI, SLO, SLA: tiene 0 subtemas
+- M9 ### Tema 6: OpenTelemetry como estándar de instrumentación: tiene 0 subtemas
+- M9 ### Tema 7: Métricas DORA — Lead Time, Deployment Frequency, MTTR, Change Failure Rate: tiene 0 subtemas
+
+### flutter
+
+- M0 ### Tema 1: Sound null safety: tiene 0 subtemas
+- M0 ### Tema 2: Clases y mixins: tiene 0 subtemas
+- M0 ### Tema 3: Futures, async/await y colecciones funcionales: tiene 0 subtemas
+- M0 ### Tema 4: Lints y estilo con analysis_options.yaml: tiene 0 subtemas
+- M1 ### Tema 1: StatelessWidget vs StatefulWidget: tiene 0 subtemas
+- M1 ### Tema 2: Layout con Row, Column y Stack, y ciclo de vida: tiene 0 subtemas
+- M1 ### Tema 3: Keys: tiene 0 subtemas
+- M10 ### Tema 1: ThemeData con Material 3: tiene 0 subtemas
+- M10 ### Tema 2: Adaptación Material vs Cupertino: tiene 0 subtemas
+- M10 ### Tema 3: Accesibilidad con Semantics y dark mode: tiene 0 subtemas
+- M11 ### Tema 1: Builds de release para cada plataforma: tiene 0 subtemas
+- M11 ### Tema 2: Iconos y splash screens: tiene 0 subtemas
+- M11 ### Tema 3: CI/CD con Codemagic o Fastlane: tiene 0 subtemas
+- M11 ### Tema 4: Entornos y flavors con --dart-define-from-file: tiene 0 subtemas
+- M12 ### Tema 1: Arquitectura por features y Clean Architecture: tiene 0 subtemas
+- M12 ### Tema 2: Uniendo los módulos del track: tiene 0 subtemas
+- M12 ### Tema 3: Cierre del track: tiene 0 subtemas
+- M13 ### Tema 1: Una API Dart puede terminar en una frontera nativa: tiene 0 subtemas
+- M13 ### Tema 2: Los secretos no pertenecen al binario: tiene 0 subtemas
+- M13 ### Tema 3: Fluidez se mide contra el presupuesto de cada frame: tiene 0 subtemas
+- M13 ### Tema 4: Producción exige protocolo, telemetría y contención: tiene 0 subtemas
+- M14 ### Tema 1: Diseño de pantallas y Riverpod: tiene 0 subtemas
+- M14 ### Tema 2: Google Maps y localización en tiempo real: tiene 0 subtemas
+- M14 ### Tema 3: Socket.IO y actualización de rutas: tiene 0 subtemas
+- M14 ### Tema 4: Animaciones de localización: tiene 0 subtemas
+- M14 ### Tema 5: Almacenamiento local, imágenes y offline: tiene 0 subtemas
+- M14 ### Tema 6: Dio y notificaciones push: tiene 0 subtemas
+- M15 ### Tema 1: flutter test y WidgetTester: tiene 0 subtemas
+- M15 ### Tema 2: pumpAndSettle, golden e integration tests: tiene 0 subtemas
+- M15 ### Tema 3: Rendimiento, RepaintBoundary y Keys: tiene 0 subtemas
+- M15 ### Tema 4: Clean Architecture: tiene 0 subtemas
+- M15 ### Tema 5: Internacionalización completa: tiene 0 subtemas
+- M15 ### Tema 6: Builds, firma y despliegue: tiene 0 subtemas
+- M16 ### Tema 1: reconocer cuándo usar FFI y crear el paquete: tiene 0 subtemas
+- M16 ### Tema 2: generar bindings C seguros para Dart: tiene 0 subtemas
+- M16 ### Tema 3: conectar una biblioteca Rust mediante una ABI C: tiene 0 subtemas
+- M16 ### Tema 4: compilar y empaquetar bibliotecas por plataforma: tiene 0 subtemas
+- M16 ### Tema 5: medir rendimiento y evitar bloquear la interfaz: tiene 0 subtemas
+- M16 ### Tema 6: propiedad de memoria, liberación y errores: tiene 0 subtemas
+- M17 ### Tema 1: macros de Dart y alternativas disponibles: tiene 0 subtemas
+- M17 ### Tema 2: generación avanzada con build_runner: tiene 0 subtemas
+- M17 ### Tema 3: reflexión limitada y registro tipado: tiene 0 subtemas
+- M17 ### Tema 4: recorrer el AST de Dart con analyzer: tiene 0 subtemas
+- M17 ### Tema 5: crear un builder pequeño para build_runner: tiene 0 subtemas
+- M17 ### Tema 6: diseñar y validar un paquete Dart: tiene 0 subtemas
+- M18 ### Tema 1: la frontera entre Dart y el código nativo: tiene 0 subtemas
+- M18 ### Tema 2: secretos fuera del binario: tiene 0 subtemas
+- M18 ### Tema 3: fluidez y presupuesto de frames: tiene 0 subtemas
+- M18 ### Tema 4: protocolo, telemetría y contención: tiene 0 subtemas
+- M18 ### Tema 5: reportes de fallos con Crashlytics y Sentry: tiene 0 subtemas
+- M18 ### Tema 6: analítica con privacidad y consentimiento: tiene 0 subtemas
+- M18 ### Tema 7: monitoreo de rendimiento en una versión publicada: tiene 0 subtemas
+- M19 ### Tema 2: mapa y permiso de ubicación: tiene 0 subtemas
+- M19 ### Tema 3: posiciones en tiempo real con Socket.IO: tiene 0 subtemas
+- M19 ### Tema 4: animar el marcador sin saltos: tiene 0 subtemas
+- M19 ### Tema 5: confirmaciones offline y sincronización: tiene 0 subtemas
+- M19 ### Tema 6: carga de evidencia con Dio y notificaciones: tiene 0 subtemas
+- M2 ### Tema 1: MediaQuery vs LayoutBuilder: tiene 0 subtemas
+- M2 ### Tema 2: Cómo Flutter calcula tamaños: tiene 0 subtemas
+- M2 ### Tema 3: Breakpoints propios y SafeArea: tiene 0 subtemas
+- M20 ### Tema 1: pruebas unitarias y de widget con Flutter Test: tiene 0 subtemas
+- M20 ### Tema 2: golden e integración de un flujo real: tiene 0 subtemas
+- M20 ### Tema 3: perfilado y presupuesto de rendimiento: tiene 0 subtemas
+- M20 ### Tema 4: Clean Architecture y sustitución de dependencias: tiene 0 subtemas
+- M20 ### Tema 5: internacionalización y formatos locales: tiene 0 subtemas
+- M20 ### Tema 6: builds por plataforma, firma y entrega: tiene 0 subtemas
+- M21 ### Tema 1: catálogo y flujo con `in_app_purchase`: tiene 0 subtemas
+- M21 ### Tema 2: suscripciones Android, planes base y cambios: tiene 0 subtemas
+- M21 ### Tema 3: suscripciones iOS con StoreKit: tiene 0 subtemas
+- M21 ### Tema 4: restauración de compras y entitlement: tiene 0 subtemas
+- M21 ### Tema 5: pruebas de IAP en sandbox: tiene 0 subtemas
+- M21 ### Tema 6: validación de transacciones en servidor: tiene 0 subtemas
+- M22 ### Tema 1: configurar AdMob y cargar el primer banner de prueba: tiene 0 subtemas
+- M22 ### Tema 2: elegir mediación, bidding y waterfall: tiene 0 subtemas
+- M22 ### Tema 3: banners, interstitials y anuncios recompensados: tiene 0 subtemas
+- M22 ### Tema 4: consentimiento, privacidad y audiencias: tiene 0 subtemas
+- M22 ### Tema 5: pruebas de anuncios y diagnóstico de no-fill: tiene 0 subtemas
+- M22 ### Tema 6: comparar AdMob, AppLovin MAX y Unity LevelPlay: tiene 0 subtemas
+- M3 ### Tema 1: go_router: navegación como función de la URL: tiene 0 subtemas
+- M3 ### Tema 2: Guards y deep linking: tiene 0 subtemas
+- M3 ### Tema 3: Transiciones personalizadas: tiene 0 subtemas
+- M4 ### Tema 1: setState y sus límites: tiene 0 subtemas
+- M4 ### Tema 2: Riverpod: tiene 0 subtemas
+- M4 ### Tema 3: Bloc/Cubit y otras alternativas: tiene 0 subtemas
+- M4 ### Tema 4: Formularios profesionales con Formz y Riverpod: tiene 0 subtemas
+- M4 ### Tema 5: Inyección de dependencias con Riverpod: reemplazar implementaciones: tiene 0 subtemas
+- M5 ### Tema 1: http vs dio: tiene 0 subtemas
+- M5 ### Tema 2: json_serializable: tiene 0 subtemas
+- M5 ### Tema 3: Interceptores y estados explícitos: tiene 0 subtemas
+- M6 ### Tema 1: shared_preferences: tiene 0 subtemas
+- M6 ### Tema 2: sqflite vs Hive: tiene 0 subtemas
+- M6 ### Tema 3: Offline-first y Firebase: tiene 0 subtemas
+- M6 ### Tema 4: Restauración de formularios con RestorationMixin y una prueba de recreación: tiene 0 subtemas
+- M7 ### Tema 1: MethodChannel: tiene 0 subtemas
+- M7 ### Tema 2: Plugins federados: tiene 0 subtemas
+- M7 ### Tema 3: Permisos de plataforma y cuándo escribir un platform channel propio: tiene 0 subtemas
+- M7 ### Tema 4: Cámara, galería y carga multipart de una evidencia: tiene 0 subtemas
+- M8 ### Tema 1: Animaciones implícitas vs explícitas: tiene 0 subtemas
+- M8 ### Tema 2: Flutter DevTools y detección de jank: tiene 0 subtemas
+- M8 ### Tema 3: const widgets, RepaintBoundary y shouldRepaint: tiene 0 subtemas
+- M8 ### Tema 4: Isolates — trabajo pesado sin congelar la interfaz: tiene 0 subtemas
+- M8 ### Tema 5: CustomPainter: dibujar con Canvas sin repintar de más: tiene 0 subtemas
+- M9 ### Tema 1: Unit tests y widget tests: tiene 0 subtemas
+- M9 ### Tema 2: Mocking con mocktail: tiene 0 subtemas
+- M9 ### Tema 3: Integration tests: tiene 0 subtemas
+
+### foundations
+
+- M0 ### Tema 1: Del hardware al programa en ejecución: tiene 0 subtemas
+- M0 ### Tema 2: Archivos, carpetas y rutas sin perderse: tiene 0 subtemas
+- M0 ### Tema 3: Cómo leer un comando antes de ejecutarlo: tiene 0 subtemas
+- M0 ### Tema 4: Primer programa, primer error y primera evidencia: tiene 0 subtemas
+- M0 ### Tema complementario: VS Code, comandos y atajos comprobables: tiene 0 subtemas
+- M1 ### Tema 1: Del problema al algoritmo y a los casos de prueba: tiene 0 subtemas
+- M1 ### Tema 2: Variables, tipos, expresiones y cambios de estado: tiene 0 subtemas
+- M1 ### Tema 3: Decisiones, repeticiones y trazado de ejecución: tiene 0 subtemas
+- M1 ### Tema 4: Funciones y descomposición de problemas: tiene 0 subtemas
+- M1 ### Tema 5: Cómo la computadora representa los datos — binario, texto y decimales: tiene 0 subtemas
+- M10 ### Tema 1: La red convierte el resultado en una incertidumbre: tiene 0 subtemas
+- M10 ### Tema 2: Replicación, consistencia y decisiones explícitas: tiene 0 subtemas
+- M10 ### Tema 3: Mensajes que se procesan con efectos exactamente una vez: tiene 0 subtemas
+- M10 ### Tema 4: Resiliencia y observabilidad orientadas a objetivos: tiene 0 subtemas
+- M10 ### Tema 5: Tiempo, coordinación y acuerdo: Lamport, elección de líder y commit en dos fases: tiene 0 subtemas
+- M10 ### Tema 6: Latencia y throughput: medir concurrencia sin confundirla con capacidad ilimitada: tiene 0 subtemas
+- M11 ### Tema 1: Sistemas, arquitectura y sistemas operativos: tiene 0 subtemas
+- M11 ### Tema 2: Algoritmos, autómatas, lenguajes y compiladores: tiene 0 subtemas
+- M11 ### Tema 3: Bases de datos, almacenes analíticos y minería de datos: tiene 0 subtemas
+- M11 ### Tema 4: Inteligencia artificial, aprendizaje automático y visión: tiene 0 subtemas
+- M11 ### Tema 5: Gráficos y cómputo científico: tiene 0 subtemas
+- M11 ### Tema 6: Redes, seguridad, web e ingeniería profesional: tiene 0 subtemas
+- M12 ### Tema 1: Matemáticas aplicadas: derivada, integral y modelos: tiene 0 subtemas
+- M12 ### Tema 2: Circuitos DC y AC: Kirchhoff, Thévenin y Norton: tiene 0 subtemas
+- M12 ### Tema 3: Electrónica analógica: diodos, transistores y amplificadores: tiene 0 subtemas
+- M12 ### Tema 4: Electrónica digital: lógica y máquinas de estados: tiene 0 subtemas
+- M12 ### Tema 5: Microcontroladores: GPIO, ADC, PWM e interrupciones: tiene 0 subtemas
+- M12 ### Tema 6: Comunicaciones: modulación y detección de errores: tiene 0 subtemas
+- M12 ### Tema 7: Señales y sistemas: muestreo, Fourier y convolución: tiene 0 subtemas
+- M12 ### Tema 8: DSP: filtros digitales y compresión: tiene 0 subtemas
+- M12 ### Tema 9: Instrumentación: calibración, DAQ e incertidumbre: tiene 0 subtemas
+- M12 ### Tema 10: Control automático: realimentación, PID y estabilidad: tiene 0 subtemas
+- M12 ### Tema 11: Potencia: conversión, eficiencia y disipación: tiene 0 subtemas
+- M12 ### Tema 12: PCB: esquemático, ERC, DRC y fabricación: tiene 0 subtemas
+- M12 ### Tema 13: Sistemas embebidos: RTOS, buses y firmware: tiene 0 subtemas
+- M12 ### Tema 14: Programación de bajo nivel: C, memoria y depuración: tiene 0 subtemas
+- M12 ### Tema 15: Electromagnetismo: Faraday y líneas de transmisión: tiene 0 subtemas
+- M12 ### Tema 16: Gestión profesional: requisitos, riesgos y evidencia: tiene 0 subtemas
+- M12 ### Tema 17: PLC y control industrial: ciclo de scan e IEC 61131-3: tiene 0 subtemas
+- M13 ### Tema 1: Ordenamientos: insertion, merge y quick sort: tiene 0 subtemas
+- M13 ### Tema 2: Algoritmos codiciosos y árbol de expansión mínima: tiene 0 subtemas
+- M13 ### Tema 3: Caminos más cortos con Dijkstra: tiene 0 subtemas
+- M13 ### Tema 4: Búsqueda en cadenas: de la fuerza bruta a KMP: tiene 0 subtemas
+- M13 ### Tema 5: Problemas intratables: P, NP y heurísticas: tiene 0 subtemas
+- M14 ### Tema 1: Decorator: agregar comportamiento sin heredar: tiene 0 subtemas
+- M14 ### Tema 2: State: un objeto que cambia de comportamiento según su estado: tiene 0 subtemas
+- M14 ### Tema 3: Template Method: un algoritmo fijo con pasos variables: tiene 0 subtemas
+- M14 ### Tema 4: Chain of Responsibility: una cadena de validadores: tiene 0 subtemas
+- M14 ### Tema 5: Mediator: coordinar objetos sin que se conozcan: tiene 0 subtemas
+- M14 ### Tema 6: Memento: guardar y restaurar estado para deshacer: tiene 0 subtemas
+- M14 ### Tema 7: Visitor: operaciones nuevas sin tocar las clases: tiene 0 subtemas
+- M14 ### Tema 8: Flyweight: compartir estado para ahorrar memoria: tiene 0 subtemas
+- M15 ### Tema 1: Nombres que revelan intención y funciones pequeñas: tiene 0 subtemas
+- M15 ### Tema 2: Comentarios honestos y excepciones en lugar de códigos de error: tiene 0 subtemas
+- M15 ### Tema 3: Objetos frente a estructuras de datos y la ley de Demeter: tiene 0 subtemas
+- M15 ### Tema 4: Pruebas limpias: F.I.R.S.T. y un concepto por prueba: tiene 0 subtemas
+- M2 ### Tema 1: Elegir estructuras según las operaciones: tiene 0 subtemas
+- M2 ### Tema 2: Pilas, colas y abstracciones de comportamiento: tiene 0 subtemas
+- M2 ### Tema 3: Búsqueda, precondiciones y demostración de corrección: tiene 0 subtemas
+- M2 ### Tema 4: Complejidad, medición, ordenamiento y recursión: tiene 0 subtemas
+- M2 ### Tema 5: Árboles y árboles binarios de búsqueda (BST): tiene 0 subtemas
+- M2 ### Tema 6: Tablas hash — búsqueda en tiempo constante: tiene 0 subtemas
+- M2 ### Tema 7: Grafos y recorridos BFS/DFS: tiene 0 subtemas
+- M2 ### Tema 8: Programación dinámica — resolver una vez, recordar el resultado: tiene 0 subtemas
+- M3 ### Tema 1: De una URL al servidor: red, DNS, IP y puertos: tiene 0 subtemas
+- M3 ### Tema 2: HTTP como contrato observable: tiene 0 subtemas
+- M3 ### Tema 3: HTML semántico, formularios y el DOM: tiene 0 subtemas
+- M3 ### Tema 4: CSS, layout responsive y accesibilidad verificable: tiene 0 subtemas
+- M3 ### Tema 5: HTML semántico y CSS responsive desde un archivo vacío: tiene 0 subtemas
+- M4 ### Tema 1: Del mundo real al modelo relacional: tiene 0 subtemas
+- M4 ### Tema 2: SQL para definir, escribir, consultar y relacionar: tiene 0 subtemas
+- M4 ### Tema 3: Índices, restricciones y planes de consulta: tiene 0 subtemas
+- M4 ### Tema 4: Transacciones, concurrencia y elección SQL/NoSQL: tiene 0 subtemas
+- M4 ### Tema 5: SQL avanzado: subconsultas, vistas, triggers y funciones de ventana: tiene 0 subtemas
+- M4 ### Tema 6: Procedimientos almacenados, funciones y cursores con PL/pgSQL: tiene 0 subtemas
+- M4 ### Tema 7: De SQL a Excel: reportes con tablas y fórmulas vivas: tiene 0 subtemas
+- M5 ### Tema 1: Depurar con evidencia, no con cambios aleatorios: tiene 0 subtemas
+- M5 ### Tema 2: Pruebas con propósito y niveles adecuados: tiene 0 subtemas
+- M5 ### Tema 3: Git como historial de decisiones y colaboración: tiene 0 subtemas
+- M5 ### Tema 4: Calidad estática, revisión e integración continua: tiene 0 subtemas
+- M6 ### Tema 1: Activos, amenazas, riesgos y límites de confianza: tiene 0 subtemas
+- M6 ### Tema 2: Identidad, contraseñas, sesiones y autorización: tiene 0 subtemas
+- M6 ### Tema 3: Criptografía aplicada, TLS, claves y secretos: tiene 0 subtemas
+- M6 ### Tema 4: Validación, vulnerabilidades web, privacidad y respuesta: tiene 0 subtemas
+- M6 ### Tema 5: Ingeniería social y phishing: detectar señales en enlaces y remitentes: tiene 0 subtemas
+- M7 ### Tema 1: Requisitos, stakeholders y criterios verificables: tiene 0 subtemas
+- M7 ### Tema 2: Arquitectura guiada por atributos de calidad: tiene 0 subtemas
+- M7 ### Tema 3: Diseño modular, principios, patrones y refactoring: tiene 0 subtemas
+- M7 ### Tema 4: Decisiones, documentación, deuda y evolución: tiene 0 subtemas
+- M7 ### Tema 5: Records de C#: igualdad por valor no implica inmutabilidad profunda: tiene 0 subtemas
+- M8 ### Tema 1: El sistema operativo como administrador y frontera: tiene 0 subtemas
+- M8 ### Tema 2: Memoria y concurrencia sin magia: tiene 0 subtemas
+- M8 ### Tema 3: Linux como entorno observable: tiene 0 subtemas
+- M8 ### Tema 4: Contenedores: aislamiento reproducible: tiene 0 subtemas
+- M8 ### Tema 5: Problemas clásicos de concurrencia: filósofos y lectores-escritores: tiene 0 subtemas
+- M9 ### Tema 1: Lógica para especificar antes de programar: tiene 0 subtemas
+- M9 ### Tema 2: Conjuntos, relaciones, funciones e inducción: tiene 0 subtemas
+- M9 ### Tema 3: Conteo, grafos y estructuras conectadas: tiene 0 subtemas
+- M9 ### Tema 4: Probabilidad y evidencia para decisiones técnicas: tiene 0 subtemas
+
+### ios
+
+- M0 ### Tema 1: Optionals y unwrapping seguro: tiene 0 subtemas
+- M0 ### Tema 2: struct vs class: tiene 0 subtemas
+- M0 ### Tema 3: Protocolos y enums con valores asociados: tiene 0 subtemas
+- M0 ### Tema 4: Closures, colecciones y genéricos con propósito: tiene 0 subtemas
+- M1 ### Tema 1: El protocolo View y composición: tiene 0 subtemas
+- M1 ### Tema 2: Orden de modificadores y layout con stacks: tiene 0 subtemas
+- M1 ### Tema 3: Previews, LazyVGrid/ScrollView y property wrappers: tiene 0 subtemas
+- M10 ### Tema 1: Instruments: tiene 0 subtemas
+- M10 ### Tema 2: Accesibilidad con VoiceOver: tiene 0 subtemas
+- M10 ### Tema 3: Human Interface Guidelines, Dynamic Type e interop con UIKit: tiene 0 subtemas
+- M10 ### Tema 4: UIKit desde cero para mantener aplicaciones reales: tiene 0 subtemas
+- M11 ### Tema 1: Certificados y provisioning profiles: tiene 0 subtemas
+- M11 ### Tema 2: Archivar, subir y TestFlight: tiene 0 subtemas
+- M11 ### Tema 3: Metadata y versionado: tiene 0 subtemas
+- M12 ### Tema 1: Arquitectura del proyecto integrador: tiene 0 subtemas
+- M12 ### Tema 2: Sincronización entre red y persistencia local: tiene 0 subtemas
+- M12 ### Tema 3: Cierre del track: tiene 0 subtemas
+- M13 ### Tema 1: El sandbox reduce superficie, pero no valida intenciones: tiene 0 subtemas
+- M13 ### Tema 2: Proteger datos es controlar todas sus copias: tiene 0 subtemas
+- M13 ### Tema 3: Offline-first es un protocolo, no una caché: tiene 0 subtemas
+- M13 ### Tema 4: Operar significa detectar, limitar y aprender del fallo: tiene 0 subtemas
+- M13 ### Tema 5: Keychain — guardar secretos de forma segura: tiene 0 subtemas
+- M13 ### Tema 6: Permisos y privacidad — pedir acceso con criterio: tiene 0 subtemas
+- M13 ### Tema 7: Notificaciones push con APNs: tiene 0 subtemas
+- M14 ### Tema 1: Swift Testing y pruebas asíncronas: tiene 0 subtemas
+- M14 ### Tema 2: ViewInspector con criterio: tiene 0 subtemas
+- M14 ### Tema 3: Combine avanzado: tiene 0 subtemas
+- M14 ### Tema 4: Animaciones y matchedGeometryEffect: tiene 0 subtemas
+- M14 ### Tema 5: UIViewRepresentable: tiene 0 subtemas
+- M14 ### Tema 6: UIViewControllerRepresentable y Coordinator: tiene 0 subtemas
+- M14 ### Tema 7: Core ML y Vision — inferencia en el dispositivo: tiene 0 subtemas
+- M2 ### Tema 1: @State y @Binding: tiene 0 subtemas
+- M2 ### Tema 2: @Observable: tiene 0 subtemas
+- M2 ### Tema 3: @Environment y identidad vs valor: tiene 0 subtemas
+- M3 ### Tema 1: NavigationStack y NavigationPath: tiene 0 subtemas
+- M3 ### Tema 2: Sheets, full screen covers y TabView: tiene 0 subtemas
+- M3 ### Tema 3: Deep linking y controles de formulario: tiene 0 subtemas
+- M4 ### Tema 1: async/await y Task: tiene 0 subtemas
+- M4 ### Tema 2: Actors para estado mutable seguro: tiene 0 subtemas
+- M4 ### Tema 3: TaskGroup y MainActor: tiene 0 subtemas
+- M4 ### Tema 4: Cancelación cooperativa: distinguir una tarea cancelada de un fallo de red: tiene 0 subtemas
+- M5 ### Tema 1: URLSession con async/await y Codable: tiene 0 subtemas
+- M5 ### Tema 2: Errores tipados: tiene 0 subtemas
+- M5 ### Tema 3: Reintentos y cancelación: tiene 0 subtemas
+- M6 ### Tema 1: @Model y ModelContainer: tiene 0 subtemas
+- M6 ### Tema 2: @Query y operaciones de escritura: tiene 0 subtemas
+- M6 ### Tema 3: Migraciones y SwiftData vs Core Data: tiene 0 subtemas
+- M7 ### Tema 1: Publishers y Subscribers: tiene 0 subtemas
+- M7 ### Tema 2: Operadores: debounce y combineLatest: tiene 0 subtemas
+- M7 ### Tema 3: Combine vs async/await: tiene 0 subtemas
+- M8 ### Tema 1: De una vista "gorda" a MVVM: tiene 0 subtemas
+- M8 ### Tema 2: Capas del proyecto e inyección por inicializador: tiene 0 subtemas
+- M8 ### Tema 3: Cuándo MVVM no alcanza: tiene 0 subtemas
+- M9 ### Tema 1: XCTest clásico y Swift Testing: tiene 0 subtemas
+- M9 ### Tema 2: Testing de código async: tiene 0 subtemas
+- M9 ### Tema 3: UI Tests con XCUITest: tiene 0 subtemas
+
+### java
+
+- M0 ### Tema 2: public static void main — qué significa cada palabra: tiene 0 subtemas
+- M0 ### Tema 3: JDK, JRE y JVM: tiene 0 subtemas
+- M0 ### Tema 4: Tipos primitivos vs referencias: tiene 0 subtemas
+- M0 ### Tema 5: Variables, conversiones y `String`: tiene 0 subtemas
+- M0 ### Tema 6: Operadores, precedencia y control de flujo: tiene 0 subtemas
+- M0 ### Tema 7: Arreglos, wrappers y paso de argumentos: tiene 0 subtemas
+- M0 ### Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`): tiene 0 subtemas
+- M1 ### Tema 1: Clases, objetos, constructores y encapsulación: tiene 0 subtemas
+- M1 ### Tema 2: Herencia y sobreescritura: tiene 0 subtemas
+- M1 ### Tema 3: Interfaces, clases abstractas y cuándo usar cada una: tiene 0 subtemas
+- M1 ### Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso: tiene 0 subtemas
+- M10 ### Tema 1: module-info.java y encapsulación fuerte: tiene 0 subtemas
+- M10 ### Tema 2: Migración incremental y cuándo JPMS aporta valor: tiene 0 subtemas
+- M10 ### Tema 3: `opens` para acceso reflexivo controlado de frameworks: tiene 0 subtemas
+- M11 ### Tema 1: Generaciones de memoria y recolectores: tiene 0 subtemas
+- M11 ### Tema 2: Java Flight Recorder y JIT compilation: tiene 0 subtemas
+- M11 ### Tema 3: Referencias especiales y heap dumps: tiene 0 subtemas
+- M11 ### Tema 4: Foreign Function & Memory API (Java 22): tiene 0 subtemas
+- M12 ### Tema 1: Builder — configuración paso a paso y validación: tiene 0 subtemas
+- M12 ### Tema 2: Factory Method y Strategy: tiene 0 subtemas
+- M12 ### Tema 3: Abstract Factory y familias de productos compatibles: tiene 0 subtemas
+- M12 ### Tema 4: SOLID y cuándo NO aplicar un patrón: tiene 0 subtemas
+- M12 ### Tema 5: Prototype: copiar un objeto sin compartir sus datos: tiene 0 subtemas
+- M12 ### Tema 6: Patrones estructurales para conectar piezas existentes: tiene 0 subtemas
+- M13 ### Tema 1: Arquitectura por capas del proyecto integrador: tiene 0 subtemas
+- M13 ### Tema 2: Integrando concurrencia, modelado y testing: tiene 0 subtemas
+- M13 ### Tema 3: Build reproducible y cierre del track: tiene 0 subtemas
+- M14 ### Tema 1: Compartir memoria requiere orden y visibilidad: tiene 0 subtemas
+- M14 ### Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo: tiene 0 subtemas
+- M14 ### Tema 3: Deserializar es permitir construcción y comportamiento: tiene 0 subtemas
+- M14 ### Tema 4: El runtime es parte del artefacto y necesita ciclo de vida: tiene 0 subtemas
+- M15 ### Tema 1: Maven avanzado: tiene 0 subtemas
+- M15 ### Tema 2: Gradle y builds reproducibles: tiene 0 subtemas
+- M15 ### Tema 3: Proyectos multi-módulo sin ciclos: tiene 0 subtemas
+- M15 ### Tema 4: JUnit 5, Mockito y assertions expresivas: tiene 0 subtemas
+- M15 ### Tema 5: Pruebas de integración reproducibles: tiene 0 subtemas
+- M15 ### Tema 6: SLF4J, Logback, MDC y logging estructurado: tiene 0 subtemas
+- M16 ### Tema 1: Entidades y relaciones JPA: tiene 0 subtemas
+- M16 ### Tema 2: FetchType.LAZY, EAGER y el problema N+1: tiene 0 subtemas
+- M16 ### Tema 3: Relaciones uno a uno, muchos a muchos y herencia: tiene 0 subtemas
+- M16 ### Tema 4: Ciclo de vida, EntityManager y consultas tipadas: tiene 0 subtemas
+- M16 ### Tema 5: Búsquedas dinámicas con Criteria y Querydsl: tiene 0 subtemas
+- M16 ### Tema 6: EntityGraph y cachés de persistencia: tiene 0 subtemas
+- M16 ### Tema 7: Concurrencia, transacciones y propagación: tiene 0 subtemas
+- M16 ### Tema 8: Migraciones y pruebas JPA con Testcontainers: tiene 0 subtemas
+- M17 ### Tema 1: JDBC, PreparedStatement y DAO: tiene 0 subtemas
+- M17 ### Tema 2: Transacciones, ACID y aislamiento: tiene 0 subtemas
+- M18 ### Tema 1: HttpClient, REST, timeouts y fallos: tiene 0 subtemas
+- M18 ### Tema 2: Tokens, validación y límites de seguridad: tiene 0 subtemas
+- M19 ### Tema 1: Reflexión y anotaciones en tiempo de ejecución: tiene 0 subtemas
+- M19 ### Tema 2: Expresiones regulares con Pattern y Matcher: tiene 0 subtemas
+- M19 ### Tema 3: Dinero exacto con BigDecimal: tiene 0 subtemas
+- M19 ### Tema 4: Assertions y diseño por contrato: tiene 0 subtemas
+- M19 ### Tema 5: ServiceLoader: plugins sin acoplar implementaciones: tiene 0 subtemas
+- M19 ### Tema 6: Proxies dinámicos: así funcionan @Transactional y los mocks: tiene 0 subtemas
+- M19 ### Tema 7: Internacionalización: números, monedas, fechas y orden de texto: tiene 0 subtemas
+- M2 ### Tema 1: List, Set, Map y sus implementaciones: tiene 0 subtemas
+- M2 ### Tema 2: Genéricos, wildcards y type erasure: tiene 0 subtemas
+- M2 ### Tema 3: Comparable vs Comparator, e iteración: tiene 0 subtemas
+- M20 ### Tema 1: Las cuatro formas: Predicate, Function, Consumer y Supplier: tiene 0 subtemas
+- M20 ### Tema 2: Componer sin anidar: andThen, compose, negate y reglas encadenadas: tiene 0 subtemas
+- M20 ### Tema 3: Streams como composición: pereza, orden y efectos que se esconden: tiene 0 subtemas
+- M20 ### Tema 4: Function y BiFunction: transformar uno o dos datos: tiene 0 subtemas
+- M20 ### Tema 5: UnaryOperator y BinaryOperator: la salida conserva el tipo: tiene 0 subtemas
+- M20 ### Tema 6: Referencias a métodos: escribir la operación sin repetirla: tiene 0 subtemas
+- M20 ### Tema 7: Optional: buscar un envío que puede no existir: tiene 0 subtemas
+- M20 ### Tema 8: Streams intermedios: filtrar, transformar, aplanar y ordenar: tiene 0 subtemas
+- M20 ### Tema 9: Streams terminales: encontrar, contar y combinar resultados: tiene 0 subtemas
+- M20 ### Tema 10: Collectors: formar listas, mapas, grupos y texto: tiene 0 subtemas
+- M20 ### Tema 11: Streams paralelos: comparar antes de acelerarlos: tiene 0 subtemas
+- M20 ### Tema 12: Pureza y efectos: calcular separado de guardar o imprimir: tiene 0 subtemas
+- M20 ### Tema 13: Flow API: publicar datos con demanda y cierre: tiene 0 subtemas
+- M3 ### Tema 1: Checked vs unchecked exceptions: tiene 0 subtemas
+- M3 ### Tema 2: try-with-resources: tiene 0 subtemas
+- M3 ### Tema 3: Excepciones personalizadas y no tragar excepciones: tiene 0 subtemas
+- M4 ### Tema 1: Stream API — map, filter, reduce, collect: tiene 0 subtemas
+- M4 ### Tema 2: Optional — evitar null explícitamente: tiene 0 subtemas
+- M4 ### Tema 3: Streams paralelos y referencias a métodos: tiene 0 subtemas
+- M4 ### Tema 4: Stream Gatherers (Java 24): tiene 0 subtemas
+- M5 ### Tema 1: ExecutorService y gestión de hilos: tiene 0 subtemas
+- M5 ### Tema 2: CompletableFuture: tiene 0 subtemas
+- M5 ### Tema 3: Virtual threads: tiene 0 subtemas
+- M5 ### Tema 4: Condiciones de carrera y sincronización: tiene 0 subtemas
+- M5 ### Tema 5: Structured Concurrency (StructuredTaskScope, Java 25): tiene 0 subtemas
+- M5 ### Tema 6: Scoped Values frente a ThreadLocal (Java 25): tiene 0 subtemas
+- M5 ### Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos: tiene 0 subtemas
+- M6 ### Tema 1: NIO.2 — Path y Files: tiene 0 subtemas
+- M6 ### Tema 2: Serialización con Jackson: tiene 0 subtemas
+- M6 ### Tema 3: Archivos grandes y recursos del classpath: tiene 0 subtemas
+- M7 ### Tema 1: record — modelos inmutables sin boilerplate: tiene 0 subtemas
+- M7 ### Tema 2: sealed — jerarquías cerradas y exhaustividad: tiene 0 subtemas
+- M7 ### Tema 3: Pattern matching exhaustivo y para instanceof: tiene 0 subtemas
+- M7 ### Tema 4: Unnamed variables y patterns (_, Java 22): tiene 0 subtemas
+- M8 ### Tema 1: pom.xml vs build.gradle.kts: tiene 0 subtemas
+- M8 ### Tema 2: Ciclo de vida de build y scopes: tiene 0 subtemas
+- M8 ### Tema 3: Proyectos multi-módulo: tiene 0 subtemas
+- M8 ### Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas: tiene 0 subtemas
+- M9 ### Tema 1: JUnit 5 — anotaciones y ciclo de vida: tiene 0 subtemas
+- M9 ### Tema 2: Mockito — aislar dependencias: tiene 0 subtemas
+- M9 ### Tema 3: Tests parametrizados y cobertura: tiene 0 subtemas
+
+### javascript
+
+- M0 ### Tema 1: Variables — `const`, `let` y `var`: tiene 0 subtemas
+- M0 ### Tema 2: Tipos primitivos y `typeof`: tiene 0 subtemas
+- M0 ### Tema 3: Conversión, coerción e igualdad: tiene 0 subtemas
+- M0 ### Tema 4: Template literals y mensajes seguros: tiene 0 subtemas
+- M0 ### Tema 5: JavaScript en navegador y Node.js: tiene 0 subtemas
+- M1 ### Tema 1: Tres formas de escribir una función: tiene 0 subtemas
+- M1 ### Tema 2: Parámetros por defecto y rest/spread: tiene 0 subtemas
+- M1 ### Tema 3: Funciones de orden superior: tiene 0 subtemas
+- M1 ### Tema 4: Control de flujo — if, switch y loops: tiene 0 subtemas
+- M1 ### Tema 5: IIFE y el objeto arguments: tiene 0 subtemas
+- M1 ### Tema 6: Desestructuración, valores por defecto y rest: tiene 0 subtemas
+- M10 ### Tema 1: Debounce y throttle: tiene 0 subtemas
+- M10 ### Tema 2: Memoización: tiene 0 subtemas
+- M10 ### Tema 3: Web Workers para trabajo pesado: tiene 0 subtemas
+- M10 ### Tema 4: Profiling con DevTools: tiene 0 subtemas
+- M10 ### Tema 5: Core Web Vitals: tiene 0 subtemas
+- M11 ### Tema 1: Tipos básicos, interfaces y type aliases: tiene 0 subtemas
+- M11 ### Tema 2: Generics: tiene 0 subtemas
+- M11 ### Tema 3: Narrowing y union types: tiene 0 subtemas
+- M11 ### Tema 4: tsconfig esencial y modo strict: tiene 0 subtemas
+- M11 ### Tema 5: TypeScript avanzado: sobrecargas, tipos mapeados, condicionales y satisfies: tiene 0 subtemas
+- M11 ### Tema 6: Decoradores estándar de TypeScript 5: tiene 0 subtemas
+- M12 ### Tema 1: Routing manual con History API: tiene 0 subtemas
+- M12 ### Tema 2: Estado de aplicación con un store propio: tiene 0 subtemas
+- M12 ### Tema 3: Consumo de una API real con manejo de errores: tiene 0 subtemas
+- M12 ### Tema 4: Conectando todo — el patrón completo de una SPA: tiene 0 subtemas
+- M13 ### Tema 1: Datos no confiables y seguridad en el navegador: tiene 0 subtemas
+- M13 ### Tema 2: Memoria administrada no significa memoria infinita: tiene 0 subtemas
+- M13 ### Tema 3: Errores útiles sin convertir usuarios en sensores involuntarios: tiene 0 subtemas
+- M13 ### Tema 4: Compatibilidad, idioma y tiempo son requisitos de datos: tiene 0 subtemas
+- M14 ### Tema 1: TypeScript avanzado: tiene 0 subtemas
+- M14 ### Tema 2: Workers y ejecución fuera del hilo principal: tiene 0 subtemas
+- M14 ### Tema 3: Bundlers y optimización: tiene 0 subtemas
+- M14 ### Tema 4: Accesibilidad web: tiene 0 subtemas
+- M14 ### Tema 5: WebAssembly con Rust o C: tiene 0 subtemas
+- M14 ### Tema 6: Web3 y machine learning en navegador: tiene 0 subtemas
+- M14 ### Tema 7: Geolocalización, permisos y precisión GPS: tiene 0 subtemas
+- M14 ### Tema 8: sessionStorage, cookies e IndexedDB: tiene 0 subtemas
+- M14 ### Tema 9: Expresiones regulares avanzadas y Unicode: tiene 0 subtemas
+- M14 ### Tema 10: Patrones Factory, Strategy, Observer y Pub/Sub: tiene 0 subtemas
+- M14 ### Tema 11: Service Workers, PWA y estrategias de caché: tiene 0 subtemas
+- M14 ### Tema 12: WebSocket y comunicación en tiempo real: tiene 0 subtemas
+- M14 ### Tema 13: Typed Arrays, ArrayBuffer y DataView: tiene 0 subtemas
+- M14 ### Tema 14: ECMAScript moderno, Temporal e iterator helpers: tiene 0 subtemas
+- M2 ### Tema 1: Scope léxico y closures: tiene 0 subtemas
+- M2 ### Tema 2: Hoisting y Temporal Dead Zone: tiene 0 subtemas
+- M2 ### Tema 3: Call stack y contexto de ejecución: tiene 0 subtemas
+- M2 ### Tema 4: this según el modo de invocación: tiene 0 subtemas
+- M2 ### Tema 5: Module pattern y factory functions: tiene 0 subtemas
+- M2 ### Tema 6: Execution Context, Scope Chain y Lexical Environment: tiene 0 subtemas
+- M3 ### Tema 1: Prototype chain y Object.create: tiene 0 subtemas
+- M3 ### Tema 2: class, extends y super: tiene 0 subtemas
+- M3 ### Tema 3: Getters, setters y propiedades computadas: tiene 0 subtemas
+- M3 ### Tema 4: Encapsulación con campos privados (#campo): tiene 0 subtemas
+- M3 ### Tema 5: Symbol y objetos iterables propios: tiene 0 subtemas
+- M4 ### Tema 1: map, filter, reduce, find, some/every: tiene 0 subtemas
+- M4 ### Tema 2: Set y Map frente a Array y Object: tiene 0 subtemas
+- M4 ### Tema 3: Inmutabilidad y actualización de estructuras anidadas: tiene 0 subtemas
+- M4 ### Tema 4: WeakMap y WeakSet: tiene 0 subtemas
+- M4 ### Tema 5: Métodos inmutables modernos: tiene 0 subtemas
+- M5 ### Tema 1: El Event Loop: tiene 0 subtemas
+- M5 ### Tema 2: Promesas: tiene 0 subtemas
+- M5 ### Tema 3: Promise.all, allSettled, race y any: tiene 0 subtemas
+- M5 ### Tema 4: El motor V8 — JIT y AST: tiene 0 subtemas
+- M5 ### Tema 5: Stack, Heap y Garbage Collection: tiene 0 subtemas
+- M6 ### Tema 1: async/await sobre promesas: tiene 0 subtemas
+- M6 ### Tema 2: try/catch en flujos asíncronos: tiene 0 subtemas
+- M6 ### Tema 3: fetch API y AbortController: tiene 0 subtemas
+- M6 ### Tema 4: Reintentos y timeouts manuales: tiene 0 subtemas
+- M6 ### Tema 5: Generadores — function*, yield y yield*: tiene 0 subtemas
+- M6 ### Tema 6: Proxies y Reflect: tiene 0 subtemas
+- M7 ### Tema 1: ESM frente a CommonJS: tiene 0 subtemas
+- M7 ### Tema 2: Tree-shaking y code-splitting: tiene 0 subtemas
+- M7 ### Tema 3: Vite y esbuild: tiene 0 subtemas
+- M7 ### Tema 4: package.json — exports, type y scripts: tiene 0 subtemas
+- M7 ### Tema 5: import() dinámico e import.meta: tiene 0 subtemas
+- M7 ### Tema 6: Webpack, Rollup y Babel/SWC: tiene 0 subtemas
+- M8 ### Tema 1: Selección y manipulación del DOM: tiene 0 subtemas
+- M8 ### Tema 2: Delegación de eventos: tiene 0 subtemas
+- M8 ### Tema 3: Formularios y validación nativa: tiene 0 subtemas
+- M8 ### Tema 4: Web APIs — localStorage e IntersectionObserver: tiene 0 subtemas
+- M8 ### Tema 5: ResizeObserver y MutationObserver: tiene 0 subtemas
+- M8 ### Tema 6: requestAnimationFrame y requestIdleCallback: tiene 0 subtemas
+- M8 ### Tema 7: Formularios accesibles: validar, anunciar y conservar la entrada: tiene 0 subtemas
+- M9 ### Tema 1: Unit testing con Vitest: tiene 0 subtemas
+- M9 ### Tema 2: Mocks, spies y fakes: tiene 0 subtemas
+- M9 ### Tema 3: Mockear fetch: tiene 0 subtemas
+- M9 ### Tema 4: ESLint, Prettier y cobertura de código: tiene 0 subtemas
+
+### kotlin-multiplatform
+
+- M0 ### Tema 1: Null safety real: tiene 0 subtemas
+- M0 ### Tema 2: data class y funciones de extensión: tiene 0 subtemas
+- M0 ### Tema 3: when como expresión: tiene 0 subtemas
+- M0 ### Tema 4: Destructuring declarations y rangos: tiene 0 subtemas
+- M1 ### Tema 1: Funciones de orden superior: tiene 0 subtemas
+- M1 ### Tema 2: Scope functions: tiene 0 subtemas
+- M1 ### Tema 3: Sealed classes y colecciones funcionales: tiene 0 subtemas
+- M1 ### Tema 4: Lambdas con receptor y builders tipo DSL: tiene 0 subtemas
+- M10 ### Tema 1: Pipeline Gradle multiplataforma en CI: tiene 0 subtemas
+- M10 ### Tema 2: Fastlane: tiene 0 subtemas
+- M10 ### Tema 3: Versionado compartido: tiene 0 subtemas
+- M11 ### Tema 1: Arquitectura del proyecto integrador: tiene 0 subtemas
+- M11 ### Tema 2: Sincronización de datos remotos con caché local: tiene 0 subtemas
+- M11 ### Tema 3: Cierre del track — la promesa realista de KMP: tiene 0 subtemas
+- M12 ### Tema 1: La mejor frontera compartida es deliberadamente pequeña: tiene 0 subtemas
+- M12 ### Tema 2: Garbage collection no cierra sockets ni rompe ciclos externos: tiene 0 subtemas
+- M12 ### Tema 3: Un artefacto compatible necesita más que el mismo número de versión: tiene 0 subtemas
+- M12 ### Tema 4: Un fallo compartido necesita símbolos y contexto de ambas plataformas: tiene 0 subtemas
+- M13 ### Tema 1: Kotlin/Native: tiene 0 subtemas
+- M13 ### Tema 2: Interop con C: tiene 0 subtemas
+- M13 ### Tema 3: Swift Export: tiene 0 subtemas
+- M13 ### Tema 4: XCFramework y API pública: tiene 0 subtemas
+- M13 ### Tema 5: Publicación en Maven Central: tiene 0 subtemas
+- M13 ### Tema 6: Compatibilidad binaria y CI multi-target: tiene 0 subtemas
+- M2 ### Tema 1: suspend functions y concurrencia estructurada: tiene 0 subtemas
+- M2 ### Tema 2: Flow, StateFlow y SharedFlow: tiene 0 subtemas
+- M2 ### Tema 3: Manejo de errores y exclusión mutua: tiene 0 subtemas
+- M2 ### Tema 4: Dispatchers y withContext: en qué hilo corre tu código: tiene 0 subtemas
+- M3 ### Tema 1: Source sets: tiene 0 subtemas
+- M3 ### Tema 2: expect/actual: tiene 0 subtemas
+- M3 ### Tema 3: Gradle multiplataforma y targets disponibles: tiene 0 subtemas
+- M3 ### Tema 4: Jerarquía de source sets intermedios: tiene 0 subtemas
+- M4 ### Tema 1: Modelos de dominio y casos de uso: tiene 0 subtemas
+- M4 ### Tema 2: Repositorios con interfaz común: tiene 0 subtemas
+- M4 ### Tema 3: Inyección de dependencias multiplataforma con Koin: tiene 0 subtemas
+- M4 ### Tema 4: Modelado de errores de dominio con un tipo Result explícito: tiene 0 subtemas
+- M4 ### Tema 5: Tiempo determinista: probar vencimientos sin dormir ni consultar el reloj global: tiene 0 subtemas
+- M5 ### Tema 1: Ktor Client multiplataforma: tiene 0 subtemas
+- M5 ### Tema 2: Manejo de errores de red con un tipo explícito: tiene 0 subtemas
+- M5 ### Tema 3: Interceptores y autenticación: tiene 0 subtemas
+- M5 ### Tema 4: Reintentos con backoff exponencial: tiene 0 subtemas
+- M5 ### Tema 5: kotlinx.serialization — JSON compartido entre plataformas: tiene 0 subtemas
+- M6 ### Tema 1: Esquemas SQLDelight y queries tipadas: tiene 0 subtemas
+- M6 ### Tema 2: Drivers por plataforma: tiene 0 subtemas
+- M6 ### Tema 3: Migraciones de esquema: tiene 0 subtemas
+- M6 ### Tema 4: Transacciones: atomicidad en operaciones multi-tabla: tiene 0 subtemas
+- M7 ### Tema 1: Compose Multiplatform vs Jetpack Compose: tiene 0 subtemas
+- M7 ### Tema 2: Estado y recomposición — mutableStateOf y por qué la UI se redibuja: tiene 0 subtemas
+- M7 ### Tema 3: Theming y navegación compartidos: tiene 0 subtemas
+- M7 ### Tema 4: Limitaciones en iOS y otros targets: tiene 0 subtemas
+- M8 ### Tema 1: El framework generado para iOS: tiene 0 subtemas
+- M8 ### Tema 2: Mapeo de tipos Kotlin ↔ Swift: tiene 0 subtemas
+- M8 ### Tema 3: Coroutines desde Swift, y distribución del framework: tiene 0 subtemas
+- M9 ### Tema 1: kotlin.test en commonTest: tiene 0 subtemas
+- M9 ### Tema 2: Fakes en vez de mocks: tiene 0 subtemas
+- M9 ### Tema 3: runTest para coroutines: tiene 0 subtemas
+
+### node
+
+- M0 ### Tema 1: Node no es "JavaScript en el servidor" sin más: tiene 0 subtemas
+- M0 ### Tema 2: Fases del Event Loop de Node: tiene 0 subtemas
+- M0 ### Tema 3: process, global y módulos core: tiene 0 subtemas
+- M0 ### Tema 4: Event-driven architecture y non-blocking I/O: tiene 0 subtemas
+- M1 ### Tema 1: package.json y semver: tiene 0 subtemas
+- M1 ### Tema 2: Lockfiles e instalación reproducible: tiene 0 subtemas
+- M1 ### Tema 3: Workspaces — monorepos con npm/pnpm: tiene 0 subtemas
+- M1 ### Tema 4: Scripts de ciclo de vida: tiene 0 subtemas
+- M1 ### Tema 5: Publicar y versionar un paquete npm (público o privado): tiene 0 subtemas
+- M1 ### Tema 6: ESM y CommonJS en el mismo proyecto: tiene 0 subtemas
+- M10 ### Tema 1: Cabeceras seguras con helmet: tiene 0 subtemas
+- M10 ### Tema 2: Rate limiting: tiene 0 subtemas
+- M10 ### Tema 3: Inyección SQL y sanitización contra XSS: tiene 0 subtemas
+- M10 ### Tema 4: OWASP API Security Top 10 y auditoría de dependencias: tiene 0 subtemas
+- M10 ### Tema 5: CVE, CWE y npm audit en el pipeline: tiene 0 subtemas
+- M11 ### Tema 1: Dockerfile multi-stage para Node: tiene 0 subtemas
+- M11 ### Tema 2: Variables de entorno por ambiente y healthchecks: tiene 0 subtemas
+- M11 ### Tema 3: PM2, contenedores y zero-downtime deploys: tiene 0 subtemas
+- M11 ### Tema 4: Nginx como reverse proxy y serverless: tiene 0 subtemas
+- M12 ### Tema 1: Arquitectura por capas: tiene 0 subtemas
+- M12 ### Tema 2: Uniendo cada módulo del track: tiene 0 subtemas
+- M12 ### Tema 3: Qué le falta a esta API para producción real: tiene 0 subtemas
+- M12 ### Tema 4: Próximos pasos — microservicios, colas de mensajes y TypeScript: tiene 0 subtemas
+- M12 ### Tema 5: Posiciones espaciales y Socket.IO con orden recuperable: tiene 0 subtemas
+- M12 ### Tema 6: Archivos y notificaciones push sin convertirlos en autorización: tiene 0 subtemas
+- M13 ### Tema 1: Tipos estáticos dentro, datos desconocidos en la frontera: tiene 0 subtemas
+- M13 ### Tema 2: Un contrato HTTP es comportamiento, no solo documentación: tiene 0 subtemas
+- M13 ### Tema 3: Reintentar sin duplicar el efecto: tiene 0 subtemas
+- M13 ### Tema 4: Webhooks verificables y recuperación por reconciliación: tiene 0 subtemas
+- M13 ### Tema 5: OpenAPI como contrato ejecutable: tiene 0 subtemas
+- M14 ### Tema 1: TypeScript en Node.js: tiene 0 subtemas
+- M14 ### Tema 2: GraphQL avanzado y Federation: tiene 0 subtemas
+- M14 ### Tema 3: Compensar una entrega cuando falla un paso: tiene 0 subtemas
+- M14 ### Tema 4: Serverless multi-cloud: tiene 0 subtemas
+- M14 ### Tema 5: Docker productivo con Node: tiene 0 subtemas
+- M14 ### Tema 6: CI/CD y promoción de artefactos: tiene 0 subtemas
+- M15 ### Tema 1: Deno y permisos explícitos: tiene 0 subtemas
+- M15 ### Tema 2: Bun reúne runtime, paquetes, pruebas y bundler: tiene 0 subtemas
+- M15 ### Tema 3: Migrar un proyecto Node a Bun sin perder reproducibilidad: tiene 0 subtemas
+- M15 ### Tema 4: Elegir entre Node, Deno y Bun: tiene 0 subtemas
+- M2 ### Tema 1: fs/promises frente a callbacks: tiene 0 subtemas
+- M2 ### Tema 2: Streams básicos: Readable, Writable y Transform: tiene 0 subtemas
+- M2 ### Tema 3: Backpressure: write() y el evento drain: tiene 0 subtemas
+- M2 ### Tema 4: pipeline() para componer streams de forma segura: tiene 0 subtemas
+- M3 ### Tema 1: El modelo request/response: tiene 0 subtemas
+- M3 ### Tema 2: Routing manual: tiene 0 subtemas
+- M3 ### Tema 3: Parsing de body y headers: tiene 0 subtemas
+- M3 ### Tema 4: Códigos de estado y content negotiation: tiene 0 subtemas
+- M3 ### Tema 5: Paginación por cursor y límites de entrada comprobables: tiene 0 subtemas
+- M4 ### Tema 1: Middleware — orden de ejecución y next(): tiene 0 subtemas
+- M4 ### Tema 2: Routers anidados: tiene 0 subtemas
+- M4 ### Tema 3: Validación de entrada con Zod y manejo centralizado de errores: tiene 0 subtemas
+- M4 ### Tema 4: Express frente a Fastify: tiene 0 subtemas
+- M4 ### Tema 5: WebSocket — comunicación en tiempo real bidireccional: tiene 0 subtemas
+- M4 ### Tema 6: Subida de archivos — multipart y validación segura: tiene 0 subtemas
+- M5 ### Tema 1: PostgreSQL desde Node con el driver puro: tiene 0 subtemas
+- M5 ### Tema 2: Prisma — schema, migraciones y queries tipadas: tiene 0 subtemas
+- M5 ### Tema 3: Pool de conexiones y transacciones: tiene 0 subtemas
+- M5 ### Tema 4: MongoDB con Mongoose y otras alternativas de ORM: tiene 0 subtemas
+- M6 ### Tema 1: Hashing de contraseñas: tiene 0 subtemas
+- M6 ### Tema 2: JWT — access y refresh tokens: tiene 0 subtemas
+- M6 ### Tema 3: Middleware de autenticación y control de roles: tiene 0 subtemas
+- M6 ### Tema 4: OAuth 2.0 y Passport.js: tiene 0 subtemas
+- M6 ### Tema 5: Sesiones, cookies seguras y protección CSRF: tiene 0 subtemas
+- M6 ### Tema 6: Flujo de login completo — de `/api/auth/login` a una ruta protegida: tiene 0 subtemas
+- M7 ### Tema 1: Vitest y Supertest — pruebas de integración HTTP reales: tiene 0 subtemas
+- M7 ### Tema 2: Testcontainers — bases de datos de prueba reales y efímeras: tiene 0 subtemas
+- M7 ### Tema 3: Mocks de servicios externos y CI: tiene 0 subtemas
+- M7 ### Tema 4: Alternativas de testing y debugging: tiene 0 subtemas
+- M7 ### Tema 5: node:test — test runner nativo sin dependencias: tiene 0 subtemas
+- M7 ### Tema 6: TDD práctico: rojo, verde y refactor con node:test: tiene 0 subtemas
+- M8 ### Tema 1: Worker Threads para trabajo CPU-bound: tiene 0 subtemas
+- M8 ### Tema 2: Cluster module y balanceo entre procesos: tiene 0 subtemas
+- M8 ### Tema 3: Colas de trabajo con BullMQ: tiene 0 subtemas
+- M8 ### Tema 4: PM2, memory leaks y heap snapshots: tiene 0 subtemas
+- M8 ### Tema 5: Redis para caché, idempotencia y Pub/Sub: tiene 0 subtemas
+- M9 ### Tema 1: Logging estructurado: tiene 0 subtemas
+- M9 ### Tema 2: Correlation ID por request: tiene 0 subtemas
+- M9 ### Tema 3: Excepciones no capturadas y graceful shutdown: tiene 0 subtemas
+- M9 ### Tema 4: REST, GraphQL y gRPC: tiene 0 subtemas
+- M9 ### Tema 5: Métricas Prometheus y trazas distribuidas con OpenTelemetry: tiene 0 subtemas
+
+### react
+
+- M0 ### Tema 1: JSX es azúcar sintáctica sobre createElement: tiene 0 subtemas
+- M0 ### Tema 2: Listas con key estable: tiene 0 subtemas
+- M0 ### Tema 3: Composición sobre herencia, y Fragments: tiene 0 subtemas
+- M0 ### Tema 4: Renderizado condicional y estilos: tiene 0 subtemas
+- M1 ### Tema 1: useState y actualizaciones funcionales: tiene 0 subtemas
+- M1 ### Tema 2: Render frente a commit: tiene 0 subtemas
+- M1 ### Tema 3: Batching de actualizaciones: tiene 0 subtemas
+- M1 ### Tema 4: Componentes controlados: tiene 0 subtemas
+- M10 ### Tema 1: Server Components por defecto: tiene 0 subtemas
+- M10 ### Tema 2: use client para interactividad: tiene 0 subtemas
+- M10 ### Tema 3: Streaming con Suspense en el servidor: tiene 0 subtemas
+- M10 ### Tema 4: Server Actions: tiene 0 subtemas
+- M11 ### Tema 1: Tipado de props y children: tiene 0 subtemas
+- M11 ### Tema 2: Hooks genéricos: tiene 0 subtemas
+- M11 ### Tema 3: Eventos tipados y componentes polimórficos: tiene 0 subtemas
+- M12 ### Tema 1: Estructura del proyecto integrador: tiene 0 subtemas
+- M12 ### Tema 2: Integrando rutas, TanStack Query y Zustand: tiene 0 subtemas
+- M12 ### Tema 3: useTareas — hook dedicado con TanStack Query: tiene 0 subtemas
+- M13 ### Tema 1: Diseñar estados de carga, error y recuperación: tiene 0 subtemas
+- M13 ### Tema 2: La composición visual debe conservar semántica y foco: tiene 0 subtemas
+- M13 ### Tema 3: Cliente y servidor forman una sola frontera de seguridad: tiene 0 subtemas
+- M13 ### Tema 4: Hidratación determinista, idioma y releases medibles: tiene 0 subtemas
+- M14 ### Tema 1: Server Components y streaming: tiene 0 subtemas
+- M14 ### Tema 2: Server Actions y seguridad: tiene 0 subtemas
+- M14 ### Tema 3: Next.js ISR, Metadata y Middleware: tiene 0 subtemas
+- M14 ### Tema 4: Optimización de imágenes y fuentes: tiene 0 subtemas
+- M14 ### Tema 5: Accesibilidad y React Aria: tiene 0 subtemas
+- M14 ### Tema 6: i18n, pluralización y RTL: tiene 0 subtemas
+- M2 ### Tema 1: useEffect — dependencias y limpieza: tiene 0 subtemas
+- M2 ### Tema 2: useRef — valores mutables sin re-render: tiene 0 subtemas
+- M2 ### Tema 3: useMemo y useCallback con criterio: tiene 0 subtemas
+- M2 ### Tema 4: Reglas de los hooks, useReducer y useImperativeHandle: tiene 0 subtemas
+- M2 ### Tema 5: Error Boundaries — contener errores de render sin romper toda la app: tiene 0 subtemas
+- M2 ### Tema 6: Efectos cancelables: impedir que una respuesta antigua sobrescriba la selección actual: tiene 0 subtemas
+- M3 ### Tema 1: React Hook Form y el problema del re-render por tecla: tiene 0 subtemas
+- M3 ### Tema 2: Validación con zod y formularios multi-paso: tiene 0 subtemas
+- M3 ### Tema 3: Eventos sintéticos: tiene 0 subtemas
+- M4 ### Tema 1: createContext y useContext: tiene 0 subtemas
+- M4 ### Tema 2: Cuándo Context es suficiente y cuándo no: tiene 0 subtemas
+- M4 ### Tema 3: Componentes compuestos, render props y hooks personalizados: tiene 0 subtemas
+- M5 ### Tema 1: Rutas anidadas y layouts compartidos: tiene 0 subtemas
+- M5 ### Tema 2: Loaders — datos antes de renderizar: tiene 0 subtemas
+- M5 ### Tema 3: Rutas protegidas y code-splitting por ruta: tiene 0 subtemas
+- M6 ### Tema 1: useQuery y el problema que resuelve: tiene 0 subtemas
+- M6 ### Tema 2: Mutations e invalidación: tiene 0 subtemas
+- M6 ### Tema 3: Optimistic updates: tiene 0 subtemas
+- M7 ### Tema 1: Zustand — stores mínimos sin boilerplate: tiene 0 subtemas
+- M7 ### Tema 2: Redux Toolkit — slices y ceremonia: tiene 0 subtemas
+- M7 ### Tema 3: Estado de servidor vs estado de cliente, y cuándo no necesitas nada de esto: tiene 0 subtemas
+- M7 ### Tema 4: Jotai, Recoil y XState como alternativas: tiene 0 subtemas
+- M8 ### Tema 1: Queries por rol, no por clase CSS: tiene 0 subtemas
+- M8 ### Tema 2: Mock Service Worker (MSW): tiene 0 subtemas
+- M8 ### Tema 3: Testing de hooks personalizados: tiene 0 subtemas
+- M9 ### Tema 1: Medir antes de optimizar: tiene 0 subtemas
+- M9 ### Tema 2: React.memo con criterio: tiene 0 subtemas
+- M9 ### Tema 3: Virtualización y code-splitting: tiene 0 subtemas
+- M9 ### Tema 4: useTransition, useDeferredValue y Fiber: tiene 0 subtemas
+- M9 ### Tema 5: Suspense y React.lazy — carga diferida del lado cliente: tiene 0 subtemas
+
+### rutaflow
+
+- M0 ### Tema 1: El proceso logístico como sistema: tiene 0 subtemas
+- M0 ### Tema 2: Entorno reproducible en Windows, macOS y Linux: tiene 0 subtemas
+- M0 ### Tema 3: Arquitectura, privacidad y amenazas: tiene 0 subtemas
+- M1 ### Tema 1: Modelo relacional e historial: tiene 0 subtemas
+- M1 ### Tema 2: Geografía con precisión útil: tiene 0 subtemas
+- M1 ### Tema 3: Ledger de doble partida: tiene 0 subtemas
+- M2 ### Tema 1: Contratos HTTP y autorización: tiene 0 subtemas
+- M2 ### Tema 2: Casos de uso y transacciones: tiene 0 subtemas
+- M2 ### Tema 3: Outbox, colas y observabilidad: tiene 0 subtemas
+- M2 ### Tema 4: Evolución de contratos: aceptar una versión nueva sin romper clientes anteriores: tiene 0 subtemas
+- M3 ### Tema 1: Estados explícitos y arquitectura de interfaz: tiene 0 subtemas
+- M3 ### Tema 2: Mapas operativos: tiene 0 subtemas
+- M3 ### Tema 3: Accesibilidad, seguridad y rendimiento: tiene 0 subtemas
+- M4 ### Tema 1: Arquitectura Flutter por capacidades: tiene 0 subtemas
+- M4 ### Tema 2: GPS, permisos y batería: tiene 0 subtemas
+- M4 ### Tema 3: Offline-first y prueba de entrega: tiene 0 subtemas
+- M5 ### Tema 1: Grafos y problema de rutas: tiene 0 subtemas
+- M5 ### Tema 2: Geocoding y map matching: tiene 0 subtemas
+- M5 ### Tema 3: Streaming y ETA con incertidumbre: tiene 0 subtemas
+- M5 ### Tema 4: Socket.IO extremo a extremo: un gateway compatible con el cliente móvil: tiene 0 subtemas
+- M5 ### Tema 5: OSRM: del contrato de coordenadas a una respuesta de ruta verificable: tiene 0 subtemas
+- M6 ### Tema 1: Cotización y facturación reproducible: tiene 0 subtemas
+- M6 ### Tema 2: Recaudo, liquidación y conciliación: tiene 0 subtemas
+- M6 ### Tema 3: Fraude responsable: tiene 0 subtemas
+- M6 ### Tema 4: Tokenización de pagos: un identificador opaco no sustituye autorización ni confirmación: tiene 0 subtemas
+- M7 ### Tema 1: Infraestructura y entrega segura: tiene 0 subtemas
+- M7 ### Tema 2: SLO y respuesta a incidentes: tiene 0 subtemas
+- M7 ### Tema 3: Pruebas end-to-end del sistema completo (app ↔ backend): tiene 0 subtemas
+- M7 ### Tema 4: Continuidad, costes y proyecto final: tiene 0 subtemas
+
+### spring-boot
+
+- M0 ### Tema 1: Inversión de control y el contenedor de Spring: tiene 0 subtemas
+- M0 ### Tema 2: Inyección por constructor vs por campo: tiene 0 subtemas
+- M0 ### Tema 3: Estereotipos, autoconfiguración y scopes: tiene 0 subtemas
+- M1 ### Tema 1: Spring Initializr y starters: tiene 0 subtemas
+- M1 ### Tema 2: application.yml vs application.properties: tiene 0 subtemas
+- M1 ### Tema 3: Perfiles y estructura por capas: tiene 0 subtemas
+- M10 ### Tema 1: Config Server y service discovery: tiene 0 subtemas
+- M10 ### Tema 2: Spring Cloud Gateway: tiene 0 subtemas
+- M10 ### Tema 3: Circuit breaker con Resilience4j: tiene 0 subtemas
+- M10 ### Tema 4: OAuth2/OIDC, Keycloak y Token Relay sin perder la frontera de autorización: tiene 0 subtemas
+- M10 ### Tema 5: HTTP Interfaces, deadlines y descubrimiento según el entorno: tiene 0 subtemas
+- M10 ### Tema 6: Spring gRPC para comunicación interna de alta frecuencia (Spring Boot 4.1): tiene 0 subtemas
+- M10 ### Tema 7: DDD para decidir límites y propiedad de datos: tiene 0 subtemas
+- M10 ### Tema 8: Orquestación de microservicios con Temporal y Spring Boot: tiene 0 subtemas
+- M10 ### Tema 9: Spring Modulith para comprobar fronteras antes de separar servicios: tiene 0 subtemas
+- M10 ### Tema 10: Spring Cloud Bus para propagar cambios de configuración: tiene 0 subtemas
+- M10 ### Tema 11: Micrometer Tracing entre servicios: tiene 0 subtemas
+- M10 ### Tema 12: Contract testing entre productor y consumidor: tiene 0 subtemas
+- M11 ### Tema 1: Fat JAR vs capas de Docker: tiene 0 subtemas
+- M11 ### Tema 2: GraalVM native image: tiene 0 subtemas
+- M11 ### Tema 3: Health checks para Kubernetes: tiene 0 subtemas
+- M12 ### Tema 1: Arquitectura del microservicio integrador: tiene 0 subtemas
+- M12 ### Tema 2: Integrando seguridad, persistencia y observabilidad: tiene 0 subtemas
+- M12 ### Tema 3: Cierre del track y próximos pasos: tiene 0 subtemas
+- M13 ### Tema 1: `@Transactional` funciona en una frontera, no como encantamiento: tiene 0 subtemas
+- M13 ### Tema 2: Recuperación implica duplicación segura: tiene 0 subtemas
+- M13 ### Tema 3: Contratos ejecutables protegen despliegues independientes: tiene 0 subtemas
+- M13 ### Tema 4: Observabilidad sirve a un objetivo y a una decisión: tiene 0 subtemas
+- M14 ### Tema 1: CRUD API y contratos: tiene 0 subtemas
+- M14 ### Tema 2: MySQL y datos espaciales: tiene 0 subtemas
+- M14 ### Tema 3: JPA e Hibernate Spatial: tiene 0 subtemas
+- M14 ### Tema 4: JWT Bearer y autorización por roles: tiene 0 subtemas
+- M14 ### Tema 5: Tiempo real con STOMP: tiene 0 subtemas
+- M14 ### Tema 6: Archivos y notificaciones push: tiene 0 subtemas
+- M15 ### Tema 1: Backpressure real en WebFlux con reactor-test: tiene 0 subtemas
+- M15 ### Tema 2: Contenedores Testcontainers reutilizados entre clases: tiene 0 subtemas
+- M15 ### Tema 3: Arquitectura hexagonal verificada con ArchUnit: tiene 0 subtemas
+- M15 ### Tema 4: Bulkhead y RateLimiter de Resilience4j: tiene 0 subtemas
+- M15 ### Tema 5: Saga con compensación real: tiene 0 subtemas
+- M15 ### Tema 6: Event Sourcing con replay real: tiene 0 subtemas
+- M15 ### Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar: tiene 0 subtemas
+- M15 ### Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework: tiene 0 subtemas
+- M16 ### Tema 1: Relaciones, lado propietario y ciclo de vida: tiene 0 subtemas
+- M16 ### Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso: tiene 0 subtemas
+- M17 ### Tema 1: DataSource, JdbcTemplate y DAO: tiene 0 subtemas
+- M17 ### Tema 2: `@Transactional`, rollback y límites de transacción: tiene 0 subtemas
+- M18 ### Tema 1: SecurityFilterChain y autorización: tiene 0 subtemas
+- M18 ### Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP: tiene 0 subtemas
+- M19 ### Tema 1: Job, Step, Tasklet y chunk processing: tiene 0 subtemas
+- M19 ### Tema 2: Reinicio, JobParameters, retry, skip y listeners: tiene 0 subtemas
+- M2 ### Tema 1: Por qué DTOs en vez de entidades directamente: tiene 0 subtemas
+- M2 ### Tema 2: Validación con Bean Validation y ResponseEntity: tiene 0 subtemas
+- M2 ### Tema 3: Manejo centralizado de errores con @ControllerAdvice: tiene 0 subtemas
+- M2 ### Tema 4: Lombok y MapStruct sin exponer datos internos: tiene 0 subtemas
+- M2 ### Tema 5: OpenAPI con springdoc: el contrato como prueba: tiene 0 subtemas
+- M2 ### Tema 6: Paginación HTTP con validación y un límite de recursos explícito: tiene 0 subtemas
+- M20 ### Tema 1: Scheduling y tareas periódicas: tiene 0 subtemas
+- M20 ### Tema 2: Eventos locales, eventos transaccionales y mensajería: tiene 0 subtemas
+- M20 ### Tema 3: Correo con Spring Mail y entrega recuperable: tiene 0 subtemas
+- M20 ### Tema 4: Caché con Spring Cache, Caffeine y Redis: tiene 0 subtemas
+- M20 ### Tema 5: @Async y ejecutores: trabajo en segundo plano con límites: tiene 0 subtemas
+- M20 ### Tema complementario: Integraciones empresariales, SOAP y fronteras de protocolo: tiene 0 subtemas
+- M20 ### Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo: tiene 0 subtemas
+- M20 ### Tema 7: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar: tiene 0 subtemas
+- M22 ### Tema 1: Hexagonal: puertos que hablan el idioma del dominio: tiene 0 subtemas
+- M22 ### Tema 2: C4: contexto, contenedores, componentes y código: tiene 0 subtemas
+- M22 ### Tema 3: ADR: decisiones con contexto, alternativas y consecuencias: tiene 0 subtemas
+- M23 ### Tema 1: módulos y límites entre paquetes: tiene 0 subtemas
+- M23 ### Tema 2: eventos entre módulos sin importar implementación: tiene 0 subtemas
+- M23 ### Tema 3: documentación generada y mapa de dependencias: tiene 0 subtemas
+- M23 ### Tema 4: pruebas de integración por módulo: tiene 0 subtemas
+- M24 ### Tema 1: schema-first con tipos y consultas: tiene 0 subtemas
+- M24 ### Tema 2: data fetchers, relaciones y problema N+1: tiene 0 subtemas
+- M24 ### Tema 3: mutations y subscriptions: tiene 0 subtemas
+- M24 ### Tema 4: pruebas GraphQL con GraphQlTester: tiene 0 subtemas
+- M3 ### Tema 1: Entidades y repositorios derivados: tiene 0 subtemas
+- M3 ### Tema 2: El problema N+1 y su corrección: tiene 0 subtemas
+- M3 ### Tema 3: Migraciones con Flyway: tiene 0 subtemas
+- M4 ### Tema 1: SecurityFilterChain moderno: tiene 0 subtemas
+- M4 ### Tema 2: Filtro JWT y autorización por rol: tiene 0 subtemas
+- M4 ### Tema 3: CORS y CSRF: tiene 0 subtemas
+- M4 ### Tema 4: Protección SSRF con InetAddressFilter (Spring Boot 4.1): tiene 0 subtemas
+- M4 ### Tema 5: Flujo de login completo — de `/api/auth/login` a una ruta protegida: tiene 0 subtemas
+- M5 ### Tema 1: @ConfigurationProperties tipado: tiene 0 subtemas
+- M5 ### Tema 2: Fallar rápido al arranque: tiene 0 subtemas
+- M5 ### Tema 3: Manejo global de excepciones consistente entre entornos: tiene 0 subtemas
+- M6 ### Tema 1: Slices de testing — @WebMvcTest: tiene 0 subtemas
+- M6 ### Tema 2: @DataJpaTest con Testcontainers: tiene 0 subtemas
+- M6 ### Tema 3: @SpringBootTest completo y estrategia de pirámide de tests: tiene 0 subtemas
+- M7 ### Tema 1: Actuator y health checks personalizados: tiene 0 subtemas
+- M7 ### Tema 2: Métricas de negocio con Micrometer: tiene 0 subtemas
+- M7 ### Tema 3: Liveness vs readiness: tiene 0 subtemas
+- M8 ### Tema 1: Producers y consumers con Spring Kafka: tiene 0 subtemas
+- M8 ### Tema 2: Dead-letter queue: tiene 0 subtemas
+- M8 ### Tema 3: Productor idempotente y transacciones (exactly-once): tiene 0 subtemas
+- M8 ### Tema 4: Rebalanceo de consumer groups y partition assignment: tiene 0 subtemas
+- M8 ### Tema 5: Kafka frente a RabbitMQ: tiene 0 subtemas
+- M8 ### Tema 6: Spring Cloud Stream y binders de Kafka/RabbitMQ: tiene 0 subtemas
+- M8 ### Tema 7: Kafka Streams con Spring para transformar eventos: tiene 0 subtemas
+- M8 ### Tema 8: Avro y Schema Registry para contratos de eventos: tiene 0 subtemas
+- M8 ### Tema 9: RabbitMQ con Spring AMQP: routing, ack y prefetch: tiene 0 subtemas
+- M9 ### Tema 1: Mono y Flux: tiene 0 subtemas
+- M9 ### Tema 2: WebClient y composición no bloqueante: tiene 0 subtemas
+- M9 ### Tema 3: Cuándo WebFlux vale la complejidad, y R2DBC: tiene 0 subtemas

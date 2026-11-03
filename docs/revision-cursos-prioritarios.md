@@ -9,7 +9,7 @@
 - Alternar explicación breve con código completo, ruta del archivo, comando, salida que se debe observar y qué significa esa salida.
 - Mostrar un caso real y un contraejemplo o fallo reproducible; guiar la corrección paso a paso.
 - Terminar con un ejercicio nuevo que el estudiante resuelva y explique con sus propias palabras. No añadir cuestionarios automáticos, puntos ni insignias.
-- Conservar la progresión de siete pasos, los temas ya existentes y los identificadores/progreso guardado. Los faltantes se añaden como temas separados; los temas compuestos se dividirán sin perder su contenido.
+- Conservar los temas ya existentes y los identificadores/progreso guardado. Migrar cada tema al formato de cuatro pasos, separándolo en 3–6 subtemas sin perder su contenido.
 - Mantener pendientes separados: cotejo de cobertura, ejecución de ejemplos, pruebas de navegador y revisión humana con principiantes.
 
 ## Resultado de cotejo estructural

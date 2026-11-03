@@ -8,78 +8,85 @@ Construirás una app de conductor desde una lista vacía hasta una entrega sincr
 
 ### Tema 1: estado de la jornada con Riverpod
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar modelarás la jornada del conductor sin mezclar datos, llamadas HTTP y widgets. **Prerrequisitos:** Dart, widgets y futures. Crea un proyecto nuevo: `flutter create rutaflow_driver`; agrega `flutter_riverpod` con `flutter pub add flutter_riverpod`.
+**Duración estimada:** 30 min.
+**¿Por qué es importante?** Una sola fuente de estado evita que distintas pantallas muestren versiones distintas de la jornada.
 
-#### Paso 2 · Contexto y caso real
-La jornada tiene carga, paradas, confirmaciones y errores. Si cada widget guarda copias de esos datos, una pantalla puede mostrar “entregada” y otra “pendiente”. Usa una fuente de estado por feature y expón solo las acciones que la interfaz necesita.
+**Prerrequisitos:** Flutter M1 T1 (widgets) y Dart M0 T3 (async/await). Proyecto continuo: `examples/flutter_rutaflow/`, la app de turnos del conductor.
 
-#### ¿Por qué es importante?
-La persona que reparte necesita una sola respuesta visible sobre la siguiente parada. El estado explícito también permite probar la lógica sin abrir el mapa o llamar al servidor.
+#### Subtema 1.1: Representa paradas con estado inmutable · 10 min
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Un provider es una toma accesible para varias pantallas; el notifier es el tablero que decide cuándo cambian los datos. Riverpod permite inyectar implementaciones de prueba con `ProviderScope`. No conviertas cada valor en un provider: separa lo que realmente tiene vida o dependientes.
+**1. Contexto**
+Si cada pantalla guarda su propia copia, una puede mostrar una parada entregada y otra pendiente. Un provider ofrece un solo estado compartido.
 
-#### Paso 4 · Demostración guiada
-Crea `lib/features/shift/shift_provider.dart`:
-
-```dart
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-class Stop {
-  const Stop(this.id, this.address, {this.done = false});
-  final String id;
-  final String address;
-  final bool done;
-}
-
-class ShiftNotifier extends Notifier<List<Stop>> {
-  @override
-  List<Stop> build() => const [];
-
-  void load(List<Stop> stops) => state = List.unmodifiable(stops);
-
-  void complete(String id) {
-    state = [
-      for (final stop in state)
-        if (stop.id == id) Stop(stop.id, stop.address, done: true) else stop,
-    ];
-  }
-}
-
-final shiftProvider = NotifierProvider<ShiftNotifier, List<Stop>>(ShiftNotifier.new);
-```
-
-Envuelve `MaterialApp` con `ProviderScope`. En una pantalla usa `ref.watch(shiftProvider)` para dibujar y `ref.read(shiftProvider.notifier).complete(id)` para confirmar.
-
-#### Paso 5 · Práctica guiada
-Prueba el notifier con `ProviderContainer`: carga dos paradas, completa una y verifica que la otra siga abierta. **Pista:** comprueba por `id`, no por posición de lista.
-
-#### Paso 6 · Práctica independiente
-Agrega estados de carga y error sin guardar objetos de UI dentro del modelo. Diseña cómo reintentar una parada si el servidor responde `503`.
-
-#### Paso 7 · Cierre y evidencia
-Guarda `lib/features/shift/shift_provider.dart` y `test/features/shift/shift_provider_test.dart`. El siguiente tema usará esa jornada en un mapa.
-
-**Prueba de diagnóstico.** Cambia deliberadamente el `id` que se marca; la prueba debe mostrar que ninguna parada cambió. **Resultado esperado:** al restaurar el id correcto, una sola parada pasa a `done: true`.
+**2. Hazlo tú**
+Abre `examples/flutter_rutaflow/lib/features/shift/shift_provider.dart`. Revisa `Stop`, `ShiftNotifier.build` y `load`; inicializan una lista vacía y guardan una copia que no se puede modificar desde afuera. Ejecuta desde `examples/flutter_rutaflow/`:
 
 ```bash
-flutter test test/features/shift/shift_provider_test.dart
+flutter test --no-pub test/features/shift/shift_provider_test.dart
 ```
 
-**Errores comunes:** mutar una lista compartida y leer el provider con `watch` dentro de un callback. Diagrama: `ProviderScope -> shiftProvider -> lista -> widgets`. Fuente oficial: [Riverpod](https://riverpod.dev/docs/introduction/getting_started).
+**Resultado esperado:** las dos pruebas pasan; la lista inicial está vacía y la lista cargada no permite agregar paradas directamente.
 
-**Proyecto propio:** `rutaflow_driver`. **Cuándo elegir un notifier:** cuando varias vistas observan el mismo estado y hay acciones con reglas. **Fallos a vigilar:** guardar `BuildContext` en el estado o modificar la lista en sitio. Si completas un id desconocido, provoca deliberadamente un fallo en el test y especifica la respuesta esperada. Evidencia de aprendizaje: entrega el test del Paso 5 y la lista antes/después.
+**Fallo deliberado:** reemplaza `List.unmodifiable(stops)` por `stops`. **Resultado esperado:** la prueba de inmutabilidad falla al intentar agregar un elemento. **Diagnóstico:** el estado comparte la lista que recibió; conserva una copia inmutable.
 
-**Resultado esperado:** cambia una parada sin alterar las demás.
+**3. Entiende**
+`Notifier` guarda el estado de una tarea y expone acciones que lo cambian. `NotifierProvider` permite que pantallas y pruebas lean la misma fuente.
 
-```mermaid
-flowchart LR
-  UI[Widgets] --> Provider[shiftProvider]
-  Provider --> State[Lista inmutable de paradas]
+**4. Cierra**
+Escribe qué estado inicial tiene una jornada y por qué `load` no conserva la lista que recibió.
+
+#### Subtema 1.2: Completa una parada por su id · 10 min
+
+**1. Contexto**
+La lista puede cambiar de orden. Identificar una parada por su id evita completar la dirección incorrecta.
+
+**2. Hazlo tú**
+Abre `examples/flutter_rutaflow/lib/features/shift/shift_provider.dart` y localiza `complete`. Ejecuta la prueba que carga dos paradas y completa `p-1`:
+
+```bash
+flutter test --no-pub test/features/shift/shift_provider_test.dart
 ```
 
----
+**Resultado esperado:** `p-1` queda `done: true`; `p-2` sigue pendiente; la lista anterior no cambia.
+
+**Fallo deliberado:** cambia `if (stop.id == id)` por `if (stop.id != id)`. **Resultado esperado:** la prueba muestra completada la parada equivocada. **Diagnóstico:** invertiste la comparación; el id recibido debe coincidir con el de la parada que cambia.
+
+**3. Entiende**
+La acción crea una lista nueva y conserva los objetos que no cambian. La interfaz puede volver a dibujar con el estado actualizado.
+
+**4. Cierra**
+Guarda el antes y el después y explica qué fila cambió.
+
+#### Subtema 1.3: Prueba la acción y un id inexistente · 10 min
+
+**1. Contexto**
+La misma acción debe comportarse de forma previsible si el servidor envía un id desconocido.
+
+**2. Hazlo tú**
+Abre `examples/flutter_rutaflow/test/features/shift/shift_provider_test.dart` y ejecuta las dos pruebas del `ProviderContainer`:
+
+```bash
+flutter test --no-pub test/features/shift/shift_provider_test.dart
+```
+
+**Resultado esperado:** al completar `no-existe`, la misma lista queda en el estado; completar `p-1` cambia solo esa parada.
+
+**Fallo deliberado:** quita `List.unmodifiable` del estado y vuelve a ejecutar. **Resultado esperado:** el test que intenta modificar la lista deja de recibir `UnsupportedError`. **Diagnóstico:** el estado quedó expuesto a cambios desde cualquier widget; restaura la copia inmutable.
+
+**3. Entiende**
+`ProviderContainer` permite probar el provider sin abrir una pantalla ni hacer una llamada de red. Las pruebas revisan el cambio observable del estado.
+
+**4. Cierra**
+Entrega las salidas de ambas pruebas y anota un caso que todavía falta, como cargar una jornada desde la API.
+
+**Hito del tema:**
+
+- [ ] Cargué dos paradas en `ShiftNotifier`.
+- [ ] Completé una por id y conservé la otra.
+- [ ] El id desconocido no cambia la lista.
+- [ ] Las pruebas muestran que el estado es inmutable.
+
+**Fuente oficial:** [Riverpod: providers y Notifier](https://riverpod.dev/docs/providers/notifier_provider).
 
 ### Tema 2: mapa y permiso de ubicación
 

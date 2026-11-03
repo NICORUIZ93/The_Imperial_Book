@@ -8,14 +8,14 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 |---|---:|---:|---|---|
 | foundations | 99 | 8 | HTML/CSS antes de frameworks; archivos y ejecución antes de persistencia avanzada | Interfaz semántica operable por teclado, algoritmo con casos límite y SQL reproducible |
 | javascript | 88 | 6 | Formularios, DOM y errores de red antes de patrones avanzados | Cliente que conserva entrada, anuncia errores y distingue cancelación de fallo |
-| node | 83 | 16 | HTTP y validación antes de autenticación e integraciones | API con límites de carga, paginación estable, pruebas y cierre ordenado |
+| node | 83 | 17 | HTTP y validación antes de autenticación e integraciones | API con límites de carga, paginación estable, pruebas y cierre ordenado |
 | angular | 71 | 3 | HTML/CSS/TypeScript explícitos; RxJS y estado con ejemplos completos | Rutas, formularios, datos remotos y cambios sin guardar comprobados con navegador |
 | react | 58 | 46 | JSX y estado antes de efectos; proveedor, dependencias y API visibles | Carga, error, vacío y carrera de respuestas; caché observada, no supuesta |
-| java | 101 | 49 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
-| spring-boot | 111 | 14 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
+| java | 101 | 50 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
+| spring-boot | 111 | 20 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
 | android | 58 | 0 | Kotlin antes de Compose; distinguir recomposición, recreación y muerte de proceso | App instalable con permisos, restauración, persistencia y pruebas en dispositivo |
 | ios | 56 | 4 | Swift antes de SwiftUI; explicitar macOS/Xcode y destino | Cancelación, estados de red, persistencia y accesibilidad comprobados en simulador |
-| flutter | 106 | 9 | Dart antes de widgets; ejemplo con main y destino de ejecución | Restauración, red, pruebas de widget, integración y publicación por plataforma |
+| flutter | 106 | 10 | Dart antes de widgets; ejemplo con main y destino de ejecución | Restauración, red, pruebas de widget, integración y publicación por plataforma |
 | kotlin-multiplatform | 56 | 2 | Kotlin y source sets antes de interoperabilidad | Política común sin dependencias nativas; reloj controlado y pruebas por destino |
 | cloud | 156 | 2 | Terminal/HTTP/Docker antes de servicios; emulación distinta de cloud real | Infraestructura, permisos mínimos, restauración ensayada, RPO/RTO y costes observados |
 | devops | 113 | 3 | Aplicación ejecutable antes de CI/CD; código de salida y artefactos identificables | Pipeline con promoción, rollback comprobado, observabilidad e incidente ensayado |
@@ -477,7 +477,7 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | flutter / 18 | [Tema 5: reportes de fallos con Crashlytics y Sentry](../web/public/content/flutter/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 18 | [Tema 6: analítica con privacidad y consentimiento](../web/public/content/flutter/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 18 | [Tema 7: monitoreo de rendimiento en una versión publicada](../web/public/content/flutter/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
-| flutter / 19 | [Tema 1: estado de la jornada con Riverpod](../web/public/content/flutter/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 19 | [Tema 1: estado de la jornada con Riverpod](../web/public/content/flutter/modulo-19.md) | demostracion-no-delimitada |
 | flutter / 19 | [Tema 2: mapa y permiso de ubicación](../web/public/content/flutter/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 19 | [Tema 3: posiciones en tiempo real con Socket.IO](../web/public/content/flutter/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 19 | [Tema 4: animar el marcador sin saltos](../web/public/content/flutter/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
@@ -686,7 +686,7 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | ios / 9 | [Tema 1: XCTest clásico y Swift Testing](../web/public/content/ios/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
 | ios / 9 | [Tema 2: Testing de código async](../web/public/content/ios/modulo-9.md) | ejemplo-breve-revisar-contexto |
 | ios / 9 | [Tema 3: UI Tests con XCUITest](../web/public/content/ios/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 0 | [Tema 1: Del código fuente a la JVM](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 0 | [Tema 1: Del código fuente a la JVM](../web/public/content/java/modulo-0.md) | demostracion-no-delimitada |
 | java / 0 | [Tema 2: public static void main — qué significa cada palabra](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 0 | [Tema 3: JDK, JRE y JVM](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 0 | [Tema 4: Tipos primitivos vs referencias](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
@@ -967,8 +967,8 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | node / 14 | [Tema 4: Serverless multi-cloud](../web/public/content/node/modulo-14.md) | comprobar-script-test |
 | node / 14 | [Tema 5: Docker productivo con Node](../web/public/content/node/modulo-14.md) | comprobar-script-test |
 | node / 14 | [Tema 6: CI/CD y promoción de artefactos](../web/public/content/node/modulo-14.md) | comprobar-script-test |
-| node / 14 | [Tema 7: Kafka desde Node: clave, grupo consumidor y offset](../web/public/content/node/modulo-14.md) | ejemplo-breve-revisar-contexto |
-| node / 14 | [Tema 8: RabbitMQ desde Node: exchange, cola y confirmaciones](../web/public/content/node/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 14 | [Tema 7: Kafka desde Node: clave, grupo consumidor y offset](../web/public/content/node/modulo-14.md) | demostracion-no-delimitada |
+| node / 14 | [Tema 8: RabbitMQ desde Node: exchange, cola y confirmaciones](../web/public/content/node/modulo-14.md) | demostracion-no-delimitada |
 | node / 15 | [Tema 1: Deno y permisos explícitos](../web/public/content/node/modulo-15.md) | ejemplo-breve-revisar-contexto |
 | node / 15 | [Tema 2: Bun reúne runtime, paquetes, pruebas y bundler](../web/public/content/node/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 15 | [Tema 3: Migrar un proyecto Node a Bun sin perder reproducibilidad](../web/public/content/node/modulo-15.md) | comprobar-script-test |
@@ -1165,9 +1165,9 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | spring-boot / 20 | [Tema complementario: Integraciones empresariales, SOAP y fronteras de protocolo](../web/public/content/spring-boot/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 20 | [Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo](../web/public/content/spring-boot/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 20 | [Tema 7: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar](../web/public/content/spring-boot/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 21 | [Tema 1: Productor, tópico, key y consumidor](../web/public/content/spring-boot/modulo-21.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 21 | [Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia](../web/public/content/spring-boot/modulo-21.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 21 | [Tema 3: Outbox transaccional y flujo de negocio](../web/public/content/spring-boot/modulo-21.md) | clase-java-no-visible |
+| spring-boot / 21 | [Tema 1: Productor, tópico, key y consumidor](../web/public/content/spring-boot/modulo-21.md) | demostracion-no-delimitada |
+| spring-boot / 21 | [Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia](../web/public/content/spring-boot/modulo-21.md) | demostracion-no-delimitada |
+| spring-boot / 21 | [Tema 3: Outbox transaccional y flujo de negocio](../web/public/content/spring-boot/modulo-21.md) | demostracion-no-delimitada |
 | spring-boot / 22 | [Tema 1: Hexagonal: puertos que hablan el idioma del dominio](../web/public/content/spring-boot/modulo-22.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 22 | [Tema 2: C4: contexto, contenedores, componentes y código](../web/public/content/spring-boot/modulo-22.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 22 | [Tema 3: ADR: decisiones con contexto, alternativas y consecuencias](../web/public/content/spring-boot/modulo-22.md) | Sin señales de estos detectores; revisión pendiente |
@@ -1179,10 +1179,10 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | spring-boot / 24 | [Tema 2: data fetchers, relaciones y problema N+1](../web/public/content/spring-boot/modulo-24.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 24 | [Tema 3: mutations y subscriptions](../web/public/content/spring-boot/modulo-24.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 24 | [Tema 4: pruebas GraphQL con GraphQlTester](../web/public/content/spring-boot/modulo-24.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 25 | [Tema 1: bindings y destinations](../web/public/content/spring-boot/modulo-25.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 25 | [Tema 2: binder Kafka y binder RabbitMQ](../web/public/content/spring-boot/modulo-25.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 25 | [Tema 3: reintentos, error handler y dead-letter](../web/public/content/spring-boot/modulo-25.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 25 | [Tema 4: test binder y límites de la prueba](../web/public/content/spring-boot/modulo-25.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 25 | [Tema 1: bindings y destinations](../web/public/content/spring-boot/modulo-25.md) | demostracion-no-delimitada |
+| spring-boot / 25 | [Tema 2: binder Kafka y binder RabbitMQ](../web/public/content/spring-boot/modulo-25.md) | demostracion-no-delimitada |
+| spring-boot / 25 | [Tema 3: reintentos, error handler y dead-letter](../web/public/content/spring-boot/modulo-25.md) | demostracion-no-delimitada |
+| spring-boot / 25 | [Tema 4: test binder y límites de la prueba](../web/public/content/spring-boot/modulo-25.md) | demostracion-no-delimitada |
 | spring-boot / 3 | [Tema 1: Entidades y repositorios derivados](../web/public/content/spring-boot/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 3 | [Tema 2: El problema N+1 y su corrección](../web/public/content/spring-boot/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 3 | [Tema 3: Migraciones con Flyway](../web/public/content/spring-boot/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |

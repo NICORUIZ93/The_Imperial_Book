@@ -1,7 +1,10 @@
 # Plan total de cambio
 
 Fecha: 2026-10-30. Alcance: contenido, medición y estructura de la academia.
-Este documento reemplaza la estrategia de crecer por lotes y marcadores.
+Este es un diagnóstico histórico que se conserva como referencia, no la plantilla
+metodológica vigente. El objetivo vigente conserva todos los módulos base y usa
+temas de 20–45 minutos, 3–6 subtemas de 5–15 minutos y cuatro pasos por subtema.
+La guía actual es [`METODOLOGIA-DE-APRENDIZAJE.md`](METODOLOGIA-DE-APRENDIZAJE.md).
 
 ## Diagnóstico
 
@@ -69,13 +72,17 @@ marcadores, no aprendizaje. Los datos medidos sobre el repositorio:
     Function, Consumer, Supplier y Streams).
 - [ ] Ruta piloto completa (Fundamentos + Java) reconstruida con checkpoints
   ejecutables por módulo.
-- [ ] Reducir el núcleo a ~112 módulos y degradar el resto a biblioteca de
-  referencia.
+- [ ] Mantener el inventario base sin eliminar temas; expandir los módulos
+  prioritarios y cruzar cada track con su hoja de ruta de industria.
 
-### Fase 3 — Réplica por ruta (pendiente)
+### Fase 3 — Migración por track (en curso)
 
-- Dos rutas por ciclo, empezando por cloud y spring-boot.
-- Cada módulo: proyecto incremental + `check.sh` + criterio de salida.
+- Aplicar la estructura de cuatro pasos a cada subtema, empezando por Java,
+  Spring Boot, Node.js, Kafka/RabbitMQ y Flutter.
+- Conservar proyecto incremental, archivo exacto, ejecución, salida y fallo
+  diagnosticado.
+- Reportar, por separado, la estructura migrada, ejemplos ejecutados y revisión
+  pedagógica humana. Ninguna cifra de marcadores declara un track completo.
 
 ### Fase 4 — Aplicación y evaluación (pendiente)
 
@@ -120,7 +127,8 @@ El PDF es una recopilación de publicaciones técnicas. Sus temas se mapearon as
 
 ## Reglas de gobernanza
 
-1. **No se añade, se reescribe.** Ningún cambio agrega texto al final de un tema.
+1. **No se elimina el temario base.** Se conserva el tema y se reorganiza en
+   subtemas accionables; se retira solo repetición que no enseña contenido.
 2. **Un defecto nuevo bloquea CI.** `--strict` compara contra el baseline.
 3. **La cobertura declarada debe ser la medida.** Un «completo» sin checkpoint
    ejecutable no se publica.
@@ -158,10 +166,9 @@ por eso el núcleo se reduce y el resto se declara biblioteca de referencia.
 | Sustancia | 476 temas con defectos históricos; 123 menos que al inicio; **0 defectos nuevos** |
 | Módulos nuevos | 4 (`devops` 17 y 18, `java` 20, `spring-boot` 22) con 14 temas; el repositorio queda con 163 laboratorios |
 
-Los módulos nuevos se escribieron con el estándar que el plan exige: siete pasos,
-fallo deliberado diagnosticado, fuente oficial, límites de uso, diagrama y
-mención al proyecto integrador. Sus ejemplos Java se compilaron y ejecutaron; los
-validadores Node de C4 y ADR se probaron con el resultado documentado.
+Este registro describe el estándar histórico de siete pasos y no acredita la
+adopción del formato de cuatro pasos. Los módulos y ejemplos existentes siguen
+siendo material de partida y deben migrarse y verificarse con el contrato actual.
 
 ### Lo que sigue pendiente
 

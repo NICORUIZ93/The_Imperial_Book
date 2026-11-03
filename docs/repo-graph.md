@@ -1,8 +1,8 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-11-03 21:01 UTC
+Generated: 2026-11-03 21:56 UTC
 Root: `The_Imperial_Book`
-Indexed files: 956
+Indexed files: 965
 Import edges: 60
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -19,17 +19,17 @@ For automated lookups, use `docs/repo-graph.json`.
 - `automation-script`: 34 files
 - `course-content`: 262 files
 - `documentation`: 57 files
-- `example`: 489 files
+- `example`: 498 files
 - `local-infra`: 1 files
 - `project-file`: 54 files
 
 ## File Types
 
-- `.md`: 328
+- `.md`: 329
 - `.py`: 160
+- `.java`: 70
 - `.json`: 68
 - `.ts`: 66
-- `.java`: 63
 - `.js`: 54
 - `.html`: 38
 - `.mjs`: 26
@@ -41,8 +41,8 @@ For automated lookups, use `docs/repo-graph.json`.
 - `.yaml`: 10
 - `.scss`: 8
 - `.sh`: 7
+- `.yml`: 6
 - `.jsx`: 6
-- `.yml`: 5
 - `.tf`: 4
 - `.example`: 3
 - `.txt`: 3
@@ -51,9 +51,9 @@ For automated lookups, use `docs/repo-graph.json`.
 
 ## High Signal Files
 
-- `README.md` (312 lines, documentation)
+- `README.md` (308 lines, documentation)
   - headings: # The_Imperial_Book, ## Como empezar, ## Levantar Floci, # 1. Levantar todos los servicios, # 2. Verificar Floci AWS
-- `scripts/validate.sh` (136 lines, automation-script)
+- `scripts/validate.sh` (137 lines, automation-script)
 - `scripts/build_repo_graph.py` (477 lines, automation-script)
   - symbols: FileNode, repo_files, read_text, classify, parse_ts_symbols, parse_ts_imports, parse_python_symbols, parse_python_imports, parse_markdown_headings, unique
 - `web/src/app/app.ts` (11 lines, angular-app)
@@ -229,13 +229,13 @@ For automated lookups, use `docs/repo-graph.json`.
 - `CLAUDE.md` (119 lines) - headings: # CLAUDE.md, ## What this is, ## First step for any repo exploration, ## Commands
 - `CODE_OF_CONDUCT.md` (25 lines) - headings: # Código de conducta, ## Compromiso, ## Conducta esperada, ## Aplicación
 - `CONTRIBUTING.md` (31 lines) - headings: # Contribuir a The Imperial Book, ## Antes de abrir un cambio, ## Licencias
-- `README.md` (312 lines) - headings: # The_Imperial_Book, ## Como empezar, ## Levantar Floci, # 1. Levantar todos los servicios
-- `docs/CONTINUAR-7-PASOS.md` (76 lines) - headings: # Continuación de la metodología de siete pasos, ## Qué se corrigió en el auditor (no repetir), ## Regla de oro, ## Los 5 temas que faltaban (resueltos)
+- `README.md` (308 lines) - headings: # The_Imperial_Book, ## Como empezar, ## Levantar Floci, # 1. Levantar todos los servicios
+- `docs/CONTINUAR-7-PASOS.md` (21 lines) - headings: # Migración a cuatro pasos y subtemas atómicos, ## Formato que se aplica, ## Estado de migración
 - `docs/ESTANDAR-DE-CODIGO.md` (56 lines) - headings: # Estándar transversal de código y diseño, ## Prioridades, ## Clean Code con criterio, ## SOLID cuando aporta valor
 - `docs/MATRIZ-CURRICULAR.md` (73 lines) - headings: # Matriz curricular auditable, ## Progresión de competencia, ## Cobertura por módulo, ## Método de evaluación
-- `docs/METODOLOGIA-DE-APRENDIZAJE.md` (57 lines) - headings: # Metodología Aprende construyendo, ## Ciclo de cada capítulo, ## Tamaño de las experiencias, ## Regla para mostrar soluciones
-- `docs/PLAN-TOTAL-DE-CAMBIO.md` (174 lines) - headings: # Plan total de cambio, ## Diagnóstico, ## Definición operativa de «de cero a profesional», ## Fases
-- `docs/PLANTILLA-LECCION.md` (109 lines) - headings: # Plantilla de Lección — Prompt Maestro para Claude / Codex, ## PROMPT MAESTRO (copiar desde aquí), ## DATOS DE LA LECCIÓN, ## REGLAS DE ESTILO
+- `docs/METODOLOGIA-DE-APRENDIZAJE.md` (67 lines) - headings: # Metodología Aprende construyendo, ## Estructura de tema y subtema, ### Hito al final de cada tema, ### Ruta del proyecto
+- `docs/PLAN-TOTAL-DE-CAMBIO.md` (181 lines) - headings: # Plan total de cambio, ## Diagnóstico, ## Definición operativa de «de cero a profesional», ## Fases
+- `docs/PLANTILLA-LECCION.md` (50 lines) - headings: # Plantilla de tema con subtemas atómicos, ### Tema N: [resultado observable] · 25–35 min, #### Subtema N.1: [acción concreta] · 5–15 min, #### Subtema N.2: ...
 - `docs/PROMPTS-FORMACION.md` (30 lines) - headings: # Prompts de formación profesional a partir de merged.pdf, ## Tutor paso a paso (página 1), ## Ruta de 30 pasos (página 21), ## Revisión profesional (página 55)
 - `docs/RUNBOOKS-CLOUD.md` (1633 lines) - headings: # Cloud Runbooks — Troubleshooting Operacional, ## Runbook 1: DynamoDB Throttling, ### Síntomas, ### Diagnosis
 - `docs/RUNBOOKS-DEVOPS.md` (1409 lines) - headings: # DevOps Runbooks — Troubleshooting Operacional, ## Runbook 1: Docker Image Build Failures, ### Síntomas, ### Diagnosis
@@ -264,7 +264,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `examples/archify/temas/cloud/modulo-22-tema-5-edge-routes.review-2/modulo-22-tema-5-edge-routes.finalize.json` (1012 lines)
 - `examples/archify/temas/foundations/modulo-12-tema-10-lazo-p.workflow.json` (183 lines)
 - `examples/archify/temas/foundations/modulo-12-tema-17-plc-scan.workflow.json` (189 lines)
-- ... 471 more files
+- ... 480 more files
 
 ### local-infra
 
@@ -278,12 +278,12 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/biblioteca/catalogo.json` (564 lines)
 - `docs/biblioteca/imagenes.json` (577 lines)
 - `docs/browser-course-review.json` (2660 lines)
-- `docs/code-visual-quality.json` (3332 lines)
-- `docs/course-depth-review.json` (13450 lines)
+- `docs/code-visual-quality.json` (3353 lines)
+- `docs/course-depth-review.json` (13468 lines)
 - `docs/curriculum-matrix.json` (394 lines)
 - `docs/floci-official-curriculum.json` (14 lines)
 - `docs/lesson-substance-baseline.json` (1693 lines)
-- `docs/lesson-substance.json` (11235 lines)
+- `docs/lesson-substance.json` (11232 lines)
 - `docs/merged-pdf-index.json` (426 lines)
 - `docs/official-learning-guides.json` (22 lines)
 - `docs/official-sources.json` (195 lines)

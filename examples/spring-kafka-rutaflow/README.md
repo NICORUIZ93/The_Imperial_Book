@@ -1,6 +1,6 @@
 # Laboratorio Spring Kafka de RutaFlow
 
-Este proyecto demuestra publicación JSON con `KafkaTemplate`, `envioId` como key y recepción con `@KafkaListener`. Su prueba inicia un broker Kafka embebido; no requiere Docker.
+Este proyecto demuestra publicación JSON con `KafkaTemplate`, `envioId` como key, dos consumer groups, retries y DLT, y la secuencia outbox/inbox con Spring JDBC. La suite inicia Kafka embebido y usa H2 en memoria; los pasos de prueba no requieren Docker.
 
 ## Requisitos y ejecución
 
@@ -13,10 +13,12 @@ Desde esta carpeta:
 ./mvnw test
 ```
 
-La prueba confirma tópico, partición, offset y key; comprueba que los grupos `rutaflow-ruteo` y `rutaflow-notificaciones` reciban el mismo evento. La aplicación también se puede ejecutar contra el broker KRaft del archivo `compose.yaml` con `./mvnw spring-boot:run`.
+Las ocho pruebas confirman tópico, partición, offset, key, orden para un mismo envío, recepción en ambos grupos, tres intentos antes de `rutaflow.envio.creado-dlt`, rollback de envío/outbox, transacción inbox, confirmación del dispatcher y replay sin doble efecto.
+
+Para ejecutar la app manualmente con PostgreSQL y Kafka locales, levanta ambos servicios con `docker compose up -d` o `podman compose up -d`. La aplicación usa PostgreSQL en `localhost:15432` y Kafka en `localhost:19092`; arráncala con `./mvnw spring-boot:run`.
 
 ## Alcance
 
-El broker embebido verifica el recorrido productor-consumidor y el contrato básico. No prueba tolerancia a fallos entre Kafka y PostgreSQL, reintentos/DLT de producción ni el patrón outbox; esos ejercicios necesitan pruebas separadas y permanecen como parte posterior del laboratorio.
+Las pruebas comprueban la transacción SQL, la deduplicación y replay junto al broker embebido. H2 hace rápida la suite; antes de producción, repite migraciones y concurrencia contra PostgreSQL real y prueba la caída real del proceso en cada ventana de outbox. El dispatcher didáctico no reclama filas con lease y no debe ejecutarse con varias instancias.
 
 En este entorno la prueba termina con código 0, aunque Kafka 4.2.2 advierte que el directorio de logs temporal queda fuera de línea durante el cierre del broker embebido. El recorrido de mensajes sí fue comprobado; el cierre limpio del broker queda pendiente de corregir.
