@@ -1698,7 +1698,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "957fbd1178037a9060746c8e0251c8b680176d948e140853d88b3f9712be4a87",
+    "fingerprint": "dd4cbd627d1fa47f8f68623d366a6f50cc996ddd817e0b56c829baa34fbc8559",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -7527,7 +7527,7 @@
         "module": 19,
         "tailWords": 201,
         "topic": "Tema 3: Dinero exacto con BigDecimal",
-        "words": 1090
+        "words": 1270
       },
       {
         "issues": [],

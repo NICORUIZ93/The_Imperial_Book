@@ -418,7 +418,15 @@ flowchart LR
 
 #### Paso 4 · Demostración guiada desde cero
 
-##### Subtema 3.1: Evitar la imprecisión de double · 10-15 min
+#### Subtema 3.1: Evitar la imprecisión de double · 10 min
+**1. Contexto**
+
+Una tarifa de RutaFlow debe sumar recargos y calcular impuestos sin acumular diferencias invisibles.
+
+**2. Hazlo tú**
+
+En una carpeta vacía, crea `Dinero.java`, ejecuta el ejemplo con `java Dinero.java` y compara las dos sumas.
+
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
 
 ```bash
@@ -475,15 +483,24 @@ equals 2.0 vs 2.00: false  compareTo: 0
 
 La penúltima línea muestra lo que realmente guarda un `double` 0.1, y la última por qué `equals` no sirve para comparar montos.
 
-**Fallo deliberado:** En la cuota quita la escala y el modo: `new BigDecimal("100000").divide(new BigDecimal("3"))`. Obtienes `java.lang.ArithmeticException: Non-terminating decimal expansion; no exact representable decimal result.` porque 100000/3 tiene infinitos decimales y no le dijiste dónde cortar.
+**Fallo deliberado:** En la cuota quita la escala y el modo: `new BigDecimal("100000").divide(new BigDecimal("3"))`. Obtienes `java.lang.ArithmeticException: Non-terminating decimal expansion; no exact representable decimal result.` porque 100000/3 tiene infinitos decimales y no le dijiste dónde cortar. **Diagnóstico:** la división decimal necesita una escala y un `RoundingMode` explícitos si el resultado no termina.
+
+**3. Entiende**
+
+Explica por qué el monto conserva exactitud y qué regla determina la escala o el redondeo.
+
+**Diagnóstico:** compara el total antes y después de redondear; la diferencia debe explicarse y asignarse de forma explícita.
+
+**4. Cierra**
+
+Anota el total esperado, el total obtenido y qué política de escala o residuo usaste.
 
 #### Paso 5 · Práctica guiada
 
-##### Subtema 3.2: Repartir un total sin perder centavos · 5-10 min
+#### Subtema 3.2: Repartir un total sin perder centavos · 10 min
+**1. Contexto** tres cuotas deben sumar exactamente el cobro original.
 
-**Contexto:** tres cuotas deben sumar exactamente el cobro original.
-
-**Hazlo tú:** crea `java-dia-a-dia/Cuotas.java`:
+**2. Hazlo tú** crea `java-dia-a-dia/Cuotas.java`:
 
 ```java
 import java.math.BigDecimal;
@@ -506,16 +523,21 @@ Ejecuta `cd java-dia-a-dia && java Cuotas.java`.
 
 **Fallo deliberado:** reparte las tres cuotas usando `divide(..., 2, RoundingMode.DOWN)`. **Resultado del fallo:** la suma queda en `99999.99`. **Diagnóstico:** el redondeo deja un centavo residual; asígnalo a la última cuota.
 
-**Entiende:** define escala y modo de redondeo y conserva una regla para el residuo.
+**3. Entiende** define escala y modo de redondeo y conserva una regla para el residuo.
 **Pista:** suma las cuotas al final; la última debe absorber el centavo que dejó el redondeo de las dos primeras.
+
+**Diagnóstico:** compara el total antes y después de redondear; la diferencia debe explicarse y asignarse de forma explícita.
+
+**4. Cierra**
+
+Anota el total esperado, el total obtenido y qué política de escala o residuo usaste.
 
 #### Paso 6 · Práctica independiente
 
-##### Subtema 3.3: Guardar centavos como enteros · 5-10 min
+#### Subtema 3.3: Guardar centavos como enteros · 10 min
+**1. Contexto** una moneda con dos decimales también se puede guardar como centavos enteros.
 
-**Contexto:** una moneda con dos decimales también se puede guardar como centavos enteros.
-
-**Hazlo tú:** crea `java-dia-a-dia/Centavos.java`:
+**2. Hazlo tú** crea `java-dia-a-dia/Centavos.java`:
 
 ```java
 public class Centavos {
@@ -536,7 +558,13 @@ Ejecuta `cd java-dia-a-dia && java Centavos.java`.
 
 **Fallo deliberado:** cambia `longValueExact()` por `longValue()` y usa `"1.239"`. **Resultado del fallo:** el valor se trunca sin avisar. **Diagnóstico:** `longValueExact()` rechaza fracciones de centavo y desbordamientos en vez de perder información.
 
-**Entiende:** centavos enteros son simples para una moneda de escala fija; `BigDecimal` expresa mejor escalas y cálculos variables.
+**3. Entiende** centavos enteros son simples para una moneda de escala fija; `BigDecimal` expresa mejor escalas y cálculos variables.
+
+**Diagnóstico:** compara el total antes y después de redondear; la diferencia debe explicarse y asignarse de forma explícita.
+
+**4. Cierra**
+
+Anota el total esperado, el total obtenido y qué política de escala o residuo usaste.
 
 #### Paso 7 · Cierre y evidencia
 Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque los errores de redondeo en dinero son bugs reales, difíciles de detectar y con consecuencias legales.

@@ -289,7 +289,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 12827,
+      "lines": 12870,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -297,7 +297,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1151,
+      "lines": 1150,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -767,7 +767,7 @@
     },
     {
       "path": "docs/java-temario-completo.md",
-      "lines": 506,
+      "lines": 509,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -9980,7 +9980,7 @@
     },
     {
       "path": "web/public/content/java/modulo-19.md",
-      "lines": 1304,
+      "lines": 1332,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

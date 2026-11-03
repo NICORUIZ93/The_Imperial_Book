@@ -51,10 +51,10 @@
     },
     "java": {
       "topics": 101,
-      "completeTopics": 84,
-      "topicsWith3to6Subtopics": 84,
-      "subtopics": 256,
-      "completeSubtopics": 256
+      "completeTopics": 85,
+      "topicsWith3to6Subtopics": 85,
+      "subtopics": 259,
+      "completeSubtopics": 259
     },
     "javascript": {
       "topics": 88,
@@ -7416,9 +7416,52 @@
       {
         "module": 19,
         "topic": "### Tema 3: Dinero exacto con BigDecimal",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "3.1",
+            "title": "#### Subtema 3.1: Evitar la imprecisión de double · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "3.2",
+            "title": "#### Subtema 3.2: Repartir un total sin perder centavos · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "3.3",
+            "title": "#### Subtema 3.3: Guardar centavos como enteros · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 19,
