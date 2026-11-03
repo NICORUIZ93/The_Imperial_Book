@@ -86,7 +86,7 @@
     },
     "java": {
       "topics": 101,
-      "code": 97,
+      "code": 94,
       "commentedCode": 33,
       "mermaid": 28,
       "archifyVisual": 1,
@@ -2365,22 +2365,22 @@
       "track": "java",
       "module": 9,
       "topic": "Tema 1: JUnit 5 — anotaciones y ciclo de vida",
-      "missingCode": false,
-      "missingComments": true
+      "missingCode": true,
+      "missingComments": false
     },
     {
       "track": "java",
       "module": 9,
       "topic": "Tema 2: Mockito — aislar dependencias",
-      "missingCode": false,
-      "missingComments": true
+      "missingCode": true,
+      "missingComments": false
     },
     {
       "track": "java",
       "module": 9,
       "topic": "Tema 3: Tests parametrizados y cobertura",
-      "missingCode": false,
-      "missingComments": true
+      "missingCode": true,
+      "missingComments": false
     },
     {
       "track": "spring-boot",

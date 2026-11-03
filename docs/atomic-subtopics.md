@@ -2,7 +2,7 @@
 
 > Auditoría estructural. Un encabezado o criterio detectado no demuestra que el ejemplo se haya ejecutado ni que la explicación sea pedagógicamente suficiente.
 
-Temas conformes a cuatro pasos: **58/1185**. Tracks inventariados: **14**.
+Temas conformes a cuatro pasos: **61/1185**. Tracks inventariados: **14**.
 
 | Track | Temas conformes | Temas inventariados | Subtemas detectados | Subtemas con estructura completa |
 |---|---:|---:|---:|---:|
@@ -13,7 +13,7 @@ Temas conformes a cuatro pasos: **58/1185**. Tracks inventariados: **14**.
 | flutter | 1 | 106 | 3 | 3 |
 | foundations | 0 | 99 | 0 | 0 |
 | ios | 0 | 56 | 0 | 0 |
-| java | 41 | 101 | 125 | 125 |
+| java | 44 | 101 | 134 | 134 |
 | javascript | 0 | 88 | 0 | 0 |
 | kotlin-multiplatform | 0 | 56 | 0 | 0 |
 | node | 2 | 83 | 6 | 6 |
@@ -761,9 +761,6 @@ Temas conformes a cuatro pasos: **58/1185**. Tracks inventariados: **14**.
 - M20 ### Tema 11: Streams paralelos: comparar antes de acelerarlos: tiene 0 subtemas
 - M20 ### Tema 12: Pureza y efectos: calcular separado de guardar o imprimir: tiene 0 subtemas
 - M20 ### Tema 13: Flow API: publicar datos con demanda y cierre: tiene 0 subtemas
-- M9 ### Tema 1: JUnit 5 — anotaciones y ciclo de vida: tiene 0 subtemas
-- M9 ### Tema 2: Mockito — aislar dependencias: tiene 0 subtemas
-- M9 ### Tema 3: Tests parametrizados y cobertura: tiene 0 subtemas
 
 ### javascript
 

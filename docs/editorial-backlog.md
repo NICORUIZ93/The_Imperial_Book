@@ -9,15 +9,15 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | Criterio | Cubierto | Pendiente |
 |---|---:|---:|
 | Explicación | 1185 | 0 |
-| Código | 1181 | 4 |
+| Código | 1178 | 7 |
 | Ruta | 1185 | 0 |
-| Ejecución | 1158 | 27 |
+| Ejecución | 1155 | 30 |
 | Resultado | 1183 | 2 |
-| Modificación | 1161 | 24 |
-| Conexión con un proyecto | 1149 | 36 |
-| Modelo mental | 1175 | 10 |
-| Límites | 1157 | 28 |
-| **Perfil de criterios detectado** | **1132** | **53** |
+| Modificación | 1159 | 26 |
+| Conexión con un proyecto | 1146 | 39 |
+| Modelo mental | 1172 | 13 |
+| Límites | 1155 | 30 |
+| **Perfil de criterios detectado** | **1129** | **56** |
 
 ## Prioridad por track
 
@@ -30,7 +30,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | flutter | 106 | 0 | 0 | 0 | 0 | 0 | 1 | 1 |
 | foundations | 99 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ios | 56 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| java | 101 | 4 | 0 | 22 | 0 | 18 | 24 | 18 |
+| java | 101 | 7 | 0 | 25 | 0 | 20 | 27 | 20 |
 | javascript | 88 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | kotlin-multiplatform | 56 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | node | 83 | 0 | 0 | 0 | 0 | 1 | 2 | 1 |
@@ -75,6 +75,9 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 - [java · módulo 8](../web/public/content/java/modulo-8.md) · Tema 2: Ciclo de vida de build y scopes: código, ejecución, modificación, conexión con un proyecto, modelo mental.
 - [java · módulo 8](../web/public/content/java/modulo-8.md) · Tema 3: Proyectos multi-módulo: código, ejecución, conexión con un proyecto, modelo mental, límites.
 - [java · módulo 8](../web/public/content/java/modulo-8.md) · Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas: código, ejecución, modificación, conexión con un proyecto, modelo mental.
+- [java · módulo 9](../web/public/content/java/modulo-9.md) · Tema 1: JUnit 5 — anotaciones y ciclo de vida: código, ejecución, conexión con un proyecto, modelo mental, límites.
+- [java · módulo 9](../web/public/content/java/modulo-9.md) · Tema 2: Mockito — aislar dependencias: código, ejecución, modificación, conexión con un proyecto, modelo mental, límites.
+- [java · módulo 9](../web/public/content/java/modulo-9.md) · Tema 3: Tests parametrizados y cobertura: código, ejecución, modificación, conexión con un proyecto, modelo mental.
 - [node · módulo 14](../web/public/content/node/modulo-14.md) · Tema 7: Kafka desde Node: clave, grupo consumidor y offset: conexión con un proyecto, límites.
 - [node · módulo 14](../web/public/content/node/modulo-14.md) · Tema 8: RabbitMQ desde Node: exchange, cola y confirmaciones: modificación, conexión con un proyecto.
 - [spring-boot · módulo 10](../web/public/content/spring-boot/modulo-10.md) · Tema 1: Config Server y service discovery: límites.

@@ -127,16 +127,16 @@
     "java": {
       "topics": 101,
       "explanation": 101,
-      "code": 97,
+      "code": 94,
       "visual": 29,
       "filePath": 101,
-      "runCommand": 79,
+      "runCommand": 76,
       "expectedResult": 101,
-      "practice": 83,
-      "project": 77,
-      "modelMental": 91,
-      "limitsDecision": 83,
-      "practicable": 69,
+      "practice": 81,
+      "project": 74,
+      "modelMental": 88,
+      "limitsDecision": 81,
+      "practicable": 66,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
@@ -16912,19 +16912,19 @@
         "topic": "Tema 1: JUnit 5 — anotaciones y ciclo de vida",
         "criteria": {
           "explanation": true,
-          "code": true,
+          "code": false,
           "visual": false,
           "filePath": true,
-          "runCommand": true,
+          "runCommand": false,
           "expectedResult": true,
           "practice": true,
-          "project": true,
-          "modelMental": true,
-          "limitsDecision": true
+          "project": false,
+          "modelMental": false,
+          "limitsDecision": false
         },
         "classification": {
-          "rubricScore": 14,
-          "practicable": true,
+          "rubricScore": 7,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -16934,19 +16934,19 @@
         "topic": "Tema 2: Mockito — aislar dependencias",
         "criteria": {
           "explanation": true,
-          "code": true,
+          "code": false,
           "visual": false,
           "filePath": true,
-          "runCommand": true,
+          "runCommand": false,
           "expectedResult": true,
-          "practice": true,
-          "project": true,
-          "modelMental": true,
-          "limitsDecision": true
+          "practice": false,
+          "project": false,
+          "modelMental": false,
+          "limitsDecision": false
         },
         "classification": {
-          "rubricScore": 14,
-          "practicable": true,
+          "rubricScore": 5,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -16956,19 +16956,19 @@
         "topic": "Tema 3: Tests parametrizados y cobertura",
         "criteria": {
           "explanation": true,
-          "code": true,
+          "code": false,
           "visual": false,
           "filePath": true,
-          "runCommand": true,
+          "runCommand": false,
           "expectedResult": true,
-          "practice": true,
-          "project": true,
-          "modelMental": true,
+          "practice": false,
+          "project": false,
+          "modelMental": false,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 14,
-          "practicable": true,
+          "rubricScore": 5,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }

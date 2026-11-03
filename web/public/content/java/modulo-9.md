@@ -5,187 +5,219 @@
 
 ### Tema 1: JUnit 5 — anotaciones y ciclo de vida
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás escribir un test con `@Test`/`@BeforeEach` y garantizar que dos pruebas de la misma clase no se contaminen entre sí por estado compartido. Prerrequisitos: JDK 25, Maven y un editor. Verifica java --version y mvn --version.
+**Por qué importa:** una prueba repetible descubre cuando un cambio rompe una regla antes de que el fallo llegue al usuario.
 
-#### Paso 2 · Contexto y caso real
-Una suite de pruebas de la calculadora de tarifas empieza a fallar de forma intermitente solo cuando se ejecuta la suite completa (nunca al correr un test aislado); la causa es un campo de instancia compartido entre pruebas que una prueba anterior deja en un estado que la siguiente no esperaba.
+**Preparación común del módulo:** usa el proyecto Maven del Módulo 8; para estos ejercicios añade JUnit Jupiter `6.0.2` y Maven Surefire `3.5.5` al `pom.xml`, con JUnit en scope `test`. JUnit 6 requiere Java 17 o superior. Fuente: [guía oficial de JUnit](https://docs.junit.org/current/user-guide/).
 
-#### Paso 3 · Teoría, modelo mental y analogía
-JUnit 5 ejecuta `@BeforeEach` automáticamente antes de cada `@Test` de la clase, reiniciando el estado a un punto conocido sin que el desarrollador tenga que recordar hacerlo manualmente al principio de cada prueba. La analogía: reiniciar completamente un escenario de laboratorio antes de cada experimento individual, para que el resultado de uno no contamine al siguiente.
+#### Subtema 1.1: Escribe y ejecuta tu primera prueba · 10 min
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
-```bash
-mkdir ejemplo-junit-lifecycle
-cd ejemplo-junit-lifecycle
-mvn -q archetype:generate -DgroupId=academia.entregas -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-cd app
-mvn test          # Maven
-./gradlew test    # Gradle (equivalente; genera el proyecto con `gradle init --type java-application --dsl kotlin --test-framework junit-jupiter`)
-```
-Crea `src/test/java/academia/entregas/CalculadoraTest.java` con un `@Test` que llame `assertEquals(5, new Calculadora().sumar(2, 3))` y un `@BeforeEach` que reinicie el estado; ejecuta `mvn test`.
+**1. Contexto**
 
-#### Paso 5 · Práctica guiada
-Pista: cambia deliberadamente el valor esperado en `assertEquals` (por ejemplo a 6) para provocar un fallo deliberado; lee el mensaje de JUnit, que muestra el valor esperado frente al obtenido. Resultado esperado: restaurar el valor correcto vuelve la prueba a verde.
+Una tarifa de envío no puede ser negativa. El test comprueba esa regla con un ejemplo que cualquiera puede volver a correr.
 
-#### Paso 6 · Práctica independiente
-Añade un segundo método de prueba que comparta estado con el primero a través de un campo de instancia, y comprueba con `@BeforeEach` que ambos parten del mismo estado inicial sin importar el orden de ejecución.
+**2. Hazlo tú**
 
-#### Paso 7 · Cierre y evidencia
-Guarda el archivo de test, la salida verde y el fallo provocado con su corrección; como siguiente paso aísla una dependencia externa con Mockito. Errores comunes: compartir estado mutable entre pruebas sin reiniciarlo en `@BeforeEach`, escribir aserciones débiles que pasan incluso con un resultado incorrecto, y depender del orden de ejecución entre pruebas que deberían ser independientes. Fuentes oficiales: https://junit.org/junit5/docs/current/user-guide/.
-**¿Por qué es importante?** Porque sin `@BeforeEach` reiniciando el estado compartido, una prueba puede pasar o fallar según qué otra prueba se ejecutó antes, un tipo de fragilidad que solo se nota al correr la suite completa, nunca al correr una prueba aislada.
-**Evidencia de aprendizaje:** entrega el test con `@Test`/`@BeforeEach`, el fallo provocado al cambiar el valor esperado, y su corrección.
-**Conceptos clave:** `@Test`, `@BeforeEach`, aserciones.
+Crea `src/main/java/Tarifa.java` con `static int calcular(int gramos) { return gramos <= 500 ? 4000 : 7000; }`. Crea `src/test/java/TarifaTest.java` con `@Test void paquetePequenoCuestaCuatroMil() { assertEquals(4000, Tarifa.calcular(300)); }`. Ejecuta `mvn test`.
 
-`@Test` marca un método como un caso de prueba ejecutable independientemente por el runner de JUnit 5, dentro del cual las aserciones (`assertEquals(5, new Calculadora().sumar(2, 3))`) verifican que el resultado real coincide con el resultado esperado, fallando la prueba con un mensaje descriptivo si no coinciden; `@BeforeEach` marca un método que se ejecuta automáticamente antes de cada prueba individual de la clase, apropiado para inicializar objetos compartidos en un estado conocido y limpio antes de cada prueba, evitando que el estado dejado por una prueba anterior afecte accidentalmente el resultado de la siguiente (cada prueba debe ser independiente y capaz de ejecutarse en cualquier orden sin afectar ni verse afectada por otras).
+**Resultado esperado:** Surefire detecta una prueba y muestra `BUILD SUCCESS`.
 
-Este ciclo de vida (`@BeforeEach` antes de cada prueba, con `@AfterEach` como su contraparte de limpieza posterior, y `@BeforeAll`/`@AfterAll` para configuración costosa que solo debe ejecutarse una única vez para toda la clase de pruebas, no repetida en cada prueba individual) estructura de forma predecible cuándo exactamente se ejecuta cada pieza de configuración o limpieza en relación con las pruebas efectivas, garantizando aislamiento entre pruebas sucesivas.
+**Fallo deliberado:** cambia el esperado a `5000`. **Diagnóstico:** compara el valor esperado y el real en el reporte de prueba; restaura el resultado correcto.
 
-**Analogía:** `@BeforeEach` es como reiniciar completamente un escenario de laboratorio a su estado inicial conocido antes de cada experimento individual, garantizando que los resultados de un experimento no contaminen accidentalmente el siguiente experimento realizado en el mismo espacio.
+**3. Entiende**
 
-**¿Por qué es importante?** El ciclo de vida de JUnit 5 garantiza aislamiento entre pruebas sucesivas, ejecutando configuración y limpieza en momentos predecibles relativos a cada prueba individual.
+`@Test` marca un método de prueba. `assertEquals` compara el resultado observado con la regla acordada.
 
-**Código del ejemplo:**
+**4. Cierra**
 
-```java
-class CalculadoraTest {
-    @Test
-    void sumaDosNumeros() {
-        assertEquals(5, new Calculadora().sumar(2, 3));
-    }
-    @BeforeEach
-    void setUp() { /* se ejecuta antes de cada test */ }
-}
-```
+Guarda el test y el reporte ubicado en `target/surefire-reports`.
 
-Cada prueba unitaria que escribas para el Proyecto integrador (Módulo 13) debe seguir este mismo ciclo de vida: sin `@BeforeEach` reiniciando el estado, las pruebas de un servicio con estado compartido empiezan a depender del orden de ejecución.
+#### Subtema 1.2: Prepara datos para cada prueba · 10 min
 
-**Cuándo no usarlo:** para un método puro sin estado ni dependencias, `@BeforeEach` es innecesario; solo aporta valor cuando hay estado compartido real que reiniciar entre pruebas.
+**1. Contexto**
+
+Una prueba debe comenzar con una tarifa limpia y no depender del orden en que se ejecutan otros tests.
+
+**2. Hazlo tú**
+
+En `src/test/java/TarifaTest.java`, crea un campo `Tarifa tarifa`; agrega `@BeforeEach void preparar() { tarifa = new Tarifa(); }` si convertiste Tarifa en clase, y prueba dos entradas distintas en métodos separados. Ejecuta `mvn test`.
+
+**Resultado esperado:** cada test pasa por su preparación, aunque el motor los ejecute en orden distinto.
+
+**Fallo deliberado:** guarda el último precio en un campo `static` compartido entre tests. **Diagnóstico:** un test modifica el estado del otro; elimina la dependencia compartida o crea datos por prueba.
+
+**3. Entiende**
+
+`@BeforeEach` prepara el contexto de cada método; no se debe usar para ocultar una dependencia entre tests.
+
+**4. Cierra**
+
+Conserva dos tests independientes y explica qué estado vuelve a crear la preparación.
+
+#### Subtema 1.3: Comprueba errores esperados · 10 min
+
+**1. Contexto**
+
+Una guía con peso negativo debe rechazarse en el momento de crearla.
+
+**2. Hazlo tú**
+
+Crea `src/main/java/Guia.java` con constructor que lance `IllegalArgumentException` si `peso <= 0`. En `src/test/java/GuiaTest.java` usa `assertThrows(IllegalArgumentException.class, () -> new Guia(-1))`. Ejecuta `mvn test`.
+
+**Resultado esperado:** el test pasa porque el caso inválido lanza el tipo esperado.
+
+**Fallo deliberado:** captura la excepción dentro del lambda y no la vuelvas a lanzar. **Diagnóstico:** `assertThrows` reporta que no se produjo la excepción; deja que el test observe el error.
+
+**3. Entiende**
+
+Una prueba de error debe comprobar el tipo de fallo que forma parte del contrato, no cualquier excepción accidental.
+
+**4. Cierra**
+
+Guarda el test válido y el fallo deliberado. Fuente: [anotaciones y assertions JUnit](https://docs.junit.org/current/user-guide/).
 
 ### Tema 2: Mockito — aislar dependencias
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás sustituir una dependencia real (un repositorio con base de datos) por un mock de Mockito, probando la lógica de negocio sin levantar ninguna infraestructura externa. Prerrequisitos: JDK 25, Maven y un editor. Verifica java --version y mvn --version.
+**Por qué importa:** una prueba de servicio debe poder comprobar una regla de negocio sin arrancar una base de datos ni llamar una API real.
 
-#### Paso 2 · Contexto y caso real
-Probar `ServicioPedidos.crear(...)` contra una base de datos real hace la suite lenta y frágil (depende de que la base esté disponible y en un estado conocido); la lógica de negocio que decide si un pedido es válido no necesita una base de datos real para verificarse, solo necesita que `RepositorioPedidos` responda de forma controlada.
+**Preparación:** añade `org.mockito:mockito-junit-jupiter:5.24.0` con scope `test` al mismo `pom.xml`. Referencia: [versiones oficiales Mockito](https://github.com/mockito/mockito/releases).
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Mockito reemplaza una dependencia real por un objeto simulado (mock) cuyo comportamiento se configura explícitamente desde la propia prueba (`when(...).thenReturn(...)`), y permite verificar después que una interacción específica ocurrió (`verify(...)`). La analogía: un actor de reparto que sigue exactamente el guion indicado para esta representación, permitiendo ensayar al protagonista sin que el elenco completo real esté disponible.
+#### Subtema 2.1: Simula un repositorio · 10 min
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
-```bash
-mkdir ejemplo-mockito-repositorio
-cd ejemplo-mockito-repositorio
-mvn -q archetype:generate -DgroupId=academia.entregas -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-cd app
-mvn test          # Maven
-./gradlew test    # Gradle (equivalente)
-```
-Crea `src/test/java/academia/entregas/ServicioPedidosTest.java` con `@Mock RepositorioPedidos repositorio` y `@InjectMocks ServicioPedidos servicio`; configura `when(repositorio.guardar(any())).thenReturn(new Pedido(1))` y verifica con `verify(repositorio).guardar(any())`.
+**1. Contexto**
 
-#### Paso 5 · Práctica guiada
-Pista: elimina deliberadamente el `when(...)` que configura el mock para provocar un fallo deliberado (el mock devuelve `null` por defecto y el test lanza `NullPointerException`); lee el stack trace, que apunta directamente a la línea sin stub. Resultado esperado: restaurar el `when(...)` corrige el fallo.
+`ServicioRutas` consulta un repositorio; en esta prueba no quieres conectar PostgreSQL.
 
-#### Paso 6 · Práctica independiente
-Agrega una segunda dependencia mockeada (por ejemplo un servicio de notificaciones) y escribe un `verify` que confirme que se llamó exactamente una vez, usando `verify(notificador, times(1))`.
+**2. Hazlo tú**
 
-#### Paso 7 · Cierre y evidencia
-Guarda el test, el fallo de `NullPointerException` provocado y su corrección; como siguiente paso cubre varios casos con tests parametrizados. Errores comunes: mockear la clase bajo prueba en vez de sus dependencias (deja de probar código real), confundir `when` (configurar comportamiento) con `verify` (comprobar que una interacción ocurrió), y mockear un objeto de valor simple que sería más claro usar real. Fuentes oficiales: https://site.mockito.org/.
-**¿Por qué es importante?** Porque mockear las dependencias externas permite probar la lógica de negocio en aislamiento, rápido y de forma determinista, sin depender de la disponibilidad ni el estado de una base de datos u otro servicio real.
-**Evidencia de aprendizaje:** entrega el test con `@Mock`/`@InjectMocks`, el fallo de `NullPointerException` al olvidar configurar el mock, y su corrección con `when(...)`.
-**Conceptos clave:** `@Mock`, `@InjectMocks`, `when`/`verify`.
+Crea `src/main/java/Ruta.java` como `record Ruta(String guia, String estado) {}` y `src/main/java/RutaRepository.java` con `Optional<Ruta> buscar(String guia)`. Crea `src/main/java/ServicioRutas.java` que delegue la búsqueda. En `src/test/java/ServicioRutasTest.java` usa `@ExtendWith(MockitoExtension.class)`, `@Mock RutaRepository repo`, prepara `when(repo.buscar("RT-1")).thenReturn(Optional.of(new Ruta("RT-1", "EN_RUTA")))` y comprueba el estado. Ejecuta `mvn test`.
 
-Mockito permite reemplazar las dependencias reales de la clase bajo prueba por objetos simulados (mocks) cuyo comportamiento se controla completamente desde la propia prueba: `@Mock RepositorioPedidos repositorio; @InjectMocks ServicioPedidos servicio;` crea un mock de `RepositorioPedidos` y lo inyecta automáticamente en una instancia real de `ServicioPedidos`, permitiendo probar la lógica de negocio de `ServicioPedidos` de forma completamente aislada, sin depender de una base de datos real ni de ninguna otra infraestructura externa que `RepositorioPedidos` normalmente requeriría en producción.
+**Resultado esperado:** el test pasa sin crear conexión de base de datos.
 
-`when(repositorio.guardar(any())).thenReturn(new Pedido(1))` configura el comportamiento simulado del mock (stub): cuando se invoque `guardar` con cualquier argumento, devolver ese `Pedido` específico, permitiendo controlar exactamente qué "respuesta" simulada recibe el servicio bajo prueba sin necesidad de una implementación real de persistencia. `verify(repositorio).guardar(any())`, en cambio, no configura comportamiento sino que verifica una interacción ya ocurrida: confirma que el servicio efectivamente invocó ese método del mock durante la ejecución de la prueba, una aserción sobre comportamiento (que cierta interacción ocurrió) en vez de sobre un valor de retorno, útil para verificar que el servicio realmente delega correctamente en su dependencia, no solo que produce el resultado correcto por alguna otra vía inesperada.
+**Fallo deliberado:** llama `repo.buscar("RT-2")` en el servicio. **Diagnóstico:** el stub solo define `RT-1`; configura la respuesta que corresponda al escenario o corrige la entrada.
 
-**Analogía:** un mock es como un actor de reparto que sigue exactamente el guion que se le indica para esta representación específica (el `when`), permitiendo ensayar la actuación del protagonista (el servicio bajo prueba) sin necesidad de que el elenco de reparto completo real esté disponible; `verify` es como confirmar después de la representación que el protagonista efectivamente interactuó con ese actor de reparto en el momento esperado del guion, no solo que la obra terminó bien por alguna otra razón.
+**3. Entiende**
 
-**¿Por qué es importante?** Mockear dependencias externas aísla la prueba de infraestructura real (bases de datos, servicios externos), haciendo la prueba más rápida, determinista y confiable, sin depender de la disponibilidad o el estado de sistemas externos.
+El mock sustituye el colaborador externo; la regla que se prueba sigue siendo código real.
 
-**Código del ejemplo:**
+**4. Cierra**
 
-```java
-@ExtendWith(MockitoExtension.class)
-class ServicioPedidosTest {
-    @Mock RepositorioPedidos repositorio;
-    @InjectMocks ServicioPedidos servicio;
+Conserva la prueba y marca cuál dependencia fue simulada.
 
-    @Test
-    void creaUnPedido() {
-        when(repositorio.guardar(any())).thenReturn(new Pedido(1));
-        Pedido resultado = servicio.crear(new Pedido(null));
-        assertEquals(1, resultado.id());
-        verify(repositorio).guardar(any()); // confirma que se llamó al repositorio
-    }
-}
-```
+#### Subtema 2.2: Verifica una interacción necesaria · 10 min
 
-Aislar dependencias con mocks es lo que permite que la suite de pruebas del Proyecto integrador (Módulo 13) corra en segundos, sin levantar la base de datos real cada vez.
+**1. Contexto**
 
-**Cuándo no usarlo:** si la dependencia es un objeto de valor simple (por ejemplo un `record` inmutable sin efectos secundarios), usar el objeto real es más simple y claro que mockearlo.
+Un servicio debe solicitar la guía una sola vez para responder una consulta.
+
+**2. Hazlo tú**
+
+En `src/test/java/ServicioRutasTest.java`, llama `servicio.buscar("RT-1")` y usa `verify(repo).buscar("RT-1")`. Ejecuta `mvn test`.
+
+**Resultado esperado:** Mockito confirma la llamada con el argumento exacto.
+
+**Fallo deliberado:** elimina la llamada real al repositorio en `ServicioRutas.buscar`. **Diagnóstico:** el resultado puede seguir pasando si solo compruebas datos prefabricados; la verificación detecta que la colaboración esperada no ocurrió.
+
+**3. Entiende**
+
+Verifica interacciones cuando forman parte del comportamiento (por ejemplo, publicar un evento); evita verificar cada llamada interna sin motivo.
+
+**4. Cierra**
+
+Explica en una frase por qué esa llamada es visible para quien usa el servicio.
+
+#### Subtema 2.3: Simula un error externo · 10 min
+
+**1. Contexto**
+
+La base de datos puede fallar; la capa de servicio debe traducir el error a un resultado claro.
+
+**2. Hazlo tú**
+
+En `src/test/java/ServicioRutasTest.java`, prepara `when(repo.buscar("RT-1")).thenThrow(new IllegalStateException("DB caída"))`. Añade al servicio un manejo específico que devuelva un error de dominio o propague una excepción documentada; comprueba esa decisión con `assertThrows`. Corre `mvn test`.
+
+**Resultado esperado:** la falla externa se reproduce de forma determinista y el test observa el contrato del servicio.
+
+**Fallo deliberado:** devuelve `Optional.empty()` para cualquier `RuntimeException`. **Diagnóstico:** una caída no significa que la ruta no exista; separa “no encontrado” de “servicio indisponible”.
+
+**3. Entiende**
+
+El mock permite probar fallos raros sin apagar servicios reales; no demuestra por sí solo que la integración real funciona.
+
+**4. Cierra**
+
+Guarda el resultado esperado y el error distinguido. Fuente: [documentación Mockito](https://github.com/mockito/mockito).
 
 ### Tema 3: Tests parametrizados y cobertura
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás escribir una única prueba parametrizada que cubra varios casos de entrada, y usar un reporte de cobertura para identificar qué rama de código ningún test ejercita todavía. Prerrequisitos: JDK 25, Maven y un editor. Verifica java --version y mvn --version.
+**Por qué importa:** una regla con límites debe comprobar entradas representativas; la cobertura ayuda a encontrar código aún no ejercitado, pero no demuestra que el test sea correcto.
 
-#### Paso 2 · Contexto y caso real
-Verificar una función como "es Fibonacci" para cinco valores distintos copiando y pegando el mismo cuerpo de prueba cinco veces (cambiando solo el número) duplica la lógica de verificación; y sin un reporte de cobertura, nadie nota que una rama específica del código (por ejemplo, el caso de un número negativo) nunca se ejecutó en ninguna prueba.
+**Preparación:** añade al build Maven el plugin JaCoCo `0.8.14` con dos ejecuciones: `prepare-agent` y `report` asociado a la fase `verify`. Esta versión soporta oficialmente Java 25. En el Tema 3 usarás `mvn verify` para producir `target/site/jacoco/index.html`. Fuente: [historial oficial de JaCoCo](https://www.jacoco.org/jacoco/trunk/doc/changes.html).
 
-#### Paso 3 · Teoría, modelo mental y analogía
-`@ParameterizedTest` ejecuta el mismo cuerpo de prueba una vez por cada valor de una fuente de datos, evitando duplicar manualmente la lógica de verificación por cada caso; JaCoCo mide qué porcentaje de líneas y ramas del código de producción efectivamente se ejecutó durante toda la suite. La analogía: verificar la misma receta con distintos ingredientes de entrada, sin reescribir el procedimiento de verificación para cada ingrediente distinto.
+#### Subtema 3.1: Comprueba varios casos con CSV · 10 min
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
-```bash
-mkdir ejemplo-parametrizado-cobertura
-cd ejemplo-parametrizado-cobertura
-mvn -q archetype:generate -DgroupId=academia.entregas -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-cd app
-mvn test jacoco:report            # Maven (plugin jacoco-maven-plugin)
-./gradlew test jacocoTestReport   # Gradle (equivalente, con el plugin `jacoco`)
-```
-Crea `src/test/java/academia/entregas/FibonacciTest.java` con `@ParameterizedTest @ValueSource(ints = {1, 2, 3, 5, 8}) void esFibonacci(int numero)`; ejecuta `mvn test jacoco:report` y abre `target/site/jacoco/index.html`.
+**1. Contexto**
 
-#### Paso 5 · Práctica guiada
-Pista: agrega el valor `4` a `@ValueSource(ints = {1, 2, 3, 5, 8})` → `{1, 2, 3, 4, 5, 8}`. **Fallo deliberado:** `4` no es un número de Fibonacci, así que `assertTrue(esFibonacci(4))` **falla** con un error `AssertionFailedError: expected: <true> but was: <false>`. Diagnostica el mensaje: JUnit reporta el fallo indicando `[4]` como el parámetro que lo provocó, no un fallo genérico — esa es la ventaja de `@ParameterizedTest`, que señala exactamente cuál de los valores de entrada rompió la aserción. Resultado esperado: quitar el `4` deja la suite en verde de nuevo; el reporte de JaCoCo además muestra qué rama del método `esFibonacci` ejercita cada valor restante.
-#### Paso 6 · Práctica independiente
-Convierte el test a `@MethodSource` con un método que genere los mismos casos programáticamente, y agrega un caso inválido (un número negativo) para verificar el manejo de error.
+La tarifa cambia al superar los 500 gramos; un test separado para cada peso repite estructura.
 
-#### Paso 7 · Cierre y evidencia
-Guarda el test, el reporte HTML de JaCoCo antes y después de quitar el caso, y la explicación de qué rama quedó sin cubrir; como siguiente paso conecta la suite a CI. Errores comunes: duplicar el mismo cuerpo de prueba por cada caso en vez de usar `@ParameterizedTest`, perseguir 100% de cobertura en código trivial (getters/setters) sin evaluar el riesgo real de cada rama, y tratar un alto porcentaje de cobertura como sinónimo de "bien probado" sin revisar la calidad de las aserciones. Fuentes oficiales: https://junit.org/junit5/docs/current/user-guide/#writing-tests-parameterized-tests y https://www.jacoco.org/jacoco/trunk/doc/.
-**¿Por qué es importante?** Porque un test parametrizado evita duplicar la misma lógica de verificación por cada caso de entrada, y un reporte de cobertura señala exactamente qué rama del código de producción ninguna prueba ejercita todavía, un riesgo invisible sin esa medición.
-**Evidencia de aprendizaje:** entrega el test parametrizado con `@ValueSource`, y el reporte de JaCoCo comparado antes y después de quitar un caso.
-**Conceptos clave:** una única prueba con múltiples conjuntos de datos, `@CsvSource`/`@MethodSource`, cobertura de líneas/ramas.
+**2. Hazlo tú**
 
-`@ParameterizedTest @ValueSource(ints = {1, 2, 3, 5, 8}) void esFibonacci(int numero) { assertTrue(esFibonacci(numero)); }` ejecuta la misma lógica de prueba una vez por cada valor proporcionado en la fuente de datos, evitando duplicar manualmente el mismo cuerpo de prueba una vez por cada caso individual que se desea verificar; `@CsvSource` permite proporcionar conjuntos de valores múltiples por ejecución (para probar métodos con más de un parámetro), y `@MethodSource` permite generar la fuente de datos mediante un método propio cuando los valores necesarios son demasiado complejos para expresarse directamente como una anotación simple; `@TestFactory` habilita la generación dinámica y programática de un conjunto variable de pruebas en tiempo de ejecución, para casos donde ni siquiera el número de pruebas necesarias se conoce de antemano de forma estática.
+En `src/test/java/TarifaTest.java`, crea `@ParameterizedTest @CsvSource({"100, 4000", "500, 4000", "501, 7000"}) void calculaTarifa(int gramos, int esperado) { assertEquals(esperado, Tarifa.calcular(gramos)); }`. Ejecuta `mvn test`.
 
-JaCoCo mide cobertura de código: qué porcentaje de líneas (y opcionalmente de ramas condicionales específicas, como cada lado de un `if`) del código de producción efectivamente se ejecutó durante la suite de pruebas completa, generado con `mvn test jacoco:report` como un reporte HTML navegable que resalta visualmente qué líneas específicas del código nunca se ejecutaron durante ninguna prueba, señalando directamente qué partes del código carecen de cobertura de pruebas y podrían albergar bugs no detectados por la suite actual; AssertJ (`assertThat(resultado).isEqualTo(5)`) y Hamcrest son librerías de aserciones fluidas alternativas a las aserciones básicas de JUnit, ofreciendo mensajes de fallo más descriptivos y una sintaxis más legible encadenada para verificaciones complejas.
+**Resultado esperado:** JUnit reporta tres ejecuciones con datos distintos.
 
-**Analogía:** un test parametrizado es como verificar la misma receta de cocina con distintos ingredientes de entrada, confirmando que produce el resultado esperado en cada caso sin tener que reescribir el procedimiento completo de verificación para cada ingrediente distinto; un reporte de cobertura es como un mapa de calor que señala exactamente qué áreas de una ciudad nunca han sido patrulladas por ninguna ronda de inspección, indicando dónde podrían existir problemas no detectados simplemente porque nadie ha verificado esa zona específica todavía.
+**Fallo deliberado:** omite el límite exacto `500`. **Diagnóstico:** el test no comprueba si la regla usa `<` o `<=`; conserva casos justo antes, en y después del límite.
 
-**¿Por qué es importante?** Los tests parametrizados evitan duplicar el mismo cuerpo de prueba para múltiples casos de datos; JaCoCo identifica visualmente qué partes del código de producción carecen de cobertura de pruebas, señalando riesgos potenciales no verificados.
+**3. Entiende**
 
-**Código del ejemplo:**
+`@CsvSource` alimenta los parámetros. Cada fila se evalúa como una invocación independiente.
 
-```java
-@ParameterizedTest
-@ValueSource(ints = {1, 2, 3, 5, 8})
-void esFibonacci(int numero) {
-    assertTrue(esFibonacci(numero));
-}
-```
-```bash
-mvn test jacoco:report   # genera un reporte HTML con líneas/ramas cubiertas
-```
+**4. Cierra**
 
-El reporte de cobertura del Proyecto integrador (Módulo 13) debe revisarse antes de cada entrega: una rama sin cubrir en la lógica de tarifas es un bug potencial no detectado.
+Conserva las tres filas y explica por qué `500` es un caso importante.
 
-**Cuándo no usarlo:** perseguir 100% de cobertura en código trivial (getters, setters) desperdicia tiempo; prioriza cobertura en la lógica de negocio con riesgo real.
+#### Subtema 3.2: Encuentra una rama no probada · 10 min
+
+**1. Contexto**
+
+El cálculo tiene una rama para peso inválido que los casos de tarifa normal no visitan.
+
+**2. Hazlo tú**
+
+En `src/main/java/Tarifa.java` agrega el rechazo de gramos negativos. Añade en `src/test/java/TarifaTest.java` un test con `assertThrows`. Ejecuta `mvn test` y observa cuál rama se ejecuta con JaCoCo activado en el POM del Módulo 9.
+
+**Resultado esperado:** la prueba pasa y la nueva rama queda recorrida.
+
+**Fallo deliberado:** borra el caso negativo y revisa `target/site/jacoco/index.html`. **Diagnóstico:** la rama queda sin cubrir; agrega la entrada, no cambies el código solo para subir el porcentaje.
+
+**3. Entiende**
+
+Cobertura señala ejecución de líneas o ramas; no prueba que los resultados afirmados sean los correctos.
+
+**4. Cierra**
+
+Anota la rama que faltaba y el test que la ejercita.
+
+#### Subtema 3.3: Lee una métrica sin perseguir el porcentaje · 10 min
+
+**1. Contexto**
+
+Un test puede ejecutar todas las líneas y aun así comprobar el resultado equivocado.
+
+**2. Hazlo tú**
+
+Ejecuta `mvn verify` y abre `target/site/jacoco/index.html`, producido por la configuración JaCoCo común de este tema. En `src/test/java/TarifaTest.java`, cambia temporalmente el valor esperado de un caso a uno incorrecto y vuelve a correr `mvn verify`.
+
+**Resultado esperado:** el porcentaje puede seguir alto, pero el test falla ante el resultado incorrecto.
+
+**Fallo deliberado:** fija como meta 100% sin revisar expectativas. **Diagnóstico:** cobertura mide qué código se ejecutó, no si la prueba detecta errores relevantes.
+
+**3. Entiende**
+
+Combina cobertura de ramas con límites, errores y comportamiento de negocio explicable.
+
+**4. Cierra**
+
+Guarda el reporte y explica un límite de esa métrica. Fuentes: [JUnit User Guide](https://docs.junit.org/current/user-guide/) y [JaCoCo Java 25](https://www.jacoco.org/jacoco/trunk/doc/changes.html).
 
 ---
 

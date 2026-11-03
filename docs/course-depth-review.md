@@ -784,9 +784,9 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | java / 8 | [Tema 2: Ciclo de vida de build y scopes](../web/public/content/java/modulo-8.md) | demostracion-no-delimitada |
 | java / 8 | [Tema 3: Proyectos multi-módulo](../web/public/content/java/modulo-8.md) | demostracion-no-delimitada |
 | java / 8 | [Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas](../web/public/content/java/modulo-8.md) | demostracion-no-delimitada |
-| java / 9 | [Tema 1: JUnit 5 — anotaciones y ciclo de vida](../web/public/content/java/modulo-9.md) | clase-java-no-visible |
-| java / 9 | [Tema 2: Mockito — aislar dependencias](../web/public/content/java/modulo-9.md) | clase-java-no-visible |
-| java / 9 | [Tema 3: Tests parametrizados y cobertura](../web/public/content/java/modulo-9.md) | clase-java-no-visible |
+| java / 9 | [Tema 1: JUnit 5 — anotaciones y ciclo de vida](../web/public/content/java/modulo-9.md) | demostracion-no-delimitada |
+| java / 9 | [Tema 2: Mockito — aislar dependencias](../web/public/content/java/modulo-9.md) | demostracion-no-delimitada |
+| java / 9 | [Tema 3: Tests parametrizados y cobertura](../web/public/content/java/modulo-9.md) | demostracion-no-delimitada |
 | javascript / 0 | [Tema 1: Variables — `const`, `let` y `var`](../web/public/content/javascript/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | javascript / 0 | [Tema 2: Tipos primitivos y `typeof`](../web/public/content/javascript/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | javascript / 0 | [Tema 3: Conversión, coerción e igualdad](../web/public/content/javascript/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |

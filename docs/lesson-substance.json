@@ -1695,11 +1695,11 @@
     }
   ],
   "summary": {
-    "fingerprint": "1ad463b2b545e36f2118cace0b19d39e323e4c33f89e8e0fc19f3ac5a2a499e5",
+    "fingerprint": "3110bb4737829e2e591802f07dfe0d26f33d69bdc4a0859e75b574c93a32ca9b",
     "issues": {
       "andamiaje-generico": 124,
-      "bloque-repetido": 185,
-      "cola-tras-cierre": 348,
+      "bloque-repetido": 182,
+      "cola-tras-cierre": 346,
       "parrafo-repetido": 5,
       "sin-fuente": 2,
       "tema-breve": 5
@@ -1712,7 +1712,7 @@
     "modules": 256,
     "modulesWithLegacySections": 181,
     "topics": 1185,
-    "topicsWithIssues": 438
+    "topicsWithIssues": 435
   },
   "topics": {
     "android": [
@@ -7862,33 +7862,25 @@
         "words": 436
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 9,
-        "tailWords": 472,
+        "tailWords": 0,
         "topic": "Tema 1: JUnit 5 — anotaciones y ciclo de vida",
-        "words": 824
+        "words": 509
       },
       {
-        "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 9,
-        "tailWords": 555,
+        "tailWords": 0,
         "topic": "Tema 2: Mockito — aislar dependencias",
-        "words": 894
+        "words": 501
       },
       {
-        "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 9,
-        "tailWords": 634,
+        "tailWords": 0,
         "topic": "Tema 3: Tests parametrizados y cobertura",
-        "words": 1061
+        "words": 521
       }
     ],
     "javascript": [

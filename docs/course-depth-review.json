@@ -8588,7 +8588,7 @@
       "file": "web/public/content/java/modulo-9.md",
       "line": 6,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8599,9 +8599,9 @@
       "module": 9,
       "title": "Tema 2: Mockito — aislar dependencias",
       "file": "web/public/content/java/modulo-9.md",
-      "line": 66,
+      "line": 78,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8612,9 +8612,9 @@
       "module": 9,
       "title": "Tema 3: Tests parametrizados y cobertura",
       "file": "web/public/content/java/modulo-9.md",
-      "line": 131,
+      "line": 150,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
