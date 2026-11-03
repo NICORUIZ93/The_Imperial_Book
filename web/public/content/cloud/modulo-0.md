@@ -224,179 +224,104 @@ Agrega el resultado real de `/salud` o `/otra`. Si algo falló, apunta el mensaj
 ### Tema 4: Qué es Floci — definición, propósito y comparativa con LocalStack
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás levantar un emulador desde cero. Prerrequisitos: Docker y terminal; verifica `docker --version`.
+Al terminar podrás reconocer qué hace Floci y comprobar si está respondiendo en tu computador. Necesitas Docker Desktop abierto y una terminal. En la carpeta principal del proyecto ejecuta `docker --version`.
 #### Paso 2 · Contexto y caso real
-Practicar localmente reduce riesgo y coste antes de usar una cuenta real.
+Antes de usar servicios de nube de una empresa, puedes ensayar en una copia local. Así practicas comandos sin crear recursos en una cuenta real.
 #### Paso 3 · Teoría, modelo mental y analogía
-Un emulador es un aeropuerto de entrenamiento: imita procedimientos, no todos los detalles.
+Piensa en Floci como un simulador: recibe algunas solicitudes parecidas a las de AWS y responde desde tu computador. No es AWS y no reproduce todos sus detalles.
 #### Paso 4 · Demostración guiada
-Crea `src/floci-check.js` desde una carpeta vacía.
+Desde la carpeta principal del proyecto, inicia solo el servicio AWS que ya está definido en `docker-compose.yml`:
 ```bash
-mkdir ejemplo-floci
-docker --version
+docker compose up -d aws-local
+docker compose ps aws-local
+curl -i http://localhost:4566/_floci/health
 ```
-Resultado esperado: Docker disponible.
+La primera orden descarga y enciende el contenedor; la segunda muestra si está activo; la tercera pregunta por su estado. Busca una respuesta HTTP `200`. Floci ofrece una herramienta llamada LocalStack, pero aquí vamos a usar Floci: ambos permiten practicar servicios de AWS en local y sus catálogos no son idénticos.
+Una respuesta HTTP es una forma de contestar por la web. `200` quiere decir “recibí tu consulta y pude responder”. Si aparece “connection refused” o “no se pudo conectar”, revisa primero que Docker esté abierto y que `docker compose ps` diga `Up`. Si ves `404`, llegaste al servidor, pero la dirección escrita no existe. En este ejercicio usamos la ruta exacta `/_floci/health`; no es una página para crear buckets.
 #### Paso 5 · Práctica guiada
-Pista: detén el contenedor para provocar un fallo deliberado y corrígelo.
-#### Paso 6 · Práctica independiente
-Levanta un servicio y documenta una limitación.
-#### Paso 7 · Cierre y evidencia
-Entrega comandos, salida, fallo y corrección; explica el resultado. Siguiente paso: catálogo. Errores comunes: asumir paridad total y usar credenciales reales. Fuente oficial: https://docs.docker.com/.
-**Conceptos clave:** emulador de nube, API-compatible, LocalStack, entorno local, coste cero.
-
-Floci es un emulador de servicios de nube que corre en tu propia máquina, dentro de un contenedor Docker, y que responde a los mismos comandos y llamadas de API que usarías contra una cuenta real de AWS, Azure o GCP. Cuando ejecutas `aws s3 mb s3://mi-bucket --endpoint-url http://localhost:4566`, Floci recibe esa petición, la procesa como si fuera el servicio S3 real, y te devuelve una respuesta con el mismo formato que devolvería AWS. La única diferencia visible es el `--endpoint-url`: en vez de apuntar a los servidores de Amazon, apunta a un puerto de tu propio ordenador.
-
-Esta idea no es nueva: Floci sigue el mismo enfoque que herramientas como LocalStack, que lleva años siendo el emulador de referencia para AWS en local. La diferencia principal entre Floci y LocalStack para este curso es que Floci empaqueta, en una sola imagen o en un pequeño conjunto de contenedores, emuladores para los tres grandes proveedores —AWS, Azure y GCP— con la misma filosofía de "mismo comando, mismo endpoint local", mientras que replicar esa cobertura multi-nube con otras herramientas normalmente implica combinar varios proyectos distintos (uno por proveedor).
-
-Es fundamental entender qué hace Floci por dentro para no tratarlo como magia: dentro del contenedor corre una implementación que entiende el protocolo HTTP y los formatos de petición/respuesta de cada servicio (S3, SQS, DynamoDB, Lambda, API Gateway, IAM, y sus equivalentes en Azure y GCP), guarda el estado en memoria o en disco local, y expone todo por un puerto TCP. No hay facturación, no hay límites de cuenta gratuita, no hay riesgo de dejarte un recurso encendido y recibir una factura sorpresa a fin de mes.
-
-Esto tiene una consecuencia práctica muy importante para cómo vas a trabajar en este curso: vas a usar las mismas herramientas de línea de comandos que usarías en un trabajo real —AWS CLI, `boto3` en Python, el SDK de Node.js— sin necesidad de crear una cuenta, sin tarjeta de crédito, y sin miedo a romper nada, porque todo lo que hagas vive dentro de un contenedor que puedes borrar y volver a levantar en segundos.
-
-Además del contenedor en sí, el proyecto ofrece dos herramientas oficiales que vas a usar a lo largo del curso: `floci-cli`, una interfaz de línea de comandos (`floci start`, `floci env`, `floci doctor`) que instalarás en el Módulo 1 y que simplifica levantar, verificar y detener Floci sin recordar flags largos de `docker run`; y `floci-ui`, un panel visual para explorar tus buckets S3, tablas DynamoDB y demás recursos desde el navegador en vez de solo desde la terminal. `floci-ui` corre como un proyecto aparte (`github.com/floci-io/floci-ui`), con su propia pila de Docker Compose que incluye su propio Floci integrado — clónalo en otra carpeta y ejecuta `docker compose up` ahí (o `docker compose --profile multicloud up` para AWS, Azure y GCP a la vez) y ábrelo en `http://localhost:4500`; no forma parte del `docker-compose.yml` de este curso.
-
-**Analogía:** Floci es como un simulador de vuelo para pilotos. Un simulador no es un avión real, pero replica fielmente la cabina, los instrumentos y las respuestas del avión ante cada acción del piloto. Un piloto que aprende en el simulador transfiere casi toda esa habilidad al avión real, porque los controles y las reacciones son los mismos; lo único que cambia es que estrellar el simulador no tiene consecuencias. Floci hace lo mismo con la nube: los comandos, las respuestas y los conceptos son los reales, pero equivocarte no cuesta dinero ni compromete una cuenta de producción.
-
-**¿Por qué es importante?** Sin un emulador local, aprender servicios cloud reales tiene dos barreras: el coste (muchos servicios cobran por uso incluso en pruebas) y el riesgo (una mala configuración de IAM o un bucket público mal configurado en una cuenta real puede tener consecuencias serias). Floci elimina ambas barreras para la fase de aprendizaje, y como usa los mismos comandos que la nube real, todo lo que practiques aquí es transferible: el día que uses una cuenta de AWS real, cambias el endpoint y usas exactamente lo mismo que aprendiste.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-    T["Tu terminal\naws s3 mb s3://x\n--endpoint-url..."]
-    T -->|"Con endpoint real"| R["api.aws.amazon.com\n(cuenta real, cobra)"]
-    T -->|"Con Floci"| F["localhost:4566\n(contenedor Floci,\ngratis, local)"]
+Detén el servicio y repite la consulta de salud:
+```bash
+docker compose stop aws-local
+curl -i http://localhost:4566/_floci/health
 ```
+La consulta debería fallar porque ya no hay un servicio escuchando. Vuelve a iniciarlo con `docker compose up -d aws-local` y repite el `curl`. Si `curl` no existe en tu sistema, abre `http://localhost:4566/_floci/health` en el navegador.
+Fíjate en la diferencia: “no se pudo conectar” indica que el servicio está apagado o que el puerto no coincide; `404` indica que el servicio sí contestó, pero no encontró esa ruta. Esta diferencia sirve para ubicar el problema antes de cambiar código. Si aparece otro mensaje, guárdalo tal como salió y consulta los registros con `docker compose logs --tail=20 aws-local`.
+#### Paso 6 · Práctica independiente
+En `ejemplo-floci.md`, anota qué comando lo inició, qué puerto usaste y qué cambió al detenerlo. No pongas claves personales: el ejercicio funciona sin una cuenta de nube.
+#### Paso 7 · Cierre y evidencia
+En `ejemplo-floci.md` incluye las dos salidas y explica por qué la segunda consulta falló. Después sigue al tema 5 para conocer los tres puertos. **Fuente:** [instalación oficial de Floci](https://floci.io/floci/getting-started/installation/) y [README oficial de Floci CLI](https://github.com/floci-io/floci-cli/blob/main/README.md). El comando de este ejercicio usa el Compose del proyecto, por lo que ejecútalo desde su carpeta principal.
+**Conceptos clave:** Floci, simulador local, contenedor, puerto.
+**¿Por qué es importante?** Practicar localmente te deja equivocarte y corregir el comando antes de trabajar con recursos de una cuenta real.
+El puerto `4566` es una entrada de tu computador conectada al servicio dentro del contenedor. Cuando el contenedor está detenido, esa entrada deja de responder. Al iniciar el curso usaremos AWS CLI y programas pequeños para crear recursos de práctica; por ahora basta con confirmar que Floci puede encenderse y apagarse. Si ya tienes otro programa usando el puerto, Docker avisará que no puede enlazarlo. Detén el programa que lo ocupa o revisa su configuración antes de seguir.
 
-**Transferencia al proyecto integrador «Cloud local multi-nube»:** Levanta el emulador elegido y crea un bucket de evidencias con credenciales locales. Documenta endpoint y versión, y comprueba que la prueba no depende de una cuenta cloud real.
+**Para el proyecto integrador:** registra el puerto y la respuesta de salud antes de probar almacenamiento. Esa respuesta solo indica que el emulador está activo.
 
 ### Tema 5: Servicios que emula Floci — AWS, Azure y GCP
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás identificar endpoints desde cero. Prerrequisitos: Docker y terminal; verifica `docker compose version`.
+Al terminar podrás ubicar qué proveedor responde en cada puerto. No necesitas instalar tres herramientas: el Compose del proyecto ya describe los tres servicios.
 #### Paso 2 · Contexto y caso real
-Una plataforma multi-cloud necesita distinguir proveedor, endpoint y contrato.
+Si una aplicación habla con el puerto equivocado, pregunta al proveedor equivocado o no recibe respuesta. Los puertos son como números de puerta.
 #### Paso 3 · Teoría, modelo mental y analogía
-Cada endpoint es una ventanilla con catálogo y reglas propias.
+AWS, Azure y Google Cloud ofrecen cosas parecidas con nombres distintos. Por ejemplo, todos permiten guardar archivos; cada uno tiene su propia puerta local y sus propias reglas.
 #### Paso 4 · Demostración guiada
-Crea `src/endpoints.js` desde una carpeta vacía.
+Desde la carpeta principal del proyecto ejecuta:
 ```bash
-mkdir ejemplo-endpoints
-docker compose version
+docker compose config --services
 ```
-Resultado esperado: Compose disponible.
+Verás `aws-local`, `azure-local` y `gcp-local`. En `docker-compose.yml`, busca `ports:` y lee las tres asignaciones. En esta versión son `4566`, `4577` y `4588`, respectivamente. El curso comienza con AWS; los otros dos se usan en el tema multi-nube.
+Si el listado no coincide, comprueba que abriste la carpeta correcta: `pwd` muestra la ruta actual en macOS/Linux y `Get-Location` la muestra en PowerShell. `docker compose config --services` lee la configuración; no inicia contenedores. Esta es una ventaja para explorar el proyecto sin ocupar memoria.
+
+| Proveedor | Ejemplo de almacenamiento | Servicio local | Puerto |
+|---|---|---|---:|
+| AWS | S3 | `aws-local` | 4566 |
+| Azure | Blob Storage | `azure-local` | 4577 |
+| Google Cloud | Cloud Storage | `gcp-local` | 4588 |
+
 #### Paso 5 · Práctica guiada
-Pista: usa un endpoint equivocado para provocar un fallo deliberado y corrígelo.
+Inicia AWS y Azure: `docker compose up -d aws-local azure-local`. Luego ejecuta `docker compose ps`. Compara los nombres y puertos que aparecen con la tabla. Si tu computador va lento, deja solo AWS encendido: `docker compose stop azure-local`.
 #### Paso 6 · Práctica independiente
-Lista un servicio por proveedor y prueba su respuesta.
+Crea `proveedores.md`. Añade una fila para cada proveedor con el nombre del servicio de archivos y el puerto leído en `docker-compose.yml`. Comprueba el puerto de GCP aunque no lo enciendas.
+Para escribir la tabla, puedes empezar con este contenido y completar las celdas:
+```text
+AWS: S3 — puerto 4566
+Azure: Blob Storage — puerto 4577
+Google Cloud: Cloud Storage — puerto 4588
+```
+Después busca cada número en la sección `ports:`. No confundas el puerto publicado, que es visible en tu computador, con el número interno del contenedor: Compose muestra ambos juntos, separados por dos puntos.
 #### Paso 7 · Cierre y evidencia
-Entrega tabla, salida, fallo y corrección; explica el resultado. Siguiente paso: límites. Errores comunes: mezclar regiones y endpoints. Fuente oficial: https://docs.aws.amazon.com/.
-**Conceptos clave:** floci (AWS), floci-az (Azure), floci-gcp (GCP), catálogo de servicios, endpoint por proveedor.
+Guarda `proveedores.md` y la salida de `docker compose ps`. Explica con tus palabras por qué `localhost:4566` y `localhost:4577` son puertas distintas. Si no tienes Docker, completa la tabla leyendo el archivo; anota que falta ejecutar la comprobación. **Fuente:** [Compose del proyecto](../../../../docker-compose.yml) y [guía oficial de servicios Floci](https://github.com/floci-io/floci/blob/main/docs/services/index.md).
+**Conceptos clave:** proveedor, servicio, puerto, endpoint.
+**¿Por qué es importante?** Leer el proveedor y su puerto antes de ejecutar un comando evita enviarlo al emulador equivocado y ayuda a entender mejor los ejemplos multi-nube posteriores.
 
-Floci no es un único contenedor: es una familia de tres imágenes, una por proveedor de nube, pensadas para usarse de forma independiente o en conjunto según lo que necesites practicar. La imagen principal, a la que llamamos simplemente Floci, emula servicios de AWS: S3 (almacenamiento de objetos), SQS (colas de mensajes), DynamoDB (base de datos NoSQL), Lambda (funciones serverless), API Gateway (APIs HTTP) e IAM (identidad y acceso), además de los servicios avanzados que verás en módulos posteriores al proyecto final, como Secrets Manager, SNS, EventBridge, CloudWatch, RDS, ECR/ECS y otros.
-
-La segunda imagen, floci-az, emula el equivalente en Azure de esos mismos patrones: Blob Storage en vez de S3, Queue Storage en vez de SQS, Cosmos DB en vez de DynamoDB, y Azure Functions en vez de Lambda. La tercera, floci-gcp, hace lo propio para Google Cloud: Cloud Storage, Pub/Sub, Firestore y Cloud Functions. Vas a conocer estas dos últimas en profundidad en el Módulo 8, pero es importante que sepas desde ahora que existen, porque el objetivo final del curso no es que memorices comandos de AWS, sino que entiendas patrones de nube que se repiten con nombres distintos en cada proveedor.
-
-Cada imagen expone sus servicios en puertos distintos para que puedas tener varias corriendo a la vez sin que choquen entre sí. Floci (AWS) usa por convención el puerto 4566 para casi todos sus servicios (el mismo patrón que usa LocalStack), mientras que floci-az y floci-gcp usan sus propios rangos de puertos que verás documentados cuando llegues al Módulo 8. Por ahora, en los Módulos 1 a 7, vas a trabajar exclusivamente con la imagen de AWS.
-
-Entender esta separación por proveedor desde el principio evita una confusión típica de quien empieza en cloud: pensar que "aprender la nube" es aprender AWS. En realidad estás aprendiendo conceptos —almacenamiento de objetos, colas, bases de datos NoSQL, cómputo sin servidor— que cada proveedor implementa con su propio nombre y su propia API, pero que comparten la misma lógica subyacente. Ese es exactamente el ejercicio que vas a hacer en el Módulo 8: el mismo caso de uso, resuelto en los tres proveedores.
-
-**Analogía:** los tres contenedores de Floci son como tres traductores distintos que hablan idiomas distintos (AWS, Azure, GCP) pero que traducen los mismos conceptos: "guardar un archivo", "enviar un mensaje a una cola", "guardar un registro en una base de datos sin esquema fijo". Aprender los tres no es aprender tres cosas nuevas, es aprender un vocabulario nuevo para las mismas ideas que ya conoces.
-
-**¿Por qué es importante?** Las empresas no siempre usan un solo proveedor de nube, y muchos roles de ingeniería exigen soltura con más de uno, o al menos la capacidad de entender rápido un proveedor nuevo si ya conoces otro. Empezar a distinguir "el servicio" de "el nombre que le pone el proveedor" desde el Módulo 0 te prepara mejor para ese escenario que aprender AWS de memoria sin esa perspectiva.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-    subgraph AWS["Floci (AWS) — Módulos 1-7"]
-        A1["S3"]
-        A2["SQS"]
-        A3["DynamoDB"]
-        A4["Lambda"]
-        A5["API Gateway"]
-        A6["IAM"]
-    end
-    subgraph AZ["floci-az (Azure) — Módulo 8"]
-        Z1["Blob Storage"]
-        Z2["Queue Storage"]
-        Z3["Cosmos DB"]
-        Z4["Functions"]
-    end
-    subgraph GCP["floci-gcp (GCP) — Módulo 8"]
-        G1["Cloud Storage"]
-        G2["Pub/Sub"]
-        G3["Firestore"]
-        G4["Cloud Functions"]
-    end
-```
-
-**Diagrama interactivo — arquitectura de Floci corriendo en local:**
-
-```mermaid
-flowchart TB
-  Dev["Tu máquina (Docker Compose)"]
-  Dev --> AWS["Floci — AWS local :4566\nS3 · SQS · DynamoDB · Lambda · API Gateway · IAM"]
-  Dev --> Azure["floci-az — Azure local :4577\nBlob Storage · Queue Storage · Cosmos DB · Functions"]
-  Dev --> GCP["floci-gcp — GCP local :4588\nCloud Storage · Pub/Sub · Firestore · Cloud Functions"]
-  AWS --> Tools["AWS CLI / SDKs apuntando a --endpoint-url local"]
-  Azure --> Tools2["az CLI / SDKs apuntando al emulador local"]
-  GCP --> Tools3["gcloud CLI / SDKs apuntando al emulador local"]
-```
+**Para el proyecto integrador:** al cambiar de proveedor tendrás que cambiar tanto el nombre del servicio como la dirección a la que tu programa envía la solicitud.
 
 ### Tema 6: Ventajas y limitaciones de practicar con un emulador local
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás evaluar fidelidad desde cero. Prerrequisitos: Docker y terminal; verifica `docker --version`.
+Al terminar podrás distinguir qué confirma una prueba local y qué todavía no confirma. Necesitas la carpeta principal del proyecto y puedes hacer el ejercicio aunque Docker no esté instalado.
 #### Paso 2 · Contexto y caso real
-Una prueba local debe declarar qué garantiza y qué no.
+Una prueba puede salir bien en tu computador y fallar en la nube real por diferencias de permisos, velocidad o funciones disponibles. Decir qué se probó evita prometer de más.
 #### Paso 3 · Teoría, modelo mental y analogía
-La paridad es un puente con límites conocidos; no es una copia perfecta.
+Un simulador de manejo sirve para practicar giros y señales, pero no demuestra cómo se siente conducir en una autopista real. Un emulador local también es útil, con límites.
 #### Paso 4 · Demostración guiada
-Crea `src/parity-check.js` desde una carpeta vacía.
+Abre `docker-compose.yml` y comprueba que AWS publica el puerto local `4566`. Si Docker está disponible, ejecuta `docker compose up -d aws-local` y después:
 ```bash
-mkdir ejemplo-paridad
-docker --version
+curl -i http://localhost:4566/_floci/health
 ```
-Resultado esperado: herramienta disponible.
+Una respuesta `200` muestra que el emulador responde a esa consulta. No prueba que un bucket se conserve ante una falla ni que los permisos se comporten igual que en AWS.
+Para saber si un ejercicio está completo, escribe una frase que nombre la acción observada: “consulté el estado de Floci y recibí `200`”. Evita frases como “ya funciona todo”: no hemos enviado un archivo, probado permisos, ni comparado el resultado con una cuenta real. Un buen registro permite que otra persona repita exactamente la misma comprobación.
 #### Paso 5 · Práctica guiada
-Pista: usa una operación no emulada para provocar un fallo deliberado y corrígelo documentando el límite.
+Prueba por error el puerto `4567`: `curl -i http://localhost:4567/_floci/health`. La consulta falla porque el Compose publica el servicio en `4566`. Corrige el número y repite. Si no puedes ejecutar Docker, predice el resultado leyendo `ports:` y anótalo como pendiente, sin inventar una salida.
 #### Paso 6 · Práctica independiente
-Compara local y documentación oficial.
+En `limites.md`, escribe dos listas cortas: “Esto sí comprobé” y “Esto aún no comprobé”. Añade como mínimo que no verificaste el uso con una cuenta real, ni la carga de muchos usuarios a la vez.
+Puedes usar estas preguntas para completar el archivo: ¿qué URL consultaste?, ¿qué número de respuesta viste?, ¿qué mensaje salió con el puerto equivocado?, ¿qué cambiarías para repetir la prueba? Añade también el nombre del archivo que revisaste (`docker-compose.yml`). Así la evidencia incluye una acción, un resultado y el límite de lo que ese resultado permite afirmar.
 #### Paso 7 · Cierre y evidencia
-Entrega matriz, salida, fallo y corrección; explica el resultado. Siguiente paso: metodología. Errores comunes: extrapolar resultados locales a producción. Fuente oficial: https://docs.aws.amazon.com/.
-**Conceptos clave:** paridad de comportamiento, fidelidad parcial, límites del emulador, transferencia de conocimiento.
+Entrega `limites.md` con la respuesta correcta para el puerto, el fallo esperado en el incorrecto y una frase sobre lo que cada prueba no demuestra. El siguiente tema organiza la forma de estudiar. **Fuente:** [guía oficial de servicios Floci](https://github.com/floci-io/floci/blob/main/docs/services/index.md).
+**Conceptos clave:** prueba local, escala, permisos, límite.
+**¿Por qué es importante?** Explicar el alcance de una prueba protege al equipo de concluir que un sistema está listo solo porque pasó una comprobación pequeña en local.
 
-Ningún emulador es una copia perfecta del servicio real, y es importante que empieces el curso con expectativas correctas sobre esto. Floci reproduce con fidelidad alta el comportamiento funcional de cada servicio: la forma de los comandos, las respuestas, los códigos de error más comunes, y el flujo de trabajo típico. Eso es suficiente para aprender el 90% de lo que necesitas para usar estos servicios en el mundo real. Lo que un emulador no reproduce, y no puede reproducir, es el comportamiento a gran escala: cómo se comporta DynamoDB con mil millones de items, cómo escala Lambda ante diez mil invocaciones simultáneas, o los tiempos de latencia reales entre regiones geográficas distintas.
-
-Tampoco reproduce, salvo excepciones, las integraciones más avanzadas o específicas de cada proveedor que dependen de infraestructura propietaria compleja —ciertas características de seguridad de nivel de red, algunos servicios de machine learning gestionado, o comportamientos de facturación—. Para el objetivo de este curso, que es que entiendas los conceptos y sepas operar cada servicio con confianza, estas limitaciones no son un obstáculo: nadie aprende a programar entendiendo primero cómo escala un sistema a nivel de datacenter.
-
-La ventaja más grande, más allá del coste cero, es la velocidad de iteración. Levantar y destruir un bucket S3, una tabla DynamoDB o una función Lambda en Floci toma segundos. Hacerlo en una cuenta real de AWS también es rápido, pero cada error tiene un coste de contexto: si rompes algo en una cuenta compartida de un equipo real, puedes afectar a otras personas. En Floci, tu única "cuenta" es tu contenedor local: si algo sale mal, lo destruyes con `docker compose down` y lo vuelves a levantar limpio en un minuto.
-
-La otra ventaja, menos obvia pero igual de importante, es que aprender contra un emulador te obliga a leer y entender los mensajes de error reales de cada servicio, en vez de depender de una interfaz gráfica que oculta los detalles. Vas a trabajar principalmente por línea de comandos a lo largo del curso, y eso construye una habilidad que se transfiere directamente a cualquier entorno de producción real, donde gran parte del trabajo serio se hace igual: por CLI, por API, o por infraestructura como código.
-
-**Analogía:** un emulador de nube es como una piscina de entrenamiento para nadadores olímpicos: tiene el mismo agua, los mismos carriles, la misma resistencia física que una piscina de competición, pero no replica el ruido de miles de espectadores ni la presión de una final olímpica. Entrenar en la piscina te prepara para nadar; la experiencia de competir a gran escala se construye después, con el tiempo, no antes.
-
-**¿Por qué es importante?** Saber qué SÍ vas a aprender bien aquí (comandos, conceptos, flujos de trabajo, errores comunes) y qué NO vas a experimentar (escala masiva, latencia de red real, facturación) te evita dos errores: subestimar lo que aprendes por pensar que "no es lo real", o sobreestimar tu preparación pensando que ya sabes operar estos servicios en producción a gran escala solo por haber terminado el curso.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-    subgraph SI["Lo que Floci SÍ te da"]
-        S1["Comandos reales"]
-        S2["Flujos de trabajo reales"]
-        S3["Errores reales"]
-        S4["Coste: $0"]
-    end
-    subgraph NO["Lo que Floci NO te da"]
-        N1["Comportamiento a escala"]
-        N2["Latencia de red real"]
-        N3["Facturación real"]
-        N4["Alta disponibilidad real"]
-    end
-```
-
-**Transferencia al proyecto integrador «Cloud local multi-nube»:** Clasifica las pruebas de almacenamiento del proyecto entre contrato local y validación pendiente en nube real. Conserva una prueba de lectura y escritura y explica qué no demuestra sobre IAM, durabilidad o latencia de producción.
+**Para el proyecto integrador:** informa con precisión: “la salud local respondió” es evidencia útil; no equivale a “la aplicación está lista para producción”.
 
 ### Tema 7: Metodología de estudio — teoría, laboratorio y evaluación en cada módulo
 

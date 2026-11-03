@@ -1647,11 +1647,11 @@
     }
   ],
   "summary": {
-    "fingerprint": "18802cacbd19718744b917185b4bfdca7c6f101f8d207f06765782fd59d63092",
+    "fingerprint": "92aa45b08da979c7871f643af5ad27bd4b77939839f862027aebda2caf749f51",
     "issues": {
       "andamiaje-generico": 128,
       "bloque-repetido": 218,
-      "cola-tras-cierre": 379,
+      "cola-tras-cierre": 376,
       "parrafo-repetido": 5,
       "tema-breve": 2
     },
@@ -1663,7 +1663,7 @@
     "modules": 245,
     "modulesWithLegacySections": 184,
     "topics": 1098,
-    "topicsWithIssues": 473
+    "topicsWithIssues": 470
   },
   "topics": {
     "android": [
@@ -2614,31 +2614,25 @@
         "words": 514
       },
       {
-        "issues": [
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 0,
-        "tailWords": 811,
+        "tailWords": 205,
         "topic": "Tema 4: Qué es Floci — definición, propósito y comparativa con LocalStack",
-        "words": 934
+        "words": 649
       },
       {
-        "issues": [
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 0,
-        "tailWords": 686,
+        "tailWords": 128,
         "topic": "Tema 5: Servicios que emula Floci — AWS, Azure y GCP",
-        "words": 806
+        "words": 511
       },
       {
-        "issues": [
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 0,
-        "tailWords": 641,
+        "tailWords": 110,
         "topic": "Tema 6: Ventajas y limitaciones de practicar con un emulador local",
-        "words": 764
+        "words": 507
       },
       {
         "issues": [

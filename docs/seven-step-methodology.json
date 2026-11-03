@@ -42,23 +42,23 @@
     },
     "cloud": {
       "topics": 156,
-      "objective": 156,
-      "prerequisites": 156,
+      "objective": 153,
+      "prerequisites": 153,
       "context": 156,
       "theoryAnalogy": 156,
-      "guidedDemo": 156,
+      "guidedDemo": 155,
       "codeExplanation": 156,
       "execution": 156,
-      "expectedResult": 156,
-      "deliberateFailure": 156,
-      "guidedPractice": 156,
+      "expectedResult": 153,
+      "deliberateFailure": 153,
+      "guidedPractice": 154,
       "independentPractice": 156,
-      "closure": 156,
-      "commonErrors": 156,
-      "resources": 156,
-      "standaloneExample": 156,
-      "learningEvidence": 156,
-      "complete": 156
+      "closure": 154,
+      "commonErrors": 153,
+      "resources": 153,
+      "standaloneExample": 153,
+      "learningEvidence": 154,
+      "complete": 153
     },
     "devops": {
       "topics": 113,
@@ -3723,78 +3723,78 @@
         "module": 0,
         "topic": "Tema 4: Qué es Floci — definición, propósito y comparativa con LocalStack",
         "criteria": {
-          "objective": true,
-          "prerequisites": true,
+          "objective": false,
+          "prerequisites": false,
           "context": true,
           "theoryAnalogy": true,
-          "guidedDemo": true,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
-          "expectedResult": true,
-          "deliberateFailure": true,
-          "guidedPractice": true,
+          "expectedResult": false,
+          "deliberateFailure": false,
+          "guidedPractice": false,
           "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 5,
+          "complete": false
         }
       },
       {
         "module": 0,
         "topic": "Tema 5: Servicios que emula Floci — AWS, Azure y GCP",
         "criteria": {
-          "objective": true,
-          "prerequisites": true,
+          "objective": false,
+          "prerequisites": false,
           "context": true,
           "theoryAnalogy": true,
           "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
-          "expectedResult": true,
-          "deliberateFailure": true,
-          "guidedPractice": true,
+          "expectedResult": false,
+          "deliberateFailure": false,
+          "guidedPractice": false,
           "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 6,
+          "complete": false
         }
       },
       {
         "module": 0,
         "topic": "Tema 6: Ventajas y limitaciones de practicar con un emulador local",
         "criteria": {
-          "objective": true,
-          "prerequisites": true,
+          "objective": false,
+          "prerequisites": false,
           "context": true,
           "theoryAnalogy": true,
           "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
-          "expectedResult": true,
-          "deliberateFailure": true,
+          "expectedResult": false,
+          "deliberateFailure": false,
           "guidedPractice": true,
           "independentPractice": true,
           "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 9,
+          "complete": false
         }
       },
       {

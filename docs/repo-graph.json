@@ -579,7 +579,7 @@
     },
     {
       "path": "docs/continuacion-material-rutaflow.md",
-      "lines": 94,
+      "lines": 103,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 48,
+      "lines": 49,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -730,7 +730,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 10590,
+      "lines": 10584,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -6862,7 +6862,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-0.md",
-      "lines": 502,
+      "lines": 427,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

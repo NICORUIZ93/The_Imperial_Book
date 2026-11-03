@@ -5,7 +5,7 @@ Mide únicamente contenido dentro de cada tema. Las guías transversales no cuen
 | Track | Temas | Código | Código comentado | Mermaid | Archify HTML | ASCII pendiente | Etiqueta engañosa | Ruta | Ejecución | Fuente oficial |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | foundations | 99 | 99 | 67 | 69 | 6 | 0 | 0 | 98 | 99 | 13 |
-| cloud | 156 | 156 | 72 | 77 | 4 | 18 | 0 | 156 | 156 | 140 |
+| cloud | 156 | 156 | 72 | 74 | 4 | 18 | 0 | 156 | 156 | 138 |
 | devops | 113 | 113 | 60 | 62 | 1 | 43 | 0 | 113 | 112 | 35 |
 | javascript | 88 | 88 | 76 | 58 | 0 | 0 | 0 | 88 | 88 | 68 |
 | node | 77 | 77 | 36 | 23 | 0 | 13 | 0 | 77 | 77 | 46 |
@@ -18,7 +18,7 @@ Mide únicamente contenido dentro de cada tema. Las guías transversales no cuen
 | ios | 56 | 56 | 26 | 30 | 0 | 16 | 0 | 56 | 56 | 56 |
 | flutter | 63 | 63 | 23 | 51 | 0 | 15 | 0 | 63 | 63 | 52 |
 | rutaflow | 29 | 29 | 27 | 24 | 0 | 0 | 0 | 28 | 27 | 7 |
-| **Total** | **1098** | **1098** | **712** | **577** | **18** | **216** | **0** | **1095** | **1093** | **720** |
+| **Total** | **1098** | **1098** | **712** | **574** | **18** | **216** | **0** | **1095** | **1093** | **718** |
 
 ## Regla editorial
 

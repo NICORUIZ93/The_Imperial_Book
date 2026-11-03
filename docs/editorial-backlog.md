@@ -12,12 +12,12 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | Código | 1098 | 0 |
 | Ruta | 1098 | 0 |
 | Ejecución | 1098 | 0 |
-| Resultado | 1098 | 0 |
+| Resultado | 1096 | 2 |
 | Modificación | 1098 | 0 |
 | Conexión con un proyecto | 1098 | 0 |
 | Modelo mental | 1098 | 0 |
-| Límites | 1098 | 0 |
-| **Perfil de criterios detectado** | **1098** | **0** |
+| Límites | 1097 | 1 |
+| **Perfil de criterios detectado** | **1096** | **2** |
 
 ## Prioridad por track
 
@@ -25,7 +25,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
 | android | 58 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | angular | 71 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| cloud | 156 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| cloud | 156 | 0 | 0 | 0 | 2 | 0 | 0 | 1 |
 | devops | 113 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | flutter | 63 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | foundations | 99 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -40,7 +40,8 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 
 ## Pendientes por tema
 
-No hay criterios pendientes en esta auditoría de presencia editorial.
+- [cloud · módulo 0](../web/public/content/cloud/modulo-0.md) · Tema 4: Qué es Floci — definición, propósito y comparativa con LocalStack: resultado.
+- [cloud · módulo 0](../web/public/content/cloud/modulo-0.md) · Tema 5: Servicios que emula Floci — AWS, Azure y GCP: resultado, límites.
 
 ## Regla de cierre
 

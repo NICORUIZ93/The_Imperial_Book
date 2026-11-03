@@ -91,3 +91,12 @@ ejemplos y la extensión `.txt`. `./scripts/validate.sh` pasa con 23 pruebas
 unitarias auxiliares (4 omitidas) y el perfil editorial y la metodología marcan
 1.098/1.098 temas. La revisión de navegador sigue pendiente: Chrome es terminado
 por el entorno antes de abrir las páginas.
+
+En esta pasada se simplificaron los temas 4–6 de Cloud 0. El tema de Floci ahora
+enciende, consulta y detiene solo el servicio AWS definido en el Compose del
+proyecto; el siguiente tema enseña a leer los tres nombres y puertos; el tercero
+separa una respuesta local de lo que aún no se ha probado. Se quitaron párrafos
+repetidos y diagramas extensos, y se añadieron comandos y resultados que el alumno
+puede registrar. La validación completa y los índices regenerados pasan. No se
+pudieron ejecutar los comandos Docker en este entorno porque el ejecutable
+`docker` no está instalado; esa práctica queda pendiente de ejecución real.
