@@ -51,10 +51,10 @@
     },
     "java": {
       "topics": 101,
-      "completeTopics": 7,
-      "topicsWith3to6Subtopics": 8,
-      "subtopics": 25,
-      "completeSubtopics": 24
+      "completeTopics": 8,
+      "topicsWith3to6Subtopics": 9,
+      "subtopics": 28,
+      "completeSubtopics": 27
     },
     "javascript": {
       "topics": 88,
@@ -5488,9 +5488,52 @@
       {
         "module": 2,
         "topic": "### Tema 1: List, Set, Map y sus implementaciones",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "1.1",
+            "title": "#### Subtema 1.1: Conserva el orden con una List · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "1.2",
+            "title": "#### Subtema 1.2: Evita duplicados con un Set · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "1.3",
+            "title": "#### Subtema 1.3: Busca una guía por su clave con Map · 15 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 2,

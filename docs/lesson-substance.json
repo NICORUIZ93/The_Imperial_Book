@@ -1695,11 +1695,11 @@
     }
   ],
   "summary": {
-    "fingerprint": "c687eb18552ca820ea7df55c61c7f963c0b48e713438ab1d4804d31f14058aad",
+    "fingerprint": "87b47a6d8702f36955a10233e169923c2ccae4d6bfa012856f100f110d3a5fd7",
     "issues": {
       "andamiaje-generico": 125,
-      "bloque-repetido": 213,
-      "cola-tras-cierre": 371,
+      "bloque-repetido": 212,
+      "cola-tras-cierre": 370,
       "parrafo-repetido": 5,
       "tema-breve": 2
     },
@@ -1711,7 +1711,7 @@
     "modules": 256,
     "modulesWithLegacySections": 181,
     "topics": 1185,
-    "topicsWithIssues": 462
+    "topicsWithIssues": 461
   },
   "topics": {
     "android": [
@@ -7576,14 +7576,11 @@
         "words": 1293
       },
       {
-        "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 2,
-        "tailWords": 701,
+        "tailWords": 0,
         "topic": "Tema 1: List, Set, Map y sus implementaciones",
-        "words": 1019
+        "words": 783
       },
       {
         "issues": [

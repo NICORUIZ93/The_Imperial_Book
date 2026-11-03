@@ -5,66 +5,145 @@
 
 ### Tema 1: List, Set, Map y sus implementaciones
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás medir la diferencia real de rendimiento entre `ArrayList` y `LinkedList`, y elegir `HashSet`/`TreeSet` según si necesitas orden. Prerrequisitos: JDK 25 y un editor. Comprueba java --version.
+**Duración estimada:** 35 min.
+**¿Por qué es importante?** Una colección organiza datos según cómo los vas a consultar: por posición, sin duplicados o mediante una clave.
+**Prerrequisitos:** M1 T1. Proyecto continuo: guardar guías, evitar duplicados y buscar cada guía por su código.
 
-#### Paso 2 · Contexto y caso real
-Un sistema de entregas debe insertar miles de registros al inicio de una cola de prioridad y, por separado, eliminar guías duplicadas de un lote importado; la estructura equivocada convierte una operación instantánea en una lenta.
+#### Subtema 1.1: Conserva el orden con una List · 10 min
 
-#### Paso 3 · Teoría, modelo mental y analogía
-`ArrayList` accede a cualquier índice al instante pero desplaza todo al insertar al inicio; `LinkedList` inserta al inicio sin desplazar nada pero debe recorrer nodo por nodo para acceder por índice. La analogía: un estante numerado (rápido para buscar por número, lento para insertar al frente) frente a una cadena de personas tomadas de la mano (rápido para insertar en cualquier punto, lento para llegar a la posición 500).
+**1. Contexto**
+Una lista de entregas mantiene el orden recibido y permite consultar una guía por su posición.
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
-```bash
-mkdir ejemplo-listas-rendimiento
-cd ejemplo-listas-rendimiento
-mkdir -p src/main/java/academia/colecciones
-```
-Crea `ComparacionListas.java` que inserte 100 000 elementos al inicio de un `ArrayList` y de un `LinkedList`, midiendo el tiempo de cada uno con `System.nanoTime()`. Compila y ejecuta:
-```bash
-javac -d out src/main/java/academia/colecciones/ComparacionListas.java
-java -cp out academia.colecciones.ComparacionListas
-```
-
-#### Paso 5 · Práctica guiada
-Pista: reduce el tamaño a 100 elementos para provocar un fallo deliberado de expectativa (la diferencia se vuelve casi imperceptible); sube de nuevo a 100 000 y confirma que `LinkedList` gana claramente en inserciones al inicio. Resultado esperado: la diferencia de rendimiento solo se manifiesta con volumen suficiente.
-
-#### Paso 6 · Práctica independiente
-Agrega una comparación equivalente entre `HashSet` y `TreeSet` insertando guías duplicadas: confirma que ambos eliminan duplicados, pero solo `TreeSet` conserva orden al iterar.
-
-#### Paso 7 · Cierre y evidencia
-Guarda el código de medición, los tiempos obtenidos y la conclusión sobre cuándo cada estructura gana; como siguiente paso estudia genéricos. Errores comunes: usar `ArrayList` cuando en realidad se necesita unicidad garantizada (debería ser un `Set`), usar un objeto mutable como clave de `HashMap`/`HashSet` (si su hash cambia después de insertarlo, deja de encontrarse), y asumir que `HashSet` conserva algún orden solo porque en una prueba particular pareció hacerlo. Fuentes oficiales: https://dev.java/learn/api/collections-framework/ y https://docs.oracle.com/javase/tutorial/java/generics/.
-**¿Por qué es importante?** Porque elegir la colección equivocada para el patrón de acceso real (inserción frecuente al inicio, necesidad de unicidad, necesidad de orden) convierte una operación que debería ser instantánea en una lenta, o permite silenciosamente duplicados que el negocio no toleraba.
-**Evidencia de aprendizaje:** entrega el código de medición `ArrayList` vs `LinkedList`, los tiempos obtenidos con 100&nbsp;000 elementos, y la comparación `HashSet` vs `TreeSet` con guías duplicadas.
-**Conceptos clave:** acceso indexado vs inserción eficiente, unicidad, orden.
-
-Elegir la colección correcta según el patrón de acceso real (no por costumbre) es la misma decisión que tomarás para cada estructura de datos del proyecto integrador de este track.
-
-**Cuándo no usarlo:** medir rendimiento con `nanoTime()` como aquí tiene sentido para decidir entre estructuras con volumen real; para una colección de un puñado de elementos que nunca crecerá, la diferencia entre `ArrayList` y `LinkedList` es irrelevante y no vale la pena medirla.
-
-`ArrayList` implementa `List` respaldado por un arreglo redimensionable internamente, ofreciendo acceso indexado rápido (`O(1)`, acceder a cualquier posición por su índice es prácticamente instantáneo) e inserción eficiente al final, pero inserción o eliminación costosa al inicio o en medio (`O(n)`, dado que todos los elementos posteriores deben desplazarse una posición); `LinkedList` implementa la misma interfaz `List` respaldada internamente por una lista doblemente enlazada de nodos, ofreciendo inserción y eliminación eficiente al inicio o en medio (sin necesidad de desplazar elementos, solo reenlazar referencias), a costa de acceso indexado más lento (`O(n)`, dado que acceder a una posición arbitraria requiere recorrer la lista nodo por nodo desde uno de los extremos).
-
-`HashSet` implementa `Set` (una colección que garantiza ausencia de duplicados) respaldada por una tabla hash, ofreciendo operaciones de inserción y búsqueda extremadamente rápidas en promedio, pero sin ningún orden garantizado entre los elementos almacenados; `TreeSet` implementa la misma garantía de unicidad, pero manteniendo los elementos ordenados automáticamente según su orden natural (o un `Comparator` proporcionado, Tema 3), a costa de operaciones ligeramente más lentas que `HashSet` (`O(log n)` en vez de aproximadamente `O(1)`), dado que mantener el orden requiere una estructura interna de árbol balanceado en vez de una tabla hash simple.
-
-`Map<K, V>` asocia claves únicas con valores (`edades.put("Ana", 28)`), con `HashMap` como la implementación más común (sin orden garantizado, acceso rápido) y alternativas como `LinkedHashMap` (que preserva el orden de inserción) o `TreeMap` (que ordena por clave, análogamente a `TreeSet`).
-
-**Analogía:** `ArrayList` es como un estante numerado donde acceder a cualquier posición específica por su número es instantáneo, pero insertar un nuevo objeto al principio requiere renumerar y desplazar físicamente todos los demás objetos; `LinkedList` es como una cadena de personas tomadas de las manos, donde insertar a alguien nuevo en cualquier punto solo requiere que sus dos vecinos inmediatos se suelten y vuelvan a tomarse de la mano con la persona nueva, sin mover a nadie más, pero encontrar a la persona en la posición 500 requiere contar uno por uno desde el principio.
-
-**¿Por qué es importante?** Elegir `ArrayList` frente a `LinkedList` según si el patrón de acceso predominante es indexado o de inserción/eliminación frecuente en los extremos evita costos de rendimiento innecesarios; elegir `HashSet` frente a `TreeSet` según si se necesita o no orden automático evita el costo adicional de mantener ese orden cuando no es requerido.
-
-**Código del ejemplo:**
+**2. Hazlo tú**
+Crea java-motor-colecciones/src/ColeccionesDemo.java:
 
 ```java
-List<String> lista = new ArrayList<>();   // acceso indexado rápido, inserción al final eficiente
-List<String> enlazada = new LinkedList<>(); // inserción/eliminación al inicio eficiente, acceso indexado lento
+import java.util.ArrayList;
+import java.util.List;
 
-Set<String> unicos = new HashSet<>();      // sin duplicados, sin orden garantizado
-Set<String> ordenado = new TreeSet<>();    // sin duplicados, ordenado automáticamente
-
-Map<String, Integer> edades = new HashMap<>();
-edades.put("Ana", 28);
+public class ColeccionesDemo {
+    public static void main(String[] args) {
+        List<String> guias = new ArrayList<>();
+        guias.add("RF-101");
+        guias.add("RF-102");
+        guias.add(1, "RF-105");
+        System.out.println(guias);
+        System.out.println("primera=" + guias.get(0));
+    }
+}
 ```
+
+Desde java-motor-colecciones/, ejecuta:
+
+```bash
+mkdir -p out
+javac -d out src/ColeccionesDemo.java
+java -cp out ColeccionesDemo
+```
+
+**Resultado esperado:** [RF-101, RF-105, RF-102] y primera=RF-101.
+
+**Fallo deliberado:** cambia guias.get(0) por guias.get(3). **Error esperado:** IndexOutOfBoundsException. **Diagnóstico:** los índices empiezan en cero y esta lista tiene posiciones 0, 1 y 2.
+
+**3. Entiende**
+List conserva elementos repetidos y su orden. ArrayList suele ser una buena opción general cuando necesitas acceder por índice o agregar elementos al final; insertar en medio desplaza los siguientes.
+
+**4. Cierra**
+Anota qué posición tiene RF-105 después de insertarla y qué pasaría si la agregas al final.
+
+#### Subtema 1.2: Evita duplicados con un Set · 10 min
+
+**1. Contexto**
+Al importar un lote pueden llegar guías repetidas. Una colección Set mantiene solo un ejemplar según equals y hashCode.
+
+**2. Hazlo tú**
+Reemplaza java-motor-colecciones/src/ColeccionesDemo.java:
+
+```java
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.TreeSet;
+
+public class ColeccionesDemo {
+    public static void main(String[] args) {
+        Set<String> ingreso = new LinkedHashSet<>();
+        ingreso.add("RF-102");
+        ingreso.add("RF-101");
+        ingreso.add("RF-102");
+
+        Set<String> ordenadas = new TreeSet<>(ingreso);
+        System.out.println("ingreso=" + ingreso);
+        System.out.println("ordenadas=" + ordenadas);
+        System.out.println("nuevas=" + ingreso.add("RF-101"));
+    }
+}
+```
+
+Compila y ejecuta con los comandos del subtema 1.1.
+
+**Resultado esperado:** ingreso=[RF-102, RF-101], ordenadas=[RF-101, RF-102] y nuevas=false.
+
+**Fallo deliberado:** reemplaza LinkedHashSet por HashSet y exige como salida fija el orden RF-102, RF-101. **Resultado no garantizado:** el orden puede variar. **Diagnóstico:** HashSet no promete orden de iteración; usa LinkedHashSet para conservar inserción o TreeSet para ordenar.
+
+**3. Entiende**
+Set impide duplicados de acuerdo con la igualdad de sus elementos. LinkedHashSet conserva el orden de inserción; TreeSet itera en orden natural o según un Comparator.
+
+**4. Cierra**
+Explica cuál colección usarías para deduplicar sin cambiar el orden del archivo importado y cuál para mostrar los códigos ordenados.
+
+#### Subtema 1.3: Busca una guía por su clave con Map · 15 min
+
+**1. Contexto**
+Un operador necesita buscar rápidamente el estado de una guía por su identificador sin recorrer toda la lista.
+
+**2. Hazlo tú**
+Reemplaza java-motor-colecciones/src/ColeccionesDemo.java:
+
+```java
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+public class ColeccionesDemo {
+    public static void main(String[] args) {
+        Map<String, String> estados = new LinkedHashMap<>();
+        estados.put("RF-101", "EN_RUTA");
+        estados.put("RF-102", "ENTREGADA");
+        estados.put("RF-101", "EN_REPARTO");
+
+        System.out.println(estados.get("RF-101"));
+        System.out.println(estados.getOrDefault("RF-999", "DESCONOCIDA"));
+        System.out.println("guias=" + estados.size());
+    }
+}
+```
+
+Desde java-motor-colecciones/, compila y ejecuta:
+
+```bash
+javac -d out src/ColeccionesDemo.java
+java -cp out ColeccionesDemo
+```
+
+**Resultado esperado:** EN_REPARTO, DESCONOCIDA y guias=2.
+
+**Fallo deliberado:** cambia la segunda búsqueda por estados.get("RF-999").toUpperCase(). **Error esperado:** NullPointerException. **Diagnóstico:** get devuelve null si la clave no existe; comprueba el resultado o usa getOrDefault.
+
+**3. Entiende**
+Map relaciona una clave única con su valor. Al insertar otra vez RF-101, se reemplazó su estado y no se añadió una tercera entrada. LinkedHashMap conserva el orden de inserción; HashMap no lo garantiza.
+
+**4. Cierra**
+Agrega la guía RF-999, conserva la salida y explica qué significa que una clave no exista.
+
+**Hito del tema:**
+
+- [ ] Usé List para conservar posiciones y repetir valores.
+- [ ] Eliminé duplicados y diferencié orden de inserción de orden natural.
+- [ ] Consulté y actualicé un estado con una clave de Map.
+- [ ] Manejé una clave ausente sin provocar un error accidental.
+
+**Fuentes oficiales:** [Collections Framework en dev.java](https://dev.java/learn/api/collections-framework/) y [interfaces de colecciones de Java](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/package-summary.html).
+
+**Transferencia al proyecto integrador:** almacena guías en una lista ordenada, usa un Set para rechazar importaciones duplicadas y conserva el estado actual en un Map por código.
 
 ### Tema 2: Genéricos, wildcards y type erasure
 

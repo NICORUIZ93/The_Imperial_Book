@@ -289,7 +289,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 9259,
+      "lines": 9302,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -297,7 +297,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1234,
+      "lines": 1233,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -660,7 +660,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 78,
+      "lines": 79,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -767,7 +767,7 @@
     },
     {
       "path": "docs/java-temario-completo.md",
-      "lines": 275,
+      "lines": 278,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -796,7 +796,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 11220,
+      "lines": 11217,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -10001,7 +10001,7 @@
     },
     {
       "path": "web/public/content/java/modulo-2.md",
-      "lines": 225,
+      "lines": 304,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10009,15 +10009,15 @@
         "# M\u00f3dulo 2: Colecciones y gen\u00e9ricos",
         "## Aprende construyendo",
         "### Tema 1: List, Set, Map y sus implementaciones",
+        "#### Subtema 1.1: Conserva el orden con una List \u00b7 10 min",
+        "#### Subtema 1.2: Evita duplicados con un Set \u00b7 10 min",
+        "#### Subtema 1.3: Busca una gu\u00eda por su clave con Map \u00b7 15 min",
+        "### Tema 2: Gen\u00e9ricos, wildcards y type erasure",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
-        "### Tema 2: Gen\u00e9ricos, wildcards y type erasure",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada"
       ]
     },
     {

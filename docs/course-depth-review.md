@@ -743,7 +743,7 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | java / 19 | [Tema 5: ServiceLoader: plugins sin acoplar implementaciones](../web/public/content/java/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 19 | [Tema 6: Proxies dinámicos: así funcionan @Transactional y los mocks](../web/public/content/java/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 19 | [Tema 7: Internacionalización: números, monedas, fechas y orden de texto](../web/public/content/java/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 2 | [Tema 1: List, Set, Map y sus implementaciones](../web/public/content/java/modulo-2.md) | clase-java-no-visible |
+| java / 2 | [Tema 1: List, Set, Map y sus implementaciones](../web/public/content/java/modulo-2.md) | demostracion-no-delimitada |
 | java / 2 | [Tema 2: Genéricos, wildcards y type erasure](../web/public/content/java/modulo-2.md) | clase-java-no-visible |
 | java / 2 | [Tema 3: Comparable vs Comparator, e iteración](../web/public/content/java/modulo-2.md) | clase-java-no-visible |
 | java / 20 | [Tema 1: Las cuatro formas: Predicate, Function, Consumer y Supplier](../web/public/content/java/modulo-20.md) | demostracion-no-delimitada |

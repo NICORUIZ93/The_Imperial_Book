@@ -13,11 +13,11 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | Ruta | 1185 | 0 |
 | Ejecución | 1171 | 14 |
 | Resultado | 1183 | 2 |
-| Modificación | 1177 | 8 |
+| Modificación | 1176 | 9 |
 | Conexión con un proyecto | 1162 | 23 |
 | Modelo mental | 1185 | 0 |
-| Límites | 1170 | 15 |
-| **Perfil de criterios detectado** | **1154** | **31** |
+| Límites | 1169 | 16 |
+| **Perfil de criterios detectado** | **1153** | **32** |
 
 ## Prioridad por track
 
@@ -30,7 +30,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | flutter | 106 | 0 | 0 | 0 | 0 | 0 | 1 | 1 |
 | foundations | 99 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ios | 56 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| java | 101 | 0 | 0 | 10 | 0 | 4 | 13 | 8 |
+| java | 101 | 0 | 0 | 10 | 0 | 5 | 13 | 9 |
 | javascript | 88 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | kotlin-multiplatform | 56 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | node | 83 | 0 | 0 | 0 | 0 | 1 | 2 | 1 |
@@ -48,6 +48,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 - [java · módulo 1](../web/public/content/java/modulo-1.md) · Tema 1: Clases, objetos, constructores y encapsulación: modificación, conexión con un proyecto.
 - [java · módulo 1](../web/public/content/java/modulo-1.md) · Tema 2: Herencia y sobreescritura: modificación, límites.
 - [java · módulo 1](../web/public/content/java/modulo-1.md) · Tema 3: Interfaces, clases abstractas y cuándo usar cada una: modificación.
+- [java · módulo 2](../web/public/content/java/modulo-2.md) · Tema 1: List, Set, Map y sus implementaciones: modificación, límites.
 - [java · módulo 20](../web/public/content/java/modulo-20.md) · Tema 4: Function y BiFunction: transformar uno o dos datos: ejecución, conexión con un proyecto.
 - [java · módulo 20](../web/public/content/java/modulo-20.md) · Tema 5: UnaryOperator y BinaryOperator: la salida conserva el tipo: ejecución, conexión con un proyecto, límites.
 - [java · módulo 20](../web/public/content/java/modulo-20.md) · Tema 6: Referencias a métodos: escribir la operación sin repetirla: ejecución, conexión con un proyecto, límites.

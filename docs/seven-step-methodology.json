@@ -142,23 +142,23 @@
     },
     "java": {
       "topics": 101,
-      "objective": 93,
+      "objective": 92,
       "prerequisites": 101,
-      "context": 93,
-      "theoryAnalogy": 83,
-      "guidedDemo": 81,
+      "context": 92,
+      "theoryAnalogy": 82,
+      "guidedDemo": 80,
       "codeExplanation": 101,
       "execution": 91,
       "expectedResult": 101,
       "deliberateFailure": 100,
-      "guidedPractice": 81,
-      "independentPractice": 84,
-      "closure": 85,
-      "commonErrors": 84,
+      "guidedPractice": 80,
+      "independentPractice": 83,
+      "closure": 84,
+      "commonErrors": 83,
       "resources": 91,
-      "standaloneExample": 79,
-      "learningEvidence": 92,
-      "complete": 76
+      "standaloneExample": 78,
+      "learningEvidence": 91,
+      "complete": 75
     },
     "javascript": {
       "topics": 88,
@@ -18917,26 +18917,26 @@
         "module": 2,
         "topic": "Tema 1: List, Set, Map y sus implementaciones",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
           "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 6,
+          "complete": false
         }
       },
       {
