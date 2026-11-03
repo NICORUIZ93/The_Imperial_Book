@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 180,
+    "topicsWithSignals": 181,
     "newLaboratories": 25
   },
   "priorities": {
@@ -13367,7 +13367,9 @@
       "title": "Tema 3: Productor idempotente y transacciones (exactly-once)",
       "file": "web/public/content/spring-boot/modulo-8.md",
       "line": 221,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -13377,7 +13379,7 @@
       "module": 8,
       "title": "Tema 4: Rebalanceo de consumer groups y partition assignment",
       "file": "web/public/content/spring-boot/modulo-8.md",
-      "line": 427,
+      "line": 319,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -13388,7 +13390,7 @@
       "module": 8,
       "title": "Tema 5: Kafka frente a RabbitMQ",
       "file": "web/public/content/spring-boot/modulo-8.md",
-      "line": 629,
+      "line": 521,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -13399,7 +13401,7 @@
       "module": 8,
       "title": "Tema 6: Spring Cloud Stream y binders de Kafka/RabbitMQ",
       "file": "web/public/content/spring-boot/modulo-8.md",
-      "line": 833,
+      "line": 725,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -13412,7 +13414,7 @@
       "module": 8,
       "title": "Tema 7: Kafka Streams con Spring para transformar eventos",
       "file": "web/public/content/spring-boot/modulo-8.md",
-      "line": 905,
+      "line": 797,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -13425,7 +13427,7 @@
       "module": 8,
       "title": "Tema 8: Avro y Schema Registry para contratos de eventos",
       "file": "web/public/content/spring-boot/modulo-8.md",
-      "line": 970,
+      "line": 862,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -13438,7 +13440,7 @@
       "module": 8,
       "title": "Tema 9: RabbitMQ con Spring AMQP: routing, ack y prefetch",
       "file": "web/public/content/spring-boot/modulo-8.md",
-      "line": 1032,
+      "line": 924,
       "signals": [
         "clase-java-no-visible"
       ],

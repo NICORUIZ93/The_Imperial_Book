@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 101,
+      "objective": 100,
       "prerequisites": 107,
-      "context": 101,
-      "theoryAnalogy": 101,
-      "guidedDemo": 101,
+      "context": 100,
+      "theoryAnalogy": 100,
+      "guidedDemo": 100,
       "codeExplanation": 111,
       "execution": 107,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 101,
-      "independentPractice": 101,
-      "closure": 101,
-      "commonErrors": 101,
+      "guidedPractice": 100,
+      "independentPractice": 100,
+      "closure": 100,
+      "commonErrors": 100,
       "resources": 104,
-      "standaloneExample": 97,
+      "standaloneExample": 96,
       "learningEvidence": 102,
-      "complete": 97
+      "complete": 96
     }
   },
   "topics": {
@@ -30863,26 +30863,26 @@
         "module": 8,
         "topic": "Tema 3: Productor idempotente y transacciones (exactly-once)",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
           "resources": true,
-          "standaloneExample": true,
+          "standaloneExample": false,
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 7,
+          "complete": false
         }
       },
       {

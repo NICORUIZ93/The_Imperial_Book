@@ -220,209 +220,101 @@ Restaura la configuración del proyecto a FixedBackOff(100L, 2), conserva la sal
 
 ### Tema 3: Productor idempotente y transacciones (exactly-once)
 
-#### Paso 1 · Objetivo y preparación
+**Duración estimada:** 40 min.
+**¿Por qué es importante?** Reintentar una publicación o recibir dos veces un mensaje no debe duplicar un envío o un cobro. El productor de Kafka, la base de datos y el consumidor tienen garantías distintas.
+**Prerrequisitos:** M8 T1 y M8 T2. Proyecto continuo: registrar un envío y aplicar su evento de forma segura aunque se repita.
+**Laboratorio:** examples/spring-kafka-rutaflow/. Ejecuta los cambios en tu copia para conservar el ejemplo original.
 
-Al finalizar podrás configurar un productor idempotente y una transacción Kafka que evite publicar un evento duplicado si el productor reintenta tras un fallo de red, confirmando con un broker real que el duplicado nunca llega al topic.
+#### Subtema 3.1: Configura idempotencia del productor · 10 min
 
-**Conocimiento previo:** Tema 1 de este módulo.
+**1. Contexto**
+El cliente de Kafka puede reintentar internamente después de perder una confirmación. La idempotencia del productor evita duplicados causados por ese reintento del mismo productor.
 
-#### Paso 2 · Contexto y caso real
+**2. Hazlo tú**
+Abre examples/spring-kafka-rutaflow/src/main/resources/application.yml y revisa esta configuración completa del productor:
 
-**¿Por qué es importante?** Sin idempotencia, un timeout de red que en realidad SÍ se entregó en el broker hace que el productor reintente, publicando el mismo evento de negocio dos veces — un conductor podría recibir la misma notificación de "nueva entrega asignada" duplicada, o un pago podría registrarse dos veces si el evento dispara un cobro.
-
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** productor idempotente, ack perdido en la red (no el mensaje), deduplicación por el broker.
-
-```java
-@Bean
-ProducerFactory<String, Object> producerFactory() {
-    Map<String, Object> config = new HashMap<>();
-    config.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
-    config.put(ProducerConfig.ACKS_CONFIG, "all");
-    return new DefaultKafkaProducerFactory<>(config);
-}
+```yaml
+spring:
+  kafka:
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      properties:
+        enable.idempotence: true
 ```
 
-Con `enable.idempotence=true`, el productor etiqueta cada lote de mensajes con un número de secuencia por partición; si el productor reintenta porque no recibió el `ack` (aunque el broker SÍ haya recibido y persistido el mensaje original, perdiéndose solo la confirmación en la red de vuelta), el broker detecta el número de secuencia repetido y descarta el duplicado en vez de escribirlo dos veces.
-
-**Analogía:** es como un número de seguimiento de un paquete entregado por mensajería: si el mensajero reenvía el mismo paquete porque no recibió la confirmación de entrega (aunque el destinatario SÍ lo recibió), el número de seguimiento repetido permite detectar que es el mismo paquete, no uno nuevo.
-
-**Diagrama:**
-
-```mermaid
-sequenceDiagram
-  participant P as Productor
-  participant B as Broker
-  P->>B: mensaje (seq=5)
-  B-->>P: ack (perdido en la red)
-  P->>B: reintento mensaje (seq=5)
-  B->>B: detecta seq=5 duplicado
-  Note over B: descarta el duplicado, no escribe dos veces
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Reutiliza `academia-spring` y crea el publicador idempotente junto con un procesador que aplica su propia verificación de idempotencia, en `src/main/java/com/academia/mensajeria/`, confirmando con un broker real que un pago duplicado (el mismo `evento.id()` llegando dos veces al topic, el escenario real que un reintento de red o de aplicación produce) se aplica exactamente una vez:
+Desde examples/spring-kafka-rutaflow/, ejecuta la suite:
 
 ```bash
-mkdir -p academia-spring/src/main/java/com/academia/mensajeria
-cd academia-spring
+./mvnw test
 ```
 
-```java
-// src/main/java/com/academia/mensajeria/PagoEvent.java
-package com.academia.mensajeria;
+**Resultado esperado:** Maven termina con BUILD SUCCESS. La configuración usa confirmación all e idempotencia; la prueba publica y verifica metadatos y recepción del evento.
 
-import java.io.Serializable;
+**Fallo deliberado:** en la copia cambia enable.idempotence a false y repite la suite. **Resultado esperado:** la suite sigue pasando. **Diagnóstico:** los tests actuales no fuerzan una pérdida de ack y reintento interno del productor; su resultado no demuestra ni refuta esa garantía. Restaura true después de la comparación.
 
-public record PagoEvent(String id, double monto) implements Serializable {}
-```
+**3. Entiende**
+Idempotencia del productor cubre reintentos internos del cliente con los identificadores de secuencia de Kafka. No deduplica dos llamadas separadas de la aplicación que vuelven a publicar el mismo evento.
 
-```java
-// src/main/java/com/academia/mensajeria/ProductorIdempotenteConfig.java
-package com.academia.mensajeria;
+**4. Cierra**
+Describe qué duplicado cubre esta opción y qué duplicado debe resolver el consumidor.
 
-import org.apache.kafka.clients.producer.ProducerConfig;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.kafka.core.DefaultKafkaProducerFactory;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.core.ProducerFactory;
+#### Subtema 3.2: Guarda el envío y el evento con outbox · 15 min
 
-import java.util.HashMap;
-import java.util.Map;
+**1. Contexto**
+La base de datos y Kafka no comparten una transacción local automática. Si el servicio guarda el envío y después falla al publicar, el sistema debe conservar el evento pendiente.
 
-@Configuration
-public class ProductorIdempotenteConfig {
-
-    @Bean
-    ProducerFactory<String, Object> producerFactory() {
-        Map<String, Object> config = new HashMap<>();
-        config.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
-        config.put(ProducerConfig.ACKS_CONFIG, "all");
-        return new DefaultKafkaProducerFactory<>(config);
-    }
-
-    @Bean
-    KafkaTemplate<String, Object> kafkaTemplatePagos(ProducerFactory<String, Object> producerFactory) {
-        return new KafkaTemplate<>(producerFactory);
-    }
-}
-```
-
-```java
-// src/main/java/com/academia/mensajeria/ProcesadorPagosIdempotente.java
-package com.academia.mensajeria;
-
-import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.stereotype.Component;
-
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
-
-@Component
-public class ProcesadorPagosIdempotente {
-    // ids de pago ya aplicados (en producción: una columna UNIQUE o un Set persistido, no en memoria);
-    // el test consulta este estado directamente para confirmar cuántas veces se aplicó el cobro REAL
-    private final Set<String> idsYaAplicados = ConcurrentHashMap.newKeySet();
-    private final AtomicInteger cobrosRealmenteAplicados = new AtomicInteger(0);
-
-    @KafkaListener(topics = "pagos.registrados", groupId = "procesador-pagos")
-    public void procesar(PagoEvent evento) {
-        if (idsYaAplicados.add(evento.id())) { // add() devuelve true SOLO la primera vez que se ve este id
-            cobrosRealmenteAplicados.incrementAndGet(); // el cobro real contra la pasarela de pago solo ocurre aquí
-        }
-        // si evento.id() ya estaba en el set, es un duplicado conocido: se descarta sin repetir el cobro
-    }
-
-    public int getCobrosRealmenteAplicados() { return cobrosRealmenteAplicados.get(); }
-}
-```
-
-**Explicación línea por línea:** `ENABLE_IDEMPOTENCE_CONFIG` evita que un reintento INTERNO del cliente de Kafka (cuando el productor no recibe el `ack` a tiempo, aunque el broker SÍ haya escrito el mensaje original) duplique esa escritura a nivel de broker; pero no puede evitar que la APLICACIÓN llame a `send(...)` dos veces de forma independiente con el mismo evento (por ejemplo, un servicio llamador que no supo si su primer intento tuvo éxito y reenvía el mismo pago) — esas dos llamadas SÍ producen dos registros reales en el topic. `idsYaAplicados.add(evento.id())` es la defensa que efectivamente garantiza "exactamente una vez" desde la perspectiva de negocio: devuelve `true` solo la primera vez que ve ese id, así que `cobrosRealmenteAplicados` se incrementa una sola vez sin importar cuántas copias del mismo pago lleguen al consumidor.
-
-Confirma con `@EmbeddedKafka` que, aunque el pago duplicado SÍ llega dos veces al topic, el procesador lo aplica una sola vez:
-
-```java
-// src/test/java/com/academia/mensajeria/ProductorIdempotenteTest.java
-package com.academia.mensajeria;
-
-import org.awaitility.Awaitility;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.test.context.EmbeddedKafka;
-import org.springframework.test.context.TestPropertySource;
-
-import java.time.Duration;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-@SpringBootTest
-@EmbeddedKafka(partitions = 1, topics = "pagos.registrados")
-@TestPropertySource(properties = "spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}")
-class ProductorIdempotenteTest {
-
-    @Autowired
-    private KafkaTemplate<String, Object> kafkaTemplatePagos;
-    @Autowired
-    private ProcesadorPagosIdempotente procesador;
-
-    @Test
-    void unPagoQueLlegaDuplicadoSeAplicaUnaSolaVez() {
-        PagoEvent evento = new PagoEvent("pago-123", 50_000);
-
-        kafkaTemplatePagos.send("pagos.registrados", evento.id(), evento); // envío original
-        kafkaTemplatePagos.send("pagos.registrados", evento.id(), evento); // reintento real: el mismo evento, reenviado
-
-        // los dos mensajes SÍ llegan al consumidor (dos llamadas independientes a send(), no un reintento interno de red);
-        // la verificación de idempotencia del consumidor es la que garantiza que el cobro real ocurre una sola vez
-        Awaitility.await().atMost(Duration.ofSeconds(5))
-            .untilAsserted(() -> assertThat(procesador.getCobrosRealmenteAplicados()).isEqualTo(1));
-    }
-}
-```
+**2. Hazlo tú**
+Abre el archivo completo examples/spring-kafka-rutaflow/src/main/java/academia/rutaflow/outbox/CrearEnvioService.java. Sigue crear: la transacción guarda envío y outbox_event juntos. Ejecuta la prueba que provoca un fallo al insertar el evento:
 
 ```bash
-mvn test -Dtest=ProductorIdempotenteTest # Maven
-./gradlew test --tests ProductorIdempotenteTest # Gradle (equivalente)
+./mvnw -Dtest=EnvioEventPublisherTest#guardaEnvioYOutboxEnLaMismaTransaccion test
 ```
 
-**Resultado esperado:** `BUILD SUCCESS` con el test en verde: ambos mensajes llegan realmente al topic `pagos.registrados` y ambos son entregados a `ProcesadorPagosIdempotente`, pero `idsYaAplicados.add(evento.id())` solo devuelve `true` en la primera entrega — `cobrosRealmenteAplicados` queda en exactamente `1`, confirmando "exactamente una vez" desde la perspectiva de negocio aunque el transporte haya entregado el evento dos veces.
+**Resultado esperado:** la prueba induce una violación de integridad y verifica que no quedan ni la fila de envio ni la de outbox_event con referencia RT-ROLLBACK.
 
-**Fallo deliberado:** en `ProcesadorPagosIdempotente.procesar`, quita el `if (idsYaAplicados.add(evento.id()))` (incrementando `cobrosRealmenteAplicados` sin ninguna condición, para cada mensaje recibido sin importar su id) y ejecuta de nuevo `mvn test -Dtest=ProductorIdempotenteTest`. El test FALLA: `cobrosRealmenteAplicados` queda en `2` en vez de `1` — diagnostica confirmando que la idempotencia del PRODUCTOR (que sigue activa en `ProducerFactory`) nunca fue la responsable de evitar el cobro duplicado; sin la verificación explícita de idempotencia en el consumidor, el mismo pago se aplica dos veces. Restaura el `if` antes de continuar.
+**Fallo deliberado:** en la copia quita @Transactional de crear y repite la prueba. **Error esperado:** queda guardada una de las dos filas cuando falla la inserción en outbox_event. **Diagnóstico:** ambas escrituras SQL necesitan la misma transacción de base de datos.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**3. Entiende**
+Outbox hace atómica la persistencia del negocio y del evento pendiente dentro de la base de datos. Un dispatcher publica después; si no consigue marcar la fila como publicada, puede volver a publicarla. Por eso el consumidor también debe ser idempotente.
 
-1. Configura `acks=all` sin idempotencia y repite el experimento de reintento; confirma que el duplicado aparece igual (`acks=all` por sí solo no da idempotencia).
-2. Combina idempotencia con una transacción que agrupe la publicación del evento Y una actualización del estado en base de datos (vía `KafkaTransactionManager` o un patrón outbox), confirmando que ambas operaciones tienen éxito o fallan juntas.
-3. Mide con `@EmbeddedKafka` cuántos registros produce una publicación con y sin idempotencia tras forzar 3 reintentos simulados.
-4. Escribe de memoria (sin mirar) la configuración mínima de un productor idempotente. Compara después contra el Paso 4.
+**4. Cierra**
+Guarda la salida del test y explica qué estado persistente permite recuperar el evento si Kafka no está disponible.
 
-**Pista:** la idempotencia del productor resuelve duplicados causados por reintentos DEL PRODUCTOR; no resuelve duplicados causados por reintentos DEL CONSUMIDOR (si el consumidor procesa un mensaje pero falla al confirmar el offset) — ese caso necesita diseño de consumidor idempotente, independiente del rebalanceo del Tema 4.
+#### Subtema 3.3: Deduplica el efecto con inbox y delimita exactly-once · 15 min
 
-#### Paso 6 · Práctica independiente
+**1. Contexto**
+Un dispatcher puede publicar de nuevo tras perder la confirmación. El consumidor debe reconocer el mismo eventId antes de aplicar por segunda vez la actualización de negocio.
 
-**Completa el código:** rellena el valor que activa la deduplicación del productor:
+**2. Hazlo tú**
+Abre examples/spring-kafka-rutaflow/src/main/java/academia/rutaflow/inbox/InboxProcessor.java y revisa cómo registra event_id y actualiza route_projection en una transacción. Ejecuta:
 
-```java
-config.put(ProducerConfig.____, true);
+```bash
+./mvnw -Dtest=EnvioEventPublisherTest#inboxHaceIdempotenteElEfectoDeNegocio test
+./mvnw -Dtest=EnvioEventPublisherTest#replayTrasAckConservaUnaSolaProyeccion test
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, el bean `ProducerFactory` con idempotencia activada y `acks=all`. Compara después contra el Paso 4.
+**Resultado esperado:** la primera aplicación devuelve true, repetir el mismo evento devuelve false y queda una sola fila de evento_procesado y una sola proyección. En el replay, el broker recibe dos mensajes y la proyección sigue siendo una.
 
-#### Paso 7 · Cierre y evidencia
+**Fallo deliberado:** en la copia elimina la comprobación de event_id existente y vuelve a ejecutar inboxHaceIdempotenteElEfectoDeNegocio. **Error esperado:** la segunda llamada viola la clave primaria de evento_procesado y no devuelve false. **Diagnóstico:** la identidad del evento y la actualización de negocio deben protegerse en la misma transacción; el esquema usa event_id como clave única.
 
-Ya configuras un productor idempotente y confirmas, con un pago realmente duplicado en el topic, que la verificación de idempotencia del consumidor es la que garantiza que el cobro se aplique exactamente una vez. El siguiente tema aborda el rebalanceo de consumer groups, el costo operacional de escalar consumidores horizontalmente. **Evidencia:** entrega el resultado de `ProductorIdempotenteTest` en verde confirmando `cobrosRealmenteAplicados` en `1` tras el pago duplicado, y el fallo real (`cobrosRealmenteAplicados` en `2`) que produce quitar la verificación de idempotencia del consumidor. Fuente oficial: [Exactly Once Semantics — Spring for Apache Kafka](https://docs.spring.io/spring-kafka/reference/kafka/exactly-once.html).
+**3. Entiende**
+La transacción inbox protege juntas la marca de evento procesado y la proyección SQL. Exactly-once de Kafka se refiere al flujo read-process-write dentro de Kafka y sus offsets; no incorpora automáticamente una base de datos externa. Outbox e inbox protegen aquí la frontera SQL y asumen entregas que pueden repetirse.
 
-**Errores comunes:** asumir que `acks=all` por sí solo da idempotencia (da durabilidad, no deduplicación); asumir que la idempotencia del productor también deduplica errores del lado del consumidor.
+**4. Cierra**
+Entrega los dos resultados de prueba y di explícitamente qué parte garantiza Kafka, cuál la base de datos y cuál el código consumidor. La prueba de este ejemplo es secuencial; el esquema tiene clave primaria, pero concurrencia de consumidores requiere probar el conflicto de inserción y la estrategia de recuperación.
 
-**Cuándo no usarlo:** para eventos donde un duplicado ocasional es tolerable y barato de ignorar (ej. una métrica de telemetría no crítica), la ceremonia adicional de productor idempotente/transaccional puede no justificarse frente a su costo de throughput.
+**Hito del tema:**
 
-**Transferencia al proyecto integrador «Backend profesional de entregas»:** Publica una confirmación con identidad de evento estable y protege también el consumidor. Repite el evento de negocio y verifica un solo cobro, distinguiendo transacción Kafka de transacción de la base externa.
+- [ ] Distinguí reintento interno del productor de una segunda llamada de negocio.
+- [ ] Comprobé rollback de envío y outbox en una misma transacción SQL.
+- [ ] Reproduje el replay de un evento y una sola proyección.
+- [ ] Expliqué por qué Kafka EOS no convierte una base de datos externa en parte de su transacción.
+
+**Fuentes oficiales:** [idempotencia y productor de Kafka en Spring](https://docs.spring.io/spring-kafka/reference/kafka/transactions.html), [Exactly Once Semantics](https://docs.spring.io/spring-kafka/reference/kafka/exactly-once.html) y [transacciones de KafkaTemplate](https://docs.spring.io/spring-kafka/reference/kafka/transactions.html#using-kafkatemplate-local-transactions).
+
+**Transferencia al proyecto integrador:** conserva eventos pendientes en outbox, publica con una clave estable y protege el efecto de cada eventId en inbox. No llames exactly-once a una operación que no cubre sus fronteras de persistencia.
 
 ### Tema 4: Rebalanceo de consumer groups y partition assignment
 

@@ -289,7 +289,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 9488,
+      "lines": 9531,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -297,7 +297,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1229,
+      "lines": 1228,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -583,7 +583,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3423,
+      "lines": 3430,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -619,7 +619,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13484,
+      "lines": 13486,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -660,7 +660,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 82,
+      "lines": 83,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1071,7 +1071,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 316,
+      "lines": 319,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -12122,7 +12122,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-8.md",
-      "lines": 1121,
+      "lines": 1013,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12138,7 +12138,7 @@
         "#### Subtema 2.2: Provoca un mensaje inv\u00e1lido y comprueba los intentos \u00b7 10 min",
         "#### Subtema 2.3: Ajusta la pol\u00edtica y atiende los mensajes recuperados \u00b7 15 min",
         "### Tema 3: Productor idempotente y transacciones (exactly-once)",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+        "#### Subtema 3.1: Configura idempotencia del productor \u00b7 10 min"
       ]
     },
     {

@@ -93,10 +93,10 @@
     },
     "spring-boot": {
       "topics": 111,
-      "completeTopics": 10,
-      "topicsWith3to6Subtopics": 10,
-      "subtopics": 30,
-      "completeSubtopics": 30
+      "completeTopics": 11,
+      "topicsWith3to6Subtopics": 11,
+      "subtopics": 33,
+      "completeSubtopics": 33
     }
   },
   "topics": {
@@ -9415,9 +9415,52 @@
       {
         "module": 8,
         "topic": "### Tema 3: Productor idempotente y transacciones (exactly-once)",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "3.1",
+            "title": "#### Subtema 3.1: Configura idempotencia del productor · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "3.2",
+            "title": "#### Subtema 3.2: Guarda el envío y el evento con outbox · 15 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "3.3",
+            "title": "#### Subtema 3.3: Deduplica el efecto con inbox y delimita exactly-once · 15 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 8,

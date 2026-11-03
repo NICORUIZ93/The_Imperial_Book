@@ -16,8 +16,8 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | Modificación | 1175 | 10 |
 | Conexión con un proyecto | 1162 | 23 |
 | Modelo mental | 1185 | 0 |
-| Límites | 1167 | 18 |
-| **Perfil de criterios detectado** | **1150** | **35** |
+| Límites | 1166 | 19 |
+| **Perfil de criterios detectado** | **1149** | **36** |
 
 ## Prioridad por track
 
@@ -36,7 +36,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | node | 83 | 0 | 0 | 0 | 0 | 1 | 2 | 1 |
 | react | 58 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | rutaflow | 29 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| spring-boot | 111 | 0 | 0 | 4 | 0 | 3 | 7 | 5 |
+| spring-boot | 111 | 0 | 0 | 4 | 0 | 3 | 7 | 6 |
 
 ## Pendientes por tema
 
@@ -75,6 +75,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 - [spring-boot · módulo 25](../web/public/content/spring-boot/modulo-25.md) · Tema 3: reintentos, error handler y dead-letter: modificación, conexión con un proyecto, límites.
 - [spring-boot · módulo 25](../web/public/content/spring-boot/modulo-25.md) · Tema 4: test binder y límites de la prueba: modificación, conexión con un proyecto.
 - [spring-boot · módulo 8](../web/public/content/spring-boot/modulo-8.md) · Tema 1: Producers y consumers con Spring Kafka: límites.
+- [spring-boot · módulo 8](../web/public/content/spring-boot/modulo-8.md) · Tema 3: Productor idempotente y transacciones (exactly-once): límites.
 
 ## Regla de cierre
 
