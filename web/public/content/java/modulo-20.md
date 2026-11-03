@@ -898,11 +898,10 @@ Al finalizar podrás convertir un resultado que puede faltar en `Optional`, tran
 
 #### Paso 4 · Ejercicio 1
 
-##### Subtema 7.1: Representar una búsqueda vacía · 5-10 min
+#### Subtema 7.1: Representar una búsqueda vacía · 10 min
+**1. Contexto** el diccionario puede no tener la guía solicitada.
 
-**Contexto:** el diccionario puede no tener la guía solicitada.
-
-**Hazlo tú:** crea `java-funcional-t07/src/Buscar.java`:
+**2. Hazlo tú** crea `java-funcional-t07/src/Buscar.java`:
 
 ```java
 import java.util.Map;
@@ -924,15 +923,20 @@ Ejecuta `cd java-funcional-t07 && java src/Buscar.java`.
 
 **Fallo deliberado:** cambia `orElse` por `get()`. **Error esperado:** `NoSuchElementException: No value present`. **Diagnóstico:** `get()` exige un valor, pero esta búsqueda está vacía.
 
-**Entiende:** pregunta por la ausencia o entrega una alternativa antes de usar el valor.
+**3. Entiende** pregunta por la ausencia o entrega una alternativa antes de usar el valor.
+
+**Diagnóstico:** verifica si el dato existe antes de transformarlo o de pedir un valor obligatorio; usa una alternativa o un error con contexto.
+
+**4. Cierra**
+
+Guarda los casos con valor y vacío y explica qué decisión tomó el programa en cada uno.
 
 #### Paso 5 · Ejercicio 2
 
-##### Subtema 7.2: Transformar solo cuando hay valor · 5-10 min
+#### Subtema 7.2: Transformar solo cuando hay valor · 10 min
+**1. Contexto** convierte el estado guardado a minúsculas, pero solo si existe.
 
-**Contexto:** convierte el estado guardado a minúsculas, pero solo si existe.
-
-**Hazlo tú:** crea `java-funcional-t07/src/Transformar.java`:
+**2. Hazlo tú** crea `java-funcional-t07/src/Transformar.java`:
 
 ```java
 import java.util.Optional;
@@ -954,15 +958,20 @@ Ejecuta `cd java-funcional-t07 && java src/Transformar.java`.
 
 **Fallo deliberado:** cambia `contains("ruta")` por `contains("pago")`. **Resultado del fallo:** `sin estado`. **Diagnóstico:** el valor existe, pero `filter` lo descarta cuando la condición no coincide.
 
-**Entiende:** las operaciones siguen dentro de la cajita hasta pedir el resultado final.
+**3. Entiende** las operaciones siguen dentro de la cajita hasta pedir el resultado final.
+
+**Diagnóstico:** verifica si el dato existe antes de transformarlo o de pedir un valor obligatorio; usa una alternativa o un error con contexto.
+
+**4. Cierra**
+
+Guarda los casos con valor y vacío y explica qué decisión tomó el programa en cada uno.
 
 #### Paso 6 · Ejercicio 3
 
-##### Subtema 7.3: Fallar con un mensaje útil · 5-10 min
+#### Subtema 7.3: Fallar con un mensaje útil · 10 min
+**1. Contexto** una factura sí necesita existir; si falta, informa qué guía se buscó.
 
-**Contexto:** una factura sí necesita existir; si falta, informa qué guía se buscó.
-
-**Hazlo tú:** crea `java-funcional-t07/src/Exigir.java`:
+**2. Hazlo tú** crea `java-funcional-t07/src/Exigir.java`:
 
 ```java
 import java.util.Map;
@@ -983,7 +992,13 @@ Ejecuta `cd java-funcional-t07 && java src/Exigir.java`.
 
 **Fallo deliberado:** quita el mensaje y usa `orElseThrow()`. **Resultado del fallo:** la excepción ya no dice qué guía faltó. **Diagnóstico:** incluye contexto que ayude a encontrar el dato incorrecto.
 
-**Entiende:** `Optional` sirve para resultados que pueden faltar; en un campo obligatorio, valida y reporta el problema en el límite de entrada.
+**3. Entiende** `Optional` sirve para resultados que pueden faltar; en un campo obligatorio, valida y reporta el problema en el límite de entrada.
+
+**Diagnóstico:** verifica si el dato existe antes de transformarlo o de pedir un valor obligatorio; usa una alternativa o un error con contexto.
+
+**4. Cierra**
+
+Guarda los casos con valor y vacío y explica qué decisión tomó el programa en cada uno.
 
 #### Paso 7 · Cierre y evidencia
 

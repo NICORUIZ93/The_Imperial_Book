@@ -51,10 +51,10 @@
     },
     "java": {
       "topics": 101,
-      "completeTopics": 94,
-      "topicsWith3to6Subtopics": 94,
-      "subtopics": 286,
-      "completeSubtopics": 286
+      "completeTopics": 95,
+      "topicsWith3to6Subtopics": 95,
+      "subtopics": 289,
+      "completeSubtopics": 289
     },
     "javascript": {
       "topics": 88,
@@ -8130,9 +8130,52 @@
       {
         "module": 20,
         "topic": "### Tema 7: Optional: buscar un envío que puede no existir",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "7.1",
+            "title": "#### Subtema 7.1: Representar una búsqueda vacía · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "7.2",
+            "title": "#### Subtema 7.2: Transformar solo cuando hay valor · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "7.3",
+            "title": "#### Subtema 7.3: Fallar con un mensaje útil · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 20,

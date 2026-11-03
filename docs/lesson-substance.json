@@ -1698,7 +1698,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "c922e44dbd136971ea3dc604b2109d7fb420facb2ff9d6f75a5515ab46811a83",
+    "fingerprint": "681ef7a7c573c5b68271b09ae49875fd8f30e9153ee1c889723b0216b2b094d7",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -7625,7 +7625,7 @@
         "module": 20,
         "tailWords": 62,
         "topic": "Tema 7: Optional: buscar un envío que puede no existir",
-        "words": 605
+        "words": 737
       },
       {
         "issues": [],
