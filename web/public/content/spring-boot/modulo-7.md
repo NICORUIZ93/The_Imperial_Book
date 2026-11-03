@@ -618,6 +618,222 @@ AvailabilityChangeEvent.publish(publisher, this, ReadinessState.____);
 
 **Transferencia al proyecto integrador:** distinguir liveness de readiness es lo que evitará que Kubernetes reinicie innecesariamente el proyecto integrador de este track (microservicio productivo, Módulo 12).
 
+### Tema 4: Tracing distribuido con Micrometer Tracing · Avanzado · 45 min
+
+**Prerrequisito:** Tema 2 de este módulo (métricas con Micrometer).
+
+**Al terminar podrás:** propagar un `traceId` compartido entre un span padre y un span hijo dentro de la misma petición usando `@Observed` y el `Tracer` de Micrometer, y diagnosticar por qué un método anotado `@Observed` puede no generar ningún span nuevo sin ningún error visible.
+
+#### Aprende
+
+**¿Por qué es importante?** Cuando un pedido de RutaFlow falla en producción, "algo salió mal en algún servicio" sin más contexto obliga a revisar logs de varios servicios a ciegas; con tracing distribuido, el mismo `traceId` aparece en los logs de cada servicio que participó en la petición, permitiendo reconstruir la secuencia completa con una sola búsqueda.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `Tracer.currentSpan()` | Prerrequisito | expone el span activo (`traceId`, `spanId`) en el punto exacto del código donde se lee |
+| `@Observed` crea un span hijo | Núcleo | el span leído DENTRO del método anotado comparte `traceId` con el padre pero tiene su propio `spanId` |
+| `management.observations.annotations.enabled` | Diagnóstico | en `false` (el valor por defecto), `@Observed` no crea ningún span nuevo, SIN ningún error |
+| `spring-boot-starter-aspectj` (Boot 4) | Prerrequisito | el starter que habilita `@Observed` se renombró desde `spring-boot-starter-aop` |
+| `management.tracing.sampling.probability` | Variante | por defecto solo 10% de las peticiones generan traza completa; `1.0` traza el 100% |
+| Mismo `traceId`, distinto `spanId` | Núcleo | la propiedad que hace posible reconstruir una cadena de llamadas como una sola historia |
+| Cuándo el overhead no se justifica | Decisión | para un servicio con una sola operación interna sin llamadas a otros servicios, tracing agrega ceremonia sin beneficio proporcional |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`Tracer.currentSpan()` (prerrequisito).** El bean `Tracer` (de `io.micrometer.tracing`) expone `currentSpan()`, que devuelve el span activo en el hilo actual en ese punto exacto de la ejecución; `span.context().traceId()` y `span.context().spanId()` son los identificadores que Micrometer Tracing gestiona automáticamente. Leer estos valores en dos puntos distintos de una misma petición es el prerrequisito para confirmar, en código, que son el mismo trace pero spans distintos.
+
+**`@Observed` crea un span hijo (núcleo).** `@Observed(name = "greeting.generate", contextualName = "generate-greeting")` sobre un método hace que, cada vez que se invoca A TRAVÉS DEL PROXY de Spring (nunca por auto-invocación directa dentro de la misma clase), se abra una nueva "Observation" que, con el puente de tracing activo, se traduce en un nuevo span hijo del que estaba activo al momento de la llamada. El test confirma esto leyendo `tracer.currentSpan()` DENTRO del método observado: su `spanId` es distinto del `spanId` leído por el llamador, pero su `traceId` es idéntico.
+
+**`management.observations.annotations.enabled` (diagnóstico).** Este es el hallazgo central del tema: la propiedad `management.observations.annotations.enabled` vale `false` POR DEFECTO. Sin ponerla en `true` explícitamente, `@Observed` no produce ningún error ni advertencia — simplemente no crea ningún span nuevo, y el `spanId` leído dentro del método "observado" resulta IDÉNTICO al del llamador, como si la anotación no existiera. Es exactamente el tipo de fallo silencioso que un error de compilación nunca atraparía.
+
+**`spring-boot-starter-aspectj` (Boot 4) (prerrequisito).** `@Observed` funciona vía AOP (un proxy intercepta la llamada al método); ese soporte de AOP requería el starter `spring-boot-starter-aop` en Spring Boot 3.x, renombrado a `spring-boot-starter-aspectj` en Spring Boot 4 (confirmado contra Maven Central: `spring-boot-starter-aop` solo existe hasta la versión `4.0.0-M2`, un milestone previo al lanzamiento de Boot 4). Un proyecto migrado de Boot 3 que todavía declare el starter viejo simplemente no resuelve la dependencia.
+
+**`management.tracing.sampling.probability` (variante).** Por defecto, Spring Boot solo muestrea (genera traza completa) el 10% de las peticiones, para no generar overhead de tracing en el 100% del tráfico de producción sin necesidad. `management.tracing.sampling.probability: 1.0` fuerza el muestreo del 100%, apropiado para un entorno de desarrollo o para depurar un incidente específico, no necesariamente para producción a gran escala.
+
+**Mismo `traceId`, distinto `spanId` (núcleo).** La garantía central que hace útil el tracing distribuido es exactamente esta: un `traceId` constante identifica TODA la cadena de llamadas de una petición (incluso cruzando servicios distintos vía propagación de headers HTTP, fuera del alcance de este demo de un solo proceso), mientras cada `spanId` distinto identifica una UNIDAD DE TRABAJO específica dentro de esa cadena (una llamada a un método, una petición HTTP saliente, una consulta a base de datos). Buscar por `traceId` en los logs reconstruye la historia completa.
+
+**Cuándo el overhead no se justifica (decisión).** Para un servicio interno con una sola operación simple que no llama a ningún otro servicio ni realiza ninguna operación costosa, instrumentar con `@Observed` y tracing agrega ceremonia de configuración sin ningún beneficio diagnóstico proporcional; el tracing se justifica cuando hay una cadena real de llamadas (entre métodos, servicios o ambos) que se vuelve difícil de reconstruir manualmente desde logs aislados.
+
+**Conceptos clave:** `Tracer`, `@Observed`, `traceId` compartido, `spanId` por unidad de trabajo, `management.observations.annotations.enabled`.
+
+`Tracer.currentSpan()` expone el span activo en cualquier punto del código; `@Observed` sobre un método crea un span hijo del span activo al momento de la llamada (vía proxy AOP, requiere `spring-boot-starter-aspectj` y, críticamente, `management.observations.annotations.enabled: true`, que vale `false` por defecto). El span hijo comparte el mismo `traceId` que el padre pero tiene su propio `spanId`, la propiedad que permite reconstruir una cadena completa de llamadas buscando un único `traceId` en los logs.
+
+**Analogía:** un `traceId` es como el número de seguimiento único de un paquete que viaja a través de varias estaciones de distribución; cada `spanId` es el sello específico que cada estación individual le agrega al pasar por ella — el número de seguimiento (traceId) permanece igual en todo el viaje, mientras cada sello (spanId) identifica una etapa específica y distinta de ese mismo viaje.
+
+**Diagrama:**
+
+```mermaid
+sequenceDiagram
+  participant C as Caller (span padre)
+  participant S as GreetingService.greet() (@Observed)
+  C->>C: traceId=ABC, spanId=1 (span padre)
+  C->>S: invoca vía proxy AOP
+  S->>S: traceId=ABC (igual), spanId=2 (nuevo, hijo)
+  S-->>C: retorna
+  Note over C,S: mismo traceId, spanId distinto por unidad de trabajo
+```
+
+#### Practica
+
+**Demo paso a paso.** Desde una carpeta vacía, genera el proyecto:
+
+```bash
+mkdir tracing-demo && cd tracing-demo
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web,actuator -d javaVersion=27 -o app.zip
+unzip -q app.zip
+```
+
+Agrega las dependencias reales de tracing y AOP al `pom.xml` (dentro de `<dependencies>`; sin fijar versión, el BOM de Spring Boot las resuelve):
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-micrometer-tracing-brave</artifactId>
+</dependency>
+<dependency>
+    <groupId>io.micrometer</groupId>
+    <artifactId>micrometer-tracing-bridge-brave</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-aspectj</artifactId>
+</dependency>
+```
+
+Crea `src/main/resources/application.yml`:
+
+```yaml
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+  observations:
+    annotations:
+      enabled: true
+```
+
+Crea `src/main/java/com/academia/tracing/GreetingService.java`:
+
+```java
+package com.academia.tracing;
+
+import io.micrometer.observation.annotation.Observed;
+import io.micrometer.tracing.Tracer;
+import org.springframework.stereotype.Service;
+
+@Service
+public class GreetingService {
+    private final Tracer tracer;
+
+    public GreetingService(Tracer tracer) { this.tracer = tracer; }
+
+    @Observed(name = "greeting.generate", contextualName = "generate-greeting")
+    public SpanInfo greet() {
+        var span = tracer.currentSpan();
+        String traceId = span != null ? span.context().traceId() : "none";
+        String spanId = span != null ? span.context().spanId() : "none";
+        return new SpanInfo("Hello, World!", traceId, spanId);
+    }
+
+    public record SpanInfo(String mensaje, String traceId, String spanId) {}
+}
+```
+
+Crea el test en `src/test/java/com/academia/tracing/GreetingServiceTracingTest.java`:
+
+```java
+package com.academia.tracing;
+
+import io.micrometer.tracing.Span;
+import io.micrometer.tracing.Tracer;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+@SpringBootTest
+class GreetingServiceTracingTest {
+
+    @Autowired
+    private Tracer tracer;
+    @Autowired
+    private GreetingService greetingService;
+
+    @Test
+    void elSpanHijoComparteTraceIdConElPadrePeroTieneSuPropioSpanId() {
+        Span spanPadre = tracer.nextSpan().name("peticion-simulada").start();
+        String traceIdPadre;
+        String spanIdPadre;
+        GreetingService.SpanInfo hijo;
+        try (Tracer.SpanInScope ignored = tracer.withSpan(spanPadre)) {
+            traceIdPadre = spanPadre.context().traceId();
+            spanIdPadre = spanPadre.context().spanId();
+            hijo = greetingService.greet(); // @Observed crea un span HIJO del activo (spanPadre)
+        } finally {
+            spanPadre.end();
+        }
+
+        assertThat(hijo.traceId()).isEqualTo(traceIdPadre); // mismo trace de extremo a extremo
+        assertThat(hijo.spanId()).isNotEqualTo(spanIdPadre); // pero es un span DISTINTO (hijo)
+    }
+}
+```
+
+```bash
+./mvnw test
+```
+
+**Resultado esperado:** el test pasa (verificado con Spring Boot 4.1.1 / Spring Framework 7.0.9 / Micrometer Tracing 1.7.1 sobre JDK 27.0.1): `hijo.traceId()` es idéntico a `traceIdPadre`, pero `hijo.spanId()` es distinto de `spanIdPadre`, confirmando en código que `@Observed` efectivamente crea un span hijo dentro del mismo trace.
+
+**Fallo deliberado:** quita (o cambia a `false`) la propiedad `management.observations.annotations.enabled` de `application.yml` y ejecuta de nuevo el test. La aserción `assertThat(hijo.spanId()).isNotEqualTo(spanIdPadre)` FALLA porque ambos `spanId` resultan IDÉNTICOS: sin esa propiedad en `true` (su valor por defecto es `false`), `@Observed` no crea ningún span nuevo, sin lanzar ningún error ni advertencia. Diagnostica confirmando que una anotación de observabilidad puede estar "presente en el código" pero completamente inactiva por una propiedad de configuración ausente, el tipo de fallo que ningún test de compilación detecta. Restaura la propiedad en `true` antes de continuar.
+
+**Ejercicios.**
+
+1. Agrega una segunda llamada a un método distinto, también `@Observed`, y confirma con un test que las tres unidades de trabajo (padre + dos hijos) comparten el mismo `traceId` pero cada una tiene su propio `spanId`.
+2. Cambia `management.tracing.sampling.probability` a `0.0` y documenta, basándote en la fuente oficial, qué implica ese valor para el muestreo de trazas en producción.
+3. Llama a `greet()` directamente desde OTRO método de la misma clase `GreetingService` (auto-invocación, sin pasar por el proxy de Spring) y confirma que, en ese caso, `@Observed` NO crea ningún span hijo (la auto-invocación no pasa por el proxy AOP).
+4. Escribe de memoria (sin mirar) un servicio con un método `@Observed` y un test que confirme que su span comparte `traceId` pero no `spanId` con un span padre simulado. Compara después contra el patrón del Paso 4.
+
+**Pista:** si un método anotado `@Observed` parece no generar ningún span nuevo, antes de sospechar del código revisa `management.observations.annotations.enabled` — es `false` por defecto y no produce ningún error que lo señale.
+
+**Completa el código:** rellena la propiedad que habilita las anotaciones de observabilidad como `@Observed`:
+
+```yaml
+management:
+  observations:
+    annotations:
+      ____: true
+```
+
+**Reto de memoria:** cierra este documento y escribe, solo de memoria, un método `@Observed`, la propiedad de configuración que lo activa, y un test que confirme `traceId` compartido con `spanId` distinto frente a un span padre simulado.
+
+#### Aplica
+
+**Reto abierto.** Instrumenta con `@Observed` los métodos de negocio clave del flujo de creación de pedidos de RutaFlow (validar, reservar inventario, cobrar, notificar), y escribe un test que confirme que las cuatro operaciones, invocadas en secuencia dentro de una misma petición simulada, comparten un único `traceId` con cuatro `spanId` distintos. Documenta qué consultarías primero en una herramienta de trazas (Zipkin, Tempo) ante un reporte de "el pedido BO-004512 se demoró mucho".
+
+**Checklist de salida.**
+
+- [ ] Un span hijo creado por `@Observed` comparte `traceId` con su span padre.
+- [ ] Ese mismo span hijo tiene un `spanId` distinto del padre.
+- [ ] `management.observations.annotations.enabled: true` está explícito en la configuración (no asumido).
+- [ ] Reprodujiste el fallo silencioso de omitir esa propiedad y entendés por qué no produce ningún error.
+- [ ] Sabés explicar la diferencia entre `traceId` (constante en toda la petición) y `spanId` (por unidad de trabajo).
+
+**Si falla.** Si todos los spans tienen el mismo `spanId` que su padre, revisa `management.observations.annotations.enabled` primero. Si la dependencia `spring-boot-starter-aop` no resuelve, en Spring Boot 4 el starter se renombró a `spring-boot-starter-aspectj`.
+
+**Siguiente paso:** el módulo 8 aborda mensajería asíncrona con Kafka y RabbitMQ.
+
+**Errores comunes:** asumir que agregar `@Observed` es suficiente sin habilitar `management.observations.annotations.enabled`; usar el nombre de starter de Boot 3.x (`spring-boot-starter-aop`) en un proyecto Boot 4; llamar al método observado por auto-invocación dentro de la misma clase, donde el proxy AOP nunca intercepta la llamada.
+
+**Límites y decisión de uso:** para un servicio con una única operación simple sin llamadas a otros servicios ni pasos internos complejos, el tracing agrega configuración y overhead sin un beneficio diagnóstico proporcional; se justifica cuando reconstruir manualmente una cadena de llamadas desde logs aislados ya es costoso o propenso a error.
+
+**Fuente oficial:** [Spring Boot — Tracing](https://docs.spring.io/spring-boot/reference/actuator/tracing.html).
+
+**Transferencia al proyecto integrador:** el `traceId` compartido de este tema es el que permitirá seguir una petición completa a través de los distintos componentes del microservicio productivo (Módulo 12).
+
 ## Laboratorio práctico
 
 **Objetivo del laboratorio:** exponer Actuator con al menos una métrica de negocio custom y health checks apropiados.

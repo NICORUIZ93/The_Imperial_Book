@@ -1677,7 +1677,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "b0ed9b8bfdb4fa1b627c56759a7363773ec67a3cd3b508ef66236a7b0c93b3e5",
+    "fingerprint": "43ce26ed2b11d7239b43009704a08dfe1e862af7acf836deb9a36810b09093f1",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
@@ -1686,7 +1686,7 @@
     },
     "modules": 254,
     "modulesWithLegacySections": 179,
-    "topics": 1162,
+    "topics": 1163,
     "topicsWithIssues": 0
   },
   "topics": {
@@ -9787,6 +9787,13 @@
         "tailWords": 283,
         "topic": "Tema 3: Liveness vs readiness · Intermedio · 30 min",
         "words": 1861
+      },
+      {
+        "issues": [],
+        "module": 7,
+        "tailWords": 343,
+        "topic": "Tema 4: Tracing distribuido con Micrometer Tracing · Avanzado · 45 min",
+        "words": 2119
       },
       {
         "issues": [],

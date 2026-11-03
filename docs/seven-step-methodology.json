@@ -248,22 +248,22 @@
       "complete": 29
     },
     "spring-boot": {
-      "topics": 96,
+      "topics": 97,
       "objective": 0,
-      "prerequisites": 96,
+      "prerequisites": 97,
       "context": 0,
       "theoryAnalogy": 0,
       "guidedDemo": 0,
-      "codeExplanation": 96,
-      "execution": 94,
-      "expectedResult": 96,
-      "deliberateFailure": 96,
+      "codeExplanation": 97,
+      "execution": 95,
+      "expectedResult": 97,
+      "deliberateFailure": 97,
       "guidedPractice": 0,
       "independentPractice": 0,
       "closure": 0,
-      "commonErrors": 96,
-      "resources": 96,
-      "standaloneExample": 93,
+      "commonErrors": 97,
+      "resources": 97,
+      "standaloneExample": 94,
       "complete": 0
     }
   },
@@ -29098,6 +29098,31 @@
       {
         "module": 7,
         "topic": "Tema 3: Liveness vs readiness · Intermedio · 30 min",
+        "criteria": {
+          "objective": false,
+          "prerequisites": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 8,
+          "complete": false
+        }
+      },
+      {
+        "module": 7,
+        "topic": "Tema 4: Tracing distribuido con Micrometer Tracing · Avanzado · 45 min",
         "criteria": {
           "objective": false,
           "prerequisites": true,

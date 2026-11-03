@@ -1,7 +1,7 @@
 {
   "summary": {
-    "topics": 1162,
-    "reviewed": 339,
+    "topics": 1163,
+    "reviewed": 340,
     "pending": 823,
     "priorityCandidates": 782,
     "byTrack": {
@@ -71,8 +71,8 @@
         "pending": 29
       },
       "spring-boot": {
-        "topics": 96,
-        "reviewed": 96,
+        "topics": 97,
+        "reviewed": 97,
         "pending": 0
       }
     },
@@ -21453,6 +21453,36 @@
         ],
         "sources": [
           "https://docs.spring.io/spring-boot/reference/actuator/"
+        ]
+      }
+    },
+    {
+      "id": "spring-boot/modulo-7::Tema 4: Tracing distribuido con Micrometer Tracing · Avanzado · 45 min",
+      "track": "spring-boot",
+      "module": 7,
+      "topic": "Tema 4: Tracing distribuido con Micrometer Tracing · Avanzado · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Lote 2 de docs/AUDITORIA-COBERTURA-SPRING-20261101.md (hueco ALTA #4: tracing distribuido -- SUPERFICIAL, solo Observation generica en M13 T4). Tema nuevo ejecutado de verdad, con TRES hallazgos reales encontrados en el proceso, no solo redactados: (1) spring-boot-starter-aop no existe en Boot 4 GA (confirmado en maven-metadata.xml: topa en 4.0.0-M2), se renombro a spring-boot-starter-aspectj; (2) org.springframework.boot.test.web.client.TestRestTemplate se movio a org.springframework.boot.resttestclient.TestRestTemplate (confirmado via javadoc oficial), lo que llevo a simplificar el demo evitando la cadena de dependencias resttestclient/RestTemplateBuilder y probar el mecanismo de tracing directamente con Tracer en vez de via HTTP; (3) el hallazgo mas valioso: @Observed con spring-boot-starter-aspectj en el classpath NO genera ningun span nuevo (ni error ni warning) a menos que management.observations.annotations.enabled=true este explicito -- su valor por defecto es false. Confirmado con el test fallando silenciosamente (spanId del hijo == spanId del padre) hasta agregar esa propiedad. mvn test: BUILD SUCCESS sobre Spring Boot 4.1.1 / Spring Framework 7.0.9 / Micrometer Tracing 1.7.1 / JDK 27.0.1.0.3. Sincronizado spring-boot.track.ts (preview del Modulo 7).",
+        "criticalSubtopics": [
+          "Tracer.currentSpan()",
+          "@Observed crea span hijo (mismo traceId, spanId distinto)",
+          "management.observations.annotations.enabled (false por defecto, fallo silencioso)",
+          "spring-boot-starter-aspectj (renombrado desde -aop en Boot 4)",
+          "management.tracing.sampling.probability"
+        ],
+        "sources": [
+          "https://docs.spring.io/spring-boot/reference/actuator/tracing.html",
+          "https://repo1.maven.org/maven2/org/springframework/boot/spring-boot-starter-aspectj/maven-metadata.xml",
+          "docs/AUDITORIA-COBERTURA-SPRING-20261101.md"
         ]
       }
     },

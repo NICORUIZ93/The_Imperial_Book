@@ -221,18 +221,18 @@
       "repeatedDemo": 0
     },
     "spring-boot": {
-      "topics": 96,
-      "explanation": 96,
-      "code": 96,
-      "visual": 76,
-      "filePath": 96,
-      "runCommand": 94,
-      "expectedResult": 96,
-      "practice": 96,
-      "project": 96,
-      "modelMental": 96,
-      "limitsDecision": 96,
-      "practicable": 94,
+      "topics": 97,
+      "explanation": 97,
+      "code": 97,
+      "visual": 77,
+      "filePath": 97,
+      "runCommand": 95,
+      "expectedResult": 97,
+      "practice": 97,
+      "project": 97,
+      "modelMental": 97,
+      "limitsDecision": 97,
+      "practicable": 95,
       "genericScaffold": 0,
       "repeatedDemo": 0
     }
@@ -25612,6 +25612,28 @@
       {
         "module": 7,
         "topic": "Tema 3: Liveness vs readiness · Intermedio · 30 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 7,
+        "topic": "Tema 4: Tracing distribuido con Micrometer Tracing · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,

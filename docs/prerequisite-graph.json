@@ -4485,6 +4485,17 @@
       ]
     },
     {
+      "id": "spring-boot:7:4",
+      "track": "spring-boot",
+      "module": 7,
+      "position": 4,
+      "title": "Tracing distribuido con Micrometer Tracing · Avanzado · 45 min",
+      "file": "web/public/content/spring-boot/modulo-7.md",
+      "requires": [
+        "spring-boot:7:3"
+      ]
+    },
+    {
       "id": "spring-boot:8:1",
       "track": "spring-boot",
       "module": 8,
@@ -4492,7 +4503,7 @@
       "title": "Producers y consumers con Spring Kafka · Avanzado · 50 min",
       "file": "web/public/content/spring-boot/modulo-8.md",
       "requires": [
-        "spring-boot:7:3"
+        "spring-boot:7:4"
       ]
     },
     {

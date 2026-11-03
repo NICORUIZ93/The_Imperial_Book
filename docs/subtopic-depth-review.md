@@ -2,8 +2,8 @@
 
 > Las señales automáticas no prueban profundidad ni ausencia de ella. Un tema sólo queda revisado mediante el registro humano con mapa de subtemas críticos, evidencia y fuentes.
 
-- Temas inventariados: 1162
-- Revisados humanamente para subtemas: 339
+- Temas inventariados: 1163
+- Revisados humanamente para subtemas: 340
 - Pendientes: 823
 - Candidatos prioritarios por señales: 782
 
@@ -24,7 +24,7 @@
 | node | 77 | 0 | 77 |
 | react | 58 | 0 | 58 |
 | rutaflow | 29 | 0 | 29 |
-| spring-boot | 96 | 96 | 0 |
+| spring-boot | 97 | 97 | 0 |
 
 ## Cola prioritaria
 
@@ -1143,6 +1143,7 @@
 - `spring-boot/modulo-7` — Tema 1: Actuator y health checks personalizados · Intermedio · 35 min — HealthIndicator custom; /actuator/health
 - `spring-boot/modulo-7` — Tema 2: Métricas de negocio con Micrometer · Avanzado · 45 min — MeterRegistry; Counter/Timer custom
 - `spring-boot/modulo-7` — Tema 3: Liveness vs readiness · Intermedio · 30 min — liveness vs readiness groups; probes para Kubernetes
+- `spring-boot/modulo-7` — Tema 4: Tracing distribuido con Micrometer Tracing · Avanzado · 45 min — Tracer.currentSpan(); @Observed crea span hijo (mismo traceId, spanId distinto); management.observations.annotations.enabled (false por defecto, fallo silencioso); spring-boot-starter-aspectj (renombrado desde -aop en Boot 4); management.tracing.sampling.probability
 - `spring-boot/modulo-8` — Tema 1: Producers y consumers con Spring Kafka · Avanzado · 50 min — KafkaTemplate; @KafkaListener; ConsumerFactory/ProducerFactory
 - `spring-boot/modulo-8` — Tema 2: Dead-letter queue · Avanzado · 45 min — @RetryableTopic; DeadLetterPublishingRecoverer
 - `spring-boot/modulo-8` — Tema 3: Productor idempotente y transacciones (exactly-once) · Experto · 50 min — enable.idempotence; KafkaTransactionManager; exactly-once semantics

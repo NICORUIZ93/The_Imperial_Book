@@ -5140,6 +5140,10 @@
       {
         "title": "Liveness vs readiness",
         "fragment": "tema-3-liveness-vs-readiness"
+      },
+      {
+        "title": "Tracing distribuido con Micrometer Tracing",
+        "fragment": "tema-4-tracing-distribuido-con-micrometer-tracing"
       }
     ],
     "8": [

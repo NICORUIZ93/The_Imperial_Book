@@ -95,7 +95,7 @@ export const SPRING_BOOT_MODULES: CourseModule[] = [
     'Suite de tests de integración con Testcontainers contra PostgreSQL real.'),
   m(7, 'Observabilidad con Actuator', 'Actuator', 'Experto', '2 h', '#6db33f',
     'Expón métricas y health checks listos para cualquier sistema de monitoreo.',
-    ['Spring Boot Actuator: endpoints clave', 'Micrometer y métricas custom', 'Health checks personalizados', 'Logging estructurado'],
+    ['Spring Boot Actuator: endpoints clave', 'Micrometer y métricas custom', 'Health checks personalizados', 'Logging estructurado', 'Tracing distribuido con Micrometer Tracing (@Observed, traceId/spanId)'],
     [
       'Agrega spring-boot-starter-actuator y expón /actuator/health y /actuator/metrics',
       'Crea un health indicator personalizado que verifique la conexión a un servicio externo',

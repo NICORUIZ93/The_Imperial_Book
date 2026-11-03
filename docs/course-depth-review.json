@@ -3,14 +3,14 @@
   "totals": {
     "tracks": 14,
     "modules": 254,
-    "topics": 1162,
+    "topics": 1163,
     "topicsWithSignals": 104,
     "newLaboratories": 25
   },
   "humanPedagogicalReview": {
     "reviewed": 0,
     "preRead": 14,
-    "total": 1162,
+    "total": 1163,
     "date": "2026-10-31",
     "responsible": "persona revisora pendiente; pre-lectura de agente registrada",
     "evidence": "docs/manual-review-log.md"
@@ -14124,6 +14124,18 @@
       "title": "Tema 3: Liveness vs readiness · Intermedio · 30 min",
       "file": "web/public/content/spring-boot/modulo-7.md",
       "line": 425,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "spring-boot",
+      "module": 7,
+      "title": "Tema 4: Tracing distribuido con Micrometer Tracing · Avanzado · 45 min",
+      "file": "web/public/content/spring-boot/modulo-7.md",
+      "line": 621,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
