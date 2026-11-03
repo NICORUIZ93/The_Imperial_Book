@@ -1698,7 +1698,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "6ef3dd03f4f6938ea7d85dc081e956a54e82a556d6ffbb5c2413ec0dd5f01e52",
+    "fingerprint": "ae6a512bba9b46ba7fab0d41b4fe446e8abb097a628cb63ae5084456fd3854bc",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -7497,16 +7497,16 @@
       {
         "issues": [],
         "module": 18,
-        "tailWords": 198,
+        "tailWords": 208,
         "topic": "Tema 1: HttpClient, REST, timeouts y fallos",
-        "words": 1713
+        "words": 1770
       },
       {
         "issues": [],
         "module": 18,
-        "tailWords": 243,
+        "tailWords": 255,
         "topic": "Tema 2: Tokens, validación y límites de seguridad",
-        "words": 1631
+        "words": 1683
       },
       {
         "issues": [],

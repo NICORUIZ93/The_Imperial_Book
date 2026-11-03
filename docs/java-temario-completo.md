@@ -5,7 +5,7 @@
 **Proyecto continuo:** Motor de asignación de entregas.
 **Prerrequisito de entrada:** Fundamentos de programación; el módulo 0 comienza con JDK y terminal..
 **Duración objetivo:** temas de 20–45 minutos; cada tema se divide en 3–6 acciones de 5–15 minutos.
-**Estado estructural:** 80/101 temas migrados; auditoría estructural actualizada el 2026-11-03.
+**Estado estructural:** 82/101 temas migrados; auditoría estructural actualizada el 2026-11-03.
 
 ## Índice de módulos y temas
 
@@ -423,8 +423,16 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
 
 [Abrir lección completa](../web/public/content/java/modulo-18.md)
 
-- [pendiente de migrar] Tema 1: HttpClient, REST, timeouts y fallos
-- [pendiente de migrar] Tema 2: Tokens, validación y límites de seguridad
+- [4 pasos] Tema 1: HttpClient, REST, timeouts y fallos
+  - ✓ Subtema 1.1: Consultar un health local · 10 min
+  - ✓ Subtema 1.2: Mostrar el motivo de un 404 · 10 min
+  - ✓ Subtema 1.3: Limitar la espera con timeout · 10 min
+  - ✓ Subtema 1.4: Reintentar un GET con un límite · 15 min
+- [4 pasos] Tema 2: Tokens, validación y límites de seguridad
+  - ✓ Subtema 2.1: Enviar un bearer local sin imprimir el secreto · 10 min
+  - ✓ Subtema 2.2: Rechazar destinos fuera de una lista permitida · 10 min
+  - ✓ Subtema 2.3: Comprobar quién puede leer cada envío · 10 min
+  - ✓ Subtema 2.4: Rechazar identificadores con formato inválido · 10 min
 
 ### Módulo 19: Java del día a día — reflexión, regex, dinero, contratos, plugins e i18n
 
@@ -481,7 +489,7 @@ La tabla registra presencia de áreas en el inventario del track, no profundidad
 
 ### Huecos y límites reportados
 
-- El repositorio contiene 101 temas en 21 módulos; 80 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
+- El repositorio contiene 101 temas en 21 módulos; 82 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
 - No hay base para afirmar que el track esté completo: la comparación con la fuente de referencia está pendiente de revisión humana módulo por módulo.
 - Los elementos de la fuente que todavía deben verificarse de forma explícita están enumerados en la tabla anterior; cualquier técnica crítica que no tenga tema propio debe añadirse conservando el currículo base.
 - La ejecución de ejemplos, el comportamiento con brokers/plataformas reales y la calidad pedagógica humana se registran por separado.

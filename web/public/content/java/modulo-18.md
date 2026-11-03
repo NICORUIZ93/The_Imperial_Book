@@ -69,7 +69,6 @@ cd app && mvn test
 # Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
 ```
 
-
 Ejecuta un servidor local de prueba y llama a `consultar(URI.create("http://localhost:8080/health"))`; ejecuta tests con `./mvnw test`.
 
 **Resultado esperado:** HTTP 200 devuelve el cuerpo; 404 y timeout aparecen como errores explícitos. **Fallo deliberado:** elimina el timeout del request y detén el servidor de prueba; observa la llamada bloqueada. Restaura el límite y verifica que el test termina acotadamente.
@@ -79,56 +78,19 @@ Ejecuta un servidor local de prueba y llama a `consultar(URI.create("http://loca
 Agrega manejo distinto para 4xx, 5xx y timeout. Implementa un retry de máximo dos intentos únicamente para GET ante 502/503/504, con backoff. El test debe verificar el máximo de intentos y que un 400 no se reintenta.
 **Pista:** si el test cuenta más de dos llamadas para un 503, o ve que un 400 también se reintentó, la condición del retry está mal acotada: debe comprobar el código de estado (502/503/504) Y el método (solo GET) antes de reintentar, no solo uno de los dos.
 
-##### Subtema 1.3: Limitar la espera con timeout · 5-10 min
-
-**Contexto:** si una dependencia tarda demasiado, el cliente debe dejar libre el hilo y reportar el timeout.
-
-**Hazlo tú:** crea `java-http-t01/src/Espera.java`:
-
-```java
-import com.sun.net.httpserver.HttpServer;
-import java.net.InetSocketAddress;
-import java.net.URI;
-import java.net.http.*;
-import java.net.http.HttpTimeoutException;
-import java.time.Duration;
-
-public class Espera {
-    public static void main(String[] args) throws Exception {
-        var server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
-        server.createContext("/lento", e -> {
-            try { Thread.sleep(800); } catch (InterruptedException x) { Thread.currentThread().interrupt(); }
-            try { e.sendResponseHeaders(200, -1); } catch (Exception ignored) { }
-            e.close();
-        });
-        server.start();
-        try {
-            var uri = URI.create("http://127.0.0.1:" + server.getAddress().getPort() + "/lento");
-            var request = HttpRequest.newBuilder(uri).timeout(Duration.ofMillis(100)).GET().build();
-            try { HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString()); }
-            catch (HttpTimeoutException e) { System.out.println("timeout: 100 ms"); }
-        } finally { server.stop(0); }
-    }
-}
-```
-
-Ejecuta `java --add-modules jdk.httpserver java-http-t01/src/Espera.java`.
-
-**Resultado esperado:** `timeout: 100 ms`.
-
-**Fallo deliberado:** sube el timeout a 2 segundos. **Resultado del fallo:** el request acaba después de la demora y no informa timeout. **Diagnóstico:** el límite ahora es mayor que los 800 ms simulados.
-
-**Entiende:** timeout limita cuánto espera el cliente; no demuestra que el servidor no recibiera el request.
-
 #### Paso 6 · Práctica independiente
 
 Consume un endpoint de RutaFlow con un DTO validado. Añade correlación de request, límite de tamaño de respuesta y una allowlist de hosts configurada por el servicio. No aceptes URLs arbitrarias del usuario.
 
-##### Subtema 1.1: Consultar un health local · 5-10 min
+#### Subtema 1.1: Consultar un health local · 10 min
 
-**Contexto:** prueba el cliente sin depender de internet ni cuentas externas.
+**1. Contexto**
 
-**Hazlo tú:** crea `java-http-t01/src/Salud.java`:
+Prueba el cliente sin depender de internet ni cuentas externas.
+
+**2. Hazlo tú**
+
+Crea `java-http-t01/src/Salud.java`:
 
 ```java
 import com.sun.net.httpserver.HttpServer;
@@ -161,15 +123,25 @@ Ejecuta `java --add-modules jdk.httpserver java-http-t01/src/Salud.java`.
 
 **Resultado esperado:** `HTTP 200: ok`.
 
-**Fallo deliberado:** cambia `/health` por `/healthz`. **Resultado del fallo:** el estado pasa a HTTP 404; el servidor devuelve su respuesta 404 por defecto. **Diagnóstico:** la ruta no coincide con la que registró el servidor local.
+**Fallo deliberado**: cambia `/health` por `/healthz`. **Resultado del fallo:** el estado pasa a HTTP 404; el servidor devuelve su respuesta 404 por defecto. **Diagnóstico:** la ruta no coincide con la que registró el servidor local.
 
-**Entiende:** el puerto 0 permite que el sistema elija uno libre; el programa consulta el puerto asignado.
+**3. Entiende**
 
-##### Subtema 1.2: Mostrar el motivo de un 404 · 5-10 min
+El puerto 0 permite que el sistema elija uno libre; el programa consulta el puerto asignado.
 
-**Contexto:** una respuesta HTTP puede llegar bien y comunicar que el recurso no existe.
+**4. Cierra**
 
-**Hazlo tú:** crea `java-http-t01/src/NoExiste.java`:
+Guarda respuesta y estado HTTP observados.
+
+#### Subtema 1.2: Mostrar el motivo de un 404 · 10 min
+
+**1. Contexto**
+
+una respuesta HTTP puede llegar bien y comunicar que el recurso no existe.
+
+**2. Hazlo tú**
+
+Crea `java-http-t01/src/NoExiste.java`:
 
 ```java
 import com.sun.net.httpserver.HttpServer;
@@ -203,15 +175,76 @@ Ejecuta `java --add-modules jdk.httpserver java-http-t01/src/NoExiste.java`.
 
 **Resultado esperado:** `IllegalStateException: API respondió HTTP 404: Guía no existe`.
 
-**Fallo deliberado:** acepta cualquier estado menor que 500. **Resultado del fallo:** el 404 pasa como si fuera éxito. **Diagnóstico:** la conexión contestó, pero no encontró el envío.
+**Fallo deliberado**: acepta cualquier estado menor que 500. **Resultado del fallo:** el 404 pasa como si fuera éxito. **Diagnóstico:** la conexión contestó, pero no encontró el envío.
 
-**Entiende:** comprueba estado y cuerpo antes de entregar una respuesta como resultado válido.
+**3. Entiende**
 
-##### Subtema 1.4: Reintentar un GET con un límite · 10-15 min
+Comprueba estado y cuerpo antes de entregar una respuesta como resultado válido.
 
-**Contexto:** un 503 puede ser temporal; repetir indefinidamente aumenta la carga cuando el proveedor está caído.
+**4. Cierra**
 
-**Hazlo tú:** crea `java-http-t01/src/Reintento.java`:
+Conserva la respuesta 404 y el texto que diagnosticó la ruta.
+
+#### Subtema 1.3: Limitar la espera con timeout · 10 min
+
+**1. Contexto**
+
+Si una dependencia tarda demasiado, el cliente debe dejar libre el hilo y reportar el timeout.
+
+**2. Hazlo tú**
+
+Crea `java-http-t01/src/Espera.java`:
+
+```java
+import com.sun.net.httpserver.HttpServer;
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.net.http.*;
+import java.net.http.HttpTimeoutException;
+import java.time.Duration;
+
+public class Espera {
+    public static void main(String[] args) throws Exception {
+        var server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        server.createContext("/lento", e -> {
+            try { Thread.sleep(800); } catch (InterruptedException x) { Thread.currentThread().interrupt(); }
+            try { e.sendResponseHeaders(200, -1); } catch (Exception ignored) { }
+            e.close();
+        });
+        server.start();
+        try {
+            var uri = URI.create("http://127.0.0.1:" + server.getAddress().getPort() + "/lento");
+            var request = HttpRequest.newBuilder(uri).timeout(Duration.ofMillis(100)).GET().build();
+            try { HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString()); }
+            catch (HttpTimeoutException e) { System.out.println("timeout: 100 ms"); }
+        } finally { server.stop(0); }
+    }
+}
+```
+
+Ejecuta `java --add-modules jdk.httpserver java-http-t01/src/Espera.java`.
+
+**Resultado esperado:** `timeout: 100 ms`.
+
+**Fallo deliberado**: sube el timeout a 2 segundos. **Resultado del fallo:** el request acaba después de la demora y no informa timeout. **Diagnóstico:** el límite ahora es mayor que los 800 ms simulados.
+
+**3. Entiende**
+
+timeout limita cuánto espera el cliente; no demuestra que el servidor no recibiera el request.
+
+**4. Cierra**
+
+Anota el timeout configurado, el observado y por qué el servidor aún pudo recibir la petición.
+
+#### Subtema 1.4: Reintentar un GET con un límite · 15 min
+
+**1. Contexto**
+
+ un 503 puede ser temporal; repetir indefinidamente aumenta la carga cuando el proveedor está caído.
+
+**2. Hazlo tú**
+
+Crea `java-http-t01/src/Reintento.java`:
 
 ```java
 import com.sun.net.httpserver.HttpServer;
@@ -251,9 +284,11 @@ Ejecuta `java --add-modules jdk.httpserver java-http-t01/src/Reintento.java`.
 
 **Resultado esperado:** `intento=1 HTTP 503`, `intento=2 HTTP 200`, `llamadas=2`.
 
-**Fallo deliberado:** cambia GET por un POST que liquida un pago y conserva el retry. **Resultado del fallo:** el pago podría enviarse dos veces. **Diagnóstico:** un POST de escritura necesita idempotencia y una política acordada antes de repetirlo.
+**Fallo deliberado**: cambia GET por un POST que liquida un pago y conserva el retry. **Resultado del fallo:** el pago podría enviarse dos veces. **Diagnóstico:** un POST de escritura necesita idempotencia y una política acordada antes de repetirlo.
 
-**Entiende:** limita intentos y espera; decide qué operación se puede repetir antes de automatizar el retry.
+**3. Entiende**
+
+Limita intentos y espera; decide qué operación se puede repetir antes de automatizar el retry.
 
 #### Paso 7 · Cierre y evidencia
 
@@ -263,6 +298,10 @@ Entrega tests de éxito, 404, 503 y timeout con número de intentos comprobado p
 **Conceptos clave:** `HttpClient`, `HttpRequest`/`HttpResponse`, timeout, reintento idempotente con backoff y jitter.
 
 **Cuándo no usarlo:** llamadas con cuerpo enorme no deben cargarse sin límite en memoria; usa un `BodyHandler` de streaming.
+
+**4. Cierra**
+
+Guarda secuencia de respuestas y cantidad de intentos.
 
 ### Tema 2: Tokens, validación y límites de seguridad
 
@@ -306,7 +345,6 @@ cd app && mvn test
 # Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
 ```
 
-
 Ejecuta con `ACADEMIA_API_TOKEN=token-de-prueba ./mvnw test` (en PowerShell, configura `$env:ACADEMIA_API_TOKEN` antes). Un test con servidor stub debe comprobar el header sin escribir el valor en logs.
 
 **Resultado esperado:** el servidor de laboratorio recibe el bearer; no hay secreto en el repositorio. **Fallo deliberado:** usa HTTP plano contra una máquina externa o registra el header completo. Identifica exposición en tránsito/logs y retira ambas prácticas; no uses tokens reales.
@@ -319,11 +357,15 @@ Prueba valores vacíos, excesivamente largos y con formato inválido antes de co
 
 Diseña una matriz de autorización para `envio:leer`, `envio:asignar` y `envio:liquidar`. Escribe pruebas de acceso permitido/denegado y agrega expiración corta al token de test. Explica por qué TLS, expiración, audience y autorización de propiedad resuelven problemas diferentes.
 
-##### Subtema 2.1: Enviar un bearer local sin imprimir el secreto · 5-10 min
+#### Subtema 2.1: Enviar un bearer local sin imprimir el secreto · 10 min
 
-**Contexto:** el servidor debe recibir una credencial ficticia sin que el programa la escriba en la terminal.
+**1. Contexto**
 
-**Hazlo tú:** crea `java-http-t02/src/BearerLocal.java`:
+El servidor debe recibir una credencial ficticia sin que el programa la escriba en la terminal.
+
+**2. Hazlo tú**
+
+Crea `java-http-t02/src/BearerLocal.java`:
 
 ```java
 import com.sun.net.httpserver.HttpServer;
@@ -358,15 +400,25 @@ Ejecuta `ACADEMIA_API_TOKEN=prueba-local java --add-modules jdk.httpserver java-
 
 **Resultado esperado:** `HTTP 200: credencial presente`; la salida nunca muestra el token.
 
-**Fallo deliberado:** agrega `System.out.println(token)`. **Resultado del fallo:** se expone el valor ficticio en la terminal. **Diagnóstico:** registra si hay credencial, nunca su contenido; en producción usa un secreto real solo desde un gestor de secretos y HTTPS.
+**Fallo deliberado**: agrega `System.out.println(token)`. **Resultado del fallo:** se expone el valor ficticio en la terminal. **Diagnóstico:** registra si hay credencial, nunca su contenido; en producción usa un secreto real solo desde un gestor de secretos y HTTPS.
 
-**Entiende:** el laboratorio usa token inventado y loopback; no pegues secretos reales en comandos o código.
+**3. Entiende**
 
-##### Subtema 2.2: Rechazar destinos fuera de una lista permitida · 5-10 min
+El laboratorio usa token inventado y loopback; no pegues secretos reales en comandos o código.
 
-**Contexto:** no permitas que una URL externa apunte a una consola o base de datos interna.
+**4. Cierra**
 
-**Hazlo tú:** crea `java-http-t02/src/DestinoSeguro.java`:
+Conserva prueba válida, faltante y token ficticio sin copiar el secreto.
+
+#### Subtema 2.2: Rechazar destinos fuera de una lista permitida · 10 min
+
+**1. Contexto**
+
+no permitas que una URL externa apunte a una consola o base de datos interna.
+
+**2. Hazlo tú**
+
+Crea `java-http-t02/src/DestinoSeguro.java`:
 
 ```java
 import java.net.URI;
@@ -392,15 +444,25 @@ Ejecuta `java java-http-t02/src/DestinoSeguro.java`.
 
 **Resultado esperado:** `rechazada: Se requiere HTTPS`.
 
-**Fallo deliberado:** quita la comprobación del host y prueba `https://127.0.0.1/admin`. **Resultado del fallo:** el destino privado pasa el chequeo de esquema. **Diagnóstico:** HTTPS cifra el canal, no restringe el destino; en producción combina allowlist con bloqueo de rangos privados en red y revisión de DNS/redirecciones.
+**Fallo deliberado**: quita la comprobación del host y prueba `https://127.0.0.1/admin`. **Resultado del fallo:** el destino privado pasa el chequeo de esquema. **Diagnóstico:** HTTPS cifra el canal, no restringe el destino; en producción combina allowlist con bloqueo de rangos privados en red y revisión de DNS/redirecciones.
 
-**Entiende:** una URL con esquema seguro aún puede apuntar a una dirección prohibida.
+**3. Entiende**
 
-##### Subtema 2.3: Comprobar quién puede leer cada envío · 5-10 min
+ una URL con esquema seguro aún puede apuntar a una dirección prohibida.
 
-**Contexto:** autenticar a Ana no significa que pueda leer los envíos de otras personas.
+**4. Cierra**
 
-**Hazlo tú:** crea `java-http-t02/src/Propiedad.java`:
+Guarda los dos destinos permitidos y el rechazado.
+
+#### Subtema 2.3: Comprobar quién puede leer cada envío · 10 min
+
+**1. Contexto**
+
+ autenticar a Ana no significa que pueda leer los envíos de otras personas.
+
+**2. Hazlo tú**
+
+Crea `java-http-t02/src/Propiedad.java`:
 
 ```java
 public class Propiedad {
@@ -420,15 +482,25 @@ Ejecuta `java java-http-t02/src/Propiedad.java`.
 
 **Resultado esperado:** `ana=true` y `leo=false`.
 
-**Fallo deliberado:** haz que `puedeLeer` siempre devuelva `true`. **Resultado del fallo:** Leo obtiene acceso al envío de Ana. **Diagnóstico:** comprobar el rol general no comprueba la propiedad de este objeto.
+**Fallo deliberado**: haz que `puedeLeer` siempre devuelva `true`. **Resultado del fallo:** Leo obtiene acceso al envío de Ana. **Diagnóstico:** comprobar el rol general no comprueba la propiedad de este objeto.
 
-**Entiende:** decide el permiso para cada envío y acción, además de validar la identidad.
+**3. Entiende**
 
-##### Subtema 2.4: Rechazar identificadores con formato inválido · 5-10 min
+Decide el permiso para cada envío y acción, además de validar la identidad.
 
-**Contexto:** valida una guía antes de pasarla a SQL o a otro servicio.
+**4. Cierra**
 
-**Hazlo tú:** crea `java-http-t02/src/ValidarGuia.java`:
+Conserva una autorización permitida y otra denegada.
+
+#### Subtema 2.4: Rechazar identificadores con formato inválido · 10 min
+
+**1. Contexto**
+
+ valida una guía antes de pasarla a SQL o a otro servicio.
+
+**2. Hazlo tú**
+
+Crea `java-http-t02/src/ValidarGuia.java`:
 
 ```java
 public class ValidarGuia {
@@ -449,9 +521,11 @@ Ejecuta `java java-http-t02/src/ValidarGuia.java`.
 
 **Resultado esperado:** `RT-82` y después `Guía inválida`.
 
-**Fallo deliberado:** reemplaza la expresión completa por `guia.startsWith("RT-")`. **Resultado del fallo:** `RT-82 OR 1=1` pasa. **Diagnóstico:** un prefijo no valida toda la entrada; comprueba el formato completo y usa consultas parametrizadas en la capa de datos.
+**Fallo deliberado**: reemplaza la expresión completa por `guia.startsWith("RT-")`. **Resultado del fallo:** `RT-82 OR 1=1` pasa. **Diagnóstico:** un prefijo no valida toda la entrada; comprueba el formato completo y usa consultas parametrizadas en la capa de datos.
 
-**Entiende:** formato, autorización y parametrización SQL resuelven problemas distintos.
+**3. Entiende**
+
+Formato, autorización y parametrización SQL resuelven problemas distintos.
 
 #### Paso 7 · Cierre y evidencia
 
@@ -462,3 +536,7 @@ Entrega pruebas del header, validación y denegación, sin incluir credenciales 
 
 **Cuándo no usarlo:** no guardes contraseñas dentro de JWT ni uses JWT como sustituto automático de sesiones; el servidor debe poder revocar o limitar tokens según el diseño.
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+
+**4. Cierra**
+
+Guarda entrada válida, inválida y la regla que la rechazó.
