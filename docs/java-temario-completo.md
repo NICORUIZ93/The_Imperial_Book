@@ -230,7 +230,8 @@ El cierre integrador se conserva en cada módulo y en el proyecto Java del catá
 - **Temas estructurales encontrados:** 101; no se quitaron temas para esta expansión.
 - **M20:** 13 temas, cada uno con tres subtemas accionables de 5–15 minutos. Se ejecutaron 39 archivos Java completos de sus ejemplos y subtemas; `Exigir.java` y `UnaVez.java` producen intencionalmente las excepciones documentadas.
 - **M18:** se ampliaron sus dos temas a cuatro subtemas prácticos cada uno. Los ocho ejemplos nuevos se ejecutaron con servidores locales; los fallos 404 se comprueban deliberadamente.
-- **Cobertura atómica del resto del track:** pendiente de una auditoría tema por tema. Los siete pasos de una lección son una estructura parental y no cuentan por sí solos como subtemas atómicos completos.
+- **M17:** los dos temas ya tienen tres subtemas cada uno. La suite JDBC ejecutó tres pruebas (búsqueda parametrizada, commit y rollback); el ejemplo de allowlist imprimió la consulta permitida y rechazó una opción hostil.
+- **Cobertura atómica medida:** 21/101 temas numerados tienen 3–6 encabezados `Subtema`; son M17, M18 y M20. Los otros 80 temas requieren expansión. Los siete pasos de una lección son una estructura parental y no cuentan por sí solos como subtemas atómicos completos.
 - **Diferencia con el esqueleto del prompt:** el prompt reserva M19 para Java funcional y M20 para el proyecto. En este repositorio M19 es “Java del día a día”, M20 contiene Java funcional y el proyecto aparece en M13 y en laboratorios transversales. No se eliminó ni renumeró contenido; queda pendiente reconciliar la secuencia y dar al capstone la ubicación que pide el prompt.
 - **Ejecución de ejemplos:** no se afirma que todos los ejemplos de todos los módulos hayan sido ejecutados. Las pruebas de laboratorios se reportan por separado.
 - **Pruebas de navegador y revisión pedagógica humana:** separadas de la auditoría estructural; pendientes para validar el recorrido completo de Java.
@@ -243,11 +244,12 @@ El cierre integrador se conserva en cada módulo y en el proyecto Java del catá
 | [Oracle Java 25 — java.util.function](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/package-summary.html) | Predicate, Function, Consumer, Supplier, aridades dobles y operadores especializados | M20 temas 1, 4 y 5; los ejemplos básicos muestran selección de interfaz, transformación, provisión y efecto. |
 | [Oracle Java 25 — java.util.stream](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/stream/package-summary.html) | operaciones intermedias y terminales, reducción, colectores, pereza y paralelismo | M20 temas 3 y 8–12. Gatherers también existe en M4 y debe cotejarse con la versión JDK de cada ejercicio. |
 | [Oracle Java 25 — java.util.concurrent.Flow](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.html) | Publisher, Subscriber, Subscription y demanda/backpressure | M20 tema 13; `Estados.java`, `Demanda.java` y `Cancelar.java` se ejecutaron y produjeron las salidas esperadas. |
+| [Oracle Java 25 — PreparedStatement](https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/PreparedStatement.html) y [Connection](https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/Connection.html) | parametrización, conexiones, confirmación y rollback | M17 temas 1–2; las tres pruebas del laboratorio H2 pasan. |
 | *Core Java, Volume I/II* (Horstmann); *Java a fondo* (Sznajdleder) | reflexión, anotaciones, regex, números exactos, plugins, proxies e internacionalización | M19 agrega siete de estos vacíos; la serialización binaria nativa queda identificada como baja prioridad y con cobertura parcial. Referencia resumida en [`biblioteca-externa-gaps-java.md`](biblioteca-externa-gaps-java.md). |
 
 ### Pendientes explícitos; Java no se declara completo
 
-1. Expandir todos los temas M0–M17 y M19 a 3–6 subtemas de 5–15 minutos con contexto, archivo y código completo, comando, salida exacta, fallo reproducible y diagnóstico.
+1. Expandir los 80 temas pendientes (M0–M16 y M19) a 3–6 subtemas de 5–15 minutos con contexto, archivo y código completo, comando, salida exacta, fallo reproducible y diagnóstico.
 2. Auditar errores y salidas deliberadas de los 47 ejemplos de M18 y M20; la ejecución normal de archivos no prueba todos los fallos indicados en prosa.
 3. Resolver del inventario de roadmap cualquier diferencia de versión, herramienta o tópico avanzado con evidencia primaria; registrar por qué se incluye o excluye cada elemento.
 4. Revisar prerrequisitos cruzados, incrementos del proyecto RutaFlow y criterios observables de salida por módulo.
