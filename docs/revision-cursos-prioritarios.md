@@ -88,7 +88,7 @@ M10 ya tiene un encabezado separado por cada elemento del inventario del prompt.
 
 ### Lectura manual de Java M17 (JDBC)
 
-Los dos temas actuales sí explican conexiones, `PreparedStatement`, `ResultSet`, DAO, prevención de inyección SQL, `commit`/`rollback`, ACID, aislamiento y un caso de bloqueo optimista. Estos puntos no se contaron como faltantes solo porque estén agrupados. La lección aún no enseña ni demuestra el pool de conexiones, el procesamiento por lotes, `JdbcTemplate`, diferencia DAO/Repository, `Savepoint` ni XA/2PC. El material usa H2 pero no fija ni incluye un proyecto autocontenido con dependencia y configuración, así que sus comandos de prueba requieren reparación antes de considerar los ejemplos ejecutables desde cero.
+Los dos temas actuales explican conexiones, `PreparedStatement`, `ResultSet`, DAO, prevención de inyección SQL, `commit`/`rollback`, ACID, aislamiento y bloqueo optimista. `examples/java-jpa-lab` ahora incluye Maven Wrapper, H2 y seis pruebas ejecutables; comprueban datos hostiles como valores y el rollback cuando falla la segunda escritura. Aún faltan ejemplos de pool de conexiones, procesamiento por lotes, `JdbcTemplate`, diferencia DAO/Repository, `Savepoint` y XA/2PC. El test de concurrencia y niveles de aislamiento requiere pruebas dedicadas.
 
 \* Las señales de `course-depth-review.json` son banderas estructurales que requieren lectura; no equivalen a defectos confirmados. De igual forma, que el auditor de practicabilidad dé todos los temas visibles por correctos no prueba que el alumno pueda ejecutarlos ni comprenderlos. Los conteos de señales son la línea base anterior a esta corrección y se regenerarán al cerrar el lote.
 
@@ -111,8 +111,9 @@ El cierre de cada curso requerirá conteo de títulos preservados, matriz de req
 
 ## Avance de esta revisión
 
-- **Java M12:** se añadieron las lecciones separadas de Prototype y patrones estructurales; el módulo pasa de 4 a 6 temas. Se amplió el ejemplo estructural para incluir Flyweight. Siguen pendientes las brechas de M17, M19 y M20.
+- **Java M12:** se añadieron las lecciones separadas de Prototype y patrones estructurales; el módulo pasa de 4 a 6 temas. Se amplió el ejemplo estructural para incluir Flyweight. Siguen pendientes las brechas de M19 y M20.
 - **Java M16:** se expandió de 2 a 8 lecciones con el mapa completo de temas del prompt; los puntos que requieren laboratorio de integración real quedan identificados como parciales en la matriz. La cobertura de títulos/estructura no se presenta como ejecución completada.
+- **Java M16–M17:** se añadió `examples/java-jpa-lab` con Boot 4.1.2, Java 25, H2 y Maven Wrapper. Seis pruebas pasan: asociaciones/JPQL, Criteria, `@EntityGraph`, N+1 frente a carga agrupada (4 frente a 1 consultas), `PreparedStatement`, confirmación y rollback de transacción JDBC. M16 sigue parcial en Querydsl, caché de segundo nivel, bloqueos, transacciones avanzadas, migraciones y Testcontainers; M17, en pools, lotes, `JdbcTemplate`, savepoints y XA.
 - **Node M14:** la saga ahora tiene objetivo, analogía, fallo y salida comprobable. Se añadieron lecciones separadas de Kafka y RabbitMQ con código de productor/consumidor, claves/grupos/offsets, exchange/routing, acknowledgements, prefetch, DLQ e idempotencia. Falta ejecutar ambos labs contra brokers disponibles.
 - **Node M15:** se creó la ruta de cuatro temas para Deno, Bun, migración y elección, basada en la documentación primaria actual. La matriz cubre estructura curricular; los ejemplos Deno/Bun aún no se ejecutaron en esos runtimes.
 - **Spring Boot M8:** se amplió de 5 a 9 lecciones con Spring Cloud Stream, Kafka Streams, Avro/Schema Registry y RabbitMQ/Spring AMQP en prácticas separadas. La build valida el catálogo; faltan pruebas reales con Kafka y RabbitMQ.

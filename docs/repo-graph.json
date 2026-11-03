@@ -560,7 +560,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3248,
+      "lines": 3262,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -897,7 +897,7 @@
     },
     {
       "path": "docs/revision-cursos-prioritarios.md",
-      "lines": 129,
+      "lines": 130,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -2219,6 +2219,64 @@
     {
       "path": "examples/java-gradle/src/main/java/com/academia/Main.java",
       "lines": 2,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/java-jpa-lab/README.md",
+      "lines": 19,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Laboratorio JPA de Java M16"
+      ]
+    },
+    {
+      "path": "examples/java-jpa-lab/src/main/java/academia/pedidos/BusquedaPedido.java",
+      "lines": 25,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/java-jpa-lab/src/main/java/academia/pedidos/Cliente.java",
+      "lines": 33,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/java-jpa-lab/src/main/java/academia/pedidos/JavaJpaLabApplication.java",
+      "lines": 12,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/java-jpa-lab/src/main/java/academia/pedidos/Pedido.java",
+      "lines": 33,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/java-jpa-lab/src/main/java/academia/pedidos/PedidoRepository.java",
+      "lines": 19,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/java-jpa-lab/src/test/java/academia/pedidos/PedidoJpaLabTest.java",
+      "lines": 81,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -9375,7 +9433,7 @@
     },
     {
       "path": "web/public/content/java/modulo-17.md",
-      "lines": 155,
+      "lines": 149,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9388,10 +9446,10 @@
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda y modelo mental",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
-        "# Maven",
-        "# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente"
+        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
+        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "### Tema 2: Transacciones, ACID y aislamiento"
       ]
     },
     {

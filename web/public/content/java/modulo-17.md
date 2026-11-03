@@ -15,7 +15,7 @@ No confundas seguridad SQL con consistencia: parametrizar evita que el valor se 
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar podrás consultar e insertar registros usando `DataSource`, `PreparedStatement` y un DAO con responsabilidades acotadas. Requiere JDK 25+ y Maven. Crea un proyecto Java con JDBC y H2 como dependencias.
+Al finalizar podrás consultar e insertar registros usando `DataSource`, `PreparedStatement` y un DAO con responsabilidades acotadas. Requiere JDK 25+. El ejemplo ejecutable usa H2 y está en `examples/java-jpa-lab/`.
 **Conocimiento previo:** haber seguido el tema anterior de este módulo y tener instalado el entorno del stack.
 #### Paso 2 · Contexto y caso real
 
@@ -29,10 +29,10 @@ Un parámetro preparado protege valores, no nombres dinámicos de tabla u ordena
 **Analogía:** un `PreparedStatement` es como un formulario con casillas fijas donde solo rellenas los huecos: nadie puede "reescribir" las preguntas (por eso frena la inyección SQL). El DAO es la ventanilla única que sabe rellenar ese formulario, de modo que el resto de la app no toca SQL directamente.
 #### Paso 4 · Demostración guiada
 
-En `src/main/java/academia/envios/EnvioDao.java`:
+Abre `examples/java-jpa-lab/src/main/java/academia/pedidos/EnvioDao.java`:
 
 ```java
-package academia.envios;
+package academia.pedidos;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -58,17 +58,14 @@ public final class EnvioDao {
 }
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+Ejecuta el test que comprueba hallado, ausente y texto hostil como valor literal:
 
 ```bash
-# Maven
-mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-cd app && mvn test
-# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
+cd examples/java-jpa-lab
+./mvnw -q -Dtest=EnvioDaoTest#consultaConParametroYDevuelveAusenteSinError test
 ```
 
-
-Inicializa H2 con `create table envio(referencia varchar(40) primary key, estado varchar(20))` y un `JdbcDataSource` de test. Ejecuta `./mvnw test`.
+La prueba crea la tabla `envio` en H2 en memoria antes de ejecutarse.
 
 **Resultado esperado:** encuentra `EN_PREPARACION` para la referencia existente y `Optional.empty()` para una ausente. **Fallo deliberado:** sustituye el `?` por concatenación y prueba una referencia como `' OR '1'='1`; el test debe exhibir por qué no se interpolan datos. Restaura `PreparedStatement` y comprueba que una referencia maliciosa se trata como valor literal.
 
@@ -123,17 +120,14 @@ try (Connection connection = dataSource.getConnection()) {
 }
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+En el mismo laboratorio, ejecuta la prueba que confirma cobro y estado juntos:
 
 ```bash
-# Maven
-mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-cd app && mvn test
-# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
+cd examples/java-jpa-lab
+./mvnw -q -Dtest=EnvioDaoTest#confirmaLasDosEscriturasJuntas test
 ```
 
-
-Ejecuta `./mvnw test -Dtest=LiquidacionDaoTest`. **Resultado esperado:** cobro y estado se guardan juntos. **Fallo deliberado:** lanza una excepción después de insertar el cobro y antes de actualizar el envío. Verifica que no queda ningún cobro parcial tras el rollback.
+**Resultado esperado:** cobro y estado se guardan juntos. Para observar el rollback cuando falta el envío, ejecuta `./mvnw -q -Dtest=EnvioDaoTest#revierteElCobroSiNoExisteElEnvio test`; debe quedar cero cobros en la tabla.
 
 #### Paso 5 · Práctica guiada
 

@@ -109,7 +109,7 @@ lección compuesta sobre mensajería y sagas se acotó a Saga y ahora tiene un
 ejemplo JavaScript completo con fallo de pago y compensaciones. Este lote no cierra
 la revisión: siguen brechas de laboratorio en Java M16/M17/M19/M20, Kafka y RabbitMQ
 por separado y el cotejo manual
-de los módulos existentes frente al inventario prioritario. Flutter M16 (FFI) y
+de los módulos existentes frente al inventario prioritario. Java M16/M17 ya tienen un primer laboratorio Spring Boot/JPA y JDBC con H2; seis pruebas pasaron, incluida la medición de 4 consultas N+1 frente a 1 con `@EntityGraph` y rollback de JDBC. Querydsl, caché avanzada, Testcontainers, pools y XA siguen pendientes. Flutter M16 (FFI) y
 M17 (generación y AST) ya se añadieron con seis temas cada uno; M18 con siete,
 M19–M22 con seis. M21 cubre compras y suscripciones con sandbox y validación servidor;
 M22 cubre anuncios, mediación y consentimiento UMP. Spring Boot M23–M25 añade Modulith,

@@ -1,8 +1,8 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-11-03 20:12 UTC
+Generated: 2026-11-03 20:14 UTC
 Root: `The_Imperial_Book`
-Indexed files: 935
+Indexed files: 942
 Import edges: 56
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -19,17 +19,17 @@ For automated lookups, use `docs/repo-graph.json`.
 - `automation-script`: 34 files
 - `course-content`: 262 files
 - `documentation`: 56 files
-- `example`: 469 files
+- `example`: 476 files
 - `local-infra`: 1 files
 - `project-file`: 54 files
 
 ## File Types
 
-- `.md`: 325
+- `.md`: 326
 - `.py`: 160
 - `.json`: 67
 - `.ts`: 66
-- `.java`: 55
+- `.java`: 61
 - `.js`: 54
 - `.html`: 38
 - `.rs`: 25
@@ -260,7 +260,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `examples/archify/temas/cloud/modulo-22-tema-5-edge-routes.review-2/modulo-22-tema-5-edge-routes.finalize.json` (1012 lines)
 - `examples/archify/temas/foundations/modulo-12-tema-10-lazo-p.workflow.json` (183 lines)
 - `examples/archify/temas/foundations/modulo-12-tema-17-plc-scan.workflow.json` (189 lines)
-- ... 451 more files
+- ... 458 more files
 
 ### local-infra
 
@@ -274,7 +274,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/biblioteca/catalogo.json` (564 lines)
 - `docs/biblioteca/imagenes.json` (577 lines)
 - `docs/browser-course-review.json` (2660 lines)
-- `docs/code-visual-quality.json` (3248 lines)
+- `docs/code-visual-quality.json` (3262 lines)
 - `docs/course-depth-review.json` (13340 lines)
 - `docs/curriculum-matrix.json` (394 lines)
 - `docs/floci-official-curriculum.json` (14 lines)
