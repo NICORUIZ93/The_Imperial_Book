@@ -11,6 +11,14 @@ La meta es comprender qué automatiza después un ORM: separar valores del SQL, 
 - **Ejemplo sencillo:** inserta una referencia, consúltala con `PreparedStatement` y comprueba por separado los casos encontrado, ausente y dato hostil.
 - **Caso RutaFlow:** liquida un envío registrando su cobro y cambiando su estado en la misma transacción. Un fallo intermedio no puede dejar un cobro parcial; una clave de idempotencia evita duplicar la operación al reintentar una solicitud.
 
+> **Alcance de este módulo.** Aquí aprendes JDBC con la profundidad necesaria para
+> usarlo con seguridad desde el track Java: parametrización, DAO y transacciones.
+> El tratamiento *de cero a experto* de acceso a datos —pooling avanzado, batch,
+> `ResultSet` scrollable y actualizable, `RowSet`, `DatabaseMetaData`, procedimientos
+> almacenados, mapeo de tipos avanzados y rendimiento— se desarrolla en el curso
+> separado **[Bases de datos con JDBC](../../../docs/PLAN-CURSO-JDBC-BASES-DATOS.md)**.
+> Este módulo no pretende cubrir ese temario completo.
+
 ### Tema 1: JDBC, PreparedStatement y DAO · Intermedio · 1 h
 
 #### Aprende
@@ -22,6 +30,34 @@ La meta es comprender qué automatiza después un ORM: separar valores del SQL, 
 JDBC es la API estándar de Java para ejecutar SQL. `DataSource` proporciona conexiones, normalmente mediante un pool; `PreparedStatement` conserva fija la estructura de la sentencia y enlaza los valores por posición. El DAO encapsula SQL y mapeo para que el servicio no tenga que conocer `Connection` ni `ResultSet`.
 
 **¿Por qué es importante?** Porque concatenar datos introducidos por usuarios permite cambiar el significado de una consulta. Además, repetir SQL y mapeo en varios servicios produce reglas de acceso inconsistentes y dificulta probarlas.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `DataSource` como fuente de conexiones | Prerrequisito | DAO recibe `DataSource`, no `DriverManager` |
+| `PreparedStatement` fija estructura, enlaza valores | Núcleo | `' OR '1'='1` tratado como valor, no SQL |
+| try-with-resources cierra `Connection`/`ResultSet` | Núcleo | Recursos liberados sin fuga |
+| DAO encapsula SQL y mapeo | Núcleo | Servicio sin `Connection`/`ResultSet` |
+| Parámetros protegen valores, no identificadores | Límite | Orden `ASC`/`DESC` por lista permitida |
+| Comprobar `executeUpdate()` | Diagnóstico | `crear` exige exactamente una fila |
+| No crear un DAO genérico | Error frecuente | Consultas reconocibles, no vagas |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`DataSource` como fuente de conexiones (prerrequisito).** `DataSource` abstrae de dónde vienen las conexiones, normalmente un pool que las reutiliza. El DAO depende de esta interfaz, no de `DriverManager.getConnection(...)`, así que en producción recibe un pool (HikariCP) y en pruebas un `JdbcDataSource` de H2 sin cambiar su código.
+
+**`PreparedStatement` fija estructura y enlaza valores (núcleo).** La sentencia se compila con su forma fija (`... where referencia = ?`) y los valores se envían aparte por posición con `setString`. El motor nunca interpreta el valor como SQL: `' OR '1'='1'` se busca como una referencia literal que no existe, devolviendo vacío en lugar de alterar la condición.
+
+**try-with-resources cierra recursos (núcleo).** `Connection`, `PreparedStatement` y `ResultSet` son recursos del sistema. Declararlos en `try (...)` garantiza su cierre incluso ante excepción, devolviendo la conexión al pool. Olvidar el cierre agota el pool y bloquea la aplicación bajo carga.
+
+**DAO encapsula SQL y mapeo (núcleo).** El DAO es el único que conoce `Connection`, `PreparedStatement` y `ResultSet`; expone métodos de dominio (`crear`, `buscarEstado`) que devuelven tipos de negocio (`Optional<String>`). El servicio llamante no toca JDBC, lo que concentra las reglas de acceso en un punto comprobable.
+
+**Parámetros protegen valores, no identificadores (límite).** No puedes enlazar con `?` un nombre de tabla, una columna ni `ASC`/`DESC`: el marcador es solo para valores. Cuando el usuario elige el orden, traduces su opción mediante una allowlist (`"fecha" -> "fecha_creacion"`) y rechazas cualquier otra, porque concatenar un identificador reintroduce la inyección.
+
+**Comprobar `executeUpdate()` (diagnóstico).** `executeUpdate()` devuelve cuántas filas afectó. Ignorarlo oculta que un `INSERT` no insertó o un `UPDATE` no encontró la fila. `crear` exige `filas == 1` y lanza si no, convirtiendo un fallo silencioso en un error explícito.
+
+**No crear un DAO genérico (error frecuente).** Una clase `GenericDao.ejecutar(sql, params)` esconde consultas muy distintas tras una firma vaga, dispersa la seguridad y es difícil de probar. Un DAO con métodos nombrados por intención hace visible cada acceso y permite una prueba por consulta.
 
 **Analogía:** un `PreparedStatement` es un formulario con preguntas impresas y casillas vacías: puedes escribir cualquier respuesta en una casilla, pero no reescribir las preguntas. El DAO es la ventanilla que conoce ese formulario para que el resto de la aplicación no lo improvise.
 
@@ -196,7 +232,7 @@ Como ejercicio independiente, extrae el mapeo de una fila a un método privado s
 
 **Errores comunes:** concatenar valores, intentar parametrizar identificadores con `?`, ignorar el resultado de `executeUpdate()` y crear un DAO genérico que esconda consultas diferentes.
 
-Fuentes oficiales: [PreparedStatement, JDK 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/PreparedStatement.html), [DataSource, JDK 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/javax/sql/DataSource.html) y [H2 Database](https://h2database.com/html/main.html).
+Fuentes oficiales revisadas el 2026-11-01: [PreparedStatement, JDK 27](https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/PreparedStatement.html), [DataSource, JDK 27](https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/javax/sql/DataSource.html) y [H2 Database](https://h2database.com/html/main.html).
 
 ### Tema 2: Transacciones, ACID y aislamiento · Avanzado · 1 h 15 min
 
@@ -209,6 +245,34 @@ Fuentes oficiales: [PreparedStatement, JDK 25](https://docs.oracle.com/en/java/j
 Una transacción agrupa operaciones bajo propiedades ACID: atomicidad, consistencia, aislamiento y durabilidad. JDBC suele comenzar con autocommit; `setAutoCommit(false)` delimita la unidad y `commit()` o `rollback()` determina su resultado. Todas las operaciones de esa unidad deben usar la misma conexión.
 
 **¿Por qué es importante?** Porque liquidar un envío exige registrar el cobro y cambiar el estado. Si el proceso falla entre ambas escrituras, una base con cobro y sin liquidación deja a la contabilidad y al seguimiento en desacuerdo.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| ACID: atomicidad y durabilidad | Prerrequisito | Cobro y estado se confirman o revierten juntos |
+| `setAutoCommit(false)` + `commit`/`rollback` | Núcleo | Unidad delimitada; fallo intermedio revierte |
+| Una sola conexión para toda la unidad | Núcleo | Dos conexiones rompen el rollback |
+| Aislamiento y qué anomalías evita | Núcleo | Lecturas sucias/no repetibles según nivel |
+| Bloqueo optimista con `version` | Variante | `UPDATE ... WHERE version = ?` detecta pisada |
+| Idempotencia con `UNIQUE` | Diagnóstico | Reintento no duplica cobro |
+| No abrir transacción durante HTTP | Límite | Outbox/saga en vez de transacción larga |
+
+Cada fila tiene su explicación individual a continuación.
+
+**ACID: atomicidad y durabilidad (prerrequisito).** Una transacción agrupa varias operaciones bajo atomicidad (todo o nada), consistencia, aislamiento y durabilidad. En este caso, insertar el cobro y actualizar el estado deben ocurrir ambos o ninguno; un resultado parcial deja contabilidad y seguimiento en desacuerdo.
+
+**`setAutoCommit(false)` + `commit`/`rollback` (núcleo).** JDBC por defecto confirma cada sentencia (autocommit). `setAutoCommit(false)` abre una unidad explícita: las escrituras no son definitivas hasta `commit()`, y `rollback()` las descarta. El patrón es intentar, `commit` al final del `try`, `rollback` en el `catch`.
+
+**Una sola conexión para toda la unidad (núcleo).** El `commit`/`rollback` opera sobre *una* conexión. Si `insertarCobro` usa otra conexión (con su propio autocommit), ese cobro queda confirmado aparte y el `rollback` de la conexión principal no puede deshacerlo. Por eso todos los métodos de la unidad reciben la misma `Connection`.
+
+**Aislamiento y qué anomalías evita (núcleo).** El nivel de aislamiento define qué cambios concurrentes puede ver una transacción: `READ COMMITTED` evita lecturas sucias, `REPEATABLE READ` evita lecturas no repetibles, `SERIALIZABLE` las evita todas al coste de más bloqueo. Subir el nivel no elimina por sí solo las actualizaciones perdidas.
+
+**Bloqueo optimista con `version` (variante).** Para una actualización perdida (dos transacciones leen y escriben la misma fila), una columna `version` y `UPDATE ... SET version=version+1 WHERE id=? AND version=?` detecta que otra operación cambió la fila: si afecta cero filas, hubo conflicto. Es más barato que bloquear pesimistamente cuando la contención es baja.
+
+**Idempotencia con `UNIQUE` (diagnóstico).** Una solicitud puede reintentarse (timeout, reenvío). Una restricción `UNIQUE` sobre `operation_id` hace que el segundo intento con la misma clave falle en la inserción, de modo que no se duplica el cobro. La capa superior distingue "ya aplicado" (clave repetida) de un conflicto real.
+
+**No abrir transacción durante HTTP (límite).** Mantener una transacción JDBC abierta mientras se espera una llamada HTTP externa retiene conexiones y bloqueos durante una latencia impredecible. Coordinar una base local con otros servicios se resuelve con patrones como outbox o saga, no alargando la transacción ni subiendo a `SERIALIZABLE` por defecto.
 
 **Analogía:** una transacción es un recibo de caja con varias líneas: o se entrega el recibo completo o se anula entero. El aislamiento es la cortina que impide que otra caja use una versión a medias del recibo.
 
@@ -413,7 +477,7 @@ Como ejercicio independiente, crea otro proyecto para transferir saldo entre dos
 
 **Errores comunes:** usar conexiones distintas dentro de una unidad, omitir la prueba de fallo, mantener la transacción durante una llamada HTTP y suponer que una restricción única sustituye al rollback.
 
-Fuentes oficiales: [Connection, JDK 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/Connection.html), [Transaction Isolation, H2](https://h2database.com/html/advanced.html#transaction_isolation) y [Jakarta Persistence](https://jakarta.ee/specifications/persistence/).
+Fuentes oficiales revisadas el 2026-11-01: [Connection, JDK 27](https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/Connection.html), [Transaction Isolation, H2](https://h2database.com/html/advanced.html#transaction_isolation) y [Jakarta Persistence](https://jakarta.ee/specifications/persistence/).
 
 ## Construcción guiada del capítulo
 

@@ -49,6 +49,7 @@ const TRACK_SOURCES = {
   react: 'web/src/app/tracks/react.track.ts',
   java: 'web/src/app/tracks/java.track.ts',
   'spring-boot': 'web/src/app/tracks/spring-boot.track.ts',
+  microservices: 'web/src/app/tracks/microservices.track.ts',
   'kotlin-multiplatform': 'web/src/app/tracks/kotlin-multiplatform.track.ts',
   android: 'web/src/app/tracks/android.track.ts',
   ios: 'web/src/app/tracks/ios.track.ts',
@@ -122,9 +123,9 @@ const readmeExpiry = readme.match(/La comprobación vence a los (\d+) días/);
 if (!readmeExpiry || Number(readmeExpiry[1]) !== sourceRegistry.maxAgeDays) {
   throw new Error('README desactualizado vs official-sources.json: caducidad');
 }
-const declaredInventory = readme.match(/La academia reúne 14 tracks, (\d+) módulos y (\d+) temas editoriales/);
+const declaredInventory = readme.match(/La academia reúne 15 tracks, (\d+) módulos y (\d+) temas editoriales/);
 if (!declaredInventory) {
-  throw new Error('README.md debe declarar el inventario actual de 14 tracks, módulos y temas');
+  throw new Error('README.md debe declarar el inventario actual de 15 tracks, módulos y temas');
 }
 const moduleTable = readme.match(
   /^\| Track \| Módulos \| Enfoque \|\n^\|[-| :]+\|\n((?:^\|[^\n]+\|\n?)+)/m,
@@ -197,6 +198,7 @@ python3 scripts/validate_markdown_fences.py
 python3 scripts/audit_topic_learning_quality.py --check --require-practicable --min-practicable 1141
 python3 scripts/audit_seven_step_methodology.py --check
 python3 scripts/audit_lesson_substance.py --check --strict
+python3 scripts/audit_subtopic_depth.py --check --max-pending 1143
 python3 scripts/audit_code_visual_quality.py --check
 python3 scripts/rebuild_topic_source_review.py --check
 python3 scripts/build_editorial_backlog.py --check

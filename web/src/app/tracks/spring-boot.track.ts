@@ -1,9 +1,9 @@
 import { CourseModule, createModule as m } from '../course-module.model';
 
 export const SPRING_BOOT_MODULES: CourseModule[] = [
-  m(0, 'Fundamentos de Spring: IoC y DI', 'IoC y DI', 'Fundamentos', '2 h 30 min', '#6db33f',
+  m(0, 'Fundamentos de Spring: IoC y DI', 'IoC y DI', 'Fundamentos', '3 h 40 min', '#6db33f',
     'El contenedor de Spring gestiona el ciclo de vida de tus objetos. Entiende ese contrato antes de usar anotaciones a ciegas.',
-    ['Inversión de control y el contenedor de Spring', 'Inyección por constructor vs por campo', '@Component, @Service, @Repository', 'Autoconfiguración: qué hace realmente "Boot"', '@Scope: singleton, prototype, request, session', '@Qualifier y @Primary cuando hay varias implementaciones'],
+    ['Inversión de control y el contenedor de Spring', 'Inyección por constructor vs por campo', '@Component, @Service, @Repository', 'Autoconfiguración: qué hace realmente "Boot"', '@Scope: singleton, prototype, request, session', '@Qualifier y @Primary cuando hay varias implementaciones', 'Ciclo de vida del bean: @PostConstruct, @PreDestroy y BeanPostProcessor', 'AOP con @Aspect y @Around para preocupaciones transversales'],
     [
       'Crea un proyecto Spring Boot mínimo con start.spring.io y arráncalo con ./mvnw spring-boot:run',
       'Define un @Service y un @Repository, e inyecta el repositorio en el servicio usando inyección por constructor',
@@ -16,7 +16,7 @@ export const SPRING_BOOT_MODULES: CourseModule[] = [
     'Aplicación Spring Boot mínima con dos beans inyectados por constructor.'),
   m(1, 'Spring Boot CLI y estructura de proyecto', 'Estructura de proyecto', 'Fundamentos', '1 h 30 min', '#6db33f',
     'Genera y entiende la estructura estándar de un proyecto Spring Boot productivo.',
-    ['Spring Initializr y starters', 'application.yml vs application.properties', 'Perfiles (dev/test/prod)', 'Estructura por capas (controller/service/repository)'],
+    ['Spring Initializr y starters', 'application.yml vs application.properties', 'Perfiles (dev/test/prod)', 'Estructura por capas (controller/service/repository)', 'Crear tu propia auto-configuración condicional (@AutoConfiguration, AutoConfiguration.imports)'],
     [
       'Genera un proyecto desde start.spring.io con los starters web, data-jpa y postgresql',
       'Convierte application.properties a application.yml y compara la legibilidad',
@@ -30,7 +30,7 @@ export const SPRING_BOOT_MODULES: CourseModule[] = [
   m(2, 'REST APIs con Spring Web', 'Spring Web', 'Aplicación', '3 h', '#6db33f',
     'Expón endpoints HTTP con validación y manejo de errores consistente.',
     [
-      'Paginación HTTP con validación y un límite de recursos explícito','@RestController y mapeo de rutas', 'DTOs y validación con Bean Validation', 'ResponseEntity y códigos de estado', '@ControllerAdvice para errores centralizados'],
+      'Paginación HTTP con validación y un límite de recursos explícito','@RestController y mapeo de rutas', 'DTOs y validación con Bean Validation', 'ResponseEntity y códigos de estado', '@ControllerAdvice para errores centralizados', 'HandlerInterceptor frente a Filter y @ControllerAdvice', 'Negociación de contenido con HttpMessageConverters'],
     [
       'Crea un @RestController con GET /tareas y POST /tareas que devuelvan/reciban un DTO, no la entidad directamente',
       'Agrega validación con @Valid y anotaciones de Bean Validation (@NotBlank, @Min) en el DTO de entrada',
@@ -43,7 +43,7 @@ export const SPRING_BOOT_MODULES: CourseModule[] = [
     'API REST con validación de entrada y manejo centralizado de errores.'),
   m(3, 'Persistencia con Spring Data JPA', 'Spring Data JPA', 'Aplicación', '3 h 30 min', '#6db33f',
     'Persiste entidades sin escribir SQL repetitivo, sin perder de vista qué genera Hibernate por debajo.',
-    ['Entidades y mapeo JPA', 'Repositorios derivados y @Query', 'Relaciones (OneToMany, ManyToMany) y N+1', 'Migraciones con Flyway/Liquibase', 'JPQL, Native Queries, Criteria API y QueryDSL', 'Paginación con Pageable y Page', '@Valid, @Validated y anotaciones de Bean Validation (@NotNull, @Size, @Email)'],
+    ['Entidades y mapeo JPA', 'Repositorios derivados y @Query', 'Relaciones (OneToMany, ManyToMany) y N+1', 'Migraciones con Flyway/Liquibase', 'Proyecciones, Specifications y auditoría de entidades', 'Paginación con Pageable y Page', '@Valid, @Validated y anotaciones de Bean Validation (@NotNull, @Size, @Email)'],
     [
       'Define una entidad @Entity Tarea con sus campos mapeados y un JpaRepository<Tarea, Long>',
       'Usa un método derivado (findByCompletadaFalse) y luego el equivalente con @Query para comparar',
@@ -82,7 +82,7 @@ export const SPRING_BOOT_MODULES: CourseModule[] = [
     'Configuración tipada y validada al arranque, sin valores hardcodeados.'),
   m(6, 'Testing en Spring Boot', 'Testing', 'Integración', '3 h', '#6db33f',
     'Prueba desde unit tests aislados hasta tests de integración contra una base real.',
-    ['@SpringBootTest vs slices (@WebMvcTest, @DataJpaTest)', 'MockMvc para probar controllers', 'Testcontainers para bases de datos reales en CI', 'Mockito en el ecosistema Spring', '@MockitoBean, @MockitoSpyBean y TestRestTemplate', 'ArgumentCaptor y AssertJ para aserciones expresivas'],
+    ['@SpringBootTest vs slices (@WebMvcTest, @DataJpaTest)', 'MockMvc para probar controllers', 'Testcontainers para bases de datos reales en CI', 'Mockito en el ecosistema Spring', '@MockitoBean, @MockitoSpyBean y TestRestTemplate', 'ArgumentCaptor y AssertJ para aserciones expresivas', '@JsonTest, @RestClientTest y @TestConfiguration'],
     [
       'Escribe un test unitario de un servicio con @Mock/@InjectMocks de Mockito, sin levantar el contexto de Spring',
       'Escribe un test de slice con @WebMvcTest que pruebe solo la capa del controller, mockeando el servicio',
@@ -95,7 +95,7 @@ export const SPRING_BOOT_MODULES: CourseModule[] = [
     'Suite de tests de integración con Testcontainers contra PostgreSQL real.'),
   m(7, 'Observabilidad con Actuator', 'Actuator', 'Experto', '2 h', '#6db33f',
     'Expón métricas y health checks listos para cualquier sistema de monitoreo.',
-    ['Spring Boot Actuator: endpoints clave', 'Micrometer y métricas custom', 'Health checks personalizados', 'Logging estructurado'],
+    ['Spring Boot Actuator: endpoints clave', 'Micrometer y métricas custom', 'Health checks personalizados', 'Logging estructurado', 'Tracing distribuido con Micrometer Tracing (@Observed, traceId/spanId)'],
     [
       'Agrega spring-boot-starter-actuator y expón /actuator/health y /actuator/metrics',
       'Crea un health indicator personalizado que verifique la conexión a un servicio externo',
@@ -107,7 +107,7 @@ export const SPRING_BOOT_MODULES: CourseModule[] = [
     'API con Actuator expuesto y al menos una métrica de negocio custom.'),
   m(8, 'Mensajería profesional: Kafka exactly-once, rebalanceo y RabbitMQ', 'Mensajería', 'Experto', '4 h 30 min', '#6db33f',
     'Desacopla servicios con mensajería asíncrona desde Spring, con productores idempotentes, consumer groups resilientes y dead-letter queues reales.',
-    ['Spring Kafka: producers y consumers', 'Spring AMQP (RabbitMQ)', 'Serialización de mensajes', 'Manejo de errores y dead-letter', 'Productor idempotente y transacciones (exactly-once)', 'Rebalanceo de consumer groups y static group membership'],
+    ['Spring Kafka: producers y consumers', 'Spring AMQP (RabbitMQ)', 'Serialización de mensajes', 'Manejo de errores y dead-letter', 'Productor idempotente y transacciones (exactly-once)', 'Rebalanceo de consumer groups y static group membership', 'RabbitMQ a fondo: TopicExchange, routing keys y dead-letter exchange'],
     [
       'Levanta Kafka en Docker Compose y configura un KafkaTemplate para publicar un evento desde tu API',
       'Implementa un @KafkaListener que consuma esos eventos y procese su contenido',
@@ -122,7 +122,7 @@ export const SPRING_BOOT_MODULES: CourseModule[] = [
     'Servicio que publica y consume eventos vía Kafka con productor idempotente, consumer groups resilientes y manejo de errores.'),
   m(9, 'Programación reactiva con WebFlux', 'WebFlux', 'Experto', '3 h', '#6db33f',
     'El modelo no bloqueante de Spring para alta concurrencia con recursos limitados.',
-    ['Mono y Flux', 'WebClient reactivo', 'Cuándo WebFlux vale la complejidad frente a MVC', 'R2DBC para acceso reactivo a datos'],
+    ['Mono y Flux', 'WebClient reactivo', 'Cuándo WebFlux vale la complejidad frente a MVC', 'R2DBC para acceso reactivo a datos', 'Virtual threads como alternativa a WebFlux'],
     [
       'Crea un endpoint reactivo que devuelva Mono<Tarea> y otro que devuelva Flux<Tarea>',
       'Usa WebClient (no RestTemplate) para componer dos llamadas HTTP externas de forma no bloqueante con flatMap',
@@ -178,17 +178,21 @@ export const SPRING_BOOT_MODULES: CourseModule[] = [
       'Idempotencia, optimistic locking, outbox, Kafka y consumidores deduplicados',
       'OpenAPI, Problem Details, Spring Cloud Contract y evolución compatible',
       'Micrometer Observation, trazas, SLI/SLO, resiliencia e incidentes',
+      'Inbox del lado consumidor, two-phase commit y el teorema CAP aplicado a decisiones reales',
     ],
     [
       'Demuestra commit/rollback y el fallo de self-invocation con una prueba de integración',
       'Fuerza requests/eventos duplicados y prueba un único efecto de negocio',
       'Rompe un contrato deliberadamente y haz que CI detenga al proveedor',
       'Inyecta latencia/caída, sigue una traza y recupera mediante runbook y postmortem',
+      'Implementa inbox para deduplicar eventos reentregados y explica por qué 2PC bloquea ante la caída del coordinador',
     ],
     [
       '¿Por qué llamar un método @Transactional desde el mismo bean puede evitar el proxy?',
       '¿Qué garantiza Kafka exactly-once y qué efecto queda fuera de esa frontera?',
       '¿Por qué una métrica con userId como tag puede derribar el monitoreo?',
+      '¿Por qué un catch de excepción dentro del mismo método @Transactional puede producir UnexpectedRollbackException?',
+      '¿Qué elige el teorema CAP entre consistencia y disponibilidad, y qué elige este módulo y por qué?',
     ],
     ['Spring Boot', 'PostgreSQL', 'Kafka', 'Spring Cloud Contract', 'OpenTelemetry'],
     'Microservicio con límites transaccionales probados, idempotencia, outbox, consumidor deduplicado, contrato ejecutable, trazas correlacionadas, SLO y recuperación de fallos ensayada.'),
@@ -203,8 +207,8 @@ export const SPRING_BOOT_MODULES: CourseModule[] = [
     'Integra WebFlux, testing avanzado, arquitectura hexagonal, Spring Cloud y patrones distribuidos sin mezclar modelos incompatibles.',
     [
       'Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar','Mono, Flux, WebClient, Netty y R2DBC', '@SpringBootTest, slices, MockMvc y Testcontainers', 'Dominio, aplicación, puertos y adaptadores', 'Config Server, Bus y Resilience4j', 'Saga, CQRS, Event Sourcing y Outbox'],
-    ['Detecta bloqueo reactivo', 'Prueba adapters reales', 'Invierte una dependencia', 'Simula config y circuit breaker', 'Deduplica evento outbox'],
-    ['¿Cuándo WebFlux empeora el sistema?', '¿Por qué Event Sourcing no es auditoría gratuita?'], ['Spring WebFlux','Testcontainers','Spring Cloud','Resilience4j','Kafka'], 'Servicio hexagonal con flujo reactivo justificado, contratos, eventos y resiliencia probada.'),
+    ['Detecta bloqueo reactivo', 'Prueba adapters reales', 'Invierte una dependencia', 'Simula config y circuit breaker', 'Deduplica evento outbox', 'Separa un modelo CQRS de escritura/lectura y construye una saga coreografiada sin coordinador central'],
+    ['¿Cuándo WebFlux empeora el sistema?', '¿Por qué Event Sourcing no es auditoría gratuita?', '¿Qué ventaja da una saga coreografiada frente a una orquestada, y qué pierde a cambio?'], ['Spring WebFlux','Testcontainers','Spring Cloud','Resilience4j','Kafka'], 'Servicio hexagonal con flujo reactivo justificado, contratos, eventos y resiliencia probada.'),
   m(16, 'JPA de Spring Boot: Hibernate, Lazy vs Eager y N+1', 'JPA / Hibernate', 'Integración', '3 h 30 min', '#6db33f',
     'Modela entidades reales con relaciones JPA y comprende cómo las estrategias de carga cambian rendimiento, consultas y coherencia.',
     ['@Entity, @Id, @GeneratedValue', '@OneToMany, @ManyToOne, @ManyToMany', 'FetchType.LAZY vs EAGER', 'N+1 queries', '@Transactional', 'JPQL y @EntityGraph', 'Caché de primer nivel y Session'],
@@ -233,7 +237,7 @@ export const SPRING_BOOT_MODULES: CourseModule[] = [
     'Persistencia explícita con DAO, JDBC y transacciones para casos donde la capa ORM no es suficiente.'),
   m(18, 'Autenticación, JWT y backend seguro con Spring Security', 'Security & HTTP', 'Experto', '4 h 30 min', '#6db33f',
     'Protege tus endpoints, genera tokens JWT y diseña una API segura con validación de entrada, HTTP seguro y reglas de autorización claras.',
-    ['SecurityFilterChain', 'JWT access/refresh tokens', 'Roles y permisos', 'HttpClient con timeouts y retries', 'OAuth2/OIDC básicos', 'HTTPS/TLS, CORS y CSRF', 'OWASP y validación de entradas'],
+    ['SecurityFilterChain', 'JWT access/refresh tokens', 'Roles y permisos', 'HttpClient con timeouts y retries', 'OAuth2/OIDC básicos', 'HTTPS/TLS, CORS y CSRF', 'OWASP y validación de entradas', 'Tu propio OAuth2 Authorization Server'],
     [
       'Configura una API REST segura con SecurityFilterChain y un filtro para JWT en cada request',
       'Implementa login con generación de token, refresh token y endpoints protegidos por rol',
@@ -255,8 +259,9 @@ export const SPRING_BOOT_MODULES: CourseModule[] = [
       'Simula un error de un registro y activa retry/skip para verificar cómo Spring Batch reintenta o descarta entradas problemáticas',
       'Usa un listener de job/step para registrar métricas de éxito, error y tiempo de ejecución',
       'Diseña una migración de datos con read/write a tabla de base de datos y documenta el efecto del chunk size',
+      'Particiona un step con un Partitioner y varios workers, y verifica con un test que la unión de los rangos procesados no tiene huecos ni duplicados',
     ],
-    ['¿Qué diferencia hay entre un Tasklet y un Step chunk-oriented?', '¿Por qué restartability es esencial en batch y no solo en APIs?', '¿Cuándo conviene retry frente a skip en un proceso lotes?', '¿Qué ventaja tiene un chunk size bien elegido frente a cargar todo en memoria?'],
+    ['¿Qué diferencia hay entre un Tasklet y un Step chunk-oriented?', '¿Por qué restartability es esencial en batch y no solo en APIs?', '¿Cuándo conviene retry frente a skip en un proceso lotes?', '¿Qué ventaja tiene un chunk size bien elegido frente a cargar todo en memoria?', '¿Cuándo conviene particionamiento local frente a remote chunking?'],
     ['Spring Batch', 'Java', 'SQL', 'CSV'],
     'Job batch funcional con lectura, transformación, escritura y gestión de reintentos y reinicios.'),
   m(20, 'Integraciones Spring: scheduling, eventos, correo y caché', 'Integraciones Spring', 'Integración', '5 h', '#6db33f',
@@ -303,4 +308,18 @@ export const SPRING_BOOT_MODULES: CourseModule[] = [
     ['¿Por qué un puerto que devuelve Page obliga al dominio a depender de Spring Data?', '¿Dónde empieza y termina una transacción en un caso de uso?', '¿Qué debe contener un ADR para que otra persona pueda revocar la decisión?'],
     ['Java', 'Spring Boot', 'Mermaid', 'Markdown'],
     'Caso de uso sin Spring, diagrama C4 de la API de envíos y tres ADR enlazados al código.'),
+  m(23, 'Concurrencia avanzada en Spring', 'Concurrencia', 'Experto', '2 h 50 min', '#6db33f',
+    'Combina resultados asíncronos con CompletableFuture, descubre por qué la autoinvocación rompe @Async, provoca y corrige un deadlock real entre locks, acota concurrencia con Semaphore y propaga MDC a un executor que por defecto lo pierde.',
+    ['CompletableFuture: thenCombine, exceptionally y orTimeout', '@Async y el bug de la autoinvocación que bypasea el proxy', 'Bean orquestador separado para que @Async funcione de verdad', 'ReentrantLock, deadlock por orden inverso y tryLock con límite', 'Orden total consistente para eliminar deadlocks', 'Semaphore para acotar concurrencia y TaskDecorator para propagar MDC'],
+    [
+      'Combina dos consultas @Async con thenCombine y mide que el tiempo total se acerca al de la más lenta, no a la suma',
+      'Provoca el bug de autoinvocación: un método @Async llamado desde la misma clase lanza la excepción de forma síncrona',
+      'Corrige el bug moviendo la llamada a un bean orquestador inyectado y confirma que ahora sí corre en el executor',
+      'Provoca un deadlock real con dos ReentrantLock tomados en orden inverso por hilos en direcciones opuestas',
+      'Corrige el deadlock con un orden total consistente por id y verifica que ambos hilos terminan sin bloquearse',
+      'Acota concurrencia con un Semaphore y propaga un correlationId de MDC a una tarea @Async con un TaskDecorator',
+    ],
+    ['¿Por qué una autoinvocación bypasea el proxy @Async sin ningún error de compilación?', '¿Qué evidencia demuestra un deadlock si no lanza ninguna excepción?', '¿Por qué un orden total consistente elimina el deadlock sin necesitar tryLock?', '¿Por qué MDC no cruza automáticamente a un hilo de executor?'],
+    ['Java', 'Spring Boot', 'CompletableFuture', 'Concurrencia', 'SLF4J'],
+    'Cotización asíncrona con fallback y timeout, deadlock real corregido con orden consistente, y MDC propagado a un executor con TaskDecorator.'),
 ];

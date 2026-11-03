@@ -32,7 +32,7 @@ test('temario bibliográfico: separa los temas actuales de los candidatos y cons
   await page.goto('/temario');
 
   await expect(page.getByRole('heading', { name: /Un índice de temas, no una colección de lecciones/i })).toBeVisible();
-  await expect(page.locator('.curriculum-stats')).toContainText('74.186');
+  await expect(page.locator('.curriculum-stats')).toContainText('74.189');
   await expect(page.locator('.curriculum-stats')).toContainText('73.027');
   await expect(page.locator('.curriculum-stats')).toContainText('18');
   await expect(page.locator('.curriculum-caveat')).toContainText('no se presentan como lecciones publicadas');
@@ -87,6 +87,111 @@ test('Fundamentos módulo 2: renderiza el ejemplo de identidad por id y sus resu
   await expect(page.locator('.topic-card')).toHaveCount(8);
   await expect(topic).toContainText('buscar_por_id_lista');
   await expect(topic).toContainText('llamar al dentista');
+});
+
+test('Fundamentos módulo 3: muestra HTTP, sitio accesible y servidor local seguro', async ({ page }) => {
+  await page.goto('/curso/foundations/3');
+
+  const topics = page.locator('.topic-card');
+  await expect(topics).toHaveCount(5);
+  await expect(topics.nth(0)).toContainText('--bind 127.0.0.1');
+  await expect(topics.nth(0)).toContainText('Rutas 404 vs 500');
+  await expect(topics.nth(0)).toContainText('HTTP/1.0 200 OK');
+
+  await topics.nth(3).getByRole('button', { name: 'Abrir tema' }).click();
+  await expect(topics.nth(3)).toContainText('4.5:1');
+  await expect(topics.nth(4)).toContainText('Proyecto integrador');
+});
+
+test('Fundamentos módulo 4: verifica el plan del índice y los límites de la transacción', async ({ page }) => {
+  await page.goto('/curso/foundations/4');
+
+  const topics = page.locator('.topic-card');
+  await expect(topics).toHaveCount(7);
+  await topics.nth(2).getByRole('button', { name: 'Abrir tema' }).click();
+  await expect(topics.nth(2)).toContainText('SCAN tareas');
+  await expect(topics.nth(2)).toContainText('SEARCH tareas USING INDEX idx_tareas_estado');
+
+  await topics.nth(3).getByRole('button', { name: 'Abrir tema' }).click();
+  await expect(topics.nth(3)).toContainText('.rowcount');
+  await expect(topics.nth(3)).toContainText('El destino no existe');
+});
+
+test('Fundamentos módulo 5: comprueba depuración, pruebas, Git y CI', async ({ page }) => {
+  await page.goto('/curso/foundations/5');
+
+  const topics = page.locator('.topic-card');
+  await expect(topics).toHaveCount(4);
+  await expect(topics.nth(0)).toContainText('Stack trace');
+
+  await topics.nth(1).getByRole('button', { name: 'Abrir tema' }).click();
+  await expect(topics.nth(1)).toContainText('test_contar_pendientes_bd_integracion');
+
+  await topics.nth(2).getByRole('button', { name: 'Abrir tema' }).click();
+  await expect(topics.nth(2)).toContainText('git init -b main');
+
+  await topics.nth(3).getByRole('button', { name: 'Abrir tema' }).click();
+  await expect(topics.nth(3)).toContainText('tmp_path');
+  await expect(topics.nth(3)).toContainText('tareas_prueba.json');
+});
+
+test('Java módulo 0: renderiza los diagramas de tipos, flujo y fechas', async ({ page }) => {
+  await page.goto('/curso/java/0');
+
+  const topics = page.locator('.topic-card');
+  await expect(topics).toHaveCount(8);
+  for (const index of [3, 4, 5, 6, 7]) {
+    await expect(topics.nth(index).locator('.visual-diagram pre.mermaid svg')).toHaveCount(1);
+  }
+  await expect(page.locator('.lesson-error[role="alert"]')).toHaveCount(0);
+});
+
+test('Java módulo 20: profundiza lambdas y conserva su evidencia observable', async ({ page }) => {
+  await page.goto('/curso/java/20');
+
+  const topics = page.locator('.topic-card');
+  await expect(topics).toHaveCount(4);
+  const lambda = topics.first();
+  await expect(lambda).toContainText('tipo objetivo');
+  await expect(lambda).toContainText('Captura y variable efectivamente final');
+  await expect(lambda).toContainText('Referencias estática, ligada, no ligada y constructor');
+  await expect(lambda).toContainText('la referencia a elegir es ambigua');
+  await expect(lambda).toContainText('Checklist de salida');
+  await expect(page.locator('.lesson-error[role="alert"]')).toHaveCount(0);
+});
+
+test('Spring Master: renderiza la recuperación idempotente de una compensación', async ({ page }) => {
+  await page.goto('/curso/spring-boot/15');
+
+  const heading = page.locator('h3.topic-heading').filter({ hasText: 'Compensación que falla: conservar trabajo pendiente' });
+  await expect(heading).toHaveCount(1);
+  const topic = heading.locator('xpath=ancestor::section[contains(@class, "topic-card")]');
+  await expect(topic.locator('.visual-diagram pre.mermaid svg')).toHaveCount(1);
+  await expect(topic).toContainText('no representa dos consumidores concurrentes');
+  await expect(page.locator('.lesson-error[role="alert"]')).toHaveCount(0);
+});
+
+test('Node módulo 0: renderiza configuración explícita y eventos no durables', async ({ page }) => {
+  await page.goto('/curso/node/0');
+
+  const topics = page.locator('.topic-card');
+  await expect(topics).toHaveCount(4);
+  for (const index of [2, 3]) {
+    await expect(topics.nth(index).locator('.visual-diagram pre.mermaid svg')).toHaveCount(1);
+  }
+  await expect(page.locator('.lesson-error[role="alert"]')).toHaveCount(0);
+});
+
+test('Flutter módulo 0: renderiza mixins y el flujo de Future sin confundirlo con hilos', async ({ page }) => {
+  await page.goto('/curso/flutter/0');
+
+  const topics = page.locator('.topic-card');
+  await expect(topics).toHaveCount(4);
+  for (const index of [1, 2]) {
+    await expect(topics.nth(index).locator('.visual-diagram pre.mermaid svg')).toHaveCount(1);
+  }
+  await expect(topics.nth(2)).toContainText('no bloquea el isolate ni crea un hilo paralelo');
+  await expect(page.locator('.lesson-error[role="alert"]')).toHaveCount(0);
 });
 
 test('ruta: presenta los niveles como orientación, no como certificación', async ({ page }) => {
@@ -636,16 +741,21 @@ test('modo libro: el objetivo viene del texto ya escrito y las flechas cambian d
   await expect(page).toHaveURL(/pagina=tema-1/);
 });
 
-test('modo libro: reconoce el objetivo escrito en futuro sin reescribirlo', async ({ page }) => {
+test('modo libro: conserva el objetivo escrito por el autor sin reescribirlo', async ({ page }) => {
   await enableBookMode(page);
   await page.goto('/curso/java/12?pagina=tema-1');
 
   const objective = page.locator('.book-topic-objective').first();
   await expect(objective).toBeVisible();
-  // La voz del autor se conserva: "Al finalizar construirás…" se muestra tal cual.
-  await expect(objective).toContainText('Al finalizar');
-  await expect(objective).toContainText('construirás un objeto inmutable');
-  await expect(page.locator('p.book-objective-source').first()).toBeHidden();
+  // La voz vigente del autor se conserva: el lector separa la etiqueta, pero
+  // el contenido visible sigue siendo exactamente el del párrafo fuente.
+  await expect(objective).toContainText('Al terminar podrás');
+  await expect(objective).toContainText('construir un objeto inmutable');
+  const source = page.locator('p.book-objective-source').first();
+  await expect(source).toBeHidden();
+  const normalize = (text: string) => text.replace(/\s+/g, ' ').trim();
+  const shown = normalize((await objective.innerText()).replace(/^Al terminar podrás/i, ''));
+  expect(normalize((await source.textContent()) ?? '')).toContain(shown);
 });
 
 test('modo libro: salir del modo devuelve el capítulo completo y persiste la elección', async ({ page }) => {

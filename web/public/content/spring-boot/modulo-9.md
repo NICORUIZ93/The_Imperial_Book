@@ -220,6 +220,37 @@ Cada tema se practica por separado con su propia repetición progresiva y su pro
 
 **¿Por qué es importante?** Una API de entregas que combina ubicación, tarifa y disponibilidad necesita modelar explícitamente si cada operación espera cero-o-un resultado (`Mono`, como buscar una entrega por código) o cero-a-N resultados (`Flux`, como listar todas las entregas), sin bloquear un thread por cada espera de red o de base de datos.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `Mono` (cardinalidad 0..1) | Núcleo | `Mono<Delivery> entrega = repository.findByTrackingCode(codigo);` |
+| `Flux` (cardinalidad 0..N) | Núcleo | `Flux<Delivery> entregas = repository.findAll();` |
+| Evaluación perezosa | Núcleo | `assert !seEjecuto.get()` se cumple antes de suscribirse |
+| Suscripción como disparador | Prerrequisito | `StepVerifier.create(mono)` ejecuta la lambda y `seEjecuto` pasa a `true` |
+| Caso vacío y error como señal | Variante | ejercicios con `Mono.empty()` y `Flux.error(new RuntimeException("fallo"))` |
+| Verificación posicional con `StepVerifier` | Diagnóstico | `expected value: Factura pagada; actual value: Pagar factura` |
+| `.block()` dentro del flujo | Error frecuente | errores comunes: llamar `.block()` "para simplificar" anula lo no bloqueante |
+| Reactivo sin I/O real | Límite | envolver cálculos en memoria en un `Mono` solo añade complejidad |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`Mono` (cardinalidad 0..1) (núcleo).** `Mono<Delivery> entrega = repository.findByTrackingCode(codigo);` modela una operación que produce cero o un elemento, como buscar una entrega por su código único. El mecanismo es un `Publisher` tipado por cardinalidad: el tipo mismo comunica al lector y al compilador que a lo sumo llega un resultado. La decisión de diseño es elegir `Mono` cuando la semántica del dominio garantiza un único resultado opcional, evitando la ambigüedad de devolver una colección que podría tener más de un elemento.
+
+**`Flux` (cardinalidad 0..N) (núcleo).** `Flux<Delivery> entregas = repository.findAll();` modela un flujo de cero a N elementos, como listar todas las entregas. A diferencia del `Mono`, admite una secuencia completa y el test `unFluxEmiteExactamenteLosElementosDeclarados` confirma que emite exactamente los tres elementos declarados, en orden, antes de completar. La decisión es reservar `Flux` para operaciones cuya cardinalidad real puede superar uno, en lugar de forzar una colección dentro de un `Mono`.
+
+**Evaluación perezosa (núcleo).** Declarar un `Mono` o `Flux` no ejecuta su lógica productora: la aserción `assert !seEjecuto.get()` se cumple justo después de construir el `Mono.fromCallable(...)` y antes de cualquier suscripción. El mecanismo es que el `Publisher` solo describe el trabajo; ni siquiera la query contra la base de datos corre hasta que alguien se suscribe. El error típico es asumir que construir el publisher ya disparó su efecto, cuando nada ocurre sin suscripción.
+
+**Suscripción como disparador (prerrequisito).** La ejecución real comienza con la suscripción: `StepVerifier.create(mono)` se suscribe de verdad y provoca que `seEjecuto` pase a `true`, verificado por la segunda aserción del test. En un `@RestController` reactivo esa suscripción la realiza Spring automáticamente al devolver el publisher desde el endpoint. La variante importante es que el método final de la cadena (`.verifyComplete()`, `.verifyError()`) es el que dispara la suscripción en el test, no `create` por sí solo.
+
+**Caso vacío y error como señal (variante).** Un flujo reactivo puede completar sin emitir (`Mono.empty()`, verificado con `verifyComplete()` sin `expectNext`) o terminar en error como señal (`Flux.error(new RuntimeException("fallo"))`, verificado con `expectError(RuntimeException.class)`). El mecanismo clave es que el error viaja como una señal dentro del flujo, no como una excepción lanzada al construir. El límite que esto enseña es que `verifyComplete()` y `expectError(...)` son terminaciones mutuamente excluyentes de una misma secuencia.
+
+**Verificación posicional con `StepVerifier` (diagnóstico).** `StepVerifier` comprueba cada elemento en su posición exacta: al cambiar `expectNext("Pagar factura")` por `expectNext("Factura pagada")`, el fallo informa `expected value: Factura pagada; actual value: Pagar factura`. El mecanismo diagnóstico es que la herramienta suscribe de verdad y confronta señal por señal, no solo que "algo" fue emitido. Esto convierte una afirmación vaga sobre el orden en un contraste observable y reproducible.
+
+**`.block()` dentro del flujo (error frecuente).** Llamar `.block()` dentro de un flujo reactivo "para simplificar" el código anula por completo el beneficio no bloqueante, como advierte la sección de errores comunes del tema. El mecanismo del daño es que la espera sincrónica detiene el thread que debía quedar libre para otras peticiones. La decisión correcta es componer con operadores reactivos y dejar que la suscripción final ocurra en el borde (el `@RestController` o el `StepVerifier`), nunca bloquear en medio.
+
+**Reactivo sin I/O real (límite).** Para lógica puramente síncrona sin espera de I/O (cálculos en memoria), envolver el resultado en un `Mono` no aporta beneficio y solo añade complejidad de composición. El mecanismo es que el modelo reactivo rinde cuando libera threads durante esperas de red o base de datos; sin esa espera no hay nada que liberar. La decisión es reservar los tipos reactivos para operaciones con I/O real y evitar reactividad ceremonial donde un valor directo basta.
+
 **Conceptos clave:** 0 o 1 elemento frente a 0 a N elementos, evaluación perezosa con suscripción.
 
 `Mono<Delivery> entrega = repository.findByTrackingCode(codigo);` representa un flujo reactivo de cero o un elemento; `Flux<Delivery> entregas = repository.findAll();` representa un flujo de cero a N elementos. Ambos son perezosos por diseño: no ejecutan ninguna lógica productora (ni siquiera la query contra la base de datos) hasta que alguien efectivamente se suscribe, con Spring suscribiéndose automáticamente cuando un `@RestController` reactivo devuelve un `Mono`/`Flux` como resultado de un endpoint.
@@ -238,7 +269,7 @@ flowchart LR
 
 #### Practica
 
-**Demo paso a paso.** Continuando en `demo-reactive` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `mkdir demo-reactive && cd demo-reactive && curl -fsSL https://start.spring.io/starter.zip -d dependencies=webflux -d javaVersion=25 -o app.zip && unzip app.zip`), agrega el starter de test de Reactor (`io.projectreactor:reactor-test`, incluido por defecto al generar el proyecto con `webflux`) y crea el test de evaluación perezosa en `src/test/java/io/academia/delivery/`:
+**Demo paso a paso.** Continuando en `demo-reactive` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `mkdir demo-reactive && cd demo-reactive && curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=webflux -d javaVersion=25 -o app.zip && unzip app.zip`), agrega el starter de test de Reactor (`io.projectreactor:reactor-test`, incluido por defecto al generar el proyecto con `webflux`) y crea el test de evaluación perezosa en `src/test/java/io/academia/delivery/`:
 
 ```bash
 mkdir -p demo-reactive/src/test/java/io/academia/delivery
@@ -353,6 +384,37 @@ StepVerifier.create(flux)
 #### Aprende
 
 **¿Por qué es importante?** Calcular el costo total de una entrega puede requerir consultar primero la ubicación del destinatario y luego, con esa ubicación, consultar la tarifa correspondiente a esa zona — dos llamadas HTTP dependientes entre sí que no deberían bloquear un thread completo durante toda la espera combinada de ambas.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `WebClient` no bloqueante | Núcleo | `webClient.get().uri(...).retrieve().bodyToMono(String.class)` libera el thread |
+| `RestTemplate` como legado | Prerrequisito | errores comunes: usar `RestTemplate` (bloqueante y legado) en vez de `WebClient` |
+| Composición dependiente con `flatMap` | Núcleo | `obtenerUbicacion(trackingCode).flatMap(this::obtenerTarifa)` |
+| `flatMap` dispara I/O real | Diagnóstico | con una sola respuesta encolada el test falla por timeout |
+| `Mono.zip` para llamadas independientes | Variante | ejercicio: tres llamadas con `Mono.zip(...)` en paralelo |
+| Error HTTP como señal | Límite | `MockResponse.Builder().code(500)` se propaga con `verifyError()` |
+| Timeout explícito | Decisión | `.timeout(Duration.ofSeconds(2))` frente a `bodyDelay(3, TimeUnit.SECONDS)` |
+| Orden de `enqueue` en `MockWebServer` | Error frecuente | las respuestas se entregan en el orden recibido, no por ruta |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`WebClient` no bloqueante (núcleo).** `WebClient` emite peticiones HTTP salientes completamente no bloqueantes: `webClient.get().uri("/usuarios/{id}", id).retrieve().bodyToMono(Usuario.class)` inicia la petición y libera el thread actual para atender otras peticiones concurrentes. El mecanismo es que la respuesta llega como un `Mono` que se resuelve cuando el I/O concluye, sin dejar un thread detenido en la espera. La decisión que habilita es escalar muchas conexiones concurrentes con pocos threads.
+
+**`RestTemplate` como legado (prerrequisito).** `WebClient` reemplaza al histórico `RestTemplate`, hoy considerado legado y bloqueante, como señala la sección de errores comunes. El mecanismo de la diferencia es que `RestTemplate` detiene el thread hasta recibir la respuesta, mientras `WebClient` no. La decisión profesional es no mezclar `RestTemplate` en un flujo reactivo, porque reintroduce el bloqueo que todo el stack intenta evitar.
+
+**Composición dependiente con `flatMap` (núcleo).** `calcularTarifaCompleta` encadena dos llamadas donde la segunda depende del resultado de la primera: `obtenerUbicacion(trackingCode).flatMap(this::obtenerTarifa)`. El mecanismo es que `flatMap` aplana el `Mono` que produce la segunda llamada dentro del flujo de la primera, de forma análoga a `thenCompose` de `CompletableFuture`, sin bloquear en ningún punto. La decisión es usar `flatMap` precisamente cuando existe dependencia de datos entre las dos llamadas.
+
+**`flatMap` dispara I/O real (diagnóstico).** Encolar solo UNA respuesta en vez de dos hace que el test falle por timeout: la segunda llamada disparada por el `flatMap` espera una respuesta que `MockWebServer` no tiene. El mecanismo diagnóstico es que esto demuestra, con un servidor HTTP real, que `flatMap` lanza una SEGUNDA petición HTTP dependiente y no solo transforma un valor en memoria. El error que revela es asumir que la composición es puramente local cuando en realidad implica un segundo viaje de red.
+
+**`Mono.zip` para llamadas independientes (variante).** Cuando dos llamadas no dependen entre sí, el ejercicio propone combinarlas con `Mono.zip(...)` en lugar de `flatMap` encadenado, disparándolas en paralelo. El mecanismo es que `zip` suscribe ambas fuentes a la vez y combina sus resultados cuando las dos completan. La decisión es elegir `zip` para independencia (paralelismo) y `flatMap` para dependencia (secuencia), según la relación real entre las llamadas.
+
+**Error HTTP como señal (límite).** Un error HTTP real de la primera llamada, provocado con `MockResponse.Builder().code(500)`, se propaga como error en el `Mono` compuesto y se verifica con `StepVerifier...verifyError()`. El mecanismo es que el fallo viaja como señal de error a través de la composición, cortando el flujo en vez de lanzarse como excepción local. El límite que enseña es que, sin manejar ese error, el flujo completo queda interrumpido como advierte la sección de errores comunes.
+
+**Timeout explícito (decisión).** Agregar `.timeout(Duration.ofSeconds(2))` acota la espera: si una respuesta tarda más, simulado con `bodyDelay(3, TimeUnit.SECONDS)`, el `Mono` termina en error de timeout en vez de esperar indefinidamente. El mecanismo es que Reactor emite una señal de error al vencer la ventana. La decisión profesional es fijar siempre un límite temporal para no dejar el flujo colgado ante un servicio externo lento.
+
+**Orden de `enqueue` en `MockWebServer` (error frecuente).** `MockWebServer` entrega las respuestas encoladas en el orden en que las recibe, no según la ruta solicitada; por eso el orden de `servidor.enqueue(...)` debe coincidir con el orden real en que el código dispara las llamadas. El mecanismo es una cola FIFO de respuestas desacoplada del endpoint. El error frecuente es encolar las respuestas en orden inverso al de las llamadas y obtener valores cruzados o un cuelgue.
 
 **Conceptos clave:** thread libre mientras espera I/O, composición con `flatMap`.
 
@@ -523,6 +585,34 @@ public Mono<Double> calcularTarifaCompleta(String trackingCode) {
 
 **¿Por qué es importante?** WebFlux se justifica específicamente para alta concurrencia con recursos de threads limitados; para un CRUD simple, Spring MVC (o virtual threads de Java 21) suele ser suficiente y considerablemente más simple de razonar y depurar. Mezclar código bloqueante dentro de un pipeline reactivo puede agotar el pequeño pool de threads reactivos compartido.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Decisión WebFlux frente a MVC | Decisión | WebFlux para alta concurrencia; MVC/virtual threads para CRUD simple |
+| `.block()` sobre el event loop | Error frecuente | `Mono.just("dato").block()` en `@GetMapping("/test/bloqueo")` |
+| Detección activa de Reactor | Diagnóstico | `IllegalStateException: block()/blockFirst()/blockLast() are blocking` |
+| Verificación de extremo a extremo | Núcleo | `WebTestClient` espera `.expectStatus().is5xxServerError()` |
+| `boundedElastic` para bloqueo inevitable | Variante | ejercicio: `.publishOn(Schedulers.boundedElastic())` responde `200 OK` |
+| Restricción por tipo de thread | Límite | el mismo `.block()` desde un test JUnit normal NO lanza el error |
+| R2DBC sin ocultar JDBC | Prerrequisito | el acceso a datos usa R2DBC y no oculta JDBC bloqueante tras `Mono` |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Decisión WebFlux frente a MVC (decisión).** WebFlux brilla en sistemas con muchas conexiones concurrentes dominadas por I/O donde los threads son un recurso limitado; para CRUDs de concurrencia moderada, Spring MVC con stack traces lineales suele ser suficiente, un balance aún más relevante desde los virtual threads de Java 21. El mecanismo es que un thread reactivo atiende varias esperas, mientras MVC asigna un thread por petición. La decisión profesional se toma con criterios medibles —concurrencia esperada, tipo de I/O, costo de depuración— no por preferencia.
+
+**`.block()` sobre el event loop (error frecuente).** El endpoint `conBloqueoIndebido()` ejecuta `Mono.just("dato").block()` dentro de un handler reactivo, forzando al thread del event loop de Netty —diseñado para nunca bloquearse— a esperar sincrónicamente. El mecanismo del daño es que ocupa uno de los pocos threads del pool reactivo durante toda la operación, afectando a las demás peticiones concurrentes. Es el antipatrón central que el tema reproduce para observarlo en código, no solo describirlo.
+
+**Detección activa de Reactor (diagnóstico).** Reactor no permite el bloqueo silenciosamente: lanza `IllegalStateException: block()/blockFirst()/blockLast() are blocking, which is not supported in thread reactor-http-nio-...`. El mecanismo diagnóstico es que Reactor marca ciertos threads (los del event loop de Netty) como no-bloqueables y rechaza activamente `.block()` sobre ellos. Esto convierte un error latente de producción en una excepción inmediata y rastreable durante el desarrollo.
+
+**Verificación de extremo a extremo (núcleo).** `WebTestClient` ejercita el pipeline HTTP completo y confirma que la petición a `/test/bloqueo` falla con `.expectStatus().is5xxServerError()`. El mecanismo es que no se trata de un test unitario aislado, sino de la petición real procesada por WebFlux sobre un thread reactivo verdadero, único contexto donde se activa la detección. La decisión de probar así garantiza que el rechazo ocurre en el entorno de ejecución real, no en una simulación.
+
+**`boundedElastic` para bloqueo inevitable (variante).** El ejercicio propone `.publishOn(Schedulers.boundedElastic())` antes de un `.block()` interno, moviendo el bloqueo a un scheduler diseñado para tolerarlo, y ese endpoint SÍ responde `200 OK`. El mecanismo es que `boundedElastic` provee threads aptos para operaciones bloqueantes, aislados del event loop. La decisión correcta, cuando el bloqueo es inevitable, es desplazarlo a ese scheduler en lugar de ejecutarlo sobre el thread no bloqueable.
+
+**Restricción por tipo de thread (límite).** El error `block() ... not supported in thread reactor-http-nio-...` solo ocurre en threads que Reactor marca como no-bloqueables; el mismo `.block()` desde un test JUnit normal, fuera de un pipeline reactivo activo, NO lo lanza. El mecanismo es que la restricción vive en el thread, no en el método `.block()` en sí. El límite que enseña es que pasar un test aislado con `.block()` no garantiza que el código sea seguro dentro del event loop.
+
+**R2DBC sin ocultar JDBC (prerrequisito).** El acceso a datos debe usar R2DBC y no ocultar JDBC bloqueante detrás de un `Mono`, como exige el checklist de salida. El mecanismo es que R2DBC es un driver reactivo real de extremo a extremo, mientras envolver JDBC en `Mono` reintroduce el bloqueo que agota el pool reactivo. La decisión profesional es mantener toda la cadena no bloqueante y, si el bloqueo es inevitable, aislarlo explícitamente en `boundedElastic`.
+
 **Conceptos clave:** alta concurrencia con recursos limitados frente a CRUD simple, JDBC bloqueante en un pipeline reactivo.
 
 WebFlux brilla en sistemas con muchas conexiones concurrentes dominadas por I/O donde los threads son un recurso limitado; para CRUDs simples con concurrencia moderada, Spring MVC tradicional (con stack traces lineales y legibles) suele ser suficiente, un balance todavía más relevante desde los virtual threads de Java 21. Mezclar código bloqueante tradicional dentro de un pipeline reactivo ocuparía uno de los pocos threads del pool reactivo durante toda la operación bloqueante, afectando a todas las demás peticiones concurrentes que dependen de esos mismos threads limitados. Reactor incluso DETECTA esto activamente en threads específicos (los del event loop de Netty) y lanza una excepción real en vez de permitirlo silenciosamente.
@@ -650,6 +740,182 @@ String resultado = Mono.just("dato").____();
 **Fuente oficial:** [Project Reactor — Blocking calls](https://projectreactor.io/docs/core/release/reference/faq.html#faq.wrap-blocking).
 
 **Transferencia al proyecto integrador:** esta decisión (WebFlux o MVC) es la misma que deberás justificar explícitamente para el microservicio productivo (Módulo 12).
+
+### Tema 4: Virtual threads como alternativa a WebFlux · Avanzado · 35 min
+
+**Prerrequisito:** Tema 3 de este módulo (cuándo WebFlux vale la complejidad).
+
+**Al terminar podrás:** activar `spring.threads.virtual.enabled=true` y confirmar con una petición HTTP real, contra un servidor embebido real, que el hilo que atiende la petición es un hilo virtual de Java, no un hilo de plataforma tradicional.
+
+#### Aprende
+
+**¿Por qué es importante?** El Tema 3 mencionó virtual threads como alternativa a WebFlux para alta concurrencia dominada por I/O, pero "mencionar" no es lo mismo que activarlo y confirmarlo: un equipo que asume que está usando virtual threads simplemente por correr en Java 21+ (sin haber activado la propiedad) sigue limitado por el pool de threads de plataforma tradicional de Tomcat, sin ningún error que lo señale.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `spring.threads.virtual.enabled` | Núcleo | en `true`, el hilo que atiende `/hilo` reporta `Thread.currentThread().isVirtual() == true` |
+| Valor por defecto: `false` | Diagnóstico | sin la propiedad explícita, el mismo endpoint reporta un hilo de plataforma, sin ningún error |
+| Requiere servidor real, no `MockMvc` | Prerrequisito | la verificación usa un puerto real (`@LocalServerPort`) y una petición HTTP real, no un `MockMvc` simulado |
+| Virtual threads vs WebFlux: mismo problema, modelo distinto | Variante | virtual threads mantiene el modelo de programación secuencial de Spring MVC; WebFlux exige un modelo reactivo distinto |
+| Dónde virtual threads NO ayuda | Límite | código con secciones `synchronized` largas puede "pinnear" el hilo virtual a uno de plataforma, perdiendo el beneficio |
+| Cuándo justifica el cambio | Decisión | alta concurrencia dominada por I/O (llamadas HTTP salientes, consultas a BD) se beneficia; CPU-bound no se beneficia |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`spring.threads.virtual.enabled` (núcleo).** Con esta propiedad en `true`, Spring Boot configura el executor de Tomcat (o el servidor embebido que corresponda) para atender cada petición HTTP sobre un hilo virtual de la JVM (Project Loom, Java 21+) en vez de un hilo de plataforma del pool tradicional. El demo confirma esto directamente: un endpoint que llama a `Thread.currentThread().isVirtual()` responde `true` cuando la propiedad está activa.
+
+**Valor por defecto: `false` (diagnóstico).** Sin declarar explícitamente `spring.threads.virtual.enabled: true`, Spring Boot NO activa virtual threads por defecto, incluso corriendo sobre una JVM que los soporta (Java 21+). El fallo deliberado de este tema confirma esto: con la propiedad en `false` (o ausente), el mismo endpoint responde `"plataforma"`, sin ningún error ni advertencia que indique que el cambio de modelo de hilos no ocurrió.
+
+**Requiere servidor real, no `MockMvc` (prerrequisito).** La verificación de este tema usa `@SpringBootTest(webEnvironment = RANDOM_PORT)` junto con `@LocalServerPort` y un `java.net.http.HttpClient` real contra ese puerto, porque `MockMvc` puede ejecutar el handler en el propio hilo de la prueba sin pasar por el pool de ejecución real del servidor embebido. Solo una petición HTTP real contra un servidor real confirma en qué hilo realmente se ejecuta el código del controller.
+
+**Virtual threads vs WebFlux: mismo problema, modelo distinto (variante).** Ambos enfoques atacan el mismo problema (threads de plataforma limitados bajo alta concurrencia de I/O), pero con modelos radicalmente distintos: WebFlux exige reescribir el código en un estilo reactivo (`Mono`/`Flux`, sin bloqueo en ningún punto); virtual threads permite mantener EXACTAMENTE el mismo código secuencial de Spring MVC de siempre, con la JVM gestionando la multiplexación de hilos virtuales sobre un pool pequeño de hilos de plataforma por debajo, de forma transparente al código de la aplicación.
+
+**Dónde virtual threads NO ayuda (límite).** Un bloque `synchronized` de larga duración puede causar que un hilo virtual quede "pinneado" (fijado) a su hilo de plataforma subyacente durante toda esa sección, bloqueando ese hilo de plataforma para otros hilos virtuales — perdiendo exactamente el beneficio de escalabilidad que motivó adoptar virtual threads en primer lugar. Código con bloqueos largos y sincronización pesada necesita revisión antes de asumir que virtual threads resuelve su problema de concurrencia sin cambios.
+
+**Cuándo justifica el cambio (decisión).** Virtual threads beneficia específicamente cargas dominadas por I/O (esperar una respuesta HTTP externa, una consulta a base de datos, lectura de archivos) donde el hilo real pasaría la mayoría del tiempo esperando; para trabajo intensivo de CPU (cálculos, procesamiento de imágenes), virtual threads no ofrece ningún beneficio porque no hay espera de I/O que multiplexar.
+
+**Conceptos clave:** `spring.threads.virtual.enabled`, `Thread.isVirtual()`, pinning de hilos virtuales.
+
+`spring.threads.virtual.enabled: true` hace que Spring Boot atienda cada petición HTTP sobre un hilo virtual de Java (Project Loom) en vez de un hilo de plataforma tradicional, manteniendo el mismo modelo de programación secuencial de Spring MVC (a diferencia de WebFlux, que exige un modelo reactivo distinto). El valor por defecto es `false`; sin activarlo explícitamente, no hay ningún cambio de comportamiento ni ningún error que lo señale. Un bloque `synchronized` largo puede "pinnear" un hilo virtual, anulando parcialmente el beneficio.
+
+**Analogía:** un hilo de plataforma tradicional es como un empleado dedicado que debe quedarse físicamente esperando frente a una ventanilla hasta que el tramite externo termine, sin poder atender a nadie más mientras espera; un hilo virtual es como un empleado que, al delegar el trámite y quedar en espera, libera inmediatamente la ventanilla física para atender a otra persona, y retoma exactamente donde quedó cuando el trámite externo finalmente responde.
+
+**Diagrama:**
+
+```text
+┌ Hilo de plataforma (tradicional) ──────────────┐
+│ 1 hilo del SO ocupado durante TODA la espera   │
+│ de I/O; pool limitado a cientos de hilos       │
+└─────────────────────────────────────────────────┘
+┌ Hilo virtual (spring.threads.virtual.enabled) ─┐
+│ el hilo del SO se libera durante la espera de  │
+│ I/O; millones de hilos virtuales son viables   │
+└─────────────────────────────────────────────────┘
+```
+
+#### Practica
+
+**Demo paso a paso.** Desde una carpeta vacía, genera el proyecto:
+
+```bash
+mkdir virtual-threads-demo && cd virtual-threads-demo
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web -d javaVersion=27 -o app.zip
+unzip -q app.zip
+```
+
+Crea `src/main/resources/application.yml`:
+
+```yaml
+spring:
+  threads:
+    virtual:
+      enabled: true
+```
+
+Crea `src/main/java/com/academia/vthreads/HiloController.java`:
+
+```java
+package com.academia.vthreads;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class HiloController {
+    @GetMapping("/hilo")
+    public String tipoDeHilo() {
+        return Thread.currentThread().isVirtual() ? "virtual" : "plataforma";
+    }
+}
+```
+
+Agrega la dependencia real de testing (`spring-boot-webmvc-test`, ver Módulo 2 Tema 7) y crea `src/test/java/com/academia/vthreads/HiloControllerTest.java`:
+
+```java
+package com.academia.vthreads;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
+
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+class HiloControllerTest {
+
+    @LocalServerPort
+    private int puerto;
+
+    @Test
+    void laPeticionHttpSeAtiendeEnUnHiloVirtualReal() throws Exception {
+        HttpClient cliente = HttpClient.newHttpClient();
+        HttpRequest peticion = HttpRequest.newBuilder(URI.create("http://localhost:" + puerto + "/hilo")).build();
+
+        HttpResponse<String> respuesta = cliente.send(peticion, HttpResponse.BodyHandlers.ofString());
+
+        assertThat(respuesta.body()).isEqualTo("virtual");
+    }
+}
+```
+
+```bash
+./mvnw test
+```
+
+**Resultado esperado:** `Tests run: 1, Failures: 0, Errors: 0` (verificado con Spring Boot 4.1.1 sobre JDK 27.0.1): la petición HTTP real contra el servidor embebido real confirma que el hilo que atendió `/hilo` es un hilo virtual.
+
+**Fallo deliberado:** cambia `spring.threads.virtual.enabled` a `false` (o elimínalo, su valor por defecto) y ejecuta de nuevo. El test FALLA porque la respuesta es `"plataforma"`, no `"virtual"`. Diagnostica confirmando que virtual threads NUNCA se activa automáticamente, incluso corriendo sobre una JVM que los soporta: sin la propiedad explícita, Spring Boot sigue usando el pool de hilos de plataforma tradicional de Tomcat, sin ningún error que señale la diferencia. Restaura la propiedad en `true` antes de continuar.
+
+**Ejercicios.**
+
+1. Agrega un segundo endpoint que realice una operación de CPU intensiva (un bucle de cálculo largo, sin ningún I/O) y documenta, basándote en el Paso 3, por qué virtual threads no ofrece ningún beneficio medible para ESE endpoint específico.
+2. Simula una sección `synchronized` dentro del controller y documenta, basándote en la fuente oficial, por qué podría "pinnear" el hilo virtual a uno de plataforma durante esa sección.
+3. Compara (leyendo la documentación oficial, sin necesidad de benchmarks propios) el modelo de programación que exige virtual threads (secuencial, igual a MVC tradicional) frente al que exige WebFlux (reactivo, Mono/Flux) para el mismo problema de concurrencia.
+4. Escribe de memoria (sin mirar) un endpoint que reporte si su hilo es virtual, la propiedad que lo activa, y un test contra un servidor real que lo confirme. Compara después contra el patrón del Paso 4.
+
+**Pista:** si no estás seguro de si virtual threads está realmente activo, no lo asumas por la versión de Java: confirma con `Thread.currentThread().isVirtual()` dentro del código que realmente se ejecuta en producción.
+
+**Completa el código:** rellena la propiedad que activa virtual threads para peticiones HTTP:
+
+```yaml
+spring:
+  threads:
+    virtual:
+      ____: true
+```
+
+**Reto de memoria:** cierra este documento y escribe, solo de memoria, la propiedad que activa virtual threads, un endpoint que confirme el tipo de hilo, y un test contra un servidor real (no `MockMvc`) que lo verifique.
+
+#### Aplica
+
+**Reto abierto.** Para el microservicio productivo de RutaFlow, evalúa si activar virtual threads sería suficiente para la carga esperada (dominada por llamadas HTTP salientes a servicios de tarifas y geocodificación) frente a migrar a WebFlux. Documenta la decisión con el mismo criterio del Tema 3 (concurrencia esperada, tipo de I/O, costo de depuración), y demuestra con un test real que el endpoint crítico del servicio corre sobre un hilo virtual.
+
+**Checklist de salida.**
+
+- [ ] `spring.threads.virtual.enabled: true` está explícito en la configuración (no asumido por la versión de Java).
+- [ ] Un test contra un servidor real (no `MockMvc`) confirma `Thread.isVirtual() == true` para una petición real.
+- [ ] Reprodujiste el fallo silencioso de omitir la propiedad y entendés por qué no produce ningún error.
+- [ ] Podés explicar la diferencia de modelo de programación entre virtual threads (secuencial) y WebFlux (reactivo) para el mismo problema.
+- [ ] Sabés identificar al menos un escenario (CPU-bound, secciones `synchronized` largas) donde virtual threads no ayuda o puede perder su beneficio.
+
+**Si falla.** Si el hilo reportado siempre es "plataforma", confirma que `spring.threads.virtual.enabled` esté en `true` en el `application.yml` que realmente se está cargando. Si el test con `MockMvc` reporta resultados inconsistentes, cambia a una petición HTTP real contra un servidor real (`RANDOM_PORT` + `@LocalServerPort`).
+
+**Siguiente paso:** el Módulo 10 aborda microservicios con Spring Cloud.
+
+**Errores comunes:** asumir que virtual threads está activo solo por correr en Java 21+, sin haber puesto la propiedad explícita; usar `MockMvc` para intentar verificar en qué hilo real se ejecuta el código, cuando puede ejecutarse en el propio hilo de la prueba; migrar a virtual threads cargas CPU-bound esperando el mismo beneficio que en cargas I/O-bound.
+
+**Límites y decisión de uso:** para trabajo intensivo de CPU sin espera de I/O, virtual threads no ofrece ningún beneficio medible; se justifica específicamente para alta concurrencia dominada por I/O donde el modelo secuencial de Spring MVC se quiere conservar sin reescribir a un estilo reactivo.
+
+**Fuente oficial:** [Spring Boot — Virtual Threads](https://docs.spring.io/spring-boot/reference/features/task-execution-and-scheduling.html#features.task-execution-and-scheduling.virtual-threads).
+
+**Transferencia al proyecto integrador:** la decisión de activar virtual threads (o no) para el microservicio productivo se toma con el mismo criterio práctico que este tema demuestra con evidencia real.
 
 ## Proyecto de cierre del módulo
 

@@ -23,6 +23,37 @@ La API de entregas necesita consultar los pedidos de un cliente, pero el pedido 
 
 **¿Por qué es importante?** Una asociación coherente evita claves foráneas huérfanas y deja claro qué entidad controla el vínculo en la base de datos.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `@Transactional` y contexto de persistencia | Prerrequisito | El servicio anotado con `@Transactional` construye el cliente, agrega el pedido y guarda el agregado por repositorio |
+| Lado propietario vs `mappedBy` | Núcleo | `@OneToMany(mappedBy = "cliente", ...)` en `Cliente` y `@ManyToOne` con `@JoinColumn(name = "cliente_id")` en `Pedido` |
+| Sincronización de ambos lados del dominio | Núcleo | `agregar` llama a `pedido.asignarCliente(this)` tras `pedidos.add(pedido)` |
+| `CascadeType.PERSIST` | Variante | Guardar `Cliente` persiste también sus `Pedido`; al quitarlo el test exige guardar `Pedido` por su repositorio |
+| Colección inversa no basta | Error frecuente | El fallo deliberado deja `pedido.cliente_id` nulo al suprimir `asignarCliente` |
+| Borrado y `orphanRemoval` | Límite | `cliente.getPedidos().remove(pedido)` no borra la fila sin `orphanRemoval = true` o borrado explícito |
+| Regla de integridad al eliminar cliente | Decisión | Eliminar un cliente no borra pedidos históricos salvo decisión explícita vía `CascadeType.REMOVE` |
+| Esquema persistente con Flyway | Decisión | El bloque Aplica usa migraciones Flyway en vez de `ddl-auto=update` |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`@Transactional` y contexto de persistencia (prerrequisito).** El servicio de este tema usa `@Transactional` para delimitar el trabajo y permitir que el contexto de persistencia gestione los cambios al construir el cliente, agregar un pedido y guardar el agregado por `ClienteRepository`. El texto advierte que esta anotación no convierte cada método Java en atómico: solo abre la unidad de trabajo dentro de la cual Hibernate implementa el contrato JPA. Sin esa transacción el contexto no coordina la escritura coherente de ambas entidades.
+
+**Lado propietario vs `mappedBy` (núcleo).** `@ManyToOne` es el lado propietario porque contiene la clave foránea, mientras `mappedBy = "cliente"` en la colección de `Cliente` declara el lado inverso que no manda sobre la base. En el código, `Pedido` lleva `@JoinColumn(name = "cliente_id")` y por eso es quien escribe esa columna. Confundir qué lado controla el vínculo es lo que produce filas con `cliente_id` nulo aunque la colección en memoria parezca correcta.
+
+**Sincronización de ambos lados del dominio (núcleo).** El método `agregar` añade el pedido a la colección y acto seguido invoca `pedido.asignarCliente(this)` para fijar el lado propietario. El mecanismo importa porque solo la referencia del lado `@ManyToOne` persiste la clave foránea; mantener ambos lados en código evita estados incoherentes entre memoria y base. El tema lo verifica comprobando que la fila de `pedido` guarda `cliente_id`.
+
+**`CascadeType.PERSIST` (variante).** Esta cascada propaga la operación de guardado del cliente a sus pedidos, de modo que guardar el agregado persiste ambos registros. La pista del tema muestra la variante contraria: al quitar `CascadeType.PERSIST` el test falla porque el pedido ya no se guarda automáticamente, y entonces hay que persistir `Pedido` explícitamente con su propio repositorio antes de guardar `Cliente`. La decisión de activarla no debe tomarse por inercia.
+
+**Colección inversa no basta (error frecuente).** El fallo deliberado consiste en eliminar la llamada `pedido.asignarCliente(this)`: al actualizar solo la colección inversa, la clave foránea `pedido.cliente_id` queda nula. Esto demuestra que modificar el lado `mappedBy` en memoria no escribe la columna, porque ese lado no es el propietario. Es el error más repetido al modelar asociaciones bidireccionales.
+
+**Borrado y `orphanRemoval` (límite).** El tema aclara que `cliente.getPedidos().remove(pedido)` no elimina la fila correspondiente sin `orphanRemoval = true` o un borrado explícito por repositorio. El límite es que `CascadeType.PERSIST` cubre el guardado pero no el borrado, así que asumir que la cascada de persistencia también elimina es incorrecto. Reconocer este límite evita filas huérfanas que sobreviven a la operación de la colección.
+
+**Regla de integridad al eliminar cliente (decisión).** Eliminar un cliente no debe borrar sus pedidos históricos salvo que se decida explícitamente activar `CascadeType.REMOVE` o `orphanRemoval`. La decisión es de diseño del dominio: el ejemplo pide intentar borrar un cliente con pedidos y definir el comportamiento de integridad esperado. Activar el borrado en cascada sobre datos que deben conservar historial es justamente lo que el tema desaconseja.
+
+**Esquema persistente con Flyway (decisión).** Para RutaFlow el bloque Aplica indica usar migraciones Flyway en lugar de `ddl-auto=update` cuando el esquema debe persistir. La decisión separa la evolución controlada del esquema de la generación automática implícita de Hibernate, que no deja rastro versionado. Así el cambio de estructura queda explícito y reproducible frente a producción.
+
 `@ManyToOne` suele ser el lado propietario porque contiene la clave foránea; `mappedBy` declara el lado inverso. Mantén ambos lados sincronizados mediante métodos del dominio. `CascadeType` expresa propagación del ciclo de vida; no lo actives por inercia: eliminar el cliente no necesariamente debe eliminar pedidos históricos.
 
 JPA define el contrato y Hibernate lo implementa. `@Transactional` delimita el trabajo y permite que el contexto de persistencia gestione cambios; no hace que cada método de Java sea automáticamente atómico.
@@ -35,7 +66,7 @@ Genera el proyecto con `web`, `data-jpa` y `h2`.
 
 **Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/main/java/academia/envios/Cliente.java` con el contenido de este tema.
 ```bash
-curl -fsSL https://start.spring.io/starter.zip -o ejemplo.zip && unzip -o ejemplo.zip -d ejemplo
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -o ejemplo.zip && unzip -o ejemplo.zip -d ejemplo
 ```
 
 **Crea** el archivo `src/main/java/academia/envios/Cliente.java` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
@@ -66,7 +97,7 @@ public class Cliente {
 **Ejecuta el ejemplo** (genera el proyecto con Spring Initializr, pega el código y corre las pruebas):
 
 ```bash
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
 ./mvnw test
 ```
 Equivalencias Maven/Gradle en el Módulo 1.
@@ -106,13 +137,44 @@ Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el
 
 **Prerrequisito:** Tema 1 de este módulo; continúa con sus entidades.
 
-**Al terminar podrás:** reproducir N+1, elegir una carga apropiada para una pantalla y verificar el plan mediante SQL medido.
+**Al terminar podrás:** reproducir N+1, elegir una carga apropiada para una pantalla y verificar el plan mediante SQL medido. Continúa el N+1 del Módulo 3, Tema 2 con `@EntityGraph`, los límites de paginar una colección y la decisión de proyectar DTOs.
 
 #### Aprende
 
 Una pantalla lista veinte clientes y cuenta sus pedidos. Una consulta inicial más veinte consultas por asociación es N+1; una relación EAGER indiscriminada puede sustituirlo por joins enormes o selects secundarios.
 
 **¿Por qué es importante?** La estrategia de carga afecta latencia, consumo de memoria y número de consultas; medirla antes de producción evita sorpresas que no aparecen con una sola fila de prueba.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Defaults JPA de fetch | Prerrequisito | `ManyToOne`/`OneToOne` son EAGER y `OneToMany`/`ManyToMany` son LAZY |
+| Reproducción del N+1 | Núcleo | `findAll()` más `getPedidos().size()` por cliente genera una consulta raíz y veinte de colección |
+| Medición con estadísticas | Núcleo | `hibernate.generate_statistics=true` y `getPrepareStatementCount()` cuentan las consultas reales |
+| `flush()`, `clear()` y caché de primer nivel | Diagnóstico | Omitir `clear()` deja un conteo de 1 porque la caché oculta el problema |
+| `@EntityGraph` / `left join fetch` | Variante | La consulta dedicada reduce el conteo respecto al N+1 |
+| Fetch join de colección con paginación | Límite | El aviso «firstResult/maxResults specified with collection fetch» y filas de cliente repetidas |
+| Proyección DTO por caso de uso | Decisión | Los endpoints de resumen y detalle devuelven DTOs, no entidades JPA |
+| `LazyInitializationException` | Error frecuente | Acceder a un proxy LAZY tras cerrar el contexto lanza la excepción |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Defaults JPA de fetch (prerrequisito).** El tema recuerda que `ManyToOne` y `OneToOne` son EAGER por defecto, mientras `OneToMany` y `ManyToMany` son LAZY. Conocer estos valores por omisión es condición para razonar el comportamiento observado, porque la carga que no se configura explícitamente la decide este default. Por eso el texto insiste en configurar las relaciones y cargar datos por caso de uso en vez de confiar en el implícito.
+
+**Reproducción del N+1 (núcleo).** El `findAll()` devuelve los clientes con una consulta raíz y, al recorrer `cliente.getPedidos().size()` por cada uno, dispara una consulta adicional por asociación: veinte pedidos, veintiuna llamadas según la analogía. Este es el mecanismo central del tema, que el test mide con el contador de sentencias. Reconocer el patrón es el paso previo a corregirlo con una consulta específica.
+
+**Medición con estadísticas (núcleo).** Activar `hibernate.generate_statistics=true` y leer `getStatistics().getPrepareStatementCount()` convierte el problema en un número observable de consultas reales. El tema advierte que el total depende de caché, datos y versión, por lo que pide registrar también esas condiciones. Medir antes de producción es lo que evita la sorpresa que una sola fila de prueba oculta.
+
+**`flush()`, `clear()` y caché de primer nivel (diagnóstico).** El test ejecuta `flush()`, `clear()` y `getStatistics().clear()` antes de contar para que la medición no quede falseada. El fallo deliberado consiste en omitir `clear()`: entonces la caché de primer nivel sirve las entidades ya cargadas y el conteo baja a 1, ocultando el N+1. Este es el diagnóstico clave cuando una medición repetida parece demasiado buena.
+
+**`@EntityGraph` / `left join fetch` (variante).** La corrección propuesta usa `@EntityGraph(attributePaths = "pedidos")` o JPQL `left join fetch c.pedidos` para traer la asociación en una consulta dedicada y repetir la medición. Es la variante optimizada frente al N+1: reduce el conteo sin recurrir a EAGER indiscriminado. El tema pide comprobar la reducción sin fijar una cifra exacta que resulte frágil.
+
+**Fetch join de colección con paginación (límite).** Combinar un `left join fetch c.pedidos` con `Pageable` provoca el aviso «firstResult/maxResults specified with collection fetch; applying in memory» o filas de cliente repetidas. El límite es que un fetch join de colección duplica filas y no combina con paginación SQL eficiente, por lo que la paginación se resuelve en memoria. La salida correcta es sustituirlo por una consulta específica para esa vista.
+
+**Proyección DTO por caso de uso (decisión).** El tema decide no serializar entidades JPA directamente y devolver DTOs: un endpoint de resumen con nombre y número de pedidos, y otro de detalle con los pedidos. La decisión alinea cada consulta con lo que la pantalla muestra, en un solo viaje, y mantiene el control transaccional de la carga. Así se evita arrastrar la asociación completa cuando la vista no la necesita.
+
+**`LazyInitializationException` (error frecuente).** Hibernate representa asociaciones LAZY con proxies, y acceder a ellas tras cerrar el contexto de persistencia produce `LazyInitializationException`. El tema advierte explícitamente que no se resuelve activando Open Session in View ni haciendo todo EAGER, sino construyendo DTOs dentro de una transacción con la consulta necesaria. Confundir la solución con esos atajos es el error frecuente que el tema previene.
 
 `LAZY` pospone la lectura hasta acceder a la asociación; `EAGER` obliga al proveedor a entregar la asociación disponible, pero no garantiza un JOIN ni una única consulta. Defaults JPA: `ManyToOne` y `OneToOne` son EAGER; `OneToMany` y `ManyToMany` son LAZY. Configura explícitamente las relaciones y carga datos por caso de uso.
 
@@ -124,7 +186,7 @@ Hibernate puede representar asociaciones LAZY mediante proxies; acceder después
 
 **Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/test/java/academia/envios/ConsultaClienteTest.java` con el contenido de este tema.
 ```bash
-curl -fsSL https://start.spring.io/starter.zip -o ejemplo.zip && unzip -o ejemplo.zip -d ejemplo
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -o ejemplo.zip && unzip -o ejemplo.zip -d ejemplo
 ```
 
 **Crea** el archivo `src/test/java/academia/envios/ConsultaClienteTest.java` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
@@ -142,7 +204,7 @@ System.out.println("Consultas SQL: " + consultas);
 **Ejecuta el ejemplo** (genera el proyecto con Spring Initializr, pega el código y corre las pruebas):
 
 ```bash
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
 ./mvnw test
 ```
 Equivalencias Maven/Gradle en el Módulo 1.

@@ -6,13 +6,13 @@
 ### Tema 1: De una URL al servidor: red, DNS, IP y puertos
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a levantar un servidor HTTP local, confirmar con `curl` que responde en el puerto correcto, y reproducir el error de conexión rechazada cuando pedís un puerto donde no hay nada escuchando. **Prerrequisitos:** terminal y Python 3 instalado; comprobá `python3 --version`.
+Al finalizar vas a levantar un servidor HTTP local, confirmar con `curl` que responde en el puerto correcto y reproducir el error de conexión rechazada cuando pedís un puerto donde no hay nada escuchando. **Prerrequisitos:** terminal, Python 3 y curl; comprueba `python3 --version` (Windows: `py --version`; en PowerShell usa `curl.exe`).
 
 #### Paso 2 · Contexto y caso real
-El proyecto integrador Fundamentos necesita, además de su CLI, una interfaz web que puedas abrir en el navegador. Cuando alguien te diga "no carga el sitio", la causa casi nunca es DNS — `localhost` se resuelve al instante sin salir a la red —; casi siempre es que el servidor quedó escuchando en un puerto distinto del que estás probando.
+El proyecto integrador Fundamentos necesita, además de su CLI, una interfaz web que puedas abrir en el navegador. Cuando alguien te diga "no carga el sitio", separa las hipótesis: resolución del nombre, conexión al puerto y respuesta HTTP. En esta práctica, `127.0.0.1` evita depender de un nombre y permite probar si el proceso escucha en el puerto esperado.
 
 #### Paso 3 · Teoría, modelo mental y analogía
-Abrir una URL dispara pasos distintos: si el host es un dominio público, DNS traduce el nombre a una dirección IP; después el cliente abre una conexión TCP contra esa IP en un puerto específico; solo entonces viaja el mensaje HTTP. `localhost` salta el primer paso — el sistema operativo lo resuelve a `127.0.0.1` sin consultar ningún servidor DNS —, así que en desarrollo local el cuello de botella casi nunca es la resolución de nombres: es que el puerto donde escucha tu servidor coincida exactamente con el puerto que pedís. La analogía: la IP es la dirección de un edificio, el puerto es el número de oficina dentro de ese edificio — podés tener la dirección perfecta y aun así golpear una puerta vacía si memorizaste mal el número de oficina.
+Abrir una URL dispara pasos distintos: si el host es un dominio público, el sistema de nombres resuelve el nombre a una dirección IP; después el cliente abre una conexión TCP contra esa IP en un puerto específico; solo entonces viaja el mensaje HTTP. En una configuración habitual, `localhost` se resuelve a una dirección de loopback (`127.0.0.1` o `::1`) sin consultar DNS público. Por eso, en este ejercicio, la causa a comprobar es que el servidor escuche en la dirección y el puerto que estás probando. La analogía: la IP es la dirección de un edificio, el puerto es el número de oficina dentro de ese edificio — podés tener la dirección perfecta y aun así golpear una puerta vacía si memorizaste mal el número de oficina.
 
 **Conceptos clave:** cliente, servidor, protocolo, URL, dominio, DNS, dirección IP, puerto, TCP y localhost.
 
@@ -20,13 +20,15 @@ Un **cliente** inicia una comunicación y un **servidor** escucha solicitudes. S
 
 En `http://localhost:8000/productos?id=3`, `http` es el esquema/protocolo, `localhost` el host, `8000` el puerto, `/productos` la ruta y `id=3` un parámetro de consulta. El puerto permite que varios procesos de red compartan una IP. Si ningún proceso escucha en 8000, obtendrás conexión rechazada aunque la máquina exista.
 
-Para un dominio público, DNS traduce un nombre como `example.com` a una dirección IP. Después el cliente establece una conexión con el puerto correspondiente. HTTP usa TCP en sus versiones tradicionales; HTTP/3 utiliza QUIC sobre UDP, pero conserva la semántica de peticiones y respuestas.
+Para un dominio público, DNS traduce un nombre como `example.com` a una dirección IP, aunque una respuesta puede estar en caché y no generar una consulta DNS en cada visita. Después el cliente establece una conexión con el puerto correspondiente. HTTP usa TCP en sus versiones tradicionales; HTTP/3 utiliza QUIC sobre UDP, pero conserva la semántica de peticiones y respuestas.
 
 ```bash
-python3 -m http.server 8000
+python3 -m http.server 8000 --bind 127.0.0.1
 ```
 
-Este comando inicia un servidor en la carpeta actual. Abre `http://localhost:8000`. Detén con `Ctrl+C`. Si aparece “address already in use”, otro proceso ocupa el puerto: elige 8001 o localiza el proceso en vez de reiniciar al azar.
+Este comando inicia un servidor de desarrollo en la carpeta actual, accesible solo desde este equipo. Abre `http://127.0.0.1:8000` y deténlo con `Ctrl+C`. En Windows usa `py -m http.server 8000 --bind 127.0.0.1`. `http.server` no es para producción y publica los archivos de la carpeta actual; trabaja desde una carpeta de práctica sin secretos. Si aparece “address already in use”, otro proceso ocupa el puerto: elige 8001 o identifica el proceso antes de detenerlo.
+
+**Cuándo no usarlo:** sirve para comprobar HTML estático local, no para publicar una aplicación real. No ofrece las medidas de seguridad, autenticación, registro y operación que requiere un servidor de producción.
 
 **Ejemplo explicado:** el navegador no “abre un archivo remoto” directamente; resuelve el host, conecta al puerto, envía bytes según un protocolo y recibe una respuesta que interpreta.
 
@@ -52,22 +54,22 @@ sequenceDiagram
 
 #### Profundización · Diseño: Rutas 404 vs 500 en servidor Fundamentos
 
-**Escenario real:** Tu CLI Fundamentos expone una API HTTP simple. Cliente solicita `GET /tareas/999` (tarea inexistente). ¿Respondes 404 o 500?
+**Escenario real:** Tu CLI Fundamentos expone una API HTTP simple. El cliente solicita `GET /tareas/999`, pero esa tarea no existe. ¿Respondes 404 o 500?
 
 **Tu tarea (sin mirar solución):**
 
-1. **Define:** ¿Cuándo es 404?, ¿cuándo 500?
-2. **Escenario A:** Tarea ID 999 nunca existió → ?
-3. **Escenario B:** Servidor se quedó sin memoria, no puede verificar → ?
+1. **Define:** ¿Qué comunica un 404?, ¿qué comunica un 500?
+2. **Escenario A:** La ruta existe, pero no hay una tarea con ID 999 → ¿qué estado corresponde?
+3. **Escenario B:** Una excepción inesperada impide que el servidor consulte las tareas → ¿qué estado corresponde?
 4. **Diseña:** ¿Cómo estructuras la respuesta? ¿JSON?, ¿qué campos?
 
 **Escribe tu respuesta:**
 ```
-404: _________ (¿quién es responsable?)
-500: _________ (¿quién es responsable?)
+404: _________ (¿qué condición informa?)
+500: _________ (¿qué condición informa?)
 Tarea 999 inexistente: _________ (código)
-Servidor sin memoria: _________ (código)
-Respuesta JSON: {“error”: “_________”, “code”: _________}
+Fallo inesperado del servidor: _________ (código)
+Respuesta JSON válida: {"error": "_________", "code": _________}
 ```
 
 <details>
@@ -75,51 +77,63 @@ Respuesta JSON: {“error”: “_________”, “code”: _________}
 
 > **Respuesta esperada:**
 >
-> **404:** Cliente solicitó mal (recurso no existe, ruta malformada).
+> **404:** El servidor no encuentra una representación del recurso solicitado. No implica por sí solo que el cliente tenga la culpa; una ruta malformada puede corresponder a otro estado, como `400`.
 >
-> **500:** Servidor tiene un problema (lógica rota, excepciones, recursos agotados).
+> **500:** Una condición inesperada del servidor impide completar la petición.
 >
-> **Tarea 999 inexistente:** 404 (cliente pidió algo que no existe, es responsabilidad del cliente verificar).
+> **Tarea 999 inexistente:** `404 Not Found`.
 >
-> **Servidor sin memoria:** 500 (servidor no puede procesar, es su problema).
+> **Excepción inesperada al consultar tareas:** `500 Internal Server Error`.
 >
 > **JSON recomendado:**
 > ```json
-> {“error”: “Tarea no encontrada”, “code”: 404, “timestamp”: “2026-10-06T14:00:00Z”}
+> {"error": "Tarea no encontrada", "code": 404}
 > ```
 
 </details>
 
 #### Paso 4 · Demostración guiada desde cero
-Guarda la página que vas a servir en `index.html` con el `printf` que sigue, antes de levantar el servidor en esa misma carpeta.
+Desde un editor de texto, crea `index.html` dentro de esta carpeta y guarda el contenido indicado. Así los pasos no dependen de que el shell tenga `printf`.
 
 ```bash
 mkdir ejemplo-url-servidor
 cd ejemplo-url-servidor
-printf '<!doctype html><html lang="es"><body><h1>Servidor Fundamentos activo</h1></body></html>' > index.html
-python3 -m http.server 8000
 ```
+
+```html
+<!doctype html>
+<html lang="es">
+  <head><meta charset="utf-8"><title>Servidor local</title></head>
+  <body><main><h1>Servidor Fundamentos activo</h1></main></body>
+</html>
+```
+
+Inicia el servidor desde `ejemplo-url-servidor`:
+```bash
+python3 -m http.server 8000 --bind 127.0.0.1
+```
+En Windows usa `py -m http.server 8000 --bind 127.0.0.1`.
 
 Desde otra terminal:
 ```bash
-curl -i http://localhost:8000
+curl -i http://127.0.0.1:8000
 ```
 **Resultado esperado:** `HTTP/1.0 200 OK` y el HTML completo en el cuerpo de la respuesta; la terminal del servidor registra `GET / HTTP/1.1`.
 
 **Fallo deliberado:** sin detener el servidor, pedí un puerto distinto:
 ```bash
-curl -i http://localhost:9999
+curl -i http://127.0.0.1:9999
 ```
-Falla con `curl: (7) Failed to connect to localhost port 9999: Connection refused`. DNS no fue el problema — `localhost` se resolvió instantáneamente a `127.0.0.1` en ambos casos —; el problema es que ningún proceso escucha en el puerto 9999. Repetí contra `8000` para confirmar que vuelve a funcionar.
+La conexión falla antes de recibir una respuesta HTTP; `curl` devuelve el código de error 7 (no pudo conectar). El mensaje exacto varía según el sistema. No se consultó DNS público: `127.0.0.1` es la dirección de loopback y ningún proceso escucha en el puerto 9999. Repite contra `8000` para confirmar que vuelve a funcionar.
 
 #### Paso 5 · Práctica guiada
-Pista: ahora detené el servidor con `Ctrl+C` y volvé a ejecutar `curl -i http://localhost:8000`. También falla con conexión rechazada, aunque el puerto sea el correcto — distinguí ese caso (nadie escucha) del `404` que vas a ver en el Tema 2 (alguien escucha, pero no encuentra el recurso).
+Pista: ahora detené el servidor con `Ctrl+C` y volvé a ejecutar `curl -i http://127.0.0.1:8000`. También falla con conexión rechazada, aunque el puerto sea el correcto — distinguí ese caso (nadie escucha) del `404` que vas a ver en el Tema 2 (alguien escucha, pero no encuentra el recurso). En Windows PowerShell, escribe `curl.exe` para invocar curl y no el alias `Invoke-WebRequest`.
 
 #### Paso 6 · Práctica independiente
-Iniciá el servidor en un puerto distinto, por ejemplo `python3 -m http.server 8080`, y repetí `curl -i http://localhost:8000` sin cambiarlo: debe fallar. Corregí el comando para que apunte a `8080` y confirmá que responde. Si alguna vez ves `address already in use` al iniciar el servidor, usá `lsof -i :8000` (macOS/Linux) o `netstat -ano | findstr 8000` (Windows) para encontrar qué proceso ya ocupa ese puerto antes de matarlo a ciegas.
+Inicia el servidor en un puerto distinto con `python3 -m http.server 8080 --bind 127.0.0.1` (Windows: `py -m http.server 8080 --bind 127.0.0.1`) y repite `curl -i http://127.0.0.1:8000` sin cambiarlo: debe fallar. Corrige el comando para que apunte a `8080` y confirma que responde. Si aparece “address already in use”, usa `lsof -i :8000` (macOS/Linux) o `netstat -ano | findstr 8000` (Windows) para identificar qué proceso ocupa el puerto antes de decidir si corresponde detenerlo.
 
 #### Paso 7 · Cierre
-Entregá la respuesta `200` del Paso 4, el `Connection refused` del puerto equivocado, y la verificación del Paso 6 con el servidor en `8080`; explicá por qué en `localhost` el cuello de botella casi nunca es DNS sino la coincidencia exacta de puerto. Como siguiente paso, en el Tema 2 vas a usar `curl -v` sobre un servidor real para observar el contrato HTTP completo: método, headers, código de estado y cuerpo. Errores comunes: confundir "conexión rechazada" con un error HTTP; asumir que `localhost` necesita resolución DNS; no verificar en qué puerto quedó escuchando el servidor antes de probarlo. Fuentes oficiales: https://developer.mozilla.org/es/docs/Learn y https://www.w3.org/WAI/fundamentals/accessibility-intro/es.
+Entrega la respuesta `200` del Paso 4, el fallo de conexión al puerto equivocado y la verificación del Paso 6 con el servidor en `8080`; explica por qué no hubo una respuesta HTTP y cómo comprobar el puerto usado. Como siguiente paso, en el Tema 2 vas a usar `curl -v` sobre un servidor real para observar el contrato HTTP completo: método, headers, código de estado y cuerpo. Errores comunes: confundir "conexión rechazada" con un error HTTP; asumir que `localhost` necesita consultar DNS público; no verificar en qué puerto quedó escuchando el servidor antes de probarlo. Fuentes oficiales: [documentación de `http.server`](https://docs.python.org/3/library/http.server.html#security-considerations), [MDN Learn](https://developer.mozilla.org/es/docs/Learn) y [WAI](https://www.w3.org/WAI/fundamentals/accessibility-intro/es).
 **Implicación práctica:** Diagnosticar "no carga" exige separar tres capas distintas — resolución de nombre, conexión TCP a un puerto y respuesta HTTP — y en desarrollo local casi siempre falla la segunda, no la primera.
 
 ### Tema 2: HTTP como contrato observable
@@ -150,11 +164,11 @@ Content-Type: application/json
 
 `GET` consulta; `POST` suele crear; `PUT` reemplaza; `PATCH` modifica parcialmente; `DELETE` elimina. La semántica importa para herramientas, cachés y reintentos. GET, PUT y DELETE se diseñan como idempotentes: repetir la misma intención debería dejar el mismo estado final, aunque la respuesta concreta pueda variar.
 
-Los estados se agrupan: 2xx éxito, 3xx redirección, 4xx problema atribuible a la petición y 5xx fallo del servidor. `404` no significa que HTTP falló: la comunicación funcionó y el servidor respondió que el recurso no existe. Una conexión rechazada ocurre antes de HTTP.
+Los estados se agrupan: 2xx éxito, 3xx redirección, 4xx respuesta de error relacionada con la petición y 5xx fallo del servidor. No son un juicio sobre quién tiene la culpa: `404` significa que el servidor no encuentra el recurso solicitado; `400` puede indicar una petición inválida. `404` no significa que HTTP falló: la comunicación funcionó y el servidor respondió que el recurso no existe. Una conexión rechazada ocurre antes de HTTP.
 
 ```bash
-curl -i http://localhost:8000/
-curl -i http://localhost:8000/no-existe
+curl -i http://127.0.0.1:8000/
+curl -i http://127.0.0.1:8000/no-existe
 ```
 
 `-i` incluye headers. Compara 200 y 404. En DevTools → Network inspecciona método, URL, estado, tamaño y tiempo. Desactiva caché y observa nuevas solicitudes.
@@ -162,6 +176,8 @@ curl -i http://localhost:8000/no-existe
 HTTPS añade TLS: autentica el servidor mediante certificados y cifra el tránsito. No vuelve correcto ni seguro todo el código, pero evita que intermediarios lean o modifiquen fácilmente el contenido.
 
 **Analogía:** HTTP es un formulario de solicitud y respuesta con campos estandarizados; TLS introduce un sobre cifrado y una identificación del destinatario.
+
+En Windows PowerShell, usa `curl.exe` en vez de `curl` para llamar al ejecutable de curl y no al alias `Invoke-WebRequest`.
 
 **Casos de uso reales:** APIs REST, navegación, descargas, autenticación, webhooks y comunicación entre microservicios.
 
@@ -228,35 +244,47 @@ Header decisivo: _________ (Request-Line: VERBO ...)
 **Límites y decisión de uso:** Un 200 confirma el contrato HTTP definido, no necesariamente que todo proceso posterior terminó. Para trabajo asíncrono documenta estado y consulta de seguimiento; un timeout tampoco prueba que el servidor no aplicó el cambio.
 
 #### Paso 4 · Demostración guiada desde cero
-Guarda la página que vas a servir en `index.html` con el `printf` que sigue, antes de levantar el servidor y observar el intercambio con `curl -v`.
+Desde un editor de texto, crea `index.html` dentro de la carpeta de práctica y guarda el contenido indicado.
 
 ```bash
 mkdir ejemplo-http-contrato
 cd ejemplo-http-contrato
-printf '<!doctype html><html lang="es"><body><h1>Tareas</h1></body></html>' > index.html
-python3 -m http.server 8000
 ```
+
+```html
+<!doctype html>
+<html lang="es">
+  <head><meta charset="utf-8"><title>Tareas</title></head>
+  <body><main><h1>Tareas</h1></main></body>
+</html>
+```
+
+Inicia el servidor desde `ejemplo-http-contrato`:
+```bash
+python3 -m http.server 8000 --bind 127.0.0.1
+```
+En Windows usa `py -m http.server 8000 --bind 127.0.0.1`.
 
 Desde otra terminal:
 ```bash
-curl -v http://localhost:8000/
+curl -v http://127.0.0.1:8000/
 ```
 **Resultado esperado:** `curl -v` muestra todo el intercambio: la línea de petición (`GET / HTTP/1.1`), las cabeceras que enviaste, la línea de respuesta (`HTTP/1.0 200 OK`), las cabeceras de respuesta (`Content-type`, `Content-Length`...) y por último el cuerpo HTML.
 
 **Fallo deliberado:**
 ```bash
-curl -v http://localhost:8000/no-existe
+curl -v http://127.0.0.1:8000/no-existe
 ```
 La conexión se establece igual que antes (no es un "connection refused") y el servidor responde — pero con `HTTP/1.0 404 File not found`. Ese es el contrato observable: sabés que la petición falló leyendo solo la primera línea de la respuesta, sin necesidad de parsear el cuerpo.
 
 #### Paso 5 · Práctica guiada
-Pista: compará los dos `curl -v` del Paso 4 línea por línea — la línea de petición (`GET ... HTTP/1.1`) es casi idéntica en ambos casos; lo único que cambia de verdad es la línea de estado de la respuesta (`200` vs `404`) y el cuerpo. Ese código es la señal que importa, no el tamaño del cuerpo ni el mensaje de texto que lo acompaña.
+Pista: compara los dos `curl -v` del Paso 4 línea por línea — la línea de petición (`GET ... HTTP/1.1`) es casi idéntica en ambos casos; lo que cambia es la línea de estado de la respuesta (`200` vs `404`) y el cuerpo. Ese código es una señal importante, pero no sustituye al cuerpo: el cliente puede necesitar los datos de éxito o el detalle del error.
 
 #### Paso 6 · Práctica independiente
-Repetí el experimento pidiendo el método `HEAD` en vez de `GET` (`curl -v -I http://localhost:8000/`) y comparalo: mismas cabeceras, sin cuerpo. Después probá `curl -v -X POST http://localhost:8000/` contra este servidor de archivos estáticos y observá qué código de estado devuelve (`501 Unsupported method ('POST')`) — confirmá que el método también es parte del contrato, no solo la ruta.
+Repite el experimento pidiendo el método `HEAD` en vez de `GET` (`curl -v -I http://127.0.0.1:8000/`) y compáralo: cabeceras de respuesta, sin cuerpo. Después prueba `curl -v -X POST http://127.0.0.1:8000/` contra este servidor de archivos estáticos y observa el código de estado (`501 Unsupported method ('POST')`) — confirma que el método también es parte del contrato, no solo la ruta. En Windows PowerShell usa `curl.exe` en estos comandos.
 
 #### Paso 7 · Cierre
-Entregá los dos `curl -v` del Paso 4 (200 y 404) con la línea de estado señalada, y la comparación de métodos del Paso 6; explicá por qué un cliente puede verificar éxito o fallo con solo leer el código de estado, sin parsear el cuerpo. Como siguiente paso, en el Tema 3 vas a construir el HTML real que un servidor como este sirve, con formularios que un lector de pantalla pueda interpretar. Errores comunes: asumir que una respuesta con cuerpo siempre significa éxito; ignorar el código de estado y confiar solo en que "algo se mostró en pantalla"; no revisar las cabeceras de respuesta al depurar una API. Fuentes oficiales: https://developer.mozilla.org/es/docs/Learn y https://www.w3.org/WAI/fundamentals/accessibility-intro/es.
+Entrega las respuestas `200` y `404` del Paso 4 con su línea de estado, y la comparación de métodos del Paso 6; explica qué garantiza el código y qué información todavía puede requerir el cuerpo. Como siguiente paso, en el Tema 3 vas a construir el HTML real que un servidor como este sirve, con formularios que un lector de pantalla pueda interpretar. Errores comunes: asumir que una respuesta con cuerpo siempre significa éxito; ignorar el código de estado y confiar solo en que "algo se mostró en pantalla"; no revisar las cabeceras de respuesta al depurar una API. Fuentes oficiales: [semántica HTTP (RFC 9110)](https://www.rfc-editor.org/rfc/rfc9110.html), [MDN Learn](https://developer.mozilla.org/es/docs/Learn) y [WAI](https://www.w3.org/WAI/fundamentals/accessibility-intro/es).
 **¿Por qué es importante?** Porque los frameworks ocultan el intercambio real, pero cualquier bug de caché, CORS o autenticación se diagnostica leyendo la petición y la respuesta HTTP reales, no adivinando.
 
 ### Tema 3: HTML semántico, formularios y el DOM
@@ -420,16 +448,16 @@ cd ejemplo-dom-formulario
 </main></body></html>
 ```
 ```bash
-python3 -m http.server 8000
+python3 -m http.server 8000 --bind 127.0.0.1
 ```
-**Fallo deliberado:** abrí `http://localhost:8000` e inspeccioná el input con DevTools → panel Accessibility (o un lector de pantalla). El campo aparece como "Edit text, blank": no tiene nombre accesible. Además, como el `<input>` no tiene atributo `name`, si este formulario se enviara de verdad a un servidor, el valor viajaría sin ninguna clave asociada — el backend no tendría forma de saber a qué campo pertenece.
+En Windows usa `py -m http.server 8000 --bind 127.0.0.1`. **Fallo deliberado:** abre `http://127.0.0.1:8000` e inspecciona el input con DevTools → panel Accessibility (o un lector de pantalla). En este ejemplo, el campo aparece sin nombre accesible porque no tiene `label` ni otro nombre programático. Además, como el `<input>` no tiene atributo `name`, si este formulario se enviara de verdad a un servidor, su valor no se incluiría como un control exitoso del formulario.
 
-**Corrección:** agregá el `label` y el `name`:
+**Corrección:** agrega el `label` y el `name`:
 ```html
 <label for="guia">Número de guía</label>
 <input id="guia" name="guia">
 ```
-Volvé a inspeccionar: ahora el campo se anuncia como "Número de guía, edit text". Confirmalo también desde la consola del navegador: `document.querySelector('#guia').labels` devolvía una lista vacía antes de agregar el label, y ahora devuelve el label real — es el propio DOM, no solo la vista, confirmando la relación.
+Vuelve a inspeccionar: ahora el campo tiene el nombre accesible "Número de guía". Confírmalo también desde la consola del navegador: `document.querySelector('#guia').labels` devolvía una lista vacía antes de agregar el label y ahora devuelve el label real — es el propio DOM, no solo la vista, confirmando la relación.
 **Resultado esperado:** la ejecución termina sin errores y produce la salida descrita arriba.
 #### Paso 5 · Práctica guiada
 Pista: hacé clic directamente sobre el texto "Número de guía" (no sobre el input) — si el `for` coincide con el `id` real, el clic enfoca el input igual que si lo hubieras tocado directamente; si eso no pasa, el `for` no coincide con el `id`.
@@ -505,12 +533,9 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    BG["fondo blanco #FFF"] --> TEXT["texto #333"]
-    BG --> WCAG["ratio contraste"]
-    TEXT --> RATIO["12:1 (cumple AA+"]
-    WCAG --> AA["WCAG AA: 4.5:1"]
-    AA --> LARGE["texto grande: 3:1"]
-    LARGE --> FAIL["NO: #FFF vs #CCC = 1.6:1"]
+    BAD["#FFFFFF + #CCCCCC: ~1.6:1"] --> FAIL["No cumple: texto normal requiere 4.5:1"]
+    GOOD["#FFFFFF + #333333: ~12.6:1"] --> PASS["Cumple el mínimo para texto normal"]
+    LARGE["Texto grande: mínimo 3:1"] --> NOTE["18 pt o 14 pt en negrita"]
 ```
 
 **Diagrama (flujo de CSS a renderizado):**
@@ -545,7 +570,7 @@ Herramienta: contrast-ratio.com, comprobación: _________
 
 > **Respuesta esperada:**
 >
-> **WCAG AA:** Contraste **4.5:1** para texto pequeño, **3:1** para texto grande.
+> **WCAG AA:** Contraste **4.5:1** para texto normal, **3:1** para texto grande (al menos 18 pt o 14 pt en negrita).
 >
 > **#FFF vs #CCC:**
 > - Luminancia #FFF = 1
@@ -555,7 +580,7 @@ Herramienta: contrast-ratio.com, comprobación: _________
 >
 > **Solución:** Usar texto oscuro:
 > - #000 (negro) vs #FFF = 21:1 ✅
-> - #333 (gris oscuro) vs #FFF ≈ 12:1 ✅
+> - #333 (gris oscuro) vs #FFF ≈ 12.6:1 ✅
 >
 > **CSS recomendado:**
 > ```css
@@ -586,9 +611,9 @@ article { padding: 1rem; border: 1px solid #d2d2d7; border-radius: .75rem; }
 @media (max-width: 40rem) { .grid { grid-template-columns: 1fr; } }
 ```
 ```bash
-python3 -m http.server 8000
+python3 -m http.server 8000 --bind 127.0.0.1
 ```
-**Resultado esperado:** el layout responde bien — dos columnas en escritorio, una columna bajo 40rem —, pero el texto `#cccccc` sobre fondo `#ffffff` es casi ilegible aun con buena vista.
+En Windows usa `py -m http.server 8000 --bind 127.0.0.1`. Abre `http://127.0.0.1:8000/index.html`. **Resultado esperado:** el layout responde bien — dos columnas en escritorio, una columna bajo 40rem —, pero el texto `#cccccc` sobre fondo `#ffffff` es casi ilegible aun con buena vista.
 
 **Fallo deliberado (verificable, no solo "se ve mal"):** calculá el contraste real entre `#cccccc` y `#ffffff` (o abrí DevTools → inspeccioná el `<h1>` → ícono de contraste junto al color de texto). El ratio es aproximadamente **1.6:1**. WCAG AA exige **4.5:1** para texto normal: este diseño falla por un margen enorme, no por una cuestión de gusto.
 
@@ -601,7 +626,7 @@ Pista: no te quedes en "se ve mejor" — recalculá el ratio o volvé a mirar el
 Elegí otras dos combinaciones de color de texto/fondo (por ejemplo las que ya usás en los bordes o enlaces de tu sitio), calculá o verificá su ratio con la misma herramienta, y documentá cuáles cumplen 4.5:1 (texto normal) y cuáles necesitarían ser texto grande para que alcance con el mínimo de 3:1.
 
 #### Paso 7 · Cierre
-Entregá el ratio reprobado (~1.6:1) del Paso 4, la corrección verificada por encima de 4.5:1, y las combinaciones adicionales del Paso 6; explicá por qué "se ve mal" no alcanza como diagnóstico de accesibilidad — necesitás un número verificable. Con esto cerrás el Módulo 3; como siguiente paso, en el Módulo 4 vas a modelar los datos de este mismo proyecto integrador en una base de datos relacional con SQL. Errores comunes: evaluar contraste "a ojo" sin calcular ni verificar con herramienta; depender solo del color para indicar un estado de error o éxito; eliminar el `outline` de foco sin reemplazo visible. Fuentes oficiales: https://developer.mozilla.org/es/docs/Learn y https://www.w3.org/WAI/fundamentals/accessibility-intro/es.
+Entrega el ratio reprobado (~1.6:1) del Paso 4, la corrección verificada por encima de 4.5:1 y las combinaciones adicionales del Paso 6; explica por qué "se ve mal" no alcanza como diagnóstico de accesibilidad — necesitas un número verificable. Con esto cierras el Módulo 3; como siguiente paso, en el Módulo 4 vas a modelar los datos de este mismo proyecto integrador en una base de datos relacional con SQL. Errores comunes: evaluar contraste "a ojo" sin calcular ni verificar con herramienta; depender solo del color para indicar un estado de error o éxito; eliminar el `outline` de foco sin reemplazo visible. Fuentes oficiales: [MDN Learn](https://developer.mozilla.org/es/docs/Learn), [WAI, contraste mínimo WCAG 2.2](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html) y [WAI, introducción a accesibilidad](https://www.w3.org/WAI/fundamentals/accessibility-intro/es).
 **¿Por qué es importante?** Porque la accesibilidad verificable exige un número que cualquiera pueda recalcular — "4.5:1 o no cumple" — en vez de una impresión subjetiva de legibilidad.
 
 ## Construcción guiada del capítulo
@@ -613,7 +638,7 @@ Crea `sitio-profesional/` con `index.html`, `styles.css`, `assets/`, `README.md`
 Fases:
 
 1. HTML semántico sin CSS; valida jerarquía y formulario.
-2. Servidor local con `python3 -m http.server 8000`.
+2. Servidor local con `python3 -m http.server 8000 --bind 127.0.0.1`.
 3. Evidencia con `curl -i` para raíz y ruta inexistente.
 4. CSS con box model, Flexbox/Grid y ancho fluido.
 5. Pruebas en 320, 768 y 1440 px, zoom 200 % y texto largo.
@@ -633,7 +658,7 @@ Fases:
 
 ## Laboratorio de transferencia
 
-### Tema 5: HTML semántico y CSS responsive desde un archivo vacío
+### Tema 5: Proyecto integrador — sitio de seguimiento accesible
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar construirás una página de seguimiento con un formulario etiquetado y dos columnas que se adaptan al espacio. **Prerrequisitos:** guardar archivos y ejecutar Python; no necesitas JavaScript ni un framework. Es un ejemplo independiente desde una carpeta vacía.
@@ -690,11 +715,11 @@ Crea `index.html` con este contenido completo:
 </body>
 </html>
 ```
-Ejecuta desde esa carpeta:
+Inicia el servidor desde esa carpeta:
 ```bash
-python3 -m http.server 8000
+python3 -m http.server 8000 --bind 127.0.0.1
 ```
-En Windows puedes usar `py -m http.server 8000`. Abre `http://localhost:8000`. **Resultado esperado:** dos columnas en una ventana amplia y una en 375 px. Explica cada bloque: metadatos preparan el documento, el formulario nombra sus datos y CSS distribuye la interfaz. Tab enfoca el campo y el botón; pulsar el label enfoca el campo. La consulta vacía activa la validación del navegador.
+En Windows usa `py -m http.server 8000 --bind 127.0.0.1`. Abre `http://127.0.0.1:8000`. **Resultado esperado:** dos columnas en una ventana amplia y una en 375 px. Explica cada bloque: metadatos preparan el documento, el formulario nombra sus datos y CSS distribuye la interfaz. Tab enfoca el campo y el botón; pulsar el label enfoca el campo. La consulta vacía activa la validación del navegador.
 
 #### Paso 5 · Práctica guiada
 **Fallo deliberado:** cambia `for="codigo"` por `for="otro"`. El label deja de enfocar el campo. **Pista:** compara `for` con el `id`; no lo arregles con un evento JavaScript. Restaura la relación y repite con teclado.

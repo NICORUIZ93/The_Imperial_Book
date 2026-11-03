@@ -23,6 +23,34 @@ Una operación nocturna detecta pedidos que llevan demasiado tiempo pendientes y
 
 **¿Por qué es importante?** Un trabajo periódico evita depender de una persona que lo ejecute a mano y crea un punto verificable para automatización operativa.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `@EnableScheduling` | Prerrequisito | Sin ella la tarea no se ejecuta; el checklist exige "la app arranca con `@EnableScheduling`". |
+| `@Scheduled` con cron y zona | Núcleo | `@Scheduled(cron = "${app.revision.cron}", zone = "UTC")` dispara `revisarPendientes()`. |
+| `fixedRate` vs `fixedDelay` vs cron | Variante | El texto distingue que `fixedRate` mide desde el disparo anterior y `fixedDelay` desde que termina. |
+| Scheduler local no coordina réplicas | Límite | Levantar dos instancias con el mismo cron y contador compartido produce dos ejecuciones. |
+| Idempotencia y duración mayor al intervalo | Decisión | Se pide definir qué hacer si una ejecución supera el siguiente intervalo y usar clave idempotente o lock. |
+| Prueba sin esperar al reloj | Diagnóstico | Inyectar `Clock` o un servicio sustituible evita que el test duerma cinco minutos. |
+| Excepción tragada en el método | Error frecuente | Forzar una `RuntimeException` y comprobar que Micrometer la registre como fallo, no como "no se completó". |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`@EnableScheduling` (Prerrequisito).** Esta anotación activa el soporte de tareas periódicas; sin ella Spring ignora `@Scheduled` y la tarea nunca se dispara. El tema la pone como primera casilla del checklist de salida ("la app arranca con `@EnableScheduling`") precisamente porque es la condición que habilita todo lo demás. Si la tarea no se ejecuta, el propio apartado "Si falla" manda revisarla antes que nada.
+
+**`@Scheduled` con cron y zona (Núcleo).** El mecanismo central es anotar `revisarPendientes()` con `@Scheduled(cron = "${app.revision.cron}", zone = "UTC")`, que externaliza la expresión a `application.yml` y fija explícitamente la zona horaria. Configurar la zona evita que el disparo dependa de la hora del servidor, un error silencioso cuando el proceso corre en otro huso. El laboratorio usa `app.revision.cron: "0 */5 * * * *"` para observar el comportamiento sin esperar demasiado.
+
+**`fixedRate` vs `fixedDelay` vs cron (Variante).** `@Scheduled` admite tres modos y el tema los contrasta por su punto de referencia temporal: `fixedRate` cuenta desde el inicio del disparo anterior, `fixedDelay` desde que el anterior termina y cron desde una expresión de calendario. Elegir mal el modo cambia cuántas veces y cuándo corre la tarea, sobre todo si una ejecución dura casi tanto como el intervalo. La decisión depende de si importa el ritmo fijo o dejar holgura entre ejecuciones.
+
+**Scheduler local no coordina réplicas (Límite).** El scheduler es local al proceso, así que con tres réplicas la misma tarea puede ejecutarse tres veces. El fallo deliberado lo hace visible: dos instancias con el mismo cron y un contador compartido producen dos ejecuciones, y el diagnóstico correcto es que `@Scheduled` no es un lock distribuido. Este límite es la frontera entre una automatización local y la coordinación entre instancias.
+
+**Idempotencia y duración mayor al intervalo (Decisión).** Cuando el negocio exige exactamente una ejecución, el tema obliga a decidir entre una clave idempotente que evite procesar dos veces el mismo envío, un lock distribuido o un job de Spring Batch con repositorio. También pide definir qué ocurre si una ejecución supera el siguiente intervalo, porque ahí aparecen solapamientos. Es una decisión de diseño operativo, no un ajuste de configuración.
+
+**Prueba sin esperar al reloj (Diagnóstico).** La buena señal es que el test invoca el servicio y comprueba el criterio de vencimiento sin dormir cinco minutos, lo que se logra inyectando `Clock` o una interfaz de servicio sustituible. Si la prueba tarda minutos, el diagnóstico es que está esperando al reloj real. Así la lógica de vencimiento queda verificada de forma determinista y rápida.
+
+**Excepción tragada en el método (Error frecuente).** Un error común es capturar la excepción del servicio dentro del método programado sin registrarla: el scheduler "parece funcionar" mientras la tarea real nunca se completa. La pista propone lanzar una `RuntimeException` dentro de `revisarPendientes()` y confirmar con Micrometer que esa ejecución fallida queda registrada como fallo, no solo como ausencia de resultado. Observar la métrica distingue un fallo silencioso de una ejecución correcta.
+
 `@EnableScheduling` activa las tareas; `@Scheduled` admite `fixedRate`, `fixedDelay` o una expresión cron. `fixedRate` mide desde el inicio del disparo anterior; `fixedDelay`, desde que termina. Configura explícitamente zona horaria en cron. Por defecto, el scheduler es local al proceso: con tres réplicas, la tarea puede ejecutarse tres veces.
 
 Un scheduler no es una cola durable ni una exclusión distribuida. Si un trabajo puede durar más que el intervalo, define concurrencia limitada, idempotencia y un mecanismo de coordinación o utiliza Spring Batch y su repositorio cuando el trabajo deba reanudarse.
@@ -36,7 +64,7 @@ Genera una app Spring Boot con `web` y `actuator`.
 **Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/main/java/academia/pedidos/PedidosScheduler.java` con el contenido de este tema.
 
 ```bash
-curl -fsSL https://start.spring.io/starter.zip -o ejemplo.zip && unzip -o ejemplo.zip -d ejemplo
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -o ejemplo.zip && unzip -o ejemplo.zip -d ejemplo
 ```
 
 **Crea** el archivo `src/main/java/academia/pedidos/PedidosScheduler.java` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
@@ -62,7 +90,7 @@ public class PedidosScheduler {
 **Ejecuta el ejemplo** (genera el proyecto con Spring Initializr, pega el código y corre las pruebas):
 
 ```bash
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
 ./mvnw test
 ```
 Equivalencias Maven/Gradle en el Módulo 1.
@@ -108,6 +136,37 @@ Al crear un envío, una auditoría local debe reaccionar al cambio.
 
 **¿Por qué es importante?** Separar responsabilidades ayuda a mantener el servicio de negocio legible, pero un evento solo en memoria puede perderse si el proceso cae.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `ApplicationEventPublisher` | Prerrequisito | `publisher.publishEvent(new EnvioCreado(envioId))` desacopla dentro del mismo proceso. |
+| Evento inmutable `EnvioCreado` | Núcleo | El checklist exige que `EnvioCreado` sea inmutable y se publique dentro de la transacción. |
+| `@TransactionalEventListener(AFTER_COMMIT)` | Variante | `alCrear(EnvioCreado)` actúa tras el commit y no tras el rollback. |
+| `@EventListener` sin fase transaccional | Error frecuente | Reemplazar la anotación deja la auditoría aunque el envío no se persista. |
+| Caída entre commit y publicación | Límite | El proceso puede caer entre el commit y la ejecución del listener. |
+| Outbox con `event_id` único | Núcleo | La tabla outbox tiene `event_id`, tipo, payload y `published_at`. |
+| Dispatcher idempotente | Diagnóstico | Ejecutar el dispatcher dos veces sin marcar `published_at` revela si duplica. |
+| Local vs mensajería durable | Decisión | Decidir qué eventos son locales y cuáles deben sobrevivir a un reinicio (Kafka, correo). |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`ApplicationEventPublisher` (Prerrequisito).** Es el punto de entrada para desacoplar componentes dentro de una misma aplicación mediante `publisher.publishEvent(new EnvioCreado(envioId))`. Por sí solo no persiste ni distribuye el evento: vive en el proceso actual. Entenderlo es condición previa para ver por qué un evento local no basta cuando el dato debe sobrevivir a una caída.
+
+**Evento inmutable `EnvioCreado` (Núcleo).** El tema declara `EnvioCreado` como evento inmutable y lo publica dentro de la transacción de negocio, lo que el checklist exige explícitamente. La inmutabilidad evita que un listener mute el estado que otros observan. Publicarlo dentro de la transacción es lo que luego habilita la variante transaccional y el outbox.
+
+**`@TransactionalEventListener(AFTER_COMMIT)` (Variante).** El listener `alCrear(EnvioCreado)` se anota con `@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)` para actuar solo cuando la transacción local ya confirmó. El resultado esperado es que registre auditoría tras el commit y no haga nada tras el rollback. Es la variante que respeta el límite transaccional frente a un listener que reacciona de inmediato.
+
+**`@EventListener` sin fase transaccional (Error frecuente).** El fallo deliberado reemplaza la anotación por `@EventListener`, fuerza rollback y muestra que la auditoría quedó aunque el envío no se persistió. Es el error típico de reaccionar antes del commit y dejar efectos colaterales de una transacción que nunca ocurrió. El checklist convierte esa observación en una casilla verificable.
+
+**Caída entre commit y publicación (Límite).** Aun con `AFTER_COMMIT`, el proceso puede caer entre el commit y la ejecución del listener, y entonces el evento solo existía en memoria. Este es el límite que impide tratar `AFTER_COMMIT` como durable. El tema insiste en que por eso hace falta un outbox, no una fase de listener más.
+
+**Outbox con `event_id` único (Núcleo).** La solución durable escribe el evento en una tabla outbox con `event_id` único, tipo, payload y `published_at`, dentro de la misma transacción que el dato de negocio. Así el evento y el cambio de estado se confirman o revierten juntos. El `event_id` único es la base para deduplicar más adelante.
+
+**Dispatcher idempotente (Diagnóstico).** La pista hace ejecutar el dispatcher dos veces sobre la misma fila sin marcar `published_at` entre medio, simulando un reintento tras una caída, y observar si el efecto aguas abajo se duplica. Si duplica, el dispatcher no es idempotente: hay que marcar la fila como publicada en la misma operación que confirma el envío al broker o deduplicar por `event_id` en el consumidor. Esta prueba diagnostica si la entrega es segura ante reintentos.
+
+**Local vs mensajería durable (Decisión).** El apartado "Aplica" obliga a decidir qué eventos son locales —como actualizar una métrica dentro del proceso— y cuáles deben sobrevivir a un reinicio, como notificar a Kafka o enviar correo. La decisión fija dónde se dibuja el límite de transacción y qué debe pasar por el outbox. Elegir mal aquí produce o eventos perdidos o complejidad innecesaria.
+
 `ApplicationEventPublisher` desacopla componentes dentro de una misma aplicación y proceso; por sí solo no persiste ni distribuye el evento. `@TransactionalEventListener(phase = AFTER_COMMIT)` espera a que la transacción local termine antes de notificar. Aun así, el proceso puede caer entre el commit y la publicación.
 
 Kafka u otro broker ofrece entrega entre procesos, con garantías que dependen de configuración y límites transaccionales. El patrón outbox escribe el evento en la misma transacción que el dato de negocio; un dispatcher lo publica después. El modelo mental: el evento local es una nota entre equipos de la misma oficina; el outbox es un registro en el libro de despacho que sobrevive al cierre.
@@ -119,7 +178,7 @@ Kafka u otro broker ofrece entrega entre procesos, con garantías que dependen d
 **Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/main/java/academia/envios/EnvioCreado.java` con el contenido de este tema.
 
 ```bash
-curl -fsSL https://start.spring.io/starter.zip -o ejemplo.zip && unzip -o ejemplo.zip -d ejemplo
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -o ejemplo.zip && unzip -o ejemplo.zip -d ejemplo
 ```
 
 En `src/main/java/academia/envios/EnvioCreado.java` declara un evento inmutable; en el servicio transaccional:
@@ -131,7 +190,7 @@ publisher.publishEvent(new EnvioCreado(envioId));
 **Ejecuta el ejemplo** (genera el proyecto con Spring Initializr, pega el código y corre las pruebas):
 
 ```bash
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
 ./mvnw test
 ```
 Equivalencias Maven/Gradle en el Módulo 1.
@@ -191,6 +250,34 @@ Después de asignar un conductor, el cliente recibe confirmación por correo.
 
 **¿Por qué es importante?** El proveedor SMTP es una dependencia externa: puede tardar, rechazar el mensaje o aceptar el correo aunque la respuesta se pierda.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Dependencia `mail` y config externa | Prerrequisito | El checklist exige declarar `mail` y leer host, puerto y credenciales de variables externas. |
+| `JavaMailSender` y `SimpleMailMessage` | Núcleo | `CorreoPedido` arma `SimpleMailMessage` con destinatario, asunto y referencia y llama `sender.send`. |
+| SMTP no es transaccional con la BD | Límite | El texto advierte no mantener una transacción SQL abierta durante la llamada SMTP. |
+| Sustituir SMTP en test con mock | Diagnóstico | Un `JavaMailSender` simulado captura `SimpleMailMessage` sin contactar SMTP. |
+| Reintento recuperable vía outbox | Variante | Un timeout queda en outbox con próxima fecha de reintento y número de intentos. |
+| Idempotencia por `event_id` | Decisión | El dispatcher no duplica con el mismo `event_id` si el proveedor ofrece clave de idempotencia. |
+| Riesgo residual de reenvío | Error frecuente | Sin clave de idempotencia debe documentarse el posible reenvío, no resolverlo con más reintentos. |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Dependencia `mail` y config externa (Prerrequisito).** El proyecto debe declarar la dependencia `mail` y leer `spring.mail.host`, puerto y credenciales desde variables externas o un secret manager, nunca desde `application.yml` versionado. El fallo deliberado usa credenciales literales y rompe la configuración en CI justamente para empujar el secreto fuera del código. Sin esta base, el resto del tema no arranca de forma segura.
+
+**`JavaMailSender` y `SimpleMailMessage` (Núcleo).** El mecanismo central es `CorreoPedido`, que recibe `JavaMailSender` por constructor, arma un `SimpleMailMessage` con `setTo`, `setSubject` y `setText` incluyendo la referencia del pedido, y lo envía con `sender.send(message)`. El checklist verifica que el mensaje lleve destinatario, asunto y texto con la referencia. Es la operación observable que todo el tema prueba y protege.
+
+**SMTP no es transaccional con la BD (Límite).** El envío no es transaccional respecto a la base de datos, así que el tema prohíbe mantener una transacción SQL abierta durante la llamada SMTP y enviar correo síncrono en la transacción HTTP crítica. Si SMTP tarda o falla, no debe arrastrar a revertir una operación de negocio ya válida. Este límite separa la confirmación del negocio del canal de notificación.
+
+**Sustituir SMTP en test con mock (Diagnóstico).** En el test se reemplaza `JavaMailSender` por un mock que captura el `SimpleMailMessage` y valida destinatario y asunto sin enviar correo ni contactar un SMTP externo. Si el test intenta conectarse a SMTP, el diagnóstico es que el sender no está sustituido o se cargó la configuración real en el contexto. Así se verifica el armado del mensaje de forma aislada y reproducible.
+
+**Reintento recuperable vía outbox (Variante).** Para entrega recuperable, un timeout SMTP simulado se registra en outbox con la próxima fecha de reintento y el número de intentos, haciendo el estado observable. Si el timeout no deja registro, el envío no está pasando por outbox. Esta variante convierte un fallo transitorio en algo reintentable y auditable en vez de una pérdida silenciosa.
+
+**Idempotencia por `event_id` (Decisión).** Cuando el proveedor admite clave de idempotencia, el dispatcher debe garantizar que una segunda ejecución con el mismo `event_id` no envíe dos notificaciones. La decisión depende de tener un identificador estable del evento, porque SMTP no ofrece entrega exactamente una vez de forma general. Elegir el `event_id` como clave es lo que hace seguro el reintento.
+
+**Riesgo residual de reenvío (Error frecuente).** La pista plantea el caso del timeout ambiguo en que no se sabe si el correo salió; si el proveedor no da clave de idempotencia, no se puede garantizar cero duplicados. El error es intentar "resolverlo" con más reintentos en vez de documentar ese posible reenvío como riesgo residual aceptado. También es error reintentar sin registrar intentos ni próxima fecha, perdiendo la distinción entre fallo transitorio y permanente.
+
 `JavaMailSender` crea y envía mensajes; la configuración de host/puerto/credenciales debe venir de entorno o secret manager. El envío no es transaccional con la base de datos. No mantengas una transacción SQL abierta durante la llamada SMTP ni registres credenciales o contenido sensible en logs.
 
 La operación de negocio debe confirmar independientemente del canal de notificación; un outbox permite reintentar con estado observable. La deduplicación requiere un identificador estable del evento, porque SMTP no ofrece una garantía general de entrega exactamente una vez.
@@ -202,7 +289,7 @@ La operación de negocio debe confirmar independientemente del canal de notifica
 **Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/main/java/academia/notificaciones/CorreoPedido.java` con el contenido de este tema.
 
 ```bash
-curl -fsSL https://start.spring.io/starter.zip -o ejemplo.zip && unzip -o ejemplo.zip -d ejemplo
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -o ejemplo.zip && unzip -o ejemplo.zip -d ejemplo
 ```
 
 Genera el proyecto con `mail` y configura `spring.mail.host`, puerto y credenciales por variables externas. En `src/main/java/academia/notificaciones/CorreoPedido.java`:
@@ -227,7 +314,7 @@ public class CorreoPedido {
 **Ejecuta el ejemplo** (genera el proyecto con Spring Initializr, pega el código y corre las pruebas):
 
 ```bash
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
 ./mvnw test
 ```
 Equivalencias Maven/Gradle en el Módulo 1.
@@ -273,6 +360,34 @@ La lista de tarifas cambia poco y se consulta miles de veces por minuto.
 
 **¿Por qué es importante?** Una caché puede reducir latencia y carga de base de datos, pero introduce copias que pueden quedar obsoletas.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `@EnableCaching` y proveedor Caffeine | Prerrequisito | El checklist exige `@EnableCaching` activo y Caffeine con máximo de entradas y TTL. |
+| `@Cacheable` con clave por `#zona` | Núcleo | `buscar(String zona)` cachea por `key = "#zona"` y dos llamadas producen una lectura. |
+| Clave de caché bien formada | Diagnóstico | Si `NORTE` y `SUR` colisionan, la clave no diferencia por `#zona`. |
+| `@CacheEvict` para invalidar | Núcleo | `actualizar` evita por `key = "#tarifa.zona"` y la siguiente búsqueda vuelve a leer. |
+| Clave de evict desalineada | Error frecuente | Sin `@CacheEvict` el usuario recibe el valor viejo hasta expirar el TTL. |
+| Caffeine local vs Redis compartido | Decisión | Una actualización en otra réplica no se ve con caché local: Redis o TTL corto son decisiones. |
+| Cache stampede | Límite | El texto define el recálculo simultáneo de una clave expirada por muchas solicitudes. |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`@EnableCaching` y proveedor Caffeine (Prerrequisito).** La abstracción se activa con `@EnableCaching` y el laboratorio usa Caffeine con un máximo de entradas y un TTL configurados. Sin `@EnableCaching` las anotaciones no surten efecto y la segunda lectura vuelve al repository. El proveedor define almacenamiento y expiración, por eso configurarlo es condición previa a medir hits y misses.
+
+**`@Cacheable` con clave por `#zona` (Núcleo).** El método `buscar(String zona)` lleva `@Cacheable(cacheNames = "tarifas", key = "#zona")`, de modo que dos llamadas a `buscar("NORTE")` produzcan una sola lectura del repository. Reutilizar la respuesta por clave es el beneficio central de la caché. El test lo comprueba contando las llamadas reales al repositorio.
+
+**Clave de caché bien formada (Diagnóstico).** La pista hace cachear `buscar("NORTE")` y `buscar("SUR")` y contar las llamadas reales por zona; si aparece una sola en total, la clave no está diferenciando por `#zona` y ambas colisionan. El diagnóstico es revisar que la expresión de clave incluya los parámetros que cambian el resultado, incluyendo tenant o locale cuando corresponda. Una clave mal formada mezcla datos de distintas entradas.
+
+**`@CacheEvict` para invalidar (Núcleo).** El método `actualizar` usa `@CacheEvict(cacheNames = "tarifas", key = "#tarifa.zona")` para invalidar la entrada tras una escritura, de modo que la siguiente búsqueda vuelva a leer de la base. La invalidación es lo que mantiene la copia consistente con el original. El checklist verifica que actualizar borre la entrada correcta.
+
+**Clave de evict desalineada (Error frecuente).** El fallo deliberado elimina `@CacheEvict` y muestra que el usuario recibe el valor viejo hasta que expira el TTL. El error relacionado es desalinear la clave de `@CacheEvict` respecto a la de `@Cacheable`, por ejemplo evictar por un formato distinto de `#tarifa.zona`, dejando entradas obsoletas que nunca se invalidan. Alinear ambas claves es lo que hace que la invalidación funcione.
+
+**Caffeine local vs Redis compartido (Decisión).** Caffeine vive dentro de cada proceso; Redis comparte datos entre réplicas a costa de una dependencia de red y operación. El tema muestra que una actualización en otra réplica no se ve con caché local, y aclara que eso no es un error del test: Redis o un TTL corto son decisiones distintas. La elección se justifica por la consistencia aceptable y el coste operativo.
+
+**Cache stampede (Límite).** El texto define el cache stampede como muchas solicitudes recalculando a la vez una clave recién expirada, lo que puede descargar la carga que la caché pretendía evitar. Es un límite a considerar al fijar TTL, tamaño y estrategia ante cache miss. Reconocerlo guía decisiones como refresco anticipado o bloqueo de recálculo, aunque el laboratorio solo lo nombra.
+
 `@EnableCaching` activa la abstracción; `@Cacheable` reutiliza una respuesta por clave; `@CacheEvict` invalida entradas; `@CachePut` actualiza una entrada explícitamente. El proveedor define almacenamiento y expiración. Caffeine vive dentro de cada proceso; Redis comparte datos entre réplicas, a costa de una dependencia de red y operación.
 
 La clave debe incluir parámetros que cambian el resultado, incluyendo tenant/locale cuando corresponda. Define TTL, invalidación, límites de tamaño y estrategia ante cache miss. Un cache stampede ocurre cuando muchas solicitudes recalculan simultáneamente una clave expirada.
@@ -286,7 +401,7 @@ Genera una app con `cache`; agrega Caffeine para el laboratorio.
 **Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/main/java/academia/tarifas/TarifaService.java` con el contenido de este tema.
 
 ```bash
-curl -fsSL https://start.spring.io/starter.zip -o ejemplo.zip && unzip -o ejemplo.zip -d ejemplo
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -o ejemplo.zip && unzip -o ejemplo.zip -d ejemplo
 ```
 
 **Crea** el archivo `src/main/java/academia/tarifas/TarifaService.java` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
@@ -316,7 +431,7 @@ public class TarifaService {
 **Ejecuta el ejemplo** (genera el proyecto con Spring Initializr, pega el código y corre las pruebas):
 
 ```bash
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
 ./mvnw test
 ```
 Equivalencias Maven/Gradle en el Módulo 1.
@@ -364,6 +479,34 @@ Al registrar un envío, el backend de RutaFlow enviaba un SMS al destinatario y 
 
 **¿Por qué es importante?** porque el trabajo en segundo plano mejora la latencia, pero sin límites ni manejo de errores provoca pérdidas silenciosas y caídas.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `@EnableAsync` y proxy | Prerrequisito | Quitar `@EnableAsync` ejecuta los SMS en serie sin error y la prueba falla. |
+| `@Async` con ejecutor nombrado | Núcleo | `@Async("notificaciones")` corre `enviarSms` en hilos `notif-1` a `notif-4`. |
+| `ThreadPoolTaskExecutor` acotado | Núcleo | El bean fija core/max 4, `QueueCapacity(100)` y prefijo `notif-`. |
+| `CompletableFuture` para combinar | Variante | El test une cuatro futuros con `allOf(...).join()` y exige menos de 1 000 ms. |
+| Auto-invocación desde la misma clase | Error frecuente | Llamar `enviarSms` desde otro método del servicio corre síncrono; se ve en el nombre del hilo. |
+| Excepciones de métodos `void` | Diagnóstico | Las excepciones de `void` no llegan a quien llama; se usa `AsyncUncaughtExceptionHandler`. |
+| `@Async` no es durable | Límite | Si la tarea debe sobrevivir a un reinicio, se usa cola u outbox, no `@Async`. |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`@EnableAsync` y proxy (Prerrequisito).** Con `@EnableAsync` Spring envuelve en un proxy los beans que tienen métodos `@Async` y entrega la llamada a un `Executor`. El fallo deliberado quita la anotación y los cuatro SMS se ejecutan uno tras otro en el hilo de la prueba, superando los 1 000 ms, sin error de compilación ni de arranque. La lección es que sin `@EnableAsync` la anotación `@Async` se ignora en silencio.
+
+**`@Async` con ejecutor nombrado (Núcleo).** `enviarSms` lleva `@Async("notificaciones")`, por lo que corre en un hilo del pool indicado y no en el hilo de la petición. En el log aparecen los hilos `notif-1` a `notif-4`, que confirman la ejecución en paralelo. Nombrar el ejecutor liga el método al pool acotado correcto en vez de a uno por defecto ilimitado.
+
+**`ThreadPoolTaskExecutor` acotado (Núcleo).** `AsyncConfig` declara un `ThreadPoolTaskExecutor` con `corePoolSize` y `maxPoolSize` en 4, `queueCapacity` 100 y `threadNamePrefix` `notif-`. Estos límites son el mecanismo que evita crear hilos sin tope y tumbar el servidor en un pico, el riesgo que el tema llama "infinitos carteros". Un pool con tamaño y cola definidos convierte la concurrencia en algo gobernado.
+
+**`CompletableFuture` para combinar (Variante).** Como `enviarSms` devuelve `CompletableFuture<String>`, el test reúne cuatro envíos y los espera con `CompletableFuture.allOf(...).join()`, midiendo un tiempo cercano a 300 ms frente a los ~1 200 ms en serie. Devolver un futuro permite a quien llama esperar o combinar resultados, a diferencia de un método `void`. Es la variante que hace observable el paralelismo.
+
+**Auto-invocación desde la misma clase (Error frecuente).** Como `@Async` funciona por proxy, una llamada desde la misma clase (`this.enviarSms()`) no pasa por el proxy y se ejecuta de forma síncrona. El tema pide agregar `enviarLote` que llame internamente a `enviarSms` y comparar `Thread.currentThread().getName()` para demostrarlo. Ver el hilo principal en lugar de `notif-` delata la auto-invocación.
+
+**Excepciones de métodos `void` (Diagnóstico).** Las excepciones lanzadas por métodos `@Async` que devuelven `void` no llegan a quien llama, así que pueden perderse en silencio. El apartado "Aplica" exige configurar un `AsyncUncaughtExceptionHandler` para capturarlas, junto con una política de rechazo cuando la cola de 100 se llena. Sin ese handler, un fallo en segundo plano no deja rastro para diagnosticar.
+
+**`@Async` no es durable (Límite).** `@Async` vive en la memoria del proceso: si la tarea debe sobrevivir a un reinicio o reintentarse, el tema manda usar una cola (Kafka, RabbitMQ) o un outbox. Al reiniciar, una tarea encolada en el ejecutor simplemente desaparece. Este límite marca la frontera entre aligerar una petición y garantizar que el trabajo se complete.
+
 Con `@EnableAsync`, Spring envuelve los beans que tienen métodos `@Async` en un **proxy**: la llamada se entrega a un `Executor` y regresa de inmediato. Si el método devuelve `CompletableFuture`, quien llama puede esperar o combinar resultados. Un `ThreadPoolTaskExecutor` con tamaño y cola definidos pone límites. Como funciona con proxies, una llamada **desde la misma clase** (`this.enviarSms()`) no pasa por el proxy y se ejecuta de forma síncrona. Las excepciones de métodos `void` no llegan a quien llama.
 
 **Analogía:** `@Async` es dejar la carta en el buzón en vez de llevarla tú; el ejecutor es el número de carteros: si hay infinitos, la oficina colapsa.
@@ -389,7 +532,7 @@ sequenceDiagram
 
 ```bash
 mkdir spring-async && cd spring-async
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web -d javaVersion=25 -o app.zip
 unzip -q app.zip
 ```
 
@@ -546,6 +689,34 @@ Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track
 
 **¿Por qué es importante?** Un socio de RutaFlow tiene SOAP y SFTP aunque la aplicación nueva use REST. REST describe una interfaz sobre recursos; SOAP define mensajes XML con Envelope, Header opcional, Body y Fault. SFTP transfiere archivos sobre SSH; no equivale a FTP ni a FTPS. SMTP transporta correo y no demuestra entrega al destinatario. Un adaptador traduce el contrato externo al dominio y conserva correlación, errores e idempotencia.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Estructura de un mensaje SOAP | Prerrequisito | El texto describe Envelope, Header opcional, Body y Fault del contrato. |
+| Namespace vs prefijo | Núcleo | Buscar por URI: cambiar el prefijo `s` por `env` conservando el URI no altera el resultado. |
+| Búsqueda por URI con `findtext` | Diagnóstico | `raiz.findtext("s:Body/r:ConsultarEnvio/r:id", namespaces=ns)` localiza `ENV-42`. |
+| Versión SOAP 1.1 vs 1.2 | Límite | Cambiar el URI SOAP a 1.1 sin actualizar el contrato lanza `ValueError`. |
+| Validación de id ausente | Error frecuente | Un id vacío debe rechazarse antes de traducir el mensaje. |
+| Adaptador que separa transporte de negocio | Decisión | Dibujar adaptador SOAP → caso de uso → repositorio con límites, timeouts y Fault. |
+| Límites del parser local | Límite | El literal local no valida WSDL, seguridad XML ni interoperabilidad real. |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Estructura de un mensaje SOAP (Prerrequisito).** SOAP define mensajes XML con Envelope, Header opcional, Body y Fault, a diferencia de REST que describe una interfaz sobre recursos. El ejemplo construye un Envelope con un Body que contiene `ConsultarEnvio` e `id`. Conocer esta estructura es condición para leer el contrato antes de intentar traducirlo.
+
+**Namespace vs prefijo (Núcleo).** El mecanismo central es que el namespace identifica el vocabulario XML por su URI y el prefijo visible puede cambiar sin cambiar el significado. La pista lo demuestra: renombrar el prefijo `s` por `env` conservando el URI deja la búsqueda funcionando. Confundir prefijo con namespace es el malentendido que el tema desmonta.
+
+**Búsqueda por URI con `findtext` (Diagnóstico).** El código mapea los URIs en `ns` y usa `raiz.findtext("s:Body/r:ConsultarEnvio/r:id", namespaces=ns)` para extraer `ENV-42`. Si `findtext` devuelve `None`, el diagnóstico es que el URI del namespace no coincide con el documento o la ruta cambió. Buscar por URI, no por prefijo, es lo que hace robusta la extracción.
+
+**Versión SOAP 1.1 vs 1.2 (Límite).** SOAP 1.1 y 1.2 usan namespaces y bindings diferentes, así que cambiar el URI SOAP a 1.1 sin actualizar el contrato hace que la búsqueda no encuentre el nodo y lance `ValueError`. El límite obliga a diagnosticar versión y URI antes de cambiar etiquetas a ciegas. Es un recordatorio de que la versión del protocolo es parte del contrato.
+
+**Validación de id ausente (Error frecuente).** El código comprueba `if not id_envio: raise ValueError(...)` para impedir traducir un mensaje sin identificador. Si un id vacío pasa la validación, falta ese control explícito. Rechazar la ausencia de datos antes de seguir evita arrastrar un mensaje inválido hacia el dominio.
+
+**Adaptador que separa transporte de negocio (Decisión).** El apartado "Aplica" pide dibujar el adaptador SOAP → caso de uso → repositorio y definir límites de tamaño, timeouts, Fault, autenticación y correlación. La decisión es traducir el contrato externo al dominio sin mezclar transporte y lógica de negocio. También distingue garantías por protocolo: SFTP exige verificar host key y fin de archivo, y SMTP no demuestra entrega al destinatario.
+
+**Límites del parser local (Límite).** El ejercicio inspecciona XML confiable construido localmente y no es un servidor SOAP ni sustituye a Spring Web Services. Para XML externo haría falta un parser endurecido, schema y límites; este literal no valida WSDL, seguridad XML ni interoperabilidad real. Presentar un archivo enviado como proceso completado sería tratar HTTP 200 como éxito de negocio, un error que el tema advierte evitar.
+
 **Analogía:** varios formularios pueden solicitar el mismo despacho, pero cada formulario necesita un traductor que valide sus campos. El namespace identifica el vocabulario XML; el prefijo puede cambiar sin cambiar el significado. SOAP 1.1 y 1.2 usan namespaces y bindings diferentes. WSDL describe operaciones y tipos; no inventes un endpoint a partir del nombre de una operación.
 
 #### Practica
@@ -572,7 +743,7 @@ print(f"Consultar envío: {id_envio}")
 **Ejecuta el ejemplo** (genera el proyecto con Spring Initializr, pega el código y corre las pruebas):
 
 ```bash
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
 ./mvnw test
 ```
 Equivalencias Maven/Gradle en el Módulo 1.
@@ -620,6 +791,34 @@ Entrega archivo, salida, fallo y tabla REST/SOAP/SFTP/SMTP con contratos y garan
 El asistente del proyecto integrador podría consultar el estado de una entrega.
 
 **¿Por qué es importante?** Un modelo puede proponer una llamada, pero la aplicación decide si está autorizada. Añadir la instrucción «consulta solo mis envíos» al prompt no sustituye ese control.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Versiones Spring Boot 4.0.9 y Spring AI 2.0.2 | Prerrequisito | El `pom.xml` fija el parent 4.0.9, el BOM 2.0.2 y Java 27. |
+| `ChatClient` sobre `ChatModel` sustituible | Núcleo | `ChatClient.builder(modeloControlado)` devuelve `Estado: creado` para `ENV-42`. |
+| Herramienta `@Tool` y callback | Núcleo | `MethodToolCallbackProvider` expone el callback de `estado` como operación de lectura. |
+| Autorización en el código de negocio | Decisión | El callback rechaza `ENV-ajeno` con excepción; la descripción de `@Tool` no autoriza. |
+| Descripción de `@Tool` no es control | Error frecuente | Quitar la comprobación de `ENV-42` hace fallar la prueba de `ENV-ajeno`. |
+| La salida del modelo no es identidad | Límite | La identidad viene de la sesión del servidor, no de un argumento propuesto por el modelo. |
+| No se prueba la elección real de herramienta | Límite | Las pruebas pasan sin red; no se valida que un modelo real elija bien ni su facturación o latencia. |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Versiones Spring Boot 4.0.9 y Spring AI 2.0.2 (Prerrequisito).** El `pom.xml` fija el parent `spring-boot-starter-parent` 4.0.9, importa el `spring-ai-bom` 2.0.2 y usa Java 27, condiciones que el checklist verifica. Si el proyecto no compila, el apartado "Si falla" manda revisar las versiones del BOM y del parent. Alinear estas versiones es el requisito previo para que el ejemplo sea reproducible sin claves ni proveedor externo.
+
+**`ChatClient` sobre `ChatModel` sustituible (Núcleo).** `ChatClient.builder(modeloControlado).build()` construye mensajes para un `ChatModel` que aquí es un stub que comprueba haber recibido `ENV-42` y responde `Estado: creado`. Que el modelo sea sustituible permite probar la adaptación de mensajes sin llamar a un proveedor real. El test confirma que el prompt llega al modelo y que la respuesta se adapta a texto.
+
+**Herramienta `@Tool` y callback (Núcleo).** El método `estado(String envioId)` se anota con `@Tool` y se expone mediante `MethodToolCallbackProvider`, que produce un único callback invocable con un JSON de argumentos. El callback traduce la petición en ejecución de código de la aplicación, que es el mecanismo central del tema. Es la frontera donde una propuesta del modelo se convierte en una llamada controlada.
+
+**Autorización en el código de negocio (Decisión).** El callback real acepta `ENV-42` y lanza `IllegalArgumentException("Sin permiso")` con `ENV-ajeno`, porque la autorización vive en el código de negocio y no en el prompt ni en la descripción de la herramienta. El apartado "Aplica" refuerza la decisión sustituyendo el ID fijo por permisos inyectados desde una sesión de prueba. La identidad no debe aceptarse como argumento propuesto por el modelo.
+
+**Descripción de `@Tool` no es control (Error frecuente).** El fallo deliberado quita la comprobación de `ENV-42` dentro de `estado` y entonces la prueba que exige excepción para `ENV-ajeno` falla. La lección es que la descripción de `@Tool` no ejecuta autorización por bien redactada que esté. Compensarlo escribiendo instrucciones en el prompt sería el mismo error desde otro ángulo.
+
+**La salida del modelo no es identidad (Límite).** La salida del modelo no es una instrucción privilegiada ni una identidad: en una integración real la identidad viene de la sesión del servidor y se aplica en el servicio que ejecuta la herramienta. Confiar en argumentos como identidad es uno de los errores comunes que el tema lista. Este límite separa lo que el modelo propone de lo que el sistema autoriza.
+
+**No se prueba la elección real de herramienta (Límite).** Las pruebas pasan sin red, que es lo esperado, pero el propio tema aclara que no se ha probado que un modelo real elija correctamente la herramienta ni se han medido facturación, latencia, streaming o recuperación del proveedor. Son controles distintos del adaptador y del callback. Reconocer este alcance evita presentar el ejercicio como evidencia del comportamiento de un LLM.
 
 ChatClient construye mensajes para un ChatModel sustituible. Una herramienta es una función con contrato y argumentos; el callback traduce la petición en ejecución de código de la aplicación. La salida del modelo no es una instrucción privilegiada ni una identidad. En una integración real, la identidad viene de la sesión del servidor y se aplica en el servicio que ejecuta la herramienta.
 
@@ -727,6 +926,34 @@ El siguiente tema estudia qué documentos puede recibir el modelo para construir
 En el proyecto integrador dos empresas consultan políticas de reembolso. Una búsqueda relevante pero de la empresa equivocada sigue siendo una fuga.
 
 **¿Por qué es importante?** La autorización se debe aplicar antes de enviar documentos al modelo, no después de ver su respuesta.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Flujo RAG: ingesta, índice, recuperación | Prerrequisito | El texto describe dividir con política de tamaño/solapamiento y construir contexto con referencias. |
+| Filtro por tenant antes del contexto | Núcleo | `recuperar` filtra por `empresa` autorizada antes de seleccionar documentos. |
+| Relevancia no es autorización | Límite | Un reembolso de la empresa B es relevante pero sigue siendo una fuga. |
+| Recuperación léxica vs embeddings | Variante | El recuperador es léxico y didáctico; no simula embeddings ni búsqueda vectorial. |
+| Ausencia de evidencia | Diagnóstico | Un término vacío o sin coincidencia devuelve `List.of()`. |
+| Contenido recuperado como dato, no instrucción | Error frecuente | Un documento con instrucción maliciosa no debe cambiar permisos ni herramientas. |
+| Evaluación de la fase vectorial | Decisión | Medir recuperación aparte de fidelidad y registrar modelo, topK, umbral y coste. |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Flujo RAG: ingesta, índice, recuperación (Prerrequisito).** Un flujo RAG ingiere documentos, los divide con una política de tamaño y solapamiento, crea un índice, recupera fragmentos y construye contexto con referencias. Entender estas etapas es condición para ver dónde encaja el control de acceso. El ejercicio se concentra en la recuperación y en el contrato de aislamiento antes de pasar a embeddings reales.
+
+**Filtro por tenant antes del contexto (Núcleo).** El método `recuperar` filtra el corpus por la `empresa` autorizada antes de seleccionar los documentos que irán al contexto. El primer test lo prueba: con documentos de A y B, devuelve un solo documento y comprueba que no contiene "secreto". Aplicar el filtro antes de construir contexto es el mecanismo central del tema.
+
+**Relevancia no es autorización (Límite).** El tema advierte que una búsqueda relevante pero de la empresa equivocada sigue siendo una fuga: relevancia semántica no significa autorización ni verdad. Por eso usar la similitud como control de acceso es un error listado. Este límite obliga a separar "qué es pertinente" de "qué se tiene permiso para abrir".
+
+**Recuperación léxica vs embeddings (Variante).** El recuperador es léxico y didáctico y el código comenta explícitamente que no simula embeddings ni búsqueda vectorial. La variante de producción conserva el mismo contrato de aislamiento pero usa un `VectorStore` y `QuestionAnswerAdvisor` de Spring AI. Si un test depende de embeddings, el diagnóstico es recordar que este ejercicio es léxico.
+
+**Ausencia de evidencia (Diagnóstico).** El segundo test comprueba que un término vacío o un corpus sin coincidencia devuelven una colección vacía, nunca texto inventado. En la aplicación ese caso debe producir una respuesta explícita de insuficiencia en vez de fabricar documentos. Si una consulta sin evidencia devuelve texto, el recuperador está inventando o falta cubrir el caso.
+
+**Contenido recuperado como dato, no instrucción (Error frecuente).** El apartado "Aplica" añade un documento autorizado con una instrucción maliciosa marcado como dato no confiable y pide una prueba que impida que ese texto cambie permisos o herramientas. Si el documento malicioso cambia permisos, el contenido recuperado se está tratando como instrucción en lugar de dato. Compensar quitando el filtro y añadiendo "ignora la empresa B" al prompt sería el mismo error.
+
+**Evaluación de la fase vectorial (Decisión).** Para la fase con embeddings y proveedor reales, el tema manda registrar modelo de embeddings, dimensiones, versión del corpus, topK, umbral, IDs recuperados y coste, y medir recuperación por separado de la fidelidad de la respuesta. Cambiar de modelo o de particionado puede exigir reindexar y volver a evaluar. La decisión es qué métricas prueban la calidad antes de acreditar esa fase, que todavía no se certifica.
 
 Un flujo RAG ingiere documentos, los divide con una política de tamaño/solapamiento, crea un índice, recupera fragmentos y construye contexto con referencias. Los embeddings representan contenido como vectores; un vector store busca por similitud y debe aplicar filtros de acceso. Relevancia semántica no significa autorización ni verdad.
 

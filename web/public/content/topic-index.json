@@ -18,8 +18,12 @@
         "fragment": "tema-4-kotlin-esencial-para-android-lo-que-usaras-en-cada-pantalla"
       },
       {
+        "title": "Lambdas y funciones de orden superior en Kotlin — contratos, captura y receptores",
+        "fragment": "tema-5-lambdas-y-funciones-de-orden-superior-en-kotlin-contratos-captura-y-receptores"
+      },
+      {
         "title": "Coroutines — asincronía sin bloquear la UI",
-        "fragment": "tema-5-coroutines-asincronia-sin-bloquear-la-ui"
+        "fragment": "tema-6-coroutines-asincronia-sin-bloquear-la-ui"
       }
     ],
     "1": [
@@ -2200,20 +2204,24 @@
   "foundations": {
     "0": [
       {
-        "title": "Del hardware al programa en ejecución",
-        "fragment": "tema-1-del-hardware-al-programa-en-ejecucion"
+        "title": "Computador, sistema operativo, programa y proceso",
+        "fragment": "tema-1-computador-sistema-operativo-programa-y-proceso"
+      },
+      {
+        "title": "Del archivo fuente al programa en ejecución",
+        "fragment": "tema-2-del-archivo-fuente-al-programa-en-ejecucion"
       },
       {
         "title": "Archivos, carpetas y rutas sin perderse",
-        "fragment": "tema-2-archivos-carpetas-y-rutas-sin-perderse"
+        "fragment": "tema-3-archivos-carpetas-y-rutas-sin-perderse"
       },
       {
         "title": "Cómo leer un comando antes de ejecutarlo",
-        "fragment": "tema-3-como-leer-un-comando-antes-de-ejecutarlo"
+        "fragment": "tema-4-como-leer-un-comando-antes-de-ejecutarlo"
       },
       {
         "title": "Primer programa, primer error y primera evidencia",
-        "fragment": "tema-4-primer-programa-primer-error-y-primera-evidencia"
+        "fragment": "tema-5-primer-programa-primer-error-y-primera-evidencia"
       },
       {
         "title": "VS Code, comandos y atajos comprobables",
@@ -2490,8 +2498,8 @@
         "fragment": "tema-4-css-layout-responsive-y-accesibilidad-verificable"
       },
       {
-        "title": "HTML semántico y CSS responsive desde un archivo vacío",
-        "fragment": "tema-5-html-semantico-y-css-responsive-desde-un-archivo-vacio"
+        "title": "Proyecto integrador — sitio de seguimiento accesible",
+        "fragment": "tema-5-proyecto-integrador-sitio-de-seguimiento-accesible"
       }
     ],
     "4": [
@@ -2886,6 +2894,10 @@
   "java": {
     "0": [
       {
+        "title": "Instalar Eclipse Temurin JDK 27 en macOS, Windows y Ubuntu",
+        "fragment": "tema-0-instalar-eclipse-temurin-jdk-27-en-macos-windows-y-ubuntu"
+      },
+      {
         "title": "Del código fuente a la JVM",
         "fragment": "tema-1-del-codigo-fuente-a-la-jvm"
       },
@@ -3080,6 +3092,14 @@
       {
         "title": "Tokens, validación y límites de seguridad",
         "fragment": "tema-2-tokens-validacion-y-limites-de-seguridad"
+      },
+      {
+        "title": "Sockets TCP y UDP — la red que hay debajo de HttpClient",
+        "fragment": "tema-3-sockets-tcp-y-udp-la-red-que-hay-debajo-de-httpclient"
+      },
+      {
+        "title": "Seguridad defensiva — hash, HMAC, firma y cifrado",
+        "fragment": "tema-4-seguridad-defensiva-hash-hmac-firma-y-cifrado"
       }
     ],
     "19": [
@@ -3128,16 +3148,60 @@
     ],
     "20": [
       {
+        "title": "Lambdas a fondo — tipo objetivo, captura y referencias a métodos",
+        "fragment": "tema-1-lambdas-a-fondo-tipo-objetivo-captura-y-referencias-a-metodos"
+      },
+      {
         "title": "Las cuatro formas: Predicate, Function, Consumer y Supplier",
-        "fragment": "tema-1-las-cuatro-formas-predicate-function-consumer-y-supplier"
+        "fragment": "tema-2-las-cuatro-formas-predicate-function-consumer-y-supplier"
       },
       {
         "title": "Componer sin anidar: andThen, compose, negate y reglas encadenadas",
-        "fragment": "tema-2-componer-sin-anidar-andthen-compose-negate-y-reglas-encadenadas"
+        "fragment": "tema-3-componer-sin-anidar-andthen-compose-negate-y-reglas-encadenadas"
       },
       {
         "title": "Streams como composición: pereza, orden y efectos que se esconden",
-        "fragment": "tema-3-streams-como-composicion-pereza-orden-y-efectos-que-se-esconden"
+        "fragment": "tema-4-streams-como-composicion-pereza-orden-y-efectos-que-se-esconden"
+      },
+      {
+        "title": "Function y BiFunction — transformar con una o dos entradas",
+        "fragment": "tema-5-function-y-bifunction-transformar-con-una-o-dos-entradas"
+      },
+      {
+        "title": "UnaryOperator y BinaryOperator — cuando entrada y salida comparten tipo",
+        "fragment": "tema-6-unaryoperator-y-binaryoperator-cuando-entrada-y-salida-comparten-tipo"
+      },
+      {
+        "title": "Referencias a métodos — las cuatro formas",
+        "fragment": "tema-7-referencias-a-metodos-las-cuatro-formas"
+      },
+      {
+        "title": "Optional — ausencia explícita sin null",
+        "fragment": "tema-8-optional-ausencia-explicita-sin-null"
+      },
+      {
+        "title": "Streams intermedios — map, filter, flatMap y sorted",
+        "fragment": "tema-9-streams-intermedios-map-filter-flatmap-y-sorted"
+      },
+      {
+        "title": "Streams terminales — collect, reduce, forEach y find",
+        "fragment": "tema-10-streams-terminales-collect-reduce-foreach-y-find"
+      },
+      {
+        "title": "Collectors — toList, toMap, groupingBy y joining",
+        "fragment": "tema-11-collectors-tolist-tomap-groupingby-y-joining"
+      },
+      {
+        "title": "Streams paralelos — cuándo ayudan y cuándo engañan",
+        "fragment": "tema-12-streams-paralelos-cuando-ayudan-y-cuando-enganan"
+      },
+      {
+        "title": "Pureza y efectos secundarios — razonar sobre funciones",
+        "fragment": "tema-13-pureza-y-efectos-secundarios-razonar-sobre-funciones"
+      },
+      {
+        "title": "Flow API — reactive streams en la biblioteca estándar",
+        "fragment": "tema-14-flow-api-reactive-streams-en-la-biblioteca-estandar"
       }
     ],
     "21": [
@@ -3949,6 +4013,56 @@
       }
     ]
   },
+  "microservices": {
+    "0": [
+      {
+        "title": "Proceso, host, puerto, socket y DNS · Fundamentos · 70 min",
+        "fragment": "tema-1-proceso-host-puerto-socket-y-dns-fundamentos-70-min"
+      },
+      {
+        "title": "Latencia, deadline y timeouts por fase · Aplicación · 80 min",
+        "fragment": "tema-2-latencia-deadline-y-timeouts-por-fase-aplicacion-80-min"
+      },
+      {
+        "title": "Fallo parcial, resultado desconocido e idempotencia · Integración · 90 min",
+        "fragment": "tema-3-fallo-parcial-resultado-desconocido-e-idempotencia-integracion-90-min"
+      },
+      {
+        "title": "Relojes, causalidad, concurrencia y orden · Integración · 80 min",
+        "fragment": "tema-4-relojes-causalidad-concurrencia-y-orden-integracion-80-min"
+      },
+      {
+        "title": "Serialización, evolución y falacias distribuidas",
+        "fragment": "tema-5-serializacion-evolucion-y-falacias-distribuidas"
+      }
+    ],
+    "1": [
+      {
+        "title": "Monolito, monolito modular, servicio y microservicio · Fundamentos · 75 min",
+        "fragment": "tema-1-monolito-monolito-modular-servicio-y-microservicio-fundamentos-75-min"
+      },
+      {
+        "title": "Cohesión, acoplamiento y API del módulo · Aplicación · 90 min",
+        "fragment": "tema-2-cohesion-acoplamiento-y-api-del-modulo-aplicacion-90-min"
+      },
+      {
+        "title": "Arquitectura hexagonal — dominio, puertos y adaptadores · Aplicación · 95 min",
+        "fragment": "tema-3-arquitectura-hexagonal-dominio-puertos-y-adaptadores-aplicacion-95-min"
+      },
+      {
+        "title": "Dependencias, ciclos y costo de coordinación · Integración · 80 min",
+        "fragment": "tema-4-dependencias-ciclos-y-costo-de-coordinacion-integracion-80-min"
+      },
+      {
+        "title": "Fitness functions con ArchUnit · Integración · 110 min",
+        "fragment": "tema-5-fitness-functions-con-archunit-integracion-110-min"
+      },
+      {
+        "title": "Evidencia y ADR para decidir una extracción",
+        "fragment": "tema-6-evidencia-y-adr-para-decidir-una-extraccion"
+      }
+    ]
+  },
   "node": {
     "0": [
       {
@@ -4700,6 +4814,14 @@
       {
         "title": "Estereotipos, autoconfiguración y scopes",
         "fragment": "tema-3-estereotipos-autoconfiguracion-y-scopes"
+      },
+      {
+        "title": "Ciclo de vida de un bean y BeanPostProcessor",
+        "fragment": "tema-4-ciclo-de-vida-de-un-bean-y-beanpostprocessor"
+      },
+      {
+        "title": "AOP con @Aspect y @Around — preocupaciones transversales",
+        "fragment": "tema-5-aop-con-aspect-y-around-preocupaciones-transversales"
       }
     ],
     "1": [
@@ -4714,6 +4836,10 @@
       {
         "title": "Perfiles y estructura por capas",
         "fragment": "tema-3-perfiles-y-estructura-por-capas"
+      },
+      {
+        "title": "Crear tu propia auto-configuración condicional",
+        "fragment": "tema-4-crear-tu-propia-auto-configuracion-condicional"
       }
     ],
     "10": [
@@ -4794,6 +4920,10 @@
       {
         "title": "Observabilidad sirve a un objetivo y a una decisión",
         "fragment": "tema-4-observabilidad-sirve-a-un-objetivo-y-a-una-decision"
+      },
+      {
+        "title": "Inbox, 2PC y el teorema CAP: límites de la consistencia distribuida",
+        "fragment": "tema-5-inbox-2pc-y-el-teorema-cap-limites-de-la-consistencia-distribuida"
       }
     ],
     "14": [
@@ -4854,6 +4984,10 @@
       {
         "title": "Clean Architecture y DDD táctico: caso de uso antes que framework",
         "fragment": "tema-8-clean-architecture-y-ddd-tactico-caso-de-uso-antes-que-framework"
+      },
+      {
+        "title": "CQRS y saga por coreografía",
+        "fragment": "tema-9-cqrs-y-saga-por-coreografia"
       }
     ],
     "16": [
@@ -4884,6 +5018,10 @@
       {
         "title": "DTO validation, CORS, JWT/OIDC y clientes HTTP",
         "fragment": "tema-2-dto-validation-cors-jwt-oidc-y-clientes-http"
+      },
+      {
+        "title": "Levantar tu propio OAuth2 Authorization Server",
+        "fragment": "tema-3-levantar-tu-propio-oauth2-authorization-server"
       }
     ],
     "19": [
@@ -4894,6 +5032,10 @@
       {
         "title": "Reinicio, JobParameters, retry, skip y listeners",
         "fragment": "tema-2-reinicio-jobparameters-retry-skip-y-listeners"
+      },
+      {
+        "title": "Particionamiento con múltiples workers y remote chunking",
+        "fragment": "tema-3-particionamiento-con-multiples-workers-y-remote-chunking"
       }
     ],
     "2": [
@@ -4920,6 +5062,14 @@
       {
         "title": "Paginación HTTP con validación y un límite de recursos explícito",
         "fragment": "tema-6-paginacion-http-con-validacion-y-un-limite-de-recursos-explicito"
+      },
+      {
+        "title": "HandlerInterceptor frente a Filter y @ControllerAdvice",
+        "fragment": "tema-7-handlerinterceptor-frente-a-filter-y-controlleradvice"
+      },
+      {
+        "title": "Negociación de contenido con HttpMessageConverters",
+        "fragment": "tema-8-negociacion-de-contenido-con-httpmessageconverters"
       }
     ],
     "20": [
@@ -4984,6 +5134,16 @@
         "fragment": "tema-3-adr-decisiones-con-contexto-alternativas-y-consecuencias"
       }
     ],
+    "23": [
+      {
+        "title": "CompletableFuture, @Async y el bug de la autoinvocación",
+        "fragment": "tema-1-completablefuture-async-y-el-bug-de-la-autoinvocacion"
+      },
+      {
+        "title": "Locks, deadlocks, semáforos y MDC en concurrencia",
+        "fragment": "tema-2-locks-deadlocks-semaforos-y-mdc-en-concurrencia"
+      }
+    ],
     "3": [
       {
         "title": "Entidades y repositorios derivados",
@@ -4996,6 +5156,10 @@
       {
         "title": "Migraciones con Flyway",
         "fragment": "tema-3-migraciones-con-flyway"
+      },
+      {
+        "title": "Proyecciones, Specifications y auditoría de entidades",
+        "fragment": "tema-4-proyecciones-specifications-y-auditoria-de-entidades"
       }
     ],
     "4": [
@@ -5046,6 +5210,10 @@
       {
         "title": "@SpringBootTest completo y estrategia de pirámide de tests",
         "fragment": "tema-3-springboottest-completo-y-estrategia-de-piramide-de-tests"
+      },
+      {
+        "title": "Slices adicionales — @JsonTest, @RestClientTest y @TestConfiguration",
+        "fragment": "tema-4-slices-adicionales-jsontest-restclienttest-y-testconfiguration"
       }
     ],
     "7": [
@@ -5060,6 +5228,10 @@
       {
         "title": "Liveness vs readiness",
         "fragment": "tema-3-liveness-vs-readiness"
+      },
+      {
+        "title": "Tracing distribuido con Micrometer Tracing",
+        "fragment": "tema-4-tracing-distribuido-con-micrometer-tracing"
       }
     ],
     "8": [
@@ -5082,6 +5254,10 @@
       {
         "title": "Kafka frente a RabbitMQ",
         "fragment": "tema-5-kafka-frente-a-rabbitmq"
+      },
+      {
+        "title": "RabbitMQ a fondo — exchanges, routing keys y dead-letter exchange",
+        "fragment": "tema-6-rabbitmq-a-fondo-exchanges-routing-keys-y-dead-letter-exchange"
       }
     ],
     "9": [
@@ -5096,6 +5272,10 @@
       {
         "title": "Cuándo WebFlux vale la complejidad, y R2DBC",
         "fragment": "tema-3-cuando-webflux-vale-la-complejidad-y-r2dbc"
+      },
+      {
+        "title": "Virtual threads como alternativa a WebFlux",
+        "fragment": "tema-4-virtual-threads-como-alternativa-a-webflux"
       }
     ]
   }

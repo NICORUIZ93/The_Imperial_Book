@@ -2,7 +2,7 @@
 
 ## Aprende construyendo
 
-Vas a seguir un envío desde una API hasta una proyección de ruteo. Primero entenderás productor, contrato, key, particiones y consumer groups; después provocarás duplicados y errores; al final cerrarás la ventana entre PostgreSQL y Kafka con outbox/inbox.
+Vas a seguir un envío desde una API hasta una proyección de ruteo. Primero entenderás productor, contrato, key, particiones y consumer groups; después provocarás duplicados y errores; al final cerrarás la ventana entre PostgreSQL y Kafka con outbox/inbox. Este módulo asume el recorrido producer/consumer/DLT/idempotencia del Módulo 8 y lo retoma a nivel experto con outbox, consumer groups y recuperación de fallos reales con Docker Compose.
 
 Cada práctica parte de una carpeta vacía: generarás el proyecto Maven y escribirás manualmente el contrato, el esquema SQL, la configuración, Compose y las pruebas. Las pruebas usan Kafka embebido y H2; el flujo manual con PostgreSQL y el broker de Compose requiere contenedores.
 
@@ -19,6 +19,37 @@ No se promete “exactly once” entre Kafka y PostgreSQL. El objetivo es entend
 Al crear un envío, el servicio de ruteo necesita enterarse sin bloquear la respuesta de la API con una llamada síncrona a otro servicio. El productor publica un evento y cada grupo interesado mantiene su propia posición de lectura.
 
 **¿Por qué es importante?** Elegir la key determina qué eventos comparten partición y orden. Sin observar key, partición y offset, un envío fuera de secuencia puede confundirse con un fallo del negocio. Separar productor y consumidores permite desplegarlos y escalarlos por separado; a cambio, el sistema debe aceptar retrasos, reentregas, cambios de contrato y fallos parciales.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Transacciones SQL y `@Transactional` | Prerrequisito | `CrearEnvioService.crear` guarda `envio` y `outbox_event` bajo `@Transactional` |
+| Key del agregado (`envioId`) | Núcleo | `kafka.send(topic, evento.envioId().toString(), evento)` fija la key en `EnvioEventPublisher` |
+| Partición y offset observables | Núcleo | el log `key={} partition={} offset={}` de `RuteoListener` muestra los tres valores |
+| Consumer group `rutaflow-ruteo` | Variante | `group-id: rutaflow-ruteo` en `application.yml` y dos grupos distintos leen el flujo por separado |
+| Orden por partición, no global | Límite | la Pista: "el orden que Kafka garantiza es por partición" |
+| Key equivocada rompe el orden por envío | Error frecuente | el fallo deliberado cambia la key a `eventId` y ya no se infiere orden por agregado |
+| Instancias vs. número de particiones | Decisión | `@EmbeddedKafka(partitions = 3 ...)` y "más instancias que particiones no dan más paralelismo" |
+| Serialización JSON del contrato | Diagnóstico | `JacksonJsonSerializer`/`JacksonJsonDeserializer` reconstruyen `EnvioCreado` en el consumidor |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Transacciones SQL y `@Transactional` (prerrequisito).** El tema asume que ya sabes agrupar escrituras en una transacción: `CrearEnvioService.crear` inserta `envio` y `outbox_event` dentro de un método anotado con `@Transactional`, de modo que ambas filas se confirman juntas o ninguna. Sin este prerrequisito no se entiende por qué el publicador espera al commit antes de enviar. El propio prerrequisito del tema remite al módulo anterior si no conoces `@Transactional`.
+
+**Key del agregado (`envioId`) (núcleo).** La key decide la partición destino: `EnvioEventPublisher` publica con `evento.envioId().toString()` para que todos los eventos del mismo envío caigan en la misma partición y conserven su orden. El mecanismo es el particionador predeterminado, que asigna la misma key a la misma partición mientras no cambien las condiciones de particionado. Elegir una key aleatoria rompería esta garantía de orden por agregado.
+
+**Partición y offset observables (núcleo).** `RuteoListener.recibir` registra `key`, `partition` y `offset` del `ConsumerRecord` tras procesar, lo que convierte supuestos en datos verificables. El offset es la posición de lectura del grupo en esa partición, no un acuse del efecto SQL. Observar estos campos permite que la prueba compruebe la key real en lugar de una key supuesta.
+
+**Consumer group `rutaflow-ruteo` (variante).** El `group-id: rutaflow-ruteo` define qué instancias comparten las particiones de un tópico; dos grupos distintos leen cada uno el flujo completo con su propio cursor. La variante clave es que grupos separados avanzan de forma independiente, mientras que instancias del mismo grupo se reparten particiones. La práctica pide levantar dos instancias del mismo grupo y luego otra con grupo distinto para observar la diferencia tras el rebalanceo.
+
+**Orden por partición, no global (límite).** Kafka garantiza orden dentro de una partición, nunca entre particiones distintas, como recuerda la Pista del tema. El límite es que no existe un orden total del tópico, así que no puedes inferir secuencia global entre agregados. Cambiar el número de particiones puede reasignar una key, por lo que la partición no sirve como identidad de negocio persistente.
+
+**Key equivocada rompe el orden por envío (error frecuente).** El fallo deliberado cambia temporalmente la key de `envioId` a `eventId` y publica varias ocurrencias del mismo envío: al compararse las particiones, ya no se puede inferir orden por agregado. El error típico es usar una key aleatoria y después esperar orden por envío. Restaurar `envioId` recupera la garantía, lo que demuestra causalmente que la key, y no la proyección, controla el orden.
+
+**Instancias vs. número de particiones (decisión).** La prueba usa `@EmbeddedKafka(partitions = 3 ...)` y el texto advierte que más instancias que particiones no dan más paralelismo para ese tópico. La decisión operativa es dimensionar consumidores comparando su número con las particiones antes de escalar. Si una segunda instancia del mismo grupo no recibe nada, el síntoma apunta a este límite, no a un fallo de negocio.
+
+**Serialización JSON del contrato (diagnóstico).** Kafka almacena bytes; `JacksonJsonSerializer` convierte el record a JSON en el productor y `JacksonJsonDeserializer` lo reconstruye como `EnvioCreado` en el consumidor, guiado por `spring.json.trusted.packages` y `spring.json.value.default.type`. Para diagnosticar problemas de lectura conviene revisar primero esta configuración y el contrato versionado por la aplicación, ya que no hay Schema Registry. Fijar el tipo de destino simplifica el laboratorio, pero no es una política general para aceptar clases arbitrarias desde mensajes externos.
 
 - Un **tópico** es un flujo particionado de registros persistentes.
 - Una **key** ayuda al particionador a asignar registros a una partición. Con el particionador predeterminado, la misma key conserva la asignación mientras no cambien las condiciones de particionado; Kafka garantiza orden dentro de una partición, no orden global.
@@ -512,6 +543,37 @@ Debes poder mostrar la respuesta `202`, la proyección `RECIBIDO`, el test de ke
 
 **¿Por qué es importante?** Una entrega repetida puede duplicar un efecto de negocio; un mensaje defectuoso puede detener el avance. Distinguir fallos temporales, permanentes y duplicados permite recuperar el flujo conservando evidencia: sin deduplicación, una reentrega puede duplicar asignaciones, cargos o notificaciones; sin una ruta de recuperación, un mensaje venenoso puede bloquear el avance.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Contrato y key del Tema 1 | Prerrequisito | el prerrequisito exige "el contrato, la key y el listener creados manualmente en el Tema 1" |
+| Entrega al menos una vez | Núcleo | caída "en la ventana entre efecto y commit del offset" hace que Kafka vuelva a llamar al handler |
+| Inbox idempotente (`event_inbox`) | Núcleo | `event_id` es clave primaria y el handler inserta inbox y proyección en la misma transacción |
+| Reintentos con `FixedBackOff(1000, 2)` | Variante | `new DefaultErrorHandler(recoverer, new FixedBackOff(1000, 2))` en `KafkaConfiguration` |
+| Error permanente a DLT | Decisión | `handler.addNotRetryableExceptions(InvalidEventException.class)` envía a `rutaflow.envio.creado.DLT` |
+| Partición de origen en la DLT | Límite | el recoverer usa `new TopicPartition(topic + ".DLT", record.partition())` |
+| `enable.idempotence` del productor | Error frecuente | "protege retransmisiones del productor ... no coordina un commit Kafka con una transacción PostgreSQL" |
+| Carrera entre entregas concurrentes | Diagnóstico | la restricción única hace que "una transacción pierde y puede reintentarse" |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Contrato y key del Tema 1 (prerrequisito).** El tema parte del contrato `EnvioCreado`, la key `envioId` y el listener que ya escribiste manualmente en el Tema 1, como indica su prerrequisito. Sin ese `eventId` estable no habría sobre qué deduplicar ni un flujo que reentregar. Por eso la práctica pide regenerar el proyecto y reescribir esos archivos base antes de añadir reintentos.
+
+**Entrega al menos una vez (núcleo).** El listener confirma el offset solo después de que `RuteoService.procesar` retorna, así que una caída en la ventana entre el efecto SQL y el commit del offset hace que Kafka vuelva a llamar al handler. El mecanismo subyacente es que offset y efecto de negocio se confirman por separado. La consecuencia es que el consumidor debe asumir que puede ver el mismo evento más de una vez.
+
+**Inbox idempotente (`event_inbox`) (núcleo).** La tabla `event_inbox` usa `event_id` como clave primaria; el handler comprueba si el evento ya existe y, si no, inserta el ID y actualiza `route_projection` en la misma transacción. El mecanismo convierte una entrega repetida en un no-op observable: `RuteoService.procesar` retorna `false` cuando ya hay registro. El inbox evita repetir el efecto de negocio, pero no borra los duplicados del tópico.
+
+**Reintentos con `FixedBackOff(1000, 2)` (variante).** `DefaultErrorHandler` se configura con `new FixedBackOff(1000, 2)`: un intento inicial y hasta dos reintentos bloqueantes separados por un segundo. Esta es la variante para fallos transitorios, que pueden resolverse esperando. Agotados los reintentos sin reclasificar el error, el registro pasa al recoverer.
+
+**Error permanente a DLT (decisión).** `handler.addNotRetryableExceptions(InvalidEventException.class)` marca el evento inválido como no reintentable, de modo que va directo a `rutaflow.envio.creado.DLT` sin gastar reintentos. La decisión es distinguir un contrato que no puede procesarse de un fallo que podría repararse esperando. Por eso el tema sustituye `IllegalArgumentException` por `InvalidEventException` para la referencia vacía.
+
+**Partición de origen en la DLT (límite).** El `DeadLetterPublishingRecoverer` construye `new TopicPartition(topic + ".DLT", record.partition())`, conservando el número de partición del registro fallido; la DLT tiene tres particiones como el tópico original. El límite es que la DLT es una bandeja de aislamiento para diagnóstico, no una papelera ni un mecanismo de reparación automática. Una persona debe decidir después si corrige, descarta o reproduce el mensaje.
+
+**`enable.idempotence` del productor (error frecuente).** `enable.idempotence` protege retransmisiones del productor dentro de las garantías de Kafka, pero no coordina un commit de Kafka con una transacción de PostgreSQL. El error frecuente es creer que esa opción da "exactly once" entre el broker y la base de datos. La deduplicación de negocio sigue dependiendo del inbox, no de esta configuración del productor.
+
+**Carrera entre entregas concurrentes (diagnóstico).** La clave primaria de `event_inbox` protege también contra dos entregas simultáneas del mismo `event_id`: si hay carrera, una transacción pierde al insertar y puede reintentarse, y la siguiente lectura ya verá el evento confirmado. Para diagnosticar un duplicado no es necesario bloqueo explícito: la restricción única basta. Así se decide entre reintentar la transacción perdedora o tratar el evento como ya aplicado.
+
 En este laboratorio, el listener confirma el offset después de que `RuteoService.procesar` retorna; el servicio usa una transacción SQL para escribir inbox y proyección. Si el proceso cae en la ventana entre efecto y commit del offset, Kafka puede volver a llamar al handler.
 
 La tabla `event_inbox` tiene `event_id` como clave primaria. El handler consulta si ya existe y, si no, inserta inbox y actualiza la proyección en la misma transacción. La restricción única protege también contra dos entregas concurrentes: si hay una carrera, una transacción pierde y puede reintentarse; la siguiente lectura ya verá el evento confirmado.
@@ -762,6 +824,37 @@ La evidencia mínima son las dos pruebas automatizadas, los conteos de inbox/pro
 **Caso real:** si la API guarda el envío y luego publica directamente, una caída entre ambas operaciones deja un envío sin evento. Si publica primero y después hace rollback SQL, el consumidor recibe un evento para un envío que nunca se confirmó.
 
 **¿Por qué es importante?** Guardar un envío y publicar su evento son operaciones en sistemas diferentes. El outbox conserva la intención de publicación en la misma transacción del envío para que una caída del broker no la pierda. Kafka y PostgreSQL son sistemas con commits independientes: una `@Transactional` JDBC normal no incluye el ack del broker.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Transacción e idempotencia previas | Prerrequisito | el prerrequisito pide "transacciones SQL, la key del Tema 1 e idempotencia del Tema 2" |
+| Escritura atómica envío + outbox | Núcleo | `INSERT INTO envio` e `INSERT INTO outbox_event` en el mismo método `@Transactional` |
+| Reclamo con `FOR UPDATE SKIP LOCKED` | Núcleo | el dispatcher "reclama un lote usando `FOR UPDATE SKIP LOCKED`" y confirma una transacción corta |
+| Publicar, esperar ack y marcar `published_at` | Variante | publica con `aggregate_id` como key, "espera el ack con timeout y solo entonces marca `published_at`" |
+| Ventana ack↔`published_at` duplica | Límite | el fallo entre ack y `published_at` "todavía puede duplicar el evento" |
+| Leases entre dispatchers | Decisión | "los leases evitan que dos dispatchers reclamen simultáneamente la misma fila" |
+| Backoff acotado y `last_error` | Diagnóstico | el dispatcher "aplica backoff exponencial acotado y guarda la causa en `last_error`" |
+| Varias instancias del dispatcher | Error frecuente | el laboratorio "solo demuestra un dispatcher periódico"; varias instancias requieren más pruebas |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Transacción e idempotencia previas (prerrequisito).** El tema exige las transacciones SQL, la key `envioId` del Tema 1 y el inbox idempotente del Tema 2, como fija su prerrequisito. El outbox apoya su garantía en esas piezas: la key conserva el orden y el inbox neutraliza los duplicados que el propio outbox puede generar. Por eso la práctica reescribe los archivos base de los Temas 1 y 2 antes de añadir el dispatcher.
+
+**Escritura atómica envío + outbox (núcleo).** En `CrearEnvioService.crear` conviven `INSERT INTO envio` e `INSERT INTO outbox_event` dentro del mismo método `@Transactional`, y el servicio ya no publica directamente en Kafka. El mecanismo graba la intención de publicar junto al cambio de negocio, de modo que una caída del broker no la pierde. Así se evita el caso en que el envío se guarda pero el evento nunca se emite.
+
+**Reclamo con `FOR UPDATE SKIP LOCKED` (núcleo).** El dispatcher reclama un lote con `FOR UPDATE SKIP LOCKED`, asigna un lease y confirma esa transacción corta antes de hablar con el broker. El mecanismo deja que varios reclamos salten filas ya tomadas en lugar de bloquearse esperándolas. La transacción corta es clave: no se mantienen bloqueos SQL durante el envío a Kafka.
+
+**Publicar, esperar ack y marcar `published_at` (variante).** Tras reclamar el lote, el dispatcher publica con `aggregate_id` como key, espera el ack del broker con timeout y solo entonces marca `published_at`. Esta variante recuperable reemplaza la entrega inmediata del Tema 1, que publicaba tras el commit. Marcar `published_at` después del ack es lo que permite reintentar lo que quedó pendiente.
+
+**Ventana ack↔`published_at` duplica (límite).** Si el proceso cae entre el ack de Kafka y la actualización de `published_at`, el evento puede reenviarse y duplicarse. El límite es que el outbox no logra "exactly once": garantiza no perder el evento, no enviarlo una sola vez. El inbox del tema anterior es el que neutraliza ese efecto repetido aguas abajo.
+
+**Leases entre dispatchers (decisión).** El lease evita que dos dispatchers reclamen la misma fila mientras siga válido, lo que permite decidir cómo repartir trabajo sin publicar lo mismo dos veces a la vez. La decisión incluye qué hacer ante expiración, timeout o caída: el lease no elimina la necesidad de idempotencia en esos casos. Es un acuerdo temporal de propiedad, no una garantía permanente de entrega única.
+
+**Backoff acotado y `last_error` (diagnóstico).** El dispatcher local aplica backoff exponencial acotado y guarda la causa del fallo en `last_error`. Ese campo convierte un fallo de envío en evidencia consultable para diagnosticar por qué una fila no avanza. El backoff acotado evita reintentar sin pausa, mientras la fila permanece pendiente hasta lograr el ack.
+
+**Varias instancias del dispatcher (error frecuente).** El laboratorio solo demuestra un dispatcher periódico; dar por hecho que escala sin cambios a varias instancias es el error frecuente. Extender la operación a varios dispatchers depende de los leases y requiere más pruebas, como señala el propio tema. Confundir el ejemplo mínimo con una configuración lista para concurrencia alta es prematuro.
 
 El outbox escribe el envío y la representación serializada del evento en una sola transacción SQL. Un dispatcher reclama un lote usando `FOR UPDATE SKIP LOCKED`, asigna un lease y confirma esa transacción corta antes de esperar al broker. Publica con `aggregate_id` como key, espera el ack con timeout y solo entonces marca `published_at`.
 

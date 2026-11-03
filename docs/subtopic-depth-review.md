@@ -1,0 +1,1176 @@
+# Revisión de profundidad de subtemas
+
+> Las señales automáticas no prueban profundidad ni ausencia de ella. Un tema sólo queda revisado mediante el registro humano con mapa de subtemas críticos, evidencia y fuentes.
+
+- Temas inventariados: 1184
+- Revisados humanamente para subtemas: 350
+- Pendientes: 834
+- Candidatos prioritarios por señales: 792
+
+## Cobertura por track
+
+| Track | Temas | Revisados | Pendientes |
+|---|---:|---:|---:|
+| android | 74 | 0 | 74 |
+| angular | 71 | 71 | 0 |
+| cloud | 156 | 0 | 156 |
+| devops | 129 | 0 | 129 |
+| flutter | 63 | 63 | 0 |
+| foundations | 100 | 0 | 100 |
+| ios | 56 | 0 | 56 |
+| java | 109 | 109 | 0 |
+| javascript | 88 | 0 | 88 |
+| kotlin-multiplatform | 56 | 0 | 56 |
+| microservices | 11 | 0 | 11 |
+| node | 77 | 0 | 77 |
+| react | 58 | 0 | 58 |
+| rutaflow | 29 | 0 | 29 |
+| spring-boot | 107 | 107 | 0 |
+
+## Cola prioritaria
+
+- `android/modulo-0` — Tema 3: AndroidManifest.xml y módulos Gradle — título agrupa varios conceptos
+- `android/modulo-0` — Tema 5: Lambdas y funciones de orden superior en Kotlin — contratos, captura y receptores · Intermedio · 120 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `android/modulo-1` — Tema 1: Ciclo de vida de una Activity — lista conceptos clave sin mapa interno verificable
+- `android/modulo-1` — Tema 2: ViewModel sobrevive a la rotación — lista conceptos clave sin mapa interno verificable
+- `android/modulo-1` — Tema 3: SavedStateHandle — lista conceptos clave sin mapa interno verificable
+- `android/modulo-10` — Tema 1: Detectar y corregir recomposición innecesaria — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `android/modulo-10` — Tema 2: Baseline Profiles y ciclo de efectos — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `android/modulo-10` — Tema 3: Accesibilidad e interop con Views — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `android/modulo-11` — Tema 1: Firma de la app — lista conceptos clave sin mapa interno verificable
+- `android/modulo-11` — Tema 2: App Bundle vs APK — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `android/modulo-11` — Tema 3: Versionado, tracks y políticas — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `android/modulo-12` — Tema 1: Arquitectura MVVM completa con UDF — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `android/modulo-12` — Tema 2: Inyección de dependencias en toda la app — lista conceptos clave sin mapa interno verificable
+- `android/modulo-12` — Tema 3: Cierre del track y próximos pasos — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `android/modulo-13` — Tema 1: El sistema operativo conecta tu app con entradas externas — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `android/modulo-13` — Tema 2: Proteger datos exige conocer copias y ciclo de vida — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `android/modulo-13` — Tema 3: Offline-first necesita un protocolo de cambios — lista conceptos clave sin mapa interno verificable
+- `android/modulo-13` — Tema 4: La calidad se opera por dispositivo y versión — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `android/modulo-13` — Tema 5: Del dispositivo al diagnóstico: SoC, memoria, límites térmicos y arranque verificado — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `android/modulo-14` — Tema 2: Finders, assertions y actions navegan el árbol semántico — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `android/modulo-14` — Tema 3: Semantics y clearAndSetSemantics definen qué percibe la accesibilidad — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `android/modulo-14` — Tema 4: AccessibilityService y TalkBack consumen el árbol semántico en producción — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `android/modulo-14` — Tema 5: Animaciones de estado y visibilidad usan una especificación medible — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `android/modulo-14` — Tema 6: AnimatedContent y AnimationSpec especifican transiciones completas — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `android/modulo-15` — Tema 1: Intents implícitos y Activity Result API — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `android/modulo-15` — Tema 2: BroadcastReceiver: reaccionar a eventos del sistema — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `android/modulo-15` — Tema 3: Foreground Service de ubicación con FusedLocationProvider — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `android/modulo-15` — Tema 4: Compartir archivos con FileProvider y content:// — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `android/modulo-16` — Tema 1: Permisos en tiempo de ejecución y alternativas sin permiso — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `android/modulo-16` — Tema 2: DataStore para preferencias consistentes y migrables — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `android/modulo-16` — Tema 3: Paging 3, estados de carga y RemoteMediator — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `android/modulo-16` — Tema 4: FCM, permiso de notificaciones y sincronización confiable — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `android/modulo-16` — Tema 5: Interfaces adaptativas para teléfono, tablet y foldable — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `android/modulo-16` — Tema 6: Credential Manager, passkeys y verificación en servidor — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `android/modulo-17` — Tema 1: Constraints, Modifier y componentes con slots — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `android/modulo-17` — Tema 2: LazyColumn, grids, claves estables y estado de scroll — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `android/modulo-17` — Tema 3: Formularios, IME, foco y validación accesible — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `android/modulo-17` — Tema 4: Side effects, lifecycle y APIs imperativas — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `android/modulo-17` — Tema 5: Gestos, Canvas y componentes personalizados accesibles — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `android/modulo-18` — Tema 1: Gradle, version catalogs y resolución de dependencias — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `android/modulo-18` — Tema 2: Build types, product flavors y configuración segura — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `android/modulo-18` — Tema 3: Modularización, convenciones y fronteras de arquitectura — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `android/modulo-18` — Tema 4: R8, recursos, Baseline Profiles y pipeline reproducible — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `android/modulo-2` — Tema 1: Composables y recomposición — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `android/modulo-2` — Tema 2: State hoisting — lista conceptos clave sin mapa interno verificable
+- `android/modulo-2` — Tema 3: remember, rememberSaveable y layout básico — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `android/modulo-3` — Tema 1: NavHost y NavController — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `android/modulo-3` — Tema 2: Argumentos tipados y deep links — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `android/modulo-3` — Tema 3: Navegación anidada con stacks independientes — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `android/modulo-3` — Tema 4: Predictive Back — gesto del sistema con preview animado — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `android/modulo-4` — Tema 1: StateFlow en el ViewModel — lista conceptos clave sin mapa interno verificable
+- `android/modulo-4` — Tema 2: collectAsStateWithLifecycle y UDF — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `android/modulo-4` — Tema 3: SharedFlow para eventos de un solo uso — lista conceptos clave sin mapa interno verificable
+- `android/modulo-4` — Tema 4: Restaurar un borrador tras recreación: remember no equivale a rememberSaveable — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `android/modulo-5` — Tema 1: Retrofit con coroutines — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `android/modulo-5` — Tema 2: Manejo de errores HTTP — lista conceptos clave sin mapa interno verificable
+- `android/modulo-5` — Tema 3: Interceptores de OkHttp — lista conceptos clave sin mapa interno verificable
+- `android/modulo-6` — Tema 1: Entities, DAOs y Database — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `android/modulo-6` — Tema 2: Room + Flow reactivo, y migraciones — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `android/modulo-6` — Tema 3: Estrategia offline-first — lista conceptos clave sin mapa interno verificable
+- `android/modulo-7` — Tema 1: Configuración básica de Hilt — lista conceptos clave sin mapa interno verificable
+- `android/modulo-7` — Tema 2: @Provides y @Binds — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `android/modulo-7` — Tema 3: Scopes y testing con Hilt — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `android/modulo-8` — Tema 1: CoroutineWorker y garantía de ejecución — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `android/modulo-8` — Tema 2: Constraints y trabajo periódico — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `android/modulo-8` — Tema 3: Notificaciones desde background work — lista conceptos clave sin mapa interno verificable
+- `android/modulo-9` — Tema 1: Testing de ViewModels con fakes y runTest — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `android/modulo-9` — Tema 2: Compose UI Testing — lista conceptos clave sin mapa interno verificable
+- `android/modulo-9` — Tema 3: Testing end-to-end con Activity real, y fakes vs mocks — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-0` — Tema 1: Fundamentos absolutos — qué es una terminal, un comando y un sistema operativo — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-0` — Tema 2: Fundamentos de redes — direcciones IP, puertos, HTTP y APIs — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-0` — Tema 3: Qué vas a aprender y cómo está estructurado el curso — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-0` — Tema 4: Qué es Floci — definición, propósito y comparativa con LocalStack — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-0` — Tema 5: Servicios que emula Floci — AWS, Azure y GCP — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-0` — Tema 6: Ventajas y limitaciones de practicar con un emulador local — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-0` — Tema 7: Metodología de estudio — teoría, laboratorio y evaluación en cada módulo — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-1` — Tema 1: Virtualización vs contenedores — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-1` — Tema 2: Imágenes y capas — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-1` — Tema 3: Registros de contenedores (Docker Hub) — lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-1` — Tema 4: Comandos esenciales de Docker — lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-1` — Tema 5: Docker Compose — servicios, redes y volúmenes — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-10` — Tema 1: Secrets Manager y por qué no usar variables de entorno hardcodeadas — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-10` — Tema 2: KMS y envelope encryption — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-10` — Tema 3: SSM Parameter Store vs Secrets Manager — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-11` — Tema 1: El patrón fan-out con SNS — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-11` — Tema 2: EventBridge: bus de eventos con filtrado declarativo — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-11` — Tema 3: SNS + SQS juntos, y Azure Event Hubs — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-12` — Tema 1: Log groups, log streams y correlation ID — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-12` — Tema 2: Metric filters y alarmas — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-12` — Tema 3: Diagnóstico sistemático y X-Ray — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-13` — Tema 1: RDS Instance y cuándo elegir SQL sobre NoSQL — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-13` — Tema 2: Snapshots y restore — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-13` — Tema 3: Migrations — lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-14` — Tema 1: ECR y por qué no basta con Docker Hub — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-14` — Tema 2: Task Definition y ECS Cluster — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-14` — Tema 3: Contenedores vs Lambda, y EKS — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-15` — Tema 1: Stack, Template y por qué no crear recursos manualmente con la CLI — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-15` — Tema 2: Change sets — lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-15` — Tema 3: Drift detection, Terraform/CDK, y compatibilidad multi-herramienta — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-16` — Tema 1: State machine y Task states — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-16` — Tema 2: Choice state, Retry y Catch — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-16` — Tema 3: Express vs Standard, y cuándo EventBridge Pipes es suficiente — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-17` — Tema 1: Streams vs colas — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-17` — Tema 2: MSK (Kafka gestionado) y consumer groups — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-17` — Tema 3: Kinesis Data Streams vs Firehose, y GCP Managed Kafka — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-18` — Tema 1: Por qué no construir tu propio sistema de autenticación — lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-18` — Tema 2: Access Token, ID Token y Refresh Token — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-18` — Tema 3: OAuth 2.0 y PKCE — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-19` — Tema 1: Data lake y Glue Catalog — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-19` — Tema 2: Glue Crawler y Athena — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-19` — Tema 3: Parquet vs CSV, y partition pruning — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-2` — Tema 1: Objetos, buckets y su nomenclatura — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-2` — Tema 2: Claves y metadatos — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-2` — Tema 3: Versionado y ciclo de vida — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-2` — Tema 4: Transición entre capas de almacenamiento — lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-2` — Tema 5: Políticas de bucket, ACL y URLs pre-firmadas — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-20` — Tema 1: Bedrock Runtime y respuestas stub deterministas — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-20` — Tema 2: Textract y Transcribe — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-20` — Tema 3: Stub vs mock, y qué probar localmente — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-21` — Tema 1: El modelo de ejecución de EC2 — instancias que son contenedores Docker reales — lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-21` — Tema 2: AMIs, grupos de seguridad y claves SSH — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-21` — Tema 3: UserData e IMDS — arranque automatizado y credenciales por instancia — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-21` — Tema 4: Auto Scaling — configuraciones de lanzamiento y grupos — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-21` — Tema 5: El reconciliador de capacidad y las políticas de escalado — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-21` — Tema 6: VPC y redes — subredes, security groups y el flujo del tráfico — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-22` — Tema 1: ELB v2 — balanceadores, grupos objetivo y reglas — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-22` — Tema 2: ACM — certificados TLS con criptografía real — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-22` — Tema 3: CloudFront — distribución de contenido y control de acceso al origen — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-22` — Tema 4: Route53 — zonas alojadas y registros de recursos — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-22` — Tema 5: Cómo se integran los cuatro servicios en una arquitectura de borde real — lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-23` — Tema 1: Qué resuelve un caché en memoria — y cuándo no ayuda — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-23` — Tema 2: Arquitectura de ElastiCache en Floci — contenedores reales, no simulación — lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-23` — Tema 3: Creación de clústeres y conexión con clientes estándar — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-23` — Tema 4: Autenticación IAM para el plano de datos de ElastiCache — lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-24` — Tema 1: CodeBuild — compilaciones reales dentro de contenedores Docker — lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-24` — Tema 2: buildspec.yml — fases y artefactos — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-24` — Tema 3: CodeDeploy — aplicaciones, grupos y configuraciones predefinidas — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-24` — Tema 4: Despliegue Blue/Green de Lambda — cambio de tráfico por alias — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-24` — Tema 5: Despliegue Blue/Green de ECS — cambio de tráfico por listener ELB — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-25` — Tema 1: AWS Config — rastrear reglas sobre tus recursos — lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-25` — Tema 2: AppConfig — desplegar configuración sin redeployar código — lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-25` — Tema 3: AppConfigData — el plano de datos que consume tu aplicación — lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-25` — Tema 4: AWS Backup — centralizar la política de respaldo de múltiples servicios — lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-25` — Tema 5: El ciclo de vida de un trabajo de respaldo — lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-25` — Tema 6: Simulacro de restauración: comprobar contenido, no solo la existencia del backup — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `cloud/modulo-26` — Tema 1: Amazon Data Firehose — entrega gestionada sin consumidores propios — lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-26` — Tema 2: Firehose vs Kinesis Data Streams — quién consume los datos — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-26` — Tema 3: EventBridge Pipes — conectar origen y destino sin código de pegamento — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-26` — Tema 4: Cuándo usar Pipes frente a reglas EventBridge o Step Functions — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-27` — Tema 1: AppSync — APIs GraphQL gestionadas — lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-27` — Tema 2: Fuentes de datos y resolvers — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-27` — Tema 3: SES — identidades, envío y plantillas — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-27` — Tema 4: El simulador de buzones y el punto de inspección local — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-28` — Tema 1: Bases de datos de grafos — cuando las relaciones son el dato — lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-28` — Tema 2: Neptune en Floci — un servidor Gremlin real, no una simulación — lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-28` — Tema 3: OpenSearch — modo simulado y modo real — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-28` — Tema 4: Eligiendo entre Neptune, OpenSearch y DynamoDB — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-29` — Tema 1: Cost Explorer — costos sintetizados a partir de tu estado real — lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-29` — Tema 2: Pricing — catálogo de tarifas de referencia — lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-29` — Tema 3: BCM Data Exports — reportes de costo en formato estándar — lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-29` — Tema 4: Resource Groups Tagging API — descubrimiento centralizado por etiqueta — lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-29` — Tema 5: STS en profundidad — identidad temporal y aislamiento multi-cuenta — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-3` — Tema 1: Colas, productores y consumidores — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-3` — Tema 2: Ciclo de vida de un mensaje — lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-3` — Tema 3: Dead Letter Queues (DLQ) — lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-3` — Tema 4: Colas FIFO vs Standard — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-30` — Tema 1: Qué resuelve Transfer Family — lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-30` — Tema 2: Ciclo de vida del servidor y modelo de usuarios — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-30` — Tema 3: Claves públicas SSH y autenticación de usuarios — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-30` — Tema 4: Los límites de la Fase 1 — plano de gestión completo, plano de datos pendiente — lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-31` — Tema 1: Arquitectura multi-nube y portabilidad de conocimiento — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-31` — Tema 2: Arquitectura interna de cloud local y su uso en CI/CD — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-31` — Tema 3: Migración desde otros emuladores, y límites de un emulador — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-31` — Tema 4: Testcontainers — pruebas de integración automatizadas — lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-32` — Tema 1: Una red segura empieza por flujos, no por subredes — lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-32` — Tema 2: Una landing zone convierte gobierno en una base repetible — lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-32` — Tema 3: Disponibilidad y recuperación responden preguntas distintas — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-32` — Tema 4: Un backup solo existe operativamente después de restaurarlo — lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-33` — Tema 1: Terraform avanzado y CI/CD cloud — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-33` — Tema 2: Kubernetes administrado, ECS y Service Mesh — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-33` — Tema 3: EC2, VPC, RDS, S3 y DynamoDB avanzados — título agrupa varios conceptos
+- `cloud/modulo-33` — Tema 4: Lambda, API Gateway y observabilidad avanzada — título agrupa varios conceptos
+- `cloud/modulo-33` — Tema 5: Seguridad, auditoría y FinOps — título agrupa varios conceptos
+- `cloud/modulo-33` — Tema 6: Microservicios, Big Data, AI/ML y multi-cloud — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-34` — Tema 1: Instalación en macOS, Linux y Windows — título agrupa varios conceptos
+- `cloud/modulo-34` — Tema 3: AWS CLI y SDK, Azure CLI y SDK, GCP CLI y SDK — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `cloud/modulo-34` — Tema 4: Configuración avanzada y ciclo de vida — título agrupa varios conceptos
+- `cloud/modulo-34` — Tema 5: Automatización, UI y agentes — título agrupa varios conceptos
+- `cloud/modulo-34` — Tema 9: floci-ui — explorador visual multi-nube — lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-34` — Tema 11: Límites y transferencia a producción — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `cloud/modulo-4` — Tema 1: Qué es NoSQL y cuándo usarlo — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-4` — Tema 2: Tablas, items y atributos — título agrupa varios conceptos
+- `cloud/modulo-4` — Tema 4: Clave primaria simple (HASH) vs compuesta (HASH + RANGE) — título agrupa varios conceptos
+- `cloud/modulo-4` — Tema 5: Índices secundarios globales (GSI) y locales (LSI) — título agrupa varios conceptos
+- `cloud/modulo-4` — Tema 6: Query vs Scan — título agrupa varios conceptos
+- `cloud/modulo-5` — Tema 1: Qué es serverless — ventajas y desventajas — título agrupa varios conceptos
+- `cloud/modulo-5` — Tema 4: Payload de entrada y respuesta — título agrupa varios conceptos
+- `cloud/modulo-5` — Tema 5: Versionado y alias — título agrupa varios conceptos
+- `cloud/modulo-5` — Tema 6: Integración con S3, DynamoDB Streams y API Gateway — título agrupa varios conceptos
+- `cloud/modulo-6` — Tema 1: Qué es API Gateway y tipos de API — REST, HTTP, WebSocket — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-6` — Tema 2: Recursos, métodos y stages — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-6` — Tema 3: Integración con Lambda (proxy) — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-6` — Tema 4: Mapeo de entrada/salida y validación con modelos — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-6` — Tema 5: Despliegue y variables de stage — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-7` — Tema 1: Principio de mínimo privilegio — lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-7` — Tema 2: Modelo de responsabilidad compartida — lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-7` — Tema 3: Usuarios, grupos y roles — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-7` — Tema 4: Estructura de una política — acciones, recursos y condiciones — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-7` — Tema 5: Buenas prácticas — roles sobre usuarios, políticas restrictivas, rotación de credenciales — lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-8` — Tema 1: floci-az — Blob Storage, Queue Storage, Table Storage, Cosmos DB, Functions — lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-8` — Tema 2: floci-gcp — Cloud Storage, Pub/Sub, Firestore, Cloud Functions — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-8` — Tema 3: Comparativa AWS vs Azure vs GCP por categoría de servicio — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-9` — Tema 1: Arquitectura de la aplicación — frontend, backend y base de datos — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-9` — Tema 2: CRUD de tareas sobre DynamoDB expuesto por Lambda — lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-9` — Tema 3: Archivos adjuntos en S3 y procesamiento en segundo plano con SQS — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-9` — Tema 4: API Gateway e IAM de mínimo privilegio para el proyecto — lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-9` — Tema 5: Documentación de la API y guía de despliegue — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-0` — Tema 1: Sistema de archivos y permisos (chmod/chown) — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-0` — Tema 2: Procesos, señales y jobs en segundo plano — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-0` — Tema 3: Pipes, redirección y filtros (grep, awk, sed) — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-0` — Tema 4: Variables de entorno y scripts bash robustos (set -euo pipefail) — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-0` — Tema 5: Cron y tareas programadas — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-0` — Tema 6: Hardening básico — SSH sin contraseña, firewalls, SELinux/AppArmor — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-0` — Tema 7: Redes — modelo OSI, TCP/IP, DNS y balanceadores de carga — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-0` — Tema 8: Cultura DevOps y el ciclo Plan→Code→Build→Test→Release→Deploy→Operate→Monitor — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-0` — Tema 9: NGINX y proxies desde cero — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-0` — Tema 10: Usuarios, grupos, permisos compartidos y sudo con mínimo privilegio — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-0` — Tema 11: systemd: servicios, timers y logs con journalctl — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-1` — Tema 1: Trunk-based development vs GitFlow — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-1` — Tema 2: Rebase interactivo vs merge — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-1` — Tema 3: Bisect para encontrar regresiones — lista conceptos clave sin mapa interno verificable
+- `devops/modulo-1` — Tema 4: Hooks de Git y commits firmados — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-1` — Tema 5: Monorepos vs polyrepos — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-1` — Tema 6: git cherry-pick, git stash, git reset vs git revert — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-1` — Tema 7: git reflog, git worktree y git submodule — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-10` — Tema 1: Logging estructurado (JSON) — lista conceptos clave sin mapa interno verificable
+- `devops/modulo-10` — Tema 2: Pipeline ELK/EFK — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-10` — Tema 3: Loki + Grafana como alternativa ligera — lista conceptos clave sin mapa interno verificable
+- `devops/modulo-10` — Tema 4: Correlation ID a través de servicios — lista conceptos clave sin mapa interno verificable
+- `devops/modulo-11` — Tema 1: Escaneo de imágenes y dependencias (Trivy, Snyk) — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-11` — Tema 2: Integración en el pipeline — lista conceptos clave sin mapa interno verificable
+- `devops/modulo-11` — Tema 3: Gestión de secretos (Vault, SOPS) — lista conceptos clave sin mapa interno verificable
+- `devops/modulo-11` — Tema 4: Menor privilegio en CI/CD — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-11` — Tema 5: SBOM y supply chain security — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-11` — Tema 6: SAST, DAST y SCA — diferencias y herramientas — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-11` — Tema 7: Reconocimiento de tu propio laboratorio: escaneo de puertos y banners — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-12` — Tema 1: De cloud local a un proveedor cloud real — lista conceptos clave sin mapa interno verificable
+- `devops/modulo-12` — Tema 2: Gestión de secretos cloud-native — lista conceptos clave sin mapa interno verificable
+- `devops/modulo-12` — Tema 3: IaC multi-nube — lista conceptos clave sin mapa interno verificable
+- `devops/modulo-12` — Tema 4: Checklist de salida a producción — lista conceptos clave sin mapa interno verificable
+- `devops/modulo-12` — Tema 5: GitOps con ArgoCD y FluxCD — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-12` — Tema 6: Platform Engineering — Internal Developer Platforms (IDPs) — lista conceptos clave sin mapa interno verificable
+- `devops/modulo-13` — Tema 1: El pipeline completo — de commit a producción verificada — lista conceptos clave sin mapa interno verificable
+- `devops/modulo-13` — Tema 2: Uniendo cada módulo del track en un solo flujo — lista conceptos clave sin mapa interno verificable
+- `devops/modulo-13` — Tema 3: Cierre del track — checklist final y reflexión — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-14` — Tema 1: Confiabilidad es una expectativa cuantificada — lista conceptos clave sin mapa interno verificable
+- `devops/modulo-14` — Tema 2: Una alerta debe conducir a una acción — lista conceptos clave sin mapa interno verificable
+- `devops/modulo-14` — Tema 3: Construir una imagen no demuestra de dónde proviene — lista conceptos clave sin mapa interno verificable
+- `devops/modulo-14` — Tema 4: Una plataforma interna es un producto con límites — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-15` — Tema 1: Docker y Compose avanzados — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-15` — Tema 2: Kubernetes extensible y Helm avanzado — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-15` — Tema 3: Service Mesh con Istio o Linkerd — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-15` — Tema 4: GitOps con Argo CD y Flux — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-15` — Tema 5: Ansible, inventarios, roles y Vault — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-15` — Tema 6: DevSecOps y métricas DORA — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-16` — Tema 1: Postman y Newman — tu primera colección contra una API real — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-16` — Tema 2: Scripts y assertions — pruebas automatizadas sobre datos reales — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-16` — Tema 3: Newman en profundidad — reportes y el contrato del código de salida — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-16` — Tema 4: Jenkins — instalación, jobs y el linter real de pipelines declarativos — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-16` — Tema 5: Integración completa — Newman dentro de un pipeline Jenkins — lista conceptos clave sin mapa interno verificable
+- `devops/modulo-16` — Tema complementario: Bruno y Postman, evaluar con el mismo contrato — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `devops/modulo-17` — Tema 1: El borde: balanceo, proxy inverso, CDN y límites de tasa — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-17` — Tema 2: Datos que crecen: índices, réplicas, sharding y la elección SQL/NoSQL — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-17` — Tema 3: CAP, consistencia e idempotencia: lo que se paga en cada decisión — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-17` — Tema 4: Capacidad y observabilidad: latencia, throughput, SLO y pruebas de carga — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-18` — Tema 1: Aprovisionar y endurecer: usuario, SSH, firewall y parches — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-18` — Tema 2: Dominio, TLS y borde: DNS, Let's Encrypt y Cloudflare — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-18` — Tema 3: Despliegue y rollback: systemd, nginx y artefactos versionados — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-18` — Tema 4: Respaldos que se restauran: restic, RPO/RTO y simulacro — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-19` — Tema 1: Límites, acoplamiento y monolito modular: cuándo un microservicio no es la respuesta — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-19` — Tema 2: Lenguaje ubicuo y contextos delimitados: el mismo envío no significa lo mismo — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-19` — Tema 3: Agregados, invariantes y eventos de dominio: dónde vive la regla que no se puede romper — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-19` — Tema 4: ADR y fitness functions: decisiones que el código puede defender — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-2` — Tema 1: Dockerfile multi-stage — lista conceptos clave sin mapa interno verificable
+- `devops/modulo-2` — Tema 2: Capas e invalidación de caché — lista conceptos clave sin mapa interno verificable
+- `devops/modulo-2` — Tema 3: Imágenes base distroless/alpine — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-2` — Tema 4: Volúmenes vs bind mounts — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-2` — Tema 5: Redes en Docker — lista conceptos clave sin mapa interno verificable
+- `devops/modulo-2` — Tema 6: Registries — Docker Hub, AWS ECR, Azure Container Registry, Harbor — lista conceptos clave sin mapa interno verificable
+- `devops/modulo-2` — Tema 7: Operación diaria: inspect, stats, events y respaldo de volúmenes — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-20` — Tema 1: Eventos de dominio e integración: hechos, no comandos — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-20` — Tema 2: Outbox transaccional: guardar el hecho y el mensaje juntos — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-20` — Tema 3: Idempotencia y orden: consumidores que sobreviven a reintentos — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-20` — Tema 4: Sagas y compensaciones: procesos largos sin transacción distribuida — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-21` — Tema 1: Descomponer por capacidad de negocio: dos servicios, un contrato — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-21` — Tema 2: Datos por servicio: propiedad, composición y réplicas — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-21` — Tema 3: Resiliencia: timeouts, reintentos y cortacircuitos — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-21` — Tema 4: Observabilidad distribuida: trazas, correlación y SLO — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-22` — Tema 1: Floci desde cero: instalar, aislar y verificar — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-22` — Tema 2: S3 y diagnóstico de red: objetos, metadatos y errores — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-22` — Tema 3: Contenedores y CI: una imagen que se prueba contra Floci — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-22` — Tema 4: Terraform, SQS y operación: infraestructura reproducible y ejercicios — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-3` — Tema 1: Servicios, dependencias y healthchecks — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-3` — Tema 2: Variables de entorno y .env — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-3` — Tema 3: Redes y descubrimiento por nombre de servicio — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-3` — Tema 4: Perfiles para distintos entornos — lista conceptos clave sin mapa interno verificable
+- `devops/modulo-4` — Tema 1: Jobs, steps y matrices de build — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-4` — Tema 2: Caché de dependencias en CI — lista conceptos clave sin mapa interno verificable
+- `devops/modulo-4` — Tema 3: Artifacts y reportes de cobertura — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-4` — Tema 4: Pipelines como código (GitHub Actions/GitLab CI) — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-5` — Tema 1: Blue-green deployment — lista conceptos clave sin mapa interno verificable
+- `devops/modulo-5` — Tema 2: Canary releases — lista conceptos clave sin mapa interno verificable
+- `devops/modulo-5` — Tema 3: Rolling updates — lista conceptos clave sin mapa interno verificable
+- `devops/modulo-5` — Tema 4: Feature flags vs branches por entorno — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-5` — Tema 5: Rollback automático por métricas — lista conceptos clave sin mapa interno verificable
+- `devops/modulo-5` — Tema 6: Rollback ensayado y compatibilidad del artefacto anterior — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `devops/modulo-5` — Tema 7: A/B testing y shadow traffic: medir sin convertir usuarios en cobayas — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `devops/modulo-6` — Tema 1: Pod, ReplicaSet, Deployment — lista conceptos clave sin mapa interno verificable
+- `devops/modulo-6` — Tema 2: Service (ClusterIP, NodePort, LoadBalancer) — lista conceptos clave sin mapa interno verificable
+- `devops/modulo-6` — Tema 3: ConfigMaps y Secrets — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-6` — Tema 4: kubectl esencial — lista conceptos clave sin mapa interno verificable
+- `devops/modulo-6` — Tema 5: Namespaces — lista conceptos clave sin mapa interno verificable
+- `devops/modulo-6` — Tema 6: StatefulSets, DaemonSets, Jobs y CronJobs — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-6` — Tema 7: Persistent Volumes, PVCs y StorageClasses — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-7` — Tema 1: Helm charts y values — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-7` — Tema 2: Ingress Controllers y reglas de enrutamiento — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-7` — Tema 3: HorizontalPodAutoscaler — lista conceptos clave sin mapa interno verificable
+- `devops/modulo-7` — Tema 4: Probes de liveness y readiness — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-7` — Tema 5: RBAC en Kubernetes — lista conceptos clave sin mapa interno verificable
+- `devops/modulo-7` — Tema 6: Service Mesh — Istio, Linkerd, Envoy y mTLS — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-7` — Tema 7: Estrategias de despliegue — Recreate vs RollingUpdate — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-8` — Tema 1: Providers, resources y data sources — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-8` — Tema 2: State remoto y locking — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-8` — Tema 3: Módulos reutilizables — lista conceptos clave sin mapa interno verificable
+- `devops/modulo-8` — Tema 4: terraform plan vs apply — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-8` — Tema 5: Workspaces para múltiples entornos — lista conceptos clave sin mapa interno verificable
+- `devops/modulo-8` — Tema 6: Ansible — playbooks, roles, inventory y módulos — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-8` — Tema 7: Pulumi como alternativa a HCL — lista conceptos clave sin mapa interno verificable
+- `devops/modulo-8` — Tema complementario: OpenTofu, plan y estado sin recursos cloud — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `devops/modulo-9` — Tema 1: Modelo de métricas de Prometheus — counter, gauge, histogram — lista conceptos clave sin mapa interno verificable
+- `devops/modulo-9` — Tema 2: PromQL esencial — lista conceptos clave sin mapa interno verificable
+- `devops/modulo-9` — Tema 3: Dashboards en Grafana — lista conceptos clave sin mapa interno verificable
+- `devops/modulo-9` — Tema 4: Alertmanager y reglas de alerta — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-9` — Tema 5: SLI, SLO, SLA — lista conceptos clave sin mapa interno verificable
+- `devops/modulo-9` — Tema 6: OpenTelemetry como estándar de instrumentación — lista conceptos clave sin mapa interno verificable
+- `devops/modulo-9` — Tema 7: Métricas DORA — Lead Time, Deployment Frequency, MTTR, Change Failure Rate — lista conceptos clave sin mapa interno verificable
+- `foundations/modulo-0` — Tema 1: Computador, sistema operativo, programa y proceso · Básico · 90 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `foundations/modulo-0` — Tema 3: Archivos, carpetas y rutas sin perderse — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `foundations/modulo-0` — Tema 5: Primer programa, primer error y primera evidencia — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `foundations/modulo-0` — Tema complementario: VS Code, comandos y atajos comprobables — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `foundations/modulo-1` — Tema 1: Del problema al algoritmo y a los casos de prueba — título agrupa varios conceptos
+- `foundations/modulo-1` — Tema 2: Variables, tipos, expresiones y cambios de estado — título agrupa varios conceptos
+- `foundations/modulo-1` — Tema 3: Decisiones, repeticiones y trazado de ejecución — título agrupa varios conceptos
+- `foundations/modulo-1` — Tema 4: Funciones y descomposición de problemas — título agrupa varios conceptos
+- `foundations/modulo-1` — Tema 5: Cómo la computadora representa los datos — binario, texto y decimales — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `foundations/modulo-10` — Tema 2: Replicación, consistencia y decisiones explícitas — título agrupa varios conceptos
+- `foundations/modulo-10` — Tema 3: Mensajes que se procesan con efectos exactamente una vez — título agrupa varios conceptos
+- `foundations/modulo-10` — Tema 4: Resiliencia y observabilidad orientadas a objetivos — título agrupa varios conceptos
+- `foundations/modulo-10` — Tema 5: Tiempo, coordinación y acuerdo: Lamport, elección de líder y commit en dos fases — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `foundations/modulo-10` — Tema 6: Latencia y throughput: medir concurrencia sin confundirla con capacidad ilimitada — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `foundations/modulo-11` — Tema 1: Sistemas, arquitectura y sistemas operativos — título agrupa varios conceptos
+- `foundations/modulo-11` — Tema 2: Algoritmos, autómatas, lenguajes y compiladores — título agrupa varios conceptos
+- `foundations/modulo-11` — Tema 3: Bases de datos, almacenes analíticos y minería de datos — título agrupa varios conceptos
+- `foundations/modulo-11` — Tema 4: Inteligencia artificial, aprendizaje automático y visión — título agrupa varios conceptos
+- `foundations/modulo-11` — Tema 5: Gráficos y cómputo científico — título agrupa varios conceptos
+- `foundations/modulo-12` — Tema 1: Matemáticas aplicadas: derivada, integral y modelos — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `foundations/modulo-12` — Tema 2: Circuitos DC y AC: Kirchhoff, Thévenin y Norton — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `foundations/modulo-12` — Tema 3: Electrónica analógica: diodos, transistores y amplificadores — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `foundations/modulo-12` — Tema 4: Electrónica digital: lógica y máquinas de estados — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `foundations/modulo-12` — Tema 5: Microcontroladores: GPIO, ADC, PWM e interrupciones — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `foundations/modulo-12` — Tema 6: Comunicaciones: modulación y detección de errores — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `foundations/modulo-12` — Tema 7: Señales y sistemas: muestreo, Fourier y convolución — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `foundations/modulo-12` — Tema 8: DSP: filtros digitales y compresión — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `foundations/modulo-12` — Tema 9: Instrumentación: calibración, DAQ e incertidumbre — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `foundations/modulo-12` — Tema 10: Control automático: realimentación, PID y estabilidad — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `foundations/modulo-12` — Tema 11: Potencia: conversión, eficiencia y disipación — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `foundations/modulo-12` — Tema 12: PCB: esquemático, ERC, DRC y fabricación — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `foundations/modulo-12` — Tema 13: Sistemas embebidos: RTOS, buses y firmware — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `foundations/modulo-12` — Tema 14: Programación de bajo nivel: C, memoria y depuración — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `foundations/modulo-12` — Tema 15: Electromagnetismo: Faraday y líneas de transmisión — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `foundations/modulo-12` — Tema 16: Gestión profesional: requisitos, riesgos y evidencia — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `foundations/modulo-12` — Tema 17: PLC y control industrial: ciclo de scan e IEC 61131-3 — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `foundations/modulo-13` — Tema 1: Ordenamientos: insertion, merge y quick sort — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `foundations/modulo-13` — Tema 2: Algoritmos codiciosos y árbol de expansión mínima — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `foundations/modulo-13` — Tema 3: Caminos más cortos con Dijkstra — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `foundations/modulo-13` — Tema 4: Búsqueda en cadenas: de la fuerza bruta a KMP — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `foundations/modulo-13` — Tema 5: Problemas intratables: P, NP y heurísticas — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `foundations/modulo-14` — Tema 1: Decorator: agregar comportamiento sin heredar — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `foundations/modulo-14` — Tema 2: State: un objeto que cambia de comportamiento según su estado — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `foundations/modulo-14` — Tema 3: Template Method: un algoritmo fijo con pasos variables — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `foundations/modulo-14` — Tema 4: Chain of Responsibility: una cadena de validadores — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `foundations/modulo-14` — Tema 5: Mediator: coordinar objetos sin que se conozcan — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `foundations/modulo-14` — Tema 6: Memento: guardar y restaurar estado para deshacer — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `foundations/modulo-14` — Tema 7: Visitor: operaciones nuevas sin tocar las clases — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `foundations/modulo-14` — Tema 8: Flyweight: compartir estado para ahorrar memoria — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `foundations/modulo-15` — Tema 1: Nombres que revelan intención y funciones pequeñas — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `foundations/modulo-15` — Tema 2: Comentarios honestos y excepciones en lugar de códigos de error — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `foundations/modulo-15` — Tema 3: Objetos frente a estructuras de datos y la ley de Demeter — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `foundations/modulo-15` — Tema 4: Pruebas limpias: F.I.R.S.T. y un concepto por prueba — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `foundations/modulo-2` — Tema 2: Pilas, colas y abstracciones de comportamiento — título agrupa varios conceptos
+- `foundations/modulo-2` — Tema 3: Búsqueda, precondiciones y demostración de corrección — título agrupa varios conceptos
+- `foundations/modulo-2` — Tema 4: Complejidad, medición, ordenamiento y recursión — título agrupa varios conceptos
+- `foundations/modulo-2` — Tema 5: Árboles y árboles binarios de búsqueda (BST) — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `foundations/modulo-2` — Tema 6: Tablas hash — búsqueda en tiempo constante — lista conceptos clave sin mapa interno verificable
+- `foundations/modulo-2` — Tema 7: Grafos y recorridos BFS/DFS — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `foundations/modulo-2` — Tema 8: Programación dinámica — resolver una vez, recordar el resultado — lista conceptos clave sin mapa interno verificable
+- `foundations/modulo-3` — Tema 1: De una URL al servidor: red, DNS, IP y puertos — título agrupa varios conceptos
+- `foundations/modulo-3` — Tema 3: HTML semántico, formularios y el DOM — título agrupa varios conceptos
+- `foundations/modulo-3` — Tema 4: CSS, layout responsive y accesibilidad verificable — título agrupa varios conceptos
+- `foundations/modulo-4` — Tema 2: SQL para definir, escribir, consultar y relacionar — título agrupa varios conceptos
+- `foundations/modulo-4` — Tema 3: Índices, restricciones y planes de consulta — título agrupa varios conceptos
+- `foundations/modulo-4` — Tema 4: Transacciones, concurrencia y elección SQL/NoSQL — título agrupa varios conceptos
+- `foundations/modulo-4` — Tema 5: SQL avanzado: subconsultas, vistas, triggers y funciones de ventana — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `foundations/modulo-4` — Tema 6: Procedimientos almacenados, funciones y cursores con PL/pgSQL — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `foundations/modulo-4` — Tema 7: De SQL a Excel: reportes con tablas y fórmulas vivas — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `foundations/modulo-5` — Tema 1: Depurar con evidencia, no con cambios aleatorios — título agrupa varios conceptos
+- `foundations/modulo-5` — Tema 2: Pruebas con propósito y niveles adecuados — título agrupa varios conceptos
+- `foundations/modulo-5` — Tema 3: Git como historial de decisiones y colaboración — título agrupa varios conceptos
+- `foundations/modulo-6` — Tema 1: Activos, amenazas, riesgos y límites de confianza — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `foundations/modulo-6` — Tema 2: Identidad, contraseñas, sesiones y autorización — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `foundations/modulo-6` — Tema 3: Criptografía aplicada, TLS, claves y secretos — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `foundations/modulo-6` — Tema 4: Validación, vulnerabilidades web, privacidad y respuesta — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `foundations/modulo-6` — Tema 5: Ingeniería social, phishing y respuesta: analizar el correo, no solo mirarlo — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `foundations/modulo-7` — Tema 1: Requisitos, stakeholders y criterios verificables — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `foundations/modulo-7` — Tema 2: Arquitectura guiada por atributos de calidad — lista conceptos clave sin mapa interno verificable
+- `foundations/modulo-7` — Tema 3: Diseño modular, principios, patrones y refactoring — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `foundations/modulo-7` — Tema 4: Decisiones, documentación, deuda y evolución — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `foundations/modulo-7` — Tema 5: Records de C#: igualdad por valor no implica inmutabilidad profunda — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `foundations/modulo-8` — Tema 1: El sistema operativo como administrador y frontera — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `foundations/modulo-8` — Tema 2: Memoria y concurrencia sin magia — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `foundations/modulo-8` — Tema 3: Linux como entorno observable — lista conceptos clave sin mapa interno verificable
+- `foundations/modulo-8` — Tema 4: Contenedores: aislamiento reproducible — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `foundations/modulo-8` — Tema 5: Problemas clásicos de concurrencia: filósofos y lectores-escritores — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `foundations/modulo-9` — Tema 1: Lógica para especificar antes de programar — lista conceptos clave sin mapa interno verificable
+- `foundations/modulo-9` — Tema 2: Conjuntos, relaciones, funciones e inducción — lista conceptos clave sin mapa interno verificable
+- `foundations/modulo-9` — Tema 3: Conteo, grafos y estructuras conectadas — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `foundations/modulo-9` — Tema 4: Probabilidad y evidencia para decisiones técnicas — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `ios/modulo-0` — Tema 1: Optionals y unwrapping seguro — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `ios/modulo-0` — Tema 2: struct vs class — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `ios/modulo-0` — Tema 3: Protocolos y enums con valores asociados — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `ios/modulo-0` — Tema 4: Closures, colecciones y genéricos con propósito — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `ios/modulo-1` — Tema 1: El protocolo View y composición — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `ios/modulo-1` — Tema 2: Orden de modificadores y layout con stacks — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `ios/modulo-1` — Tema 3: Previews, LazyVGrid/ScrollView y property wrappers — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `ios/modulo-10` — Tema 1: Instruments — lista conceptos clave sin mapa interno verificable
+- `ios/modulo-10` — Tema 2: Accesibilidad con VoiceOver — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `ios/modulo-10` — Tema 3: Human Interface Guidelines, Dynamic Type e interop con UIKit — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `ios/modulo-10` — Tema 4: UIKit desde cero para mantener aplicaciones reales — lista conceptos clave sin mapa interno verificable
+- `ios/modulo-11` — Tema 1: Certificados y provisioning profiles — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `ios/modulo-11` — Tema 2: Archivar, subir y TestFlight — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `ios/modulo-11` — Tema 3: Metadata y versionado — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `ios/modulo-12` — Tema 1: Arquitectura del proyecto integrador — lista conceptos clave sin mapa interno verificable
+- `ios/modulo-12` — Tema 2: Sincronización entre red y persistencia local — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `ios/modulo-12` — Tema 3: Cierre del track — lista conceptos clave sin mapa interno verificable
+- `ios/modulo-13` — Tema 1: El sandbox reduce superficie, pero no valida intenciones — lista conceptos clave sin mapa interno verificable
+- `ios/modulo-13` — Tema 2: Proteger datos es controlar todas sus copias — lista conceptos clave sin mapa interno verificable
+- `ios/modulo-13` — Tema 3: Offline-first es un protocolo, no una caché — lista conceptos clave sin mapa interno verificable
+- `ios/modulo-13` — Tema 4: Operar significa detectar, limitar y aprender del fallo — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `ios/modulo-13` — Tema 5: Keychain — guardar secretos de forma segura — lista conceptos clave sin mapa interno verificable
+- `ios/modulo-13` — Tema 6: Permisos y privacidad — pedir acceso con criterio — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `ios/modulo-13` — Tema 7: Notificaciones push con APNs — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `ios/modulo-14` — Tema 1: Swift Testing y pruebas asíncronas — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `ios/modulo-14` — Tema 2: ViewInspector con criterio — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `ios/modulo-14` — Tema 3: Combine avanzado — lista conceptos clave sin mapa interno verificable
+- `ios/modulo-14` — Tema 4: Animaciones y matchedGeometryEffect — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `ios/modulo-14` — Tema 5: UIViewRepresentable — lista conceptos clave sin mapa interno verificable
+- `ios/modulo-14` — Tema 6: UIViewControllerRepresentable y Coordinator — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `ios/modulo-14` — Tema 7: Core ML y Vision — inferencia en el dispositivo — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `ios/modulo-2` — Tema 1: @State y @Binding — título agrupa varios conceptos
+- `ios/modulo-2` — Tema 2: @Observable — lista conceptos clave sin mapa interno verificable
+- `ios/modulo-2` — Tema 3: @Environment y identidad vs valor — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `ios/modulo-3` — Tema 1: NavigationStack y NavigationPath — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `ios/modulo-3` — Tema 2: Sheets, full screen covers y TabView — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `ios/modulo-3` — Tema 3: Deep linking y controles de formulario — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `ios/modulo-4` — Tema 1: async/await y Task — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `ios/modulo-4` — Tema 2: Actors para estado mutable seguro — lista conceptos clave sin mapa interno verificable
+- `ios/modulo-4` — Tema 3: TaskGroup y MainActor — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `ios/modulo-4` — Tema 4: Cancelación cooperativa: distinguir una tarea cancelada de un fallo de red — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `ios/modulo-5` — Tema 1: URLSession con async/await y Codable — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `ios/modulo-5` — Tema 2: Errores tipados — lista conceptos clave sin mapa interno verificable
+- `ios/modulo-5` — Tema 3: Reintentos y cancelación — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `ios/modulo-6` — Tema 1: @Model y ModelContainer — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `ios/modulo-6` — Tema 2: @Query y operaciones de escritura — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `ios/modulo-6` — Tema 3: Migraciones y SwiftData vs Core Data — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `ios/modulo-7` — Tema 1: Publishers y Subscribers — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `ios/modulo-7` — Tema 2: Operadores: debounce y combineLatest — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `ios/modulo-7` — Tema 3: Combine vs async/await — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `ios/modulo-8` — Tema 1: De una vista "gorda" a MVVM — lista conceptos clave sin mapa interno verificable
+- `ios/modulo-8` — Tema 2: Capas del proyecto e inyección por inicializador — lista conceptos clave sin mapa interno verificable
+- `ios/modulo-8` — Tema 3: Cuándo MVVM no alcanza — lista conceptos clave sin mapa interno verificable
+- `ios/modulo-9` — Tema 1: XCTest clásico y Swift Testing — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `ios/modulo-9` — Tema 2: Testing de código async — lista conceptos clave sin mapa interno verificable
+- `ios/modulo-9` — Tema 3: UI Tests con XCUITest — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-0` — Tema 1: Variables — `const`, `let` y `var` — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-0` — Tema 2: Tipos primitivos y `typeof` — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `javascript/modulo-0` — Tema 4: Template literals y mensajes seguros — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `javascript/modulo-0` — Tema 5: JavaScript en navegador y Node.js — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `javascript/modulo-1` — Tema 1: Tres formas de escribir una función — lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-1` — Tema 2: Parámetros por defecto y rest/spread — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-1` — Tema 3: Funciones de orden superior — lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-1` — Tema 4: Control de flujo — if, switch y loops — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-1` — Tema 5: IIFE y el objeto arguments — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-1` — Tema 6: Desestructuración, valores por defecto y rest — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-10` — Tema 1: Debounce y throttle — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-10` — Tema 2: Memoización — lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-10` — Tema 3: Web Workers para trabajo pesado — lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-10` — Tema 4: Profiling con DevTools — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-10` — Tema 5: Core Web Vitals — lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-11` — Tema 1: Tipos básicos, interfaces y type aliases — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-11` — Tema 2: Generics — lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-11` — Tema 3: Narrowing y union types — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-11` — Tema 4: tsconfig esencial y modo strict — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-11` — Tema 5: TypeScript avanzado: sobrecargas, tipos mapeados, condicionales y satisfies — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-11` — Tema 6: Decoradores estándar de TypeScript 5 — lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-12` — Tema 1: Routing manual con History API — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-12` — Tema 2: Estado de aplicación con un store propio — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-12` — Tema 3: Consumo de una API real con manejo de errores — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-12` — Tema 4: Conectando todo — el patrón completo de una SPA — lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-13` — Tema 1: Datos no confiables y seguridad en el navegador — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-13` — Tema 2: Memoria administrada no significa memoria infinita — lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-13` — Tema 3: Errores útiles sin convertir usuarios en sensores involuntarios — lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-13` — Tema 4: Compatibilidad, idioma y tiempo son requisitos de datos — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-14` — Tema 1: TypeScript avanzado — lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-14` — Tema 2: Workers y ejecución fuera del hilo principal — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-14` — Tema 3: Bundlers y optimización — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-14` — Tema 4: Accesibilidad web — lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-14` — Tema 5: WebAssembly con Rust o C — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-14` — Tema 6: Web3 y machine learning en navegador — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-14` — Tema 7: Geolocalización, permisos y precisión GPS — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-14` — Tema 8: sessionStorage, cookies e IndexedDB — lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-14` — Tema 9: Expresiones regulares avanzadas y Unicode — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-14` — Tema 10: Patrones Factory, Strategy, Observer y Pub/Sub — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-14` — Tema 11: Service Workers, PWA y estrategias de caché — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-14` — Tema 12: WebSocket y comunicación en tiempo real — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-14` — Tema 13: Typed Arrays, ArrayBuffer y DataView — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-14` — Tema 14: ECMAScript moderno, Temporal e iterator helpers — lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-2` — Tema 1: Scope léxico y closures — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-2` — Tema 2: Hoisting y Temporal Dead Zone — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-2` — Tema 3: Call stack y contexto de ejecución — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-2` — Tema 4: this según el modo de invocación — lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-2` — Tema 5: Module pattern y factory functions — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-2` — Tema 6: Execution Context, Scope Chain y Lexical Environment — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-3` — Tema 1: Prototype chain y Object.create — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-3` — Tema 2: class, extends y super — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-3` — Tema 3: Getters, setters y propiedades computadas — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-3` — Tema 4: Encapsulación con campos privados (#campo) — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-3` — Tema 5: Symbol y objetos iterables propios — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-4` — Tema 1: map, filter, reduce, find, some/every — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-4` — Tema 2: Set y Map frente a Array y Object — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-4` — Tema 3: Inmutabilidad y actualización de estructuras anidadas — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-4` — Tema 4: WeakMap y WeakSet — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-4` — Tema 5: Métodos inmutables modernos — lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-5` — Tema 1: El Event Loop — lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-5` — Tema 2: Promesas — lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-5` — Tema 3: Promise.all, allSettled, race y any — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-5` — Tema 4: El motor V8 — JIT y AST — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-5` — Tema 5: Stack, Heap y Garbage Collection — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-6` — Tema 1: async/await sobre promesas — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-6` — Tema 2: try/catch en flujos asíncronos — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-6` — Tema 3: fetch API y AbortController — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-6` — Tema 4: Reintentos y timeouts manuales — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-6` — Tema 5: Generadores — function*, yield y yield* — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-6` — Tema 6: Proxies y Reflect — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-7` — Tema 1: ESM frente a CommonJS — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-7` — Tema 2: Tree-shaking y code-splitting — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-7` — Tema 3: Vite y esbuild — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-7` — Tema 4: package.json — exports, type y scripts — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-7` — Tema 5: import() dinámico e import.meta — lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-7` — Tema 6: Webpack, Rollup y Babel/SWC — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-8` — Tema 1: Selección y manipulación del DOM — título agrupa varios conceptos
+- `javascript/modulo-8` — Tema 2: Delegación de eventos — lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-8` — Tema 3: Formularios y validación nativa — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-8` — Tema 4: Web APIs — localStorage e IntersectionObserver — lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-8` — Tema 5: ResizeObserver y MutationObserver — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-8` — Tema 6: requestAnimationFrame y requestIdleCallback — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-8` — Tema 7: Formularios accesibles: validar, anunciar y conservar la entrada — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `javascript/modulo-9` — Tema 1: Unit testing con Vitest — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-9` — Tema 2: Mocks, spies y fakes — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-9` — Tema 3: Mockear fetch — lista conceptos clave sin mapa interno verificable
+- `javascript/modulo-9` — Tema 4: ESLint, Prettier y cobertura de código — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-0` — Tema 1: Null safety real — lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-0` — Tema 2: data class y funciones de extensión — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-0` — Tema 3: when como expresión — lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-0` — Tema 4: Destructuring declarations y rangos — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-1` — Tema 1: Funciones de orden superior — lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-1` — Tema 2: Scope functions — lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-1` — Tema 3: Sealed classes y colecciones funcionales — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-1` — Tema 4: Lambdas con receptor y builders tipo DSL — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-10` — Tema 1: Pipeline Gradle multiplataforma en CI — lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-10` — Tema 2: Fastlane — lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-10` — Tema 3: Versionado compartido — lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-11` — Tema 1: Arquitectura del proyecto integrador — lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-11` — Tema 2: Sincronización de datos remotos con caché local — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-11` — Tema 3: Cierre del track — la promesa realista de KMP — lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-12` — Tema 1: La mejor frontera compartida es deliberadamente pequeña — lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-12` — Tema 2: Garbage collection no cierra sockets ni rompe ciclos externos — lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-12` — Tema 3: Un artefacto compatible necesita más que el mismo número de versión — lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-12` — Tema 4: Un fallo compartido necesita símbolos y contexto de ambas plataformas — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-13` — Tema 1: Kotlin/Native — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-13` — Tema 2: Interop con C — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-13` — Tema 3: Swift Export — lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-13` — Tema 4: XCFramework y API pública — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-13` — Tema 5: Publicación en Maven Central — lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-13` — Tema 6: Compatibilidad binaria y CI multi-target — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-2` — Tema 1: suspend functions y concurrencia estructurada — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-2` — Tema 2: Flow, StateFlow y SharedFlow — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-2` — Tema 3: Manejo de errores y exclusión mutua — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-2` — Tema 4: Dispatchers y withContext: en qué hilo corre tu código — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-3` — Tema 1: Source sets — lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-3` — Tema 2: expect/actual — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-3` — Tema 3: Gradle multiplataforma y targets disponibles — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-3` — Tema 4: Jerarquía de source sets intermedios — lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-4` — Tema 1: Modelos de dominio y casos de uso — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-4` — Tema 2: Repositorios con interfaz común — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-4` — Tema 3: Inyección de dependencias multiplataforma con Koin — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-4` — Tema 4: Modelado de errores de dominio con un tipo Result explícito — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-4` — Tema 5: Tiempo determinista: probar vencimientos sin dormir ni consultar el reloj global — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `kotlin-multiplatform/modulo-5` — Tema 1: Ktor Client multiplataforma — lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-5` — Tema 2: Manejo de errores de red con un tipo explícito — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-5` — Tema 3: Interceptores y autenticación — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-5` — Tema 4: Reintentos con backoff exponencial — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-5` — Tema 5: kotlinx.serialization — JSON compartido entre plataformas — lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-6` — Tema 1: Esquemas SQLDelight y queries tipadas — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-6` — Tema 2: Drivers por plataforma — lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-6` — Tema 3: Migraciones de esquema — lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-6` — Tema 4: Transacciones: atomicidad en operaciones multi-tabla — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-7` — Tema 1: Compose Multiplatform vs Jetpack Compose — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-7` — Tema 2: Estado y recomposición — mutableStateOf y por qué la UI se redibuja — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-7` — Tema 3: Theming y navegación compartidos — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-7` — Tema 4: Limitaciones en iOS y otros targets — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-8` — Tema 1: El framework generado para iOS — lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-8` — Tema 2: Mapeo de tipos Kotlin ↔ Swift — lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-8` — Tema 3: Coroutines desde Swift, y distribución del framework — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-9` — Tema 1: kotlin.test en commonTest — lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-9` — Tema 2: Fakes en vez de mocks — lista conceptos clave sin mapa interno verificable
+- `kotlin-multiplatform/modulo-9` — Tema 3: runTest para coroutines — lista conceptos clave sin mapa interno verificable
+- `microservices/modulo-0` — Tema 1: Proceso, host, puerto, socket y DNS · Fundamentos · 70 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `microservices/modulo-0` — Tema 2: Latencia, deadline y timeouts por fase · Aplicación · 80 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `microservices/modulo-0` — Tema 4: Relojes, causalidad, concurrencia y orden · Integración · 80 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `microservices/modulo-0` — Tema 5: Serialización, evolución y falacias distribuidas · Experto · 100 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `microservices/modulo-1` — Tema 1: Monolito, monolito modular, servicio y microservicio · Fundamentos · 75 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `microservices/modulo-1` — Tema 2: Cohesión, acoplamiento y API del módulo · Aplicación · 90 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `microservices/modulo-1` — Tema 3: Arquitectura hexagonal — dominio, puertos y adaptadores · Aplicación · 95 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `microservices/modulo-1` — Tema 4: Dependencias, ciclos y costo de coordinación · Integración · 80 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `microservices/modulo-1` — Tema 5: Fitness functions con ArchUnit · Integración · 110 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `microservices/modulo-1` — Tema 6: Evidencia y ADR para decidir una extracción · Experto · 90 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `node/modulo-0` — Tema 3: process, global y módulos core · Básico · 75 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `node/modulo-0` — Tema 4: Event-driven architecture y non-blocking I/O · Intermedio · 75 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `node/modulo-1` — Tema 1: package.json y semver · Básico · 50 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `node/modulo-1` — Tema 2: Lockfiles e instalación reproducible · Básico · 50 min — lista conceptos clave sin mapa interno verificable
+- `node/modulo-1` — Tema 3: Workspaces — monorepos con npm/pnpm · Intermedio · 60 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `node/modulo-1` — Tema 4: Scripts de ciclo de vida · Intermedio · 50 min — lista conceptos clave sin mapa interno verificable
+- `node/modulo-1` — Tema 5: Publicar y versionar un paquete npm (público o privado) · Intermedio · 60 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `node/modulo-1` — Tema 6: ESM y CommonJS en el mismo proyecto · Intermedio · 60 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `node/modulo-10` — Tema 1: Cabeceras seguras con helmet · Intermedio · 55 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `node/modulo-10` — Tema 2: Rate limiting · Intermedio · 55 min — lista conceptos clave sin mapa interno verificable
+- `node/modulo-10` — Tema 3: Inyección SQL y sanitización contra XSS · Intermedio · 65 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `node/modulo-10` — Tema 4: OWASP API Security Top 10 y auditoría de dependencias · Intermedio · 65 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `node/modulo-10` — Tema 5: CVE, CWE y npm audit en el pipeline · Avanzado · 70 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `node/modulo-11` — Tema 1: Dockerfile multi-stage para Node · Intermedio · 75 min — lista conceptos clave sin mapa interno verificable
+- `node/modulo-11` — Tema 2: Variables de entorno por ambiente y healthchecks · Intermedio · 70 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `node/modulo-11` — Tema 3: PM2, contenedores y zero-downtime deploys · Avanzado · 85 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `node/modulo-11` — Tema 4: Nginx como reverse proxy y serverless · Avanzado · 85 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `node/modulo-12` — Tema 4: Próximos pasos — microservicios, colas de mensajes y TypeScript · Intermedio · 75 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `node/modulo-12` — Tema 5: Posiciones espaciales y Socket.IO con orden recuperable · Avanzado · 150 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `node/modulo-12` — Tema 6: Archivos y notificaciones push sin convertirlos en autorización · Avanzado · 150 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `node/modulo-13` — Tema 4: Webhooks verificables y recuperación por reconciliación · Avanzado · 100 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `node/modulo-14` — Tema 2: GraphQL avanzado y Federation · Avanzado · 105 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `node/modulo-14` — Tema 3: Microservicios, Kafka, RabbitMQ y sagas · Avanzado · 105 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `node/modulo-14` — Tema 5: Docker productivo con Node · Avanzado · 90 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `node/modulo-14` — Tema 6: CI/CD y promoción de artefactos · Avanzado · 105 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `node/modulo-2` — Tema 1: fs/promises frente a callbacks · Intermedio · 45 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `node/modulo-2` — Tema 2: Streams básicos: Readable, Writable y Transform · Intermedio · 60 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `node/modulo-2` — Tema 3: Backpressure: write() y el evento drain · Avanzado · 55 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `node/modulo-2` — Tema 4: pipeline() para componer streams de forma segura · Avanzado · 60 min — lista conceptos clave sin mapa interno verificable
+- `node/modulo-3` — Tema 1: El modelo request/response · Básico · 60 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `node/modulo-3` — Tema 3: Parsing de body y headers · Intermedio · 75 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `node/modulo-3` — Tema 4: Códigos de estado y content negotiation · Intermedio · 75 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `node/modulo-3` — Tema 5: Paginación por cursor y límites de entrada comprobables · Intermedio · 60 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `node/modulo-4` — Tema 1: Middleware — orden de ejecución y next() · Básico · 75 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `node/modulo-4` — Tema 2: Routers anidados · Básico · 75 min — lista conceptos clave sin mapa interno verificable
+- `node/modulo-4` — Tema 3: Validación de entrada con Zod y manejo centralizado de errores · Intermedio · 75 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `node/modulo-4` — Tema 4: Express frente a Fastify · Intermedio · 75 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `node/modulo-4` — Tema 5: WebSocket — comunicación en tiempo real bidireccional · Intermedio · 75 min — lista conceptos clave sin mapa interno verificable
+- `node/modulo-4` — Tema 6: Subida de archivos — multipart y validación segura · Intermedio · 75 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `node/modulo-5` — Tema 1: PostgreSQL desde Node con el driver puro · Básico · 90 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `node/modulo-5` — Tema 2: Prisma — schema, migraciones y queries tipadas · Intermedio · 90 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `node/modulo-5` — Tema 3: Pool de conexiones y transacciones · Intermedio · 90 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `node/modulo-5` — Tema 4: MongoDB con Mongoose y otras alternativas de ORM · Intermedio · 75 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `node/modulo-6` — Tema 2: JWT — access y refresh tokens · Intermedio · 90 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `node/modulo-6` — Tema 3: Middleware de autenticación y control de roles · Intermedio · 90 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `node/modulo-6` — Tema 4: OAuth 2.0 y Passport.js · Intermedio · 75 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `node/modulo-6` — Tema 5: Sesiones, cookies seguras y protección CSRF · Intermedio · 105 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `node/modulo-6` — Tema 6: Flujo de login completo — de `/api/auth/login` a una ruta protegida · Intermedio · 105 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `node/modulo-7` — Tema 1: Vitest y Supertest — pruebas de integración HTTP reales · Intermedio · 50 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `node/modulo-7` — Tema 2: Testcontainers — bases de datos de prueba reales y efímeras · Intermedio · 55 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `node/modulo-7` — Tema 3: Mocks de servicios externos y CI · Intermedio · 50 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `node/modulo-7` — Tema 4: Alternativas de testing y debugging · Intermedio · 45 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `node/modulo-7` — Tema 5: node:test — test runner nativo sin dependencias · Intermedio · 40 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `node/modulo-7` — Tema 6: TDD práctico: rojo, verde y refactor con node:test · Intermedio · 60 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `node/modulo-8` — Tema 1: Worker Threads para trabajo CPU-bound · Intermedio · 45 min — lista conceptos clave sin mapa interno verificable
+- `node/modulo-8` — Tema 2: Cluster module y balanceo entre procesos · Intermedio · 45 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `node/modulo-8` — Tema 3: Colas de trabajo con BullMQ · Intermedio · 50 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `node/modulo-8` — Tema 4: PM2, memory leaks y heap snapshots · Intermedio · 50 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `node/modulo-8` — Tema 5: Redis para caché, idempotencia y Pub/Sub · Intermedio · 50 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `node/modulo-9` — Tema 1: Logging estructurado · Intermedio · 45 min — lista conceptos clave sin mapa interno verificable
+- `node/modulo-9` — Tema 2: Correlation ID por request · Intermedio · 45 min — lista conceptos clave sin mapa interno verificable
+- `node/modulo-9` — Tema 3: Excepciones no capturadas y graceful shutdown · Avanzado · 60 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `node/modulo-9` — Tema 4: REST, GraphQL y gRPC · Intermedio · 55 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `node/modulo-9` — Tema 5: Métricas Prometheus y trazas distribuidas con OpenTelemetry · Avanzado · 75 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `react/modulo-0` — Tema 1: JSX es azúcar sintáctica sobre createElement — lista conceptos clave sin mapa interno verificable
+- `react/modulo-0` — Tema 2: Listas con key estable — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `react/modulo-0` — Tema 3: Composición sobre herencia, y Fragments — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `react/modulo-0` — Tema 4: Renderizado condicional y estilos — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `react/modulo-1` — Tema 1: useState y actualizaciones funcionales — título agrupa varios conceptos
+- `react/modulo-1` — Tema 2: Render frente a commit — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `react/modulo-1` — Tema 3: Batching de actualizaciones — lista conceptos clave sin mapa interno verificable
+- `react/modulo-10` — Tema 1: Server Components por defecto — lista conceptos clave sin mapa interno verificable
+- `react/modulo-10` — Tema 2: use client para interactividad — lista conceptos clave sin mapa interno verificable
+- `react/modulo-10` — Tema 3: Streaming con Suspense en el servidor — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `react/modulo-11` — Tema 1: Tipado de props y children — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `react/modulo-11` — Tema 2: Hooks genéricos — lista conceptos clave sin mapa interno verificable
+- `react/modulo-11` — Tema 3: Eventos tipados y componentes polimórficos — título agrupa varios conceptos
+- `react/modulo-12` — Tema 1: Estructura del proyecto integrador — lista conceptos clave sin mapa interno verificable
+- `react/modulo-12` — Tema 2: Integrando rutas, TanStack Query y Zustand — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `react/modulo-12` — Tema 3: useTareas — hook dedicado con TanStack Query — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `react/modulo-13` — Tema 1: Diseñar estados de carga, error y recuperación — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `react/modulo-13` — Tema 2: La composición visual debe conservar semántica y foco — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `react/modulo-13` — Tema 3: Cliente y servidor forman una sola frontera de seguridad — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `react/modulo-13` — Tema 4: Hidratación determinista, idioma y releases medibles — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `react/modulo-14` — Tema 1: Server Components y streaming — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `react/modulo-14` — Tema 2: Server Actions y seguridad — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `react/modulo-14` — Tema 3: Next.js ISR, Metadata y Middleware — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `react/modulo-14` — Tema 4: Optimización de imágenes y fuentes — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `react/modulo-14` — Tema 5: Accesibilidad y React Aria — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `react/modulo-14` — Tema 6: i18n, pluralización y RTL — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `react/modulo-2` — Tema 1: useEffect — dependencias y limpieza — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `react/modulo-2` — Tema 2: useRef — valores mutables sin re-render — lista conceptos clave sin mapa interno verificable
+- `react/modulo-2` — Tema 3: useMemo y useCallback con criterio — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `react/modulo-2` — Tema 4: Reglas de los hooks, useReducer y useImperativeHandle — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `react/modulo-2` — Tema 5: Error Boundaries — contener errores de render sin romper toda la app — lista conceptos clave sin mapa interno verificable
+- `react/modulo-2` — Tema 6: Efectos cancelables: impedir que una respuesta antigua sobrescriba la selección actual — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `react/modulo-3` — Tema 1: React Hook Form y el problema del re-render por tecla — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `react/modulo-3` — Tema 2: Validación con zod y formularios multi-paso — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `react/modulo-4` — Tema 1: createContext y useContext — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `react/modulo-4` — Tema 2: Cuándo Context es suficiente y cuándo no — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `react/modulo-4` — Tema 3: Componentes compuestos, render props y hooks personalizados — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `react/modulo-5` — Tema 1: Rutas anidadas y layouts compartidos — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `react/modulo-5` — Tema 2: Loaders — datos antes de renderizar — lista conceptos clave sin mapa interno verificable
+- `react/modulo-5` — Tema 3: Rutas protegidas y code-splitting por ruta — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `react/modulo-6` — Tema 1: useQuery y el problema que resuelve — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `react/modulo-6` — Tema 2: Mutations e invalidación — lista conceptos clave sin mapa interno verificable
+- `react/modulo-7` — Tema 1: Zustand — stores mínimos sin boilerplate — lista conceptos clave sin mapa interno verificable
+- `react/modulo-7` — Tema 2: Redux Toolkit — slices y ceremonia — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `react/modulo-7` — Tema 3: Estado de servidor vs estado de cliente, y cuándo no necesitas nada de esto — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `react/modulo-7` — Tema 4: Jotai, Recoil y XState como alternativas — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `react/modulo-8` — Tema 1: Queries por rol, no por clase CSS — lista conceptos clave sin mapa interno verificable
+- `react/modulo-8` — Tema 2: Mock Service Worker (MSW) — lista conceptos clave sin mapa interno verificable
+- `react/modulo-9` — Tema 1: Medir antes de optimizar — lista conceptos clave sin mapa interno verificable
+- `react/modulo-9` — Tema 2: React.memo con criterio — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `react/modulo-9` — Tema 3: Virtualización y code-splitting — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `react/modulo-9` — Tema 4: useTransition, useDeferredValue y Fiber — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `react/modulo-9` — Tema 5: Suspense y React.lazy — carga diferida del lado cliente — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `rutaflow/modulo-0` — Tema 1: El proceso logístico como sistema — lista conceptos clave sin mapa interno verificable
+- `rutaflow/modulo-0` — Tema 2: Entorno reproducible en Windows, macOS y Linux — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `rutaflow/modulo-0` — Tema 3: Arquitectura, privacidad y amenazas — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `rutaflow/modulo-1` — Tema 1: Modelo relacional e historial — lista conceptos clave sin mapa interno verificable
+- `rutaflow/modulo-1` — Tema 2: Geografía con precisión útil — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `rutaflow/modulo-1` — Tema 3: Ledger de doble partida — lista conceptos clave sin mapa interno verificable
+- `rutaflow/modulo-2` — Tema 1: Contratos HTTP y autorización — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `rutaflow/modulo-2` — Tema 2: Casos de uso y transacciones — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `rutaflow/modulo-2` — Tema 3: Outbox, colas y observabilidad — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `rutaflow/modulo-2` — Tema 4: Evolución de contratos: aceptar una versión nueva sin romper clientes anteriores — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `rutaflow/modulo-3` — Tema 1: Estados explícitos y arquitectura de interfaz — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `rutaflow/modulo-3` — Tema 2: Mapas operativos — lista conceptos clave sin mapa interno verificable
+- `rutaflow/modulo-3` — Tema 3: Accesibilidad, seguridad y rendimiento — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `rutaflow/modulo-4` — Tema 1: Arquitectura Flutter por capacidades — lista conceptos clave sin mapa interno verificable
+- `rutaflow/modulo-4` — Tema 2: GPS, permisos y batería — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `rutaflow/modulo-4` — Tema 3: Offline-first y prueba de entrega — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `rutaflow/modulo-5` — Tema 1: Grafos y problema de rutas — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `rutaflow/modulo-5` — Tema 2: Geocoding y map matching — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `rutaflow/modulo-5` — Tema 3: Streaming y ETA con incertidumbre — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `rutaflow/modulo-5` — Tema 4: Socket.IO extremo a extremo: un gateway compatible con el cliente móvil — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `rutaflow/modulo-5` — Tema 5: OSRM: del contrato de coordenadas a una respuesta de ruta verificable — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `rutaflow/modulo-6` — Tema 1: Cotización y facturación reproducible — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `rutaflow/modulo-6` — Tema 2: Recaudo, liquidación y conciliación — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `rutaflow/modulo-6` — Tema 3: Fraude responsable — lista conceptos clave sin mapa interno verificable
+- `rutaflow/modulo-6` — Tema 4: Tokenización de pagos: un identificador opaco no sustituye autorización ni confirmación — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `rutaflow/modulo-7` — Tema 1: Infraestructura y entrega segura — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `rutaflow/modulo-7` — Tema 2: SLO y respuesta a incidentes — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `rutaflow/modulo-7` — Tema 3: Pruebas end-to-end del sistema completo (app ↔ backend) — lista conceptos clave sin mapa interno verificable
+- `rutaflow/modulo-7` — Tema 4: Continuidad, costes y proyecto final — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+
+## Revisados
+
+- `angular/modulo-0` — Tema 1: El CLI ya no genera NgModules — standalone por defecto desde Angular 17
+- `angular/modulo-0` — Tema 2: Interpolación y property binding — property binding vs atributo HTML
+- `angular/modulo-0` — Tema 3: TypeScript a fondo — unknown, any, never y utility types — unknown exige narrowing; never exhaustivo
+- `angular/modulo-0` — Tema 4: Compilador AOT frente a JIT — ng build real con error de plantilla AOT
+- `angular/modulo-1` — Tema 1: input()/output() basados en signals — input()/output() signal-based
+- `angular/modulo-1` — Tema 2: Control de flujo nativo — @if, @for, @switch — @if/@for/@switch nativo (no *ngIf/*ngFor)
+- `angular/modulo-1` — Tema 3: Content projection con ng-content — ng-content
+- `angular/modulo-1` — Tema 4: Ciclo de vida completo de un componente — OnInit/OnDestroy + hooks basados en función
+- `angular/modulo-1` — Tema 5: Consultas signal y trabajo posterior al render — viewChild() signal query; afterNextRender()
+- `angular/modulo-1` — Tema 6: Directivas y pipes personalizados — Directive con input()/effect()
+- `angular/modulo-1` — Tema 7: Pipes puros e impuros, AsyncPipe y signals — AsyncPipe; pipe puro vs impuro
+- `angular/modulo-10` — Tema 1: TestBed y componentes standalone — TestBed.configureTestingModule standalone
+- `angular/modulo-10` — Tema 2: Angular Testing Library — @testing-library/angular
+- `angular/modulo-10` — Tema 3: Mockear HttpClient y el nuevo builder basado en Vitest — HttpTestingController.expectOne/flush; @angular/build:unit-test (experimental)
+- `angular/modulo-10` — Tema 4: Angular Material y CDK: componentes accesibles probados con harnesses — TestbedHarnessEnvironment
+- `angular/modulo-11` — Tema 1: Server-Side Rendering — renderApplication(bootstrap, options); @angular/platform-server
+- `angular/modulo-11` — Tema 2: Hidratación — contenido no-determinista rompe hidratación
+- `angular/modulo-11` — Tema 3: `@defer` — estados reales, incluyendo error — @error block; DeferBlockState forzado en test
+- `angular/modulo-11` — Tema 4: Zoneless — provideZonelessChangeDetection(); fixture.whenStable()
+- `angular/modulo-12` — Tema 1: Reconocer la versión y la arquitectura de un proyecto — detectar NgModules vs standalone
+- `angular/modulo-12` — Tema 2: Leer la guía de actualización antes de modificar archivos — ng update; guía de migración oficial
+- `angular/modulo-12` — Tema 3: Migrar una versión mayor a la vez y verificar cada salto — una versión mayor a la vez
+- `angular/modulo-13` — Tema 1: Estructura del proyecto integrador — estructura por feature
+- `angular/modulo-13` — Tema 2: Integrando routing, store y formularios — integración routing+store+forms
+- `angular/modulo-13` — Tema 3: TareasStore — combinando signals, computed y HttpClient — store con signal/computed/HttpClient
+- `angular/modulo-14` — Tema 1: Accesibilidad es comportamiento, no una puntuación — accesibilidad verificada en comportamiento, no solo en score
+- `angular/modulo-14` — Tema 2: La seguridad automática tiene fronteras explícitas — DomSanitizer; bypassSecurityTrust* como frontera explícita
+- `angular/modulo-14` — Tema 3: Internacionalizar implica significado, no reemplazo de texto — i18n más allá de reemplazo literal de strings
+- `angular/modulo-14` — Tema 4: Rendimiento y actualización son contratos de experiencia — rendimiento como contrato, no solo métrica
+- `angular/modulo-15` — Tema 1: TestBed y ComponentFixture — ComponentFixture.detectChanges()
+- `angular/modulo-15` — Tema 2: Pruebas de Signals — probar effect()/computed() con TestBed.tick()
+- `angular/modulo-15` — Tema 3: Cypress y Playwright — Cypress vs Playwright para E2E
+- `angular/modulo-15` — Tema 4: Animaciones accesibles — respetar prefers-reduced-motion
+- `angular/modulo-15` — Tema 5: SSR y TransferState — TransferState para no repetir peticiones HTTP
+- `angular/modulo-15` — Tema 6: Hidratación y `provideServerRendering` — provideServerRendering() (@angular/ssr); provideClientHydration(withEventReplay()); isPlatformBrowser
+- `angular/modulo-16` — Tema 1: Qué renderiza Angular Native y por qué no es un WebView — Fabric renderer (no WebView); @ng-native/components
+- `angular/modulo-16` — Tema 2: Signals, estilos nativos compilados y el preset de Tailwind — estilos resueltos en build time
+- `angular/modulo-16` — Tema 3: Router nativo y servicios de Expo inyectados como servicios Angular — stacks nativos vía @angular/router
+- `angular/modulo-16` — Tema 4: Evaluar la madurez de una tecnología alpha con criterio — criterios para evaluar una librería alpha
+- `angular/modulo-2` — Tema 1: signal(), computed() y effect() — signal(); computed(); effect()
+- `angular/modulo-2` — Tema 2: Mutación frente a actualización inmutable — signal.set(); signal.update()
+- `angular/modulo-2` — Tema 3: Signals frente a Observables — toSignal; toObservable
+- `angular/modulo-2` — Tema 4: Hacia zoneless change detection — TestBed.tick() (no flushEffects, deprecado); precisión de effect() por dependencia leída; URL canónica /guide/zoneless
+- `angular/modulo-2` — Tema 5: linkedSignal — estado derivado que el usuario puede sobrescribir — linkedSignal() con función de cómputo
+- `angular/modulo-2` — Tema 6: resource() y httpResource — datos asíncronos reactivos — resource({params, loader}) (no request); httpResource() con HttpClient real; HttpTestingController para httpResource
+- `angular/modulo-3` — Tema 1: @Injectable y providedIn: root — providedIn: 'root'
+- `angular/modulo-3` — Tema 2: inject() frente a inyección por constructor — inject() fuera y dentro de contexto
+- `angular/modulo-3` — Tema 3: Jerarquía de inyectores — inyector de módulo/componente/elemento
+- `angular/modulo-3` — Tema 4: Tokens de inyección y decoradores de resolución — InjectionToken; @Optional/@Self/@SkipSelf
+- `angular/modulo-4` — Tema 1: Router config con rutas standalone — Routes standalone sin NgModule
+- `angular/modulo-4` — Tema 2: Guards funcionales — CanActivate como función, no clase
+- `angular/modulo-4` — Tema 3: Lazy loading con loadComponent — loadComponent
+- `angular/modulo-4` — Tema 4: Parámetros de ruta, query params y capacidades avanzadas de routing — ActivatedRoute params/queryParams
+- `angular/modulo-4` — Tema 5: CanDeactivate: proteger un borrador sin confundir navegación con autorización — CanDeactivate funcional
+- `angular/modulo-5` — Tema 1: Reactive Forms — FormGroup y FormControl — FormGroup/FormControl
+- `angular/modulo-5` — Tema 2: Validadores asíncronos — AsyncValidatorFn
+- `angular/modulo-5` — Tema 3: FormArray para campos dinámicos — FormArray
+- `angular/modulo-5` — Tema 4: Template-driven forms — cuándo siguen siendo válidos — ngModel vs Reactive Forms
+- `angular/modulo-6` — Tema 1: Observable frente a Promise — Observable multi-valor vs Promise single-valor
+- `angular/modulo-6` — Tema 2: Operadores clave — debounceTime, distinctUntilChanged, switchMap, combineLatest — switchMap cancela peticiones previas
+- `angular/modulo-6` — Tema 3: Manejo de suscripciones sin fugas de memoria — takeUntilDestroyed
+- `angular/modulo-6` — Tema 4: Subjects y operadores de aplanamiento avanzados — Subject/BehaviorSubject; mergeMap/concatMap
+- `angular/modulo-7` — Tema 1: HttpClient con backend fetch — provideHttpClient(withFetch())
+- `angular/modulo-7` — Tema 2: Interceptores funcionales — HttpInterceptorFn (función, no clase)
+- `angular/modulo-7` — Tema 3: Registro de interceptores y centralización del manejo de errores — withInterceptors([...]); orden de interceptores
+- `angular/modulo-8` — Tema 1: Bootstrap sin NgModules — bootstrapApplication
+- `angular/modulo-8` — Tema 2: Organización por feature — carpetas por feature sin NgModule
+- `angular/modulo-8` — Tema 3: Migración desde NgModules — migración incremental standalone
+- `angular/modulo-9` — Tema 1: Store propio con signals — signal store casero
+- `angular/modulo-9` — Tema 2: NgRx — actions, reducers y selectors — createReducer; createSelector
+- `angular/modulo-9` — Tema 3: Cuándo NgRx justifica su complejidad — signals vs NgRx: criterio de decisión
+- `flutter/modulo-0` — Tema 1: Sound null safety — tipos nullable explícitos (?); operador !
+- `flutter/modulo-0` — Tema 2: Clases y mixins — mixin con 'with'
+- `flutter/modulo-0` — Tema 3: Futures, async/await y colecciones funcionales — Future/async/await; map/where/fold
+- `flutter/modulo-0` — Tema 4: Lints y estilo con analysis_options.yaml — analysis_options.yaml; package:flutter_lints
+- `flutter/modulo-1` — Tema 1: StatelessWidget vs StatefulWidget — StatelessWidget; StatefulWidget + State
+- `flutter/modulo-1` — Tema 2: Layout con Row, Column y Stack, y ciclo de vida — Row/Column/Stack; initState/dispose
+- `flutter/modulo-1` — Tema 3: Keys — ValueKey/ObjectKey/GlobalKey
+- `flutter/modulo-10` — Tema 1: ThemeData con Material 3 — ColorScheme.fromSeed
+- `flutter/modulo-10` — Tema 2: Adaptación Material vs Cupertino — Platform.isIOS para adaptar widgets
+- `flutter/modulo-10` — Tema 3: Accesibilidad con Semantics y dark mode — Semantics widget; ThemeMode.system
+- `flutter/modulo-11` — Tema 1: Builds de release para cada plataforma — flutter build apk/ipa --release
+- `flutter/modulo-11` — Tema 2: Iconos y splash screens — flutter_launcher_icons; flutter_native_splash
+- `flutter/modulo-11` — Tema 3: CI/CD con Codemagic o Fastlane — codemagic.yaml; Fastfile
+- `flutter/modulo-11` — Tema 4: Entornos y flavors con --dart-define-from-file — flavors por plataforma; --dart-define-from-file
+- `flutter/modulo-12` — Tema 1: Arquitectura por features y Clean Architecture — presentation/application/domain/data
+- `flutter/modulo-12` — Tema 2: Uniendo los módulos del track — integración go_router+Riverpod+dio+Hive
+- `flutter/modulo-12` — Tema 3: Cierre del track — checklist de cierre
+- `flutter/modulo-13` — Tema 1: Una API Dart puede terminar en una frontera nativa — frontera Dart/nativo
+- `flutter/modulo-13` — Tema 2: Los secretos no pertenecen al binario — --dart-define no es un secreto seguro
+- `flutter/modulo-13` — Tema 3: Fluidez se mide contra el presupuesto de cada frame — presupuesto de 16ms/frame
+- `flutter/modulo-13` — Tema 4: Producción exige protocolo, telemetría y contención — Sentry/Crashlytics; contención de errores en producción
+- `flutter/modulo-14` — Tema 1: Diseño de pantallas y Riverpod — pantallas RutaFlow con Riverpod
+- `flutter/modulo-14` — Tema 2: Google Maps y localización en tiempo real — google_maps_flutter; geolocator
+- `flutter/modulo-14` — Tema 3: Socket.IO y actualización de rutas — socket_io_client 3.x <-> servidor Socket.IO 4.7+; Socket.IO != STOMP
+- `flutter/modulo-14` — Tema 4: Animaciones de localización — interpolación de posición en el mapa
+- `flutter/modulo-14` — Tema 5: Almacenamiento local, imágenes y offline — caché local de imágenes/datos de ruta
+- `flutter/modulo-14` — Tema 6: Dio y notificaciones push — dio para la API de RutaFlow; push notifications
+- `flutter/modulo-15` — Tema 1: flutter test y WidgetTester — WidgetTester.pump/pumpAndSettle
+- `flutter/modulo-15` — Tema 2: pumpAndSettle, golden e integration tests — golden tests (matchesGoldenFile)
+- `flutter/modulo-15` — Tema 3: Rendimiento, RepaintBoundary y Keys — RepaintBoundary + Keys combinados
+- `flutter/modulo-15` — Tema 4: Clean Architecture — capas independientes de framework
+- `flutter/modulo-15` — Tema 5: Internacionalización completa — intl + flutter gen-l10n
+- `flutter/modulo-15` — Tema 6: Builds, firma y despliegue — firma Android/iOS; despliegue a tiendas
+- `flutter/modulo-2` — Tema 1: MediaQuery vs LayoutBuilder — MediaQuery.of(context); LayoutBuilder constraints
+- `flutter/modulo-2` — Tema 2: Cómo Flutter calcula tamaños — protocolo de layout de Flutter (constraints down, sizes up)
+- `flutter/modulo-2` — Tema 3: Breakpoints propios y SafeArea — SafeArea; breakpoints responsive propios
+- `flutter/modulo-3` — Tema 1: go_router: navegación como función de la URL — context.go(); Navigator 2.0 declarativo
+- `flutter/modulo-3` — Tema 2: Guards y deep linking — redirect centralizado; rutas hijas heredan protección
+- `flutter/modulo-3` — Tema 3: Transiciones personalizadas — CustomTransitionPage
+- `flutter/modulo-4` — Tema 1: setState y sus límites — setState y su alcance (solo el propio widget)
+- `flutter/modulo-4` — Tema 2: Riverpod — ref.watch vs ref.read; Notifier<State>; flutter pub add (sin versión fijada)
+- `flutter/modulo-4` — Tema 3: Bloc/Cubit y otras alternativas — Cubit vs Bloc; criterio de elección vs Riverpod
+- `flutter/modulo-4` — Tema 4: Formularios profesionales con Formz y Riverpod — FormzInput tipado; Notifier coordinando envío único
+- `flutter/modulo-4` — Tema 5: Inyección de dependencias con Riverpod: reemplazar implementaciones — ProviderScope overrides para testing
+- `flutter/modulo-5` — Tema 1: http vs dio — dio interceptors vs http plano
+- `flutter/modulo-5` — Tema 2: json_serializable — @JsonSerializable(); build_runner
+- `flutter/modulo-5` — Tema 3: Interceptores y estados explícitos — Interceptor onRequest/onError
+- `flutter/modulo-6` — Tema 1: shared_preferences — SharedPreferences.getInstance()
+- `flutter/modulo-6` — Tema 2: sqflite vs Hive — @HiveType/@HiveField; sqflite SQL real vs Hive objeto directo
+- `flutter/modulo-6` — Tema 3: Offline-first y Firebase — UI lee siempre de caché local; sincronización en background separada
+- `flutter/modulo-6` — Tema 4: Restauración de formularios con RestorationMixin y una prueba de recreación — RestorationMixin; RestorationBucket
+- `flutter/modulo-7` — Tema 1: MethodChannel — MethodChannel bidireccional; implementación Kotlin + Swift
+- `flutter/modulo-7` — Tema 2: Plugins federados — arquitectura de plugin federado (app-facing + platform packages)
+- `flutter/modulo-7` — Tema 3: Permisos de plataforma y cuándo escribir un platform channel propio — permission_handler vs platform channel propio
+- `flutter/modulo-7` — Tema 4: Cámara, galería y carga multipart de una evidencia — image_picker; multipart/form-data
+- `flutter/modulo-8` — Tema 1: Animaciones implícitas vs explícitas — AnimatedContainer vs AnimationController
+- `flutter/modulo-8` — Tema 2: Flutter DevTools y detección de jank — DevTools Performance view; jank (frames >16ms)
+- `flutter/modulo-8` — Tema 3: const widgets, RepaintBoundary y shouldRepaint — const constructor evita rebuild; RepaintBoundary
+- `flutter/modulo-8` — Tema 4: Isolates — trabajo pesado sin congelar la interfaz — compute(); Isolate.spawn
+- `flutter/modulo-8` — Tema 5: CustomPainter: dibujar con Canvas sin repintar de más — CustomPainter.shouldRepaint
+- `flutter/modulo-9` — Tema 1: Unit tests y widget tests — testWidgets; WidgetTester.pump
+- `flutter/modulo-9` — Tema 2: Mocking con mocktail — mocktail when()/verify()
+- `flutter/modulo-9` — Tema 3: Integration tests — integration_test package
+- `java/modulo-0` — Tema 0: Instalar Eclipse Temurin JDK 27 en macOS, Windows y Ubuntu · Básico · 15 min — JDK frente a runtime; PATH frente a JAVA_HOME; Version, distribucion y arquitectura
+- `java/modulo-0` — Tema 1: Del código fuente a la JVM · Básico · 35 min — archivo fuente .java y nombre de clase public; compilación con javac y -d; bytecode y formato .class; verificación/interpretación/JIT; major version del class file (71=27, 69=25); JDK de compilación vs runtime; nombre binario, paquete y ruta; ClassNotFoundException vs NoClassDefFoundError; compilación manual vs build tool
+- `java/modulo-0` — Tema 2: public static void main — qué significa cada palabra · Básico · 30 min — firma de método; public (accesible al launcher); static (sin instancia previa); void vs código de salida del proceso; nombre main como contrato; String[] args y String... args; sobrecargas de main; clases anidadas y múltiples entry points; lanzamiento de fuente única; errores de firma
+- `java/modulo-0` — Tema 3: JDK, JRE y JVM · Básico · 30 min — JVM como máquina abstracta; runtime y bibliotecas estándar; JDK y herramientas; JRE histórico vs runtime actual; distribución, proveedor y licencia; LTS vs feature release; JAVA_HOME y PATH; runtime personalizado con jlink; arquitectura del binario; verificación de instalación
+- `java/modulo-0` — Tema 4: Tipos primitivos vs referencias · Básico · 40 min — ocho tipos primitivos; referencia, objeto y null; copia de valor primitivo; copia de referencia y aliasing; identidad vs igualdad (== vs equals); campos, locales y valores por defecto; paso por valor; arrays como referencias; memoria y GC (sin mito stack/heap); final vs inmutabilidad
+- `java/modulo-0` — Tema 5: Variables, conversiones y `String` · Intermedio · 45 min — declaración, inicialización y var; alcance y shadowing; widening y narrowing; overflow y underflow; promoción numérica; IEEE 754; BigDecimal desde texto; String inmutable y pool; ==/equals/Objects.equals; StringBuilder y text blocks
+- `java/modulo-0` — Tema 6: Operadores, precedencia y control de flujo · Intermedio · 45 min — aritméticos y división entera; relacionales, lógicos y cortocircuito; asignación compuesta e incremento; precedencia y asociatividad; if y expresión condicional; switch statement vs expression y fall-through; exhaustividad con enum/sealed; ciclos for/while/do-while; break/continue y etiquetas; pattern matching en decisiones
+- `java/modulo-0` — Tema 7: Arreglos, wrappers y paso de argumentos · Intermedio · 45 min — declaración/creación/inicialización de array; índices y longitud fija; arrays multidimensionales y dentados; copia superficial (clone/copyOf/arraycopy); varargs; wrappers; boxing/unboxing y null; caché de wrappers; genéricos y ausencia de primitivos; paso por valor y mutación
+- `java/modulo-0` — Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`) · Intermedio · 50 min — entrada por argumentos y Scanner; parseo y validación; LocalDate/LocalTime/LocalDateTime; Instant; ZoneId y ZonedDateTime; OffsetDateTime; Duration y Period; DateTimeFormatter y locale; DST, huecos y solapamientos; Date/Calendar e interoperabilidad
+- `java/modulo-1` — Tema 1: Clases, objetos, constructores y encapsulación · Básico · 40 min — clase vs objeto/instancia; campos de instancia y this; constructor e invariantes; constructor por defecto vs explícito; sobrecarga de constructores y this(...); encapsulación private y final; getters sin setters; campos estáticos vs instancia; identidad de objetos (==); cuándo NO imponer invariantes
+- `java/modulo-1` — Tema 2: Herencia y sobreescritura · Intermedio · 1 h — extends y qué se hereda; super(...) en el constructor; sobreescritura y @Override; polimorfismo de subtipo (dispatch dinámico); super.metodo(); Object y sus métodos; instanceof y downcasting; final/sealed para limitar herencia; @interface, @Target, @Retention; retención y reflexión
+- `java/modulo-1` — Tema 3: Interfaces, clases abstractas y cuándo usar cada una · Intermedio · 50 min — interfaz como contrato; métodos default y static en interfaz; implementación múltiple; colisión de default (diamante); clase abstracta y método abstracto; clase abstracta no instanciable; interfaz vs clase abstracta; herencia simple vs múltiples interfaces; interfaz funcional
+- `java/modulo-1` — Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso · Intermedio · 55 min — sobrecarga: misma firma de nombre, distinta de parámetros; resolución de sobrecarga en compilación; sobreescritura (contraste); covarianza del tipo de retorno; private; package-private; protected; public; mínimo privilegio
+- `java/modulo-10` — Tema 1: module-info.java y encapsulación fuerte · Intermedio · 50 min — module-info.java; exports y encapsulación fuerte; requires; requires transitive; module path vs classpath; named/automatic/unnamed modules
+- `java/modulo-10` — Tema 2: Migración incremental y cuándo JPMS aporta valor · Avanzado · 55 min — migración bottom-up (hoja primero); automatic modules como puente; requires transitive en migración; module not found; costo/beneficio de JPMS
+- `java/modulo-10` — Tema 3: `opens` para acceso reflexivo controlado de frameworks · Avanzado · 60 min — exports vs opens; InaccessibleObjectException; opens ... to acotado; exports ... to cualificado; open module; cuándo NO abrir
+- `java/modulo-11` — Tema 1: Generaciones de memoria y recolectores · Avanzado · 55 min — hipótesis generacional débil; generación joven vs vieja; G1 (throughput/pausas, default JDK 27); ZGC (latencia); medir antes de tunear; heap vs memoria nativa
+- `java/modulo-11` — Tema 2: Java Flight Recorder y JIT compilation · Avanzado · 55 min — JFR y bajo overhead en producción; eventos y jfr print; interpretación vs JIT; warm-up; inlining del JIT; -Xint para contrastar
+- `java/modulo-11` — Tema 3: Referencias especiales y heap dumps · Avanzado · 60 min — referencia fuerte vs especial; SoftReference vs WeakReference; PhantomReference y ReferenceQueue; OutOfMemoryError por caché sin límite; heap dump (HeapDumpOnOutOfMemoryError); análisis: retained size y dominators
+- `java/modulo-11` — Tema 4: Foreign Function & Memory API (Java 22) · Experto · 55 min — FFM vs JNI; Linker y downcallHandle; FunctionDescriptor y layouts; MemorySegment y Arena; cierre del Arena e invalidez; --enable-native-access
+- `java/modulo-12` — Tema 1: Builder — configuración paso a paso y validación · Intermedio · 45 min — el problema del constructor telescópico; encadenamiento fluido; validación en build(); campos obligatorios vs opcionales; producto inmutable con constructor privado; Builder vs record/constructor
+- `java/modulo-12` — Tema 2: Factory Method y Strategy · Intermedio · 55 min — Factory simple (switch central); Factory Method (GoF); producto común y creador; Strategy (algoritmo intercambiable); inyección de la estrategia; qué varía: creación o algoritmo
+- `java/modulo-12` — Tema 3: Abstract Factory y familias de productos compatibles · Avanzado · 50 min — familia de productos relacionados; la interfaz de la fábrica abstracta; fábricas concretas por familia; coherencia garantizada por la fábrica; selección en composición; Abstract Factory vs Factory Method
+- `java/modulo-12` — Tema 4: SOLID y cuándo NO aplicar un patrón · Avanzado · 60 min — SRP (responsabilidad única); OCP (abierto/cerrado); LSP (sustitución de Liskov); ISP (segregación de interfaces); DIP (inversión de dependencias); cuándo NO aplicar un patrón
+- `java/modulo-12` — Tema 5: Prototype — copiar configuración sin compartir estado mutable · Intermedio · 45 min — clonar una configuración existente; copia superficial vs profunda; campos mutables y copia defensiva; clone()/Cloneable y sus problemas; Prototype vs Builder/new
+- `java/modulo-12` — Tema 6: Patrones estructurales — elegir por intención · Avanzado · 65 min — Adapter: traducir una interfaz; Decorator: añadir responsabilidad; Proxy: controlar el acceso; Facade: simplificar un subsistema; Bridge: separar abstracción de implementación; elegir por intención, no por forma
+- `java/modulo-13` — Tema 1: Arquitectura por capas del proyecto integrador · Avanzado · 50 min — capas: dominio, servicio, aplicación; dirección de la dependencia; dominio sin infraestructura; puerto y adaptador (inversión); ensamblaje en el bootstrap; fitness function de la frontera
+- `java/modulo-13` — Tema 2: Integrando concurrencia, modelado y testing · Experto · 60 min — resultado explícito con sealed (Exito/Error); fallo esperado vs error interno; procesamiento concurrente del lote; reparto de éxitos y errores; prueba con dependencia simulada
+- `java/modulo-13` — Tema 3: Build reproducible y cierre del track · Avanzado · 50 min — orden única y documentada; build reproducible; project.build.outputTimestamp; comparación byte a byte; fijar entorno y versiones; fuente única de verdad
+- `java/modulo-14` — Tema 1: Compartir memoria requiere orden y visibilidad · Experto · 60 min — carrera de datos y resultado permitido por el JMM; volatile como happens-before write->read; otras aristas happens-before (monitor, start/join); volatile no da atomicidad en read-modify-write; AtomicLong/LongAdder; publicación segura de colecciones (copia defensiva); inmutabilidad superficial vs profunda en records
+- `java/modulo-14` — Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo · Experto · 65 min — dead code elimination del JIT; consumir resultado: retorno vs Blackhole; warmup, forks e iteraciones; @State/@Setup/@Param; procesador de anotaciones genera BenchmarkList; Score vs Error (distribución); microbenchmark != latencia de usuario
+- `java/modulo-14` — Tema 3: Deserializar es permitir construcción y comportamiento · Experto · 60 min — deserialización ejecuta construcción, no solo lectura; allowlist por patrón terminada en !*; java.base/* necesario para tipos internos; límites maxdepth/maxrefs/maxbytes; el filtro no sustituye validación del DTO; preferir JSON con DTO cerrado; allowlist, no denylist de gadgets
+- `java/modulo-14` — Tema 4: El runtime es parte del artefacto y necesita ciclo de vida · Experto · 60 min — jdeps --print-module-deps descubre módulos; jlink enlaza una imagen autocontenida; módulo ausente => fallo en ejecución; detección estática no ve reflexión/ServiceLoader; -Xmx no cubre memoria no-heap; ciclo de vida: reconstruir ante parche del JDK
+- `java/modulo-15` — Tema 1: Maven avanzado · Avanzado · 55 min — reactor y orden de construcción; dependencyManagement fija versión sin añadir dependencia; BOM importado con scope import; convergencia de versiones transitivas; Enforcer requireJavaVersion; POM efectivo como fuente de verdad; perfiles solo para variantes de build, no secretos
+- `java/modulo-15` — Tema 2: Gradle y builds reproducibles · Avanzado · 45 min — entradas no deterministas (timestamp, orden, ruta); jar --date fija fechas; orden de entrada estable; equivalencia Gradle isPreserveFileTimestamps=false; wrapper y toolchain; dependency locking y verification metadata; caché solo fiable para tareas deterministas
+- `java/modulo-15` — Tema 3: Proyectos multi-módulo sin ciclos · Experto · 1 h 15 min — separación en capas domain/application/infrastructure/api; dirección de dependencias (infra->app); puerto en application, adaptador en infrastructure; ArchUnit sobre bytecode detecta la violación real; freeOfCycles() entre slices; el build impide la dependencia inversa; un módulo por paquete es sobre-ingeniería
+- `java/modulo-15` — Tema 4: JUnit 5, Mockito y assertions expresivas · Avanzado · 55 min — fake con estado real vs mock de frontera; @ExtendWith(MockitoExtension) y @Mock; aserción de estado con AssertJ; verify del contrato observable; no mockear la clase bajo prueba; verifyNoMoreInteractions con criterio; ArgumentCaptor vs afirmar estado
+- `java/modulo-15` — Tema 5: Pruebas de integración reproducibles · Experto · 1 h — Testcontainers inicia PostgreSQL versionado; Flyway crea el esquema con migración versionada; JDBC real con tipos NUMERIC/DATE; Surefire vs Failsafe (unit vs IT); aislamiento de datos entre pruebas; esperar condición, no tiempo fijo; migración aplicada es inmutable
+- `java/modulo-15` — Tema 6: SLF4J, Logback, MDC y logging estructurado · Avanzado · 55 min — SLF4J fachada, Logback implementación; logging parametrizado {}; MDC asocia contexto al hilo; MDC.putCloseable restaura al cerrar; contaminación de MDC en pool reutilizado; encoder JSON para campos consultables; no registrar secretos ni duplicar stack traces
+- `java/modulo-16` — Tema 1: Entidades y relaciones JPA · Intermedio · 55 min — @Entity, @Id, @GeneratedValue; lado propietario (@JoinColumn) vs inverso (mappedBy); sincronizar ambos lados en el agregado; CascadeType.PERSIST no implica REMOVE; @Enumerated(EnumType.STRING); unidireccional cuando solo navegas en un sentido; no exponer setters generales
+- `java/modulo-16` — Tema 2: FetchType.LAZY, EAGER y el problema N+1 · Avanzado · 1 h — defaults de fetch (to-one EAGER, to-many LAZY); el problema N+1 medido; JOIN FETCH resuelve en una consulta; medir con contexto limpio (clear()); EAGER != un único join; paginar fetch de colección es en memoria; proyección DTO para listados
+- `java/modulo-17` — Tema 1: JDBC, PreparedStatement y DAO · Intermedio · 1 h — DataSource como fuente de conexiones; PreparedStatement fija estructura, enlaza valores; try-with-resources cierra Connection/ResultSet; DAO encapsula SQL y mapeo; parámetros protegen valores, no identificadores; comprobar executeUpdate(); no crear un DAO genérico
+- `java/modulo-17` — Tema 2: Transacciones, ACID y aislamiento · Avanzado · 1 h 15 min — ACID: atomicidad y durabilidad; setAutoCommit(false) + commit/rollback; una sola conexión para toda la unidad; aislamiento y qué anomalías evita; bloqueo optimista con version; idempotencia con UNIQUE; no abrir transacción durante HTTP
+- `java/modulo-18` — Tema 1: HttpClient, REST, timeouts y fallos · Intermedio · 2 h — HttpClient reutilizable y su pool; HttpRequest: método, headers, body; timeout de conexión vs de solicitud; separar transporte de cuerpo; diagnosticar 200/404/timeout; reintento solo de idempotentes; backoff con jitter y límite
+- `java/modulo-18` — Tema 2: Tokens, validación y límites de seguridad · Avanzado · 2 h — autenticación vs autorización por objeto; bearer en header Authorization, sin loguearlo; validar entrada en cada frontera; JWT/OAuth2/OIDC: qué resuelve cada uno; SSRF: validar esquema, host y DNS; parametrización != autorización; no criptografía propia
+- `java/modulo-18` — Tema 3: Sockets TCP y UDP — la red que hay debajo de HttpClient · Avanzado · 2 h — modelo cliente/servidor y puertos; ServerSocket y accept(); Socket y streams de I/O con charset explícito; TCP fiable, ordenado, orientado a conexión; UDP DatagramSocket/DatagramPacket; TCP frente a UDP; timeouts de socket (setSoTimeout); cierre de recursos y puerto ocupado; un cliente por hilo frente a virtual threads
+- `java/modulo-18` — Tema 4: Seguridad defensiva — hash, HMAC, firma y cifrado · Avanzado · 2 h 30 min — hash criptográfico (MessageDigest); comparación en tiempo constante (MessageDigest.isEqual); hash no sirve para contraseñas; HMAC (Mac); firma digital (Signature, par de claves); cifrado simétrico AES-GCM (Cipher); IV/nonce único y gestión de claves; hash vs HMAC vs firma vs cifrado
+- `java/modulo-19` — Tema 1: Reflexión y anotaciones en tiempo de ejecución · Intermedio · 90 min — Class<?> y descriptores (Field, Method); @Retention(RUNTIME) para ver anotaciones; isAnnotationPresent y getAnnotation; setAccessible(true) y opens (JPMS); invocar por nombre (Method.invoke); coste y optimización del acceso reflectivo; no usar reflexión en lógica de negocio
+- `java/modulo-19` — Tema 2: Expresiones regulares con Pattern y Matcher · Intermedio · 90 min — Pattern compilado una vez, reutilizable; clases, cuantificadores y límites (\b, {6}); grupos con nombre (?<ciudad>...); find() vs matches(); escapes en literal Java (\\d); replaceAll con referencias ${nombre}; ReDoS por backtracking catastrófico
+- `java/modulo-19` — Tema 3: Dinero exacto con BigDecimal · Básico · 75 min — double es binario inexacto para dinero; construir desde String, no double; escala y RoundingMode explícitos; HALF_UP comercial vs HALF_EVEN bancario; equals vs compareTo; reparto que cuadra al total; cuándo double sí sirve
+- `java/modulo-19` — Tema 4: Assertions y diseño por contrato · Intermedio · 75 min — precondición pública con excepción; invariante interna con assert; -ea activa las assertions (off por defecto); postcondición al final del método; localizar la invariante rota; assert nunca para datos externos; assert sin efectos secundarios necesarios
+- `java/modulo-19` — Tema 5: ServiceLoader: plugins sin acoplar implementaciones · Avanzado · 2 h — servicio = interfaz; proveedor = implementación; descriptor META-INF/services/<interfaz>; constructor público sin argumentos; ServiceLoader.load descubre e instancia perezoso; extender sin tocar el consumidor; descriptor ausente => 0 proveedores (sin error); uses/provides en JPMS
+- `java/modulo-19` — Tema 6: Proxies dinámicos: así funcionan @Transactional y los mocks · Avanzado · 90 min — Proxy.newProxyInstance genera una clase; InvocationHandler.invoke intercepta todo; delegar en el objeto real; desenvolver InvocationTargetException; proxy JDK solo con interfaces; auto-invocación no pasa por el proxy; cuándo un Decorator manual es mejor
+- `java/modulo-19` — Tema 7: Internacionalización: números, monedas, fechas y orden de texto · Intermedio · 90 min — Locale (idioma+región) con forLanguageTag/of; NumberFormat número y moneda por región; DateTimeFormatter.ofLocalizedDate; Collator ordena por idioma, no Unicode; MessageFormat con choice (plurales); ResourceBundle separa textos por idioma; localizar es presentación, no intercambio
+- `java/modulo-2` — Tema 1: List, Set, Map y sus implementaciones · Básico · 45 min — List y sus implementaciones (ArrayList/LinkedList); complejidad Big-O; Set y unicidad; equals/hashCode como contrato; orden de iteración por implementación; Map y sus implementaciones; colecciones inmutables (List.of); iteración y ConcurrentModificationException; medición informal vs benchmark
+- `java/modulo-2` — Tema 2: Genéricos, wildcards y type erasure · Intermedio · 45 min — clase genérica <T>; seguridad de tipos en compilación; método genérico; bounded type parameter; wildcard ? extends (productor); wildcard ? super (consumidor, PECS); type erasure; límites del erasure (new T[], instanceof); raw types
+- `java/modulo-2` — Tema 3: Comparable vs Comparator, e iteración · Intermedio · 50 min — Comparable y orden natural; contrato de compareTo; el bug de la resta (a-b); Comparator externo; Comparator.comparing y key extractor; encadenar thenComparing/reversed; orden con nulos (nullsFirst); consistencia compareTo/equals; iterar Map con entrySet()
+- `java/modulo-20` — Tema 1: Lambdas a fondo — tipo objetivo, captura y referencias a métodos · Intermedio · 120 min — Interfaz funcional y método SAM; Sintaxis de parámetros y cuerpo; Tipo objetivo e inferencia; Captura y variable efectivamente final; Alcance de this; Cuatro formas de referencias a métodos; Sobrecarga ambigua; Excepciones checked; Especializaciones primitivas; Identidad y serialización
+- `java/modulo-20` — Tema 2: Las cuatro formas: Predicate, Function, Consumer y Supplier · Básico · 75 min — Predicate<T>: decidir un boolean; Function<T,R>: transformar; Consumer<T>: efecto sin retorno; Supplier<T>: proveer sin argumentos; Métodos SAM (test/apply/accept/get); Aridad de la lambda vs la interfaz; Clase con nombre cuando hay estado o dominio
+- `java/modulo-20` — Tema 3: Componer sin anidar: andThen, compose, negate y reglas encadenadas · Intermedio · 75 min — Predicate.and/or/negate; Function.andThen (f luego g); Function.compose (g sobre f); El orden de composición es la regla de negocio; Referencias a método en la cadena; Motivos de rechazo vs un solo boolean; Cadena legible vs tipo Resultado
+- `java/modulo-20` — Tema 4: Streams como composición: pereza, orden y efectos que se esconden · Intermedio · 90 min — Stream describe trabajo, no es colección; Operaciones perezosas (filter/map/peek); Operaciones terminales disparan el recorrido; Consumo único del Stream; peek es para depurar, no para lógica; Efectos escondidos en map; Agregar con reduce/collect sin efectos
+- `java/modulo-20` — Tema 5: Function y BiFunction — transformar con una o dos entradas · Básico · 30 min — Function<T,R>: una entrada; BiFunction<T,U,R>: dos entradas; BiFunction.andThen; BiFunction no tiene compose; Tres o mas entradas: objeto o currying; Boxing en genericos de Function
+- `java/modulo-20` — Tema 6: UnaryOperator y BinaryOperator — cuando entrada y salida comparten tipo · Básico · 20 min — UnaryOperator<T> extiende Function<T,T>; BinaryOperator<T> extiende BiFunction<T,T,T>; Encaja con List.replaceAll/Stream.reduce; minBy/maxBy como BinaryOperator; El tipo se conserva; Identidad correcta en reduce
+- `java/modulo-20` — Tema 7: Referencias a métodos — las cuatro formas · Básico · 25 min — Referencia estatica; Instancia particular; Instancia arbitraria; Constructor Tipo::new; Equivalencia con la lambda (SAM); Cuando la lambda es mas clara
+- `java/modulo-20` — Tema 8: Optional — ausencia explícita sin null · Intermedio · 30 min — Optional.of/empty/ofNullable; map transforma si hay valor; orElse/orElseThrow; flatMap evita Optional<Optional>; Antipatron isPresent()+get(); Optional no para campos ni parametros
+- `java/modulo-20` — Tema 9: Streams intermedios — map, filter, flatMap y sorted · Intermedio · 35 min — filter selecciona por predicado; map transforma cada elemento; flatMap aplana flujos anidados; sorted ordena el flujo; Son perezosas; flatMap vs map con colecciones
+- `java/modulo-20` — Tema 10: Streams terminales — collect, reduce, forEach y find · Intermedio · 35 min — toList/collect materializan; reduce agrega a un valor; forEach para efectos no para construir; findFirst/anyMatch cortocircuitan; La terminal cierra el Stream; reduce necesita operacion asociativa
+- `java/modulo-20` — Tema 11: Collectors — toList, toMap, groupingBy y joining · Intermedio · 35 min — toList/toSet; toMap con clave y valor; groupingBy agrupa por clasificador; Colector posterior (summingInt); joining une cadenas; toMap sin merge ante duplicados
+- `java/modulo-20` — Tema 12: Streams paralelos — cuándo ayudan y cuándo engañan · Avanzado · 30 min — parallel() divide el trabajo; Operacion asociativa y sin estado; Resultado correcto no siempre mas rapido; ForkJoinPool.commonPool compartido; Estado compartido rompe en paralelo; Medir antes de paralelizar
+- `java/modulo-20` — Tema 13: Pureza y efectos secundarios — razonar sobre funciones · Intermedio · 30 min — Funcion pura: determinista y sin efectos; Efecto secundario: I/O, estado, reloj; Transparencia referencial; Efectos en los bordes, nucleo puro; Impureza oculta rompe tests y paralelo; Pureza no significa sin estado nunca
+- `java/modulo-20` — Tema 14: Flow API — reactive streams en la biblioteca estándar · Avanzado · 30 min — Las cuatro interfaces Flow; SubmissionPublisher como publicador; onSubscribe/onNext/onComplete; Subscription.request(n) = demanda; Backpressure: el consumidor marca el ritmo; Flow es el contrato no una libreria reactiva
+- `java/modulo-21` — Tema 1: Qué es la superficie pública de una API · Básico · 40 min — niveles de acceso frente a superficie real; tipos expuestos en la firma; constante public static final en línea; encapsulación por paquete y JPMS; error de tipo de retorno inaccesible; javap -public como vista del cliente; sacar el tipo interno de la firma
+- `java/modulo-21` — Tema 2: Compatibilidad binaria frente a compatibilidad de fuente · Intermedio · 45 min — compatibilidad de fuente frente a binaria; enlace perezoso de la JVM; NoSuchMethodError con descriptor completo; constante en línea no se propaga; casos de ida y vuelta fuente/binario; confundir NoClassDefFoundError con NoSuchMethodError; subir versión mayor con todos los consumidores
+- `java/modulo-21` — Tema 3: Evolucionar sin romper: default methods, deprecación y retirada · Intermedio · 45 min — método default como crecimiento seguro; delegación del default al método abstracto; método abstracto añadido rompe binarios; AbstractMethodError frente a NoSuchMethodError; deprecación con forRemoval y since; interfaz sellada cambia el cálculo; documentar la política de retirada
+- `java/modulo-21` — Tema 4: Genéricos, borrado y métodos puente en la superficie pública · Avanzado · 50 min — borrado de tipos en la JVM; choque de borrado en sobrecargas; método puente sintético; flags ACC_BRIDGE y ACC_SYNTHETIC; varianza binario-compatible, fuente-incompatible; información genérica ausente en ejecución; nombres distintos o varianza en vez de sobrecarga
+- `java/modulo-21` — Tema 5: Verificar la compatibilidad en el build · Avanzado · 50 min — cliente congelado como prueba reproducible; ToolProvider.getSystemJavaCompiler; DiagnosticCollector y filtrado de errores; código de salida como puerta de build; getTask(...).call() como señal de éxito; qué no detecta el verificador; confundir exit 2 con incompatibilidad
+- `java/modulo-22` — Tema 1: El contrato de equals y hashCode · Básico · 35 min — reflexividad/simetría/transitividad de equals; coherencia equals-hashCode; hashCode distribuye en buckets; equals con getClass vs instanceof; campos incluidos en la identidad; objeto de valor inmutable como clave; romper hashCode rompe HashSet/HashMap
+- `java/modulo-22` — Tema 2: Claves mutables y el mapa que pierde entradas · Intermedio · 40 min — hashCode calculado al insertar; mutar la clave cambia su bucket; entrada huérfana (get=null, size=1); clave inmutable como solución; defensiva: copiar la clave al insertar; contrato: clave estable mientras esté en el mapa; no usar colecciones mutables como clave
+- `java/modulo-22` — Tema 3: Copia defensiva, copia superficial y clone · Intermedio · 40 min — copia superficial comparte referencias; constructor de copia defensiva; copiar colecciones internas (List.copyOf/new ArrayList); clone() superficial y Cloneable; inmutabilidad como alternativa a copiar; copiar en el getter frente a en el constructor; fuga de estado mutable por referencia compartida
+- `java/modulo-22` — Tema 4: Enums de dominio: estado, código y comportamiento · Intermedio · 45 min — campo propio y constructor privado; comportamiento por constante (método abstracto); ordinal inestable frente a código estable; switch exhaustivo sin default; values() devuelve arreglo nuevo; EnumMap/EnumSet con orden de declaración; serialización por nombre devuelve la misma instancia
+- `java/modulo-22` — Tema 5: Clases anidadas, this$0 y la referencia que retiene · Avanzado · 45 min — clase interna no estática y su exterior; campo sintético this$0; clase anidada static sin exterior; retención del exterior por la interna; this en clase anónima frente a lambda; interna inconstruible sin exterior; static por defecto como decisión de diseño
+- `java/modulo-3` — Tema 1: Checked vs unchecked exceptions · Básico · 40 min — jerarquía Throwable/Error/Exception/RuntimeException; checked y throws; unchecked (RuntimeException); try/catch/finally; orden de catch (específico antes que general); multicatch (A|B); Error y qué no capturar
+- `java/modulo-3` — Tema 2: try-with-resources · Básico · 40 min — AutoCloseable y close(); cierre garantizado ante excepción; múltiples recursos y orden inverso; suppressed exceptions; try-with-resources vs finally manual
+- `java/modulo-3` — Tema 3: Excepciones personalizadas y no tragar excepciones · Intermedio · 45 min — excepción de dominio propia; checked vs unchecked para dominio; encadenamiento de causa (cause); wrapping checked->unchecked; no tragar: el catch vacío; preservar el rastro al relanzar
+- `java/modulo-4` — Tema 1: Stream API — map, filter, reduce, collect · Básico · 45 min — pipeline declarativo vs bucle; intermedias vs terminales; pereza y consumo único; Collectors (toList/groupingBy/joining/summingDouble); reduce con identidad; streams primitivos (IntStream); iterate/generate + limit; pureza y efectos secundarios
+- `java/modulo-4` — Tema 2: Optional — evitar null explícitamente · Intermedio · 40 min — Optional como tipo de retorno; creación (of/ofNullable/empty); map/flatMap/filter; orElse vs orElseGet; orElseThrow / ifPresent; get() sin comprobar; dónde NO usar Optional (ni campo ni parámetro)
+- `java/modulo-4` — Tema 3: Streams paralelos y referencias a métodos · Intermedio · 45 min — parallelStream() y ForkJoinPool; correctitud antes que velocidad; overhead de paralelización; estado compartido y condiciones de carrera; referencias a métodos; medición informal vs JMH
+- `java/modulo-4` — Tema 4: Stream Gatherers (Java 24) · Avanzado · 50 min — límite de map/filter (sin memoria); Stream.gather(); Gatherers.windowSliding(n); Gatherers.windowFixed(n); gatherer vs reduce; cuándo basta map/filter
+- `java/modulo-5` — Tema 1: ExecutorService y gestión de hilos · Intermedio · 50 min — Runnable vs Callable; submit y Future; Future.get y ExecutionException; invokeAll; shutdown vs shutdownNow; awaitTermination; tipos de pool y cola no acotada
+- `java/modulo-5` — Tema 2: CompletableFuture · Intermedio · 45 min — supplyAsync/runAsync; thenApply vs thenCompose; thenCombine; exceptionally vs handle; CompletionException; elegir el executor
+- `java/modulo-5` — Tema 3: Virtual threads · Intermedio · 50 min — platform thread vs virtual thread; carrier thread y montado/desmontado; I/O-bound vs CPU-bound; newVirtualThreadPerTaskExecutor; pinning y JEP 491; backpressure
+- `java/modulo-5` — Tema 4: Condiciones de carrera y sincronización · Intermedio · 50 min — condición de carrera; ++ no es atómico; synchronized; AtomicInteger y CAS; volatile: visibilidad != atomicidad; primitivas de coordinación (ReentrantLock/Semaphore/CountDownLatch); deadlock
+- `java/modulo-5` — Tema 5: Structured Concurrency (StructuredTaskScope, preview en JDK 27) · Avanzado · 55 min — estado preview en JDK 27; StructuredTaskScope.open y fork; join y Subtask.get(); Joiner (política allSuccessfulOrThrow); cancelación conjunta vs CompletableFuture suelto; scope acota ciclo de vida, no latencia
+- `java/modulo-5` — Tema 6: Scoped Values frente a ThreadLocal (Java 25) · Avanzado · 50 min — ScopedValue vs ThreadLocal; where(...).run(...) y get(); inmutabilidad del binding; herencia por subtareas estructuradas; liberación automática al salir; estado: ScopedValue estable, scope preview
+- `java/modulo-5` — Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos · Avanzado · 45 min — get(timeout) y TimeoutException; cancel(true) como señal; interrupción cooperativa; InterruptedException y restaurar la marca; dejar de esperar != detener el trabajo; terminación verificada del executor
+- `java/modulo-6` — Tema 1: NIO.2 — Path y Files · Intermedio · 45 min — Path vs clase File; operaciones de Files; createDirectories y jerarquía; Files.walk como stream; resolve vs normalize (orden importa); path traversal (..); enlaces simbólicos y toRealPath
+- `java/modulo-6` — Tema 2: Serialización con Jackson · Intermedio · 50 min — ObjectMapper y ciclo serializar/deserializar; records como modelo serializable; campos ausentes y valores por defecto; deserialización estricta (FAIL_ON_*); JsonNode/Map para JSON irregular; versión fija de la dependencia
+- `java/modulo-6` — Tema 3: Archivos grandes y recursos del classpath · Intermedio · 45 min — cargar todo vs streaming; BufferedReader/readLine; memoria por línea; Files.lines como stream; recurso del classpath (getResourceAsStream); classpath vs sistema de archivos
+- `java/modulo-7` — Tema 1: record — modelos inmutables sin boilerplate · Básico · 45 min — declaración y qué genera; accesores sin get; equals/hashCode/toString por valor; componentes final e inmutabilidad superficial; constructor compacto; constructor canónico y copia defensiva; wither para actualizar; cuándo NO usar record
+- `java/modulo-7` — Tema 2: sealed — jerarquías cerradas y exhaustividad · Intermedio · 45 min — sealed y permits; final/sealed/non-sealed en subtipos; exhaustividad en switch sin default; sealed + records = ADT; alcance de permits (mismo módulo/paquete); cuándo NO sellar
+- `java/modulo-7` — Tema 3: Pattern matching exhaustivo y para instanceof · Intermedio · 45 min — instanceof con binding; type pattern en switch; record patterns (deconstrucción); guardas when; exhaustividad sobre sealed; case null
+- `java/modulo-7` — Tema 4: Unnamed variables y patterns (_, Java 22) · Avanzado · 50 min — _ en record pattern; _ en catch; _ en bucles y recursos; _ no es una variable; descarte explícito vs nombre sin usar
+- `java/modulo-8` — Tema 1: pom.xml vs build.gradle.kts · Básico · 45 min — coordenadas (groupId:artifactId:version); declaración de dependencias; versión fija y reproducibilidad; repositorio y resolución; dependencias transitivas; XML declarativo vs DSL
+- `java/modulo-8` — Tema 2: Ciclo de vida de build y scopes · Intermedio · 45 min — fases del ciclo de vida; una fase implica las anteriores; binding fase->goal y plugins; scope de dependencia; el JAR plano no trae dependencias
+- `java/modulo-8` — Tema 3: Proyectos multi-módulo · Intermedio · 50 min — POM agregador (packaging pom) y módulos; herencia del padre; dependencia interna explícita; dirección de la dependencia; reactor y orden de build; ciclos entre módulos
+- `java/modulo-8` — Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas · Avanzado · 50 min — mismo problema, dos filosofías; equivalencia de comandos; el wrapper (gradlew/mvnw); estructura estándar compartida; cuál elegir (no los dos)
+- `java/modulo-9` — Tema 1: JUnit 5 — anotaciones y ciclo de vida · Básico · 45 min — @Test y aserciones; ciclo de vida (@BeforeEach/@AfterEach); @BeforeAll/@AfterAll; instancia por prueba y @TestInstance; aislamiento e independencia del orden; aserciones expresivas (assertThrows/assertAll)
+- `java/modulo-9` — Tema 2: Mockito — aislar dependencias · Intermedio · 50 min — mock vs dependencia real; @Mock/@InjectMocks; stub: when(...).thenReturn(...); verify sobre interacción; argument matchers (any/eq); thenThrow para simular fallos; cuándo NO mockear
+- `java/modulo-9` — Tema 3: Tests parametrizados y cobertura · Intermedio · 50 min — @ParameterizedTest + @ValueSource; @CsvSource (varios parámetros); @MethodSource (datos complejos); cobertura de líneas y ramas (JaCoCo); qué NO mide la cobertura; aserciones fluidas (AssertJ)
+- `spring-boot/modulo-0` — Tema 1: Inversión de control y el contenedor de Spring · Básico · 20 min — acoplamiento con new frente a IoC; el contenedor crea y conecta beans; estereotipo registra la clase como bean; depender de la abstracción, no la implementación; component scanning por paquete; @Primary/@Qualifier ante varios candidatos; cuándo IoC es ceremonia excesiva
+- `spring-boot/modulo-0` — Tema 2: Inyección por constructor vs por campo · Básico · 20 min — inyección por constructor permite final; test sin contenedor con new; inyección por campo se asigna tras construir; NullPointerException al instanciar con new; reflexión para testear campo privado; pérdida de inmutabilidad con campo no-final; constructor gigante → objeto de configuración
+- `spring-boot/modulo-0` — Tema 3: Estereotipos, autoconfiguración y scopes · Intermedio · 25 min — @Component/@Service/@Repository; @Repository traduce excepciones de persistencia; spring-boot-starter-webmvc autoconfigura; singleton (default): una instancia por contenedor; prototype: instancia nueva por resolución; prototype ≠ una instancia por petición HTTP; scope irrelevante sin estado mutable
+- `spring-boot/modulo-0` — Tema 4: Ciclo de vida de un bean y BeanPostProcessor · Intermedio · 30 min — Orden de fases de inicializacion; @PostConstruct como hook estandar; InitializingBean.afterPropertiesSet; @PreDestroy / DisposableBean al cerrar; BeanPostProcessor envuelve todos los beans; Recursos de prototype no se destruyen solos; Abrir recurso en el constructor
+- `spring-boot/modulo-0` — Tema 5: AOP con @Aspect y @Around — preocupaciones transversales · Avanzado · 40 min — @Aspect + @EnableAspectJAutoProxy; @Around y ProceedingJoinPoint.proceed(); Pointcut execution(...); El advice conserva la excepcion original; El proxy es el mecanismo (igual que @Transactional); Auto-invocacion no pasa por el aspecto; Abusar de AOP oscurece el flujo
+- `spring-boot/modulo-1` — Tema 1: Spring Initializr y starters · Básico · 20 min — Spring Initializr como generador; Starter como dependencia curada; BOM y resolución de versiones; Starter web vs otros starters; Anotación ausente sin el starter; Dependencia suelta vs starter; Cuándo no usar starters; Starters mínimos del proyecto
+- `spring-boot/modulo-1` — Tema 2: application.yml vs application.properties · Básico · 20 min — Pares clave-valor en .properties; Indentación jerárquica en .yml; Equivalencia funcional de ambos formatos; Detección automática del archivo; Sensibilidad a la indentación de YAML; Error de indentación silencioso; Mezclar .properties y .yml; Elección de formato por legibilidad
+- `spring-boot/modulo-1` — Tema 3: Perfiles y estructura por capas · Intermedio · 30 min — Configuración base en application.yml; Perfil como sobreescritura parcial; Activación explícita del perfil; Configuración fusionada efectiva; Perfil nunca activo por defecto; Olvidar activar el perfil al desplegar; Separación por capas controller/service/repository; Perfiles solo cuando hay varios entornos; spring.profiles.group (perfil paraguas)
+- `spring-boot/modulo-1` — Tema 4: Crear tu propia auto-configuración condicional · Avanzado · 40 min — @AutoConfiguration como marca de clase candidata; AutoConfiguration.imports; @ConditionalOnProperty; ApplicationContextRunner; ausencia de registro vs condicion no cumplida
+- `spring-boot/modulo-10` — Tema 1: Config Server y service discovery · Intermedio · 45 min — Config Server; service discovery
+- `spring-boot/modulo-10` — Tema 2: Spring Cloud Gateway · Intermedio · 40 min — rutas programáticas; predicates/filters
+- `spring-boot/modulo-10` — Tema 3: Circuit breaker con Resilience4j · Avanzado · 45 min — CircuitBreaker standalone; estados CLOSED/OPEN/HALF_OPEN
+- `spring-boot/modulo-10` — Tema 4: OAuth2/OIDC, Keycloak y Token Relay sin perder la frontera de autorización · Avanzado · 50 min — oauth2-resource-server; Token Relay; frontera de autorización
+- `spring-boot/modulo-10` — Tema 5: HTTP Interfaces, deadlines y descubrimiento según el entorno · Avanzado · 45 min — @HttpExchange proxy; withReadTimeout; ResourceAccessException; RestClient vs WebClient vs RestTemplate (decision)
+- `spring-boot/modulo-10` — Tema 6: Spring gRPC para comunicación interna de alta frecuencia (Spring Boot 4.1) · Avanzado · 50 min — @GrpcService; GrpcChannelFactory.createChannel; identidad de campo por número (protobuf)
+- `spring-boot/modulo-10` — Tema 7: DDD para decidir límites y propiedad de datos · Avanzado · 45 min — agregado con invariante encapsulada; propiedad de datos entre servicios
+- `spring-boot/modulo-10` — Tema 8: Orquestación de microservicios con Temporal y Spring Boot · Experto · 60 min — @WorkflowImpl(workers=...); @ActivityImpl(workers=...); Saga.addCompensation; TestWorkflowEnvironment
+- `spring-boot/modulo-11` — Tema 1: Fat JAR vs capas de Docker · Intermedio · 45 min — spring-boot-jarmode layertools
+- `spring-boot/modulo-11` — Tema 2: GraalVM native image · Avanzado · 45 min — spring-boot:process-aot; @ImportRuntimeHints; limitación explícita sin GraalVM instalado
+- `spring-boot/modulo-11` — Tema 3: Health checks para Kubernetes · Intermedio · 40 min — liveness/readiness probes
+- `spring-boot/modulo-12` — Tema 1: Arquitectura del microservicio integrador · Experto · 3 h — integración de módulos previos
+- `spring-boot/modulo-12` — Tema 2: Integrando seguridad, persistencia y observabilidad · Experto · 2 h 40 min — integración seguridad+persistencia+observabilidad
+- `spring-boot/modulo-12` — Tema 3: Cierre del track y próximos pasos · Experto · 1 h 20 min — checklist de cierre del track
+- `spring-boot/modulo-13` — Tema 1: `@Transactional` funciona en una frontera, no como encantamiento · Experto · 1 h 55 min — @Transactional como frontera explícita
+- `spring-boot/modulo-13` — Tema 2: Recuperación implica duplicación segura · Experto · 2 h 35 min — idempotencia en recuperación; catch de DataIntegrityViolationException fuera del método @Transactional (evita UnexpectedRollbackException)
+- `spring-boot/modulo-13` — Tema 3: Contratos ejecutables protegen despliegues independientes · Experto · 1 h 45 min — contract testing ejecutable
+- `spring-boot/modulo-13` — Tema 4: Observabilidad sirve a un objetivo y a una decisión · Experto · 1 h 45 min — observabilidad orientada a objetivo
+- `spring-boot/modulo-13` — Tema 5: Inbox, 2PC y el teorema CAP: límites de la consistencia distribuida · Experto · 1 h 30 min — inbox: deduplicación de eventos reentregados en el consumidor; mismo patrón de dos métodos (catch fuera de @Transactional) que corrige la regresión del Tema 2; 2PC bloquea ante la caída del coordinador entre prepare y commit; teorema CAP aplicado a la elección de disponibilidad sobre consistencia fuerte
+- `spring-boot/modulo-14` — Tema 1: CRUD API y contratos · Experto · 2 h 15 min — CRUD con contrato DTO
+- `spring-boot/modulo-14` — Tema 2: MySQL y datos espaciales · Experto · 1 h 45 min — tipos espaciales MySQL
+- `spring-boot/modulo-14` — Tema 3: JPA e Hibernate Spatial · Experto · 2 h 15 min — org.hibernate.orm:hibernate-spatial; tipos JTS
+- `spring-boot/modulo-14` — Tema 4: JWT Bearer y autorización por roles · Experto · 1 h 55 min — ownership vs rol
+- `spring-boot/modulo-14` — Tema 5: Tiempo real con STOMP · Experto · 2 h 15 min — @EnableWebSocketMessageBroker; WebSocketStompClient; STOMP != Socket.IO
+- `spring-boot/modulo-14` — Tema 6: Archivos y notificaciones push · Experto · 1 h 35 min — detección real de MIME
+- `spring-boot/modulo-15` — Tema 1: Backpressure real en WebFlux con reactor-test · Experto · 1 h 30 min — reactor-test StepVerifier
+- `spring-boot/modulo-15` — Tema 2: Contenedores Testcontainers reutilizados entre clases · Experto · 1 h 40 min — contenedor singleton reutilizado
+- `spring-boot/modulo-15` — Tema 3: Arquitectura hexagonal verificada con ArchUnit · Experto · 1 h 50 min — archunit-junit5; ArchRuleDefinition.noClasses
+- `spring-boot/modulo-15` — Tema 4: Bulkhead y RateLimiter de Resilience4j · Experto · 1 h 55 min — Bulkhead; RateLimiter
+- `spring-boot/modulo-15` — Tema 5: Saga con compensación real · Experto · 2 h 10 min — Saga.addCompensation / compensate en orden inverso
+- `spring-boot/modulo-15` — Tema 6: Event Sourcing con replay real · Experto · 2 h — replay desde el log de eventos
+- `spring-boot/modulo-15` — Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar · Experto · 1 h 15 min — reintento idempotente de compensación
+- `spring-boot/modulo-15` — Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework · Experto · 1 h 50 min — caso de uso independiente de framework
+- `spring-boot/modulo-15` — Tema 9: CQRS y saga por coreografía · Experto · 1 h 20 min — modelo de escritura y lectura como clases/tablas distintas conectadas por evento; fase AFTER_COMMIT y transacción REQUIRES_NEW para la proyección local; saga coreografiada: ningún componente conoce la secuencia completa; compensación disparada por evento, no por llamada directa de un coordinador; diferencia entre evento local síncrono y mensajería distribuida durable; frontera de doble escritura y patrón outbox; idempotencia, orden y evolución de contratos de evento; observabilidad por correlationId, estado de saga y detección de ciclos
+- `spring-boot/modulo-16` — Tema 1: Relaciones, lado propietario y ciclo de vida · Avanzado · 1 h 50 min — lado propietario de la relación
+- `spring-boot/modulo-16` — Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso · Avanzado · 1 h 40 min — FetchType; N+1
+- `spring-boot/modulo-17` — Tema 1: DataSource, JdbcTemplate y DAO · Avanzado · 1 h 40 min — JdbcTemplate; patrón DAO
+- `spring-boot/modulo-17` — Tema 2: `@Transactional`, rollback y límites de transacción · Avanzado · 1 h 20 min — propagación transaccional
+- `spring-boot/modulo-18` — Tema 1: SecurityFilterChain y autorización · Avanzado · 1 h 30 min — SecurityFilterChain
+- `spring-boot/modulo-18` — Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP · Avanzado · 1 h 20 min — validación DTO + OIDC
+- `spring-boot/modulo-18` — Tema 3: Levantar tu propio OAuth2 Authorization Server · Experto · 50 min — OAuth2AuthorizationServerConfigurer (instanciado con constructor, sin factory estatico); RegisteredClient con AuthorizationGrantType.CLIENT_CREDENTIALS; JWKSource con clave RSA generada al arrancar; POST /oauth2/token real con httpBasic; 401 ante credenciales invalidas
+- `spring-boot/modulo-19` — Tema 1: Job, Step, Tasklet y chunk processing · Avanzado · 1 h 40 min — chunk-oriented processing
+- `spring-boot/modulo-19` — Tema 2: Reinicio, JobParameters, retry, skip y listeners · Avanzado · 1 h 20 min — JobParameters; retry/skip policy
+- `spring-boot/modulo-19` — Tema 3: Particionamiento con múltiples workers y remote chunking · Experto · 1 h 30 min — Partitioner y ExecutionContext por partición; verificación de cobertura sin huecos ni duplicados; reubicación de paquetes en Spring Batch 6; PlatformTransactionManager requerido por spring-boot-starter-jdbc
+- `spring-boot/modulo-2` — Tema 1: Por qué DTOs en vez de entidades directamente · Intermedio · 30 min — DTO de entrada/salida; Acoplamiento entidad-contrato; Mapeo manual vs herramienta
+- `spring-boot/modulo-2` — Tema 2: Validación con Bean Validation y ResponseEntity · Intermedio · 25 min — @Valid en controller; ResponseEntity.status(); jakarta.validation constraints
+- `spring-boot/modulo-2` — Tema 3: Manejo centralizado de errores con @ControllerAdvice · Intermedio · 30 min — @RestControllerAdvice; @ExceptionHandler; MethodArgumentNotValidException
+- `spring-boot/modulo-2` — Tema 4: Lombok y MapStruct sin exponer datos internos · Intermedio · 40 min — lombok-mapstruct-binding orden; MapStruct componentModel=spring; unmappedTargetPolicy=ERROR
+- `spring-boot/modulo-2` — Tema 5: OpenAPI con springdoc: el contrato como prueba · Intermedio · 40 min — springdoc-openapi-starter-webmvc-ui 3.x; /v3/api-docs; swagger-ui.html
+- `spring-boot/modulo-2` — Tema 6: Paginación HTTP con validación y un límite de recursos explícito · Intermedio · 35 min — Validación de page/size; 400 vs 200 en tamaño inválido; Orden estable con desempate; Offset vs cursor
+- `spring-boot/modulo-2` — Tema 7: HandlerInterceptor frente a Filter y @ControllerAdvice · Avanzado · 35 min — preHandle/postHandle/afterCompletion; preHandle=false corta la cadena y omite afterCompletion; Filter vs HandlerInterceptor: acceso al handler resuelto; WebMvcConfigurer.addInterceptors; spring-boot-webmvc-test (dependencia explicita en Boot 4)
+- `spring-boot/modulo-2` — Tema 8: Negociación de contenido con HttpMessageConverters · Avanzado · 35 min — produces en @GetMapping; HttpMessageConverter autoconfigurado por classpath; 406 Not Acceptable; mismo DTO/controller, distinta representacion por converter
+- `spring-boot/modulo-20` — Tema 1: Scheduling y tareas periódicas · Avanzado · 1 h 10 min — @Scheduled
+- `spring-boot/modulo-20` — Tema 2: Eventos locales, eventos transaccionales y mensajería · Avanzado · 1 h 20 min — @TransactionalEventListener
+- `spring-boot/modulo-20` — Tema 3: Correo con Spring Mail y entrega recuperable · Avanzado · 1 h 10 min — JavaMailSender
+- `spring-boot/modulo-20` — Tema 4: Caché con Spring Cache, Caffeine y Redis · Avanzado · 1 h 20 min — @Cacheable; Caffeine vs Redis
+- `spring-boot/modulo-20` — Tema 5: @Async y ejecutores: trabajo en segundo plano con límites · Avanzado · 1 h 40 min — @Async; ThreadPoolTaskExecutor
+- `spring-boot/modulo-20` — Tema complementario: Integraciones empresariales, SOAP y fronteras de protocolo · Avanzado · 50 min — Spring Integration; SOAP legacy
+- `spring-boot/modulo-20` — Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo · Avanzado · 1 h 30 min — spring-ai-bom 2.0.2; ChatClient.builder(chatModel); @Tool con autorización fuera del modelo
+- `spring-boot/modulo-20` — Tema 7: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar · Avanzado · 1 h 10 min — autorización antes de recuperar evidencia para RAG
+- `spring-boot/modulo-21` — Tema 1: Productor, tópico, key y consumidor · Experto · 1 h 20 min — key de partición
+- `spring-boot/modulo-21` — Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia · Experto · 1 h 50 min — at-least-once + idempotencia
+- `spring-boot/modulo-21` — Tema 3: Outbox transaccional y flujo de negocio · Experto · 1 h 50 min — outbox pattern transaccional
+- `spring-boot/modulo-22` — Tema 1: Hexagonal: puertos que hablan el idioma del dominio · Experto · 1 h 10 min — puertos del dominio
+- `spring-boot/modulo-22` — Tema 2: C4: contexto, contenedores, componentes y código · Experto · 1 h 20 min — niveles del modelo C4
+- `spring-boot/modulo-22` — Tema 3: ADR: decisiones con contexto, alternativas y consecuencias · Experto · 1 h 10 min — estructura de un ADR
+- `spring-boot/modulo-23` — Tema 1: CompletableFuture, @Async y el bug de la autoinvocación · Avanzado · 1 h 20 min — autoinvocación bypasea el proxy @Async; bean orquestador separado restaura el proxy; thenCombine/exceptionally/orTimeout sobre CompletableFuture
+- `spring-boot/modulo-23` — Tema 2: Locks, deadlocks, semáforos y MDC en concurrencia · Experto · 1 h 30 min — deadlock por locks en orden inverso, verificado con join(timeout); orden total consistente elimina el deadlock; Semaphore acota concurrencia máxima; MDC es ThreadLocal y requiere TaskDecorator para propagarse a un executor
+- `spring-boot/modulo-3` — Tema 1: Entidades y repositorios derivados · Intermedio · 35 min — @Entity/@Id/@GeneratedValue; JpaRepository; @DataJpaTest
+- `spring-boot/modulo-3` — Tema 2: El problema N+1 y su corrección · Avanzado · 50 min — Hibernate Statistics; FetchType; JOIN FETCH / EntityGraph
+- `spring-boot/modulo-3` — Tema 3: Migraciones con Flyway · Intermedio · 35 min — db/migration naming; spring.flyway.enabled; reparación de migración fallida
+- `spring-boot/modulo-3` — Tema 4: Proyecciones, Specifications y auditoría de entidades · Avanzado · 45 min — proyeccion por interfaz (SQL selecciona solo esas columnas); JpaSpecificationExecutor + Specification.where().and(); @EnableJpaAuditing + @EntityListeners(AuditingEntityListener.class); Querydsl original sin mantenimiento, fork OpenFeign best-effort; spring-boot-data-jpa-test (dependencia explicita Boot 4)
+- `spring-boot/modulo-4` — Tema 1: SecurityFilterChain moderno · Intermedio · 40 min — SecurityFilterChain bean; HttpSecurity DSL
+- `spring-boot/modulo-4` — Tema 2: Filtro JWT y autorización por rol · Avanzado · 55 min — jjwt-api/impl/jackson split; OncePerRequestFilter; roles en claims
+- `spring-boot/modulo-4` — Tema 3: CORS y CSRF · Intermedio · 35 min — CorsConfigurationSource; csrf.disable() para API stateless
+- `spring-boot/modulo-4` — Tema 4: Protección SSRF con InetAddressFilter (Spring Boot 4.1) · Experto · 50 min — InetAddressFilter.externalAddresses(); HttpClientSettings.withInetAddressFilter; FilteredHostException; DNS rebinding
+- `spring-boot/modulo-4` — Tema 5: Flujo de login completo — de `/api/auth/login` a una ruta protegida · Avanzado · 45 min — login endpoint; token en Authorization header; ruta protegida 401 vs 200
+- `spring-boot/modulo-5` — Tema 1: @ConfigurationProperties tipado · Intermedio · 35 min — @ConfigurationProperties; binding por constructor
+- `spring-boot/modulo-5` — Tema 2: Fallar rápido al arranque · Intermedio · 30 min — fail-fast al arranque; validación de propiedades obligatorias
+- `spring-boot/modulo-5` — Tema 3: Manejo global de excepciones consistente entre entornos · Avanzado · 40 min — ProblemDetail RFC 9457; consistencia entre perfiles
+- `spring-boot/modulo-6` — Tema 1: Slices de testing — @WebMvcTest · Intermedio · 35 min — @WebMvcTest; MockMvc; @MockBean vs @MockitoBean
+- `spring-boot/modulo-6` — Tema 2: @DataJpaTest con Testcontainers · Avanzado · 50 min — @DataJpaTest; @Container; @ServiceConnection
+- `spring-boot/modulo-6` — Tema 3: @SpringBootTest completo y estrategia de pirámide de tests · Avanzado · 45 min — pirámide de tests; RANDOM_PORT; cuándo NO usar @SpringBootTest
+- `spring-boot/modulo-6` — Tema 4: Slices adicionales — @JsonTest, @RestClientTest y @TestConfiguration · Avanzado · 40 min — @JsonTest + JacksonTester; Jackson2Tester deprecado desde Boot 4.0; @RestClientTest + MockRestServiceServer; paquete org.springframework.boot.restclient.test.autoconfigure (Boot 4); RestClient.Builder manual rompe el mock; @TestConfiguration agrega beans solo para el test
+- `spring-boot/modulo-7` — Tema 1: Actuator y health checks personalizados · Intermedio · 35 min — HealthIndicator custom; /actuator/health
+- `spring-boot/modulo-7` — Tema 2: Métricas de negocio con Micrometer · Avanzado · 45 min — MeterRegistry; Counter/Timer custom
+- `spring-boot/modulo-7` — Tema 3: Liveness vs readiness · Intermedio · 30 min — liveness vs readiness groups; probes para Kubernetes
+- `spring-boot/modulo-7` — Tema 4: Tracing distribuido con Micrometer Tracing · Avanzado · 45 min — Tracer.currentSpan(); @Observed crea span hijo (mismo traceId, spanId distinto); management.observations.annotations.enabled (false por defecto, fallo silencioso); spring-boot-starter-aspectj (renombrado desde -aop en Boot 4); management.tracing.sampling.probability
+- `spring-boot/modulo-8` — Tema 1: Producers y consumers con Spring Kafka · Avanzado · 50 min — KafkaTemplate; @KafkaListener; ConsumerFactory/ProducerFactory
+- `spring-boot/modulo-8` — Tema 2: Dead-letter queue · Avanzado · 45 min — @RetryableTopic; DeadLetterPublishingRecoverer
+- `spring-boot/modulo-8` — Tema 3: Productor idempotente y transacciones (exactly-once) · Experto · 50 min — enable.idempotence; KafkaTransactionManager; exactly-once semantics
+- `spring-boot/modulo-8` — Tema 4: Rebalanceo de consumer groups y partition assignment · Avanzado · 45 min — ConsumerRebalanceListener; cooperative-sticky assignor
+- `spring-boot/modulo-8` — Tema 5: Kafka frente a RabbitMQ · Intermedio · 35 min — modelo de log vs cola; orden vs enrutamiento flexible
+- `spring-boot/modulo-8` — Tema 6: RabbitMQ a fondo — exchanges, routing keys y dead-letter exchange · Avanzado · 50 min — TopicExchange + routing key con patron (* vs #); ackMode=MANUAL + basicAck/basicNack; x-dead-letter-exchange en la cola; mensaje sin binding coincidente se pierde en silencio; requeue=true en bucle infinito vs requeue=false + DLX
+- `spring-boot/modulo-9` — Tema 1: Mono y Flux · Intermedio · 40 min — Mono vs Flux; evaluación perezosa (cold)
+- `spring-boot/modulo-9` — Tema 2: WebClient y composición no bloqueante · Avanzado · 45 min — WebClient.Builder; composición con flatMap
+- `spring-boot/modulo-9` — Tema 3: Cuándo WebFlux vale la complejidad, y R2DBC · Avanzado · 40 min — WebFlux vs WebMVC decisión; R2DBC no bloqueante
+- `spring-boot/modulo-9` — Tema 4: Virtual threads como alternativa a WebFlux · Avanzado · 35 min — spring.threads.virtual.enabled (false por defecto); Thread.currentThread().isVirtual(); verificacion requiere servidor real, no MockMvc; pinning de hilos virtuales en secciones synchronized largas; virtual threads (secuencial) vs WebFlux (reactivo)

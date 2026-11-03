@@ -499,12 +499,12 @@ describe('Precision real del grafo de dependencias de signals', () => {
     const efectoFiltro = vi.fn();
     const { pedido } = crearEstadosIndependientes(injector, efectoPedido, efectoFiltro);
 
-    TestBed.flushEffects();
+    TestBed.tick();
     efectoPedido.mockClear();
     efectoFiltro.mockClear();
 
     pedido.set('PED-002'); // cambia SOLO el signal pedido
-    TestBed.flushEffects();
+    TestBed.tick();
 
     expect(efectoPedido).toHaveBeenCalledTimes(1); // su effect SI se disparo
     expect(efectoFiltro).toHaveBeenCalledTimes(0); // el effect NO relacionado nunca se disparo
@@ -527,7 +527,7 @@ npx ng test --watch=false
 3. Escribe un test que confirme que un `computed()` compartido por AMBOS signals SÍ se recalcula cuando cualquiera de los dos cambia, contrastando con los `effect()` aislados de este tema.
 4. Escribe de memoria (sin mirar) dos signals independientes con un `effect()` cada uno, y un test con espías que confirme que cambiar uno no dispara el del otro. Compara después contra el patrón del Paso 4.
 
-**Pista:** `TestBed.flushEffects()` procesa síncronamente los `effect()` pendientes en un test — sin esta llamada, un `effect()` real podría no haberse ejecutado todavía en el momento exacto de la aserción, ya que Angular los programa para ejecutarse en un microtask, no de forma inmediata al cambiar el signal.
+**Pista:** `TestBed.tick()` procesa síncronamente los `effect()` pendientes en un test (el método anterior, `TestBed.flushEffects()`, sigue funcionando pero está deprecado en favor de `tick()` según la referencia oficial) — sin esta llamada, un `effect()` real podría no haberse ejecutado todavía en el momento exacto de la aserción, ya que Angular los programa para ejecutarse en un microtask, no de forma inmediata al cambiar el signal.
 
 #### Paso 6 · Práctica independiente
 
@@ -541,7 +541,7 @@ TestBed.____();
 
 #### Paso 7 · Cierre
 
-Ya confirmas, con un conteo real de invocaciones sobre dos signals independientes, que el grafo de dependencias de signals es preciso: solo notifica a quien realmente depende de cada cambio. Esto cierra el módulo de signals como el nuevo modelo de reactividad de Angular; como siguiente paso, continúa con el módulo 3 de este track (inyección de dependencias). Fuentes oficiales: [Angular — Zoneless](https://angular.dev/guide/experimental/zoneless), [Angular — Signals](https://angular.dev/guide/signals).
+Ya confirmas, con un conteo real de invocaciones sobre dos signals independientes, que el grafo de dependencias de signals es preciso: solo notifica a quien realmente depende de cada cambio. Esto cierra el módulo de signals como el nuevo modelo de reactividad de Angular; como siguiente paso, continúa con el módulo 3 de este track (inyección de dependencias). Fuentes oficiales: [Angular — Zoneless](https://angular.dev/guide/zoneless), [Angular — Signals](https://angular.dev/guide/signals).
 
 **Errores comunes:** asumir que el modo zoneless funciona automáticamente sin migrar el estado relevante a signals; agregar lecturas de signals adicionales dentro de un `effect()` sin darse cuenta de que eso amplía su conjunto real de dependencias rastreadas.
 
@@ -639,7 +639,7 @@ Ya usás `linkedSignal` para estado derivado pero sobrescribible, confirmado con
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar podrás usar `resource()` para traer los datos de un conductor de forma reactiva ligada a un signal `conductorId`, con estado de carga/error automático y sin condición de carrera cuando el id cambia antes de que la petición anterior termine.
+Al finalizar podrás usar `resource()` y su variante `httpResource()` (integrada con `HttpClient`) para traer los datos de un conductor de forma reactiva ligada a un signal `conductorId`, con estado de carga/error automático y sin condición de carrera cuando el id cambia antes de que la petición anterior termine.
 
 **Conocimiento previo:** Tema 5 de este módulo.
 
@@ -678,8 +678,10 @@ ng new ejemplo
 ```ts
 conductorId = signal('c-1');
 conductor = resource({
-  request: this.conductorId,
-  loader: ({ request }) => fetch(`/api/conductores/${request}`).then(r => r.json()),
+  // params es una función reactiva: se reevalúa cuando conductorId cambia
+  // (antes de Angular 20 esta propiedad se llamaba "request"; sigue el mismo rol)
+  params: () => this.conductorId(),
+  loader: ({ params }) => fetch(`/api/conductores/${params}`).then(r => r.json()),
 });
 ```
 
@@ -700,6 +702,59 @@ Abre http://localhost:4200; corre las pruebas con `ng test`.
 
 **Fallo deliberado:** reemplazá `resource()` por un `effect()` manual que llame a `fetch()` directamente y asigne el resultado a un signal con `.set()`, sin ningún mecanismo de cancelación. Simulá una respuesta lenta para `c-1` (con un delay artificial) y cambiá rápido a `c-2` (con una respuesta rápida) — el signal termina mostrando los datos de `c-1`, porque su respuesta, aunque pedida primero, llegó después y sobrescribió sin control los datos correctos de `c-2`.
 
+**`httpResource()` — la misma garantía integrada con `HttpClient`.** `resource()` con `fetch()` manual (como arriba) funciona, pero pierde la integración con `HttpClient` (interceptores, `provideHttpClientTesting()` en tests, etc.). `httpResource()` resuelve exactamente el mismo problema de condición de carrera, con la misma API de `.value()`/`.isLoading()`/`.error()`, pero usando `HttpClient` por debajo:
+
+```ts
+// src/app/conductor-panel.ts
+import { Component, signal } from '@angular/core';
+import { httpResource } from '@angular/common/http';
+
+interface Conductor { id: string; nombre: string; }
+
+@Component({
+  selector: 'app-conductor-panel',
+  template: `
+    @if (conductor.isLoading()) { <p>Cargando...</p> }
+    @if (conductor.hasValue()) { <p>{{ conductor.value().nombre }}</p> }
+    @if (conductor.error()) { <p>Error al cargar</p> }
+  `,
+})
+export class ConductorPanel {
+  conductorId = signal('c-1');
+  // la función reactiva se re-evalúa cuando conductorId cambia; httpResource
+  // cancela la petición anterior en curso antes de emitir la nueva, igual que resource()
+  conductor = httpResource<Conductor>(() => `/api/conductores/${this.conductorId()}`);
+}
+```
+
+```ts
+// src/app/conductor-panel.spec.ts
+import { TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { ConductorPanel } from './conductor-panel';
+
+describe('httpResource descarta respuestas obsoletas', () => {
+  it('conserva el valor del id más reciente aunque su respuesta llegue primero', () => {
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    });
+    const fixture = TestBed.createComponent(ConductorPanel);
+    const http = TestBed.inject(HttpTestingController);
+    fixture.componentInstance.conductorId.set('c-2'); // cambia antes de resolver c-1
+    fixture.detectChanges();
+
+    const peticiones = http.match(() => true);
+    peticiones[peticiones.length - 1].flush({ id: 'c-2', nombre: 'Rocío' });
+
+    expect(fixture.componentInstance.conductor.value().id).toBe('c-2');
+    http.verify();
+  });
+});
+```
+
+**Resultado esperado:** `httpResource()` reacciona a `conductorId` exactamente como `resource()` lo hace con `fetch()`, pero la petición pasa por el `HttpClient` real (interceptable, verificable con `HttpTestingController`); `conductor.value().id` siempre corresponde al `conductorId` vigente, nunca a uno obsoleto. Nota: `httpResource()` usa el `HttpClient` disponible globalmente — `provideHttpClient(...)` solo es necesario para configurar interceptores, XSRF u otras opciones (o, como aquí, para habilitar `provideHttpClientTesting()` en el test).
+
 #### Paso 5 · Práctica guiada — repetición progresiva
 
 1. Agregá un test que simule exactamente esa carrera (respuesta lenta para la primera petición, rápida para la segunda) confirmando que el valor final corresponde siempre a la petición más reciente.
@@ -713,14 +768,14 @@ Abre http://localhost:4200; corre las pruebas con `ng test`.
 **Completa el código:** rellena la propiedad que liga `resource()` al signal de entrada:
 
 ```ts
-conductor = resource({ ____: this.conductorId, loader: /* ... */ });
+conductor = resource({ ____: () => this.conductorId(), loader: /* ... */ });
 ```
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `resource()` ligado a un signal con su manejo de `isLoading()`. Verifica con `npx ng test --watch=false`. Compara después contra el Paso 4.
 
 #### Paso 7 · Cierre
 
-Ya usás `resource()` para datos asíncronos ligados reactivamente a un signal, confirmado con un test que reproduce y corrige la condición de carrera de respuestas obsoletas; esta misma garantía es la que necesitará el proyecto propio del track al cargar datos de un conductor o pedido seleccionado dinámicamente. Esto cierra el módulo de signals; como siguiente paso, aplica `httpResource()` específicamente sobre `HttpClient` en el módulo de interceptores. Fuentes oficiales: [Angular — resource](https://angular.dev/guide/signals/resource) y [Angular — httpResource](https://angular.dev/guide/signals/rxjs-interop).
+Ya usás `resource()` y `httpResource()` para datos asíncronos ligados reactivamente a un signal, confirmado con tests que reproducen y corrigen la condición de carrera de respuestas obsoletas; esta misma garantía es la que necesitará el proyecto propio del track al cargar datos de un conductor o pedido seleccionado dinámicamente. Esto cierra el módulo de signals; como siguiente paso, el módulo de interceptores (Módulo 7) profundiza en `HttpClient` para peticiones que no se modelan como `resource()` (mutaciones, envíos de formulario). Fuentes oficiales: [Angular — resource](https://angular.dev/guide/signals/resource) y [Angular — httpResource](https://angular.dev/guide/http/http-resource).
 
 **Errores comunes:** usar `effect()`+`fetch()` manual para datos reactivos sin ningún mecanismo de cancelación de respuestas obsoletas; no distinguir `isLoading()` de un `value()` todavía en su estado inicial.
 

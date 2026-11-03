@@ -222,6 +222,19 @@ Los módulos core están incluidos en Node: `os` informa sobre el sistema, `buff
 
 **Analogía:** `process` es el tablero del vehículo y los módulos core su kit de fábrica. Leer un indicador no basta: antes de conducir hay que comprobar que sus valores están en un rango seguro.
 
+**Flujo de configuración:** los valores externos se convierten y validan al arrancar; el resto de la aplicación recibe una configuración segura, no el objeto global `process`.
+
+```mermaid
+flowchart LR
+  process["process"] --> argumentos["argv: argumentos del CLI"]
+  process --> entorno["env: cadenas o undefined"]
+  proceso["version y platform"] --> diagnostico["diagnóstico del runtime"]
+  core["módulos core node:"] --> diagnostico
+  entorno --> validar["convertir y validar"]
+  validar --> config["config inmutable"]
+  config --> servicio["servicio usa valores explícitos"]
+```
+
 #### Practica
 
 Desde una carpeta vacía:
@@ -343,6 +356,24 @@ import { EventEmitter } from "node:events";
 const emisor = new EventEmitter();
 emisor.on("dato", (valor) => console.log("recibido:", valor));
 emisor.emit("dato", 42);
+```
+
+**Secuencia del ejemplo:** `emit` llama al listener en el mismo flujo; la escritura iniciada puede terminar después. `off` quita el listener para eventos futuros, pero no cancela ese I/O; `captureRejections` envía sus rechazos al listener de `error`.
+
+```mermaid
+sequenceDiagram
+  participant C as Caso de uso
+  participant B as EventEmitter
+  participant L as Listener de auditoría
+  participant FS as I/O de archivo
+  C->>B: emit(entrega.actualizada)
+  B->>L: invoca listener de forma síncrona
+  L->>FS: inicia appendFile asíncrono
+  B-->>C: emit devuelve el control
+  C->>B: off(misma función)
+  Note right of B: listenerCount queda en cero. El I/O ya iniciado continúa.
+  FS-->>L: escritura resuelta o rechazada
+  L->>B: rechazo capturado como error
 ```
 
 #### Practica

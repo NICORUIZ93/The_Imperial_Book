@@ -581,7 +581,7 @@ Ya confirmas con `TransferState` real que un dato obtenido durante el renderizad
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar podrás confirmar, con `TestBed` simulando un contexto no-navegador, que código guardado detrás de `isPlatformBrowser(platformId)` no se ejecuta durante el renderizado del servidor, evitando exactamente el tipo de discrepancia servidor/cliente que causa errores de hidratación.
+Al finalizar podrás confirmar, con `TestBed` simulando un contexto no-navegador, que código guardado detrás de `isPlatformBrowser(platformId)` no se ejecuta durante el renderizado del servidor, evitando exactamente el tipo de discrepancia servidor/cliente que causa errores de hidratación; también sabrás cómo `provideServerRendering()` y `provideClientHydration(withEventReplay())` activan SSR e hidratación a nivel de arranque.
 
 **Conocimiento previo:** Tema 5 de este módulo (SSR y TransferState).
 
@@ -594,6 +594,32 @@ Al finalizar podrás confirmar, con `TestBed` simulando un contexto no-navegador
 **Conceptos clave:** `isPlatformBrowser`, `PLATFORM_ID`, discrepancia de hidratación.
 
 `isPlatformBrowser(inject(PLATFORM_ID))` confirma en tiempo de ejecución si el código actual corre en un navegador real o en el entorno de renderizado del servidor (Node.js, sin `window`/`localStorage` reales); envolver código específico del navegador en esa comprobación evita que se ejecute donde no debería, la causa más común de errores de hidratación.
+
+**`provideServerRendering` y `provideClientHydration` (la otra mitad, a nivel de arranque).** `isPlatformBrowser` protege código puntual dentro de un servicio o componente, pero la hidratación en sí se activa a nivel de arranque de la aplicación, en dos archivos de configuración distintos:
+
+```ts
+// src/app/app.config.server.ts (arranque del servidor)
+import { ApplicationConfig } from '@angular/core';
+import { provideServerRendering } from '@angular/ssr';
+
+export const serverConfig: ApplicationConfig = {
+  providers: [provideServerRendering()],
+};
+```
+
+```ts
+// src/app/app.config.ts (arranque del cliente, el mismo que se hidrata)
+import { ApplicationConfig } from '@angular/core';
+import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideClientHydration(withEventReplay()), // reproduce clics/inputs ocurridos antes de hidratar
+  ],
+};
+```
+
+`provideServerRendering()` (paquete `@angular/ssr`) habilita el renderizado en el servidor; `provideClientHydration()` (paquete `@angular/platform-browser`) habilita que el cliente reutilice el HTML ya renderizado en vez de volver a construirlo desde cero, y `withEventReplay()` — generado por defecto por el CLI en proyectos SSR nuevos desde Angular 19 — reproduce eventos del usuario (clics, entradas de texto) que ocurrieron durante la ventana entre el HTML inicial y la hidratación completa, para que no se pierdan.
 
 **Analogía:** `isPlatformBrowser` es como preguntar "¿estoy en la tienda física o en el catálogo impreso?" antes de intentar abrir una puerta real — el catálogo impreso no tiene una puerta física que abrir, y asumir que sí produce un error.
 
@@ -698,7 +724,7 @@ if (!____(this.platformId)) {
 
 #### Paso 7 · Cierre
 
-Ya proteges código específico del navegador con `isPlatformBrowser`, confirmando con tests reales que el mismo código se comporta de forma segura tanto en el servidor como en el navegador, evitando discrepancias de hidratación. Este era el último tema del módulo y del track; el siguiente paso natural es aplicar estas seis técnicas combinadas sobre un proyecto propio de tamaño real. Fuentes oficiales: [Angular — Hydration](https://angular.dev/guide/hydration).
+Ya proteges código específico del navegador con `isPlatformBrowser`, y configuras `provideServerRendering()` + `provideClientHydration(withEventReplay())` a nivel de arranque, confirmando con tests reales que el mismo código se comporta de forma segura tanto en el servidor como en el navegador, evitando discrepancias de hidratación. Este era el último tema del módulo y del track; el siguiente paso natural es aplicar estas seis técnicas combinadas sobre un proyecto propio de tamaño real. Fuentes oficiales: [Angular — Hydration](https://angular.dev/guide/hydration), [Angular — SSR](https://angular.dev/guide/ssr).
 
 **Errores comunes:** acceder a APIs exclusivas del navegador (`window`, `localStorage`, `document`) sin verificar la plataforma primero; asumir que un error de hidratación es un bug de Angular en vez de una discrepancia real de comportamiento entre servidor y cliente en el propio código de la aplicación.
 

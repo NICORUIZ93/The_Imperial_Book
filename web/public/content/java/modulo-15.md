@@ -18,6 +18,34 @@ Dos módulos pueden recibir el mismo artefacto por caminos distintos. Si cada ca
 
 **¿Por qué es importante?** Porque un artefacto aparentemente correcto no debe ocultar dependencias divergentes ni un entorno incompatible. Es preferible detener el build antes de desplegar.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Reactor y orden de construcción entre módulos | Prerrequisito | `domain` compila antes que `app` con `-pl app -am` |
+| `dependencyManagement` fija versión sin añadir dependencia | Núcleo | Hijo declara el artefacto sin `<version>` |
+| BOM importado con ámbito `import` | Variante | Familia Jackson coordinada desde un BOM |
+| Convergencia de versiones transitivas | Núcleo | `Dependency convergence error` 2.19.2/2.18.3 |
+| Enforcer `requireJavaVersion` | Diagnóstico | Build rechazado con `[99,)` |
+| POM efectivo como fuente de verdad | Decisión | `help:effective-pom` muestra versión resuelta |
+| Perfiles solo para variantes de build, no secretos | Error frecuente | Credenciales fuera del POM |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Reactor y orden de construcción (prerrequisito).** Un POM con `packaging=pom` y `<modules>` define un reactor: Maven ordena los módulos según sus dependencias internas. Con `-pl app -am` seleccionas `app` y pides "also make" sus dependencias, así que `domain` se construye primero. Sin el reactor tendrías que instalar cada módulo a mano en el orden correcto.
+
+**`dependencyManagement` fija versión sin añadir la dependencia (núcleo).** El bloque `dependencyManagement` del padre solo *declara qué versión usar si* un hijo pide ese artefacto; no lo añade al classpath de nadie. Por eso `domain` y `app` deben declarar `jackson-databind` explícitamente (aunque sin `<version>`) para recibirlo. Confundir administrar con declarar deja módulos sin la dependencia que creías haber dado.
+
+**BOM importado con ámbito `import` (variante).** En lugar de repetir una propiedad de versión, un BOM (`<type>pom</type><scope>import</scope>` en `dependencyManagement`) trae un conjunto coherente de versiones de una familia (todo Jackson alineado). Es la forma recomendada de coordinar artefactos que deben moverse juntos, evitando mezclar `jackson-core` y `jackson-databind` de versiones distintas.
+
+**Convergencia de versiones transitivas (núcleo).** Dos rutas pueden traer el mismo artefacto en versiones distintas (`app` directa 2.19.2, `app→domain` 2.18.3). Maven elige una por "nearest wins", pero el resultado puede no ser el que probaste. La regla `dependencyConvergence` de Enforcer falla el build con `Dependency convergence error` en vez de dejar pasar un classpath ambiguo.
+
+**Enforcer `requireJavaVersion` (diagnóstico).** La regla `requireJavaVersion` compara el JDK que ejecuta Maven con un rango (`[27,28)`). Forzar `[99,)` hace que Enforcer detenga el build porque ningún JDK instalado cumple. Esto mueve un fallo de "funciona en mi máquina" al momento del build, antes de empaquetar.
+
+**POM efectivo como fuente de verdad (decisión).** La herencia, los BOM y las propiedades hacen difícil saber qué versión gana. `mvn help:effective-pom` imprime el POM ya resuelto, y `dependency:tree` muestra las rutas. Esa es la evidencia para decidir, no la lectura mental del POM fuente.
+
+**Perfiles solo para variantes de build, no secretos (error frecuente).** Los perfiles cambian cómo se construye (p. ej. activar un plugin en CI), no dónde guardar contraseñas ni reglas de negocio. Meter credenciales en un perfil las versiona en el repositorio; los secretos van en el entorno o en un gestor de secretos.
+
 **Analogía:** un catálogo corporativo de compras autoriza una versión por proveedor; cada departamento declara qué necesita, pero no negocia otra versión por su cuenta.
 
 Los perfiles sirven para diferencias del proceso de construcción, no para guardar contraseñas ni reglas de negocio. El wrapper puede fijar Maven, pero aquí usarás el `mvn` instalado para que cada archivo necesario sea visible. En Gradle, las plataformas y las estrategias de resolución cumplen funciones comparables; no necesitas mantener dos builds para aprender la equivalencia.
@@ -214,6 +242,34 @@ Un build reproducible hace explícitas sus entradas y evita incorporar hora actu
 
 **¿Por qué es importante?** Porque el mismo commit debe producir el mismo contenido en una laptop limpia y en CI. Así puedes firmar, auditar y desplegar exactamente lo que probaste.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Entradas no deterministas (timestamp, orden, ruta) | Prerrequisito | Dos JAR sin `--date` difieren |
+| `jar --date` fija fechas de las entradas | Núcleo | Dos SHA-256 idénticos |
+| Orden de entrada estable | Núcleo | Con varias clases, orden fijado |
+| Equivalencia Gradle: `isPreserveFileTimestamps=false` | Variante | Mapeo documentado en `VERIFICACION.md` |
+| Wrapper y toolchain fijan distribución y JDK | Variante | Tabla de equivalencias |
+| Dependency locking y verification metadata | Núcleo | Checksums de dependencias registrados |
+| Caché solo fiable para tareas deterministas | Límite | Tarea que lee la hora no se cachea |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Entradas no deterministas (prerrequisito).** Un artefacto deja de ser reproducible cuando incorpora la hora actual, un orden de archivos imprevisible o rutas absolutas de la máquina. El mismo bytecode produce bytes distintos en el JAR. Identificar esas entradas es el primer paso antes de intentar igualar hashes.
+
+**`jar --date` fija las fechas de las entradas (núcleo).** Cada entrada de un ZIP/JAR guarda una marca de tiempo. Por defecto es la hora de empaquetado, así que dos builds separados difieren. `jar --create --date=2026-01-01T00:00:00Z` escribe una fecha fija en todas las entradas, eliminando esa fuente de variación.
+
+**Orden de entrada estable (núcleo).** El JAR también depende del orden en que se añaden los archivos. Con una sola clase el orden es trivial; con muchas, hay que ordenarlas de forma determinista (p. ej. alfabético) antes de empaquetar, o dos builds diferirán aunque las fechas estén fijas.
+
+**Equivalencia Gradle `isPreserveFileTimestamps=false` (variante).** En una tarea `Jar` de Gradle, `isPreserveFileTimestamps = false` cumple el papel de `--date` y `isReproducibleFileOrder = true` el del orden estable. Son dos propiedades explícitas que convierten cualquier `Jar` en reproducible sin cambiar las fuentes.
+
+**Wrapper y toolchain fijan distribución y JDK (variante).** El Gradle wrapper fija qué versión de Gradle se usa; una toolchain selecciona qué JDK compila el código. Ojo con un matiz: la toolchain elige la JVM del *código*, no la JVM que ejecuta el propio Gradle. Confundirlos lleva a creer que cambiaste el runtime cuando solo cambiaste el target de compilación.
+
+**Dependency locking y verification metadata (núcleo).** Reproducibilidad del empaquetado no basta si las dependencias cambian de versión o contenido. El dependency locking congela las versiones resueltas y el verification metadata guarda checksums/firmas, de modo que una dependencia alterada aborta el build en vez de colarse.
+
+**Caché solo fiable para tareas deterministas (límite).** La build cache reutiliza la salida de una tarea cuando sus entradas no cambian. Pero si una tarea lee la hora o un recurso externo mutable, su salida no está determinada por sus entradas declaradas: cachearla propaga un resultado incorrecto. La caché no corrige el no-determinismo, lo oculta.
+
 **Analogía:** una receta reproducible fija ingredientes, cantidades y orden; escribir la hora de cocina dentro del plato haría distinto cada resultado aunque la receta no cambiara.
 
 Este laboratorio ejecuta el mecanismo esencial con el JDK, sin exigir una instalación de Gradle. La equivalencia de JAR reproducible en Gradle es `isPreserveFileTimestamps = false` y `isReproducibleFileOrder = true`; una toolchain no cambia la JVM que ejecuta el propio Gradle.
@@ -259,7 +315,7 @@ jar --create --file build/logistica-1.0.0.jar --main-class academia.App --date=2
 shasum -a 256 build/logistica-1.0.0.jar
 ```
 
-**Resultado esperado:** la ejecución imprime `artefacto=logistica version=1.0.0` y los dos SHA-256 son idénticos. `--date` fija las fechas de las entradas; con una sola clase también queda fijo su orden. En un proyecto con varios archivos, conserva un orden de entrada estable.
+**Resultado esperado (verificado con Temurin 27.0.1):** la ejecución imprime `artefacto=logistica version=1.0.0` y los dos SHA-256 son idénticos (en una corrida de referencia, `6c88933e…567b12`). `--date` fija las fechas de las entradas; con una sola clase también queda fijo su orden. En un proyecto con varios archivos, conserva un orden de entrada estable.
 
 **Fallo deliberado:** repite el empaquetado dos veces sin `--date` y separa las ejecuciones para que cambie la fecha ZIP:
 
@@ -290,7 +346,7 @@ Añade `src/academia/Version.java` con un método que devuelva la versión y ús
 
 **Errores comunes:** guardar credenciales en propiedades del build, pensar que una toolchain selecciona la JVM del lanzador y confiar en la caché para ocultar entradas no declaradas.
 
-Fuentes oficiales: [Gradle Build Cache](https://docs.gradle.org/current/userguide/build_cache.html), [Gradle 9.1.0 Release Notes](https://docs.gradle.org/9.1.0/release-notes.html) y [JAR Tool](https://docs.oracle.com/en/java/javase/25/docs/specs/man/jar.html).
+Fuentes oficiales revisadas el 2026-11-01: [Gradle Build Cache](https://docs.gradle.org/current/userguide/build_cache.html), [Gradle 9.1.0 Release Notes](https://docs.gradle.org/9.1.0/release-notes.html) y [JAR Tool](https://docs.oracle.com/en/java/javase/27/docs/specs/man/jar.html).
 
 ### Tema 3: Proyectos multi-módulo sin ciclos · Experto · 1 h 15 min
 
@@ -303,6 +359,34 @@ Fuentes oficiales: [Gradle Build Cache](https://docs.gradle.org/current/userguid
 `domain` contiene reglas sin frameworks; `application` coordina casos de uso y depende del dominio; `infrastructure` implementa puertos de aplicación; `api` ensambla los adaptadores. Una dependencia `implementation` no expone tipos a consumidores, mientras que una API pública sí forma parte del contrato. Los módulos justifican su costo cuando el límite necesita propiedad y dependencias distintas.
 
 **¿Por qué es importante?** Porque un ciclo revela responsabilidades mal ubicadas y dificulta compilar, probar y evolucionar cada parte. La dirección debe quedar protegida tanto por el build como por una regla legible.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Separación en capas `domain/application/infrastructure/api` | Núcleo | Reactor con cuatro módulos más el de pruebas |
+| Dirección de dependencias (infra→app, no al revés) | Núcleo | Diagrama y orden del reactor |
+| Puerto en `application`, adaptador en `infrastructure` | Núcleo | `RepositorioGuias` (interfaz) y `RepositorioMemoria` |
+| ArchUnit sobre bytecode detecta la violación real | Diagnóstico | Regla señala `domain → infrastructure` |
+| `freeOfCycles()` entre slices | Variante | Segunda regla sin ciclos |
+| El build mismo impide la dependencia inversa | Límite | `domain` no declara infraestructura |
+| Un módulo por paquete es sobre-ingeniería | Error frecuente | Módulos justificados por frontera real |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Separación en capas (núcleo).** `domain` guarda reglas sin frameworks; `application` coordina casos de uso sobre el dominio; `infrastructure` implementa los puertos; `api` ensambla adaptadores. Dividir en módulos Maven hace que el compilador, no solo la convención, impida mezclar responsabilidades: `domain` ni siquiera tiene en su classpath las clases de infraestructura.
+
+**Dirección de dependencias (núcleo).** Las flechas apuntan hacia el dominio: `api→application`, `api→infrastructure`, `infrastructure→application`, `application→domain`. El dominio no conoce a nadie. Si alguien intenta que `domain` dependa de `infrastructure`, invierte la flecha y rompe la regla de dependencias.
+
+**Puerto en `application`, adaptador en `infrastructure` (núcleo).** `RepositorioGuias` es una interfaz (puerto) declarada en `application`; `RepositorioMemoria` la implementa en `infrastructure`. Así la aplicación depende de una abstracción que ella misma posee, y la infraestructura depende de la aplicación, nunca al contrario. Es la inversión de dependencias aplicada a módulos.
+
+**ArchUnit sobre bytecode detecta la violación real (diagnóstico).** ArchUnit no mira nombres de paquete: importa el bytecode y sigue referencias de campos, parámetros y retornos. Por eso detecta que `ClienteHttp` en `academia.domain` tiene un campo de tipo `RepositorioMemoria`, aunque el nombre del paquete "parezca" correcto. La regla `noClasses()...should().dependOnClassesThat()` falla con la clase y el campo exactos.
+
+**`freeOfCycles()` entre slices (variante).** Más allá de la dirección, un diseño puede tener ciclos entre sub-paquetes. `SlicesRuleDefinition.slices().matching("academia.(*)..").should().beFreeOfCycles()` corta en rebanadas y verifica que ninguna se referencie en círculo, un defecto que la regla de capas simple no siempre revela.
+
+**El build mismo impide la dependencia inversa (límite).** La prueba ArchUnit protege dentro de un módulo, pero el reactor da una garantía más fuerte: como `domain/pom.xml` no declara `infrastructure` como dependencia, una clase de producción en `domain` que importe infraestructura ni siquiera compila. El test cubre el caso en que ambos estuvieran en el classpath de pruebas.
+
+**Un módulo por paquete es sobre-ingeniería (error frecuente).** Los módulos cuestan: POMs, versiones, orden de build. Se justifican cuando una frontera necesita propiedad, versionado o dependencias distintas. Convertir cada paquete en módulo multiplica la ceremonia sin aportar aislamiento real; para una app pequeña, paquetes ordenados más una prueba ArchUnit bastan.
 
 **Analogía:** un organigrama permite solicitar recursos solo a las áreas autorizadas; una solicitud en sentido contrario necesita cambiar el contrato, no ocultarse en una importación.
 
@@ -553,6 +637,34 @@ JUnit ejecuta y organiza pruebas; Mockito sustituye colaboradores; AssertJ expre
 
 **¿Por qué es importante?** Porque una suite rápida pierde valor si da falsos positivos o se rompe con cualquier refactor interno. Las pruebas deben observar comportamiento y contratos, no cada llamada privada.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Fake con estado real vs mock de frontera | Núcleo | `RepositorioMemoria` real, notificación mockeada |
+| `@ExtendWith(MockitoExtension)` y `@Mock` | Núcleo | Mock inyectado sin `mock(...)` manual |
+| Aserción de estado con AssertJ | Núcleo | `assertThat(resultado.estado())...` |
+| `verify` del contrato observable | Núcleo | `verify(notificacion).enviar(resultado)` |
+| No mockear la clase bajo prueba | Límite | Caso de uso instanciado, no mockeado |
+| `verifyNoMoreInteractions` con criterio | Variante | Verificación estricta solo si aporta |
+| `ArgumentCaptor` vs afirmar estado | Decisión | Captura de evento como alternativa |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Fake con estado real vs mock de frontera (núcleo).** Un fake en memoria (`RepositorioMemoria`) conserva comportamiento real: guardas y recuperas de verdad, así la prueba ejercita la lógica del caso de uso. Un mock reemplaza un colaborador cuyo efecto es externo (enviar una notificación) y lento o inseguro de ejecutar. Elegir uno u otro según el papel del colaborador evita pruebas frágiles.
+
+**`@ExtendWith(MockitoExtension)` y `@Mock` (núcleo).** La extensión de Mockito para JUnit 5 crea e inyecta los campos `@Mock` antes de cada test y verifica usos incorrectos (stubbing innecesario). Evita el `Mockito.mock(...)` manual y el olvido de inicializar, dejando el test centrado en el comportamiento.
+
+**Aserción de estado con AssertJ (núcleo).** `assertThat(resultado.estado()).isEqualTo(ENTREGADA)` comprueba el resultado de dominio con un mensaje de fallo legible. AssertJ encadena aserciones fluidas y, al fallar, muestra el valor esperado y el real, que es lo que necesitas para diagnosticar sin releer el test.
+
+**`verify` del contrato observable (núcleo).** `verify(notificacion).enviar(resultado)` comprueba que ocurrió la interacción que *es parte del contrato*: confirmar una entrega debe notificar. Verificar esa llamada es legítimo porque el envío es observable hacia afuera, no un detalle interno.
+
+**No mockear la clase bajo prueba (límite).** Si mockeas `ConfirmarEntrega`, pruebas el mock, no tu código: desaparece justo lo que querías validar. La clase bajo prueba siempre es real; solo sus colaboradores externos se sustituyen.
+
+**`verifyNoMoreInteractions` con criterio (variante).** `verifyNoMoreInteractions(notificacion)` falla si hay cualquier llamada no verificada. Es útil cuando una notificación extra representa un riesgo real (duplicar un aviso al cliente), pero como costumbre automática rompe el test ante cualquier añadido legítimo. Úsalo solo donde el exceso sea un defecto.
+
+**`ArgumentCaptor` vs afirmar estado (decisión).** `ArgumentCaptor<Guia>` captura el objeto pasado al mock para inspeccionarlo. A veces es necesario, pero suele ser más estable afirmar el estado resultante del sistema que el argumento exacto de una llamada: el estado sobrevive a refactors de cómo se construye el evento.
+
 **Analogía:** en un ensayo de teatro, el protagonista es real, el escenario es una maqueta funcional y solo se comprueba que determinadas señales se emitan.
 
 Un `ArgumentCaptor` permite inspeccionar un evento, pero suele ser más estable afirmar el estado resultante. `verifyNoMoreInteractions` es útil solo cuando una llamada adicional representa un riesgo real.
@@ -728,6 +840,34 @@ Fuentes oficiales: [JUnit 5 User Guide](https://junit.org/junit5/docs/current/us
 Una prueba de integración ejercita componentes reales y su protocolo. Testcontainers inicia una versión explícita de PostgreSQL; Flyway crea el esquema; JDBC inserta y lee tipos reales. Un mock de métodos no detecta una columna mal escrita, una restricción ni una conversión `NUMERIC`.
 
 **¿Por qué es importante?** Porque los adaptadores fallan en sus contratos concretos: SQL, tipos, headers, timeouts y serialización. La prueba debe cruzar esa frontera real.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Testcontainers inicia PostgreSQL versionado | Núcleo | `postgres:17-alpine` arranca en el test |
+| Flyway crea el esquema con migración versionada | Núcleo | `V1__crear_guias.sql` aplicada |
+| JDBC real con tipos `NUMERIC`/`DATE` | Núcleo | Decimal y fecha sobreviven ida y vuelta |
+| Surefire vs Failsafe (unit vs IT) | Prerrequisito | Clases `*IT` ejecutadas por Failsafe |
+| Aislamiento de datos entre pruebas | Diagnóstico | `truncate` en `@BeforeEach` |
+| Esperar condición, no tiempo fijo | Límite | Testcontainers espera disponibilidad |
+| Migración aplicada es inmutable | Error frecuente | Editar `V1` ya compartida rompe el historial |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Testcontainers inicia PostgreSQL versionado (núcleo).** `new PostgreSQLContainer<>("postgres:17-alpine")` levanta un contenedor con una versión *explícita* del motor, la misma en tu máquina y en CI. Pruebas contra el PostgreSQL real, no contra un emulador ni un mock, así que el dialecto SQL y los tipos son los de producción.
+
+**Flyway crea el esquema con migración versionada (núcleo).** `Flyway.configure().dataSource(...).load().migrate()` aplica `V1__crear_guias.sql` sobre el contenedor recién iniciado. El esquema que pruebas es el que desplegarás, descrito por las mismas migraciones, no un `CREATE TABLE` improvisado en el test.
+
+**JDBC real con tipos `NUMERIC`/`DATE` (núcleo).** El repositorio usa `PreparedStatement` con `setBigDecimal` y `getObject(..., LocalDate.class)`. La prueba inserta `1250.50` y una fecha y comprueba que vuelven idénticos: eso valida la conversión real entre Java y PostgreSQL, que un mock de métodos nunca ejercita.
+
+**Surefire vs Failsafe, unit vs IT (prerrequisito).** Surefire corre las pruebas unitarias (`*Test`) en la fase `test`; Failsafe corre las de integración (`*IT`) en `integration-test`/`verify`. Separarlas permite que una suite rápida corra siempre y la lenta antes de publicar, sin mezclar fallos de lógica con fallos de infraestructura.
+
+**Aislamiento de datos entre pruebas (diagnóstico).** `truncate table guias` en `@BeforeEach` garantiza que cada prueba parte de un estado conocido. Compartir una base mutable entre pruebas produce fallos que dependen del orden de ejecución, los más difíciles de diagnosticar.
+
+**Esperar condición, no tiempo fijo (límite).** Testcontainers espera a que el contenedor cumpla una *condición de disponibilidad* (puerto listo, log esperado), no un `sleep` arbitrario. Un tiempo fijo o es demasiado corto (flaky) o demasiado largo (lento); la espera por condición es determinista.
+
+**Migración aplicada es inmutable (error frecuente).** Una vez que una migración (`V1`) se aplicó en un entorno compartido, editarla cambia su checksum y Flyway lo detecta como historial corrupto. Los cambios se hacen con una migración nueva (`V2`), nunca editando una ya aplicada; por eso el fallo deliberado se corrige restaurando `V1`, no parcheándola en caliente.
 
 **Analogía:** probar un puente con una sección real y carga real aporta evidencia distinta de revisar únicamente sus cálculos en papel.
 
@@ -926,6 +1066,34 @@ Fuentes oficiales: [Testcontainers for Java](https://java.testcontainers.org/), 
 SLF4J es una fachada y Logback una implementación. La parametrización `log.info("guia={}", guia)` evita construir texto cuando el nivel está deshabilitado. MDC asocia contexto al hilo; `MDC.putCloseable` permite restaurarlo automáticamente. En un pool, olvidar la limpieza puede adjudicar una operación a la traza anterior sin lanzar ninguna excepción.
 
 **¿Por qué es importante?** Porque durante un incidente necesitas reconstruir una operación sin adivinar por timestamps y sin registrar tokens, emails o documentos completos. Logs, métricas y trazas se complementan, pero no son intercambiables.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| SLF4J fachada, Logback implementación | Prerrequisito | `slf4j-api` + `logback-classic` |
+| Logging parametrizado `{}` | Núcleo | `log.info("guia={}", guia)` sin construir texto |
+| MDC asocia contexto al hilo | Núcleo | `traceId`/`guiaId` en el JSON |
+| `MDC.putCloseable` restaura al cerrar | Núcleo | Segundo evento sin `traceId` heredado |
+| Contaminación de MDC en pool reutilizado | Diagnóstico | Fallo silencioso con `MDC.put` sin cerrar |
+| Encoder JSON para campos consultables | Variante | `LogstashEncoder` emite JSON |
+| No registrar secretos ni duplicar stack traces | Error frecuente | Prueba que rechaza token/email |
+
+Cada fila tiene su explicación individual a continuación.
+
+**SLF4J fachada, Logback implementación (prerrequisito).** El código llama a la API de SLF4J; en runtime, Logback provee la implementación que realmente escribe. Esta separación permite cambiar el backend sin tocar el código de logging y evita acoplar la aplicación a un framework concreto.
+
+**Logging parametrizado `{}` (núcleo).** `log.info("guia={}", guia)` difiere la construcción del mensaje: si el nivel `INFO` está deshabilitado, nunca se concatena ni se llama a `toString()`. Concatenar con `+` construye el texto siempre, desperdiciando trabajo en el nivel más común de producción.
+
+**MDC asocia contexto al hilo (núcleo).** El Mapped Diagnostic Context guarda pares clave-valor ligados al hilo actual. Al poner `traceId` y `guiaId` en el MDC, cada evento que ese hilo emita los incluye automáticamente, permitiendo correlacionar todos los logs de una operación sin pasarlos como parámetros.
+
+**`MDC.putCloseable` restaura al cerrar (núcleo).** `try (var t = MDC.putCloseable("traceId", id))` añade la clave y la elimina al salir del bloque, incluso ante excepción. Es el patrón correcto para que el contexto viva exactamente el alcance de la operación y no se filtre a la siguiente.
+
+**Contaminación de MDC en pool reutilizado (diagnóstico).** Un pool reutiliza hilos. Si usas `MDC.put` sin remover, la segunda tarea que corre en el mismo hilo hereda el `traceId` de la primera: un evento queda atribuido a la operación equivocada sin lanzar ninguna excepción. La evidencia solo aparece inspeccionando el JSON; por eso `putCloseable` es la defensa.
+
+**Encoder JSON para campos consultables (variante).** `LogstashEncoder` emite cada evento como un documento JSON con `timestamp`, `level`, `logger_name`, `message` y las claves MDC declaradas. Frente a texto plano, esto permite filtrar y agregar por campo en el sistema de logs, no hacer grep frágil sobre cadenas.
+
+**No registrar secretos ni duplicar stack traces (error frecuente).** Concatenar un token o email completo en un mensaje lo deja en reposo en los logs; registra identificadores no sensibles y redacta el resto. Y una excepción se registra con contexto *una sola vez*, en su frontera: loguearla en cada capa infla el ruido y dificulta ver dónde nació.
 
 **Analogía:** una etiqueta de seguimiento acompaña cada escaneo del paquete; al terminar debe retirarse de la cinta para que el siguiente paquete no herede su identidad.
 

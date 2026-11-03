@@ -186,6 +186,16 @@ Este patrón de composición de comportamiento transversal es conceptualmente si
 
 **¿Por qué es importante?** Un mixin permite compartir comportamiento reutilizable entre clases sin depender de herencia múltiple tradicional (no soportada en Dart), resolviendo el mismo problema que protocolos con extensiones en Swift o interfaces con implementación por defecto en otros lenguajes orientados a objetos.
 
+**Diagrama de composición:** ambas clases reciben el mismo comportamiento, pero ninguna hereda de la otra.
+
+```mermaid
+flowchart LR
+  conductor["Conductor"] -->|with| rastreable["mixin Rastreable"]
+  vehiculo["Vehiculo"] -->|with| rastreable
+  rastreable --> metodo["reportarPosicion()"]
+  conductor -. "sin extends entre sí" .- vehiculo
+```
+
 #### Paso 4 · Demostración guiada desde cero
 Parte de una carpeta vacía:
 ```bash
@@ -251,7 +261,7 @@ Al finalizar vas a simular con `Future.delayed` la consulta de entregas de un co
 Consultar las entregas pendientes de un conductor tarda un tiempo real (una llamada de red); mientras se espera esa respuesta, el programa no debe bloquearse, y una vez que llega, sumar los montos a cobrar a mano con un bucle mutable es más propenso a errores que encadenar operaciones declarativas.
 
 #### Paso 3 · Teoría, modelo mental y analogía
-Un `Future<T>` representa un valor que estará disponible más adelante, no inmediatamente; `await` suspende sin bloquear el hilo. `where`/`map`/`fold` transforman una colección en pasos declarativos encadenados. La analogía: un recibo de pedido que garantiza la entrega después, y una línea de ensamblaje con estaciones sucesivas para transformar datos.
+Un `Future<T>` representa un valor que estará disponible más adelante, no inmediatamente; `await` suspende la función actual sin bloquear el isolate ni crear otro hilo. `where`/`map`/`fold` transforman una colección en pasos declarativos encadenados. La analogía: un recibo de pedido que garantiza la entrega después, y una línea de ensamblaje con estaciones sucesivas para transformar datos.
 
 **Conceptos clave:** operación asíncrona representada como un valor futuro, transformación declarativa de colecciones.
 
@@ -271,7 +281,7 @@ void main() async {
 }
 ```
 
-Un `Future<T>` representa un valor de tipo `T` que estará disponible en algún momento futuro, no inmediatamente; una función marcada `async` puede usar `await` para suspender su ejecución hasta que ese `Future` se resuelva, sin bloquear el hilo de ejecución mientras tanto, permitiendo que el código se lea de forma lineal y secuencial exactamente igual que en `async`/`await` de Swift (Módulo 4 del track de iOS) o `suspend` en Kotlin (Módulo 2 del track de Kotlin Multiplatform): la misma convergencia de múltiples lenguajes hacia el mismo modelo mental de asincronía legible.
+Un `Future<T>` representa un valor de tipo `T` que estará disponible más adelante. Dentro de una función `async`, `await` suspende esa función mientras el `Future` está pendiente; no bloquea el isolate ni crea un hilo paralelo. Mientras espera una operación asíncrona, el isolate puede procesar otros eventos, pero una operación síncrona que consuma CPU todavía lo bloquea. El código puede leerse de forma lineal, como `async`/`await` en Swift o `suspend` en Kotlin, aunque cada lenguaje tenga sus propios detalles de ejecución.
 
 ```dart
 final nombres = personas.where((p) => p.edad >= 18).map((p) => p.nombre).toList();
@@ -283,6 +293,19 @@ final total = pedidos.fold<double>(0, (acumulado, p) => acumulado + p.monto);
 **Analogía:** un `Future` es como un recibo de un pedido que garantiza la entrega en algún momento posterior, aunque no inmediatamente: se puede seguir haciendo otras cosas mientras se espera, y `await` es simplemente el momento de recoger el pedido cuando efectivamente está listo; encadenar `where`/`map`/`fold` es como una línea de ensamblaje con estaciones sucesivas, cada una aplicando una transformación simple y bien definida, produciendo en conjunto un resultado complejo a partir de pasos individuales fáciles de entender por separado.
 
 **¿Por qué es importante?** `Future` con `async`/`await` permite código asíncrono legible de forma lineal, el mismo modelo convergente que otros lenguajes modernos; encadenar operaciones funcionales sobre colecciones expresa transformaciones complejas de forma declarativa y legible, sin bucles imperativos con estado mutable manual.
+
+**Flujo de espera y transformación:** la función se reanuda cuando llega el resultado; después, el pipeline filtra y proyecta los datos, mientras `fold` calcula un total.
+
+```mermaid
+flowchart LR
+  llamada["obtenerEntregas()"] --> future["Future<List<Entrega>>"]
+  future --> await["await suspende esta función"]
+  await -->|cuando se resuelve| lista["List<Entrega>"]
+  isolate["el isolate atiende otros eventos"] -. "mientras espera I/O" .-> future
+  lista --> filtro["where(completada)"]
+  filtro --> proyeccion["map(guia)"]
+  filtro --> suma["fold(monto)"]
+```
 
 ---
 
@@ -337,7 +360,7 @@ Pista: con el `await` restaurado, cambiá `.where((e) => e.completada)` por ning
 Corregí el Paso 5 restaurando el filtro `where((e) => e.completada)`, y agregá una segunda transformación que use `.map((e) => e.guia)` para imprimir solo las guías de las entregas completadas, confirmando que `where`, `map` y `fold` se encadenan sin variables intermedias mutables.
 
 #### Paso 7 · Cierre
-Entregá la consulta asíncrona con `await` del Paso 4, el error de tipos al quitar `await` del Paso 4, y las transformaciones encadenadas del Paso 6; explicá por qué el analizador detecta el `await` faltante antes de ejecutar el programa, no como un crash en producción. Siguiente paso: estudia widgets. Errores comunes: olvidar `await` sobre un `Future`; sumar colecciones con un bucle mutable en vez de `fold`. Fuentes oficiales: https://docs.flutter.dev/get-started/install y https://dart.dev/language.
+Entregá la consulta asíncrona con `await` del Paso 4, el error de tipos al quitar `await` del Paso 4, y las transformaciones encadenadas del Paso 6; explicá por qué el analizador detecta el `await` faltante antes de ejecutar el programa, no como un crash en producción. Siguiente paso: estudia widgets. Errores comunes: olvidar `await` sobre un `Future`; sumar colecciones con un bucle mutable en vez de `fold`. Fuentes oficiales: https://docs.flutter.dev/get-started/install, [async](https://dart.dev/language/async) y [concurrencia/isolate](https://dart.dev/language/concurrency).
 **Implicación práctica:** `await` suspende sin bloquear mientras se espera un resultado futuro, y encadenar `where`/`map`/`fold` expresa transformaciones de colecciones como pasos declarativos legibles, sin una variable acumuladora mutable gestionada a mano.
 
 ### Tema 4: Lints y estilo con analysis_options.yaml

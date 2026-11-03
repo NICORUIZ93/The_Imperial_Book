@@ -25,6 +25,33 @@ Cada track utiliza tres escalas:
 - **Tarea:** obliga a transferir el mecanismo sin seguir exactamente los mismos pasos.
 - **Proyecto acumulativo:** integra lo aprendido con arquitectura, pruebas, seguridad y operación.
 
+## Profundidad de los subtemas
+
+Este nivel es universal. El tema profundo de lambdas sirve como patrón de
+granularidad: antes de una API que dependa de un concepto, la persona estudia el
+concepto mediante todos sus mecanismos y decisiones esenciales. Cada tema recibe
+un mapa propio; no se replica mecánicamente la lista de lambdas en otros dominios.
+
+Cada tema comienza con un mapa de subtemas, no con la redacción. El mapa distingue:
+
+- prerrequisitos que deben enseñarse antes;
+- mecanismo central sin el cual el tema no se comprende;
+- variantes de sintaxis, API o arquitectura que cambian su uso;
+- límites y decisiones profesionales;
+- errores diagnosticables;
+- extensiones avanzadas que pueden quedar para otro módulo.
+
+Un subtema crítico no queda cubierto por mencionarlo. Debe responder qué cambia,
+por qué cambia, cómo observarlo, cómo falla y qué debe resolver el estudiante sin
+copiar. Puede reutilizar el proyecto del tema, pero necesita una evidencia propia y
+localizable dentro de ese proyecto. Si un título agrupa subtemas con objetivos o
+fallos diferentes, se divide en varios temas y se conectan sus prerrequisitos.
+
+Ejemplo: «lambdas» no se reduce a `x -> x + 1`. Incluye interfaz funcional y método
+SAM, tipo objetivo e inferencia, formas de sintaxis, captura efectivamente final,
+alcance de `this`, referencias a métodos, resolución de sobrecargas, excepciones y
+especializaciones primitivas. Cada parte crítica debe explicarse y practicarse.
+
 ## Regla para mostrar soluciones
 
 La solución se consulta después de un intento verificable. Antes de abrirla, la persona escribe su predicción, el error encontrado o la decisión que tomó. Después compara, explica la diferencia y vuelve a implementar sin copiar línea por línea.

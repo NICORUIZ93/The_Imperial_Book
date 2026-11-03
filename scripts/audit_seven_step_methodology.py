@@ -164,7 +164,7 @@ def main() -> None:
         MD_REPORT.write_text(md_text, encoding="utf-8")
     total = sum(row["topics"] for row in data["summary"].values())
     complete = sum(row["complete"] for row in data["summary"].values())
-    if total < 893 or len(data["summary"]) != 14:
+    if total < 893 or len(data["summary"]) != 15:
         raise SystemExit(f"Inventario metodológico inválido: {total} temas en {len(data['summary'])} tracks")
     if args.require_complete and complete != total:
         raise SystemExit(f"Metodología incompleta: {complete}/{total} temas")

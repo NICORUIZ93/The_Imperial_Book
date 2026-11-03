@@ -1,16 +1,16 @@
 {
   "tracks": {
     "foundations": {
-      "topics": 99,
-      "code": 99,
-      "commentedCode": 93,
-      "mermaid": 70,
+      "topics": 100,
+      "code": 100,
+      "commentedCode": 94,
+      "mermaid": 71,
       "archifyVisual": 6,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
-      "filePath": 98,
-      "runCommand": 99,
-      "officialSource": 99
+      "filePath": 99,
+      "runCommand": 100,
+      "officialSource": 100
     },
     "cloud": {
       "topics": 156,
@@ -51,8 +51,8 @@
     "node": {
       "topics": 77,
       "code": 77,
-      "commentedCode": 23,
-      "mermaid": 26,
+      "commentedCode": 25,
+      "mermaid": 28,
       "archifyVisual": 0,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
@@ -85,28 +85,40 @@
       "officialSource": 58
     },
     "java": {
-      "topics": 95,
-      "code": 95,
-      "commentedCode": 55,
-      "mermaid": 35,
+      "topics": 109,
+      "code": 109,
+      "commentedCode": 57,
+      "mermaid": 41,
       "archifyVisual": 3,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
-      "filePath": 95,
-      "runCommand": 95,
-      "officialSource": 95
+      "filePath": 108,
+      "runCommand": 109,
+      "officialSource": 108
     },
     "spring-boot": {
-      "topics": 91,
-      "code": 91,
-      "commentedCode": 77,
-      "mermaid": 54,
+      "topics": 107,
+      "code": 107,
+      "commentedCode": 89,
+      "mermaid": 60,
       "archifyVisual": 4,
-      "asciiVisual": 17,
+      "asciiVisual": 21,
       "misleadingDiagramLabel": 0,
-      "filePath": 91,
-      "runCommand": 91,
-      "officialSource": 91
+      "filePath": 107,
+      "runCommand": 107,
+      "officialSource": 107
+    },
+    "microservices": {
+      "topics": 11,
+      "code": 11,
+      "commentedCode": 2,
+      "mermaid": 0,
+      "archifyVisual": 0,
+      "asciiVisual": 0,
+      "misleadingDiagramLabel": 0,
+      "filePath": 10,
+      "runCommand": 8,
+      "officialSource": 10
     },
     "kotlin-multiplatform": {
       "topics": 56,
@@ -121,16 +133,16 @@
       "officialSource": 56
     },
     "android": {
-      "topics": 73,
-      "code": 73,
+      "topics": 74,
+      "code": 74,
       "commentedCode": 65,
       "mermaid": 27,
       "archifyVisual": 0,
       "asciiVisual": 40,
       "misleadingDiagramLabel": 0,
-      "filePath": 71,
-      "runCommand": 70,
-      "officialSource": 72
+      "filePath": 72,
+      "runCommand": 71,
+      "officialSource": 73
     },
     "ios": {
       "topics": 56,
@@ -147,8 +159,8 @@
     "flutter": {
       "topics": 63,
       "code": 63,
-      "commentedCode": 48,
-      "mermaid": 51,
+      "commentedCode": 50,
+      "mermaid": 53,
       "archifyVisual": 0,
       "asciiVisual": 14,
       "misleadingDiagramLabel": 0,
@@ -201,7 +213,7 @@
     {
       "track": "foundations",
       "module": 3,
-      "topic": "Tema 5: HTML semántico y CSS responsive desde un archivo vacío",
+      "topic": "Tema 5: Proyecto integrador — sitio de seguimiento accesible",
       "missingCode": false,
       "missingComments": true
     },
@@ -844,20 +856,6 @@
     },
     {
       "track": "node",
-      "module": 0,
-      "topic": "Tema 3: process, global y módulos core · Básico · 75 min",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "node",
-      "module": 0,
-      "topic": "Tema 4: Event-driven architecture y non-blocking I/O · Intermedio · 75 min",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "node",
       "module": 1,
       "topic": "Tema 1: package.json y semver · Básico · 50 min",
       "missingCode": false,
@@ -1481,15 +1479,85 @@
     },
     {
       "track": "java",
-      "module": 2,
-      "topic": "Tema 3: Comparable vs Comparator, e iteración · Intermedio · 50 min",
+      "module": 20,
+      "topic": "Tema 1: Lambdas a fondo — tipo objetivo, captura y referencias a métodos · Intermedio · 120 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 20,
-      "topic": "Tema 2: Componer sin anidar: andThen, compose, negate y reglas encadenadas · Intermedio · 75 min",
+      "topic": "Tema 3: Componer sin anidar: andThen, compose, negate y reglas encadenadas · Intermedio · 75 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 20,
+      "topic": "Tema 5: Function y BiFunction — transformar con una o dos entradas · Básico · 30 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 20,
+      "topic": "Tema 6: UnaryOperator y BinaryOperator — cuando entrada y salida comparten tipo · Básico · 20 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 20,
+      "topic": "Tema 7: Referencias a métodos — las cuatro formas · Básico · 25 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 20,
+      "topic": "Tema 8: Optional — ausencia explícita sin null · Intermedio · 30 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 20,
+      "topic": "Tema 9: Streams intermedios — map, filter, flatMap y sorted · Intermedio · 35 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 20,
+      "topic": "Tema 10: Streams terminales — collect, reduce, forEach y find · Intermedio · 35 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 20,
+      "topic": "Tema 11: Collectors — toList, toMap, groupingBy y joining · Intermedio · 35 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 20,
+      "topic": "Tema 12: Streams paralelos — cuándo ayudan y cuándo engañan · Avanzado · 30 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 20,
+      "topic": "Tema 14: Flow API — reactive streams en la biblioteca estándar · Avanzado · 30 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 3,
+      "topic": "Tema 1: Checked vs unchecked exceptions · Básico · 40 min",
       "missingCode": false,
       "missingComments": true
     },
@@ -1511,6 +1579,20 @@
       "track": "java",
       "module": 4,
       "topic": "Tema 2: Optional — evitar null explícitamente · Intermedio · 40 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 4,
+      "topic": "Tema 3: Streams paralelos y referencias a métodos · Intermedio · 45 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 4,
+      "topic": "Tema 4: Stream Gatherers (Java 24) · Avanzado · 50 min",
       "missingCode": false,
       "missingComments": true
     },
@@ -1628,6 +1710,13 @@
     },
     {
       "track": "spring-boot",
+      "module": 0,
+      "topic": "Tema 5: AOP con @Aspect y @Around — preocupaciones transversales · Avanzado · 40 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
       "module": 16,
       "topic": "Tema 1: Relaciones, lado propietario y ciclo de vida · Avanzado · 1 h 50 min",
       "missingCode": false,
@@ -1684,6 +1773,13 @@
     },
     {
       "track": "spring-boot",
+      "module": 19,
+      "topic": "Tema 3: Particionamiento con múltiples workers y remote chunking · Experto · 1 h 30 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
       "module": 20,
       "topic": "Tema 1: Scheduling y tareas periódicas · Avanzado · 1 h 10 min",
       "missingCode": false,
@@ -1721,6 +1817,83 @@
       "track": "spring-boot",
       "module": 21,
       "topic": "Tema 3: Outbox transaccional y flujo de negocio · Experto · 1 h 50 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 6,
+      "topic": "Tema 4: Slices adicionales — @JsonTest, @RestClientTest y @TestConfiguration · Avanzado · 40 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 9,
+      "topic": "Tema 4: Virtual threads como alternativa a WebFlux · Avanzado · 35 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "microservices",
+      "module": 0,
+      "topic": "Tema 1: Proceso, host, puerto, socket y DNS · Fundamentos · 70 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "microservices",
+      "module": 0,
+      "topic": "Tema 2: Latencia, deadline y timeouts por fase · Aplicación · 80 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "microservices",
+      "module": 0,
+      "topic": "Tema 3: Fallo parcial, resultado desconocido e idempotencia · Integración · 90 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "microservices",
+      "module": 0,
+      "topic": "Tema 4: Relojes, causalidad, concurrencia y orden · Integración · 80 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "microservices",
+      "module": 0,
+      "topic": "Tema 5: Serialización, evolución y falacias distribuidas · Experto · 100 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "microservices",
+      "module": 1,
+      "topic": "Tema 2: Cohesión, acoplamiento y API del módulo · Aplicación · 90 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "microservices",
+      "module": 1,
+      "topic": "Tema 3: Arquitectura hexagonal — dominio, puertos y adaptadores · Aplicación · 95 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "microservices",
+      "module": 1,
+      "topic": "Tema 4: Dependencias, ciclos y costo de coordinación · Integración · 80 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "microservices",
+      "module": 1,
+      "topic": "Tema 5: Fitness functions con ArchUnit · Integración · 110 min",
       "missingCode": false,
       "missingComments": true
     },
@@ -1811,7 +1984,14 @@
     {
       "track": "android",
       "module": 0,
-      "topic": "Tema 5: Coroutines — asincronía sin bloquear la UI",
+      "topic": "Tema 5: Lambdas y funciones de orden superior en Kotlin — contratos, captura y receptores · Intermedio · 120 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "android",
+      "module": 0,
+      "topic": "Tema 6: Coroutines — asincronía sin bloquear la UI",
       "missingCode": false,
       "missingComments": true
     },
@@ -1966,20 +2146,6 @@
       "track": "ios",
       "module": 7,
       "topic": "Tema 2: Operadores: debounce y combineLatest",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "flutter",
-      "module": 0,
-      "topic": "Tema 2: Clases y mixins",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "flutter",
-      "module": 0,
-      "topic": "Tema 3: Futures, async/await y colecciones funcionales",
       "missingCode": false,
       "missingComments": true
     },

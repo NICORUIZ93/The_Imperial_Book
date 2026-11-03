@@ -4,6 +4,7 @@
   "trackDependencies": {
     "node": "javascript",
     "spring-boot": "java",
+    "microservices": "spring-boot",
     "angular": "javascript",
     "react": "javascript",
     "android": "java",
@@ -18,7 +19,7 @@
       "track": "foundations",
       "module": 0,
       "position": 1,
-      "title": "Del hardware al programa en ejecución",
+      "title": "Computador, sistema operativo, programa y proceso · Básico · 90 min",
       "file": "web/public/content/foundations/modulo-0.md",
       "requires": []
     },
@@ -27,7 +28,7 @@
       "track": "foundations",
       "module": 0,
       "position": 2,
-      "title": "Archivos, carpetas y rutas sin perderse",
+      "title": "Del archivo fuente al programa en ejecución",
       "file": "web/public/content/foundations/modulo-0.md",
       "requires": [
         "foundations:0:1"
@@ -38,7 +39,7 @@
       "track": "foundations",
       "module": 0,
       "position": 3,
-      "title": "Cómo leer un comando antes de ejecutarlo",
+      "title": "Archivos, carpetas y rutas sin perderse",
       "file": "web/public/content/foundations/modulo-0.md",
       "requires": [
         "foundations:0:2"
@@ -49,7 +50,7 @@
       "track": "foundations",
       "module": 0,
       "position": 4,
-      "title": "Primer programa, primer error y primera evidencia",
+      "title": "Cómo leer un comando antes de ejecutarlo",
       "file": "web/public/content/foundations/modulo-0.md",
       "requires": [
         "foundations:0:3"
@@ -60,10 +61,21 @@
       "track": "foundations",
       "module": 0,
       "position": 5,
-      "title": "VS Code, comandos y atajos comprobables",
+      "title": "Primer programa, primer error y primera evidencia",
       "file": "web/public/content/foundations/modulo-0.md",
       "requires": [
         "foundations:0:4"
+      ]
+    },
+    {
+      "id": "foundations:0:6",
+      "track": "foundations",
+      "module": 0,
+      "position": 6,
+      "title": "VS Code, comandos y atajos comprobables",
+      "file": "web/public/content/foundations/modulo-0.md",
+      "requires": [
+        "foundations:0:5"
       ]
     },
     {
@@ -74,7 +86,7 @@
       "title": "Del problema al algoritmo y a los casos de prueba",
       "file": "web/public/content/foundations/modulo-1.md",
       "requires": [
-        "foundations:0:5"
+        "foundations:0:6"
       ]
     },
     {
@@ -258,7 +270,7 @@
       "track": "foundations",
       "module": 3,
       "position": 5,
-      "title": "HTML semántico y CSS responsive desde un archivo vacío",
+      "title": "Proyecto integrador — sitio de seguimiento accesible",
       "file": "web/public/content/foundations/modulo-3.md",
       "requires": [
         "foundations:3:4"
@@ -2071,7 +2083,7 @@
       "track": "java",
       "module": 0,
       "position": 1,
-      "title": "Del código fuente a la JVM · Básico · 35 min",
+      "title": "Instalar Eclipse Temurin JDK 27 en macOS, Windows y Ubuntu · Básico · 15 min",
       "file": "web/public/content/java/modulo-0.md",
       "requires": []
     },
@@ -2080,7 +2092,7 @@
       "track": "java",
       "module": 0,
       "position": 2,
-      "title": "public static void main — qué significa cada palabra · Básico · 30 min",
+      "title": "Del código fuente a la JVM · Básico · 35 min",
       "file": "web/public/content/java/modulo-0.md",
       "requires": [
         "java:0:1"
@@ -2091,7 +2103,7 @@
       "track": "java",
       "module": 0,
       "position": 3,
-      "title": "JDK, JRE y JVM · Básico · 30 min",
+      "title": "public static void main — qué significa cada palabra · Básico · 30 min",
       "file": "web/public/content/java/modulo-0.md",
       "requires": [
         "java:0:2"
@@ -2102,7 +2114,7 @@
       "track": "java",
       "module": 0,
       "position": 4,
-      "title": "Tipos primitivos vs referencias · Básico · 40 min",
+      "title": "JDK, JRE y JVM · Básico · 30 min",
       "file": "web/public/content/java/modulo-0.md",
       "requires": [
         "java:0:3"
@@ -2113,7 +2125,7 @@
       "track": "java",
       "module": 0,
       "position": 5,
-      "title": "Variables, conversiones y `String` · Intermedio · 45 min",
+      "title": "Tipos primitivos vs referencias · Básico · 40 min",
       "file": "web/public/content/java/modulo-0.md",
       "requires": [
         "java:0:4"
@@ -2124,7 +2136,7 @@
       "track": "java",
       "module": 0,
       "position": 6,
-      "title": "Operadores, precedencia y control de flujo · Intermedio · 45 min",
+      "title": "Variables, conversiones y `String` · Intermedio · 45 min",
       "file": "web/public/content/java/modulo-0.md",
       "requires": [
         "java:0:5"
@@ -2135,7 +2147,7 @@
       "track": "java",
       "module": 0,
       "position": 7,
-      "title": "Arreglos, wrappers y paso de argumentos · Intermedio · 45 min",
+      "title": "Operadores, precedencia y control de flujo · Intermedio · 45 min",
       "file": "web/public/content/java/modulo-0.md",
       "requires": [
         "java:0:6"
@@ -2146,10 +2158,21 @@
       "track": "java",
       "module": 0,
       "position": 8,
-      "title": "Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`) · Intermedio · 50 min",
+      "title": "Arreglos, wrappers y paso de argumentos · Intermedio · 45 min",
       "file": "web/public/content/java/modulo-0.md",
       "requires": [
         "java:0:7"
+      ]
+    },
+    {
+      "id": "java:0:9",
+      "track": "java",
+      "module": 0,
+      "position": 9,
+      "title": "Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`) · Intermedio · 50 min",
+      "file": "web/public/content/java/modulo-0.md",
+      "requires": [
+        "java:0:8"
       ]
     },
     {
@@ -2160,7 +2183,7 @@
       "title": "Clases, objetos, constructores y encapsulación · Básico · 40 min",
       "file": "web/public/content/java/modulo-1.md",
       "requires": [
-        "java:0:8"
+        "java:0:9"
       ]
     },
     {
@@ -2890,6 +2913,28 @@
       ]
     },
     {
+      "id": "java:18:3",
+      "track": "java",
+      "module": 18,
+      "position": 3,
+      "title": "Sockets TCP y UDP — la red que hay debajo de HttpClient · Avanzado · 2 h",
+      "file": "web/public/content/java/modulo-18.md",
+      "requires": [
+        "java:18:2"
+      ]
+    },
+    {
+      "id": "java:18:4",
+      "track": "java",
+      "module": 18,
+      "position": 4,
+      "title": "Seguridad defensiva — hash, HMAC, firma y cifrado · Avanzado · 2 h 30 min",
+      "file": "web/public/content/java/modulo-18.md",
+      "requires": [
+        "java:18:3"
+      ]
+    },
+    {
       "id": "java:19:1",
       "track": "java",
       "module": 19,
@@ -2897,7 +2942,7 @@
       "title": "Reflexión y anotaciones en tiempo de ejecución · Intermedio · 90 min",
       "file": "web/public/content/java/modulo-19.md",
       "requires": [
-        "java:18:2"
+        "java:18:4"
       ]
     },
     {
@@ -2971,7 +3016,7 @@
       "track": "java",
       "module": 20,
       "position": 1,
-      "title": "Las cuatro formas: Predicate, Function, Consumer y Supplier · Básico · 75 min",
+      "title": "Lambdas a fondo — tipo objetivo, captura y referencias a métodos · Intermedio · 120 min",
       "file": "web/public/content/java/modulo-20.md",
       "requires": [
         "java:19:7"
@@ -2982,7 +3027,7 @@
       "track": "java",
       "module": 20,
       "position": 2,
-      "title": "Componer sin anidar: andThen, compose, negate y reglas encadenadas · Intermedio · 75 min",
+      "title": "Las cuatro formas: Predicate, Function, Consumer y Supplier · Básico · 75 min",
       "file": "web/public/content/java/modulo-20.md",
       "requires": [
         "java:20:1"
@@ -2993,10 +3038,131 @@
       "track": "java",
       "module": 20,
       "position": 3,
-      "title": "Streams como composición: pereza, orden y efectos que se esconden · Intermedio · 90 min",
+      "title": "Componer sin anidar: andThen, compose, negate y reglas encadenadas · Intermedio · 75 min",
       "file": "web/public/content/java/modulo-20.md",
       "requires": [
         "java:20:2"
+      ]
+    },
+    {
+      "id": "java:20:4",
+      "track": "java",
+      "module": 20,
+      "position": 4,
+      "title": "Streams como composición: pereza, orden y efectos que se esconden · Intermedio · 90 min",
+      "file": "web/public/content/java/modulo-20.md",
+      "requires": [
+        "java:20:3"
+      ]
+    },
+    {
+      "id": "java:20:5",
+      "track": "java",
+      "module": 20,
+      "position": 5,
+      "title": "Function y BiFunction — transformar con una o dos entradas · Básico · 30 min",
+      "file": "web/public/content/java/modulo-20.md",
+      "requires": [
+        "java:20:4"
+      ]
+    },
+    {
+      "id": "java:20:6",
+      "track": "java",
+      "module": 20,
+      "position": 6,
+      "title": "UnaryOperator y BinaryOperator — cuando entrada y salida comparten tipo · Básico · 20 min",
+      "file": "web/public/content/java/modulo-20.md",
+      "requires": [
+        "java:20:5"
+      ]
+    },
+    {
+      "id": "java:20:7",
+      "track": "java",
+      "module": 20,
+      "position": 7,
+      "title": "Referencias a métodos — las cuatro formas · Básico · 25 min",
+      "file": "web/public/content/java/modulo-20.md",
+      "requires": [
+        "java:20:6"
+      ]
+    },
+    {
+      "id": "java:20:8",
+      "track": "java",
+      "module": 20,
+      "position": 8,
+      "title": "Optional — ausencia explícita sin null · Intermedio · 30 min",
+      "file": "web/public/content/java/modulo-20.md",
+      "requires": [
+        "java:20:7"
+      ]
+    },
+    {
+      "id": "java:20:9",
+      "track": "java",
+      "module": 20,
+      "position": 9,
+      "title": "Streams intermedios — map, filter, flatMap y sorted · Intermedio · 35 min",
+      "file": "web/public/content/java/modulo-20.md",
+      "requires": [
+        "java:20:8"
+      ]
+    },
+    {
+      "id": "java:20:10",
+      "track": "java",
+      "module": 20,
+      "position": 10,
+      "title": "Streams terminales — collect, reduce, forEach y find · Intermedio · 35 min",
+      "file": "web/public/content/java/modulo-20.md",
+      "requires": [
+        "java:20:9"
+      ]
+    },
+    {
+      "id": "java:20:11",
+      "track": "java",
+      "module": 20,
+      "position": 11,
+      "title": "Collectors — toList, toMap, groupingBy y joining · Intermedio · 35 min",
+      "file": "web/public/content/java/modulo-20.md",
+      "requires": [
+        "java:20:10"
+      ]
+    },
+    {
+      "id": "java:20:12",
+      "track": "java",
+      "module": 20,
+      "position": 12,
+      "title": "Streams paralelos — cuándo ayudan y cuándo engañan · Avanzado · 30 min",
+      "file": "web/public/content/java/modulo-20.md",
+      "requires": [
+        "java:20:11"
+      ]
+    },
+    {
+      "id": "java:20:13",
+      "track": "java",
+      "module": 20,
+      "position": 13,
+      "title": "Pureza y efectos secundarios — razonar sobre funciones · Intermedio · 30 min",
+      "file": "web/public/content/java/modulo-20.md",
+      "requires": [
+        "java:20:12"
+      ]
+    },
+    {
+      "id": "java:20:14",
+      "track": "java",
+      "module": 20,
+      "position": 14,
+      "title": "Flow API — reactive streams en la biblioteca estándar · Avanzado · 30 min",
+      "file": "web/public/content/java/modulo-20.md",
+      "requires": [
+        "java:20:13"
       ]
     },
     {
@@ -3007,7 +3173,7 @@
       "title": "Qué es la superficie pública de una API · Básico · 40 min",
       "file": "web/public/content/java/modulo-21.md",
       "requires": [
-        "java:20:3"
+        "java:20:14"
       ]
     },
     {
@@ -3990,6 +4156,28 @@
       ]
     },
     {
+      "id": "spring-boot:0:4",
+      "track": "spring-boot",
+      "module": 0,
+      "position": 4,
+      "title": "Ciclo de vida de un bean y BeanPostProcessor · Intermedio · 30 min",
+      "file": "web/public/content/spring-boot/modulo-0.md",
+      "requires": [
+        "spring-boot:0:3"
+      ]
+    },
+    {
+      "id": "spring-boot:0:5",
+      "track": "spring-boot",
+      "module": 0,
+      "position": 5,
+      "title": "AOP con @Aspect y @Around — preocupaciones transversales · Avanzado · 40 min",
+      "file": "web/public/content/spring-boot/modulo-0.md",
+      "requires": [
+        "spring-boot:0:4"
+      ]
+    },
+    {
       "id": "spring-boot:1:1",
       "track": "spring-boot",
       "module": 1,
@@ -3997,7 +4185,7 @@
       "title": "Spring Initializr y starters · Básico · 20 min",
       "file": "web/public/content/spring-boot/modulo-1.md",
       "requires": [
-        "spring-boot:0:3"
+        "spring-boot:0:5"
       ]
     },
     {
@@ -4023,6 +4211,17 @@
       ]
     },
     {
+      "id": "spring-boot:1:4",
+      "track": "spring-boot",
+      "module": 1,
+      "position": 4,
+      "title": "Crear tu propia auto-configuración condicional · Avanzado · 40 min",
+      "file": "web/public/content/spring-boot/modulo-1.md",
+      "requires": [
+        "spring-boot:1:3"
+      ]
+    },
+    {
       "id": "spring-boot:2:1",
       "track": "spring-boot",
       "module": 2,
@@ -4030,7 +4229,7 @@
       "title": "Por qué DTOs en vez de entidades directamente · Intermedio · 30 min",
       "file": "web/public/content/spring-boot/modulo-2.md",
       "requires": [
-        "spring-boot:1:3"
+        "spring-boot:1:4"
       ]
     },
     {
@@ -4089,6 +4288,28 @@
       ]
     },
     {
+      "id": "spring-boot:2:7",
+      "track": "spring-boot",
+      "module": 2,
+      "position": 7,
+      "title": "HandlerInterceptor frente a Filter y @ControllerAdvice · Avanzado · 35 min",
+      "file": "web/public/content/spring-boot/modulo-2.md",
+      "requires": [
+        "spring-boot:2:6"
+      ]
+    },
+    {
+      "id": "spring-boot:2:8",
+      "track": "spring-boot",
+      "module": 2,
+      "position": 8,
+      "title": "Negociación de contenido con HttpMessageConverters · Avanzado · 35 min",
+      "file": "web/public/content/spring-boot/modulo-2.md",
+      "requires": [
+        "spring-boot:2:7"
+      ]
+    },
+    {
       "id": "spring-boot:3:1",
       "track": "spring-boot",
       "module": 3,
@@ -4096,7 +4317,7 @@
       "title": "Entidades y repositorios derivados · Intermedio · 35 min",
       "file": "web/public/content/spring-boot/modulo-3.md",
       "requires": [
-        "spring-boot:2:6"
+        "spring-boot:2:8"
       ]
     },
     {
@@ -4122,6 +4343,17 @@
       ]
     },
     {
+      "id": "spring-boot:3:4",
+      "track": "spring-boot",
+      "module": 3,
+      "position": 4,
+      "title": "Proyecciones, Specifications y auditoría de entidades · Avanzado · 45 min",
+      "file": "web/public/content/spring-boot/modulo-3.md",
+      "requires": [
+        "spring-boot:3:3"
+      ]
+    },
+    {
       "id": "spring-boot:4:1",
       "track": "spring-boot",
       "module": 4,
@@ -4129,7 +4361,7 @@
       "title": "SecurityFilterChain moderno · Intermedio · 40 min",
       "file": "web/public/content/spring-boot/modulo-4.md",
       "requires": [
-        "spring-boot:3:3"
+        "spring-boot:3:4"
       ]
     },
     {
@@ -4243,6 +4475,17 @@
       ]
     },
     {
+      "id": "spring-boot:6:4",
+      "track": "spring-boot",
+      "module": 6,
+      "position": 4,
+      "title": "Slices adicionales — @JsonTest, @RestClientTest y @TestConfiguration · Avanzado · 40 min",
+      "file": "web/public/content/spring-boot/modulo-6.md",
+      "requires": [
+        "spring-boot:6:3"
+      ]
+    },
+    {
       "id": "spring-boot:7:1",
       "track": "spring-boot",
       "module": 7,
@@ -4250,7 +4493,7 @@
       "title": "Actuator y health checks personalizados · Intermedio · 35 min",
       "file": "web/public/content/spring-boot/modulo-7.md",
       "requires": [
-        "spring-boot:6:3"
+        "spring-boot:6:4"
       ]
     },
     {
@@ -4276,6 +4519,17 @@
       ]
     },
     {
+      "id": "spring-boot:7:4",
+      "track": "spring-boot",
+      "module": 7,
+      "position": 4,
+      "title": "Tracing distribuido con Micrometer Tracing · Avanzado · 45 min",
+      "file": "web/public/content/spring-boot/modulo-7.md",
+      "requires": [
+        "spring-boot:7:3"
+      ]
+    },
+    {
       "id": "spring-boot:8:1",
       "track": "spring-boot",
       "module": 8,
@@ -4283,7 +4537,7 @@
       "title": "Producers y consumers con Spring Kafka · Avanzado · 50 min",
       "file": "web/public/content/spring-boot/modulo-8.md",
       "requires": [
-        "spring-boot:7:3"
+        "spring-boot:7:4"
       ]
     },
     {
@@ -4331,6 +4585,17 @@
       ]
     },
     {
+      "id": "spring-boot:8:6",
+      "track": "spring-boot",
+      "module": 8,
+      "position": 6,
+      "title": "RabbitMQ a fondo — exchanges, routing keys y dead-letter exchange · Avanzado · 50 min",
+      "file": "web/public/content/spring-boot/modulo-8.md",
+      "requires": [
+        "spring-boot:8:5"
+      ]
+    },
+    {
       "id": "spring-boot:9:1",
       "track": "spring-boot",
       "module": 9,
@@ -4338,7 +4603,7 @@
       "title": "Mono y Flux · Intermedio · 40 min",
       "file": "web/public/content/spring-boot/modulo-9.md",
       "requires": [
-        "spring-boot:8:5"
+        "spring-boot:8:6"
       ]
     },
     {
@@ -4364,6 +4629,17 @@
       ]
     },
     {
+      "id": "spring-boot:9:4",
+      "track": "spring-boot",
+      "module": 9,
+      "position": 4,
+      "title": "Virtual threads como alternativa a WebFlux · Avanzado · 35 min",
+      "file": "web/public/content/spring-boot/modulo-9.md",
+      "requires": [
+        "spring-boot:9:3"
+      ]
+    },
+    {
       "id": "spring-boot:10:1",
       "track": "spring-boot",
       "module": 10,
@@ -4371,7 +4647,7 @@
       "title": "Config Server y service discovery · Intermedio · 45 min",
       "file": "web/public/content/spring-boot/modulo-10.md",
       "requires": [
-        "spring-boot:9:3"
+        "spring-boot:9:4"
       ]
     },
     {
@@ -4562,6 +4838,17 @@
       ]
     },
     {
+      "id": "spring-boot:13:5",
+      "track": "spring-boot",
+      "module": 13,
+      "position": 5,
+      "title": "Inbox, 2PC y el teorema CAP: límites de la consistencia distribuida · Experto · 1 h 30 min",
+      "file": "web/public/content/spring-boot/modulo-13.md",
+      "requires": [
+        "spring-boot:13:4"
+      ]
+    },
+    {
       "id": "spring-boot:14:1",
       "track": "spring-boot",
       "module": 14,
@@ -4569,7 +4856,7 @@
       "title": "CRUD API y contratos · Experto · 2 h 15 min",
       "file": "web/public/content/spring-boot/modulo-14.md",
       "requires": [
-        "spring-boot:13:4"
+        "spring-boot:13:5"
       ]
     },
     {
@@ -4716,6 +5003,17 @@
       ]
     },
     {
+      "id": "spring-boot:15:9",
+      "track": "spring-boot",
+      "module": 15,
+      "position": 9,
+      "title": "CQRS y saga por coreografía · Experto · 1 h 20 min",
+      "file": "web/public/content/spring-boot/modulo-15.md",
+      "requires": [
+        "spring-boot:15:8"
+      ]
+    },
+    {
       "id": "spring-boot:16:1",
       "track": "spring-boot",
       "module": 16,
@@ -4723,7 +5021,7 @@
       "title": "Relaciones, lado propietario y ciclo de vida · Avanzado · 1 h 50 min",
       "file": "web/public/content/spring-boot/modulo-16.md",
       "requires": [
-        "spring-boot:15:8"
+        "spring-boot:15:9"
       ]
     },
     {
@@ -4782,6 +5080,17 @@
       ]
     },
     {
+      "id": "spring-boot:18:3",
+      "track": "spring-boot",
+      "module": 18,
+      "position": 3,
+      "title": "Levantar tu propio OAuth2 Authorization Server · Experto · 50 min",
+      "file": "web/public/content/spring-boot/modulo-18.md",
+      "requires": [
+        "spring-boot:18:2"
+      ]
+    },
+    {
       "id": "spring-boot:19:1",
       "track": "spring-boot",
       "module": 19,
@@ -4789,7 +5098,7 @@
       "title": "Job, Step, Tasklet y chunk processing · Avanzado · 1 h 40 min",
       "file": "web/public/content/spring-boot/modulo-19.md",
       "requires": [
-        "spring-boot:18:2"
+        "spring-boot:18:3"
       ]
     },
     {
@@ -4804,6 +5113,17 @@
       ]
     },
     {
+      "id": "spring-boot:19:3",
+      "track": "spring-boot",
+      "module": 19,
+      "position": 3,
+      "title": "Particionamiento con múltiples workers y remote chunking · Experto · 1 h 30 min",
+      "file": "web/public/content/spring-boot/modulo-19.md",
+      "requires": [
+        "spring-boot:19:2"
+      ]
+    },
+    {
       "id": "spring-boot:20:1",
       "track": "spring-boot",
       "module": 20,
@@ -4811,7 +5131,7 @@
       "title": "Scheduling y tareas periódicas · Avanzado · 1 h 10 min",
       "file": "web/public/content/spring-boot/modulo-20.md",
       "requires": [
-        "spring-boot:19:2"
+        "spring-boot:19:3"
       ]
     },
     {
@@ -4955,6 +5275,149 @@
       "file": "web/public/content/spring-boot/modulo-22.md",
       "requires": [
         "spring-boot:22:2"
+      ]
+    },
+    {
+      "id": "spring-boot:23:1",
+      "track": "spring-boot",
+      "module": 23,
+      "position": 1,
+      "title": "CompletableFuture, @Async y el bug de la autoinvocación · Avanzado · 1 h 20 min",
+      "file": "web/public/content/spring-boot/modulo-23.md",
+      "requires": [
+        "spring-boot:22:3"
+      ]
+    },
+    {
+      "id": "spring-boot:23:2",
+      "track": "spring-boot",
+      "module": 23,
+      "position": 2,
+      "title": "Locks, deadlocks, semáforos y MDC en concurrencia · Experto · 1 h 30 min",
+      "file": "web/public/content/spring-boot/modulo-23.md",
+      "requires": [
+        "spring-boot:23:1"
+      ]
+    },
+    {
+      "id": "microservices:0:1",
+      "track": "microservices",
+      "module": 0,
+      "position": 1,
+      "title": "Proceso, host, puerto, socket y DNS · Fundamentos · 70 min",
+      "file": "web/public/content/microservices/modulo-0.md",
+      "requires": [
+        "spring-boot:23:2"
+      ]
+    },
+    {
+      "id": "microservices:0:2",
+      "track": "microservices",
+      "module": 0,
+      "position": 2,
+      "title": "Latencia, deadline y timeouts por fase · Aplicación · 80 min",
+      "file": "web/public/content/microservices/modulo-0.md",
+      "requires": [
+        "microservices:0:1"
+      ]
+    },
+    {
+      "id": "microservices:0:3",
+      "track": "microservices",
+      "module": 0,
+      "position": 3,
+      "title": "Fallo parcial, resultado desconocido e idempotencia · Integración · 90 min",
+      "file": "web/public/content/microservices/modulo-0.md",
+      "requires": [
+        "microservices:0:2"
+      ]
+    },
+    {
+      "id": "microservices:0:4",
+      "track": "microservices",
+      "module": 0,
+      "position": 4,
+      "title": "Relojes, causalidad, concurrencia y orden · Integración · 80 min",
+      "file": "web/public/content/microservices/modulo-0.md",
+      "requires": [
+        "microservices:0:3"
+      ]
+    },
+    {
+      "id": "microservices:0:5",
+      "track": "microservices",
+      "module": 0,
+      "position": 5,
+      "title": "Serialización, evolución y falacias distribuidas · Experto · 100 min",
+      "file": "web/public/content/microservices/modulo-0.md",
+      "requires": [
+        "microservices:0:4"
+      ]
+    },
+    {
+      "id": "microservices:1:1",
+      "track": "microservices",
+      "module": 1,
+      "position": 1,
+      "title": "Monolito, monolito modular, servicio y microservicio · Fundamentos · 75 min",
+      "file": "web/public/content/microservices/modulo-1.md",
+      "requires": [
+        "microservices:0:5"
+      ]
+    },
+    {
+      "id": "microservices:1:2",
+      "track": "microservices",
+      "module": 1,
+      "position": 2,
+      "title": "Cohesión, acoplamiento y API del módulo · Aplicación · 90 min",
+      "file": "web/public/content/microservices/modulo-1.md",
+      "requires": [
+        "microservices:1:1"
+      ]
+    },
+    {
+      "id": "microservices:1:3",
+      "track": "microservices",
+      "module": 1,
+      "position": 3,
+      "title": "Arquitectura hexagonal — dominio, puertos y adaptadores · Aplicación · 95 min",
+      "file": "web/public/content/microservices/modulo-1.md",
+      "requires": [
+        "microservices:1:2"
+      ]
+    },
+    {
+      "id": "microservices:1:4",
+      "track": "microservices",
+      "module": 1,
+      "position": 4,
+      "title": "Dependencias, ciclos y costo de coordinación · Integración · 80 min",
+      "file": "web/public/content/microservices/modulo-1.md",
+      "requires": [
+        "microservices:1:3"
+      ]
+    },
+    {
+      "id": "microservices:1:5",
+      "track": "microservices",
+      "module": 1,
+      "position": 5,
+      "title": "Fitness functions con ArchUnit · Integración · 110 min",
+      "file": "web/public/content/microservices/modulo-1.md",
+      "requires": [
+        "microservices:1:4"
+      ]
+    },
+    {
+      "id": "microservices:1:6",
+      "track": "microservices",
+      "module": 1,
+      "position": 6,
+      "title": "Evidencia y ADR para decidir una extracción · Experto · 90 min",
+      "file": "web/public/content/microservices/modulo-1.md",
+      "requires": [
+        "microservices:1:5"
       ]
     },
     {
@@ -7041,10 +7504,21 @@
       "track": "android",
       "module": 0,
       "position": 5,
-      "title": "Coroutines — asincronía sin bloquear la UI",
+      "title": "Lambdas y funciones de orden superior en Kotlin — contratos, captura y receptores · Intermedio · 120 min",
       "file": "web/public/content/android/modulo-0.md",
       "requires": [
         "android:0:4"
+      ]
+    },
+    {
+      "id": "android:0:6",
+      "track": "android",
+      "module": 0,
+      "position": 6,
+      "title": "Coroutines — asincronía sin bloquear la UI",
+      "file": "web/public/content/android/modulo-0.md",
+      "requires": [
+        "android:0:5"
       ]
     },
     {
@@ -7055,7 +7529,7 @@
       "title": "Ciclo de vida de una Activity",
       "file": "web/public/content/android/modulo-1.md",
       "requires": [
-        "android:0:5"
+        "android:0:6"
       ]
     },
     {

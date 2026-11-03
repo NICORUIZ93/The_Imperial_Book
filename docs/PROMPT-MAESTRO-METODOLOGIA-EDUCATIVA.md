@@ -20,7 +20,7 @@ ENTRADAS
 - Restricciones técnicas: {{VERSIONES_SISTEMAS_HERRAMIENTAS}}
 
 REGLAS DE EVIDENCIA
-1. Conserva todos los temas actuales. No elimines un tema nuevo sólo porque su título se parece a otro.
+1. Conserva todos los temas actuales. Conserva además cada candidato nuevo en el inventario y registra su decisión; conservarlo en el inventario no obliga a publicarlo como lección.
 2. Fusiona dos temas únicamente cuando compartan concepto, alcance, prerrequisitos y evidencia de aprendizaje. Registra títulos alternativos y fuentes.
 3. Distingue: listado, explicado, practicable, ejecutado y revisado humanamente.
 4. Un título encontrado en un libro no acredita cobertura educativa.
@@ -28,6 +28,35 @@ REGLAS DE EVIDENCIA
 6. Conserva libro, idioma, capítulo y página como trazabilidad; no copies extensamente contenido protegido.
 7. Declara cualquier ejemplo, comando, plataforma o fuente que no haya podido verificarse.
 8. No inventes resultados, referencias, pruebas ejecutadas ni experiencia profesional.
+9. La meta es máxima cobertura útil, no el mayor contador posible de títulos. No conviertas números de página, encabezados editoriales, nombres de autores, fragmentos rotos del OCR ni entradas de índice en temas.
+10. No copies párrafos, ejercicios ni soluciones de los libros. Extrae conceptos, secuencias y tipos de práctica; crea explicaciones y actividades originales y cita la fuente.
+
+FASE 0 — REANUDACIÓN Y CONTROL DE COBERTURA
+Antes de modificar contenido:
+- lee el manifiesto de la ejecución anterior;
+- registra commit base, fecha, stack, módulos y rango de identificadores;
+- comprueba qué archivos tienen cambios locales y no los sobrescribas;
+- carga los temas actuales desde los Markdown reales y no desde una cifra histórica;
+- carga candidatos desde el inventario unificado conservando fuente y página;
+- declara qué verificaciones están disponibles en el entorno;
+- asigna un identificador estable a cada candidato antes de decidir sobre él.
+
+Trabaja en lotes que puedan revisarse y validarse completos. Un lote termina por frontera conceptual o de módulo, no por límite arbitrario de tokens. Al cerrar el lote entrega un manifiesto con identificadores recibidos, publicados, fusionados, divididos, rechazados, ambiguos y pendientes. La siguiente ejecución comienza exactamente en el primer identificador pendiente.
+
+CLASIFICACIÓN PREVIA OBLIGATORIA
+Antes de secuenciar, clasifica cada entrada como una de estas opciones:
+- `tema-curricular`: merece objetivo y evidencia propios;
+- `subtema`: pertenece dentro de otro tema, pero debe conservar trazabilidad;
+- `titulo-alternativo`: otro nombre para el mismo concepto;
+- `duplicado-seguro`: equivalencia demostrada, con destino registrado;
+- `proyecto-o-practica`: actividad, no concepto independiente;
+- `referencia-editorial`: prefacio, índice, bibliografía, apéndice o metadato;
+- `fragmento-defectuoso`: texto roto, número, OCR incompleto o encabezado sin sentido;
+- `obsoleto-o-historico`: útil para contexto o migración, no como ruta principal;
+- `fuera-de-alcance`: pertenece a otro stack o producto;
+- `ambiguo`: requiere lectura de página o decisión humana.
+
+Ninguna entrada desaparece: incluso las descartadas conservan identificador, fuente, página, clasificación y motivo. Sólo `tema-curricular`, `subtema` y `proyecto-o-practica` avanzan al diseño educativo.
 
 FASE 1 — UNIFICACIÓN Y DEPURACIÓN
 Para cada entrada produce:
@@ -43,6 +72,9 @@ Para cada entrada produce:
 - temas que dependen de él;
 - nivel de profundidad requerido;
 - motivo para conservar, fusionar, dividir o reubicar.
+- clasificación previa y nivel de confianza;
+- identificador del destino cuando se fusione o reubique;
+- riesgo de obsolescencia y versión tecnológica aplicable.
 
 Detecta títulos que mezclan varios conocimientos. Divídelos cuando exijan prácticas o evidencias diferentes. Une sólo duplicados semánticos seguros. Entrega una tabla de decisiones y otra lista de casos ambiguos para revisión humana.
 
@@ -66,10 +98,52 @@ Para cada módulo declara:
 
 Evita saltos de dificultad. Si una explicación necesita un término todavía no enseñado, añade el prerrequisito antes o reemplaza el término por una demostración concreta.
 
+No uses el orden alfabético, el número de página ni el orden de extracción como secuencia pedagógica. Cuando dos temas puedan estudiarse en paralelo, decláralo; no inventes una dependencia lineal.
+
 FASE 3 — DISEÑO INVERSO
 Para cada tema define primero qué desempeño demostrará comprensión. Después diseña la práctica que produce esa evidencia y, al final, la explicación necesaria para realizarla.
 
 El objetivo debe usar acciones observables: crear, ejecutar, predecir, comparar, depurar, medir, justificar, diseñar o mantener. Evita “conocer”, “entender” o “aprender” sin una acción comprobable.
+
+Para cada objetivo entrega la correspondencia explícita `objetivo → evidencia → práctica → explicación`. Si la práctica no produce la evidencia o la explicación no prepara la práctica, rediseña la unidad antes de redactarla.
+
+FASE 3.1 — MAPA OBLIGATORIO DE SUBTEMAS
+Antes de escribir cada tema, descompónlo mediante documentación primaria, fuentes bibliográficas revisadas, código real y fallos profesionales. No uses sólo el título como alcance.
+
+Clasifica cada subtema como:
+- `prerrequisito`: debe dominarse antes y se enlaza a su lección;
+- `nucleo`: mecanismo indispensable del tema;
+- `variante`: sintaxis, API o implementación que cambia su aplicación;
+- `limite-decision`: cuándo funciona, cuándo no y qué alternativa existe;
+- `diagnostico`: error, síntoma, causa y corrección propios;
+- `profundizacion`: internals, rendimiento o arquitectura avanzada.
+
+Para cada subtema registra:
+- nombre canónico y términos equivalentes;
+- por qué es necesario;
+- profundidad objetivo: reconocer, aplicar, depurar, decidir o diseñar;
+- explicación causal que necesita;
+- ejemplo o parte exacta del ejemplo que lo demuestra;
+- salida o evidencia observable;
+- error o límite propio;
+- práctica de transferencia;
+- fuente primaria y fuente bibliográfica, si existe;
+- destino: dentro del tema, tema separado, módulo posterior o fuera de alcance con motivo.
+
+Regla crítica: una mención, una viñeta, una tabla de nombres o una aparición dentro de código no cuenta como subtema explicado. Todo subtema necesario para usar, depurar o decidir profesionalmente debe alcanzar al menos `aplicar` y tener evidencia. Si dos subtemas necesitan objetivos, ejemplos o fallos diferentes, divídelos en temas separados. Evita tanto la omisión como la lección enciclopédica.
+
+Nivel mínimo universal: aplica a cada tema el mismo grado de análisis usado en este ejemplo normativo: «Crear antes de las interfaces funcionales un tema completo de lambdas que cubra sintaxis, SAM, target typing, captura, `this`, referencias a métodos, sobrecargas ambiguas, excepciones checked y especializaciones primitivas».
+
+El ejemplo fija la **profundidad y la secuenciación**, no una lista universal. Para cada tecnología descubre su desglose correcto mediante documentación primaria, libros pertinentes, errores frecuentes y dependencias conceptuales. Si un tema avanzado usa una base que todavía no fue enseñada con ese nivel, crea o mueve primero el tema de base. No escondas el prerrequisito en una introducción breve del tema avanzado.
+
+Para aprobar, cada tema debe poder resumirse en una instrucción igualmente precisa: «Crear antes de [dependencia] un tema completo de [concepto] que cubra [mapa concreto y suficiente de subtemas]». «Explicar a fondo» sin enumerar el mapa editorial no es suficiente.
+
+**Puerta obligatoria:** un tema no se entrega por tener el mapa. Cada fila crítica
+debe apuntar a una explicación individual, evidencia, fallo o límite y práctica de
+transferencia dentro del contenido real. Registra la revisión humana antes de
+declararlo cerrado. Un lote no puede aumentar el número de pendientes.
+
+Antes de aprobar el mapa pregunta: “¿Qué necesitaría saber una persona para usar esto sin copiar, diagnosticar cuando falla y elegirlo frente a una alternativa?”. Todo concepto requerido por la respuesta debe aparecer en el mapa.
 
 FASE 4 — CONTRATO OBLIGATORIO DE CADA TEMA
 Cada tema debe contener, en este orden:
@@ -97,6 +171,8 @@ Cada tema debe contener, en este orden:
 21. Explicación propia solicitada una pregunta a la vez.
 22. Criterio concreto para avanzar y enlace al siguiente tema.
 23. Incremento guardable del proyecto y forma de restaurarlo.
+
+El orden puede agruparse visualmente como `Aprende`, `Practica` y `Aplica`, pero ningún grupo puede ocultar los elementos obligatorios. No agregues colas genéricas repetidas para satisfacer detectores. Cada explicación, error y ejercicio debe depender del concepto específico del tema.
 
 FASE 5 — PROGRESIÓN DE EJEMPLOS
 Usa esta escalera:
@@ -149,6 +225,8 @@ No generes cuestionarios automáticos, puntos, insignias ni marcas de finalizaci
 
 Define una rúbrica con criterios observables para exactitud, razonamiento, diagnóstico, calidad, seguridad y comunicación. Una marca de lectura nunca equivale a competencia.
 
+La interfaz puede conservar progreso de lectura y archivos alcanzados, pero debe rotularlos como progreso, no como certificación, dominio o aprobación.
+
 FASE 10 — CONTROL DE CALIDAD
 Antes de aceptar un tema comprueba:
 - explicación con modelo mental, límites y decisiones;
@@ -163,8 +241,30 @@ Antes de aceptar un tema comprueba:
 - versiones y fecha de revisión;
 - accesibilidad de texto, teclado y movimiento;
 - ausencia de afirmaciones o pruebas inventadas.
+- mapa explícito de subtemas críticos y destino de cada uno;
+- ningún subtema crítico reducido a mención o código sin explicación;
+- evidencia localizable para aplicar, diagnosticar y decidir cada subtema crítico.
 
 Un tema no es practicable si falta ejemplo, ubicación, ejecución o práctica. Marca la deuda explícitamente; no la rellenes con texto genérico.
+
+Aplica cuatro verificaciones separadas y no intercambiables:
+1. `estructura`: están presentes los componentes editoriales exigidos;
+2. `ejecución`: comandos, ejemplos y fallos fueron ejecutados en un entorno declarado;
+3. `navegador`: navegación, teclado, responsive, persistencia y errores fueron probados;
+4. `revisión-humana`: una persona comprobó claridad, precisión, dificultad y transferencia.
+
+Una validación estructural exitosa no permite marcar como realizadas las otras tres.
+
+CONDICIONES DE RECHAZO O PAUSA
+No publiques el lote cuando:
+- la fuente o versión decisiva no se pudo comprobar;
+- el ejemplo depende de código omitido o archivos inexistentes;
+- el comando no indica directorio o preparación;
+- el resultado esperado no es observable;
+- la práctica sólo repite el ejemplo;
+- el tema introduce prerrequisitos no enseñados;
+- la explicación fue generada como plantilla intercambiable;
+- un cambio local de otra tarea se solapa y no puede preservarse con seguridad.
 
 FORMATO DE SALIDA
 A. Resumen de cobertura y límites.
@@ -178,10 +278,12 @@ H. Rúbricas y evidencias.
 I. Matriz de fuentes primarias y bibliográficas.
 J. Registro separado de verificaciones: estructura, ejecución, navegador y revisión humana.
 K. Deuda editorial, libros pendientes de OCR y cuestiones sin comprobar.
+L. Manifiesto de continuidad del lote con commit base, archivos modificados, identificadores tratados, verificaciones ejecutadas y primer identificador pendiente.
+M. Matriz de cobertura de subtemas: tema, subtema, criticidad, profundidad, evidencia, fuente, estado y deuda.
 
 Trabaja módulo por módulo. No resumas los temas restantes ni prometas desarrollarlos después. Si el volumen excede una entrega, termina el módulo actual, conserva un manifiesto de cobertura exacto y continúa desde el siguiente identificador sin repetir ni omitir entradas.
 ```
 
 ## Aplicación editorial
 
-El prompt debe ejecutarse por módulos manejables, no sobre decenas de miles de entradas en una sola respuesta. La fuente canónica de cobertura será el JSON unificado; cada ejecución debe devolver los identificadores tratados, fusionados, divididos y pendientes. La publicación en `web/public/content/<track>/modulo-N.md` sólo procede después de revisión técnica, ejecución proporcional al riesgo y validación del repositorio.
+El prompt debe ejecutarse por módulos manejables, no sobre decenas de miles de entradas en una sola respuesta. El JSON unificado es la fuente canónica del inventario, mientras que los Markdown reales son la fuente canónica de lo publicado. Cada ejecución debe devolver los identificadores tratados, fusionados, divididos, descartados con motivo y pendientes. La publicación en `web/public/content/<track>/modulo-N.md` sólo procede después de revisión técnica, ejecución proporcional al riesgo y validación del repositorio.

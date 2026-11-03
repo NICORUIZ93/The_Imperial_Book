@@ -6,15 +6,40 @@
 
 #### Aprende
 
-**Prerrequisito:** JDK 27, records y paquetes. Comprueba `java --version` y `javac --version`.
+**Prerrequisito:** Módulos 1, 7, 10 y 12 de Java (clases, records, JPMS, SOLID); JDK 27 y un editor. Comprueba `java --version` y `javac --version`.
 
-**Al terminar podrás:** separar dominio, servicio y aplicación, compilar el dominio sin infraestructura y detectar una dependencia que atraviesa la frontera en la dirección equivocada.
+**Al terminar podrás:** separar dominio, servicio y aplicación con la dirección de dependencia correcta, compilar el dominio sin infraestructura, aplicar inversión puerto/adaptador, y verificar la frontera en el build.
 
 Una aplicación de entregas que mezcla SQL o clientes HTTP con las reglas de negocio obliga a revisar esas reglas cuando cambia una decisión técnica. El dominio debe describir conceptos del negocio; el servicio coordina casos de uso; la infraestructura implementa persistencia y comunicación.
 
 **¿Por qué es importante?** Porque una frontera comprobable permite cambiar un adaptador sin reescribir el modelo. Los nombres de paquetes ayudan, pero la prueba real es qué necesita cada capa para compilar.
 
-**Analogía:** diseño de producto, operaciones y logística externa pueden colaborar sin que un cambio de transportista altere el diseño del producto.
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia del tema |
+|---|---|---|
+| capas: dominio, servicio, aplicación | Núcleo | cada una con una responsabilidad distinta |
+| dirección de la dependencia | Núcleo | el dominio no depende de servicio ni infraestructura |
+| dominio sin infraestructura | Diagnóstico | el dominio compila sin classpath |
+| puerto y adaptador (inversión) | Variante | la infraestructura depende del servicio, no al revés |
+| ensamblaje en el bootstrap | Núcleo | el punto de entrada compone las capas |
+| fitness function de la frontera | Decisión | verificar la frontera, no confiar en la carpeta |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Capas: dominio, servicio, aplicación (núcleo).** El **dominio** describe conceptos y reglas del negocio (valores, invariantes); el **servicio** coordina casos de uso; la **aplicación/infraestructura** implementa persistencia y comunicación (SQL, HTTP). Separar estas responsabilidades evita revisar las reglas cada vez que cambia una decisión técnica.
+
+**Dirección de la dependencia (núcleo).** La regla central: las dependencias apuntan **hacia el dominio**, nunca al revés. El dominio no importa servicio ni infraestructura; el servicio importa el dominio; el bootstrap ensambla ambos. Esa dirección es lo que protege el modelo de los cambios técnicos.
+
+**Dominio sin infraestructura (diagnóstico).** La prueba real no es el nombre del paquete sino qué necesita **compilar**: el dominio debe compilar **sin classpath** (sin servicio ni infraestructura). Si el dominio no compila aislado, una dependencia cruzó la frontera en la dirección equivocada.
+
+**Puerto y adaptador (inversión) (variante).** Para que la infraestructura (un repositorio) sirva al servicio sin que el dominio dependa de ella, se usa inversión: el servicio define un **puerto** (interfaz) y la infraestructura lo **implementa** (adaptador). Así la infraestructura depende del servicio, no al revés (DIP, Módulo 12).
+
+**Ensamblaje en el bootstrap (núcleo).** El punto de entrada (`Main`) es el único que **conoce todas las capas**: crea las implementaciones concretas y las inyecta. Concentrar ahí el ensamblaje mantiene el resto del código dependiendo solo de abstracciones.
+
+**Fitness function de la frontera (decisión).** No confíes en que "las carpetas garantizan aislamiento": verifícalo. Compilar el dominio aislado, o una prueba de arquitectura (ArchUnit), o un `grep -R "infrastructure" domain/src` vacío, convierten la frontera en algo **comprobable** en el build, no en una convención que se erosiona.
+
+**Analogía (con su límite):** diseño de producto, operaciones y logística externa colaboran sin que cambiar de transportista altere el diseño del producto. La analogía explica la separación de responsabilidades; no explica la inversión puerto/adaptador ni que la frontera deba verificarse en el build.
 
 ```mermaid
 flowchart LR
@@ -117,21 +142,43 @@ Añade al servicio la regla que rechaza identificadores en blanco. Crea un adapt
 
 **Errores comunes:** confundir carpetas con aislamiento efectivo, colocar validación de negocio en un controlador y crear dependencias cíclicas entre capas.
 
-Fuentes: [Maven Guides](https://maven.apache.org/guides/) y [Dev.java Learn](https://dev.java/learn/).
+**Fuentes revisadas el 2026-11-01:** [Maven Guides](https://maven.apache.org/guides/) y [dev.java: Learn](https://dev.java/learn/).
 
 ### Tema 2: Integrando concurrencia, modelado y testing · Experto · 60 min
 
 #### Aprende
 
-**Prerrequisito:** JDK 27, Maven 3.9 o superior, virtual threads, sealed interfaces y JUnit 5.
+**Prerrequisito:** Tema 1 de este módulo y Módulos 5, 7 y 9 (virtual threads, sealed, testing); JDK 27 y Maven 3.9+.
 
-**Al terminar podrás:** procesar tareas concurrentemente, convertir fallos esperados en resultados explícitos y probar el reparto de éxitos y errores con una dependencia simulada.
+**Al terminar podrás:** modelar el resultado con un `sealed` Exito/Error, distinguir fallo esperado de error interno, procesar el lote concurrentemente sin perder resultados, y probar el reparto con una dependencia simulada.
 
 Un lote no debería perder todos sus resultados porque una entrega tenga una dirección incompleta. El fallo esperado pertenece al resultado de esa tarea; un error de infraestructura o una interrupción requieren otro tratamiento.
 
 **¿Por qué es importante?** Porque separar un fallo esperado de un fallo interno evita tanto ocultar errores como abandonar trabajo válido. La interfaz sellada hace visibles los casos que el consumidor debe contemplar.
 
-**Analogía:** una línea de inspección etiqueta cada pieza como aprobada o rechazada; una pieza defectuosa no obliga a tirar las demás.
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia del tema |
+|---|---|---|
+| resultado explícito con `sealed` (Exito/Error) | Núcleo | el fallo esperado es parte del resultado, no una excepción |
+| fallo esperado frente a error interno | Diagnóstico | la dirección incompleta no es lo mismo que una caída |
+| procesamiento concurrente del lote | Núcleo | virtual threads por tarea sin perder resultados |
+| reparto de éxitos y errores | Variante | el lote devuelve ambos, no se detiene en el primero |
+| prueba con dependencia simulada | Integración | mockear la frontera y verificar el reparto |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Resultado explícito con `sealed` (núcleo).** En vez de lanzar una excepción por cada entrega inválida, el procesamiento devuelve un `sealed interface Resultado permits Exito, Error` (Módulo 7): el fallo esperado es un **valor** que el consumidor debe contemplar en un `switch` exhaustivo, no algo que interrumpe el lote. Hace visibles los casos.
+
+**Fallo esperado frente a error interno (diagnóstico).** Una **dirección incompleta** es un fallo de negocio esperado → va al `Error` del resultado. Un fallo de infraestructura (base caída) o una interrupción es otra cosa → se propaga como excepción. Mezclarlos oculta bugs reales o abandona trabajo válido; distinguirlos es la decisión clave.
+
+**Procesamiento concurrente del lote (núcleo).** Las entregas se procesan en paralelo con virtual threads (Módulo 5), cada tarea devolviendo su `Resultado`. Que una tarea falle no tumba a las demás; cada una encapsula su desenlace.
+
+**Reparto de éxitos y errores (variante).** Al final, el lote entrega **ambos** conjuntos (procesadas y rechazadas con su motivo), no se detiene en el primer fallo. El llamador decide qué hacer con cada grupo (reintentar, reportar). Es lo contrario de "una fila mala pierde todo el lote".
+
+**Prueba con dependencia simulada (integración).** Se verifica el reparto **mockeando la frontera** (el repositorio/servicio externo, Módulo 9): se inyectan entradas que fuerzan éxitos y errores esperados, y se comprueba que el lote los separa correctamente, sin infraestructura real. Integra concurrencia, modelado con sealed y testing en un solo caso.
+
+**Analogía (con su límite):** una línea de inspección etiqueta cada pieza como aprobada o rechazada; una defectuosa no obliga a tirar las demás. La analogía explica el reparto éxito/error; no explica la diferencia entre fallo esperado y error interno, que es una decisión de diseño del dominio.
 
 ```java
 sealed interface Resultado permits Exito, Error {}
@@ -270,21 +317,46 @@ Añade un resultado `Omitida` para tareas duplicadas y actualiza la interfaz sel
 
 **Errores comunes:** capturar toda excepción como fallo de negocio, ignorar `InterruptedException` y crear virtual threads sin proteger un recurso agotable.
 
-Fuentes: [Virtual Threads](https://dev.java/learn/concurrency/virtual-threads/), [JUnit 5](https://docs.junit.org/current/user-guide/) y [Mockito](https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html).
+**Fuentes revisadas el 2026-11-01:** [Virtual Threads](https://dev.java/learn/concurrency/virtual-threads/), [JUnit 5](https://docs.junit.org/current/user-guide/) y [Mockito](https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html).
 
 ### Tema 3: Build reproducible y cierre del track · Avanzado · 50 min
 
 #### Aprende
 
-**Prerrequisito:** JDK 27 y Maven 3.9 o superior; comprueba `mvn --version`.
+**Prerrequisito:** Temas 1–2 de este módulo y Módulo 8 (build); JDK 27 y Maven 3.9+. Comprueba `mvn --version`.
 
-**Al terminar podrás:** ejecutar una aplicación con una orden documentada, fijar la fecha de las entradas del JAR y comparar dos artefactos byte a byte.
+**Al terminar podrás:** ejecutar la aplicación con una orden documentada, fijar `project.build.outputTimestamp`, comparar dos artefactos byte a byte, y explicar que la reproducibilidad exige fijar también el entorno.
 
 Un proyecto que exige pasos manuales no escritos no es reproducible para otra persona. Además, compilar dos veces el mismo código puede producir archivos distintos si el empaquetado guarda fechas cambiantes.
 
 **¿Por qué es importante?** Porque una orden única reduce errores de preparación y un artefacto idéntico permite relacionar el binario con el código y las dependencias declaradas.
 
-**Analogía:** entregar un equipo ensamblado con una receta fija, no una caja cuya composición cambia según la hora de empaquetado.
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia del tema |
+|---|---|---|
+| orden única y documentada | Núcleo | el proyecto se construye y ejecuta sin pasos ocultos |
+| build reproducible | Núcleo | dos builds del mismo código dan el mismo artefacto |
+| `project.build.outputTimestamp` | Diagnóstico | normalizar las fechas de las entradas del JAR |
+| comparación byte a byte | Variante | verificar la igualdad de dos artefactos |
+| fijar entorno y versiones | Límite | mismo JDK y dependencias, no solo el timestamp |
+| fuente única de verdad | Decisión | el valor deriva del commit/pipeline, no del reloj |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Orden única y documentada (núcleo).** Un proyecto reproducible se construye y ejecuta con una **orden escrita** (en el README/build), sin pasos manuales que solo conoce quien lo escribió. Si otra persona no puede clonar y ejecutar siguiendo la documentación, el proyecto no es reproducible para el equipo.
+
+**Build reproducible (núcleo).** Compilar **dos veces** el mismo código con el mismo entorno debe producir un artefacto **idéntico**. Esto permite relacionar un binario desplegado con el código y las dependencias exactas que lo generaron (trazabilidad de la cadena de suministro).
+
+**`project.build.outputTimestamp` (diagnóstico).** Por defecto el JAR guarda la **fecha de empaquetado** en cada entrada, así que dos builds difieren aunque el código sea idéntico. Maven usa `project.build.outputTimestamp` para **normalizar** esas fechas a un valor fijo; es el ajuste clave para la reproducibilidad del artefacto.
+
+**Comparación byte a byte (variante).** La verificación es objetiva: construir dos veces y comparar los artefactos con un checksum (`sha256sum`) o byte a byte. Si coinciden, la build es reproducible para ese entorno; si no, algo introduce no-determinismo (timestamps, orden, rutas absolutas).
+
+**Fijar entorno y versiones (límite).** Reproducibilidad **no** significa que dos máquinas con JDK o dependencias distintas den lo mismo. Hay que fijar también el **entorno**: misma versión de JDK, dependencias con versión exacta (Módulo 8), y preferiblemente un build contenedorizado. El timestamp solo resuelve una parte.
+
+**Fuente única de verdad (decisión).** El `outputTimestamp` debe derivar de una **fuente estable** (la fecha del commit, una variable del pipeline), **nunca** del reloj actual ni de un valor inventado a mano. Una sola fuente de verdad evita que el valor se desincronice entre máquinas.
+
+**Analogía (con su límite):** entregar un equipo ensamblado con una receta fija, no una caja cuya composición cambia según la hora de empaquetado. La analogía explica el determinismo del artefacto; no explica que también hay que fijar el entorno (JDK, dependencias), no solo la fecha.
 
 Maven usa `project.build.outputTimestamp` para normalizar las fechas de las entradas del archivo. El valor debe ser fijo o derivar de una revisión estable, nunca del reloj actual. Reproducibilidad no significa que dos máquinas con JDK o dependencias diferentes produzcan necesariamente lo mismo: hay que fijar también el entorno y las versiones.
 
@@ -382,7 +454,7 @@ Documenta en el `README.md` del proyecto las versiones de JDK y Maven, `mvn clea
 
 **Errores comunes:** confundir una compilación exitosa con reproducibilidad, omitir versiones de plugins y comparar hashes sin limpiar el artefacto anterior.
 
-Fuentes: [Reproducible Builds en Maven](https://maven.apache.org/guides/mini/guide-reproducible-builds.html), [Exec Maven Plugin](https://www.mojohaus.org/exec-maven-plugin/) y [Dev.java Learn](https://dev.java/learn/).
+**Fuentes revisadas el 2026-11-01:** [Reproducible Builds en Maven](https://maven.apache.org/guides/mini/guide-reproducible-builds.html), [Exec Maven Plugin](https://www.mojohaus.org/exec-maven-plugin/) y [dev.java: Learn](https://dev.java/learn/).
 
 ## Construcción guiada del capítulo
 

@@ -14,6 +14,37 @@ Cada tema demuestra un patrón de Spring Cloud con verificación real: Config Se
 
 **¿Por qué es importante?** En un sistema con muchos microservicios, cada uno con su propio `application.yml` local, cambiar un valor compartido (una URL de un servicio externo común) exigiría modificar y redesplegar cada servicio individual. Un Config Server centraliza esa configuración en un único lugar; el service discovery permite que los servicios se llamen por nombre lógico en vez de por URL fija, tolerando cambios de ubicación o escalado sin tocar código cliente.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Backend `native` del Config Server | Prerrequisito | `profiles.active: native` y `search-locations: classpath:/config` en `application.yml` |
+| Endpoint HTTP `/{aplicacion}/{perfil}` | Núcleo | `TestRestTemplate` pide `/servicio-pedidos/default` y la respuesta contiene `descuento-maximo` y `15` |
+| `@EnableConfigServer` | Núcleo | la anotación sobre `ConfigServerApplication` activa el endpoint que sirve configuración |
+| `SimpleDiscoveryClient` y el contrato `DiscoveryClient.getInstances(...)` | Núcleo | `getInstances("servicio-pedidos")` devuelve una lista de tamaño 1 con URI `http://localhost:8081` |
+| `200` con `propertySources` vacío frente a `404` | Diagnóstico | el fallo deliberado cambia a `/servicio-inexistente/default` y recibe `200` sin el valor `15` |
+| Perfil por aplicación (`default` vs `produccion`) | Variante | el ejercicio 1 pide `/servicio-pedidos/produccion` y espera el valor específico del perfil |
+| Nombre lógico nunca registrado | Límite | el ejercicio 3 confirma que `getInstances("servicio-inexistente")` devuelve lista vacía, no error |
+| Un único servicio sin configuración compartida | Decisión | el apartado de límites: un Config Server no aporta sobre un `application.yml` local |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Backend `native` del Config Server (Prerrequisito).** El backend nativo lee la configuración de archivos locales (`classpath:/config`) en lugar de un repositorio Git remoto, lo que hace el ejemplo verificable sin infraestructura externa. Se activa con `profiles.active: native` y `search-locations`, que indica la carpeta a leer. Según la Pista del tema, ese backend relee los archivos en cada petición durante desarrollo, así que agregar un nuevo YAML basta para que el siguiente test lo detecte sin reiniciar.
+
+**Endpoint HTTP `/{aplicacion}/{perfil}` (Núcleo).** El Config Server expone cada configuración por HTTP: el primer test arranca un servidor real con `RANDOM_PORT` y `TestRestTemplate` hace una petición real (no simulada) a `/servicio-pedidos/default`, confirmando que el cuerpo contiene `descuento-maximo` y `15` leídos de `servicio-pedidos.yml`. El nombre del archivo debe coincidir con la aplicación consultada (`{aplicacion}.yml`), como recuerda el apartado "Si falla".
+
+**`@EnableConfigServer` (Núcleo).** Esta anotación sobre `ConfigServerApplication` es la que activa el endpoint que sirve configuración; sin ella el proyecto arrancaría como una app Spring Boot ordinaria sin exponer `/{aplicacion}/{perfil}`. Es el interruptor que convierte un proyecto normal en un servidor de configuración.
+
+**`SimpleDiscoveryClient` y el contrato `DiscoveryClient.getInstances(...)` (Núcleo).** `SimpleDiscoveryClient` resuelve un nombre lógico a instancias configuradas explícitamente vía `spring.cloud.discovery.client.simple.instances...`, implementando el mismo contrato `DiscoveryClient.getInstances(nombre)` que usaría Eureka en producción. El segundo test confirma que `getInstances("servicio-pedidos")` devuelve una lista de tamaño 1 cuya URI es `http://localhost:8081`, probando la resolución por nombre sin un servidor de registro corriendo.
+
+**`200` con `propertySources` vacío frente a `404` (Diagnóstico).** El fallo deliberado solicita `/servicio-inexistente/default` y el Config Server responde `200 OK` con un `propertySources` vacío, no `404`, haciendo fallar la aserción `.contains("15")`. Confundir este comportamiento es un error fácil: una aplicación sin configuración específica no provoca error, simplemente devuelve un conjunto vacío de propiedades, detalle que solo se descubre probándolo explícitamente.
+
+**Perfil por aplicación (`default` vs `produccion`) (Variante).** El ejercicio 1 agrega `servicio-pedidos-produccion.yml` con un valor distinto de `descuento-maximo` y confirma que pedir `/servicio-pedidos/produccion` devuelve el valor de ese perfil, no el de `default`. El segundo segmento de la ruta (`{perfil}`) selecciona qué archivo específico de la aplicación se sirve, permitiendo sobrescribir valores por entorno.
+
+**Nombre lógico nunca registrado (Límite).** El ejercicio 3 confirma que pedir instancias de un nombre jamás registrado (`getInstances("servicio-inexistente")`) devuelve una lista vacía, no una excepción. El cliente de descubrimiento distingue entre "no hay instancias" y "error", de modo que el llamador debe comprobar el tamaño de la lista antes de usarla.
+
+**Un único servicio sin configuración compartida (Decisión).** El apartado de límites advierte que para un sistema con un solo servicio, un Config Server centralizado agrega una pieza de infraestructura sin beneficio real sobre un `application.yml` local. La decisión de adoptarlo depende de que exista configuración compartida entre varios microservicios que de otro modo habría que duplicar y redesplegar en cada uno.
+
 **Conceptos clave:** configuración centralizada servida por HTTP, resolución por nombre lógico en vez de URL fija.
 
 Un Config Server expone la configuración de cada aplicación cliente vía un endpoint HTTP (`GET /{aplicacion}/{perfil}`); el backend nativo lee esos valores de archivos locales (`classpath:/config` o una carpeta), el mismo mecanismo que usaría un backend respaldado por Git, pero sin necesidad de un repositorio remoto para un ejemplo verificable. `SimpleDiscoveryClient` resuelve un nombre lógico como `servicio-pedidos` a una lista de instancias reales configuradas explícitamente, el mismo contrato (`DiscoveryClient.getInstances(nombre)`) que usaría Eureka en producción, sin requerir un servidor de registro corriendo para probar la resolución por nombre.
@@ -32,7 +63,7 @@ flowchart LR
 
 #### Practica
 
-**Demo paso a paso.** Continuando en `demo-cloud` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `mkdir demo-config-server && cd demo-config-server && curl -fsSL https://start.spring.io/starter.zip -d dependencies=cloud-config-server,web -d javaVersion=25 -o app.zip && unzip app.zip`), crea `src/main/java/io/academia/config/ConfigServerApplication.java` y `src/main/resources/config/servicio-pedidos.yml`:
+**Demo paso a paso.** Continuando en `demo-cloud` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `mkdir demo-config-server && cd demo-config-server && curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=cloud-config-server,web -d javaVersion=25 -o app.zip && unzip app.zip`), crea `src/main/java/io/academia/config/ConfigServerApplication.java` y `src/main/resources/config/servicio-pedidos.yml`:
 
 ```bash
 mkdir -p demo-cloud/config-server/src/main/resources/config
@@ -78,7 +109,20 @@ public class ConfigServerApplication {
 }
 ```
 
-Confirma con un test real que el Config Server efectivamente sirve ese valor por HTTP, y que `SimpleDiscoveryClient` efectivamente resuelve un nombre lógico:
+Confirma con un test real que el Config Server efectivamente sirve ese valor por HTTP, y que `SimpleDiscoveryClient` efectivamente resuelve un nombre lógico. **Nota (Spring Boot 4):** `TestRestTemplate` requiere agregar explícitamente `spring-boot-restclient` (scope normal, provee `RestTemplateBuilder`) y `spring-boot-resttestclient` (scope `test`) al `pom.xml`, además de anotar el test con `@AutoConfigureTestRestTemplate` — ninguno de los tres se infiere automáticamente desde `spring-boot-starter-test`:
+
+```xml
+<!-- dentro de <dependencies> del pom.xml -->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-restclient</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-resttestclient</artifactId>
+    <scope>test</scope>
+</dependency>
+```
 
 ```java
 // src/test/java/io/academia/config/ConfigServerTest.java
@@ -86,7 +130,8 @@ package io.academia.config;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.resttestclient.TestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
@@ -98,6 +143,7 @@ import static org.assertj.core.api.Assertions.assertThat;
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     properties = "spring.cloud.discovery.client.simple.instances.servicio-pedidos[0].uri=http://localhost:8081"
 )
+@AutoConfigureTestRestTemplate
 class ConfigServerTest {
 
     @LocalServerPort
@@ -189,6 +235,37 @@ List<ServiceInstance> instancias = discoveryClient.____("servicio-pedidos");
 
 **¿Por qué es importante?** Con varios microservicios independientes, exponer cada uno directamente al cliente externo multiplica la superficie de red y dificulta aplicar responsabilidades transversales (autenticación inicial, rate limiting, trazabilidad) de forma consistente. Un gateway centraliza el punto de entrada, enrutando cada petición hacia el microservicio correcto según su ruta.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `RouteLocator` como bean | Prerrequisito | `GatewayConfig.routes(...)` declara un `@Bean RouteLocator` con `builder.routes()...build()` |
+| Predicado `path(...)` | Núcleo | `r.path("/api/pedidos/**").uri(backendUri)` decide qué peticiones entran en la ruta |
+| Enrutamiento de extremo a extremo | Núcleo | `WebTestClient` pide `/api/pedidos/1` y recibe `200` con `$.estado = EN_RUTA` del backend |
+| `404` sin predicado coincidente | Núcleo | `/api/inexistente/1` recibe `isNotFound()` del propio Gateway, sin contactar backend |
+| `@DynamicPropertySource` apuntando al puerto de `MockWebServer` | Prerrequisito | el bloque `static` arranca `BACKEND` y publica su URL como `backendUri` |
+| Desajuste de predicado indistinguible de backend caído | Diagnóstico | el fallo deliberado cambia a `/api/entregas/**` y `/api/pedidos/1` recibe `404` |
+| Filtro `StripPrefix` verificado con `takeRequest()` | Variante | el ejercicio 1 inspecciona `BACKEND.takeRequest().getPath()` sin el prefijo `/api` |
+| Un único servicio expuesto directamente | Decisión | el apartado de límites: el gateway solo agrega un salto de red sin enrutamiento real |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`RouteLocator` como bean (Prerrequisito).** El tema configura las rutas programáticamente con un `@Bean RouteLocator` en `GatewayConfig`, en vez de declararlas en `application.yml`, precisamente para poder inyectar el puerto dinámico del backend de prueba. El `RouteLocatorBuilder` encadena `routes()...build()` y cada ruta recibe un id (`"pedidos"`), un predicado y un destino.
+
+**Predicado `path(...)` (Núcleo).** `r.path("/api/pedidos/**")` es el predicado que decide qué peticiones entrantes entran en la ruta, y `.uri(backendUri)` fija su destino. El predicado es la condición que empareja la URL solicitada; si no coincide con ninguna ruta declarada, la petición nunca se reenvía a ningún backend.
+
+**Enrutamiento de extremo a extremo (Núcleo).** El primer test usa `WebTestClient` (cliente reactivo real) contra el Gateway en un puerto aleatorio: una petición real a `/api/pedidos/1` solo puede devolver `200` con `$.estado` igual a `EN_RUTA` si el Gateway reenvió la petición a `MockWebServer` y devolvió su cuerpo sin alterarlo. La prueba demuestra el reenvío real, no una simulación.
+
+**`404` sin predicado coincidente (Núcleo).** El segundo test confirma que `/api/inexistente/1` recibe `isNotFound()` directamente del Gateway, sin siquiera intentar contactar ningún backend. El `404` lo emite el propio Gateway cuando ninguna ruta declarada empareja, lo que distingue "ruta no declarada" de "backend que respondió un error".
+
+**`@DynamicPropertySource` apuntando al puerto de `MockWebServer` (Prerrequisito).** El bloque `static` arranca `MockWebServer` antes de que Spring construya el contexto, y `@DynamicPropertySource` publica su URL real (`http://localhost:{puerto}`) como la propiedad `backendUri` que consume el bean de la ruta. El apartado "Si falla" avisa que este orden importa: si la propiedad no se resuelve antes de construir el bean, el contexto no arranca, y la URL debe terminar en `/`.
+
+**Desajuste de predicado indistinguible de backend caído (Diagnóstico).** El fallo deliberado cambia el predicado a `/api/entregas/**` sin tocar el test: `/api/pedidos/1` entonces recibe `404` del propio Gateway en lugar de la respuesta del backend. Desde fuera, un predicado desalineado con las rutas reales de los clientes es indistinguible de un backend completamente caído, por lo que el apartado "Si falla" sugiere imprimir `BACKEND.getRequestCount()`: `0` significa que nunca se reenvió nada.
+
+**Filtro `StripPrefix` verificado con `takeRequest()` (Variante).** El ejercicio 1 añade un filtro `StripPrefix` y comprueba con `BACKEND.takeRequest().getPath()` que la petición que llega realmente al backend ya no incluye el prefijo `/api`. Según la Pista, `takeRequest()` devuelve la petición HTTP real que el Gateway reenvió, por lo que inspeccionar su path es la forma directa de confirmar qué transformó un filtro antes de reenviar, sin adivinar.
+
+**Un único servicio expuesto directamente (Decisión).** El apartado de límites señala que con un único servicio expuesto directamente al cliente, un gateway agrega un salto de red sin ningún beneficio de enrutamiento real. La decisión de introducirlo depende de que existan varios servicios cuya superficie de red y responsabilidades transversales convenga centralizar en un único punto de entrada.
+
 **Conceptos clave:** punto de entrada único, enrutamiento centralizado por predicado de ruta.
 
 `spring.cloud.gateway.routes` define una lista de rutas, cada una con un `predicate` (por ejemplo, `Path=/api/pedidos/**`) que decide qué peticiones entrantes redirige hacia qué `uri` de destino. Centralizar el enrutamiento en un gateway único es también un lugar natural para autenticación inicial y trazabilidad, pero verificar un token únicamente en el gateway crea una frontera peligrosa si un servicio puede alcanzarse por otra ruta: cada servicio que protege datos debe validar la credencial y autorizar el recurso que posee.
@@ -206,7 +283,7 @@ flowchart LR
 
 #### Practica
 
-**Demo paso a paso.** Continuando en `demo-cloud` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `mkdir demo-gateway && cd demo-gateway && curl -fsSL https://start.spring.io/starter.zip -d dependencies=cloud-gateway -d javaVersion=25 -o app.zip && unzip app.zip`), crea `src/main/java/io/academia/gateway/GatewayConfig.java` con una ruta configurada programáticamente (para poder apuntarla al puerto real y dinámico de un backend de prueba):
+**Demo paso a paso.** Continuando en `demo-cloud` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `mkdir demo-gateway && cd demo-gateway && curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=cloud-gateway -d javaVersion=25 -o app.zip && unzip app.zip`), crea `src/main/java/io/academia/gateway/GatewayConfig.java` con una ruta configurada programáticamente (para poder apuntarla al puerto real y dinámico de un backend de prueba):
 
 ```bash
 mkdir -p demo-cloud/gateway/src/main/java/io/academia/gateway
@@ -365,6 +442,37 @@ builder.routes()
 
 **¿Por qué es importante?** Sin un circuit breaker, un servicio caído puede arrastrar en cascada a todos los servicios que dependen de él: cada petición esperaría su timeout completo antes de fallar, acumulando peticiones en espera activa que agotan threads y conexiones del servicio dependiente.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Ventana deslizante y `failureRateThreshold` | Prerrequisito | `failureRateThreshold(50)` y `slidingWindowSize(4)` en `CircuitBreakerConfig` |
+| `decorateSupplier` sin ejecución diferida | Núcleo | la lambda solo corre al invocar `.get()`; el `AtomicInteger` lo evidencia |
+| Transición a `OPEN` tras superar el umbral | Núcleo | tras 4 fallos (100% > 50%), `getState()` es `CircuitBreaker.State.OPEN` |
+| Llamada rechazada con `CallNotPermittedException` | Núcleo | la quinta llamada lanza `CallNotPermittedException` y el contador sigue en 4 |
+| `minimumNumberOfCalls` vs `slidingWindowSize` | Diagnóstico | el fallo deliberado sube el mínimo a 10 y el circuito queda en `CLOSED` |
+| Fallback con valor por defecto | Variante | el ejercicio 1 devuelve "valor por defecto" en vez de lanzar excepción |
+| Ciclo `HALF_OPEN → CLOSED` | Variante | el ejercicio 2 usa `transitionToHalfOpenState()` y llamadas exitosas vuelven a `CLOSED` |
+| Llamada local sin componente de red | Decisión | el apartado de límites: sin red real el circuit breaker no protege de nada |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Ventana deslizante y `failureRateThreshold` (Prerrequisito).** `failureRateThreshold(50)` abre el circuito cuando la mitad o más de las llamadas de la ventana fallan, y `slidingWindowSize(4)` fija cuántas llamadas se recuerdan. El circuito observa la tasa de fallo de las últimas N llamadas; con 4 fallos sobre una ventana de 4 la tasa es 100%, superando el umbral del 50%. El ejercicio 3 explora la variante `TIME_BASED` frente a `COUNT_BASED`.
+
+**`decorateSupplier` sin ejecución diferida (Núcleo).** `CircuitBreaker.decorateSupplier(...)` envuelve la lambda pero no la ejecuta al declararla; según la Pista, igual que `Mono`/`Flux`, solo corre al invocar `.get()` sobre el `Supplier` decorado. El `AtomicInteger` que la lambda incrementa es la evidencia de cuántas veces se ejecutó realmente la llamada protegida.
+
+**Transición a `OPEN` tras superar el umbral (Núcleo).** El bucle provoca 4 fallos reales (cada uno lanza `RuntimeException` y cuenta en el `AtomicInteger`); tras el cuarto, `circuitBreaker.getState()` es `CircuitBreaker.State.OPEN`. Es el momento en que el circuito deja de confiar en el servicio y cambia su comportamiento para las siguientes llamadas.
+
+**Llamada rechazada con `CallNotPermittedException` (Núcleo).** Con el circuito abierto, la quinta invocación lanza `CallNotPermittedException` sin tocar la lambda real, por lo que el `AtomicInteger` sigue en 4. Esta es la garantía central: el circuito abierto falla de inmediato en vez de intentar una llamada que con alta probabilidad no responderá, evitando acumular esperas.
+
+**`minimumNumberOfCalls` vs `slidingWindowSize` (Diagnóstico).** El fallo deliberado sube `minimumNumberOfCalls` a 10: con solo 4 llamadas el circuito nunca evalúa la tasa de fallo y permanece en `CLOSED`, haciendo fallar la aserción de estado `OPEN`. Esto demuestra que `minimumNumberOfCalls` es un umbral independiente de `slidingWindowSize`; confundirlos es uno de los errores comunes listados en el tema.
+
+**Fallback con valor por defecto (Variante).** El ejercicio 1 combina el decorador con `.recover(throwable -> "valor por defecto")` o un `try/catch` manual para que, con el circuito abierto, la llamada devuelva un valor por defecto en vez de propagar una excepción. El checklist exige que ese fallback tenga un valor semánticamente correcto para quien llama, no un relleno arbitrario.
+
+**Ciclo `HALF_OPEN → CLOSED` (Variante).** El ejercicio 2 simula recuperación: tras `waitDurationInOpenState` usa `transitionToHalfOpenState()` manualmente y confirma que llamadas exitosas en ese estado devuelven el circuito a `CLOSED`. El diagrama del tema muestra el ciclo completo `CLOSED → OPEN → HALF_OPEN → CLOSED`; en `HALF_OPEN` se dejan pasar llamadas de prueba que deciden si el servicio ya se recuperó.
+
+**Llamada local sin componente de red (Decisión).** El apartado de límites advierte que para llamadas locales en memoria, sin ningún componente de red o servicio externo, un circuit breaker no protege contra ningún fallo real y solo agrega complejidad. La decisión de usarlo depende de que exista una dependencia remota que pueda caer y arrastrar en cascada a sus dependientes.
+
 **Conceptos clave:** abrir el circuito ante fallos repetidos, fallback inmediato sin intentar la llamada real.
 
 Un `CircuitBreaker` observa la tasa de fallo de las últimas N llamadas (la "ventana deslizante"); si esa tasa supera un umbral configurable, el circuito pasa a estado `OPEN`: las siguientes llamadas NO intentan ejecutar la operación real, sino que fallan inmediatamente con `CallNotPermittedException` (o invocan un método de fallback), evitando que las peticiones se acumulen esperando indefinidamente una respuesta de un servicio que, con alta probabilidad, no va a responder exitosamente. `@Retry`, `@RateLimiter`, `@Bulkhead` y `@TimeLimiter` son primitivas complementarias de Resilience4j.
@@ -384,7 +492,7 @@ stateDiagram-v2
 
 #### Practica
 
-**Demo paso a paso.** Continuando en `demo-cloud` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `mkdir demo-resilience && cd demo-resilience && curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip app.zip` y agrega `io.github.resilience4j:resilience4j-circuitbreaker` al `pom.xml`), crea `src/test/java/io/academia/resilience/CircuitBreakerRealTest.java`; este `CircuitBreaker` se prueba de forma completamente aislada, sin necesitar Spring ni un servidor real:
+**Demo paso a paso.** Continuando en `demo-cloud` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `mkdir demo-resilience && cd demo-resilience && curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web -d javaVersion=25 -o app.zip && unzip app.zip` y agrega `io.github.resilience4j:resilience4j-circuitbreaker` al `pom.xml`), crea `src/test/java/io/academia/resilience/CircuitBreakerRealTest.java`; este `CircuitBreaker` se prueba de forma completamente aislada, sin necesitar Spring ni un servidor real:
 
 ```bash
 mkdir -p demo-cloud/resilience/src/test/java/io/academia/resilience
@@ -502,6 +610,37 @@ assertThat(circuitBreaker.getState()).isEqualTo(CircuitBreaker.State.____);
 
 **¿Por qué es importante?** Firma válida responde «quién emitió esta credencial y si fue alterada»; audiencia, scope y propiedad responden preguntas adicionales. Confundirlas produce acceso horizontal entre usuarios o reutilización de tokens fuera de contexto.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Resource Server con `issuer-uri` y JWKS | Prerrequisito | `issuer-uri: http://keycloak:8080/realms/demo` y `.oauth2ResourceServer(...jwt...)` |
+| Regla `hasAuthority("SCOPE_location:write")` | Núcleo | el `requestMatchers(POST, "/api/journeys/*/positions")` exige ese scope |
+| Post-processor oficial `jwt()` | Núcleo | `jwt().authorities(...)` inyecta la autenticación en el `SecurityContext` |
+| 401 / 403 / 201 según la credencial | Núcleo | tres tests `MockMvc`: sin token 401, scope erróneo 403, con scope 201 |
+| `JwtDecoder` de prueba para no descubrir Keycloak | Prerrequisito | `@TestConfiguration` define un `JwtDecoder` que lanza excepción si se usa |
+| Scope vs propiedad del recurso (`sub`) | Límite | el reto abierto exige un caso con scope correcto pero `sub` que no es el dueño |
+| Regresión al sustituir la regla por `permitAll()` | Diagnóstico | el fallo deliberado cambia a `.permitAll()` y el 403 pasa a 201 |
+| Red privada de confianza ya controlada | Decisión | el apartado de límites: OAuth2 completo puede ser desproporcionado |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Resource Server con `issuer-uri` y JWKS (Prerrequisito).** Cada API protegida se configura como Resource Server usando el `issuer-uri`; Spring Security obtiene las claves públicas vía JWKS y valida firma, emisor y expiración. En el tema esto se declara con `issuer-uri: http://keycloak:8080/realms/demo` y `.oauth2ResourceServer(oauth -> oauth.jwt(...))`. Keycloak actúa como proveedor de identidad que autentica y emite el access token firmado.
+
+**Regla `hasAuthority("SCOPE_location:write")` (Núcleo).** El `requestMatchers(HttpMethod.POST, "/api/journeys/*/positions").hasAuthority("SCOPE_location:write")` es la regla explícita que protege la operación crítica. El checklist exige que cada operación tenga su regla propia en vez de un `anyRequest().authenticated()` genérico, porque es esta regla la que distingue estar autenticado de estar autorizado para un recurso concreto.
+
+**Post-processor oficial `jwt()` (Núcleo).** `jwt()`, de `spring-security-test`, coloca un `Authentication` ya construido en el `SecurityContext`, sustituyendo al decoder. `.jwt(builder -> ...)` define claims concretos como `scope`, y `.authorities(...)` fija directamente las autoridades resultantes. Según la Pista, ninguna de las dos formas valida firma, emisor ni expiración: eso se prueba aparte contra un `JwtDecoder` real.
+
+**401 / 403 / 201 según la credencial (Núcleo).** Los tres tests ejercitan el filtro real de `SecurityConfig`: sin token el servidor responde `401`, con un token cuyo `scope` es `otro:scope` responde `403`, y con la autoridad `SCOPE_location:write` la petición atraviesa el filtro y el controlador responde `201`. Las tres respuestas observan exactamente lo que decide la cadena de filtros de Spring Security.
+
+**`JwtDecoder` de prueba para no descubrir Keycloak (Prerrequisito).** La `@TestConfiguration SinIdentityProvider` define un `JwtDecoder` que lanza `JwtException` si alguien lo usa, evitando que Boot intente descubrir el issuer real de Keycloak al arrancar el contexto. El apartado "Si falla" lo confirma: si el contexto no arranca por falta de `JwtDecoder`, es porque el `issuer-uri` de producción intenta contactar un servidor inexistente en la prueba.
+
+**Scope vs propiedad del recurso (`sub`) (Límite).** El tema insiste en que `roles` y `scopes` expresan capacidades generales, no propiedad: `ROLE_DRIVER` abre el conjunto de operaciones del conductor, pero el caso de uso aún debe verificar que el recurso pertenece al usuario autenticado. El reto abierto exige probar el caso de un token con el scope correcto cuyo `sub` no es el dueño del recurso, el límite que un scope por sí solo no cubre.
+
+**Regresión al sustituir la regla por `permitAll()` (Diagnóstico).** El fallo deliberado cambia `.hasAuthority("SCOPE_location:write")` por `.permitAll()`: el test `conTokenValidoPeroSinElScopeRequeridoResponde403` falla porque el endpoint ahora responde `201`. Esto demuestra que sin la regla explícita cualquier usuario autenticado, con cualquier scope, ejecuta la operación protegida: exactamente la regresión silenciosa que el test atrapa.
+
+**Red privada de confianza ya controlada (Decisión).** El apartado de límites señala que para un endpoint interno accesible solo dentro de una red privada ya controlada por otros mecanismos, exigir OAuth2 completo puede ser una capa desproporcionada frente al riesgo real. La decisión de aplicarlo depende de que el endpoint esté expuesto a clientes cuya identidad y autorización haya que verificar de verdad.
+
 **Conceptos clave:** Identity Provider, issuer, scopes, roles, Resource Server, JWKS.
 
 Keycloak actúa como proveedor de identidad: autentica al usuario y emite un access token firmado. Cada API protegida se configura como **Resource Server** usando el `issuer-uri`; Spring Security obtiene las claves públicas vía JWKS y valida firma, emisor y expiración. `roles` y `scopes` expresan capacidades generales, pero no propiedad: `ROLE_DRIVER` permite entrar al conjunto de operaciones del conductor, pero el caso de uso todavía debe verificar que el recurso solicitado pertenece a ese usuario autenticado.
@@ -521,7 +660,7 @@ flowchart LR
 
 #### Practica
 
-**Demo paso a paso.** Continuando en `demo-cloud` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `mkdir demo-security && cd demo-security && curl -fsSL https://start.spring.io/starter.zip -d dependencies=web,oauth2-resource-server -d javaVersion=25 -o app.zip && unzip app.zip`), crea `src/main/java/io/academia/security/SecurityConfig.java`:
+**Demo paso a paso.** Continuando en `demo-cloud` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `mkdir demo-security && cd demo-security && curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web,oauth2-resource-server -d javaVersion=25 -o app.zip && unzip app.zip`), crea `src/main/java/io/academia/security/SecurityConfig.java`:
 
 ```bash
 mkdir -p demo-cloud/security/src/main/java/io/academia/security
@@ -565,7 +704,16 @@ public class SecurityConfig {
 }
 ```
 
-Confirma con `MockMvc` y el post-processor oficial `SecurityMockMvcRequestPostProcessors.jwt()` (de `spring-security-test`, la forma recomendada por la documentación oficial de Spring Security para probar reglas de Resource Server sin un Identity Provider real corriendo) las tres respuestas reales. El test incluye un controlador mínimo para que la petición autorizada llegue a un endpoint real, y un `JwtDecoder` de prueba que evita que Spring Boot intente descubrir el issuer de Keycloak durante la prueba:
+Confirma con `MockMvc` y el post-processor oficial `SecurityMockMvcRequestPostProcessors.jwt()` (de `spring-security-test`, la forma recomendada por la documentación oficial de Spring Security para probar reglas de Resource Server sin un Identity Provider real corriendo) las tres respuestas reales. El test incluye un controlador mínimo para que la petición autorizada llegue a un endpoint real, y un `JwtDecoder` de prueba que evita que Spring Boot intente descubrir el issuer de Keycloak durante la prueba. **Nota (Spring Boot 4):** `WebMvcTest` requiere agregar explícitamente `spring-boot-webmvc-test` (scope `test`) al `pom.xml` — en Boot 3.x venía incluido en `spring-boot-starter-test`:
+
+```xml
+<!-- dentro de <dependencies> del pom.xml -->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-webmvc-test</artifactId>
+    <scope>test</scope>
+</dependency>
+```
 
 ```java
 // src/test/java/io/academia/security/ResourceServerTest.java
@@ -573,7 +721,7 @@ package io.academia.security;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
@@ -700,6 +848,40 @@ mockMvc.perform(post("/api/journeys/1/positions")
 
 **¿Por qué es importante?** Un cliente HTTP declarativo describe el contrato de la dependencia sin mezclarlo con la regla de negocio, pero no elimina fallos de red: sin un deadline explícito, una llamada hacia un servicio lento puede bloquear la petición completa mucho más allá de lo tolerable para el usuario final.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Interfaz `@HttpExchange` / `@GetExchange` | Prerrequisito | `@GetExchange("/{journeyId}") String find(...)` declara el contrato sin implementación |
+| Proxy generado sobre `RestClient` | Núcleo | `RestClientAdapter` + `HttpServiceProxyFactory.createClient(RouteClient.class)` |
+| Timeout de lectura con `withReadTimeout(...)` | Núcleo | `ClientHttpRequestFactorySettings.defaults().withReadTimeout(deadline)` |
+| Corte medido con `System.nanoTime()` | Diagnóstico | el deadline de 500 ms aborta una respuesta de 800 ms; `transcurridoMs < 700` |
+| Abortar con `ResourceAccessException` | Núcleo | `assertThatThrownBy(() -> cliente.find("RF-001"))` espera `ResourceAccessException` |
+| Sin timeout explícito espera indefinidamente | Error frecuente | el fallo deliberado quita `.withReadTimeout` y la llamada espera los 800 ms completos |
+| Retries no coordinados amplifican latencia | Límite | el ejercicio 3 documenta cómo reintentar sin coordinar multiplica la latencia total |
+| `RestClient` vs `WebClient` vs `RestTemplate` | Decisión | tres clientes HTTP de Spring con un criterio de elección explícito, no por familiaridad |
+| Llamada local sin componente de red | Decisión | el apartado de límites: ni `@HttpExchange` ni el deadline aportan valor |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Interfaz `@HttpExchange` / `@GetExchange` (Prerrequisito).** La interfaz `RouteClient` declara el contrato de la dependencia con `@GetExchange("/{journeyId}")` sobre `String find(@PathVariable String journeyId)`, sin implementación. Describir la dependencia como un contrato declarativo la separa de la regla de negocio y reduce código repetitivo, pero no elimina por sí sola los fallos de red.
+
+**Proxy generado sobre `RestClient` (Núcleo).** Spring genera un proxy cliente real: `RestClientAdapter.create(restClient)` y `HttpServiceProxyFactory.builderFor(...).build().createClient(RouteClient.class)` convierten el `RestClient` configurado en una implementación de la interfaz. El apartado "Si falla" advierte que un `RestClient` creado con `RestClient.create()` ignora la fábrica con el timeout, por lo que el proxy debe construirse sobre el `RestClient` que sí la usa.
+
+**Timeout de lectura con `withReadTimeout(...)` (Núcleo).** `ClientHttpRequestFactorySettings.defaults().withReadTimeout(deadline)` establece cuánto espera el cliente la respuesta una vez establecida la conexión, antes de abortar. Es distinto del timeout de conexión que explora el ejercicio 1: uno mide el tiempo para establecer el TCP, el otro el tiempo esperando la respuesta tras conectar.
+
+**Corte medido con `System.nanoTime()` (Diagnóstico).** El test encola una respuesta con `bodyDelay(800, ...)` y configura un deadline de 500 ms; `System.nanoTime()` mide el tiempo real transcurrido y la aserción exige `transcurridoMs < 700`, evidencia cronométrica de que el corte ocurrió cerca del deadline y no al terminar los 800 ms. Según la Pista, se usa `nanoTime()` y no `currentTimeMillis()` porque no se ve afectado por ajustes del reloj.
+
+**Abortar con `ResourceAccessException` (Núcleo).** Cuando el deadline vence, la llamada aborta lanzando `ResourceAccessException`, lo que el test captura con `assertThatThrownBy(() -> cliente.find("RF-001"))`. Esa excepción es la señal observable de que el cliente dejó de esperar, en vez de bloquear la petición completa a la espera del backend lento.
+
+**Sin timeout explícito espera indefinidamente (Error frecuente).** El fallo deliberado quita `.withReadTimeout(deadline)`: la llamada entonces espera los 800 ms completos y la aserción `assertThatThrownBy` falla porque no se lanza ninguna excepción. Confirma que sin un timeout de lectura explícito el cliente queda limitado solo por el timeout por defecto del sistema operativo, típicamente varios minutos, justo el riesgo que el tema previene.
+
+**Retries no coordinados amplifican latencia (Límite).** El ejercicio 3 pide documentar por qué agregar retries automáticos sobre una llamada con deadline, sin coordinarlos con el resto del sistema, puede multiplicar la latencia total percibida por el usuario. El reto abierto refuerza el límite: la suma de los deadlines de los saltos internos debe caber dentro del deadline total que percibe el cliente externo.
+
+**`RestClient` vs `WebClient` vs `RestTemplate` (Decisión).** Spring ofrece tres clientes HTTP con roles distintos, no intercambiables por preferencia: `RestClient` (el cliente síncrono moderno, usado en este tema vía `RestClientAdapter`) es la elección por defecto para aplicaciones Spring MVC tradicionales que necesitan una API fluida y actual; `WebClient` (Módulo 9) es exclusivamente para flujos no bloqueantes/reactivos (`Mono`/`Flux`) — usarlo en una aplicación puramente síncrona agrega la complejidad del modelo reactivo sin ningún beneficio, porque de cualquier forma se bloqueará en algún punto para obtener el resultado; `RestTemplate` es el cliente histórico, considerado legado desde que `RestClient` cubre el mismo caso de uso síncrono con una API más moderna — ya no es la recomendación por defecto para código nuevo, aunque sigue siendo soportado para proyectos existentes que ya lo usan extensamente. El criterio de elección es el modelo de ejecución de la aplicación (síncrona vs reactiva) y si el código es nuevo o ya depende de `RestTemplate`, no la familiaridad del equipo con una API en particular.
+
+**Llamada local sin componente de red (Decisión).** El apartado de límites indica que para una llamada local sin ningún componente de red real, ni `@HttpExchange` ni un deadline aportan valor. La decisión de aplicar estos patrones depende de que exista una dependencia remota cuya lentitud pueda bloquear la petición del usuario.
+
 **Conceptos clave:** contrato cliente declarativo, timeout de lectura, deadline medible.
 
 Una interfaz `@HttpExchange` describe el contrato de la dependencia; Spring genera un proxy cliente real sobre `RestClient`, reduciendo código repetitivo. Definir un timeout de lectura explícito (vía `ClientHttpRequestFactorySettings`) establece cuánto tiempo el cliente está dispuesto a esperar antes de abortar la llamada, en vez de depender del timeout por defecto del sistema operativo (a menudo minutos).
@@ -719,7 +901,7 @@ sequenceDiagram
 
 #### Practica
 
-**Demo paso a paso.** Continuando en `demo-cloud` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `mkdir demo-http-client && cd demo-http-client && curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip app.zip`), crea `src/main/java/io/academia/routes/RouteClient.java`:
+**Demo paso a paso.** Continuando en `demo-cloud` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `mkdir demo-http-client && cd demo-http-client && curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web -d javaVersion=25 -o app.zip && unzip app.zip`), crea `src/main/java/io/academia/routes/RouteClient.java`:
 
 ```bash
 mkdir -p demo-cloud/http-client/src/main/java/io/academia/routes
@@ -871,6 +1053,37 @@ ClientHttpRequestFactorySettings.defaults().____(deadline);
 
 **¿Por qué es importante?** La comunicación entre el servicio de Jornadas y el servicio de Tarifas ocurre decenas de veces por segundo en el camino crítico de cada entrega; serializar y parsear JSON sobre HTTP en cada llamada interna agrega una sobrecarga medible que gRPC (contrato binario tipado, HTTP/2 multiplexado) reduce sin cambiar la lógica de negocio.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Contrato `.proto` y generación de stub | Prerrequisito | `tarifa.proto` define `TarifaService`; `find target/generated-sources -name 'TarifaServiceGrpc.java'` |
+| `@GrpcService` como bean gestionado | Núcleo | `TarifaServiceImpl extends TarifaServiceGrpc.TarifaServiceImplBase` anotado `@GrpcService` |
+| Auto-configuración de Spring gRPC (Boot 4.1) | Núcleo | `spring.grpc.server.port: 9090`, sin `ServerBuilder` manual de Netty |
+| `StreamObserver` (`onNext` / `onCompleted`) | Núcleo | el servicio emite con `responseObserver.onNext(...)` y cierra con `onCompleted()` |
+| Llamada binaria real cliente-servidor | Núcleo | el stub inyectado por `GrpcChannelFactory` invoca `calcular(...)` y recibe `monto = 15000` para 10 km |
+| Identidad de campo por número, no por nombre | Diagnóstico | el fallo deliberado reusa `= 1` y un cliente viejo lee mal el valor |
+| `reserved` para números retirados | Error frecuente | el ejercicio 3 y los errores comunes: marcar `reserved` evita reusos accidentales |
+| gRPC-Web / terceros que esperan JSON | Decisión | el apartado de límites: gRPC agrega fricción frente a HTTP Interfaces |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Contrato `.proto` y generación de stub (Prerrequisito).** `tarifa.proto` define una sola vez el servicio `TarifaService` con el RPC `Calcular` y los mensajes `TarifaRequest`/`TarifaResponse`; el plugin `protobuf-maven-plugin` traduce ese contrato a clases Java (`TarifaServiceGrpc`, `TarifaServiceImplBase` y los mensajes) en cada compilación. El demo verifica que existen con `find target/generated-sources -name 'TarifaServiceGrpc.java'` tras `./mvnw compile`.
+
+**`@GrpcService` como bean gestionado (Núcleo).** `@GrpcService` marca `TarifaServiceImpl`, que extiende la clase base generada `TarifaServiceGrpc.TarifaServiceImplBase`, como un bean gestionado por Spring con inyección de dependencias normal. Es la pieza que conecta la implementación de negocio con el contrato generado del `.proto`.
+
+**Auto-configuración de Spring gRPC (Boot 4.1) (Núcleo).** Spring gRPC, incorporado en Spring Boot 4.1, registra automáticamente el servidor y los clientes a partir de `application.yml` (`spring.grpc.server.port: 9090`), igual que Boot autoconfigura un servidor HTTP embebido, sin la configuración manual de un `ServerBuilder` de Netty que gRPC puro exigiría. Esto reduce el arranque a unas pocas líneas de configuración.
+
+**`StreamObserver` (`onNext` / `onCompleted`) (Núcleo).** La implementación emite la respuesta con `responseObserver.onNext(TarifaResponse.newBuilder().setMonto(monto).build())` y cierra el RPC con `onCompleted()`. Este par de llamadas es el contrato de una respuesta unaria: `onNext` entrega el mensaje y `onCompleted` señala que no vendrán más, cerrando la llamada.
+
+**Llamada binaria real cliente-servidor (Núcleo).** El test obtiene un stub bloqueante con `GrpcChannelFactory.createChannel("localhost:9090")` (el mecanismo documentado por la referencia oficial de Spring gRPC para crear un canal con nombre o dirección) y llama a `calcular(TarifaRequest.newBuilder().setDistanciaKm(10).build())`, recibiendo `TarifaResponse` con `monto = 15000` (10 km × 1500) a través de HTTP/2, sin parseo manual de JSON en ninguno de los dos lados. Confirma que la comunicación binaria funciona de extremo a extremo.
+
+**Identidad de campo por número, no por nombre (Diagnóstico).** El fallo deliberado quita `distanciaKm = 1` y reusa el número `= 1` para `distanciaMillas`: un cliente viejo compilado contra el contrato anterior interpreta el valor binario de `distanciaMillas` como si fuera `distanciaKm`, produciendo un cálculo silenciosamente incorrecto sin error de compilación ni de red. Según la Pista, protobuf identifica campos por NÚMERO; el nombre es solo legibilidad humana, por lo que renombrar es seguro pero reusar o reordenar un número no lo es.
+
+**`reserved` para números retirados (Error frecuente).** El ejercicio 3 y los errores comunes del tema piden marcar como `reserved` el número de un campo eliminado para que nadie lo reuse accidentalmente en el futuro. El ejercicio 1 muestra la alternativa segura al fallo: asignar el siguiente número disponible (`distanciaMillas = 2`), de modo que un cliente viejo simplemente no vea el campo nuevo en vez de corromper un valor existente.
+
+**gRPC-Web / terceros que esperan JSON (Decisión).** El apartado de límites indica que para un cliente de navegador (gRPC-Web requiere un proxy adicional) o un tercero externo que espera JSON/REST estándar, gRPC agrega fricción de integración sin beneficio frente a las HTTP Interfaces del Tema 5. La decisión de usar gRPC depende de que la comunicación sea interna, de alta frecuencia y entre servicios que controlas en ambos extremos.
+
 **Conceptos clave:** contrato `.proto`, generación de stub, HTTP/2 multiplexado, Spring gRPC (Boot 4.1) frente a configuración manual de Netty.
 
 ```protobuf
@@ -945,10 +1158,23 @@ Y un cliente de prueba que invoca el servicio ya arrancado:
 // src/test/java/io/academia/tarifas/TarifaGrpcTest.java
 package io.academia.tarifas;
 
+import org.springframework.grpc.client.GrpcChannelFactory;
+
 @SpringBootTest
 class TarifaGrpcTest {
-    @GrpcClient("tarifa-service")
+    @Autowired
     private TarifaServiceGrpc.TarifaServiceBlockingStub cliente;
+
+    @TestConfiguration
+    static class ClienteDePrueba {
+        @Bean
+        TarifaServiceGrpc.TarifaServiceBlockingStub cliente(GrpcChannelFactory channels) {
+            // crea el canal apuntando al puerto configurado en spring.grpc.server.port;
+            // la referencia oficial documenta este @Bean manual como alternativa
+            // a @ImportGrpcClients cuando el canal no sigue el escaneo por paquete
+            return TarifaServiceGrpc.newBlockingStub(channels.createChannel("localhost:9090"));
+        }
+    }
 
     @Test
     void calculaTarifaPorDistancia() {
@@ -963,7 +1189,7 @@ class TarifaGrpcTest {
 ./mvnw test -Dtest=TarifaGrpcTest
 ```
 
-**Explicación línea por línea:** el `.proto` define el contrato una sola vez y el plugin lo traduce a clases Java en ambos extremos, de modo que emisor y receptor comparten tipos exactos; `@GrpcService` registra la implementación en el servidor que Spring gRPC levanta en `spring.grpc.server.port`; `responseObserver.onNext(...)` emite la respuesta y `onCompleted()` cierra el RPC; en el test, `@GrpcClient("tarifa-service")` inyecta un stub bloqueante construido desde el canal configurado, y `calcular(...)` es una llamada binaria real que devuelve el mensaje generado.
+**Explicación línea por línea:** el `.proto` define el contrato una sola vez y el plugin lo traduce a clases Java en ambos extremos, de modo que emisor y receptor comparten tipos exactos; `@GrpcService` registra la implementación en el servidor que Spring gRPC levanta en `spring.grpc.server.port`; `responseObserver.onNext(...)` emite la respuesta y `onCompleted()` cierra el RPC; en el test, el `@Bean` que expone `GrpcChannelFactory.createChannel("localhost:9090")` construye un stub bloqueante inyectado por `@Autowired`, y `calcular(...)` es una llamada binaria real que devuelve el mensaje generado.
 
 **Resultado esperado:** el cliente gRPC invoca `TarifaServiceImpl` a través de HTTP/2 usando el stub generado del contrato `.proto`, recibiendo `TarifaResponse` con `monto=15000` para 10 km, sin ningún parseo manual de JSON en ninguno de los dos lados.
 
@@ -1020,6 +1246,37 @@ public class TarifaServiceImpl extends TarifaServiceGrpc.TarifaServiceImplBase {
 #### Aprende
 
 **¿Por qué es importante?** Spring Cloud resuelve problemas de coordinación entre servicios; no corrige una separación de dominio equivocada. Distribuir primero y descubrir después los límites produce transacciones imposibles, llamadas circulares y cambios coordinados entre equipos.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Contexto delimitado | Prerrequisito | `Journey` pertenece al contexto "Operación de entregas" donde vive su regla |
+| Agregado como frontera transaccional | Núcleo | `Journey` guarda `status` y `positions` privados y solo expone `record`/`close` |
+| Invariante encapsulada | Núcleo | `record(...)` lanza `JourneyAlreadyClosed` si `status == CLOSED` |
+| Prueba sin infraestructura | Núcleo | `JourneyTest` confirma la regla sin Kafka ni PostgreSQL ni HTTP |
+| Invariante depende de la comprobación explícita | Diagnóstico | el fallo deliberado quita el `if` y `record` ya no lanza la excepción |
+| Estado interno inmutable hacia fuera | Límite | `positions()` devuelve `List.copyOf(...)`; el ejercicio 2 espera `UnsupportedOperationException` |
+| Foreign key entre bases rompe la propiedad | Error frecuente | el ejercicio 3 y el diagrama: Facturación no consulta tablas ajenas |
+| Límites de dominio aún inciertos | Decisión | el apartado de límites: un monolito modular es preferible a microservicios prematuros |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Contexto delimitado (Prerrequisito).** Un contexto delimitado define dónde un término mantiene un significado coherente; `Journey` pertenece al contexto "Operación de entregas" porque allí viven reglas como «una jornada cerrada no acepta nuevas posiciones». Un microservicio no es una capa técnica ni una tabla aislada: se separa por capacidades de negocio, no por entidades, como recuerdan los errores comunes del tema.
+
+**Agregado como frontera transaccional (Núcleo).** El agregado `Journey` protege sus invariantes en una única frontera: guarda `status` y la lista `positions` como campos privados y expone solo operaciones de negocio (`record`, `close`, `positions()`). Ninguna otra clase puede manipular directamente el estado, de modo que la regla de negocio tiene un único dueño.
+
+**Invariante encapsulada (Núcleo).** La invariante vive dentro del agregado: `record(...)` comprueba `if (status == JourneyStatus.CLOSED)` y lanza `JourneyAlreadyClosed` antes de agregar la posición. Esa comprobación es la única puerta de entrada a la lista, lo que impide que cualquier código salte la regla. El primer test confirma además que la posición rechazada nunca quedó registrada (`positions()` sigue teniendo tamaño 1).
+
+**Prueba sin infraestructura (Núcleo).** `JourneyTest` verifica la invariante sin Kafka, sin PostgreSQL y sin HTTP: la regla vive completamente en el agregado y se comprueba de forma aislada y rápida. Según la Pista, si una regla de negocio solo puede probarse levantando Kafka o PostgreSQL, es señal de que no está realmente encapsulada en el agregado.
+
+**Invariante depende de la comprobación explícita (Diagnóstico).** El fallo deliberado quita el `if (status == JourneyStatus.CLOSED)` de `record(...)`: el test `unaJornadaCerradaRechazaNuevasPosiciones` falla porque ya no se lanza `JourneyAlreadyClosed`. Esto demuestra en código, no solo en diseño, que la invariante depende enteramente de esa comprobación; sin ella cualquier servicio que use `Journey` podría registrar posiciones en una jornada cerrada.
+
+**Estado interno inmutable hacia fuera (Límite).** `positions()` devuelve `List.copyOf(...)` para impedir que un llamador modifique el estado interno del agregado. El ejercicio 2 lo formaliza: intentar modificar la lista devuelta lanza `UnsupportedOperationException`, confirmando que exponer una referencia mutable sería una fuga que permitiría saltarse la encapsulación del agregado.
+
+**Foreign key entre bases rompe la propiedad (Error frecuente).** El ejercicio 3 pide documentar por qué una foreign key directa desde la base de Facturación hacia la tabla `journeys` de Operaciones rompería la propiedad de datos aunque técnicamente funcione. El diagrama lo refleja: Facturación recibe un evento `JourneyCompleted v1` por Kafka y no consulta tablas ajenas; compartir una entidad JPA o una FK entre bases rompe la autonomía de cada contexto.
+
+**Límites de dominio aún inciertos (Decisión).** El apartado de límites recomienda que, con límites de dominio todavía inciertos (un producto nuevo, sin historial de cambios), empezar con un monolito modular y paquetes explícitos es preferible a extraer microservicios sobre hipótesis de contexto delimitado no validadas. La decisión de distribuir debe apoyarse en límites ya conocidos, no en conveniencia técnica.
 
 **Conceptos clave:** contexto delimitado, agregado, invariante, propiedad de datos.
 
@@ -1196,11 +1453,42 @@ if (status == JourneyStatus.CLOSED) {
 
 **Prerrequisito:** Tema 3 de este módulo (circuit breaker con Resilience4j); el patrón Saga del track se introduce aquí de forma ejecutable. Nociones de microservicios que se comunican por red (Temas 1-7).
 
-**Al terminar podrás:** orquestar una transacción distribuida que cruza varios microservicios (aceptar un pedido, asignar un repartidor, cobrar y notificar) con un **Workflow de Temporal**, de forma que el proceso sobreviva a caídas y reinicios, reintente automáticamente los pasos que fallan de forma transitoria, y **compense** (deshaga) los pasos ya completados si uno posterior falla de forma definitiva, todo confirmado con el servidor de pruebas embebido de Temporal.
+**Al terminar podrás:** orquestar una transacción distribuida que cruza varios microservicios (aceptar un pedido, asignar un repartidor, cobrar y notificar) con un **Workflow de Temporal**, de forma que el proceso sobreviva a caídas y reinicios, reintente automáticamente los pasos que fallan de forma transitoria, y **compense** (deshaga) los pasos ya completados si uno posterior falla de forma definitiva, todo confirmado con el servidor de pruebas embebido de Temporal. Esta es una saga **orquestada**: un coordinador central (Temporal) conoce y dirige la secuencia completa. En una saga **coreografiada**, no existe ese coordinador: cada servicio reacciona a eventos de los demás y decide su propio siguiente paso, sin que nadie tenga la vista completa del proceso — más desacoplado, pero más difícil de seguir cuando algo falla. El Módulo 15, Tema 5 muestra un orquestador saga manual (sin motor de workflow) como variante intermedia entre ambos extremos.
 
 #### Aprende
 
 **¿Por qué es importante?** En RutaFlow, aceptar un pedido dispara una secuencia que toca varios servicios: reservar inventario, asignar un repartidor, cobrar al cliente y notificar. Si el cobro falla **después** de haber reservado inventario y asignado repartidor, no puedes dejar el sistema a medias: hay que deshacer lo hecho. Coordinar esto con llamadas HTTP y bases de datos sueltas lleva a estados inconsistentes cuando un servicio se cae a mitad del proceso. Temporal resuelve esto ejecutando la orquestación como un **workflow duradero**: si el proceso (o la máquina) se cae en el paso 3, al reiniciar Temporal lo retoma exactamente donde estaba, sin repetir los pasos ya completados.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Workflow determinista vs Activity con efecto externo | Prerrequisito | `@WorkflowInterface` y `@ActivityInterface` separan orquestación de pasos externos |
+| Mismo Worker en Workflow y Activity | Prerrequisito | `@WorkflowImpl(workers = "pedidos")` y `@ActivityImpl(workers = "pedidos")` |
+| Stub de Activities con `RetryOptions` | Núcleo | `Workflow.newActivityStub(...).setRetryOptions(...setMaximumAttempts(3))` |
+| Saga: registrar compensación antes de cada paso | Núcleo | `saga.addCompensation(() -> actividades.liberarInventario(pedidoId))` tras reservar |
+| Compensación en orden inverso ante fallo definitivo | Núcleo | el `catch` llama a `saga.compensate()` y libera repartidor e inventario al revés |
+| Servidor de pruebas embebido | Diagnóstico | `spring.temporal.test-server.enabled: true` y el test devuelve `CONFIRMADO` |
+| Registrar la compensación después de la Activity | Error frecuente | la Pista y los errores comunes: si se registra tarde, nunca se registra |
+| Transacción local que cabe en `@Transactional` | Decisión | el apartado de límites: Temporal es sobreingeniería para un solo servicio |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Workflow determinista vs Activity con efecto externo (Prerrequisito).** Temporal separa dos cosas: el Workflow es código de orquestación determinista que decide el orden de los pasos y sobrevive a fallos porque Temporal registra cada decisión en un historial reproducible; las Activities son los pasos que tocan el mundo exterior (una API, una base de datos, un cobro) y por eso pueden fallar. En el demo esto se declara con `@WorkflowInterface`/`@ActivityInterface`, y los errores comunes advierten de no meter efectos externos ni `Thread.sleep` dentro del Workflow.
+
+**Mismo Worker en Workflow y Activity (Prerrequisito).** `@WorkflowImpl(workers = "pedidos")` y `@ActivityImpl(workers = "pedidos")` (el atributo `workers` referencia el nombre del Worker o de su Task Queue; `taskQueues` es el nombre usado en versiones anteriores del starter) registran ambos extremos en el mismo Worker, que es lo que permite a un Worker local ejecutarlos. El test usa `WorkflowOptions.newBuilder().setTaskQueue("pedidos")` (API del SDK núcleo de Temporal, sin cambios) para encolar el workflow en esa misma cola; si no coincidieran, el Worker no recogería las tareas.
+
+**Stub de Activities con `RetryOptions` (Núcleo).** `Workflow.newActivityStub(...)` crea el stub con `RetryOptions` de tres intentos (`setMaximumAttempts(3)`), de modo que un fallo transitorio se reintenta automáticamente sin que escribas el bucle de retry. El ejercicio 1 lo contrasta bajando el máximo a 1 (la compensación se dispara al primer fallo) y el ejercicio 3 hace que un paso falle dos veces y triunfe a la tercera, resolviéndose por reintento sin compensar.
+
+**Saga: registrar compensación antes de cada paso (Núcleo).** Para deshacer efectos ya aplicados, el Workflow usa la clase `Saga`: antes de ejecutar el siguiente paso registra la compensación del anterior con `saga.addCompensation(() -> actividades.liberarInventario(pedidoId))`. El "Completa el código" refuerza esto pidiendo registrar la compensación del repartidor antes del cobro, de modo que si el cobro falla la compensación ya esté registrada.
+
+**Compensación en orden inverso ante fallo definitivo (Núcleo).** Si un paso falla de forma definitiva tras sus reintentos, el `catch` llama a `saga.compensate()`, que ejecuta las compensaciones en orden inverso al que se aplicaron: primero libera el repartidor, luego el inventario. El fallo deliberado (hacer que `cobrar` lance siempre una excepción) confirma que tras agotar los 3 reintentos el sistema no queda a medias: lo reservado se libera.
+
+**Servidor de pruebas embebido (Diagnóstico).** El test corre contra el servidor de pruebas embebido (`TestWorkflowEnvironment` en memoria) activado con `spring.temporal.test-server.enabled: true` en `src/test/resources/application.yml`, sin instalar un servidor Temporal. El camino feliz devuelve `CONFIRMADO ...`; el apartado "Si falla" indica que si el test no arranca hay que revisar ese flag y que el paquete de auto-discovery coincida con el de las clases.
+
+**Registrar la compensación después de la Activity (Error frecuente).** La Pista y los errores comunes insisten: la compensación debe registrarse antes de llamar a la Activity que compensa. Si se registra después y la Activity falla, esa línea nunca se ejecuta y la compensación nunca queda registrada, dejando el efecto aplicado sin posibilidad de deshacerlo. El criterio de aceptación del módulo lo convierte en condición de cierre.
+
+**Transacción local que cabe en `@Transactional` (Decisión).** El apartado de límites señala que para una operación local de un solo servicio que cabe en una transacción `@Transactional` de base de datos, Temporal es sobreingeniería; su valor aparece cuando la transacción cruza varios servicios, dura minutos u horas o debe sobrevivir a caídas del proceso. Frente a Kafka/outbox, la diferencia es que la mensajería coordina eventos desacoplados mientras Temporal orquesta un proceso con estado, pasos ordenados y compensación explícita.
 
 **Conceptos clave:** Workflow (orquestador duradero), Activity (paso con efecto externo que puede fallar), reintentos automáticos, Saga y compensación.
 
@@ -1293,7 +1581,7 @@ import io.temporal.workflow.Workflow;
 
 import java.time.Duration;
 
-@WorkflowImpl(taskQueues = "pedidos")
+@WorkflowImpl(workers = "pedidos")
 public class PedidoWorkflowImpl implements PedidoWorkflow {
 
     // Stub de Activities con reintentos automáticos ante fallos transitorios.
@@ -1345,7 +1633,7 @@ import io.temporal.spring.boot.ActivityImpl;
 import org.springframework.stereotype.Component;
 
 @Component
-@ActivityImpl(taskQueues = "pedidos")
+@ActivityImpl(workers = "pedidos")
 public class PedidoActivitiesImpl implements PedidoActivities {
     public String reservarInventario(String p) { return "INV-" + p; }
     public void liberarInventario(String p) { /* revierte la reserva */ }
@@ -1429,7 +1717,7 @@ mvn test -Dtest=PedidoWorkflowTest           # Maven
 ./gradlew test --tests PedidoWorkflowTest    # Gradle (equivalente)
 ```
 
-**Explicación línea por línea:** `@ActivityInterface` y `@WorkflowInterface` separan los pasos con efecto externo de la orquestación; `@WorkflowImpl(taskQueues = "pedidos")` y `@ActivityImpl(taskQueues = "pedidos")` registran ambos extremos en la misma cola de tareas, que es lo que permite a un Worker local ejecutarlos; `Workflow.newActivityStub(...)` crea el stub con `RetryOptions` de tres intentos, de modo que un fallo transitorio se reintenta sin código adicional; `saga.addCompensation(...)` se registra justo después de cada paso exitoso y antes del siguiente; el `catch` llama a `saga.compensate()`, que ejecuta las compensaciones registradas en orden inverso y deja el sistema en el estado previo.
+**Explicación línea por línea:** `@ActivityInterface` y `@WorkflowInterface` separan los pasos con efecto externo de la orquestación; `@WorkflowImpl(workers = "pedidos")` y `@ActivityImpl(workers = "pedidos")` registran ambos extremos en la misma cola de tareas, que es lo que permite a un Worker local ejecutarlos; `Workflow.newActivityStub(...)` crea el stub con `RetryOptions` de tres intentos, de modo que un fallo transitorio se reintenta sin código adicional; `saga.addCompensation(...)` se registra justo después de cada paso exitoso y antes del siguiente; el `catch` llama a `saga.compensate()`, que ejecuta las compensaciones registradas en orden inverso y deja el sistema en el estado previo.
 
 **Resultado esperado:** el test pasa en verde contra el servidor de pruebas embebido de Temporal (en memoria, sin instalar nada): el Workflow ejecuta los cuatro pasos en orden y devuelve `CONFIRMADO ...`. **Fallo deliberado y diagnóstico:** en `PedidoActivitiesImpl.cobrar(...)` lanza siempre una excepción (`throw new RuntimeException("tarjeta rechazada");`). Vuelve a ejecutar el test: tras agotar los 3 reintentos de la Activity `cobrar`, el Workflow entra al `catch`, llama a `saga.compensate()` y ejecuta `liberarRepartidor` y `liberarInventario` **en orden inverso**. Diagnostica confirmando que el estado no queda a medias: lo que se reservó se libera. Es exactamente la garantía que una secuencia de llamadas HTTP sueltas no te da cuando el proceso se cae a mitad de camino.
 

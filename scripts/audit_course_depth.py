@@ -21,6 +21,7 @@ PRIORITIES = {
  'react': ('JSX y estado antes de efectos; proveedor, dependencias y API visibles', 'Carga, error, vacío y carrera de respuestas; caché observada, no supuesta'),
  'java': ('Clases completas antes de concurrencia; no reemplazar implementación por un enunciado', 'Compilación, errores, Futures, recursos cerrados y cancelación cooperativa'),
  'spring-boot': ('Java/HTTP/SQL como requisitos; proyecto y starters reproducibles', 'Contratos HTTP, validación, autorización por recurso y consulta real con límites'),
+ 'microservices': ('Procesos, red y fallo parcial antes de patrones; monolito modular antes de extracción', 'Contratos evolutivos, datos propios, idempotencia, recuperación y observabilidad demostradas'),
  'android': ('Kotlin antes de Compose; distinguir recomposición, recreación y muerte de proceso', 'App instalable con permisos, restauración, persistencia y pruebas en dispositivo'),
  'ios': ('Swift antes de SwiftUI; explicitar macOS/Xcode y destino', 'Cancelación, estados de red, persistencia y accesibilidad comprobados en simulador'),
  'flutter': ('Dart antes de widgets; ejemplo con main y destino de ejecución', 'Restauración, red, pruebas de widget, integración y publicación por plataforma'),

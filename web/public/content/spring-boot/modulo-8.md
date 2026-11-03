@@ -1,6 +1,6 @@
 # Módulo 8: Mensajería — Kafka/RabbitMQ
 
-Cada tema se practica por separado con su propia repetición progresiva y su propio reto de memoria, verificado contra un broker real (`@EmbeddedKafka` para Kafka, sin necesitar Docker; `RabbitMQContainer` de Testcontainers para RabbitMQ), para que "el evento se publicó y se consumió" sea comprobable, no solo descrito.
+Cada tema se practica por separado con su propia repetición progresiva y su propio reto de memoria, verificado contra un broker real (`@EmbeddedKafka` para Kafka, sin necesitar Docker; `RabbitMQContainer` de Testcontainers para RabbitMQ), para que "el evento se publicó y se consumió" sea comprobable, no solo descrito. Este módulo es el recorrido único de Kafka producer/consumer/DLT/idempotencia; el Módulo 21 lo retoma a nivel experto con outbox, consumer groups y recuperación de fallos reales.
 
 
 ## Aprende construyendo
@@ -14,6 +14,34 @@ Cada tema se practica por separado con su propia repetición progresiva y su pro
 #### Aprende
 
 **¿Por qué es importante?** La asignación de un conductor y el envío de notificaciones no deben bloquear el request HTTP que crea una tarea; un evento desacopla al publicador de sus consumidores, permitiendo que la notificación se procese de forma independiente sin que el creador de la tarea espere por ella.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `KafkaTemplate.send` con topic | Núcleo | `kafka.send("tareas.creadas", evento.id(), evento)` publica sin conocer al consumidor |
+| `@KafkaListener` independiente | Núcleo | `@KafkaListener(topics = "tareas.creadas", groupId = "notificaciones")` registra un consumidor sin referencia al publicador |
+| Clave del mensaje y partición | Variante | usar `evento.id()` como clave: "mismo id -> misma partición" y orden por partición |
+| Consumo asíncrono | Límite | el test usa `Awaitility.await().atMost(Duration.ofSeconds(5))` porque la entrega no es inmediata |
+| Acoplamiento por nombre de topic | Error frecuente | el fallo deliberado cambia a `tareas.otro-topic` y el test queda sin recibir mensajes |
+| `@EmbeddedKafka` como broker real | Prerrequisito | `@EmbeddedKafka(partitions = 1, topics = "tareas.creadas")` levanta Kafka embebido sin Docker |
+| Varios `groupId` sobre el mismo topic | Decisión | el reto abierto añade `analytics` sin tocar el publicador |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`KafkaTemplate.send` con topic (Núcleo).** El publicador invoca `kafka.send("tareas.creadas", evento.id(), evento)` y entrega el evento al topic sin conocer ni referenciar a ningún consumidor. Ese envío es lo que convierte una llamada directa a `NotificacionService` en un punto de desacoplamiento: el `TareaService` ya no necesita que el consumidor esté disponible en el mismo instante. El mecanismo es asíncrono respecto al request HTTP que originó la tarea.
+
+**`@KafkaListener` independiente (Núcleo).** El consumidor se declara con `@KafkaListener(topics = "tareas.creadas", groupId = "notificaciones")` y Spring lo invoca automáticamente por cada mensaje del topic. No existe ninguna dependencia de compilación entre `EventoPublisher` y `NotificacionListener`: el único vínculo es el nombre del topic. Esto permite agregar o quitar consumidores sin modificar el publicador.
+
+**Clave del mensaje y partición (Variante).** Enviar con `evento.id()` como clave fija la partición de destino, de modo que todos los eventos de la misma tarea caen en la misma partición y se procesan en orden entre sí, como indica el comentario "clave estable: mismo id -> misma partición". Es una variante del envío básico que añade una garantía de orden parcial. El ejercicio 3 explora qué ocurre con un `id` nulo o vacío al enrutar.
+
+**Consumo asíncrono (Límite).** El listener no procesa el mensaje en el instante de `publicar(...)`; por eso el test espera activamente con `Awaitility.await().atMost(Duration.ofSeconds(5))` en vez de verificar de inmediato. Verificar sin espera produce tests intermitentes (flaky), como advierte la Pista. El límite es que el desacoplamiento asíncrono impide confirmar el efecto de forma síncrona.
+
+**Acoplamiento por nombre de topic (Error frecuente).** El fallo deliberado cambia el topic del listener a `tareas.otro-topic` y el test falla con `ConditionTimeoutException` tras los 5 segundos, porque el consumidor escucha un topic que nunca recibe mensajes. Esto revela que el acoplamiento no desaparece: se traslada al string del topic, que debe coincidir carácter por carácter. Un desajuste ahí es una desconexión silenciosa sin error de compilación.
+
+**`@EmbeddedKafka` como broker real (Prerrequisito).** El test se anota con `@EmbeddedKafka(partitions = 1, topics = "tareas.creadas")`, que levanta un broker Kafka real dentro del proceso de test sin necesitar Docker ni un Kafka externo. La propiedad `spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}` conecta la aplicación a ese broker. Sin este prerrequisito no habría forma de confirmar la entrega de extremo a extremo.
+
+**Varios `groupId` sobre el mismo topic (Decisión).** Al añadir un segundo `@KafkaListener` con un `groupId` distinto, ambos grupos reciben el mismo evento de forma independiente, como pide el ejercicio 1 y el reto abierto con `analytics`. La decisión de diseño es que sumar lectores no exige tocar al publicador. El diagrama ya anticipa ese grupo futuro "sin tocar el publicador".
 
 **Conceptos clave:** desacoplamiento vía topic, `@KafkaListener`.
 
@@ -58,7 +86,7 @@ flowchart LR
 ```bash
 mkdir -p academia-spring/src/main/java/com/academia/mensajeria
 cd academia-spring
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web,kafka -d javaVersion=25 -d artifactId=academia-mensajeria -o app.zip
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web,kafka -d javaVersion=25 -d artifactId=academia-mensajeria -o app.zip
 unzip -o app.zip
 ```
 
@@ -217,6 +245,34 @@ public void escuchar(TareaCreadaEvent evento) { }
 #### Aprende
 
 **¿Por qué es importante?** Un mensaje con un payload corrupto o una condición que el consumidor no puede manejar no debería bloquear indefinidamente el procesamiento de todos los mensajes válidos que llegan después de él en la misma partición.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `DefaultErrorHandler` explícito | Núcleo | el `@Bean errorHandler` combina recoverer y backoff; sin él no hay DLQ |
+| `DeadLetterPublishingRecoverer` | Núcleo | `new DeadLetterPublishingRecoverer(template)` republica el mensaje agotados los reintentos |
+| `FixedBackOff` (reintentos y espera) | Variante | `FixedBackOff(100L, 2)` declara 2 reintentos con 100ms; el ejercicio 2 prueba `FixedBackOff(100L, 0)` |
+| Convención de sufijo `.DLT` | Prerrequisito | el mensaje termina en `pedidos.procesar.DLT` por convención por defecto |
+| Verificación leyendo la DLQ | Diagnóstico | `KafkaTestUtils.getSingleRecord(..., "pedidos.procesar.DLT", ...)` confirma `"payload-invalido"` |
+| DLQ no es automática | Error frecuente | quitar el `@Bean` provoca timeout: nada llega a `.DLT` |
+| Cuándo NO usar DLQ | Decisión | para fallos que deben detener todo el flujo, diferir a una DLQ oculta el problema |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`DefaultErrorHandler` explícito (Núcleo).** El `@Bean errorHandler` crea un `DefaultErrorHandler` que combina el recoverer con la política de reintentos y es el que el contenedor de listeners usa para decidir qué hacer ante una excepción del consumidor. El fallo deliberado demuestra que, sin este bean, no existe dead-letter queue en absoluto. Es el punto donde se declara explícitamente el manejo de errores de mensajería.
+
+**`DeadLetterPublishingRecoverer` (Núcleo).** `new DeadLetterPublishingRecoverer(template)` intercepta la excepción después de agotados los reintentos y republica el mensaje original en el topic de destino. En el demo, `ListenerConFalloDeliberado.procesar` lanza `IllegalArgumentException` para `"payload-invalido"` y el recoverer lo envía a `pedidos.procesar.DLT` en vez de perderlo o bloquear la partición. El mecanismo transforma un fallo repetido en un mensaje trazable.
+
+**`FixedBackOff` (reintentos y espera) (Variante).** `FixedBackOff(100L, 2)` configura 2 reintentos con 100ms entre cada uno, valores reducidos a propósito para que el test corra rápido; el "Completa el código" pide la variante `FixedBackOff(1000L, 3)`. El ejercicio 2 usa `FixedBackOff(100L, 0)`, cero reintentos, y el mensaje llega a la DLQ tras el primer fallo. Variar estos dos números cambia cuántas veces se intenta y cuánto se espera antes de rendirse.
+
+**Convención de sufijo `.DLT` (Prerrequisito).** El `DeadLetterPublishingRecoverer` usa por defecto el nombre del topic original con el sufijo `.DLT` (Dead Letter Topic), por eso el mensaje inválido termina en `pedidos.procesar.DLT`. La Pista señala que mantener esta convención permite a cualquier desarrollador saber dónde buscar sin documentación extra. Conocer la convención es prerrequisito para declarar y consultar el topic correcto.
+
+**Verificación leyendo la DLQ (Diagnóstico).** El test abre un consumidor sobre `pedidos.procesar.DLT` y usa `KafkaTestUtils.getSingleRecord(consumidorDlq, "pedidos.procesar.DLT", Duration.ofSeconds(10))`, confirmando que `registroEnDlq.value()` es exactamente `"payload-invalido"`. Esto diagnostica que el mensaje quedó aislado y trazable, no perdido. El ejercicio 3 inspecciona además `registroEnDlq.headers()` para ver la información de la excepción original que Spring adjunta.
+
+**DLQ no es automática (Error frecuente).** El fallo deliberado quita el `@Bean errorHandler` completo y el test falla con timeout en `getSingleRecord(...)` porque ningún mensaje llega a la DLQ: con el manejo por defecto el mensaje se reintenta indefinidamente o se descarta, pero nunca va a `.DLT`. El error frecuente es asumir que Kafka envía solo a una dead-letter queue; en realidad exige configurar `DefaultErrorHandler` con `DeadLetterPublishingRecoverer`.
+
+**Cuándo NO usar DLQ (Decisión).** Los Límites señalan que para un consumidor donde cualquier fallo debe detener de inmediato todo el flujo hasta que un humano intervenga, reintentar y luego enviar en silencio a una DLQ puede ocultar un problema que requiere atención inmediata. La decisión es ponderar si diferir el fallo es aceptable o si conviene parar. El checklist refuerza esto exigiendo un dueño y un procedimiento para vaciar la DLQ.
 
 **Conceptos clave:** reintentos limitados, destino final para mensajes que fallan repetidamente.
 
@@ -404,6 +460,34 @@ return new DefaultErrorHandler(recoverer, new ____(1000L, 3));
 #### Aprende
 
 **¿Por qué es importante?** Sin idempotencia, un timeout de red que en realidad SÍ se entregó en el broker hace que el productor reintente, publicando el mismo evento de negocio dos veces — un conductor podría recibir la misma notificación de "nueva entrega asignada" duplicada, o un pago podría registrarse dos veces si el evento dispara un cobro.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `enable.idempotence=true` | Núcleo | `config.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true)` activa la deduplicación del productor |
+| `acks=all` | Prerrequisito | `config.put(ProducerConfig.ACKS_CONFIG, "all")`; el ejercicio 1 muestra que solo da durabilidad |
+| Número de secuencia por partición | Núcleo | el broker "detecta seq=5 duplicado" y descarta el reintento interno |
+| Reintento del productor vs. de la aplicación | Límite | dos `send(...)` independientes SÍ producen dos registros reales en el topic |
+| Consumidor idempotente por id de negocio | Variante | `idsYaAplicados.add(evento.id())` devuelve `true` solo la primera vez |
+| Sin deduplicación en el consumidor | Error frecuente | el fallo deliberado deja `cobrosRealmenteAplicados` en `2` en vez de `1` |
+| Cuándo omitir la ceremonia | Decisión | para telemetría no crítica un duplicado ocasional puede tolerarse |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`enable.idempotence=true` (Núcleo).** `config.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true)` hace que el productor etiquete cada lote con un número de secuencia por partición, de modo que un reintento interno del cliente Kafka no escriba el mismo mensaje dos veces en el broker. El "Completa el código" confirma que esta es la clave que activa la deduplicación del productor. Es el mecanismo central contra duplicados por ack perdido.
+
+**`acks=all` (Prerrequisito).** `config.put(ProducerConfig.ACKS_CONFIG, "all")` exige que todas las réplicas confirmen la escritura antes de considerarla exitosa, lo que da durabilidad. El ejercicio 1 y los Errores comunes dejan claro que `acks=all` por sí solo no da idempotencia. Funciona como prerrequisito de configuración junto a la idempotencia, no como sustituto de ella.
+
+**Número de secuencia por partición (Núcleo).** El diagrama muestra el productor reenviando `seq=5` tras un ack perdido y el broker detectando el `seq=5` duplicado para descartarlo sin escribir dos veces. Ese número de secuencia por partición es el mecanismo concreto que implementa la deduplicación del lado del broker. Solo cubre reintentos del propio cliente, no llamadas independientes de la aplicación.
+
+**Reintento del productor vs. de la aplicación (Límite).** La Explicación línea por línea distingue el reintento INTERNO del cliente (que la idempotencia sí evita) de dos llamadas a `send(...)` hechas por la APLICACIÓN con el mismo evento, que SÍ producen dos registros reales en el topic. El test envía dos veces con `kafkaTemplatePagos.send(...)` para reproducir ese segundo caso. El límite es que la idempotencia del productor no alcanza al reenvío de la aplicación.
+
+**Consumidor idempotente por id de negocio (Variante).** La defensa que garantiza "exactamente una vez" de negocio es `idsYaAplicados.add(evento.id())`, que devuelve `true` solo la primera vez que ve ese id, por lo que `cobrosRealmenteAplicados` se incrementa una sola vez aunque lleguen varias copias. Es una variante de idempotencia que vive en el consumidor y usa una identidad de negocio estable, no el offset. El comentario aclara que en producción sería una columna UNIQUE o un Set persistido.
+
+**Sin deduplicación en el consumidor (Error frecuente).** El fallo deliberado quita el `if (idsYaAplicados.add(evento.id()))` e incrementa el contador para cada mensaje; entonces `cobrosRealmenteAplicados` queda en `2` en vez de `1` y el test falla. Esto demuestra que la idempotencia del productor nunca fue la responsable de evitar el cobro duplicado. La Pista añade que los reintentos del consumidor por offset no confirmado también necesitan este diseño.
+
+**Cuándo omitir la ceremonia (Decisión).** Los Límites indican que para eventos donde un duplicado ocasional es tolerable y barato de ignorar, como una métrica de telemetría no crítica, la ceremonia de productor idempotente y transaccional puede no justificar su costo de throughput. La decisión depende del costo real de un duplicado frente al rendimiento. El checklist pide además que la deduplicación sobreviva a un reinicio mediante almacén persistente u outbox.
 
 **Conceptos clave:** productor idempotente, ack perdido en la red (no el mensaje), deduplicación por el broker.
 
@@ -620,6 +704,34 @@ config.put(ProducerConfig.____, true);
 
 **¿Por qué es importante?** Cada vez que una instancia de un consumer group se une o abandona el grupo (incluyendo un simple restart de un pod en Kubernetes), Kafka reasigna TODAS las particiones entre TODAS las instancias restantes, deteniendo momentáneamente el consumo de todo el grupo — invisible en desarrollo con una sola instancia, pero costoso en producción con varias.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Rebalanceo al unirse/salir | Núcleo | al arrancar `contenedorB` el broker reparte las 2 particiones entre A y B |
+| `onPartitionsRevoked` / `onPartitionsAssigned` | Núcleo | los callbacks mantienen `particionesAsignadasActualmente` fiel al broker |
+| `group.instance.id` (static membership) | Variante | `GROUP_INSTANCE_ID_CONFIG, "notificaciones-1"` da identidad estable entre reinicios |
+| `CooperativeStickyAssignor` | Variante | minimiza cuántas particiones cambian de dueño en un rebalanceo |
+| Estado local obsoleto | Error frecuente | quitar `removeAll(particiones)` hace que la suma dé `3` en vez de `2` |
+| `session.timeout.ms` | Límite | un reinicio más largo que la ventana SÍ dispara rebalanceo (ejercicio 2) |
+| Cuándo no aplica static membership | Decisión | para un grupo de una sola instancia no hay rebalanceo que evitar |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Rebalanceo al unirse/salir (Núcleo).** El test arranca `contenedorA` solo, que recibe las 2 particiones, y al iniciar `contenedorB` en el mismo `groupId` el broker fuerza un rebalanceo genuino que reparte esas particiones entre ambas instancias. La aserción final verifica que la suma de particiones asignadas sigue siendo 2, sin perder ni duplicar ninguna. Es el mecanismo central: unirse o salir del grupo redistribuye el trabajo.
+
+**`onPartitionsRevoked` / `onPartitionsAssigned` (Núcleo).** `EstadoParticionRebalanceListener` implementa ambos callbacks reales del broker: `onPartitionsRevoked` quita particiones del estado local y cuenta revocaciones, `onPartitionsAssigned` las añade en la asignación inicial y tras cada rebalanceo. Juntos mantienen `particionesAsignadasActualmente` fiel a lo que el broker realmente asignó. El checklist exige implementar los dos, no solo uno.
+
+**`group.instance.id` (static membership) (Variante).** `config.put(ConsumerConfig.GROUP_INSTANCE_ID_CONFIG, "notificaciones-1")` da a la instancia una identidad estable: si se reinicia dentro de `session.timeout.ms`, el broker la trata como la misma instancia que regresa y no dispara un rebalanceo completo. El "Completa el código" confirma que esta es la configuración que da identidad estable entre reinicios. Es una variante del consumo básico pensada para reinicios breves y conocidos.
+
+**`CooperativeStickyAssignor` (Variante).** Configurado vía `PARTITION_ASSIGNMENT_STRATEGY_CONFIG`, minimiza cuántas particiones efectivamente cambian de dueño cuando un rebalanceo sí ocurre, en vez de reasignar todas desde cero. El ejercicio 1 propone contar cuántas particiones cambian con y sin este assignor usando 3 instancias. Es una variante de estrategia de asignación que reduce el costo del rebalanceo.
+
+**Estado local obsoleto (Error frecuente).** El fallo deliberado quita `particionesAsignadasActualmente.removeAll(particiones)` de `onPartitionsRevoked` y la aserción de la suma reporta `3` en vez de `2`, porque la primera instancia sigue creyendo que conserva una partición ya reasignada. Esto reproduce el bug real de estado obsoleto: una instancia podría servir, cachear o contar datos de una partición que ya no le pertenece. Ignorar la revocación es el error típico.
+
+**`session.timeout.ms` (Límite).** El ejercicio 2 configura un `session.timeout.ms` corto (por ejemplo 5 segundos) y confirma que un reinicio que tarde más que esa ventana SÍ dispara un rebalanceo incluso con static membership. La Pista precisa que static membership protege reinicios breves, no la pérdida permanente de una instancia. El límite es la duración de la ausencia tolerada.
+
+**Cuándo no aplica static membership (Decisión).** Los Límites indican que para un consumer group de una sola instancia, sin escalado horizontal, el rebalanceo no es un problema real a evitar y static membership solo agrega configuración sin beneficio. La decisión es aplicarlo únicamente cuando hay varias instancias y reinicios frecuentes. El ejercicio 3 también advierte sobre usar el mismo `group.instance.id` en dos instancias por error.
+
 **Conceptos clave:** consumer group, rebalanceo, partition assignment strategy, static membership.
 
 ```java
@@ -831,6 +943,34 @@ config.put(ConsumerConfig.____, "notificaciones-1");
 
 **¿Por qué es importante?** Elegir la tecnología de mensajería equivocada para el patrón de consumo real necesario (retención y relectura de historial vs. distribución simple de trabajo) genera complejidad innecesaria o limitaciones inesperadas más adelante.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `@RabbitListener` vs. `@KafkaListener` | Prerrequisito | `@RabbitListener(queues = "tareas.creadas")` es sintácticamente similar pero de modelo distinto |
+| Kafka como log retenido | Núcleo | retiene mensajes un período configurable aunque ya se hayan consumido |
+| RabbitMQ como broker de colas | Núcleo | el mensaje se entrega y se elimina de la cola una vez consumido |
+| Relectura del historial | Variante | varios grupos pueden releer el mismo stream completo, incluso eventos ya vistos |
+| Competencia de consumidores | Variante | en RabbitMQ un solo trabajador del pool recibe cada carta (punto-a-punto) |
+| `spring-boot-starter-amqp` y `Queue` | Diagnóstico | `new Queue("tareas.creadas.rabbit", true)` declara la cola equivalente del Tema 1 |
+| Elegir según patrón de consumo | Decisión | retención/relectura vs. distribución simple de trabajo guía la tecnología |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`@RabbitListener` vs. `@KafkaListener` (Prerrequisito).** `@RabbitListener(queues = "tareas.creadas")` se parece mucho a `@KafkaListener`, pero el modelo subyacente es distinto. Reconocer esa similitud superficial es prerrequisito para no asumir que ambas tecnologías se comportan igual bajo el mismo código. La demo monta el equivalente RabbitMQ del publicador/consumidor del Tema 1 para comparar directamente.
+
+**Kafka como log retenido (Núcleo).** Kafka es un log distribuido que retiene mensajes durante un período configurable con independencia de si ya fueron consumidos. Eso permite que múltiples consumidores, o el mismo releyendo desde un punto anterior, lean el stream completo. Es el mecanismo que distingue a Kafka de una cola tradicional y la base de la relectura de historial.
+
+**RabbitMQ como broker de colas (Núcleo).** RabbitMQ es un broker de colas tradicional donde un mensaje típicamente se entrega y se elimina de la cola una vez consumido, en un patrón punto-a-punto. El diagrama lo resume como "el mensaje se entrega y se elimina de la cola". Ese modelo es el contraste directo con la retención de Kafka.
+
+**Relectura del historial (Variante).** Como Kafka conserva los mensajes, varios grupos de consumidores pueden releer el mismo stream completo, incluso eventos ya consumidos, según el diagrama. Es una variante de consumo que RabbitMQ no ofrece de forma nativa porque elimina el mensaje tras entregarlo. Determina si se puede reprocesar historial.
+
+**Competencia de consumidores (Variante).** En RabbitMQ un solo trabajador del pool recibe cada carta, lo que el diagrama describe como competencia de consumidores. Es una variante de reparto punto-a-punto, distinta de los grupos de Kafka que leen el stream completo en paralelo. Encaja con la distribución simple de trabajo entre workers.
+
+**`spring-boot-starter-amqp` y `Queue` (Diagnóstico).** La demo agrega la dependencia real `spring-boot-starter-amqp` y declara `new Queue("tareas.creadas.rabbit", true)` en `RabbitConfig`, el equivalente RabbitMQ del flujo del Tema 1. Observar esa cola y su consumidor permite diagnosticar en qué se diferencia su entrega respecto a Kafka. El segundo argumento `true` marca la cola como durable.
+
+**Elegir según patrón de consumo (Decisión).** La importancia del tema está en que elegir la tecnología equivocada genera complejidad o limitaciones más adelante: retención y relectura de historial apuntan a Kafka, distribución simple de trabajo apunta a RabbitMQ. La decisión profesional parte del patrón de consumo real necesario, no de la familiaridad con la API. Ambas comparten una anotación parecida pero resuelven problemas distintos.
+
 **Conceptos clave:** log distribuido retenido frente a broker de colas tradicional.
 
 `@RabbitListener(queues = "tareas.creadas") public void escuchar(TareaCreadaEvent evento) { ... }` es sintácticamente muy similar a `@KafkaListener`, pero el modelo subyacente es distinto: Kafka es un log distribuido que retiene mensajes durante un período configurable independientemente de si ya fueron consumidos, permitiendo que múltiples consumidores (o el mismo, releyendo desde un punto anterior) lean el mismo stream completo; RabbitMQ es un broker de colas tradicional, donde un mensaje típicamente se entrega y se elimina de la cola una vez consumido (patrón punto-a-punto).
@@ -1005,6 +1145,277 @@ public void escuchar(String titulo) { }
 **Fuente oficial:** [Spring AMQP Reference](https://docs.spring.io/spring-amqp/reference/).
 
 **Transferencia al proyecto integrador:** la comparación Kafka frente a RabbitMQ de este tema es la que justificará la elección de mensajería del microservicio productivo (Módulo 12).
+
+### Tema 6: RabbitMQ a fondo — exchanges, routing keys y dead-letter exchange · Avanzado · 50 min
+
+**Prerrequisito:** Tema 5 de este módulo (RabbitMQ básico vs Kafka).
+
+**Al terminar podrás:** declarar un `TopicExchange` con bindings por patrón de routing key, configurar una cola con `x-dead-letter-exchange` para que un mensaje rechazado no se pierda, y confirmar con `Channel.basicAck`/`basicNack` manual que un mensaje con error termina exactamente en la cola de dead-letter, no en la cola principal ni perdido.
+
+#### Aprende
+
+**¿Por qué es importante?** El Tema 5 usó una única cola directa (`Queue` + el nombre exacto), suficiente para comparar con Kafka, pero insuficiente para un sistema real: un servicio de notificaciones de RutaFlow necesita enrutar "pedido.creado", "pedido.cancelado" y "pedido.entregado" hacia colas distintas sin triplicar el código del publicador, y necesita que un mensaje que el consumidor no puede procesar (dato corrupto, validación fallida) no desaparezca silenciosamente ni bloquee la cola reintentándose para siempre.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `TopicExchange` y routing keys con patrón | Núcleo | `with("pedido.*")` coincide con `pedido.creado`, no con `factura.creada` |
+| Un asterisco vs `#` en el patrón | Variante | `pedido.*` exige exactamente una palabra tras el punto; `pedido.#` aceptaría cero o más |
+| `ackMode = "MANUAL"` en `@RabbitListener` | Prerrequisito | el listener decide explícitamente `basicAck`/`basicNack`, no Spring por él |
+| `x-dead-letter-exchange` en la cola | Núcleo | un mensaje con `basicNack(..., requeue=false)` se reenvía al DLX configurado |
+| Mensaje sin binding coincidente se pierde en silencio | Diagnóstico | publicar con una routing key que ningún binding cubre no produce ningún error, pero nadie lo recibe |
+| Reintentar indefinidamente con `requeue=true` | Error frecuente | un nack con requeue en un mensaje que siempre falla crea un bucle infinito de redelivery |
+| Exchange types (direct/topic/fanout/headers) | Decisión | topic para patrones por palabra; fanout para difundir a todos; direct para una clave exacta |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`TopicExchange` y routing keys con patrón (núcleo).** A diferencia de una `Queue` nombrada directamente (Tema 5), un `TopicExchange` enruta mensajes a las colas vinculadas según si la routing key del mensaje coincide con el patrón del binding. `BindingBuilder.bind(colaNotificaciones()).to(pedidosExchange()).with("pedido.*")` vincula la cola a cualquier mensaje publicado con una routing key que coincida con ese patrón.
+
+**Un asterisco vs `#` en el patrón (variante).** En el lenguaje de patrones de RabbitMQ para topic exchanges, `*` (asterisco) coincide con EXACTAMENTE una palabra entre puntos; `#` (numeral) coincide con CERO O MÁS palabras. `pedido.*` coincide con `pedido.creado` pero no con `pedido.creado.urgente` (dos palabras tras el punto); `pedido.#` coincidiría con ambos. Elegir el símbolo equivocado es una fuente real de mensajes que "deberían" llegar y no llegan, o viceversa.
+
+**`ackMode = "MANUAL"` en `@RabbitListener` (prerrequisito).** Por defecto, Spring AMQP confirma (`ack`) un mensaje automáticamente si el método del listener retorna sin lanzar una excepción. `@RabbitListener(queues = ..., ackMode = "MANUAL")` desactiva ese comportamiento automático: el método recibe el `Channel` y el `deliveryTag` del mensaje, y debe llamar explícitamente `channel.basicAck(deliveryTag, false)` (confirmar) o `channel.basicNack(deliveryTag, false, false)` (rechazar sin reencolar) él mismo. Es el prerrequisito que hace posible decidir, con lógica de negocio real, cuándo un mensaje "falló" de verdad.
+
+**`x-dead-letter-exchange` en la cola (núcleo).** `QueueBuilder.durable(COLA_NOTIFICACIONES).withArgument("x-dead-letter-exchange", DLX).withArgument("x-dead-letter-routing-key", DLQ).build()` declara una cola que, cuando un consumidor hace `basicNack` con `requeue=false` sobre un mensaje de esa cola, automáticamente reenvía ese mensaje al exchange de dead-letter configurado, en vez de descartarlo silenciosamente. El mensaje queda disponible para inspección, alerta o reprocesamiento manual en la cola de dead-letter.
+
+**Mensaje sin binding coincidente se pierde en silencio (diagnóstico).** Publicar un mensaje con una routing key que ningún binding declarado cubre (por ejemplo, `factura.creada` cuando solo existe un binding para `pedido.*`) NO produce ningún error observable: RabbitMQ simplemente no tiene a quién entregárselo, y el mensaje se descarta (salvo que el exchange tenga un "alternate exchange" configurado, fuera del alcance de este tema). Esto es diagnosticable solo verificando activamente que la cola esperada recibió el mensaje, nunca asumiéndolo por la ausencia de errores.
+
+**Reintentar indefinidamente con `requeue=true` (error frecuente).** Si el manejo de errores usara `basicNack(deliveryTag, false, true)` (con `requeue=true`) para CUALQUIER fallo, un mensaje que falla por una razón permanente (JSON malformado, por ejemplo) se reencola, se vuelve a entregar, vuelve a fallar, y se reencola de nuevo — un bucle infinito que satura el consumidor sin nunca resolver el problema. `requeue=false` combinado con `x-dead-letter-exchange` es el patrón correcto para fallos que no se resuelven solos con un reintento inmediato.
+
+**Exchange types: direct/topic/fanout/headers (decisión).** Este tema usa `TopicExchange` porque el caso de uso necesita enrutar por PATRONES de routing key; un `DirectExchange` enrutaría solo por coincidencia EXACTA de routing key (sin patrones); un `FanoutExchange` ignora la routing key por completo y entrega a TODAS las colas vinculadas (difusión); un `HeadersExchange` enruta según atributos del mensaje en vez de la routing key. La decisión depende de si el enrutamiento necesita patrones (topic), exactitud (direct), difusión total (fanout) o atributos (headers).
+
+**Conceptos clave:** `TopicExchange`, patrón de routing key (`*` vs `#`), `ackMode = "MANUAL"`, `x-dead-letter-exchange`, `basicAck`/`basicNack`.
+
+Un `TopicExchange` enruta mensajes a las colas vinculadas según coincidencia de patrón entre la routing key del mensaje y el patrón del binding (`*` = una palabra, `#` = cero o más palabras). Con `ackMode = "MANUAL"`, el listener decide explícitamente `basicAck` (confirmar) o `basicNack` (rechazar); una cola con `x-dead-letter-exchange` reenvía automáticamente los mensajes rechazados con `requeue=false` hacia un exchange de dead-letter, en vez de perderlos o reintentarlos indefinidamente.
+
+**Analogía:** un `TopicExchange` con routing keys es como un sistema de clasificación postal por código: una carta con el código "pedido.creado" se clasifica hacia el casillero que acepta el patrón "pedido.*", mientras una carta con un código que ningún casillero acepta simplemente nunca se entrega; la cola de dead-letter es el casillero de "correspondencia devuelta" donde termina una carta que el destinatario rechazó explícitamente, en vez de desaparecer sin dejar rastro.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+  P["Publicador: routing key = pedido.creado"] --> E["TopicExchange: pedidos.exchange"]
+  E -->|"binding: pedido.*"| Q["Cola: pedidos.notificaciones"]
+  Q --> L["Listener (ackMode=MANUAL)"]
+  L -->|"basicAck"| OK["Procesado"]
+  L -->|"basicNack requeue=false"| DLX["DLX: pedidos.dlx"]
+  DLX --> DLQ["Cola: pedidos.notificaciones.dlq"]
+```
+
+#### Practica
+
+**Demo paso a paso.** Desde una carpeta vacía, genera el proyecto con `spring-boot-starter-amqp`:
+
+```bash
+mkdir rabbitmq-demo && cd rabbitmq-demo
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=amqp -d javaVersion=27 -o app.zip
+unzip -q app.zip
+```
+
+Crea `src/main/java/com/academia/amqp/PedidoAmqpConfig.java`:
+
+```java
+package com.academia.amqp;
+
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.QueueBuilder;
+import org.springframework.amqp.core.TopicExchange;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class PedidoAmqpConfig {
+    static final String EXCHANGE = "pedidos.exchange";
+    static final String COLA_NOTIFICACIONES = "pedidos.notificaciones";
+    static final String DLX = "pedidos.dlx";
+    static final String DLQ = "pedidos.notificaciones.dlq";
+
+    @Bean
+    TopicExchange pedidosExchange() { return new TopicExchange(EXCHANGE); }
+
+    @Bean
+    TopicExchange pedidosDlx() { return new TopicExchange(DLX); }
+
+    @Bean
+    Queue colaDeadLetter() { return QueueBuilder.durable(DLQ).build(); }
+
+    @Bean
+    Binding bindingDeadLetter() {
+        return BindingBuilder.bind(colaDeadLetter()).to(pedidosDlx()).with(DLQ);
+    }
+
+    @Bean
+    Queue colaNotificaciones() {
+        return QueueBuilder.durable(COLA_NOTIFICACIONES)
+                .withArgument("x-dead-letter-exchange", DLX)
+                .withArgument("x-dead-letter-routing-key", DLQ)
+                .build();
+    }
+
+    @Bean
+    Binding bindingNotificaciones() {
+        return BindingBuilder.bind(colaNotificaciones()).to(pedidosExchange()).with("pedido.*");
+    }
+}
+```
+
+Crea `src/main/java/com/academia/amqp/NotificacionListener.java`:
+
+```java
+package com.academia.amqp;
+
+import com.rabbitmq.client.Channel;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.support.AmqpHeaders;
+import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+@Component
+public class NotificacionListener {
+    private final List<String> procesados = new CopyOnWriteArrayList<>();
+
+    @RabbitListener(queues = PedidoAmqpConfig.COLA_NOTIFICACIONES, ackMode = "MANUAL")
+    public void escuchar(Message mensaje, Channel channel,
+                          @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag) throws IOException {
+        String cuerpo = new String(mensaje.getBody());
+        if (cuerpo.startsWith("ERROR")) {
+            channel.basicNack(deliveryTag, false, false); // sin requeue -> va al DLX
+            return;
+        }
+        procesados.add(cuerpo);
+        channel.basicAck(deliveryTag, false);
+    }
+
+    public List<String> getProcesados() { return procesados; }
+}
+```
+
+Agrega las dependencias de test reales (Testcontainers + Awaitility) y crea `src/test/java/com/academia/amqp/PedidoAmqpTest.java`:
+
+```java
+package com.academia.amqp;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.RabbitMQContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+
+import java.time.Duration;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
+
+@SpringBootTest
+@Testcontainers
+class PedidoAmqpTest {
+
+    @Container
+    static RabbitMQContainer rabbit = new RabbitMQContainer("rabbitmq:3.13-management");
+
+    @DynamicPropertySource
+    static void propiedades(DynamicPropertyRegistry registry) {
+        registry.add("spring.rabbitmq.host", rabbit::getHost);
+        registry.add("spring.rabbitmq.port", rabbit::getAmqpPort);
+    }
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+    @Autowired
+    private NotificacionListener listener;
+
+    @Test
+    void routingKeyPedidoCreadoLlegaALaColaYSeProcesaConAckManual() {
+        rabbitTemplate.convertAndSend(PedidoAmqpConfig.EXCHANGE, "pedido.creado", "Pedido BO-001 creado");
+
+        await().atMost(Duration.ofSeconds(5))
+                .untilAsserted(() -> assertThat(listener.getProcesados()).contains("Pedido BO-001 creado"));
+    }
+
+    @Test
+    void mensajeRechazadoTerminaEnLaColaDeDeadLetter() {
+        rabbitTemplate.convertAndSend(PedidoAmqpConfig.EXCHANGE, "pedido.fallido", "ERROR dato corrupto");
+
+        await().atMost(Duration.ofSeconds(5)).untilAsserted(() -> {
+            Object enDlq = rabbitTemplate.receiveAndConvert(PedidoAmqpConfig.DLQ);
+            assertThat(enDlq).isEqualTo("ERROR dato corrupto");
+        });
+    }
+
+    @Test
+    void routingKeyQueNoCoincideConElPatronNuncaLlegaAlListener() {
+        rabbitTemplate.convertAndSend(PedidoAmqpConfig.EXCHANGE, "factura.creada", "Factura F-1");
+
+        Object nada = rabbitTemplate.receiveAndConvert(PedidoAmqpConfig.COLA_NOTIFICACIONES, 500);
+        assertThat(nada).isNull();
+    }
+}
+```
+
+```bash
+# requiere Docker corriendo localmente; Testcontainers levanta el broker RabbitMQ real
+./mvnw test
+```
+
+**Nota de verificación.** El código de este tema se compiló y se verificó línea por línea contra la referencia oficial de Spring AMQP (`TopicExchange`, `QueueBuilder`, `BindingBuilder`, `@RabbitListener(ackMode=...)`, `Channel.basicAck/basicNack`) y contra el Javadoc de `RabbitMQContainer`. La ejecución de punta a punta contra un broker real vía Testcontainers requiere Docker corriendo localmente con una versión de API compatible; ejecútalo en tu propio entorno con `./mvnw test` para confirmar los tres casos antes de considerarlo cerrado.
+
+**Resultado esperado:** los tres tests pasan: el mensaje con routing key `pedido.creado` llega al listener y se confirma con `basicAck`; el mensaje que empieza con `ERROR` se rechaza con `basicNack(..., requeue=false)` y aparece en la cola de dead-letter; el mensaje con routing key `factura.creada` (que no coincide con ningún binding) nunca llega a la cola de notificaciones.
+
+**Fallo deliberado:** cambia `basicNack(deliveryTag, false, false)` por `basicNack(deliveryTag, false, true)` (con `requeue=true`) en el manejo del mensaje `ERROR`, y ejecuta de nuevo. El mensaje se reencola inmediatamente, el mismo listener lo vuelve a recibir, lo vuelve a rechazar con requeue, y se repite indefinidamente — un bucle de redelivery observable en los logs (la cuenta de entregas del mismo mensaje crece sin límite) que nunca termina en la cola de dead-letter. Diagnostica confirmando que `requeue=true` es apropiado solo para fallos TRANSITORIOS (una dependencia momentáneamente no disponible), nunca para datos permanentemente inválidos. Restaura `requeue=false` antes de continuar.
+
+**Ejercicios.**
+
+1. Cambia el patrón del binding de `pedido.*` a `pedido.#` y confirma con un test que ahora SÍ coincide una routing key de dos palabras como `pedido.creado.urgente`.
+2. Agrega un segundo binding a la misma cola con un patrón distinto (`envio.*`) y confirma que la cola recibe mensajes de AMBOS patrones.
+3. Declara un `FanoutExchange` alternativo y confirma que, a diferencia del `TopicExchange`, una cola vinculada a él recibe el mensaje sin importar la routing key usada al publicar.
+4. Escribe de memoria (sin mirar) una cola con `x-dead-letter-exchange` configurado y un listener con `ackMode=MANUAL` que rechace mensajes inválidos. Compara después contra el patrón del Paso 4.
+
+**Pista:** si un mensaje "desaparece" sin llegar ni a la cola principal ni a la de dead-letter, la causa más común es que ninguna routing key coincide con ningún binding — RabbitMQ no reporta ese caso como error.
+
+**Completa el código:** rellena el argumento que configura el dead-letter exchange de una cola:
+
+```java
+Queue cola = QueueBuilder.durable("mi-cola")
+    .withArgument("____", "mi-dlx")
+    .build();
+```
+
+**Reto de memoria:** cierra este documento y escribe, solo de memoria, un `TopicExchange` con un binding por patrón, una cola con dead-letter exchange configurado, y un listener con `ackMode=MANUAL` que distinga entre `basicAck` y `basicNack` según el contenido del mensaje.
+
+#### Aplica
+
+**Reto abierto.** Diseña el esquema de mensajería de notificaciones de RutaFlow: un `TopicExchange` único con bindings para `pedido.*`, `envio.*` y `conductor.*`, cada uno hacia su propia cola, todas con dead-letter exchange configurado hacia una cola común de incidencias. Demuestra con tests que cada routing key llega solo a la cola correcta y que un mensaje inválido en cualquiera de las tres termina en la cola de incidencias.
+
+**Checklist de salida.**
+
+- [ ] El `TopicExchange` enruta por patrón, no por nombre de cola directo.
+- [ ] Un test confirma que una routing key sin binding coincidente no llega a ninguna cola.
+- [ ] `ackMode=MANUAL` con `basicAck`/`basicNack` explícito, no el ack automático por defecto.
+- [ ] Un mensaje rechazado con `requeue=false` termina en la cola de dead-letter, verificado con un test.
+- [ ] Podés explicar por qué `requeue=true` en un bucle de fallo permanente es un error, no una red de seguridad.
+
+**Si falla.** Si un mensaje nunca llega a ninguna cola, revisa que la routing key coincida con el patrón EXACTO del binding (`*` es una palabra, `#` es cero o más). Si un mensaje rechazado no aparece en la cola de dead-letter, confirma que el nack use `requeue=false` y que la cola tenga `x-dead-letter-exchange` configurado.
+
+**Siguiente paso:** esto cierra el módulo de mensajería; el siguiente módulo aborda la programación reactiva con WebFlux y el modelo no bloqueante.
+
+**Errores comunes:** usar `requeue=true` para fallos permanentes, creando un bucle infinito de redelivery; olvidar que una routing key sin binding coincidente se pierde sin ningún error observable; declarar el dead-letter exchange en el código de la aplicación pero no vincularlo con un binding hacia su propia cola de dead-letter.
+
+**Límites y decisión de uso:** para un flujo con un único tipo de mensaje y un único consumidor, una `Queue` directa (Tema 5) es más simple que un `TopicExchange` con bindings por patrón; el exchange con patrones se justifica cuando varios tipos de evento relacionados necesitan enrutarse de forma distinta sin que el publicador conozca los detalles de cada consumidor.
+
+**Fuente oficial:** [Spring AMQP Reference — Exchanges, Queues and Bindings](https://docs.spring.io/spring-amqp/reference/amqp/exchange-queue-binding.html), [RabbitMQ — Dead Letter Exchanges](https://www.rabbitmq.com/docs/dlx).
+
+**Transferencia al proyecto integrador:** el esquema de exchange y dead-letter de este tema es el que usará la mensajería de notificaciones del microservicio productivo (Módulo 12).
 
 ## Proyecto de cierre del módulo
 

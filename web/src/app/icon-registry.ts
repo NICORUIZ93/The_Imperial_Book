@@ -1,6 +1,6 @@
 import {
   Apple, Atom, BookOpen, Braces, ChevronDown, ChevronRight, Circle, CircleCheck, CloudCog, Coffee,
-  Command, GitBranch, Layers, Leaf, LucideIconData, Search, Server, Shield, Smartphone, Truck, Wind, X,
+  Command, GitBranch, Layers, Leaf, LucideIconData, Network, Search, Server, Shield, Smartphone, Truck, Wind, X,
 } from 'lucide-angular';
 
 /** Mapea el campo string `Track.icon` a su icono lucide-angular, para mantener
@@ -15,6 +15,7 @@ export const TRACK_ICONS: Record<string, LucideIconData> = {
   'atom': Atom,
   'coffee': Coffee,
   'leaf': Leaf,
+  'network': Network,
   'layers': Layers,
   'smartphone': Smartphone,
   'apple': Apple,
@@ -30,6 +31,6 @@ export const SHARED_ICONS = {
  * identidad reconocible sin depender de fuentes de iconos o CDN externos. */
 export const TRACK_MARKS: Record<string, string> = {
   rutaflow: 'RF', foundations: '</>', cloud: '☁', devops: '∞', javascript: 'JS',
-  node: '⬢', angular: 'A', react: '⚛', java: 'J', 'spring-boot': 'S',
+  node: '⬢', angular: 'A', react: '⚛', java: 'J', 'spring-boot': 'S', microservices: 'µS',
   'kotlin-multiplatform': 'K', android: 'A', ios: '', flutter: 'F',
 };

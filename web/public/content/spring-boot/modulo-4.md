@@ -8,11 +8,39 @@ Cada tema declara su nivel, su duración y un proyecto verificable. La frontera 
 
 **Prerrequisito:** Spring Initializr y starters (Módulo 1); `@RestController` básico (Módulo 1).
 
-**Al terminar podrás:** declarar un `SecurityFilterChain` como `@Bean` que permite rutas públicas y exige autenticación en el resto, y confirmar con `MockMvc` real los códigos 200 y 401 correspondientes.
+**Al terminar podrás:** declarar un `SecurityFilterChain` como `@Bean` que permite rutas públicas y exige autenticación en el resto, y confirmar con `MockMvc` real los códigos 200 y 401 correspondientes. Esto es autenticación básica; el Módulo 18, Tema 1 añade autorización por rol, 403, `@PreAuthorize` y OAuth2 resource server.
 
 #### Aprende
 
 **¿Por qué es importante?** Clientes, conductores y operadores consultan rutas distintas de una API de entregas; un endpoint de salud (`/public/health`) debe responder sin credencial para que un balanceador de carga lo consulte, mientras las rutas de negocio (`/api/**`) deben exigir identidad — confundir esta frontera expone datos y operaciones críticas.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `SecurityFilterChain` como `@Bean` | Núcleo | El `@Bean filterChain(HttpSecurity http)` de `SecurityConfig.java` compila y arranca el contexto |
+| `authorizeHttpRequests` y orden de reglas | Núcleo | `/public/health` da `200` y `/api/entregas` da `401` en `SecurityFilterChainTest` |
+| `permitAll()` para rutas públicas | Prerrequisito | `requestMatchers("/public/**").permitAll()` deja pasar `/public/health` sin credencial |
+| `anyRequest().authenticated()` como frontera | Decisión | `@WithMockUser` convierte el `401` de `/api/entregas` en `200` |
+| Migración desde `WebSecurityConfigurerAdapter` | Variante | El tema declara el adapter como deprecado frente al `@Bean` actual |
+| Evaluación en orden específico-general | Límite | Quitar `permitAll()` hace que incluso `/public/health` responda `401` (ejercicio 3) |
+| Abrir todo con `anyRequest().permitAll()` | Error frecuente | El fallo deliberado produce `expected: 401 but was: 200` |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`SecurityFilterChain` como `@Bean` (núcleo).** La configuración moderna declara la cadena de filtros como un `@Bean` dentro de una clase `@Configuration`, reemplazando la herencia de `WebSecurityConfigurerAdapter`. El método `filterChain(HttpSecurity http)` construye y devuelve la cadena con `.build()`; si la clase no está anotada o el bean no se registra, toda ruta responde `401`, como señala la sección "Si falla".
+
+**`authorizeHttpRequests` y orden de reglas (núcleo).** `http.authorizeHttpRequests(auth -> ...)` configura de forma fluida qué rutas requieren autenticación. El test `SecurityFilterChainTest` ejecuta la frontera real: `/public/health` responde `200` sin credencial y `/api/entregas` responde `401`. La evidencia es un código de estado HTTP ejecutado con `MockMvc`, no una inspección visual del código.
+
+**`permitAll()` para rutas públicas (prerrequisito).** `requestMatchers("/public/**").permitAll()` declara explícitamente las rutas que no exigen identidad, para que un balanceador consulte `/public/health` sin credencial. Es prerrequisito de la regla general: sin esta declaración explícita, la ruta de salud cae bajo `anyRequest().authenticated()` y el ejercicio 3 demuestra que entonces responde `401`.
+
+**`anyRequest().authenticated()` como frontera (decisión).** Esta única línea decide que cualquier ruta no listada exige autenticación; es la frontera completa entre una API protegida y una abierta. El test con `@WithMockUser` lo confirma: simula un usuario autenticado dentro del contexto de seguridad y el `401` de `/api/entregas` pasa a `200`. La decisión profesional es ubicar las reglas específicas antes de esta regla general.
+
+**Migración desde `WebSecurityConfigurerAdapter` (variante).** El enfoque por `@Bean` sustituye al patrón anterior de extender `WebSecurityConfigurerAdapter`, ahora deprecado. Es la misma frontera de seguridad expresada por composición explícita de beans en vez de herencia de una clase base configurable, reflejando la dirección general de Spring.
+
+**Evaluación en orden específico-general (límite).** Las reglas de `authorizeHttpRequests` se evalúan en orden, y una regla general declarada primero cubriría a las específicas antes de que se evalúen. El ejercicio 3 lo vuelve observable: eliminar `requestMatchers("/public/**").permitAll()` hace que incluso `/public/health` responda `401`, demostrando que la presencia y posición de cada regla importan.
+
+**Abrir todo con `anyRequest().permitAll()` (error frecuente).** Cambiar `.anyRequest().authenticated()` por `.anyRequest().permitAll()` durante el desarrollo y olvidar revertirlo abre toda la API. El fallo deliberado del tema lo reproduce: `rutaProtegidaExigeAutenticacion` falla con `expected: 401 but was: 200`, evidencia ejecutada de que esa sola línea separa una API protegida de una completamente abierta.
 
 **Conceptos clave:** configuración declarativa vía `@Bean`, reglas de autorización por ruta.
 
@@ -38,7 +66,7 @@ flowchart LR
 ```bash
 mkdir -p academia-spring
 cd academia-spring
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web,security -d javaVersion=25 -d artifactId=academia-security -o app.zip
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web,security -d javaVersion=25 -d artifactId=academia-security -o app.zip
 unzip -o app.zip
 mkdir -p src/main/java/com/academia/seguridad
 ```
@@ -88,7 +116,16 @@ public class RutasController {
 
 **Explicación línea por línea:** `requestMatchers("/public/**").permitAll()` declara explícitamente qué rutas no requieren autenticación; `anyRequest().authenticated()` exige identidad para cualquier otra ruta no listada; `httpBasic(...)` habilita autenticación básica real (usuario/contraseña) como mecanismo concreto de este tema, reemplazado por el filtro JWT en el Tema 2.
 
-Confirma con `MockMvc` real (levanta el contexto de seguridad completo, sin mockear la cadena de filtros) que `/public/health` responde sin credencial y `/api/entregas` exige autenticación:
+Confirma con `MockMvc` real (levanta el contexto de seguridad completo, sin mockear la cadena de filtros) que `/public/health` responde sin credencial y `/api/entregas` exige autenticación. **Nota (Spring Boot 4):** `AutoConfigureMockMvc`/`WebMvcTest` requieren agregar explícitamente `spring-boot-webmvc-test` (scope `test`) al `pom.xml` — en Boot 3.x venía incluido en `spring-boot-starter-test`; en Boot 4 se movió a su propio módulo, con el import reubicado a `org.springframework.boot.webmvc.test.autoconfigure`:
+
+```xml
+<!-- dentro de <dependencies> del pom.xml -->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-webmvc-test</artifactId>
+    <scope>test</scope>
+</dependency>
+```
 
 ```java
 // src/test/java/com/academia/seguridad/SecurityFilterChainTest.java
@@ -96,7 +133,7 @@ package com.academia.seguridad;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -190,6 +227,37 @@ mvn test -Dtest=SecurityFilterChainTest           # Maven
 #### Aprende
 
 **¿Por qué es importante?** Una API stateless (sin sesiones en el servidor) necesita identificar al usuario en cada petición sin mantener estado; un JWT firmado transporta esa identidad de forma verificable sin que el servidor necesite recordar nada entre peticiones, y el rol contenido en él determina qué operaciones puede realizar.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `OncePerRequestFilter` | Prerrequisito | `JwtFilter extends OncePerRequestFilter` se ejecuta una vez por petición |
+| Firma y validación con la misma clave HMAC | Núcleo | El fallo deliberado con otra clave lanza `SignatureException` y da `401` |
+| `SecurityContextHolder` como fuente de identidad | Núcleo | El token válido establece la autenticación y `/api/entregas/1` da `200` |
+| `@PreAuthorize("hasRole('ADMIN')")` | Núcleo | `conRolInsuficienteResponde403` da `403` con rol `DRIVER` |
+| Prefijo `ROLE_` en `SimpleGrantedAuthority` | Límite | `new SimpleGrantedAuthority("ROLE_" + rol)` hace funcionar `hasRole(...)` |
+| Expiración del token (`expiration`) | Variante | Una fecha pasada hace que `validar(...)` lance excepción (ejercicio 2) |
+| Confundir `401` con `403` | Diagnóstico | Sin token `401`; autenticado sin rol `403` en `JwtFilterTest` |
+| Registrar el JWT completo en logs | Error frecuente | El checklist exige que ningún token completo aparezca en logs |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`OncePerRequestFilter` (prerrequisito).** `JwtFilter` extiende `OncePerRequestFilter`, lo que garantiza que la extracción y validación del token ocurra exactamente una vez por petición, incluso en configuraciones de servlets anidados. Es prerrequisito del resto: sin esta base el filtro podría ejecutarse varias veces, como advierten los errores comunes del laboratorio.
+
+**Firma y validación con la misma clave HMAC (núcleo).** `JwtService.generar` firma el token con una clave HMAC y `validar` lo verifica con esa misma clave mediante `Jwts.parser().verifyWith(clave)`. El fallo deliberado lo hace observable: firmar con una clave distinta hace que `validar(...)` lance una `SignatureException` real, el filtro deja la petición sin autenticar y `conRolAdminResponde200` obtiene `401`. Un JWT no vale por su estructura, sino por estar firmado con la clave exacta del servidor.
+
+**`SecurityContextHolder` como fuente de identidad (núcleo).** Si el token es válido, el filtro construye un `UsernamePasswordAuthenticationToken` y lo coloca en `SecurityContextHolder.getContext().setAuthentication(auth)`, el mecanismo central que el resto de Spring Security consulta para saber quién es el usuario. Con un token `ADMIN`, `DELETE /api/entregas/1` responde `200` porque la identidad quedó establecida.
+
+**`@PreAuthorize("hasRole('ADMIN')")` (núcleo).** Esta anotación sobre `eliminar(...)` verifica el rol del usuario autenticado antes de ejecutar el método y devuelve `403` automáticamente si falta. El test `conRolInsuficienteResponde403` lo confirma: un token real firmado con rol `DRIVER` recibe `403` porque está autenticado pero no tiene el rol requerido.
+
+**Prefijo `ROLE_` en `SimpleGrantedAuthority` (límite).** El filtro crea la autoridad como `new SimpleGrantedAuthority("ROLE_" + rol)` porque `hasRole(...)` espera ese prefijo. Es un límite concreto: si se omite `ROLE_`, la sección "Si falla" advierte que todo responderá `403` aunque el token sea correcto, porque la autoridad no coincide con lo que `hasRole` busca.
+
+**Expiración del token (`expiration`) (variante).** `JwtService.generar` fija `expiration` a una hora en el futuro; el ejercicio 2 convierte esa fecha en una ya pasada (`System.currentTimeMillis() - 1000`) y confirma que `validar(...)` lanza una excepción real de token expirado. Es una variante del caso de token inválido: estructura y firma correctas, pero fuera de vigencia.
+
+**Confundir `401` con `403` (diagnóstico).** Un `401` significa "no autenticado en absoluto" y un `403` "autenticado pero sin permiso". `JwtFilterTest` separa ambos: sin token `401`, con rol insuficiente `403`. La pista del tema lo usa como herramienta de diagnóstico: si esperas uno y obtienes el otro, el problema está en un lugar distinto del que asumías.
+
+**Registrar el JWT completo en logs (error frecuente).** Guardar el token completo en logs expone la sesión de un usuario si esos logs se filtran. El checklist de salida exige explícitamente que ningún token completo aparezca en logs, tratando este error como un punto verificable y no como un detalle opcional.
 
 **Conceptos clave:** validación de token en cada request, `SecurityContextHolder`, `@PreAuthorize`.
 
@@ -317,7 +385,7 @@ package com.academia.seguridad;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -416,6 +484,34 @@ public void eliminar(@PathVariable Long id) { }
 
 **¿Por qué es importante?** Un frontend servido desde un dominio distinto al de la API necesita permiso explícito del navegador para consumirla (CORS); un atacante no debería poder inducir peticiones no deseadas aprovechando cookies de sesión (CSRF) — dos protecciones distintas que se confunden con frecuencia.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `CorsConfigurationSource` como `@Bean` | Núcleo | El bean `corsConfigurationSource()` compila y registra la config en `/**` |
+| `setAllowedOrigins` con origen explícito | Núcleo | El origen permitido recibe `Access-Control-Allow-Origin: https://demo.academia.dev` |
+| Preflight `OPTIONS` con header `Origin` | Prerrequisito | El test envía `options("/public/health")` con `Origin` y `Access-Control-Request-Method` |
+| `.cors(cors -> {})` en el `SecurityFilterChain` | Límite | Sin registrarlo, la petición permitida no recibe el header (sección "Si falla") |
+| Restringir `setAllowedMethods` | Variante | Un preflight con `DELETE` restringido a `GET` se rechaza (ejercicio 2) |
+| CSRF solo en sesiones por cookie | Decisión | La API JWT stateless usa `csrf.disable()` justificado, no por costumbre |
+| `allowedOrigins("*")` en producción | Error frecuente | El fallo deliberado hace que `sitio-no-autorizado.com` reciba el header |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`CorsConfigurationSource` como `@Bean` (núcleo).** `CorsConfig` publica un `CorsConfigurationSource` como `@Bean` y lo registra para `/**` con `source.registerCorsConfiguration("/**", config)`. El bean debe llamarse exactamente `corsConfigurationSource`, como recuerda la sección "Si falla"; con otro nombre Spring Security no lo aplica y la política no surte efecto.
+
+**`setAllowedOrigins` con origen explícito (núcleo).** `config.setAllowedOrigins(List.of("https://demo.academia.dev"))` declara qué frontend puede consumir la API desde JavaScript en el navegador. El test `origenPermitidoRecibeElHeaderDeAutorizacionCors` lo verifica: la respuesta preflight incluye `Access-Control-Allow-Origin: https://demo.academia.dev`, mientras un origen no listado se rechaza con `403`.
+
+**Preflight `OPTIONS` con header `Origin` (prerrequisito).** El navegador envía una petición preflight `OPTIONS` con `Origin` y `Access-Control-Request-Method` antes de la llamada real; entender ese mecanismo es prerrequisito para probar CORS. El test lo reproduce con `options("/public/health")` y esos dos headers, porque `MockMvc` simula fielmente el preflight que un navegador ejecutaría.
+
+**`.cors(cors -> {})` en el `SecurityFilterChain` (límite).** La configuración de CORS solo se aplica si se registra `.cors(cors -> {})` en la cadena del Tema 1. Es un límite concreto: según la sección "Si falla", si una petición permitida no recibe el header hay que confirmar que `.cors(...)` está registrado; sin ese enganche el bean existe pero nunca interviene.
+
+**Restringir `setAllowedMethods` (variante).** `config.setAllowedMethods(List.of("GET", "POST", "DELETE"))` acota qué métodos acepta la política. El ejercicio 2 explora la variante restrictiva: limitar a solo `GET` hace que un preflight con `Access-Control-Request-Method: DELETE` desde el origen permitido sea rechazado de todas formas, porque el método no está en la lista aunque el origen sí lo esté.
+
+**CSRF solo en sesiones por cookie (decisión).** CSRF es relevante cuando el navegador envía cookies de sesión automáticamente; una API stateless con JWT no corre ese riesgo porque el token debe incluirse explícitamente en el header `Authorization`. El ejercicio 3 pide decidir por qué `csrf.disable()` es apropiado aquí y por qué sí haría falta con sesiones basadas en cookies: una decisión ligada al transporte de sesión, no a la costumbre.
+
+**`allowedOrigins("*")` en producción (error frecuente).** Abrir la política con `setAllowedOrigins(List.of("*"))` permite que cualquier sitio consuma la API desde un navegador. El fallo deliberado lo hace observable: `origenNoPermitidoNoRecibeElHeaderDeAutorizacionCors` falla porque ahora `https://sitio-no-autorizado.com` recibe el header de autorización, exactamente el error que la lista explícita existe para prevenir.
+
 **Conceptos clave:** origen distinto del navegador (CORS), protección específica de sesiones basadas en cookies (CSRF).
 
 CORS controla qué orígenes (protocolo + dominio + puerto) tienen permitido, desde el navegador del usuario, realizar peticiones hacia la API desde un origen distinto: `config.setAllowedOrigins(List.of("https://miapp.com"))` restringe explícitamente qué frontends pueden consumirla desde JavaScript en el navegador — no aplica a llamadas directas entre servidores. CSRF es un ataque relevante específicamente para aplicaciones con sesiones basadas en cookies: el navegador envía automáticamente las cookies de un dominio en cualquier petición hacia él, incluso iniciada desde un sitio malicioso. Una API stateless con JWT (Tema 2) generalmente no necesita esa protección, porque el token debe incluirse explícitamente en el header `Authorization` por el código cliente — algo que un atacante no puede forzar sin conocer el token de la víctima.
@@ -480,7 +576,7 @@ package com.academia.seguridad;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -573,6 +669,34 @@ config.setAllowedOrigins(List.of("____"));
 #### Aprende
 
 **¿Por qué es importante?** Un endpoint que valida webhooks o genera miniaturas de imágenes a partir de una URL que el usuario proporciona, sin restringir a qué direcciones puede conectarse el cliente HTTP del servidor, permite que un atacante le pida al propio servidor que consulte `http://169.254.169.254/latest/meta-data/iam/security-credentials/` (el endpoint de metadatos de la nube) o un servicio interno sin autenticación, filtrando credenciales o datos que nunca deberían ser accesibles desde fuera.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `InetAddressFilter.externalAddresses()` | Núcleo | `bloqueaLoopbackAntesDeConectar` lanza `FilteredHostException` |
+| Bloqueo sobre la IP resuelta, no el string | Núcleo | El servidor local recibe cero peticiones (`solicitudes.get()` es `0`) |
+| Allowlist vs blocklist | Prerrequisito | El tema advierte no confundir lista de permitidos con lista de bloqueados |
+| `withRedirects(HttpRedirects.DONT_FOLLOW)` | Límite | Un redirect hacia dirección interna debe rechazarse, no seguirse (ejercicio 2) |
+| Control positivo con `InetAddressFilter.all()` | Diagnóstico | El segundo test recibe `200` y `solicitudes.get()` es `1` |
+| Clasificar la causa del error | Decisión | No traducir toda `ResourceAccessException` como rechazo por política |
+| Validar solo el string de la URL | Error frecuente | Allowlist de strings evadible con DNS rebinding; falta el rango `169.254.169.254` |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`InetAddressFilter.externalAddresses()` (núcleo).** `SafeClient.externalOnly()` aplica `InetAddressFilter.externalAddresses()`, agregado en Spring Boot 4.1, que rechaza destinos que resuelvan a loopback, link-local, rangos privados o metadatos de nube. El test `bloqueaLoopbackAntesDeConectar` lo confirma: la petición hacia el servidor local lanza `FilteredHostException`, evidencia de que el transporte filtró la dirección.
+
+**Bloqueo sobre la IP resuelta, no el string (núcleo).** `withInetAddressFilter(allowedAddresses)` interviene en la resolución DNS/IP antes de establecer la conexión, no sobre el texto de la URL. La evidencia es que `solicitudes.get()` queda en `0`: el servidor local nunca recibe la petición porque el filtro bloquea antes de conectar, no después de una validación de cadena.
+
+**Allowlist vs blocklist (prerrequisito).** `externalAddresses()` describe las direcciones permitidas y el transporte rechaza las demás; el tema insiste en no confundir una lista de permitidos con una de bloqueados. Entender que el modelo es allowlist por destino resuelto es prerrequisito para razonar qué pasa con una IP nueva: si no es externa, se bloquea por defecto.
+
+**`withRedirects(HttpRedirects.DONT_FOLLOW)` (límite).** `withRedirects(HttpRedirects.DONT_FOLLOW)` impide que un redirect traslade la conexión a un destino que la política original no evaluó. Es el límite que un atacante intentaría cruzar: el ejercicio 2 exige confirmar que un redirect hacia una dirección interna se rechaza en vez de seguirse, cerrando una evasión que el filtro por sí solo no cubriría si se permitieran redirects.
+
+**Control positivo con `InetAddressFilter.all()` (diagnóstico).** El segundo test usa `SafeClient.create(InetAddressFilter.all())` contra el mismo servidor local y espera `200` con `solicitudes.get()` igual a `1`. Es diagnóstico: sin este control positivo, un servidor que nunca arrancó también fallaría y parecería un bloqueo correcto; el par positivo/negativo distingue el filtrado real de un destino simplemente inalcanzable.
+
+**Clasificar la causa del error (decisión).** El tema advierte que un timeout genérico no satisface la prueba de bloqueo y que la capa llamadora no debe traducir toda `ResourceAccessException` como rechazo por política. La decisión profesional es clasificar la causa: distinguir `FilteredHostException` de un timeout permite reportar correctamente por qué falló una petición saliente.
+
+**Validar solo el string de la URL (error frecuente).** Confiar únicamente en comparar el texto de la URL contra una allowlist es evadible con DNS rebinding, porque el nombre validado puede resolver luego a una IP interna. Los errores comunes del tema añaden no probar el rango de metadatos `169.254.169.254`, uno de los destinos más valiosos para un atacante en un entorno cloud; el filtro actúa en la capa de red real, no sobre el string.
 
 **Conceptos clave:** Server-Side Request Forgery (SSRF), rango de direcciones bloqueadas, egress controlado, validación de URL insuficiente por sí sola.
 
@@ -809,6 +933,34 @@ var settings = HttpClientSettings.defaults()
 
 **¿Por qué es importante?** En los temas anteriores generaste tokens y protegiste rutas en ejemplos separados. En el backend real de RutaFlow, el panel operativo hace login una sola vez (`POST /api/auth/login`), recibe un token y lo adjunta en cada operación posterior. Ver ese recorrido completo —credenciales → token → petición protegida— es lo que une la seguridad en un sistema que de verdad funciona, no piezas aisladas.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `POST /api/auth/login` como ruta pública | Prerrequisito | `.requestMatchers("/api/auth/**", "/public/**").permitAll()` deja entrar el login |
+| `BCryptPasswordEncoder.matches` contra el hash | Núcleo | El login solo emite token si `encoder.matches(password, hashGuardado)` es verdadero |
+| Emisión del JWT con `JwtService.generar` | Núcleo | `flujoCompletoLoginYRutaProtegida` obtiene un token y la ruta protegida da `200` |
+| Flujo stateless de punta a punta | Núcleo | Sin token `401`, con `Authorization: Bearer` `200` en el mismo test |
+| Extraer el token del JSON con `ObjectMapper` | Variante | `mapper.readTree(respuesta).get("token")` lee un token distinto en cada login |
+| Respuesta de error uniforme | Decisión | Email inexistente y contraseña incorrecta devuelven el mismo `401` |
+| No devolver el hash en `/api/usuarios` | Error frecuente | `UsuariosController` retorna solo `email` y `rol`, nunca el hash |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`POST /api/auth/login` como ruta pública (prerrequisito).** El propio login debe ser accesible sin token, por eso el `SecurityFilterChain` declara `.requestMatchers("/api/auth/**", "/public/**").permitAll()`. Es prerrequisito del flujo: la sección "Si falla" advierte que olvidar permitir `/api/auth/**` bloquearía el login con `401`, impidiendo obtener el token que abre el resto.
+
+**`BCryptPasswordEncoder.matches` contra el hash (núcleo).** `AuthController` compara la contraseña recibida contra `hashGuardado` con `encoder.matches(password, hashGuardado)`, sin descifrar el hash. El fallo deliberado lo hace observable: forzar la comparación a falsa hace que el login responda `401` en vez de `200`, confirmando que sin credenciales válidas no se emite token.
+
+**Emisión del JWT con `JwtService.generar` (núcleo).** Solo tras validar email y contraseña se ejecuta `jwtService.generar(email, "ADMIN")`, reutilizando el servicio del Tema 2. El test `flujoCompletoLoginYRutaProtegida` confirma que el login devuelve ese token y que, presentado en la ruta protegida, produce `200`.
+
+**Flujo stateless de punta a punta (núcleo).** El recorrido completo encadena credenciales → token → petición protegida sin estado en el servidor. El mismo test muestra los tres momentos: login `200`, `/api/usuarios` sin token `401`, y `/api/usuarios` con `Authorization: Bearer <token>` `200`, que es la frontera del Tema 1 operando sobre la identidad del Tema 2.
+
+**Extraer el token del JSON con `ObjectMapper` (variante).** El test lee el token de la respuesta con `mapper.readTree(respuesta).get("token")` en vez de hardcodearlo. La pista explica el porqué: cada login genera un token distinto con una marca de tiempo nueva, así que extraerlo dinámicamente es la variante correcta frente a fijar un valor que quedaría obsoleto.
+
+**Respuesta de error uniforme (decisión).** `AuthController` devuelve el mismo `401` y el mismo cuerpo ante email inexistente y ante contraseña incorrecta, para no revelar qué correos existen. Es una decisión de seguridad verificable: el ejercicio 3 pide dos tests que confirmen que ningún mensaje distingue cuál de los dos factores falló.
+
+**No devolver el hash en `/api/usuarios` (error frecuente).** `UsuariosController` retorna solo `email` y `rol`, nunca el hash de la contraseña. Devolver el hash en la respuesta es un error común que el checklist marca como punto de control; exponerlo filtraría material sensible aunque la ruta estuviera correctamente protegida.
+
 **Conceptos clave:** endpoint de login, emisión de JWT tras verificar credenciales, header `Authorization: Bearer`, flujo stateless de punta a punta.
 
 El flujo tiene tres momentos: (1) **login** — `POST /api/auth/login` recibe email y contraseña, verifica la contraseña contra el hash guardado (como en Node M6 Tema 1; en Spring con `PasswordEncoder`), y si coincide firma un JWT con `JwtService.generar(...)` (Tema 2); (2) **el cliente guarda el token**; (3) **uso** — cada petición a una ruta protegida lleva `Authorization: Bearer <token>`, que el `JwtFilter` (Tema 2) valida y convierte en una identidad en el `SecurityContextHolder` antes de que la ruta responda.
@@ -915,7 +1067,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;

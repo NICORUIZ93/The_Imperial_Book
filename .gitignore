@@ -61,3 +61,7 @@ examples/rutaflow-material/clean-architecture/build/
 
 # Salida de compilación de ejemplos Java (Gradle/Javac)
 examples/**/bin/
+
+# Artefactos pesados generados / huérfanos — se conservan en disco local pero no se versionan.
+# PDF de imágenes RutaFlow: no lo consume validate.sh, la app ni el contenido (huérfano).
+docs/imagenes-rutaflow/imagenes-tecnicas-rutaflow.pdf

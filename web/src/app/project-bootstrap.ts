@@ -90,6 +90,15 @@ const BOOTSTRAPS: Record<string, ProjectBootstrap> = {
     expected: 'La aplicación arranca, Netty escucha el puerto 8080 y GET /actuator/health responde cuando Actuator esté incluido.',
     recovery: ['Si UnsupportedClassVersionError aparece, verifica java --version.', 'Si falta una clase reactiva, confirma webflux y data-r2dbc en pom.xml.'],
   },
+  microservices: {
+    workspace: 'academia-labs/microservices',
+    prerequisites: ['JDK 25', 'Git', 'curl', 'lsof en macOS o ss en Linux'],
+    createCommands: ['mkdir -p academia-labs/microservices/{src,evidence}', 'cd academia-labs/microservices', 'git init', 'java --version'],
+    structure: ['src/Servidor.java', 'src/Cliente.java', 'evidence/', 'README.md'],
+    runCommand: 'javac -d out src/*.java && java -cp out Servidor',
+    expected: 'El servidor informa 127.0.0.1:8081 y otro proceso puede observar el puerto y provocar latencia o timeout.',
+    recovery: ['Si el puerto está ocupado, identifica el PID antes de cambiarlo.', 'Si javac no existe, instala un JDK, no solo un runtime.'],
+  },
   'kotlin-multiplatform': {
     workspace: 'academia-labs/kmp-app',
     prerequisites: ['JDK 25', 'Android Studio o IntelliJ', 'Xcode para iOS'],

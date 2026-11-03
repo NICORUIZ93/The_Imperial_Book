@@ -14,6 +14,37 @@ Cada tema declara su nivel, su duración y una verificación reproducible. La co
 
 **¿Por qué es importante?** Una API de entregas cambia URLs, límites y credenciales entre local, pruebas y producción; leer cada valor individual con `@Value("${...}")` disperso en distintas clases dificulta tener una visión centralizada de toda la configuración relacionada con un aspecto específico, como JWT.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Prefijo `@ConfigurationProperties("app.jwt")` | Prerrequisito | El `record JwtConfig` agrupa todo bajo el prefijo `app.jwt` del `application.yml` |
+| Enlace a un `record` tipado | Núcleo | `assertThat(config.secreto()).isEqualTo("clave-real")` y `config.expiracionSegundos()` en `JwtConfigTest` |
+| `@EnableConfigurationProperties(JwtConfig.class)` | Prerrequisito | `ConfigActivador` registra la clase y `withUserConfiguration(ConfigActivador.class)` la carga |
+| Convención kebab-case | Diagnóstico | `expiracion-segundos` en `application.yml` mapea a `expiracionSegundos` del record |
+| `@NestedConfigurationProperty` para anidar | Variante | El ejercicio 2 agrupa un sub-objeto de reintentos dentro de `JwtConfig` |
+| Conversión de tipos al enlazar | Error frecuente | `app.jwt.expiracion-segundos=texto-no-numerico` hace que el enlace falle con `hasFailed()` |
+| `@ConfigurationProperties` vs `@Value` suelto | Decisión | Para un feature flag booleano aislado, un `@Value` simple es más directo |
+| `ApplicationContextRunner` como verificación | Límite | Levanta solo los beans de `withUserConfiguration(...)`, no toda la aplicación |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Prefijo `@ConfigurationProperties("app.jwt")` (prerrequisito).** El prefijo declarado en la anotación es la raíz común que Spring usa para localizar en `application.yml` todas las propiedades que pertenecen a este grupo. En el ejemplo, `secreto` y `expiracion-segundos` viven ambos bajo `app.jwt`, de modo que el record reúne un aspecto completo de la configuración. Si el prefijo no coincide con la estructura del YAML, los componentes del record llegan sin valor.
+
+**Enlace a un `record` tipado (núcleo).** El mecanismo central es traducir texto del `application.yml` a los componentes tipados del `record JwtConfig`, verificado por `JwtConfigTest` cuando `config.secreto()` devuelve `"clave-real"` y `config.expiracionSegundos()` devuelve `900L`. Esto reemplaza múltiples `@Value` dispersos por un único objeto fuertemente tipado e inyectable. El beneficio directo es verificación de tipos en tiempo de compilación sobre todo el grupo, no sobre strings sueltos.
+
+**`@EnableConfigurationProperties(JwtConfig.class)` (prerrequisito).** Sin este registro, Spring no crea el bean y el enlace nunca ocurre, aunque el record esté bien anotado. En el ejemplo lo aporta `ConfigActivador`, y el test lo activa con `withUserConfiguration(ConfigActivador.class)`. Omitirlo produce el síntoma de que el bean no existe en el contexto, descrito en la sección "Si falla".
+
+**Convención kebab-case (diagnóstico).** La clave `expiracion-segundos` del `application.yml` se enlaza al componente `expiracionSegundos` del record mediante la relajación de nombres de Spring Boot. Cuando los valores llegan `null`, la causa típica es una discrepancia entre el nombre en el YAML y el prefijo declarado. Reconocer esta convención permite diagnosticar el problema sin tocar el código del record.
+
+**`@NestedConfigurationProperty` para anidar (variante).** El ejercicio 2 muestra una variante del enlace plano: agrupar un sub-objeto (por ejemplo, una configuración de reintentos) dentro de `JwtConfig` manteniendo el mismo mecanismo de enlace tipado. Es la forma de componer configuración jerárquica sin romper la validación del grupo. El ejercicio pide confirmar con el test que el sub-objeto también se enlaza correctamente.
+
+**Conversión de tipos al enlazar (error frecuente).** El fallo deliberado sustituye `expiracion-segundos=900` por `texto-no-numerico`: Spring no puede convertir ese texto al `long` declarado y el enlace falla, comprobable con `assertThat(context).hasFailed()`. El punto clave es que el error aparece al enlazar la configuración, antes de que ningún código de negocio use el valor. Es el error más instructivo del tema porque demuestra la verificación temprana.
+
+**`@ConfigurationProperties` vs `@Value` suelto (decisión).** La sección de límites es explícita: para un único valor aislado sin relación con un grupo mayor, como un feature flag booleano suelto, crear un `record` completo es desproporcionado y un `@Value` simple resulta más directo. La decisión profesional depende de si el valor pertenece a un grupo coherente. Agrupar aporta valor cuando varias propiedades comparten un aspecto.
+
+**`ApplicationContextRunner` como verificación (límite).** La utilidad levanta un contexto mínimo y aislado con solo los beans declarados en `withUserConfiguration(...)`, no la aplicación completa. Por eso es más rápida que `@SpringBootTest` para probar configuración, como señala la pista del tema. Su límite es precisamente ese aislamiento: prueba el enlace del grupo, no la integración con el resto de la aplicación.
+
 **Conceptos clave:** agrupación de configuración relacionada, frente a `@Value` disperso.
 
 `@ConfigurationProperties("app.jwt") @Validated public record JwtConfig(@NotBlank String secreto, @Min(60) long expiracionSegundos) {}` mapea un grupo completo de configuración relacionada (todo bajo el prefijo `app.jwt`) hacia un único tipo fuertemente tipado, en vez de leer cada valor disperso con `@Value` repetido en cada clase que lo necesita. Esta agrupación ofrece verificación de tipos en tiempo de compilación (un valor numérico mal configurado como texto se detecta al mapear) y validación centralizada de todo el grupo en un único lugar.
@@ -35,7 +66,7 @@ flowchart LR
 ```bash
 mkdir -p academia-spring/src/main/java/com/academia/config
 cd academia-spring
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web,validation -d javaVersion=25 -d artifactId=academia-config -o app.zip
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web,validation -d javaVersion=25 -d artifactId=academia-config -o app.zip
 unzip -o app.zip
 ```
 
@@ -171,6 +202,37 @@ public record JwtConfig(@NotBlank String secreto, @Min(60) long expiracionSegund
 
 **¿Por qué es importante?** Si `app.jwt.secreto` falta y la aplicación arranca de todas formas, el problema se manifestará mucho más tarde —posiblemente ya en producción bajo tráfico real— cuando algún código intente usar ese valor `null`, en un momento y contexto completamente distinto de donde realmente se originó el problema.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `@Validated` sobre `@ConfigurationProperties` | Prerrequisito | Tema 1 añadió `@Validated` a `JwtConfig`; aquí es la causa del fallo de arranque |
+| Fallo rápido al arranque | Núcleo | Sin `app.jwt.secreto`, `assertThat(context).hasFailed()` es verdadero |
+| `BindValidationException` como causa raíz | Diagnóstico | `hasRootCauseInstanceOf(BindValidationException.class)` en `FalloArranqueTest` |
+| Arranque exitoso con todos los valores | Núcleo | Con secreto y `expiracion-segundos` presentes, `hasNotFailed()` pasa |
+| Violación de `@Min(60)` | Variante | El ejercicio 1 confirma que `expiracion-segundos` menor a 60 también detiene el arranque |
+| Mensaje que nombra la propiedad | Diagnóstico | `context.getStartupFailure().getMessage()` menciona la propiedad problemática |
+| Quitar `@Validated` deja `null` silencioso | Error frecuente | Sin `@Validated` el contexto arranca con `secreto = null` y el test deja de fallar |
+| Opcional con default seguro vs obligatorio | Decisión | Un tamaño de página con default no debe forzarse como obligatorio |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`@Validated` sobre `@ConfigurationProperties` (prerrequisito).** Este tema depende directamente de la clase `JwtConfig` del Tema 1, que ya lleva `@Validated`. Esa anotación es la que activa la validación de `@NotBlank` y `@Min` durante el enlace, y por tanto es el requisito previo sin el cual el comportamiento de fallo rápido no existe. El tema reutiliza `ConfigActivador` para cargarla en el contexto de prueba.
+
+**Fallo rápido al arranque (núcleo).** El mecanismo central: cuando falta un valor marcado como obligatorio, el contexto NO arranca y el fallo se produce en el momento más temprano y supervisado posible. El test `sinElValorObligatorioElContextoNoArranca` omite a propósito `app.jwt.secreto` y comprueba `hasFailed()`. Esto convierte un problema latente en un error inmediato durante el despliegue en lugar de en producción bajo tráfico.
+
+**`BindValidationException` como causa raíz (diagnóstico).** El test no solo verifica que el arranque falló, sino que la causa raíz real es `BindValidationException`, con `hasRootCauseInstanceOf(BindValidationException.class)`. Esta es la excepción concreta que Spring lanza cuando `@Validated` rechaza un valor al enlazar. Identificarla permite distinguir un fallo de validación de configuración de otros fallos de arranque no relacionados.
+
+**Arranque exitoso con todos los valores (núcleo).** El segundo test, `conTodosLosValoresObligatoriosElContextoArrancaCorrectamente`, aporta la cara positiva: con `secreto` y `expiracion-segundos` presentes, el mismo contexto arranca y `hasNotFailed()` pasa. Este contraste medido sobre el resultado real del arranque demuestra que la diferencia la marca la presencia o ausencia del valor, no una suposición.
+
+**Violación de `@Min(60)` (variante).** El ejercicio 1 extiende el caso del valor faltante a un valor presente pero inválido: `expiracion-segundos` menor a 60 viola `@Min(60)` y detiene el arranque con el mismo tipo de causa raíz. Es una variante importante porque muestra que el fallo rápido cubre tanto ausencia como rangos inválidos, no solo campos vacíos.
+
+**Mensaje que nombra la propiedad (diagnóstico).** El ejercicio 2 pide leer `context.getStartupFailure().getMessage()` y confirmar que menciona explícitamente la propiedad problemática. Este detalle es el que hace accionable el fallo para quien despliega, porque señala exactamente qué valor corregir. La pista recuerda que `getStartupFailure()` devuelve la cadena completa de causas.
+
+**Quitar `@Validated` deja `null` silencioso (error frecuente).** El fallo deliberado retira `@Validated` de `JwtConfig`: entonces el contexto arranca "exitosamente" con `secreto = null` y `hasFailed()` pasa a ser falso, por lo que el test deja de pasar. Esto demuestra que `@Validated` es la línea responsable de convertir un valor faltante en un fallo inmediato. Omitirla es el error central que el tema previene.
+
+**Opcional con default seguro vs obligatorio (decisión).** La sección de límites aclara que no todo valor debe ser obligatorio: un valor genuinamente opcional con un default seguro, como un tamaño de página de paginación, no debería forzarse con `@NotBlank`/`@Min` sin default. La decisión profesional reserva la obligatoriedad para valores donde no existe un valor por defecto seguro, como secretos o credenciales.
+
 **Conceptos clave:** validación temprana, evitar fallas silenciosas tardías en producción.
 
 Con `@Validated` aplicado a una clase de `@ConfigurationProperties`, si falta un valor marcado `@NotBlank` o `@Min`, la aplicación NO arranca en absoluto: falla inmediatamente durante el arranque con un mensaje claro señalando exactamente qué valor falta o es inválido. Este principio de "fallar rápido" (fail-fast) prioriza detectar el problema en el momento más temprano y controlado posible (el arranque, típicamente supervisado activamente durante un despliegue) en vez de dejar que se manifieste de forma impredecible durante la operación normal.
@@ -297,6 +359,37 @@ contextRunner.withPropertyValues("app.jwt.expiracion-segundos=900")
 
 **¿Por qué es importante?** Cada nueva regla de negocio que puede fallar (por ejemplo, exceder el límite de paradas por ruta) necesita comunicar el error al cliente de la API en el MISMO formato que cualquier otro error ya manejado, sin que el consumidor de la API tenga que aprender un formato distinto por cada tipo de excepción nueva.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Excepción de negocio del dominio | Prerrequisito | `LimiteParadasExcedidoException extends RuntimeException` con mensaje del límite |
+| `@ExceptionHandler` en un `@RestControllerAdvice` | Núcleo | `manejarLimiteExcedido` mapea la excepción en `ManejadorGlobalErrores` |
+| `ProblemDetail` y RFC 7807 | Núcleo | La respuesta usa `application/problem+json` con `title` y `status` 422 |
+| Verificación con `MockMvc` real | Diagnóstico | `status().isUnprocessableEntity()` y `jsonPath("$.title")` en el test |
+| Campos adicionales con `setProperty` | Variante | El ejercicio 2 añade `problema.setProperty("limite", ...)` y lo lee con `jsonPath("$.limite")` |
+| Condición de límite `>` vs `=` | Límite | El ejercicio 3 prueba `numeroDeParadas=20` contra la condición `> LIMITE_PARADAS` |
+| Respuesta de error manual en el endpoint | Error frecuente | El fallo deliberado devuelve `200 OK` con texto plano y rompe el test |
+| Handler global vs manejo local | Decisión | Un error exclusivo de un único endpoint puede manejarse en el método |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Excepción de negocio del dominio (prerrequisito).** `LimiteParadasExcedidoException` extiende `RuntimeException` y construye su mensaje a partir del límite recibido. Es el punto de partida: el controller la lanza cuando la regla de negocio se viola, sin construir la respuesta de error allí mismo. Modelar el fallo como una excepción de dominio es lo que permite centralizar su traducción después.
+
+**`@ExceptionHandler` en un `@RestControllerAdvice` (núcleo).** El mecanismo central es mapear la excepción a una respuesta HTTP en el MISMO `@RestControllerAdvice` que ya manejaría otras excepciones del Módulo 2, mediante `manejarLimiteExcedido`. Así la traducción vive en un único lugar y el endpoint queda limpio. El tema insiste en extender el advice existente, no crear uno nuevo por excepción.
+
+**`ProblemDetail` y RFC 7807 (núcleo).** El handler devuelve `ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, ...)`, el formato estándar RFC 7807 que Spring serializa como `application/problem+json`. Fija el `title` "Límite de paradas excedido" y el `status` 422. Usar este tipo estándar garantiza que todos los errores compartan la misma forma de cuerpo, sin importar el entorno ni el endpoint de origen.
+
+**Verificación con `MockMvc` real (diagnóstico).** El test `excederElLimiteDeParadasDevuelveProblemDetailConsistente` envía `numeroDeParadas=25` y comprueba `status().isUnprocessableEntity()`, el `contentTypeCompatibleWith("application/problem+json")`, el `title` y el `status` 422 con `jsonPath`. La pista explica que `contentTypeCompatibleWith` es más robusto que comparar el string exacto porque tolera un charset añadido. Esta verificación mide la respuesta real, no una suposición.
+
+**Campos adicionales con `setProperty` (variante).** El ejercicio 2 muestra una variante: enriquecer el `ProblemDetail` con `problema.setProperty("limite", LIMITE_PARADAS)` y confirmar con `jsonPath("$.limite")` que aparece en la respuesta. Es la forma de añadir contexto específico del error sin abandonar el formato estándar. Mantiene la uniformidad del cuerpo mientras agrega datos útiles para el cliente.
+
+**Condición de límite `>` vs `=` (límite).** El ejercicio 3 fuerza el caso de frontera exacto: `numeroDeParadas=20`, igual al límite, contra la condición `numeroDeParadas > LIMITE_PARADAS`. Como la comparación es estrictamente mayor, 20 se acepta y 21 se rechaza. El ejercicio pide decidir si ese es el comportamiento correcto según el enunciado "el límite es 20", que es exactamente el tipo de error por uno (off-by-one) que suele pasarse por alto.
+
+**Respuesta de error manual en el endpoint (error frecuente).** El fallo deliberado sustituye el `throw` por un `return "ERROR: límite excedido"` con `200 OK` por defecto. El test falla porque `status().isUnprocessableEntity()` no coincide con el `200` real. Esto demuestra de forma observable por qué construir respuestas de error a mano en cada endpoint produce inconsistencias: un cliente que espera `422` con `ProblemDetail` recibiría un `200` con texto plano no estructurado.
+
+**Handler global vs manejo local (decisión).** La sección de límites matiza la regla: para un error verdaderamente específico de un único endpoint sin posibilidad de reutilización, manejarlo directamente en el método puede ser aceptable. La decisión profesional reserva el `@RestControllerAdvice` centralizado para excepciones de negocio con sentido a nivel de aplicación, que es la mayoría. El criterio es la reutilización del tipo de error.
+
 **Conceptos clave:** el mismo `@RestControllerAdvice` extendido, formato uniforme sin importar el entorno.
 
 El manejo global de excepciones, ya cubierto en el Módulo 2 con `@RestControllerAdvice`, se extiende naturalmente para mapear cualquier excepción de negocio adicional hacia una respuesta HTTP consistente, en el mismo lugar centralizado, garantizando que el formato de error permanezca exactamente el mismo sin importar el entorno (desarrollo, pruebas, producción) ni qué endpoint originó el error. Combinar esto con la configuración tipada y validada de los Temas 1-2 produce una aplicación robusta en su conjunto: los problemas de configuración se detectan al arranque, y los errores de negocio que sí ocurren durante la operación se comunican de forma predecible.
@@ -375,7 +468,16 @@ public class RutasController {
 
 **Explicación línea por línea:** `LimiteParadasExcedidoException` es una excepción de negocio específica del dominio; `@ExceptionHandler(LimiteParadasExcedidoException.class)` en el MISMO `@RestControllerAdvice` que ya manejaría otras excepciones (Módulo 2) la mapea a `422 Unprocessable Entity` usando `ProblemDetail` (el formato estándar RFC 7807, el mismo formato que cualquier otro error de esta API); el controller lanza la excepción cuando la regla de negocio se viola, sin necesidad de construir la respuesta de error manualmente en cada endpoint.
 
-Confirma con `MockMvc` real que la excepción se traduce al formato `ProblemDetail` esperado, con el mismo `Content-Type` estándar que cualquier otro error de la API:
+Confirma con `MockMvc` real que la excepción se traduce al formato `ProblemDetail` esperado, con el mismo `Content-Type` estándar que cualquier otro error de la API. **Nota (Spring Boot 4):** `AutoConfigureMockMvc` requiere agregar explícitamente `spring-boot-webmvc-test` (scope `test`) al `pom.xml` — en Boot 3.x venía incluido en `spring-boot-starter-test`:
+
+```xml
+<!-- dentro de <dependencies> del pom.xml -->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-webmvc-test</artifactId>
+    <scope>test</scope>
+</dependency>
+```
 
 ```java
 // src/test/java/com/academia/errores/ManejadorGlobalErroresTest.java
@@ -383,7 +485,7 @@ package com.academia.errores;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 

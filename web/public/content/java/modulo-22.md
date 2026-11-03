@@ -15,6 +15,34 @@ El proyecto es el modelo de pedidos de RutaFlow: líneas, estados y claves de b�
 
 **¿Por qué es importante?** `HashSet`, `HashMap`, `ConcurrentHashMap` y casi toda biblioteca de colecciones localizan un objeto en dos pasos: primero calculan su `hashCode` para elegir un cubo, después usan `equals` para distinguirlo de otros objetos del mismo cubo. Si dos objetos son iguales pero declaran códigos distintos, pueden caer en cubos distintos y la colección no los compara. El resultado no es necesariamente una excepción: es una deduplicación silenciosa que no deduplica y un `get` que devuelve `null` sobre una entrada que existe.
 
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Las cinco reglas del contrato de `equals` | Prerrequisito | La tabla del reto exige un contraejemplo ejecutado por cada regla; `instanceof Punto p` ancla la simetría y el chequeo de `null`. |
+| Regla de coherencia `equals`/`hashCode` sobre los mismos campos | Núcleo | `Punto` usa `x`, `y` en ambos métodos y `bien size = 1`. |
+| Localización en dos pasos (cubo por hash, luego `equals`) | Núcleo | `roto size = 2` y `roto contains = false` muestran búsqueda en cubos distintos. |
+| `getClass()` frente a `instanceof` en jerarquías | Variante | El ejercicio 2 rompe la simetría con `Punto3D extends PuntoBase` y la arregla con `getClass()`. |
+| Hash con campo ajeno a `equals` | Error frecuente | `RotoPunto` incluye `y` solo en `hashCode`: `roto equals = true` con `roto hash iguales = false`. |
+| Identidad JPA frente a igualdad por valor | Límite | La sección de decisión advierte que comparar entidades por todos sus campos rompe cuando la fila cambia. |
+| `record` como generador de `equals`/`hashCode` | Decisión | El cierre del tema y el reto de `CodigoGuia` usan `record` para no olvidar ninguno de los dos métodos. |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Las cinco reglas del contrato de `equals` (prerrequisito).** Reflexividad, simetría, transitividad, consistencia y respuesta `false` ante `null` son la base sobre la que descansan `hashCode` y toda colección de hash. El demo las hace tangibles: el patrón `otro instanceof Punto p` devuelve `false` ante `null` y permite el acceso tipado solo cuando el tipo coincide. Sin estas reglas, ni siquiera tiene sentido discutir `hashCode`.
+
+**Regla de coherencia `equals`/`hashCode` sobre los mismos campos (núcleo).** El contrato de `hashCode` obliga a que dos objetos iguales devuelvan el mismo hash; la única forma fiable de garantizarlo es alimentar ambos métodos con los mismos campos. `Punto` usa `x` e `y` en los dos, por eso dos instancias `(2, 3)` comparten cubo y el `HashSet` conserva una sola (`bien size = 1`). Es el mecanismo central del tema.
+
+**Localización en dos pasos (núcleo).** Las colecciones de hash buscan primero el cubo con `hashCode` y solo dentro de él comparan con `equals`; si el hash manda a cubos distintos, los objetos nunca se comparan. El demo lo prueba con `roto size = 2`: `(2, 3)` y `(2, 4)` caen en cubos diferentes y conviven aunque `equals` los declare iguales, y `roto contains = false` confirma que la búsqueda ni siquiera llega a comparar.
+
+**`getClass()` frente a `instanceof` en jerarquías (variante).** `instanceof` permite que una subclase se compare con la base, pero rompe la simetría si la subclase añade estado y decide ser igual solo consigo misma; `getClass()` lo impide a costa de prohibir esa comparación. El ejercicio 2 construye `PuntoBase`/`Punto3D` para observar la asimetría y cómo `getClass()` la corta. En una clase `final` como `Punto` la elección es indiferente.
+
+**Hash con campo ajeno a `equals` (error frecuente).** Incluir en `hashCode` un campo que `equals` ignora produce objetos iguales con hashes distintos, la violación más silenciosa del contrato. `RotoPunto` lo hace a propósito: `equals` compara solo `x` pero `hashCode` usa `Objects.hash(x, y)`, de ahí `roto equals = true` junto a `roto hash iguales = false`. El efecto observable es la deduplicación que no deduplica.
+
+**Identidad JPA frente a igualdad por valor (límite).** No todo objeto debe ser igual por valor: una entidad persistente toma su identidad de la base de datos, y compararla por todos sus campos falla cuando una fila cambia o cuando dos entidades transitorias coinciden. El tema marca este borde en su sección de decisión, separando los objetos de valor —códigos, importes, coordenadas— de las entidades con identidad propia. Confundir ambos casos es una fuente real de bugs.
+
+**`record` como generador de `equals`/`hashCode` (decisión).** Un `record` deriva `equals`, `hashCode` y `toString` de sus componentes, de modo que es imposible olvidar uno de los dos métodos —el fallo más común del tema—. Por eso el reto de `CodigoGuia` lo adopta para un objeto de valor que debe deduplicar y servir de clave. La decisión profesional es usar `record` para valores y reservar las clases con `equals` manual para identidades que lo justifiquen.
+
 **Conceptos clave:** identidad, igualdad lógica, contrato de `Object`, cubo de hash, consistencia, `record`.
 
 El contrato de `Object.equals` exige cinco propiedades: reflexividad (`x.equals(x)`), simetría (`x.equals(y)` si y solo si `y.equals(x)`), transitividad, consistencia mientras el estado no cambie y `false` frente a `null`. El contrato de `hashCode` añade una más: si `x.equals(y)`, entonces `x.hashCode() == y.hashCode()`. La recíproca no se exige —dos objetos distintos pueden compartir hash—, pero declarar hashes distintos para objetos iguales rompe todas las colecciones basadas en hash.
@@ -212,7 +240,7 @@ public int hashCode() {
 
 **Límites y decisión de uso:** en una entidad JPA la identidad la define la base de datos, no los campos de negocio: comparar entidades por todos sus campos rompe cuando una fila cambia o cuando dos entidades transitorias son iguales. Para objetos de valor —códigos, importes, coordenadas— la igualdad por valor es la correcta. `record` cubre el caso de valor sin escribir nada; una clase con identidad propia debe documentar qué significa ser igual.
 
-**Fuente oficial:** [Java SE 25 API — java.lang.Object](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html).
+**Fuente oficial revisada el 2026-11-01:** [Java SE 27 API — java.lang.Object](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/Object.html).
 
 **Transferencia al proyecto integrador:** el `CodigoGuia` de este tema es el tipo que el proyecto integrador del Módulo 13 usará como clave de sus cachés y de sus conjuntos de deduplicación, en lugar de comparar cadenas sueltas.
 
@@ -224,6 +252,34 @@ public int hashCode() {
 #### Aprende
 
 **¿Por qué es importante?** `HashMap` calcula el cubo de una clave en el momento de insertarla; si después la clave cambia en un campo que participa en el hash, la entrada se queda donde estaba pero todas las búsquedas futuras calculan otro cubo. El mapa no está corrupto de forma visible: `size()` sigue contando la entrada, `containsValue` la encuentra y la iteración la muestra, pero `get` con la misma referencia devuelve `null`. Ese comportamiento produce fugas de memoria —entradas que ya nadie puede alcanzar ni eliminar— y resultados que dependen del orden de las operaciones.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| El cubo se fija en el `put` y no se recalcula | Prerrequisito | `get tras mutar = null` tras `setCodigo("A-2")` sobre una clave insertada como `A-1`. |
+| Entrada visible pero inalcanzable | Núcleo | `tamano = 1`, `valor sigue dentro = true` y `entradas = [ClaveMutable[A-2]=valor]` coexisten con el `get` nulo. |
+| Clave con setter que participa en el hash | Error frecuente | `ClaveMutable` expone `setCodigo` y lo usa en `hashCode`; mutarla descoloca la entrada. |
+| `record` como clave inmutable | Decisión | `ClaveInmutable` es un `record` sin setters: `record get = valor` con una instancia nueva pero igual. |
+| `remove` no limpia la entrada descolocada | Diagnóstico | El ejercicio 1 confirma que `remove(clave)` devuelve `false` y `size()` sigue en uno. |
+| `record` con componente mutable no es inmutable | Límite | La sección «Si falla» advierte que un `record` con un `List` sin copia no es inmutable. |
+| `TreeMap` con `Comparator` como alternativa | Variante | El ejercicio 3 contrasta el fallo del `TreeMap` al mutar la clave con el del `HashMap`. |
+
+Cada fila tiene su explicación individual a continuación.
+
+**El cubo se fija en el `put` y no se recalcula (prerrequisito).** `HashMap` calcula el cubo en el momento de insertar y no vuelve a hacerlo por su cuenta; si la clave cambia un campo del hash, la entrada se queda archivada bajo el hash viejo. El demo lo prueba: `put` guarda bajo `hash("A-1")`, `setCodigo("A-2")` cambia el objeto, y `get(clave)` calcula `hash("A-2")`, busca en otro cubo y devuelve `null`. Entender este instante es la base de todo el tema.
+
+**Entrada visible pero inalcanzable (núcleo).** El desajuste no borra la entrada: `size()` recorre cubos sin recalcular y sigue contando uno, `containsValue` compara valores nodo a nodo y la encuentra, y la iteración la muestra con su estado actual. Por eso conviven `tamano = 1`, `valor sigue dentro = true` y `entradas = [ClaveMutable[A-2]=valor]` con un `get` que devuelve `null`. Esa contradicción visible es el síntoma que el tema enseña a reconocer.
+
+**Clave con setter que participa en el hash (error frecuente).** Cualquier clase con setter cuyo campo alimente `hashCode` es inservible como clave de un mapa de hash, porque su hash deja de ser estable. `ClaveMutable` lo encarna: `setCodigo` modifica el campo que `hashCode` usa, y tras la mutación la entrada queda descolocada. No hay configuración de `HashMap` que lo arregle; el problema es el contrato de la clave.
+
+**`record` como clave inmutable (decisión).** La solución no es vigilar la clave sino hacerla imposible de mutar: un `record` tiene componentes `final` y ningún setter, así que su hash nunca cambia tras insertarla. El demo lo demuestra con `ClaveInmutable`, donde `seguro.get(new ClaveInmutable("A-1"))` devuelve `valor` usando una instancia distinta pero igual. Esa es la decisión profesional por defecto para claves de mapa.
+
+**`remove` no limpia la entrada descolocada (diagnóstico).** Una vez descolocada la entrada, tampoco `remove(clave)` la alcanza, porque calcula el hash actual y busca en el cubo equivocado. El ejercicio 1 lo comprueba: `remove(clave)` devuelve `false` y `size()` sigue en uno, de modo que la única forma de limpiar es reconstruir o vaciar el mapa. Es la señal diagnóstica de una fuga por clave mutada.
+
+**`record` con componente mutable no es inmutable (límite).** Que una clave sea un `record` no basta: si un componente es un `List` mutable sin copia, el estado interno puede cambiar y arrastrar al hash. La sección «Si falla» lo marca explícitamente: un `record` solo es inmutable si todos sus componentes lo son. Ignorar este borde reintroduce el mismo fallo bajo apariencia de inmutabilidad.
+
+**`TreeMap` con `Comparator` como alternativa (variante).** Un `TreeMap` no usa hash sino un orden definido por `Comparator` o `Comparable`, así que mutar la clave produce un fallo distinto —búsqueda por orden inconsistente— en lugar del cubo descolocado del `HashMap`. El ejercicio 3 pide reproducir y explicar esa diferencia. La variante muestra que el problema de las claves mutables cambia de forma, no de causa, al cambiar de estructura.
 
 **Conceptos clave:** clave mutable, cubo, `hashCode` inestable, copia defensiva de clave, objeto de valor inmutable.
 
@@ -373,7 +429,7 @@ System.out.println("get tras mutar = " + mapa.______(clave));
 
 **Límites y decisión de uso:** hay estructuras que sí toleran claves mutables, como una lista ordenada por un comparador estable, pero cambian las garantías. Si la clave debe cambiar con frecuencia, el mapa es la estructura equivocada: conviene indexar por un identificador estable y guardar el estado mutable en el valor.
 
-**Fuente oficial:** [Java SE 25 API — java.util.Map](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Map.html).
+**Fuente oficial revisada el 2026-11-01:** [Java SE 27 API — java.util.Map](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/Map.html).
 
 **Transferencia al proyecto integrador:** la caché de guías del proyecto integrador del Módulo 13 usará una clave inmutable; este tema es la justificación escrita de esa decisión.
 
@@ -385,6 +441,34 @@ System.out.println("get tras mutar = " + mapa.______(clave));
 #### Aprende
 
 **¿Por qué es importante?** Un objeto que recibe una lista y la guarda tal cual no tiene una lista: tiene un alias de la lista de otro. Quien conserve la referencia original puede añadir, borrar o modificar elementos sin pasar por el objeto. Lo mismo ocurre con un getter que devuelve la lista interna. El fallo no aparece en la clase que lo escribió: aparece semanas después, cuando otro componente muta la lista y el pedido cambia sin que nadie lo haya tocado.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Alias por constructor y por getter | Prerrequisito | `alias en constructor = [teclado x1, raton x2]` tras `original.add` y `getter mutable` con `monitor` añadido por el getter. |
+| Copia superficial comparte elementos | Núcleo | `misma lista = true` y la copia superficial pasa a `teclado x99` cuando el original cambia. |
+| Copia profunda duplica cada elemento | Núcleo | `misma linea = false` y `profunda = [teclado x1, ...]` pese al cambio a 99 en el original. |
+| `List.copyOf` protege estructura, no elementos | Variante | `PedidoSeguro` copia cada `Linea` antes de `List.copyOf`; `seguro` conserva `raton x2` y el `add` falla. |
+| `clone()` es copia superficial con `Cloneable` | Error frecuente | El fallo deliberado muestra `misma lista = true` tras `super.clone()`. |
+| `List.copyOf` devuelve lista no modificable | Diagnóstico | El `add` sobre `seguro.lineas()` imprime `lista no modificable`. |
+| Constructor de copia frente a `clone` | Decisión | La sección de decisión y el ejercicio 2 sustituyen `Cloneable` por un constructor de copia. |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Alias por constructor y por getter (prerrequisito).** Guardar una lista recibida tal cual, o devolverla desde un getter, crea un alias: quien conserve la referencia original edita el estado del objeto sin pasar por su API. El demo lo expone en dos frentes: `original.add(new Linea("raton", 2))` después de construir el `Pedido` hace que el pedido vea `raton`, y `pedido.lineas().add(...)` mete `monitor` desde el getter. Reconocer ambas fugas es el punto de partida.
+
+**Copia superficial comparte elementos (núcleo).** `new ArrayList<>(lineas)` crea otra lista, pero sus elementos siguen siendo los mismos objetos; `copiaSuperficial` ni siquiera copia la lista, pasa la misma referencia. Por eso `misma lista = true` y, al cambiar la cantidad de la línea 0 a 99 en el original, la copia superficial también muestra `teclado x99`. Es el mecanismo que distingue estructura de contenido.
+
+**Copia profunda duplica cada elemento (núcleo).** Una copia profunda construye una `Linea` nueva por cada elemento, de modo que el grafo queda independiente. `copiaProfunda` lo hace en el bucle y el resultado es `misma linea = false`: el cambio a 99 en el original no afecta a `profunda`, que conserva `teclado x1`. Copiar la estructura sin copiar los elementos solo da media protección.
+
+**`List.copyOf` protege estructura, no elementos (variante).** `List.copyOf` devuelve una lista no modificable pero no clona sus elementos; para una copia completa hay que copiar cada elemento antes. `PedidoSeguro` lo hace: construye `Linea` nuevas y luego envuelve con `List.copyOf`, así tras cambiar `raton` a 500 en el original la copia conserva `raton x2`. La inmutabilidad total exige las dos operaciones, no solo la envoltura.
+
+**`clone()` es copia superficial con `Cloneable` (error frecuente).** `Object.clone()` copia campo a campo: los campos de referencia se comparten, igual que en una copia superficial, y además obliga a `Cloneable` con su excepción comprobada. El fallo deliberado lo prueba: tras `super.clone()`, `misma lista = true` y el clon cambia cuando se muta la línea 0 del original. `clone()` no es una copia profunda por mucho que lo parezca.
+
+**`List.copyOf` devuelve lista no modificable (diagnóstico).** Además de no copiar elementos, `List.copyOf` entrega una vista que rechaza mutaciones estructurales. El demo lo evidencia: `seguro.lineas().add(new Linea("impresora", 1))` lanza `UnsupportedOperationException` y se imprime `lista no modificable`. Esa excepción es la señal diagnóstica de que el getter ya no filtra una lista editable.
+
+**Constructor de copia frente a `clone` (decisión).** La corrección profesional no es parchear `clone` para copiar la lista, sino eliminar `Cloneable` y exponer un constructor de copia o un método `copia()` explícito, sin excepciones comprobadas ni herencia implícita. El ejercicio 2 lo pide y la sección de decisión lo recomienda. Es la decisión que cierra el tema: expresar la copia donde se lee, no delegarla en un contrato frágil.
 
 **Conceptos clave:** alias, copia superficial, copia profunda, copia defensiva, `List.copyOf`, `clone`.
 
@@ -627,7 +711,7 @@ this.lineas = ______;
 
 **Límites y decisión de uso:** copiar en cada llamada tiene un coste. En estructuras grandes y de solo lectura, una lista persistente o una vista no modificable compartida puede ser mejor, siempre que nadie conserve la referencia original. La copia defensiva se decide por frontera: en el constructor y en el getter de un objeto de dominio, sí; en bucles internos de cálculo, no.
 
-**Fuente oficial:** [Java SE 25 API — java.lang.Object#clone()](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#clone()).
+**Fuente oficial revisada el 2026-11-01:** [Java SE 27 API — java.lang.Object#clone()](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/Object.html#clone()).
 
 **Transferencia al proyecto integrador:** el constructor de copia de `Pedido` es el patrón que el proyecto integrador del Módulo 13 aplicará a sus agregados antes de publicarlos por una API.
 
@@ -639,6 +723,34 @@ this.lineas = ______;
 #### Aprende
 
 **¿Por qué es importante?** Un estado representado con enteros o cadenas acepta cualquier valor: `estado = 7` compila y solo falla cuando alguien lo interpreta. Un `enum` restringe el conjunto de valores en tiempo de compilación, pero eso es solo el principio: puede llevar campos, constructor, métodos y comportamiento distinto por constante. Lo que no puede hacer es cambiar de forma: sus instancias son fijas, se crean una vez y son únicas. Esa unicidad resuelve de paso la serialización y la comparación con `==`.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Campo propio y constructor privado | Prerrequisito | `EstadoPedido(int codigo)` asigna `codigo`; `codigo ENVIADO = 30`. |
+| Comportamiento por constante con método abstracto | Núcleo | Cada constante implementa `permiteEnvio()`; `permite envio = true` para `CONFIRMADO`. |
+| `ordinal()` inestable frente a código estable | Error frecuente | `ordinal ENVIADO = 2` frente a `codigo ENVIADO = 30`; reordenar cambia solo el primero. |
+| `switch` exhaustivo sin `default` | Decisión | `etiqueta = Cancelado` sale de un `switch` que cubre las cuatro constantes. |
+| `values()` devuelve un arreglo nuevo | Límite | `values identicos = false` en dos llamadas seguidas. |
+| `EnumMap` y `EnumSet` con orden de declaración | Variante | `conteo = {BORRADOR=1, CONFIRMADO=1, ENVIADO=5, CANCELADO=1}` y `abiertos = [BORRADOR, CONFIRMADO]`. |
+| Serialización por nombre devuelve la misma instancia | Diagnóstico | `DemoSerial` imprime `misma instancia = true`. |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Campo propio y constructor privado (prerrequisito).** Un enum no es solo un conjunto de nombres: cada constante puede llevar estado propio inyectado por un constructor implícitamente privado. `EstadoPedido(int codigo)` guarda un `codigo` final por constante, y el demo lo lee con `codigo ENVIADO = 30`. Ese campo es la base para no depender de la posición.
+
+**Comportamiento por constante con método abstracto (núcleo).** Declarar un método abstracto en el enum obliga a cada constante a aportar su cuerpo, que el compilador materializa como una subclase anónima. `permiteEnvio()` devuelve `true` solo en `CONFIRMADO`, y el demo lo confirma con `permite envio = true`. Así el estado lleva su propia regla en lugar de dispersarla en condicionales externas.
+
+**`ordinal()` inestable frente a código estable (error frecuente).** `ordinal()` es la posición en la declaración, de modo que reordenar constantes cambia el número sin cambiar el significado; persistirlo corrompe datos antiguos en silencio. El demo pone lado a lado `ordinal ENVIADO = 2` y `codigo ENVIADO = 30`: insertar `CANCELADO` antes de `ENVIADO` movería el ordinal a 3 y leería un pedido viejo como `CANCELADO`, mientras el código 30 permanece. La regla profesional es persistir `name()` o un código propio, nunca el ordinal.
+
+**`switch` exhaustivo sin `default` (decisión).** Un `switch` que enumera todas las constantes y omite `default` convierte al compilador en guardián: añadir una quinta constante obliga a actualizarlo. `etiqueta` lo aplica y produce `etiqueta = Cancelado`; agregar `default` desactivaría ese aviso. La decisión profesional es renunciar al `default` para que las ramas incompletas fallen en compilación, no en producción.
+
+**`values()` devuelve un arreglo nuevo (límite).** `values()` construye un arreglo fresco en cada invocación, por lo que dos llamadas no son el mismo objeto y modificar el resultado no altera el enum. El demo lo evidencia con `values identicos = false`. Conocer este límite evita tanto fugas de mutabilidad como el coste de llamarlo dentro de un bucle caliente.
+
+**`EnumMap` y `EnumSet` con orden de declaración (variante).** `EnumMap` y `EnumSet` usan el ordinal internamente pero garantizan el orden de declaración y rechazan claves de otro enum. El demo lo muestra con `conteo = {BORRADOR=1, CONFIRMADO=1, ENVIADO=5, CANCELADO=1}` y `abiertos = [BORRADOR, CONFIRMADO]`, ambos en el orden en que se declararon las constantes. Son la variante optimizada frente a un `HashMap` o `HashSet` genérico.
+
+**Serialización por nombre devuelve la misma instancia (diagnóstico).** La serialización de un enum escribe su nombre y la lectura lo resuelve con `valueOf`, así que nunca se duplica una constante al deserializar. `DemoSerial` lo comprueba con `misma instancia = true` tras un ciclo de escritura y lectura. De ahí se deduce que añadir constantes es compatible con datos antiguos, pero renombrarlas rompe la lectura.
 
 **Conceptos clave:** constante de enum, campo final, cuerpo por constante, `ordinal`, `values`, `valueOf`, `EnumMap`, `EnumSet`, exhaustividad.
 
@@ -833,7 +945,7 @@ System.out.println("codigo ENVIADO = " + EstadoPedido.ENVIADO.______());
 
 **Límites y decisión de uso:** un enum es la elección correcta cuando el conjunto es cerrado y conocido en compilación. Si los estados los define el cliente o cambian sin desplegar, un enum obliga a recompilar: en ese caso conviene una tabla de estados o una jerarquía sellada con datos. Un enum con decenas de constantes y cuerpos largos suele pedir una jerarquía `sealed` con un `record` por estado.
 
-**Fuente oficial:** [Java Language Specification, SE 25 — §8.9 Enum Types](https://docs.oracle.com/javase/specs/jls/se25/html/jls-8.html#jls-8.9).
+**Fuente oficial revisada el 2026-11-01:** [Java Language Specification, SE 27 — §8.9 Enum Types](https://docs.oracle.com/javase/specs/jls/se27/html/jls-8.html#jls-8.9).
 
 **Transferencia al proyecto integrador:** los estados del pedido del proyecto integrador del Módulo 13 serán este enum con transiciones; el código persistido, no el ordinal, es lo que viajará en la API.
 
@@ -845,6 +957,34 @@ System.out.println("codigo ENVIADO = " + EstadoPedido.ENVIADO.______());
 #### Aprende
 
 **¿Por qué es importante?** Una clase interna no estática guarda una referencia implícita a la instancia externa que la creó. Esa referencia aparece en el bytecode como un campo `final` llamado `this$0` y un parámetro extra en el constructor. Mientras alguien conserve la instancia interna —en una caché, en una lista de listeners, en un `CompletableFuture`—, el objeto externo y todo su grafo siguen vivos. En una aplicación de larga vida, eso es una fuga que el recolector no puede resolver porque la referencia es real.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Clase interna no estática y su exterior | Prerrequisito | `cola.new Cursor()` crea el enlace; `siguiente()` lee `pendientes` del exterior. |
+| El campo sintético `this$0` | Núcleo | `javap` del `Cursor` muestra `final io.academia.modelo.Cola this$0;` y el constructor que recibe `Cola`. |
+| Clase anidada `static` sin exterior | Variante | `Limite` solo declara `maximo`; su `javap` no tiene `this$0`. |
+| Retención del exterior por la interna | Diagnóstico | El ejercicio 2 guarda cien `Cursor` y la `Cola` no puede recolectarse. |
+| `this` en clase anónima frente a lambda | Error frecuente | `anonimo this = ...Cola$1` frente a `lambda this = ...Cola`. |
+| Interna inconstruible sin exterior | Límite | `new Cola.Cursor()` falla: `an enclosing instance ... is required`. |
+| `static` por defecto como decisión de diseño | Decisión | La pista y la sección de decisión marcan `static` salvo que la identidad con el exterior sea parte del diseño. |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Clase interna no estática y su exterior (prerrequisito).** Una clase interna no estática pertenece a una instancia concreta del exterior y accede a sus miembros de instancia. El demo la crea con `cola.new Cursor()`, sintaxis que indica qué `Cola` será el exterior, y `siguiente()` lee el campo `pendientes` de esa cola. Sin entender ese vínculo, el resto del tema no se sostiene.
+
+**El campo sintético `this$0` (núcleo).** El compilador materializa ese vínculo como un campo `final this$0` y un parámetro extra en el constructor, ambos invisibles en el fuente. El `javap -p` del `Cursor` lo prueba: `final io.academia.modelo.Cola this$0;` y `public io.academia.modelo.Cola$Cursor(io.academia.modelo.Cola);`. Ese campo es el mecanismo exacto que retiene al exterior.
+
+**Clase anidada `static` sin exterior (variante).** Una clase anidada `static` es una clase normal cuyo nombre vive dentro de otra; no tiene instancia externa ni puede usar sus miembros de instancia. `Limite` lo ilustra: su único campo es `maximo` y su `javap` no muestra `this$0` ni parámetro de enlace. Es la variante que no retiene nada del exterior.
+
+**Retención del exterior por la interna (diagnóstico).** Mientras alguien conserve una instancia interna —en una caché, una lista o un futuro—, el `this$0` mantiene vivo al exterior y a todo su grafo, y el recolector no puede liberarlo porque la referencia es legítima. El ejercicio 2 lo diagnostica: cien `Cursor` en una lista estática impiden recolectar la `Cola` aunque no quede otra referencia. Es la fuga característica del tema.
+
+**`this` en clase anónima frente a lambda (error frecuente).** En una clase anónima `this` es la propia instancia anónima; en una lambda `this` es la instancia de la clase que la encierra, porque una lambda es una función, no una clase. El demo lo hace visible: `anonimo this = io.academia.modelo.Cola$1` frente a `lambda this = io.academia.modelo.Cola`. Confundir ambos cambia a qué campo o método apunta el código y qué se captura.
+
+**Interna inconstruible sin exterior (límite).** No se puede instanciar una clase interna no estática sin una instancia del exterior que la enlace. El fallo deliberado lo confirma: `new Cola.Cursor()` no compila y el error es `an enclosing instance that contains Cola.Cursor is required`. Ese límite del compilador es la prueba observable de que el `this$0` es obligatorio.
+
+**`static` por defecto como decisión de diseño (decisión).** Si una clase anidada no necesita miembros de instancia del exterior, marcarla `static` elimina el `this$0` y la retención asociada; `static` no es una optimización, cambia la semántica de la referencia. La pista y la sección de decisión lo fijan como regla: estática por defecto, interna solo cuando la identidad con el exterior sea parte del diseño, como un iterador sobre su colección. Es la decisión profesional que cierra el módulo.
 
 **Conceptos clave:** clase anidada estática, clase interna, clase local, clase anónima, `this$0`, captura, lambda, retención.
 
@@ -1057,7 +1197,7 @@ Cola.Cursor cursor = ______;
 
 **Límites y decisión de uso:** la clase interna es correcta cuando la instancia interna no tiene sentido sin la externa —un iterador sobre una colección, una vista de un documento—. Fuera de ese caso, `static` reduce acoplamiento y retención. En un framework de inyección de dependencias, las clases internas de configuración suelen ser `static` precisamente por esto.
 
-**Fuente oficial:** [Java Language Specification, SE 25 — §8.1.3 Inner Classes and Enclosing Instances](https://docs.oracle.com/javase/specs/jls/se25/html/jls-8.html#jls-8.1.3).
+**Fuente oficial revisada el 2026-11-01:** [Java Language Specification, SE 27 — §8.1.3 Inner Classes and Enclosing Instances](https://docs.oracle.com/javase/specs/jls/se27/html/jls-8.html#jls-8.1.3).
 
 **Transferencia al proyecto integrador:** el proyecto integrador del Módulo 13 revisará sus clases anidadas con este criterio: estática por defecto, interna solo cuando la identidad con el exterior sea parte del diseño.
 

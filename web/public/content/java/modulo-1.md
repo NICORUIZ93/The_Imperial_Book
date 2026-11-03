@@ -7,21 +7,62 @@
 
 ### Tema 1: Clases, objetos, constructores y encapsulación · Básico · 40 min
 
-**Prerrequisito:** JDK 27, Maven y un editor. Comprueba `java --version`.
+**Paso 1 · Objetivo y preparación**
 
-**Al terminar podrás:** diseñar una clase que valida sus invariantes en el constructor, de forma que ninguna instancia inválida pueda existir.
+**Prerrequisito:** Módulo 0 de Java (clases, `main`, tipos), JDK 27 o posterior y un editor. Comprueba `java --version` y `javac --version`.
+
+**Al finalizar podrás:** distinguir clase de instancia; usar `this`, campos de instancia y estáticos; escribir un constructor que valide invariantes y una sobrecarga que delegue con `this(...)`; y encapsular con `private final` y getters sin setters.
 
 #### Aprende
 
-En un caso real de entregas, una guía sin número o con peso fuera de rango no debería poder crearse nunca, en vez de crearse y luego validarse por separado en cada punto donde se use.
+**Paso 2 · Contexto y caso profesional**
+
+**Caso profesional (escenario de RutaFlow):** una guía sin número o con peso fuera de rango no debe llegar al motor como una instancia válida. El constructor puede rechazar esos datos al crear el objeto, en vez de dejar que cada consumidor recuerde validarlos.
+
+**Paso 3 · Teoría, modelo mental y analogía**
 
 **¿Por qué es importante?** Porque un constructor que valida sus invariantes es la única garantía real de que ningún objeto inválido llegue a existir en el sistema, sin depender de que cada consumidor recuerde validar por su cuenta antes de usarlo.
 
 El constructor es la única puerta de entrada para crear un objeto: si valida ahí, ningún consumidor puede construir una instancia inválida y "completarla después".
 
-**Analogía:** el constructor es como el control de calidad en la línea de ensamblaje: se rechaza la pieza defectuosa antes de que salga de fábrica, no después de instalarla.
+**Mapa de subtemas críticos**
 
-**Conceptos clave:** invariantes, constructor, encapsulación.
+| Subtema | Papel | Evidencia del tema |
+|---|---|---|
+| clase frente a objeto/instancia | Prerrequisito | la clase `Guia` es el molde; `new Guia(...)` crea instancias distintas |
+| campos de instancia y `this` | Núcleo | `this.numero` distingue el campo del parámetro homónimo |
+| constructor e invariantes | Núcleo | el constructor rechaza datos inválidos antes de crear el objeto |
+| constructor por defecto frente a explícito | Diagnóstico | al declarar un constructor, `new Guia()` deja de existir |
+| sobrecarga de constructores y `this(...)` | Variante | un constructor corto delega en el principal sin repetir validación |
+| encapsulación: `private` y `final` | Núcleo | sin setters, el invariante no se puede romper tras construir |
+| getters sin setters | Decisión | se expone lectura, no mutación |
+| campos estáticos frente a instancia | Límite | un contador `static` pertenece a la clase, no a cada objeto |
+| identidad de objetos (`==`) | Límite | dos instancias con los mismos datos no son `==` |
+| cuándo NO imponer invariantes | Decisión | un DTO de transporte no necesita esta disciplina |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Clase frente a objeto/instancia (prerrequisito).** Una **clase** es el molde que describe qué datos y qué comportamiento tendrán los objetos; un **objeto** (o instancia) es cada ejemplar concreto creado con `new`. `Guia` es la clase; `new Guia("RF-1", 12.5)` y `new Guia("RF-2")` son dos objetos independientes, cada uno con sus propios campos.
+
+**Campos de instancia y `this` (núcleo).** Los campos declarados sin `static` pertenecen a **cada instancia**: dos guías tienen su propio `numero` y `pesoKg`. Dentro del constructor, el parámetro `numero` y el campo `numero` se llaman igual; `this.numero` se refiere al **campo del objeto** y `numero` (sin `this`) al parámetro. Sin `this`, la asignación `numero = numero` se asignaría el parámetro a sí mismo y el campo quedaría sin inicializar.
+
+**Constructor e invariantes (núcleo).** El constructor es la única puerta para crear el objeto. Si valida ahí (rechazando número vacío o peso fuera de rango con `IllegalArgumentException`), ningún consumidor puede construir una instancia inválida y "completarla después".
+
+**Constructor por defecto frente a explícito (diagnóstico).** Si una clase **no declara** ningún constructor, Java le da uno sin argumentos (el *por defecto*). Pero en cuanto declaras **uno explícito**, ese por defecto desaparece: con `Guia(String, double)` definido, `new Guia()` ya no compila. Es un error frecuente al añadir el primer constructor con parámetros.
+
+**Sobrecarga de constructores y `this(...)` (variante).** Puedes ofrecer varios constructores con firmas distintas. Para no repetir la validación, un constructor corto delega en el principal con `this(...)`: `Guia(String numero) { this(numero, 1.0); }`. La regla del lenguaje: `this(...)` debe ser la **primera** instrucción del constructor.
+
+**Encapsulación: `private` y `final` (núcleo).** Los campos son `private` (nadie los toca desde fuera) y `final` (no se reasignan tras construir). Juntos garantizan que, una vez validado el objeto, su estado no puede romperse: no hay setter que vuelva a dejar un peso inválido.
+
+**Getters sin setters (decisión).** Para que otros lean el valor, expones **getters** (`numero()`, `pesoKg()`), pero **no setters**. Así permites lectura sin abrir la puerta a una mutación que rompa el invariante. Exponer un setter equivaldría a renunciar a la garantía del constructor.
+
+**Campos estáticos frente a instancia (límite).** Un campo `static` (por ejemplo un contador `creadas`) pertenece a la **clase**, no a cada objeto: todas las instancias comparten el mismo. Se accede como `Guia.creadas()`. No confundas "dato de cada guía" (instancia) con "dato de todas las guías" (estático).
+
+**Identidad de objetos (límite).** `==` entre objetos compara **identidad** (si son el mismo objeto en memoria), no contenido. Dos guías con los mismos datos (`new Guia("RF-1", 12.5)` dos veces) **no** son `==`. Comparar su contenido es trabajo de `equals` (Módulo posterior); por ahora, ten claro que `new` siempre crea un objeto distinto.
+
+**Analogía (con su límite):** el constructor es el control de calidad de la línea de ensamblaje: rechaza la pieza defectuosa antes de que salga de fábrica. La analogía explica la validación de invariantes; no explica `this`, la sobrecarga ni la identidad, que son reglas del lenguaje.
+
+**Conceptos clave:** clase/instancia, `this`, invariantes, constructor por defecto/explícito, `this(...)`, encapsulación, estático/instancia, identidad.
 
 **Código del ejemplo:**
 
@@ -29,32 +70,46 @@ El constructor es la única puerta de entrada para crear un objeto: si valida ah
 package academia.entregas;
 
 public final class Guia {
-    private final String numero;
+    private static int creadas = 0;              // estático: compartido por la clase
+    private final String numero;                 // instancia: propio de cada objeto
     private final double pesoKg;
 
-    public Guia(String numero, double pesoKg) {
+    public Guia(String numero, double pesoKg) {  // constructor principal (valida)
         if (numero == null || numero.isBlank()) {
             throw new IllegalArgumentException("El número de guía no puede estar vacío");
         }
         if (pesoKg <= 0 || pesoKg > 50) {
             throw new IllegalArgumentException("El peso debe estar entre 0 y 50 kg");
         }
-        this.numero = numero;
+        this.numero = numero;                    // this: campo frente a parámetro
         this.pesoKg = pesoKg;
+        creadas++;
     }
 
+    public Guia(String numero) { this(numero, 1.0); }  // sobrecarga que delega con this(...)
+
+    public String numero() { return numero; }          // getter, sin setter
+    public double pesoKg() { return pesoKg; }
+    public static int creadas() { return creadas; }     // dato de la clase
+
     public static void main(String[] args) {
-        Guia guia = new Guia("RF-1", 12.5);
-        System.out.println("Creada: " + guia.numero + " (" + guia.pesoKg + " kg)");
+        Guia a = new Guia("RF-1", 12.5);
+        Guia b = new Guia("RF-2");                       // usa el constructor sobrecargado
+        System.out.println(a.numero() + " " + a.pesoKg() + " | " + b.numero() + " " + b.pesoKg());
+        System.out.println("instancias creadas=" + Guia.creadas());
+        Guia otra = new Guia("RF-1", 12.5);
+        System.out.println("a==otra? " + (a == otra));   // identidad: objetos distintos
     }
 }
 ```
 
-Los campos son `private final`: no hay setters que puedan romper el invariante después de construir, y el constructor rechaza cualquier valor que lo viole antes de que el objeto exista.
+Los campos son `private final`: no hay setters que rompan el invariante tras construir, y el constructor rechaza cualquier valor inválido antes de que el objeto exista. El contador `creadas` es `static` porque cuenta guías de toda la clase, no de una instancia.
 
 **Cuándo no usarlo:** para un objeto puramente de transporte de datos sin ninguna regla de negocio que proteger (un DTO que solo cruza una frontera de serialización), validar cada campo en el constructor es esfuerzo sin beneficio real; resérvalo para entidades de dominio donde un estado inválido tendría consecuencias reales.
 
 #### Practica
+
+**Paso 4 · Demostración guiada desde cero**
 
 **Desde cero:** parte de una carpeta vacía y prepara la estructura.
 
@@ -73,48 +128,122 @@ javac -d out src/main/java/academia/entregas/Guia.java
 java -cp out academia.entregas.Guia
 ```
 
-**Resultado esperado:** `Creada: RF-1 (12.5 kg)`.
+**Resultado esperado** (verificado con Temurin 27.0.1):
 
-**Fallo deliberado:** en `main`, sustituye `new Guia("RF-1", 12.5)` por `new Guia("", 10)`, recompila y ejecuta. El constructor lanza `IllegalArgumentException` y la guía nunca llega a existir; repite con `new Guia("RF-1", 0)`.
+```text
+RF-1 12.5 | RF-2 1.0
+instancias creadas=2
+a==otra? false
+```
+
+Léelo subtema por subtema: `b` usó el constructor sobrecargado (peso por defecto `1.0`); `creadas=2` es el contador estático compartido; y `a==otra` es `false` porque son objetos distintos aunque tengan los mismos datos.
+
+**Fallo deliberado 1 — invariante:** en `main`, sustituye `new Guia("RF-1", 12.5)` por `new Guia("", 10)`, recompila y ejecuta. El constructor lanza `IllegalArgumentException` y la guía nunca llega a existir; repite con `new Guia("RF-1", 0)`.
+
+**Fallo deliberado 2 — constructor por defecto:** añade en `main` la línea `new Guia();`. No compila:
+
+```text
+error: constructor Guia in class Guia cannot be applied to given types;
+  required: String,double
+  found:    no arguments
+```
+
+Al declarar constructores con parámetros, el constructor sin argumentos **ya no existe**. Quita la línea para seguir.
 
 Después de observar el fallo, restaura los argumentos válidos. **Pista:** ambas construcciones inválidas deben fallar desde el constructor, antes de que exista una instancia a medias; si el objeto se crea y el error aparece después, la validación está en el lugar equivocado. **Resultado esperado:** ninguna instancia inválida llega a existir.
 
 **Si falla.** Si `javac` no encuentra `Guia.java`, revisa que la ruta incluya `src/main/java/academia/entregas` y que el paquete del archivo coincida. Si `java` no encuentra la clase, comprueba que `-cp` apunta a `out` y que ejecutas el nombre completo `academia.entregas.Guia`. Si la guía vacía se crea sin lanzar nada, la comparación del número está mal: `isBlank()` cubre también una cadena de solo espacios.
 
+**Paso 5 · Práctica guiada**
+
+Restaura los datos válidos y prueba el límite superior: crea `new Guia("RF-2", 50)` y luego `new Guia("RF-3", 50.01)`. Antes de ejecutar, predice cuál construcción se acepta y cuál lanza `IllegalArgumentException`.
+
+**Pista:** el límite está expresado como `pesoKg > 50`; por eso 50 se acepta y cualquier valor mayor se rechaza. Si ambas construcciones se aceptan, revisa la condición del constructor.
+
 #### Aplica
 
+**Paso 6 · Práctica independiente**
+
 Escribe `GuiaTest` con un caso válido y tres casos inválidos (número vacío, peso cero, peso mayor a 50); confirma que los tres lanzan excepción desde el constructor, no desde un método `validar()` separado.
+
+**Paso 7 · Cierre**
 
 **Checklist de salida.**
 
 - [ ] `Guia.java` compila con `javac -d out` y conserva el paquete `academia.entregas`.
-- [ ] `java -cp out academia.entregas.Guia` imprime `Creada: RF-1 (12.5 kg)`.
+- [ ] La ejecución imprime `RF-1 12.5 | RF-2 1.0`, `instancias creadas=2` y `a==otra? false`.
+- [ ] El constructor sobrecargado `Guia(String)` delega con `this(numero, 1.0)`.
 - [ ] `new Guia("", 10)` y `new Guia("RF-1", 0)` lanzan `IllegalArgumentException` desde el constructor.
-- [ ] `GuiaTest` cubre un caso válido y tres inválidos.
+- [ ] `new Guia()` no compila porque hay un constructor explícito con parámetros.
 - [ ] Ningún setter permite modificar `numero` o `pesoKg` después de construir.
-- [ ] Explicas por qué la validación no debe vivir en un método `validar()` separado.
+- [ ] `creadas` es estático (dato de la clase) y `a==otra` demuestra identidad, no contenido.
 
-**Si falla.** Si `GuiaTest` compila pero no ejecuta, confirma que el runner o el `main` de la prueba esté configurado; una clase de prueba no se ejecuta sola. Si una construcción inválida no lanza excepción, ese caso no está llegando al constructor o la condición no cubre el valor.
+**Si falla.** Si `instancias creadas` no es `2`, el contador no es `static` o se reinicia. Si `a==otra` da `true`, estás comparando la misma referencia, no dos `new`. Si `new Guia()` compila, no declaraste un constructor con parámetros. Si una construcción inválida no lanza excepción, ese caso no llega al constructor.
 
-Guarda la clase, la prueba, la salida y el fallo diagnosticado. Esta misma disciplina (validar en el constructor, no exponer setters que rompan el invariante) es la que aplicarás a cada entidad del proyecto integrador de este track.
+Guarda `Guia.java`, la salida, el `IllegalArgumentException` y el error de `new Guia()`. Esta disciplina (validar en el constructor, encapsular con `private final`, exponer getters sin setters) es la que aplicarás a cada entidad del proyecto integrador.
 
-**Errores comunes:** validar en un método separado en vez del constructor, exponer setters que rompan el invariante después de construir, y confiar en que "nadie va a pasar un valor inválido".
+**Antes del siguiente tema:** explica qué invariante protege el constructor, por qué `this` es necesario cuando el parámetro y el campo se llaman igual, y en qué se diferencia un campo estático de uno de instancia.
 
-**Fuente oficial:** [dev.java: clases y objetos](https://dev.java/learn/classes-objects/) y [The Java Tutorials: Interfaces and Inheritance](https://docs.oracle.com/javase/tutorial/java/IandI/).
+**Errores comunes:** validar en un método separado en vez del constructor; olvidar `this` y asignar el parámetro a sí mismo; exponer setters que rompan el invariante; asumir que `new Guia()` sigue existiendo tras declarar otro constructor; y comparar objetos con `==` esperando comparar contenido.
+
+**Fuentes oficiales revisadas el 2026-11-01:** [dev.java: clases y objetos](https://dev.java/learn/classes-objects/), [JLS 8.8 — constructores (Java SE 27)](https://docs.oracle.com/javase/specs/jls/se27/html/jls-8.html#jls-8.8) y [The Java Tutorials: classes and objects](https://docs.oracle.com/javase/tutorial/java/javaOO/).
 
 ### Tema 2: Herencia y sobreescritura · Intermedio · 1 h
 
-**Prerrequisito:** JDK 27, Maven y un editor. Comprueba `java --version`.
+**Paso 1 · Objetivo y preparación**
 
-**Al terminar podrás:** demostrar polimorfismo de subtipo con `extends`/`@Override`, y diagnosticar el error de olvidar `@Retention(RUNTIME)` en una anotación propia.
+**Prerrequisito:** Tema 1 de este módulo, JDK 27 o posterior y un editor. Comprueba `java --version` y `javac --version`.
+
+**Al finalizar podrás:** usar `extends`/`super`, demostrar dispatch dinámico, sobreescribir métodos de `Object`, hacer downcasting seguro con `instanceof`, limitar la herencia con `sealed`, y diagnosticar el error de olvidar `@Retention(RUNTIME)` en una anotación propia.
 
 #### Aprende
 
-Un sistema de reparto trata conductores y vehículos de forma polimórfica (todos "hablan"/operan igual desde afuera), pero cada tipo concreto responde distinto; además, auditar acciones sensibles (confirmar una entrega) requiere una anotación propia correctamente configurada para que un interceptor pueda descubrirla.
+**Paso 2 · Contexto y caso profesional**
+
+**Caso profesional (escenario de RutaFlow):** el motor puede operar con distintos tipos de entrega mediante un tipo común, mientras un componente de auditoría busca una anotación en acciones sensibles. La sobreescritura y la retención de anotaciones resuelven problemas distintos y se probarán por separado.
+
+**Paso 3 · Teoría, modelo mental y analogía**
 
 **¿Por qué es importante?** Porque el polimorfismo de subtipo permite que el mismo código funcione correctamente con cualquier subclase futura sin modificarse, y una anotación propia sin la retención correcta falla en silencio para quien la consume por reflexión, aunque el código compile sin ningún error.
 
 El tipo real del objeto en tiempo de ejecución decide qué versión sobreescrita se ejecuta, no el tipo declarado de la variable.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia del tema |
+|---|---|---|
+| `extends` y qué se hereda | Prerrequisito | la subclase usa miembros no privados de la superclase |
+| `super(...)` en el constructor | Núcleo | el constructor de la subclase inicializa la parte heredada |
+| sobreescritura y `@Override` | Núcleo | la subclase redefine un método con la misma firma |
+| polimorfismo de subtipo (dispatch dinámico) | Núcleo | el tipo real decide el método ejecutado |
+| `super.metodo()` | Variante | la subclase reutiliza y extiende la versión heredada |
+| `Object` y sus métodos | Integración | sobreescribir `toString`/`equals` heredados de `Object` |
+| `instanceof` y downcasting | Diagnóstico | refinar el tipo con patrón; un cast inválido lanza `ClassCastException` |
+| `final`/`sealed` para limitar herencia | Decisión | impedir o restringir quién puede heredar |
+| anotaciones: `@interface`, `@Target`, `@Retention` | Núcleo | metadatos que una herramienta interpreta |
+| retención y reflexión | Diagnóstico | sin `RUNTIME`, la reflexión no encuentra la anotación |
+
+El tema tiene dos ejes: la **herencia/polimorfismo** (filas 1–8) y las **anotaciones** (filas 9–10). Cada fila tiene su explicación individual a continuación.
+
+**`extends` y qué se hereda (prerrequisito).** `class Perro extends Animal` hace que `Perro` reciba los miembros **no privados** de `Animal` (campos `protected`/públicos y métodos). Lo `private` de la superclase existe en el objeto pero no es accesible por nombre desde la subclase. Una clase solo puede extender **una** superclase (herencia simple).
+
+**`super(...)` en el constructor (núcleo).** Al construir una subclase, primero debe construirse la parte heredada. `super(nombre)` llama al constructor de la superclase y debe ser la **primera** instrucción del constructor de la subclase; si no lo escribes y la superclase tiene constructor sin argumentos, Java inserta `super()` implícito. Si la superclase solo tiene constructores con parámetros, estás **obligado** a llamar `super(...)` explícitamente.
+
+**Sobreescritura y `@Override` (núcleo).** La subclase redefine un método heredado con la **misma firma** para especializar su comportamiento. `@Override` no es obligatorio, pero pide al compilador que verifique que realmente sobreescribe algo: si escribes mal el nombre o cambias la firma, en vez de crear un método nuevo sin querer, obtienes un error.
+
+**Polimorfismo de subtipo / dispatch dinámico (núcleo).** Cuando invocas un método sobreescrito a través de una referencia de la superclase, se ejecuta la versión del **tipo real** del objeto, decidido en tiempo de ejecución: `Animal a = new Perro(); a.hablar()` ejecuta el `hablar()` de `Perro`. Esto permite que código escrito contra `Animal` funcione con subclases futuras sin tocarse.
+
+**`super.metodo()` (variante).** Dentro de un método sobreescrito, `super.hablar()` invoca la versión **de la superclase**, no la propia. Sirve para extender el comportamiento heredado (hacer algo adicional) en vez de reemplazarlo del todo.
+
+**`Object` y sus métodos (integración).** Toda clase hereda de `Object`, que aporta `toString()`, `equals()`, `hashCode()`, etc. Sobreescribir `toString()` cambia cómo se imprime el objeto; es un caso real de sobreescritura heredada que usarás en casi todas tus clases.
+
+**`instanceof` y downcasting (diagnóstico).** Para tratar una referencia de superclase como su subclase concreta necesitas un *downcast*. Hazlo seguro con el patrón `if (a instanceof Perro p)`: si `a` no es un `Perro`, el bloque no entra. Un cast directo `(Perro) g` sobre un objeto que **no** es `Perro` compila pero lanza `ClassCastException` en ejecución.
+
+**`final`/`sealed` para limitar herencia (decisión).** `final class` impide que alguien herede de tu clase; `sealed class Animal permits Perro, Gato` **restringe** quién puede hacerlo a una lista cerrada, lo que además habilita la comprobación de exhaustividad en un `switch`. Son decisiones de diseño: abres la herencia solo a quien debe extender.
+
+**Anotaciones: `@interface`, `@Target`, `@Retention` (núcleo).** El `@` introduce una **anotación**: metadatos sobre una declaración, no código ejecutable. Declaras una propia con `@interface`; `@Target` limita dónde puede ponerse (método, clase, campo…) y `@Retention` cuánto vive: `SOURCE` (solo en el fuente), `CLASS` (en el `.class`) o `RUNTIME` (accesible por reflexión).
+
+**Retención y reflexión (diagnóstico).** Una herramienta que lee anotaciones en ejecución (un interceptor, un framework) solo las encuentra si su retención es `RUNTIME`. Declarar una anotación sin `@Retention(RUNTIME)` y esperar que la reflexión la vea es un fallo silencioso: el código compila pero `isAnnotationPresent(...)` devuelve `false`.
 
 `class Perro extends Animal` establece que `Perro` hereda todos los miembros no privados de `Animal`, pudiendo además sobreescribir (`@Override`) el comportamiento de métodos heredados para especializarlo: `Animal` define `hablar()` devolviendo `"..."`, y `Perro` sobreescribe ese mismo método para devolver `"Guau"`, de modo que invocar `hablar()` sobre una referencia de tipo `Animal` que en realidad apunta a un objeto `Perro` en tiempo de ejecución invoca la versión sobreescrita de `Perro`, no la de `Animal`, un comportamiento llamado polimorfismo de subtipo: el método que efectivamente se ejecuta se determina por el tipo real del objeto en tiempo de ejecución, no por el tipo declarado de la variable que lo referencia.
 
@@ -153,27 +282,38 @@ En este ejemplo, `@Auditable` tiene un elemento obligatorio llamado `accion`. Su
 
 **Analogía:** la herencia es como una plantilla base de un formulario que las subclases pueden personalizar, manteniendo la mayoría de los campos originales pero reescribiendo ciertas secciones específicas según sus necesidades particulares; `@Override` es como marcar explícitamente que una sección personalizada efectivamente reemplaza una sección existente de la plantilla original, y no una sección completamente nueva sin relación con la plantilla base.
 
-**Conceptos clave:** `extends`, `@Override`, polimorfismo de subtipo.
+**Conceptos clave:** `extends`, `super`, `@Override`, dispatch dinámico, `Object`, `instanceof`, `sealed`.
 
-**Código del ejemplo:**
+**Código del ejemplo (herencia):**
 
 ```java
-class Animal {
+sealed class Animal permits Perro, Gato {       // sealed: lista cerrada de subclases
+    protected final String nombre;
+    Animal(String nombre) { this.nombre = nombre; }
     String hablar() { return "..."; }
+    @Override public String toString() { return "Animal(" + nombre + ")"; } // override de Object
 }
-class Perro extends Animal {
-    @Override
-    String hablar() { return "Guau"; }
+final class Perro extends Animal {
+    Perro(String nombre) { super(nombre); }     // super(...): construye la parte heredada
+    @Override String hablar() { return "Guau"; }
+    String buscar() { return nombre + " busca"; }
+    @Override public String toString() { return "Perro(" + nombre + "): " + super.hablar(); }
+}
+final class Gato extends Animal {
+    Gato(String nombre) { super(nombre); }
+    @Override String hablar() { return "Miau"; }
 }
 ```
 
-**Implicación práctica:** El polimorfismo de subtipo permite que el mismo código que opera sobre una referencia `Animal` ejecute automáticamente el comportamiento específico de la subclase real en tiempo de ejecución, sin necesidad de conocer de antemano esa subclase concreta.
+**Implicación práctica:** `Animal a = new Perro("Fido"); a.hablar()` ejecuta el `hablar()` de `Perro` por dispatch dinámico; `super.hablar()` dentro de `Perro.toString()` reutiliza la versión heredada; y `(Perro) a` solo es seguro si `a` es realmente un `Perro` (compruébalo con `instanceof`).
 
 **Cuándo no usarlo:** crear una anotación propia con reflexión agrega una capa de indirección; para una única llamada de auditoría en un único lugar, invocar directamente el código de registro es más simple y más fácil de rastrear que una anotación que un interceptor debe descubrir.
 
 **Transferencia al proyecto integrador «Motor de asignación de entregas»:** Sustituye dos estrategias de asignación mediante un contrato común. Prueba ambas con el mismo conjunto de entregas y verifica invariantes compartidas sin depender de detalles de una subclase.
 
 #### Practica
+
+**Paso 4 · Demostración guiada desde cero**
 
 **Desde cero:** parte de una carpeta vacía y prepara la estructura.
 
@@ -194,7 +334,7 @@ package academia.animales;
 
 final class Main {
     public static void main(String[] args) {
-        Animal animal = new Perro();
+        Animal animal = new Perro("Fido");
         System.out.println(animal.hablar());
     }
 }
@@ -224,6 +364,8 @@ java -cp out academia.auditoria.Auditoria
 
 **Resultado esperado:** la primera ejecución imprime `Guau` y la segunda `true`.
 
+**Paso 5 · Práctica guiada**
+
 **Fallo deliberado:** elimina `@Retention(RetentionPolicy.RUNTIME)` de `@Auditable`, recompila `Auditable.java` y `Auditoria.java`, y vuelve a ejecutar. El código compila igual, pero la consulta por reflexión imprime `false`: la anotación ya no está disponible en ejecución, aunque siga presente en el código fuente.
 
 **Pista:** si después de quitar la retención el programa sigue imprimiendo `true`, estás ejecutando una versión anterior de la clase; borra `out` y recompila. **Resultado esperado:** identificas que la causa es la política de retención, no el `@Target`.
@@ -241,70 +383,161 @@ cd app && mvn test
 
 El arquetipo valida Maven o Gradle, pero no copia estas clases: pégalas en `src/main/java/academia/...` del proyecto generado para ejecutarlas con `mvn test`.
 
+Ahora reúne los subtemas de herencia en un `Demo` ejecutable. Crea `src/main/java/academia/animales/Demo.java` con las clases `sealed Animal`/`Perro`/`Gato` del ejemplo y este `main`:
+
+```java
+public class Demo {
+    public static void main(String[] args) {
+        Animal a = new Perro("Fido");                 // declarado Animal, real Perro
+        System.out.println("dinamico=" + a.hablar()); // dispatch dinámico
+        System.out.println("toString=" + a);          // override de Object
+        if (a instanceof Perro p) System.out.println("cast=" + p.buscar());  // downcast seguro
+        Animal g = new Gato("Tom");
+        try { Perro mal = (Perro) g; }                 // cast inválido en runtime
+        catch (ClassCastException e) { System.out.println("ClassCastException ok"); }
+    }
+}
+```
+
+```bash
+javac -d out src/main/java/academia/animales/Demo.java
+java -cp out academia.animales.Demo
+```
+
+**Salida esperada (verificada con Temurin 27.0.1):**
+
+```text
+dinamico=Guau
+toString=Perro(Fido): ...
+cast=Fido busca
+ClassCastException ok
+```
+
+`dinamico=Guau` es el dispatch por tipo real; `toString` usó la sobreescritura de `Object` y, dentro, `super.hablar()` devolvió `...`; `instanceof Perro p` permitió el downcast seguro a `buscar()`; y castear un `Gato` a `Perro` lanzó `ClassCastException`. **Fallo deliberado:** crea `class Loro extends Animal {}` sin añadir `Loro` al `permits`; no compila (`class is not allowed to extend sealed class`). Añádelo a `permits` y declara `Loro` como `final` para resolverlo.
+
 #### Aplica
 
-Agrega una tercera subclase de `Animal` (por ejemplo `Gato`) y confirma que invocar `hablar()` sobre las tres referencias `Animal` ejecuta la versión correcta de cada una; agrega una segunda anotación propia con `@Target(ElementType.FIELD)`.
+**Paso 6 · Práctica independiente**
+
+Agrega una segunda anotación propia con `@Target(ElementType.FIELD)` y colócala sobre un campo; confirma que no compila si intentas usarla sobre un método. Explica, en una frase, por qué `@Target` cambia dónde puede aplicarse una anotación.
+
+**Paso 7 · Cierre**
 
 **Checklist de salida.**
 
-- [ ] `java -cp out academia.animales.Main` imprime `Guau` mediante una referencia `Animal`.
-- [ ] `@Override` está presente y el compilador acepta la sobreescritura.
-- [ ] `Auditoria` imprime `true` con `@Retention(RUNTIME)`.
-- [ ] Al quitar la retención y recompilar, `Auditoria` imprime `false` y explicas por qué.
-- [ ] La tercera subclase responde con su propia versión de `hablar()`.
-- [ ] La segunda anotación declara `@Target(ElementType.FIELD)` y compila.
+- [ ] `Demo` imprime `dinamico=Guau`, `toString=Perro(Fido): ...`, `cast=Fido busca` y `ClassCastException ok`.
+- [ ] `super(nombre)` inicializa la parte heredada y `super.hablar()` reutiliza la versión de la superclase.
+- [ ] `toString()` sobreescribe el método heredado de `Object`.
+- [ ] `instanceof Perro p` hace un downcast seguro; `(Perro) g` sobre un `Gato` lanza `ClassCastException`.
+- [ ] Añadir una subclase fuera de `permits` no compila (sealed).
+- [ ] `Auditoria` imprime `true` con `@Retention(RUNTIME)`; sin la retención, `false`.
 
-**Si falla.** Si la tercera subclase no cambia la salida, revisa que el objeto real sea de esa subclase y no una instancia de `Animal`. Si la segunda anotación no compila, su `@Target` debe incluir `ElementType.FIELD` y su uso debe estar sobre un campo, no sobre un método.
+**Si falla.** Si `dinamico` no es `Guau`, el objeto real no es `Perro`. Si el cast no lanza `ClassCastException`, no estás casteando un `Gato` a `Perro`. Si la subclase nueva compila sin estar en `permits`, la clase base no es `sealed`. Si `Auditoria` siempre da `false`, revisa la retención.
 
-Guarda las clases, la anotación, la salida del polimorfismo y el diagnóstico del fallo de retención.
+Guarda las clases, la salida del polimorfismo, el `ClassCastException`, el error de `sealed` y el diagnóstico del fallo de retención.
 
-**Errores comunes:** herencia por reutilización sin relación "es un" real, olvidar `@Override`, y anotaciones sin la retención correcta para su consumidor.
+**Antes del siguiente tema:** explica por qué el tipo real determina la implementación de `hablar()`, para qué sirve `super(...)` frente a `super.metodo()`, y qué cambia cuando una anotación usa `RUNTIME`.
 
-**Fuente oficial:** [dev.java: clases y objetos](https://dev.java/learn/classes-objects/) y [The Java Tutorials: Interfaces and Inheritance](https://docs.oracle.com/javase/tutorial/java/IandI/).
+**Errores comunes:** heredar por reutilización sin una relación "es un" real; olvidar `@Override`; castear sin comprobar `instanceof`; extender una clase `sealed` sin estar en `permits`; y anotaciones sin la retención que su consumidor necesita.
+
+**Fuentes oficiales revisadas el 2026-11-01:** [dev.java: clases y objetos](https://dev.java/learn/classes-objects/), [JLS 8.1.1.2 — clases `sealed` (Java SE 27)](https://docs.oracle.com/javase/specs/jls/se27/html/jls-8.html#jls-8.1.1.2) y [The Java Tutorials: inheritance](https://docs.oracle.com/javase/tutorial/java/IandI/).
 
 ### Tema 3: Interfaces, clases abstractas y cuándo usar cada una · Intermedio · 50 min
 
-**Prerrequisito:** JDK 27, Maven y un editor. Comprueba `java --version`.
+**Paso 1 · Objetivo y preparación**
 
-**Al terminar podrás:** elegir entre interfaz y clase abstracta según si existe comportamiento compartido real, e implementar ambas con una jerarquía `Forma`.
+**Prerrequisito:** Temas 1–2 de este módulo, JDK 27 o posterior y un editor. Comprueba `java --version` y `javac --version`.
+
+**Al finalizar podrás:** elegir entre interfaz y clase abstracta; usar métodos `default`/`static`; implementar varias interfaces y resolver un `default` en conflicto; y explicar por qué una clase abstracta no se instancia.
 
 #### Aprende
 
-El sistema necesita que tipos no relacionados (un `Pajaro` y un `Avion`, por ejemplo) cumplan un contrato común (`Volador`) sin compartir jerarquía; y necesita que figuras geométricas relacionadas (`Circulo`, `Cuadrado`) compartan una implementación común (`describir()`) además de un método propio (`area()`).
+**Paso 2 · Contexto y caso profesional**
+
+**Caso profesional (escenario aplicado):** el modelo necesita que tipos no relacionados como `Pajaro` y `Avion` cumplan un contrato `Volador`, mientras figuras relacionadas pueden compartir comportamiento mediante `Forma`.
+
+**Paso 3 · Teoría, modelo mental y analogía**
 
 **¿Por qué es importante?** Elegir entre clase abstracta e interfaz según si existe comportamiento compartido real (clase abstracta) o solo un contrato puro (interfaz) produce un diseño de jerarquía de clases más claro y correctamente alineado con la relación real entre los tipos involucrados.
 
 Una interfaz es un contrato puro sin implementación; una clase abstracta combina comportamiento compartido real con métodos que cada subclase debe completar.
 
-Una interfaz (`interface Volador { void volar(); }`) define un contrato puro: qué métodos debe tener cualquier clase que la implemente, sin proporcionar ninguna implementación propia por defecto (salvo métodos `default` explícitamente marcados como tales, un caso especial más avanzado), permitiendo que clases completamente no relacionadas entre sí en su jerarquía de herencia (una clase `Pajaro` y una clase `Avion`, por ejemplo, sin ninguna relación de herencia común) implementen el mismo contrato `Volador`, algo que Java permite hacer con múltiples interfaces simultáneamente (`class Pajaro implements Volador, Comestible`), a diferencia de la herencia de clases, donde Java solo permite extender una única superclase.
+**Mapa de subtemas críticos**
 
-Una clase abstracta (`abstract class Forma { abstract double area(); void describir() {...} }`) es apropiada en cambio cuando existe comportamiento genuinamente compartido entre subclases relacionadas entre sí (el método `describir()`, con una implementación concreta compartida por todas las subclases de `Forma`), combinado con métodos abstractos que cada subclase concreta debe implementar por su cuenta (`area()`, sin implementación en la clase abstracta, dado que el cálculo específico depende de qué forma geométrica concreta sea cada subclase). La elección entre ambas se resume en si existe comportamiento compartido real que valga la pena centralizar (clase abstracta) frente a un contrato puro que clases potencialmente no relacionadas deben cumplir (interfaz).
+| Subtema | Papel | Evidencia del tema |
+|---|---|---|
+| interfaz como contrato | Núcleo | `Volador` define `volar()` sin implementarlo |
+| métodos `default` y `static` en interfaz | Variante | una interfaz puede traer implementación parcial |
+| implementación múltiple | Núcleo | una clase implementa varias interfaces a la vez |
+| colisión de `default` (diamante) | Diagnóstico | dos `default` homónimos obligan a resolver con `Interfaz.super` |
+| clase abstracta y método abstracto | Núcleo | `Forma` comparte `describir()` y deja `area()` sin implementar |
+| clase abstracta no instanciable | Límite | `new Forma()` no compila |
+| interfaz frente a clase abstracta | Decisión | contrato puro frente a comportamiento compartido real |
+| herencia simple frente a múltiples interfaces | Límite | una sola superclase, varias interfaces |
+| interfaz funcional | Integración | una interfaz de un solo método se usa como lambda (Módulo 20) |
 
-**Analogía:** una interfaz es como un contrato de servicio que múltiples empresas completamente distintas y no relacionadas entre sí pueden firmar, comprometiéndose a ofrecer ciertos servicios específicos sin que el contrato les dicte cómo implementarlos internamente; una clase abstracta es como una franquicia que comparte cierta infraestructura y procedimientos comunes reales entre todas sus sucursales, dejando que cada sucursal específica implemente únicamente los detalles particulares de su operación local.
+Cada fila tiene su explicación individual a continuación.
 
-**Conceptos clave:** contrato sin implementación, comportamiento compartido parcial, múltiple implementación de interfaces.
+**Interfaz como contrato (núcleo).** `interface Volador { void volar(); }` declara **qué** debe ofrecer quien la implemente, sin decir **cómo**. Clases sin relación de herencia entre sí (`Pajaro`, `Avion`) pueden cumplir el mismo contrato.
+
+**Métodos `default` y `static` en interfaz (variante).** Una interfaz puede traer implementación: un método `default` da un comportamiento que las clases heredan sin escribirlo (y pueden sobreescribir), y un método `static` pertenece a la interfaz misma (`Volador.nulo()`). Esto permite evolucionar una interfaz sin romper a sus implementadores.
+
+**Implementación múltiple (núcleo).** Una clase puede implementar **varias** interfaces: `class Pato implements Volador, Nadador`. A diferencia de la herencia de clases (una sola superclase), aquí no hay límite, porque las interfaces son contratos, no estado heredado.
+
+**Colisión de `default` (diamante, diagnóstico).** Si dos interfaces aportan un `default` con la **misma firma**, la clase que implementa ambas está **obligada** a resolver el conflicto sobreescribiendo el método; dentro puede elegir una versión con `Volador.super.descripcion()`. Si no lo resuelve, no compila. Es la forma controlada en que Java evita el "problema del diamante".
+
+**Clase abstracta y método abstracto (núcleo).** `abstract class Forma` combina comportamiento **compartido real** (`describir()`, ya implementado) con métodos **abstractos** (`area()`, que cada subclase concreta define). Sirve cuando hay código común que vale la pena centralizar entre subclases relacionadas.
+
+**Clase abstracta no instanciable (límite).** No puedes hacer `new Forma()`: una clase abstracta no se instancia directamente (`error: Forma is abstract; cannot be instantiated`). Solo se crean objetos de sus subclases concretas, que completan los métodos abstractos.
+
+**Interfaz frente a clase abstracta (decisión).** Usa **interfaz** cuando solo necesitas un contrato que tipos potencialmente no relacionados deban cumplir; usa **clase abstracta** cuando haya comportamiento compartido real entre subclases emparentadas. Elegir mal duplica código común o fuerza una herencia que no corresponde.
+
+**Herencia simple frente a múltiples interfaces (límite).** Una clase extiende **una** superclase pero implementa **muchas** interfaces. Si necesitas "combinar" capacidades de orígenes distintos, se hace con interfaces, no con herencia múltiple de clases (que Java no permite).
+
+**Interfaz funcional (integración).** Una interfaz con un **único** método abstracto (como `Volador` si solo tuviera `volar()`) es una *interfaz funcional* y puede implementarse con una lambda. Es el puente hacia el Módulo 20; aquí basta reconocer que `Volador.nulo()` devuelve una lambda `() -> {}` que cumple el contrato.
+
+**Analogía (con su límite):** una interfaz es como un contrato de servicio que empresas distintas y no relacionadas pueden firmar, sin que les dicte cómo implementarlo; una clase abstracta es como una franquicia que comparte infraestructura real entre sus sucursales y deja que cada una complete sus detalles. La analogía ayuda a decidir cuál usar; no explica el conflicto de `default` ni por qué una abstracta no se instancia, que son reglas del lenguaje.
+
+**Conceptos clave:** contrato sin implementación, `default`/`static`, implementación múltiple, diamante, clase abstracta no instanciable.
 
 **Código del ejemplo:**
 
 ```java
 interface Volador {
-    void volar();
+    void volar();                                          // contrato
+    default String descripcion() { return "puede volar"; } // default: implementación en la interfaz
+    static Volador nulo() { return () -> {}; }             // static de interfaz
 }
-class Pajaro implements Volador {
-    public void volar() { System.out.println("Vuela"); }
+interface Nadador {
+    default String descripcion() { return "puede nadar"; }
 }
 
 abstract class Forma {
-    abstract double area();              // sin implementación: cada subclase la define
-    void describir() { System.out.println("Área: " + area()); } // con implementación, compartida
+    abstract double area();                                // cada subclase la define
+    void describir() { System.out.println("area=" + area()); } // compartido
+}
+final class Circulo extends Forma {
+    private final double r;
+    Circulo(double r) { this.r = r; }
+    @Override double area() { return Math.PI * r * r; }
+}
+
+// Implementa DOS interfaces con un default homónimo: debe resolver el diamante.
+final class Pato implements Volador, Nadador {
+    @Override public void volar() {}
+    @Override public String descripcion() {
+        return Volador.super.descripcion() + " y " + Nadador.super.descripcion();
+    }
 }
 ```
 
-**Implicación práctica:** Elegir mal entre interfaz y clase abstracta duplica comportamiento compartido real entre subclases relacionadas, o fuerza una relación de herencia innecesaria donde solo hacía falta un contrato puro.
+**Implicación práctica:** `Circulo` reutiliza `describir()` de la clase abstracta y solo define `area()`; `Pato` combina dos contratos y resuelve el `default` en conflicto con `Interfaz.super`. Elegir mal entre interfaz y clase abstracta duplica comportamiento compartido o fuerza una herencia innecesaria.
 
 **Transferencia al proyecto integrador «Motor de asignación de entregas»:** Define una interfaz de asignación y decide qué comportamiento merece una base abstracta. Una implementación falsa debe poder probar el consumidor sin heredar campos que no necesita.
 
 #### Practica
+
+**Paso 4 · Demostración guiada desde cero**
 
 **Desde cero:** parte de una carpeta vacía y prepara la estructura.
 
@@ -314,46 +547,49 @@ cd ejemplo-interfaz-abstracta
 mkdir -p src/main/java/academia/formas
 ```
 
-**Crea** `src/main/java/academia/formas/Formas.java`: pega el código del ejemplo con `package academia.formas;` al inicio y añade debajo las subclases concretas y el `main`:
+**Crea** `src/main/java/academia/formas/Formas.java`: pega el código del ejemplo (las interfaces `Volador`/`Nadador`, la `abstract class Forma`, `Circulo` y `Pato`) con `package academia.formas;` al inicio, y añade este `main`:
 
 ```java
-final class Circulo extends Forma {
-    private final double radio;
-    Circulo(double radio) { this.radio = radio; }
-    double area() { return Math.PI * radio * radio; }
-}
-
-final class Cuadrado extends Forma {
-    private final double lado;
-    Cuadrado(double lado) { this.lado = lado; }
-    double area() { return lado * lado; }
-}
-
-final class MainFormas {
+public final class Formas {
     public static void main(String[] args) {
-        Forma circulo = new Circulo(2);
-        Forma cuadrado = new Cuadrado(3);
-        circulo.describir();
-        cuadrado.describir();
-        new Pajaro().volar();
+        Forma f = new Circulo(2);
+        f.describir();                                  // reutiliza describir(), define area()
+        System.out.println(new Pato().descripcion());   // diamante resuelto
+        System.out.println(Volador.nulo().descripcion()); // static + lambda
     }
 }
 ```
 
-**Ejecuta el ejemplo** (compila el archivo y ejecuta `describir()` sobre cada forma):
+**Ejecuta el ejemplo:**
 
 ```bash
 javac -d out src/main/java/academia/formas/Formas.java
-java -cp out academia.formas.MainFormas
+java -cp out academia.formas.Formas
 ```
 
-**Resultado esperado:** dos líneas de área (`12.566370614359172` y `9.0`) y luego `Vuela`.
+**Salida esperada (verificada con Temurin 27.0.1):**
 
-**Fallo deliberado:** añade `Forma forma = new Forma();` dentro del `main` y recompila. El compilador rechaza la instanciación directa con un error del tipo "Forma is abstract; cannot be instantiated", porque una clase abstracta exige una subclase concreta.
+```text
+area=12.566370614359172
+puede volar y puede nadar
+puede volar
+```
 
-**Pista:** borra esa línea después de leer el error. **Resultado esperado:** el compilador rechaza la instanciación directa y exige una subclase concreta.
+Léela subtema por subtema: `Circulo` reutilizó `describir()` de la abstracta y aportó su `area()`; `Pato` resolvió el `default` en conflicto combinando ambas interfaces con `Interfaz.super`; y `Volador.nulo()` (método `static`) devolvió una lambda cuyo `default descripcion()` imprime `puede volar`.
 
-**Si falla.** Si `javac` dice que `Forma` no es abstracta o que falta `area()`, revisa que `Circulo` y `Cuadrado` la implementen. Si `MainFormas` no se encuentra, comprueba que está en el mismo archivo y paquete. Si el área del círculo no coincide, recuerda que `Math.PI` multiplica el radio al cuadrado, no el diámetro.
+**Paso 5 · Práctica guiada**
+
+**Fallo deliberado 1 — abstracta no instanciable:** añade `Forma forma = new Forma();` dentro del `main` y recompila:
+
+```text
+error: Forma is abstract; cannot be instantiated
+```
+
+Borra esa línea: una clase abstracta exige una subclase concreta.
+
+**Fallo deliberado 2 — diamante sin resolver:** en `Pato`, elimina la sobreescritura de `descripcion()`. No compila, porque hereda dos `default` homónimos de `Volador` y `Nadador` y el compilador exige que la clase resuelva el conflicto. Restaura el método con `Volador.super.descripcion()`.
+
+**Si falla.** Si `javac` dice que falta `area()`, revisa que `Circulo` la implemente. Si no aparece el error del diamante, confirma que ambas interfaces declaran `descripcion()` como `default`. Si el área no coincide, recuerda que `Math.PI` multiplica el radio al cuadrado.
 
 **También puedes verificar el toolchain dentro de un proyecto Maven:**
 
@@ -366,40 +602,86 @@ cd app && mvn test
 
 #### Aplica
 
+**Paso 6 · Práctica independiente**
+
 Agrega una segunda implementación de `Volador` (por ejemplo `Avion`, sin relación de herencia con `Pajaro`) y una tercera subclase de `Forma` (`Triangulo`); confirma que `describir()` funciona igual para las tres sin reescribirlo.
+
+**Paso 7 · Cierre**
 
 **Checklist de salida.**
 
 - [ ] `Formas.java` compila con `javac -d out` y conserva el paquete `academia.formas`.
-- [ ] `java -cp out academia.formas.MainFormas` imprime las dos áreas y `Vuela`.
-- [ ] `new Forma()` no compila y sabes explicar por qué.
-- [ ] `Avion` implementa `Volador` sin heredar de `Pajaro`.
-- [ ] `Triangulo` implementa `area()` y reutiliza `describir()` sin reescribirlo.
-- [ ] Distingues qué comportamiento pertenece a la interfaz y cuál a la clase abstracta.
+- [ ] La ejecución imprime `area=12.566...`, `puede volar y puede nadar` y `puede volar`.
+- [ ] `new Forma()` no compila (`Forma is abstract; cannot be instantiated`).
+- [ ] Quitar la sobreescritura de `descripcion()` en `Pato` no compila (diamante sin resolver).
+- [ ] `Circulo` define `area()` y reutiliza `describir()` sin reescribirlo.
+- [ ] Distingues qué va en la interfaz (`default`/`static`) y qué en la clase abstracta.
 
-**Si falla.** Si `Avion` no compila, revisa que declare `implements Volador` y que `volar()` sea público. Si `Triangulo` no reutiliza `describir()`, está heredando de otra clase o no extiende `Forma`. Si la salida mezcla áreas, comprueba que cada subclase calcula con sus propias dimensiones.
+**Si falla.** Si no aparece el error de abstracta, revisa que `Forma` sea `abstract`. Si no aparece el del diamante, confirma que ambas interfaces declaran `descripcion()` como `default`. Si el área no coincide, `Math.PI` multiplica el radio al cuadrado.
 
-Guarda las clases, la salida de `describir()` para cada forma y el error de instanciación directa.
+Guarda las clases, la salida de `describir()`/`descripcion()`, el error de instanciación directa y el del diamante.
 
-**Errores comunes:** usar clase abstracta cuando bastaba una interfaz, y duplicar comportamiento compartido en cada implementación de una interfaz en vez de centralizarlo en una clase abstracta.
+**Antes del siguiente tema:** justifica qué relación expresa `implements Volador`, por qué una abstracta no se instancia, y cómo se resuelve un `default` en conflicto.
 
-**Fuente oficial:** [dev.java: clases y objetos](https://dev.java/learn/classes-objects/) y [The Java Tutorials: Interfaces and Inheritance](https://docs.oracle.com/javase/tutorial/java/IandI/).
+**Errores comunes:** usar clase abstracta cuando bastaba una interfaz; duplicar comportamiento compartido en cada implementación en vez de centralizarlo; intentar `new` sobre una abstracta; y dejar sin resolver dos `default` homónimos.
+
+**Fuentes oficiales revisadas el 2026-11-01:** [dev.java: interfaces](https://dev.java/learn/interfaces/), [JLS 9.4 — métodos de interfaz y `default` (Java SE 27)](https://docs.oracle.com/javase/specs/jls/se27/html/jls-9.html#jls-9.4) y [The Java Tutorials: interfaces](https://docs.oracle.com/javase/tutorial/java/IandI/).
 
 ### Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso · Intermedio · 55 min
 
-**Prerrequisito:** JDK 27, Maven y un editor. Comprueba `java --version`.
+**Paso 1 · Objetivo y preparación**
 
-**Al terminar podrás:** distinguir sobrecarga (varias firmas, mismo nombre) de sobreescritura (Tema 2), y aplicar los cuatro niveles de visibilidad de Java.
+**Prerrequisito:** Temas 1–3 de este módulo, JDK 27 o posterior y un editor. Comprueba `java --version` y `javac --version`.
+
+**Al finalizar podrás:** distinguir sobrecarga de sobreescritura; predecir qué sobrecarga resuelve el compilador; usar covarianza del tipo de retorno; y aplicar los cuatro niveles de visibilidad con criterio de mínimo privilegio.
 
 #### Aprende
 
-Un servicio de tarifas necesita `sumar` para enteros y para decimales sin duplicar el nombre del método; y necesita que solo ciertas clases del mismo paquete puedan acceder a un campo interno, mientras otras partes del sistema no.
+**Paso 2 · Contexto y caso profesional**
+
+**Caso profesional (escenario de RutaFlow):** un servicio de tarifas necesita aceptar cantidades de tipos distintos sin duplicar el nombre del método, y mantener campos internos fuera del alcance de consumidores que no deben modificarlos.
+
+**Paso 3 · Teoría, modelo mental y analogía**
 
 **¿Por qué es importante?** Sobrecarga y sobreescritura resuelven problemas distintos (múltiples formas de invocar un método según sus argumentos, frente a redefinir el comportamiento heredado); los modificadores de acceso controlan con precisión granular quién puede ver y usar cada miembro de una clase.
 
 La sobrecarga se resuelve en tiempo de compilación según los tipos de los argumentos; la sobreescritura, en tiempo de ejecución según el tipo real del objeto.
 
 La sobrecarga (overload) define múltiples métodos con el mismo nombre pero distintas firmas (distinto número o tipo de parámetros) dentro de la misma clase: `int sumar(int a, int b)` y `double sumar(double a, double b)` son dos métodos distintos que el compilador resuelve según los tipos de los argumentos pasados en cada llamada específica, una decisión tomada en tiempo de compilación; la sobreescritura (override, Tema 2) redefine el comportamiento de un método heredado con exactamente la misma firma en una subclase, una decisión resuelta en tiempo de ejecución según el tipo real del objeto.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia del tema |
+|---|---|---|
+| sobrecarga: misma firma de nombre, distinta de parámetros | Núcleo | `sumar(int,int)` y `sumar(double,double)` coexisten |
+| resolución de sobrecarga (compilación) | Diagnóstico | `tipo(5)`, `tipo(5L)`, `tipo("x")` eligen `int`/`long`/`Object` |
+| sobreescritura (compárese con Tema 2) | Prerrequisito | misma firma exacta, resuelta por tipo real |
+| covarianza del tipo de retorno | Variante | la subclase puede devolver un subtipo del retorno heredado |
+| `private` | Núcleo | solo la propia clase; acceder desde fuera no compila |
+| package-private (sin modificador) | Núcleo | visible en el mismo paquete |
+| `protected` | Núcleo | mismo paquete y subclases (aun en otro paquete) |
+| `public` | Núcleo | accesible desde cualquier lugar |
+| mínimo privilegio | Decisión | exponer lo menos posible para proteger invariantes |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Sobrecarga (núcleo).** Varios métodos con el **mismo nombre** y **distinta lista de parámetros** (número o tipos) en la misma clase. El tipo de retorno **no** distingue una sobrecarga: cambiar solo el retorno no compila. `sumar(int,int)` y `sumar(double,double)` son dos métodos distintos.
+
+**Resolución de sobrecarga en compilación (diagnóstico).** El compilador elige la sobrecarga por los **tipos de los argumentos**, siguiendo un orden: primero coincidencia exacta, luego ampliación (*widening*, `int→long`), luego autoboxing, y por último varargs. Por eso `tipo(5)` elige `int`, `tipo(5L)` elige `long` y `tipo("x")` elige `Object`. Entender este orden evita sorpresas cuando una llamada acaba en una sobrecarga que no esperabas.
+
+**Sobreescritura (prerrequisito, del Tema 2).** Redefine un método heredado con la **misma firma exacta**; se resuelve en ejecución por el tipo real. La clave para no confundirla con la sobrecarga: sobrecarga = distinta firma en la misma clase (compilación); sobreescritura = misma firma en una subclase (ejecución).
+
+**Covarianza del tipo de retorno (variante).** Al sobreescribir, la subclase puede declarar un tipo de retorno **más específico** que el heredado: si `Base.crear()` devuelve `Object`, `Sub.crear()` puede devolver `String` (subtipo). Esto es legal y útil; lo contrario (un retorno más general) no lo es.
+
+**`private` (núcleo).** Visible **solo dentro de la propia clase**. Acceder a un miembro `private` desde otra clase no compila (`has private access`). Es el nivel que protege los invariantes del Tema 1.
+
+**Package-private / sin modificador (núcleo).** Si no escribes modificador, el miembro es visible desde **cualquier clase del mismo paquete**, pero no desde otros paquetes. Es el nivel por defecto; útil para colaboración interna de un paquete.
+
+**`protected` (núcleo).** Amplía el acceso del package-private a las **subclases, incluso en otro paquete**. Sirve para miembros que una subclase legítimamente necesita, sin abrirlos a todo el mundo.
+
+**`public` (núcleo).** Accesible desde **cualquier lugar**. Resérvalo para la API que de verdad quieres ofrecer; todo lo público es un compromiso que otros pueden depender.
+
+**Mínimo privilegio (decisión).** Expón el **menor** nivel de visibilidad que el diseño requiera: empieza en `private` y amplía solo cuando haya una razón. Hacer todo `public` "por comodidad" rompe la encapsulación y vuelve costoso cambiar la implementación después.
 
 Los modificadores de acceso controlan la visibilidad de un miembro de una clase en círculos concéntricos de alcance creciente: `private` restringe el acceso exclusivamente a la propia clase; sin modificador explícito (package-private, el nivel por defecto cuando no se escribe ninguno) permite acceso desde cualquier clase del mismo paquete; `protected` extiende ese acceso también a subclases, incluso si están en otro paquete distinto; `public` permite acceso desde cualquier lugar sin restricción alguna, la misma jerarquía de visibilidad estudiada de forma más general en el Módulo 4 del track de JavaScript sobre encapsulación, aquí con la sintaxis y granularidad específica de Java.
 
@@ -421,6 +703,8 @@ double sumar(double a, double b) { return a + b; } // sobrecarga: mismo nombre, 
 **Transferencia al proyecto integrador «Motor de asignación de entregas»:** Separa sobrecarga de métodos de la sustitución de comportamiento del motor. Prueba llamadas por interfaz y restringe modificadores para impedir que un consumidor altere capacidad sin validación.
 
 #### Practica
+
+**Paso 4 · Demostración guiada desde cero**
 
 **Desde cero:** parte de una carpeta vacía y prepara la estructura.
 
@@ -461,23 +745,60 @@ java -cp out academia.tarifas.Main
 
 **Resultado esperado:** `5` y `6.25`, cada uno resuelto por la versión `int` o `double` correspondiente.
 
-**Fallo deliberado:** crea `src/main/java/academia/tarifas/Otra.java` con una clase del mismo paquete que intente leer `tarifa.saldo`, y compila junto a `Tarifa.java`:
+Ahora comprueba la **resolución de sobrecarga** y la **covarianza de retorno**. Añade a `Tarifa` tres sobrecargas `tipo` y una jerarquía con retorno covariante, y este `main`:
 
 ```java
-package academia.tarifas;
-
-final class Otra {
-    static double leer(Tarifa tarifa) {
-        return tarifa.saldo;
+public class Demo {
+    static String tipo(int x)    { return "int"; }
+    static String tipo(long x)   { return "long"; }
+    static String tipo(Object x) { return "Object"; }
+    static class Base { Object crear() { return "base"; } }
+    static class Sub extends Base { @Override String crear() { return "sub"; } } // covarianza
+    public static void main(String[] args) {
+        System.out.println("tipo(5)=" + tipo(5));       // exacto: int
+        System.out.println("tipo(5L)=" + tipo(5L));     // long
+        System.out.println("tipo(\"x\")=" + tipo("x")); // Object
+        System.out.println("covarianza=" + new Sub().crear());
     }
 }
 ```
 
-El compilador informa que `saldo` tiene acceso `private`: el campo solo es visible dentro de `Tarifa`, aunque `Otra` esté en el mismo paquete. Cambia `private` por `protected` y comprueba que el mismo paquete sí accede.
+```bash
+javac -d out src/main/java/academia/tarifas/Demo.java
+java -cp out academia.tarifas.Demo
+```
 
-**Pista:** el campo sin modificador (package-private) también sería accesible desde `Otra`; la diferencia entre ambos aparece al intentar acceder desde otro paquete. **Resultado esperado:** distingues qué nivel de visibilidad permite cada acceso.
+**Salida esperada (verificada con Temurin 27.0.1):**
 
-**Si falla.** Si `javac` exige un archivo por clase pública, recuerda que solo `Tarifa` es pública en `Tarifa.java` y `Main` es package-private. Si ambas llamadas imprimen `5`, revisa que los literales decimales tengan punto. Si el error de acceso no aparece, confirma que recompilaste después de cambiar el modificador.
+```text
+tipo(5)=int
+tipo(5L)=long
+tipo("x")=Object
+covarianza=sub
+```
+
+`tipo(5)` eligió el `int` exacto (no `long` ni `Object`); `tipo(5L)` el `long`; `tipo("x")` el `Object`. La covarianza permitió que `Sub.crear()` devuelva `String` (subtipo de `Object`).
+
+**Paso 5 · Práctica guiada**
+
+**Fallo deliberado — acceso `private`:** crea una clase del mismo paquete que intente leer un campo `private` de `Tarifa`:
+
+```java
+package academia.tarifas;
+final class Otra {
+    static double leer(Tarifa tarifa) { return tarifa.saldo; }  // saldo es private
+}
+```
+
+Compílala junto a `Tarifa.java`:
+
+```text
+error: saldo has private access in Tarifa
+```
+
+El campo solo es visible dentro de `Tarifa`, aunque `Otra` esté en el mismo paquete. Cambia `private` por package-private (quita el modificador) y comprueba que el mismo paquete sí accede; con `protected`, además lo verían las subclases de otro paquete.
+
+**Si falla.** Si no ves el error de acceso, recompilaste sin el cambio. Si `tipo(5)` elige `Object`, falta la sobrecarga `int` exacta. Si la covarianza no compila, el retorno de la subclase no es subtipo del heredado.
 
 **También puedes verificar el toolchain dentro de un proyecto Maven:**
 
@@ -490,24 +811,30 @@ cd app && mvn test
 
 #### Aplica
 
+**Paso 6 · Práctica independiente**
+
 Agrega una tercera sobrecarga de `sumar` que reciba tres argumentos, y una clase en otro paquete que confirme que el campo `protected` es accesible solo desde una subclase.
+
+**Paso 7 · Cierre**
 
 **Checklist de salida.**
 
-- [ ] `Tarifa.java` compila y `Main` imprime `5` y `6.25`.
-- [ ] La tercera sobrecarga recibe tres argumentos y se resuelve sin ambigüedad.
-- [ ] Acceder a `saldo` desde otra clase no compila mientras sea `private`.
-- [ ] `descuento` es accesible desde una subclase en otro paquete.
-- [ ] Una clase no subclase en otro paquete no accede a `descuento`.
-- [ ] Explicas la diferencia entre sobrecarga y sobreescritura con un ejemplo de cada una.
+- [ ] `Tarifa` resuelve `sumar(int,int)`→`5` y `sumar(double,double)`→`6.25`.
+- [ ] `tipo(5)`→`int`, `tipo(5L)`→`long`, `tipo("x")`→`Object` (resolución por tipo).
+- [ ] La covarianza permite que `Sub.crear()` devuelva `String` en vez de `Object`.
+- [ ] Acceder a un campo `private` desde otra clase no compila (`has private access`).
+- [ ] `protected` es accesible desde una subclase en otro paquete; package-private no.
+- [ ] Distingues sobrecarga (compilación, misma clase) de sobreescritura (ejecución, subclase).
 
-**Si falla.** Si la sobrecarga de tres argumentos no se resuelve, revisa el número de argumentos y sus tipos. Si la subclase en otro paquete no compila, `Tarifa` debe ser `public` y no `final`, y `descuento` debe seguir siendo `protected`. Si una no subclase accede a `descuento`, el campo es `public` o está en el mismo paquete por error.
+**Si falla.** Si `tipo(5)` elige `Object`, falta la sobrecarga `int`. Si la covarianza no compila, el retorno no es subtipo. Si no ves el error de `private`, recompilaste sin el cambio. Si la subclase de otro paquete no ve `protected`, `Tarifa` debe ser `public` y no `final`.
 
-Guarda las sobrecargas, la salida de cada resolución y el error de acceso al campo `private`.
+Guarda las sobrecargas, la salida de cada resolución, la covarianza y el error de acceso al campo `private`.
 
-**Errores comunes:** confundir sobrecarga con sobreescritura, hacer todo `public` por comodidad, y setters sin reglas que rompan invariantes.
+**Antes del siguiente tema:** explica por qué `sumar(int,int)` y `sumar(double,double)` son sobrecargas, qué debe mantenerse igual para que sea sobreescritura, y en qué orden resuelve el compilador una sobrecarga.
 
-**Fuente oficial:** [dev.java: clases y objetos](https://dev.java/learn/classes-objects/) y [The Java Tutorials: Interfaces and Inheritance](https://docs.oracle.com/javase/tutorial/java/IandI/).
+**Errores comunes:** confundir sobrecarga con sobreescritura; creer que el tipo de retorno distingue una sobrecarga; hacer todo `public` por comodidad; y exponer campos con más visibilidad de la necesaria.
+
+**Fuentes oficiales revisadas el 2026-11-01:** [JLS 15.12.2 — resolución de sobrecarga (Java SE 27)](https://docs.oracle.com/javase/specs/jls/se27/html/jls-15.html#jls-15.12.2), [JLS 6.6 — control de acceso (Java SE 27)](https://docs.oracle.com/javase/specs/jls/se27/html/jls-6.html#jls-6.6) y [The Java Tutorials: access control](https://docs.oracle.com/javase/tutorial/java/javaOO/accesscontrol.html).
 
 ## Construcción guiada del capítulo
 

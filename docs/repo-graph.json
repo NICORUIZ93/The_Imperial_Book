@@ -26,7 +26,7 @@
     },
     {
       "path": "AGENTS.md",
-      "lines": 47,
+      "lines": 92,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -34,6 +34,7 @@
         "# The Imperial Book: trabajo con contenido y experiencia de estudio",
         "## Skills para el objetivo de la academia",
         "## Contrato de estudio desde cero",
+        "### Profundidad obligatoria de temas y subtemas",
         "## Verificaci\u00f3n"
       ]
     },
@@ -90,8 +91,29 @@
       ]
     },
     {
+      "path": "MASTER-PROMPT.md",
+      "lines": 143,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# MASTER PROMPT \u2014 THE IMPERIAL BOOK \u00b7 RECONSTRUCCI\u00d3N COMPLETA",
+        "## PARTE 1 \u00b7 METODOLOG\u00cdA EDITORIAL",
+        "### 1.1 Las 12 pautas innegociables",
+        "### 1.2 Regla de preservaci\u00f3n",
+        "### 1.3 Formato de capstone",
+        "## PARTE 2 \u00b7 CURR\u00cdCULO COMPLETO \u2014 15 TRACKS PUBLICADOS + CURSOS APROBADOS",
+        "## PARTE 3 \u00b7 INSTRUCCIONES DE EJECUCI\u00d3N",
+        "### 3.1 Expandir cada tema al formato de 7 pasos",
+        "### 3.2 Orden de ejecuci\u00f3n por track",
+        "### 3.3 Puerta estricta antes de publicar un tema",
+        "## PARTE 4 \u00b7 VALIDACI\u00d3N Y ENTREGABLES",
+        "### 4.1 Criterios por track"
+      ]
+    },
+    {
       "path": "README.md",
-      "lines": 369,
+      "lines": 371,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -145,6 +167,26 @@
       ]
     },
     {
+      "path": "docs/AUDITORIA-COBERTURA-SPRING-20261101.md",
+      "lines": 157,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Auditor\u00eda de cobertura \u2014 Track Spring Boot vs temario profesional",
+        "## Resumen de huecos confirmados",
+        "### ALTA (prerrequisitos del n\u00facleo / imprescindibles)",
+        "### MEDIA",
+        "### BAJA",
+        "## Solapamientos a resolver",
+        "## Reparto de m\u00f3dulos entre tracks/cursos",
+        "## Estado de ejecuci\u00f3n del cierre de huecos",
+        "### Lote 1 (2026-11-01) \u2014 ALTA, fundamentos del n\u00facleo",
+        "### Lote 2 (2026-11-01/02) \u2014 ALTA restantes + MEDIA",
+        "### Pendiente (pr\u00f3ximos lotes)"
+      ]
+    },
+    {
       "path": "docs/CONTINUAR-7-PASOS.md",
       "lines": 76,
       "kind": "documentation",
@@ -157,6 +199,48 @@
         "## Los 5 temas que faltaban (resueltos)",
         "## C\u00f3mo encontrar los temas exactos",
         "## Verificaci\u00f3n tras cada tanda"
+      ]
+    },
+    {
+      "path": "docs/CONTINUIDAD-CHATGPT-PROMPTS-20261101.md",
+      "lines": 182,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Continuidad de ChatGPT: biblioteca, metodolog\u00eda y revisi\u00f3n de prompts",
+        "## Punto exacto del repositorio",
+        "## Qu\u00e9 ya est\u00e1 confirmado",
+        "## Qu\u00e9 contiene la tanda local sin commit",
+        "## Estado verificable de la metodolog\u00eda",
+        "## Revisi\u00f3n del prompt maestro",
+        "## Skills y l\u00edmites",
+        "## Validaci\u00f3n de esta tanda",
+        "## C\u00f3mo continuar",
+        "## Siguiente lote recomendado",
+        "## Continuaci\u00f3n: Java m\u00f3dulo 8",
+        "## Regla permanente: profundidad de subtemas"
+      ]
+    },
+    {
+      "path": "docs/ESTADO-REVISION-MINUCIOSA-20261101.md",
+      "lines": 985,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Estado verificable de la revisi\u00f3n minuciosa",
+        "## 1. Objetivo obligatorio",
+        "### Ejemplo normativo aportado por el usuario",
+        "## 2. Fuentes persistentes de la regla",
+        "## 3. Estado cuantitativo real",
+        "## 4. Trabajo realizado en esta tanda",
+        "### 4.1 Metodolog\u00eda y control",
+        "### 4.2 Java",
+        "#### Lambda como piloto cerrado",
+        "#### Java m\u00f3dulo 0",
+        "### 4.3 Android/Kotlin",
+        "### 4.4 Foundations"
       ]
     },
     {
@@ -212,7 +296,7 @@
     },
     {
       "path": "docs/METODOLOGIA-DE-APRENDIZAJE.md",
-      "lines": 45,
+      "lines": 72,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -220,10 +304,95 @@
         "# Metodolog\u00eda Aprende construyendo",
         "## Ciclo de cada cap\u00edtulo",
         "## Tama\u00f1o de las experiencias",
+        "## Profundidad de los subtemas",
         "## Regla para mostrar soluciones",
         "## Aplicaci\u00f3n en el lector",
         "## Mantenimiento tecnol\u00f3gico",
         "## Calidad del c\u00f3digo en toda la academia"
+      ]
+    },
+    {
+      "path": "docs/PLAN-CURSO-BUILD-MAVEN-GRADLE.md",
+      "lines": 161,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Plan curricular verificable: Build Tools \u2014 Maven y Gradle de cero a experto",
+        "## Motivo del curso separado",
+        "## Frontera con el track Java",
+        "## Secuencia completa",
+        "### M\u00f3dulo 0 \u00b7 Qu\u00e9 es construir software (sin herramienta)",
+        "### M\u00f3dulo 1 \u00b7 Maven: modelo de proyecto y `pom.xml`",
+        "### M\u00f3dulo 2 \u00b7 Maven: ciclo de vida, fases, goals y plugins",
+        "### M\u00f3dulo 3 \u00b7 Maven: dependencias, scopes y resoluci\u00f3n transitiva",
+        "### M\u00f3dulo 4 \u00b7 Maven: multi-m\u00f3dulo y reactor",
+        "### M\u00f3dulo 5 \u00b7 Gradle: modelo, tareas y el grafo de tareas",
+        "### M\u00f3dulo 6 \u00b7 Gradle: dependencias, configuraciones y cat\u00e1logos de versiones",
+        "### M\u00f3dulo 7 \u00b7 Gradle: multi-proyecto y convenciones"
+      ]
+    },
+    {
+      "path": "docs/PLAN-CURSO-DOCKER-KUBERNETES.md",
+      "lines": 287,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Plan curricular verificable: Docker y Kubernetes, de cero a experto",
+        "## Prop\u00f3sito",
+        "## Bloque I \u00b7 Fundamentos de contenedores y Docker",
+        "### M\u00f3dulo 0 \u00b7 Linux necesario para comprender contenedores",
+        "### M\u00f3dulo 1 \u00b7 Arquitectura Docker y primer contenedor",
+        "### M\u00f3dulo 2 \u00b7 Im\u00e1genes OCI y Dockerfile desde cero",
+        "### M\u00f3dulo 3 \u00b7 Builds profesionales y reproducibles",
+        "### M\u00f3dulo 4 \u00b7 Almacenamiento y persistencia en Docker",
+        "### M\u00f3dulo 5 \u00b7 Redes Docker en profundidad",
+        "### M\u00f3dulo 6 \u00b7 Docker Compose como entorno reproducible",
+        "### M\u00f3dulo 7 \u00b7 Registros y distribuci\u00f3n de im\u00e1genes",
+        "### M\u00f3dulo 8 \u00b7 Seguridad y operaci\u00f3n Docker"
+      ]
+    },
+    {
+      "path": "docs/PLAN-CURSO-JDBC-BASES-DATOS.md",
+      "lines": 159,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Plan curricular verificable: Bases de datos con Java (JDBC) de cero a experto",
+        "## Motivo del curso separado",
+        "## Frontera con los tracks Java y Spring Boot",
+        "## Secuencia completa",
+        "### M\u00f3dulo 0 \u00b7 El modelo de JDBC y la primera conexi\u00f3n",
+        "### M\u00f3dulo 1 \u00b7 Consultas: Statement, PreparedStatement y ResultSet",
+        "### M\u00f3dulo 2 \u00b7 SQL injection a fondo",
+        "### M\u00f3dulo 3 \u00b7 El patr\u00f3n DAO y el mapeo objeto-relacional a mano",
+        "### M\u00f3dulo 4 \u00b7 Transacciones, ACID y commit/rollback",
+        "### M\u00f3dulo 5 \u00b7 Niveles de aislamiento y anomal\u00edas de concurrencia",
+        "### M\u00f3dulo 6 \u00b7 Savepoints y transacciones anidadas l\u00f3gicas",
+        "### M\u00f3dulo 7 \u00b7 Pooling de conexiones"
+      ]
+    },
+    {
+      "path": "docs/PLAN-CURSO-MICROSERVICIOS.md",
+      "lines": 187,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Plan curricular verificable: Microservicios",
+        "## Prop\u00f3sito y frontera",
+        "## Secuencia completa",
+        "### M\u00f3dulo 0 \u00b7 Antes de distribuir: proceso, red y falacias",
+        "### M\u00f3dulo 1 \u00b7 Monolito modular antes de microservicios",
+        "### M\u00f3dulo 2 \u00b7 Dominio y l\u00edmites de servicio",
+        "### M\u00f3dulo 3 \u00b7 Descomposici\u00f3n y contratos evolutivos",
+        "### M\u00f3dulo 4 \u00b7 Comunicaci\u00f3n s\u00edncrona",
+        "### M\u00f3dulo 5 \u00b7 Mensajer\u00eda y arquitectura orientada a eventos",
+        "### M\u00f3dulo 6 \u00b7 Propiedad de datos y consistencia",
+        "### M\u00f3dulo 7 \u00b7 Outbox, idempotencia y entrega confiable",
+        "### M\u00f3dulo 8 \u00b7 Transacciones distribuidas y sagas"
       ]
     },
     {
@@ -270,7 +439,7 @@
     },
     {
       "path": "docs/PROMPT-MAESTRO-METODOLOGIA-EDUCATIVA.md",
-      "lines": 188,
+      "lines": 290,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -352,6 +521,27 @@
       ]
     },
     {
+      "path": "docs/TEMARIO-REFERENCIA-SPRING-PROFESIONAL.md",
+      "lines": 166,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Temario de referencia profesional \u2014 Spring / Spring Boot",
+        "## Fundamentos y n\u00facleo",
+        "## Web",
+        "## Datos",
+        "## Seguridad",
+        "## Calidad / Observabilidad",
+        "## Mensajer\u00eda",
+        "## Reactivo y concurrencia",
+        "## Resiliencia y consistencia",
+        "## Arquitectura",
+        "## Integraciones",
+        "## Producci\u00f3n y despliegue"
+      ]
+    },
+    {
       "path": "docs/app-flow-inspection-dedup.json",
       "lines": 8267,
       "kind": "project-file",
@@ -400,7 +590,17 @@
       "headings": []
     },
     {
-      "path": "docs/auditoria-profundidad-cobertura.md",
+      "path": "docs/archivo/README.md",
+      "lines": 10,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Archivo hist\u00f3rico de documentos de proceso"
+      ]
+    },
+    {
+      "path": "docs/archivo/auditoria-profundidad-cobertura.md",
       "lines": 235,
       "kind": "documentation",
       "symbols": [],
@@ -418,6 +618,89 @@
         "### P0 \u2014 Arreglar el instrumento de medici\u00f3n",
         "### P1 \u2014 Profundidad cr\u00edtica (Paso 4 ejecutable)",
         "### P2 \u2014 Cobertura: puerta de entrada"
+      ]
+    },
+    {
+      "path": "docs/archivo/continuacion-material-rutaflow.md",
+      "lines": 38,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Continuaci\u00f3n del material de Proyecto-RutaFlow",
+        "## Referencias examinadas",
+        "## Implementaci\u00f3n",
+        "## Evidencia y l\u00edmites"
+      ]
+    },
+    {
+      "path": "docs/archivo/integracion-biblioteca-externa-progreso.md",
+      "lines": 207,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Integraci\u00f3n de biblioteca externa y capturas \u2014 progreso",
+        "## Fase 1 \u2014 Capturas: revisi\u00f3n visual completa, integraci\u00f3n parcial",
+        "## Fase 2 \u2014 Biblioteca externa `/Volumes/Nicolas/03_Libros_Biblioteca/` (EN PROGRESO)",
+        "### C\u00f3mo retomar",
+        "### Cat\u00e1logo inicial de la sesi\u00f3n anterior",
+        "### Orden de prioridad sugerido (por impacto directo en tracks existentes)",
+        "## Hallazgos por integrar (se completa a medida que se revisan libros)",
+        "## Continuidad entre m\u00e1quinas \u2014 actualizaci\u00f3n 2026-10-13",
+        "## Siguiente acci\u00f3n concreta",
+        "## Verificaci\u00f3n del primer incremento",
+        "## Recuperar este incremento en otra PC",
+        "## Continuidad de Copilot \u2014 2026-10-30"
+      ]
+    },
+    {
+      "path": "docs/archivo/renovacion-cursos-2026-10-29.md",
+      "lines": 27,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Renovaci\u00f3n de cursos y experiencia de estudio",
+        "## Cambios entregados",
+        "## Cobertura de revisi\u00f3n",
+        "## Trabajo pendiente"
+      ]
+    },
+    {
+      "path": "docs/archivo/renovacion-primera-entrega.md",
+      "lines": 53,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Renovaci\u00f3n: portada y primera sesi\u00f3n",
+        "## Alcance entregado",
+        "## Alineaci\u00f3n de aprendizaje",
+        "## Verificaci\u00f3n realizada",
+        "## Fuentes primarias consultadas",
+        "## Siguientes lotes"
+      ]
+    },
+    {
+      "path": "docs/archivo/validacion-extensa-roadmaps.md",
+      "lines": 157,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Validaci\u00f3n extensa de los 14 tracks contra roadmaps oficiales 2026",
+        "## Tablero maestro: cobertura + profundidad por track",
+        "## Detalle por track: qu\u00e9 falta y con qu\u00e9 empezar",
+        "### foundations \u2014 \u26a0\ufe0f el m\u00e1s cr\u00edtico (puerta de entrada)",
+        "### ios \u2014 \u26a0\ufe0f profundidad cr\u00edtica (6/51 practicable)",
+        "### react \u2014 \u26a0\ufe0f profundidad cr\u00edtica (11/55 practicable)",
+        "### flutter \u2014 \u26a0\ufe0f profundidad (24/57) + 1 hueco",
+        "### java \u2014 profundidad (41/72)",
+        "### android \u2014 cobertura",
+        "### cloud \u2014 cobertura (amplitud enorme, bien)",
+        "### node \u2014 cobertura (casi completo)",
+        "### angular \u2014 cobertura (casi completo)"
       ]
     },
     {
@@ -562,18 +845,20 @@
     },
     {
       "path": "docs/biblioteca-externa-gaps-java.md",
-      "lines": 57,
+      "lines": 73,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
       "headings": [
         "# Huecos del track Java frente a la biblioteca externa",
-        "## Estado (2026-10-28)",
+        "## Estado (2026-11-01) \u2014 cruce actualizado con outlines reales",
         "## Libros cotejados",
         "## Veredicto general",
         "## Huecos reales (coinciden en 2+ libros) \u2014 candidatos a tema nuevo",
+        "## Ya resueltos (confirmados en el track, no son huecos)",
         "## Deliberadamente fuera de alcance (no son huecos)",
-        "## Propuesta de incorporaci\u00f3n (si se aprueba)"
+        "## Propuesta de incorporaci\u00f3n (prioridad alta)",
+        "## M\u00e9todo"
       ]
     },
     {
@@ -674,7 +959,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 2093,
+      "lines": 2259,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -682,26 +967,13 @@
     },
     {
       "path": "docs/code-visual-quality.md",
-      "lines": 28,
+      "lines": 29,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
       "headings": [
         "# Auditor\u00eda de c\u00f3digo y visuales",
         "## Regla editorial"
-      ]
-    },
-    {
-      "path": "docs/continuacion-material-rutaflow.md",
-      "lines": 38,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Continuaci\u00f3n del material de Proyecto-RutaFlow",
-        "## Referencias examinadas",
-        "## Implementaci\u00f3n",
-        "## Evidencia y l\u00edmites"
       ]
     },
     {
@@ -714,7 +986,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13991,
+      "lines": 14513,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -722,7 +994,7 @@
     },
     {
       "path": "docs/course-depth-review.md",
-      "lines": 1172,
+      "lines": 1216,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -755,7 +1027,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 48,
+      "lines": 62,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -826,27 +1098,6 @@
       ]
     },
     {
-      "path": "docs/integracion-biblioteca-externa-progreso.md",
-      "lines": 207,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Integraci\u00f3n de biblioteca externa y capturas \u2014 progreso",
-        "## Fase 1 \u2014 Capturas: revisi\u00f3n visual completa, integraci\u00f3n parcial",
-        "## Fase 2 \u2014 Biblioteca externa `/Volumes/Nicolas/03_Libros_Biblioteca/` (EN PROGRESO)",
-        "### C\u00f3mo retomar",
-        "### Cat\u00e1logo inicial de la sesi\u00f3n anterior",
-        "### Orden de prioridad sugerido (por impacto directo en tracks existentes)",
-        "## Hallazgos por integrar (se completa a medida que se revisan libros)",
-        "## Continuidad entre m\u00e1quinas \u2014 actualizaci\u00f3n 2026-10-13",
-        "## Siguiente acci\u00f3n concreta",
-        "## Verificaci\u00f3n del primer incremento",
-        "## Recuperar este incremento en otra PC",
-        "## Continuidad de Copilot \u2014 2026-10-30"
-      ]
-    },
-    {
       "path": "docs/inventario-imagenes.md",
       "lines": 389,
       "kind": "documentation",
@@ -885,6 +1136,22 @@
       ]
     },
     {
+      "path": "docs/java-m0-reconstruction-map.md",
+      "lines": 58,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Java M0 \u2014 mapa de reconstrucci\u00f3n",
+        "## Criterios aplicados",
+        "## Trabajo ejecutado \u2014 2026-11-02",
+        "## Inventario del m\u00f3dulo actual",
+        "## Hallazgos de dependencia y alcance",
+        "## Secuencia de trabajo propuesta (provisional)",
+        "## Fuentes t\u00e9cnicas verificadas para el bloque de compilaci\u00f3n"
+      ]
+    },
+    {
       "path": "docs/lesson-substance-baseline.json",
       "lines": 819,
       "kind": "project-file",
@@ -894,7 +1161,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 9710,
+      "lines": 10028,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -995,12 +1262,13 @@
     },
     {
       "path": "docs/migration-plan.md",
-      "lines": 195,
+      "lines": 228,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
       "headings": [
         "# Plan de migraci\u00f3n editorial",
+        "## Reconstrucci\u00f3n activa \u2014 corte 2026-11-02",
         "## Estado de las fases",
         "## Contrato de correspondencia: siete pasos \u2192 Aprende/Practica/Aplica",
         "## Cifras corregidas",
@@ -1008,7 +1276,8 @@
         "## Identidad: m\u00f3dulos, fragmentos y progreso",
         "## Spring Boot: mapa corregido (91 temas, 17 m\u00f3dulos)",
         "## Validaci\u00f3n por m\u00f3dulo",
-        "## Pr\u00f3ximo paso"
+        "## Pr\u00f3ximo paso",
+        "## Pr\u00f3ximo paso vigente"
       ]
     },
     {
@@ -1021,7 +1290,7 @@
     },
     {
       "path": "docs/official-learning-guides.json",
-      "lines": 22,
+      "lines": 23,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1064,7 +1333,7 @@
     },
     {
       "path": "docs/prerequisite-graph.json",
-      "lines": 12559,
+      "lines": 13033,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1072,7 +1341,7 @@
     },
     {
       "path": "docs/prerequisite-graph.md",
-      "lines": 40,
+      "lines": 42,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1114,34 +1383,6 @@
         "## Muestra de profundidad",
         "## Cobertura de pruebas de la aplicaci\u00f3n",
         "## C\u00f3mo usar los resultados"
-      ]
-    },
-    {
-      "path": "docs/renovacion-cursos-2026-10-29.md",
-      "lines": 27,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Renovaci\u00f3n de cursos y experiencia de estudio",
-        "## Cambios entregados",
-        "## Cobertura de revisi\u00f3n",
-        "## Trabajo pendiente"
-      ]
-    },
-    {
-      "path": "docs/renovacion-primera-entrega.md",
-      "lines": 53,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Renovaci\u00f3n: portada y primera sesi\u00f3n",
-        "## Alcance entregado",
-        "## Alineaci\u00f3n de aprendizaje",
-        "## Verificaci\u00f3n realizada",
-        "## Fuentes primarias consultadas",
-        "## Siguientes lotes"
       ]
     },
     {
@@ -1211,7 +1452,7 @@
     },
     {
       "path": "docs/seven-step-methodology.json",
-      "lines": 28826,
+      "lines": 29922,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1219,7 +1460,7 @@
     },
     {
       "path": "docs/seven-step-methodology.md",
-      "lines": 32,
+      "lines": 33,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1238,7 +1479,7 @@
     },
     {
       "path": "docs/specialization-outcomes.json",
-      "lines": 1325,
+      "lines": 1346,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1260,8 +1501,37 @@
       ]
     },
     {
+      "path": "docs/subtopic-depth-review.json",
+      "lines": 22152,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "docs/subtopic-depth-review.md",
+      "lines": 1177,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Revisi\u00f3n de profundidad de subtemas",
+        "## Cobertura por track",
+        "## Cola prioritaria",
+        "## Revisados"
+      ]
+    },
+    {
+      "path": "docs/subtopic-depth-reviewed.json",
+      "lines": 5018,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
       "path": "docs/temario-maestro-unificado.json",
-      "lines": 1119545,
+      "lines": 1119600,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1269,7 +1539,7 @@
     },
     {
       "path": "docs/temario-maestro-unificado.md",
-      "lines": 162043,
+      "lines": 162048,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1321,7 +1591,7 @@
     },
     {
       "path": "docs/topic-learning-quality.json",
-      "lines": 25373,
+      "lines": 26337,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1329,7 +1599,7 @@
     },
     {
       "path": "docs/topic-learning-quality.md",
-      "lines": 26,
+      "lines": 27,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1340,7 +1610,7 @@
     },
     {
       "path": "docs/topic-source-review.json",
-      "lines": 11059,
+      "lines": 11270,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1360,27 +1630,6 @@
         "## Las pruebas E2E no encuentran navegador o se quedan colgadas",
         "## Las credenciales locales son rechazadas",
         "## La validaci\u00f3n del repositorio falla"
-      ]
-    },
-    {
-      "path": "docs/validacion-extensa-roadmaps.md",
-      "lines": 157,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Validaci\u00f3n extensa de los 14 tracks contra roadmaps oficiales 2026",
-        "## Tablero maestro: cobertura + profundidad por track",
-        "## Detalle por track: qu\u00e9 falta y con qu\u00e9 empezar",
-        "### foundations \u2014 \u26a0\ufe0f el m\u00e1s cr\u00edtico (puerta de entrada)",
-        "### ios \u2014 \u26a0\ufe0f profundidad cr\u00edtica (6/51 practicable)",
-        "### react \u2014 \u26a0\ufe0f profundidad cr\u00edtica (11/55 practicable)",
-        "### flutter \u2014 \u26a0\ufe0f profundidad (24/57) + 1 hueco",
-        "### java \u2014 profundidad (41/72)",
-        "### android \u2014 cobertura",
-        "### cloud \u2014 cobertura (amplitud enorme, bien)",
-        "### node \u2014 cobertura (casi completo)",
-        "### angular \u2014 cobertura (casi completo)"
       ]
     },
     {
@@ -4264,6 +4513,14 @@
       "headings": []
     },
     {
+      "path": "examples/professional-bridges/microservices/Servidor.java",
+      "lines": 17,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
       "path": "examples/professional-bridges/node/pagina.mjs",
       "lines": 11,
       "kind": "example",
@@ -6208,7 +6465,7 @@
     },
     {
       "path": "scripts/audit_course_depth.py",
-      "lines": 147,
+      "lines": 148,
       "kind": "automation-script",
       "symbols": [
         "signals",
@@ -6311,6 +6568,28 @@
       "headings": []
     },
     {
+      "path": "scripts/audit_subtopic_depth.py",
+      "lines": 164,
+      "kind": "automation-script",
+      "symbols": [
+        "semantic_headings",
+        "broad_title",
+        "build",
+        "render",
+        "main"
+      ],
+      "imports": [
+        "__future__",
+        "argparse",
+        "json",
+        "re",
+        "collections",
+        "pathlib",
+        "audit_topic_learning_quality"
+      ],
+      "headings": []
+    },
+    {
       "path": "scripts/audit_topic_learning_quality.py",
       "lines": 259,
       "kind": "automation-script",
@@ -6379,7 +6658,7 @@
     },
     {
       "path": "scripts/build_prerequisite_graph.py",
-      "lines": 114,
+      "lines": 115,
       "kind": "automation-script",
       "symbols": [
         "topics_for",
@@ -6819,7 +7098,7 @@
     },
     {
       "path": "scripts/validate.sh",
-      "lines": 213,
+      "lines": 215,
       "kind": "automation-script",
       "symbols": [],
       "imports": [],
@@ -6860,7 +7139,7 @@
     },
     {
       "path": "scripts/validate_learning_priorities.py",
-      "lines": 93,
+      "lines": 94,
       "kind": "automation-script",
       "symbols": [],
       "imports": [
@@ -7031,7 +7310,7 @@
     },
     {
       "path": "web/e2e/academy.spec.ts",
-      "lines": 677,
+      "lines": 787,
       "kind": "project-file",
       "symbols": [],
       "imports": [
@@ -7090,7 +7369,7 @@
     },
     {
       "path": "web/public/content/android/modulo-0.md",
-      "lines": 663,
+      "lines": 787,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7636,7 +7915,7 @@
     },
     {
       "path": "web/public/content/angular/modulo-15.md",
-      "lines": 715,
+      "lines": 741,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7678,7 +7957,7 @@
     },
     {
       "path": "web/public/content/angular/modulo-2.md",
-      "lines": 760,
+      "lines": 815,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9328,7 +9607,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-0.md",
-      "lines": 482,
+      "lines": 505,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9664,7 +9943,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-0.md",
-      "lines": 324,
+      "lines": 428,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9673,14 +9952,14 @@
         "## Antes de comenzar: prepara tu primera sesi\u00f3n",
         "### Instala y comprueba",
         "## Aprende construyendo",
-        "### Tema 1: Del hardware al programa en ejecuci\u00f3n",
-        "#### El primer resultado que puedes repetir",
-        "#### Crea y ejecuta `saludo.py`",
-        "# Muestra un mensaje en la terminal.",
-        "#### Cambia el resultado y diagnostica un fallo",
-        "#### Transfiere lo aprendido y conserva evidencia",
-        "### Tema 2: Archivos, carpetas y rutas sin perderse",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+        "### Tema 1: Computador, sistema operativo, programa y proceso \u00b7 B\u00e1sico \u00b7 90 min",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
+        "#### Paso 2 \u00b7 Contexto y caso real",
+        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y mapa de subtemas",
+        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
+        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
+        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
+        "#### Paso 7 \u00b7 Cierre"
       ]
     },
     {
@@ -9853,7 +10132,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-3.md",
-      "lines": 709,
+      "lines": 734,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9874,7 +10153,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-4.md",
-      "lines": 1006,
+      "lines": 1035,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9895,7 +10174,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-5.md",
-      "lines": 555,
+      "lines": 594,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10315,7 +10594,7 @@
     },
     {
       "path": "web/public/content/java/modulo-0.md",
-      "lines": 835,
+      "lines": 1776,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10323,20 +10602,20 @@
         "# M\u00f3dulo 0: Sintaxis, tipos y el modelo de la JVM",
         "## Antes de comenzar: instala Java correctamente",
         "## Aprende construyendo",
-        "### Tema 1: Del c\u00f3digo fuente a la JVM \u00b7 B\u00e1sico \u00b7 35 min",
+        "### Tema 0: Instalar Eclipse Temurin JDK 27 en macOS, Windows y Ubuntu \u00b7 B\u00e1sico \u00b7 15 min",
         "#### Aprende",
         "#### Practica",
-        "#### Aplica",
-        "### Tema 2: public static void main \u2014 qu\u00e9 significa cada palabra \u00b7 B\u00e1sico \u00b7 30 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 3: JDK, JRE y JVM \u00b7 B\u00e1sico \u00b7 30 min"
+        "# macOS: instala Temurin 27 desde el cask oficial (gen\u00e9rico = versi\u00f3n m\u00e1s reciente).",
+        "# Verifica que el lanzador y el compilador respondan.",
+        "# Conserva las versiones y rutas en un archivo Markdown.",
+        "# Ubuntu/Debian: a\u00f1ade la clave y el repositorio oficial.",
+        "# Comprueba el JDK reci\u00e9n instalado.",
+        "# Conserva las versiones y rutas en un archivo Markdown."
       ]
     },
     {
       "path": "web/public/content/java/modulo-1.md",
-      "lines": 536,
+      "lines": 863,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10357,7 +10636,7 @@
     },
     {
       "path": "web/public/content/java/modulo-10.md",
-      "lines": 447,
+      "lines": 519,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10378,7 +10657,7 @@
     },
     {
       "path": "web/public/content/java/modulo-11.md",
-      "lines": 534,
+      "lines": 634,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10399,7 +10678,7 @@
     },
     {
       "path": "web/public/content/java/modulo-12.md",
-      "lines": 1393,
+      "lines": 1546,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10420,7 +10699,7 @@
     },
     {
       "path": "web/public/content/java/modulo-13.md",
-      "lines": 410,
+      "lines": 482,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10441,7 +10720,7 @@
     },
     {
       "path": "web/public/content/java/modulo-14.md",
-      "lines": 499,
+      "lines": 620,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10462,7 +10741,7 @@
     },
     {
       "path": "web/public/content/java/modulo-15.md",
-      "lines": 1065,
+      "lines": 1233,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10483,12 +10762,12 @@
     },
     {
       "path": "web/public/content/java/modulo-16.md",
-      "lines": 453,
+      "lines": 513,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
       "headings": [
-        "# M\u00f3dulo 16: JPA, Hibernate y FetchType.LAZY vs EAGER",
+        "# M\u00f3dulo 16: Mapear y optimizar persistencia con JPA e Hibernate",
         "## Aprende construyendo",
         "### Dos ejemplos: primero visible, luego real",
         "### Tema 1: Entidades y relaciones JPA \u00b7 Intermedio \u00b7 55 min",
@@ -10504,7 +10783,7 @@
     },
     {
       "path": "web/public/content/java/modulo-17.md",
-      "lines": 425,
+      "lines": 489,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10525,7 +10804,7 @@
     },
     {
       "path": "web/public/content/java/modulo-18.md",
-      "lines": 369,
+      "lines": 744,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10546,7 +10825,7 @@
     },
     {
       "path": "web/public/content/java/modulo-19.md",
-      "lines": 1002,
+      "lines": 1198,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10567,7 +10846,7 @@
     },
     {
       "path": "web/public/content/java/modulo-2.md",
-      "lines": 395,
+      "lines": 682,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10588,28 +10867,28 @@
     },
     {
       "path": "web/public/content/java/modulo-20.md",
-      "lines": 411,
+      "lines": 1673,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
       "headings": [
-        "# M\u00f3dulo 20: Java funcional \u2014 interfaces que componen comportamiento",
+        "# M\u00f3dulo 20: Lambdas y Java funcional \u2014 comportamiento con tipo",
         "## Aprende construyendo",
-        "### Tema 1: Las cuatro formas: Predicate, Function, Consumer y Supplier \u00b7 B\u00e1sico \u00b7 75 min",
+        "### Tema 1: Lambdas a fondo \u2014 tipo objetivo, captura y referencias a m\u00e9todos \u00b7 Intermedio \u00b7 120 min",
         "#### Aprende",
         "#### Practica",
         "#### Aplica",
-        "### Tema 2: Componer sin anidar: andThen, compose, negate y reglas encadenadas \u00b7 Intermedio \u00b7 75 min",
+        "### Tema 2: Las cuatro formas: Predicate, Function, Consumer y Supplier \u00b7 B\u00e1sico \u00b7 75 min",
         "#### Aprende",
         "#### Practica",
         "#### Aplica",
-        "### Tema 3: Streams como composici\u00f3n: pereza, orden y efectos que se esconden \u00b7 Intermedio \u00b7 90 min",
+        "### Tema 3: Componer sin anidar: andThen, compose, negate y reglas encadenadas \u00b7 Intermedio \u00b7 75 min",
         "#### Aprende"
       ]
     },
     {
       "path": "web/public/content/java/modulo-21.md",
-      "lines": 988,
+      "lines": 1128,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10630,7 +10909,7 @@
     },
     {
       "path": "web/public/content/java/modulo-22.md",
-      "lines": 1090,
+      "lines": 1230,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10651,7 +10930,7 @@
     },
     {
       "path": "web/public/content/java/modulo-3.md",
-      "lines": 397,
+      "lines": 671,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10672,7 +10951,7 @@
     },
     {
       "path": "web/public/content/java/modulo-4.md",
-      "lines": 552,
+      "lines": 821,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10693,7 +10972,7 @@
     },
     {
       "path": "web/public/content/java/modulo-5.md",
-      "lines": 864,
+      "lines": 1326,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10714,7 +10993,7 @@
     },
     {
       "path": "web/public/content/java/modulo-6.md",
-      "lines": 434,
+      "lines": 683,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10735,7 +11014,7 @@
     },
     {
       "path": "web/public/content/java/modulo-7.md",
-      "lines": 550,
+      "lines": 836,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10756,7 +11035,7 @@
     },
     {
       "path": "web/public/content/java/modulo-8.md",
-      "lines": 556,
+      "lines": 673,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10777,7 +11056,7 @@
     },
     {
       "path": "web/public/content/java/modulo-9.md",
-      "lines": 560,
+      "lines": 638,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -11406,8 +11685,50 @@
       ]
     },
     {
+      "path": "web/public/content/microservices/modulo-0.md",
+      "lines": 286,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 0: Antes de distribuir \u2014 proceso, red y falacias",
+        "## Aprende construyendo",
+        "## Entorno del m\u00f3dulo",
+        "### Tema 1: Proceso, host, puerto, socket y DNS \u00b7 Fundamentos \u00b7 70 min",
+        "#### Aprende",
+        "#### Practica",
+        "### Tema 2: Latencia, deadline y timeouts por fase \u00b7 Aplicaci\u00f3n \u00b7 80 min",
+        "#### Aprende",
+        "#### Practica",
+        "### Tema 3: Fallo parcial, resultado desconocido e idempotencia \u00b7 Integraci\u00f3n \u00b7 90 min",
+        "#### Aprende",
+        "#### Practica"
+      ]
+    },
+    {
+      "path": "web/public/content/microservices/modulo-1.md",
+      "lines": 290,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 1: Monolito modular antes de microservicios",
+        "## Aprende construyendo",
+        "## Entorno reproducible",
+        "### Tema 1: Monolito, monolito modular, servicio y microservicio \u00b7 Fundamentos \u00b7 75 min",
+        "#### Aprende",
+        "#### Practica",
+        "# Clasificaci\u00f3n de RutaFlow",
+        "### Tema 2: Cohesi\u00f3n, acoplamiento y API del m\u00f3dulo \u00b7 Aplicaci\u00f3n \u00b7 90 min",
+        "#### Aprende",
+        "#### Practica",
+        "### Tema 3: Arquitectura hexagonal \u2014 dominio, puertos y adaptadores \u00b7 Aplicaci\u00f3n \u00b7 95 min",
+        "#### Aprende"
+      ]
+    },
+    {
       "path": "web/public/content/node/modulo-0.md",
-      "lines": 466,
+      "lines": 497,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12205,7 +12526,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-0.md",
-      "lines": 453,
+      "lines": 864,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12226,7 +12547,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-1.md",
-      "lines": 395,
+      "lines": 723,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12247,7 +12568,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-10.md",
-      "lines": 1538,
+      "lines": 1826,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12268,7 +12589,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-11.md",
-      "lines": 470,
+      "lines": 572,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12289,7 +12610,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-12.md",
-      "lines": 598,
+      "lines": 702,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12310,7 +12631,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-13.md",
-      "lines": 668,
+      "lines": 1031,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12331,7 +12652,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-14.md",
-      "lines": 941,
+      "lines": 1118,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12352,7 +12673,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-15.md",
-      "lines": 1194,
+      "lines": 1651,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12373,7 +12694,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-16.md",
-      "lines": 178,
+      "lines": 241,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12393,7 +12714,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-17.md",
-      "lines": 208,
+      "lines": 264,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12413,7 +12734,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-18.md",
-      "lines": 189,
+      "lines": 509,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12428,12 +12749,13 @@
         "### Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP \u00b7 Avanzado \u00b7 1 h 20 min",
         "#### Aprende",
         "#### Practica",
-        "#### Aplica"
+        "#### Aplica",
+        "### Tema 3: Levantar tu propio OAuth2 Authorization Server \u00b7 Experto \u00b7 50 min"
       ]
     },
     {
       "path": "web/public/content/spring-boot/modulo-19.md",
-      "lines": 217,
+      "lines": 532,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12448,12 +12770,13 @@
         "### Tema 2: Reinicio, JobParameters, retry, skip y listeners \u00b7 Avanzado \u00b7 1 h 20 min",
         "#### Aprende",
         "#### Practica",
-        "#### Aplica"
+        "#### Aplica",
+        "### Tema 3: Particionamiento con m\u00faltiples workers y remote chunking \u00b7 Experto \u00b7 1 h 30 min"
       ]
     },
     {
       "path": "web/public/content/spring-boot/modulo-2.md",
-      "lines": 893,
+      "lines": 1522,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12474,7 +12797,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-20.md",
-      "lines": 822,
+      "lines": 1049,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12495,7 +12818,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-21.md",
-      "lines": 1107,
+      "lines": 1200,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12516,7 +12839,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-22.md",
-      "lines": 423,
+      "lines": 507,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12536,8 +12859,28 @@
       ]
     },
     {
+      "path": "web/public/content/spring-boot/modulo-23.md",
+      "lines": 365,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 23: Concurrencia avanzada en Spring",
+        "## Aprende construyendo",
+        "### Dos ejemplos: primero visible, luego real",
+        "### Tema 1: CompletableFuture, @Async y el bug de la autoinvocaci\u00f3n \u00b7 Avanzado \u00b7 1 h 20 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica",
+        "### Tema 2: Locks, deadlocks, sem\u00e1foros y MDC en concurrencia \u00b7 Experto \u00b7 1 h 30 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica"
+      ]
+    },
+    {
       "path": "web/public/content/spring-boot/modulo-3.md",
-      "lines": 554,
+      "lines": 895,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12558,7 +12901,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-4.md",
-      "lines": 1066,
+      "lines": 1218,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12579,7 +12922,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-5.md",
-      "lines": 516,
+      "lines": 618,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12600,7 +12943,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-6.md",
-      "lines": 540,
+      "lines": 867,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12621,7 +12964,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-7.md",
-      "lines": 575,
+      "lines": 893,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12642,7 +12985,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-8.md",
-      "lines": 1062,
+      "lines": 1473,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12663,7 +13006,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-9.md",
-      "lines": 702,
+      "lines": 968,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12684,7 +13027,7 @@
     },
     {
       "path": "web/public/content/topic-index.json",
-      "lines": 5103,
+      "lines": 5283,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -13624,7 +13967,7 @@
     },
     {
       "path": "web/src/app/catalog/curriculum-library.ts",
-      "lines": 218,
+      "lines": 219,
       "kind": "angular-app",
       "symbols": [
         "CurriculumLibraryComponent",
@@ -13879,7 +14222,7 @@
     },
     {
       "path": "web/src/app/course/lesson-viewer.ts",
-      "lines": 1782,
+      "lines": 1783,
       "kind": "angular-app",
       "symbols": [
         "LessonViewerComponent",
@@ -13979,7 +14322,7 @@
     },
     {
       "path": "web/src/app/course-data.ts",
-      "lines": 887,
+      "lines": 889,
       "kind": "angular-app",
       "symbols": [
         "ServiceGroup",
@@ -13995,6 +14338,7 @@
         "./tracks/react.track",
         "./tracks/java.track",
         "./tracks/spring-boot.track",
+        "./tracks/microservices.track",
         "./tracks/kotlin-multiplatform.track",
         "./tracks/android.track",
         "./tracks/ios.track",
@@ -14054,7 +14398,7 @@
     },
     {
       "path": "web/src/app/icon-registry.ts",
-      "lines": 36,
+      "lines": 37,
       "kind": "angular-app",
       "symbols": [],
       "imports": [
@@ -14074,7 +14418,7 @@
     },
     {
       "path": "web/src/app/learning-activities.ts",
-      "lines": 28,
+      "lines": 29,
       "kind": "angular-app",
       "symbols": [
         "TrackProject",
@@ -14085,7 +14429,7 @@
     },
     {
       "path": "web/src/app/official-learning-paths.ts",
-      "lines": 31,
+      "lines": 32,
       "kind": "angular-app",
       "symbols": [
         "OfficialLearningPath"
@@ -14142,7 +14486,7 @@
     },
     {
       "path": "web/src/app/project-bootstrap.ts",
-      "lines": 143,
+      "lines": 152,
       "kind": "angular-app",
       "symbols": [
         "ProjectBootstrap",
@@ -14205,7 +14549,7 @@
     },
     {
       "path": "web/src/app/track-guides.ts",
-      "lines": 25,
+      "lines": 26,
       "kind": "angular-app",
       "symbols": [
         "TrackGuide"
@@ -14277,7 +14621,7 @@
     },
     {
       "path": "web/src/app/tracks/java.track.ts",
-      "lines": 307,
+      "lines": 311,
       "kind": "angular-app",
       "symbols": [],
       "imports": [
@@ -14298,6 +14642,16 @@
     {
       "path": "web/src/app/tracks/kotlin-multiplatform.track.ts",
       "lines": 191,
+      "kind": "angular-app",
+      "symbols": [],
+      "imports": [
+        "../course-module.model"
+      ],
+      "headings": []
+    },
+    {
+      "path": "web/src/app/tracks/microservices.track.ts",
+      "lines": 34,
       "kind": "angular-app",
       "symbols": [],
       "imports": [
@@ -14337,7 +14691,7 @@
     },
     {
       "path": "web/src/app/tracks/spring-boot.track.ts",
-      "lines": 307,
+      "lines": 326,
       "kind": "angular-app",
       "symbols": [],
       "imports": [
@@ -14590,6 +14944,10 @@
     {
       "source": "web/src/app/course-data.ts",
       "target": "web/src/app/tracks/spring-boot.track.ts"
+    },
+    {
+      "source": "web/src/app/course-data.ts",
+      "target": "web/src/app/tracks/microservices.track.ts"
     },
     {
       "source": "web/src/app/course-data.ts",

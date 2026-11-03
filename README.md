@@ -9,8 +9,8 @@
 Academia en español para estudiar programación, desarrollo de software y cloud local. La
 experiencia oficial es una aplicación Angular con lecciones Markdown.
 
-La academia reúne 14 tracks, 254 módulos y 1141 temas editoriales en formato de
-libro. Esos 14 tracks son Fundamentos + RutaFlow + 12 rutas de especialización.
+La academia reúne 15 tracks, 257 módulos y 1184 temas editoriales en formato de
+libro. Esos 15 tracks son Fundamentos + RutaFlow + 13 rutas de especialización.
 La presencia de criterios editoriales y la completitud de los siete pasos
 se reportan por separado; ninguna métrica automática sustituye la revisión técnica
 ni demuestra por sí sola que un ejemplo se ejecutó.
@@ -47,7 +47,7 @@ catálogo puedes exportarlo a un archivo JSON y restaurarlo en otro navegador.
 
 No hay quizzes generados, XP, insignias, rachas ni recompensas artificiales:
 el progreso representa exclusivamente actividades y capítulos terminados. Las
-12 rutas de especialización tienen un proyecto integrador propio; Fundamentos
+13 rutas de especialización tienen un proyecto integrador propio; Fundamentos
 prepara las bases, incluye un capítulo introductorio de electrónica e IoT con 17 modelos Python ejecutables, y RutaFlow conecta los proyectos en una plataforma logística transversal.
 
 ```bash
@@ -66,7 +66,7 @@ Si algo falla, consulta la [guía de solución de problemas](docs/troubleshootin
 - **Angular 21.2.** La aplicación usa `@angular/core` `^21.2.0` y se instala con `npm ci`; no requiere instalación global.
 - **Docker Engine con Compose v2.** Necesario para el stack `docker-compose.yml` y para Floci por contenedores.
 - **Python 3.11 o superior.** Lo usan los auditores, la validación y varios ejemplos (`python3 --version`).
-- **JDK 27 o superior (Temurin 27.0.1).** Los ejemplos Java se ejecutaron con JDK 27; los proyectos Spring Boot se compilaron y sus pruebas aisladas pasaron, salvo los laboratorios que exigen servicios externos. El JDK solo es necesario para esos tracks.
+- **JDK 27 o superior para el track Java completo (Temurin 27.0.1).** Java M0 añade una sesión independiente para instalar y verificar Temurin 21.0.13+9; los módulos posteriores pueden requerir una versión mayor. Los proyectos Spring Boot se compilaron y sus pruebas aisladas pasaron, salvo los laboratorios que exigen servicios externos.
 - **Floci.** El Compose fija el emulador `2.2.0`; la CLI `0.4.0` es la release observada y su versión mínima compatible sigue sin verificarse ([detalle](docs/floci.md)).
 - **Go y Rust (opcional).** Solo para los ejemplos de `examples/go` y `examples/rust`; el repositorio no fija versión en `go.mod` ni `Cargo.toml`, así que anota la toolchain que uses al ejecutarlos.
 - **Toolchains móviles (opcional).** Android, iOS, Flutter y Kotlin Multiplatform requieren su SDK y emulador o simulador propios; no son necesarios para la aplicación web.
@@ -198,8 +198,8 @@ El contrato editorial que debe alcanzar cada tema es:
 ## Tracks de la academia
 
 La versión Angular tiene su propio contenido, más amplio, en formato Markdown
-(`web/public/content/<track>/modulo-N.md`), organizado en 14 tracks, 254
-módulos y 1141 temas editoriales visibles. Cada módulo prioriza una secuencia de
+(`web/public/content/<track>/modulo-N.md`), organizado en 15 tracks, 257
+módulos y 1184 temas editoriales visibles. Cada módulo prioriza una secuencia de
 temas prácticos. El sílabo y el estándar de calidad viven en documentos
 centrales; las fuentes específicas permanecen junto al tema que sustentan. No
 existen rutas separadas de cuestionarios, rúbricas o laboratorios repetidos.
@@ -208,12 +208,13 @@ Los conteos se verifican contra los tracks y el Markdown desde
 `scripts/validate_learning_priorities.py`; la validación falla si README vuelve
 a quedar desincronizado. La auditoría de criterios editoriales informa presencia
 estructural detectada por heurísticas, no calidad ni ejecución: el corte
-versionado registra 1141/1141 temas con los nueve criterios detectados. El
+versionado registra 1170/1184 temas con los nueve criterios detectados. El
 criterio de práctica acepta tanto el vocabulario de los siete pasos como una
 sección `#### Practica` con cuerpo accionable. La
-auditoría independiente de metodología registra 955/1141 con sus marcadores de
-siete pasos: los 46 módulos migrados a Aprende/Practica/Aplica, entre ellos los
-23 módulos de Spring Boot y los Módulos 0–22 de Java, ya no usan esos marcadores. Ninguno de esos resultados demuestra que las instrucciones sean
+auditoría independiente de metodología registra 901/1184 temas con sus
+marcadores de siete pasos. Los 61 módulos migrados usan la envoltura
+Aprende/Practica/Aplica y 193 conservan el formato anterior; ambos formatos
+pueden contener temas cuyos siete pasos se auditan por separado. Ninguno de esos resultados demuestra que las instrucciones sean
 correctas, que los ejemplos se ejecuten o que el tema enseñe de forma efectiva.
 El estado por tema y las señales adicionales están en
 [`docs/seven-step-methodology.md`](docs/seven-step-methodology.md),
@@ -263,7 +264,8 @@ como certificaciones.
 | Angular | 17 | Componentes, Signals, routing, SSR, zoneless |
 | React | 15 | Hooks, estado, data fetching, Next.js |
 | Java | 23 | POO, colecciones, concurrencia, JVM moderna, JDBC, JPA, HTTP, Java funcional, APIs compatibles y semántica de objetos |
-| Spring Boot | 23 | REST, JPA, seguridad, Batch, Kafka, microservicios y arquitectura (hexagonal, C4, ADR) |
+| Spring Boot | 24 | REST, JPA, seguridad, Batch, Kafka, microservicios, arquitectura (hexagonal, C4, ADR) y concurrencia avanzada |
+| Microservicios | 2 | Procesos, red, monolito modular, fronteras ejecutables y sistemas distribuidos; publicación progresiva |
 | Kotlin Multiplatform | 14 | Lógica compartida entre Android e iOS |
 | Android | 19 | Kotlin, Compose, arquitectura, datos, plataforma, privacidad, build y entrega profesional |
 | iOS | 15 | SwiftUI, concurrencia moderna, SwiftData |
@@ -283,7 +285,7 @@ las rutas de especialización no presuponen los tracks que no necesitan.
 
 `scripts/validate.sh` valida automáticamente que el número de archivos
 Markdown de cada track coincida con los módulos declarados en su fuente
-TypeScript, que el índice web corresponda a esos 14 tracks y que los reportes de
+TypeScript, que el índice web corresponda a esos 15 tracks y que los reportes de
 calidad permanezcan sincronizados con el Markdown real.
 
 ## Actualización tecnológica

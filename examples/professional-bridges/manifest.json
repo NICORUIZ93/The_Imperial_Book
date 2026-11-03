@@ -2,7 +2,7 @@
   {
     "track": "foundations",
     "module": 3,
-    "title": "HTML semántico y CSS responsive desde un archivo vacío",
+    "title": "Tema 5: Proyecto integrador — sitio de seguimiento accesible",
     "path": "web/public/content/foundations/modulo-3.md",
     "examples": [
       "examples/professional-bridges/foundations/index.html"
@@ -127,6 +127,15 @@
     "path": "web/public/content/spring-boot/modulo-2.md",
     "examples": [
       "examples/professional-bridges/spring-boot/EnviosController.java"
+    ]
+  },
+  {
+    "track": "microservices",
+    "module": 0,
+    "title": "Ejecutar dos procesos Java y comprobar su socket HTTP",
+    "path": "web/public/content/microservices/modulo-0.md",
+    "examples": [
+      "examples/professional-bridges/microservices/Servidor.java"
     ]
   }
 ]

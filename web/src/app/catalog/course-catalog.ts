@@ -59,7 +59,7 @@ export class CourseCatalogComponent {
   constructor(private readonly progressService: ProgressService) {}
 
   readonly cards = computed<TrackCard[]>(() =>
-    [...TRACKS].sort((a, b) => ['foundations', 'javascript', 'java', 'angular', 'react', 'node', 'spring-boot', 'flutter', 'android', 'ios', 'kotlin-multiplatform', 'cloud', 'devops', 'rutaflow'].indexOf(a.id) - ['foundations', 'javascript', 'java', 'angular', 'react', 'node', 'spring-boot', 'flutter', 'android', 'ios', 'kotlin-multiplatform', 'cloud', 'devops', 'rutaflow'].indexOf(b.id)).map(track => ({
+    [...TRACKS].sort((a, b) => ['foundations', 'javascript', 'java', 'angular', 'react', 'node', 'spring-boot', 'microservices', 'flutter', 'android', 'ios', 'kotlin-multiplatform', 'cloud', 'devops', 'rutaflow'].indexOf(a.id) - ['foundations', 'javascript', 'java', 'angular', 'react', 'node', 'spring-boot', 'microservices', 'flutter', 'android', 'ios', 'kotlin-multiplatform', 'cloud', 'devops', 'rutaflow'].indexOf(b.id)).map(track => ({
       id: track.id,
       name: track.name,
       shortName: track.shortName,

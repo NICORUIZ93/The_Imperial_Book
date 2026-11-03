@@ -1,10 +1,10 @@
 import { CourseModule, createModule as m } from '../course-module.model';
 
 export const FOUNDATIONS_MODULES: CourseModule[] = [
-  m(0, 'Cómo funciona tu entorno de desarrollo', 'Computador y terminal', 'Fundamentos', '4 h', '#6d5dfc',
+  m(0, 'Cómo funciona tu entorno de desarrollo', 'Computador y terminal', 'Fundamentos', '6 h', '#6d5dfc',
     'Empieza desde cero absoluto: entiende qué es un computador, cómo organiza archivos el sistema operativo, qué hace una terminal y cómo ejecutar tu primer programa sin copiar comandos a ciegas.',
     [
-      'Hardware, sistema operativo, programa y proceso',
+      'Hardware, sistema operativo, programa, intérprete, proceso y código de salida',
       'Archivos, carpetas, rutas absolutas y relativas',
       'Terminal, shell, comando, argumento y código de salida',
       'Editor, archivo fuente, intérprete y salida del programa',
@@ -72,11 +72,11 @@ export const FOUNDATIONS_MODULES: CourseModule[] = [
   m(3, 'Fundamentos de web, redes y accesibilidad', 'Web y redes', 'Fundamentos', '8 h', '#6d5dfc',
     'Comprende qué ocurre al abrir una URL y construye una web semántica, responsive y accesible antes de utilizar frameworks de frontend o backend.',
     [
-      'HTML semántico y CSS responsive desde un archivo vacío',
-      'Cliente, servidor, IP, puerto, DNS, URL y TCP',
+      'Cliente, servidor, URL, DNS, IP, TCP y puertos',
       'HTTP: métodos, headers, estados, cuerpo, caché y HTTPS',
       'HTML semántico, formularios, DOM y validación',
-      'CSS: cascada, box model, layout responsive y accesibilidad',
+      'CSS: cascada, box model, layout responsive y accesibilidad verificable',
+      'Proyecto integrador: sitio de seguimiento accesible y responsive',
     ],
     [
       'Traza desde una URL hasta una respuesta HTTP',
