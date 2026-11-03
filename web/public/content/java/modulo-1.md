@@ -5,42 +5,176 @@
 
 ### Tema 1: Clases, objetos, constructores y encapsulación
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás diseñar una clase que valida sus invariantes en el constructor, de forma que ninguna instancia inválida pueda existir. Prerrequisitos: JDK 25, Maven y un editor. Comprueba java --version.
+**Duración estimada:** 35 min.
+**¿Por qué es importante?** Las clases agrupan datos y operaciones; la encapsulación permite impedir que una guía de entrega quede en un estado imposible.
+**Prerrequisitos:** M0 T1. Proyecto continuo: crear el modelo inicial de una guía del motor de asignación. Trabaja desde `java-motor-poo/` con JDK 21 o posterior.
 
-#### Paso 2 · Contexto y caso real
-En un caso real de entregas, una guía sin número o con peso fuera de rango no debería poder crearse nunca, en vez de crearse y luego validarse por separado en cada punto donde se use.
+#### Subtema 1.1: Crea una clase e instancia objetos · 10 min
 
-#### Paso 3 · Teoría, modelo mental y analogía
-El constructor es la única puerta de entrada para crear un objeto: si valida ahí, ningún consumidor puede construir una instancia inválida y "completarla después". La analogía es el control de calidad en la línea de ensamblaje: se rechaza la pieza defectuosa antes de que salga de fábrica, no después de instalarla.
+**1. Contexto**
+El motor recibe muchas guías. Una clase describe qué datos guarda cada guía y permite crear varias con esa misma forma.
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
-```bash
-mkdir ejemplo-guia-invariantes
-cd ejemplo-guia-invariantes
-mkdir -p src/main/java/academia/entregas
+**2. Hazlo tú**
+Crea `java-motor-poo/src/Guia.java`:
+
+```java
+public final class Guia {
+    String numero;
+    String destino;
+
+    Guia(String numero, String destino) {
+        this.numero = numero;
+        this.destino = destino;
+    }
+
+    public static void main(String[] args) {
+        Guia primera = new Guia("RF-101", "Medellin");
+        Guia segunda = new Guia("RF-102", "Envigado");
+        System.out.println(primera.numero + " -> " + primera.destino);
+        System.out.println(segunda.numero + " -> " + segunda.destino);
+    }
+}
 ```
-Crea `src/main/java/academia/entregas/Guia.java` con el constructor que valida `numero` y `pesoKg` (el código completo aparece más abajo, en "Código del ejemplo"). Compila y ejecuta:
+
+Desde `java-motor-poo/`, ejecuta:
+
 ```bash
-javac -d out src/main/java/academia/entregas/Guia.java
-java -cp out academia.entregas.Guia
+mkdir -p out
+javac -d out src/Guia.java
+java -cp out Guia
 ```
 
-#### Paso 5 · Práctica guiada
-Pista: intenta construir `new Guia("", 10)` y luego `new Guia("RF-1", 0)` para provocar un fallo deliberado; ambos deben lanzar `IllegalArgumentException` desde el constructor, nunca crear el objeto a medias. Resultado esperado: ninguna instancia inválida llega a existir.
+**Resultado esperado:** `RF-101 -> Medellin` y `RF-102 -> Envigado`.
 
-#### Paso 6 · Práctica independiente
-Escribe `GuiaTest` con un caso válido y tres casos inválidos (número vacío, peso cero, peso mayor a 50); confirma que los tres lanzan excepción desde el constructor, no desde un método `validar()` separado.
+**Fallo deliberado:** cambia `new Guia("RF-101", "Medellin")` por `new Guia("RF-101")`. **Error esperado:** `javac` indica que el constructor requiere dos argumentos. **Diagnóstico:** definimos un constructor con número y destino; la llamada debe entregar ambos.
 
-#### Paso 7 · Cierre y evidencia
-Guarda la clase, la prueba, la salida y el fallo diagnosticado; como siguiente paso estudia herencia y sobreescritura. Errores comunes: validar en un método separado en vez del constructor, exponer setters que rompan el invariante después de construir, y confiar en que "nadie va a pasar un valor inválido". Fuentes oficiales: https://dev.java/learn/classes-objects/ y https://docs.oracle.com/javase/tutorial/java/IandI/.
+**3. Entiende**
+`Guia` es la clase; `primera` y `segunda` son objetos distintos creados con `new`. El constructor recibe valores iniciales y asigna esos valores a cada objeto.
 
-Esta misma disciplina (validar en el constructor, no exponer setters que rompan el invariante) es la que aplicarás a cada entidad del proyecto integrador de este track.
+**4. Cierra**
+Señala cuáles dos líneas crean los objetos y qué diferencia sus datos.
 
-**Cuándo no usarlo:** para un objeto puramente de transporte de datos sin ninguna regla de negocio que proteger (un DTO que solo cruza una frontera de serialización), validar cada campo en el constructor es esfuerzo sin beneficio real; resérvalo para entidades de dominio donde un estado inválido tendría consecuencias reales.
-**¿Por qué es importante?** Porque un constructor que valida sus invariantes es la única garantía real de que ningún objeto inválido llegue a existir en el sistema, sin depender de que cada consumidor recuerde validar por su cuenta antes de usarlo.
-**Evidencia de aprendizaje:** entrega la clase `Guia` con sus invariantes en el constructor, los tres casos inválidos (número vacío, peso cero, peso excesivo) que lanzan excepción, y la prueba que lo confirma.
+#### Subtema 1.2: Protege los datos con encapsulación · 10 min
+
+**1. Contexto**
+Si cualquier código puede reemplazar el destino directamente, una guía puede cambiar sin pasar por las reglas del modelo.
+
+**2. Hazlo tú**
+Reemplaza `java-motor-poo/src/Guia.java` por este archivo completo:
+
+```java
+public final class Guia {
+    private final String numero;
+    private String destino;
+
+    public Guia(String numero, String destino) {
+        this.numero = numero;
+        this.destino = destino;
+    }
+
+    public String getNumero() {
+        return numero;
+    }
+
+    public String getDestino() {
+        return destino;
+    }
+
+    public void cambiarDestino(String nuevoDestino) {
+        destino = nuevoDestino;
+    }
+
+    public static void main(String[] args) {
+        Guia guia = new Guia("RF-101", "Medellin");
+        guia.cambiarDestino("Envigado");
+        System.out.println(guia.getNumero() + " -> " + guia.getDestino());
+    }
+}
+```
+
+Compila y ejecuta con los mismos comandos del subtema 1.1.
+
+**Resultado esperado:** `RF-101 -> Envigado`.
+
+**Fallo deliberado:** en `main`, intenta asignar `guia.numero = "RF-999"`. **Error esperado:** `numero has private access in Guia`. **Diagnóstico:** `private` limita el acceso al interior de la clase y `final` impide cambiar ese identificador después de construir el objeto.
+
+**3. Entiende**
+Los campos privados esconden el estado interno. Los métodos públicos forman una interfaz pequeña para leer datos o pedir un cambio; no hace falta publicar cada campo.
+
+**4. Cierra**
+Identifica qué campo no se puede cambiar y qué método permite cambiar el destino.
+
+#### Subtema 1.3: Rechaza guías inválidas desde el constructor · 15 min
+
+**1. Contexto**
+La guía debe tener identificador y destino. Rechazar esos datos al crearla evita que el resto del programa tenga que revisar el mismo error una y otra vez.
+
+**2. Hazlo tú**
+Reemplaza `java-motor-poo/src/Guia.java` por este archivo completo:
+
+```java
+public final class Guia {
+    private final String numero;
+    private String destino;
+
+    public Guia(String numero, String destino) {
+        if (numero == null || numero.isBlank()) {
+            throw new IllegalArgumentException("El numero es obligatorio");
+        }
+        if (destino == null || destino.isBlank()) {
+            throw new IllegalArgumentException("El destino es obligatorio");
+        }
+        this.numero = numero;
+        this.destino = destino;
+    }
+
+    public String getNumero() { return numero; }
+    public String getDestino() { return destino; }
+
+    public void cambiarDestino(String nuevoDestino) {
+        if (nuevoDestino == null || nuevoDestino.isBlank()) {
+            throw new IllegalArgumentException("El destino es obligatorio");
+        }
+        destino = nuevoDestino;
+    }
+
+    public static void main(String[] args) {
+        Guia guia = new Guia("RF-101", "Medellin");
+        System.out.println(guia.getNumero() + " -> " + guia.getDestino());
+        try {
+            new Guia("", "Envigado");
+        } catch (IllegalArgumentException error) {
+            System.out.println("Rechazada: " + error.getMessage());
+        }
+    }
+}
+```
+
+Desde `java-motor-poo/`, ejecuta:
+
+```bash
+javac -d out src/Guia.java
+java -cp out Guia
+```
+
+**Resultado esperado:** `RF-101 -> Medellin` y `Rechazada: El numero es obligatorio`.
+
+**Fallo deliberado:** quita el primer `if` del constructor y ejecuta de nuevo. **Error esperado:** la guía con número vacío se imprime como si fuera válida. **Diagnóstico:** sin validar en el punto de creación, ningún método impide construir el estado inválido; restaura la condición y vuelve a ejecutar.
+
+**3. Entiende**
+Una regla que siempre debe cumplirse es un invariante. El constructor la comprueba antes de asignar el estado y el método de cambio aplica una validación equivalente cuando ese estado se actualiza.
+
+**4. Cierra**
+Entrega el archivo, la salida válida y el fallo reproducido. Para una clase que solo transporta datos sin reglas propias puede bastar una validación en la frontera; protege aquí el modelo porque el número y destino son necesarios para operar la guía.
+
+**Hito del tema:**
+
+- [ ] Creé dos objetos distintos a partir de `Guia`.
+- [ ] Protegí campos privados y leí datos mediante métodos públicos.
+- [ ] Rechacé valores vacíos al construir y al cambiar el destino.
+- [ ] Reproduje un estado inválido al quitar la validación y expliqué la causa.
+
+**Fuentes oficiales:** [clases y objetos en dev.java](https://dev.java/learn/classes-objects/) y [herencia y clases en Java](https://docs.oracle.com/javase/tutorial/java/IandI/).
 
 ### Tema 2: Herencia y sobreescritura
 

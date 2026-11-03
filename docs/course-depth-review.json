@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 174,
+    "topicsWithSignals": 176,
     "newLaboratories": 25
   },
   "priorities": {
@@ -7395,7 +7395,9 @@
       "title": "Tema 2: public static void main — qué significa cada palabra",
       "file": "web/public/content/java/modulo-0.md",
       "line": 122,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -7405,8 +7407,10 @@
       "module": 0,
       "title": "Tema 3: JDK, JRE y JVM",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 177,
-      "signals": [],
+      "line": 244,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -7416,7 +7420,7 @@
       "module": 0,
       "title": "Tema 4: Tipos primitivos vs referencias",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 235,
+      "line": 362,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7427,7 +7431,7 @@
       "module": 0,
       "title": "Tema 5: Variables, conversiones y `String`",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 308,
+      "line": 435,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7438,7 +7442,7 @@
       "module": 0,
       "title": "Tema 6: Operadores, precedencia y control de flujo",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 365,
+      "line": 492,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7449,7 +7453,7 @@
       "module": 0,
       "title": "Tema 7: Arreglos, wrappers y paso de argumentos",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 450,
+      "line": 577,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7460,7 +7464,7 @@
       "module": 0,
       "title": "Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`)",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 531,
+      "line": 658,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7473,7 +7477,7 @@
       "file": "web/public/content/java/modulo-1.md",
       "line": 6,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7484,7 +7488,7 @@
       "module": 1,
       "title": "Tema 2: Herencia y sobreescritura",
       "file": "web/public/content/java/modulo-1.md",
-      "line": 45,
+      "line": 179,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7495,7 +7499,7 @@
       "module": 1,
       "title": "Tema 3: Interfaces, clases abstractas y cuándo usar cada una",
       "file": "web/public/content/java/modulo-1.md",
-      "line": 144,
+      "line": 278,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7506,7 +7510,7 @@
       "module": 1,
       "title": "Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso",
       "file": "web/public/content/java/modulo-1.md",
-      "line": 212,
+      "line": 346,
       "signals": [
         "clase-java-no-visible"
       ],

@@ -87,14 +87,14 @@
     "java": {
       "topics": 101,
       "code": 101,
-      "commentedCode": 55,
+      "commentedCode": 53,
       "mermaid": 32,
       "archifyVisual": 2,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
       "filePath": 101,
       "runCommand": 101,
-      "officialSource": 42
+      "officialSource": 41
     },
     "spring-boot": {
       "topics": 111,
@@ -1910,6 +1910,20 @@
       "track": "java",
       "module": 0,
       "topic": "Tema 1: Del código fuente a la JVM",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 0,
+      "topic": "Tema 2: public static void main — qué significa cada palabra",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 0,
+      "topic": "Tema 3: JDK, JRE y JVM",
       "missingCode": false,
       "missingComments": true
     },

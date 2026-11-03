@@ -1,8 +1,8 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-11-03 22:01 UTC
+Generated: 2026-11-03 22:06 UTC
 Root: `The_Imperial_Book`
-Indexed files: 988
+Indexed files: 990
 Import edges: 60
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -19,15 +19,15 @@ For automated lookups, use `docs/repo-graph.json`.
 - `automation-script`: 36 files
 - `course-content`: 262 files
 - `documentation`: 61 files
-- `example`: 514 files
+- `example`: 516 files
 - `local-infra`: 1 files
 - `project-file`: 55 files
 
 ## File Types
 
-- `.md`: 334
+- `.md`: 335
 - `.py`: 162
-- `.java`: 78
+- `.java`: 79
 - `.json`: 69
 - `.ts`: 66
 - `.js`: 54
@@ -240,7 +240,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/RUNBOOKS-CLOUD.md` (1633 lines) - headings: # Cloud Runbooks — Troubleshooting Operacional, ## Runbook 1: DynamoDB Throttling, ### Síntomas, ### Diagnosis
 - `docs/RUNBOOKS-DEVOPS.md` (1409 lines) - headings: # DevOps Runbooks — Troubleshooting Operacional, ## Runbook 1: Docker Image Build Failures, ### Síntomas, ### Diagnosis
 - `docs/SKILLS-VISUALES-Y-ESTUDIO.md` (94 lines) - headings: # Skills para visuales y estudio desde cero, ## Selección y uso, ## Recorrido que debe comprobarse, ## Cómo usar las skills en una revisión
-- `docs/atomic-subtopics.md` (1239 lines) - headings: # Auditoría de subtemas atómicos, ## Temas pendientes, ### android, ### angular
+- `docs/atomic-subtopics.md` (1237 lines) - headings: # Auditoría de subtemas atómicos, ## Temas pendientes, ### android, ### angular
 - `docs/auditoria-profundidad-cobertura.md` (213 lines) - headings: # Auditoría de profundidad y cobertura — The Imperial Book, ## Resumen ejecutivo (sin adornos), ## Eje 1 — PROFUNDIDAD (¿el Paso 4 es ejecutable de cero a profesional?), ### Evidencia directa (leída, no inferida)
 - ... 43 more files
 
@@ -264,7 +264,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `examples/archify/temas/cloud/modulo-22-tema-5-edge-routes.review-2/modulo-22-tema-5-edge-routes.finalize.json` (1012 lines)
 - `examples/archify/temas/foundations/modulo-12-tema-10-lazo-p.workflow.json` (183 lines)
 - `examples/archify/temas/foundations/modulo-12-tema-17-plc-scan.workflow.json` (189 lines)
-- ... 496 more files
+- ... 498 more files
 
 ### local-infra
 
@@ -275,16 +275,16 @@ For automated lookups, use `docs/repo-graph.json`.
 - `.env.example` (8 lines)
 - `.github/workflows/ci.yml` (62 lines)
 - `docs/app-flow-inspection.json` (13830 lines)
-- `docs/atomic-subtopics.json` (8987 lines)
+- `docs/atomic-subtopics.json` (9116 lines)
 - `docs/biblioteca/catalogo.json` (564 lines)
 - `docs/biblioteca/imagenes.json` (577 lines)
 - `docs/browser-course-review.json` (2660 lines)
-- `docs/code-visual-quality.json` (3367 lines)
-- `docs/course-depth-review.json` (13472 lines)
+- `docs/code-visual-quality.json` (3381 lines)
+- `docs/course-depth-review.json` (13476 lines)
 - `docs/curriculum-matrix.json` (394 lines)
 - `docs/floci-official-curriculum.json` (14 lines)
 - `docs/lesson-substance-baseline.json` (1693 lines)
-- `docs/lesson-substance.json` (11232 lines)
+- `docs/lesson-substance.json` (11229 lines)
 - `docs/merged-pdf-index.json` (426 lines)
 - `docs/official-learning-guides.json` (22 lines)
 - `docs/official-sources.json` (195 lines)

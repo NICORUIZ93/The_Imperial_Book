@@ -1695,11 +1695,11 @@
     }
   ],
   "summary": {
-    "fingerprint": "285fa471692904cc8a02ebff3340bd5550583f93e540d3c8520b6ff4c1ef28de",
+    "fingerprint": "67b6ffd088c6d5d28650ed624a4f277064d247879ab6532c9a612c9464385655",
     "issues": {
       "andamiaje-generico": 125,
-      "bloque-repetido": 217,
-      "cola-tras-cierre": 375,
+      "bloque-repetido": 216,
+      "cola-tras-cierre": 374,
       "parrafo-repetido": 5,
       "tema-breve": 2
     },
@@ -1711,7 +1711,7 @@
     "modules": 256,
     "modulesWithLegacySections": 181,
     "topics": 1185,
-    "topicsWithIssues": 466
+    "topicsWithIssues": 465
   },
   "topics": {
     "android": [
@@ -7117,14 +7117,11 @@
         "words": 593
       },
       {
-        "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 0,
-        "tailWords": 532,
+        "tailWords": 0,
         "topic": "Tema 2: public static void main — qué significa cada palabra",
-        "words": 952
+        "words": 801
       },
       {
         "issues": [
@@ -7134,7 +7131,7 @@
         "module": 0,
         "tailWords": 527,
         "topic": "Tema 3: JDK, JRE y JVM",
-        "words": 962
+        "words": 1300
       },
       {
         "issues": [
@@ -7182,9 +7179,9 @@
       {
         "issues": [],
         "module": 1,
-        "tailWords": 216,
+        "tailWords": 0,
         "topic": "Tema 1: Clases, objetos, constructores y encapsulación",
-        "words": 518
+        "words": 860
       },
       {
         "issues": [

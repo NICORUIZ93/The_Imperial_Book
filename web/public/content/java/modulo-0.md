@@ -121,95 +121,222 @@ Entrega la salida correcta, el error reproducido y la ruta que corregiste.
 
 ### Tema 2: public static void main — qué significa cada palabra
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás explicar qué significa cada palabra de `public static void main(String[] args)` y diagnosticar por qué la JVM rechaza cualquier firma que se desvíe de ella. Prerrequisitos: JDK 25 y un editor de texto o IDE. Comprueba `java --version`.
+**Duración estimada:** 30 min.
+**¿Por qué es importante?** Este método conecta lo que escribes con el arranque del programa; entenderlo te permite recibir parámetros de ejecución y diagnosticar por qué el lanzador no encuentra la entrada.
+**Prerrequisitos:** M0 T1. Proyecto continuo: el motor de asignación de entregas recibirá origen y destino por terminal. Usa JDK 21 o posterior. Java 25 admite formas adicionales de métodos `main`; aquí practicarás la firma clásica, compatible con versiones anteriores.
 
-#### Paso 2 · Contexto y caso real
-Un desarrollador junior copia un método `main` desde un tutorial y le agrega `private` "porque esta clase no debería exponerlo públicamente"; el programa compila sin ningún error, pero al ejecutarlo la JVM informa que no encuentra un punto de entrada válido. Entender qué papel cumple cada palabra de la firma evita ese tipo de "corrección" que en realidad rompe el programa.
+#### Subtema 2.1: Identifica cada parte de la firma clásica · 10 min
 
-#### Paso 3 · Teoría, modelo mental y analogía
-La JVM no ejecuta cualquier método: busca específicamente uno llamado `main`, público, estático, sin retorno, que reciba un arreglo de `String`. Cualquier desviación de esa firma exacta lo vuelve invisible para la JVM, aunque el resto de la clase compile perfectamente. La analogía: es como una convocatoria con un formato de postulación obligatorio — una postulación correcta en el fondo pero distinta en el formato exigido simplemente no se procesa.
+**1. Contexto**
+El lanzador necesita una entrada reconocible para iniciar el motor sin pedirle al usuario que cree objetos primero.
 
-#### Paso 4 · Demostración guiada desde cero
-Desde una **carpeta vacía**, crea `src/PuntoEntrada.java`:
-```bash
-mkdir java-main && cd java-main
-mkdir src out
-```
+**2. Hazlo tú**
+Crea `java-motor/src/PuntoEntrada.java`:
+
 ```java
 public final class PuntoEntrada {
     public static void main(String[] args) {
-        // args recibe cada argumento escrito después del nombre de la clase.
-        System.out.printf("argumentos=%d, primero=%s%n", args.length, args[0]);
+        System.out.println("Motor de entregas listo");
+        System.out.println("Argumentos recibidos: " + args.length);
     }
 }
 ```
+
+Desde `java-motor/`, compila y ejecuta:
+
 ```bash
 javac -d out src/PuntoEntrada.java
-java -cp out PuntoEntrada guia-123
+java -cp out PuntoEntrada
 ```
-**Resultado esperado:** `argumentos=1, primero=guia-123`. **Fallo deliberado:** elimina `static`, recompila y ejecuta; la JVM informa que no encuentra un método `main` válido. `static` permite invocarlo sin crear antes un objeto.
 
-#### Paso 5 · Práctica guiada
-Pista: cambia la firma a `public static void main(String args)` (sin los corchetes, `args` como un `String` simple) y recompila. Resultado esperado: compila sin error, pero al ejecutar `java -cp out PuntoEntrada guia-123` la JVM vuelve a informar que no encuentra un método `main` válido — la firma exige específicamente `String[] args`, y esta variación tampoco cuenta como punto de entrada.
+**Resultado esperado:** `Motor de entregas listo` y `Argumentos recibidos: 0`.
 
-#### Paso 6 · Práctica independiente
-Modifica `PuntoEntrada` para que espere dos argumentos (origen y destino de una guía) y valide `args.length >= 2` antes de leerlos. Documenta qué mensaje debería mostrar si falta alguno, en vez de dejar que el programa termine con `ArrayIndexOutOfBoundsException` sin ningún control.
+**Fallo deliberado:** cambia el nombre `main` por `iniciar`, recompila y lanza la clase. **Error esperado:** Java indica que no encuentra un método principal válido. **Diagnóstico:** el código sigue siendo un método Java válido, pero el lanzador busca una entrada reconocida llamada `main`.
 
-#### Paso 7 · Cierre y evidencia
-Guarda `PuntoEntrada.java`, la ejecución con un argumento real, y el intento sin `static` junto a su corrección; como siguiente paso, en el Tema 3 distinguirás qué herramienta exacta instalaste junto con esa JVM que acabas de invocar. Errores comunes: agregar modificadores de acceso distintos a `public`, omitir `static` asumiendo que Java creará una instancia automáticamente, y declarar `args` con un tipo distinto a `String[]`. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html y https://dev.java/learn/getting-started/.
-**¿Por qué es importante?** Porque un error de firma en `main` no se reporta como un error de compilación, sino como un fallo al arrancar la JVM — un tipo de diagnóstico distinto que hay que saber reconocer.
-**Evidencia de aprendizaje:** entrega `PuntoEntrada.java`, su ejecución con `args` reales, y el fallo de la JVM al quitar `static` junto a la explicación de por qué ocurre.
-**Conceptos clave:** punto de entrada, pertenencia a la clase frente a instancia.
+**3. Entiende**
+`public` permite que el lanzador acceda al método; `static` permite llamarlo en la clase antes de crear una instancia; `void` indica que no devuelve un resultado al lanzador. `String[] args` es una lista de textos que puede venir vacía.
 
-`public static void main(String[] args)` es la firma exacta que la JVM busca como punto de entrada de cualquier programa Java ejecutable, y cada palabra de esa firma tiene un significado preciso y necesario: `public` hace que el método sea accesible desde cualquier lugar, incluyendo desde fuera de la propia clase, necesario porque la JVM (que no es parte del código de la aplicación) necesita poder invocarlo desde el exterior; `static` indica que el método pertenece a la clase en sí, no a una instancia particular de esa clase, siendo esto crucial porque la JVM invoca `main` sin haber creado previamente ningún objeto de esa clase — si `main` no fuera `static`, la JVM necesitaría una instancia ya existente para invocarlo, pero no existe ninguna todavía en ese punto de la ejecución.
+**4. Cierra**
+Señala en el archivo qué palabra permite el acceso, cuál evita crear un objeto y dónde aparecen los argumentos.
 
-`void` indica que el método no devuelve ningún valor (el programa simplemente termina cuando `main` retorna, sin que la JVM espere ni use un valor de retorno de esa llamada específica); `main` es el nombre exacto que la JVM busca por convención estricta, sin el cual no reconocería ese método como el punto de entrada; `String[] args` es el arreglo de argumentos de línea de comandos que se pasan al ejecutar el programa (`java Hola argumento1 argumento2` haría que `args` contenga `["argumento1", "argumento2"]`), permitiendo parametrizar la ejecución del programa desde fuera sin necesidad de recompilarlo.
+#### Subtema 2.2: Recibe argumentos sin recompilar · 10 min
 
-**Analogía:** `main` es como la puerta principal marcada específicamente para que cualquier visitante (la JVM) sepa exactamente por dónde entrar, sin necesidad de que alguien dentro del edificio (una instancia ya creada) lo reciba primero en la puerta.
+**1. Contexto**
+Una misma versión del motor debe poder asignar rutas distintas cambiando solo los datos de entrada.
 
-**¿Por qué es importante?** Cada palabra de `public static void main(String[] args)` cumple un propósito necesario y preciso para que la JVM pueda localizar e invocar ese método como punto de entrada sin necesitar una instancia previamente existente de la clase.
+**2. Hazlo tú**
+Reemplaza el contenido de `java-motor/src/PuntoEntrada.java` por el siguiente código completo:
+
+```java
+public final class PuntoEntrada {
+    public static void main(String[] args) {
+        if (args.length < 2) {
+            System.out.println("Uso: java PuntoEntrada <origen> <destino>");
+            return;
+        }
+
+        String origen = args[0];
+        String destino = args[1];
+        System.out.printf("Ruta solicitada: %s -> %s%n", origen, destino);
+    }
+}
+```
+
+Desde `java-motor/`, ejecuta:
+
+```bash
+javac -d out src/PuntoEntrada.java
+java -cp out PuntoEntrada Medellin Envigado
+java -cp out PuntoEntrada Medellin
+```
+
+**Resultado esperado:** la primera ejecución muestra `Ruta solicitada: Medellin -> Envigado`; la segunda muestra el mensaje de uso y termina normalmente.
+
+**Fallo deliberado:** elimina la condición `if` y ejecuta con un solo argumento. **Error esperado:** `ArrayIndexOutOfBoundsException`. **Diagnóstico:** `args[1]` no existe; valida la cantidad antes de leer posiciones.
+
+**3. Entiende**
+Los argumentos llegan en el mismo orden en que aparecen después del nombre de la clase: `args[0]` es el primero y `args[1]` el segundo. El `return` termina este método `void`; no devuelve datos.
+
+**4. Cierra**
+Guarda las dos salidas y explica por qué el programa maneja la entrada incompleta antes de acceder a `args[1]`.
+
+#### Subtema 2.3: Compara una forma abreviada de Java 25 · 10 min
+
+**1. Contexto**
+Al leer ejemplos nuevos puedes encontrar programas de archivo único con menos sintaxis; debes reconocer qué versión requiere cada forma.
+
+**2. Hazlo tú**
+En una carpeta aparte `java-motor/java25/`, crea `Hola25.java` con este archivo completo:
+
+```java
+void main() {
+    System.out.println("Hola, Java 25");
+}
+```
+
+Con JDK 25, desde `java-motor/java25/`, ejecuta:
+
+```bash
+java Hola25.java
+```
+
+**Resultado esperado:** `Hola, Java 25`. El modo de archivo fuente permite este ejemplo compacto en Java 25.
+
+**Fallo deliberado:** ejecuta `javac -d out Hola25.java` con un JDK 21. **Error esperado:** errores de sintaxis cerca de `void main()`. **Diagnóstico:** la forma compacta mostrada depende de las capacidades incorporadas en Java 25; el estilo clásico del subtema anterior funciona en JDK 21 y posteriores.
+
+**3. Entiende**
+Java 25 amplió las formas de entrada válidas para facilitar programas pequeños; la firma clásica sigue siendo útil en proyectos y versiones anteriores. Al elegir una forma, comprueba la versión mínima declarada por el proyecto.
+
+**4. Cierra**
+Anota las versiones con las que verificaste cada archivo y conserva las salidas. No cambies la firma clásica del motor por una forma que el JDK objetivo no soporte.
+
+**Hito del tema:**
+
+- [ ] Identifiqué el papel de `public`, `static`, `void`, `main` y `String[] args`.
+- [ ] Recibí y mostré dos argumentos en el orden correcto.
+- [ ] Controlé el caso en que faltaba un argumento y reproduje el fallo sin validación.
+- [ ] Distinguí la firma clásica de la forma compacta disponible en Java 25.
+
+**Fuentes oficiales:** [guía de lanzamiento de aplicaciones Java](https://docs.oracle.com/en/java/javase/25/docs/specs/man/java.html) y [JEP 512: Compact Source Files and Instance Main Methods](https://openjdk.org/jeps/512).
 
 **Diagrama interactivo:** [La firma que la JVM busca](/visuals/temas/java/modulo-0-tema-2-main.html).
 
-**Transferencia al proyecto integrador «Motor de asignación de entregas»:** Crea un punto de entrada que reciba datos mínimos para asignar entregas. Ejecuta con argumentos válidos e incompletos y comprueba salida y código de terminación sin mezclar entrada con reglas del dominio.
-
 ### Tema 3: JDK, JRE y JVM
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás distinguir con precisión qué instala el JDK, qué incluye el JRE y qué ejecuta específicamente la JVM, y decidir cuál necesitas en cada máquina. Prerrequisitos: JDK 25 y un editor de texto o IDE. Comprueba `java --version` y `javac --version`.
+**Duración estimada:** 30 min.
+**¿Por qué es importante?** Distinguir las herramientas de desarrollo del entorno que ejecuta la aplicación evita diagnosticar mal una máquina de despliegue y ayuda a elegir un runtime mínimo.
+**Prerrequisitos:** M0 T1. Proyecto continuo: preparar el motor para compilar en desarrollo y ejecutarse en otra máquina. Usa el mismo JDK en ambos ejercicios.
 
-#### Paso 2 · Contexto y caso real
-Un pipeline de despliegue falla en el servidor con `javac: command not found`, aunque el programa ya compilado corre perfectamente en la máquina de desarrollo; el servidor de producción tiene instalado únicamente un JRE, porque ejecutar un `.class` ya compilado no exige el compilador.
+#### Subtema 3.1: Comprueba las herramientas instaladas · 10 min
 
-#### Paso 3 · Teoría, modelo mental y analogía
-La JVM ejecuta bytecode; el JRE agrega las librerías estándar que ese bytecode necesita en tiempo de ejecución; el JDK agrega además las herramientas para desarrollar, como `javac`. Cada nivel incluye al anterior. La analogía: la JVM es el motor de un vehículo, el JRE es el vehículo completo listo para circular, y el JDK es ese mismo vehículo más un taller de herramientas para repararlo — necesario solo para quien lo construye o modifica, no para quien simplemente lo conduce.
+**1. Contexto**
+En tu equipo el motor necesita compilador y lanzador. Comprueba qué ejecutables encuentra realmente la terminal.
 
-#### Paso 4 · Demostración guiada desde cero
-Desde una **carpeta vacía**, crea `src/Entorno.java` y relaciona cada comando con su responsabilidad:
+**2. Hazlo tú**
+Desde una terminal ejecuta:
+
 ```bash
-mkdir java-entorno && cd java-entorno
-mkdir src out
 java --version
 javac --version
 ```
+
+**Resultado esperado:** ambos comandos existen y muestran la misma versión mayor del JDK.
+
+**Fallo deliberado:** cambia `javac` por `javacc`. **Error esperado:** “command not found” o el mensaje equivalente del sistema. **Diagnóstico:** no es un error del proyecto; el nombre de la herramienta está mal escrito. Si `java` funciona pero `javac` no, revisa que el JDK esté instalado y que su carpeta `bin` esté en `PATH`.
+
+**3. Entiende**
+`java` lanza programas; `javac` compila fuentes. El JDK reúne estas herramientas y componentes de ejecución; una JVM es la máquina virtual que ejecuta bytecode en una implementación concreta.
+
+**4. Cierra**
+Guarda las dos versiones y anota qué comando usarías para compilar y cuál para iniciar el motor.
+
+#### Subtema 3.2: Mira la máquina virtual que ejecuta el programa · 10 min
+
+**1. Contexto**
+El mismo bytecode puede ejecutarse en distintas máquinas virtuales compatibles; inspecciona qué implementación y versión tienes activa.
+
+**2. Hazlo tú**
+Crea `java-motor/src/Entorno.java`:
+
 ```java
 public final class Entorno {
     public static void main(String[] args) {
-        // Estas propiedades describen la JVM que ejecuta el bytecode.
-        System.out.println(System.getProperty("java.vm.name"));
-        System.out.println(System.getProperty("java.version"));
+        System.out.println("VM: " + System.getProperty("java.vm.name"));
+        System.out.println("Java: " + System.getProperty("java.version"));
     }
 }
 ```
+
+Desde `java-motor/`, ejecuta:
+
 ```bash
 javac -d out src/Entorno.java
 java -cp out Entorno
 ```
-**Resultado esperado:** `javac` y `java` muestran la misma línea mayor, y el programa informa el nombre de la VM. **Fallo deliberado:** prueba `javacc --version`; “command not found” no es un error de Java sino un nombre de herramienta incorrecto. Si `java` existe pero `javac` no, instalaste un runtime sin compilador o el JDK no está en `PATH`.
 
-#### Paso 5 · Práctica guiada
-Pista: ejecuta `java -cp out Entorno` en una carpeta `out` vacía, sin haber corrido antes `javac -d out src/Entorno.java`. Resultado esperado: `Error: Could not find or load main class Entorno`, un mensaje distinto al `command not found` del Paso 4 — aquí la herramienta `java` sí existe, pero el bytecode compilado que debe cargar todavía no existe.
+**Resultado esperado:** aparecen el nombre de la VM y la versión utilizada para esa ejecución.
+
+**Fallo deliberado:** ejecuta `java -cp out Entorno` antes de compilar, con `out/` vacío. **Error esperado:** no se puede encontrar o cargar la clase `Entorno`. **Diagnóstico:** el lanzador existe, pero no hay bytecode en el classpath; compila primero.
+
+**3. Entiende**
+Las propiedades consultadas describen el proceso que está ejecutando el programa. El JDK aporta herramientas como `javac`; la JVM carga e interpreta o compila bytecode durante la ejecución.
+
+**4. Cierra**
+Entrega el archivo fuente, el comando de compilación, el comando de ejecución y las dos líneas que reportó tu VM.
+
+#### Subtema 3.3: Decide qué instalar en cada máquina · 10 min
+
+**1. Contexto**
+La máquina de desarrollo compila código; el servidor necesita ejecutar el artefacto. Las distribuciones modernas suelen entregar un JDK completo y no siempre ofrecen un paquete separado llamado JRE.
+
+**2. Hazlo tú**
+Desde `java-motor/`, compila la clase y comprueba qué herramienta requiere cada acción:
+
+```bash
+javac -d out src/Entorno.java
+java -cp out Entorno
+```
+
+Anota que el equipo que compila necesita `javac` y el que arranca el programa necesita un runtime compatible. En un proyecto real confirma el proveedor, versión mínima y modo de distribución en el archivo de construcción y en la imagen de despliegue.
+
+**Resultado esperado:** el programa se compila y se ejecuta; puedes explicar por qué el servidor no necesita ejecutar `javac` si recibe bytecode ya construido.
+
+**Fallo deliberado:** intenta ejecutar `javac -d out src/Entorno.java` en un entorno que solo tenga un runtime sin compilador. **Error esperado:** `javac` no se encuentra. **Diagnóstico:** el runtime puede ejecutar artefactos, pero la compilación requiere un JDK; compila en CI o instala el JDK apropiado.
+
+**3. Entiende**
+“JRE” describe el conjunto de componentes necesarios para ejecutar Java, pero no es un paquete separado universal en las distribuciones actuales. Para producción se puede usar un runtime del proveedor o construir una imagen reducida compatible; no asumas la forma del paquete sin revisar la distribución elegida.
+
+**4. Cierra**
+Escribe una decisión para desarrollo, CI y ejecución, indicando dónde se compila, qué artefacto viaja y qué versión de Java lo ejecutará.
+
+**Hito del tema:**
+
+- [ ] Distinguí JVM, runtime y JDK sin tratarlos como el mismo ejecutable.
+- [ ] Comprobé `java --version` y `javac --version`.
+- [ ] Compilé y ejecuté `Entorno` e inspeccioné las propiedades de su VM.
+- [ ] Expliqué qué herramientas requiere desarrollo y cuál es el contrato del servidor.
+
+**Fuentes oficiales:** [documentación del JDK de Oracle](https://docs.oracle.com/en/java/javase/25/) y [guía de inicio de dev.java](https://dev.java/learn/getting-started/).
 
 #### Paso 6 · Práctica independiente
 Ejecuta `java -XshowSettings:properties -version` y localiza en la salida la propiedad `java.home`. Explica con tus palabras por qué esa ruta corresponde a la instalación completa del JDK y no a un JRE separado.

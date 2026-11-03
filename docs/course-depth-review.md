@@ -11,7 +11,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 | node | 83 | 17 | HTTP y validación antes de autenticación e integraciones | API con límites de carga, paginación estable, pruebas y cierre ordenado |
 | angular | 71 | 3 | HTML/CSS/TypeScript explícitos; RxJS y estado con ejemplos completos | Rutas, formularios, datos remotos y cambios sin guardar comprobados con navegador |
 | react | 58 | 46 | JSX y estado antes de efectos; proveedor, dependencias y API visibles | Carga, error, vacío y carrera de respuestas; caché observada, no supuesta |
-| java | 101 | 51 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
+| java | 101 | 53 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
 | spring-boot | 111 | 21 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
 | android | 58 | 0 | Kotlin antes de Compose; distinguir recomposición, recreación y muerte de proceso | App instalable con permisos, restauración, persistencia y pruebas en dispositivo |
 | ios | 56 | 4 | Swift antes de SwiftUI; explicitar macOS/Xcode y destino | Cancelación, estados de red, persistencia y accesibilidad comprobados en simulador |
@@ -687,14 +687,14 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | ios / 9 | [Tema 2: Testing de código async](../web/public/content/ios/modulo-9.md) | ejemplo-breve-revisar-contexto |
 | ios / 9 | [Tema 3: UI Tests con XCUITest](../web/public/content/ios/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 0 | [Tema 1: Del código fuente a la JVM](../web/public/content/java/modulo-0.md) | demostracion-no-delimitada |
-| java / 0 | [Tema 2: public static void main — qué significa cada palabra](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 0 | [Tema 3: JDK, JRE y JVM](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 0 | [Tema 2: public static void main — qué significa cada palabra](../web/public/content/java/modulo-0.md) | demostracion-no-delimitada |
+| java / 0 | [Tema 3: JDK, JRE y JVM](../web/public/content/java/modulo-0.md) | demostracion-no-delimitada |
 | java / 0 | [Tema 4: Tipos primitivos vs referencias](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 0 | [Tema 5: Variables, conversiones y `String`](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 0 | [Tema 6: Operadores, precedencia y control de flujo](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 0 | [Tema 7: Arreglos, wrappers y paso de argumentos](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 0 | [Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`)](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 1 | [Tema 1: Clases, objetos, constructores y encapsulación](../web/public/content/java/modulo-1.md) | clase-java-no-visible |
+| java / 1 | [Tema 1: Clases, objetos, constructores y encapsulación](../web/public/content/java/modulo-1.md) | demostracion-no-delimitada |
 | java / 1 | [Tema 2: Herencia y sobreescritura](../web/public/content/java/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 1 | [Tema 3: Interfaces, clases abstractas y cuándo usar cada una](../web/public/content/java/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 1 | [Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso](../web/public/content/java/modulo-1.md) | clase-java-no-visible |

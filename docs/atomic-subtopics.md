@@ -2,7 +2,7 @@
 
 > Auditoría estructural. Un encabezado o criterio detectado no demuestra que el ejemplo se haya ejecutado ni que la explicación sea pedagógicamente suficiente.
 
-Temas conformes a cuatro pasos: **13/1185**. Tracks inventariados: **14**.
+Temas conformes a cuatro pasos: **15/1185**. Tracks inventariados: **14**.
 
 | Track | Temas conformes | Temas inventariados | Subtemas detectados | Subtemas con estructura completa |
 |---|---:|---:|---:|---:|
@@ -13,7 +13,7 @@ Temas conformes a cuatro pasos: **13/1185**. Tracks inventariados: **14**.
 | flutter | 1 | 106 | 3 | 3 |
 | foundations | 0 | 99 | 0 | 0 |
 | ios | 0 | 56 | 0 | 0 |
-| java | 2 | 101 | 6 | 6 |
+| java | 4 | 101 | 15 | 14 |
 | javascript | 0 | 88 | 0 | 0 |
 | kotlin-multiplatform | 0 | 56 | 0 | 0 |
 | node | 2 | 83 | 6 | 6 |
@@ -704,14 +704,12 @@ Temas conformes a cuatro pasos: **13/1185**. Tracks inventariados: **14**.
 
 ### java
 
-- M0 ### Tema 2: public static void main — qué significa cada palabra: tiene 0 subtemas
-- M0 ### Tema 3: JDK, JRE y JVM: tiene 0 subtemas
+- M0 ### Tema 3: JDK, JRE y JVM: 3.1: faltan action
 - M0 ### Tema 4: Tipos primitivos vs referencias: tiene 0 subtemas
 - M0 ### Tema 5: Variables, conversiones y `String`: tiene 0 subtemas
 - M0 ### Tema 6: Operadores, precedencia y control de flujo: tiene 0 subtemas
 - M0 ### Tema 7: Arreglos, wrappers y paso de argumentos: tiene 0 subtemas
 - M0 ### Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`): tiene 0 subtemas
-- M1 ### Tema 1: Clases, objetos, constructores y encapsulación: tiene 0 subtemas
 - M1 ### Tema 2: Herencia y sobreescritura: tiene 0 subtemas
 - M1 ### Tema 3: Interfaces, clases abstractas y cuándo usar cada una: tiene 0 subtemas
 - M1 ### Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso: tiene 0 subtemas

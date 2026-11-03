@@ -13,11 +13,11 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | Ruta | 1185 | 0 |
 | Ejecución | 1171 | 14 |
 | Resultado | 1183 | 2 |
-| Modificación | 1181 | 4 |
-| Conexión con un proyecto | 1164 | 21 |
+| Modificación | 1179 | 6 |
+| Conexión con un proyecto | 1162 | 23 |
 | Modelo mental | 1185 | 0 |
-| Límites | 1172 | 13 |
-| **Perfil de criterios detectado** | **1158** | **27** |
+| Límites | 1171 | 14 |
+| **Perfil de criterios detectado** | **1156** | **29** |
 
 ## Prioridad por track
 
@@ -30,7 +30,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | flutter | 106 | 0 | 0 | 0 | 0 | 0 | 1 | 1 |
 | foundations | 99 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ios | 56 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| java | 101 | 0 | 0 | 10 | 0 | 0 | 11 | 6 |
+| java | 101 | 0 | 0 | 10 | 0 | 2 | 13 | 7 |
 | javascript | 88 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | kotlin-multiplatform | 56 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | node | 83 | 0 | 0 | 0 | 0 | 1 | 2 | 1 |
@@ -44,6 +44,8 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 - [cloud · módulo 0](../web/public/content/cloud/modulo-0.md) · Tema 5: Servicios que emula Floci — AWS, Azure y GCP: resultado, límites.
 - [flutter · módulo 19](../web/public/content/flutter/modulo-19.md) · Tema 1: estado de la jornada con Riverpod: conexión con un proyecto, límites.
 - [java · módulo 0](../web/public/content/java/modulo-0.md) · Tema 1: Del código fuente a la JVM: conexión con un proyecto, límites.
+- [java · módulo 0](../web/public/content/java/modulo-0.md) · Tema 2: public static void main — qué significa cada palabra: modificación, conexión con un proyecto, límites.
+- [java · módulo 1](../web/public/content/java/modulo-1.md) · Tema 1: Clases, objetos, constructores y encapsulación: modificación, conexión con un proyecto.
 - [java · módulo 20](../web/public/content/java/modulo-20.md) · Tema 4: Function y BiFunction: transformar uno o dos datos: ejecución, conexión con un proyecto.
 - [java · módulo 20](../web/public/content/java/modulo-20.md) · Tema 5: UnaryOperator y BinaryOperator: la salida conserva el tipo: ejecución, conexión con un proyecto, límites.
 - [java · módulo 20](../web/public/content/java/modulo-20.md) · Tema 6: Referencias a métodos: escribir la operación sin repetirla: ejecución, conexión con un proyecto, límites.
