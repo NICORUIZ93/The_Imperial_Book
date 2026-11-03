@@ -1,7 +1,7 @@
 {
   "summary": {
-    "topics": 1160,
-    "reviewed": 337,
+    "topics": 1161,
+    "reviewed": 338,
     "pending": 823,
     "priorityCandidates": 782,
     "byTrack": {
@@ -71,8 +71,8 @@
         "pending": 29
       },
       "spring-boot": {
-        "topics": 94,
-        "reviewed": 94,
+        "topics": 95,
+        "reviewed": 95,
         "pending": 0
       }
     },
@@ -21346,6 +21346,38 @@
         ],
         "sources": [
           "https://docs.spring.io/spring-boot/reference/testing/"
+        ]
+      }
+    },
+    {
+      "id": "spring-boot/modulo-6::Tema 4: Slices adicionales — @JsonTest, @RestClientTest y @TestConfiguration · Avanzado · 40 min",
+      "track": "spring-boot",
+      "module": 6,
+      "topic": "Tema 4: Slices adicionales — @JsonTest, @RestClientTest y @TestConfiguration · Avanzado · 40 min",
+      "status": "reviewed",
+      "semanticHeadings": [],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Lote 2 de docs/AUDITORIA-COBERTURA-SPRING-20261101.md (hueco ALTA #5: testing slices faltantes @JsonTest/@RestClientTest/@TestConfiguration). Tema nuevo ejecutado de verdad: proyecto Maven real, 3 clases de test corriendo juntas. mvn test: Tests run: 4, Failures: 0, Errors: 0 sobre Spring Boot 4.1.1 / Spring Framework 7.0.9 / JDK 27.0.1.0.3. Verificado contra Javadoc oficial que @RestClientTest se reorganizo en Boot 4 a org.springframework.boot.restclient.test.autoconfigure (distinto del paquete de Boot 3.x) y que Jackson2Tester esta deprecado desde 4.0.0 (forRemoval en 4.3.0) a favor de JacksonTester. Fallo deliberado encontrado organicamente, no inventado: declarar un RestClient.Builder manual en una @TestConfiguration anidada rompe @RestClientTest con IllegalStateException real (capturado el mensaje exacto), porque el bean manual reemplaza el builder ya customizado con soporte de MockRestServiceServer. Sincronizado spring-boot.track.ts (preview de topicos del Modulo 6).",
+        "criticalSubtopics": [
+          "@JsonTest + JacksonTester",
+          "Jackson2Tester deprecado desde Boot 4.0",
+          "@RestClientTest + MockRestServiceServer",
+          "paquete org.springframework.boot.restclient.test.autoconfigure (Boot 4)",
+          "RestClient.Builder manual rompe el mock",
+          "@TestConfiguration agrega beans solo para el test"
+        ],
+        "sources": [
+          "https://docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html",
+          "https://docs.spring.io/spring-boot/api/java/org/springframework/boot/restclient/test/autoconfigure/package-summary.html",
+          "https://docs.spring.io/spring-boot/api/java/org/springframework/boot/test/json/package-summary.html",
+          "docs/AUDITORIA-COBERTURA-SPRING-20261101.md"
         ]
       }
     },

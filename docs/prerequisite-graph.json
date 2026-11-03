@@ -4441,6 +4441,17 @@
       ]
     },
     {
+      "id": "spring-boot:6:4",
+      "track": "spring-boot",
+      "module": 6,
+      "position": 4,
+      "title": "Slices adicionales — @JsonTest, @RestClientTest y @TestConfiguration · Avanzado · 40 min",
+      "file": "web/public/content/spring-boot/modulo-6.md",
+      "requires": [
+        "spring-boot:6:3"
+      ]
+    },
+    {
       "id": "spring-boot:7:1",
       "track": "spring-boot",
       "module": 7,
@@ -4448,7 +4459,7 @@
       "title": "Actuator y health checks personalizados · Intermedio · 35 min",
       "file": "web/public/content/spring-boot/modulo-7.md",
       "requires": [
-        "spring-boot:6:3"
+        "spring-boot:6:4"
       ]
     },
     {

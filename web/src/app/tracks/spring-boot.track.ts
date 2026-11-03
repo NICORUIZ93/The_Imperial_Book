@@ -82,7 +82,7 @@ export const SPRING_BOOT_MODULES: CourseModule[] = [
     'Configuración tipada y validada al arranque, sin valores hardcodeados.'),
   m(6, 'Testing en Spring Boot', 'Testing', 'Integración', '3 h', '#6db33f',
     'Prueba desde unit tests aislados hasta tests de integración contra una base real.',
-    ['@SpringBootTest vs slices (@WebMvcTest, @DataJpaTest)', 'MockMvc para probar controllers', 'Testcontainers para bases de datos reales en CI', 'Mockito en el ecosistema Spring', '@MockitoBean, @MockitoSpyBean y TestRestTemplate', 'ArgumentCaptor y AssertJ para aserciones expresivas'],
+    ['@SpringBootTest vs slices (@WebMvcTest, @DataJpaTest)', 'MockMvc para probar controllers', 'Testcontainers para bases de datos reales en CI', 'Mockito en el ecosistema Spring', '@MockitoBean, @MockitoSpyBean y TestRestTemplate', 'ArgumentCaptor y AssertJ para aserciones expresivas', '@JsonTest, @RestClientTest y @TestConfiguration'],
     [
       'Escribe un test unitario de un servicio con @Mock/@InjectMocks de Mockito, sin levantar el contexto de Spring',
       'Escribe un test de slice con @WebMvcTest que pruebe solo la capa del controller, mockeando el servicio',

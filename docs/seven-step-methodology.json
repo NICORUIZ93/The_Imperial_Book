@@ -248,22 +248,22 @@
       "complete": 29
     },
     "spring-boot": {
-      "topics": 94,
+      "topics": 95,
       "objective": 0,
-      "prerequisites": 94,
+      "prerequisites": 95,
       "context": 0,
       "theoryAnalogy": 0,
       "guidedDemo": 0,
-      "codeExplanation": 94,
-      "execution": 92,
-      "expectedResult": 94,
-      "deliberateFailure": 94,
+      "codeExplanation": 95,
+      "execution": 93,
+      "expectedResult": 95,
+      "deliberateFailure": 95,
       "guidedPractice": 0,
       "independentPractice": 0,
       "closure": 0,
-      "commonErrors": 94,
-      "resources": 94,
-      "standaloneExample": 91,
+      "commonErrors": 95,
+      "resources": 95,
+      "standaloneExample": 92,
       "complete": 0
     }
   },
@@ -28998,6 +28998,31 @@
       {
         "module": 6,
         "topic": "Tema 3: @SpringBootTest completo y estrategia de pirámide de tests · Avanzado · 45 min",
+        "criteria": {
+          "objective": false,
+          "prerequisites": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 8,
+          "complete": false
+        }
+      },
+      {
+        "module": 6,
+        "topic": "Tema 4: Slices adicionales — @JsonTest, @RestClientTest y @TestConfiguration · Avanzado · 40 min",
         "criteria": {
           "objective": false,
           "prerequisites": true,

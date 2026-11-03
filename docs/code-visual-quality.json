@@ -97,16 +97,16 @@
       "officialSource": 108
     },
     "spring-boot": {
-      "topics": 94,
-      "code": 94,
+      "topics": 95,
+      "code": 95,
       "commentedCode": 79,
       "mermaid": 56,
       "archifyVisual": 4,
-      "asciiVisual": 17,
+      "asciiVisual": 18,
       "misleadingDiagramLabel": 0,
-      "filePath": 94,
-      "runCommand": 94,
-      "officialSource": 94
+      "filePath": 95,
+      "runCommand": 95,
+      "officialSource": 95
     },
     "kotlin-multiplatform": {
       "topics": 56,
@@ -1798,6 +1798,13 @@
       "track": "spring-boot",
       "module": 21,
       "topic": "Tema 3: Outbox transaccional y flujo de negocio · Experto · 1 h 50 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 6,
+      "topic": "Tema 4: Slices adicionales — @JsonTest, @RestClientTest y @TestConfiguration · Avanzado · 40 min",
       "missingCode": false,
       "missingComments": true
     },

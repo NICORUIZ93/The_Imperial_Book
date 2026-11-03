@@ -5122,6 +5122,10 @@
       {
         "title": "@SpringBootTest completo y estrategia de pirámide de tests",
         "fragment": "tema-3-springboottest-completo-y-estrategia-de-piramide-de-tests"
+      },
+      {
+        "title": "Slices adicionales — @JsonTest, @RestClientTest y @TestConfiguration",
+        "fragment": "tema-4-slices-adicionales-jsontest-restclienttest-y-testconfiguration"
       }
     ],
     "7": [

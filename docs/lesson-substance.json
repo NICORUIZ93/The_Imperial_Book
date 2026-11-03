@@ -1677,7 +1677,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "c44949cf540dbdfad6152db669f606fe74e87448b4dc113775d62ebf01b46de1",
+    "fingerprint": "80b35e481ae0509066f5b6d4852b0e278ae1518b18e347946a3e7218fe6de7ba",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
@@ -1686,7 +1686,7 @@
     },
     "modules": 254,
     "modulesWithLegacySections": 179,
-    "topics": 1160,
+    "topics": 1161,
     "topicsWithIssues": 0
   },
   "topics": {
@@ -9756,9 +9756,16 @@
       {
         "issues": [],
         "module": 6,
-        "tailWords": 309,
+        "tailWords": 316,
         "topic": "Tema 3: @SpringBootTest completo y estrategia de pirámide de tests · Avanzado · 45 min",
-        "words": 1937
+        "words": 1944
+      },
+      {
+        "issues": [],
+        "module": 6,
+        "tailWords": 344,
+        "topic": "Tema 4: Slices adicionales — @JsonTest, @RestClientTest y @TestConfiguration · Avanzado · 40 min",
+        "words": 2098
       },
       {
         "issues": [],

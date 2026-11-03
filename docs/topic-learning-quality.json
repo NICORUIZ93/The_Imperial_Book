@@ -221,18 +221,18 @@
       "repeatedDemo": 0
     },
     "spring-boot": {
-      "topics": 94,
-      "explanation": 94,
-      "code": 94,
+      "topics": 95,
+      "explanation": 95,
+      "code": 95,
       "visual": 75,
-      "filePath": 94,
-      "runCommand": 92,
-      "expectedResult": 94,
-      "practice": 94,
-      "project": 94,
-      "modelMental": 94,
-      "limitsDecision": 94,
-      "practicable": 92,
+      "filePath": 95,
+      "runCommand": 93,
+      "expectedResult": 95,
+      "practice": 95,
+      "project": 95,
+      "modelMental": 95,
+      "limitsDecision": 95,
+      "practicable": 93,
       "genericScaffold": 0,
       "repeatedDemo": 0
     }
@@ -25538,6 +25538,28 @@
         },
         "classification": {
           "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 6,
+        "topic": "Tema 4: Slices adicionales — @JsonTest, @RestClientTest y @TestConfiguration · Avanzado · 40 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false

@@ -2,8 +2,8 @@
 
 > Las señales automáticas no prueban profundidad ni ausencia de ella. Un tema sólo queda revisado mediante el registro humano con mapa de subtemas críticos, evidencia y fuentes.
 
-- Temas inventariados: 1160
-- Revisados humanamente para subtemas: 337
+- Temas inventariados: 1161
+- Revisados humanamente para subtemas: 338
 - Pendientes: 823
 - Candidatos prioritarios por señales: 782
 
@@ -24,7 +24,7 @@
 | node | 77 | 0 | 77 |
 | react | 58 | 0 | 58 |
 | rutaflow | 29 | 0 | 29 |
-| spring-boot | 94 | 94 | 0 |
+| spring-boot | 95 | 95 | 0 |
 
 ## Cola prioritaria
 
@@ -1139,6 +1139,7 @@
 - `spring-boot/modulo-6` — Tema 1: Slices de testing — @WebMvcTest · Intermedio · 35 min — @WebMvcTest; MockMvc; @MockBean vs @MockitoBean
 - `spring-boot/modulo-6` — Tema 2: @DataJpaTest con Testcontainers · Avanzado · 50 min — @DataJpaTest; @Container; @ServiceConnection
 - `spring-boot/modulo-6` — Tema 3: @SpringBootTest completo y estrategia de pirámide de tests · Avanzado · 45 min — pirámide de tests; RANDOM_PORT; cuándo NO usar @SpringBootTest
+- `spring-boot/modulo-6` — Tema 4: Slices adicionales — @JsonTest, @RestClientTest y @TestConfiguration · Avanzado · 40 min — @JsonTest + JacksonTester; Jackson2Tester deprecado desde Boot 4.0; @RestClientTest + MockRestServiceServer; paquete org.springframework.boot.restclient.test.autoconfigure (Boot 4); RestClient.Builder manual rompe el mock; @TestConfiguration agrega beans solo para el test
 - `spring-boot/modulo-7` — Tema 1: Actuator y health checks personalizados · Intermedio · 35 min — HealthIndicator custom; /actuator/health
 - `spring-boot/modulo-7` — Tema 2: Métricas de negocio con Micrometer · Avanzado · 45 min — MeterRegistry; Counter/Timer custom
 - `spring-boot/modulo-7` — Tema 3: Liveness vs readiness · Intermedio · 30 min — liveness vs readiness groups; probes para Kubernetes

@@ -572,7 +572,7 @@ class CrearTareaEndToEndTest { }
 
 **Si falla.** Si el end-to-end responde `201` pero no persiste, revisa que el servicio real esté en el contexto y que no quede un `@MockitoBean` residual; si tarda demasiado, confirma que no haya varios `@SpringBootTest` cubriendo el mismo flujo.
 
-**Siguiente paso:** el módulo 7 aborda cómo observar esta misma API en producción.
+**Siguiente paso:** el Tema 4 de este módulo cierra los slices que faltan: JSON, cliente HTTP y configuración de prueba.
 
 **Errores comunes:** usar `@SpringBootTest` para todo, incluso pruebas simples de lógica de negocio que un test unitario con Mockito cubriría igual de bien y mucho más rápido; no tener NINGÚN `@SpringBootTest`, confiando únicamente en slices que, como demuestra el fallo deliberado, pueden dejar pasar bugs de integración entre capas.
 
@@ -581,6 +581,229 @@ class CrearTareaEndToEndTest { }
 **Fuente oficial:** [Spring Boot — Testing Spring Boot Applications](https://docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html).
 
 **Transferencia al proyecto integrador:** la pirámide de tests que diseñes aquí es la misma que aplicará el proyecto integrador de este track (microservicio productivo, Módulo 12).
+
+### Tema 4: Slices adicionales — @JsonTest, @RestClientTest y @TestConfiguration · Avanzado · 40 min
+
+**Prerrequisito:** Tema 1 de este módulo (`@WebMvcTest`).
+
+**Al terminar podrás:** probar la serialización JSON de un DTO con `@JsonTest`, probar un cliente HTTP saliente con `@RestClientTest` y `MockRestServiceServer` sin tocar la red, y agregar un bean exclusivo de prueba con `@TestConfiguration`, los tres slices que completan el mapa de `@WebMvcTest`/`@DataJpaTest`/`@SpringBootTest` ya vistos.
+
+#### Aprende
+
+**¿Por qué es importante?** Un DTO con un campo que debería serializarse como número y termina serializándose como texto (o viceversa) rompe la integración con un cliente externo de forma silenciosa si solo se prueba con `@SpringBootTest` end-to-end; un cliente HTTP saliente que depende de un servicio de tarifas externo no puede probarse contra ese servicio real en cada ejecución de la suite sin volverla lenta y frágil ante cualquier caída de red.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `@JsonTest` + `JacksonTester<T>` | Núcleo | `json.write(tarifa)` y `json.parse(contenido)` verifican serialización/deserialización real |
+| `Jackson2Tester` deprecado desde Boot 4.0 | Diagnóstico | la clase existe pero está marcada para eliminación en 4.3.0, a favor de Jackson 3 |
+| `@RestClientTest` + `MockRestServiceServer` | Núcleo | `server.expect(requestTo(...)).andRespond(...)` simula el servidor remoto sin red real |
+| Paquete reorganizado en Spring Boot 4 | Prerrequisito | `@RestClientTest` vive en `org.springframework.boot.restclient.test.autoconfigure`, no en el paquete de Boot 3.x |
+| Declarar tu propio `RestClient.Builder` rompe el mock | Diagnóstico | con un bean manual en `@TestConfiguration`, `MockRestServiceServer` lanza `IllegalStateException` |
+| `@TestConfiguration` agrega beans solo para el test | Núcleo | un `Clock` fijo reemplaza el reloj real sin que la aplicación de producción dependa de uno fijo |
+| Cuándo cada slice es la herramienta correcta | Decisión | JSON para serialización, RestClientTest para clientes salientes, TestConfiguration para infraestructura de prueba transversal |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`@JsonTest` + `JacksonTester<T>` (núcleo).** `@JsonTest` arranca un contexto mínimo que autoconfigura solo lo necesario para probar serialización JSON; `JacksonTester<TarifaDto>` inyectado permite `json.write(tarifa)` (serializar y hacer aserciones JSONPath sobre el resultado) y `json.parse(contenido)` (deserializar una cadena JSON real y comparar el objeto resultante). Es la forma de confirmar, con una ejecución real de Jackson, que un campo numérico no termina como texto o viceversa.
+
+**`Jackson2Tester` deprecado desde Boot 4.0 (diagnóstico).** La clase `Jackson2Tester` (el nombre usado en Spring Boot 3.x) sigue existiendo en Boot 4 pero está marcada `@Deprecated(since = "4.0.0", forRemoval = true)`, programada para eliminarse en la versión 4.3.0, en favor de `JacksonTester` (que usa Jackson 3, no Jackson 2). Un proyecto que todavía importe `Jackson2Tester` compila hoy pero acumula una migración pendiente con fecha de vencimiento real.
+
+**`@RestClientTest` + `MockRestServiceServer` (núcleo).** `@RestClientTest(TarifaClient.class)` arranca un contexto mínimo enfocado solo en beans que usan `RestClient.Builder` o `RestTemplateBuilder`; `MockRestServiceServer` inyectado permite declarar `server.expect(requestTo(url)).andRespond(withSuccess(json, tipo))` para simular la respuesta exacta de un servidor remoto, sin que ninguna petición real salga a la red. `server.verify()` al final confirma que la petición esperada realmente ocurrió.
+
+**Paquete reorganizado en Spring Boot 4 (prerrequisito).** En Spring Boot 4, `@RestClientTest` se reorganizó al paquete `org.springframework.boot.restclient.test.autoconfigure` (verificado contra el Javadoc oficial de `spring-boot-restclient-test`), distinto del paquete que tenía en Boot 3.x. Importar desde el paquete viejo simplemente no compila: es un prerrequisito mecánico antes de poder usar la anotación en absoluto.
+
+**Declarar tu propio `RestClient.Builder` rompe el mock (diagnóstico).** El fallo deliberado de este tema confirma algo real, no hipotético: si declaras tu propio bean `RestClient.Builder` dentro de una `@TestConfiguration` anidada (pensando en proveer la dependencia que `TarifaClient` necesita), `MockRestServiceServer` lanza `IllegalStateException: Unable to use auto-configured MockRestServiceServer since a mock server customizer has not been bound to a RestTemplate or RestClient`. La razón: `@RestClientTest` customiza el `RestClient.Builder` que SU PROPIA auto-configuración provee; un bean declarado a mano reemplaza ese builder ya customizado por uno "limpio" sin el soporte de mock conectado.
+
+**`@TestConfiguration` agrega beans solo para el test (núcleo).** Una clase anidada `@TestConfiguration(proxyBeanMethods = false)` dentro de la clase de test, con un método `@Bean`, agrega ese bean al contexto SOLO para ese test, sin que la aplicación de producción necesite depender de un valor fijo. El ejemplo reemplaza un `Clock` real por `Clock.fixed(...)`, haciendo que `MarcaTiempoService.ahora()` sea determinista y verificable con `assertThat(...).isEqualTo(...)`, en vez de comparar contra "aproximadamente ahora".
+
+**Cuándo cada slice es la herramienta correcta (decisión).** `@JsonTest` cuando el riesgo está en la serialización misma (no en la lógica de negocio ni en HTTP); `@RestClientTest` cuando el componente bajo prueba habla con un servicio externo vía `RestClient`/`RestTemplate`; `@TestConfiguration` cuando necesitás una pieza de infraestructura (reloj, generador de IDs, feature flag) fija y predecible solo durante la prueba. Usar `@SpringBootTest` para los tres casos funciona, pero es más lento y menos específico sobre qué, exactamente, se está verificando.
+
+**Conceptos clave:** `@JsonTest`, `JacksonTester`, `@RestClientTest`, `MockRestServiceServer`, `@TestConfiguration`.
+
+`@JsonTest` enfoca el contexto en serialización JSON (`JacksonTester<T>` con `.write()`/`.parse()`); `@RestClientTest` enfoca el contexto en un cliente HTTP saliente, inyectando un `MockRestServiceServer` que intercepta las peticiones antes de que lleguen a la red; `@TestConfiguration` anidada agrega (o, con cuidado, reemplaza) beans exclusivamente para la clase de test actual. Los tres completan, junto a `@WebMvcTest`/`@DataJpaTest`/`@SpringBootTest` ya vistos, el catálogo de slices de testing de Spring Boot.
+
+**Analogía:** `@JsonTest` es como probar únicamente la traducción de un documento sin publicarlo; `@RestClientTest` es como ensayar una llamada telefónica con un actor que responde exactamente el guion esperado, en vez de llamar al número real; `@TestConfiguration` es como cambiar la pila de un reloj de utilería solo para el ensayo, sin tocar el reloj real que usa el resto del edificio.
+
+**Diagrama:**
+
+```
+@JsonTest          -> solo Jackson/JacksonTester, sin red ni base de datos
+@RestClientTest     -> solo el cliente HTTP + MockRestServiceServer, sin red real
+@TestConfiguration  -> bean adicional SOLO para este test (ej. Clock fijo)
+```
+
+#### Practica
+
+**Demo paso a paso.** Desde una carpeta vacía, genera el proyecto:
+
+```bash
+mkdir testing-slices-demo && cd testing-slices-demo
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web -d javaVersion=27 -o app.zip
+unzip -q app.zip
+```
+
+Agrega la dependencia de test real al `pom.xml` (dentro de `<dependencies>`):
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-restclient-test</artifactId>
+    <scope>test</scope>
+</dependency>
+```
+
+Crea `src/main/java/com/academia/testingslices/TarifaDto.java`:
+
+```java
+package com.academia.testingslices;
+
+public record TarifaDto(String id, int monto) {
+}
+```
+
+Crea `src/main/java/com/academia/testingslices/TarifaClient.java`:
+
+```java
+package com.academia.testingslices;
+
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClient;
+
+@Component
+public class TarifaClient {
+    private final RestClient restClient;
+
+    public TarifaClient(RestClient.Builder restClientBuilder) {
+        this.restClient = restClientBuilder.baseUrl("https://tarifas.interno").build();
+    }
+
+    public TarifaDto obtener(String id) {
+        return restClient.get().uri("/tarifas/{id}", id).retrieve().body(TarifaDto.class);
+    }
+}
+```
+
+Crea el test de JSON en `src/test/java/com/academia/testingslices/TarifaDtoJsonTest.java`:
+
+```java
+package com.academia.testingslices;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.json.JsonTest;
+import org.springframework.boot.test.json.JacksonTester;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+@JsonTest
+class TarifaDtoJsonTest {
+
+    @Autowired
+    private JacksonTester<TarifaDto> json;
+
+    @Test
+    void serializaMontoComoNumeroNoComoTexto() throws Exception {
+        TarifaDto tarifa = new TarifaDto("BO-004512", 15000);
+        assertThat(json.write(tarifa)).extractingJsonPathStringValue("@.id").isEqualTo("BO-004512");
+        assertThat(json.write(tarifa)).extractingJsonPathNumberValue("@.monto").isEqualTo(15000);
+    }
+
+    @Test
+    void deserializaJsonRealAUnTarifaDto() throws Exception {
+        String contenido = "{\"id\":\"BO-004512\",\"monto\":15000}";
+        assertThat(json.parse(contenido)).isEqualTo(new TarifaDto("BO-004512", 15000));
+    }
+}
+```
+
+Crea el test de cliente HTTP en `src/test/java/com/academia/testingslices/TarifaClientRestClientTest.java` (SIN declarar tu propio `RestClient.Builder`: deja que la auto-configuración del slice lo customice):
+
+```java
+package com.academia.testingslices;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.restclient.test.autoconfigure.RestClientTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.client.MockRestServiceServer;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
+
+@RestClientTest(TarifaClient.class)
+class TarifaClientRestClientTest {
+
+    @Autowired
+    private TarifaClient client;
+
+    @Autowired
+    private MockRestServiceServer server;
+
+    @Test
+    void obtieneLaTarifaSinTocarUnServidorReal() {
+        server.expect(requestTo("https://tarifas.interno/tarifas/BO-004512"))
+                .andRespond(withSuccess("{\"id\":\"BO-004512\",\"monto\":15000}", MediaType.APPLICATION_JSON));
+
+        TarifaDto tarifa = client.obtener("BO-004512");
+
+        assertThat(tarifa.monto()).isEqualTo(15000);
+        server.verify();
+    }
+}
+```
+
+```bash
+./mvnw test
+```
+
+**Resultado esperado:** `Tests run: 3, Failures: 0, Errors: 0` (verificado con Spring Boot 4.1.1 / Spring Framework 7.0.9 sobre JDK 27.0.1): `TarifaDtoJsonTest` confirma serialización y deserialización exactas, `TarifaClientRestClientTest` confirma que `TarifaClient` obtiene el monto correcto sin ninguna petición de red real.
+
+**Fallo deliberado:** agrega una `@TestConfiguration` anidada dentro de `TarifaClientRestClientTest` con un `@Bean RestClient.Builder restClientBuilder() { return RestClient.builder(); }` (pensando en "proveer la dependencia que falta") y ejecuta de nuevo. El test falla con `IllegalStateException: Unable to use auto-configured MockRestServiceServer since a mock server customizer has not been bound to a RestTemplate or RestClient`. Diagnostica confirmando que tu bean manual reemplazó el `RestClient.Builder` que la auto-configuración de `@RestClientTest` ya había customizado con soporte de mock; la auto-configuración del slice debe proveer ese bean, no tu `@TestConfiguration`. Elimina el bean manual para restaurar el comportamiento correcto.
+
+**Ejercicios.**
+
+1. Agrega un tercer campo a `TarifaDto` (por ejemplo, `moneda`) y actualiza `TarifaDtoJsonTest` para verificar ese campo con una aserción JSONPath adicional.
+2. Cambia la respuesta simulada en `TarifaClientRestClientTest` a un código de error (`withServerError()` en vez de `withSuccess(...)`) y documenta qué excepción lanza `restClient.retrieve()` ante un 500.
+3. Escribe un `MarcaTiempoService` que use un `Clock` inyectado, y una `@TestConfiguration` anidada en un `@SpringBootTest` que reemplace ese `Clock` por uno fijo (`Clock.fixed(...)`), confirmando que el servicio devuelve siempre la misma marca de tiempo durante el test.
+4. Escribe de memoria (sin mirar) un test `@RestClientTest` con `MockRestServiceServer` para un cliente nuevo, sin declarar ningún `RestClient.Builder` manual. Compara después contra el patrón del Paso 4.
+
+**Pista:** si `@RestClientTest` falla con un error sobre "mock server customizer... not been bound", la causa casi siempre es un `RestClient.Builder` (o `RestTemplateBuilder`) declarado a mano en algún lugar del contexto de test.
+
+**Completa el código:** rellena la anotación que enfoca el contexto solo en beans que usan `RestClient.Builder`:
+
+```java
+@____(TarifaClient.class)
+class TarifaClientRestClientTest { }
+```
+
+**Reto de memoria:** cierra este documento y escribe, solo de memoria, un `@JsonTest` con `JacksonTester` y un `@RestClientTest` con `MockRestServiceServer`, incluyendo los imports correctos de Spring Boot 4 (`org.springframework.boot.restclient.test.autoconfigure.RestClientTest`). Compara después contra el patrón del Paso 4.
+
+#### Aplica
+
+**Reto abierto.** Para el microservicio productivo de RutaFlow, escribe un `@JsonTest` que confirme que un DTO de evento de posición serializa correctamente sus campos de coordenadas (latitud/longitud como números, no como texto), y un `@RestClientTest` para un cliente que consulta un servicio externo de geocodificación, simulando tanto una respuesta exitosa como un timeout.
+
+**Checklist de salida.**
+
+- [ ] `@JsonTest` con `JacksonTester` confirma serialización Y deserialización del DTO.
+- [ ] `@RestClientTest` con `MockRestServiceServer` confirma la llamada sin tocar la red real.
+- [ ] `server.verify()` confirma que la petición esperada efectivamente ocurrió.
+- [ ] Ningún `RestClient.Builder`/`RestTemplateBuilder` manual interfiere con la auto-configuración del slice.
+- [ ] Una `@TestConfiguration` agrega al menos un bean exclusivo de prueba (reloj fijo u otro) sin afectar la configuración de producción.
+
+**Si falla.** Si `MockRestServiceServer` lanza `IllegalStateException` sobre un "mock server customizer" no vinculado, revisa que no haya ningún `RestClient.Builder`/`RestTemplateBuilder` declarado manualmente en el contexto de test. Si `@JsonTest` no encuentra `JacksonTester`, confirma el import exacto (`org.springframework.boot.test.json.JacksonTester`, no `Jackson2Tester`, deprecado).
+
+**Siguiente paso:** el módulo 7 aborda cómo observar esta misma API en producción.
+
+**Errores comunes:** declarar un `RestClient.Builder`/`RestTemplateBuilder` manual dentro de un `@RestClientTest`, rompiendo la customización de `MockRestServiceServer`; seguir usando `Jackson2Tester` (deprecado desde Boot 4.0) en vez de `JacksonTester`; usar `@SpringBootTest` completo para probar solo serialización JSON o un cliente HTTP aislado.
+
+**Límites y decisión de uso:** para un cliente HTTP que solo se usa una vez en todo el proyecto y cuyo contrato cambia raramente, un test de integración más amplio puede ser suficiente; estos slices se justifican cuando la serialización o el cliente HTTP tienen suficiente complejidad o riesgo propio para merecer una prueba dedicada y rápida.
+
+**Fuente oficial:** [Spring Boot — Testing Spring Boot Applications](https://docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html), [Javadoc — spring-boot-restclient-test](https://docs.spring.io/spring-boot/api/java/org/springframework/boot/restclient/test/autoconfigure/package-summary.html).
+
+**Transferencia al proyecto integrador:** el cliente HTTP hacia el servicio de tarifas del proyecto integrador (Módulo 12) se prueba con exactamente este mismo patrón de `@RestClientTest`.
 
 ## Laboratorio práctico
 
