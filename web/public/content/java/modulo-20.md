@@ -776,11 +776,10 @@ Una referencia a método no agrega comportamiento nuevo: conecta una interfaz fu
 
 #### Paso 4 · Ejercicio 1
 
-##### Subtema 6.1: Referencia a un método estático · 5-10 min
+#### Subtema 6.1: Referencia a un método estático · 10 min
+**1. Contexto** lee un número de guía que llega como texto.
 
-**Contexto:** lee un número de guía que llega como texto.
-
-**Hazlo tú:** crea `java-funcional-t06/src/Parsear.java`:
+**2. Hazlo tú** crea `java-funcional-t06/src/Parsear.java`:
 
 ```java
 import java.util.function.Function;
@@ -799,15 +798,20 @@ Ejecuta `cd java-funcional-t06 && java src/Parsear.java`.
 
 **Fallo deliberado:** reemplaza por `Integer::sum`. **Error esperado:** el método requiere dos argumentos. **Diagnóstico:** `Function<String,Integer>` entrega un solo argumento; `parseInt` coincide.
 
-**Entiende:** `Tipo::metodoEstatico` no requiere crear primero un objeto.
+**3. Entiende** `Tipo::metodoEstatico` no requiere crear primero un objeto.
+
+**Diagnóstico:** compara los parámetros y el resultado del método con los tipos que exige la interfaz funcional.
+
+**4. Cierra**
+
+Guarda la salida y explica si la referencia necesitó un objeto, una clase o creó una instancia.
 
 #### Paso 5 · Ejercicio 2
 
-##### Subtema 6.2: Referencia ligada a un objeto · 5-10 min
+#### Subtema 6.2: Referencia ligada a un objeto · 10 min
+**1. Contexto** antepone el prefijo que ya eligió la sesión.
 
-**Contexto:** antepone el prefijo que ya eligió la sesión.
-
-**Hazlo tú:** crea `java-funcional-t06/src/Prefijo.java`:
+**2. Hazlo tú** crea `java-funcional-t06/src/Prefijo.java`:
 
 ```java
 import java.util.function.UnaryOperator;
@@ -827,15 +831,20 @@ Ejecuta `cd java-funcional-t06 && java src/Prefijo.java`.
 
 **Fallo deliberado:** cambia `prefijo::concat` por `String::concat`. **Error esperado:** los parámetros no coinciden con `UnaryOperator<String>`. **Diagnóstico:** una referencia ligada ya conserva el objeto `prefijo`.
 
-**Entiende:** `objeto::metodo` usa el objeto indicado al crear la referencia.
+**3. Entiende** `objeto::metodo` usa el objeto indicado al crear la referencia.
+
+**Diagnóstico:** compara los parámetros y el resultado del método con los tipos que exige la interfaz funcional.
+
+**4. Cierra**
+
+Guarda la salida y explica si la referencia necesitó un objeto, una clase o creó una instancia.
 
 #### Paso 6 · Ejercicio 3
 
-##### Subtema 6.3: Referencia no ligada y constructor · 5-10 min
+#### Subtema 6.3: Referencia no ligada y constructor · 10 min
+**1. Contexto** limpia una guía y después crea un objeto `Envio` con el texto.
 
-**Contexto:** limpia una guía y después crea un objeto `Envio` con el texto.
-
-**Hazlo tú:** crea `java-funcional-t06/src/CrearEnvio.java`:
+**2. Hazlo tú** crea `java-funcional-t06/src/CrearEnvio.java`:
 
 ```java
 import java.util.function.Function;
@@ -861,7 +870,13 @@ Ejecuta `cd java-funcional-t06 && java src/CrearEnvio.java`.
 
 **Fallo deliberado:** cambia `Function<String, Envio> crear = Envio::new` por `Supplier<Envio> crear = Envio::new`. **Error esperado:** el constructor necesita un `String`. **Diagnóstico:** usa `Function` cuando el constructor recibe el dato, `Supplier` cuando no recibe ninguno.
 
-**Entiende:** `Tipo::metodoDeInstancia` puede usar el primer argumento como receptor; `Tipo::new` apunta al constructor compatible.
+**3. Entiende** `Tipo::metodoDeInstancia` puede usar el primer argumento como receptor; `Tipo::new` apunta al constructor compatible.
+
+**Diagnóstico:** compara los parámetros y el resultado del método con los tipos que exige la interfaz funcional.
+
+**4. Cierra**
+
+Guarda la salida y explica si la referencia necesitó un objeto, una clase o creó una instancia.
 
 #### Paso 7 · Cierre y evidencia
 

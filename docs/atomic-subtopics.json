@@ -51,10 +51,10 @@
     },
     "java": {
       "topics": 101,
-      "completeTopics": 93,
-      "topicsWith3to6Subtopics": 93,
-      "subtopics": 283,
-      "completeSubtopics": 283
+      "completeTopics": 94,
+      "topicsWith3to6Subtopics": 94,
+      "subtopics": 286,
+      "completeSubtopics": 286
     },
     "javascript": {
       "topics": 88,
@@ -8080,9 +8080,52 @@
       {
         "module": 20,
         "topic": "### Tema 6: Referencias a métodos: escribir la operación sin repetirla",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "6.1",
+            "title": "#### Subtema 6.1: Referencia a un método estático · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "6.2",
+            "title": "#### Subtema 6.2: Referencia ligada a un objeto · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "6.3",
+            "title": "#### Subtema 6.3: Referencia no ligada y constructor · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 20,

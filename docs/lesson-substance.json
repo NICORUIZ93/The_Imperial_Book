@@ -1698,7 +1698,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "7d6fa48ff557242adab2d9e8d28993daf9e776dbee1592ed1beefe488478f8dd",
+    "fingerprint": "c922e44dbd136971ea3dc604b2109d7fb420facb2ff9d6f75a5515ab46811a83",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -7618,7 +7618,7 @@
         "module": 20,
         "tailWords": 60,
         "topic": "Tema 6: Referencias a métodos: escribir la operación sin repetirla",
-        "words": 580
+        "words": 694
       },
       {
         "issues": [],
