@@ -1682,7 +1682,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "1b15d3d3b6c1b22ea19fbd5a964c53386eeb48af8982a49daab55f024b525ebb",
+    "fingerprint": "3a7f1088236aa88f5da637b20a6118968dedaeb8a94e1d9d6c561b90b74e1a66",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
@@ -1691,7 +1691,7 @@
     },
     "modules": 255,
     "modulesWithLegacySections": 179,
-    "topics": 1171,
+    "topics": 1172,
     "topicsWithIssues": 0
   },
   "topics": {
@@ -9355,9 +9355,9 @@
       {
         "issues": [],
         "module": 13,
-        "tailWords": 353,
+        "tailWords": 423,
         "topic": "Tema 2: Recuperación implica duplicación segura · Experto · 2 h 35 min",
-        "words": 2044
+        "words": 2399
       },
       {
         "issues": [],
@@ -9369,9 +9369,16 @@
       {
         "issues": [],
         "module": 13,
-        "tailWords": 358,
+        "tailWords": 350,
         "topic": "Tema 4: Observabilidad sirve a un objetivo y a una decisión · Experto · 1 h 45 min",
-        "words": 1837
+        "words": 1829
+      },
+      {
+        "issues": [],
+        "module": 13,
+        "tailWords": 389,
+        "topic": "Tema 5: Inbox, 2PC y el teorema CAP: límites de la consistencia distribuida · Experto · 1 h 30 min",
+        "words": 2329
       },
       {
         "issues": [],

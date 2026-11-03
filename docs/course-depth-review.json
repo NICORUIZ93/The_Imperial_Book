@@ -3,14 +3,14 @@
   "totals": {
     "tracks": 14,
     "modules": 255,
-    "topics": 1171,
+    "topics": 1172,
     "topicsWithSignals": 104,
     "newLaboratories": 25
   },
   "humanPedagogicalReview": {
     "reviewed": 0,
     "preRead": 14,
-    "total": 1171,
+    "total": 1172,
     "date": "2026-10-31",
     "responsible": "persona revisora pendiente; pre-lectura de agente registrada",
     "evidence": "docs/manual-review-log.md"
@@ -13384,7 +13384,7 @@
       "module": 13,
       "title": "Tema 3: Contratos ejecutables protegen despliegues independientes · Experto · 1 h 45 min",
       "file": "web/public/content/spring-boot/modulo-13.md",
-      "line": 406,
+      "line": 422,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -13396,7 +13396,19 @@
       "module": 13,
       "title": "Tema 4: Observabilidad sirve a un objetivo y a una decisión · Experto · 1 h 45 min",
       "file": "web/public/content/spring-boot/modulo-13.md",
-      "line": 576,
+      "line": 592,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "spring-boot",
+      "module": 13,
+      "title": "Tema 5: Inbox, 2PC y el teorema CAP: límites de la consistencia distribuida · Experto · 1 h 30 min",
+      "file": "web/public/content/spring-boot/modulo-13.md",
+      "line": 759,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

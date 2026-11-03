@@ -107,11 +107,31 @@ Total del repo: 1146 → **1148 temas** (2 nuevos). README y `spring-boot.track.
   `.exceptionally()`; confirmado con `javap` que `VirtualThreadTaskExecutor` no tiene
   `setTaskDecorator` (sí `SimpleAsyncTaskExecutor`), lo que descartó el primer diseño del executor.
   `mvn test` → BUILD SUCCESS, 9/9 tests en ambos Temas.
+- [x] **14. Consistencia distribuida: inbox, 2PC, CAP** → nuevo `spring-boot/M13 Tema 5`. Inbox
+  implementado con demo real (`mvn test` → BUILD SUCCESS: redelivery secuencial y concurrente
+  deduplicadas, fallo deliberado del catch-dentro-de-`@Transactional` verificado explícitamente).
+  2PC y CAP tratados como contenido de decisión/explicación, no demostrados con código ejecutado
+  (requerirían un coordinador XA real cayendo en un punto exacto), declarado explícitamente en la
+  lección — mismo criterio que remote chunking (M19 T3) y Querydsl (M3 T4).
+  **Hallazgo colateral importante:** al construir el demo de inbox con el mismo mecanismo
+  (restricción única + `@Transactional` + catch de `DataIntegrityViolationException`) del Tema 2
+  de este mismo módulo, se descubrió que el código YA PUBLICADO del Tema 2 (`PedidoService`) está
+  roto bajo las versiones actuales (Spring Boot 4.1.1 / Hibernate ORM 7.4.5.Final): un flush
+  fallido marca la transacción rollback-only aunque la excepción se capture dentro del mismo método
+  `@Transactional`, y el intento de `commit` al final lanza `UnexpectedRollbackException` en vez de
+  nunca propagar el error original — reproducido de forma determinista (3 ejecuciones) con el
+  código EXACTO que estaba publicado. **Corregido en el Tema 2** (no solo documentado): se separó
+  en dos métodos (uno sin `@Transactional` que captura la excepción desde fuera, otro con
+  `@Transactional` que no la captura y deja que se propague y revierta de forma normal), verificado
+  con `mvn test` incluyendo atomicidad real entre la clave y un efecto de negocio persistido. Esta
+  es la razón por la que `./scripts/validate.sh` y la revisión de ejecución real importan más que
+  confiar en que un tema "ya revisado" sigue siendo válido: el stack de versiones pinned puede
+  cambiar de comportamiento entre revisiones.
 
-Total del repo tras Lote 2: 1148 → **1169 temas**. README y `spring-boot.track.ts` sincronizados.
+Total del repo tras Lote 2: 1148 → **1171 temas**. README y `spring-boot.track.ts` sincronizados.
+Todos los huecos MEDIA (8-17) quedan cerrados.
 
 ### Pendiente (próximos lotes)
-MEDIA: 14 (consistencia distribuida: inbox, 2PC, CAP → M13).
 BAJA: 18 a 26 completos (HATEOAS, Spring REST Docs, integraciones JMS/LDAP/JMX/Spring
 Integration/Spring Session/webhooks HMAC, Spring Modulith, i18n/logging estructurado/graceful
 shutdown, caché 2º nivel Hibernate, Spring AI reranking/evaluación/observabilidad, CQRS/saga por

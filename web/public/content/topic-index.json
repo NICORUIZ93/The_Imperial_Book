@@ -4870,6 +4870,10 @@
       {
         "title": "Observabilidad sirve a un objetivo y a una decisión",
         "fragment": "tema-4-observabilidad-sirve-a-un-objetivo-y-a-una-decision"
+      },
+      {
+        "title": "Inbox, 2PC y el teorema CAP: límites de la consistencia distribuida",
+        "fragment": "tema-5-inbox-2pc-y-el-teorema-cap-limites-de-la-consistencia-distribuida"
       }
     ],
     "14": [

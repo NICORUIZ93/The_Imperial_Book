@@ -4837,6 +4837,17 @@
       ]
     },
     {
+      "id": "spring-boot:13:5",
+      "track": "spring-boot",
+      "module": 13,
+      "position": 5,
+      "title": "Inbox, 2PC y el teorema CAP: límites de la consistencia distribuida · Experto · 1 h 30 min",
+      "file": "web/public/content/spring-boot/modulo-13.md",
+      "requires": [
+        "spring-boot:13:4"
+      ]
+    },
+    {
       "id": "spring-boot:14:1",
       "track": "spring-boot",
       "module": 14,
@@ -4844,7 +4855,7 @@
       "title": "CRUD API y contratos · Experto · 2 h 15 min",
       "file": "web/public/content/spring-boot/modulo-14.md",
       "requires": [
-        "spring-boot:13:4"
+        "spring-boot:13:5"
       ]
     },
     {

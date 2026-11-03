@@ -2,8 +2,8 @@
 
 > Las señales automáticas no prueban profundidad ni ausencia de ella. Un tema sólo queda revisado mediante el registro humano con mapa de subtemas críticos, evidencia y fuentes.
 
-- Temas inventariados: 1171
-- Revisados humanamente para subtemas: 348
+- Temas inventariados: 1172
+- Revisados humanamente para subtemas: 349
 - Pendientes: 823
 - Candidatos prioritarios por señales: 782
 
@@ -24,7 +24,7 @@
 | node | 77 | 0 | 77 |
 | react | 58 | 0 | 58 |
 | rutaflow | 29 | 0 | 29 |
-| spring-boot | 105 | 105 | 0 |
+| spring-boot | 106 | 106 | 0 |
 
 ## Cola prioritaria
 
@@ -1080,9 +1080,10 @@
 - `spring-boot/modulo-12` — Tema 2: Integrando seguridad, persistencia y observabilidad · Experto · 2 h 40 min — integración seguridad+persistencia+observabilidad
 - `spring-boot/modulo-12` — Tema 3: Cierre del track y próximos pasos · Experto · 1 h 20 min — checklist de cierre del track
 - `spring-boot/modulo-13` — Tema 1: `@Transactional` funciona en una frontera, no como encantamiento · Experto · 1 h 55 min — @Transactional como frontera explícita
-- `spring-boot/modulo-13` — Tema 2: Recuperación implica duplicación segura · Experto · 2 h 35 min — idempotencia en recuperación
+- `spring-boot/modulo-13` — Tema 2: Recuperación implica duplicación segura · Experto · 2 h 35 min — idempotencia en recuperación; catch de DataIntegrityViolationException fuera del método @Transactional (evita UnexpectedRollbackException)
 - `spring-boot/modulo-13` — Tema 3: Contratos ejecutables protegen despliegues independientes · Experto · 1 h 45 min — contract testing ejecutable
 - `spring-boot/modulo-13` — Tema 4: Observabilidad sirve a un objetivo y a una decisión · Experto · 1 h 45 min — observabilidad orientada a objetivo
+- `spring-boot/modulo-13` — Tema 5: Inbox, 2PC y el teorema CAP: límites de la consistencia distribuida · Experto · 1 h 30 min — inbox: deduplicación de eventos reentregados en el consumidor; mismo patrón de dos métodos (catch fuera de @Transactional) que corrige la regresión del Tema 2; 2PC bloquea ante la caída del coordinador entre prepare y commit; teorema CAP aplicado a la elección de disponibilidad sobre consistencia fuerte
 - `spring-boot/modulo-14` — Tema 1: CRUD API y contratos · Experto · 2 h 15 min — CRUD con contrato DTO
 - `spring-boot/modulo-14` — Tema 2: MySQL y datos espaciales · Experto · 1 h 45 min — tipos espaciales MySQL
 - `spring-boot/modulo-14` — Tema 3: JPA e Hibernate Spatial · Experto · 2 h 15 min — org.hibernate.orm:hibernate-spatial; tipos JTS

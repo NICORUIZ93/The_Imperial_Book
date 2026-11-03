@@ -2732,12 +2732,14 @@
     "spring-boot/modulo-13::Tema 2: Recuperación implica duplicación segura · Experto · 2 h 35 min": {
       "status": "reviewed",
       "reviewDate": "2026-11-02",
-      "execution": "Mecanismo y APIs citadas son Spring estándar, estables entre Boot 3 y 4; sin pins de versión frágiles ni artefactos que requieran verificación especial.",
+      "execution": "REGRESIÓN REAL ENCONTRADA Y CORREGIDA (2026-11-02): el código previamente publicado de PedidoService.crearConClave tenía @Transactional en el MISMO método que capturaba DataIntegrityViolationException con try/catch. Verificado con un proyecto Maven real reproduciendo exactamente ese código (Spring Boot 4.1.1, Hibernate ORM 7.4.5.Final): el flush fallido marca la transacción como rollback-only aunque la excepción se capture; al retornar `false` con normalidad, el proxy intenta confirmar esa transacción y lanza UnexpectedRollbackException en vez de nunca propagar el DataIntegrityViolationException original -- reproducido de forma determinista en 3 ejecuciones repetidas, con el código EXACTO que estaba publicado en la lección (RegistroIdempotencia + PedidoService + RaceIdempotenciaTest verbatim). Fix verificado con el mismo proyecto: separar en dos métodos -- crearConClave SIN @Transactional captura la excepción desde fuera de cualquier transacción Spring; registrarYProcesarPedido CON @Transactional hace el saveAndFlush y deja que la excepción se propague sin capturarla. mvn test -> BUILD SUCCESS tanto para la carrera de dos threads (XOR) como para la atomicidad real entre la clave y un efecto de negocio persistido (verificado con una segunda entidad Pedido, no solo un contador en memoria). Lección (modulo-13.md) actualizada: código de PedidoService corregido, nueva fila de mapa de subtemas \"El catch no puede vivir dentro del método @Transactional\" (error frecuente), nota añadida al ejercicio de completar código, checklist y Si falla actualizados.",
       "criticalSubtopics": [
-        "idempotencia en recuperación"
+        "idempotencia en recuperación",
+        "catch de DataIntegrityViolationException fuera del método @Transactional (evita UnexpectedRollbackException)"
       ],
       "sources": [
-        "https://docs.spring.io/spring-boot/reference/"
+        "https://docs.spring.io/spring-boot/reference/",
+        "reproducción directa con Spring Boot 4.1.1 + Hibernate ORM 7.4.5.Final (mvn test, proyecto scratch verbatim)"
       ]
     },
     "spring-boot/modulo-13::Tema 3: Contratos ejecutables protegen despliegues independientes · Experto · 1 h 45 min": {
@@ -2760,6 +2762,20 @@
       ],
       "sources": [
         "https://docs.spring.io/spring-boot/reference/"
+      ]
+    },
+    "spring-boot/modulo-13::Tema 5: Inbox, 2PC y el teorema CAP: límites de la consistencia distribuida · Experto · 1 h 30 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Demo Maven real (Spring Boot 4.1.1, spring-boot-starter-data-jpa + h2): EventoProcesado con restricción única sobre eventId; ConsumidorEventosService.procesarEvento (SIN @Transactional) captura DataIntegrityViolationException de registrarYAplicarEfecto (CON @Transactional, sin capturar nada dentro). mvn test -> BUILD SUCCESS: redelivery secuencial del mismo eventId (segunda llamada devuelve false, efecto aplicado 1 vez) y redelivery concurrente con pool.invokeAll de 2 threads reales (XOR, efecto aplicado 1 vez). Fallo deliberado verificado explícitamente: mover el catch dentro del método @Transactional (igual patrón que la regresión real encontrada en el Tema 2 de este mismo módulo) reproduce UnexpectedRollbackException de forma determinista en ambos tests -- confirmado ejecutando esa variante exacta y luego restaurando la versión correcta. 2PC y CAP se tratan como contenido de decisión/explicación, NO demostrados con código ejecutado: 2PC requeriría un coordinador XA real (Atomikos/Narayana) cayendo en un punto exacto entre prepare y commit, fuera del alcance verificable razonable de este laboratorio; declarado explícitamente en la lección como decisión arquitectónica, igual que remote chunking (M19 T3) y Querydsl (M3 T4).",
+      "criticalSubtopics": [
+        "inbox: deduplicación de eventos reentregados en el consumidor",
+        "mismo patrón de dos métodos (catch fuera de @Transactional) que corrige la regresión del Tema 2",
+        "2PC bloquea ante la caída del coordinador entre prepare y commit",
+        "teorema CAP aplicado a la elección de disponibilidad sobre consistencia fuerte"
+      ],
+      "sources": [
+        "https://docs.spring.io/spring-framework/reference/data-access/transaction.html"
       ]
     },
     "spring-boot/modulo-14::Tema 1: CRUD API y contratos · Experto · 2 h 15 min": {

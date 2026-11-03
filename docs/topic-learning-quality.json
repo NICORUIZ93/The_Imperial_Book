@@ -221,18 +221,18 @@
       "repeatedDemo": 0
     },
     "spring-boot": {
-      "topics": 105,
-      "explanation": 105,
-      "code": 105,
+      "topics": 106,
+      "explanation": 106,
+      "code": 106,
       "visual": 82,
-      "filePath": 105,
-      "runCommand": 103,
-      "expectedResult": 105,
-      "practice": 105,
-      "project": 105,
-      "modelMental": 105,
-      "limitsDecision": 105,
-      "practicable": 103,
+      "filePath": 106,
+      "runCommand": 104,
+      "expectedResult": 106,
+      "practice": 106,
+      "project": 106,
+      "modelMental": 106,
+      "limitsDecision": 106,
+      "practicable": 104,
       "genericScaffold": 0,
       "repeatedDemo": 0
     }
@@ -24306,6 +24306,28 @@
         },
         "classification": {
           "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 13,
+        "topic": "Tema 5: Inbox, 2PC y el teorema CAP: límites de la consistencia distribuida · Experto · 1 h 30 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
