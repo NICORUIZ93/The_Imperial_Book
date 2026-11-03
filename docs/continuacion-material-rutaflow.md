@@ -99,7 +99,7 @@ Se cotejó el prompt maestro contra el contenido visible real de Java, Node.js,
 Spring Boot y Flutter. El inventario revela diferencias que la auditoría de siete
 pasos no detecta: Java 91 temas frente a 122 elementos cronometrados, Node 83
 temas frente a 75, Spring Boot 23 módulos/99 temas frente a 26/161, y Flutter
-21 módulos/94 temas frente a 23/155. Las diferencias por módulo quedan en
+23 módulos/106 temas frente a 23/155. Las diferencias por módulo quedan en
 `revision-cursos-prioritarios.md`; son candidatos de omisión que requieren cotejo
 individual, no una certificación automática.
 
@@ -108,10 +108,11 @@ estructurales; se ejecutaron ambas demostraciones con JDK 25. En Node M14, la
 lección compuesta sobre mensajería y sagas se acotó a Saga y ahora tiene un
 ejemplo JavaScript completo con fallo de pago y compensaciones. Este lote no cierra
 la revisión: siguen brechas de laboratorio en Java M16/M17/M19/M20, Kafka y RabbitMQ
-por separado, módulos Spring Boot 23–25, Flutter M21/M22 y el cotejo manual
+por separado, módulos Spring Boot 23–25 y el cotejo manual
 de los módulos existentes frente al inventario prioritario. Flutter M16 (FFI) y
 M17 (generación y AST) ya se añadieron con seis temas cada uno; M18 con siete,
-M19 y M20 con seis. Los fragmentos M19 pasaron `flutter analyze` con sus dependencias
+M19–M22 con seis. M21 cubre compras y suscripciones con sandbox y validación servidor;
+M22 cubre anuncios, mediación y consentimiento UMP. Los fragmentos M19 pasaron `flutter analyze` con sus dependencias
 en un proyecto temporal y la regla del M20 pasó `flutter test`; mapas, realtime,
 integración móvil, paneles y firma siguen pendientes de servicios/dispositivos. Falta
 terminar la ejecución por toolchain nativo y hacer el cotejo humano de los cursos existentes.

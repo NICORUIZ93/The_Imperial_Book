@@ -81,24 +81,24 @@
       "complete": 113
     },
     "flutter": {
-      "topics": 94,
-      "objective": 94,
-      "prerequisites": 94,
-      "context": 94,
-      "theoryAnalogy": 94,
-      "guidedDemo": 94,
-      "codeExplanation": 94,
-      "execution": 94,
-      "expectedResult": 94,
-      "deliberateFailure": 94,
-      "guidedPractice": 94,
-      "independentPractice": 94,
-      "closure": 94,
-      "commonErrors": 94,
-      "resources": 94,
-      "standaloneExample": 94,
-      "learningEvidence": 94,
-      "complete": 94
+      "topics": 106,
+      "objective": 106,
+      "prerequisites": 106,
+      "context": 106,
+      "theoryAnalogy": 106,
+      "guidedDemo": 106,
+      "codeExplanation": 106,
+      "execution": 106,
+      "expectedResult": 106,
+      "deliberateFailure": 106,
+      "guidedPractice": 106,
+      "independentPractice": 106,
+      "closure": 105,
+      "commonErrors": 106,
+      "resources": 106,
+      "standaloneExample": 106,
+      "learningEvidence": 106,
+      "complete": 105
     },
     "foundations": {
       "topics": 99,
@@ -12358,6 +12358,318 @@
       {
         "module": 20,
         "topic": "Tema 6: builds por plataforma, firma y entrega",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 21,
+        "topic": "Tema 1: catálogo y flujo con `in_app_purchase`",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 21,
+        "topic": "Tema 2: suscripciones Android, planes base y cambios",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 21,
+        "topic": "Tema 3: suscripciones iOS con StoreKit",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 21,
+        "topic": "Tema 4: restauración de compras y entitlement",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 21,
+        "topic": "Tema 5: pruebas de IAP en sandbox",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 21,
+        "topic": "Tema 6: validación de transacciones en servidor",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 22,
+        "topic": "Tema 1: configurar AdMob y cargar el primer banner de prueba",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 22,
+        "topic": "Tema 2: elegir mediación, bidding y waterfall",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 22,
+        "topic": "Tema 3: banners, interstitials y anuncios recompensados",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": false,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 15,
+          "complete": false
+        }
+      },
+      {
+        "module": 22,
+        "topic": "Tema 4: consentimiento, privacidad y audiencias",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 22,
+        "topic": "Tema 5: pruebas de anuncios y diagnóstico de no-fill",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 22,
+        "topic": "Tema 6: comparar AdMob, AppLovin MAX y Unity LevelPlay",
         "criteria": {
           "objective": true,
           "prerequisites": true,

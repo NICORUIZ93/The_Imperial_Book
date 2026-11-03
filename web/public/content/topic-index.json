@@ -2070,6 +2070,58 @@
         "fragment": "tema-6-builds-por-plataforma-firma-y-entrega"
       }
     ],
+    "21": [
+      {
+        "title": "catálogo y flujo con `in_app_purchase`",
+        "fragment": "tema-1-catalogo-y-flujo-con-in-app-purchase"
+      },
+      {
+        "title": "suscripciones Android, planes base y cambios",
+        "fragment": "tema-2-suscripciones-android-planes-base-y-cambios"
+      },
+      {
+        "title": "suscripciones iOS con StoreKit",
+        "fragment": "tema-3-suscripciones-ios-con-storekit"
+      },
+      {
+        "title": "restauración de compras y entitlement",
+        "fragment": "tema-4-restauracion-de-compras-y-entitlement"
+      },
+      {
+        "title": "pruebas de IAP en sandbox",
+        "fragment": "tema-5-pruebas-de-iap-en-sandbox"
+      },
+      {
+        "title": "validación de transacciones en servidor",
+        "fragment": "tema-6-validacion-de-transacciones-en-servidor"
+      }
+    ],
+    "22": [
+      {
+        "title": "configurar AdMob y cargar el primer banner de prueba",
+        "fragment": "tema-1-configurar-admob-y-cargar-el-primer-banner-de-prueba"
+      },
+      {
+        "title": "elegir mediación, bidding y waterfall",
+        "fragment": "tema-2-elegir-mediacion-bidding-y-waterfall"
+      },
+      {
+        "title": "banners, interstitials y anuncios recompensados",
+        "fragment": "tema-3-banners-interstitials-y-anuncios-recompensados"
+      },
+      {
+        "title": "consentimiento, privacidad y audiencias",
+        "fragment": "tema-4-consentimiento-privacidad-y-audiencias"
+      },
+      {
+        "title": "pruebas de anuncios y diagnóstico de no-fill",
+        "fragment": "tema-5-pruebas-de-anuncios-y-diagnostico-de-no-fill"
+      },
+      {
+        "title": "comparar AdMob, AppLovin MAX y Unity LevelPlay",
+        "fragment": "tema-6-comparar-admob-applovin-max-y-unity-levelplay"
+      }
+    ],
     "3": [
       {
         "title": "go_router: navegación como función de la URL",

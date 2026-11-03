@@ -2,9 +2,9 @@
   "method": "Lectura automática de todos los bloques visibles; alertas para revisión, no veredictos de corrección ni aprendizaje. Una demo breve puede ser suficiente. La ausencia de alertas no acredita ejecutabilidad.",
   "totals": {
     "tracks": 14,
-    "modules": 251,
-    "topics": 1151,
-    "topicsWithSignals": 162,
+    "modules": 253,
+    "topics": 1163,
+    "topicsWithSignals": 163,
     "newLaboratories": 25
   },
   "priorities": {
@@ -5204,6 +5204,140 @@
       "title": "Tema 6: builds por plataforma, firma y entrega",
       "file": "web/public/content/flutter/modulo-20.md",
       "line": 303,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "flutter",
+      "module": 21,
+      "title": "Tema 1: catálogo y flujo con `in_app_purchase`",
+      "file": "web/public/content/flutter/modulo-21.md",
+      "line": 9,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "flutter",
+      "module": 21,
+      "title": "Tema 2: suscripciones Android, planes base y cambios",
+      "file": "web/public/content/flutter/modulo-21.md",
+      "line": 100,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "flutter",
+      "module": 21,
+      "title": "Tema 3: suscripciones iOS con StoreKit",
+      "file": "web/public/content/flutter/modulo-21.md",
+      "line": 156,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "flutter",
+      "module": 21,
+      "title": "Tema 4: restauración de compras y entitlement",
+      "file": "web/public/content/flutter/modulo-21.md",
+      "line": 212,
+      "signals": [
+        "ejemplo-breve-revisar-contexto"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "flutter",
+      "module": 21,
+      "title": "Tema 5: pruebas de IAP en sandbox",
+      "file": "web/public/content/flutter/modulo-21.md",
+      "line": 277,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "flutter",
+      "module": 21,
+      "title": "Tema 6: validación de transacciones en servidor",
+      "file": "web/public/content/flutter/modulo-21.md",
+      "line": 333,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "flutter",
+      "module": 22,
+      "title": "Tema 1: configurar AdMob y cargar el primer banner de prueba",
+      "file": "web/public/content/flutter/modulo-22.md",
+      "line": 9,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "flutter",
+      "module": 22,
+      "title": "Tema 2: elegir mediación, bidding y waterfall",
+      "file": "web/public/content/flutter/modulo-22.md",
+      "line": 130,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "flutter",
+      "module": 22,
+      "title": "Tema 3: banners, interstitials y anuncios recompensados",
+      "file": "web/public/content/flutter/modulo-22.md",
+      "line": 188,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "flutter",
+      "module": 22,
+      "title": "Tema 4: consentimiento, privacidad y audiencias",
+      "file": "web/public/content/flutter/modulo-22.md",
+      "line": 273,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "flutter",
+      "module": 22,
+      "title": "Tema 5: pruebas de anuncios y diagnóstico de no-fill",
+      "file": "web/public/content/flutter/modulo-22.md",
+      "line": 346,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "flutter",
+      "module": 22,
+      "title": "Tema 6: comparar AdMob, AppLovin MAX y Unity LevelPlay",
+      "file": "web/public/content/flutter/modulo-22.md",
+      "line": 405,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

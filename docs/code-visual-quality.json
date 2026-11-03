@@ -145,16 +145,16 @@
       "officialSource": 56
     },
     "flutter": {
-      "topics": 94,
-      "code": 94,
-      "commentedCode": 33,
-      "mermaid": 75,
+      "topics": 106,
+      "code": 106,
+      "commentedCode": 34,
+      "mermaid": 81,
       "archifyVisual": 0,
       "asciiVisual": 15,
       "misleadingDiagramLabel": 0,
-      "filePath": 94,
-      "runCommand": 91,
-      "officialSource": 71
+      "filePath": 103,
+      "runCommand": 103,
+      "officialSource": 77
     },
     "rutaflow": {
       "topics": 29,
@@ -2960,6 +2960,83 @@
       "track": "flutter",
       "module": 20,
       "topic": "Tema 6: builds por plataforma, firma y entrega",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 21,
+      "topic": "Tema 1: catálogo y flujo con `in_app_purchase`",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 21,
+      "topic": "Tema 2: suscripciones Android, planes base y cambios",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 21,
+      "topic": "Tema 3: suscripciones iOS con StoreKit",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 21,
+      "topic": "Tema 4: restauración de compras y entitlement",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 21,
+      "topic": "Tema 5: pruebas de IAP en sandbox",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 21,
+      "topic": "Tema 6: validación de transacciones en servidor",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 22,
+      "topic": "Tema 2: elegir mediación, bidding y waterfall",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 22,
+      "topic": "Tema 3: banners, interstitials y anuncios recompensados",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 22,
+      "topic": "Tema 4: consentimiento, privacidad y audiencias",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 22,
+      "topic": "Tema 5: pruebas de anuncios y diagnóstico de no-fill",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 22,
+      "topic": "Tema 6: comparar AdMob, AppLovin MAX y Unity LevelPlay",
       "missingCode": false,
       "missingComments": true
     },

@@ -9387,6 +9387,138 @@
       ]
     },
     {
+      "id": "flutter:21:1",
+      "track": "flutter",
+      "module": 21,
+      "position": 1,
+      "title": "catálogo y flujo con `in_app_purchase`",
+      "file": "web/public/content/flutter/modulo-21.md",
+      "requires": [
+        "flutter:20:6"
+      ]
+    },
+    {
+      "id": "flutter:21:2",
+      "track": "flutter",
+      "module": 21,
+      "position": 2,
+      "title": "suscripciones Android, planes base y cambios",
+      "file": "web/public/content/flutter/modulo-21.md",
+      "requires": [
+        "flutter:21:1"
+      ]
+    },
+    {
+      "id": "flutter:21:3",
+      "track": "flutter",
+      "module": 21,
+      "position": 3,
+      "title": "suscripciones iOS con StoreKit",
+      "file": "web/public/content/flutter/modulo-21.md",
+      "requires": [
+        "flutter:21:2"
+      ]
+    },
+    {
+      "id": "flutter:21:4",
+      "track": "flutter",
+      "module": 21,
+      "position": 4,
+      "title": "restauración de compras y entitlement",
+      "file": "web/public/content/flutter/modulo-21.md",
+      "requires": [
+        "flutter:21:3"
+      ]
+    },
+    {
+      "id": "flutter:21:5",
+      "track": "flutter",
+      "module": 21,
+      "position": 5,
+      "title": "pruebas de IAP en sandbox",
+      "file": "web/public/content/flutter/modulo-21.md",
+      "requires": [
+        "flutter:21:4"
+      ]
+    },
+    {
+      "id": "flutter:21:6",
+      "track": "flutter",
+      "module": 21,
+      "position": 6,
+      "title": "validación de transacciones en servidor",
+      "file": "web/public/content/flutter/modulo-21.md",
+      "requires": [
+        "flutter:21:5"
+      ]
+    },
+    {
+      "id": "flutter:22:1",
+      "track": "flutter",
+      "module": 22,
+      "position": 1,
+      "title": "configurar AdMob y cargar el primer banner de prueba",
+      "file": "web/public/content/flutter/modulo-22.md",
+      "requires": [
+        "flutter:21:6"
+      ]
+    },
+    {
+      "id": "flutter:22:2",
+      "track": "flutter",
+      "module": 22,
+      "position": 2,
+      "title": "elegir mediación, bidding y waterfall",
+      "file": "web/public/content/flutter/modulo-22.md",
+      "requires": [
+        "flutter:22:1"
+      ]
+    },
+    {
+      "id": "flutter:22:3",
+      "track": "flutter",
+      "module": 22,
+      "position": 3,
+      "title": "banners, interstitials y anuncios recompensados",
+      "file": "web/public/content/flutter/modulo-22.md",
+      "requires": [
+        "flutter:22:2"
+      ]
+    },
+    {
+      "id": "flutter:22:4",
+      "track": "flutter",
+      "module": 22,
+      "position": 4,
+      "title": "consentimiento, privacidad y audiencias",
+      "file": "web/public/content/flutter/modulo-22.md",
+      "requires": [
+        "flutter:22:3"
+      ]
+    },
+    {
+      "id": "flutter:22:5",
+      "track": "flutter",
+      "module": 22,
+      "position": 5,
+      "title": "pruebas de anuncios y diagnóstico de no-fill",
+      "file": "web/public/content/flutter/modulo-22.md",
+      "requires": [
+        "flutter:22:4"
+      ]
+    },
+    {
+      "id": "flutter:22:6",
+      "track": "flutter",
+      "module": 22,
+      "position": 6,
+      "title": "comparar AdMob, AppLovin MAX y Unity LevelPlay",
+      "file": "web/public/content/flutter/modulo-22.md",
+      "requires": [
+        "flutter:22:5"
+      ]
+    },
+    {
       "id": "devops:0:1",
       "track": "devops",
       "module": 0,

@@ -1,8 +1,8 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-11-03 19:51 UTC
+Generated: 2026-11-03 20:01 UTC
 Root: `The_Imperial_Book`
-Indexed files: 928
+Indexed files: 930
 Import edges: 56
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -17,7 +17,7 @@ For automated lookups, use `docs/repo-graph.json`.
 
 - `angular-app`: 59 files
 - `automation-script`: 34 files
-- `course-content`: 255 files
+- `course-content`: 257 files
 - `documentation`: 56 files
 - `example`: 469 files
 - `local-infra`: 1 files
@@ -25,7 +25,7 @@ For automated lookups, use `docs/repo-graph.json`.
 
 ## File Types
 
-- `.md`: 318
+- `.md`: 320
 - `.py`: 160
 - `.json`: 67
 - `.ts`: 66
@@ -216,7 +216,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/public/content/android/modulo-6.md` (406 lines) - headings: # Módulo 6: Persistencia local con Room, ## Aprende construyendo, ### Tema 1: Entities, DAOs y Database, #### Paso 1 · Objetivo y preparación
 - `web/public/content/android/modulo-7.md` (388 lines) - headings: # Módulo 7: Inyección de dependencias con Hilt, ## Aprende construyendo, ### Tema 1: Configuración básica de Hilt, #### Paso 1 · Objetivo y preparación
 - `web/public/content/android/modulo-8.md` (376 lines) - headings: # Módulo 8: Trabajo en segundo plano, ## Aprende construyendo, ### Tema 1: CoroutineWorker y garantía de ejecución, #### Paso 1 · Objetivo y preparación
-- ... 237 more files
+- ... 239 more files
 
 ### documentation
 
@@ -274,16 +274,16 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/biblioteca/catalogo.json` (564 lines)
 - `docs/biblioteca/imagenes.json` (577 lines)
 - `docs/browser-course-review.json` (2660 lines)
-- `docs/code-visual-quality.json` (3094 lines)
-- `docs/course-depth-review.json` (13074 lines)
+- `docs/code-visual-quality.json` (3171 lines)
+- `docs/course-depth-review.json` (13208 lines)
 - `docs/curriculum-matrix.json` (394 lines)
 - `docs/floci-official-curriculum.json` (14 lines)
 - `docs/lesson-substance-baseline.json` (1693 lines)
-- `docs/lesson-substance.json` (10978 lines)
+- `docs/lesson-substance.json` (11072 lines)
 - `docs/merged-pdf-index.json` (426 lines)
 - `docs/official-learning-guides.json` (22 lines)
 - `docs/official-sources.json` (195 lines)
 - `docs/official-topic-atlas.json` (175 lines)
-- `docs/prerequisite-graph.json` (12669 lines)
+- `docs/prerequisite-graph.json` (12801 lines)
 - `docs/requested-master-topics.json` (189 lines)
 - ... 36 more files
