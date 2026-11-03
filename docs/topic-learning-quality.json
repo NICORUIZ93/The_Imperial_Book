@@ -77,18 +77,18 @@
       "repeatedDemo": 0
     },
     "flutter": {
-      "topics": 63,
-      "explanation": 63,
-      "code": 63,
-      "visual": 52,
-      "filePath": 63,
-      "runCommand": 63,
-      "expectedResult": 63,
-      "practice": 63,
-      "project": 63,
-      "modelMental": 63,
-      "limitsDecision": 63,
-      "practicable": 63,
+      "topics": 69,
+      "explanation": 69,
+      "code": 69,
+      "visual": 53,
+      "filePath": 69,
+      "runCommand": 69,
+      "expectedResult": 69,
+      "practice": 69,
+      "project": 69,
+      "modelMental": 69,
+      "limitsDecision": 69,
+      "practicable": 69,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
@@ -9710,6 +9710,138 @@
       {
         "module": 15,
         "topic": "Tema 6: Builds, firma y despliegue",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 16,
+        "topic": "Tema 1: reconocer cuándo usar FFI y crear el paquete",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 16,
+        "topic": "Tema 2: generar bindings C seguros para Dart",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 16,
+        "topic": "Tema 3: conectar una biblioteca Rust mediante una ABI C",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 16,
+        "topic": "Tema 4: compilar y empaquetar bibliotecas por plataforma",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 16,
+        "topic": "Tema 5: medir rendimiento y evitar bloquear la interfaz",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 16,
+        "topic": "Tema 6: propiedad de memoria, liberación y errores",
         "criteria": {
           "explanation": true,
           "code": true,

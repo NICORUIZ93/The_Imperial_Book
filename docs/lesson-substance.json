@@ -632,6 +632,11 @@
       "track": "flutter"
     },
     {
+      "legacySections": [],
+      "module": 16,
+      "track": "flutter"
+    },
+    {
       "legacySections": [
         "**Errores comunes y soluciones**"
       ],
@@ -1645,7 +1650,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "062abdba78adfeff20698167bef2956b7ad9a7ddd15d0d1a03d978eb8c2739be",
+    "fingerprint": "8a61ca5a0909795c02cebb9be442d8b6cab034413d3c2d0f6685ff0212cf5a90",
     "issues": {
       "andamiaje-generico": 128,
       "bloque-repetido": 218,
@@ -1658,9 +1663,9 @@
       "## Ruta de proyecto progresivo desde carpeta vacía": 12,
       "**Errores comunes y soluciones**": 179
     },
-    "modules": 246,
+    "modules": 247,
     "modulesWithLegacySections": 181,
-    "topics": 1120,
+    "topics": 1126,
     "topicsWithIssues": 470
   },
   "topics": {
@@ -5129,6 +5134,48 @@
         "tailWords": 121,
         "topic": "Tema 6: Builds, firma y despliegue",
         "words": 765
+      },
+      {
+        "issues": [],
+        "module": 16,
+        "tailWords": 145,
+        "topic": "Tema 1: reconocer cuándo usar FFI y crear el paquete",
+        "words": 644
+      },
+      {
+        "issues": [],
+        "module": 16,
+        "tailWords": 147,
+        "topic": "Tema 2: generar bindings C seguros para Dart",
+        "words": 662
+      },
+      {
+        "issues": [],
+        "module": 16,
+        "tailWords": 152,
+        "topic": "Tema 3: conectar una biblioteca Rust mediante una ABI C",
+        "words": 639
+      },
+      {
+        "issues": [],
+        "module": 16,
+        "tailWords": 168,
+        "topic": "Tema 4: compilar y empaquetar bibliotecas por plataforma",
+        "words": 625
+      },
+      {
+        "issues": [],
+        "module": 16,
+        "tailWords": 184,
+        "topic": "Tema 5: medir rendimiento y evitar bloquear la interfaz",
+        "words": 695
+      },
+      {
+        "issues": [],
+        "module": 16,
+        "tailWords": 175,
+        "topic": "Tema 6: propiedad de memoria, liberación y errores",
+        "words": 668
       },
       {
         "issues": [

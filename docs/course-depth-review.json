@@ -2,9 +2,9 @@
   "method": "Lectura automática de todos los bloques visibles; alertas para revisión, no veredictos de corrección ni aprendizaje. Una demo breve puede ser suficiente. La ausencia de alertas no acredita ejecutabilidad.",
   "totals": {
     "tracks": 14,
-    "modules": 246,
-    "topics": 1120,
-    "topicsWithSignals": 160,
+    "modules": 247,
+    "topics": 1126,
+    "topicsWithSignals": 162,
     "newLaboratories": 25
   },
   "priorities": {
@@ -4826,6 +4826,76 @@
       "title": "Tema 6: Builds, firma y despliegue",
       "file": "web/public/content/flutter/modulo-15.md",
       "line": 301,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "flutter",
+      "module": 16,
+      "title": "Tema 1: reconocer cuándo usar FFI y crear el paquete",
+      "file": "web/public/content/flutter/modulo-16.md",
+      "line": 9,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "flutter",
+      "module": 16,
+      "title": "Tema 2: generar bindings C seguros para Dart",
+      "file": "web/public/content/flutter/modulo-16.md",
+      "line": 66,
+      "signals": [
+        "ejemplo-breve-revisar-contexto"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "flutter",
+      "module": 16,
+      "title": "Tema 3: conectar una biblioteca Rust mediante una ABI C",
+      "file": "web/public/content/flutter/modulo-16.md",
+      "line": 121,
+      "signals": [
+        "ejemplo-breve-revisar-contexto"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "flutter",
+      "module": 16,
+      "title": "Tema 4: compilar y empaquetar bibliotecas por plataforma",
+      "file": "web/public/content/flutter/modulo-16.md",
+      "line": 166,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "flutter",
+      "module": 16,
+      "title": "Tema 5: medir rendimiento y evitar bloquear la interfaz",
+      "file": "web/public/content/flutter/modulo-16.md",
+      "line": 207,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "flutter",
+      "module": 16,
+      "title": "Tema 6: propiedad de memoria, liberación y errores",
+      "file": "web/public/content/flutter/modulo-16.md",
+      "line": 254,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

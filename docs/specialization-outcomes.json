@@ -176,8 +176,8 @@
             11,
             12,
             13,
-        14,
-        15
+            14,
+            15
           ],
           "evidence": [
             "servicio integrado",
@@ -990,16 +990,17 @@
         {
           "id": "FLUTTER-4",
           "level": "Experto",
-          "statement": "Publicar y operar Flutter con seguridad, isolates, sincronización y releases por plataforma.",
+          "statement": "Publicar y operar Flutter con seguridad, isolates, sincronización, FFI y releases por plataforma.",
           "moduleIds": [
             11,
             12,
             13,
             14,
-            15
+            15,
+            16
           ],
           "evidence": [
-            "builds firmados",
+            "builds firmados y matriz de targets FFI",
             "auditoría, outbox y runbook"
           ],
           "cs2023": [

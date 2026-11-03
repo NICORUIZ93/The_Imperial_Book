@@ -81,24 +81,24 @@
       "complete": 113
     },
     "flutter": {
-      "topics": 63,
-      "objective": 63,
-      "prerequisites": 63,
-      "context": 63,
-      "theoryAnalogy": 63,
-      "guidedDemo": 63,
-      "codeExplanation": 63,
-      "execution": 63,
-      "expectedResult": 63,
-      "deliberateFailure": 63,
-      "guidedPractice": 63,
-      "independentPractice": 63,
-      "closure": 63,
-      "commonErrors": 63,
-      "resources": 63,
-      "standaloneExample": 63,
-      "learningEvidence": 63,
-      "complete": 63
+      "topics": 69,
+      "objective": 69,
+      "prerequisites": 69,
+      "context": 69,
+      "theoryAnalogy": 69,
+      "guidedDemo": 69,
+      "codeExplanation": 69,
+      "execution": 69,
+      "expectedResult": 69,
+      "deliberateFailure": 69,
+      "guidedPractice": 69,
+      "independentPractice": 69,
+      "closure": 69,
+      "commonErrors": 69,
+      "resources": 69,
+      "standaloneExample": 69,
+      "learningEvidence": 69,
+      "complete": 69
     },
     "foundations": {
       "topics": 99,
@@ -11474,6 +11474,162 @@
       {
         "module": 15,
         "topic": "Tema 6: Builds, firma y despliegue",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 16,
+        "topic": "Tema 1: reconocer cuándo usar FFI y crear el paquete",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 16,
+        "topic": "Tema 2: generar bindings C seguros para Dart",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 16,
+        "topic": "Tema 3: conectar una biblioteca Rust mediante una ABI C",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 16,
+        "topic": "Tema 4: compilar y empaquetar bibliotecas por plataforma",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 16,
+        "topic": "Tema 5: medir rendimiento y evitar bloquear la interfaz",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 16,
+        "topic": "Tema 6: propiedad de memoria, liberación y errores",
         "criteria": {
           "objective": true,
           "prerequisites": true,

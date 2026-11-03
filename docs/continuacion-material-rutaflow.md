@@ -97,9 +97,9 @@ por el entorno antes de abrir las páginas.
 
 Se cotejó el prompt maestro contra el contenido visible real de Java, Node.js,
 Spring Boot y Flutter. El inventario revela diferencias que la auditoría de siete
-pasos no detecta: Java 83 temas frente a 122 elementos cronometrados, Node 15
-módulos frente a 16, Spring Boot 23 módulos/91 temas frente a 26/161, y Flutter
-16 módulos/63 temas frente a 23/155. Las diferencias por módulo quedan en
+pasos no detecta: Java 91 temas frente a 122 elementos cronometrados, Node 83
+temas frente a 75, Spring Boot 23 módulos/99 temas frente a 26/161, y Flutter
+17 módulos/69 temas frente a 23/155. Las diferencias por módulo quedan en
 `revision-cursos-prioritarios.md`; son candidatos de omisión que requieren cotejo
 individual, no una certificación automática.
 
@@ -107,9 +107,10 @@ Como primera corrección de Java, M12 incorpora lecciones de Prototype y patrone
 estructurales; se ejecutaron ambas demostraciones con JDK 25. En Node M14, la
 lección compuesta sobre mensajería y sagas se acotó a Saga y ahora tiene un
 ejemplo JavaScript completo con fallo de pago y compensaciones. Este lote no cierra
-la revisión: faltan las brechas de Java M16/M17/M19/M20, Kafka y RabbitMQ por
-separado, módulos Spring Boot 23–25, Flutter 16–22 y el cotejo del resto del
-inventario prioritario.
+la revisión: siguen brechas de laboratorio en Java M16/M17/M19/M20, Kafka y RabbitMQ
+por separado, módulos Spring Boot 23–25, Flutter M17/M18/M21/M22 y el cotejo manual
+de los módulos existentes frente al inventario prioritario. Flutter M16 ya se
+añadió con seis temas de FFI; todavía requiere ejecución por toolchain nativo.
 
 Los ejemplos Prototype, StructuralPatternsDemo (incluido Flyweight) y las dos
 rutas de la saga Node se ejecutaron con salida esperada. `./scripts/validate.sh`

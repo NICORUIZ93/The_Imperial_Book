@@ -9046,6 +9046,72 @@
       ]
     },
     {
+      "id": "flutter:16:1",
+      "track": "flutter",
+      "module": 16,
+      "position": 1,
+      "title": "reconocer cuándo usar FFI y crear el paquete",
+      "file": "web/public/content/flutter/modulo-16.md",
+      "requires": [
+        "flutter:15:6"
+      ]
+    },
+    {
+      "id": "flutter:16:2",
+      "track": "flutter",
+      "module": 16,
+      "position": 2,
+      "title": "generar bindings C seguros para Dart",
+      "file": "web/public/content/flutter/modulo-16.md",
+      "requires": [
+        "flutter:16:1"
+      ]
+    },
+    {
+      "id": "flutter:16:3",
+      "track": "flutter",
+      "module": 16,
+      "position": 3,
+      "title": "conectar una biblioteca Rust mediante una ABI C",
+      "file": "web/public/content/flutter/modulo-16.md",
+      "requires": [
+        "flutter:16:2"
+      ]
+    },
+    {
+      "id": "flutter:16:4",
+      "track": "flutter",
+      "module": 16,
+      "position": 4,
+      "title": "compilar y empaquetar bibliotecas por plataforma",
+      "file": "web/public/content/flutter/modulo-16.md",
+      "requires": [
+        "flutter:16:3"
+      ]
+    },
+    {
+      "id": "flutter:16:5",
+      "track": "flutter",
+      "module": 16,
+      "position": 5,
+      "title": "medir rendimiento y evitar bloquear la interfaz",
+      "file": "web/public/content/flutter/modulo-16.md",
+      "requires": [
+        "flutter:16:4"
+      ]
+    },
+    {
+      "id": "flutter:16:6",
+      "track": "flutter",
+      "module": 16,
+      "position": 6,
+      "title": "propiedad de memoria, liberación y errores",
+      "file": "web/public/content/flutter/modulo-16.md",
+      "requires": [
+        "flutter:16:5"
+      ]
+    },
+    {
       "id": "devops:0:1",
       "track": "devops",
       "module": 0,

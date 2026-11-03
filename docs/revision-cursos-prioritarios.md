@@ -21,14 +21,14 @@ Los conteos comparan elementos con duración enumerados en el prompt con encabez
 | Java | 21 módulos, 122 elementos cronometrados | 21 módulos, 91 temas | La granularidad difiere en M12, M16, M17, M19 y M20; M16 se amplió de 2 a 8 lecciones | 46 al iniciar la revisión |
 | Node.js | 16 módulos, 75 elementos cronometrados | 16 módulos, 83 temas | M15 ya existe; M14 separa saga, Kafka y RabbitMQ en lecciones diferentes | 15 |
 | Spring Boot | 26 módulos, 161 elementos cronometrados | 23 módulos, 99 temas | M8 se amplió de 5 a 9 y M10 de 8 a 12 lecciones; M23–M25 todavía no tienen archivo | 8 |
-| Flutter | 23 módulos, 155 elementos cronometrados | 16 módulos, 63 temas | M16–M22 no tienen archivo; granularidad de M0–M15 por cotejar | 6 |
+| Flutter | 23 módulos, 155 elementos cronometrados | 17 módulos, 69 temas | M16 ya tiene seis lecciones; M17–M22 no tienen archivo; M0–M15 aún requieren cotejo manual completo | 6 |
 
 **Detalle de diferencias por módulo según cantidad de elementos cronometrados:**
 
 - **Java:** las diferencias de elementos por encabezados son M12 (+2 elementos), M16 (+15), M17 (+10), M19 (+5) y M20 (+10). El cotejo de contenido definirá cuáles son subtemas cubiertos dentro de una lección compuesta y cuáles requieren una lección propia.
 - **Node:** se añadió M15 con Deno, Bun, migración desde Node y criterio de elección. M14 separa saga, Kafka y RabbitMQ para comprobar clave/grupo/offset de Kafka y exchange/cola/ack/prefetch de RabbitMQ por separado; falta ejecutar los labs contra brokers reales.
 - **Spring Boot:** hay diferencias de granularidad que se revisarán por contenido en M2 (2), M3 (5), M4 (5), M6 (5), M7 (3), M8 (ahora 9 temas frente a 8 elementos del prompt), M9 (3), M10 (ahora 12 temas para 12 elementos del prompt), M11 (1), M16 (6), M17 (6), M18 (5), M19 (6), M20 (2), M21 (3), M22 (2). M23, M24 y M25 no tienen archivo en el contenido web; cada uno enumera 4 elementos en el prompt.
-- **Flutter:** hay diferencias de granularidad por cotejar en M0 (6), M1 (5), M2 (2), M3 (3), M4 (5), M5 (2), M6 (2), M7 (4), M8 (3), M9 (7), M10 (9), M11 (4), M12 (3), M13 (4), M14 (1), M15 (1). M16, M17, M18, M21 y M22 no tienen archivo en la web; enumeran 6, 6, 7, 6 y 6 elementos. El prompt describe M19 y M20 sin una lista cronometrada reconocible; su proyecto/capstone se revisará directamente.
+- **Flutter:** hay diferencias de granularidad por cotejar en M0 (6), M1 (5), M2 (2), M3 (3), M4 (5), M5 (2), M6 (2), M7 (4), M8 (3), M9 (7), M10 (9), M11 (4), M12 (3), M13 (4), M14 (1), M15 (1). M16 ya cuenta con seis lecciones sobre FFI, bindings C, Rust, empaquetado, rendimiento y memoria. M17, M18, M21 y M22 siguen sin archivo; enumeran 6, 7, 6 y 6 elementos. El prompt describe M19 y M20 como proyectos de seis componentes sin lista cronometrada reconocible; se revisarán directamente.
 
 ### Lectura manual de Java M16 (JPA)
 
@@ -117,4 +117,5 @@ El cierre de cada curso requerirá conteo de títulos preservados, matriz de req
 - **Node M15:** se creó la ruta de cuatro temas para Deno, Bun, migración y elección, basada en la documentación primaria actual. La matriz cubre estructura curricular; los ejemplos Deno/Bun aún no se ejecutaron en esos runtimes.
 - **Spring Boot M8:** se amplió de 5 a 9 lecciones con Spring Cloud Stream, Kafka Streams, Avro/Schema Registry y RabbitMQ/Spring AMQP en prácticas separadas. La build valida el catálogo; faltan pruebas reales con Kafka y RabbitMQ.
 - **Spring Boot M10:** se amplió de 8 a 12 lecciones para cubrir Spring Modulith, Spring Cloud Bus, Micrometer Tracing y contract testing por separado. El catálogo incluye cuatro prácticas nuevas; brokers, Keycloak, Temporal, exporter y generación de stubs no se ejecutaron en este entorno.
+- **Flutter M16:** se añadió el módulo FFI con seis lecciones de decisión, bindings C, Rust mediante ABI C, empaquetado por plataforma, benchmarks y propiedad de memoria. Se usaron los flujos actuales de `package_ffi` y build hooks; aún falta ejecutar los ejemplos en cada toolchain nativo. M17–M22 permanecen pendientes.
 - La auditoría de Java, Spring Boot, Flutter y Node no está cerrada. En particular, Flutter y Spring todavía no alcanzan el inventario modular del prompt.

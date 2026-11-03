@@ -1922,6 +1922,32 @@
         "fragment": "tema-6-builds-firma-y-despliegue"
       }
     ],
+    "16": [
+      {
+        "title": "reconocer cuándo usar FFI y crear el paquete",
+        "fragment": "tema-1-reconocer-cuando-usar-ffi-y-crear-el-paquete"
+      },
+      {
+        "title": "generar bindings C seguros para Dart",
+        "fragment": "tema-2-generar-bindings-c-seguros-para-dart"
+      },
+      {
+        "title": "conectar una biblioteca Rust mediante una ABI C",
+        "fragment": "tema-3-conectar-una-biblioteca-rust-mediante-una-abi-c"
+      },
+      {
+        "title": "compilar y empaquetar bibliotecas por plataforma",
+        "fragment": "tema-4-compilar-y-empaquetar-bibliotecas-por-plataforma"
+      },
+      {
+        "title": "medir rendimiento y evitar bloquear la interfaz",
+        "fragment": "tema-5-medir-rendimiento-y-evitar-bloquear-la-interfaz"
+      },
+      {
+        "title": "propiedad de memoria, liberación y errores",
+        "fragment": "tema-6-propiedad-de-memoria-liberacion-y-errores"
+      }
+    ],
     "2": [
       {
         "title": "MediaQuery vs LayoutBuilder",

@@ -184,4 +184,18 @@ export const FLUTTER_MODULES: CourseModule[] = [
     ['flutter test, WidgetTester y pumpWidget', 'pumpAndSettle, golden e integration tests', 'RepaintBoundary, const, Keys y GlobalKey', 'Domain/Data/Presentation, repositories y use cases', 'intl, flutter_localizations y LocalizationsDelegate', 'APK, App Bundle, iOS, web, firma y stores'],
     ['Prueba widget', 'Detecta animación infinita', 'Mide repaints', 'Sustituye adapter', 'Prueba plurales', 'Firma artefactos'],
     ['¿Cuándo GlobalKey es deuda?', '¿Por qué pumpAndSettle puede ocultar un fallo?'], ['flutter_test','DevTools','intl','Fastlane'], 'Aplicación Flutter arquitecturada, localizada, perfilada, probada y desplegable.'),
+  m(16, 'Flutter FFI: Dart con código nativo', 'Dart FFI', 'Experto', '3 h', '#02569b',
+    'Conecta una biblioteca C o Rust mediante ABI C, genera bindings, mide si la llamada nativa aporta valor y administra buffers fuera del recolector Dart.',
+    ['FFI vs plugin y MethodChannel; paquete package_ffi y build hooks', 'Firmas C y bindings con ffigen', 'Rust exportado mediante ABI C', 'Bibliotecas y targets nativos por plataforma', 'Medición, lotes y fluidez de interfaz', 'Asignación, propiedad y liberación de memoria'],
+    [
+      'Crea un paquete con flutter create --template=package_ffi native_add, inspecciona el header y haz pasar el test de suma',
+      'Añade route_zone al header C, genera bindings con ffigen y prueba los límites 10 y 11 desde Dart',
+      'Exporta una función Rust con ABI C, escribe el header equivalente y documenta por separado cargo test, compilación nativa y carga desde Dart',
+      'Registra compilador, arquitectura y artefacto FFI para Android, iOS y un target desktop disponible; no cuentes el build de un target como cobertura de todos',
+      'Compara cálculo Dart y FFI en modo profile para una llamada por segmento y un lote; revisa frame chart y anota dispositivo y muestra',
+      'Envuelve un buffer nativo con cierre único y libera en finally; prueba error, cierre repetido y acceso tras cerrar',
+    ],
+    ['¿En qué caso elegirías FFI frente a un plugin o MethodChannel?', '¿Qué puede salir mal si la firma del header y la de Dart usan tipos distintos?', '¿Por qué un benchmark de escritorio no garantiza más fluidez en un teléfono?'],
+    ['dart:ffi', 'ffigen', 'build hooks', 'Rust ABI C'],
+    'Paquete FFI con función C o Rust, binding generado, prueba de memoria y matriz de compilación por plataforma.'),
 ];

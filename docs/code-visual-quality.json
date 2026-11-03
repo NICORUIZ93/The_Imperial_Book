@@ -145,16 +145,16 @@
       "officialSource": 56
     },
     "flutter": {
-      "topics": 63,
-      "code": 63,
-      "commentedCode": 23,
-      "mermaid": 51,
+      "topics": 69,
+      "code": 69,
+      "commentedCode": 27,
+      "mermaid": 52,
       "archifyVisual": 0,
       "asciiVisual": 15,
       "misleadingDiagramLabel": 0,
-      "filePath": 63,
-      "runCommand": 63,
-      "officialSource": 52
+      "filePath": 69,
+      "runCommand": 69,
+      "officialSource": 57
     },
     "rutaflow": {
       "topics": 29,
@@ -2792,6 +2792,20 @@
       "track": "flutter",
       "module": 15,
       "topic": "Tema 5: Internacionalización completa",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 16,
+      "topic": "Tema 1: reconocer cuándo usar FFI y crear el paquete",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 16,
+      "topic": "Tema 4: compilar y empaquetar bibliotecas por plataforma",
       "missingCode": false,
       "missingComments": true
     },
