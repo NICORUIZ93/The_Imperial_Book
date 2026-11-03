@@ -4518,6 +4518,50 @@
       ]
     },
     {
+      "id": "spring-boot:10:9",
+      "track": "spring-boot",
+      "module": 10,
+      "position": 9,
+      "title": "Spring Modulith para comprobar fronteras antes de separar servicios",
+      "file": "web/public/content/spring-boot/modulo-10.md",
+      "requires": [
+        "spring-boot:10:8"
+      ]
+    },
+    {
+      "id": "spring-boot:10:10",
+      "track": "spring-boot",
+      "module": 10,
+      "position": 10,
+      "title": "Spring Cloud Bus para propagar cambios de configuración",
+      "file": "web/public/content/spring-boot/modulo-10.md",
+      "requires": [
+        "spring-boot:10:9"
+      ]
+    },
+    {
+      "id": "spring-boot:10:11",
+      "track": "spring-boot",
+      "module": 10,
+      "position": 11,
+      "title": "Micrometer Tracing entre servicios",
+      "file": "web/public/content/spring-boot/modulo-10.md",
+      "requires": [
+        "spring-boot:10:10"
+      ]
+    },
+    {
+      "id": "spring-boot:10:12",
+      "track": "spring-boot",
+      "module": 10,
+      "position": 12,
+      "title": "Contract testing entre productor y consumidor",
+      "file": "web/public/content/spring-boot/modulo-10.md",
+      "requires": [
+        "spring-boot:10:11"
+      ]
+    },
+    {
       "id": "spring-boot:11:1",
       "track": "spring-boot",
       "module": 11,
@@ -4525,7 +4569,7 @@
       "title": "Fat JAR vs capas de Docker",
       "file": "web/public/content/spring-boot/modulo-11.md",
       "requires": [
-        "spring-boot:10:8"
+        "spring-boot:10:12"
       ]
     },
     {

@@ -221,17 +221,17 @@
       "repeatedDemo": 0
     },
     "spring-boot": {
-      "topics": 95,
-      "explanation": 95,
-      "code": 95,
-      "visual": 74,
-      "filePath": 95,
+      "topics": 99,
+      "explanation": 99,
+      "code": 99,
+      "visual": 77,
+      "filePath": 99,
       "runCommand": 95,
-      "expectedResult": 95,
-      "practice": 95,
-      "project": 95,
-      "modelMental": 95,
-      "limitsDecision": 95,
+      "expectedResult": 99,
+      "practice": 99,
+      "project": 99,
+      "modelMental": 99,
+      "limitsDecision": 99,
       "practicable": 95,
       "genericScaffold": 0,
       "repeatedDemo": 0
@@ -23031,6 +23031,94 @@
         "classification": {
           "rubricScore": 16,
           "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 10,
+        "topic": "Tema 9: Spring Modulith para comprobar fronteras antes de separar servicios",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": false,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 10,
+        "topic": "Tema 10: Spring Cloud Bus para propagar cambios de configuración",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": false,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 10,
+        "topic": "Tema 11: Micrometer Tracing entre servicios",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": false,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 12,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 10,
+        "topic": "Tema 12: Contract testing entre productor y consumidor",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": false,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }

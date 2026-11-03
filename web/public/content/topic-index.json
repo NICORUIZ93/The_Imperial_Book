@@ -4616,6 +4616,22 @@
       {
         "title": "Orquestación de microservicios con Temporal y Spring Boot",
         "fragment": "tema-8-orquestacion-de-microservicios-con-temporal-y-spring-boot"
+      },
+      {
+        "title": "Spring Modulith para comprobar fronteras antes de separar servicios",
+        "fragment": "tema-9-spring-modulith-para-comprobar-fronteras-antes-de-separar-servicios"
+      },
+      {
+        "title": "Spring Cloud Bus para propagar cambios de configuración",
+        "fragment": "tema-10-spring-cloud-bus-para-propagar-cambios-de-configuracion"
+      },
+      {
+        "title": "Micrometer Tracing entre servicios",
+        "fragment": "tema-11-micrometer-tracing-entre-servicios"
+      },
+      {
+        "title": "Contract testing entre productor y consumidor",
+        "fragment": "tema-12-contract-testing-entre-productor-y-consumidor"
       }
     ],
     "11": [

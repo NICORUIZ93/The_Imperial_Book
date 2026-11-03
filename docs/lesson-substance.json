@@ -1521,9 +1521,7 @@
       "track": "spring-boot"
     },
     {
-      "legacySections": [
-        "**Errores comunes y soluciones**"
-      ],
+      "legacySections": [],
       "module": 10,
       "track": "spring-boot"
     },
@@ -1647,7 +1645,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "99c46fc0ea3acfa16f1cc42b54d5afa8db8ee76e9309337d9b18e56883a1860e",
+    "fingerprint": "062abdba78adfeff20698167bef2956b7ad9a7ddd15d0d1a03d978eb8c2739be",
     "issues": {
       "andamiaje-generico": 128,
       "bloque-repetido": 218,
@@ -1658,11 +1656,11 @@
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
       "## Ruta de proyecto progresivo desde carpeta vacía": 12,
-      "**Errores comunes y soluciones**": 180
+      "**Errores comunes y soluciones**": 179
     },
     "modules": 246,
-    "modulesWithLegacySections": 182,
-    "topics": 1116,
+    "modulesWithLegacySections": 181,
+    "topics": 1120,
     "topicsWithIssues": 470
   },
   "topics": {
@@ -10108,6 +10106,34 @@
         "tailWords": 292,
         "topic": "Tema 8: Orquestación de microservicios con Temporal y Spring Boot",
         "words": 1951
+      },
+      {
+        "issues": [],
+        "module": 10,
+        "tailWords": 179,
+        "topic": "Tema 9: Spring Modulith para comprobar fronteras antes de separar servicios",
+        "words": 566
+      },
+      {
+        "issues": [],
+        "module": 10,
+        "tailWords": 157,
+        "topic": "Tema 10: Spring Cloud Bus para propagar cambios de configuración",
+        "words": 544
+      },
+      {
+        "issues": [],
+        "module": 10,
+        "tailWords": 167,
+        "topic": "Tema 11: Micrometer Tracing entre servicios",
+        "words": 536
+      },
+      {
+        "issues": [],
+        "module": 10,
+        "tailWords": 184,
+        "topic": "Tema 12: Contract testing entre productor y consumidor",
+        "words": 587
       },
       {
         "issues": [],

@@ -8,16 +8,16 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 
 | Criterio | Cubierto | Pendiente |
 |---|---:|---:|
-| Explicación | 1116 | 0 |
-| Código | 1116 | 0 |
-| Ruta | 1116 | 0 |
-| Ejecución | 1116 | 0 |
-| Resultado | 1114 | 2 |
-| Modificación | 1116 | 0 |
-| Conexión con un proyecto | 1116 | 0 |
-| Modelo mental | 1116 | 0 |
-| Límites | 1115 | 1 |
-| **Perfil de criterios detectado** | **1114** | **2** |
+| Explicación | 1120 | 0 |
+| Código | 1120 | 0 |
+| Ruta | 1120 | 0 |
+| Ejecución | 1116 | 4 |
+| Resultado | 1118 | 2 |
+| Modificación | 1120 | 0 |
+| Conexión con un proyecto | 1120 | 0 |
+| Modelo mental | 1120 | 0 |
+| Límites | 1119 | 1 |
+| **Perfil de criterios detectado** | **1114** | **6** |
 
 ## Prioridad por track
 
@@ -36,12 +36,16 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | node | 83 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | react | 58 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | rutaflow | 29 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| spring-boot | 95 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| spring-boot | 99 | 0 | 0 | 4 | 0 | 0 | 0 | 0 |
 
 ## Pendientes por tema
 
 - [cloud · módulo 0](../web/public/content/cloud/modulo-0.md) · Tema 4: Qué es Floci — definición, propósito y comparativa con LocalStack: resultado.
 - [cloud · módulo 0](../web/public/content/cloud/modulo-0.md) · Tema 5: Servicios que emula Floci — AWS, Azure y GCP: resultado, límites.
+- [spring-boot · módulo 10](../web/public/content/spring-boot/modulo-10.md) · Tema 9: Spring Modulith para comprobar fronteras antes de separar servicios: ejecución.
+- [spring-boot · módulo 10](../web/public/content/spring-boot/modulo-10.md) · Tema 10: Spring Cloud Bus para propagar cambios de configuración: ejecución.
+- [spring-boot · módulo 10](../web/public/content/spring-boot/modulo-10.md) · Tema 11: Micrometer Tracing entre servicios: ejecución.
+- [spring-boot · módulo 10](../web/public/content/spring-boot/modulo-10.md) · Tema 12: Contract testing entre productor y consumidor: ejecución.
 
 ## Regla de cierre
 

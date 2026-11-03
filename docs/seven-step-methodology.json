@@ -261,23 +261,23 @@
       "complete": 29
     },
     "spring-boot": {
-      "topics": 95,
-      "objective": 95,
-      "prerequisites": 95,
-      "context": 95,
-      "theoryAnalogy": 95,
-      "guidedDemo": 95,
-      "codeExplanation": 95,
+      "topics": 99,
+      "objective": 99,
+      "prerequisites": 99,
+      "context": 99,
+      "theoryAnalogy": 99,
+      "guidedDemo": 99,
+      "codeExplanation": 99,
       "execution": 95,
-      "expectedResult": 95,
-      "deliberateFailure": 95,
-      "guidedPractice": 95,
-      "independentPractice": 95,
-      "closure": 95,
-      "commonErrors": 95,
-      "resources": 95,
+      "expectedResult": 99,
+      "deliberateFailure": 99,
+      "guidedPractice": 99,
+      "independentPractice": 99,
+      "closure": 99,
+      "commonErrors": 99,
+      "resources": 99,
       "standaloneExample": 95,
-      "learningEvidence": 95,
+      "learningEvidence": 99,
       "complete": 95
     }
   },
@@ -27217,6 +27217,110 @@
         "classification": {
           "stepsPassed": 16,
           "complete": true
+        }
+      },
+      {
+        "module": 10,
+        "topic": "Tema 9: Spring Modulith para comprobar fronteras antes de separar servicios",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": false,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": false,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 14,
+          "complete": false
+        }
+      },
+      {
+        "module": 10,
+        "topic": "Tema 10: Spring Cloud Bus para propagar cambios de configuración",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": false,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": false,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 14,
+          "complete": false
+        }
+      },
+      {
+        "module": 10,
+        "topic": "Tema 11: Micrometer Tracing entre servicios",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": false,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": false,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 14,
+          "complete": false
+        }
+      },
+      {
+        "module": 10,
+        "topic": "Tema 12: Contract testing entre productor y consumidor",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": false,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": false,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 14,
+          "complete": false
         }
       },
       {

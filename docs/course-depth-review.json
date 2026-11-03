@@ -3,8 +3,8 @@
   "totals": {
     "tracks": 14,
     "modules": 246,
-    "topics": 1116,
-    "topicsWithSignals": 158,
+    "topics": 1120,
+    "topicsWithSignals": 160,
     "newLaboratories": 25
   },
   "priorities": {
@@ -11754,6 +11754,56 @@
       "title": "Tema 8: Orquestación de microservicios con Temporal y Spring Boot",
       "file": "web/public/content/spring-boot/modulo-10.md",
       "line": 1064,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "spring-boot",
+      "module": 10,
+      "title": "Tema 9: Spring Modulith para comprobar fronteras antes de separar servicios",
+      "file": "web/public/content/spring-boot/modulo-10.md",
+      "line": 1371,
+      "signals": [
+        "ejemplo-breve-revisar-contexto",
+        "clase-java-no-visible"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "spring-boot",
+      "module": 10,
+      "title": "Tema 10: Spring Cloud Bus para propagar cambios de configuración",
+      "file": "web/public/content/spring-boot/modulo-10.md",
+      "line": 1421,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "spring-boot",
+      "module": 10,
+      "title": "Tema 11: Micrometer Tracing entre servicios",
+      "file": "web/public/content/spring-boot/modulo-10.md",
+      "line": 1475,
+      "signals": [
+        "ejemplo-breve-revisar-contexto",
+        "clase-java-no-visible"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "spring-boot",
+      "module": 10,
+      "title": "Tema 12: Contract testing entre productor y consumidor",
+      "file": "web/public/content/spring-boot/modulo-10.md",
+      "line": 1518,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

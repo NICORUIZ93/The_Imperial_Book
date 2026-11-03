@@ -97,16 +97,16 @@
       "officialSource": 42
     },
     "spring-boot": {
-      "topics": 95,
-      "code": 95,
-      "commentedCode": 75,
-      "mermaid": 51,
+      "topics": 99,
+      "code": 99,
+      "commentedCode": 78,
+      "mermaid": 54,
       "archifyVisual": 4,
       "asciiVisual": 20,
       "misleadingDiagramLabel": 0,
-      "filePath": 95,
-      "runCommand": 95,
-      "officialSource": 71
+      "filePath": 99,
+      "runCommand": 99,
+      "officialSource": 75
     },
     "kotlin-multiplatform": {
       "topics": 56,
@@ -2106,6 +2106,13 @@
       "track": "java",
       "module": 9,
       "topic": "Tema 3: Tests parametrizados y cobertura",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 10,
+      "topic": "Tema 11: Micrometer Tracing entre servicios",
       "missingCode": false,
       "missingComments": true
     },

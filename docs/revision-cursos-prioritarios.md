@@ -20,14 +20,14 @@ Los conteos comparan elementos con duración enumerados en el prompt con encabez
 |---|---:|---:|---:|---:|
 | Java | 21 módulos, 122 elementos cronometrados | 21 módulos, 91 temas | La granularidad difiere en M12, M16, M17, M19 y M20; M16 se amplió de 2 a 8 lecciones | 46 al iniciar la revisión |
 | Node.js | 16 módulos, 75 elementos cronometrados | 16 módulos, 83 temas | M15 ya existe; M14 separa saga, Kafka y RabbitMQ en lecciones diferentes | 15 |
-| Spring Boot | 26 módulos, 161 elementos cronometrados | 23 módulos, 95 temas | M8 se amplió de 5 a 9 lecciones; M23–M25 todavía no tienen archivo | 8 |
+| Spring Boot | 26 módulos, 161 elementos cronometrados | 23 módulos, 99 temas | M8 se amplió de 5 a 9 y M10 de 8 a 12 lecciones; M23–M25 todavía no tienen archivo | 8 |
 | Flutter | 23 módulos, 155 elementos cronometrados | 16 módulos, 63 temas | M16–M22 no tienen archivo; granularidad de M0–M15 por cotejar | 6 |
 
 **Detalle de diferencias por módulo según cantidad de elementos cronometrados:**
 
 - **Java:** las diferencias de elementos por encabezados son M12 (+2 elementos), M16 (+15), M17 (+10), M19 (+5) y M20 (+10). El cotejo de contenido definirá cuáles son subtemas cubiertos dentro de una lección compuesta y cuáles requieren una lección propia.
 - **Node:** se añadió M15 con Deno, Bun, migración desde Node y criterio de elección. M14 separa saga, Kafka y RabbitMQ para comprobar clave/grupo/offset de Kafka y exchange/cola/ack/prefetch de RabbitMQ por separado; falta ejecutar los labs contra brokers reales.
-- **Spring Boot:** hay diferencias de granularidad que se revisarán por contenido en M2 (2), M3 (5), M4 (5), M6 (5), M7 (3), M8 (ahora 9 temas frente a 8 elementos del prompt), M9 (3), M10 (4), M11 (1), M16 (6), M17 (6), M18 (5), M19 (6), M20 (2), M21 (3), M22 (2). M23, M24 y M25 no tienen archivo en el contenido web; cada uno enumera 4 elementos en el prompt.
+- **Spring Boot:** hay diferencias de granularidad que se revisarán por contenido en M2 (2), M3 (5), M4 (5), M6 (5), M7 (3), M8 (ahora 9 temas frente a 8 elementos del prompt), M9 (3), M10 (ahora 12 temas para 12 elementos del prompt), M11 (1), M16 (6), M17 (6), M18 (5), M19 (6), M20 (2), M21 (3), M22 (2). M23, M24 y M25 no tienen archivo en el contenido web; cada uno enumera 4 elementos en el prompt.
 - **Flutter:** hay diferencias de granularidad por cotejar en M0 (6), M1 (5), M2 (2), M3 (3), M4 (5), M5 (2), M6 (2), M7 (4), M8 (3), M9 (7), M10 (9), M11 (4), M12 (3), M13 (4), M14 (1), M15 (1). M16, M17, M18, M21 y M22 no tienen archivo en la web; enumeran 6, 6, 7, 6 y 6 elementos. El prompt describe M19 y M20 sin una lista cronometrada reconocible; su proyecto/capstone se revisará directamente.
 
 ### Lectura manual de Java M16 (JPA)
@@ -67,6 +67,25 @@ Esta lectura demuestra por qué un módulo con dos encabezados puede cubrir part
 
 La estructura ahora contempla los requisitos del módulo; la matriz distingue las lecciones añadidas de evidencia de broker ejecutada. Los labs de Kafka y RabbitMQ necesitan contenedores disponibles para considerarse validados en ejecución.
 
+### Lectura manual de Spring Boot M10 (microservicios)
+
+| Elemento del prompt | Estado actual | Evidencia/pendiente |
+|---|---|---|
+| Config Server y service discovery | Cubierto en tema existente | Configuración y resolución por nombre lógico; comprobarlo con dos procesos en ejecución. |
+| Spring Cloud Gateway | Cubierto en tema existente | Enrutamiento como entrada; aún requiere ejecución del ejemplo integrado. |
+| Resilience4j circuit breaker | Cubierto en tema existente | Falla y fallback explicados; falta evidencia de recuperación y métricas en runtime. |
+| OAuth2/OIDC, Keycloak y Token Relay | Parcial | El tema cubre identidad y relay; levantar Keycloak y comprobar scopes/roles queda pendiente. |
+| HTTP Interfaces, deadlines y discovery | Parcial | Hay interfaz y resolución; falta medir deadline con servicio lento y cancelación real. |
+| Spring gRPC | Cubierto a nivel de lección | Contrato `.proto`, generación y evolución de campos; ejecución entre dos servicios pendiente. |
+| DDD: límites y propiedad de datos | Cubierto | La lección separa capacidades, dueño de datos y dependencias entre contextos. |
+| Temporal: workflows y orquestación | Cubierto a nivel de lección | Workflow, activities y saga descritos; el worker no se ejecutó con Temporal Server. |
+| Spring Modulith | Añadido como Tema 9 | `ApplicationModules.verify()`, dependencia interna deliberada, evento y prueba de módulo; ejecución pendiente. |
+| Spring Cloud Bus | Añadido como Tema 10 | Refresh en dos instancias, identidad Bus, broker, autorización y rollback; requiere broker real. |
+| Micrometer Tracing | Añadido como Tema 11 | Propagación de trace/span, builder HTTP auto-configurado, fallo manual y cardinalidad; exportación pendiente. |
+| Contract testing | Añadido como Tema 12 | Contrato, validación del proveedor y stub del consumidor; configuración de plugin y pruebas pendientes. |
+
+M10 ya tiene un encabezado separado por cada elemento del inventario del prompt. Esta cobertura estructural no acredita que dependencias, broker, Keycloak, Temporal, exporter o pruebas de contrato hayan corrido. La validación de fuentes y del código escrito es un paso distinto de la ejecución del laboratorio.
+
 ### Lectura manual de Java M17 (JDBC)
 
 Los dos temas actuales sí explican conexiones, `PreparedStatement`, `ResultSet`, DAO, prevención de inyección SQL, `commit`/`rollback`, ACID, aislamiento y un caso de bloqueo optimista. Estos puntos no se contaron como faltantes solo porque estén agrupados. La lección aún no enseña ni demuestra el pool de conexiones, el procesamiento por lotes, `JdbcTemplate`, diferencia DAO/Repository, `Savepoint` ni XA/2PC. El material usa H2 pero no fija ni incluye un proyecto autocontenido con dependencia y configuración, así que sus comandos de prueba requieren reparación antes de considerar los ejemplos ejecutables desde cero.
@@ -97,4 +116,5 @@ El cierre de cada curso requerirá conteo de títulos preservados, matriz de req
 - **Node M14:** la saga ahora tiene objetivo, analogía, fallo y salida comprobable. Se añadieron lecciones separadas de Kafka y RabbitMQ con código de productor/consumidor, claves/grupos/offsets, exchange/routing, acknowledgements, prefetch, DLQ e idempotencia. Falta ejecutar ambos labs contra brokers disponibles.
 - **Node M15:** se creó la ruta de cuatro temas para Deno, Bun, migración y elección, basada en la documentación primaria actual. La matriz cubre estructura curricular; los ejemplos Deno/Bun aún no se ejecutaron en esos runtimes.
 - **Spring Boot M8:** se amplió de 5 a 9 lecciones con Spring Cloud Stream, Kafka Streams, Avro/Schema Registry y RabbitMQ/Spring AMQP en prácticas separadas. La build valida el catálogo; faltan pruebas reales con Kafka y RabbitMQ.
+- **Spring Boot M10:** se amplió de 8 a 12 lecciones para cubrir Spring Modulith, Spring Cloud Bus, Micrometer Tracing y contract testing por separado. El catálogo incluye cuatro prácticas nuevas; brokers, Keycloak, Temporal, exporter y generación de stubs no se ejecutaron en este entorno.
 - La auditoría de Java, Spring Boot, Flutter y Node no está cerrada. En particular, Flutter y Spring todavía no alcanzan el inventario modular del prompt.

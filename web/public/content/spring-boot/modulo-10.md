@@ -1367,3 +1367,206 @@ La orquestación con Temporal es el patrón que coordina la transacción distrib
 - **Dividir servicios por entidades o compartir su base de datos.** Separa por capacidades y reglas; un único servicio es dueño de cada dato y publica contratos.
 
 ---
+
+### Tema 9: Spring Modulith para comprobar fronteras antes de separar servicios
+
+#### Paso 1 · Objetivo y preparación
+
+Al finalizar dividirás un monolito por módulos funcionales, verificarás dependencias permitidas y probarás una interacción por evento. **Prerrequisitos:** paquetes Java, eventos Spring y el modelo de dominios del Tema 7. Añade Spring Modulith desde el BOM compatible con tu Spring Boot.
+
+#### Paso 2 · Contexto y caso real
+
+Un equipo quiere desplegar Pedidos, Conductores y Notificaciones como microservicios porque sus clases ya tienen paquetes distintos. Sin embargo, Notificaciones importa repositorios internos de Pedidos y los tres módulos escriben las mismas tablas. Separarlos ahora convertiría dependencias invisibles en llamadas de red.
+
+#### Paso 3 · Teoría y analogía
+
+Spring Modulith modela módulos de aplicación dentro de un proceso Spring Boot, verifica ciclos y acceso a APIs, y prueba cada módulo con un contexto acotado. Los eventos de módulo reducen acoplamiento directo y su registro de publicaciones permite observar trabajo transaccional. Es como dividir una oficina con puertas y reglas de acceso antes de construir edificios separados. Modulith ayuda a reforzar estructura; no crea aislamiento de datos ni infraestructura distribuida por sí mismo.
+
+```mermaid
+flowchart LR
+  P[Pedidos: API pública] -->|PedidoCreado| N[Notificaciones]
+  P -->|sin acceso a repositorio interno| D[Dependencias verificables]
+  D --> T[Prueba ApplicationModules.verify]
+```
+
+#### Paso 4 · Demostración guiada
+
+Crea `src/test/java/academia/entregas/ArquitecturaModularTest.java`:
+
+```java
+@Test
+void modulosNoTienenCiclosNiAccesoInterno() {
+    ApplicationModules.of(EntregasApplication.class).verify();
+}
+```
+
+En `pedidos` publica `PedidoCreado`; en `notificaciones` escucha ese evento con `@ApplicationModuleListener`. Ejecuta `./mvnw test -Dtest=ArquitecturaModularTest`. **Resultado esperado:** la verificación pasa si no hay ciclos y si el módulo consumidor usa una API expuesta; al llamar a una clase del paquete interno, la prueba informa la dependencia inválida.
+
+#### Paso 5 · Práctica guiada
+
+**Fallo deliberado:** importa un repositorio interno de Pedidos desde Notificaciones. **Pista:** que ambos estén en el mismo JVM no convierte esa dependencia en contrato público. Diagnostica la infracción en el resultado de `verify()` y cambia la integración a un evento o una API publicada.
+
+#### Paso 6 · Práctica independiente
+
+Escribe una prueba de escenario que publique `PedidoCreado`, espere `AvisoPreparado` o un cambio observable y verifique el resultado. Agrega regla para permitir solo dependencias del módulo `catalogo`. Distingue ese test de una prueba de contrato HTTP entre procesos: el primero prueba módulos dentro de una app, el segundo acuerdos de despliegue entre servicios.
+
+#### Paso 7 · Cierre y evidencia
+
+Entrega el resultado de `verify`, el ciclo reproducido y el test del evento. **Proyecto integrador RutaFlow:** separa primero APIs y propiedad de datos; extrae un microservicio cuando un límite de equipo, despliegue o escala justifique el costo de red. Errores comunes: llamar microservicios a paquetes del mismo proceso, publicar todas las clases como API y creer que eventos en memoria sobreviven a caída sin registro durable. Siguiente paso: actualizar configuración de varias instancias cuando cambie una propiedad. Fuentes oficiales: [Spring Modulith: verificación](https://docs.spring.io/spring-modulith/reference/verification.html), [eventos](https://docs.spring.io/spring-modulith/reference/events.html) y [testing](https://docs.spring.io/spring-modulith/reference/testing.html).
+
+**¿Por qué es importante?** Una frontera clara en un proceso es más fácil de revisar antes de pagar latencia, fallos parciales y operación de red.
+**Evidencia de aprendizaje:** entrega la infracción reproducida, la corrección y la prueba de integración del módulo.
+**Cuándo no usarlo:** si la aplicación es pequeña y no tiene límites de módulo que necesites comprobar, agrega esta herramienta solo cuando resuelva una necesidad real.
+
+### Tema 10: Spring Cloud Bus para propagar cambios de configuración
+
+#### Paso 1 · Objetivo y preparación
+
+Al finalizar enviarás una actualización de configuración a varias instancias mediante un broker y medirás cuál cambió. **Prerrequisitos:** Spring Cloud Config, Actuator y RabbitMQ o Kafka operativo. Utiliza dependencias del mismo release train que el proyecto.
+
+#### Paso 2 · Contexto y caso real
+
+Se modifica el límite de concurrencia del servicio de entregas. Reiniciar una por una las réplicas deja un periodo con configuraciones distintas; llamar solo al endpoint local actualiza una instancia y no al grupo.
+
+#### Paso 3 · Teoría y analogía
+
+Spring Cloud Bus distribuye eventos de cambio entre instancias conectadas a un broker. `busrefresh` limpia el caché de RefreshScope y vuelve a enlazar `@ConfigurationProperties`; `busenv` puede modificar propiedades distribuidas. La aplicación sigue necesitando una fuente de configuración y clases refrescables. Es un anuncio por altavoz con destinatarios: hace llegar el cambio, pero no valida por sí solo que el nuevo valor sea correcto ni que todas las instancias estén listas.
+
+```mermaid
+flowchart LR
+  O[Operador autenticado] -->|POST busrefresh| A[Instancia A]
+  A --> B[Broker Bus]
+  B --> C[Instancia B]
+  B --> D[Instancia C]
+  C --> R[Rebind propiedades]
+  D --> R
+```
+
+#### Paso 4 · Demostración guiada
+
+Añade `spring-cloud-starter-bus-amqp` (o el starter Kafka), Actuator y una propiedad en `src/main/resources/application.yml`:
+
+```yaml
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,busrefresh
+```
+
+Inyecta `@RefreshScope` en el bean de demostración, levanta dos instancias con IDs distintos y actualiza la fuente Config Server. Ejecuta `curl -X POST http://localhost:8080/actuator/busrefresh`. **Resultado esperado:** ambas instancias observan la nueva configuración sin reinicio completo. En producción no expongas este endpoint públicamente: protégelo con autorización de operador y red administrativa.
+
+#### Paso 5 · Práctica guiada
+
+**Fallo deliberado:** inicia una réplica con el mismo `spring.cloud.bus.id` que otra. **Pista:** los IDs deben identificar instancias; los duplicados pueden causar filtrado o procesamiento incorrecto. Revisa logs, ID y disponibilidad del broker. Corrige la identidad antes de repetir el refresh.
+
+#### Paso 6 · Práctica independiente
+
+Actualiza una propiedad a un valor inválido y mide cómo reacciona el bean, cómo lo detecta readiness y cómo se revierte el cambio. Compara un refresh global con destino dirigido a una instancia. Documenta una alternativa de reinicio gradual si la propiedad no es refrescable o si requiere recrear conexiones.
+
+#### Paso 7 · Cierre y evidencia
+
+Entrega trazas del evento, versión de propiedad observada en ambas instancias y el fallo de ID duplicado diagnosticado. **Proyecto integrador RutaFlow:** usa Bus para cambios operacionales limitados; conserva versionado, auditoría y rollback en Config Server. Errores comunes: asumir que todos los beans se actualizan, usar `busenv` como almacén de configuración permanente y dejar endpoint sin autorización. Siguiente paso: trazar una solicitud entre servicios con un identificador común. Fuentes oficiales: [Spring Cloud Bus](https://docs.spring.io/spring-cloud-bus/reference/), [bus refresh](https://docs.spring.io/spring-cloud-bus/reference/spring-cloud-bus/bus-endpoints.html) y [Actuator](https://docs.spring.io/spring-boot/reference/actuator/).
+
+**¿Por qué es importante?** Una flota de réplicas debe cambiar de forma coordinada y comprobable.
+**Evidencia de aprendizaje:** demuestra el cambio en dos instancias y el rollback del valor inválido.
+**Cuándo no usarlo:** no agregues Bus si un despliegue gradual reiniciable es más simple y cumple el tiempo de actualización requerido.
+
+### Tema 11: Micrometer Tracing entre servicios
+
+#### Paso 1 · Objetivo y preparación
+
+Al finalizar propagarás una traza desde una petición HTTP hasta otro servicio y localizarás el tramo que aumenta la latencia. **Prerrequisitos:** Actuator, cliente HTTP y al menos dos servicios locales. Levanta un receptor OTLP o Zipkin de desarrollo.
+
+#### Paso 2 · Contexto y caso real
+
+El endpoint de despacho tarda cuatro segundos, pero sus logs locales no muestran si esperó Gateway, inventario o geolocalización. Un `traceId` común permite inspeccionar los spans de esa solicitud.
+
+#### Paso 3 · Teoría y analogía
+
+Micrometer Tracing conecta las observaciones de Spring con un tracer como OpenTelemetry y exporta spans a un backend. Cada span mide una operación dentro de una traza. Para propagar contexto HTTP usa builders autoconfigurados de Spring, no clientes creados manualmente fuera de ellos. El `traceId` es el número de expediente que cruza departamentos; cada span es un sello de tiempo de una operación. Sampling controla cuánto se registra y debe ajustarse al tráfico y costo.
+
+#### Paso 4 · Demostración guiada
+
+Añade Actuator y el bridge/exporter compatible con el backend de desarrollo. En `application.yml` configura endpoint OTLP y sampling del perfil local. Crea `src/main/java/academia/entregas/ClienteInventario.java` usando el builder inyectado:
+
+```java
+@Bean
+RestClient inventarioClient(RestClient.Builder builder) {
+    return builder.baseUrl("http://localhost:8082").build();
+}
+```
+
+Envía una petición a entregas, que llama inventario, y revisa ambos spans en el backend. Ejecuta `./mvnw test -Dtest=TrazaDistribuidaTest` y luego la app con el exporter activo. **Resultado esperado:** spans de entrada y salida comparten `traceId`, y los logs muestran correlación en el MDC.
+
+#### Paso 5 · Práctica guiada
+
+**Fallo deliberado:** construye `new RestClient()` directamente en vez de usar el builder de Boot. **Pista:** el cliente creado al margen puede no propagar el contexto de trace. Compara spans; vuelve al builder y diagnostica el encabezado de propagación ausente.
+
+#### Paso 6 · Práctica independiente
+
+Añade una observación de negocio para `reserva-conductor`, con tags de baja cardinalidad como `resultado=aprobado/rechazado`; evita agregar `pedidoId` como etiqueta métrica. Fuerza timeout en inventario, encuentra el span que espera y compara error con latencia total. Ajusta sampling solo en desarrollo para pruebas exhaustivas; documenta el valor de producción y el costo esperado.
+
+#### Paso 7 · Cierre y evidencia
+
+Entrega captura/exportación de una traza completa, el fallo sin contexto y el tiempo del span lento. **Proyecto integrador RutaFlow:** conserva propagación por HTTP y mensajería y vincula traces con logs sin poner datos privados en atributos. Errores comunes: crear clientes fuera de auto-configuración, poner IDs únicos como tags y muestrear 100% de tráfico de alto volumen indefinidamente. Siguiente paso: fijar contratos que permitan desplegar proveedor y consumidor por separado. Fuentes oficiales: [Spring Boot: tracing](https://docs.spring.io/spring-boot/reference/actuator/tracing.html), [observabilidad](https://docs.spring.io/spring-boot/reference/actuator/observability.html) y [métricas](https://docs.spring.io/spring-boot/reference/actuator/metrics.html).
+
+**¿Por qué es importante?** La traza cruza procesos y hace visible dónde se gasta el tiempo de extremo a extremo.
+**Evidencia de aprendizaje:** entrega la traza que cruza dos servicios y el span que explica la demora.
+**Cuándo no usarlo:** no exportes todos los eventos o atributos a una etiqueta métrica; las trazas y métricas tienen límites distintos.
+
+### Tema 12: Contract testing entre productor y consumidor
+
+#### Paso 1 · Objetivo y preparación
+
+Al finalizar escribirás un contrato HTTP de consumidor y comprobarás que el productor genera un stub compatible. **Prerrequisitos:** API REST, pruebas Spring y dos servicios con despliegues independientes. Alinea Spring Cloud Contract con el release train elegido.
+
+#### Paso 2 · Contexto y caso real
+
+Pedidos necesita consultar disponibilidad de Conductores. Una prueba unitaria con mock local no detecta que el productor cambió `conductorId` a `driverId` y desplegó primero, rompiendo al consumidor.
+
+#### Paso 3 · Teoría y analogía
+
+El contract test declara una interacción requerida: solicitud y respuesta que productor y consumidor acuerdan. Spring Cloud Contract puede generar pruebas para validar el productor y stubs para el consumidor. El contrato no implementa toda la lógica de negocio ni prueba producción; verifica el borde compartido. Es como un enchufe: ambos aparatos pueden cambiar internamente siempre que respeten forma y voltaje del conector.
+
+```mermaid
+flowchart LR
+  C[Contrato pedido-disponibilidad] --> P[Test generado en productor]
+  C --> S[Stub consumido por Pedidos]
+  P --> V[Validar proveedor]
+  S --> T[Test de consumidor sin red real]
+```
+
+#### Paso 4 · Demostración guiada
+
+Crea `src/test/resources/contracts/conductores/disponibilidad.yml`:
+
+```yaml
+request:
+  method: GET
+  url: /conductores/c-12/disponibilidad
+response:
+  status: 200
+  headers:
+    Content-Type: application/json
+  body:
+    disponible: true
+```
+
+Configura plugin/dependencia de Spring Cloud Contract y la base de test del productor; genera el test del proveedor. En el consumidor agrega Stub Runner apuntando al artefacto del productor y llama el cliente HTTP contra el stub. Ejecuta `./mvnw clean verify`. **Resultado esperado:** el proveedor satisface el contrato y el consumidor recibe la respuesta esperada desde el stub sin levantar Conductores real.
+
+#### Paso 5 · Práctica guiada
+
+**Fallo deliberado:** cambia el productor a `disponibleAhora` y ejecuta el test generado. **Pista:** el contrato describe el JSON observado por el consumidor; el cambio rompe compatibilidad aun si el endpoint devuelve 200. Restaura el nombre o versiona explícitamente el contrato y despliega una transición compatible.
+
+#### Paso 6 · Práctica independiente
+
+Agrega caso 404 para conductor inexistente y una regla que acepte campos adicionales si el consumidor no depende de ellos. Corre contrato en CI del productor y stub test en CI del consumidor. Registra quién aprueba cambios, cómo se publica el artefacto de stubs y cómo se limpia una versión vieja. Combina contract tests con pruebas de integración, no intentes que un solo contrato sustituya casos de negocio completos.
+
+#### Paso 7 · Cierre y evidencia
+
+Entrega el contrato, test de proveedor generado, prueba de consumidor con stub y fallo por campo renombrado. **Proyecto integrador RutaFlow:** valida contratos antes de promover cada servicio y define política de compatibilidad durante despliegues graduales. Errores comunes: escribir contratos desde el proveedor sin confirmar necesidades reales del consumidor, poner lógica de negocio completa dentro del contrato y asumir que la prueba garantiza disponibilidad de red o base de datos. Siguiente paso: lleva la versión y el resultado del contrato al pipeline de despliegue. Fuentes oficiales: [Spring Cloud Contract](https://docs.spring.io/spring-cloud-contract/reference/), [contratos DSL](https://docs.spring.io/spring-cloud-contract/reference/project-features-contract.html) y [stubs](https://docs.spring.io/spring-cloud-contract/reference/project-features-stubrunner/).
+
+**¿Por qué es importante?** Los equipos necesitan detectar incompatibilidades antes de que un cambio llegue al servicio consumidor.
+**Evidencia de aprendizaje:** entrega test de proveedor, stub, prueba de consumidor y cambio incompatible reproducido.
+**Cuándo no usarlo:** para dos componentes que siempre se despliegan juntos y no comparten contrato de red, una prueba de integración en el mismo módulo puede ser suficiente.
