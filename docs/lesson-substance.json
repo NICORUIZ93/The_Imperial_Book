@@ -1695,7 +1695,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "367ee4e11914543f839ba94dcd881e412ae6f93d5638297042682a8980e55249",
+    "fingerprint": "59da7dbee57457e635ad0826c9e7cc38061e7eba0d3644ddd1b7299cf2742508",
     "issues": {
       "andamiaje-generico": 128,
       "bloque-repetido": 218,
@@ -7546,49 +7546,49 @@
         "module": 19,
         "tailWords": 204,
         "topic": "Tema 1: Reflexión y anotaciones en tiempo de ejecución",
-        "words": 863
+        "words": 1165
       },
       {
         "issues": [],
         "module": 19,
         "tailWords": 215,
         "topic": "Tema 2: Expresiones regulares con Pattern y Matcher",
-        "words": 858
+        "words": 1144
       },
       {
         "issues": [],
         "module": 19,
         "tailWords": 201,
         "topic": "Tema 3: Dinero exacto con BigDecimal",
-        "words": 812
+        "words": 1090
       },
       {
         "issues": [],
         "module": 19,
         "tailWords": 200,
         "topic": "Tema 4: Assertions y diseño por contrato",
-        "words": 830
+        "words": 1117
       },
       {
         "issues": [],
         "module": 19,
         "tailWords": 200,
         "topic": "Tema 5: ServiceLoader: plugins sin acoplar implementaciones",
-        "words": 841
+        "words": 1151
       },
       {
         "issues": [],
         "module": 19,
         "tailWords": 210,
         "topic": "Tema 6: Proxies dinámicos: así funcionan @Transactional y los mocks",
-        "words": 926
+        "words": 1336
       },
       {
         "issues": [],
         "module": 19,
         "tailWords": 218,
         "topic": "Tema 7: Internacionalización: números, monedas, fechas y orden de texto",
-        "words": 930
+        "words": 1293
       },
       {
         "issues": [

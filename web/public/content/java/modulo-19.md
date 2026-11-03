@@ -6,7 +6,7 @@
 ### Tema 1: Reflexión y anotaciones en tiempo de ejecución
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás inspeccionar clases, campos y métodos con la API de reflexión, leer anotaciones propias en tiempo de ejecución y explicar cómo la usan Spring, Jackson y JUnit. Prerrequisitos: Módulo 4 (orientación a objetos) y Módulo 10 (módulos y `opens`).
+Al finalizar podrás inspeccionar clases, campos y métodos con la API de reflexión, leer anotaciones propias en tiempo de ejecución y explicar cómo la usan Spring, Jackson y JUnit. **Prerrequisitos:** Java M1 Tema 1 (clases y encapsulación) y Java M10 Tema 3 (`opens`).
 
 #### Paso 2 · Contexto y caso real
 Spring encuentra tus `@RestController`, Jackson convierte objetos a JSON y JUnit ejecuta los métodos `@Test` sin que escribas una línea que los llame. Todo eso es reflexión. En RutaFlow la usaremos para un caso real: un validador genérico de campos obligatorios que sirve para cualquier clase.
@@ -27,6 +27,8 @@ flowchart LR
 ```
 
 #### Paso 4 · Demostración guiada desde cero
+
+##### Subtema 1.1: Encontrar campos marcados en tiempo de ejecución · 10-15 min
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
 
 ```bash
@@ -109,10 +111,71 @@ El validador no menciona `Envio` en ningún lugar: lo descubrió todo con `getDe
 **Fallo deliberado:** Borra la línea `@Retention(RetentionPolicy.RUNTIME)`. El programa compila y corre, pero ahora los tres campos dicen `obligatorio=false` y el envío vacío pasa la validación (`[]`). La retención por defecto es `CLASS`: la anotación queda en el bytecode pero no es visible para la reflexión. Es una falla silenciosa típica al crear anotaciones propias.
 
 #### Paso 5 · Práctica guiada
-Crea la anotación `@Rango(min, max)` para enteros y valida que `kilos` esté entre 1 y 30. **Pista:** declara `int min(); int max();` dentro de la anotación y léelos con `campo.getAnnotation(Rango.class).min()`.
+
+##### Subtema 1.2: Leer límites desde una anotación · 5-10 min
+
+**Contexto:** cada campo de entrada debe declarar su rango permitido junto al dato.
+
+**Hazlo tú:** crea `java-dia-a-dia/RangoCheck.java`:
+
+```java
+import java.lang.annotation.*;
+import java.lang.reflect.Field;
+
+public class RangoCheck {
+    @Retention(RetentionPolicy.RUNTIME) @Target(ElementType.FIELD)
+    @interface Rango { int min(); int max(); }
+    static class Envio { @Rango(min=1, max=30) private int kilos = 35; }
+    public static void main(String[] args) throws Exception {
+        Field kilos = Envio.class.getDeclaredField("kilos");
+        Rango regla = kilos.getAnnotation(Rango.class);
+        int valor = kilos.getInt(new Envio());
+        System.out.println("válido=" + (valor >= regla.min() && valor <= regla.max()));
+    }
+}
+```
+
+Ejecuta `cd java-dia-a-dia && java RangoCheck.java`.
+
+**Resultado esperado:** `válido=false`.
+
+**Fallo deliberado:** quita `@Retention(RetentionPolicy.RUNTIME)`. **Resultado del fallo:** `getAnnotation` devuelve `null` y aparece `NullPointerException`. **Diagnóstico:** el validador lee la anotación al ejecutar; su retención debe ser `RUNTIME`.
+
+**Entiende:** la anotación guarda la regla; reflexión la lee para comprobar el objeto.
+
+La práctica `@Rango` ya está implementada arriba: cambia kilos a 25 y vuelve a ejecutar; debe imprimir `válido=true`.
+**Pista:** si `getAnnotation` devuelve `null`, comprueba primero que la anotación tenga retención `RUNTIME`.
 
 #### Paso 6 · Práctica independiente
-Mide con `System.nanoTime()` cuánto tarda leer un campo 1 000 000 de veces por reflexión frente a un getter normal, y explica la diferencia.
+
+##### Subtema 1.3: Invocar un método por su nombre · 5-10 min
+
+**Contexto:** una herramienta de diagnóstico puede llamar un método conocido sin usar código específico para cada clase.
+
+**Hazlo tú:** crea `java-dia-a-dia/Invocar.java`:
+
+```java
+import java.lang.reflect.Method;
+
+public class Invocar {
+    static class Envio { public String etiqueta() { return "RT-8 | Cali"; } }
+    public static void main(String[] args) throws Exception {
+        Method metodo = Envio.class.getMethod("etiqueta");
+        Object resultado = metodo.invoke(new Envio());
+        System.out.println(resultado);
+    }
+}
+```
+
+Ejecuta `cd java-dia-a-dia && java Invocar.java`.
+
+**Resultado esperado:** `RT-8 | Cali`.
+
+**Fallo deliberado:** cambia `etiqueta` por `estado`. **Error esperado:** `NoSuchMethodException: Invocar$Envio.estado()`. **Diagnóstico:** `getMethod` busca por nombre y firma; revisa el nombre declarado.
+
+**Entiende:** reflexión da flexibilidad en herramientas, pero el compilador ya no comprueba el nombre del método.
+
+La comparación de tiempos sugerida originalmente queda como ejercicio posterior; no la uses para elegir una API sin una medición repetible.
 
 #### Paso 7 · Cierre y evidencia
 Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque entender la reflexión quita la magia a los frameworks y te ayuda a diagnosticar errores como `InaccessibleObjectException` o anotaciones que "no hacen nada".
@@ -127,7 +190,7 @@ Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track
 ### Tema 2: Expresiones regulares con Pattern y Matcher
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás escribir expresiones regulares con clases de caracteres, cuantificadores, límites de palabra y grupos con nombre, y usarlas para buscar, validar y reemplazar. Prerrequisito: Módulo 2 (strings).
+Al finalizar podrás escribir expresiones regulares con clases de caracteres, cuantificadores, límites de palabra y grupos con nombre, y usarlas para buscar, validar y reemplazar. **Prerrequisito:** Java M0 Tema 5 (`String`).
 
 #### Paso 2 · Contexto y caso real
 El manifiesto diario de RutaFlow es texto libre con guías mezcladas (`BO-004512`). Hay que extraerlas, contarlas por ciudad, validar correos y enmascarar números antes de enviar el texto a un log. Es un caso real de cualquier backend: parsear y sanear texto.
@@ -149,6 +212,8 @@ flowchart LR
 ```
 
 #### Paso 4 · Demostración guiada desde cero
+
+##### Subtema 2.1: Validar una guía completa · 10-15 min
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
 
 ```bash
@@ -209,10 +274,64 @@ Despacho 28/10: BO-****** a Chapinero, CA-****** a Cali, bo-1 inválida, ME-1234
 **Fallo deliberado:** En el patrón `GUIA` cambia `\\d{6}` por `\d{6}` (una sola barra). El programa no compila: `error: illegal escape character`. Java interpreta `\d` como un escape de string, no de regex. Diagnostica qué barras son de Java y cuáles del regex.
 
 #### Paso 5 · Práctica guiada
-Agrega un patrón para teléfonos colombianos de 10 dígitos que empiecen por 3 y extrae los teléfonos del manifiesto. **Pista:** algo como `\\b3\\d{9}\\b`; prueba también un número de 11 dígitos para confirmar que no coincide.
+
+##### Subtema 2.2: Aceptar teléfonos con longitud exacta · 5-10 min
+
+**Contexto:** el formulario debe aceptar celulares colombianos de diez dígitos que empiecen en 3.
+
+**Hazlo tú:** crea `java-dia-a-dia/Telefono.java`:
+
+```java
+import java.util.regex.Pattern;
+
+public class Telefono {
+    public static void main(String[] args) {
+        Pattern celular = Pattern.compile("\\b3\\d{9}\\b");
+        for (String valor : new String[]{"3001234567", "30012345678", "2001234567"})
+            System.out.println(valor + "=" + celular.matcher(valor).matches());
+    }
+}
+```
+
+Ejecuta `cd java-dia-a-dia && java Telefono.java`.
+
+**Resultado esperado:** `3001234567=true`, `30012345678=false`, `2001234567=false`.
+
+**Fallo deliberado:** cambia `\\d{9}` por `\\d+`. **Resultado del fallo:** se aceptan longitudes incorrectas. **Diagnóstico:** `+` significa “uno o más”; el requisito pide exactamente nueve dígitos después del 3.
+
+**Entiende:** `matches()` valida el texto entero; `find()` busca una coincidencia dentro de un texto más largo.
+**Pista:** predice qué ocurre con once dígitos antes de ejecutar; el límite de palabra no reemplaza la cantidad exacta del cuantificador.
 
 #### Paso 6 · Práctica independiente
-Escribe una prueba con el texto `"a".repeat(30) + "!"` y el patrón `(a+)+$`, mide el tiempo y explica qué es el *backtracking catastrófico* (ReDoS).
+
+##### Subtema 2.3: Extraer la guía y la ciudad con grupos · 5-10 min
+
+**Contexto:** el manifiesto guarda la guía y el destino en una línea con formato conocido.
+
+**Hazlo tú:** crea `java-dia-a-dia/ExtraerGuia.java`:
+
+```java
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class ExtraerGuia {
+    public static void main(String[] args) {
+        Pattern linea = Pattern.compile("(?<guia>RT-[0-9]{3})\\|(?<ciudad>[A-Z][a-z]+)");
+        Matcher m = linea.matcher("RT-082|Cali");
+        if (m.matches()) System.out.println(m.group("guia") + " -> " + m.group("ciudad"));
+    }
+}
+```
+
+Ejecuta `cd java-dia-a-dia && java ExtraerGuia.java`.
+
+**Resultado esperado:** `RT-082 -> Cali`.
+
+**Fallo deliberado:** cambia `m.matches()` por `m.find()` y agrega texto inválido al final de la línea. **Resultado del fallo:** se acepta un fragmento válido dentro de una línea inválida. **Diagnóstico:** usa `matches()` cuando el formato debe cubrir toda la entrada.
+
+**Entiende:** los grupos con nombre permiten recuperar partes sin depender de índices numéricos.
+
+La prueba de ReDoS sugerida arriba se mantiene como lectura controlada; no aumentes el tamaño de entrada sin un límite de tiempo.
 
 #### Paso 7 · Cierre y evidencia
 Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque las regex aparecen en validaciones, logs, rutas y búsquedas, y un patrón mal escrito es una vulnerabilidad de denegación de servicio.
@@ -227,7 +346,7 @@ Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track
 ### Tema 3: Dinero exacto con BigDecimal
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás explicar por qué `double` no sirve para dinero, operar con `BigDecimal` creado desde texto, fijar escala y modo de redondeo, y comparar valores correctamente. Prerrequisito: Módulo 2 (tipos primitivos).
+Al finalizar podrás explicar por qué `double` no sirve para dinero, operar con `BigDecimal` creado desde texto, fijar escala y modo de redondeo, y comparar valores correctamente. **Prerrequisitos:** Java M0 Tema 4 (tipos) y Java M2 Tema 1 (colecciones para los ejemplos de cuotas).
 
 #### Paso 2 · Contexto y caso real
 RutaFlow cobra tarifas, IVA y cuotas. Sumar diez recargos de 0,10 con `double` no da exactamente 1. En contabilidad, un peso de diferencia multiplicado por un millón de facturas es un problema real de auditoría.
@@ -248,6 +367,8 @@ flowchart LR
 ```
 
 #### Paso 4 · Demostración guiada desde cero
+
+##### Subtema 3.1: Evitar la imprecisión de double · 10-15 min
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
 
 ```bash
@@ -307,10 +428,65 @@ La penúltima línea muestra lo que realmente guarda un `double` 0.1, y la últi
 **Fallo deliberado:** En la cuota quita la escala y el modo: `new BigDecimal("100000").divide(new BigDecimal("3"))`. Obtienes `java.lang.ArithmeticException: Non-terminating decimal expansion; no exact representable decimal result.` porque 100000/3 tiene infinitos decimales y no le dijiste dónde cortar.
 
 #### Paso 5 · Práctica guiada
-Reparte un total de 100000 en 3 cuotas de modo que la suma de las cuotas sea exactamente el total. **Pista:** calcula dos cuotas redondeadas a 2 decimales y deja que la última sea el total menos la suma de las anteriores.
+
+##### Subtema 3.2: Repartir un total sin perder centavos · 5-10 min
+
+**Contexto:** tres cuotas deben sumar exactamente el cobro original.
+
+**Hazlo tú:** crea `java-dia-a-dia/Cuotas.java`:
+
+```java
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
+public class Cuotas {
+    public static void main(String[] args) {
+        BigDecimal total = new BigDecimal("100000.00");
+        BigDecimal cuota = total.divide(new BigDecimal("3"), 2, RoundingMode.DOWN);
+        BigDecimal ultima = total.subtract(cuota.multiply(new BigDecimal("2")));
+        System.out.println(cuota + ", " + cuota + ", " + ultima);
+        System.out.println(cuota.add(cuota).add(ultima));
+    }
+}
+```
+
+Ejecuta `cd java-dia-a-dia && java Cuotas.java`.
+
+**Resultado esperado:** `33333.33, 33333.33, 33333.34` y `100000.00`.
+
+**Fallo deliberado:** reparte las tres cuotas usando `divide(..., 2, RoundingMode.DOWN)`. **Resultado del fallo:** la suma queda en `99999.99`. **Diagnóstico:** el redondeo deja un centavo residual; asígnalo a la última cuota.
+
+**Entiende:** define escala y modo de redondeo y conserva una regla para el residuo.
+**Pista:** suma las cuotas al final; la última debe absorber el centavo que dejó el redondeo de las dos primeras.
 
 #### Paso 6 · Práctica independiente
-Representa el dinero como `long` de centavos y compara legibilidad y riesgos frente a `BigDecimal`. Investiga también la API `javax.money` (JSR 354).
+
+##### Subtema 3.3: Guardar centavos como enteros · 5-10 min
+
+**Contexto:** una moneda con dos decimales también se puede guardar como centavos enteros.
+
+**Hazlo tú:** crea `java-dia-a-dia/Centavos.java`:
+
+```java
+public class Centavos {
+    static long aCentavos(String pesos) {
+        return new java.math.BigDecimal(pesos).movePointRight(2).longValueExact();
+    }
+    public static void main(String[] args) {
+        long total = aCentavos("27.50") + aCentavos("12.25");
+        System.out.println("centavos=" + total);
+        System.out.printf("pesos=%d.%02d%n", total / 100, total % 100);
+    }
+}
+```
+
+Ejecuta `cd java-dia-a-dia && java Centavos.java`.
+
+**Resultado esperado:** `centavos=3975` y `pesos=39.75`.
+
+**Fallo deliberado:** cambia `longValueExact()` por `longValue()` y usa `"1.239"`. **Resultado del fallo:** el valor se trunca sin avisar. **Diagnóstico:** `longValueExact()` rechaza fracciones de centavo y desbordamientos en vez de perder información.
+
+**Entiende:** centavos enteros son simples para una moneda de escala fija; `BigDecimal` expresa mejor escalas y cálculos variables.
 
 #### Paso 7 · Cierre y evidencia
 Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque los errores de redondeo en dinero son bugs reales, difíciles de detectar y con consecuencias legales.
@@ -325,7 +501,7 @@ Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track
 ### Tema 4: Assertions y diseño por contrato
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás distinguir precondiciones públicas (excepciones) de invariantes internas (`assert`), activar assertions con `-ea` y usarlas para detectar bugs propios. Prerrequisito: Módulo 3 (excepciones).
+Al finalizar podrás distinguir precondiciones públicas (excepciones) de invariantes internas (`assert`), activar assertions con `-ea` y usarlas para detectar bugs propios. **Prerrequisito:** Java M3 Tema 1 (excepciones).
 
 #### Paso 2 · Contexto y caso real
 El cargador de camiones de RutaFlow mantiene el total de kilos para no recalcularlo. Si un cambio futuro olvida actualizarlo, el camión saldría sobrecargado. Las assertions detectan ese bug durante el desarrollo, y las excepciones protegen la entrada pública en producción: un caso real de cualquier clase con estado.
@@ -347,6 +523,8 @@ flowchart LR
 ```
 
 #### Paso 4 · Demostración guiada desde cero
+
+##### Subtema 4.1: Proteger entradas públicas y revisar invariantes · 10-15 min
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
 
 ```bash
@@ -434,8 +612,60 @@ Con y sin `-ea` el resultado es igual porque el código es correcto; la diferenc
 #### Paso 5 · Práctica guiada
 Agrega una postcondición a `subir`: después de subir, `total` debe ser mayor que antes. **Pista:** guarda `int antes = total;` al inicio y escribe `assert total > antes : ...` al final.
 
+##### Subtema 4.2: Comprobar una postcondición · 5-10 min
+
+**Contexto:** cada llamada correcta a `subir` debe aumentar el total en los kilos pedidos.
+
+**Hazlo tú:** crea `java-dia-a-dia/Postcondicion.java`:
+
+```java
+public class Postcondicion {
+    static int agregar(int total, int kilos) {
+        if (kilos <= 0) throw new IllegalArgumentException("kilos debe ser positivo");
+        int antes = total;
+        total += kilos;
+        assert total == antes + kilos : "el total no aumentó como se pidió";
+        return total;
+    }
+    public static void main(String[] args) {
+        System.out.println(agregar(12, 5));
+    }
+}
+```
+
+Ejecuta `cd java-dia-a-dia && java -ea Postcondicion.java`.
+
+**Resultado esperado:** `17`.
+
+**Fallo deliberado:** cambia `total += kilos` por `total += 0`. **Resultado del fallo:** `AssertionError: el total no aumentó como se pidió`. **Diagnóstico:** la postcondición compara el resultado con el compromiso anunciado por el método.
+
+**Entiende:** usa excepciones para entradas inválidas y assertions para detectar errores internos.
+
 #### Paso 6 · Práctica independiente
 Configura tu herramienta de pruebas (Maven Surefire o Gradle) para ejecutar con `-ea` y comprueba que una invariante rota hace fallar una prueba.
+
+##### Subtema 4.3: Ver el efecto de `-ea` · 5-10 min
+
+**Contexto:** las assertions vienen apagadas si no se activa la opción de la JVM.
+
+**Hazlo tú:** crea `java-dia-a-dia/ActivarAssert.java`:
+
+```java
+public class ActivarAssert {
+    public static void main(String[] args) {
+        assert false : "invariante rota";
+        System.out.println("sin fallo visible");
+    }
+}
+```
+
+Ejecuta primero `cd java-dia-a-dia && java ActivarAssert.java`, luego `java -ea ActivarAssert.java`.
+
+**Resultado esperado:** sin `-ea` aparece `sin fallo visible`; con `-ea` la JVM informa `AssertionError: invariante rota`.
+
+**Fallo deliberado:** corre las pruebas sin `-ea`. **Resultado del fallo:** la invariante rota no detiene el programa. **Diagnóstico:** habilita assertions en la JVM de pruebas; no uses `assert` para validar la entrada del usuario.
+
+**Entiende:** `assert` es una alarma de desarrollo, no una barrera de seguridad siempre activa.
 
 #### Paso 7 · Cierre y evidencia
 Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque separar validación de entrada y verificación interna hace el código más honesto y encuentra bugs cerca de su causa.
@@ -450,7 +680,7 @@ Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track
 ### Tema 5: ServiceLoader: plugins sin acoplar implementaciones
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás definir un servicio como interfaz, registrar implementaciones en `META-INF/services` y descubrirlas con `ServiceLoader` sin que el código principal las conozca. Prerrequisitos: interfaces (Módulo 4) y classpath (Módulo 10).
+Al finalizar podrás definir un servicio como interfaz, registrar implementaciones en `META-INF/services` y descubrirlas con `ServiceLoader` sin que el código principal las conozca. **Prerrequisitos:** Java M1 Tema 3 (interfaces) y Java M10 Tema 1 (módulos y classpath).
 
 #### Paso 2 · Contexto y caso real
 RutaFlow trabaja con varias transportadoras y cada mes se suma una. Si el cotizador hace `new Moto()` y `new Camion()`, cada transportadora nueva obliga a modificarlo. Así funcionan en la realidad los drivers JDBC, los proveedores de logging de SLF4J y los motores de plantillas: se agregan con un JAR.
@@ -471,6 +701,8 @@ flowchart LR
 ```
 
 #### Paso 4 · Demostración guiada desde cero
+
+##### Subtema 5.1: Descubrir proveedores por el classpath · 10-15 min
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
 
 ```bash
@@ -570,8 +802,52 @@ Implementaciones descubiertas: 2
 #### Paso 5 · Práctica guiada
 Agrega la transportadora `Bicicleta` que solo cubre Bogotá y pedidos de hasta 5 kg, sin modificar `Cotizador`. **Pista:** crea la clase, agrega `rutaflow.Bicicleta` al archivo de servicios y vuelve a compilar y copiar `META-INF`.
 
+##### Subtema 5.2: Añadir una transportadora sin cambiar el cotizador · 5-10 min
+
+**Contexto:** el equipo incorpora bicicletas de reparto urbano y conserva el mismo contrato.
+
+**Hazlo tú:** en el proyecto `plugins`, crea `src/rutaflow/Bicicleta.java`:
+
+```java
+package rutaflow;
+
+public class Bicicleta implements Transportadora {
+    public String nombre() { return "Bicicleta"; }
+    public boolean cubre(String ciudad) { return ciudad.equals("Bogotá"); }
+    public int cotizar(int kilos) {
+        if (kilos > 5) throw new IllegalArgumentException("máximo 5 kg");
+        return 4000 + kilos * 500;
+    }
+}
+```
+
+Agrega `rutaflow.Bicicleta` a `src/META-INF/services/rutaflow.Transportadora`. En `src/rutaflow/Cotizador.java`, cambia `int kilos = 10;` a `int kilos = 4` para probar una carga que la bicicleta puede llevar. Ejecuta `javac -d out src/rutaflow/*.java && cp -r src/META-INF out/ && java -cp out rutaflow.Cotizador`.
+
+**Resultado esperado:** tres implementaciones descubiertas; en Bogotá aparece `Bicicleta ... 4 kg = 6000 COP`.
+
+**Fallo deliberado:** escribe `rutaflow.Bicleta` en el archivo. **Error esperado:** `ServiceConfigurationError` indica que no se pudo encontrar o cargar la clase. **Diagnóstico:** el nombre del proveedor debe coincidir exactamente con su nombre de paquete y clase.
+
+**Entiende:** el contrato compartido permite añadir un proveedor sin editar el cotizador.
+
 #### Paso 6 · Práctica independiente
 Convierte el ejemplo a módulos con `module-info.java` usando `uses` y `provides ... with ...`, y explica qué ventaja da frente al archivo de texto.
+
+##### Subtema 5.3: Diagnosticar un archivo de servicios ausente · 5-10 min
+
+**Contexto:** compilar proveedores no basta; `ServiceLoader` también necesita encontrarlos en el classpath.
+
+**Hazlo tú:** vuelve a compilar el proyecto sin copiar `META-INF/services`:
+
+```bash
+javac -d out2 src/rutaflow/*.java
+java -cp out2 rutaflow.Cotizador
+```
+
+**Resultado esperado:** `Implementaciones descubiertas: 0`.
+
+**Fallo deliberado:** asume que el plugin está instalado porque `Moto.class` aparece en `out2`. **Resultado del fallo:** no hay cotizaciones aunque las clases estén compiladas. **Diagnóstico:** copia también el descriptor `src/META-INF/services/rutaflow.Transportadora` al classpath.
+
+**Entiende:** el registro del proveedor es parte del artefacto ejecutable, junto con las clases.
 
 #### Paso 7 · Cierre y evidencia
 Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque es el mecanismo estándar de extensión de Java y explica por qué un driver aparece o no aparece en tiempo de ejecución.
@@ -586,7 +862,7 @@ Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track
 ### Tema 6: Proxies dinámicos: así funcionan @Transactional y los mocks
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás crear un proxy dinámico con `java.lang.reflect.Proxy` que intercepte todas las llamadas de una interfaz, y explicar cómo los frameworks agregan transacciones, logs y mocks sin tocar tu código. Prerrequisito: Tema 1 de este módulo.
+Al finalizar podrás crear un proxy dinámico con `java.lang.reflect.Proxy` que intercepte todas las llamadas de una interfaz, y explicar cómo los frameworks agregan transacciones, logs y mocks sin tocar tu código. **Prerrequisito:** Java M19 Tema 1 (reflexión y métodos).
 
 #### Paso 2 · Contexto y caso real
 Spring envuelve tus servicios para abrir y cerrar transacciones; Mockito crea objetos falsos; los clientes HTTP declarativos generan implementaciones a partir de interfaces. En RutaFlow agregaremos registro de llamadas al servicio de tarifas sin modificar `TarifasReales`: el caso real que explica por qué `@Transactional` no funciona en una llamada interna.
@@ -612,6 +888,8 @@ sequenceDiagram
 ```
 
 #### Paso 4 · Demostración guiada desde cero
+
+##### Subtema 6.1: Registrar las llamadas sin tocar el servicio · 10-15 min
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
 
 ```bash
@@ -696,8 +974,84 @@ La excepción llegó al llamador como `IllegalArgumentException`, igual que si n
 #### Paso 5 · Práctica guiada
 Agrega al proxy una caché: si `cotizar` se llama dos veces con los mismos argumentos, devuelve el resultado guardado. **Pista:** usa un `Map<List<Object>, Object>` con `List.of(argumentos)` como clave y aplica la caché solo cuando `metodo.getName()` sea `cotizar`.
 
+##### Subtema 6.2: Guardar el resultado de una llamada repetida · 5-10 min
+
+**Contexto:** una pantalla puede pedir dos veces la misma cotización; el proxy puede reutilizarla mientras los datos no cambien.
+
+**Hazlo tú:** crea `java-dia-a-dia/CacheProxy.java`:
+
+```java
+import java.lang.reflect.*;
+import java.util.*;
+
+public class CacheProxy {
+    interface Tarifas { int cotizar(String ciudad, int kilos); }
+    static class Reales implements Tarifas {
+        public int cotizar(String ciudad, int kilos) { return kilos * 1000; }
+    }
+    public static void main(String[] args) {
+        Tarifas real = new Reales();
+        Map<List<Object>, Object> cache = new HashMap<>();
+        Tarifas proxy = (Tarifas) Proxy.newProxyInstance(Tarifas.class.getClassLoader(),
+            new Class<?>[]{Tarifas.class}, (obj, metodo, valores) -> {
+                var clave = Arrays.asList(valores);
+                if (cache.containsKey(clave)) return cache.get(clave);
+                Object resultado = metodo.invoke(real, valores);
+                cache.put(clave, resultado);
+                System.out.println("cálculo nuevo");
+                return resultado;
+            });
+        System.out.println(proxy.cotizar("Cali", 4));
+        System.out.println(proxy.cotizar("Cali", 4));
+    }
+}
+```
+
+Ejecuta `cd java-dia-a-dia && java CacheProxy.java`.
+
+**Resultado esperado:** `cálculo nuevo`, `4000`, `4000`.
+
+**Fallo deliberado:** elimina `cache.put(clave, resultado)`. **Resultado del fallo:** aparece `cálculo nuevo` dos veces. **Diagnóstico:** el resultado se calculó, pero el proxy nunca lo guardó.
+
+**Entiende:** la clave incluye los argumentos; esta caché local no reemplaza una caché compartida ni considera vencimiento.
+
 #### Paso 6 · Práctica independiente
 Escribe una clase con un método que llame a otro método propio y explica por qué el segundo no pasa por el proxy (la auto-invocación de `@Transactional`).
+
+##### Subtema 6.3: Ver una llamada interna que salta el proxy · 5-10 min
+
+**Contexto:** Spring aplica su interceptación cuando una llamada entra desde fuera del objeto proxy.
+
+**Hazlo tú:** crea `java-dia-a-dia/AutoLlamada.java`:
+
+```java
+import java.lang.reflect.*;
+
+public class AutoLlamada {
+    interface Tareas { void externa(); void interna(); }
+    static class Servicio implements Tareas {
+        public void externa() { System.out.println("externa"); interna(); }
+        public void interna() { System.out.println("interna real"); }
+    }
+    public static void main(String[] args) {
+        Tareas real = new Servicio();
+        Tareas proxy = (Tareas) Proxy.newProxyInstance(Tareas.class.getClassLoader(),
+            new Class<?>[]{Tareas.class}, (obj, metodo, valores) -> {
+                System.out.println("interceptada: " + metodo.getName());
+                return metodo.invoke(real, valores);
+            });
+        proxy.externa();
+    }
+}
+```
+
+Ejecuta `cd java-dia-a-dia && java AutoLlamada.java`.
+
+**Resultado esperado:** `interceptada: externa`, `externa`, `interna real`; no aparece `interceptada: interna`.
+
+**Fallo deliberado:** supone que la llamada interna también inicia otra transacción. **Resultado del fallo:** la llamada a `interna` ocurre directamente en el objeto real. **Diagnóstico:** llama a través de un proxy desde otro bean o mueve la operación a otro servicio.
+
+**Entiende:** las llamadas propias no vuelven a atravesar el proxy que recibió la llamada externa.
 
 #### Paso 7 · Cierre y evidencia
 Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque explica el comportamiento de frameworks que usas a diario y errores clásicos de entrevistas como la auto-invocación.
@@ -712,7 +1066,7 @@ Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track
 ### Tema 7: Internacionalización: números, monedas, fechas y orden de texto
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás formatear números, monedas y fechas según el `Locale`, ordenar texto en español con `Collator` y construir mensajes con plurales. Prerrequisito: Módulo 0 (`java.time`).
+Al finalizar podrás formatear números, monedas y fechas según el `Locale`, ordenar texto en español con `Collator` y construir mensajes con plurales. **Prerrequisito:** Java M0 Tema 8 (`java.time`).
 
 #### Paso 2 · Contexto y caso real
 RutaFlow factura en Colombia y empieza a operar con clientes en Estados Unidos y Alemania. `1.234` significa mil doscientos treinta y cuatro en Bogotá y uno coma dos en Nueva York. Un listado de barrios ordenado con `compareTo` pone "Álamos" al final. Son errores reales que ven los usuarios.
@@ -733,6 +1087,8 @@ flowchart LR
 ```
 
 #### Paso 4 · Demostración guiada desde cero
+
+##### Subtema 7.1: Mostrar importes y fechas según Locale · 10-15 min
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
 
 ```bash
@@ -802,8 +1158,65 @@ Los espacios del símbolo de moneda y algunos detalles pueden variar según la v
 #### Paso 5 · Práctica guiada
 Formatea la hora de una entrega (`ZonedDateTime`) en Bogotá y en Berlín con el mismo `Instant`. **Pista:** crea un `Instant`, conviértelo con `atZone(ZoneId.of("America/Bogota"))` y con `Europe/Berlin`, y formatea cada uno con su `Locale`.
 
+##### Subtema 7.2: Mostrar el mismo instante en dos ciudades · 5-10 min
+
+**Contexto:** una misma entrega llega a horas locales diferentes sin cambiar el instante guardado.
+
+**Hazlo tú:** crea `java-dia-a-dia/HorasLocales.java`:
+
+```java
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+
+public class HorasLocales {
+    public static void main(String[] args) {
+        Instant llegada = Instant.parse("2026-11-03T15:00:00Z");
+        var formato = DateTimeFormatter.ofPattern("d MMM uuuu HH:mm z", Locale.forLanguageTag("es-CO"));
+        System.out.println(llegada.atZone(ZoneId.of("America/Bogota")).format(formato));
+        System.out.println(llegada.atZone(ZoneId.of("Europe/Berlin")).format(formato));
+    }
+}
+```
+
+Ejecuta `cd java-dia-a-dia && java HorasLocales.java`.
+
+**Resultado esperado:** horas locales `10:00` y `16:00` para el mismo instante; Java puede mostrar `COT` y `GMT+01:00` según los datos de zona incluidos en el JDK.
+
+**Fallo deliberado:** agrega ocho horas a una cadena de texto para calcular Berlín. **Resultado del fallo:** el desfase deja de ser correcto al cambiar el horario de verano. **Diagnóstico:** convierte desde el mismo `Instant` con `ZoneId`; no sumes horas a mano.
+
+**Entiende:** un instante es único; zona e idioma solo cambian cómo se muestra.
+
 #### Paso 6 · Práctica independiente
 Mueve los mensajes a dos archivos `mensajes_es.properties` y `mensajes_en.properties` y cárgalos con `ResourceBundle.getBundle`.
+
+##### Subtema 7.3: Cargar mensajes en dos idiomas · 5-10 min
+
+**Contexto:** las etiquetas de la aplicación deben cambiar de idioma sin duplicar la lógica Java.
+
+**Hazlo tú:** crea `java-dia-a-dia/Mensajes.java`:
+
+```java
+import java.util.Locale;
+import java.util.ResourceBundle;
+
+public class Mensajes {
+    public static void main(String[] args) {
+        for (Locale locale : new Locale[]{Locale.forLanguageTag("es"), Locale.forLanguageTag("en")}) {
+            ResourceBundle textos = ResourceBundle.getBundle("mensajes", locale);
+            System.out.println(textos.getString("saludo"));
+        }
+    }
+}
+```
+
+Crea `java-dia-a-dia/mensajes_es.properties` con `saludo=Hola, Ana` y `java-dia-a-dia/mensajes_en.properties` con `saludo=Hello, Ana`. Ejecuta desde `java-dia-a-dia`: `java Mensajes.java`.
+
+**Resultado esperado:** `Hola, Ana` y `Hello, Ana`.
+
+**Fallo deliberado:** escribe `saludos` en el programa en vez de `saludo`. **Error esperado:** `MissingResourceException`. **Diagnóstico:** la clave solicitada debe existir en cada archivo de recursos.
+
+**Entiende:** `ResourceBundle` escoge el archivo según el locale; conserva las claves iguales entre idiomas.
 
 #### Paso 7 · Cierre y evidencia
 Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque cualquier producto que crece cruza fronteras, y los errores de formato de dinero o fecha generan cobros y entregas equivocados.
