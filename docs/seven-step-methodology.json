@@ -248,20 +248,20 @@
       "complete": 29
     },
     "spring-boot": {
-      "topics": 106,
+      "topics": 107,
       "objective": 0,
-      "prerequisites": 106,
+      "prerequisites": 107,
       "context": 0,
       "theoryAnalogy": 0,
       "guidedDemo": 0,
-      "codeExplanation": 106,
-      "execution": 104,
-      "expectedResult": 105,
-      "deliberateFailure": 106,
+      "codeExplanation": 107,
+      "execution": 105,
+      "expectedResult": 106,
+      "deliberateFailure": 107,
       "guidedPractice": 0,
       "independentPractice": 0,
       "closure": 0,
-      "commonErrors": 106,
+      "commonErrors": 107,
       "resources": 106,
       "standaloneExample": 99,
       "complete": 0
@@ -27992,6 +27992,31 @@
         },
         "classification": {
           "stepsPassed": 8,
+          "complete": false
+        }
+      },
+      {
+        "module": 15,
+        "topic": "Tema 9: CQRS y saga por coreografía · Experto · 1 h 20 min",
+        "criteria": {
+          "objective": false,
+          "prerequisites": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": true,
+          "resources": false,
+          "standaloneExample": false
+        },
+        "classification": {
+          "stepsPassed": 6,
           "complete": false
         }
       },

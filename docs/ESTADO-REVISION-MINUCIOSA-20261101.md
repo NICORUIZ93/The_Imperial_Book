@@ -921,3 +921,33 @@ la detección de marcadores como formación verificada.
 
 Siguiente prioridad del usuario: Microservicios (curso separado, docs/PLAN-CURSO-MICROSERVICIOS.md)
 → Docker/Kubernetes (curso separado) → Flutter → Node.
+
+## 28. Corrección de continuidad: Spring Boot M15 T9 — CQRS y saga por coreografía
+
+Fecha: 2026-11-02. Esta sección reemplaza para el estado actual los conteos y la afirmación de
+“track completo” de la sección 27: Spring Boot contiene ahora **107 temas** y el registro marca
+107/107 revisados, pero esa cobertura registral no sustituye ejecución exhaustiva, navegador ni
+firma pedagógica humana. El repositorio completo contiene 1173 temas; 350 están en el registro de
+profundidad y 823 permanecen pendientes.
+
+Se añadió y corrigió `spring-boot/modulo-15::Tema 9: CQRS y saga por coreografía`. La primera
+redacción tenía dos defectos: regeneraba el proyecto con la dependencia `web` en lugar de
+`data-jpa,h2`, y describía consistencia eventual sobre un `@EventListener` local síncrono. La
+versión corregida enseña `@TransactionalEventListener(AFTER_COMMIT)` con `REQUIRES_NEW`, distingue
+evento local de mensajería durable y descompone doble escritura/outbox, idempotencia, orden,
+versión de contratos, observabilidad, correlation ID y ciclos. Incluye transferencia observable
+para cada mecanismo y aclara que CQRS no exige eventos, bases separadas ni Event Sourcing.
+
+Evidencia ejecutada en un proyecto limpio de Spring Initializr: Spring Boot 4.1.2, Java release
+25, JPA y H2; `./mvnw test` terminó `BUILD SUCCESS` con 3/3 pruebas (proyección después del commit,
+camino feliz y compensación). El SQL mostró inserciones separadas en escritura y lectura.
+
+Validaciones posteriores: `./scripts/validate.sh` EXIT 0; build Angular EXIT 0; Vitest 7 archivos,
+26 pruebas, 0 fallos. Se regeneraron índice web, grafos de prerrequisitos/repositorio y auditorías
+derivadas. Métricas actuales: metodología 901/1173, perfil editorial practicable 1159/1173 (14 de
+deuda), revisión de profundidad 350/1173. Ninguna métrica automática acredita comprensión.
+
+Discrepancia de skills: el manifiesto declara `scope-and-sequence-designer`,
+`backwards-design-unit-planner` y `competency-unpacker`, pero sus `SKILL.md` no existen en las
+rutas instaladas declaradas. No se afirma que esas skills hayan sido ejecutadas; se aplicaron
+directamente los contratos pedagógicos versionados del repositorio.

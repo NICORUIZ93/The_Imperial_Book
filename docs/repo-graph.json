@@ -224,7 +224,7 @@
     },
     {
       "path": "docs/ESTADO-REVISION-MINUCIOSA-20261101.md",
-      "lines": 924,
+      "lines": 954,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -986,7 +986,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 14363,
+      "lines": 14375,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -994,7 +994,7 @@
     },
     {
       "path": "docs/course-depth-review.md",
-      "lines": 1203,
+      "lines": 1204,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1161,7 +1161,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 9932,
+      "lines": 9939,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1333,7 +1333,7 @@
     },
     {
       "path": "docs/prerequisite-graph.json",
-      "lines": 12900,
+      "lines": 12911,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1452,7 +1452,7 @@
     },
     {
       "path": "docs/seven-step-methodology.json",
-      "lines": 29601,
+      "lines": 29626,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1502,7 +1502,7 @@
     },
     {
       "path": "docs/subtopic-depth-review.json",
-      "lines": 21972,
+      "lines": 22007,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1510,7 +1510,7 @@
     },
     {
       "path": "docs/subtopic-depth-review.md",
-      "lines": 1165,
+      "lines": 1166,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1523,7 +1523,7 @@
     },
     {
       "path": "docs/subtopic-depth-reviewed.json",
-      "lines": 4996,
+      "lines": 5018,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1591,7 +1591,7 @@
     },
     {
       "path": "docs/topic-learning-quality.json",
-      "lines": 26055,
+      "lines": 26077,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -12623,7 +12623,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-15.md",
-      "lines": 1437,
+      "lines": 1651,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12977,7 +12977,7 @@
     },
     {
       "path": "web/public/content/topic-index.json",
-      "lines": 5229,
+      "lines": 5233,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

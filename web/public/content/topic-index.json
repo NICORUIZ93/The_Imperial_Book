@@ -4934,6 +4934,10 @@
       {
         "title": "Clean Architecture y DDD táctico: caso de uso antes que framework",
         "fragment": "tema-8-clean-architecture-y-ddd-tactico-caso-de-uso-antes-que-framework"
+      },
+      {
+        "title": "CQRS y saga por coreografía",
+        "fragment": "tema-9-cqrs-y-saga-por-coreografia"
       }
     ],
     "16": [

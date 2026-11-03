@@ -1682,7 +1682,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "14d9d9d2f183fa4fba782864d3d32c9f523605957c1b92e6ce0c0dc61baaa53b",
+    "fingerprint": "2a4d5a96746bb8b3084305e710dbcc61ec036a828730fa20291504f8e750eb87",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
@@ -1691,7 +1691,7 @@
     },
     "modules": 255,
     "modulesWithLegacySections": 179,
-    "topics": 1172,
+    "topics": 1173,
     "topicsWithIssues": 0
   },
   "topics": {
@@ -9477,6 +9477,13 @@
         "tailWords": 312,
         "topic": "Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework · Experto · 1 h 50 min",
         "words": 1629
+      },
+      {
+        "issues": [],
+        "module": 15,
+        "tailWords": 418,
+        "topic": "Tema 9: CQRS y saga por coreografía · Experto · 1 h 20 min",
+        "words": 2483
       },
       {
         "issues": [],

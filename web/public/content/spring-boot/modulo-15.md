@@ -1434,3 +1434,217 @@ demuestra dirección de dependencias y no reemplaza pruebas de integración,
 transacciones reales, migraciones Flyway ni seguridad de la API.
 
 **Fuente oficial:** [Spring Boot reference](https://docs.spring.io/spring-boot/reference/) y [DDD Aggregate de Martin Fowler](https://martinfowler.com/bliki/DDD_Aggregate.html).
+
+### Tema 9: CQRS y saga por coreografía · Experto · 1 h 20 min
+
+**Prerrequisito:** Tema 5 de este módulo (saga con compensación real) y Módulo 10, Tema 8 (saga orquestada con Temporal).
+
+**Al terminar podrás:** separar un modelo de escritura de uno de lectura conectados por un evento de dominio, e implementar una saga coreografiada donde ningún componente conoce la secuencia completa — a diferencia de los dos orquestadores (Temporal y manual) ya vistos.
+
+#### Aprende
+
+Un endpoint de resumen solo necesita leer; el endpoint que crea un envío solo necesita escribir. Forzar ambos a pasar por la misma entidad JPA acopla una pantalla de solo lectura a las reglas de validación de la escritura.
+
+**¿Por qué es importante?** CQRS separa el modelo que escribe del modelo que se lee, permitiendo que cada uno se optimice para su propio trabajo; una saga coreografiada elimina el punto único de coordinación de una saga orquestada, a costa de que ningún componente tenga la vista completa del proceso.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Modelo de escritura (`EnvioEscritura`) | Núcleo | Entidad normalizada; `EnvioComandoService` la muta y publica `EnvioEstadoCambiado` |
+| Modelo de lectura (`EnvioResumenLectura`) | Núcleo | Entidad denormalizada, distinta clase y tabla, actualizada solo por el listener de proyección |
+| Proyección después del commit | Núcleo | `@TransactionalEventListener(AFTER_COMMIT)` evita publicar una lectura de una escritura que luego haga rollback |
+| Saga coreografiada sin coordinador | Núcleo | `InventarioService` y `PagoService` solo reaccionan a eventos; ningún bean conoce reservar→cobrar→compensar completo |
+| Compensación disparada por evento | Variante | `PagoRechazado` dispara `InventarioService.alRechazarPago`, no una llamada directa |
+| Orquestada (Temporal/manual) vs coreografiada | Decisión | Mismo resultado de negocio, ningún componente central en la versión coreografiada |
+| Evento local frente a mensajería durable | Límite | `ApplicationEventPublisher` es síncrono, en proceso y no reemplaza Kafka, un broker ni un outbox |
+| Atomicidad y doble escritura | Diagnóstico | Guardar dominio y publicar a un broker por separado puede perder o duplicar mensajes; outbox cierra esa frontera |
+| Idempotencia, orden y versión | Profundización | Una proyección profesional tolera reentregas, rechaza eventos antiguos y evoluciona contratos explícitamente |
+| Observabilidad y ciclos | Diagnóstico | Correlation ID, estado de saga y grafo de eventos permiten localizar pasos atascados y bucles |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Modelo de escritura (`EnvioEscritura`) (núcleo).** El modelo de escritura (Command side de CQRS) es la fuente de verdad normalizada: `EnvioComandoService.crearEnvio`/`avanzarEstado` mutan `EnvioEscritura` dentro de una transacción y publican `EnvioEstadoCambiado` al terminar. Este modelo no está optimizado para mostrarse en una pantalla; está optimizado para validar reglas de negocio al escribir.
+
+**Modelo de lectura (`EnvioResumenLectura`) (núcleo).** El modelo de lectura (Query side) es una clase y tabla completamente distintas, con una forma denormalizada ("resumen" como texto ya armado) pensada solo para leerse rápido. El test `losModelosDeEscrituraYLecturaSonEntidadesYTablasDistintas` confirma explícitamente que no es la misma entidad vista de dos formas: son dos clases que ni siquiera son instancias una de la otra.
+
+**Proyección después del commit (núcleo).** `EnvioProyeccionListener.actualizarResumen` escucha `EnvioEstadoCambiado` con `@TransactionalEventListener(phase = AFTER_COMMIT)` y reconstruye el modelo de lectura desde los datos del evento, sin volver a consultar el modelo de escritura. La fase importa: un `@EventListener` común se ejecuta durante `publishEvent`; si después falla la transacción, un consumidor externo podría haber observado un estado que nunca fue confirmado. Como la transacción original ya terminó, la escritura de la proyección abre una transacción nueva con `REQUIRES_NEW`. Si el evento se publica sin una transacción activa, el listener transaccional no se ejecuta salvo que se configure `fallbackExecution = true`; aquí no se habilita para detectar ese error.
+
+**Saga coreografiada sin coordinador (núcleo).** En las sagas vistas antes (Temporal en el Módulo 10, el orquestador manual en el Tema 5), un componente conoce y dirige la secuencia completa. Aquí, `InventarioService.alCrearPedido` solo sabe "cuando llega `PedidoCreado`, reservo y publico `InventarioReservado`"; `PagoService.alReservarInventario` solo sabe "cuando llega `InventarioReservado`, cobro y publico `PagoAprobado` o `PagoRechazado`". Ningún bean contiene la secuencia `reservar → cobrar → (compensar si falla)`: esa secuencia emerge de cómo cada servicio reacciona de forma independiente a eventos. `PedidoService.crearPedido` solo anuncia que el pedido existe; no es un orquestador.
+
+**Compensación disparada por evento (variante).** Cuando `PagoService` publica `PagoRechazado`, es `InventarioService.alRechazarPago` quien decide liberar el inventario — una reacción, no una instrucción de un coordinador. El test `pagoRechazadoDisparaCompensacionDeInventarioSinCoordinadorCentral` confirma la secuencia completa `inventario:reservar → pago:rechazar → inventario:liberar` emergiendo solo de reacciones encadenadas.
+
+**Orquestada (Temporal/manual) vs coreografiada (decisión).** Las tres formas de saga (Temporal, orquestador manual, coreografiada) logran el mismo resultado de negocio: compensar si un paso falla. La orquestada centraliza la lógica de secuencia en un lugar fácil de leer y depurar, a cambio de un punto único de coordinación; la coreografiada elimina ese punto único (cada servicio se despliega y evoluciona con más independencia), a cambio de que entender el flujo completo requiere leer varios servicios a la vez y no hay un solo lugar que muestre "en qué paso va" un pedido concreto.
+
+**Evento local frente a mensajería durable (límite).** `ApplicationEventPublisher` llama listeners dentro de la misma JVM; por defecto, en el thread que publica. `AFTER_COMMIT` cambia la fase, no convierte el evento en asíncrono, persistente ni distribuido. En esta demostración, cuando el método público regresa, la proyección ya se ejecutó. Con Kafka u otro broker la lectura sí puede quedar temporalmente atrasada y el cliente debe tolerar esa consistencia eventual. Si el proceso cae entre el commit y el listener local, Spring no reentrega el evento después de reiniciar.
+
+**Atomicidad y doble escritura (diagnóstico).** Guardar `EnvioEscritura` y luego publicar directamente a un broker son dos operaciones distintas: puede confirmarse una y fallar la otra. El patrón outbox —ya practicado en este módulo— persiste el cambio y el mensaje pendiente en la misma transacción; un publicador posterior lo entrega al broker. El consumidor debe seguir siendo idempotente porque una entrega puede repetirse. No llames a esta demostración una integración distribuida confiable: demuestra separación de modelos y fase transaccional dentro de una JVM.
+
+**Idempotencia, orden y versión (profundización).** Un evento profesional incluye `eventId`, `aggregateId`, `aggregateVersion`, fecha y versión del esquema. La proyección conserva los `eventId` procesados o aplica una operación idempotente; además, solo acepta una versión de agregado posterior a la última aplicada. Sin esas defensas, una reentrega puede repetir efectos y un evento tardío puede devolver la lectura a un estado anterior. Cambiar o eliminar campos del evento exige compatibilidad, adaptador o migración; renombrar un record Java no es una estrategia de evolución distribuida.
+
+**Observabilidad y ciclos (diagnóstico).** Al repartir el flujo, registra el mismo `correlationId` en cada evento y materializa el estado de la saga (`INICIADA`, `INVENTARIO_RESERVADO`, `COMPENSADA`, etc.) para detectar procesos atascados. Revisa también el grafo de publicaciones: si A publica X, B responde con Y y A vuelve a publicar X, los listeners síncronos pueden entrar en recursión hasta agotar la pila. La ausencia de coordinador no elimina la coordinación; la distribuye y obliga a observarla.
+
+CQRS separa el modelo de escritura (valida e impone invariantes) del modelo de lectura (optimizado para mostrarse). CQRS no obliga a usar eventos, bases separadas ni Event Sourcing: este ejemplo elige un evento para mantener la proyección sin acoplarla al servicio de comandos. Una saga coreografiada logra el mismo resultado que una orquestada (compensar pasos ya completados si uno falla) sin que ningún componente conozca la secuencia completa: cada servicio reacciona únicamente a los eventos que le interesan.
+
+**Analogía:** CQRS es como una cocina con dos áreas separadas: la de preparación (donde se cortan y validan los ingredientes, siguiendo reglas estrictas) y la de montaje del plato para servir (que solo necesita el resultado ya listo, no repetir la validación). Una saga coreografiada es una fila de bomberos pasándose baldes: cada uno solo sabe "recibo un balde, lo paso al siguiente"; nadie en la fila ve el incendio completo ni dirige a los demás.
+
+#### Practica
+
+Genera un proyecto Spring Boot desde Initializr.
+
+```bash
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=data-jpa,h2 -d javaVersion=25 -o app.zip && unzip -o app.zip
+```
+
+Crea el modelo de escritura y su servicio de comandos:
+
+```java
+@Entity
+public class EnvioEscritura {
+    @Id private String envioId;
+    private String estado;
+    // constructor, getters, setEstado
+}
+
+@Service
+public class EnvioComandoService {
+    private final EnvioEscrituraRepository repository;
+    private final ApplicationEventPublisher eventos;
+    // constructor
+
+    @Transactional
+    public void crearEnvio(String envioId, String ciudadDestino) {
+        repository.save(new EnvioEscritura(envioId, "CREADO"));
+        eventos.publishEvent(new EnvioEstadoCambiado(envioId, "CREADO", ciudadDestino));
+    }
+}
+```
+
+Crea el modelo de lectura (clase y tabla distintas) y el listener que lo proyecta:
+
+```java
+@Entity
+public class EnvioResumenLectura {
+    @Id private String envioId;
+    private String resumen;
+    // constructor, getters
+}
+
+@Component
+public class EnvioProyeccionListener {
+    private final EnvioResumenLecturaRepository lectura;
+    // constructor
+
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void actualizarResumen(EnvioEstadoCambiado evento) {
+        String resumen = "Envío " + evento.envioId() + " -> " + evento.estado() + " (" + evento.ciudadDestino() + ")";
+        lectura.save(new EnvioResumenLectura(evento.envioId(), resumen));
+    }
+}
+```
+
+Crea la saga coreografiada con dos servicios que solo se escuchan entre sí:
+
+```java
+@Component
+public class InventarioService {
+    // constructor con ApplicationEventPublisher y RegistroAcciones (log para el test)
+
+    @EventListener
+    public void alCrearPedido(Eventos.PedidoCreado evento) {
+        registro.registrar("inventario:reservar:" + evento.pedidoId());
+        eventos.publishEvent(new Eventos.InventarioReservado(evento.pedidoId()));
+    }
+
+    @EventListener
+    public void alRechazarPago(Eventos.PagoRechazado evento) {
+        registro.registrar("inventario:liberar:" + evento.pedidoId());
+        eventos.publishEvent(new Eventos.InventarioLiberado(evento.pedidoId()));
+    }
+}
+
+@Component
+public class PagoService {
+    // constructor con ApplicationEventPublisher y RegistroAcciones
+
+    @EventListener
+    public void alReservarInventario(Eventos.InventarioReservado evento) {
+        if (evento.pedidoId().contains("FALLA")) {
+            registro.registrar("pago:rechazar:" + evento.pedidoId());
+            eventos.publishEvent(new Eventos.PagoRechazado(evento.pedidoId()));
+        } else {
+            registro.registrar("pago:aprobar:" + evento.pedidoId());
+            eventos.publishEvent(new Eventos.PagoAprobado(evento.pedidoId()));
+        }
+    }
+}
+```
+
+**Ejecuta el ejemplo** (genera el proyecto con Spring Initializr, pega el código y corre las pruebas):
+
+```bash
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=data-jpa,h2 -d javaVersion=25 -o app.zip && unzip -o app.zip
+./mvnw test
+```
+Equivalencias Maven/Gradle en el Módulo 1.
+
+Escribe el test de CQRS que confirma proyección real, y el de saga que confirma la secuencia emergente sin coordinador:
+
+```java
+@Test
+void elComandoActualizaElModeloDeEscrituraYElEventoProyectaElModeloDeLectura() {
+    comandos.crearEnvio("ENV-CQRS-1", "Medellín");
+    assertThat(consultas.resumenDe("ENV-CQRS-1")).isEqualTo("Envío ENV-CQRS-1 -> CREADO (Medellín)");
+}
+
+@Test
+void pagoRechazadoDisparaCompensacionDeInventarioSinCoordinadorCentral() {
+    pedidos.crearPedido("PED-FALLA-1");
+    assertThat(registro.acciones()).containsExactly(
+        "inventario:reservar:PED-FALLA-1",
+        "pago:rechazar:PED-FALLA-1",
+        "inventario:liberar:PED-FALLA-1");
+}
+```
+
+#### Transfiere cada mecanismo
+
+No des por comprendido un subtema solo porque el test principal quedó verde. Realiza estas variaciones una por una:
+
+1. **Escritura/lectura:** agrega `peso` a la escritura pero solo `categoriaPeso` a la lectura; demuestra que cada modelo puede evolucionar con una forma distinta.
+2. **Fase de commit:** publica el evento fuera de `@Transactional` y observa que el listener no corre; luego explica por qué activar `fallbackExecution` ocultaría ese error de diseño en este caso.
+3. **Coreografía/compensación:** agrega `NotificacionService` sin editar inventario ni pagos; fuerza su fallo y decide explícitamente si se reintenta o se compensa.
+4. **Durabilidad/outbox:** mata el proceso conceptualmente justo después del commit y antes de proyectar; dibuja qué dato permite al outbox recuperar el trabajo que el evento local perdería.
+5. **Idempotencia/orden:** entrega dos veces el mismo `eventId` y después entrega las versiones 3 y 2; la lectura debe aplicar una sola vez la 3 y rechazar la 2 como obsoleta.
+6. **Observabilidad/ciclos:** propaga un `correlationId`, registra cada transición y crea temporalmente un listener que vuelva a publicar el evento inicial; detecta el ciclo en el grafo antes de ejecutarlo.
+
+**Resultados observables:** cada variación debe dejar una aserción o registro verificable: forma distinta de los modelos, listener ausente sin transacción, nuevo paso agregado sin coordinador, outbox pendiente recuperable, versión final igual a 3 y grafo con ciclo marcado. Si solo puedes describir el resultado pero no observarlo, la práctica aún no acredita el subtema.
+
+**Resultado esperado:** `BUILD SUCCESS` con ambos flujos en verde: al regresar `crearEnvio`, el commit ya ocurrió y el listener abrió una transacción nueva para proyectar la lectura; el pedido con "FALLA" en su id dispara exactamente reservar → rechazar → liberar, sin que ningún método conozca esa secuencia completa. **Fallo deliberado 1:** cambia `AFTER_COMMIT` por `BEFORE_COMMIT`, lanza una excepción después de publicar y comprueba que ambas tablas hacen rollback; luego explica por qué enviar a un broker no transaccional dentro de esa fase no tendría el mismo resultado. **Fallo deliberado 2:** elimina el listener `alRechazarPago`; el test debe fallar porque falta `inventario:liberar`, no esperar a una auditoría manual de stock.
+
+**Pista:** si quieres confirmar que de verdad no hay coordinador, cuenta cuántas clases distintas conocen el nombre completo de la secuencia `reservar → cobrar → compensar`. En la versión coreografiada, la respuesta debería ser cero.
+
+#### Aplica
+
+Agrega un tercer paso (`NotificacionService` que escucha `PagoAprobado` y marca el pedido como notificado) sin tocar `InventarioService` ni `PagoService`. Confirma que agregar un paso nuevo a una saga coreografiada no requiere modificar los servicios existentes, a diferencia de un orquestador donde agregar un paso sí implica editar la secuencia central.
+
+**Checklist de salida.**
+
+- [ ] `EnvioEscritura` y `EnvioResumenLectura` son clases y tablas distintas.
+- [ ] El modelo de lectura se actualiza solo a través de `@TransactionalEventListener(AFTER_COMMIT)`, nunca por una llamada directa desde el comando.
+- [ ] `InventarioService` y `PagoService` no comparten ninguna clase que conozca la secuencia completa.
+- [ ] Un pago rechazado dispara la compensación de inventario únicamente por el evento `PagoRechazado`.
+- [ ] Puedes nombrar una ventaja y una desventaja de coreografía frente a orquestación.
+- [ ] Puedes explicar por qué el evento local no es durable y cuándo necesitas outbox, idempotencia y control de versión.
+- [ ] Cada evento de saga conserva un `correlationId` y puedes detectar un ciclo en el grafo de publicaciones.
+
+**Si falla.** Si la consulta no refleja el último estado, confirma que el listener realmente escucha el tipo de evento publicado (coincidencia exacta de clase). Si la compensación no ocurre, confirma que `PagoRechazado` se publica y que `InventarioService` tiene un `@EventListener` para ese tipo exacto.
+
+Entrega el modelo de escritura/lectura separado, la saga coreografiada con su test de compensación, y una frase comparando coreografía con los dos orquestadores ya vistos (Temporal y manual), como incremento del proyecto integrador de RutaFlow. **Cuándo no usarlo:** no introduzcas CQRS para una entidad simple de CRUD sin lógica de negocio significativa en la escritura; la separación de modelos añade código sin beneficio cuando leer y escribir usan la misma forma de los datos de todas formas.
+
+Como **siguiente** paso, lleva lo aprendido al proyecto integrador del track.
+
+**Errores comunes:** hacer que el listener de proyección vuelva a consultar el modelo de escritura en vez de usar los datos del evento, reintroduciendo el acoplamiento que CQRS buscaba eliminar; y asumir que una saga coreografiada "no tiene lógica de coordinación" cuando en realidad esa lógica existe, solo que está repartida entre varios servicios en vez de centralizada.
+
+**Fuentes primarias y de arquitectura:** [Spring Framework — eventos ligados a transacciones](https://docs.spring.io/spring-framework/reference/data-access/transaction/event.html), [Spring Framework — propagación transaccional](https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/tx-propagation.html), [Azure Architecture Center — CQRS](https://learn.microsoft.com/en-us/azure/architecture/patterns/cqrs) y [Azure Architecture Center — Saga](https://learn.microsoft.com/en-us/azure/architecture/reference-architectures/saga/saga).

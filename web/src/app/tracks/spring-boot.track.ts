@@ -207,8 +207,8 @@ export const SPRING_BOOT_MODULES: CourseModule[] = [
     'Integra WebFlux, testing avanzado, arquitectura hexagonal, Spring Cloud y patrones distribuidos sin mezclar modelos incompatibles.',
     [
       'Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar','Mono, Flux, WebClient, Netty y R2DBC', '@SpringBootTest, slices, MockMvc y Testcontainers', 'Dominio, aplicación, puertos y adaptadores', 'Config Server, Bus y Resilience4j', 'Saga, CQRS, Event Sourcing y Outbox'],
-    ['Detecta bloqueo reactivo', 'Prueba adapters reales', 'Invierte una dependencia', 'Simula config y circuit breaker', 'Deduplica evento outbox'],
-    ['¿Cuándo WebFlux empeora el sistema?', '¿Por qué Event Sourcing no es auditoría gratuita?'], ['Spring WebFlux','Testcontainers','Spring Cloud','Resilience4j','Kafka'], 'Servicio hexagonal con flujo reactivo justificado, contratos, eventos y resiliencia probada.'),
+    ['Detecta bloqueo reactivo', 'Prueba adapters reales', 'Invierte una dependencia', 'Simula config y circuit breaker', 'Deduplica evento outbox', 'Separa un modelo CQRS de escritura/lectura y construye una saga coreografiada sin coordinador central'],
+    ['¿Cuándo WebFlux empeora el sistema?', '¿Por qué Event Sourcing no es auditoría gratuita?', '¿Qué ventaja da una saga coreografiada frente a una orquestada, y qué pierde a cambio?'], ['Spring WebFlux','Testcontainers','Spring Cloud','Resilience4j','Kafka'], 'Servicio hexagonal con flujo reactivo justificado, contratos, eventos y resiliencia probada.'),
   m(16, 'JPA de Spring Boot: Hibernate, Lazy vs Eager y N+1', 'JPA / Hibernate', 'Integración', '3 h 30 min', '#6db33f',
     'Modela entidades reales con relaciones JPA y comprende cómo las estrategias de carga cambian rendimiento, consultas y coherencia.',
     ['@Entity, @Id, @GeneratedValue', '@OneToMany, @ManyToOne, @ManyToMany', 'FetchType.LAZY vs EAGER', 'N+1 queries', '@Transactional', 'JPQL y @EntityGraph', 'Caché de primer nivel y Session'],

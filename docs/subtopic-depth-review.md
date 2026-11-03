@@ -2,8 +2,8 @@
 
 > Las señales automáticas no prueban profundidad ni ausencia de ella. Un tema sólo queda revisado mediante el registro humano con mapa de subtemas críticos, evidencia y fuentes.
 
-- Temas inventariados: 1172
-- Revisados humanamente para subtemas: 349
+- Temas inventariados: 1173
+- Revisados humanamente para subtemas: 350
 - Pendientes: 823
 - Candidatos prioritarios por señales: 782
 
@@ -24,7 +24,7 @@
 | node | 77 | 0 | 77 |
 | react | 58 | 0 | 58 |
 | rutaflow | 29 | 0 | 29 |
-| spring-boot | 106 | 106 | 0 |
+| spring-boot | 107 | 107 | 0 |
 
 ## Cola prioritaria
 
@@ -1098,6 +1098,7 @@
 - `spring-boot/modulo-15` — Tema 6: Event Sourcing con replay real · Experto · 2 h — replay desde el log de eventos
 - `spring-boot/modulo-15` — Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar · Experto · 1 h 15 min — reintento idempotente de compensación
 - `spring-boot/modulo-15` — Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework · Experto · 1 h 50 min — caso de uso independiente de framework
+- `spring-boot/modulo-15` — Tema 9: CQRS y saga por coreografía · Experto · 1 h 20 min — modelo de escritura y lectura como clases/tablas distintas conectadas por evento; fase AFTER_COMMIT y transacción REQUIRES_NEW para la proyección local; saga coreografiada: ningún componente conoce la secuencia completa; compensación disparada por evento, no por llamada directa de un coordinador; diferencia entre evento local síncrono y mensajería distribuida durable; frontera de doble escritura y patrón outbox; idempotencia, orden y evolución de contratos de evento; observabilidad por correlationId, estado de saga y detección de ciclos
 - `spring-boot/modulo-16` — Tema 1: Relaciones, lado propietario y ciclo de vida · Avanzado · 1 h 50 min — lado propietario de la relación
 - `spring-boot/modulo-16` — Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso · Avanzado · 1 h 40 min — FetchType; N+1
 - `spring-boot/modulo-17` — Tema 1: DataSource, JdbcTemplate y DAO · Avanzado · 1 h 40 min — JdbcTemplate; patrón DAO

@@ -1,7 +1,7 @@
 {
   "summary": {
-    "topics": 1172,
-    "reviewed": 349,
+    "topics": 1173,
+    "reviewed": 350,
     "pending": 823,
     "priorityCandidates": 782,
     "byTrack": {
@@ -71,8 +71,8 @@
         "pending": 29
       },
       "spring-boot": {
-        "topics": 106,
-        "reviewed": 106,
+        "topics": 107,
+        "reviewed": 107,
         "pending": 0
       }
     },
@@ -20322,6 +20322,41 @@
         ],
         "sources": [
           "https://www.archunit.org/userguide/html/000_Index.html"
+        ]
+      }
+    },
+    {
+      "id": "spring-boot/modulo-15::Tema 9: CQRS y saga por coreografía · Experto · 1 h 20 min",
+      "track": "spring-boot",
+      "module": 15,
+      "topic": "Tema 9: CQRS y saga por coreografía · Experto · 1 h 20 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Transfiere cada mecanismo"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Demo regenerada desde Spring Initializr y ejecutada con Maven (Spring Boot 4.1.2, Java release 25, spring-boot-starter-data-jpa + H2). CQRS: EnvioEscritura y EnvioResumenLectura se materializaron como clases y tablas JPA distintas; EnvioEstadoCambiado se publicó dentro de la transacción de comando y la proyección se guardó con @TransactionalEventListener(AFTER_COMMIT) + REQUIRES_NEW. El SQL observado confirmó insert separado en ambas tablas. Saga coreografiada: PedidoService, InventarioService y PagoService reaccionan solo a eventos locales, y RegistroAcciones observa sin coordinar. ./mvnw test -> BUILD SUCCESS; 3 pruebas, 0 fallos: proyección posterior al commit, camino feliz reservar->aprobar y compensación reservar->rechazar->liberar.",
+        "criticalSubtopics": [
+          "modelo de escritura y lectura como clases/tablas distintas conectadas por evento",
+          "fase AFTER_COMMIT y transacción REQUIRES_NEW para la proyección local",
+          "saga coreografiada: ningún componente conoce la secuencia completa",
+          "compensación disparada por evento, no por llamada directa de un coordinador",
+          "diferencia entre evento local síncrono y mensajería distribuida durable",
+          "frontera de doble escritura y patrón outbox",
+          "idempotencia, orden y evolución de contratos de evento",
+          "observabilidad por correlationId, estado de saga y detección de ciclos"
+        ],
+        "sources": [
+          "https://docs.spring.io/spring-framework/reference/data-access/transaction/event.html",
+          "https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/tx-propagation.html",
+          "https://learn.microsoft.com/en-us/azure/architecture/patterns/cqrs",
+          "https://learn.microsoft.com/en-us/azure/architecture/reference-architectures/saga/saga"
         ]
       }
     },

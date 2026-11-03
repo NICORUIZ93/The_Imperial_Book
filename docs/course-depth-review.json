@@ -3,14 +3,14 @@
   "totals": {
     "tracks": 14,
     "modules": 255,
-    "topics": 1172,
+    "topics": 1173,
     "topicsWithSignals": 104,
     "newLaboratories": 25
   },
   "humanPedagogicalReview": {
     "reviewed": 0,
     "preRead": 14,
-    "total": 1172,
+    "total": 1173,
     "date": "2026-10-31",
     "responsible": "persona revisora pendiente; pre-lectura de agente registrada",
     "evidence": "docs/manual-review-log.md"
@@ -13577,6 +13577,18 @@
       "title": "Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework · Experto · 1 h 50 min",
       "file": "web/public/content/spring-boot/modulo-15.md",
       "line": 1232,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "spring-boot",
+      "module": 15,
+      "title": "Tema 9: CQRS y saga por coreografía · Experto · 1 h 20 min",
+      "file": "web/public/content/spring-boot/modulo-15.md",
+      "line": 1438,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
