@@ -11,7 +11,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 | node | 77 | 14 | HTTP y validación antes de autenticación e integraciones | API con límites de carga, paginación estable, pruebas y cierre ordenado |
 | angular | 71 | 3 | HTML/CSS/TypeScript explícitos; RxJS y estado con ejemplos completos | Rutas, formularios, datos remotos y cambios sin guardar comprobados con navegador |
 | react | 58 | 46 | JSX y estado antes de efectos; proveedor, dependencias y API visibles | Carga, error, vacío y carrera de respuestas; caché observada, no supuesta |
-| java | 85 | 46 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
+| java | 91 | 49 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
 | spring-boot | 91 | 8 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
 | android | 58 | 0 | Kotlin antes de Compose; distinguir recomposición, recreación y muerte de proceso | App instalable con permisos, restauración, persistencia y pruebas en dispositivo |
 | ios | 56 | 4 | Swift antes de SwiftUI; explicitar macOS/Xcode y destino | Cancelación, estados de red, persistencia y accesibilidad comprobados en simulador |
@@ -683,6 +683,12 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | java / 15 | [Tema 6: SLF4J, Logback, MDC y logging estructurado](../web/public/content/java/modulo-15.md) | clase-java-no-visible |
 | java / 16 | [Tema 1: Entidades y relaciones JPA](../web/public/content/java/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 16 | [Tema 2: FetchType.LAZY, EAGER y el problema N+1](../web/public/content/java/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 16 | [Tema 3: Relaciones uno a uno, muchos a muchos y herencia](../web/public/content/java/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 16 | [Tema 4: Ciclo de vida, EntityManager y consultas tipadas](../web/public/content/java/modulo-16.md) | clase-java-no-visible |
+| java / 16 | [Tema 5: Búsquedas dinámicas con Criteria y Querydsl](../web/public/content/java/modulo-16.md) | clase-java-no-visible |
+| java / 16 | [Tema 6: EntityGraph y cachés de persistencia](../web/public/content/java/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 16 | [Tema 7: Concurrencia, transacciones y propagación](../web/public/content/java/modulo-16.md) | ejemplo-breve-revisar-contexto, clase-java-no-visible |
+| java / 16 | [Tema 8: Migraciones y pruebas JPA con Testcontainers](../web/public/content/java/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 17 | [Tema 1: JDBC, PreparedStatement y DAO](../web/public/content/java/modulo-17.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 17 | [Tema 2: Transacciones, ACID y aislamiento](../web/public/content/java/modulo-17.md) | clase-java-no-visible |
 | java / 18 | [Tema 1: HttpClient, REST, timeouts y fallos](../web/public/content/java/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |

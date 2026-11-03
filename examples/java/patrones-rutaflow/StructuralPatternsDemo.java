@@ -1,7 +1,7 @@
 import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class StructuralPatternsDemo {
     interface Etiquetador {
@@ -109,7 +109,7 @@ public class StructuralPatternsDemo {
     record MarkerStyle(String icon, String color) {}
 
     static final class MarkerStyleCache {
-        private final Map<String, MarkerStyle> styles = new ConcurrentHashMap<>();
+        private final Map<String, MarkerStyle> styles = new HashMap<>();
 
         MarkerStyle get(String type) {
             return styles.computeIfAbsent(type, key -> switch (key) {

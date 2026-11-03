@@ -1,8 +1,8 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-11-03 16:57 UTC
+Generated: 2026-11-03 18:43 UTC
 Root: `The_Imperial_Book`
-Indexed files: 921
+Indexed files: 924
 Import edges: 56
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -18,25 +18,25 @@ For automated lookups, use `docs/repo-graph.json`.
 - `angular-app`: 59 files
 - `automation-script`: 34 files
 - `course-content`: 251 files
-- `documentation`: 55 files
-- `example`: 467 files
+- `documentation`: 56 files
+- `example`: 469 files
 - `local-infra`: 1 files
 - `project-file`: 54 files
 
 ## File Types
 
-- `.md`: 313
+- `.md`: 314
 - `.py`: 160
 - `.json`: 67
 - `.ts`: 66
-- `.java`: 54
+- `.java`: 55
 - `.js`: 54
 - `.html`: 38
 - `.rs`: 25
 - `.go`: 24
 - `.dart`: 22
 - `.swift`: 20
-- `.mjs`: 17
+- `.mjs`: 18
 - `.kt`: 13
 - `.yaml`: 9
 - `.scss`: 8
@@ -238,7 +238,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/SKILLS-VISUALES-Y-ESTUDIO.md` (94 lines) - headings: # Skills para visuales y estudio desde cero, ## Selección y uso, ## Recorrido que debe comprobarse, ## Cómo usar las skills en una revisión
 - `docs/auditoria-profundidad-cobertura.md` (213 lines) - headings: # Auditoría de profundidad y cobertura — The Imperial Book, ## Resumen ejecutivo (sin adornos), ## Eje 1 — PROFUNDIDAD (¿el Paso 4 es ejecutable de cero a profesional?), ### Evidencia directa (leída, no inferida)
 - `docs/biblioteca-externa-gaps-android.md` (31 lines) - headings: # Huecos del track Android frente a la biblioteca externa, ## Estado (2026-10-28), ## Libros cotejados, ## Huecos
-- ... 37 more files
+- ... 38 more files
 
 ### example
 
@@ -260,7 +260,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `examples/archify/temas/cloud/modulo-22-tema-5-edge-routes.review-2/modulo-22-tema-5-edge-routes.finalize.json` (1012 lines)
 - `examples/archify/temas/foundations/modulo-12-tema-10-lazo-p.workflow.json` (183 lines)
 - `examples/archify/temas/foundations/modulo-12-tema-17-plc-scan.workflow.json` (189 lines)
-- ... 449 more files
+- ... 451 more files
 
 ### local-infra
 
@@ -274,16 +274,16 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/biblioteca/catalogo.json` (564 lines)
 - `docs/biblioteca/imagenes.json` (577 lines)
 - `docs/browser-course-review.json` (2660 lines)
-- `docs/code-visual-quality.json` (2891 lines)
-- `docs/course-depth-review.json` (12484 lines)
+- `docs/code-visual-quality.json` (2919 lines)
+- `docs/course-depth-review.json` (12557 lines)
 - `docs/curriculum-matrix.json` (394 lines)
 - `docs/floci-official-curriculum.json` (14 lines)
 - `docs/lesson-substance-baseline.json` (1693 lines)
-- `docs/lesson-substance.json` (10595 lines)
+- `docs/lesson-substance.json` (10637 lines)
 - `docs/merged-pdf-index.json` (426 lines)
 - `docs/official-learning-guides.json` (22 lines)
 - `docs/official-sources.json` (195 lines)
 - `docs/official-topic-atlas.json` (175 lines)
-- `docs/prerequisite-graph.json` (12108 lines)
+- `docs/prerequisite-graph.json` (12174 lines)
 - `docs/requested-master-topics.json` (189 lines)
 - ... 36 more files

@@ -3,8 +3,8 @@
   "totals": {
     "tracks": 14,
     "modules": 245,
-    "topics": 1100,
-    "topicsWithSignals": 149,
+    "topics": 1106,
+    "topicsWithSignals": 152,
     "newLaboratories": 25
   },
   "priorities": {
@@ -7186,7 +7186,7 @@
       "module": 12,
       "title": "Tema 6: Patrones estructurales para conectar piezas existentes",
       "file": "web/public/content/java/modulo-12.md",
-      "line": 463,
+      "line": 466,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7369,7 +7369,80 @@
       "module": 16,
       "title": "Tema 2: FetchType.LAZY, EAGER y el problema N+1",
       "file": "web/public/content/java/modulo-16.md",
-      "line": 124,
+      "line": 131,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "java",
+      "module": 16,
+      "title": "Tema 3: Relaciones uno a uno, muchos a muchos y herencia",
+      "file": "web/public/content/java/modulo-16.md",
+      "line": 211,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "java",
+      "module": 16,
+      "title": "Tema 4: Ciclo de vida, EntityManager y consultas tipadas",
+      "file": "web/public/content/java/modulo-16.md",
+      "line": 270,
+      "signals": [
+        "clase-java-no-visible"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "java",
+      "module": 16,
+      "title": "Tema 5: Búsquedas dinámicas con Criteria y Querydsl",
+      "file": "web/public/content/java/modulo-16.md",
+      "line": 329,
+      "signals": [
+        "clase-java-no-visible"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "java",
+      "module": 16,
+      "title": "Tema 6: EntityGraph y cachés de persistencia",
+      "file": "web/public/content/java/modulo-16.md",
+      "line": 392,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "java",
+      "module": 16,
+      "title": "Tema 7: Concurrencia, transacciones y propagación",
+      "file": "web/public/content/java/modulo-16.md",
+      "line": 444,
+      "signals": [
+        "ejemplo-breve-revisar-contexto",
+        "clase-java-no-visible"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "java",
+      "module": 16,
+      "title": "Tema 8: Migraciones y pruebas JPA con Testcontainers",
+      "file": "web/public/content/java/modulo-16.md",
+      "line": 503,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

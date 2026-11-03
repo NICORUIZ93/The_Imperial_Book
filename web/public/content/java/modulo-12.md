@@ -419,24 +419,26 @@ La implementación es síncrona, de un solo hilo y conserva el orden de registro
 ### Tema 5: Prototype: copiar un objeto sin compartir sus datos
 
 #### Paso 1 · Objetivo y preparación
-Al terminar podrás copiar un objeto `Paquete` y comprobar que cambiar la copia no modifica el original. Necesitas JDK 17 o posterior. Abre `examples/java/patrones-rutaflow/PrototypeDemo.java` desde la raíz del repositorio.
+Al finalizar podrás copiar un objeto `Paquete` y comprobar que cambiar la copia no modifica el original. **Prerrequisitos:** saber ejecutar un archivo Java y tener JDK 17 o posterior. El archivo completo está en `examples/java/patrones-rutaflow/PrototypeDemo.java`.
 
 #### Paso 2 · Contexto y caso real
 Una aplicación prepara muchos paquetes con etiquetas parecidas. Copiar una configuración inicial puede ahorrar pasos, pero una copia mal hecha puede compartir la misma lista y cambiar pedidos que no deberían tocarse.
 
-#### Paso 3 · Explicación con un modelo sencillo
-Prototype significa crear un objeto nuevo usando otro objeto como punto de partida. Piensa en duplicar una plantilla de envío: la copia hereda el código y las etiquetas actuales, pero luego puede cambiarse por separado.
+#### Paso 3 · Teoría y analogía con un modelo sencillo
+Prototype significa crear un objeto nuevo usando otro objeto como punto de partida. **Analogía:** duplicar una plantilla de envío crea otra ficha con los mismos datos iniciales; cambiar la copia no debería editar la ficha que usaste como modelo.
 
 En Java, `copiar()` construye otro `Paquete`. El constructor también crea una nueva lista con `new ArrayList<>(etiquetas)`. Esto separa la lista, aunque sus elementos sean los mismos; aquí es suficiente porque las etiquetas son `String` y no se pueden modificar.
 
-#### Paso 4 · Ejemplo y ejecución
-El archivo ya contiene todo el ejemplo. Ejecuta desde la carpeta principal:
+#### Paso 4 · Demostración guiada
+Ejemplo independiente: desde la raíz del repositorio crea una carpeta de práctica y copia el archivo completo:
 
 ```bash
-java examples/java/patrones-rutaflow/PrototypeDemo.java
+mkdir -p ejemplo-prototype
+cp examples/java/patrones-rutaflow/PrototypeDemo.java ejemplo-prototype/PrototypeDemo.java
+java ejemplo-prototype/PrototypeDemo.java
 ```
 
-La salida esperada es:
+Explicación del bloque: `copiar()` crea un objeto nuevo y el constructor crea una lista nueva. **Resultado esperado:**
 
 ```text
 original=RF-7:fragil
@@ -446,16 +448,17 @@ copia=RF-7:fragil,prioritario
 La primera línea no incluye `prioritario`: agregar la etiqueta a la copia no cambió el original. **Fallo deliberado:** en `copiar()`, reemplaza `return new Paquete(codigo, etiquetas);` por `return this;`. Ejecuta otra vez. Ahora el original también cambia, porque ya no creaste una copia. Restaura la línea original.
 
 #### Paso 5 · Práctica guiada
+**Pista:** `return this` devuelve el mismo objeto en vez de hacer una copia.
 1. Cambia el código del paquete a `RF-8` y predice ambas líneas antes de ejecutar.
 2. Agrega una segunda etiqueta al original antes de copiarlo.
-3. Cambia deliberadamente el método para compartir la lista y observa el fallo.
+3. **Fallo deliberado:** cambia el método para devolver `this` y ejecuta otra vez. **Error observado:** el original también tendrá la etiqueta nueva. El diagnóstico es que ambos nombres apuntan al mismo paquete; restaura `return new Paquete(codigo, etiquetas)`.
 4. Corrige el método y explica por qué una lista nueva evita que los dos objetos se afecten.
 
 #### Paso 6 · Práctica independiente
 Crea `examples/java/patrones-rutaflow/PrototypeEnvio.java`: copia una configuración de envío con zona y lista de servicios. Modifica la lista de la copia y demuestra que la original queda igual. Indica qué pasaría si la lista contuviera objetos que también pueden cambiarse.
 
 #### Paso 7 · Cierre y evidencia
-Guarda la salida del comando y explica en dos frases qué dato se comparte y qué lista se copia. En el proyecto RutaFlow usa esta idea solo cuando crear desde cero sea costoso y puedas definir qué partes deben duplicarse. Si el objeto tiene pocos campos, un constructor suele ser más claro. **Fuente:** [ejemplo ejecutable del módulo](../../../examples/java/patrones-rutaflow/PrototypeDemo.java) y [Java `ArrayList`](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/ArrayList.html).
+**Evidencia de aprendizaje:** guarda ambas salidas y explica qué dato se copia y qué lista queda separada. **Errores comunes:** copiar solo la referencia a la lista o usar Prototype cuando un constructor simple ya resuelve el caso. En el **proyecto integrador de RutaFlow**, aplica la copia solo si necesitas partir de una configuración costosa de crear. **Límite:** los objetos mutables dentro de la lista también necesitarían copiarse si no deben compartirse. **Fuentes oficiales:** [ejemplo ejecutable](../../../examples/java/patrones-rutaflow/PrototypeDemo.java) y [Java `ArrayList`](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/ArrayList.html). Como siguiente tema, compara cómo se conectan varias piezas existentes.
 
 **Idea clave:** copiar un objeto no siempre copia todo lo que contiene; comprueba si las partes internas son compartidas.
 **¿Por qué es importante?** Evita cambiar por accidente otro pedido cuando trabajas a partir de una copia.
@@ -463,28 +466,40 @@ Guarda la salida del comando y explica en dos frases qué dato se comparte y qu�
 ### Tema 6: Patrones estructurales para conectar piezas existentes
 
 #### Paso 1 · Objetivo y preparación
-Al terminar reconocerás siete patrones estructurales y ejecutarás ejemplos de Adapter, Decorator, Facade, Composite, Proxy, Bridge y Flyweight. Necesitas JDK 17 o posterior y el archivo `examples/java/patrones-rutaflow/StructuralPatternsDemo.java`.
+Al finalizar reconocerás siete patrones estructurales y ejecutarás ejemplos de Adapter, Decorator, Facade, Composite, Proxy, Bridge y Flyweight. **Prerrequisitos:** conocer interfaces y poder ejecutar Java. Necesitas JDK 17 o posterior y el archivo `examples/java/patrones-rutaflow/StructuralPatternsDemo.java`.
 
 #### Paso 2 · Contexto y caso real
 Un sistema de entregas suele combinar piezas de distintas épocas: un servicio antiguo que crea etiquetas, un canal de avisos nuevo y una pantalla que agrupa paquetes. Cambiar todo de una vez es costoso; estos patrones ayudan a conectar o envolver componentes sin reescribirlos.
 
-#### Paso 3 · Explicación con ejemplos cotidianos
+#### Paso 3 · Teoría y analogía con ejemplos cotidianos
 Un patrón estructural describe cómo conectar objetos. **Adapter** traduce entre dos interfaces, como un adaptador de enchufe. **Decorator** agrega una capacidad alrededor de otra, por ejemplo registro antes de enviar un aviso. **Facade** ofrece una puerta simple frente a varios pasos. **Composite** deja tratar un paquete y un grupo de paquetes con la misma operación. **Proxy** controla el acceso a un objeto. **Bridge** separa el tipo de aviso del canal usado. **Flyweight** comparte datos repetidos para no guardar copias innecesarias.
 
 El ejemplo Flyweight guarda dos estilos de marcador y los reutiliza para mil marcadores. Las posiciones de cada marcador seguirían siendo datos propios; solo se comparte el estilo. No uses el patrón sin medir: para una lista pequeña, la caché puede añadir complejidad sin ahorrar memoria.
 
-#### Paso 4 · Demostración guiada
-Desde la raíz del repositorio ejecuta:
+**Diagrama:**
 
-```bash
-java examples/java/patrones-rutaflow/StructuralPatternsDemo.java
+```mermaid
+flowchart LR
+  A[Servicio antiguo] --> B[Adapter traduce la entrada]
+  B --> C[Interfaz nueva]
+  D[1000 marcadores] --> E[2 estilos compartidos: Flyweight]
 ```
 
-Al final verás `flyweight=1000-markers,2-shared-styles`. El programa crea mil marcadores alternando dos tipos; por eso la caché termina con solo dos estilos. También imprime una línea por cada uno de los otros seis patrones.
+#### Paso 4 · Demostración guiada
+Ejemplo independiente: copia el programa completo a `ejemplo-estructuras/` y ejecútalo desde la raíz del repositorio:
+
+```bash
+mkdir -p ejemplo-estructuras
+cp examples/java/patrones-rutaflow/StructuralPatternsDemo.java ejemplo-estructuras/StructuralPatternsDemo.java
+java ejemplo-estructuras/StructuralPatternsDemo.java
+```
+
+**Resultado esperado:** la última línea es `flyweight=1000-markers,2-shared-styles`. El programa crea mil marcadores alternando dos tipos; por eso la caché termina con solo dos estilos. También imprime una línea por cada uno de los otros seis patrones.
 
 **Fallo deliberado:** cambia el tipo `"camion"` por `"moto"`. La caché muestra `IllegalArgumentException: tipo desconocido: moto`. Es intencional: el ejemplo solo admite dos estilos. Corrige el valor o añade un caso `moto` con su icono y color.
 
 #### Paso 5 · Práctica guiada
+**Pista:** el método `get` permite dos tipos; Flyweight guarda un estilo por cada tipo distinto.
 1. Localiza el método `get` y señala dónde se guarda cada estilo.
 2. Añade un tercer tipo permitido y confirma que el contador pasa a tres.
 3. Comenta temporalmente la llamada a `cache.get` y predice el contador.
@@ -494,7 +509,7 @@ Al final verás `flyweight=1000-markers,2-shared-styles`. El programa crea mil m
 Agrega `bicicleta` al ejemplo con un estilo propio. Después añade una variante de aviso que mida el tiempo antes de delegar en el canal original. Explica cuál de los dos cambios comparte datos y cuál envuelve comportamiento.
 
 #### Paso 7 · Cierre y evidencia
-Entrega la salida completa y una tabla propia de patrón, problema que resuelve y clase que lo muestra. Para el proyecto de RutaFlow elige el patrón por la variación real que tienes que soportar; no conviertas cada clase en una abstracción. **Fuente:** [demostración ejecutable](../../../examples/java/patrones-rutaflow/StructuralPatternsDemo.java) y [mapa de patrones](https://refactoring.guru/design-patterns/structural-patterns).
+**Evidencia de aprendizaje:** entrega la salida completa y una tabla de patrón, problema que resuelve y clase que lo muestra. En el **proyecto integrador de RutaFlow**, elige un patrón por una variación concreta; no conviertas cada clase en una abstracción. **Errores comunes:** llamar Adapter a una simple conversión de texto o añadir Decorator sin cambiar comportamiento. **Fuentes oficiales:** [demostración ejecutable](../../../examples/java/patrones-rutaflow/StructuralPatternsDemo.java) y [mapa de patrones](https://refactoring.guru/design-patterns/structural-patterns). Como siguiente tema, documenta qué patrón resuelve un problema real y cuál sería sobre-ingeniería.
 
 **Idea clave:** estos patrones organizan conexiones entre piezas; el nombre no es una razón suficiente para añadir una capa.
 **¿Por qué es importante?** Permite cambiar o conectar una pieza concreta sin obligarte a reescribir las demás.

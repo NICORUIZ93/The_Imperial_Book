@@ -2846,6 +2846,72 @@
       ]
     },
     {
+      "id": "java:16:3",
+      "track": "java",
+      "module": 16,
+      "position": 3,
+      "title": "Relaciones uno a uno, muchos a muchos y herencia",
+      "file": "web/public/content/java/modulo-16.md",
+      "requires": [
+        "java:16:2"
+      ]
+    },
+    {
+      "id": "java:16:4",
+      "track": "java",
+      "module": 16,
+      "position": 4,
+      "title": "Ciclo de vida, EntityManager y consultas tipadas",
+      "file": "web/public/content/java/modulo-16.md",
+      "requires": [
+        "java:16:3"
+      ]
+    },
+    {
+      "id": "java:16:5",
+      "track": "java",
+      "module": 16,
+      "position": 5,
+      "title": "Búsquedas dinámicas con Criteria y Querydsl",
+      "file": "web/public/content/java/modulo-16.md",
+      "requires": [
+        "java:16:4"
+      ]
+    },
+    {
+      "id": "java:16:6",
+      "track": "java",
+      "module": 16,
+      "position": 6,
+      "title": "EntityGraph y cachés de persistencia",
+      "file": "web/public/content/java/modulo-16.md",
+      "requires": [
+        "java:16:5"
+      ]
+    },
+    {
+      "id": "java:16:7",
+      "track": "java",
+      "module": 16,
+      "position": 7,
+      "title": "Concurrencia, transacciones y propagación",
+      "file": "web/public/content/java/modulo-16.md",
+      "requires": [
+        "java:16:6"
+      ]
+    },
+    {
+      "id": "java:16:8",
+      "track": "java",
+      "module": 16,
+      "position": 8,
+      "title": "Migraciones y pruebas JPA con Testcontainers",
+      "file": "web/public/content/java/modulo-16.md",
+      "requires": [
+        "java:16:7"
+      ]
+    },
+    {
       "id": "java:17:1",
       "track": "java",
       "module": 17,
@@ -2853,7 +2919,7 @@
       "title": "JDBC, PreparedStatement y DAO",
       "file": "web/public/content/java/modulo-17.md",
       "requires": [
-        "java:16:2"
+        "java:16:8"
       ]
     },
     {

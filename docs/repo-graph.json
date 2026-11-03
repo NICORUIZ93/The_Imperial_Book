@@ -560,7 +560,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 2891,
+      "lines": 2919,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -596,7 +596,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 12484,
+      "lines": 12557,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -604,7 +604,7 @@
     },
     {
       "path": "docs/course-depth-review.md",
-      "lines": 1130,
+      "lines": 1136,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -637,7 +637,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 52,
+      "lines": 50,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -731,7 +731,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 10595,
+      "lines": 10637,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -820,7 +820,7 @@
     },
     {
       "path": "docs/prerequisite-graph.json",
-      "lines": 12108,
+      "lines": 12174,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -896,6 +896,23 @@
       "headings": []
     },
     {
+      "path": "docs/revision-cursos-prioritarios.md",
+      "lines": 83,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Revisi\u00f3n de cursos prioritarios contra el prompt maestro",
+        "## Criterio editorial que se aplicar\u00e1",
+        "## Resultado de cotejo estructural",
+        "### Lectura manual de Java M16 (JPA)",
+        "### Lectura manual de Java M17 (JDBC)",
+        "## Verificaci\u00f3n de versiones",
+        "## Orden de trabajo",
+        "## Avance de esta revisi\u00f3n"
+      ]
+    },
+    {
       "path": "docs/revision-prompt-academia.md",
       "lines": 105,
       "kind": "documentation",
@@ -931,7 +948,7 @@
     },
     {
       "path": "docs/seven-step-methodology.json",
-      "lines": 28915,
+      "lines": 29071,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -966,7 +983,7 @@
     },
     {
       "path": "docs/topic-learning-quality.json",
-      "lines": 24471,
+      "lines": 24603,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2150,6 +2167,14 @@
     {
       "path": "examples/java/patrones-rutaflow/ObserverDemo.java",
       "lines": 29,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/java/patrones-rutaflow/PrototypeDemo.java",
+      "lines": 31,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -3668,6 +3693,14 @@
         "graphql-tag",
         "node:url"
       ],
+      "headings": []
+    },
+    {
+      "path": "examples/node-sagas/saga.mjs",
+      "lines": 41,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
       "headings": []
     },
     {
@@ -9088,7 +9121,7 @@
     },
     {
       "path": "web/public/content/java/modulo-12.md",
-      "lines": 514,
+      "lines": 529,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9172,7 +9205,7 @@
     },
     {
       "path": "web/public/content/java/modulo-16.md",
-      "lines": 195,
+      "lines": 562,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -11335,7 +11368,7 @@
     },
     {
       "path": "web/public/content/topic-index.json",
-      "lines": 4921,
+      "lines": 4945,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12753,7 +12786,7 @@
     },
     {
       "path": "web/src/app/tracks/java.track.ts",
-      "lines": 281,
+      "lines": 283,
       "kind": "angular-app",
       "symbols": [],
       "imports": [

@@ -2922,6 +2922,30 @@
       {
         "title": "FetchType.LAZY, EAGER y el problema N+1",
         "fragment": "tema-2-fetchtype-lazy-eager-y-el-problema-n-1"
+      },
+      {
+        "title": "Relaciones uno a uno, muchos a muchos y herencia",
+        "fragment": "tema-3-relaciones-uno-a-uno-muchos-a-muchos-y-herencia"
+      },
+      {
+        "title": "Ciclo de vida, EntityManager y consultas tipadas",
+        "fragment": "tema-4-ciclo-de-vida-entitymanager-y-consultas-tipadas"
+      },
+      {
+        "title": "Búsquedas dinámicas con Criteria y Querydsl",
+        "fragment": "tema-5-busquedas-dinamicas-con-criteria-y-querydsl"
+      },
+      {
+        "title": "EntityGraph y cachés de persistencia",
+        "fragment": "tema-6-entitygraph-y-caches-de-persistencia"
+      },
+      {
+        "title": "Concurrencia, transacciones y propagación",
+        "fragment": "tema-7-concurrencia-transacciones-y-propagacion"
+      },
+      {
+        "title": "Migraciones y pruebas JPA con Testcontainers",
+        "fragment": "tema-8-migraciones-y-pruebas-jpa-con-testcontainers"
       }
     ],
     "17": [

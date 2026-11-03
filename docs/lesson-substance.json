@@ -1644,7 +1644,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "9abd912f3c7219f9c18881d2ac02c51f89ceaddefa0f60a4149e09c6f58e15d5",
+    "fingerprint": "514a1edf804480dd9b2457e8d315f22a667e33265b0b54a83fafe63eabe06289",
     "issues": {
       "andamiaje-generico": 128,
       "bloque-repetido": 218,
@@ -1659,7 +1659,7 @@
     },
     "modules": 245,
     "modulesWithLegacySections": 183,
-    "topics": 1100,
+    "topics": 1106,
     "topicsWithIssues": 470
   },
   "topics": {
@@ -6973,16 +6973,16 @@
       {
         "issues": [],
         "module": 12,
-        "tailWords": 118,
+        "tailWords": 146,
         "topic": "Tema 5: Prototype: copiar un objeto sin compartir sus datos",
-        "words": 486
+        "words": 594
       },
       {
         "issues": [],
         "module": 12,
-        "tailWords": 273,
+        "tailWords": 304,
         "topic": "Tema 6: Patrones estructurales para conectar piezas existentes",
-        "words": 699
+        "words": 804
       },
       {
         "issues": [
@@ -7110,14 +7110,56 @@
         "module": 16,
         "tailWords": 198,
         "topic": "Tema 1: Entidades y relaciones JPA",
-        "words": 868
+        "words": 885
       },
       {
         "issues": [],
         "module": 16,
         "tailWords": 220,
         "topic": "Tema 2: FetchType.LAZY, EAGER y el problema N+1",
-        "words": 870
+        "words": 899
+      },
+      {
+        "issues": [],
+        "module": 16,
+        "tailWords": 131,
+        "topic": "Tema 3: Relaciones uno a uno, muchos a muchos y herencia",
+        "words": 541
+      },
+      {
+        "issues": [],
+        "module": 16,
+        "tailWords": 135,
+        "topic": "Tema 4: Ciclo de vida, EntityManager y consultas tipadas",
+        "words": 545
+      },
+      {
+        "issues": [],
+        "module": 16,
+        "tailWords": 115,
+        "topic": "Tema 5: Búsquedas dinámicas con Criteria y Querydsl",
+        "words": 526
+      },
+      {
+        "issues": [],
+        "module": 16,
+        "tailWords": 113,
+        "topic": "Tema 6: EntityGraph y cachés de persistencia",
+        "words": 592
+      },
+      {
+        "issues": [],
+        "module": 16,
+        "tailWords": 146,
+        "topic": "Tema 7: Concurrencia, transacciones y propagación",
+        "words": 601
+      },
+      {
+        "issues": [],
+        "module": 16,
+        "tailWords": 139,
+        "topic": "Tema 8: Migraciones y pruebas JPA con Testcontainers",
+        "words": 578
       },
       {
         "issues": [],

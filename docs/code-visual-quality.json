@@ -85,16 +85,16 @@
       "officialSource": 39
     },
     "java": {
-      "topics": 85,
-      "code": 85,
-      "commentedCode": 58,
-      "mermaid": 24,
+      "topics": 91,
+      "code": 91,
+      "commentedCode": 60,
+      "mermaid": 33,
       "archifyVisual": 3,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
-      "filePath": 85,
-      "runCommand": 85,
-      "officialSource": 41
+      "filePath": 91,
+      "runCommand": 91,
+      "officialSource": 42
     },
     "spring-boot": {
       "topics": 91,
@@ -1908,13 +1908,6 @@
     },
     {
       "track": "java",
-      "module": 12,
-      "topic": "Tema 6: Patrones estructurales para conectar piezas existentes",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "java",
       "module": 13,
       "topic": "Tema 1: Arquitectura por capas del proyecto integrador",
       "missingCode": false,
@@ -1952,6 +1945,41 @@
       "track": "java",
       "module": 15,
       "topic": "Tema 2: Gradle y builds reproducibles",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 16,
+      "topic": "Tema 3: Relaciones uno a uno, muchos a muchos y herencia",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 16,
+      "topic": "Tema 5: Búsquedas dinámicas con Criteria y Querydsl",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 16,
+      "topic": "Tema 6: EntityGraph y cachés de persistencia",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 16,
+      "topic": "Tema 7: Concurrencia, transacciones y propagación",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 16,
+      "topic": "Tema 8: Migraciones y pruebas JPA con Testcontainers",
       "missingCode": false,
       "missingComments": true
     },
