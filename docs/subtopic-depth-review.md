@@ -3,9 +3,9 @@
 > Las señales automáticas no prueban profundidad ni ausencia de ella. Un tema sólo queda revisado mediante el registro humano con mapa de subtemas críticos, evidencia y fuentes.
 
 - Temas inventariados: 1159
-- Revisados humanamente para subtemas: 123
-- Pendientes: 1036
-- Candidatos prioritarios por señales: 993
+- Revisados humanamente para subtemas: 148
+- Pendientes: 1011
+- Candidatos prioritarios por señales: 968
 
 ## Cobertura por track
 
@@ -24,7 +24,7 @@
 | node | 77 | 0 | 77 |
 | react | 58 | 0 | 58 |
 | rutaflow | 29 | 0 | 29 |
-| spring-boot | 93 | 14 | 79 |
+| spring-boot | 93 | 39 | 54 |
 
 ## Cola prioritaria
 
@@ -996,31 +996,6 @@
 - `spring-boot/modulo-22` — Tema 1: Hexagonal: puertos que hablan el idioma del dominio · Experto · 1 h 10 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `spring-boot/modulo-22` — Tema 2: C4: contexto, contenedores, componentes y código · Experto · 1 h 20 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `spring-boot/modulo-22` — Tema 3: ADR: decisiones con contexto, alternativas y consecuencias · Experto · 1 h 10 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-3` — Tema 1: Entidades y repositorios derivados · Intermedio · 35 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-3` — Tema 2: El problema N+1 y su corrección · Avanzado · 50 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-3` — Tema 3: Migraciones con Flyway · Intermedio · 35 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-4` — Tema 1: SecurityFilterChain moderno · Intermedio · 40 min — lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-4` — Tema 2: Filtro JWT y autorización por rol · Avanzado · 55 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-4` — Tema 3: CORS y CSRF · Intermedio · 35 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-4` — Tema 4: Protección SSRF con InetAddressFilter (Spring Boot 4.1) · Experto · 50 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-4` — Tema 5: Flujo de login completo — de `/api/auth/login` a una ruta protegida · Avanzado · 45 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-5` — Tema 1: @ConfigurationProperties tipado · Intermedio · 35 min — lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-5` — Tema 2: Fallar rápido al arranque · Intermedio · 30 min — lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-5` — Tema 3: Manejo global de excepciones consistente entre entornos · Avanzado · 40 min — lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-6` — Tema 1: Slices de testing — @WebMvcTest · Intermedio · 35 min — lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-6` — Tema 2: @DataJpaTest con Testcontainers · Avanzado · 50 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-6` — Tema 3: @SpringBootTest completo y estrategia de pirámide de tests · Avanzado · 45 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-7` — Tema 1: Actuator y health checks personalizados · Intermedio · 35 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-7` — Tema 2: Métricas de negocio con Micrometer · Avanzado · 45 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-7` — Tema 3: Liveness vs readiness · Intermedio · 30 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-8` — Tema 1: Producers y consumers con Spring Kafka · Avanzado · 50 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-8` — Tema 2: Dead-letter queue · Avanzado · 45 min — lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-8` — Tema 3: Productor idempotente y transacciones (exactly-once) · Experto · 50 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-8` — Tema 4: Rebalanceo de consumer groups y partition assignment · Avanzado · 45 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-8` — Tema 5: Kafka frente a RabbitMQ · Intermedio · 35 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-9` — Tema 1: Mono y Flux · Intermedio · 40 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-9` — Tema 2: WebClient y composición no bloqueante · Avanzado · 45 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-9` — Tema 3: Cuándo WebFlux vale la complejidad, y R2DBC · Avanzado · 40 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 
 ## Revisados
 
@@ -1147,3 +1122,28 @@
 - `spring-boot/modulo-2` — Tema 4: Lombok y MapStruct sin exponer datos internos · Intermedio · 40 min — lombok-mapstruct-binding orden; MapStruct componentModel=spring; unmappedTargetPolicy=ERROR
 - `spring-boot/modulo-2` — Tema 5: OpenAPI con springdoc: el contrato como prueba · Intermedio · 40 min — springdoc-openapi-starter-webmvc-ui 3.x; /v3/api-docs; swagger-ui.html
 - `spring-boot/modulo-2` — Tema 6: Paginación HTTP con validación y un límite de recursos explícito · Intermedio · 35 min — Validación de page/size; 400 vs 200 en tamaño inválido; Orden estable con desempate; Offset vs cursor
+- `spring-boot/modulo-3` — Tema 1: Entidades y repositorios derivados · Intermedio · 35 min — @Entity/@Id/@GeneratedValue; JpaRepository; @DataJpaTest
+- `spring-boot/modulo-3` — Tema 2: El problema N+1 y su corrección · Avanzado · 50 min — Hibernate Statistics; FetchType; JOIN FETCH / EntityGraph
+- `spring-boot/modulo-3` — Tema 3: Migraciones con Flyway · Intermedio · 35 min — db/migration naming; spring.flyway.enabled; reparación de migración fallida
+- `spring-boot/modulo-4` — Tema 1: SecurityFilterChain moderno · Intermedio · 40 min — SecurityFilterChain bean; HttpSecurity DSL
+- `spring-boot/modulo-4` — Tema 2: Filtro JWT y autorización por rol · Avanzado · 55 min — jjwt-api/impl/jackson split; OncePerRequestFilter; roles en claims
+- `spring-boot/modulo-4` — Tema 3: CORS y CSRF · Intermedio · 35 min — CorsConfigurationSource; csrf.disable() para API stateless
+- `spring-boot/modulo-4` — Tema 4: Protección SSRF con InetAddressFilter (Spring Boot 4.1) · Experto · 50 min — InetAddressFilter.externalAddresses(); HttpClientSettings.withInetAddressFilter; FilteredHostException; DNS rebinding
+- `spring-boot/modulo-4` — Tema 5: Flujo de login completo — de `/api/auth/login` a una ruta protegida · Avanzado · 45 min — login endpoint; token en Authorization header; ruta protegida 401 vs 200
+- `spring-boot/modulo-5` — Tema 1: @ConfigurationProperties tipado · Intermedio · 35 min — @ConfigurationProperties; binding por constructor
+- `spring-boot/modulo-5` — Tema 2: Fallar rápido al arranque · Intermedio · 30 min — fail-fast al arranque; validación de propiedades obligatorias
+- `spring-boot/modulo-5` — Tema 3: Manejo global de excepciones consistente entre entornos · Avanzado · 40 min — ProblemDetail RFC 9457; consistencia entre perfiles
+- `spring-boot/modulo-6` — Tema 1: Slices de testing — @WebMvcTest · Intermedio · 35 min — @WebMvcTest; MockMvc; @MockBean vs @MockitoBean
+- `spring-boot/modulo-6` — Tema 2: @DataJpaTest con Testcontainers · Avanzado · 50 min — @DataJpaTest; @Container; @ServiceConnection
+- `spring-boot/modulo-6` — Tema 3: @SpringBootTest completo y estrategia de pirámide de tests · Avanzado · 45 min — pirámide de tests; RANDOM_PORT; cuándo NO usar @SpringBootTest
+- `spring-boot/modulo-7` — Tema 1: Actuator y health checks personalizados · Intermedio · 35 min — HealthIndicator custom; /actuator/health
+- `spring-boot/modulo-7` — Tema 2: Métricas de negocio con Micrometer · Avanzado · 45 min — MeterRegistry; Counter/Timer custom
+- `spring-boot/modulo-7` — Tema 3: Liveness vs readiness · Intermedio · 30 min — liveness vs readiness groups; probes para Kubernetes
+- `spring-boot/modulo-8` — Tema 1: Producers y consumers con Spring Kafka · Avanzado · 50 min — KafkaTemplate; @KafkaListener; ConsumerFactory/ProducerFactory
+- `spring-boot/modulo-8` — Tema 2: Dead-letter queue · Avanzado · 45 min — @RetryableTopic; DeadLetterPublishingRecoverer
+- `spring-boot/modulo-8` — Tema 3: Productor idempotente y transacciones (exactly-once) · Experto · 50 min — enable.idempotence; KafkaTransactionManager; exactly-once semantics
+- `spring-boot/modulo-8` — Tema 4: Rebalanceo de consumer groups y partition assignment · Avanzado · 45 min — ConsumerRebalanceListener; cooperative-sticky assignor
+- `spring-boot/modulo-8` — Tema 5: Kafka frente a RabbitMQ · Intermedio · 35 min — modelo de log vs cola; orden vs enrutamiento flexible
+- `spring-boot/modulo-9` — Tema 1: Mono y Flux · Intermedio · 40 min — Mono vs Flux; evaluación perezosa (cold)
+- `spring-boot/modulo-9` — Tema 2: WebClient y composición no bloqueante · Avanzado · 45 min — WebClient.Builder; composición con flatMap
+- `spring-boot/modulo-9` — Tema 3: Cuándo WebFlux vale la complejidad, y R2DBC · Avanzado · 40 min — WebFlux vs WebMVC decisión; R2DBC no bloqueante

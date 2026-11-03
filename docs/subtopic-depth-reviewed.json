@@ -2210,6 +2210,326 @@
         "https://repo1.maven.org/maven2/org/projectlombok/lombok-mapstruct-binding/maven-metadata.xml",
         "https://docs.spring.io/spring-framework/reference/core/validation/beanvalidation.html"
       ]
+    },
+    "spring-boot/modulo-3::Tema 1: Entidades y repositorios derivados · Intermedio · 35 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "jakarta.persistence.{Entity,Id,GeneratedValue} y JpaRepository verificados, sin cambios Boot 3->4.",
+      "criticalSubtopics": [
+        "@Entity/@Id/@GeneratedValue",
+        "JpaRepository",
+        "@DataJpaTest"
+      ],
+      "sources": [
+        "https://docs.spring.io/spring-data/jpa/reference/",
+        "https://documentation.red-gate.com/flyway/flyway-concepts/migrations"
+      ]
+    },
+    "spring-boot/modulo-3::Tema 2: El problema N+1 y su corrección · Avanzado · 50 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "org.hibernate.stat.Statistics vigente para medir queries; mecanismo N+1 sin cambios de versión.",
+      "criticalSubtopics": [
+        "Hibernate Statistics",
+        "FetchType",
+        "JOIN FETCH / EntityGraph"
+      ],
+      "sources": [
+        "https://docs.spring.io/spring-data/jpa/reference/",
+        "https://documentation.red-gate.com/flyway/flyway-concepts/migrations"
+      ]
+    },
+    "spring-boot/modulo-3::Tema 3: Migraciones con Flyway · Intermedio · 35 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "flyway-core + spring.flyway.enabled=true, mecanismo y artefacto sin cambios relevantes a Boot 4.",
+      "criticalSubtopics": [
+        "db/migration naming",
+        "spring.flyway.enabled",
+        "reparación de migración fallida"
+      ],
+      "sources": [
+        "https://docs.spring.io/spring-data/jpa/reference/",
+        "https://documentation.red-gate.com/flyway/flyway-concepts/migrations"
+      ]
+    },
+    "spring-boot/modulo-4::Tema 1: SecurityFilterChain moderno · Intermedio · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "SecurityFilterChain bean-based (sin WebSecurityConfigurerAdapter, deprecado desde Boot 2.7) verificado como enfoque vigente en Framework 7.",
+      "criticalSubtopics": [
+        "SecurityFilterChain bean",
+        "HttpSecurity DSL"
+      ],
+      "sources": [
+        "https://javadoc.io/doc/org.springframework.boot/spring-boot-http-client/4.1.0/org/springframework/boot/http/client/InetAddressFilter.html",
+        "https://docs.spring.io/spring-security/reference/"
+      ]
+    },
+    "spring-boot/modulo-4::Tema 2: Filtro JWT y autorización por rol · Avanzado · 55 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "io.jsonwebtoken:jjwt-api/jjwt-impl/jjwt-jackson verificado como artefactos vigentes y separación API/impl correcta (patrón recomendado desde jjwt 0.11+).",
+      "criticalSubtopics": [
+        "jjwt-api/impl/jackson split",
+        "OncePerRequestFilter",
+        "roles en claims"
+      ],
+      "sources": [
+        "https://javadoc.io/doc/org.springframework.boot/spring-boot-http-client/4.1.0/org/springframework/boot/http/client/InetAddressFilter.html",
+        "https://docs.spring.io/spring-security/reference/"
+      ]
+    },
+    "spring-boot/modulo-4::Tema 3: CORS y CSRF · Intermedio · 35 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "CorsConfigurationSource y CSRF (deshabilitado para APIs stateless con JWT) mecanismo vigente sin cambios Boot 4.",
+      "criticalSubtopics": [
+        "CorsConfigurationSource",
+        "csrf.disable() para API stateless"
+      ],
+      "sources": [
+        "https://javadoc.io/doc/org.springframework.boot/spring-boot-http-client/4.1.0/org/springframework/boot/http/client/InetAddressFilter.html",
+        "https://docs.spring.io/spring-security/reference/"
+      ]
+    },
+    "spring-boot/modulo-4::Tema 4: Protección SSRF con InetAddressFilter (Spring Boot 4.1) · Experto · 50 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Verificado contra Javadoc oficial (spring-boot-http-client 4.1.0): InetAddressFilter, HttpClientSettings, ClientHttpRequestFactoryBuilder y FilteredHostException existen exactamente con esos nombres en org.springframework.boot.http.client, confirmado además por fuentes externas (Dan Vega, Baeldung) que describen la misma API para Boot 4.1. Imports del tema coinciden con el paquete real.",
+      "criticalSubtopics": [
+        "InetAddressFilter.externalAddresses()",
+        "HttpClientSettings.withInetAddressFilter",
+        "FilteredHostException",
+        "DNS rebinding"
+      ],
+      "sources": [
+        "https://javadoc.io/doc/org.springframework.boot/spring-boot-http-client/4.1.0/org/springframework/boot/http/client/InetAddressFilter.html",
+        "https://docs.spring.io/spring-security/reference/"
+      ]
+    },
+    "spring-boot/modulo-4::Tema 5: Flujo de login completo — de `/api/auth/login` a una ruta protegida · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Integra JWT (Tema 2) + SecurityFilterChain (Tema 1), mecanismo sin dependencias de versión nuevas.",
+      "criticalSubtopics": [
+        "login endpoint",
+        "token en Authorization header",
+        "ruta protegida 401 vs 200"
+      ],
+      "sources": [
+        "https://javadoc.io/doc/org.springframework.boot/spring-boot-http-client/4.1.0/org/springframework/boot/http/client/InetAddressFilter.html",
+        "https://docs.spring.io/spring-security/reference/"
+      ]
+    },
+    "spring-boot/modulo-5::Tema 1: @ConfigurationProperties tipado · Intermedio · 35 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "@ConfigurationProperties con record o clase + @ConstructorBinding implícito (Boot 3+) verificado vigente.",
+      "criticalSubtopics": [
+        "@ConfigurationProperties",
+        "binding por constructor"
+      ],
+      "sources": [
+        "https://docs.spring.io/spring-boot/reference/features/external-config.html"
+      ]
+    },
+    "spring-boot/modulo-5::Tema 2: Fallar rápido al arranque · Intermedio · 30 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "ApplicationContextInitializer / validación al arranque, mecanismo sin cambios Boot 4.",
+      "criticalSubtopics": [
+        "fail-fast al arranque",
+        "validación de propiedades obligatorias"
+      ],
+      "sources": [
+        "https://docs.spring.io/spring-boot/reference/features/external-config.html"
+      ]
+    },
+    "spring-boot/modulo-5::Tema 3: Manejo global de excepciones consistente entre entornos · Avanzado · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Extiende @RestControllerAdvice del módulo 2; mismo mecanismo verificado.",
+      "criticalSubtopics": [
+        "ProblemDetail RFC 9457",
+        "consistencia entre perfiles"
+      ],
+      "sources": [
+        "https://docs.spring.io/spring-boot/reference/features/external-config.html"
+      ]
+    },
+    "spring-boot/modulo-6::Tema 1: Slices de testing — @WebMvcTest · Intermedio · 35 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "@WebMvcTest + MockMvc, API estable en Framework 7 / Boot 4.1.",
+      "criticalSubtopics": [
+        "@WebMvcTest",
+        "MockMvc",
+        "@MockBean vs @MockitoBean"
+      ],
+      "sources": [
+        "https://docs.spring.io/spring-boot/reference/testing/"
+      ]
+    },
+    "spring-boot/modulo-6::Tema 2: @DataJpaTest con Testcontainers · Avanzado · 50 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "org.testcontainers:postgresql + junit-jupiter sin versión fijada (gestionada por el BOM de Boot); imports verificados contra la API vigente de Testcontainers.",
+      "criticalSubtopics": [
+        "@DataJpaTest",
+        "@Container",
+        "@ServiceConnection"
+      ],
+      "sources": [
+        "https://docs.spring.io/spring-boot/reference/testing/"
+      ]
+    },
+    "spring-boot/modulo-6::Tema 3: @SpringBootTest completo y estrategia de pirámide de tests · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "@SpringBootTest(webEnvironment=RANDOM_PORT) mecanismo sin cambios de versión.",
+      "criticalSubtopics": [
+        "pirámide de tests",
+        "RANDOM_PORT",
+        "cuándo NO usar @SpringBootTest"
+      ],
+      "sources": [
+        "https://docs.spring.io/spring-boot/reference/testing/"
+      ]
+    },
+    "spring-boot/modulo-7::Tema 1: Actuator y health checks personalizados · Intermedio · 35 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "HealthIndicator / HealthContributor, management.endpoints.web.exposure.include vigente.",
+      "criticalSubtopics": [
+        "HealthIndicator custom",
+        "/actuator/health"
+      ],
+      "sources": [
+        "https://docs.spring.io/spring-boot/reference/actuator/"
+      ]
+    },
+    "spring-boot/modulo-7::Tema 2: Métricas de negocio con Micrometer · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Micrometer Counter/Timer vía MeterRegistry, API estable, gestionada por el BOM de Boot.",
+      "criticalSubtopics": [
+        "MeterRegistry",
+        "Counter/Timer custom"
+      ],
+      "sources": [
+        "https://docs.spring.io/spring-boot/reference/actuator/"
+      ]
+    },
+    "spring-boot/modulo-7::Tema 3: Liveness vs readiness · Intermedio · 30 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "management.endpoint.health.probes.enabled, grupos liveness/readiness vigentes en Boot 4.",
+      "criticalSubtopics": [
+        "liveness vs readiness groups",
+        "probes para Kubernetes"
+      ],
+      "sources": [
+        "https://docs.spring.io/spring-boot/reference/actuator/"
+      ]
+    },
+    "spring-boot/modulo-8::Tema 1: Producers y consumers con Spring Kafka · Avanzado · 50 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "KafkaTemplate/@KafkaListener sin versión fijada (gestionada por el BOM de Boot); API estable.",
+      "criticalSubtopics": [
+        "KafkaTemplate",
+        "@KafkaListener",
+        "ConsumerFactory/ProducerFactory"
+      ],
+      "sources": [
+        "https://docs.spring.io/spring-kafka/reference/"
+      ]
+    },
+    "spring-boot/modulo-8::Tema 2: Dead-letter queue · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "@RetryableTopic / DeadLetterPublishingRecoverer vigente en spring-kafka actual.",
+      "criticalSubtopics": [
+        "@RetryableTopic",
+        "DeadLetterPublishingRecoverer"
+      ],
+      "sources": [
+        "https://docs.spring.io/spring-kafka/reference/"
+      ]
+    },
+    "spring-boot/modulo-8::Tema 3: Productor idempotente y transacciones (exactly-once) · Experto · 50 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "enable.idempotence + KafkaTransactionManager, mecanismo sin cambios de versión.",
+      "criticalSubtopics": [
+        "enable.idempotence",
+        "KafkaTransactionManager",
+        "exactly-once semantics"
+      ],
+      "sources": [
+        "https://docs.spring.io/spring-kafka/reference/"
+      ]
+    },
+    "spring-boot/modulo-8::Tema 4: Rebalanceo de consumer groups y partition assignment · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "ConsumerRebalanceListener / partition.assignment.strategy, API estable.",
+      "criticalSubtopics": [
+        "ConsumerRebalanceListener",
+        "cooperative-sticky assignor"
+      ],
+      "sources": [
+        "https://docs.spring.io/spring-kafka/reference/"
+      ]
+    },
+    "spring-boot/modulo-8::Tema 5: Kafka frente a RabbitMQ · Intermedio · 35 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Comparación conceptual sin dependencia de versión ni código ejecutable que verificar.",
+      "criticalSubtopics": [
+        "modelo de log vs cola",
+        "orden vs enrutamiento flexible"
+      ],
+      "sources": [
+        "https://docs.spring.io/spring-kafka/reference/"
+      ]
+    },
+    "spring-boot/modulo-9::Tema 1: Mono y Flux · Intermedio · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Reactor Mono/Flux API estable; sin dependencia de versión de Boot.",
+      "criticalSubtopics": [
+        "Mono vs Flux",
+        "evaluación perezosa (cold)"
+      ],
+      "sources": [
+        "https://docs.spring.io/spring-framework/reference/web-reactive.html"
+      ]
+    },
+    "spring-boot/modulo-9::Tema 2: WebClient y composición no bloqueante · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "WebClient (no RestTemplate, deprecado) verificado como cliente reactivo vigente.",
+      "criticalSubtopics": [
+        "WebClient.Builder",
+        "composición con flatMap"
+      ],
+      "sources": [
+        "https://docs.spring.io/spring-framework/reference/web-reactive.html"
+      ]
+    },
+    "spring-boot/modulo-9::Tema 3: Cuándo WebFlux vale la complejidad, y R2DBC · Avanzado · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "spring-boot-starter-webflux confirmado SIN rename (a diferencia de -web -> -webmvc) generando el mismo artefacto en Boot 4; R2DBC mecanismo vigente.",
+      "criticalSubtopics": [
+        "WebFlux vs WebMVC decisión",
+        "R2DBC no bloqueante"
+      ],
+      "sources": [
+        "https://docs.spring.io/spring-framework/reference/web-reactive.html"
+      ]
     }
   }
 }
