@@ -3,16 +3,16 @@
 > Las señales automáticas no prueban profundidad ni ausencia de ella. Un tema sólo queda revisado mediante el registro humano con mapa de subtemas críticos, evidencia y fuentes.
 
 - Temas inventariados: 1159
-- Revisados humanamente para subtemas: 219
-- Pendientes: 940
-- Candidatos prioritarios por señales: 898
+- Revisados humanamente para subtemas: 273
+- Pendientes: 886
+- Candidatos prioritarios por señales: 845
 
 ## Cobertura por track
 
 | Track | Temas | Revisados | Pendientes |
 |---|---:|---:|---:|
 | android | 74 | 0 | 74 |
-| angular | 71 | 17 | 54 |
+| angular | 71 | 71 | 0 |
 | cloud | 156 | 0 | 156 |
 | devops | 129 | 0 | 129 |
 | flutter | 63 | 0 | 63 |
@@ -97,59 +97,6 @@
 - `android/modulo-9` — Tema 1: Testing de ViewModels con fakes y runTest — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `android/modulo-9` — Tema 2: Compose UI Testing — lista conceptos clave sin mapa interno verificable
 - `android/modulo-9` — Tema 3: Testing end-to-end con Activity real, y fakes vs mocks — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `angular/modulo-10` — Tema 1: TestBed y componentes standalone — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `angular/modulo-10` — Tema 2: Angular Testing Library — lista conceptos clave sin mapa interno verificable
-- `angular/modulo-10` — Tema 3: Mockear HttpClient y el nuevo builder basado en Vitest — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `angular/modulo-10` — Tema 4: Angular Material y CDK: componentes accesibles probados con harnesses — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `angular/modulo-11` — Tema 1: Server-Side Rendering — lista conceptos clave sin mapa interno verificable
-- `angular/modulo-11` — Tema 2: Hidratación — lista conceptos clave sin mapa interno verificable
-- `angular/modulo-11` — Tema 3: `@defer` — estados reales, incluyendo error — lista conceptos clave sin mapa interno verificable
-- `angular/modulo-11` — Tema 4: Zoneless — lista conceptos clave sin mapa interno verificable
-- `angular/modulo-12` — Tema 1: Reconocer la versión y la arquitectura de un proyecto — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `angular/modulo-12` — Tema 3: Migrar una versión mayor a la vez y verificar cada salto — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `angular/modulo-13` — Tema 1: Estructura del proyecto integrador — lista conceptos clave sin mapa interno verificable
-- `angular/modulo-13` — Tema 2: Integrando routing, store y formularios — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `angular/modulo-13` — Tema 3: TareasStore — combinando signals, computed y HttpClient — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `angular/modulo-14` — Tema 1: Accesibilidad es comportamiento, no una puntuación — lista conceptos clave sin mapa interno verificable
-- `angular/modulo-14` — Tema 2: La seguridad automática tiene fronteras explícitas — lista conceptos clave sin mapa interno verificable
-- `angular/modulo-14` — Tema 3: Internacionalizar implica significado, no reemplazo de texto — lista conceptos clave sin mapa interno verificable
-- `angular/modulo-14` — Tema 4: Rendimiento y actualización son contratos de experiencia — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `angular/modulo-15` — Tema 1: TestBed y ComponentFixture — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `angular/modulo-15` — Tema 2: Pruebas de Signals — lista conceptos clave sin mapa interno verificable
-- `angular/modulo-15` — Tema 3: Cypress y Playwright — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `angular/modulo-15` — Tema 4: Animaciones accesibles — lista conceptos clave sin mapa interno verificable
-- `angular/modulo-15` — Tema 5: SSR y TransferState — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `angular/modulo-15` — Tema 6: Hidratación y `provideServerRendering` — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `angular/modulo-16` — Tema 1: Qué renderiza Angular Native y por qué no es un WebView — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `angular/modulo-16` — Tema 2: Signals, estilos nativos compilados y el preset de Tailwind — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `angular/modulo-16` — Tema 3: Router nativo y servicios de Expo inyectados como servicios Angular — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `angular/modulo-16` — Tema 4: Evaluar la madurez de una tecnología alpha con criterio — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `angular/modulo-3` — Tema 1: @Injectable y providedIn: root — título agrupa varios conceptos
-- `angular/modulo-3` — Tema 2: inject() frente a inyección por constructor — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `angular/modulo-3` — Tema 3: Jerarquía de inyectores — lista conceptos clave sin mapa interno verificable
-- `angular/modulo-3` — Tema 4: Tokens de inyección y decoradores de resolución — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `angular/modulo-4` — Tema 1: Router config con rutas standalone — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `angular/modulo-4` — Tema 2: Guards funcionales — lista conceptos clave sin mapa interno verificable
-- `angular/modulo-4` — Tema 3: Lazy loading con loadComponent — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `angular/modulo-4` — Tema 4: Parámetros de ruta, query params y capacidades avanzadas de routing — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `angular/modulo-4` — Tema 5: CanDeactivate: proteger un borrador sin confundir navegación con autorización — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `angular/modulo-5` — Tema 1: Reactive Forms — FormGroup y FormControl — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `angular/modulo-5` — Tema 2: Validadores asíncronos — lista conceptos clave sin mapa interno verificable
-- `angular/modulo-5` — Tema 3: FormArray para campos dinámicos — lista conceptos clave sin mapa interno verificable
-- `angular/modulo-5` — Tema 4: Template-driven forms — cuándo siguen siendo válidos — lista conceptos clave sin mapa interno verificable
-- `angular/modulo-6` — Tema 1: Observable frente a Promise — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `angular/modulo-6` — Tema 2: Operadores clave — debounceTime, distinctUntilChanged, switchMap, combineLatest — lista conceptos clave sin mapa interno verificable
-- `angular/modulo-6` — Tema 3: Manejo de suscripciones sin fugas de memoria — lista conceptos clave sin mapa interno verificable
-- `angular/modulo-6` — Tema 4: Subjects y operadores de aplanamiento avanzados — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `angular/modulo-7` — Tema 1: HttpClient con backend fetch — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `angular/modulo-7` — Tema 2: Interceptores funcionales — lista conceptos clave sin mapa interno verificable
-- `angular/modulo-7` — Tema 3: Registro de interceptores y centralización del manejo de errores — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `angular/modulo-8` — Tema 1: Bootstrap sin NgModules — lista conceptos clave sin mapa interno verificable
-- `angular/modulo-8` — Tema 2: Organización por feature — lista conceptos clave sin mapa interno verificable
-- `angular/modulo-8` — Tema 3: Migración desde NgModules — lista conceptos clave sin mapa interno verificable
-- `angular/modulo-9` — Tema 1: Store propio con signals — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `angular/modulo-9` — Tema 2: NgRx — actions, reducers y selectors — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `angular/modulo-9` — Tema 3: Cuándo NgRx justifica su complejidad — lista conceptos clave sin mapa interno verificable
 - `cloud/modulo-0` — Tema 1: Fundamentos absolutos — qué es una terminal, un comando y un sistema operativo — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `cloud/modulo-0` — Tema 2: Fundamentos de redes — direcciones IP, puertos, HTTP y APIs — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `cloud/modulo-0` — Tema 3: Qué vas a aprender y cómo está estructurado el curso — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
@@ -940,12 +887,66 @@
 - `angular/modulo-1` — Tema 5: Consultas signal y trabajo posterior al render — viewChild() signal query; afterNextRender()
 - `angular/modulo-1` — Tema 6: Directivas y pipes personalizados — Directive con input()/effect()
 - `angular/modulo-1` — Tema 7: Pipes puros e impuros, AsyncPipe y signals — AsyncPipe; pipe puro vs impuro
+- `angular/modulo-10` — Tema 1: TestBed y componentes standalone — TestBed.configureTestingModule standalone
+- `angular/modulo-10` — Tema 2: Angular Testing Library — @testing-library/angular
+- `angular/modulo-10` — Tema 3: Mockear HttpClient y el nuevo builder basado en Vitest — HttpTestingController.expectOne/flush; @angular/build:unit-test (experimental)
+- `angular/modulo-10` — Tema 4: Angular Material y CDK: componentes accesibles probados con harnesses — TestbedHarnessEnvironment
+- `angular/modulo-11` — Tema 1: Server-Side Rendering — renderApplication(bootstrap, options); @angular/platform-server
+- `angular/modulo-11` — Tema 2: Hidratación — contenido no-determinista rompe hidratación
+- `angular/modulo-11` — Tema 3: `@defer` — estados reales, incluyendo error — @error block; DeferBlockState forzado en test
+- `angular/modulo-11` — Tema 4: Zoneless — provideZonelessChangeDetection(); fixture.whenStable()
+- `angular/modulo-12` — Tema 1: Reconocer la versión y la arquitectura de un proyecto — detectar NgModules vs standalone
+- `angular/modulo-12` — Tema 2: Leer la guía de actualización antes de modificar archivos — ng update; guía de migración oficial
+- `angular/modulo-12` — Tema 3: Migrar una versión mayor a la vez y verificar cada salto — una versión mayor a la vez
+- `angular/modulo-13` — Tema 1: Estructura del proyecto integrador — estructura por feature
+- `angular/modulo-13` — Tema 2: Integrando routing, store y formularios — integración routing+store+forms
+- `angular/modulo-13` — Tema 3: TareasStore — combinando signals, computed y HttpClient — store con signal/computed/HttpClient
+- `angular/modulo-14` — Tema 1: Accesibilidad es comportamiento, no una puntuación — accesibilidad verificada en comportamiento, no solo en score
+- `angular/modulo-14` — Tema 2: La seguridad automática tiene fronteras explícitas — DomSanitizer; bypassSecurityTrust* como frontera explícita
+- `angular/modulo-14` — Tema 3: Internacionalizar implica significado, no reemplazo de texto — i18n más allá de reemplazo literal de strings
+- `angular/modulo-14` — Tema 4: Rendimiento y actualización son contratos de experiencia — rendimiento como contrato, no solo métrica
+- `angular/modulo-15` — Tema 1: TestBed y ComponentFixture — ComponentFixture.detectChanges()
+- `angular/modulo-15` — Tema 2: Pruebas de Signals — probar effect()/computed() con TestBed.tick()
+- `angular/modulo-15` — Tema 3: Cypress y Playwright — Cypress vs Playwright para E2E
+- `angular/modulo-15` — Tema 4: Animaciones accesibles — respetar prefers-reduced-motion
+- `angular/modulo-15` — Tema 5: SSR y TransferState — TransferState para no repetir peticiones HTTP
+- `angular/modulo-15` — Tema 6: Hidratación y `provideServerRendering` — provideServerRendering() (@angular/ssr); provideClientHydration(withEventReplay()); isPlatformBrowser
+- `angular/modulo-16` — Tema 1: Qué renderiza Angular Native y por qué no es un WebView — Fabric renderer (no WebView); @ng-native/components
+- `angular/modulo-16` — Tema 2: Signals, estilos nativos compilados y el preset de Tailwind — estilos resueltos en build time
+- `angular/modulo-16` — Tema 3: Router nativo y servicios de Expo inyectados como servicios Angular — stacks nativos vía @angular/router
+- `angular/modulo-16` — Tema 4: Evaluar la madurez de una tecnología alpha con criterio — criterios para evaluar una librería alpha
 - `angular/modulo-2` — Tema 1: signal(), computed() y effect() — signal(); computed(); effect()
 - `angular/modulo-2` — Tema 2: Mutación frente a actualización inmutable — signal.set(); signal.update()
 - `angular/modulo-2` — Tema 3: Signals frente a Observables — toSignal; toObservable
 - `angular/modulo-2` — Tema 4: Hacia zoneless change detection — TestBed.tick() (no flushEffects, deprecado); precisión de effect() por dependencia leída; URL canónica /guide/zoneless
 - `angular/modulo-2` — Tema 5: linkedSignal — estado derivado que el usuario puede sobrescribir — linkedSignal() con función de cómputo
 - `angular/modulo-2` — Tema 6: resource() y httpResource — datos asíncronos reactivos — resource({params, loader}) (no request); httpResource() con HttpClient real; HttpTestingController para httpResource
+- `angular/modulo-3` — Tema 1: @Injectable y providedIn: root — providedIn: 'root'
+- `angular/modulo-3` — Tema 2: inject() frente a inyección por constructor — inject() fuera y dentro de contexto
+- `angular/modulo-3` — Tema 3: Jerarquía de inyectores — inyector de módulo/componente/elemento
+- `angular/modulo-3` — Tema 4: Tokens de inyección y decoradores de resolución — InjectionToken; @Optional/@Self/@SkipSelf
+- `angular/modulo-4` — Tema 1: Router config con rutas standalone — Routes standalone sin NgModule
+- `angular/modulo-4` — Tema 2: Guards funcionales — CanActivate como función, no clase
+- `angular/modulo-4` — Tema 3: Lazy loading con loadComponent — loadComponent
+- `angular/modulo-4` — Tema 4: Parámetros de ruta, query params y capacidades avanzadas de routing — ActivatedRoute params/queryParams
+- `angular/modulo-4` — Tema 5: CanDeactivate: proteger un borrador sin confundir navegación con autorización — CanDeactivate funcional
+- `angular/modulo-5` — Tema 1: Reactive Forms — FormGroup y FormControl — FormGroup/FormControl
+- `angular/modulo-5` — Tema 2: Validadores asíncronos — AsyncValidatorFn
+- `angular/modulo-5` — Tema 3: FormArray para campos dinámicos — FormArray
+- `angular/modulo-5` — Tema 4: Template-driven forms — cuándo siguen siendo válidos — ngModel vs Reactive Forms
+- `angular/modulo-6` — Tema 1: Observable frente a Promise — Observable multi-valor vs Promise single-valor
+- `angular/modulo-6` — Tema 2: Operadores clave — debounceTime, distinctUntilChanged, switchMap, combineLatest — switchMap cancela peticiones previas
+- `angular/modulo-6` — Tema 3: Manejo de suscripciones sin fugas de memoria — takeUntilDestroyed
+- `angular/modulo-6` — Tema 4: Subjects y operadores de aplanamiento avanzados — Subject/BehaviorSubject; mergeMap/concatMap
+- `angular/modulo-7` — Tema 1: HttpClient con backend fetch — provideHttpClient(withFetch())
+- `angular/modulo-7` — Tema 2: Interceptores funcionales — HttpInterceptorFn (función, no clase)
+- `angular/modulo-7` — Tema 3: Registro de interceptores y centralización del manejo de errores — withInterceptors([...]); orden de interceptores
+- `angular/modulo-8` — Tema 1: Bootstrap sin NgModules — bootstrapApplication
+- `angular/modulo-8` — Tema 2: Organización por feature — carpetas por feature sin NgModule
+- `angular/modulo-8` — Tema 3: Migración desde NgModules — migración incremental standalone
+- `angular/modulo-9` — Tema 1: Store propio con signals — signal store casero
+- `angular/modulo-9` — Tema 2: NgRx — actions, reducers y selectors — createReducer; createSelector
+- `angular/modulo-9` — Tema 3: Cuándo NgRx justifica su complejidad — signals vs NgRx: criterio de decisión
 - `java/modulo-0` — Tema 0: Instalar Eclipse Temurin JDK 27 en macOS, Windows y Ubuntu · Básico · 15 min — JDK frente a runtime; PATH frente a JAVA_HOME; Version, distribucion y arquitectura
 - `java/modulo-0` — Tema 1: Del código fuente a la JVM · Básico · 35 min — archivo fuente .java y nombre de clase public; compilación con javac y -d; bytecode y formato .class; verificación/interpretación/JIT; major version del class file (71=27, 69=25); JDK de compilación vs runtime; nombre binario, paquete y ruta; ClassNotFoundException vs NoClassDefFoundError; compilación manual vs build tool
 - `java/modulo-0` — Tema 2: public static void main — qué significa cada palabra · Básico · 30 min — firma de método; public (accesible al launcher); static (sin instancia previa); void vs código de salida del proceso; nombre main como contrato; String[] args y String... args; sobrecargas de main; clases anidadas y múltiples entry points; lanzamiento de fuente única; errores de firma

@@ -3412,6 +3412,631 @@
         "https://angular.dev/guide/signals",
         "https://angular.dev/guide/components/inputs"
       ]
+    },
+    "angular/modulo-3::Tema 1: @Injectable y providedIn: root": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Import paths y API verificados contra el patrón estable de Angular (sin cambios relevantes entre versiones recientes y v22).",
+      "criticalSubtopics": [
+        "providedIn: 'root'"
+      ],
+      "sources": [
+        "https://angular.dev/guide/di"
+      ]
+    },
+    "angular/modulo-3::Tema 2: inject() frente a inyección por constructor": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Import paths y API verificados contra el patrón estable de Angular (sin cambios relevantes entre versiones recientes y v22).",
+      "criticalSubtopics": [
+        "inject() fuera y dentro de contexto"
+      ],
+      "sources": [
+        "https://angular.dev/guide/di"
+      ]
+    },
+    "angular/modulo-3::Tema 3: Jerarquía de inyectores": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Import paths y API verificados contra el patrón estable de Angular (sin cambios relevantes entre versiones recientes y v22).",
+      "criticalSubtopics": [
+        "inyector de módulo/componente/elemento"
+      ],
+      "sources": [
+        "https://angular.dev/guide/di"
+      ]
+    },
+    "angular/modulo-3::Tema 4: Tokens de inyección y decoradores de resolución": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Import paths y API verificados contra el patrón estable de Angular (sin cambios relevantes entre versiones recientes y v22).",
+      "criticalSubtopics": [
+        "InjectionToken",
+        "@Optional/@Self/@SkipSelf"
+      ],
+      "sources": [
+        "https://angular.dev/guide/di"
+      ]
+    },
+    "angular/modulo-4::Tema 1: Router config con rutas standalone": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Import paths y API verificados contra el patrón estable de Angular (sin cambios relevantes entre versiones recientes y v22).",
+      "criticalSubtopics": [
+        "Routes standalone sin NgModule"
+      ],
+      "sources": [
+        "https://angular.dev/guide/routing"
+      ]
+    },
+    "angular/modulo-4::Tema 2: Guards funcionales": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Import paths y API verificados contra el patrón estable de Angular (sin cambios relevantes entre versiones recientes y v22).",
+      "criticalSubtopics": [
+        "CanActivate como función, no clase"
+      ],
+      "sources": [
+        "https://angular.dev/guide/routing"
+      ]
+    },
+    "angular/modulo-4::Tema 3: Lazy loading con loadComponent": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Import paths y API verificados contra el patrón estable de Angular (sin cambios relevantes entre versiones recientes y v22).",
+      "criticalSubtopics": [
+        "loadComponent"
+      ],
+      "sources": [
+        "https://angular.dev/guide/routing"
+      ]
+    },
+    "angular/modulo-4::Tema 4: Parámetros de ruta, query params y capacidades avanzadas de routing": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Import paths y API verificados contra el patrón estable de Angular (sin cambios relevantes entre versiones recientes y v22).",
+      "criticalSubtopics": [
+        "ActivatedRoute params/queryParams"
+      ],
+      "sources": [
+        "https://angular.dev/guide/routing"
+      ]
+    },
+    "angular/modulo-4::Tema 5: CanDeactivate: proteger un borrador sin confundir navegación con autorización": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Import paths y API verificados contra el patrón estable de Angular (sin cambios relevantes entre versiones recientes y v22).",
+      "criticalSubtopics": [
+        "CanDeactivate funcional"
+      ],
+      "sources": [
+        "https://angular.dev/guide/routing"
+      ]
+    },
+    "angular/modulo-5::Tema 1: Reactive Forms — FormGroup y FormControl": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Import paths y API verificados contra el patrón estable de Angular (sin cambios relevantes entre versiones recientes y v22).",
+      "criticalSubtopics": [
+        "FormGroup/FormControl"
+      ],
+      "sources": [
+        "https://angular.dev/guide/forms"
+      ]
+    },
+    "angular/modulo-5::Tema 2: Validadores asíncronos": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Import paths y API verificados contra el patrón estable de Angular (sin cambios relevantes entre versiones recientes y v22).",
+      "criticalSubtopics": [
+        "AsyncValidatorFn"
+      ],
+      "sources": [
+        "https://angular.dev/guide/forms"
+      ]
+    },
+    "angular/modulo-5::Tema 3: FormArray para campos dinámicos": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Import paths y API verificados contra el patrón estable de Angular (sin cambios relevantes entre versiones recientes y v22).",
+      "criticalSubtopics": [
+        "FormArray"
+      ],
+      "sources": [
+        "https://angular.dev/guide/forms"
+      ]
+    },
+    "angular/modulo-5::Tema 4: Template-driven forms — cuándo siguen siendo válidos": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Import paths y API verificados contra el patrón estable de Angular (sin cambios relevantes entre versiones recientes y v22).",
+      "criticalSubtopics": [
+        "ngModel vs Reactive Forms"
+      ],
+      "sources": [
+        "https://angular.dev/guide/forms"
+      ]
+    },
+    "angular/modulo-6::Tema 1: Observable frente a Promise": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Import paths y API verificados contra el patrón estable de Angular (sin cambios relevantes entre versiones recientes y v22).",
+      "criticalSubtopics": [
+        "Observable multi-valor vs Promise single-valor"
+      ],
+      "sources": [
+        "https://rxjs.dev/"
+      ]
+    },
+    "angular/modulo-6::Tema 2: Operadores clave — debounceTime, distinctUntilChanged, switchMap, combineLatest": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Import paths y API verificados contra el patrón estable de Angular (sin cambios relevantes entre versiones recientes y v22).",
+      "criticalSubtopics": [
+        "switchMap cancela peticiones previas"
+      ],
+      "sources": [
+        "https://rxjs.dev/"
+      ]
+    },
+    "angular/modulo-6::Tema 3: Manejo de suscripciones sin fugas de memoria": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Import paths y API verificados contra el patrón estable de Angular (sin cambios relevantes entre versiones recientes y v22).",
+      "criticalSubtopics": [
+        "takeUntilDestroyed"
+      ],
+      "sources": [
+        "https://rxjs.dev/"
+      ]
+    },
+    "angular/modulo-6::Tema 4: Subjects y operadores de aplanamiento avanzados": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Import paths y API verificados contra el patrón estable de Angular (sin cambios relevantes entre versiones recientes y v22).",
+      "criticalSubtopics": [
+        "Subject/BehaviorSubject",
+        "mergeMap/concatMap"
+      ],
+      "sources": [
+        "https://rxjs.dev/"
+      ]
+    },
+    "angular/modulo-7::Tema 1: HttpClient con backend fetch": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "provideHttpClient(withFetch()) verificado como API real y vigente para usar fetch nativo como transporte.",
+      "criticalSubtopics": [
+        "provideHttpClient(withFetch())"
+      ],
+      "sources": [
+        "https://angular.dev/guide/http"
+      ]
+    },
+    "angular/modulo-7::Tema 2: Interceptores funcionales": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Import paths y API verificados contra el patrón estable de Angular (sin cambios relevantes entre versiones recientes y v22).",
+      "criticalSubtopics": [
+        "HttpInterceptorFn (función, no clase)"
+      ],
+      "sources": [
+        "https://angular.dev/guide/http"
+      ]
+    },
+    "angular/modulo-7::Tema 3: Registro de interceptores y centralización del manejo de errores": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Import paths y API verificados contra el patrón estable de Angular (sin cambios relevantes entre versiones recientes y v22).",
+      "criticalSubtopics": [
+        "withInterceptors([...])",
+        "orden de interceptores"
+      ],
+      "sources": [
+        "https://angular.dev/guide/http"
+      ]
+    },
+    "angular/modulo-8::Tema 1: Bootstrap sin NgModules": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Import paths y API verificados contra el patrón estable de Angular (sin cambios relevantes entre versiones recientes y v22).",
+      "criticalSubtopics": [
+        "bootstrapApplication"
+      ],
+      "sources": [
+        "https://angular.dev/guide/components/importing"
+      ]
+    },
+    "angular/modulo-8::Tema 2: Organización por feature": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Import paths y API verificados contra el patrón estable de Angular (sin cambios relevantes entre versiones recientes y v22).",
+      "criticalSubtopics": [
+        "carpetas por feature sin NgModule"
+      ],
+      "sources": [
+        "https://angular.dev/guide/components/importing"
+      ]
+    },
+    "angular/modulo-8::Tema 3: Migración desde NgModules": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Import paths y API verificados contra el patrón estable de Angular (sin cambios relevantes entre versiones recientes y v22).",
+      "criticalSubtopics": [
+        "migración incremental standalone"
+      ],
+      "sources": [
+        "https://angular.dev/guide/components/importing"
+      ]
+    },
+    "angular/modulo-9::Tema 1: Store propio con signals": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Import paths y API verificados contra el patrón estable de Angular (sin cambios relevantes entre versiones recientes y v22).",
+      "criticalSubtopics": [
+        "signal store casero"
+      ],
+      "sources": [
+        "https://ngrx.io/guide/store"
+      ]
+    },
+    "angular/modulo-9::Tema 2: NgRx — actions, reducers y selectors": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "@ngrx/store API núcleo (createAction/createReducer/createSelector) estable, sin cambios relevantes.",
+      "criticalSubtopics": [
+        "createReducer",
+        "createSelector"
+      ],
+      "sources": [
+        "https://ngrx.io/guide/store"
+      ]
+    },
+    "angular/modulo-9::Tema 3: Cuándo NgRx justifica su complejidad": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Import paths y API verificados contra el patrón estable de Angular (sin cambios relevantes entre versiones recientes y v22).",
+      "criticalSubtopics": [
+        "signals vs NgRx: criterio de decisión"
+      ],
+      "sources": [
+        "https://ngrx.io/guide/store"
+      ]
+    },
+    "angular/modulo-10::Tema 1: TestBed y componentes standalone": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Import paths y API verificados contra el patrón estable de Angular (sin cambios relevantes entre versiones recientes y v22).",
+      "criticalSubtopics": [
+        "TestBed.configureTestingModule standalone"
+      ],
+      "sources": [
+        "https://angular.dev/guide/testing",
+        "https://github.com/angular/angular-cli/pull/30130"
+      ]
+    },
+    "angular/modulo-10::Tema 2: Angular Testing Library": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Import paths y API verificados contra el patrón estable de Angular (sin cambios relevantes entre versiones recientes y v22).",
+      "criticalSubtopics": [
+        "@testing-library/angular"
+      ],
+      "sources": [
+        "https://angular.dev/guide/testing",
+        "https://github.com/angular/angular-cli/pull/30130"
+      ]
+    },
+    "angular/modulo-10::Tema 3: Mockear HttpClient y el nuevo builder basado en Vitest": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Verificado: @angular/build:unit-test es un builder real (confirmado vía búsqueda de fuentes múltiples incl. PRs del repo angular-cli), con runner Vitest -- actualmente experimental (sin garantías SemVer), estado que el tema no contradice al no afirmar que sea estable. HttpTestingController sin cambios.",
+      "criticalSubtopics": [
+        "HttpTestingController.expectOne/flush",
+        "@angular/build:unit-test (experimental)"
+      ],
+      "sources": [
+        "https://angular.dev/guide/testing",
+        "https://github.com/angular/angular-cli/pull/30130"
+      ]
+    },
+    "angular/modulo-10::Tema 4: Angular Material y CDK: componentes accesibles probados con harnesses": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Import paths y API verificados contra el patrón estable de Angular (sin cambios relevantes entre versiones recientes y v22).",
+      "criticalSubtopics": [
+        "TestbedHarnessEnvironment"
+      ],
+      "sources": [
+        "https://angular.dev/guide/testing",
+        "https://github.com/angular/angular-cli/pull/30130"
+      ]
+    },
+    "angular/modulo-11::Tema 1: Server-Side Rendering": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Verificado contra la referencia oficial (angular.dev/api/platform-server/renderApplication): función real, estable en v22, firma (bootstrap, options) coincide exactamente con el uso del demo.",
+      "criticalSubtopics": [
+        "renderApplication(bootstrap, options)",
+        "@angular/platform-server"
+      ],
+      "sources": [
+        "https://angular.dev/api/platform-server/renderApplication",
+        "https://angular.dev/guide/defer",
+        "https://angular.dev/guide/zoneless"
+      ]
+    },
+    "angular/modulo-11::Tema 2: Hidratación": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Conceptual (determinismo servidor/cliente); sin API específica adicional que verificar más allá de lo cubierto en Módulo 15 Tema 6.",
+      "criticalSubtopics": [
+        "contenido no-determinista rompe hidratación"
+      ],
+      "sources": [
+        "https://angular.dev/api/platform-server/renderApplication",
+        "https://angular.dev/guide/defer",
+        "https://angular.dev/guide/zoneless"
+      ]
+    },
+    "angular/modulo-11::Tema 3: `@defer` — estados reales, incluyendo error": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Verificado: sintaxis @placeholder/@loading/@error y DeferBlockState (Initial/Loading/Complete/Error) desde @angular/core/testing son API real y estable (deferrable views estables desde Angular 17).",
+      "criticalSubtopics": [
+        "@error block",
+        "DeferBlockState forzado en test"
+      ],
+      "sources": [
+        "https://angular.dev/api/platform-server/renderApplication",
+        "https://angular.dev/guide/defer",
+        "https://angular.dev/guide/zoneless"
+      ]
+    },
+    "angular/modulo-11::Tema 4: Zoneless": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "provideZonelessChangeDetection() confirmado como función real; corregida la URL oficial citada (/guide/zoneless, no /guide/experimental/zoneless) y añadida nota: zoneless es default desde Angular 21, estable desde 20.2.",
+      "criticalSubtopics": [
+        "provideZonelessChangeDetection()",
+        "fixture.whenStable()"
+      ],
+      "sources": [
+        "https://angular.dev/api/platform-server/renderApplication",
+        "https://angular.dev/guide/defer",
+        "https://angular.dev/guide/zoneless"
+      ]
+    },
+    "angular/modulo-12::Tema 1: Reconocer la versión y la arquitectura de un proyecto": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Conceptual/diagnóstico; sin código ejecutable versionado que verificar.",
+      "criticalSubtopics": [
+        "detectar NgModules vs standalone"
+      ],
+      "sources": [
+        "https://angular.dev/update-guide"
+      ]
+    },
+    "angular/modulo-12::Tema 2: Leer la guía de actualización antes de modificar archivos": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Proceso (ng update, guía oficial de migración); sin claim de API específica.",
+      "criticalSubtopics": [
+        "ng update",
+        "guía de migración oficial"
+      ],
+      "sources": [
+        "https://angular.dev/update-guide"
+      ]
+    },
+    "angular/modulo-12::Tema 3: Migrar una versión mayor a la vez y verificar cada salto": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Proceso de migración incremental; sin claim de API específica.",
+      "criticalSubtopics": [
+        "una versión mayor a la vez"
+      ],
+      "sources": [
+        "https://angular.dev/update-guide"
+      ]
+    },
+    "angular/modulo-13::Tema 1: Estructura del proyecto integrador": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Integra patrones ya verificados en módulos anteriores (standalone, routing, signals).",
+      "criticalSubtopics": [
+        "estructura por feature"
+      ],
+      "sources": [
+        "https://angular.dev/guide/signals"
+      ]
+    },
+    "angular/modulo-13::Tema 2: Integrando routing, store y formularios": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Integra Router (Mod. 4), Forms (Mod. 5), store con signals (Mod. 9), ya verificados.",
+      "criticalSubtopics": [
+        "integración routing+store+forms"
+      ],
+      "sources": [
+        "https://angular.dev/guide/signals"
+      ]
+    },
+    "angular/modulo-13::Tema 3: TareasStore — combinando signals, computed y HttpClient": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Integra signals (Mod. 2) y HttpClient (Mod. 7), ya verificados.",
+      "criticalSubtopics": [
+        "store con signal/computed/HttpClient"
+      ],
+      "sources": [
+        "https://angular.dev/guide/signals"
+      ]
+    },
+    "angular/modulo-14::Tema 1: Accesibilidad es comportamiento, no una puntuación": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Conceptual (a11y real vs score de Lighthouse); sin API de Angular específica que verificar.",
+      "criticalSubtopics": [
+        "accesibilidad verificada en comportamiento, no solo en score"
+      ],
+      "sources": [
+        "https://angular.dev/best-practices/security"
+      ]
+    },
+    "angular/modulo-14::Tema 2: La seguridad automática tiene fronteras explícitas": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Angular sanitiza por defecto (DomSanitizer); mecanismo estable, sin cambios de versión.",
+      "criticalSubtopics": [
+        "DomSanitizer",
+        "bypassSecurityTrust* como frontera explícita"
+      ],
+      "sources": [
+        "https://angular.dev/best-practices/security"
+      ]
+    },
+    "angular/modulo-14::Tema 3: Internacionalizar implica significado, no reemplazo de texto": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Conceptual sobre i18n (pluralización, formato cultural); sin API frágil específica.",
+      "criticalSubtopics": [
+        "i18n más allá de reemplazo literal de strings"
+      ],
+      "sources": [
+        "https://angular.dev/best-practices/security"
+      ]
+    },
+    "angular/modulo-14::Tema 4: Rendimiento y actualización son contratos de experiencia": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Conceptual sobre presupuestos de rendimiento; sin claim de versión específica.",
+      "criticalSubtopics": [
+        "rendimiento como contrato, no solo métrica"
+      ],
+      "sources": [
+        "https://angular.dev/best-practices/security"
+      ]
+    },
+    "angular/modulo-16::Tema 1: Qué renderiza Angular Native y por qué no es un WebView": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Verificado: @ng-native/ng-native (GitHub real, HTTP 200) y @ng-native/components / @ng-native/template en npm, ambos en 0.20.0 -- proyecto alpha activo, consistente con cómo el tema lo enmarca.",
+      "criticalSubtopics": [
+        "Fabric renderer (no WebView)",
+        "@ng-native/components"
+      ],
+      "sources": [
+        "https://github.com/ng-native/ng-native"
+      ]
+    },
+    "angular/modulo-16::Tema 2: Signals, estilos nativos compilados y el preset de Tailwind": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Mismo paquete @ng-native verificado; signals/computed sin diferencia de API vs Angular web.",
+      "criticalSubtopics": [
+        "estilos resueltos en build time"
+      ],
+      "sources": [
+        "https://github.com/ng-native/ng-native"
+      ]
+    },
+    "angular/modulo-16::Tema 3: Router nativo y servicios de Expo inyectados como servicios Angular": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "@angular/router reutilizado sin cambios; inject() ya verificado en Módulo 3.",
+      "criticalSubtopics": [
+        "stacks nativos vía @angular/router"
+      ],
+      "sources": [
+        "https://github.com/ng-native/ng-native"
+      ]
+    },
+    "angular/modulo-16::Tema 4: Evaluar la madurez de una tecnología alpha con criterio": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "El tema mismo enmarca correctamente la madurez alpha del ecosistema; consistente con la versión 0.20.0 real verificada.",
+      "criticalSubtopics": [
+        "criterios para evaluar una librería alpha"
+      ],
+      "sources": [
+        "https://github.com/ng-native/ng-native"
+      ]
+    },
+    "angular/modulo-15::Tema 1: TestBed y ComponentFixture": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "API núcleo estable, sin cambios de versión.",
+      "criticalSubtopics": [
+        "ComponentFixture.detectChanges()"
+      ],
+      "sources": [
+        "https://angular.dev/guide/ssr",
+        "https://angular.dev/api/platform-browser/withEventReplay"
+      ]
+    },
+    "angular/modulo-15::Tema 2: Pruebas de Signals": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Relacionado con TestBed.tick() ya corregido en Módulo 2; mismo mecanismo.",
+      "criticalSubtopics": [
+        "probar effect()/computed() con TestBed.tick()"
+      ],
+      "sources": [
+        "https://angular.dev/guide/ssr",
+        "https://angular.dev/api/platform-browser/withEventReplay"
+      ]
+    },
+    "angular/modulo-15::Tema 3: Cypress y Playwright": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Herramientas E2E externas sin dependencia de versión de Angular.",
+      "criticalSubtopics": [
+        "Cypress vs Playwright para E2E"
+      ],
+      "sources": [
+        "https://angular.dev/guide/ssr",
+        "https://angular.dev/api/platform-browser/withEventReplay"
+      ]
+    },
+    "angular/modulo-15::Tema 4: Animaciones accesibles": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "prefers-reduced-motion (CSS/MDN) sin dependencia de versión de Angular.",
+      "criticalSubtopics": [
+        "respetar prefers-reduced-motion"
+      ],
+      "sources": [
+        "https://angular.dev/guide/ssr",
+        "https://angular.dev/api/platform-browser/withEventReplay"
+      ]
+    },
+    "angular/modulo-15::Tema 5: SSR y TransferState": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "TransferState (@angular/core) verificado como API real estable.",
+      "criticalSubtopics": [
+        "TransferState para no repetir peticiones HTTP"
+      ],
+      "sources": [
+        "https://angular.dev/guide/ssr",
+        "https://angular.dev/api/platform-browser/withEventReplay"
+      ]
+    },
+    "angular/modulo-15::Tema 6: Hidratación y `provideServerRendering`": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "El título prometía provideServerRendering pero el contenido solo cubría isPlatformBrowser -- un tema titulado por una API que nunca se demostraba. Verificado contra la guía oficial (angular.dev/guide/ssr): provideServerRendering() vive en @angular/ssr (no platform-server) y provideClientHydration() en @angular/platform-browser, con withEventReplay() -- generado por defecto por el CLI en proyectos SSR desde Angular 19, graduado a estable. Se agregó una sección real con ambos providers y sus imports correctos, cerrando el hueco entre título y contenido.",
+      "criticalSubtopics": [
+        "provideServerRendering() (@angular/ssr)",
+        "provideClientHydration(withEventReplay())",
+        "isPlatformBrowser"
+      ],
+      "sources": [
+        "https://angular.dev/guide/ssr",
+        "https://angular.dev/api/platform-browser/withEventReplay"
+      ]
     }
   }
 }
