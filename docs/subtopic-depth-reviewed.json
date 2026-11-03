@@ -4037,6 +4037,748 @@
         "https://angular.dev/guide/ssr",
         "https://angular.dev/api/platform-browser/withEventReplay"
       ]
+    },
+    "flutter/modulo-0::Tema 1: Sound null safety": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Fundamentos de Dart/Flutter estables desde hace varias versiones mayores; sin API frágil ni versión pinneada que verificar.",
+      "criticalSubtopics": [
+        "tipos nullable explícitos (?)",
+        "operador !"
+      ],
+      "sources": [
+        "https://dart.dev/language"
+      ]
+    },
+    "flutter/modulo-0::Tema 2: Clases y mixins": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Fundamentos de Dart/Flutter estables desde hace varias versiones mayores; sin API frágil ni versión pinneada que verificar.",
+      "criticalSubtopics": [
+        "mixin con 'with'"
+      ],
+      "sources": [
+        "https://dart.dev/language"
+      ]
+    },
+    "flutter/modulo-0::Tema 3: Futures, async/await y colecciones funcionales": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Fundamentos de Dart/Flutter estables desde hace varias versiones mayores; sin API frágil ni versión pinneada que verificar.",
+      "criticalSubtopics": [
+        "Future/async/await",
+        "map/where/fold"
+      ],
+      "sources": [
+        "https://dart.dev/language"
+      ]
+    },
+    "flutter/modulo-0::Tema 4: Lints y estilo con analysis_options.yaml": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Fundamentos de Dart/Flutter estables desde hace varias versiones mayores; sin API frágil ni versión pinneada que verificar.",
+      "criticalSubtopics": [
+        "analysis_options.yaml",
+        "package:flutter_lints"
+      ],
+      "sources": [
+        "https://dart.dev/language"
+      ]
+    },
+    "flutter/modulo-1::Tema 1: StatelessWidget vs StatefulWidget": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Fundamentos de Dart/Flutter estables desde hace varias versiones mayores; sin API frágil ni versión pinneada que verificar.",
+      "criticalSubtopics": [
+        "StatelessWidget",
+        "StatefulWidget + State"
+      ],
+      "sources": [
+        "https://docs.flutter.dev/ui/widgets"
+      ]
+    },
+    "flutter/modulo-1::Tema 2: Layout con Row, Column y Stack, y ciclo de vida": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Fundamentos de Dart/Flutter estables desde hace varias versiones mayores; sin API frágil ni versión pinneada que verificar.",
+      "criticalSubtopics": [
+        "Row/Column/Stack",
+        "initState/dispose"
+      ],
+      "sources": [
+        "https://docs.flutter.dev/ui/widgets"
+      ]
+    },
+    "flutter/modulo-1::Tema 3: Keys": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Fundamentos de Dart/Flutter estables desde hace varias versiones mayores; sin API frágil ni versión pinneada que verificar.",
+      "criticalSubtopics": [
+        "ValueKey/ObjectKey/GlobalKey"
+      ],
+      "sources": [
+        "https://docs.flutter.dev/ui/widgets"
+      ]
+    },
+    "flutter/modulo-2::Tema 1: MediaQuery vs LayoutBuilder": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Fundamentos de Dart/Flutter estables desde hace varias versiones mayores; sin API frágil ni versión pinneada que verificar.",
+      "criticalSubtopics": [
+        "MediaQuery.of(context)",
+        "LayoutBuilder constraints"
+      ],
+      "sources": [
+        "https://docs.flutter.dev/ui/layout"
+      ]
+    },
+    "flutter/modulo-2::Tema 2: Cómo Flutter calcula tamaños": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Fundamentos de Dart/Flutter estables desde hace varias versiones mayores; sin API frágil ni versión pinneada que verificar.",
+      "criticalSubtopics": [
+        "protocolo de layout de Flutter (constraints down, sizes up)"
+      ],
+      "sources": [
+        "https://docs.flutter.dev/ui/layout"
+      ]
+    },
+    "flutter/modulo-2::Tema 3: Breakpoints propios y SafeArea": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Fundamentos de Dart/Flutter estables desde hace varias versiones mayores; sin API frágil ni versión pinneada que verificar.",
+      "criticalSubtopics": [
+        "SafeArea",
+        "breakpoints responsive propios"
+      ],
+      "sources": [
+        "https://docs.flutter.dev/ui/layout"
+      ]
+    },
+    "flutter/modulo-3::Tema 1: go_router: navegación como función de la URL": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Verificado contra pub.dev: go_router latest 18.1.2 (paquete activo, API citada -- context.go, pathParameters -- estable entre versiones mayores recientes).",
+      "criticalSubtopics": [
+        "context.go()",
+        "Navigator 2.0 declarativo"
+      ],
+      "sources": [
+        "https://pub.dev/packages/go_router"
+      ]
+    },
+    "flutter/modulo-3::Tema 2: Guards y deep linking": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Mismo paquete go_router verificado; redirect es API estable.",
+      "criticalSubtopics": [
+        "redirect centralizado",
+        "rutas hijas heredan protección"
+      ],
+      "sources": [
+        "https://pub.dev/packages/go_router"
+      ]
+    },
+    "flutter/modulo-3::Tema 3: Transiciones personalizadas": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "CustomTransitionPage de go_router, API estable.",
+      "criticalSubtopics": [
+        "CustomTransitionPage"
+      ],
+      "sources": [
+        "https://pub.dev/packages/go_router"
+      ]
+    },
+    "flutter/modulo-4::Tema 1: setState y sus límites": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Fundamentos de Dart/Flutter estables desde hace varias versiones mayores; sin API frágil ni versión pinneada que verificar.",
+      "criticalSubtopics": [
+        "setState y su alcance (solo el propio widget)"
+      ],
+      "sources": [
+        "https://pub.dev/packages/flutter_riverpod",
+        "https://pub.dev/packages/flutter_bloc",
+        "https://pub.dev/packages/formz"
+      ]
+    },
+    "flutter/modulo-4::Tema 2: Riverpod": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Verificado contra pub.dev (riverpod/flutter_riverpod latest 3.4.3) y riverpod.dev/docs/concepts2/providers (contenido real confirmado, no redirect): ref.watch/ref.read, ConsumerWidget y Notifier<T> coinciden con la API vigente de Riverpod 3.x; el tema ya anota explícitamente que la sintaxis de overrides es la misma en versiones anteriores a la 3.",
+      "criticalSubtopics": [
+        "ref.watch vs ref.read",
+        "Notifier<State>",
+        "flutter pub add (sin versión fijada)"
+      ],
+      "sources": [
+        "https://pub.dev/packages/flutter_riverpod",
+        "https://pub.dev/packages/flutter_bloc",
+        "https://pub.dev/packages/formz"
+      ]
+    },
+    "flutter/modulo-4::Tema 3: Bloc/Cubit y otras alternativas": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "flutter_bloc (pub.dev latest 9.1.1) API Cubit/Bloc estable.",
+      "criticalSubtopics": [
+        "Cubit vs Bloc",
+        "criterio de elección vs Riverpod"
+      ],
+      "sources": [
+        "https://pub.dev/packages/flutter_riverpod",
+        "https://pub.dev/packages/flutter_bloc",
+        "https://pub.dev/packages/formz"
+      ]
+    },
+    "flutter/modulo-4::Tema 4: Formularios profesionales con Formz y Riverpod": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Formz (pub.dev latest 0.8.1) + Notifier de Riverpod, ambos verificados.",
+      "criticalSubtopics": [
+        "FormzInput tipado",
+        "Notifier coordinando envío único"
+      ],
+      "sources": [
+        "https://pub.dev/packages/flutter_riverpod",
+        "https://pub.dev/packages/flutter_bloc",
+        "https://pub.dev/packages/formz"
+      ]
+    },
+    "flutter/modulo-4::Tema 5: Inyección de dependencias con Riverpod: reemplazar implementaciones": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "overrides de ProviderScope, mecanismo estable de Riverpod.",
+      "criticalSubtopics": [
+        "ProviderScope overrides para testing"
+      ],
+      "sources": [
+        "https://pub.dev/packages/flutter_riverpod",
+        "https://pub.dev/packages/flutter_bloc",
+        "https://pub.dev/packages/formz"
+      ]
+    },
+    "flutter/modulo-5::Tema 1: http vs dio": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "dio (pub.dev latest 5.11.1) vs http, comparación conceptual sin API frágil.",
+      "criticalSubtopics": [
+        "dio interceptors vs http plano"
+      ],
+      "sources": [
+        "https://pub.dev/packages/dio",
+        "https://pub.dev/packages/json_serializable"
+      ]
+    },
+    "flutter/modulo-5::Tema 2: json_serializable": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "json_serializable (pub.dev latest 6.15.2), build_runner codegen estable.",
+      "criticalSubtopics": [
+        "@JsonSerializable()",
+        "build_runner"
+      ],
+      "sources": [
+        "https://pub.dev/packages/dio",
+        "https://pub.dev/packages/json_serializable"
+      ]
+    },
+    "flutter/modulo-5::Tema 3: Interceptores y estados explícitos": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "dio Interceptor API estable.",
+      "criticalSubtopics": [
+        "Interceptor onRequest/onError"
+      ],
+      "sources": [
+        "https://pub.dev/packages/dio",
+        "https://pub.dev/packages/json_serializable"
+      ]
+    },
+    "flutter/modulo-6::Tema 1: shared_preferences": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Fundamentos de Dart/Flutter estables desde hace varias versiones mayores; sin API frágil ni versión pinneada que verificar.",
+      "criticalSubtopics": [
+        "SharedPreferences.getInstance()"
+      ],
+      "sources": [
+        "https://pub.dev/packages/sqflite",
+        "https://pub.dev/packages/hive"
+      ]
+    },
+    "flutter/modulo-6::Tema 2: sqflite vs Hive": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Verificado contra pub.dev: sqflite latest 2.4.5, hive latest 2.2.3 (ambos activos y vigentes). @HiveType/@HiveField/HiveObject coinciden con la API real de Hive.",
+      "criticalSubtopics": [
+        "@HiveType/@HiveField",
+        "sqflite SQL real vs Hive objeto directo"
+      ],
+      "sources": [
+        "https://pub.dev/packages/sqflite",
+        "https://pub.dev/packages/hive"
+      ]
+    },
+    "flutter/modulo-6::Tema 3: Offline-first y Firebase": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Patrón offline-first (UI lee de caché local reactiva, Stream sobre Hive) demostrado con código real; Firebase se trata correctamente como mención conceptual evaluativa de cierre de módulo, no como demo de código prometida y no entregada -- sin hueco título/contenido.",
+      "criticalSubtopics": [
+        "UI lee siempre de caché local",
+        "sincronización en background separada"
+      ],
+      "sources": [
+        "https://pub.dev/packages/sqflite",
+        "https://pub.dev/packages/hive"
+      ]
+    },
+    "flutter/modulo-6::Tema 4: Restauración de formularios con RestorationMixin y una prueba de recreación": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Fundamentos de Dart/Flutter estables desde hace varias versiones mayores; sin API frágil ni versión pinneada que verificar.",
+      "criticalSubtopics": [
+        "RestorationMixin",
+        "RestorationBucket"
+      ],
+      "sources": [
+        "https://pub.dev/packages/sqflite",
+        "https://pub.dev/packages/hive"
+      ]
+    },
+    "flutter/modulo-7::Tema 1: MethodChannel": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "API núcleo de Flutter extremadamente estable (invokeMethod/setMethodCallHandler/FlutterMethodChannel); verificada contra api.flutter.dev.",
+      "criticalSubtopics": [
+        "MethodChannel bidireccional",
+        "implementación Kotlin + Swift"
+      ],
+      "sources": [
+        "https://docs.flutter.dev/platform-integration/platform-channels"
+      ]
+    },
+    "flutter/modulo-7::Tema 2: Plugins federados": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Fundamentos de Dart/Flutter estables desde hace varias versiones mayores; sin API frágil ni versión pinneada que verificar.",
+      "criticalSubtopics": [
+        "arquitectura de plugin federado (app-facing + platform packages)"
+      ],
+      "sources": [
+        "https://docs.flutter.dev/platform-integration/platform-channels"
+      ]
+    },
+    "flutter/modulo-7::Tema 3: Permisos de plataforma y cuándo escribir un platform channel propio": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Fundamentos de Dart/Flutter estables desde hace varias versiones mayores; sin API frágil ni versión pinneada que verificar.",
+      "criticalSubtopics": [
+        "permission_handler vs platform channel propio"
+      ],
+      "sources": [
+        "https://docs.flutter.dev/platform-integration/platform-channels"
+      ]
+    },
+    "flutter/modulo-7::Tema 4: Cámara, galería y carga multipart de una evidencia": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Fundamentos de Dart/Flutter estables desde hace varias versiones mayores; sin API frágil ni versión pinneada que verificar.",
+      "criticalSubtopics": [
+        "image_picker",
+        "multipart/form-data"
+      ],
+      "sources": [
+        "https://docs.flutter.dev/platform-integration/platform-channels"
+      ]
+    },
+    "flutter/modulo-8::Tema 1: Animaciones implícitas vs explícitas": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Fundamentos de Dart/Flutter estables desde hace varias versiones mayores; sin API frágil ni versión pinneada que verificar.",
+      "criticalSubtopics": [
+        "AnimatedContainer vs AnimationController"
+      ],
+      "sources": [
+        "https://docs.flutter.dev/perf"
+      ]
+    },
+    "flutter/modulo-8::Tema 2: Flutter DevTools y detección de jank": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Fundamentos de Dart/Flutter estables desde hace varias versiones mayores; sin API frágil ni versión pinneada que verificar.",
+      "criticalSubtopics": [
+        "DevTools Performance view",
+        "jank (frames >16ms)"
+      ],
+      "sources": [
+        "https://docs.flutter.dev/perf"
+      ]
+    },
+    "flutter/modulo-8::Tema 3: const widgets, RepaintBoundary y shouldRepaint": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Fundamentos de Dart/Flutter estables desde hace varias versiones mayores; sin API frágil ni versión pinneada que verificar.",
+      "criticalSubtopics": [
+        "const constructor evita rebuild",
+        "RepaintBoundary"
+      ],
+      "sources": [
+        "https://docs.flutter.dev/perf"
+      ]
+    },
+    "flutter/modulo-8::Tema 4: Isolates — trabajo pesado sin congelar la interfaz": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Fundamentos de Dart/Flutter estables desde hace varias versiones mayores; sin API frágil ni versión pinneada que verificar.",
+      "criticalSubtopics": [
+        "compute()",
+        "Isolate.spawn"
+      ],
+      "sources": [
+        "https://docs.flutter.dev/perf"
+      ]
+    },
+    "flutter/modulo-8::Tema 5: CustomPainter: dibujar con Canvas sin repintar de más": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Fundamentos de Dart/Flutter estables desde hace varias versiones mayores; sin API frágil ni versión pinneada que verificar.",
+      "criticalSubtopics": [
+        "CustomPainter.shouldRepaint"
+      ],
+      "sources": [
+        "https://docs.flutter.dev/perf"
+      ]
+    },
+    "flutter/modulo-9::Tema 1: Unit tests y widget tests": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Fundamentos de Dart/Flutter estables desde hace varias versiones mayores; sin API frágil ni versión pinneada que verificar.",
+      "criticalSubtopics": [
+        "testWidgets",
+        "WidgetTester.pump"
+      ],
+      "sources": [
+        "https://pub.dev/packages/mocktail"
+      ]
+    },
+    "flutter/modulo-9::Tema 2: Mocking con mocktail": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "mocktail (pub.dev latest 1.0.5), API estable sin codegen.",
+      "criticalSubtopics": [
+        "mocktail when()/verify()"
+      ],
+      "sources": [
+        "https://pub.dev/packages/mocktail"
+      ]
+    },
+    "flutter/modulo-9::Tema 3: Integration tests": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Fundamentos de Dart/Flutter estables desde hace varias versiones mayores; sin API frágil ni versión pinneada que verificar.",
+      "criticalSubtopics": [
+        "integration_test package"
+      ],
+      "sources": [
+        "https://pub.dev/packages/mocktail"
+      ]
+    },
+    "flutter/modulo-10::Tema 1: ThemeData con Material 3": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Material 3 es el default desde Flutter 3.16, API ThemeData(useMaterial3) estable.",
+      "criticalSubtopics": [
+        "ColorScheme.fromSeed"
+      ],
+      "sources": [
+        "https://docs.flutter.dev/ui/design/material"
+      ]
+    },
+    "flutter/modulo-10::Tema 2: Adaptación Material vs Cupertino": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Fundamentos de Dart/Flutter estables desde hace varias versiones mayores; sin API frágil ni versión pinneada que verificar.",
+      "criticalSubtopics": [
+        "Platform.isIOS para adaptar widgets"
+      ],
+      "sources": [
+        "https://docs.flutter.dev/ui/design/material"
+      ]
+    },
+    "flutter/modulo-10::Tema 3: Accesibilidad con Semantics y dark mode": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Fundamentos de Dart/Flutter estables desde hace varias versiones mayores; sin API frágil ni versión pinneada que verificar.",
+      "criticalSubtopics": [
+        "Semantics widget",
+        "ThemeMode.system"
+      ],
+      "sources": [
+        "https://docs.flutter.dev/ui/design/material"
+      ]
+    },
+    "flutter/modulo-11::Tema 1: Builds de release para cada plataforma": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Fundamentos de Dart/Flutter estables desde hace varias versiones mayores; sin API frágil ni versión pinneada que verificar.",
+      "criticalSubtopics": [
+        "flutter build apk/ipa --release"
+      ],
+      "sources": [
+        "https://docs.flutter.dev/deployment"
+      ]
+    },
+    "flutter/modulo-11::Tema 2: Iconos y splash screens": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Fundamentos de Dart/Flutter estables desde hace varias versiones mayores; sin API frágil ni versión pinneada que verificar.",
+      "criticalSubtopics": [
+        "flutter_launcher_icons",
+        "flutter_native_splash"
+      ],
+      "sources": [
+        "https://docs.flutter.dev/deployment"
+      ]
+    },
+    "flutter/modulo-11::Tema 3: CI/CD con Codemagic o Fastlane": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Herramientas externas (Codemagic/Fastlane) sin dependencia de versión de Flutter específica.",
+      "criticalSubtopics": [
+        "codemagic.yaml",
+        "Fastfile"
+      ],
+      "sources": [
+        "https://docs.flutter.dev/deployment"
+      ]
+    },
+    "flutter/modulo-11::Tema 4: Entornos y flavors con --dart-define-from-file": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "--dart-define-from-file es flag estable del CLI de Flutter.",
+      "criticalSubtopics": [
+        "flavors por plataforma",
+        "--dart-define-from-file"
+      ],
+      "sources": [
+        "https://docs.flutter.dev/deployment"
+      ]
+    },
+    "flutter/modulo-12::Tema 1: Arquitectura por features y Clean Architecture": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Fundamentos de Dart/Flutter estables desde hace varias versiones mayores; sin API frágil ni versión pinneada que verificar.",
+      "criticalSubtopics": [
+        "presentation/application/domain/data"
+      ],
+      "sources": [
+        "https://docs.flutter.dev/app-architecture"
+      ]
+    },
+    "flutter/modulo-12::Tema 2: Uniendo los módulos del track": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Integra patrones ya verificados en módulos anteriores.",
+      "criticalSubtopics": [
+        "integración go_router+Riverpod+dio+Hive"
+      ],
+      "sources": [
+        "https://docs.flutter.dev/app-architecture"
+      ]
+    },
+    "flutter/modulo-12::Tema 3: Cierre del track": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Cierre narrativo; sin código ejecutable nuevo que verificar.",
+      "criticalSubtopics": [
+        "checklist de cierre"
+      ],
+      "sources": [
+        "https://docs.flutter.dev/app-architecture"
+      ]
+    },
+    "flutter/modulo-13::Tema 1: Una API Dart puede terminar en una frontera nativa": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Fundamentos de Dart/Flutter estables desde hace varias versiones mayores; sin API frágil ni versión pinneada que verificar.",
+      "criticalSubtopics": [
+        "frontera Dart/nativo"
+      ],
+      "sources": [
+        "https://docs.flutter.dev/perf"
+      ]
+    },
+    "flutter/modulo-13::Tema 2: Los secretos no pertenecen al binario": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Fundamentos de Dart/Flutter estables desde hace varias versiones mayores; sin API frágil ni versión pinneada que verificar.",
+      "criticalSubtopics": [
+        "--dart-define no es un secreto seguro"
+      ],
+      "sources": [
+        "https://docs.flutter.dev/perf"
+      ]
+    },
+    "flutter/modulo-13::Tema 3: Fluidez se mide contra el presupuesto de cada frame": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Fundamentos de Dart/Flutter estables desde hace varias versiones mayores; sin API frágil ni versión pinneada que verificar.",
+      "criticalSubtopics": [
+        "presupuesto de 16ms/frame"
+      ],
+      "sources": [
+        "https://docs.flutter.dev/perf"
+      ]
+    },
+    "flutter/modulo-13::Tema 4: Producción exige protocolo, telemetría y contención": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Fundamentos de Dart/Flutter estables desde hace varias versiones mayores; sin API frágil ni versión pinneada que verificar.",
+      "criticalSubtopics": [
+        "Sentry/Crashlytics",
+        "contención de errores en producción"
+      ],
+      "sources": [
+        "https://docs.flutter.dev/perf"
+      ]
+    },
+    "flutter/modulo-14::Tema 1: Diseño de pantallas y Riverpod": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Mismo Riverpod ya verificado en Módulo 4.",
+      "criticalSubtopics": [
+        "pantallas RutaFlow con Riverpod"
+      ],
+      "sources": [
+        "https://pub.dev/packages/socket_io_client"
+      ]
+    },
+    "flutter/modulo-14::Tema 2: Google Maps y localización en tiempo real": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Fundamentos de Dart/Flutter estables desde hace varias versiones mayores; sin API frágil ni versión pinneada que verificar.",
+      "criticalSubtopics": [
+        "google_maps_flutter",
+        "geolocator"
+      ],
+      "sources": [
+        "https://pub.dev/packages/socket_io_client"
+      ]
+    },
+    "flutter/modulo-14::Tema 3: Socket.IO y actualización de rutas": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Verificado contra pub.dev: socket_io_client latest 3.1.6, coincide exactamente con el '3.x' citado en el tema; el tema ya distingue correctamente Socket.IO de STOMP (protocolos no intercambiables), consistente con la misma distinción verificada en spring-boot/modulo-14.",
+      "criticalSubtopics": [
+        "socket_io_client 3.x <-> servidor Socket.IO 4.7+",
+        "Socket.IO != STOMP"
+      ],
+      "sources": [
+        "https://pub.dev/packages/socket_io_client"
+      ]
+    },
+    "flutter/modulo-14::Tema 4: Animaciones de localización": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Fundamentos de Dart/Flutter estables desde hace varias versiones mayores; sin API frágil ni versión pinneada que verificar.",
+      "criticalSubtopics": [
+        "interpolación de posición en el mapa"
+      ],
+      "sources": [
+        "https://pub.dev/packages/socket_io_client"
+      ]
+    },
+    "flutter/modulo-14::Tema 5: Almacenamiento local, imágenes y offline": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Mismo patrón offline-first de Hive ya verificado en Módulo 6.",
+      "criticalSubtopics": [
+        "caché local de imágenes/datos de ruta"
+      ],
+      "sources": [
+        "https://pub.dev/packages/socket_io_client"
+      ]
+    },
+    "flutter/modulo-14::Tema 6: Dio y notificaciones push": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Mismo dio ya verificado en Módulo 5; notificaciones push vía FCM conceptual.",
+      "criticalSubtopics": [
+        "dio para la API de RutaFlow",
+        "push notifications"
+      ],
+      "sources": [
+        "https://pub.dev/packages/socket_io_client"
+      ]
+    },
+    "flutter/modulo-15::Tema 1: flutter test y WidgetTester": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Fundamentos de Dart/Flutter estables desde hace varias versiones mayores; sin API frágil ni versión pinneada que verificar.",
+      "criticalSubtopics": [
+        "WidgetTester.pump/pumpAndSettle"
+      ],
+      "sources": [
+        "https://docs.flutter.dev/testing"
+      ]
+    },
+    "flutter/modulo-15::Tema 2: pumpAndSettle, golden e integration tests": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Fundamentos de Dart/Flutter estables desde hace varias versiones mayores; sin API frágil ni versión pinneada que verificar.",
+      "criticalSubtopics": [
+        "golden tests (matchesGoldenFile)"
+      ],
+      "sources": [
+        "https://docs.flutter.dev/testing"
+      ]
+    },
+    "flutter/modulo-15::Tema 3: Rendimiento, RepaintBoundary y Keys": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Mismo mecanismo ya verificado en Módulo 8.",
+      "criticalSubtopics": [
+        "RepaintBoundary + Keys combinados"
+      ],
+      "sources": [
+        "https://docs.flutter.dev/testing"
+      ]
+    },
+    "flutter/modulo-15::Tema 4: Clean Architecture": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Mismo patrón ya verificado en Módulo 12.",
+      "criticalSubtopics": [
+        "capas independientes de framework"
+      ],
+      "sources": [
+        "https://docs.flutter.dev/testing"
+      ]
+    },
+    "flutter/modulo-15::Tema 5: Internacionalización completa": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Fundamentos de Dart/Flutter estables desde hace varias versiones mayores; sin API frágil ni versión pinneada que verificar.",
+      "criticalSubtopics": [
+        "intl + flutter gen-l10n"
+      ],
+      "sources": [
+        "https://docs.flutter.dev/testing"
+      ]
+    },
+    "flutter/modulo-15::Tema 6: Builds, firma y despliegue": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Mismo proceso ya verificado en Módulo 11.",
+      "criticalSubtopics": [
+        "firma Android/iOS",
+        "despliegue a tiendas"
+      ],
+      "sources": [
+        "https://docs.flutter.dev/testing"
+      ]
     }
   }
 }

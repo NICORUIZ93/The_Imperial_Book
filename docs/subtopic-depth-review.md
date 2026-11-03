@@ -3,9 +3,9 @@
 > Las señales automáticas no prueban profundidad ni ausencia de ella. Un tema sólo queda revisado mediante el registro humano con mapa de subtemas críticos, evidencia y fuentes.
 
 - Temas inventariados: 1159
-- Revisados humanamente para subtemas: 273
-- Pendientes: 886
-- Candidatos prioritarios por señales: 845
+- Revisados humanamente para subtemas: 336
+- Pendientes: 823
+- Candidatos prioritarios por señales: 782
 
 ## Cobertura por track
 
@@ -15,7 +15,7 @@
 | angular | 71 | 71 | 0 |
 | cloud | 156 | 0 | 156 |
 | devops | 129 | 0 | 129 |
-| flutter | 63 | 0 | 63 |
+| flutter | 63 | 63 | 0 |
 | foundations | 100 | 0 | 100 |
 | ios | 56 | 0 | 56 |
 | java | 109 | 109 | 0 |
@@ -374,69 +374,6 @@
 - `devops/modulo-9` — Tema 5: SLI, SLO, SLA — lista conceptos clave sin mapa interno verificable
 - `devops/modulo-9` — Tema 6: OpenTelemetry como estándar de instrumentación — lista conceptos clave sin mapa interno verificable
 - `devops/modulo-9` — Tema 7: Métricas DORA — Lead Time, Deployment Frequency, MTTR, Change Failure Rate — lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-0` — Tema 1: Sound null safety — lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-0` — Tema 2: Clases y mixins — título agrupa varios conceptos
-- `flutter/modulo-0` — Tema 3: Futures, async/await y colecciones funcionales — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-0` — Tema 4: Lints y estilo con analysis_options.yaml — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-1` — Tema 1: StatelessWidget vs StatefulWidget — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-1` — Tema 2: Layout con Row, Column y Stack, y ciclo de vida — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-1` — Tema 3: Keys — lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-10` — Tema 1: ThemeData con Material 3 — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-10` — Tema 2: Adaptación Material vs Cupertino — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-10` — Tema 3: Accesibilidad con Semantics y dark mode — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-11` — Tema 1: Builds de release para cada plataforma — lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-11` — Tema 2: Iconos y splash screens — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-11` — Tema 3: CI/CD con Codemagic o Fastlane — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-11` — Tema 4: Entornos y flavors con --dart-define-from-file — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-12` — Tema 1: Arquitectura por features y Clean Architecture — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-12` — Tema 2: Uniendo los módulos del track — lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-12` — Tema 3: Cierre del track — lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-13` — Tema 1: Una API Dart puede terminar en una frontera nativa — lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-13` — Tema 2: Los secretos no pertenecen al binario — lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-13` — Tema 3: Fluidez se mide contra el presupuesto de cada frame — lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-13` — Tema 4: Producción exige protocolo, telemetría y contención — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-14` — Tema 1: Diseño de pantallas y Riverpod — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-14` — Tema 2: Google Maps y localización en tiempo real — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-14` — Tema 3: Socket.IO y actualización de rutas — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-14` — Tema 4: Animaciones de localización — lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-14` — Tema 5: Almacenamiento local, imágenes y offline — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-14` — Tema 6: Dio y notificaciones push — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-15` — Tema 1: flutter test y WidgetTester — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-15` — Tema 2: pumpAndSettle, golden e integration tests — lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-15` — Tema 3: Rendimiento, RepaintBoundary y Keys — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-15` — Tema 4: Clean Architecture — lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-15` — Tema 5: Internacionalización completa — lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-15` — Tema 6: Builds, firma y despliegue — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `flutter/modulo-2` — Tema 1: MediaQuery vs LayoutBuilder — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-2` — Tema 2: Cómo Flutter calcula tamaños — lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-2` — Tema 3: Breakpoints propios y SafeArea — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-3` — Tema 1: go_router: navegación como función de la URL — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-3` — Tema 2: Guards y deep linking — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-3` — Tema 3: Transiciones personalizadas — lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-4` — Tema 1: setState y sus límites — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-4` — Tema 2: Riverpod — lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-4` — Tema 3: Bloc/Cubit y otras alternativas — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-4` — Tema 4: Formularios profesionales con Formz y Riverpod — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-4` — Tema 5: Inyección de dependencias con Riverpod: reemplazar implementaciones — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-5` — Tema 1: http vs dio — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-5` — Tema 2: json_serializable — lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-5` — Tema 3: Interceptores y estados explícitos — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-6` — Tema 1: shared_preferences — lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-6` — Tema 2: sqflite vs Hive — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-6` — Tema 3: Offline-first y Firebase — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-6` — Tema 4: Restauración de formularios con RestorationMixin y una prueba de recreación — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `flutter/modulo-7` — Tema 1: MethodChannel — lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-7` — Tema 2: Plugins federados — lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-7` — Tema 3: Permisos de plataforma y cuándo escribir un platform channel propio — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-7` — Tema 4: Cámara, galería y carga multipart de una evidencia — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-8` — Tema 1: Animaciones implícitas vs explícitas — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-8` — Tema 2: Flutter DevTools y detección de jank — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-8` — Tema 3: const widgets, RepaintBoundary y shouldRepaint — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-8` — Tema 4: Isolates — trabajo pesado sin congelar la interfaz — lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-8` — Tema 5: CustomPainter: dibujar con Canvas sin repintar de más — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-9` — Tema 1: Unit tests y widget tests — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-9` — Tema 2: Mocking con mocktail — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `flutter/modulo-9` — Tema 3: Integration tests — lista conceptos clave sin mapa interno verificable
 - `foundations/modulo-0` — Tema 1: Computador, sistema operativo, programa y proceso · Básico · 90 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `foundations/modulo-0` — Tema 3: Archivos, carpetas y rutas sin perderse — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `foundations/modulo-0` — Tema 5: Primer programa, primer error y primera evidencia — título agrupa varios conceptos; menos de dos encabezados semánticos internos
@@ -947,6 +884,69 @@
 - `angular/modulo-9` — Tema 1: Store propio con signals — signal store casero
 - `angular/modulo-9` — Tema 2: NgRx — actions, reducers y selectors — createReducer; createSelector
 - `angular/modulo-9` — Tema 3: Cuándo NgRx justifica su complejidad — signals vs NgRx: criterio de decisión
+- `flutter/modulo-0` — Tema 1: Sound null safety — tipos nullable explícitos (?); operador !
+- `flutter/modulo-0` — Tema 2: Clases y mixins — mixin con 'with'
+- `flutter/modulo-0` — Tema 3: Futures, async/await y colecciones funcionales — Future/async/await; map/where/fold
+- `flutter/modulo-0` — Tema 4: Lints y estilo con analysis_options.yaml — analysis_options.yaml; package:flutter_lints
+- `flutter/modulo-1` — Tema 1: StatelessWidget vs StatefulWidget — StatelessWidget; StatefulWidget + State
+- `flutter/modulo-1` — Tema 2: Layout con Row, Column y Stack, y ciclo de vida — Row/Column/Stack; initState/dispose
+- `flutter/modulo-1` — Tema 3: Keys — ValueKey/ObjectKey/GlobalKey
+- `flutter/modulo-10` — Tema 1: ThemeData con Material 3 — ColorScheme.fromSeed
+- `flutter/modulo-10` — Tema 2: Adaptación Material vs Cupertino — Platform.isIOS para adaptar widgets
+- `flutter/modulo-10` — Tema 3: Accesibilidad con Semantics y dark mode — Semantics widget; ThemeMode.system
+- `flutter/modulo-11` — Tema 1: Builds de release para cada plataforma — flutter build apk/ipa --release
+- `flutter/modulo-11` — Tema 2: Iconos y splash screens — flutter_launcher_icons; flutter_native_splash
+- `flutter/modulo-11` — Tema 3: CI/CD con Codemagic o Fastlane — codemagic.yaml; Fastfile
+- `flutter/modulo-11` — Tema 4: Entornos y flavors con --dart-define-from-file — flavors por plataforma; --dart-define-from-file
+- `flutter/modulo-12` — Tema 1: Arquitectura por features y Clean Architecture — presentation/application/domain/data
+- `flutter/modulo-12` — Tema 2: Uniendo los módulos del track — integración go_router+Riverpod+dio+Hive
+- `flutter/modulo-12` — Tema 3: Cierre del track — checklist de cierre
+- `flutter/modulo-13` — Tema 1: Una API Dart puede terminar en una frontera nativa — frontera Dart/nativo
+- `flutter/modulo-13` — Tema 2: Los secretos no pertenecen al binario — --dart-define no es un secreto seguro
+- `flutter/modulo-13` — Tema 3: Fluidez se mide contra el presupuesto de cada frame — presupuesto de 16ms/frame
+- `flutter/modulo-13` — Tema 4: Producción exige protocolo, telemetría y contención — Sentry/Crashlytics; contención de errores en producción
+- `flutter/modulo-14` — Tema 1: Diseño de pantallas y Riverpod — pantallas RutaFlow con Riverpod
+- `flutter/modulo-14` — Tema 2: Google Maps y localización en tiempo real — google_maps_flutter; geolocator
+- `flutter/modulo-14` — Tema 3: Socket.IO y actualización de rutas — socket_io_client 3.x <-> servidor Socket.IO 4.7+; Socket.IO != STOMP
+- `flutter/modulo-14` — Tema 4: Animaciones de localización — interpolación de posición en el mapa
+- `flutter/modulo-14` — Tema 5: Almacenamiento local, imágenes y offline — caché local de imágenes/datos de ruta
+- `flutter/modulo-14` — Tema 6: Dio y notificaciones push — dio para la API de RutaFlow; push notifications
+- `flutter/modulo-15` — Tema 1: flutter test y WidgetTester — WidgetTester.pump/pumpAndSettle
+- `flutter/modulo-15` — Tema 2: pumpAndSettle, golden e integration tests — golden tests (matchesGoldenFile)
+- `flutter/modulo-15` — Tema 3: Rendimiento, RepaintBoundary y Keys — RepaintBoundary + Keys combinados
+- `flutter/modulo-15` — Tema 4: Clean Architecture — capas independientes de framework
+- `flutter/modulo-15` — Tema 5: Internacionalización completa — intl + flutter gen-l10n
+- `flutter/modulo-15` — Tema 6: Builds, firma y despliegue — firma Android/iOS; despliegue a tiendas
+- `flutter/modulo-2` — Tema 1: MediaQuery vs LayoutBuilder — MediaQuery.of(context); LayoutBuilder constraints
+- `flutter/modulo-2` — Tema 2: Cómo Flutter calcula tamaños — protocolo de layout de Flutter (constraints down, sizes up)
+- `flutter/modulo-2` — Tema 3: Breakpoints propios y SafeArea — SafeArea; breakpoints responsive propios
+- `flutter/modulo-3` — Tema 1: go_router: navegación como función de la URL — context.go(); Navigator 2.0 declarativo
+- `flutter/modulo-3` — Tema 2: Guards y deep linking — redirect centralizado; rutas hijas heredan protección
+- `flutter/modulo-3` — Tema 3: Transiciones personalizadas — CustomTransitionPage
+- `flutter/modulo-4` — Tema 1: setState y sus límites — setState y su alcance (solo el propio widget)
+- `flutter/modulo-4` — Tema 2: Riverpod — ref.watch vs ref.read; Notifier<State>; flutter pub add (sin versión fijada)
+- `flutter/modulo-4` — Tema 3: Bloc/Cubit y otras alternativas — Cubit vs Bloc; criterio de elección vs Riverpod
+- `flutter/modulo-4` — Tema 4: Formularios profesionales con Formz y Riverpod — FormzInput tipado; Notifier coordinando envío único
+- `flutter/modulo-4` — Tema 5: Inyección de dependencias con Riverpod: reemplazar implementaciones — ProviderScope overrides para testing
+- `flutter/modulo-5` — Tema 1: http vs dio — dio interceptors vs http plano
+- `flutter/modulo-5` — Tema 2: json_serializable — @JsonSerializable(); build_runner
+- `flutter/modulo-5` — Tema 3: Interceptores y estados explícitos — Interceptor onRequest/onError
+- `flutter/modulo-6` — Tema 1: shared_preferences — SharedPreferences.getInstance()
+- `flutter/modulo-6` — Tema 2: sqflite vs Hive — @HiveType/@HiveField; sqflite SQL real vs Hive objeto directo
+- `flutter/modulo-6` — Tema 3: Offline-first y Firebase — UI lee siempre de caché local; sincronización en background separada
+- `flutter/modulo-6` — Tema 4: Restauración de formularios con RestorationMixin y una prueba de recreación — RestorationMixin; RestorationBucket
+- `flutter/modulo-7` — Tema 1: MethodChannel — MethodChannel bidireccional; implementación Kotlin + Swift
+- `flutter/modulo-7` — Tema 2: Plugins federados — arquitectura de plugin federado (app-facing + platform packages)
+- `flutter/modulo-7` — Tema 3: Permisos de plataforma y cuándo escribir un platform channel propio — permission_handler vs platform channel propio
+- `flutter/modulo-7` — Tema 4: Cámara, galería y carga multipart de una evidencia — image_picker; multipart/form-data
+- `flutter/modulo-8` — Tema 1: Animaciones implícitas vs explícitas — AnimatedContainer vs AnimationController
+- `flutter/modulo-8` — Tema 2: Flutter DevTools y detección de jank — DevTools Performance view; jank (frames >16ms)
+- `flutter/modulo-8` — Tema 3: const widgets, RepaintBoundary y shouldRepaint — const constructor evita rebuild; RepaintBoundary
+- `flutter/modulo-8` — Tema 4: Isolates — trabajo pesado sin congelar la interfaz — compute(); Isolate.spawn
+- `flutter/modulo-8` — Tema 5: CustomPainter: dibujar con Canvas sin repintar de más — CustomPainter.shouldRepaint
+- `flutter/modulo-9` — Tema 1: Unit tests y widget tests — testWidgets; WidgetTester.pump
+- `flutter/modulo-9` — Tema 2: Mocking con mocktail — mocktail when()/verify()
+- `flutter/modulo-9` — Tema 3: Integration tests — integration_test package
 - `java/modulo-0` — Tema 0: Instalar Eclipse Temurin JDK 27 en macOS, Windows y Ubuntu · Básico · 15 min — JDK frente a runtime; PATH frente a JAVA_HOME; Version, distribucion y arquitectura
 - `java/modulo-0` — Tema 1: Del código fuente a la JVM · Básico · 35 min — archivo fuente .java y nombre de clase public; compilación con javac y -d; bytecode y formato .class; verificación/interpretación/JIT; major version del class file (71=27, 69=25); JDK de compilación vs runtime; nombre binario, paquete y ruta; ClassNotFoundException vs NoClassDefFoundError; compilación manual vs build tool
 - `java/modulo-0` — Tema 2: public static void main — qué significa cada palabra · Básico · 30 min — firma de método; public (accesible al launcher); static (sin instancia previa); void vs código de salida del proceso; nombre main como contrato; String[] args y String... args; sobrecargas de main; clases anidadas y múltiples entry points; lanzamiento de fuente única; errores de firma
