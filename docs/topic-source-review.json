@@ -5243,7 +5243,7 @@
         "https://martinfowler.com/bliki/DDD_Aggregate.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 1200,
+      "line": 1213,
       "originalProseUrls": [
         "https://martinfowler.com/bliki/DDD_Aggregate.html"
       ],
@@ -5260,7 +5260,7 @@
         "https://docs.temporal.io/develop/java/workflows/basics"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 1412,
+      "line": 1425,
       "originalProseUrls": [
         "https://central.sonatype.com/artifact/io.temporal/temporal-spring-boot-starter",
         "https://docs.temporal.io/design-patterns/saga-pattern",

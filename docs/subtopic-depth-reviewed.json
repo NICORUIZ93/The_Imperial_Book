@@ -2530,6 +2530,123 @@
       "sources": [
         "https://docs.spring.io/spring-framework/reference/web-reactive.html"
       ]
+    },
+    "spring-boot/modulo-10::Tema 1: Config Server y service discovery · Intermedio · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "spring-cloud-config-server, mecanismo sin cambios relevantes a Boot 4.",
+      "criticalSubtopics": [
+        "Config Server",
+        "service discovery"
+      ],
+      "sources": [
+        "https://docs.spring.io/spring-grpc/reference/client.html",
+        "https://docs.temporal.io/develop/java/spring-boot-integration",
+        "https://docs.spring.io/spring-framework/reference/integration/rest-clients.html"
+      ]
+    },
+    "spring-boot/modulo-10::Tema 2: Spring Cloud Gateway · Intermedio · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "cloud-gateway dependency id verificado en metadata de Initializr (sin rename, a diferencia de web).",
+      "criticalSubtopics": [
+        "rutas programáticas",
+        "predicates/filters"
+      ],
+      "sources": [
+        "https://docs.spring.io/spring-grpc/reference/client.html",
+        "https://docs.temporal.io/develop/java/spring-boot-integration",
+        "https://docs.spring.io/spring-framework/reference/integration/rest-clients.html"
+      ]
+    },
+    "spring-boot/modulo-10::Tema 3: Circuit breaker con Resilience4j · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "CircuitBreaker probado de forma aislada sin Spring; API de resilience4j-circuitbreaker estable.",
+      "criticalSubtopics": [
+        "CircuitBreaker standalone",
+        "estados CLOSED/OPEN/HALF_OPEN"
+      ],
+      "sources": [
+        "https://docs.spring.io/spring-grpc/reference/client.html",
+        "https://docs.temporal.io/develop/java/spring-boot-integration",
+        "https://docs.spring.io/spring-framework/reference/integration/rest-clients.html"
+      ]
+    },
+    "spring-boot/modulo-10::Tema 4: OAuth2/OIDC, Keycloak y Token Relay sin perder la frontera de autorización · Avanzado · 50 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "oauth2-resource-server dependency id verificado; mecanismo de Token Relay sin cambios de versión.",
+      "criticalSubtopics": [
+        "oauth2-resource-server",
+        "Token Relay",
+        "frontera de autorización"
+      ],
+      "sources": [
+        "https://docs.spring.io/spring-grpc/reference/client.html",
+        "https://docs.temporal.io/develop/java/spring-boot-integration",
+        "https://docs.spring.io/spring-framework/reference/integration/rest-clients.html"
+      ]
+    },
+    "spring-boot/modulo-10::Tema 5: HTTP Interfaces, deadlines y descubrimiento según el entorno · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "@HttpExchange/@GetExchange, RestClientAdapter, HttpServiceProxyFactory, ClientHttpRequestFactorySettings.withReadTimeout: todas APIs estables de Spring 6/7, sin cambios Boot 4.",
+      "criticalSubtopics": [
+        "@HttpExchange proxy",
+        "withReadTimeout",
+        "ResourceAccessException"
+      ],
+      "sources": [
+        "https://docs.spring.io/spring-grpc/reference/client.html",
+        "https://docs.temporal.io/develop/java/spring-boot-integration",
+        "https://docs.spring.io/spring-framework/reference/integration/rest-clients.html"
+      ]
+    },
+    "spring-boot/modulo-10::Tema 6: Spring gRPC para comunicación interna de alta frecuencia (Spring Boot 4.1) · Avanzado · 50 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Verificado contra la referencia oficial de Spring gRPC (docs.spring.io/spring-grpc/reference/client.html) y el índice Javadoc de org.springframework.grpc.client: NO existe una anotación '@GrpcClient' en el proyecto oficial Spring gRPC (solo en el starter comunitario no-oficial net.devh, un paquete distinto) -- el tema la usaba por error. Corregido: el test ahora usa el patrón oficial confirmado (@Bean manual con GrpcChannelFactory.createChannel(direccion) + @Autowired del stub), documentado explícitamente en la página oficial como alternativa a @ImportGrpcClients. @GrpcService, StreamObserver, spring.grpc.server.port y el resto del tema sí coinciden con el paquete real org.springframework.grpc.server.service.",
+      "criticalSubtopics": [
+        "@GrpcService",
+        "GrpcChannelFactory.createChannel",
+        "identidad de campo por número (protobuf)"
+      ],
+      "sources": [
+        "https://docs.spring.io/spring-grpc/reference/client.html",
+        "https://docs.temporal.io/develop/java/spring-boot-integration",
+        "https://docs.spring.io/spring-framework/reference/integration/rest-clients.html"
+      ]
+    },
+    "spring-boot/modulo-10::Tema 7: DDD para decidir límites y propiedad de datos · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Conceptual (agregados, invariantes, contexto delimitado); sin dependencia de versión de Boot que verificar.",
+      "criticalSubtopics": [
+        "agregado con invariante encapsulada",
+        "propiedad de datos entre servicios"
+      ],
+      "sources": [
+        "https://docs.spring.io/spring-grpc/reference/client.html",
+        "https://docs.temporal.io/develop/java/spring-boot-integration",
+        "https://docs.spring.io/spring-framework/reference/integration/rest-clients.html"
+      ]
+    },
+    "spring-boot/modulo-10::Tema 8: Orquestación de microservicios con Temporal y Spring Boot · Experto · 60 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Verificado contra la documentación oficial de Temporal (docs.temporal.io/develop/java/spring-boot-integration): el atributo correcto de @WorkflowImpl/@ActivityImpl en la versión vigente del starter es 'workers', no 'taskQueues' (terminología de una versión anterior del starter, confirmada por blogs/foros más antiguos pero no por la documentación actual). Corregidas las 8 ocurrencias de taskQueues= en el tema; WorkflowOptions.setTaskQueue(...) del SDK núcleo de Temporal no cambió y se deja intacto. spring.temporal.test-server.enabled y el patrón de auto-discovery por paquete confirmados contra la misma fuente.",
+      "criticalSubtopics": [
+        "@WorkflowImpl(workers=...)",
+        "@ActivityImpl(workers=...)",
+        "Saga.addCompensation",
+        "TestWorkflowEnvironment"
+      ],
+      "sources": [
+        "https://docs.spring.io/spring-grpc/reference/client.html",
+        "https://docs.temporal.io/develop/java/spring-boot-integration",
+        "https://docs.spring.io/spring-framework/reference/integration/rest-clients.html"
+      ]
     }
   }
 }

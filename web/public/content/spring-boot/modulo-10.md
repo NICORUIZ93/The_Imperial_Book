@@ -1034,7 +1034,7 @@ ClientHttpRequestFactorySettings.defaults().____(deadline);
 | `@GrpcService` como bean gestionado | Núcleo | `TarifaServiceImpl extends TarifaServiceGrpc.TarifaServiceImplBase` anotado `@GrpcService` |
 | Auto-configuración de Spring gRPC (Boot 4.1) | Núcleo | `spring.grpc.server.port: 9090`, sin `ServerBuilder` manual de Netty |
 | `StreamObserver` (`onNext` / `onCompleted`) | Núcleo | el servicio emite con `responseObserver.onNext(...)` y cierra con `onCompleted()` |
-| Llamada binaria real cliente-servidor | Núcleo | `@GrpcClient` invoca `calcular(...)` y recibe `monto = 15000` para 10 km |
+| Llamada binaria real cliente-servidor | Núcleo | el stub inyectado por `GrpcChannelFactory` invoca `calcular(...)` y recibe `monto = 15000` para 10 km |
 | Identidad de campo por número, no por nombre | Diagnóstico | el fallo deliberado reusa `= 1` y un cliente viejo lee mal el valor |
 | `reserved` para números retirados | Error frecuente | el ejercicio 3 y los errores comunes: marcar `reserved` evita reusos accidentales |
 | gRPC-Web / terceros que esperan JSON | Decisión | el apartado de límites: gRPC agrega fricción frente a HTTP Interfaces |
@@ -1049,7 +1049,7 @@ Cada fila tiene su explicación individual a continuación.
 
 **`StreamObserver` (`onNext` / `onCompleted`) (Núcleo).** La implementación emite la respuesta con `responseObserver.onNext(TarifaResponse.newBuilder().setMonto(monto).build())` y cierra el RPC con `onCompleted()`. Este par de llamadas es el contrato de una respuesta unaria: `onNext` entrega el mensaje y `onCompleted` señala que no vendrán más, cerrando la llamada.
 
-**Llamada binaria real cliente-servidor (Núcleo).** El test inyecta un stub bloqueante con `@GrpcClient("tarifa-service")` y llama a `calcular(TarifaRequest.newBuilder().setDistanciaKm(10).build())`, recibiendo `TarifaResponse` con `monto = 15000` (10 km × 1500) a través de HTTP/2, sin parseo manual de JSON en ninguno de los dos lados. Confirma que la comunicación binaria funciona de extremo a extremo.
+**Llamada binaria real cliente-servidor (Núcleo).** El test obtiene un stub bloqueante con `GrpcChannelFactory.createChannel("localhost:9090")` (el mecanismo documentado por la referencia oficial de Spring gRPC para crear un canal con nombre o dirección) y llama a `calcular(TarifaRequest.newBuilder().setDistanciaKm(10).build())`, recibiendo `TarifaResponse` con `monto = 15000` (10 km × 1500) a través de HTTP/2, sin parseo manual de JSON en ninguno de los dos lados. Confirma que la comunicación binaria funciona de extremo a extremo.
 
 **Identidad de campo por número, no por nombre (Diagnóstico).** El fallo deliberado quita `distanciaKm = 1` y reusa el número `= 1` para `distanciaMillas`: un cliente viejo compilado contra el contrato anterior interpreta el valor binario de `distanciaMillas` como si fuera `distanciaKm`, produciendo un cálculo silenciosamente incorrecto sin error de compilación ni de red. Según la Pista, protobuf identifica campos por NÚMERO; el nombre es solo legibilidad humana, por lo que renombrar es seguro pero reusar o reordenar un número no lo es.
 
@@ -1131,10 +1131,23 @@ Y un cliente de prueba que invoca el servicio ya arrancado:
 // src/test/java/io/academia/tarifas/TarifaGrpcTest.java
 package io.academia.tarifas;
 
+import org.springframework.grpc.client.GrpcChannelFactory;
+
 @SpringBootTest
 class TarifaGrpcTest {
-    @GrpcClient("tarifa-service")
+    @Autowired
     private TarifaServiceGrpc.TarifaServiceBlockingStub cliente;
+
+    @TestConfiguration
+    static class ClienteDePrueba {
+        @Bean
+        TarifaServiceGrpc.TarifaServiceBlockingStub cliente(GrpcChannelFactory channels) {
+            // crea el canal apuntando al puerto configurado en spring.grpc.server.port;
+            // la referencia oficial documenta este @Bean manual como alternativa
+            // a @ImportGrpcClients cuando el canal no sigue el escaneo por paquete
+            return TarifaServiceGrpc.newBlockingStub(channels.createChannel("localhost:9090"));
+        }
+    }
 
     @Test
     void calculaTarifaPorDistancia() {
@@ -1149,7 +1162,7 @@ class TarifaGrpcTest {
 ./mvnw test -Dtest=TarifaGrpcTest
 ```
 
-**Explicación línea por línea:** el `.proto` define el contrato una sola vez y el plugin lo traduce a clases Java en ambos extremos, de modo que emisor y receptor comparten tipos exactos; `@GrpcService` registra la implementación en el servidor que Spring gRPC levanta en `spring.grpc.server.port`; `responseObserver.onNext(...)` emite la respuesta y `onCompleted()` cierra el RPC; en el test, `@GrpcClient("tarifa-service")` inyecta un stub bloqueante construido desde el canal configurado, y `calcular(...)` es una llamada binaria real que devuelve el mensaje generado.
+**Explicación línea por línea:** el `.proto` define el contrato una sola vez y el plugin lo traduce a clases Java en ambos extremos, de modo que emisor y receptor comparten tipos exactos; `@GrpcService` registra la implementación en el servidor que Spring gRPC levanta en `spring.grpc.server.port`; `responseObserver.onNext(...)` emite la respuesta y `onCompleted()` cierra el RPC; en el test, el `@Bean` que expone `GrpcChannelFactory.createChannel("localhost:9090")` construye un stub bloqueante inyectado por `@Autowired`, y `calcular(...)` es una llamada binaria real que devuelve el mensaje generado.
 
 **Resultado esperado:** el cliente gRPC invoca `TarifaServiceImpl` a través de HTTP/2 usando el stub generado del contrato `.proto`, recibiendo `TarifaResponse` con `monto=15000` para 10 km, sin ningún parseo manual de JSON en ninguno de los dos lados.
 
@@ -1424,7 +1437,7 @@ if (status == JourneyStatus.CLOSED) {
 | Subtema | Papel | Evidencia |
 |---|---|---|
 | Workflow determinista vs Activity con efecto externo | Prerrequisito | `@WorkflowInterface` y `@ActivityInterface` separan orquestación de pasos externos |
-| Misma `taskQueue` en Workflow y Activity | Prerrequisito | `@WorkflowImpl(taskQueues = "pedidos")` y `@ActivityImpl(taskQueues = "pedidos")` |
+| Mismo Worker en Workflow y Activity | Prerrequisito | `@WorkflowImpl(workers = "pedidos")` y `@ActivityImpl(workers = "pedidos")` |
 | Stub de Activities con `RetryOptions` | Núcleo | `Workflow.newActivityStub(...).setRetryOptions(...setMaximumAttempts(3))` |
 | Saga: registrar compensación antes de cada paso | Núcleo | `saga.addCompensation(() -> actividades.liberarInventario(pedidoId))` tras reservar |
 | Compensación en orden inverso ante fallo definitivo | Núcleo | el `catch` llama a `saga.compensate()` y libera repartidor e inventario al revés |
@@ -1436,7 +1449,7 @@ Cada fila tiene su explicación individual a continuación.
 
 **Workflow determinista vs Activity con efecto externo (Prerrequisito).** Temporal separa dos cosas: el Workflow es código de orquestación determinista que decide el orden de los pasos y sobrevive a fallos porque Temporal registra cada decisión en un historial reproducible; las Activities son los pasos que tocan el mundo exterior (una API, una base de datos, un cobro) y por eso pueden fallar. En el demo esto se declara con `@WorkflowInterface`/`@ActivityInterface`, y los errores comunes advierten de no meter efectos externos ni `Thread.sleep` dentro del Workflow.
 
-**Misma `taskQueue` en Workflow y Activity (Prerrequisito).** `@WorkflowImpl(taskQueues = "pedidos")` y `@ActivityImpl(taskQueues = "pedidos")` registran ambos extremos en la misma cola de tareas, que es lo que permite a un Worker local ejecutarlos. El test usa `WorkflowOptions.newBuilder().setTaskQueue("pedidos")` para encolar el workflow en esa misma cola; si no coincidieran, el Worker no recogería las tareas.
+**Mismo Worker en Workflow y Activity (Prerrequisito).** `@WorkflowImpl(workers = "pedidos")` y `@ActivityImpl(workers = "pedidos")` (el atributo `workers` referencia el nombre del Worker o de su Task Queue; `taskQueues` es el nombre usado en versiones anteriores del starter) registran ambos extremos en el mismo Worker, que es lo que permite a un Worker local ejecutarlos. El test usa `WorkflowOptions.newBuilder().setTaskQueue("pedidos")` (API del SDK núcleo de Temporal, sin cambios) para encolar el workflow en esa misma cola; si no coincidieran, el Worker no recogería las tareas.
 
 **Stub de Activities con `RetryOptions` (Núcleo).** `Workflow.newActivityStub(...)` crea el stub con `RetryOptions` de tres intentos (`setMaximumAttempts(3)`), de modo que un fallo transitorio se reintenta automáticamente sin que escribas el bucle de retry. El ejercicio 1 lo contrasta bajando el máximo a 1 (la compensación se dispara al primer fallo) y el ejercicio 3 hace que un paso falle dos veces y triunfe a la tercera, resolviéndose por reintento sin compensar.
 
@@ -1541,7 +1554,7 @@ import io.temporal.workflow.Workflow;
 
 import java.time.Duration;
 
-@WorkflowImpl(taskQueues = "pedidos")
+@WorkflowImpl(workers = "pedidos")
 public class PedidoWorkflowImpl implements PedidoWorkflow {
 
     // Stub de Activities con reintentos automáticos ante fallos transitorios.
@@ -1593,7 +1606,7 @@ import io.temporal.spring.boot.ActivityImpl;
 import org.springframework.stereotype.Component;
 
 @Component
-@ActivityImpl(taskQueues = "pedidos")
+@ActivityImpl(workers = "pedidos")
 public class PedidoActivitiesImpl implements PedidoActivities {
     public String reservarInventario(String p) { return "INV-" + p; }
     public void liberarInventario(String p) { /* revierte la reserva */ }
@@ -1677,7 +1690,7 @@ mvn test -Dtest=PedidoWorkflowTest           # Maven
 ./gradlew test --tests PedidoWorkflowTest    # Gradle (equivalente)
 ```
 
-**Explicación línea por línea:** `@ActivityInterface` y `@WorkflowInterface` separan los pasos con efecto externo de la orquestación; `@WorkflowImpl(taskQueues = "pedidos")` y `@ActivityImpl(taskQueues = "pedidos")` registran ambos extremos en la misma cola de tareas, que es lo que permite a un Worker local ejecutarlos; `Workflow.newActivityStub(...)` crea el stub con `RetryOptions` de tres intentos, de modo que un fallo transitorio se reintenta sin código adicional; `saga.addCompensation(...)` se registra justo después de cada paso exitoso y antes del siguiente; el `catch` llama a `saga.compensate()`, que ejecuta las compensaciones registradas en orden inverso y deja el sistema en el estado previo.
+**Explicación línea por línea:** `@ActivityInterface` y `@WorkflowInterface` separan los pasos con efecto externo de la orquestación; `@WorkflowImpl(workers = "pedidos")` y `@ActivityImpl(workers = "pedidos")` registran ambos extremos en la misma cola de tareas, que es lo que permite a un Worker local ejecutarlos; `Workflow.newActivityStub(...)` crea el stub con `RetryOptions` de tres intentos, de modo que un fallo transitorio se reintenta sin código adicional; `saga.addCompensation(...)` se registra justo después de cada paso exitoso y antes del siguiente; el `catch` llama a `saga.compensate()`, que ejecuta las compensaciones registradas en orden inverso y deja el sistema en el estado previo.
 
 **Resultado esperado:** el test pasa en verde contra el servidor de pruebas embebido de Temporal (en memoria, sin instalar nada): el Workflow ejecuta los cuatro pasos en orden y devuelve `CONFIRMADO ...`. **Fallo deliberado y diagnóstico:** en `PedidoActivitiesImpl.cobrar(...)` lanza siempre una excepción (`throw new RuntimeException("tarjeta rechazada");`). Vuelve a ejecutar el test: tras agotar los 3 reintentos de la Activity `cobrar`, el Workflow entra al `catch`, llama a `saga.compensate()` y ejecuta `liberarRepartidor` y `liberarInventario` **en orden inverso**. Diagnostica confirmando que el estado no queda a medias: lo que se reservó se libera. Es exactamente la garantía que una secuencia de llamadas HTTP sueltas no te da cuando el proceso se cae a mitad de camino.
 

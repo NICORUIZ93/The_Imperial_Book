@@ -1677,7 +1677,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "2fa139b56d6eec69a5e243f924a52bb60023f7bccb5b761449f4e4ea9d05dc26",
+    "fingerprint": "f4c9bd9a12ce2ba92927686336aaf30e65c182604162bf817342ac39ce7342d0",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
@@ -9275,7 +9275,7 @@
         "module": 10,
         "tailWords": 335,
         "topic": "Tema 6: Spring gRPC para comunicación interna de alta frecuencia (Spring Boot 4.1) · Avanzado · 50 min",
-        "words": 2002
+        "words": 2081
       },
       {
         "issues": [],
@@ -9289,7 +9289,7 @@
         "module": 10,
         "tailWords": 411,
         "topic": "Tema 8: Orquestación de microservicios con Temporal y Spring Boot · Experto · 60 min",
-        "words": 2851
+        "words": 2880
       },
       {
         "issues": [],
