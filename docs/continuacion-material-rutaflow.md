@@ -35,3 +35,25 @@ framework y una frontera explícita para JPA/H2.
 - `./scripts/validate.sh` correcto, con las cuatro omisiones PostgreSQL ya documentadas. El nuevo control comprueba origen y coincidencia de código, sin declarar todos los temas ejecutados. Los reportes mantienen los marcadores no detectados; no se relajaron para poner este lote en verde.
 
 La verificación por tema vive en `examples/rutaflow-material/verification.json`. Quedan separadas la prueba técnica, la cobertura de una referencia y la revisión pedagógica con personas principiantes.
+
+## Revisión de continuación — 2026-11-03
+
+Se revisó el prompt maestro recibido como material de referencia y se documentaron
+sus contradicciones, diferencias de conteo y verificaciones citadas que no existen
+en el repositorio en [revision-prompt-academia.md](revision-prompt-academia.md).
+El inventario vigente es 14 rutas, 241 módulos y 1.084 temas; el control
+`validate_requested_master_topics.py` cubre 75 filas en 12 rutas y no demuestra
+la meta de 1.800 ni la cobertura de todos los cursos.
+
+La inspección visual de escritorio encontró que la barra de progreso atravesaba
+el contenido al desplazarse. Se ajustó al borde superior. Se retiraron seis
+binarios Java generados y `clean-architecture/test.sh` ahora compila en una
+carpeta temporal. Las pruebas Node y Java de esos ejemplos habían pasado antes
+de esta anotación.
+
+En esta continuación, Chrome fue cerrado por el entorno antes de completar la
+prueba E2E; no se cuenta como validación E2E. La ejecución anterior de 42 pruebas
+indicada arriba corresponde a la sesión anterior y no valida el cambio CSS de
+esta fecha. La compilación y las pruebas unitarias actuales quedan sujetas al
+resultado del cierre de esta revisión. No se verificó en esta sesión un viewport
+móvil con navegador.
