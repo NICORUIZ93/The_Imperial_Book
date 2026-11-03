@@ -146,19 +146,19 @@
       "prerequisites": 91,
       "context": 91,
       "theoryAnalogy": 91,
-      "guidedDemo": 90,
+      "guidedDemo": 89,
       "codeExplanation": 91,
       "execution": 91,
       "expectedResult": 91,
-      "deliberateFailure": 91,
+      "deliberateFailure": 90,
       "guidedPractice": 91,
       "independentPractice": 91,
       "closure": 91,
       "commonErrors": 91,
       "resources": 91,
-      "standaloneExample": 91,
+      "standaloneExample": 89,
       "learningEvidence": 91,
-      "complete": 90
+      "complete": 88
     },
     "javascript": {
       "topics": 88,
@@ -18437,12 +18437,12 @@
           "closure": true,
           "commonErrors": true,
           "resources": true,
-          "standaloneExample": true,
+          "standaloneExample": false,
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 15,
+          "complete": false
         }
       },
       {
@@ -18453,22 +18453,22 @@
           "prerequisites": true,
           "context": true,
           "theoryAnalogy": true,
-          "guidedDemo": true,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
-          "deliberateFailure": true,
+          "deliberateFailure": false,
           "guidedPractice": true,
           "independentPractice": true,
           "closure": true,
           "commonErrors": true,
           "resources": true,
-          "standaloneExample": true,
+          "standaloneExample": false,
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 13,
+          "complete": false
         }
       },
       {

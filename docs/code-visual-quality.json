@@ -87,7 +87,7 @@
     "java": {
       "topics": 91,
       "code": 91,
-      "commentedCode": 60,
+      "commentedCode": 59,
       "mermaid": 33,
       "archifyVisual": 3,
       "asciiVisual": 0,
@@ -1945,6 +1945,13 @@
       "track": "java",
       "module": 15,
       "topic": "Tema 2: Gradle y builds reproducibles",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 16,
+      "topic": "Tema 2: FetchType.LAZY, EAGER y el problema N+1",
       "missingCode": false,
       "missingComments": true
     },

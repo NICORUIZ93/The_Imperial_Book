@@ -1695,7 +1695,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "142c62a79ec798eee8df4ee714c7dcd57bb0ba984618e42b27e08ebcb9fcdf8e",
+    "fingerprint": "c707e482ebff9c8f2eafa12ec3627dd45ad3364ddf3e160bef68a18eca7da4f5",
     "issues": {
       "andamiaje-generico": 128,
       "bloque-repetido": 218,
@@ -7462,14 +7462,14 @@
         "module": 16,
         "tailWords": 198,
         "topic": "Tema 1: Entidades y relaciones JPA",
-        "words": 885
+        "words": 865
       },
       {
         "issues": [],
         "module": 16,
         "tailWords": 220,
         "topic": "Tema 2: FetchType.LAZY, EAGER y el problema N+1",
-        "words": 899
+        "words": 832
       },
       {
         "issues": [],

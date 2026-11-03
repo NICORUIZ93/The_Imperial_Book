@@ -40,9 +40,9 @@ Los conteos comparan elementos con duración enumerados en el prompt con encabez
 | Callbacks del ciclo de vida | Parcial | Se incorporan `@PrePersist` y `@PostLoad` en prácticas; falta el test completo con implementación entregada. |
 | `EntityManager`, contexto de persistencia y `flush` | Cubierto a nivel de lección | Se distinguen `persist`, `flush`, `clear`, commit y entidad administrada; ejecutar la prueba queda pendiente. |
 | JPQL | Cubierto a nivel de lección | Hay consulta tipada y filtros parametrizados; la consulta de ejemplo aún necesita implementarse en el laboratorio. |
-| Criteria API y Querydsl | Parcial | Criteria tiene código de predicados; Querydsl se plantea como práctica comparativa, sin configuración de generación ni salida lista. |
-| `LAZY`, `EAGER` y N+1 | Cubierto | Se comparan consultas y se explica que EAGER no garantiza un JOIN. |
-| `@EntityGraph` | Parcial | Se especifican ruta, anotación y prueba a crear; falta código completo del repositorio y medición ejecutada. |
+| Criteria API y Querydsl | Parcial | Criteria API ahora se ejecuta en `examples/java-jpa-lab`; Querydsl sigue como práctica sin configuración ni salida ejecutable. |
+| `LAZY`, `EAGER` y N+1 | Cubierto con alcance acotado | El laboratorio mide N+1 y lo compara con `@EntityGraph` en H2; no cubre todas las estrategias ni bases reales. |
+| `@EntityGraph` | Cubierto en el laboratorio | Repositorio y test ejecutables en H2; caché de segundo nivel sigue pendiente. |
 | Caché de primer y segundo nivel | Parcial | Se explica el contexto L1 y los límites de L2; no se incluye configuración concreta de proveedor ni test L2. |
 | Bloqueo optimista y pesimista | Parcial | Se propone `@Version`, `@Lock` y diagnóstico de conflicto; la prueba concurrente está descrita pero no implementada en el repositorio. |
 | Transacciones y propagación | Parcial | Se explica `REQUIRED`/`REQUIRES_NEW` y límite del proxy; falta una prueba ejecutada de rollback/commit. |

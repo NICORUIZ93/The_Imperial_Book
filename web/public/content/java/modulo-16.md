@@ -63,13 +63,11 @@ public class Cliente {
 }
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+El laboratorio completo está en `examples/java-jpa-lab/`. Ahí están estas dos clases y un test que puedes ejecutar sin copiar piezas a un proyecto vacío:
 
 ```bash
-# Maven
-mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-cd app && mvn test
-# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
+cd examples/java-jpa-lab
+./mvnw -q -Dtest=PedidoJpaLabTest#guardaLosDosLadosYConsultaPorClienteConJpql test
 ```
 
 
@@ -98,7 +96,7 @@ public class Pedido {
 }
 ```
 
-Un test `@DataJpaTest` debe crear un `Cliente`, llamar dos veces a `agregar(new Pedido(...))`, guardarlo con `EntityManager.persist(cliente)` y confirmar que se recuperan dos pedidos. Ejecuta `./mvnw test`.
+El test `PedidoJpaLabTest#guardaLosDosLadosYConsultaPorClienteConJpql` crea un cliente, agrega dos pedidos y vuelve a leerlos desde H2. `./mvnw` descarga Maven local para este proyecto; no necesitas instalarlo globalmente.
 
 **Resultado esperado:** el test termina en verde y la fila de `pedido` contiene `cliente_id`. **Fallo deliberado:** quita `pedido.asignarCliente(this)` y vuelve a probar. La asociación propietaria queda sin cliente; diagnostica inspeccionando la clave foránea, no solo la colección Java.
 
@@ -146,34 +144,27 @@ La estrategia de mapeo es el valor por defecto, no un plan de consulta universal
 **Analogía:** `LAZY` es pedir el menú y traer cada plato solo cuando lo pides; `EAGER` es que te traigan todo de golpe. El problema N+1 es pedir la lista de comensales (1 consulta) y luego preguntar el plato de cada uno por separado (N consultas): muchos viajes a la cocina por no pedir todo junto.
 #### Paso 4 · Demostración guiada
 
-En `src/test/java/academia/pedidos/ConsultasPedidoTest.java`, persiste diez clientes con pedidos. Limpia el contexto antes de medir para evitar que la caché de primer nivel oculte consultas:
+Abre `examples/java-jpa-lab/src/test/java/academia/pedidos/PedidoJpaLabTest.java`. El test `comparaNMasUnoConCargaPorEntityGraph` guarda tres clientes. Limpia el contexto antes de medir para que la caché de primer nivel no esconda consultas:
 
 ```java
 entityManager.flush();
 entityManager.clear();
 statistics.clear();
 
-List<Cliente> clientes = entityManager.createQuery(
-    "select c from Cliente c", Cliente.class
-).getResultList();
-clientes.forEach(c -> c.getPedidos().size());
+List<Pedido> filas = pedidos.findAll();
+filas.forEach(p -> p.getCliente().getNombre());
 
 System.out.println("Consultas: " + statistics.getPrepareStatementCount());
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+El test ya compara esa consulta con otra que carga `cliente` mediante `@EntityGraph`:
 
 ```bash
-# Maven
-mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-cd app && mvn test
-# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
+cd examples/java-jpa-lab
+./mvnw -q -Dtest=PedidoJpaLabTest#comparaNMasUnoConCargaPorEntityGraph test
 ```
 
-
-Activa `hibernate.generate_statistics=true` en la configuración de test y obtiene `Statistics` desde `SessionFactory`. Ejecuta `./mvnw test -Dtest=ConsultasPedidoTest`.
-
-**Resultado esperado:** el primer recorrido suele revelar una consulta de clientes y consultas adicionales por asociación. Los números exactos dependen de la versión y del caché; compara con el mismo conjunto de datos y contexto limpio. **Fallo deliberado:** elimina `entityManager.clear()`; explica por qué una sesión ya poblada puede hacer que el contador parezca mejor de lo que es.
+`application.properties` activa las estadísticas de Hibernate. **Resultado esperado:** tres pedidos con tres clientes producen más consultas que la variante `@EntityGraph`, que debe quedar en una. El test falla si quitas el `clear()` o cambias la consulta de forma que vuelva a cargar clientes por separado.
 
 #### Paso 5 · Práctica guiada
 

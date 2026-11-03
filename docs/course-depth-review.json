@@ -7848,7 +7848,7 @@
       "module": 16,
       "title": "Tema 2: FetchType.LAZY, EAGER y el problema N+1",
       "file": "web/public/content/java/modulo-16.md",
-      "line": 131,
+      "line": 129,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7859,7 +7859,7 @@
       "module": 16,
       "title": "Tema 3: Relaciones uno a uno, muchos a muchos y herencia",
       "file": "web/public/content/java/modulo-16.md",
-      "line": 211,
+      "line": 202,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7870,7 +7870,7 @@
       "module": 16,
       "title": "Tema 4: Ciclo de vida, EntityManager y consultas tipadas",
       "file": "web/public/content/java/modulo-16.md",
-      "line": 270,
+      "line": 261,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -7883,7 +7883,7 @@
       "module": 16,
       "title": "Tema 5: Búsquedas dinámicas con Criteria y Querydsl",
       "file": "web/public/content/java/modulo-16.md",
-      "line": 329,
+      "line": 320,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -7896,7 +7896,7 @@
       "module": 16,
       "title": "Tema 6: EntityGraph y cachés de persistencia",
       "file": "web/public/content/java/modulo-16.md",
-      "line": 392,
+      "line": 383,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7907,7 +7907,7 @@
       "module": 16,
       "title": "Tema 7: Concurrencia, transacciones y propagación",
       "file": "web/public/content/java/modulo-16.md",
-      "line": 444,
+      "line": 435,
       "signals": [
         "ejemplo-breve-revisar-contexto",
         "clase-java-no-visible"
@@ -7921,7 +7921,7 @@
       "module": 16,
       "title": "Tema 8: Migraciones y pruebas JPA con Testcontainers",
       "file": "web/public/content/java/modulo-16.md",
-      "line": 503,
+      "line": 494,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

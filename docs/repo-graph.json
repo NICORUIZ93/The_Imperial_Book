@@ -560,7 +560,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3241,
+      "lines": 3248,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -9354,7 +9354,7 @@
     },
     {
       "path": "web/public/content/java/modulo-16.md",
-      "lines": 562,
+      "lines": 553,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9367,10 +9367,10 @@
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda y modelo mental",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
-        "# Maven",
-        "# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente"
+        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
+        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "### Tema 2: FetchType.LAZY, EAGER y el problema N+1"
       ]
     },
     {
@@ -11387,6 +11387,69 @@
         "#### Paso 7 \u00b7 Cierre y evidencia",
         "### Tema 2: C4: contexto, contenedores, componentes y c\u00f3digo",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+      ]
+    },
+    {
+      "path": "web/public/content/spring-boot/modulo-23.md",
+      "lines": 330,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 23: Spring Modulith y l\u00edmites del monolito modular",
+        "## Aprende construyendo",
+        "### Tema 1: m\u00f3dulos y l\u00edmites entre paquetes",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
+        "#### Paso 2 \u00b7 Contexto y caso real",
+        "#### \u00bfPor qu\u00e9 es importante?",
+        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
+        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
+        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
+        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "### Tema 2: eventos entre m\u00f3dulos sin importar implementaci\u00f3n"
+      ]
+    },
+    {
+      "path": "web/public/content/spring-boot/modulo-24.md",
+      "lines": 315,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 24: Spring GraphQL para pedidos y entregas",
+        "## Aprende construyendo",
+        "### Tema 1: schema-first con tipos y consultas",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
+        "#### Paso 2 \u00b7 Contexto y caso real",
+        "#### \u00bfPor qu\u00e9 es importante?",
+        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
+        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
+        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
+        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "### Tema 2: data fetchers, relaciones y problema N+1"
+      ]
+    },
+    {
+      "path": "web/public/content/spring-boot/modulo-25.md",
+      "lines": 280,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 25: Spring Cloud Stream con Kafka y RabbitMQ",
+        "## Aprende construyendo",
+        "### Tema 1: bindings y destinations",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
+        "#### Paso 2 \u00b7 Contexto y caso real",
+        "#### \u00bfPor qu\u00e9 es importante?",
+        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
+        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
+        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
+        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "### Tema 2: binder Kafka y binder RabbitMQ"
       ]
     },
     {
