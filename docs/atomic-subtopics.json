@@ -93,10 +93,10 @@
     },
     "spring-boot": {
       "topics": 111,
-      "completeTopics": 9,
-      "topicsWith3to6Subtopics": 9,
-      "subtopics": 27,
-      "completeSubtopics": 27
+      "completeTopics": 10,
+      "topicsWith3to6Subtopics": 10,
+      "subtopics": 30,
+      "completeSubtopics": 30
     }
   },
   "topics": {
@@ -9365,9 +9365,52 @@
       {
         "module": 8,
         "topic": "### Tema 2: Dead-letter queue",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "2.1",
+            "title": "#### Subtema 2.1: Configura reintentos limitados y DLT · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "2.2",
+            "title": "#### Subtema 2.2: Provoca un mensaje inválido y comprueba los intentos · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "2.3",
+            "title": "#### Subtema 2.3: Ajusta la política y atiende los mensajes recuperados · 15 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 8,

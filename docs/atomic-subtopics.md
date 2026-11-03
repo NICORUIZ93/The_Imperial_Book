@@ -2,7 +2,7 @@
 
 > Auditoría estructural. Un encabezado o criterio detectado no demuestra que el ejemplo se haya ejecutado ni que la explicación sea pedagógicamente suficiente.
 
-Temas conformes a cuatro pasos: **22/1185**. Tracks inventariados: **14**.
+Temas conformes a cuatro pasos: **23/1185**. Tracks inventariados: **14**.
 
 | Track | Temas conformes | Temas inventariados | Subtemas detectados | Subtemas con estructura completa |
 |---|---:|---:|---:|---:|
@@ -19,7 +19,7 @@ Temas conformes a cuatro pasos: **22/1185**. Tracks inventariados: **14**.
 | node | 2 | 83 | 6 | 6 |
 | react | 0 | 58 | 0 | 0 |
 | rutaflow | 0 | 29 | 0 | 0 |
-| spring-boot | 9 | 111 | 27 | 27 |
+| spring-boot | 10 | 111 | 30 | 30 |
 
 ## Temas pendientes
 
@@ -1216,7 +1216,6 @@ Temas conformes a cuatro pasos: **22/1185**. Tracks inventariados: **14**.
 - M7 ### Tema 1: Actuator y health checks personalizados: tiene 0 subtemas
 - M7 ### Tema 2: Métricas de negocio con Micrometer: tiene 0 subtemas
 - M7 ### Tema 3: Liveness vs readiness: tiene 0 subtemas
-- M8 ### Tema 2: Dead-letter queue: tiene 0 subtemas
 - M8 ### Tema 3: Productor idempotente y transacciones (exactly-once): tiene 0 subtemas
 - M8 ### Tema 4: Rebalanceo de consumer groups y partition assignment: tiene 0 subtemas
 - M8 ### Tema 5: Kafka frente a RabbitMQ: tiene 0 subtemas

@@ -1695,7 +1695,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "e6ed3c27cea8adad84fa4a6568ef44f8a6ee3fa1dadc558757c7f3ac75e0ff27",
+    "fingerprint": "069ff840bd223866a1b7edf679ba2c74fd9fbd2943947755b6e362f9124e4a68",
     "issues": {
       "andamiaje-generico": 125,
       "bloque-repetido": 210,
@@ -11126,14 +11126,14 @@
         "module": 8,
         "tailWords": 0,
         "topic": "Tema 1: Producers y consumers con Spring Kafka",
-        "words": 874
+        "words": 960
       },
       {
         "issues": [],
         "module": 8,
-        "tailWords": 202,
+        "tailWords": 0,
         "topic": "Tema 2: Dead-letter queue",
-        "words": 1373
+        "words": 830
       },
       {
         "issues": [],

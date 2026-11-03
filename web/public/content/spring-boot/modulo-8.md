@@ -24,6 +24,26 @@ Abre el archivo completo examples/spring-kafka-rutaflow/src/main/java/academia/r
 return kafka.send(TOPIC, evento.envioId().toString(), evento);
 ```
 
+En examples/spring-kafka-rutaflow/src/main/resources/application.yml, revisa los serializers y deserializers JSON que permiten escribir y leer EnvioCreado:
+
+```yaml
+spring:
+  kafka:
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      properties:
+        enable.idempotence: true
+    consumer:
+      group-id: rutaflow-ruteo
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.value.default.type: academia.rutaflow.event.EnvioCreado
+        spring.json.trusted.packages: academia.rutaflow.event
+```
+
 Desde examples/spring-kafka-rutaflow/, ejecuta la prueba de integración:
 
 ```bash
@@ -104,181 +124,99 @@ Entrega los resultados de ambas pruebas y describe qué esperarías si publicara
 
 ### Tema 2: Dead-letter queue
 
-#### Paso 1 · Objetivo y preparación
+**Duración estimada:** 35 min.
+**¿Por qué es importante?** Si el consumidor rechaza un mensaje cada vez, los reintentos deben tener un límite y el mensaje requiere un destino donde el equipo pueda investigarlo.
+**Prerrequisitos:** M8 T1. Proyecto continuo: apartar eventos de envío que no pasan la validación del listener.
+**Laboratorio:** examples/spring-kafka-rutaflow/. Trabaja en la copia spring-kafka-practice que preparaste en el Tema 1.
 
-Al finalizar podrás configurar reintentos limitados y una dead-letter queue para mensajes que fallan repetidamente, confirmando con un broker real que el mensaje problemático termina exactamente ahí, sin bloquear los mensajes siguientes.
+#### Subtema 2.1: Configura reintentos limitados y DLT · 10 min
 
-**Conocimiento previo:** Tema 1 de este módulo.
+**1. Contexto**
+Kafka no crea una dead-letter queue de aplicación automáticamente. El consumidor necesita un manejador que decida cuántos intentos hacer y dónde recuperar el registro que sigue fallando.
 
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** Un mensaje con un payload corrupto o una condición que el consumidor no puede manejar no debería bloquear indefinidamente el procesamiento de todos los mensajes válidos que llegan después de él en la misma partición.
-
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** reintentos limitados, destino final para mensajes que fallan repetidamente.
+**2. Hazlo tú**
+Abre examples/spring-kafka-rutaflow/src/main/java/academia/rutaflow/KafkaLabConfiguration.java y estudia el bean completo errorHandler:
 
 ```java
 @Bean
-DefaultErrorHandler errorHandler(KafkaTemplate<Object, Object> template) {
-    var recoverer = new DeadLetterPublishingRecoverer(template);
-    return new DefaultErrorHandler(recoverer, new FixedBackOff(1000L, 3));
+DefaultErrorHandler errorHandler(KafkaTemplate<Object, Object> kafka) {
+    var recoverer = new DeadLetterPublishingRecoverer(kafka);
+    return new DefaultErrorHandler(recoverer, new FixedBackOff(100L, 2));
 }
 ```
 
-Este bean configura reintentos limitados (3, con 1 segundo entre cada uno); si todos fallan, el mensaje se redirige automáticamente a una dead-letter queue (por convención, el mismo nombre del topic original con el sufijo `.DLT`), en vez de perderse silenciosamente o bloquear los mensajes siguientes.
-
-**Analogía:** una dead-letter queue es una bandeja separada de correspondencia no entregable en una oficina de correos, donde las cartas que no pudieron entregarse tras varios intentos se archivan para investigación manual, en vez de bloquear indefinidamente el resto de la correspondencia normal.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-  A[mensaje llega al consumidor] --> B{"¿procesa exitosamente?"}
-  B -->|sí| C[continúa con el siguiente mensaje]
-  B -->|no, reintento 1/2/3| B
-  B -->|agotados los 3 reintentos| D["publicado en tareas.creadas.DLT"]
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Reutiliza `academia-spring` (o créalo desde una carpeta vacía con `mkdir -p academia-spring` si es tu primera vez) y crea la configuración de manejo de errores en `src/main/java/com/academia/mensajeria/`:
+Comprueba que la misma configuración declara el topic original y el topic terminado en -dlt. Desde la raíz del laboratorio ejecuta:
 
 ```bash
-mkdir -p academia-spring/src/main/java/com/academia/mensajeria
-cd academia-spring
+./mvnw -Dtest=EnvioEventPublisherTest#reintentaYPublicaEnDltCuandoLaKeyNoCoincide test
 ```
 
-```java
-// src/main/java/com/academia/mensajeria/KafkaErrorConfig.java
-package com.academia.mensajeria;
+**Resultado esperado:** Maven termina con BUILD SUCCESS y la prueba encuentra el evento fallido en rutaflow.envio.creado-dlt.
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.listener.DeadLetterPublishingRecoverer;
-import org.springframework.kafka.listener.DefaultErrorHandler;
-import org.springframework.util.backoff.FixedBackOff;
+**Fallo deliberado:** comenta el bean errorHandler en la copia del laboratorio y vuelve a ejecutar. **Error esperado:** la prueba no encuentra el registro en la DLT y vence su espera. **Diagnóstico:** sin recoverer configurado no hay una regla que publique el registro fallido en el destino esperado.
 
-@Configuration
-public class KafkaErrorConfig {
+**3. Entiende**
+DefaultErrorHandler coordina fallos del listener y FixedBackOff define el intervalo y el máximo de reintentos. DeadLetterPublishingRecoverer publica el registro recuperado en otro topic.
 
-    @Bean
-    DefaultErrorHandler errorHandler(KafkaTemplate<Object, Object> template) {
-        var recoverer = new DeadLetterPublishingRecoverer(template);
-        return new DefaultErrorHandler(recoverer, new FixedBackOff(100L, 2)); // 2 reintentos rápidos para el test
-    }
-}
-```
+**4. Cierra**
+Señala dónde se crea el topic original, dónde se crea el DLT y qué bean conecta el fallo con la recuperación.
 
-```java
-// src/main/java/com/academia/mensajeria/ListenerConFalloDeliberado.java
-package com.academia.mensajeria;
+#### Subtema 2.2: Provoca un mensaje inválido y comprueba los intentos · 10 min
 
-import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.stereotype.Component;
+**1. Contexto**
+Una clave que no coincide con el envío hace que el listener falle siempre. Ese error repetible permite observar cada reintento y comprobar que el mensaje no desaparece.
 
-@Component
-public class ListenerConFalloDeliberado {
-
-    @KafkaListener(topics = "pedidos.procesar", groupId = "procesador")
-    public void procesar(String payload) {
-        if (payload.equals("payload-invalido")) {
-            throw new IllegalArgumentException("no se puede procesar: " + payload);
-        }
-        // procesamiento normal para cualquier otro payload
-    }
-}
-```
-
-**Explicación línea por línea:** `FixedBackOff(100L, 2)` declara 2 reintentos con 100ms entre cada uno (valores reducidos deliberadamente para que el test corra rápido); `ListenerConFalloDeliberado.procesar` lanza una excepción real de forma controlada para un payload específico, simulando un mensaje que el consumidor genuinamente no puede procesar; `DeadLetterPublishingRecoverer` intercepta esa excepción después de agotados los reintentos y republica el mensaje original en `pedidos.procesar.DLT`.
-
-Confirma con `@EmbeddedKafka` que el mensaje inválido termina en la DLQ tras agotar los reintentos, mientras un mensaje válido posterior se procesa normalmente sin bloquearse:
-
-```java
-// src/test/java/com/academia/mensajeria/DeadLetterQueueTest.java
-package com.academia.mensajeria;
-
-import org.apache.kafka.clients.consumer.Consumer;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.test.EmbeddedKafkaBroker;
-import org.springframework.kafka.test.context.EmbeddedKafka;
-import org.springframework.kafka.test.utils.KafkaTestUtils;
-import org.springframework.test.context.TestPropertySource;
-
-import java.time.Duration;
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-@SpringBootTest
-@EmbeddedKafka(partitions = 1, topics = {"pedidos.procesar", "pedidos.procesar.DLT"})
-@TestPropertySource(properties = "spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}")
-class DeadLetterQueueTest {
-
-    @Autowired
-    private KafkaTemplate<String, String> kafkaTemplate;
-    @Autowired
-    private EmbeddedKafkaBroker embeddedKafkaBroker;
-
-    @Test
-    void unMensajeInvalidoTerminaEnLaDeadLetterQueue() {
-        kafkaTemplate.send("pedidos.procesar", "payload-invalido");
-
-        Map<String, Object> configs = KafkaTestUtils.consumerProps("grupo-verificacion-dlq", "true", embeddedKafkaBroker);
-        try (Consumer<String, String> consumidorDlq = new org.apache.kafka.clients.consumer.KafkaConsumer<>(
-                configs, new org.apache.kafka.common.serialization.StringDeserializer(), new org.apache.kafka.common.serialization.StringDeserializer())) {
-            embeddedKafkaBroker.consumeFromAnEmbeddedTopic(consumidorDlq, "pedidos.procesar.DLT");
-
-            ConsumerRecord<String, String> registroEnDlq = KafkaTestUtils.getSingleRecord(consumidorDlq, "pedidos.procesar.DLT", Duration.ofSeconds(10));
-
-            assertThat(registroEnDlq.value()).isEqualTo("payload-invalido");
-        }
-    }
-}
-```
+**2. Hazlo tú**
+Abre examples/spring-kafka-rutaflow/src/test/java/academia/rutaflow/event/EnvioEventPublisherTest.java y ejecuta el test reintentaYPublicaEnDltCuandoLaKeyNoCoincide:
 
 ```bash
-mvn test -Dtest=DeadLetterQueueTest # Maven
-./gradlew test --tests DeadLetterQueueTest # Gradle (equivalente)
+./mvnw -Dtest=EnvioEventPublisherTest#reintentaYPublicaEnDltCuandoLaKeyNoCoincide test
 ```
 
-**Resultado esperado:** `BUILD SUCCESS` con el test en verde: el mensaje `"payload-invalido"` se reintenta 2 veces (falla ambas), y `DeadLetterPublishingRecoverer` lo republica automáticamente en `pedidos.procesar.DLT`, donde el consumidor de verificación del test lo lee directamente desde ese topic real — confirmando que el mensaje problemático quedó aislado y trazable, no perdido.
+Localiza en la prueba el envío con key incorrecta, la espera por tres intentos y la lectura desde el topic DLT.
 
-**Fallo deliberado:** quita el `@Bean errorHandler` completo de `KafkaErrorConfig` (dejando el manejo de errores por defecto de Spring Kafka, sin DLQ configurada) y ejecuta de nuevo el test. El test FALLA con timeout en `KafkaTestUtils.getSingleRecord(...)` porque ningún mensaje llega a `pedidos.procesar.DLT` — sin el `errorHandler` explícito, el mensaje fallido se reintenta indefinidamente con la política por defecto, o se descarta según la configuración implícita, pero en cualquier caso NUNCA llega a la DLQ que el test espera — diagnostica confirmando que la dead-letter queue no es un comportamiento automático de Kafka, sino algo que debe configurarse explícitamente con un `DefaultErrorHandler` y un `DeadLetterPublishingRecoverer`. Revierte el cambio antes de continuar.
+**Resultado esperado:** el test confirma tres entregas fallidas del listener y encuentra el payload RT-DLT en rutaflow.envio.creado-dlt.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**Fallo deliberado:** cambia la key incorrecta del test por envioId.toString(). **Resultado esperado:** la ruta de ruteo acepta el mensaje y la condición de tres fallos vence. **Diagnóstico:** el caso deja de ser inválido; restaura una key que no coincida para que el test ejercite el error y la recuperación.
 
-1. Publica un mensaje válido inmediatamente después del inválido en el mismo test, y confirma que el mensaje válido se procesa sin ningún retraso causado por los reintentos del mensaje anterior (los reintentos son por mensaje individual, no bloquean toda la partición indefinidamente en este patrón).
-2. Aumenta `FixedBackOff(100L, 2)` a `FixedBackOff(100L, 0)` (cero reintentos) y confirma que el mensaje llega a la DLQ inmediatamente tras el primer fallo, sin ningún reintento.
-3. Inspecciona los headers del `ConsumerRecord` recibido en la DLQ (`registroEnDlq.headers()`) y documenta qué información adicional sobre la excepción original Spring Kafka adjunta automáticamente.
-4. Escribe de memoria (sin mirar) un `DefaultErrorHandler` con `DeadLetterPublishingRecoverer`, y un test que confirme que un mensaje fallido termina en el topic `.DLT` correspondiente. Compara después contra el patrón del Paso 4.
+**3. Entiende**
+FixedBackOff(100L, 2) significa un intento inicial y hasta dos reintentos adicionales: tres entregas al listener en total. El evento que llega al DLT queda disponible para inspección y reproceso controlado.
 
-**Pista:** el sufijo `.DLT` (Dead Letter Topic) es la convención por defecto de `DeadLetterPublishingRecoverer`; puede personalizarse, pero mantener la convención por defecto facilita que cualquier desarrollador del equipo sepa dónde buscar mensajes fallidos sin necesitar documentación adicional.
+**4. Cierra**
+Anota el total de intentos, el topic de origen y el DLT donde quedó el registro.
 
-#### Paso 6 · Práctica independiente
+#### Subtema 2.3: Ajusta la política y atiende los mensajes recuperados · 15 min
 
-**Completa el código:** rellena el espacio para configurar 3 reintentos con 1 segundo entre cada uno antes de enviar a la DLQ:
+**1. Contexto**
+El número de reintentos y el tiempo de espera dependen del fallo. Un dato definitivamente inválido no mejora por esperar; un problema temporal sí podría resolverse con otro intento.
 
-```java
-return new DefaultErrorHandler(recoverer, new ____(1000L, 3));
+**2. Hazlo tú**
+En la copia, edita examples/spring-kafka-rutaflow/src/main/java/academia/rutaflow/KafkaLabConfiguration.java: cambia FixedBackOff(100L, 2) por FixedBackOff(100L, 0). Ajusta en la copia el test para esperar un intento y vuelve a ejecutarlo:
+
+```bash
+./mvnw -Dtest=EnvioEventPublisherTest#reintentaYPublicaEnDltCuandoLaKeyNoCoincide test
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `DefaultErrorHandler` con reintentos limitados y `DeadLetterPublishingRecoverer`, y un test que confirme el mensaje fallido en la DLQ. Compara después contra el patrón del Paso 4.
+**Resultado esperado:** con cero reintentos adicionales, el primer fallo se recupera y el mensaje llega a rutaflow.envio.creado-dlt.
 
-#### Paso 7 · Cierre y evidencia
+**Fallo deliberado:** cambia el topic del verificador a rutaflow.envio.creado-dlt-mal. **Error esperado:** el consumidor de prueba vence la espera sin encontrar el registro. **Diagnóstico:** comprueba que el recoverer usa el sufijo -dlt y que el test escucha exactamente ese topic.
 
-Ya configuras reintentos limitados y una dead-letter queue real, confirmando con un broker Kafka embebido que un mensaje problemático queda aislado y trazable sin bloquear el flujo normal. El siguiente tema profundiza en productores idempotentes y transacciones para evitar duplicados, el requisito de nivel profesional que la DLQ por sí sola no resuelve. **Evidencia:** entrega el resultado de `DeadLetterQueueTest` en verde, y el timeout que produce el fallo deliberado al quitar el `errorHandler`. Fuente oficial: [Spring for Apache Kafka — Dead Letters](https://docs.spring.io/spring-kafka/reference/retrytopic.html).
+**3. Entiende**
+El recoverer de esta práctica usa por defecto el topic original más el sufijo -dlt, y conserva la partición original cuando está disponible. El DLT necesita monitoreo y un responsable: acumular mensajes sin revisar solo traslada el problema.
 
-**Errores comunes:** no configurar ninguna dead-letter queue, arriesgando que un mensaje problemático bloquee o se pierda silenciosamente; no monitorear ni asignar dueño a la DLQ, dejando mensajes fallidos acumulándose sin que nadie los investigue.
+**4. Cierra**
+Restaura la configuración del proyecto a FixedBackOff(100L, 2), conserva la salida correcta y explica cuándo dejarías de reintentar un error de validación.
 
-**Cuándo no usarlo:** para un consumidor donde CUALQUIER fallo de procesamiento debe detener inmediatamente todo el flujo hasta que un humano intervenga (un escenario donde continuar procesando otros mensajes sería inaceptable), reintentar y luego enviar silenciosamente a una DLQ podría ocultar un problema que requiere atención inmediata en vez de diferida.
+**Hito del tema:**
 
-La dead-letter queue de este tema es la que evitará perder mensajes fallidos en el proyecto integrador de este track (microservicio productivo, Módulo 12).
+- [ ] Configuré DefaultErrorHandler y DeadLetterPublishingRecoverer.
+- [ ] Comprobé el intento inicial y los dos reintentos configurados.
+- [ ] Encontré el registro fallido en el topic terminado en -dlt.
+- [ ] Cambié temporalmente a cero reintentos y restauré el laboratorio.
+
+**Fuentes oficiales:** [manejo de excepciones y reintentos en Spring Kafka](https://docs.spring.io/spring-kafka/reference/kafka/annotation-error-handling.html) y [publicación en dead-letter topics](https://docs.spring.io/spring-kafka/reference/kafka/annotation-error-handling.html#publishing-dead-letter-records).
+
+**Transferencia al proyecto integrador:** define reintentos según el tipo de fallo y envía los eventos irrecuperables a un DLT monitoreado con un procedimiento de revisión.
 
 ### Tema 3: Productor idempotente y transacciones (exactly-once)
 

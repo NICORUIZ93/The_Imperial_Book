@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 102,
+      "objective": 101,
       "prerequisites": 107,
-      "context": 102,
-      "theoryAnalogy": 102,
-      "guidedDemo": 102,
+      "context": 101,
+      "theoryAnalogy": 101,
+      "guidedDemo": 101,
       "codeExplanation": 111,
       "execution": 107,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 102,
-      "independentPractice": 102,
-      "closure": 102,
-      "commonErrors": 102,
+      "guidedPractice": 101,
+      "independentPractice": 101,
+      "closure": 101,
+      "commonErrors": 101,
       "resources": 104,
-      "standaloneExample": 98,
-      "learningEvidence": 103,
-      "complete": 98
+      "standaloneExample": 97,
+      "learningEvidence": 102,
+      "complete": 97
     }
   },
   "topics": {
@@ -30837,26 +30837,26 @@
         "module": 8,
         "topic": "Tema 2: Dead-letter queue",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
           "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 6,
+          "complete": false
         }
       },
       {
