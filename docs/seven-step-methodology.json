@@ -142,23 +142,23 @@
     },
     "java": {
       "topics": 101,
-      "objective": 91,
+      "objective": 90,
       "prerequisites": 101,
-      "context": 91,
-      "theoryAnalogy": 81,
-      "guidedDemo": 79,
+      "context": 90,
+      "theoryAnalogy": 80,
+      "guidedDemo": 78,
       "codeExplanation": 101,
       "execution": 91,
       "expectedResult": 101,
       "deliberateFailure": 100,
-      "guidedPractice": 79,
-      "independentPractice": 82,
-      "closure": 83,
-      "commonErrors": 82,
+      "guidedPractice": 78,
+      "independentPractice": 81,
+      "closure": 82,
+      "commonErrors": 81,
       "resources": 91,
-      "standaloneExample": 77,
-      "learningEvidence": 91,
-      "complete": 74
+      "standaloneExample": 76,
+      "learningEvidence": 90,
+      "complete": 73
     },
     "javascript": {
       "topics": 88,
@@ -18969,26 +18969,26 @@
         "module": 2,
         "topic": "Tema 3: Comparable vs Comparator, e iteración",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
           "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 6,
+          "complete": false
         }
       },
       {

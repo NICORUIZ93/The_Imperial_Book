@@ -19,6 +19,7 @@ Crea java-motor-colecciones/src/ColeccionesDemo.java:
 
 ```java
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class ColeccionesDemo {
@@ -29,6 +30,10 @@ public class ColeccionesDemo {
         guias.add(1, "RF-105");
         System.out.println(guias);
         System.out.println("primera=" + guias.get(0));
+
+        List<String> cola = new LinkedList<>(List.of("RF-101", "RF-102"));
+        cola.add(0, "RF-105");
+        System.out.println("cola=" + cola);
     }
 }
 ```
@@ -41,12 +46,12 @@ javac -d out src/ColeccionesDemo.java
 java -cp out ColeccionesDemo
 ```
 
-**Resultado esperado:** [RF-101, RF-105, RF-102] y primera=RF-101.
+**Resultado esperado:** [RF-101, RF-105, RF-102], primera=RF-101 y cola=[RF-105, RF-101, RF-102].
 
 **Fallo deliberado:** cambia guias.get(0) por guias.get(3). **Error esperado:** IndexOutOfBoundsException. **Diagnóstico:** los índices empiezan en cero y esta lista tiene posiciones 0, 1 y 2.
 
 **3. Entiende**
-List conserva elementos repetidos y su orden. ArrayList suele ser una buena opción general cuando necesitas acceder por índice o agregar elementos al final; insertar en medio desplaza los siguientes.
+List conserva elementos repetidos y su orden. ArrayList suele ser una buena opción general para acceder por índice o agregar al final; insertar al principio desplaza los elementos siguientes. LinkedList puede enlazar un nodo al principio sin desplazar los demás, pero encontrar una posición arbitraria todavía exige recorrer la lista.
 
 **4. Cierra**
 Anota qué posición tiene RF-105 después de insertarla y qué pasaría si la agregas al final.
@@ -327,87 +332,187 @@ Entrega las tres líneas de salida y explica qué dato sí conserva el objeto, y
 
 ### Tema 3: Comparable vs Comparator, e iteración
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás implementar el orden natural de una clase con `Comparable` y ofrecer órdenes alternativos con `Comparator`, sin modificar la clase original. Prerrequisitos: JDK 25 y un editor. Comprueba java --version.
+**Duración estimada:** 35 min.
+**¿Por qué es importante?** El orden natural sirve cuando una clase tiene un criterio principal; un Comparator permite cambiarlo para una vista concreta. La iteración permite procesar colecciones sin depender de su implementación.
+**Prerrequisitos:** M2 T1 y M1 T2. Proyecto continuo: ordenar guías por código o destino y retirar entregas completadas con seguridad.
 
-#### Paso 2 · Contexto y caso real
-Un listado de entregas necesita un orden natural único por antigüedad (`Comparable`) y, además, la posibilidad de reordenarlo puntualmente por destino o por peso sin tocar la clase `Entrega`.
+#### Subtema 3.1: Define el orden natural con Comparable · 10 min
 
-#### Paso 3 · Teoría, modelo mental y analogía
-`Comparable` define el único orden natural de una clase implementando `compareTo`; `Comparator` define órdenes alternativos externos sin modificar esa clase. La analogía: el orden oficial de un catálogo (por código de producto) frente a pedirle temporalmente que lo muestre ordenado por precio, sin alterar su orden oficial para nadie más.
+**1. Contexto**
+Cuando el motor muestre sus guías, el orden estable por código ayuda a localizar una entrada repetidamente.
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
-```bash
-mkdir ejemplo-comparable-comparator
-cd ejemplo-comparable-comparator
-mkdir -p src/main/java/academia/orden
-```
-Crea `Entrega.java` implementando `Comparable<Entrega>` por antigüedad, y una clase `Main` que ordene una lista primero con `Collections.sort` (orden natural) y luego con `lista.sort(Comparator.comparing(Entrega::getDestino))`. Compila y ejecuta:
-```bash
-javac -d out src/main/java/academia/orden/Entrega.java
-java -cp out academia.orden.Main
-```
-
-#### Paso 5 · Práctica guiada
-Pista: elimina deliberadamente `implements Comparable<Entrega>` para provocar un fallo de compilación al llamar `Collections.sort(lista)` sin `Comparator`; restaura la interfaz y confirma que ambos órdenes (natural y alternativo) coexisten sin conflicto. Resultado esperado: dos salidas ordenadas de forma distinta a partir de la misma lista.
-
-#### Paso 6 · Práctica independiente
-Agrega un segundo `Comparator` por peso y encadénalos con `thenComparing`; recorre el resultado con un `Map<String, List<Entrega>>` agrupado por destino usando `entrySet()`.
-
-#### Paso 7 · Cierre y evidencia
-Guarda `Entrega`, ambos órdenes obtenidos y el error de compilación provocado; como siguiente paso estudia excepciones. Errores comunes: implementar `compareTo` con una resta de enteros (`this.valor - otro.valor`) que puede desbordar con valores extremos en vez de usar `Integer.compare`, modificar después de insertar el campo por el que un `TreeSet`/`TreeMap` ya ordenó un objeto (corrompe la estructura interna), y definir un `Comparable` inconsistente con `equals` sin documentarlo. Fuentes oficiales: https://dev.java/learn/api/collections-framework/ y https://docs.oracle.com/javase/tutorial/java/generics/.
-**¿Por qué es importante?** Porque mezclar el único orden natural de una clase (`Comparable`) con necesidades de orden puntuales y alternativas (`Comparator`) en una sola implementación obliga a modificar la clase original cada vez que alguien necesita un criterio de orden distinto.
-**Evidencia de aprendizaje:** entrega `Entrega` con su orden natural por `Comparable`, el orden alternativo por `Comparator.comparing`, y el error de compilación al quitar `implements Comparable<Entrega>` e intentar `Collections.sort` sin `Comparator`.
-**Conceptos clave:** orden natural único frente a órdenes alternativos externos, `entrySet()`.
-
-Definir el orden natural de cada entidad del proyecto integrador de este track (por fecha, por antigüedad) con `Comparable`, y reservar `Comparator` para vistas alternativas puntuales, evita mezclar ambas responsabilidades en una sola clase.
-
-**Cuándo no usarlo:** implementar `Comparable` no tiene sentido para una clase que nunca se ordenará (una entidad puramente de referencia); y usar un `Comparator` externo para el único orden que la clase siempre necesitará agrega indirección donde `Comparable` sería más directo.
-
-`Comparable<Persona>` (implementado directamente por la clase `Persona`, definiendo `compareTo`) establece el único orden "natural" de esa clase, apropiado cuando existe una forma canónica y única de ordenar objetos de ese tipo (por ejemplo, ordenar personas por edad como su criterio de orden natural más obvio y común); `Comparator` (una función o clase externa a `Persona`, pasada explícitamente a métodos de ordenamiento como `sort`) permite definir órdenes alternativos adicionales sin modificar la clase original (`personas.sort(Comparator.comparing(Persona::getNombre))`, ordenando por nombre sin tocar la implementación de `compareTo` que ya ordena por edad), apropiado cuando se necesitan múltiples criterios de orden distintos según el contexto específico de cada uso.
-
-Recorrer un `Map` con for-each requiere iterar sobre `entrySet()` (`for (Map.Entry<String, Integer> entrada : edades.entrySet())`), que devuelve una vista del mapa como un conjunto de pares clave-valor, permitiendo acceder tanto a `entrada.getKey()` como a `entrada.getValue()` dentro de una única iteración, en vez de iterar únicamente sobre las claves (`keySet()`) y tener que consultar el valor correspondiente por separado en cada iteración, un patrón menos eficiente que recorrer directamente los pares ya emparejados de `entrySet()`.
-
-**Analogía:** `Comparable` es como la forma oficial y única en que un catálogo ordena sus productos por defecto (por ejemplo, por código de producto); `Comparator` es como poder pedirle al mismo catálogo que, sin modificar su orden oficial, te lo muestre temporalmente ordenado de otra forma alternativa según tu necesidad puntual (por precio, por nombre), sin alterar el orden oficial del catálogo para nadie más.
-
-**¿Por qué es importante?** `Comparable` define el único orden natural de una clase; `Comparator` permite múltiples órdenes alternativos externos sin modificar esa clase, siendo la elección correcta según si se necesita un único criterio canónico o múltiples criterios intercambiables.
-
-**Código del ejemplo:**
+**2. Hazlo tú**
+Crea java-motor-colecciones/src/OrdenDemo.java:
 
 ```java
-class Persona implements Comparable<Persona> {
-    public int compareTo(Persona otra) { return this.edad - otra.edad; } // orden "natural"
-}
-personas.sort(Comparator.comparing(Persona::getNombre)); // orden alternativo, sin modificar la clase
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-for (Map.Entry<String, Integer> entrada : edades.entrySet()) {
-    System.out.println(entrada.getKey() + ": " + entrada.getValue());
+class Guia implements Comparable<Guia> {
+    private final String codigo;
+
+    Guia(String codigo) { this.codigo = codigo; }
+    String codigo() { return codigo; }
+
+    @Override
+    public int compareTo(Guia otra) {
+        return codigo.compareTo(otra.codigo);
+    }
+
+    @Override
+    public String toString() { return codigo; }
+}
+
+public class OrdenDemo {
+    public static void main(String[] args) {
+        List<Guia> guias = new ArrayList<>(List.of(
+            new Guia("RF-103"), new Guia("RF-101"), new Guia("RF-102")));
+        Collections.sort(guias);
+        System.out.println(guias);
+    }
 }
 ```
 
----
+Desde java-motor-colecciones/, compila y ejecuta:
 
+```bash
+mkdir -p out
+javac -d out src/OrdenDemo.java
+java -cp out OrdenDemo
+```
+
+**Resultado esperado:** [RF-101, RF-102, RF-103].
+
+**Fallo deliberado:** elimina implements Comparable<Guia> y la anotación @Override de compareTo; luego ejecuta Collections.sort(guias). **Error esperado:** el compilador no puede inferir un orden para Guia. **Diagnóstico:** el orden natural requiere que Guia implemente Comparable o que la llamada reciba un Comparator.
+
+**3. Entiende**
+compareTo devuelve un valor negativo, cero o positivo para indicar menor, igual o mayor. Comparar Strings directamente evita restar números y no tiene el riesgo de desbordamiento de restar enteros.
+
+**4. Cierra**
+Cambia los valores de entrada y confirma que el orden natural sigue comparando por código.
+
+#### Subtema 3.2: Cambia el criterio con Comparator · 10 min
+
+**1. Contexto**
+Una pantalla de despacho puede necesitar ordenar por destino sin reemplazar el orden natural de la clase.
+
+**2. Hazlo tú**
+Reemplaza java-motor-colecciones/src/OrdenDemo.java por este archivo completo:
+
+```java
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
+record Guia(String codigo, String destino) { }
+
+public class OrdenDemo {
+    public static void main(String[] args) {
+        List<Guia> guias = new ArrayList<>(List.of(
+            new Guia("RF-103", "Cali"),
+            new Guia("RF-101", "Bogota"),
+            new Guia("RF-102", "Bogota")));
+
+        guias.sort(Comparator.comparing(Guia::destino)
+                             .thenComparing(Guia::codigo));
+        guias.forEach(System.out::println);
+    }
+}
+```
+
+Compila y ejecuta con los comandos del subtema 3.1.
+
+**Resultado esperado:** Guia[codigo=RF-101, destino=Bogota], Guia[codigo=RF-102, destino=Bogota] y Guia[codigo=RF-103, destino=Cali].
+
+**Fallo deliberado:** elimina thenComparing y cambia el orden de entrada para poner RF-102 antes que RF-101, aunque ambos tengan el mismo destino. **Resultado observado:** ese orden de entrada se conserva porque el comparator no desempata por código. **Diagnóstico:** si quieres una salida estable por código independientemente del orden inicial, agrega una segunda clave.
+
+**3. Entiende**
+Comparator define un criterio externo al objeto. comparing elige el destino y thenComparing completa el desempate por código; la clase no necesita cambiar su orden natural.
+
+**4. Cierra**
+Agrega un criterio por destino invertido y explica qué parte del orden cambió.
+
+#### Subtema 3.3: Recorre entradas y elimina con Iterator · 15 min
+
+**1. Contexto**
+El proceso de cierre debe recorrer estados de guías y quitar las entregas ya completadas sin modificar una colección a escondidas durante un for-each.
+
+**2. Hazlo tú**
+Reemplaza java-motor-colecciones/src/OrdenDemo.java:
+
+```java
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+public class OrdenDemo {
+    public static void main(String[] args) {
+        Map<String, String> estados = new LinkedHashMap<>();
+        estados.put("RF-101", new String("ENTREGADA"));
+        estados.put("RF-102", "EN_RUTA");
+
+        Iterator<Map.Entry<String, String>> iterador =
+            estados.entrySet().iterator();
+        while (iterador.hasNext()) {
+            Map.Entry<String, String> entrada = iterador.next();
+            if (entrada.getValue().equals("ENTREGADA")) {
+                iterador.remove();
+            }
+        }
+
+        estados.forEach((codigo, estado) ->
+            System.out.println(codigo + "=" + estado));
+    }
+}
+```
+
+Desde java-motor-colecciones/, compila y ejecuta:
+
+```bash
+javac -d out src/OrdenDemo.java
+java -cp out OrdenDemo
+```
+
+**Resultado esperado:** RF-102=EN_RUTA.
+
+**Fallo deliberado:** cambia equals por ==. **Resultado erróneo esperado:** también aparece RF-101=ENTREGADA. **Diagnóstico:** == compara si son la misma instancia String, no si contienen el mismo texto; usa equals para comparar estados.
+
+**3. Entiende**
+entrySet entrega pares clave-valor para recorrer el Map. Iterator permite quitar el elemento actual mediante su método remove; no llames estados.remove desde el mismo ciclo. Para comparar texto, equals evalúa el contenido.
+
+**4. Cierra**
+Guarda el mapa antes y después, e identifica la entrada que quitó el iterador.
+
+**Hito del tema:**
+
+- [ ] Ordené Guia por su criterio natural con Comparable.
+- [ ] Creé un orden alternativo por destino y un desempate con Comparator.
+- [ ] Recorrí pares de un Map mediante entrySet.
+- [ ] Eliminé la entrada actual con Iterator y corregí una comparación de String con ==.
+
+**Fuentes oficiales:** [Collections Framework en dev.java](https://dev.java/learn/api/collections-framework/), [ordenación de colecciones](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html#sort(java.util.Comparator)) y [contrato Comparable](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Comparable.html).
+
+**Transferencia al proyecto integrador:** ordena las guías por el criterio natural acordado, agrega vistas alternativas con Comparator y elimina del registro entradas completadas durante su recorrido seguro.
 
 ## Construcción guiada del capítulo
 
-**Objetivo del laboratorio:** construir una estructura de datos genérica propia con tests, comparando el rendimiento de distintas implementaciones de colecciones.
+**Objetivo del laboratorio:** organizar guías por posición, eliminar duplicados, buscar por clave, ordenar entregas y conservar seguridad de tipos.
 
 **Requisitos previos:** Módulo 1 completado.
 
 | Paso | Acción | Código | Explicación |
 |---|---|---|---|
-| 1 | Comparar `ArrayList` vs `LinkedList` insertando al inicio | Ver Tema 1 | Mide el tiempo con 100,000 elementos |
-| 2 | Usar `HashSet` y `TreeSet` para eliminar duplicados | Ver Tema 1 | Compara la presencia de orden |
-| 3 | Crear `Caja<T>` genérica | Ver Tema 2 | Verifica la seguridad de tipos en compilación |
-| 4 | Implementar `Comparable` y un `Comparator` externo | Ver Tema 3 | Compara ambos criterios de orden |
-| 5 | Recorrer un `Map` con `entrySet()` | Ver Tema 3 | Verifica acceso a clave y valor |
+| 1 | Organizar guías con `List`, `Set` y `Map` | Ver Tema 1 | Conserva orden, deduplica y consulta estados |
+| 2 | Crear `Caja<T>` y procesar wildcards | Ver Tema 2 | Verifica tipos, límites `extends` y `super` |
+| 3 | Ordenar por código y destino | Ver Tema 3 | Compara orden natural y criterio alternativo |
+| 4 | Recorrer entradas y eliminar con `Iterator` | Ver Tema 3 | Evita modificar el mapa fuera del iterador |
 
-**Verificación:** el laboratorio se considera exitoso si la comparación de rendimiento entre `ArrayList` y `LinkedList` muestra la diferencia esperada al insertar al inicio, y si la estructura de datos genérica propia funciona correctamente con al menos dos tipos concretos distintos.
+**Verificación:** el laboratorio se considera exitoso si las colecciones producen las salidas esperadas, el compilador rechaza un tipo incorrecto y el orden alternativo conserva la clase sin cambios.
 
 **Errores comunes y soluciones**
 
-- **Usar `ArrayList` para inserciones frecuentes al inicio de una lista grande.** Considera `LinkedList` para ese patrón de acceso específico.
+- **Elegir `LinkedList` solo porque “insertar es rápido”.** Insertar cerca del inicio o de un iterador puede evitar desplazamientos; encontrar una posición arbitraria todavía requiere recorrer la lista.
 - **Asumir orden en un `HashSet`.** Usa `TreeSet` o `LinkedHashSet` si el orden importa.
 - **Confundir cuándo usar `Comparable` frente a `Comparator`.** Usa `Comparable` para el único orden natural de la clase; `Comparator` para órdenes alternativos externos.
 
