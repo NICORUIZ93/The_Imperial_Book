@@ -3,9 +3,9 @@
 > Las señales automáticas no prueban profundidad ni ausencia de ella. Un tema sólo queda revisado mediante el registro humano con mapa de subtemas críticos, evidencia y fuentes.
 
 - Temas inventariados: 1159
-- Revisados humanamente para subtemas: 117
-- Pendientes: 1042
-- Candidatos prioritarios por señales: 999
+- Revisados humanamente para subtemas: 123
+- Pendientes: 1036
+- Candidatos prioritarios por señales: 993
 
 ## Cobertura por track
 
@@ -24,7 +24,7 @@
 | node | 77 | 0 | 77 |
 | react | 58 | 0 | 58 |
 | rutaflow | 29 | 0 | 29 |
-| spring-boot | 93 | 8 | 85 |
+| spring-boot | 93 | 14 | 79 |
 
 ## Cola prioritaria
 
@@ -983,12 +983,6 @@
 - `spring-boot/modulo-18` — Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP · Avanzado · 1 h 20 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `spring-boot/modulo-19` — Tema 1: Job, Step, Tasklet y chunk processing · Avanzado · 1 h 40 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `spring-boot/modulo-19` — Tema 2: Reinicio, JobParameters, retry, skip y listeners · Avanzado · 1 h 20 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `spring-boot/modulo-2` — Tema 1: Por qué DTOs en vez de entidades directamente · Intermedio · 30 min — lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-2` — Tema 2: Validación con Bean Validation y ResponseEntity · Intermedio · 25 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-2` — Tema 3: Manejo centralizado de errores con @ControllerAdvice · Intermedio · 30 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-2` — Tema 4: Lombok y MapStruct sin exponer datos internos · Intermedio · 40 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `spring-boot/modulo-2` — Tema 5: OpenAPI con springdoc: el contrato como prueba · Intermedio · 40 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `spring-boot/modulo-2` — Tema 6: Paginación HTTP con validación y un límite de recursos explícito · Intermedio · 35 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `spring-boot/modulo-20` — Tema 1: Scheduling y tareas periódicas · Avanzado · 1 h 10 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `spring-boot/modulo-20` — Tema 2: Eventos locales, eventos transaccionales y mensajería · Avanzado · 1 h 20 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `spring-boot/modulo-20` — Tema 3: Correo con Spring Mail y entrega recuperable · Avanzado · 1 h 10 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
@@ -1147,3 +1141,9 @@
 - `spring-boot/modulo-1` — Tema 1: Spring Initializr y starters · Básico · 20 min — Spring Initializr como generador; Starter como dependencia curada; BOM y resolución de versiones; Starter web vs otros starters; Anotación ausente sin el starter; Dependencia suelta vs starter; Cuándo no usar starters; Starters mínimos del proyecto
 - `spring-boot/modulo-1` — Tema 2: application.yml vs application.properties · Básico · 20 min — Pares clave-valor en .properties; Indentación jerárquica en .yml; Equivalencia funcional de ambos formatos; Detección automática del archivo; Sensibilidad a la indentación de YAML; Error de indentación silencioso; Mezclar .properties y .yml; Elección de formato por legibilidad
 - `spring-boot/modulo-1` — Tema 3: Perfiles y estructura por capas · Intermedio · 30 min — Configuración base en application.yml; Perfil como sobreescritura parcial; Activación explícita del perfil; Configuración fusionada efectiva; Perfil nunca activo por defecto; Olvidar activar el perfil al desplegar; Separación por capas controller/service/repository; Perfiles solo cuando hay varios entornos
+- `spring-boot/modulo-2` — Tema 1: Por qué DTOs en vez de entidades directamente · Intermedio · 30 min — DTO de entrada/salida; Acoplamiento entidad-contrato; Mapeo manual vs herramienta
+- `spring-boot/modulo-2` — Tema 2: Validación con Bean Validation y ResponseEntity · Intermedio · 25 min — @Valid en controller; ResponseEntity.status(); jakarta.validation constraints
+- `spring-boot/modulo-2` — Tema 3: Manejo centralizado de errores con @ControllerAdvice · Intermedio · 30 min — @RestControllerAdvice; @ExceptionHandler; MethodArgumentNotValidException
+- `spring-boot/modulo-2` — Tema 4: Lombok y MapStruct sin exponer datos internos · Intermedio · 40 min — lombok-mapstruct-binding orden; MapStruct componentModel=spring; unmappedTargetPolicy=ERROR
+- `spring-boot/modulo-2` — Tema 5: OpenAPI con springdoc: el contrato como prueba · Intermedio · 40 min — springdoc-openapi-starter-webmvc-ui 3.x; /v3/api-docs; swagger-ui.html
+- `spring-boot/modulo-2` — Tema 6: Paginación HTTP con validación y un límite de recursos explícito · Intermedio · 35 min — Validación de page/size; 400 vs 200 en tamaño inválido; Orden estable con desempate; Offset vs cursor

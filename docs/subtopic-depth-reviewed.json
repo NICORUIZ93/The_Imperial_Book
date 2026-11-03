@@ -2052,7 +2052,7 @@
     "spring-boot/modulo-1::Tema 1: Spring Initializr y starters · Básico · 20 min": {
       "status": "reviewed",
       "reviewDate": "2026-11-02",
-      "execution": "JDK 27.0.1 + Maven real contra start.spring.io confirmado en vivo: el tipo de proyecto por defecto de Initializr cambió a Gradle (metadata default=gradle-project), y `dependencies=web` ahora resuelve a `spring-boot-starter-webmvc` (no `spring-boot-starter-web`, descontinuado desde Boot 4.0, verificado: tope 3.5.x en Maven Central). Corregido en el contenido: añadido `-d type=maven-project` a 64 comandos curl start.spring.io en 20 archivos del track (antes generaban Gradle silenciosamente pese a instruir `./mvnw`), y renombradas 3 menciones de `spring-boot-starter-web` a `spring-boot-starter-webmvc` en este módulo.",
+      "execution": "JDK 27.0.1 + Maven real contra start.spring.io confirmado en vivo: el tipo de proyecto por defecto de Initializr cambió a Gradle (metadata default=gradle-project). Corrección inicial de esta revisión decía que spring-boot-starter-web \"no existe\" en Boot 4 basado en una búsqueda de Maven Central con índice desactualizado (solrsearch, tope 3.5.x); verificado después contra la fuente autoritativa (maven-metadata.xml de Maven Central y la guía oficial de migración a Spring Boot 4) que spring-boot-starter-web SÍ existe para 4.0.0-4.2.0-RC1, pero quedó deprecado: Spring Boot 4 lo renombró a spring-boot-starter-webmvc (nombre que Initializr genera por defecto para dependencies=web) y el starter clásico se eliminará en una versión futura. Corregido en el contenido: añadido -d type=maven-project a 64 comandos curl start.spring.io en 20 archivos del track, y actualizadas 3 menciones en este módulo para nombrar spring-boot-starter-webmvc (llamado spring-boot-starter-web antes de Spring Boot 4).",
       "criticalSubtopics": [
         "Spring Initializr como generador",
         "Starter como dependencia curada",
@@ -2067,7 +2067,9 @@
         "https://start.spring.io/metadata/client",
         "https://search.maven.org/solrsearch/select?q=g:org.springframework.boot+AND+a:spring-boot-starter-web",
         "https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.external-config",
-        "https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.profiles"
+        "https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.profiles",
+        "https://docs.openrewrite.org/recipes/java/spring/boot4/renamedeprecatedstartersmanagedversions",
+        "https://repo1.maven.org/maven2/org/springframework/boot/spring-boot-starter-web/maven-metadata.xml"
       ]
     },
     "spring-boot/modulo-1::Tema 2: application.yml vs application.properties · Básico · 20 min": {
@@ -2110,6 +2112,103 @@
         "https://search.maven.org/solrsearch/select?q=g:org.springframework.boot+AND+a:spring-boot-starter-web",
         "https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.external-config",
         "https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.profiles"
+      ]
+    },
+    "spring-boot/modulo-2::Tema 1: Por qué DTOs en vez de entidades directamente · Intermedio · 30 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Mecanismo (DTO vs entidad expuesta) independiente de versión; sin dependencias externas que verificar.",
+      "criticalSubtopics": [
+        "DTO de entrada/salida",
+        "Acoplamiento entidad-contrato",
+        "Mapeo manual vs herramienta"
+      ],
+      "sources": [
+        "https://repo1.maven.org/maven2/org/springdoc/springdoc-openapi-starter-webmvc-ui/maven-metadata.xml",
+        "https://repo1.maven.org/maven2/org/mapstruct/mapstruct/maven-metadata.xml",
+        "https://repo1.maven.org/maven2/org/projectlombok/lombok-mapstruct-binding/maven-metadata.xml",
+        "https://docs.spring.io/spring-framework/reference/core/validation/beanvalidation.html"
+      ]
+    },
+    "spring-boot/modulo-2::Tema 2: Validación con Bean Validation y ResponseEntity · Intermedio · 25 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Imports verificados: jakarta.validation.constraints.{Min,NotBlank} (namespace vigente en Framework 7, sin cambio Boot 3->4). ResponseEntity sin cambios de API.",
+      "criticalSubtopics": [
+        "@Valid en controller",
+        "ResponseEntity.status()",
+        "jakarta.validation constraints"
+      ],
+      "sources": [
+        "https://repo1.maven.org/maven2/org/springdoc/springdoc-openapi-starter-webmvc-ui/maven-metadata.xml",
+        "https://repo1.maven.org/maven2/org/mapstruct/mapstruct/maven-metadata.xml",
+        "https://repo1.maven.org/maven2/org/projectlombok/lombok-mapstruct-binding/maven-metadata.xml",
+        "https://docs.spring.io/spring-framework/reference/core/validation/beanvalidation.html"
+      ]
+    },
+    "spring-boot/modulo-2::Tema 3: Manejo centralizado de errores con @ControllerAdvice · Intermedio · 30 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Usa @RestControllerAdvice + @ExceptionHandler + MethodArgumentNotValidException, API estable en Framework 7.",
+      "criticalSubtopics": [
+        "@RestControllerAdvice",
+        "@ExceptionHandler",
+        "MethodArgumentNotValidException"
+      ],
+      "sources": [
+        "https://repo1.maven.org/maven2/org/springdoc/springdoc-openapi-starter-webmvc-ui/maven-metadata.xml",
+        "https://repo1.maven.org/maven2/org/mapstruct/mapstruct/maven-metadata.xml",
+        "https://repo1.maven.org/maven2/org/projectlombok/lombok-mapstruct-binding/maven-metadata.xml",
+        "https://docs.spring.io/spring-framework/reference/core/validation/beanvalidation.html"
+      ]
+    },
+    "spring-boot/modulo-2::Tema 4: Lombok y MapStruct sin exponer datos internos · Intermedio · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Versiones verificadas contra maven-metadata.xml (autoritativo, no el índice solrsearch que quedó desactualizado en una revisión anterior): mapstruct 1.6.3 es la última GA estable (1.7.0.Beta2 es beta, correctamente no usada); lombok-mapstruct-binding 0.2.0 es la última publicada. Orden de annotationProcessorPaths (lombok-mapstruct-binding) correcto.",
+      "criticalSubtopics": [
+        "lombok-mapstruct-binding orden",
+        "MapStruct componentModel=spring",
+        "unmappedTargetPolicy=ERROR"
+      ],
+      "sources": [
+        "https://repo1.maven.org/maven2/org/springdoc/springdoc-openapi-starter-webmvc-ui/maven-metadata.xml",
+        "https://repo1.maven.org/maven2/org/mapstruct/mapstruct/maven-metadata.xml",
+        "https://repo1.maven.org/maven2/org/projectlombok/lombok-mapstruct-binding/maven-metadata.xml",
+        "https://docs.spring.io/spring-framework/reference/core/validation/beanvalidation.html"
+      ]
+    },
+    "spring-boot/modulo-2::Tema 5: OpenAPI con springdoc: el contrato como prueba · Intermedio · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Verificado contra maven-metadata.xml autoritativo (no solrsearch, que solo indexaba hasta 2.8.6 y producía un falso negativo): springdoc-openapi-starter-webmvc-ui SÍ tiene línea 3.x (3.0.0 hasta 3.2.0 disponibles), confirmado además por la guía de migración a Spring Boot 4 (springdoc 3.x añade soporte Spring Boot 4/Framework 7). La versión 3.0.0 citada en el tema es válida y resoluble.",
+      "criticalSubtopics": [
+        "springdoc-openapi-starter-webmvc-ui 3.x",
+        "/v3/api-docs",
+        "swagger-ui.html"
+      ],
+      "sources": [
+        "https://repo1.maven.org/maven2/org/springdoc/springdoc-openapi-starter-webmvc-ui/maven-metadata.xml",
+        "https://repo1.maven.org/maven2/org/mapstruct/mapstruct/maven-metadata.xml",
+        "https://repo1.maven.org/maven2/org/projectlombok/lombok-mapstruct-binding/maven-metadata.xml",
+        "https://docs.spring.io/spring-framework/reference/core/validation/beanvalidation.html"
+      ]
+    },
+    "spring-boot/modulo-2::Tema 6: Paginación HTTP con validación y un límite de recursos explícito · Intermedio · 35 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "bootVersion=4.0.9 pinned en el curl de Initializr: existe (confirmado, no es la línea recomendada 4.1.x pero es una release real y el texto ya incluye fallback si Initializr deja de ofrecerla); mecanismo de paginación sin dependencia de versión.",
+      "criticalSubtopics": [
+        "Validación de page/size",
+        "400 vs 200 en tamaño inválido",
+        "Orden estable con desempate",
+        "Offset vs cursor"
+      ],
+      "sources": [
+        "https://repo1.maven.org/maven2/org/springdoc/springdoc-openapi-starter-webmvc-ui/maven-metadata.xml",
+        "https://repo1.maven.org/maven2/org/mapstruct/mapstruct/maven-metadata.xml",
+        "https://repo1.maven.org/maven2/org/projectlombok/lombok-mapstruct-binding/maven-metadata.xml",
+        "https://docs.spring.io/spring-framework/reference/core/validation/beanvalidation.html"
       ]
     }
   }
