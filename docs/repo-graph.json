@@ -289,7 +289,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 12741,
+      "lines": 12784,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -297,7 +297,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1153,
+      "lines": 1152,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -767,7 +767,7 @@
     },
     {
       "path": "docs/java-temario-completo.md",
-      "lines": 500,
+      "lines": 503,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -9959,7 +9959,7 @@
     },
     {
       "path": "web/public/content/java/modulo-18.md",
-      "lines": 544,
+      "lines": 543,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9980,7 +9980,7 @@
     },
     {
       "path": "web/public/content/java/modulo-19.md",
-      "lines": 1254,
+      "lines": 1276,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9992,11 +9992,11 @@
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
+        "#### Subtema 1.1: Encontrar campos marcados en tiempo de ejecuci\u00f3n \u00b7 10 min",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
+        "#### Subtema 1.2: Leer l\u00edmites desde una anotaci\u00f3n \u00b7 10 min",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
-        "### Tema 2: Expresiones regulares con Pattern y Matcher",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+        "#### Subtema 1.3: Invocar un m\u00e9todo por su nombre \u00b7 10 min"
       ]
     },
     {

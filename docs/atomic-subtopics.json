@@ -51,10 +51,10 @@
     },
     "java": {
       "topics": 101,
-      "completeTopics": 82,
-      "topicsWith3to6Subtopics": 82,
-      "subtopics": 250,
-      "completeSubtopics": 250
+      "completeTopics": 83,
+      "topicsWith3to6Subtopics": 83,
+      "subtopics": 253,
+      "completeSubtopics": 253
     },
     "javascript": {
       "topics": 88,
@@ -7316,9 +7316,52 @@
       {
         "module": 19,
         "topic": "### Tema 1: Reflexión y anotaciones en tiempo de ejecución",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "1.1",
+            "title": "#### Subtema 1.1: Encontrar campos marcados en tiempo de ejecución · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "1.2",
+            "title": "#### Subtema 1.2: Leer límites desde una anotación · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "1.3",
+            "title": "#### Subtema 1.3: Invocar un método por su nombre · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 19,

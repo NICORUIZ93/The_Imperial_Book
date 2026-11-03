@@ -1698,7 +1698,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "ae6a512bba9b46ba7fab0d41b4fe446e8abb097a628cb63ae5084456fd3854bc",
+    "fingerprint": "62260b8b1064ebedbdcfa68d1098dc0e25068bf9cebee9ec4907b0f85260cce8",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -7513,7 +7513,7 @@
         "module": 19,
         "tailWords": 204,
         "topic": "Tema 1: Reflexión y anotaciones en tiempo de ejecución",
-        "words": 1165
+        "words": 1305
       },
       {
         "issues": [],

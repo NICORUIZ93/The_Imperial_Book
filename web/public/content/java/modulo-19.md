@@ -28,7 +28,15 @@ flowchart LR
 
 #### Paso 4 · Demostración guiada desde cero
 
-##### Subtema 1.1: Encontrar campos marcados en tiempo de ejecución · 10-15 min
+#### Subtema 1.1: Encontrar campos marcados en tiempo de ejecución · 10 min
+**1. Contexto**
+
+Un validador debe descubrir los campos obligatorios sin conocer de antemano qué clase de entrega recibe.
+
+**2. Hazlo tú**
+
+Crea una carpeta de práctica vacía, añade la anotación y el validador genérico del ejemplo, y ejecuta ambos casos de datos.
+
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
 
 ```bash
@@ -108,15 +116,22 @@ ENTREGADO
 
 El validador no menciona `Envio` en ningún lugar: lo descubrió todo con `getDeclaredFields()`. La última línea invoca `toUpperCase` buscándolo por su nombre.
 
-**Fallo deliberado:** Borra la línea `@Retention(RetentionPolicy.RUNTIME)`. El programa compila y corre, pero ahora los tres campos dicen `obligatorio=false` y el envío vacío pasa la validación (`[]`). La retención por defecto es `CLASS`: la anotación queda en el bytecode pero no es visible para la reflexión. Es una falla silenciosa típica al crear anotaciones propias.
+**Fallo deliberado:** Borra la línea `@Retention(RetentionPolicy.RUNTIME)`. El programa compila y corre, pero ahora los tres campos dicen `obligatorio=false` y el envío vacío pasa la validación (`[]`). La retención por defecto es `CLASS`: la anotación queda en el bytecode pero no es visible para la reflexión. Es una falla silenciosa típica al crear anotaciones propias. **Diagnóstico:** inspecciona `RetentionPolicy`; si no es `RUNTIME`, `isAnnotationPresent` devuelve `false` durante la ejecución.
+
+**3. Entiende**
+
+La API lee metadatos de la clase cargada; sin retención de ejecución, el validador no puede encontrar la regla aunque el código fuente muestre la anotación.
+
+**4. Cierra**
+
+Guarda la salida válida, el caso que falló y una frase que explique por qué ocurrió.
 
 #### Paso 5 · Práctica guiada
 
-##### Subtema 1.2: Leer límites desde una anotación · 5-10 min
+#### Subtema 1.2: Leer límites desde una anotación · 10 min
+**1. Contexto** cada campo de entrada debe declarar su rango permitido junto al dato.
 
-**Contexto:** cada campo de entrada debe declarar su rango permitido junto al dato.
-
-**Hazlo tú:** crea `java-dia-a-dia/RangoCheck.java`:
+**2. Hazlo tú** crea `java-dia-a-dia/RangoCheck.java`:
 
 ```java
 import java.lang.annotation.*;
@@ -141,18 +156,21 @@ Ejecuta `cd java-dia-a-dia && java RangoCheck.java`.
 
 **Fallo deliberado:** quita `@Retention(RetentionPolicy.RUNTIME)`. **Resultado del fallo:** `getAnnotation` devuelve `null` y aparece `NullPointerException`. **Diagnóstico:** el validador lee la anotación al ejecutar; su retención debe ser `RUNTIME`.
 
-**Entiende:** la anotación guarda la regla; reflexión la lee para comprobar el objeto.
+**3. Entiende** la anotación guarda la regla; reflexión la lee para comprobar el objeto.
 
 La práctica `@Rango` ya está implementada arriba: cambia kilos a 25 y vuelve a ejecutar; debe imprimir `válido=true`.
 **Pista:** si `getAnnotation` devuelve `null`, comprueba primero que la anotación tenga retención `RUNTIME`.
 
+**4. Cierra**
+
+Guarda la salida válida, el caso que falló y una frase que explique por qué ocurrió.
+
 #### Paso 6 · Práctica independiente
 
-##### Subtema 1.3: Invocar un método por su nombre · 5-10 min
+#### Subtema 1.3: Invocar un método por su nombre · 10 min
+**1. Contexto** una herramienta de diagnóstico puede llamar un método conocido sin usar código específico para cada clase.
 
-**Contexto:** una herramienta de diagnóstico puede llamar un método conocido sin usar código específico para cada clase.
-
-**Hazlo tú:** crea `java-dia-a-dia/Invocar.java`:
+**2. Hazlo tú** crea `java-dia-a-dia/Invocar.java`:
 
 ```java
 import java.lang.reflect.Method;
@@ -173,9 +191,13 @@ Ejecuta `cd java-dia-a-dia && java Invocar.java`.
 
 **Fallo deliberado:** cambia `etiqueta` por `estado`. **Error esperado:** `NoSuchMethodException: Invocar$Envio.estado()`. **Diagnóstico:** `getMethod` busca por nombre y firma; revisa el nombre declarado.
 
-**Entiende:** reflexión da flexibilidad en herramientas, pero el compilador ya no comprueba el nombre del método.
+**3. Entiende** reflexión da flexibilidad en herramientas, pero el compilador ya no comprueba el nombre del método.
 
 La comparación de tiempos sugerida originalmente queda como ejercicio posterior; no la uses para elegir una API sin una medición repetible.
+
+**4. Cierra**
+
+Guarda la salida válida, el caso que falló y una frase que explique por qué ocurrió.
 
 #### Paso 7 · Cierre y evidencia
 Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque entender la reflexión quita la magia a los frameworks y te ayuda a diagnosticar errores como `InaccessibleObjectException` o anotaciones que "no hacen nada".
