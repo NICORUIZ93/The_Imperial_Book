@@ -5,7 +5,7 @@
 **Proyecto continuo:** Motor de asignación de entregas.
 **Prerrequisito de entrada:** Fundamentos de programación; el módulo 0 comienza con JDK y terminal..
 **Duración objetivo:** temas de 20–45 minutos; cada tema se divide en 3–6 acciones de 5–15 minutos.
-**Estado estructural:** 70/101 temas migrados; auditoría estructural actualizada el 2026-11-03.
+**Estado estructural:** 78/101 temas migrados; auditoría estructural actualizada el 2026-11-03.
 
 ## Índice de módulos y temas
 
@@ -373,14 +373,38 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
 
 [Abrir lección completa](../web/public/content/java/modulo-16.md)
 
-- [pendiente de migrar] Tema 1: Entidades y relaciones JPA
-- [pendiente de migrar] Tema 2: FetchType.LAZY, EAGER y el problema N+1
-- [pendiente de migrar] Tema 3: Relaciones uno a uno, muchos a muchos y herencia
-- [pendiente de migrar] Tema 4: Ciclo de vida, EntityManager y consultas tipadas
-- [pendiente de migrar] Tema 5: Búsquedas dinámicas con Criteria y Querydsl
-- [pendiente de migrar] Tema 6: EntityGraph y cachés de persistencia
-- [pendiente de migrar] Tema 7: Concurrencia, transacciones y propagación
-- [pendiente de migrar] Tema 8: Migraciones y pruebas JPA con Testcontainers
+- [4 pasos] Tema 1: Entidades y relaciones JPA
+  - ✓ Subtema 1.1: Guarda una relación de cliente y pedido · 10 min
+  - ✓ Subtema 1.2: Protege la referencia obligatoria · 10 min
+  - ✓ Subtema 1.3: Elige la cascada según historial · 10 min
+- [4 pasos] Tema 2: FetchType.LAZY, EAGER y el problema N+1
+  - ✓ Subtema 2.1: Accede a una relación lazy en su contexto · 10 min
+  - ✓ Subtema 2.2: Cuenta las consultas N+1 · 10 min
+  - ✓ Subtema 2.3: Elige datos para cada pantalla · 10 min
+- [4 pasos] Tema 3: Relaciones uno a uno, muchos a muchos y herencia
+  - ✓ Subtema 3.1: Impide dos perfiles para el mismo cliente · 10 min
+  - ✓ Subtema 3.2: Modela una línea como entidad · 10 min
+  - ✓ Subtema 3.3: Inspecciona una estrategia de herencia · 10 min
+- [4 pasos] Tema 4: Ciclo de vida, EntityManager y consultas tipadas
+  - ✓ Subtema 4.1: Separa flush de clear · 10 min
+  - ✓ Subtema 4.2: Consulta entidades con JPQL · 10 min
+  - ✓ Subtema 4.3: Reconoce una entidad separada · 10 min
+- [4 pasos] Tema 5: Búsquedas dinámicas con Criteria y Querydsl
+  - ✓ Subtema 5.1: Busca por prefijo con Criteria · 10 min
+  - ✓ Subtema 5.2: Combina filtros opcionales · 10 min
+  - ✓ Subtema 5.3: Prueba Querydsl con Jakarta · 10 min
+- [4 pasos] Tema 6: EntityGraph y cachés de persistencia
+  - ✓ Subtema 6.1: Carga detalle con EntityGraph · 10 min
+  - ✓ Subtema 6.2: Observa el caché de primer nivel · 10 min
+  - ✓ Subtema 6.3: Mide antes de activar caché de segundo nivel · 10 min
+- [4 pasos] Tema 7: Concurrencia, transacciones y propagación
+  - ✓ Subtema 7.1: Detecta una actualización perdida · 10 min
+  - ✓ Subtema 7.2: Revierte un agregado completo · 10 min
+  - ✓ Subtema 7.3: Compara lock optimista y pesimista · 10 min
+- [4 pasos] Tema 8: Migraciones y pruebas JPA con Testcontainers
+  - ✓ Subtema 8.1: Versiona un cambio de esquema · 10 min
+  - ✓ Subtema 8.2: Ejecuta integración contra PostgreSQL · 10 min
+  - ✓ Subtema 8.3: Comprueba rollback fuera del contexto viejo · 10 min
 
 ### Módulo 17: JDBC, DAO y transacciones
 
@@ -451,7 +475,7 @@ La tabla registra presencia de áreas en el inventario del track, no profundidad
 
 ### Huecos y límites reportados
 
-- El repositorio contiene 101 temas en 21 módulos; 70 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
+- El repositorio contiene 101 temas en 21 módulos; 78 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
 - No hay base para afirmar que el track esté completo: la comparación con la fuente de referencia está pendiente de revisión humana módulo por módulo.
 - Los elementos de la fuente que todavía deben verificarse de forma explícita están enumerados en la tabla anterior; cualquier técnica crítica que no tenga tema propio debe añadirse conservando el currículo base.
 - La ejecución de ejemplos, el comportamiento con brokers/plataformas reales y la calidad pedagógica humana se registran por separado.

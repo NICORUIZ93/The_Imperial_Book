@@ -2,7 +2,7 @@
 
 > Auditoría estructural. Un encabezado o criterio detectado no demuestra que el ejemplo se haya ejecutado ni que la explicación sea pedagógicamente suficiente.
 
-Temas conformes a cuatro pasos: **87/1185**. Tracks inventariados: **14**.
+Temas conformes a cuatro pasos: **95/1185**. Tracks inventariados: **14**.
 
 | Track | Temas conformes | Temas inventariados | Subtemas detectados | Subtemas con estructura completa |
 |---|---:|---:|---:|---:|
@@ -13,7 +13,7 @@ Temas conformes a cuatro pasos: **87/1185**. Tracks inventariados: **14**.
 | flutter | 1 | 106 | 3 | 3 |
 | foundations | 0 | 99 | 0 | 0 |
 | ios | 0 | 56 | 0 | 0 |
-| java | 70 | 101 | 212 | 212 |
+| java | 78 | 101 | 236 | 236 |
 | javascript | 0 | 88 | 0 | 0 |
 | kotlin-multiplatform | 0 | 56 | 0 | 0 |
 | node | 2 | 83 | 6 | 6 |
@@ -704,14 +704,6 @@ Temas conformes a cuatro pasos: **87/1185**. Tracks inventariados: **14**.
 
 ### java
 
-- M16 ### Tema 1: Entidades y relaciones JPA: tiene 0 subtemas
-- M16 ### Tema 2: FetchType.LAZY, EAGER y el problema N+1: tiene 0 subtemas
-- M16 ### Tema 3: Relaciones uno a uno, muchos a muchos y herencia: tiene 0 subtemas
-- M16 ### Tema 4: Ciclo de vida, EntityManager y consultas tipadas: tiene 0 subtemas
-- M16 ### Tema 5: Búsquedas dinámicas con Criteria y Querydsl: tiene 0 subtemas
-- M16 ### Tema 6: EntityGraph y cachés de persistencia: tiene 0 subtemas
-- M16 ### Tema 7: Concurrencia, transacciones y propagación: tiene 0 subtemas
-- M16 ### Tema 8: Migraciones y pruebas JPA con Testcontainers: tiene 0 subtemas
 - M17 ### Tema 1: JDBC, PreparedStatement y DAO: tiene 0 subtemas
 - M17 ### Tema 2: Transacciones, ACID y aislamiento: tiene 0 subtemas
 - M18 ### Tema 1: HttpClient, REST, timeouts y fallos: tiene 0 subtemas

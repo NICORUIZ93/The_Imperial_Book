@@ -86,15 +86,15 @@
     },
     "java": {
       "topics": 101,
-      "code": 70,
-      "commentedCode": 14,
-      "mermaid": 16,
+      "code": 62,
+      "commentedCode": 12,
+      "mermaid": 8,
       "archifyVisual": 1,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
       "filePath": 100,
       "runCommand": 101,
-      "officialSource": 18
+      "officialSource": 17
     },
     "spring-boot": {
       "topics": 111,
@@ -2175,44 +2175,58 @@
     {
       "track": "java",
       "module": 16,
+      "topic": "Tema 1: Entidades y relaciones JPA",
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "java",
+      "module": 16,
       "topic": "Tema 2: FetchType.LAZY, EAGER y el problema N+1",
-      "missingCode": false,
-      "missingComments": true
+      "missingCode": true,
+      "missingComments": false
     },
     {
       "track": "java",
       "module": 16,
       "topic": "Tema 3: Relaciones uno a uno, muchos a muchos y herencia",
-      "missingCode": false,
-      "missingComments": true
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "java",
+      "module": 16,
+      "topic": "Tema 4: Ciclo de vida, EntityManager y consultas tipadas",
+      "missingCode": true,
+      "missingComments": false
     },
     {
       "track": "java",
       "module": 16,
       "topic": "Tema 5: Búsquedas dinámicas con Criteria y Querydsl",
-      "missingCode": false,
-      "missingComments": true
+      "missingCode": true,
+      "missingComments": false
     },
     {
       "track": "java",
       "module": 16,
       "topic": "Tema 6: EntityGraph y cachés de persistencia",
-      "missingCode": false,
-      "missingComments": true
+      "missingCode": true,
+      "missingComments": false
     },
     {
       "track": "java",
       "module": 16,
       "topic": "Tema 7: Concurrencia, transacciones y propagación",
-      "missingCode": false,
-      "missingComments": true
+      "missingCode": true,
+      "missingComments": false
     },
     {
       "track": "java",
       "module": 16,
       "topic": "Tema 8: Migraciones y pruebas JPA con Testcontainers",
-      "missingCode": false,
-      "missingComments": true
+      "missingCode": true,
+      "missingComments": false
     },
     {
       "track": "java",

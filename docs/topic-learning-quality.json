@@ -127,16 +127,16 @@
     "java": {
       "topics": 101,
       "explanation": 101,
-      "code": 70,
-      "visual": 17,
+      "code": 62,
+      "visual": 9,
       "filePath": 101,
-      "runCommand": 50,
+      "runCommand": 43,
       "expectedResult": 101,
-      "practice": 60,
-      "project": 49,
-      "modelMental": 62,
-      "limitsDecision": 68,
-      "practicable": 40,
+      "practice": 54,
+      "project": 41,
+      "modelMental": 54,
+      "limitsDecision": 61,
+      "practicable": 32,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
@@ -15592,19 +15592,19 @@
         "topic": "Tema 1: Entidades y relaciones JPA",
         "criteria": {
           "explanation": true,
-          "code": true,
-          "visual": true,
+          "code": false,
+          "visual": false,
           "filePath": true,
           "runCommand": true,
           "expectedResult": true,
-          "practice": true,
-          "project": true,
-          "modelMental": true,
-          "limitsDecision": true
+          "practice": false,
+          "project": false,
+          "modelMental": false,
+          "limitsDecision": false
         },
         "classification": {
-          "rubricScore": 16,
-          "practicable": true,
+          "rubricScore": 7,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -15614,19 +15614,19 @@
         "topic": "Tema 2: FetchType.LAZY, EAGER y el problema N+1",
         "criteria": {
           "explanation": true,
-          "code": true,
-          "visual": true,
+          "code": false,
+          "visual": false,
           "filePath": true,
-          "runCommand": true,
+          "runCommand": false,
           "expectedResult": true,
-          "practice": true,
-          "project": true,
-          "modelMental": true,
-          "limitsDecision": true
+          "practice": false,
+          "project": false,
+          "modelMental": false,
+          "limitsDecision": false
         },
         "classification": {
-          "rubricScore": 16,
-          "practicable": true,
+          "rubricScore": 5,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -15636,19 +15636,19 @@
         "topic": "Tema 3: Relaciones uno a uno, muchos a muchos y herencia",
         "criteria": {
           "explanation": true,
-          "code": true,
-          "visual": true,
+          "code": false,
+          "visual": false,
           "filePath": true,
-          "runCommand": true,
+          "runCommand": false,
           "expectedResult": true,
-          "practice": true,
-          "project": true,
-          "modelMental": true,
-          "limitsDecision": true
+          "practice": false,
+          "project": false,
+          "modelMental": false,
+          "limitsDecision": false
         },
         "classification": {
-          "rubricScore": 16,
-          "practicable": true,
+          "rubricScore": 5,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -15658,19 +15658,19 @@
         "topic": "Tema 4: Ciclo de vida, EntityManager y consultas tipadas",
         "criteria": {
           "explanation": true,
-          "code": true,
-          "visual": true,
+          "code": false,
+          "visual": false,
           "filePath": true,
-          "runCommand": true,
+          "runCommand": false,
           "expectedResult": true,
           "practice": true,
-          "project": true,
-          "modelMental": true,
-          "limitsDecision": true
+          "project": false,
+          "modelMental": false,
+          "limitsDecision": false
         },
         "classification": {
-          "rubricScore": 16,
-          "practicable": true,
+          "rubricScore": 7,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -15680,19 +15680,19 @@
         "topic": "Tema 5: Búsquedas dinámicas con Criteria y Querydsl",
         "criteria": {
           "explanation": true,
-          "code": true,
-          "visual": true,
+          "code": false,
+          "visual": false,
           "filePath": true,
-          "runCommand": true,
+          "runCommand": false,
           "expectedResult": true,
-          "practice": true,
-          "project": true,
-          "modelMental": true,
-          "limitsDecision": true
+          "practice": false,
+          "project": false,
+          "modelMental": false,
+          "limitsDecision": false
         },
         "classification": {
-          "rubricScore": 16,
-          "practicable": true,
+          "rubricScore": 5,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -15702,19 +15702,19 @@
         "topic": "Tema 6: EntityGraph y cachés de persistencia",
         "criteria": {
           "explanation": true,
-          "code": true,
-          "visual": true,
+          "code": false,
+          "visual": false,
           "filePath": true,
-          "runCommand": true,
+          "runCommand": false,
           "expectedResult": true,
-          "practice": true,
-          "project": true,
-          "modelMental": true,
-          "limitsDecision": true
+          "practice": false,
+          "project": false,
+          "modelMental": false,
+          "limitsDecision": false
         },
         "classification": {
-          "rubricScore": 16,
-          "practicable": true,
+          "rubricScore": 5,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -15724,19 +15724,19 @@
         "topic": "Tema 7: Concurrencia, transacciones y propagación",
         "criteria": {
           "explanation": true,
-          "code": true,
-          "visual": true,
+          "code": false,
+          "visual": false,
           "filePath": true,
-          "runCommand": true,
+          "runCommand": false,
           "expectedResult": true,
-          "practice": true,
-          "project": true,
-          "modelMental": true,
+          "practice": false,
+          "project": false,
+          "modelMental": false,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 16,
-          "practicable": true,
+          "rubricScore": 5,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -15746,19 +15746,19 @@
         "topic": "Tema 8: Migraciones y pruebas JPA con Testcontainers",
         "criteria": {
           "explanation": true,
-          "code": true,
-          "visual": true,
+          "code": false,
+          "visual": false,
           "filePath": true,
-          "runCommand": true,
+          "runCommand": false,
           "expectedResult": true,
           "practice": true,
-          "project": true,
-          "modelMental": true,
-          "limitsDecision": true
+          "project": false,
+          "modelMental": false,
+          "limitsDecision": false
         },
         "classification": {
-          "rubricScore": 16,
-          "practicable": true,
+          "rubricScore": 7,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }

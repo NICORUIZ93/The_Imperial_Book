@@ -1698,14 +1698,14 @@
     }
   ],
   "summary": {
-    "fingerprint": "19672849593d54809e09960b93c89b0d24984d44e4e286e13a69c4b1cc475d09",
+    "fingerprint": "6d6ddbcfd0f3baac0c09910facbb29f02fbf66e43e95de35ff773ff419d8ed19",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
       "cola-tras-cierre": 331,
       "parrafo-repetido": 5,
-      "sin-fuente": 10,
-      "tema-breve": 12
+      "sin-fuente": 12,
+      "tema-breve": 20
     },
     "legacySections": {
       "## Construcción guiada del capítulo": 42,
@@ -1715,7 +1715,7 @@
     "modules": 256,
     "modulesWithLegacySections": 182,
     "topics": 1185,
-    "topicsWithIssues": 425
+    "topicsWithIssues": 433
   },
   "topics": {
     "android": [
@@ -7407,60 +7407,78 @@
         "words": 484
       },
       {
-        "issues": [],
+        "issues": [
+          "tema-breve"
+        ],
         "module": 16,
-        "tailWords": 198,
+        "tailWords": 0,
         "topic": "Tema 1: Entidades y relaciones JPA",
-        "words": 865
+        "words": 385
       },
       {
-        "issues": [],
+        "issues": [
+          "sin-fuente",
+          "tema-breve"
+        ],
         "module": 16,
-        "tailWords": 220,
+        "tailWords": 0,
         "topic": "Tema 2: FetchType.LAZY, EAGER y el problema N+1",
-        "words": 832
+        "words": 349
       },
       {
-        "issues": [],
+        "issues": [
+          "tema-breve"
+        ],
         "module": 16,
-        "tailWords": 131,
+        "tailWords": 0,
         "topic": "Tema 3: Relaciones uno a uno, muchos a muchos y herencia",
-        "words": 541
+        "words": 365
       },
       {
-        "issues": [],
+        "issues": [
+          "tema-breve"
+        ],
         "module": 16,
-        "tailWords": 135,
+        "tailWords": 0,
         "topic": "Tema 4: Ciclo de vida, EntityManager y consultas tipadas",
-        "words": 545
+        "words": 354
       },
       {
-        "issues": [],
+        "issues": [
+          "tema-breve"
+        ],
         "module": 16,
-        "tailWords": 115,
+        "tailWords": 0,
         "topic": "Tema 5: Búsquedas dinámicas con Criteria y Querydsl",
-        "words": 526
+        "words": 336
       },
       {
-        "issues": [],
+        "issues": [
+          "sin-fuente",
+          "tema-breve"
+        ],
         "module": 16,
-        "tailWords": 113,
+        "tailWords": 0,
         "topic": "Tema 6: EntityGraph y cachés de persistencia",
-        "words": 592
+        "words": 353
       },
       {
-        "issues": [],
+        "issues": [
+          "tema-breve"
+        ],
         "module": 16,
-        "tailWords": 146,
+        "tailWords": 0,
         "topic": "Tema 7: Concurrencia, transacciones y propagación",
-        "words": 601
+        "words": 331
       },
       {
-        "issues": [],
+        "issues": [
+          "tema-breve"
+        ],
         "module": 16,
-        "tailWords": 139,
+        "tailWords": 0,
         "topic": "Tema 8: Migraciones y pruebas JPA con Testcontainers",
-        "words": 578
+        "words": 417
       },
       {
         "issues": [],

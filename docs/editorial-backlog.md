@@ -9,15 +9,15 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | Criterio | Cubierto | Pendiente |
 |---|---:|---:|
 | Explicación | 1185 | 0 |
-| Código | 1154 | 31 |
+| Código | 1146 | 39 |
 | Ruta | 1185 | 0 |
-| Ejecución | 1129 | 56 |
+| Ejecución | 1122 | 63 |
 | Resultado | 1183 | 2 |
-| Modificación | 1138 | 47 |
-| Conexión con un proyecto | 1121 | 64 |
-| Modelo mental | 1146 | 39 |
-| Límites | 1142 | 43 |
-| **Perfil de criterios detectado** | **1103** | **82** |
+| Modificación | 1132 | 53 |
+| Conexión con un proyecto | 1113 | 72 |
+| Modelo mental | 1138 | 47 |
+| Límites | 1135 | 50 |
+| **Perfil de criterios detectado** | **1095** | **90** |
 
 ## Prioridad por track
 
@@ -30,7 +30,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | flutter | 106 | 0 | 0 | 0 | 0 | 0 | 1 | 1 |
 | foundations | 99 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ios | 56 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| java | 101 | 31 | 0 | 51 | 0 | 41 | 52 | 33 |
+| java | 101 | 39 | 0 | 58 | 0 | 47 | 60 | 40 |
 | javascript | 88 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | kotlin-multiplatform | 56 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | node | 83 | 0 | 0 | 0 | 0 | 1 | 2 | 1 |
@@ -74,6 +74,14 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 - [java · módulo 15](../web/public/content/java/modulo-15.md) · Tema 4: JUnit 5, Mockito y assertions expresivas: código, ejecución, modificación, conexión con un proyecto, modelo mental.
 - [java · módulo 15](../web/public/content/java/modulo-15.md) · Tema 5: Pruebas de integración reproducibles: ejecución, modificación, conexión con un proyecto, modelo mental.
 - [java · módulo 15](../web/public/content/java/modulo-15.md) · Tema 6: SLF4J, Logback, MDC y logging estructurado: código, ejecución, modificación, conexión con un proyecto, modelo mental.
+- [java · módulo 16](../web/public/content/java/modulo-16.md) · Tema 1: Entidades y relaciones JPA: código, modificación, conexión con un proyecto, modelo mental, límites.
+- [java · módulo 16](../web/public/content/java/modulo-16.md) · Tema 2: FetchType.LAZY, EAGER y el problema N+1: código, ejecución, modificación, conexión con un proyecto, modelo mental, límites.
+- [java · módulo 16](../web/public/content/java/modulo-16.md) · Tema 3: Relaciones uno a uno, muchos a muchos y herencia: código, ejecución, modificación, conexión con un proyecto, modelo mental, límites.
+- [java · módulo 16](../web/public/content/java/modulo-16.md) · Tema 4: Ciclo de vida, EntityManager y consultas tipadas: código, ejecución, conexión con un proyecto, modelo mental, límites.
+- [java · módulo 16](../web/public/content/java/modulo-16.md) · Tema 5: Búsquedas dinámicas con Criteria y Querydsl: código, ejecución, modificación, conexión con un proyecto, modelo mental, límites.
+- [java · módulo 16](../web/public/content/java/modulo-16.md) · Tema 6: EntityGraph y cachés de persistencia: código, ejecución, modificación, conexión con un proyecto, modelo mental, límites.
+- [java · módulo 16](../web/public/content/java/modulo-16.md) · Tema 7: Concurrencia, transacciones y propagación: código, ejecución, modificación, conexión con un proyecto, modelo mental.
+- [java · módulo 16](../web/public/content/java/modulo-16.md) · Tema 8: Migraciones y pruebas JPA con Testcontainers: código, ejecución, conexión con un proyecto, modelo mental, límites.
 - [java · módulo 2](../web/public/content/java/modulo-2.md) · Tema 1: List, Set, Map y sus implementaciones: modificación, límites.
 - [java · módulo 2](../web/public/content/java/modulo-2.md) · Tema 2: Genéricos, wildcards y type erasure: modificación.
 - [java · módulo 2](../web/public/content/java/modulo-2.md) · Tema 3: Comparable vs Comparator, e iteración: límites.
