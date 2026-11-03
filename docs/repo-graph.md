@@ -1,8 +1,8 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-11-03 20:14 UTC
+Generated: 2026-11-03 20:20 UTC
 Root: `The_Imperial_Book`
-Indexed files: 942
+Indexed files: 944
 Import edges: 56
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -19,7 +19,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `automation-script`: 34 files
 - `course-content`: 262 files
 - `documentation`: 56 files
-- `example`: 476 files
+- `example`: 478 files
 - `local-infra`: 1 files
 - `project-file`: 54 files
 
@@ -29,7 +29,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `.py`: 160
 - `.json`: 67
 - `.ts`: 66
-- `.java`: 61
+- `.java`: 63
 - `.js`: 54
 - `.html`: 38
 - `.rs`: 25
@@ -260,7 +260,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `examples/archify/temas/cloud/modulo-22-tema-5-edge-routes.review-2/modulo-22-tema-5-edge-routes.finalize.json` (1012 lines)
 - `examples/archify/temas/foundations/modulo-12-tema-10-lazo-p.workflow.json` (183 lines)
 - `examples/archify/temas/foundations/modulo-12-tema-17-plc-scan.workflow.json` (189 lines)
-- ... 458 more files
+- ... 460 more files
 
 ### local-infra
 

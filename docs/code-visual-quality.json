@@ -56,7 +56,7 @@
       "archifyVisual": 0,
       "asciiVisual": 13,
       "misleadingDiagramLabel": 0,
-      "filePath": 82,
+      "filePath": 83,
       "runCommand": 83,
       "officialSource": 49
     },
@@ -87,7 +87,7 @@
     "java": {
       "topics": 91,
       "code": 91,
-      "commentedCode": 59,
+      "commentedCode": 57,
       "mermaid": 33,
       "archifyVisual": 3,
       "asciiVisual": 0,
@@ -1987,6 +1987,20 @@
       "track": "java",
       "module": 16,
       "topic": "Tema 8: Migraciones y pruebas JPA con Testcontainers",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 17,
+      "topic": "Tema 1: JDBC, PreparedStatement y DAO",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 17,
+      "topic": "Tema 2: Transacciones, ACID y aislamiento",
       "missingCode": false,
       "missingComments": true
     },

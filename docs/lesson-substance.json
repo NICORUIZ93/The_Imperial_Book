@@ -1695,7 +1695,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "c707e482ebff9c8f2eafa12ec3627dd45ad3364ddf3e160bef68a18eca7da4f5",
+    "fingerprint": "4f4d50dba1434928db899e1f4dfa6ad48d68765a3aaf826eb5a1cb60bc7b79de",
     "issues": {
       "andamiaje-generico": 128,
       "bloque-repetido": 218,
@@ -7518,14 +7518,14 @@
         "module": 17,
         "tailWords": 199,
         "topic": "Tema 1: JDBC, PreparedStatement y DAO",
-        "words": 751
+        "words": 714
       },
       {
         "issues": [],
         "module": 17,
         "tailWords": 228,
         "topic": "Tema 2: Transacciones, ACID y aislamiento",
-        "words": 720
+        "words": 679
       },
       {
         "issues": [],
@@ -9234,7 +9234,7 @@
         "module": 14,
         "tailWords": 340,
         "topic": "Tema 1: TypeScript en Node.js",
-        "words": 810
+        "words": 817
       },
       {
         "issues": [],
@@ -9276,14 +9276,14 @@
         "module": 14,
         "tailWords": 176,
         "topic": "Tema 7: Kafka desde Node: clave, grupo consumidor y offset",
-        "words": 866
+        "words": 787
       },
       {
         "issues": [],
         "module": 14,
         "tailWords": 155,
         "topic": "Tema 8: RabbitMQ desde Node: exchange, cola y confirmaciones",
-        "words": 768
+        "words": 758
       },
       {
         "issues": [],

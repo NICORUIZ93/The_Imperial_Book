@@ -897,7 +897,7 @@
     },
     {
       "path": "docs/revision-cursos-prioritarios.md",
-      "lines": 130,
+      "lines": 131,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -2251,6 +2251,14 @@
       "headings": []
     },
     {
+      "path": "examples/java-jpa-lab/src/main/java/academia/pedidos/EnvioDao.java",
+      "lines": 51,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
       "path": "examples/java-jpa-lab/src/main/java/academia/pedidos/JavaJpaLabApplication.java",
       "lines": 12,
       "kind": "example",
@@ -2269,6 +2277,14 @@
     {
       "path": "examples/java-jpa-lab/src/main/java/academia/pedidos/PedidoRepository.java",
       "lines": 19,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/java-jpa-lab/src/test/java/academia/pedidos/EnvioDaoTest.java",
+      "lines": 60,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -10420,7 +10436,7 @@
     },
     {
       "path": "web/public/content/node/modulo-14.md",
-      "lines": 642,
+      "lines": 618,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

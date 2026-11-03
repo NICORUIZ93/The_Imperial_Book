@@ -951,13 +951,13 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | node / 13 | [Tema 3: Reintentar sin duplicar el efecto](../web/public/content/node/modulo-13.md) | comprobar-script-test |
 | node / 13 | [Tema 4: Webhooks verificables y recuperación por reconciliación](../web/public/content/node/modulo-13.md) | comprobar-script-test |
 | node / 13 | [Tema 5: OpenAPI como contrato ejecutable](../web/public/content/node/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 14 | [Tema 1: TypeScript en Node.js](../web/public/content/node/modulo-14.md) | comprobar-script-test |
+| node / 14 | [Tema 1: TypeScript en Node.js](../web/public/content/node/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 14 | [Tema 2: GraphQL avanzado y Federation](../web/public/content/node/modulo-14.md) | comprobar-script-test |
 | node / 14 | [Tema 3: Compensar una entrega cuando falla un paso](../web/public/content/node/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 14 | [Tema 4: Serverless multi-cloud](../web/public/content/node/modulo-14.md) | comprobar-script-test |
 | node / 14 | [Tema 5: Docker productivo con Node](../web/public/content/node/modulo-14.md) | comprobar-script-test |
 | node / 14 | [Tema 6: CI/CD y promoción de artefactos](../web/public/content/node/modulo-14.md) | comprobar-script-test |
-| node / 14 | [Tema 7: Kafka desde Node: clave, grupo consumidor y offset](../web/public/content/node/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 14 | [Tema 7: Kafka desde Node: clave, grupo consumidor y offset](../web/public/content/node/modulo-14.md) | ejemplo-breve-revisar-contexto |
 | node / 14 | [Tema 8: RabbitMQ desde Node: exchange, cola y confirmaciones](../web/public/content/node/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 15 | [Tema 1: Deno y permisos explícitos](../web/public/content/node/modulo-15.md) | ejemplo-breve-revisar-contexto |
 | node / 15 | [Tema 2: Bun reúne runtime, paquetes, pruebas y bundler](../web/public/content/node/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |

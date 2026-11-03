@@ -7943,7 +7943,7 @@
       "module": 17,
       "title": "Tema 2: Transacciones, ACID y aislamiento",
       "file": "web/public/content/java/modulo-17.md",
-      "line": 92,
+      "line": 89,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -10428,9 +10428,7 @@
       "title": "Tema 1: TypeScript en Node.js",
       "file": "web/public/content/node/modulo-14.md",
       "line": 7,
-      "signals": [
-        "comprobar-script-test"
-      ],
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -10440,7 +10438,7 @@
       "module": 14,
       "title": "Tema 2: GraphQL avanzado y Federation",
       "file": "web/public/content/node/modulo-14.md",
-      "line": 79,
+      "line": 81,
       "signals": [
         "comprobar-script-test"
       ],
@@ -10453,7 +10451,7 @@
       "module": 14,
       "title": "Tema 3: Compensar una entrega cuando falla un paso",
       "file": "web/public/content/node/modulo-14.md",
-      "line": 145,
+      "line": 147,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -10464,7 +10462,7 @@
       "module": 14,
       "title": "Tema 4: Serverless multi-cloud",
       "file": "web/public/content/node/modulo-14.md",
-      "line": 215,
+      "line": 217,
       "signals": [
         "comprobar-script-test"
       ],
@@ -10477,7 +10475,7 @@
       "module": 14,
       "title": "Tema 5: Docker productivo con Node",
       "file": "web/public/content/node/modulo-14.md",
-      "line": 300,
+      "line": 302,
       "signals": [
         "comprobar-script-test"
       ],
@@ -10490,7 +10488,7 @@
       "module": 14,
       "title": "Tema 6: CI/CD y promoción de artefactos",
       "file": "web/public/content/node/modulo-14.md",
-      "line": 386,
+      "line": 388,
       "signals": [
         "comprobar-script-test"
       ],
@@ -10503,8 +10501,10 @@
       "module": 14,
       "title": "Tema 7: Kafka desde Node: clave, grupo consumidor y offset",
       "file": "web/public/content/node/modulo-14.md",
-      "line": 475,
-      "signals": [],
+      "line": 477,
+      "signals": [
+        "ejemplo-breve-revisar-contexto"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -10514,7 +10514,7 @@
       "module": 14,
       "title": "Tema 8: RabbitMQ desde Node: exchange, cola y confirmaciones",
       "file": "web/public/content/node/modulo-14.md",
-      "line": 568,
+      "line": 546,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

@@ -36,10 +36,12 @@ console.log(resultado);
 **Ejecuta el ejemplo** (monta el proyecto Node y córrelo):
 
 ```bash
-npm init -y && npm install
-node index.js
+mkdir -p ejemplo-node/src
+cd ejemplo-node
+npm init -y
+npm pkg set type=module
+node src/asignar.ts
 ```
-Para las pruebas: `npm test`.
 
 
 Ejecuta directamente con `node src/asignar.ts` (sin `tsc`, sin `ts-node`, sin ningún paso de compilación). **Resultado esperado:** Node elimina las anotaciones de tipo (`: Pedido`, `: string`) en memoria y ejecuta el JavaScript resultante, imprimiendo `{ id: 'p-1', conductorId: 'c-9' }`, sin que ningún archivo `.js` compilado se haya generado en disco.
@@ -105,7 +107,7 @@ npm start
 
 Desde otra terminal consulta el gateway:
 ```bash
-curl --fail http://127.0.0.1:4000/ -H 'content-type: application/json' --data '{"query":"{ pedido(id: "p-1") { conductor { nombre pedidosActivos } } }"}'
+curl --fail http://127.0.0.1:4000/ -H 'content-type: application/json' --data '{"query":"{ pedido(id: \"p-1\") { conductor { nombre pedidosActivos } } }"}'
 ```
 **Resultado esperado:** `{"data":{"pedido":{"conductor":{"nombre":"Ana","pedidosActivos":1}}}}`. Un ID de pedido inexistente devuelve `pedido: null`; `npm test` comprueba ambos casos con puertos efímeros y cierra los tres servidores. Ctrl+C cierra la ejecución interactiva. Es un laboratorio local con datos ficticios, sin autenticación; no lo publiques como servicio real.
 
@@ -498,51 +500,27 @@ flowchart LR
 
 #### Paso 4 · Demostración guiada
 
-Crea `ejemplo-kafka/producer.js` y `consumer.js`; instala `@confluentinc/kafka-javascript`. Configura `bootstrap.servers` desde `KAFKA_BOOTSTRAP_SERVERS` y usa un tópico de desarrollo creado en tu cluster. El productor debe enviar `pedidoId` como `key` y JSON en `value`; el consumidor se conecta, se suscribe, fija `group.id` y registra tópico, partición, offset, clave y valor. Usa la API promisificada recomendada para proyectos nuevos. Ejemplo independiente desde cero: crea una carpeta separada y prepara sus archivos, sin copiar estado de otro módulo.
+Abre `examples/node-messaging/kafka/producer.mjs` y `consumer.mjs`; instalan `@confluentinc/kafka-javascript`. El cliente KafkaJS de Confluent usa `kafkaJS.brokers` y `kafkaJS.groupId`; no mezcla esas opciones con la API nativa `bootstrap.servers`. Usa un tópico de desarrollo creado en tu cluster. El productor envía `pedidoId` como `key` y JSON en `value`; el consumidor registra tópico, partición, offset, clave y valor.
 
-`producer.js` publica un evento; `consumer.js` crea un lector del grupo. Sustituye el nombre de tópico por uno existente:
-
-```js
-// producer.js
-const { Kafka } = require("@confluentinc/kafka-javascript").KafkaJS;
-async function main() {
-  const kafka = new Kafka({ "bootstrap.servers": process.env.KAFKA_BOOTSTRAP_SERVERS });
-  const producer = kafka.producer();
-  await producer.connect();
-  await producer.send({ topic: "pedidos", messages: [{
-    key: "p-17", value: JSON.stringify({ eventId: "e-1", estado: "DESPACHADO" })
-  }] });
-  await producer.disconnect();
-}
-main().catch(console.error);
-```
+El cliente y la configuración que usan ambos programas están en `examples/node-messaging/kafka/client.mjs`:
 
 ```js
-// consumer.js
-const { Kafka } = require("@confluentinc/kafka-javascript").KafkaJS;
-async function main() {
-  const kafka = new Kafka({ "bootstrap.servers": process.env.KAFKA_BOOTSTRAP_SERVERS });
-  const consumer = kafka.consumer({ "group.id": "proyeccion-pedidos" });
-  await consumer.connect();
-  await consumer.subscribe({ topics: ["pedidos"] });
-  consumer.run({ eachMessage: async ({ partition, message }) => {
-    console.log({ partition, offset: message.offset, key: message.key?.toString(),
-      value: message.value?.toString() });
-  } });
-}
-main().catch(console.error);
+import { KafkaJS } from "@confluentinc/kafka-javascript";
+const kafka = new KafkaJS.Kafka({
+  kafkaJS: { clientId: "rutaflow-node-lab", brokers: ["localhost:19092"] }
+});
 ```
 
 El bucle `run` continúa hasta terminar el proceso; para el laboratorio detenlo con Ctrl+C y añade cierre ordenado antes de desplegar.
 
 ```bash
-mkdir -p ejemplo-kafka
-cd ejemplo-kafka
-npm init -y
-npm install @confluentinc/kafka-javascript
-export KAFKA_BOOTSTRAP_SERVERS=localhost:9092
-node producer.js
-node consumer.js
+cd examples/node-messaging
+npm ci
+docker compose -f ../spring-kafka-rutaflow/compose.yaml up -d
+docker compose -f ../spring-kafka-rutaflow/compose.yaml exec kafka /opt/kafka/bin/kafka-topics.sh --create --if-not-exists --topic pedidos --bootstrap-server localhost:9092 --partitions 3 --replication-factor 1
+npm run kafka:consumer
+# En otra terminal, desde la misma carpeta:
+npm run kafka:producer
 ```
 
 Antes de ejecutar, establece `KAFKA_BOOTSTRAP_SERVERS` con el host del cluster y confirma que el tópico `pedidos` existe y que la cuenta tiene permiso para leer/escribir.
@@ -590,36 +568,34 @@ flowchart LR
 
 #### Paso 4 · Demostración guiada
 
-Ejemplo independiente desde cero: crea `ejemplo-rabbit/consumer.mjs` y `producer.mjs`; usa `amqplib`. Levanta un broker local, declara durable exchange y cola, crea binding y publica un mensaje persistente con una routing key. En el consumidor usa `prefetch(5)`, parsea JSON, ejecuta el efecto y solo entonces llama `ack`. Confirma publicaciones con un canal de confirmación y espera el callback de confirmación antes de informar éxito al llamador.
+El laboratorio ejecutable está en `examples/node-messaging/rabbit/producer.mjs` y `worker.mjs`; `amqplib` conecta con RabbitMQ 4.4.0. El código declara exchange y colas durables, usa `prefetch(5)`, parsea JSON, llama `ack` después del trabajo y espera publisher confirms. La bandeja `Set` evita repetir un evento solo durante la vida de este proceso; para sobrevivir reinicios usa una tabla inbox persistente con `eventId` único.
 
-Fragmento central del consumidor; `guardarUnaVez` debe usar `eventId` como clave única y confirmar solo después de guardar:
-
-El ejemplo del repositorio usa cola durable y enruta mensajes rechazados a una DLQ configurada. En el laboratorio crea `entregas` como exchange directo, enlaza `envios` con `label.ready`, y enlaza `envios.dlq` con `dead` en `entregas.dlx`.
+El ejemplo del repositorio crea `entregas` como exchange directo, enlaza `envios` con `label.ready`, y enlaza `envios.dlq` con `dead` en `entregas.dlx`. El punto clave del worker es validar el ID, completar el trabajo y luego confirmar:
 
 ```js
-await channel.prefetch(5);
-await channel.consume("envios", async (msg) => {
-  if (!msg) return;
-  try {
-    const event = JSON.parse(msg.content.toString());
-    await guardarUnaVez(event.eventId, event);
-    channel.ack(msg);
-  } catch (error) {
-    channel.nack(msg, false, false); // Rechazo final: revisar DLQ.
+const event = JSON.parse(message.content.toString());
+if (typeof event.eventId !== "string" || !event.eventId) {
+  channel.nack(message, false, false); // Enruta al dead-letter exchange.
+} else {
+  if (processedInThisProcess.has(event.eventId)) {
+    console.log(`duplicado=${event.eventId}`);
+  } else {
+    console.log(`procesado=${JSON.stringify(event)}`);
+    processedInThisProcess.add(event.eventId);
   }
-}, { noAck: false });
+  channel.ack(message); // Solo después de completar el trabajo.
+}
 ```
 
 En el publisher, usa `createConfirmChannel()` y `await channel.waitForConfirms()` después de publicar. El confirm solo prueba que el broker aceptó el mensaje según su configuración; no confirma que el consumidor guardó el efecto.
 
 ```bash
-mkdir -p ejemplo-rabbit
-cd ejemplo-rabbit
-npm init -y
-npm install amqplib
-docker run -d --name rabbit-lab -p 5672:5672 -p 15672:15672 rabbitmq:4.4-management
-node producer.mjs
-node consumer.mjs
+cd examples/node-messaging
+npm ci
+docker compose -f compose.rabbit.yaml up -d --wait
+npm run rabbit:worker
+# En otra terminal, desde la misma carpeta:
+npm run rabbit:producer
 ```
 
 **Resultado esperado:** el mensaje aparece en una sola cola asociada; el consumidor escribe su resultado y luego confirma. Detén el proceso antes del ack: la entrega vuelve a estar disponible al reconectar.
