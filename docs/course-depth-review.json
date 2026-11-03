@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 245,
     "topics": 1098,
-    "topicsWithSignals": 149,
+    "topicsWithSignals": 150,
     "newLaboratories": 25
   },
   "priorities": {
@@ -1532,7 +1532,9 @@
       "title": "Tema 4: Qué es Floci — definición, propósito y comparativa con LocalStack",
       "file": "web/public/content/cloud/modulo-0.md",
       "line": 224,
-      "signals": [],
+      "signals": [
+        "ejemplo-breve-revisar-contexto"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -1542,7 +1544,7 @@
       "module": 0,
       "title": "Tema 5: Servicios que emula Floci — AWS, Azure y GCP",
       "file": "web/public/content/cloud/modulo-0.md",
-      "line": 259,
+      "line": 266,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -1553,7 +1555,7 @@
       "module": 0,
       "title": "Tema 6: Ventajas y limitaciones de practicar con un emulador local",
       "file": "web/public/content/cloud/modulo-0.md",
-      "line": 299,
+      "line": 306,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -1564,7 +1566,7 @@
       "module": 0,
       "title": "Tema 7: Metodología de estudio — teoría, laboratorio y evaluación en cada módulo",
       "file": "web/public/content/cloud/modulo-0.md",
-      "line": 326,
+      "line": 333,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

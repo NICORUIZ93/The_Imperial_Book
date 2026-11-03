@@ -97,6 +97,8 @@ enciende, consulta y detiene solo el servicio AWS definido en el Compose del
 proyecto; el siguiente tema enseña a leer los tres nombres y puertos; el tercero
 separa una respuesta local de lo que aún no se ha probado. Se quitaron párrafos
 repetidos y diagramas extensos, y se añadieron comandos y resultados que el alumno
-puede registrar. La validación completa y los índices regenerados pasan. No se
-pudieron ejecutar los comandos Docker en este entorno porque el ejecutable
-`docker` no está instalado; esa práctica queda pendiente de ejecución real.
+puede registrar. El archivo JavaScript pasó `node --check` y respondió `200` ante
+un servidor HTTP de prueba local; eso solo verifica el ejemplo de código, no Floci.
+La validación completa y los índices regenerados pasan. No se pudieron ejecutar
+los comandos Docker en este entorno porque el ejecutable `docker` no está
+instalado; esa práctica queda pendiente de ejecución real.

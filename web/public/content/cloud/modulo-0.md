@@ -237,6 +237,13 @@ docker compose ps aws-local
 curl -i http://localhost:4566/_floci/health
 ```
 La primera orden descarga y enciende el contenedor; la segunda muestra si está activo; la tercera pregunta por su estado. Busca una respuesta HTTP `200`. Floci ofrece una herramienta llamada LocalStack, pero aquí vamos a usar Floci: ambos permiten practicar servicios de AWS en local y sus catálogos no son idénticos.
+Ahora crea `ejemplo-floci/revisar.mjs` con este código:
+```js
+const respuesta = await fetch("http://localhost:4566/_floci/health");
+
+console.log(`Floci respondió: ${respuesta.status}`);
+```
+Ejecuta `node ejemplo-floci/revisar.mjs`. Debe imprimir `Floci respondió: 200`. `fetch` hace la misma pregunta que el comando anterior, y `respuesta.status` muestra el número que volvió. Cambia temporalmente `4566` por `4567` y ejecuta de nuevo: ahora Node mostrará un error de conexión. Devuelve el `4566` para corregirlo. Si el `200` no aparece, primero revisa el estado con `docker compose ps aws-local`.
 Una respuesta HTTP es una forma de contestar por la web. `200` quiere decir “recibí tu consulta y pude responder”. Si aparece “connection refused” o “no se pudo conectar”, revisa primero que Docker esté abierto y que `docker compose ps` diga `Up`. Si ves `404`, llegaste al servidor, pero la dirección escrita no existe. En este ejercicio usamos la ruta exacta `/_floci/health`; no es una página para crear buckets.
 #### Paso 5 · Práctica guiada
 Detén el servicio y repite la consulta de salud:
@@ -249,7 +256,7 @@ Fíjate en la diferencia: “no se pudo conectar” indica que el servicio está
 #### Paso 6 · Práctica independiente
 En `ejemplo-floci.md`, anota qué comando lo inició, qué puerto usaste y qué cambió al detenerlo. No pongas claves personales: el ejercicio funciona sin una cuenta de nube.
 #### Paso 7 · Cierre y evidencia
-En `ejemplo-floci.md` incluye las dos salidas y explica por qué la segunda consulta falló. Después sigue al tema 5 para conocer los tres puertos. **Fuente:** [instalación oficial de Floci](https://floci.io/floci/getting-started/installation/) y [README oficial de Floci CLI](https://github.com/floci-io/floci-cli/blob/main/README.md). El comando de este ejercicio usa el Compose del proyecto, por lo que ejecútalo desde su carpeta principal.
+En `ejemplo-floci.md` incluye la salida de `revisar.mjs`, la consulta con puerto incorrecto y explica por qué falló. Después sigue al tema 5 para conocer los tres puertos. **Fuente:** [instalación oficial de Floci](https://floci.io/floci/getting-started/installation/) y [README oficial de Floci CLI](https://github.com/floci-io/floci-cli/blob/main/README.md). El comando de este ejercicio usa el Compose del proyecto, por lo que ejecútalo desde su carpeta principal.
 **Conceptos clave:** Floci, simulador local, contenedor, puerto.
 **¿Por qué es importante?** Practicar localmente te deja equivocarte y corregir el comando antes de trabajar con recursos de una cuenta real.
 El puerto `4566` es una entrada de tu computador conectada al servicio dentro del contenedor. Cuando el contenedor está detenido, esa entrada deja de responder. Al iniciar el curso usaremos AWS CLI y programas pequeños para crear recursos de práctica; por ahora basta con confirmar que Floci puede encenderse y apagarse. Si ya tienes otro programa usando el puerto, Docker avisará que no puede enlazarlo. Detén el programa que lo ocupa o revisa su configuración antes de seguir.

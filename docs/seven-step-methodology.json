@@ -46,7 +46,7 @@
       "prerequisites": 153,
       "context": 156,
       "theoryAnalogy": 156,
-      "guidedDemo": 155,
+      "guidedDemo": 156,
       "codeExplanation": 156,
       "execution": 156,
       "expectedResult": 153,
@@ -3727,7 +3727,7 @@
           "prerequisites": false,
           "context": true,
           "theoryAnalogy": true,
-          "guidedDemo": false,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": false,
@@ -3741,7 +3741,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 5,
+          "stepsPassed": 6,
           "complete": false
         }
       },

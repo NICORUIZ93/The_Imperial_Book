@@ -579,7 +579,7 @@
     },
     {
       "path": "docs/continuacion-material-rutaflow.md",
-      "lines": 103,
+      "lines": 105,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -595,7 +595,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 12462,
+      "lines": 12464,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -6862,7 +6862,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-0.md",
-      "lines": 427,
+      "lines": 434,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

@@ -1647,7 +1647,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "92aa45b08da979c7871f643af5ad27bd4b77939839f862027aebda2caf749f51",
+    "fingerprint": "43976ca0b2a8b9e2ce0c8ba72fb016110171ab8e875fee11ba027b9f402b8953",
     "issues": {
       "andamiaje-generico": 128,
       "bloque-repetido": 218,
@@ -2616,9 +2616,9 @@
       {
         "issues": [],
         "module": 0,
-        "tailWords": 205,
+        "tailWords": 209,
         "topic": "Tema 4: Qué es Floci — definición, propósito y comparativa con LocalStack",
-        "words": 649
+        "words": 742
       },
       {
         "issues": [],
