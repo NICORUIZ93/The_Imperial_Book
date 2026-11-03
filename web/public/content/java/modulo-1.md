@@ -566,66 +566,174 @@ Entrega el archivo y la salida. Justifica por qué `Confirmable` es una interfaz
 
 ### Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás distinguir sobrecarga (varias firmas, mismo nombre) de sobreescritura (Tema 2), y aplicar los cuatro niveles de visibilidad de Java. Prerrequisitos: JDK 25, Maven y un editor. Comprueba java --version.
+**Duración estimada:** 35 min.
+**¿Por qué es importante?** La sobrecarga ofrece varias formas de llamar a una operación; la sobreescritura cambia el comportamiento heredado. Los modificadores limitan quién puede usar cada parte del modelo.
+**Prerrequisitos:** M1 T2 y M1 T3. Proyecto continuo: calcular tarifas de entrega y proteger los datos de una guía.
 
-#### Paso 2 · Contexto y caso real
-Un servicio de tarifas necesita `sumar` para enteros y para decimales sin duplicar el nombre del método; y necesita que solo ciertas clases del mismo paquete puedan acceder a un campo interno, mientras otras partes del sistema no.
+#### Subtema 4.1: Sobrecarga según los parámetros · 10 min
 
-#### Paso 3 · Teoría, modelo mental y analogía
-La sobrecarga se resuelve en tiempo de compilación según los tipos de los argumentos; la sobreescritura, en tiempo de ejecución según el tipo real del objeto. La analogía: la sobrecarga es tener varias entradas a un edificio para distinto tipo de visitante; los modificadores de acceso son círculos concéntricos de alcance creciente.
+**1. Contexto**
+El motor calcula una tarifa con distancias enteras o decimales y conserva un nombre de operación fácil de recordar.
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
-```bash
-mkdir ejemplo-sobrecarga-visibilidad
-cd ejemplo-sobrecarga-visibilidad
-mkdir -p src/main/java/academia/tarifas
-```
-
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
-
-```bash
-# Maven
-mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-cd app && mvn test
-# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
-```
-
-Crea `Tarifa.java` con dos métodos `sumar` sobrecargados (`int`/`int` y `double`/`double`) y un campo `private` junto a uno `protected`. Compila y ejecuta una clase `Main` que invoque ambas variantes de `sumar` y muestre cuál se resuelve para cada tipo de argumento.
-
-#### Paso 5 · Práctica guiada
-Pista: intenta acceder al campo `private` desde otra clase del mismo paquete para provocar un fallo deliberado de compilación; solo el campo sin modificador (package-private) es accesible ahí. Resultado esperado: distingues qué nivel de visibilidad permite cada acceso.
-
-#### Paso 6 · Práctica independiente
-Agrega una tercera sobrecarga de `sumar` que reciba tres argumentos, y una clase en otro paquete que confirme que el campo `protected` es accesible solo desde una subclase.
-
-#### Paso 7 · Cierre y evidencia
-Guarda las sobrecargas, la salida de cada resolución y el error de acceso al campo `private`; como siguiente paso estudia colecciones. Errores comunes: confundir sobrecarga con sobreescritura, hacer todo `public` por comodidad, y setters sin reglas que rompan invariantes. Fuentes oficiales: https://dev.java/learn/classes-objects/ y https://docs.oracle.com/javase/tutorial/java/IandI/.
-**¿Por qué es importante?** Porque confundir sobrecarga con sobreescritura, o exponer un campo con más visibilidad de la necesaria, son errores de diseño que se vuelven costosos de revertir una vez que otro código ya depende de ellos.
-**Evidencia de aprendizaje:** entrega las dos sobrecargas de `sumar`, la resolución correcta de cada una según el tipo del argumento, y el error de compilación al intentar acceder al campo `private` desde otra clase.
-**Conceptos clave:** misma firma vs distintas firmas, niveles de visibilidad.
-
-La sobrecarga (overload) define múltiples métodos con el mismo nombre pero distintas firmas (distinto número o tipo de parámetros) dentro de la misma clase: `int sumar(int a, int b)` y `double sumar(double a, double b)` son dos métodos distintos que el compilador resuelve según los tipos de los argumentos pasados en cada llamada específica, una decisión tomada en tiempo de compilación; la sobreescritura (override, Tema 2) redefine el comportamiento de un método heredado con exactamente la misma firma en una subclase, una decisión resuelta en tiempo de ejecución según el tipo real del objeto.
-
-Los modificadores de acceso controlan la visibilidad de un miembro de una clase en círculos concéntricos de alcance creciente: `private` restringe el acceso exclusivamente a la propia clase; sin modificador explícito (package-private, el nivel por defecto cuando no se escribe ninguno) permite acceso desde cualquier clase del mismo paquete; `protected` extiende ese acceso también a subclases, incluso si están en otro paquete distinto; `public` permite acceso desde cualquier lugar sin restricción alguna, la misma jerarquía de visibilidad estudiada de forma más general en el Módulo 4 del track de JavaScript sobre encapsulación, aquí con la sintaxis y granularidad específica de Java.
-
-**Analogía:** la sobrecarga es como tener varias entradas distintas a un mismo edificio, cada una diseñada para un tipo distinto de visitante que llega con diferente equipaje; la sobreescritura es como una sucursal específica de una franquicia que decide atender a sus visitantes de una forma particular y distinta a como lo especifica el manual general de la franquicia, sin cambiar el nombre del procedimiento que sigue.
-
-**¿Por qué es importante?** Sobrecarga y sobreescritura resuelven problemas distintos (múltiples formas de invocar un método según sus argumentos, frente a redefinir el comportamiento heredado); los modificadores de acceso controlan con precisión granular quién puede ver y usar cada miembro de una clase.
-
-**Código del ejemplo:**
+**2. Hazlo tú**
+Crea el archivo java-motor-poo/src/TarifaDemo.java:
 
 ```java
-int sumar(int a, int b) { return a + b; }
-double sumar(double a, double b) { return a + b; } // sobrecarga: mismo nombre, firma distinta
+class Tarifa {
+    static int calcular(int kilometros) { return kilometros * 1200; }
+    static double calcular(double kilometros) { return kilometros * 1200.0; }
+}
 
-// private (solo la clase) < package-private (mismo paquete) < protected (+ subclases) < public (todos)
+public class TarifaDemo {
+    public static void main(String[] args) {
+        System.out.println(Tarifa.calcular(3));
+        System.out.println(Tarifa.calcular(2.5));
+    }
+}
 ```
 
----
+Desde java-motor-poo/, compila y ejecuta:
 
-**Transferencia al proyecto integrador «Motor de asignación de entregas»:** Separa sobrecarga de métodos de la sustitución de comportamiento del motor. Prueba llamadas por interfaz y restringe modificadores para impedir que un consumidor altere capacidad sin validación.
+```bash
+mkdir -p out
+javac -d out src/TarifaDemo.java
+java -cp out TarifaDemo
+```
+
+**Resultado esperado:** 3600 y 3000.0.
+
+**Fallo deliberado:** agrega una variante calcular(int) que solo cambie el tipo de retorno. **Error esperado:** method calcular(int) is already defined. **Diagnóstico:** el tipo de retorno por sí solo no diferencia dos métodos; cambia la cantidad o los tipos de parámetros.
+
+**3. Entiende**
+Las variantes comparten nombre, pero tienen parámetros distintos. El compilador selecciona una según los argumentos de la llamada.
+
+**4. Cierra**
+Anota qué firma se eligió en cada llamada y qué la distingue.
+
+#### Subtema 4.2: Compara sobrecarga y sobreescritura · 10 min
+
+**1. Contexto**
+Al investigar una llamada, distingue si el compilador eligió otra firma o si un objeto de una subclase cambió la implementación heredada.
+
+**2. Hazlo tú**
+Reemplaza java-motor-poo/src/TarifaDemo.java:
+
+```java
+class Calculador {
+    String calcular(int kilometros) { return "base=" + kilometros; }
+}
+
+class CalculadorExpress extends Calculador {
+    @Override
+    String calcular(int kilometros) { return "express=" + kilometros; }
+
+    String calcular(double kilometros) { return "decimal=" + kilometros; }
+}
+
+public class TarifaDemo {
+    public static void main(String[] args) {
+        Calculador calculador = new CalculadorExpress();
+        System.out.println(calculador.calcular(3));
+        System.out.println(((CalculadorExpress) calculador).calcular(2.5));
+    }
+}
+```
+
+Compila y ejecuta con los comandos del subtema 4.1.
+
+**Resultado esperado:** express=3 y decimal=2.5.
+
+**Fallo deliberado:** elimina @Override y escribe calcularr en la variante entera. **Resultado erróneo esperado:** base=3. **Diagnóstico:** creaste otro método; no reemplaza calcular. Restaura el nombre y usa @Override para que el compilador detecte errores de firma.
+
+**3. Entiende**
+calcular(int) sobrescribe la firma heredada y el objeto decide la implementación durante la ejecución. calcular(double) es una sobrecarga, elegida por los argumentos al compilar.
+
+**4. Cierra**
+Clasifica cada llamada y explica si su selección ocurre por firma o por tipo real del objeto.
+
+#### Subtema 4.3: Restringe el acceso a los datos · 15 min
+
+**1. Contexto**
+El identificador de una guía debe permanecer privado; el paquete puede compartir un contador interno y una subclase puede especializar el estado protegido.
+
+**2. Hazlo tú**
+Crea java-motor-poo/src/modelo/Guia.java:
+
+```java
+package modelo;
+
+public class Guia {
+    private final String numero;
+    int intentos;
+    protected String estado = "lista";
+
+    public Guia(String numero) { this.numero = numero; }
+    public String numero() { return numero; }
+}
+```
+
+Crea java-motor-poo/src/modelo/Control.java:
+
+```java
+package modelo;
+
+public class Control {
+    public static void main(String[] args) {
+        Guia guia = new Guia("RF-301");
+        guia.intentos++;
+        System.out.println(guia.numero() + " intentos=" + guia.intentos);
+    }
+}
+```
+
+Crea java-motor-poo/src/app/Bicicleta.java:
+
+```java
+package app;
+
+import modelo.Guia;
+
+public class Bicicleta extends Guia {
+    public Bicicleta() { super("RF-302"); }
+
+    public String resumen() {
+        return numero() + " estado=" + estado;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(new Bicicleta().resumen());
+    }
+}
+```
+
+Desde java-motor-poo/, compila y ejecuta:
+
+```bash
+javac -d out src/modelo/Guia.java src/modelo/Control.java src/app/Bicicleta.java
+java -cp out modelo.Control
+java -cp out app.Bicicleta
+```
+
+**Resultado esperado:** RF-301 intentos=1 y RF-302 estado=lista.
+
+**Fallo deliberado:** en Bicicleta, intenta leer new Guia("RF-303").estado. **Error esperado:** estado has protected access in Guia. **Diagnóstico:** fuera del paquete, una subclase puede usar el miembro protegido en el contexto de su herencia; una instancia arbitraria de la clase base no queda abierta al acceso.
+
+**3. Entiende**
+private limita el miembro a su clase; sin modificador (package-private) lo comparte dentro del paquete; protected permite acceso en el paquete y en subclases con las reglas de Java; public expone el miembro desde otros paquetes. El método numero() da acceso controlado al campo privado.
+
+**4. Cierra**
+Ordena los cuatro niveles de menor a mayor alcance y explica por qué leer estado desde this es válido, pero leerlo desde la instancia base no.
+
+**Hito del tema:**
+
+- [ ] Sobrecargué un método con parámetros distintos y comprobé que cambiar solo el retorno no basta.
+- [ ] Comparé una sobrecarga con una sobreescritura.
+- [ ] Probé private y package-private dentro del paquete.
+- [ ] Usé protected desde una subclase externa y describí cuándo conviene public.
+
+**Fuentes oficiales:** [clases y objetos en dev.java](https://dev.java/learn/classes-objects/), [sobrecarga y sobreescritura](https://docs.oracle.com/javase/tutorial/java/IandI/override.html) y [modificadores de acceso de Java](https://docs.oracle.com/javase/tutorial/java/javaOO/accesscontrol.html).
+
+**Transferencia al proyecto integrador:** conserva una interfaz pública pequeña para operar el motor y mantén privados los datos que solo el modelo debe cambiar.
 
 ## Construcción guiada del capítulo
 
@@ -635,14 +743,13 @@ double sumar(double a, double b) { return a + b; } // sobrecarga: mismo nombre, 
 
 | Paso | Acción | Código | Explicación |
 |---|---|---|---|
-| 1 | Construir `Guia` con invariantes en el constructor | Ver Tema 1 | Impide número vacío y peso inválido |
-| 2 | Crear `Animal` y `Perro` con `@Override` | Ver Tema 2 | Verifica el polimorfismo de subtipo |
-| 3 | Definir `Volador` e implementarla en `Pajaro` | Ver Tema 3 | Contrato puro sin implementación |
-| 4 | Crear `Forma` abstracta con `Circulo`/`Cuadrado` | Ver Tema 3 | Comportamiento compartido + métodos abstractos |
-| 5 | Sobrecargar `sumar()` con distintas firmas | Ver Tema 4 | Compara con sobreescritura |
-| 6 | Aplicar `private`/`protected`/`public` | Ver Tema 4 | Explica cuándo usar cada uno |
+| 1 | Construir `Guia` con invariantes en el constructor | Ver Tema 1 | Impide número y destino vacíos |
+| 2 | Extender `Vehiculo` y sobrescribir `entregar()` | Ver Tema 2 | Verifica despacho polimórfico |
+| 3 | Combinar `Confirmable` con `ServicioEntrega` abstracto | Ver Tema 3 | Separa capacidad común de estado compartido |
+| 4 | Sobrecargar `calcular()` y contrastarlo con `@Override` | Ver Tema 4 | Distingue selección por firma y tipo real |
+| 5 | Revisar acceso de campos en `Guia` y `Bicicleta` | Ver Tema 4 | Contrasta `private`, package-private y `protected` |
 
-**Verificación:** el laboratorio se considera exitoso si invocar un método sobre una referencia `Animal` que apunta a un `Perro` ejecuta correctamente la versión sobreescrita, y si la jerarquía distingue apropiadamente qué comportamiento pertenece a una interfaz frente a una clase abstracta.
+**Verificación:** el laboratorio se considera exitoso si el motor procesa servicios mediante `Confirmable`, comparte el dato de guía solo donde corresponde y demuestra la diferencia entre sobrecarga, sobreescritura y alcance de los miembros.
 
 **Errores comunes y soluciones**
 

@@ -1695,11 +1695,11 @@
     }
   ],
   "summary": {
-    "fingerprint": "2da08c0099cd6fe908e3fbee5a9adb5c2f2ac4c4207d7b805641920c201de5e3",
+    "fingerprint": "c687eb18552ca820ea7df55c61c7f963c0b48e713438ab1d4804d31f14058aad",
     "issues": {
       "andamiaje-generico": 125,
-      "bloque-repetido": 214,
-      "cola-tras-cierre": 372,
+      "bloque-repetido": 213,
+      "cola-tras-cierre": 371,
       "parrafo-repetido": 5,
       "tema-breve": 2
     },
@@ -1711,7 +1711,7 @@
     "modules": 256,
     "modulesWithLegacySections": 181,
     "topics": 1185,
-    "topicsWithIssues": 463
+    "topicsWithIssues": 462
   },
   "topics": {
     "android": [
@@ -7198,14 +7198,11 @@
         "words": 846
       },
       {
-        "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 1,
-        "tailWords": 521,
+        "tailWords": 0,
         "topic": "Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso",
-        "words": 877
+        "words": 882
       },
       {
         "issues": [

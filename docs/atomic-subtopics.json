@@ -51,10 +51,10 @@
     },
     "java": {
       "topics": 101,
-      "completeTopics": 6,
-      "topicsWith3to6Subtopics": 7,
-      "subtopics": 22,
-      "completeSubtopics": 21
+      "completeTopics": 7,
+      "topicsWith3to6Subtopics": 8,
+      "subtopics": 25,
+      "completeSubtopics": 24
     },
     "javascript": {
       "topics": 88,
@@ -5123,9 +5123,52 @@
       {
         "module": 1,
         "topic": "### Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "4.1",
+            "title": "#### Subtema 4.1: Sobrecarga según los parámetros · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "4.2",
+            "title": "#### Subtema 4.2: Compara sobrecarga y sobreescritura · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "4.3",
+            "title": "#### Subtema 4.3: Restringe el acceso a los datos · 15 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 10,

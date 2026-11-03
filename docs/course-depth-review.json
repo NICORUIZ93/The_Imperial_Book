@@ -7516,7 +7516,7 @@
       "file": "web/public/content/java/modulo-1.md",
       "line": 567,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

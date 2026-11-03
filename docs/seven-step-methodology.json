@@ -142,23 +142,23 @@
     },
     "java": {
       "topics": 101,
-      "objective": 94,
+      "objective": 93,
       "prerequisites": 101,
-      "context": 94,
-      "theoryAnalogy": 84,
-      "guidedDemo": 82,
+      "context": 93,
+      "theoryAnalogy": 83,
+      "guidedDemo": 81,
       "codeExplanation": 101,
       "execution": 91,
       "expectedResult": 101,
       "deliberateFailure": 100,
-      "guidedPractice": 82,
-      "independentPractice": 85,
-      "closure": 86,
-      "commonErrors": 85,
+      "guidedPractice": 81,
+      "independentPractice": 84,
+      "closure": 85,
+      "commonErrors": 84,
       "resources": 91,
-      "standaloneExample": 80,
-      "learningEvidence": 93,
-      "complete": 77
+      "standaloneExample": 79,
+      "learningEvidence": 92,
+      "complete": 76
     },
     "javascript": {
       "topics": 88,
@@ -17721,26 +17721,26 @@
         "module": 1,
         "topic": "Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
           "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 6,
+          "complete": false
         }
       },
       {

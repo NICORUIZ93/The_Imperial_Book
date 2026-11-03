@@ -1,6 +1,6 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-11-03 22:09 UTC
+Generated: 2026-11-03 22:13 UTC
 Root: `The_Imperial_Book`
 Indexed files: 990
 Import edges: 60
@@ -240,7 +240,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/RUNBOOKS-CLOUD.md` (1633 lines) - headings: # Cloud Runbooks — Troubleshooting Operacional, ## Runbook 1: DynamoDB Throttling, ### Síntomas, ### Diagnosis
 - `docs/RUNBOOKS-DEVOPS.md` (1409 lines) - headings: # DevOps Runbooks — Troubleshooting Operacional, ## Runbook 1: Docker Image Build Failures, ### Síntomas, ### Diagnosis
 - `docs/SKILLS-VISUALES-Y-ESTUDIO.md` (94 lines) - headings: # Skills para visuales y estudio desde cero, ## Selección y uso, ## Recorrido que debe comprobarse, ## Cómo usar las skills en una revisión
-- `docs/atomic-subtopics.md` (1235 lines) - headings: # Auditoría de subtemas atómicos, ## Temas pendientes, ### android, ### angular
+- `docs/atomic-subtopics.md` (1234 lines) - headings: # Auditoría de subtemas atómicos, ## Temas pendientes, ### android, ### angular
 - `docs/auditoria-profundidad-cobertura.md` (213 lines) - headings: # Auditoría de profundidad y cobertura — The Imperial Book, ## Resumen ejecutivo (sin adornos), ## Eje 1 — PROFUNDIDAD (¿el Paso 4 es ejecutable de cero a profesional?), ### Evidencia directa (leída, no inferida)
 - ... 43 more files
 
@@ -275,16 +275,16 @@ For automated lookups, use `docs/repo-graph.json`.
 - `.env.example` (8 lines)
 - `.github/workflows/ci.yml` (62 lines)
 - `docs/app-flow-inspection.json` (13830 lines)
-- `docs/atomic-subtopics.json` (9216 lines)
+- `docs/atomic-subtopics.json` (9259 lines)
 - `docs/biblioteca/catalogo.json` (564 lines)
 - `docs/biblioteca/imagenes.json` (577 lines)
 - `docs/browser-course-review.json` (2660 lines)
-- `docs/code-visual-quality.json` (3395 lines)
+- `docs/code-visual-quality.json` (3402 lines)
 - `docs/course-depth-review.json` (13480 lines)
 - `docs/curriculum-matrix.json` (394 lines)
 - `docs/floci-official-curriculum.json` (14 lines)
 - `docs/lesson-substance-baseline.json` (1693 lines)
-- `docs/lesson-substance.json` (11223 lines)
+- `docs/lesson-substance.json` (11220 lines)
 - `docs/merged-pdf-index.json` (426 lines)
 - `docs/official-learning-guides.json` (22 lines)
 - `docs/official-sources.json` (195 lines)

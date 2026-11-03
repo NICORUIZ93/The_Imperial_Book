@@ -87,7 +87,7 @@
     "java": {
       "topics": 101,
       "code": 101,
-      "commentedCode": 51,
+      "commentedCode": 50,
       "mermaid": 32,
       "archifyVisual": 2,
       "asciiVisual": 0,
@@ -1945,6 +1945,13 @@
       "track": "java",
       "module": 1,
       "topic": "Tema 3: Interfaces, clases abstractas y cuándo usar cada una",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 1,
+      "topic": "Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso",
       "missingCode": false,
       "missingComments": true
     },
