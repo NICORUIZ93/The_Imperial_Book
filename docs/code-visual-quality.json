@@ -97,16 +97,16 @@
       "officialSource": 108
     },
     "spring-boot": {
-      "topics": 101,
-      "code": 101,
-      "commentedCode": 84,
-      "mermaid": 59,
+      "topics": 102,
+      "code": 102,
+      "commentedCode": 85,
+      "mermaid": 60,
       "archifyVisual": 4,
       "asciiVisual": 21,
       "misleadingDiagramLabel": 0,
-      "filePath": 101,
-      "runCommand": 101,
-      "officialSource": 101
+      "filePath": 102,
+      "runCommand": 102,
+      "officialSource": 102
     },
     "kotlin-multiplatform": {
       "topics": 56,

@@ -248,22 +248,22 @@
       "complete": 29
     },
     "spring-boot": {
-      "topics": 101,
+      "topics": 102,
       "objective": 0,
-      "prerequisites": 101,
+      "prerequisites": 102,
       "context": 0,
       "theoryAnalogy": 0,
       "guidedDemo": 0,
-      "codeExplanation": 101,
-      "execution": 99,
-      "expectedResult": 101,
-      "deliberateFailure": 101,
+      "codeExplanation": 102,
+      "execution": 100,
+      "expectedResult": 102,
+      "deliberateFailure": 102,
       "guidedPractice": 0,
       "independentPractice": 0,
       "closure": 0,
-      "commonErrors": 101,
-      "resources": 101,
-      "standaloneExample": 98,
+      "commonErrors": 102,
+      "resources": 102,
+      "standaloneExample": 99,
       "complete": 0
     }
   },
@@ -28098,6 +28098,31 @@
       {
         "module": 18,
         "topic": "Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP · Avanzado · 1 h 20 min",
+        "criteria": {
+          "objective": false,
+          "prerequisites": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 8,
+          "complete": false
+        }
+      },
+      {
+        "module": 18,
+        "topic": "Tema 3: Levantar tu propio OAuth2 Authorization Server · Experto · 50 min",
         "criteria": {
           "objective": false,
           "prerequisites": true,

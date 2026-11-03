@@ -221,18 +221,18 @@
       "repeatedDemo": 0
     },
     "spring-boot": {
-      "topics": 101,
-      "explanation": 101,
-      "code": 101,
-      "visual": 81,
-      "filePath": 101,
-      "runCommand": 99,
-      "expectedResult": 101,
-      "practice": 101,
-      "project": 101,
-      "modelMental": 101,
-      "limitsDecision": 101,
-      "practicable": 99,
+      "topics": 102,
+      "explanation": 102,
+      "code": 102,
+      "visual": 82,
+      "filePath": 102,
+      "runCommand": 100,
+      "expectedResult": 102,
+      "practice": 102,
+      "project": 102,
+      "modelMental": 102,
+      "limitsDecision": 102,
+      "practicable": 100,
       "genericScaffold": 0,
       "repeatedDemo": 0
     }
@@ -24746,6 +24746,28 @@
         },
         "classification": {
           "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 18,
+        "topic": "Tema 3: Levantar tu propio OAuth2 Authorization Server · Experto · 50 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false

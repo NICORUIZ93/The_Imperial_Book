@@ -985,7 +985,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 14303,
+      "lines": 14315,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -993,7 +993,7 @@
     },
     {
       "path": "docs/course-depth-review.md",
-      "lines": 1198,
+      "lines": 1199,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1160,7 +1160,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 9892,
+      "lines": 9899,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1332,7 +1332,7 @@
     },
     {
       "path": "docs/prerequisite-graph.json",
-      "lines": 12845,
+      "lines": 12856,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1451,7 +1451,7 @@
     },
     {
       "path": "docs/seven-step-methodology.json",
-      "lines": 29476,
+      "lines": 29501,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1501,7 +1501,7 @@
     },
     {
       "path": "docs/subtopic-depth-review.json",
-      "lines": 21838,
+      "lines": 21865,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1509,7 +1509,7 @@
     },
     {
       "path": "docs/subtopic-depth-review.md",
-      "lines": 1160,
+      "lines": 1161,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1522,7 +1522,7 @@
     },
     {
       "path": "docs/subtopic-depth-reviewed.json",
-      "lines": 4921,
+      "lines": 4937,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1590,7 +1590,7 @@
     },
     {
       "path": "docs/topic-learning-quality.json",
-      "lines": 25945,
+      "lines": 25967,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -12683,7 +12683,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-18.md",
-      "lines": 251,
+      "lines": 509,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12698,7 +12698,8 @@
         "### Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP \u00b7 Avanzado \u00b7 1 h 20 min",
         "#### Aprende",
         "#### Practica",
-        "#### Aplica"
+        "#### Aplica",
+        "### Tema 3: Levantar tu propio OAuth2 Authorization Server \u00b7 Experto \u00b7 50 min"
       ]
     },
     {
@@ -12954,7 +12955,7 @@
     },
     {
       "path": "web/public/content/topic-index.json",
-      "lines": 5207,
+      "lines": 5211,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

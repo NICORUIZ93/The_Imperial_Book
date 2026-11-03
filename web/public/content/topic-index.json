@@ -4960,6 +4960,10 @@
       {
         "title": "DTO validation, CORS, JWT/OIDC y clientes HTTP",
         "fragment": "tema-2-dto-validation-cors-jwt-oidc-y-clientes-http"
+      },
+      {
+        "title": "Levantar tu propio OAuth2 Authorization Server",
+        "fragment": "tema-3-levantar-tu-propio-oauth2-authorization-server"
       }
     ],
     "19": [

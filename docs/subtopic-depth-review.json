@@ -1,7 +1,7 @@
 {
   "summary": {
-    "topics": 1167,
-    "reviewed": 344,
+    "topics": 1168,
+    "reviewed": 345,
     "pending": 823,
     "priorityCandidates": 782,
     "byTrack": {
@@ -71,8 +71,8 @@
         "pending": 29
       },
       "spring-boot": {
-        "topics": 101,
-        "reviewed": 101,
+        "topics": 102,
+        "reviewed": 102,
         "pending": 0
       }
     },
@@ -20434,6 +20434,33 @@
         ],
         "sources": [
           "https://docs.spring.io/spring-security/reference/"
+        ]
+      }
+    },
+    {
+      "id": "spring-boot/modulo-18::Tema 3: Levantar tu propio OAuth2 Authorization Server · Experto · 50 min",
+      "track": "spring-boot",
+      "module": 18,
+      "topic": "Tema 3: Levantar tu propio OAuth2 Authorization Server · Experto · 50 min",
+      "status": "reviewed",
+      "semanticHeadings": [],
+      "prioritySignals": [
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Lote 2 (MEDIA #16) de docs/AUDITORIA-COBERTURA-SPRING-20261101.md: 'OAuth2 Authorization Server (Spring Authorization Server) -> M10/M18'. Completamente ausente antes (el track solo cubria resource server y client, consumiendo identidad externa -- nunca emitiendola). Ejecutado de verdad: mvn test, Tests run: 2, Failures: 0, Errors: 0 sobre Spring Boot 4.1.1 / Spring Security 7.1.1 / Spring Framework 7.0.9 / JDK 27.0.1.0.3. Confirmado con una peticion real a /oauth2/token con client_credentials: access_token real, token_type=Bearer, scope correcto; credenciales invalidas responden 401 real. Hallazgo real durante la construccion del demo: la guia oficial (fetched) describe OAuth2AuthorizationServerConfigurer.authorizationServer() como metodo factory estatico en el paquete org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers -- NINGUNO de los dos es correcto para la version real 7.1.1 resuelta: inspeccionando la clase compilada real (javap sobre spring-security-config-7.1.1.jar) se confirmo que el paquete correcto es org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization, y que la clase se instancia con su constructor normal (new OAuth2AuthorizationServerConfigurer()), sin ningun metodo factory estatico. Esto se convirtio en el fallo deliberado del tema -- un ejemplo real de por que verificar contra la clase compilada importa mas que replicar un tutorial sin confirmarlo.",
+        "criticalSubtopics": [
+          "OAuth2AuthorizationServerConfigurer (instanciado con constructor, sin factory estatico)",
+          "RegisteredClient con AuthorizationGrantType.CLIENT_CREDENTIALS",
+          "JWKSource con clave RSA generada al arrancar",
+          "POST /oauth2/token real con httpBasic",
+          "401 ante credenciales invalidas"
+        ],
+        "sources": [
+          "https://docs.spring.io/spring-authorization-server/reference/getting-started.html",
+          "docs/AUDITORIA-COBERTURA-SPRING-20261101.md"
         ]
       }
     },

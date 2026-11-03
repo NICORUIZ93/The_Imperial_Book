@@ -233,7 +233,7 @@ export const SPRING_BOOT_MODULES: CourseModule[] = [
     'Persistencia explícita con DAO, JDBC y transacciones para casos donde la capa ORM no es suficiente.'),
   m(18, 'Autenticación, JWT y backend seguro con Spring Security', 'Security & HTTP', 'Experto', '4 h 30 min', '#6db33f',
     'Protege tus endpoints, genera tokens JWT y diseña una API segura con validación de entrada, HTTP seguro y reglas de autorización claras.',
-    ['SecurityFilterChain', 'JWT access/refresh tokens', 'Roles y permisos', 'HttpClient con timeouts y retries', 'OAuth2/OIDC básicos', 'HTTPS/TLS, CORS y CSRF', 'OWASP y validación de entradas'],
+    ['SecurityFilterChain', 'JWT access/refresh tokens', 'Roles y permisos', 'HttpClient con timeouts y retries', 'OAuth2/OIDC básicos', 'HTTPS/TLS, CORS y CSRF', 'OWASP y validación de entradas', 'Tu propio OAuth2 Authorization Server'],
     [
       'Configura una API REST segura con SecurityFilterChain y un filtro para JWT en cada request',
       'Implementa login con generación de token, refresh token y endpoints protegidos por rol',

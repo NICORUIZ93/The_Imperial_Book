@@ -1677,7 +1677,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "569b3efd4c4372520be55c6143beaf3a9cd6e50cecab1c90acae3f9909026ac5",
+    "fingerprint": "897be2f9a7439f62f32e93f124199c06031ef572b4a8e08a567168ac8aedbcbf",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
@@ -1686,7 +1686,7 @@
     },
     "modules": 254,
     "modulesWithLegacySections": 179,
-    "topics": 1167,
+    "topics": 1168,
     "topicsWithIssues": 0
   },
   "topics": {
@@ -9507,6 +9507,13 @@
         "tailWords": 322,
         "topic": "Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP · Avanzado · 1 h 20 min",
         "words": 1505
+      },
+      {
+        "issues": [],
+        "module": 18,
+        "tailWords": 339,
+        "topic": "Tema 3: Levantar tu propio OAuth2 Authorization Server · Experto · 50 min",
+        "words": 2101
       },
       {
         "issues": [],
