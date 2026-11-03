@@ -5,279 +5,298 @@
 
 ### Tema 1: Generaciones de memoria y recolectores
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás medir y comparar las pausas de G1 y ZGC bajo la misma carga de asignación de objetos, y decidir cuál recolector corresponde según throughput o latencia mínima. Prerrequisitos: JDK 25, Maven y un editor. Comprueba java --version.
+**Por qué importa:** saber si crece el heap o si el GC solo está limpiando objetos temporales ayuda a investigar pausas y memoria insuficiente.
 
-#### Paso 2 · Contexto y caso real
-Un servicio de entregas reporta latencia creciente bajo carga, y el equipo "optimiza" cambiando el recolector a ciegas sin medir primero cuántas pausas de GC ocurren realmente ni cuánto duran, arriesgando cambiar algo que no era el cuello de botella real.
+#### Subtema 1.1: Observa el heap de una JVM · 10 min
 
-#### Paso 3 · Teoría, modelo mental y analogía
-La heap se divide en una generación joven (donde nacen los objetos, recolectada frecuente y rápidamente) y una vieja (objetos que sobrevivieron, recolectada con menor frecuencia); G1 balancea throughput y pausas predecibles, ZGC prioriza pausas sub-milisegundo a costa de algo más de overhead. La analogía: revisar una flota con telemetría real antes de cambiar piezas — el ruido no se corrige a ciegas sin identificar primero el síntoma exacto.
+**1. Contexto**
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
-```bash
-mkdir ejemplo-g1-vs-zgc
-cd ejemplo-g1-vs-zgc
-mkdir -p src/main/java/academia/perf
-```
+Un servicio parece usar memoria, pero no sabes cuánto heap reservó y cuánto está ocupado.
 
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+**2. Hazlo tú**
 
-```bash
-# Maven
-mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-cd app && mvn test
-# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
-```
+Crea `src/Memoria.java` con `public class Memoria { public static void main(String[] args) throws Exception { var datos = new byte[10_000_000]; System.out.println(datos.length); Thread.sleep(30_000); } }`. Ejecuta `javac -d out src/Memoria.java`, luego `java -cp out Memoria` en una terminal aparte y, mientras espera, `jcmd -l` y `jcmd <PID> GC.heap_info`.
 
-Crea `src/main/java/academia/perf/CargaAsignacion.java`: un bucle que crea millones de objetos pequeños de vida corta en un `while(true)` con un contador de iteraciones impreso cada segundo. Compílalo con `javac -d out src/main/java/academia/perf/CargaAsignacion.java` y ejecútalo primero con `java -Xlog:gc -XX:+UseG1GC -cp out academia.perf.CargaAsignacion`, luego con `-XX:+UseZGC`.
+**Resultado esperado:** ves una JVM activa y el estado resumido del heap; el arreglo sigue referenciado durante la espera.
 
-#### Paso 5 · Práctica guiada
-Pista: reduce deliberadamente el heap máximo (`-Xmx64m`) con G1 para provocar pausas de GC visibles y más frecuentes en el log; lee las líneas `[gc]` que muestran duración de pausa. Resultado esperado: aumentar `-Xmx` reduce la frecuencia de pausas para la misma carga.
-#### Paso 6 · Práctica independiente
-Ejecuta la misma carga con `-Xlog:gc` bajo G1 y bajo ZGC, mide la pausa máxima reportada en cada log, y documenta cuál elegirías para un servicio de baja latencia frente a uno de alto throughput por lotes.
+**Fallo deliberado:** ejecuta `GC.heap_info` con el PID de otro proceso. **Diagnóstico:** comprueba PID y usuario antes de interpretar la salida.
 
-#### Paso 7 · Cierre y evidencia
-Guarda ambos logs de GC (G1 y ZGC) con sus pausas máximas comparadas; como siguiente paso graba un perfil JFR de la misma carga. Errores comunes: tunear el recolector sin un baseline medido previamente, confundir uso de heap con memoria nativa (fuera del control del GC), y comparar recolectores bajo cargas de trabajo distintas en vez de la misma carga exacta. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/gctuning/.
-**¿Por qué es importante?** Porque elegir un recolector sin medir primero es optimizar a ciegas; la decisión entre G1 y ZGC depende de si la aplicación prioriza throughput general o latencia mínima extrema, algo que solo una medición real responde.
-**Evidencia de aprendizaje:** entrega ambos logs de GC (G1 y ZGC) con sus pausas máximas comparadas bajo la misma carga, y la justificación de cuál elegirías.
-**Conceptos clave:** generación joven vs vieja, G1 frente a ZGC.
+**3. Entiende**
 
-La heap de la JVM se divide típicamente en una generación joven (donde se crean los objetos recién instanciados, recolectada frecuentemente y de forma rápida) y una generación vieja (donde terminan los objetos que sobrevivieron varias rondas de recolección de la generación joven, recolectada con menor frecuencia pero de forma más costosa), una división basada en la observación empírica conocida como "hipótesis generacional débil": la gran mayoría de los objetos creados en cualquier programa mueren jóvenes (dejan de ser referenciados poco después de crearse), por lo que concentrar el esfuerzo de recolección frecuente específicamente en esa generación joven, donde efectivamente se encuentra la mayoría de la basura recolectable, es considerablemente más eficiente que recorrer la heap completa con la misma frecuencia sin distinción.
+El heap contiene objetos; el proceso puede reservar más memoria que la ocupada en ese instante.
 
-G1 (Garbage-First) ofrece un buen balance general entre throughput (cantidad total de trabajo útil que la aplicación puede realizar) y pausas predecibles y razonablemente cortas, apropiado para la gran mayoría de aplicaciones sin requisitos extremos de latencia; ZGC ofrece pausas ultra-cortas, del orden de sub-milisegundo, incluso con heaps extremadamente grandes, a cambio de algo más de overhead general de procesamiento, siendo la elección apropiada específicamente para aplicaciones muy sensibles a la latencia donde incluso una pausa breve de G1 sería inaceptable, aceptando a cambio un throughput total potencialmente algo menor.
+**4. Cierra**
 
-**Actualización de plataforma:** G1 es el recolector por defecto desde Java 9, pero solo en máquinas "server-class"; en entornos restringidos (un solo CPU, o menos de 1792&nbsp;MB de memoria física — típico de un contenedor pequeño) la JVM elegía Serial GC por defecto en su lugar. Desde JDK 27 (JEP 523), G1 es el default en **todos** los entornos sin excepción; una aplicación que corre en un contenedor pequeño sin especificar recolector explícitamente pasa a usar G1 donde antes usaba Serial, y conviene volver a medir si eso cambia algo relevante.
+Guarda la salida de `GC.heap_info` y el PID consultado.
 
-**Analogía:** la generación joven es como una bandeja de entrada que se revisa y se vacía frecuentemente, dado que la mayoría de sus elementos se resuelven o descartan rápidamente; la generación vieja es como un archivo de largo plazo revisado con mucha menor frecuencia, dado que lo que llega ahí ya demostró que probablemente permanecerá relevante por más tiempo. G1 es como un equipo de limpieza que hace rondas regulares y predecibles sin detener completamente las operaciones normales del edificio; ZGC es como un sistema de limpieza casi instantáneo e imperceptible, a costa de requerir algo más de recursos generales para operar de esa forma.
+#### Subtema 1.2: Distingue objetos vivos de basura · 10 min
 
-**¿Por qué es importante?** La división generacional concentra el esfuerzo de recolección frecuente donde efectivamente se encuentra la mayoría de la basura recolectable; elegir G1 frente a ZGC depende de si la aplicación prioriza throughput general o latencia mínima extrema.
+**1. Contexto**
 
-**Prueba en terminal:**
+Un lote temporal ya no se necesita y el GC puede recuperar su espacio cuando lo determine.
 
-```bash
-java -XX:+UseZGC -jar mi-app.jar
-```
-```
-Generación joven: objetos recién creados, recolectada frecuente y rápidamente
-Generación vieja: objetos que sobrevivieron, recolectada con menor frecuencia
-G1: buen balance throughput/pausas | ZGC: pausas sub-milisegundo, algo más de overhead
-```
+**2. Hazlo tú**
 
-Elegir el recolector correcto es una decisión de infraestructura que documentarías igual para el Proyecto integrador (Módulo 13) antes de desplegarlo bajo carga real.
+En `src/Memoria.java`, crea una función que asigne varios arreglos dentro de un bloque y no los retenga después; compara con una lista estática que sí conserve referencias. Ejecuta `java -Xlog:gc -Xms32m -Xmx32m -cp out Memoria`.
 
-**Cuándo no usarlo:** para un script de corta vida o una prueba unitaria, tunear el recolector es tiempo perdido; solo importa en procesos de larga duración con carga sostenida.
+**Resultado esperado:** el log informa actividad del GC; los objetos retenidos no desaparecen solo por dejar de usarlos localmente.
+
+**Fallo deliberado:** espera que `System.gc()` garantice una recolección inmediata. **Diagnóstico:** es una solicitud al runtime, no una orden de resultado garantizado.
+
+**3. Entiende**
+
+La alcanzabilidad determina si un objeto puede reclamarse. Las generaciones son una estrategia común del collector, no una promesa de que cada objeto se mueva en un momento exacto.
+
+**4. Cierra**
+
+Escribe cuál arreglo sigue alcanzable y por qué.
+
+#### Subtema 1.3: Compara logs antes de ajustar · 10 min
+
+**1. Contexto**
+
+Cambiar el collector sin medir puede empeorar una aplicación que ya cumple sus objetivos.
+
+**2. Hazlo tú**
+
+Ejecuta `src/Memoria.java` con `java -Xlog:gc -Xms32m -Xmx32m -cp out Memoria` y luego con `java -XX:+UseSerialGC -Xlog:gc -Xms32m -Xmx32m -cp out Memoria`. Compara número de eventos y pausas reportadas sin extrapolar a producción.
+
+**Resultado esperado:** cada proceso deja eventos observables y una configuración reproducible.
+
+**Fallo deliberado:** elige el collector por un único evento corto. **Diagnóstico:** usa una carga representativa y mide latencia además de throughput.
+
+**3. Entiende**
+
+El log permite formular hipótesis; requiere carga y objetivos del servicio para concluir.
+
+**4. Cierra**
+
+Guarda los dos comandos y una observación medida. Fuente: [logging de GC en Java](https://docs.oracle.com/en/java/javase/25/gctuning/garbage-collector-implementation.html).
 
 ### Tema 2: Java Flight Recorder y JIT compilation
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás grabar un perfil de JFR con overhead mínimo apto para producción, e identificar el método que realmente consume más CPU bajo una carga real. Prerrequisitos: JDK 25, Maven y un editor. Comprueba java --version.
+**Por qué importa:** JFR registra actividad de la JVM con bajo esfuerzo; el JIT compila código caliente y vuelve engañosa una medición sin calentamiento.
 
-#### Paso 2 · Contexto y caso real
-Medir el rendimiento de un método justo al arrancar la aplicación, antes de que el JIT haya compilado el código caliente a código máquina optimizado, mide el intérprete lento de arranque, no el rendimiento real que esa misma aplicación tendrá en producción tras unos segundos de uso continuo.
+#### Subtema 2.1: Captura una grabación JFR · 10 min
 
-#### Paso 3 · Teoría, modelo mental y analogía
-La JVM interpreta bytecode inicialmente, pero identifica dinámicamente el código "caliente" (ejecutado con mucha frecuencia) y lo compila en caliente a código máquina optimizado (JIT); JFR graba eventos detallados de la JVM con overhead deliberadamente mínimo, pensado para usarse de forma segura en producción. La analogía: un traductor que al notar que ciertas frases se repiten constantemente, memoriza progresivamente una traducción óptima para ellas, acelerando esas partes recurrentes con el tiempo.
+**1. Contexto**
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
-```bash
-mkdir ejemplo-jfr-warmup
-cd ejemplo-jfr-warmup
-mkdir -p src/main/java/academia/perf
-```
+Necesitas una evidencia de lo que ocurre durante un proceso, no una suposición basada en el uso de CPU.
 
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+**2. Hazlo tú**
 
-```bash
-# Maven
-mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-cd app && mvn test
-# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
-```
+Crea `src/Trabajo.java` que imprima un mensaje y mantenga el proceso activo con `Thread.sleep(5000)`. Compila con `javac -d out src/Trabajo.java`; ejecuta `java -XX:StartFlightRecording=filename=trabajo.jfr,duration=8s -cp out Trabajo`; luego `jfr summary trabajo.jfr`.
 
-Crea `src/main/java/academia/perf/MetodoCaliente.java`: un método que hace una operación aritmética simple dentro de un bucle de 50 millones de iteraciones, imprimiendo el tiempo transcurrido cada 10 millones de iteraciones (deberías ver que las últimas mediciones son más rápidas que las primeras, evidencia del warm-up del JIT). Compílalo y ejecútalo con `java -XX:StartFlightRecording=filename=perfil.jfr -cp out academia.perf.MetodoCaliente`.
+**Resultado esperado:** el resumen muestra duración y tipos de eventos de la grabación.
 
-#### Paso 5 · Práctica guiada
-Pista: ejecuta la misma clase con `-Xint` (fuerza modo interpretado puro, sin JIT) para provocar deliberadamente la ausencia de aceleración por warm-up; compara el tiempo total contra la ejecución normal. Resultado esperado: sin JIT, el tiempo por bloque de iteraciones se mantiene constante en vez de acelerarse.
+**Fallo deliberado:** intenta leer el archivo antes de terminar la captura. **Diagnóstico:** espera a que el proceso cierre la grabación y confirma que el archivo existe.
 
-#### Paso 6 · Práctica independiente
-Abre `perfil.jfr` con `jfr print --events jdk.ExecutionSample perfil.jfr` y documenta qué método aparece con más muestras (el método "caliente" real).
+**3. Entiende**
 
-#### Paso 7 · Cierre y evidencia
-Guarda el comportamiento con y sin `-Xint`, y el resumen de `jfr print` mostrando el método caliente; como siguiente paso investiga una retención de memoria con heap dump. Errores comunes: medir rendimiento sin dejar que el warm-up del JIT ocurra primero, asumir que JFR tiene overhead alto en producción sin haberlo medido, y confundir el método que aparece con más muestras con la causa raíz sin revisar su contexto de llamada. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/docs/specs/man/jfr.html.
-**¿Por qué es importante?** Porque medir antes del warm-up del JIT mide el intérprete lento de arranque, no el rendimiento real que la aplicación tendrá en producción tras los primeros segundos de ejecución continua.
-**Evidencia de aprendizaje:** entrega la comparación con y sin `-Xint` (JIT desactivado), y el método caliente real identificado con `jfr print`.
-**Conceptos clave:** perfilado de bajo overhead en producción, compilación en caliente.
+JFR recopila eventos temporales de la JVM; un resumen breve no explica por sí solo la causa de lentitud.
 
-Java Flight Recorder (JFR) graba eventos detallados de la JVM (uso de CPU por método, actividad de memoria, contención de locks) con un overhead deliberadamente mínimo, diseñado específicamente para poder usarse de forma segura en producción sin degradar significativamente el rendimiento de la aplicación mientras se graba: `java -XX:StartFlightRecording=filename=perfil.jfr -jar mi-app.jar` inicia una grabación que produce un archivo `.jfr` analizable posteriormente, permitiendo diagnosticar problemas reales de rendimiento observados directamente en producción bajo carga real, en vez de tener que intentar reproducir artificialmente esas condiciones en un entorno de pruebas separado, que frecuentemente no logra replicar exactamente las condiciones específicas que causan el problema real observado.
+**4. Cierra**
 
-La JVM inicialmente interpreta el bytecode (Módulo 0) en vez de compilarlo directamente a código máquina, pero identifica dinámicamente el código "caliente" (métodos ejecutados con muchísima frecuencia durante la ejecución real) y lo compila en caliente a código máquina nativo altamente optimizado específicamente para el patrón de uso observado en esa ejecución concreta, un proceso llamado compilación JIT (Just-In-Time); esta es precisamente la razón por la que una aplicación Java típica suele acelerarse notablemente después de sus primeros segundos de ejecución (el período de "warm-up"): el código que efectivamente se ejecuta con mayor frecuencia progresivamente deja de interpretarse y pasa a ejecutarse como código máquina nativo ya optimizado por el JIT.
+Guarda `jfr summary` y la duración que capturaste.
 
-**Analogía:** JFR es como una caja negra de un avión, registrando datos detallados de la operación con un impacto mínimo en el propio funcionamiento del avión, permitiendo analizar exactamente qué ocurrió durante un vuelo real específico en vez de solo poder estudiar simulaciones de vuelo separadas; el JIT es como un traductor que inicialmente interpreta un discurso frase por frase en tiempo real, pero que, al notar que ciertas frases se repiten constantemente, memoriza y perfecciona progresivamente una traducción óptima específica para esas frases frecuentes, acelerando notablemente la traducción de esas partes recurrentes con el paso del tiempo.
+#### Subtema 2.2: Observa compilación caliente · 10 min
 
-**¿Por qué es importante?** JFR permite diagnosticar problemas de rendimiento con evidencia real de producción, con overhead mínimo; el JIT explica por qué el rendimiento de una aplicación Java mejora progresivamente tras sus primeros momentos de ejecución.
+**1. Contexto**
 
-**Prueba en terminal:**
+Un bucle medido una sola vez puede incluir interpretación y compilación JIT.
 
-```bash
-java -XX:StartFlightRecording=filename=perfil.jfr -jar mi-app.jar
-```
-```
-JVM interpreta bytecode inicialmente → identifica código "caliente" → 
-compila JIT a código máquina optimizado → la app se acelera tras el warm-up
-```
+**2. Hazlo tú**
 
-Un benchmark del Proyecto integrador (Módulo 13) que no espera el warm-up del JIT mide el intérprete, no el rendimiento real de producción.
+En `src/Calentar.java` crea un bucle que llame muchas veces una función de suma y mida el tiempo con `System.nanoTime()`. Compila y ejecuta `java -XX:+PrintCompilation -cp out Calentar`.
 
-**Cuándo no usarlo:** para un script de un solo uso que se ejecuta y termina en milisegundos, el warm-up del JIT nunca llega a ocurrir; no tiene sentido optimizar pensando en código "caliente" que no existirá.
+**Resultado esperado:** el proceso imprime compilaciones JIT además de los tiempos; ejecuciones repetidas pueden diferir por calentamiento.
+
+**Fallo deliberado:** declara que la primera pasada representa el rendimiento estable. **Diagnóstico:** repite la carga y compara después de calentamiento; también considera optimizaciones y ruido de la máquina.
+
+**3. Entiende**
+
+El JIT compila métodos que ejecutan repetidamente. Una micro-medición manual no reemplaza un benchmark diseñado.
+
+**4. Cierra**
+
+Anota la salida de compilación y qué medición no usarías para decidir una optimización.
+
+#### Subtema 2.3: Resume la grabación para comparar · 10 min
+
+**1. Contexto**
+
+Quieres revisar eventos del proceso de carga y no solo el tiempo de pared.
+
+**2. Hazlo tú**
+
+Ejecuta `src/Calentar.java` con `java -XX:StartFlightRecording=filename=calentar.jfr,duration=10s -cp out Calentar`. Corre `jfr summary calentar.jfr` y `jfr print --events jdk.Compilation calentar.jfr`.
+
+**Resultado esperado:** el reporte lista eventos de compilación registrados durante esa ventana.
+
+**Fallo deliberado:** compara grabaciones de cargas distintas como si fueran equivalentes. **Diagnóstico:** repite mismo JDK, flags, duración y carga.
+
+**3. Entiende**
+
+La grabación aporta contexto de ejecución; usa la misma prueba de carga para que las comparaciones signifiquen algo.
+
+**4. Cierra**
+
+Guarda el comando y tres datos del resumen. Fuente: [Java Flight Recorder](https://docs.oracle.com/en/java/javase/25/jfapi/).
 
 ### Tema 3: Referencias especiales y heap dumps
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás provocar un `OutOfMemoryError` real, analizar el heap dump que genera, y corregirlo reemplazando referencias fuertes por `SoftReference` en una caché. Prerrequisitos: JDK 25, Maven y un editor. Comprueba java --version.
+**Por qué importa:** retener objetos más tiempo del necesario puede agotar memoria; un heap dump ayuda a encontrar quién conserva referencias.
 
-#### Paso 2 · Contexto y caso real
-Una caché implementada con una lista que acumula objetos indefinidamente sin nunca liberarlos agota la heap disponible tarde o temprano; sin un heap dump del momento exacto del fallo, diagnosticar qué estaba acumulándose y desde dónde es mucho más difícil que con los logs normales de la aplicación.
+#### Subtema 3.1: Prueba una referencia débil · 10 min
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Un heap dump es un volcado completo del contenido de la heap en el instante de un fallo, mostrando exactamente qué objetos consumían la memoria; `WeakReference`/`SoftReference` permiten que el recolector libere un objeto si ya no hay otras referencias fuertes hacia él, cooperando con el recolector en vez de impedir siempre su trabajo. La analogía: una fotografía forense tomada exactamente en el momento de un colapso, mostrando con precisión qué había acumulado — algo que un registro de eventos anteriores no puede ofrecer con el mismo nivel de detalle del instante exacto.
+**1. Contexto**
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
-```bash
-mkdir ejemplo-heap-dump-oom
-cd ejemplo-heap-dump-oom
-mkdir -p src/main/java/academia/perf
-```
+Un índice de ayuda no debería ser el único motivo para mantener un objeto en memoria.
 
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+**2. Hazlo tú**
 
-```bash
-# Maven
-mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-cd app && mvn test
-# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
-```
+Crea `src/ReferenciaDebil.java` con `WeakReference<byte[]> ref = new WeakReference<>(new byte[1_000_000]); System.out.println(ref.get() != null); System.gc(); System.out.println(ref.get());`. Ejecuta `javac -d out src/ReferenciaDebil.java` y `java -cp out ReferenciaDebil`.
 
-Crea `src/main/java/academia/perf/FugaCache.java`: una `List<byte[]>` estática donde un bucle agrega arreglos de 1MB indefinidamente sin nunca liberarlos, hasta agotar la heap. Compílalo y ejecútalo con `java -Xmx128m -XX:+HeapDumpOnOutOfMemoryError -cp out academia.perf.FugaCache`.
+**Resultado esperado:** la primera consulta encuentra el objeto; la segunda puede encontrarlo o ser `null`, porque el GC no promete cuándo actuar.
 
-#### Paso 5 · Práctica guiada
-Pista: deja correr el programa para provocar deliberadamente un `OutOfMemoryError`; el flag `-XX:+HeapDumpOnOutOfMemoryError` genera automáticamente un archivo `.hprof` en ese momento. Resultado esperado: el heap dump muestra `byte[]` como el tipo dominante en memoria.
+**Fallo deliberado:** afirma que `System.gc()` siempre debe producir `null`. **Diagnóstico:** una referencia débil permite recuperación, no ordena una recolección inmediata.
 
-#### Paso 6 · Práctica independiente
-Reescribe `FugaCache` usando `List<SoftReference<byte[]>>` en vez de referencias fuertes, ejecuta de nuevo con el mismo `-Xmx128m` y confirma que ya no se produce `OutOfMemoryError` porque el recolector libera las referencias suaves bajo presión de memoria.
+**3. Entiende**
 
-#### Paso 7 · Cierre y evidencia
-Guarda el `.hprof` generado, el análisis de qué tipo dominaba la memoria, y la versión corregida con `SoftReference` que ya no falla; como siguiente paso construye el laboratorio completo del capítulo. Errores comunes: usar referencias fuertes para una caché que debería poder liberarse bajo presión de memoria, intentar una corrección a ciegas sin analizar primero el heap dump, y capturar un heap dump de producción con datos sensibles sin sanearlo antes de compartirlo. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/docs/specs/man/jhsdb.html.
-**¿Por qué es importante?** Porque un heap dump muestra exactamente qué objetos consumían la memoria en el instante del fallo, información mucho más específica que los logs normales; una caché con referencias fuertes que nunca se liberan es una causa común y evitable de ese mismo fallo.
-**Evidencia de aprendizaje:** entrega el `.hprof` generado por el `OutOfMemoryError`, el análisis de qué tipo dominaba la memoria, y la corrección con `SoftReference` que ya no falla bajo el mismo límite de heap.
-**Conceptos clave:** `WeakReference`/`SoftReference`/`PhantomReference`, análisis de un heap dump.
+Una referencia débil no mantiene vivo por sí sola su referent; comprueba `get()` antes de usarlo.
 
-`WeakReference` permite mantener una referencia a un objeto sin impedir que el recolector de basura lo elimine si esa es la única referencia restante hacia él (a diferencia de una referencia normal, "fuerte", que sí impide la recolección mientras exista), apropiada para estructuras como cachés donde se desea que ciertos objetos puedan liberarse automáticamente si la memoria se vuelve escasa y ya no hay otras referencias reales activas hacia ellos; `SoftReference` es similar pero más conservadora, permitiendo que el recolector la elimine solo bajo presión real de memoria, no tan agresivamente como una `WeakReference`; `PhantomReference`, junto con una `ReferenceQueue` asociada, permite ejecutar cierta lógica de limpieza específica justo después de que un objeto ha sido efectivamente finalizado por el recolector, un mecanismo más avanzado y de uso considerablemente menos común que los dos anteriores.
+**4. Cierra**
 
-Provocar intencionalmente un `OutOfMemoryError` (acumulando objetos indefinidamente en una estructura sin nunca liberar sus referencias) y analizar el heap dump generado en ese momento (un volcado completo del contenido de la heap en el instante del error) permite identificar exactamente qué objetos específicos consumían la memoria disponible en el momento del fallo, y con qué frecuencia y desde qué puntos del código se estaban creando, información considerablemente más específica y accionable que la que los logs normales de la aplicación proporcionarían, dado que los logs típicamente no capturan el estado completo detallado de la memoria en el instante exacto de un fallo de memoria.
+Guarda ambas salidas si varían y explica por qué el resultado puede cambiar.
 
-**Analogía:** una `WeakReference` es como una nota adhesiva que recuerda dónde está un objeto, pero que no impide que ese objeto se deseche si nadie más lo necesita realmente; un heap dump es como una fotografía forense detallada tomada exactamente en el momento de un colapso, mostrando con precisión qué había acumulado y en qué cantidades exactas, información que un simple registro de eventos anteriores al colapso no podría ofrecer con el mismo nivel de detalle específico del instante del fallo.
+#### Subtema 3.2: Detecta una referencia fuerte accidental · 10 min
 
-**¿Por qué es importante?** Las referencias especiales (`WeakReference`, `SoftReference`) permiten estructuras que cooperan con el recolector de basura en vez de impedir siempre su trabajo; un heap dump proporciona información detallada y específica sobre el estado exacto de la memoria en el momento de un fallo, información que los logs normales no capturan.
+**1. Contexto**
 
-**Diagrama:**
+Una caché estática que nunca elimina entradas puede conservar miles de paquetes antiguos.
 
-```mermaid
-flowchart LR
-    ROOT["GC roots"] --> LIVE["objetos alcanzables"]
-    CACHE["caché fuerte accidental"] --> LIVE
-    WEAK["WeakReference"] -. "no impide recolección" .-> CANDIDATE["objeto sin raíz fuerte"]
-    DUMP["heap dump"] --> DOMINATOR["retained size y dominators"]
-```
+**2. Hazlo tú**
 
-Diagnosticar una fuga de memoria con heap dump es la habilidad que usarías si el Proyecto integrador (Módulo 13) empezara a consumir memoria creciente en producción.
+En `src/Retencion.java` usa una lista `static final` que retenga arreglos creados en un ciclo. Ejecuta `javac -d out src/Retencion.java` y `java -Xmx32m -cp out Retencion`; registra el error de memoria o el tamaño alcanzado.
 
-**Cuándo no usarlo:** capturar un heap dump completo en un servicio de producción con datos sensibles puede exponer información confidencial en el volcado; sanea o restringe el acceso al archivo `.hprof` antes de compartirlo.
+**Resultado esperado:** la lista conserva las referencias hasta que se limpie o termine el proceso.
+
+**Fallo deliberado:** atribuye el crecimiento al GC sin revisar quién mantiene los objetos. **Diagnóstico:** inspecciona campos estáticos y estructuras de caché.
+
+**3. Entiende**
+
+El GC no elimina objetos alcanzables por referencias fuertes. Para una caché real define vencimiento, tamaño máximo o política de expulsión.
+
+**4. Cierra**
+
+Nombra la estructura que retuvo los arreglos y una política para limitarla.
+
+#### Subtema 3.3: Crea un heap dump para investigarlo · 10 min
+
+**1. Contexto**
+
+Una fuga aparente requiere capturar objetos y referencias mientras el proceso aún está vivo.
+
+**2. Hazlo tú**
+
+Inicia `src/Retencion.java` con `java -Xmx64m -cp out Retencion` manteniéndolo activo. En otra terminal identifica PID con `jcmd -l` y ejecuta `jcmd <PID> GC.heap_dump retencion.hprof`. Confirma el archivo y su tamaño.
+
+**Resultado esperado:** aparece un dump HPROF que puedes abrir en un analizador de heap compatible.
+
+**Fallo deliberado:** guarda el dump en un volumen sin espacio. **Diagnóstico:** verifica permisos y espacio antes de repetir; un heap dump puede ser grande y pausar la JVM.
+
+**3. Entiende**
+
+El dump captura objetos y referencias; puede contener datos sensibles de memoria. Protege el archivo y bórralo según política.
+
+**4. Cierra**
+
+Registra comando, PID y ruta del dump, sin compartirlo fuera del entorno autorizado. Fuente: [herramienta `jcmd`](https://docs.oracle.com/en/java/javase/25/docs/specs/man/jcmd.html).
 
 ### Tema 4: Foreign Function & Memory API (Java 22)
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a llamar una función nativa de C (`strlen` de la libc) desde Java con el Foreign Function & Memory API, sin escribir ningún código JNI. Prerrequisitos: JDK 22+ y Tema 3 de este módulo.
+**Por qué importa:** FFM permite llamar funciones nativas y administrar memoria fuera del heap con tipos y ciclos de vida explícitos.
 
-#### Paso 2 · Contexto y caso real
-El equipo necesita invocar una librería nativa C ya probada en producción (no quiere reescribirla en Java); hacerlo con JNI tradicional requeriría generar cabeceras, compilar código C intermedio, y mantener ese puente nativo.
+#### Subtema 4.1: Reserva memoria nativa con Arena · 10 min
 
-#### Paso 3 · Teoría, modelo mental y analogía
-El FFM API (finalizado en Java 22) reemplaza JNI con un modelo seguro: un `Linker` resuelve símbolos nativos, un `MethodHandle` los invoca, y un `Arena` controla explícitamente el ciclo de vida de la memoria nativa asignada — esa memoria, fuera del heap de Java, no la gestiona el recolector. La analogía: pedir prestada una herramienta de un taller ajeno con un control de devolución explícito, en vez de confiar en que alguien la devuelva sola.
+**1. Contexto**
 
-#### Paso 4 · Demostración guiada desde cero
-Crea `src/main/java/academia/interop/LongitudNativa.java`:
+Una librería nativa necesita un segmento de memoria para recibir texto UTF-8.
+
+**2. Hazlo tú**
+
+Crea `src/MemoriaNativa.java`:
+
 ```java
-Linker linker = Linker.nativeLinker();
-MethodHandle strlen = linker.downcallHandle(
-    linker.defaultLookup().find("strlen").get(),
-    FunctionDescriptor.of(JAVA_LONG, ADDRESS));
+import java.lang.foreign.Arena;
 
-try (Arena arena = Arena.ofConfined()) {
-    MemorySegment texto = arena.allocateUtf8String("entrega-RF-4471");
-    long longitud = (long) strlen.invoke(texto);
+public class MemoriaNativa {
+    public static void main(String[] args) {
+        try (Arena arena = Arena.ofConfined()) {
+            var texto = arena.allocateUtf8String("RutaFlow");
+            System.out.println(texto.byteSize());
+        }
+    }
 }
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+Compila `javac -d out src/MemoriaNativa.java` y ejecuta `java -cp out MemoriaNativa` con JDK 22 o superior.
 
-```bash
-# Maven
-mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-cd app && mvn test
-# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
-```
+**Resultado esperado:** se imprime el tamaño en bytes del segmento UTF-8.
 
-Resultado esperado: `longitud` devuelve 15, obtenido invocando directamente la función `strlen` de la libc del sistema operativo desde Java puro, sin ningún código C ni JNI intermedio compilado por separado.
+**Fallo deliberado:** mueve el acceso al segmento fuera del bloque `try`. **Diagnóstico:** el arena ya cerró su memoria; usa el segmento solo durante su ciclo de vida.
 
-#### Paso 5 · Práctica guiada
-Pista: movés `MemorySegment texto` fuera del bloque `try (Arena ...)` guardándolo en un campo para "reusarlo después" en una segunda llamada nativa posterior. Ese es el fallo deliberado: el `Arena` confinado se cierra automáticamente al salir del bloque `try`, liberando la memoria nativa que respaldaba a `texto`; la segunda llamada que intenta usar ese segmento lanza `IllegalStateException: Already closed`.
+**3. Entiende**
 
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 asegurando que toda llamada nativa que use `texto` ocurra dentro del mismo bloque `try (Arena ...)` que lo asignó; si genuinamente necesitás reusar el segmento entre varias llamadas, usá un `Arena.ofShared()` con un ciclo de vida explícitamente más largo y documentado.
+El arena controla el tiempo de vida del segmento. Al cerrar un arena confinado, su memoria deja de estar disponible.
 
-#### Paso 7 · Cierre y evidencia
-Entregá la llamada nativa exitosa del Paso 4, el `IllegalStateException` por memoria liberada del Paso 5, y la corrección de ciclo de vida del Paso 6; explicá por qué la memoria nativa fuera del heap necesita un dueño explícito (el `Arena`) en vez de depender del recolector de basura de Java. Siguiente paso: cerrá el módulo con el laboratorio completo del capítulo. Errores comunes: usar memoria de un Arena confinado después de que se cerró, no liberar nunca un Arena de vida larga (fuga de memoria nativa), y preferir JNI tradicional para casos donde el FFM API ya cubre la necesidad de forma más segura. Fuentes oficiales: https://openjdk.org/jeps/454 y https://docs.oracle.com/en/java/javase/22/core/foreign-function-and-memory-api.html.
-**¿Por qué es importante?** La memoria nativa asignada fuera del heap de Java no la libera el recolector de basura; un Arena con ciclo de vida explícito es la única garantía de que esa memoria se libera correctamente, ni antes ni después de tiempo.
-**Evidencia de aprendizaje:** entrega llamada nativa funcionando con FFM API, IllegalStateException por memoria liberada reproducido y corrección de ciclo de vida confirmada.
-**Conceptos clave:** Foreign Function & Memory API, Linker, MethodHandle, MemorySegment, Arena, ciclo de vida de memoria nativa, reemplazo de JNI.
+**4. Cierra**
 
-Cada integración del proyecto integrador de este track con una librería nativa existente (en vez de reescribirla en Java) se beneficia del FFM API en vez de JNI tradicional.
+Guarda el tamaño y señala cuándo termina el ciclo de vida de esa memoria.
 
-**Cuándo no usarlo:** para funcionalidad que ya existe como librería Java pura, agregar una dependencia nativa con FFM API introduce una dependencia del sistema operativo y complejidad de ciclo de vida de memoria sin ningún beneficio real.
+#### Subtema 4.2: Llama una función nativa conocida · 10 min
 
-El FFM API reemplaza JNI con un modelo considerablemente más simple y seguro de tipos: un `Linker` resuelve un símbolo nativo por nombre y describe su firma (`FunctionDescriptor`), produciendo un `MethodHandle` invocable directamente desde Java; un `Arena` controla explícitamente cuándo se libera la memoria nativa asignada (`MemorySegment`), reemplazando el manejo manual de punteros y la generación de código C intermedio que JNI tradicional requería.
+**1. Contexto**
 
-**Diagrama:**
+La función `strlen` de la biblioteca C devuelve la longitud de una cadena terminada en cero.
 
-```mermaid
-flowchart LR
-    A["Arena.ofConfined()"] --> M[MemorySegment asignado]
-    M --> C["strlen invocado via MethodHandle"]
-    C --> R[resultado]
-    A -->|cierra el bloque try| L["memoria liberada: M ya inválido"]
-```
+**2. Hazlo tú**
 
-**Analogía:** el FFM API es como pedir prestada una herramienta de un taller ajeno con un control de devolución explícito y claro; JNI tradicional es como construir un puente completo de concreto entre dos talleres solo para pasar una herramienta una vez.
+Crea `src/LongitudNativa.java` con `Linker.nativeLinker()`, busca el símbolo `strlen` en `linker.defaultLookup()`, crea un downcall handle con `FunctionDescriptor.of(ValueLayout.JAVA_LONG, ValueLayout.ADDRESS)`, reserva `arena.allocateUtf8String("RutaFlow")` y llama `invokeExact(texto)`. Activa `--enable-native-access=ALL-UNNAMED`; compila con JDK 22+ y ejecuta `java --enable-native-access=ALL-UNNAMED -cp out LongitudNativa`.
 
-**¿Por qué es importante?** El FFM API permite invocar código nativo existente de forma segura y con tipos verificados, sin la ceremonia ni los riesgos de memoria de JNI tradicional.
+**Resultado esperado:** la función nativa devuelve `8` para `RutaFlow`.
 
-**Código del ejemplo:**
+**Fallo deliberado:** describe el retorno nativo como `JAVA_INT`. **Diagnóstico:** la firma C devuelve `size_t`, representado como `JAVA_LONG` en esta plataforma de 64 bits; revisa la ABI del sistema.
 
-```java
-Linker linker = Linker.nativeLinker();
-MethodHandle strlen = linker.downcallHandle(
-    linker.defaultLookup().find("strlen").get(),
-    FunctionDescriptor.of(JAVA_LONG, ADDRESS));
+**3. Entiende**
 
-try (Arena arena = Arena.ofConfined()) {
-    MemorySegment texto = arena.allocateUtf8String("entrega-RF-4471");
-    long longitud = (long) strlen.invoke(texto);
-}
-```
+Un downcall handle conecta una firma Java con una función nativa. La firma, plataforma y duración de memoria deben coincidir.
+
+**4. Cierra**
+
+Conserva la salida y el descriptor elegido. Fuente: [FFM API en Java 22](https://docs.oracle.com/en/java/javase/22/core/foreign-function-and-memory-api.html).
+
+#### Subtema 4.3: Evita que memoria nativa se use tras cerrar Arena · 10 min
+
+**1. Contexto**
+
+Un segmento que se conserva después de cerrar su arena ya no es seguro de acceder.
+
+**2. Hazlo tú**
+
+En `src/MemoriaNativa.java`, conserva el segmento en una variable externa al bloque `try (Arena arena = Arena.ofConfined())`. Dentro del bloque imprime el texto; después intenta leerlo con `texto.getString(0)`. Compila y ejecuta `java -cp out MemoriaNativa`.
+
+**Resultado esperado:** el acceso dentro del bloque funciona y el acceso posterior falla porque el segmento quedó liberado.
+
+**Fallo deliberado:** comparte el segmento confinado con otro hilo. **Diagnóstico:** el arena confinado pertenece al hilo que lo creó; usa un arena compartido solo si el diseño necesita acceso concurrente y define quién lo cierra.
+
+**3. Entiende**
+
+FFM hace explícita la gestión de memoria nativa; un acceso inválido puede fallar en vez de comportarse como una referencia Java ordinaria.
+
+**4. Cierra**
+
+Guarda el fallo tras el cierre y documenta quién es responsable de cerrar el arena. Fuente: [JEP 454](https://openjdk.org/jeps/454).
 
 ---
 

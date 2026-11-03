@@ -1695,14 +1695,14 @@
     }
   ],
   "summary": {
-    "fingerprint": "db4cbd370109a14752cdbbfb387e3436727ff68a47f453f3c6571f472b6c500c",
+    "fingerprint": "b3bbb752984bef758b6421be0ebb765b1b65c2116095db61103eeb6949294ba9",
     "issues": {
       "andamiaje-generico": 124,
-      "bloque-repetido": 179,
-      "cola-tras-cierre": 343,
+      "bloque-repetido": 175,
+      "cola-tras-cierre": 340,
       "parrafo-repetido": 5,
       "sin-fuente": 3,
-      "tema-breve": 5
+      "tema-breve": 6
     },
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
@@ -1712,7 +1712,7 @@
     "modules": 256,
     "modulesWithLegacySections": 181,
     "topics": 1185,
-    "topicsWithIssues": 433
+    "topicsWithIssues": 430
   },
   "topics": {
     "android": [
@@ -7218,43 +7218,34 @@
         "words": 592
       },
       {
-        "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 11,
-        "tailWords": 697,
+        "tailWords": 0,
         "topic": "Tema 1: Generaciones de memoria y recolectores",
-        "words": 1113
+        "words": 481
       },
       {
         "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
+          "tema-breve"
         ],
         "module": 11,
-        "tailWords": 610,
+        "tailWords": 0,
         "topic": "Tema 2: Java Flight Recorder y JIT compilation",
-        "words": 1027
+        "words": 444
       },
       {
-        "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 11,
-        "tailWords": 643,
+        "tailWords": 0,
         "topic": "Tema 3: Referencias especiales y heap dumps",
-        "words": 1052
+        "words": 470
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 11,
-        "tailWords": 484,
+        "tailWords": 0,
         "topic": "Tema 4: Foreign Function & Memory API (Java 22)",
-        "words": 906
+        "words": 535
       },
       {
         "issues": [

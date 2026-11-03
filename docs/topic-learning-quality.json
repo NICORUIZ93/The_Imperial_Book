@@ -127,16 +127,16 @@
     "java": {
       "topics": 101,
       "explanation": 101,
-      "code": 91,
-      "visual": 28,
+      "code": 88,
+      "visual": 26,
       "filePath": 101,
-      "runCommand": 73,
+      "runCommand": 69,
       "expectedResult": 101,
-      "practice": 78,
-      "project": 71,
-      "modelMental": 85,
-      "limitsDecision": 80,
-      "practicable": 63,
+      "practice": 74,
+      "project": 67,
+      "modelMental": 81,
+      "limitsDecision": 79,
+      "practicable": 59,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
@@ -15086,19 +15086,19 @@
         "topic": "Tema 1: Generaciones de memoria y recolectores",
         "criteria": {
           "explanation": true,
-          "code": true,
+          "code": false,
           "visual": false,
           "filePath": true,
-          "runCommand": true,
+          "runCommand": false,
           "expectedResult": true,
-          "practice": true,
-          "project": true,
-          "modelMental": true,
-          "limitsDecision": true
+          "practice": false,
+          "project": false,
+          "modelMental": false,
+          "limitsDecision": false
         },
         "classification": {
-          "rubricScore": 14,
-          "practicable": true,
+          "rubricScore": 5,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -15108,19 +15108,19 @@
         "topic": "Tema 2: Java Flight Recorder y JIT compilation",
         "criteria": {
           "explanation": true,
-          "code": true,
+          "code": false,
           "visual": false,
           "filePath": true,
-          "runCommand": true,
+          "runCommand": false,
           "expectedResult": true,
-          "practice": true,
-          "project": true,
-          "modelMental": true,
+          "practice": false,
+          "project": false,
+          "modelMental": false,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 14,
-          "practicable": true,
+          "rubricScore": 5,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -15130,19 +15130,19 @@
         "topic": "Tema 3: Referencias especiales y heap dumps",
         "criteria": {
           "explanation": true,
-          "code": true,
-          "visual": true,
+          "code": false,
+          "visual": false,
           "filePath": true,
-          "runCommand": true,
+          "runCommand": false,
           "expectedResult": true,
-          "practice": true,
-          "project": true,
-          "modelMental": true,
+          "practice": false,
+          "project": false,
+          "modelMental": false,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 16,
-          "practicable": true,
+          "rubricScore": 5,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -15153,18 +15153,18 @@
         "criteria": {
           "explanation": true,
           "code": true,
-          "visual": true,
+          "visual": false,
           "filePath": true,
-          "runCommand": true,
+          "runCommand": false,
           "expectedResult": true,
-          "practice": true,
-          "project": true,
-          "modelMental": true,
+          "practice": false,
+          "project": false,
+          "modelMental": false,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 16,
-          "practicable": true,
+          "rubricScore": 7,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }

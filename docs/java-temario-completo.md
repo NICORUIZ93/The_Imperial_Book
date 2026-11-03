@@ -5,7 +5,7 @@
 **Proyecto continuo:** Motor de asignación de entregas.
 **Prerrequisito de entrada:** Fundamentos de programación; el módulo 0 comienza con JDK y terminal..
 **Duración objetivo:** temas de 20–45 minutos; cada tema se divide en 3–6 acciones de 5–15 minutos.
-**Estado estructural:** 47/101 temas migrados; auditoría estructural actualizada el 2026-11-03.
+**Estado estructural:** 51/101 temas migrados; auditoría estructural actualizada el 2026-11-03.
 
 ## Índice de módulos y temas
 
@@ -256,10 +256,22 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
 
 [Abrir lección completa](../web/public/content/java/modulo-11.md)
 
-- [pendiente de migrar] Tema 1: Generaciones de memoria y recolectores
-- [pendiente de migrar] Tema 2: Java Flight Recorder y JIT compilation
-- [pendiente de migrar] Tema 3: Referencias especiales y heap dumps
-- [pendiente de migrar] Tema 4: Foreign Function & Memory API (Java 22)
+- [4 pasos] Tema 1: Generaciones de memoria y recolectores
+  - ✓ Subtema 1.1: Observa el heap de una JVM · 10 min
+  - ✓ Subtema 1.2: Distingue objetos vivos de basura · 10 min
+  - ✓ Subtema 1.3: Compara logs antes de ajustar · 10 min
+- [4 pasos] Tema 2: Java Flight Recorder y JIT compilation
+  - ✓ Subtema 2.1: Captura una grabación JFR · 10 min
+  - ✓ Subtema 2.2: Observa compilación caliente · 10 min
+  - ✓ Subtema 2.3: Resume la grabación para comparar · 10 min
+- [4 pasos] Tema 3: Referencias especiales y heap dumps
+  - ✓ Subtema 3.1: Prueba una referencia débil · 10 min
+  - ✓ Subtema 3.2: Detecta una referencia fuerte accidental · 10 min
+  - ✓ Subtema 3.3: Crea un heap dump para investigarlo · 10 min
+- [4 pasos] Tema 4: Foreign Function & Memory API (Java 22)
+  - ✓ Subtema 4.1: Reserva memoria nativa con Arena · 10 min
+  - ✓ Subtema 4.2: Llama una función nativa conocida · 10 min
+  - ✓ Subtema 4.3: Evita que memoria nativa se use tras cerrar Arena · 10 min
 
 ### Módulo 12: Buenas prácticas y patrones de diseño
 
@@ -382,7 +394,7 @@ La tabla registra presencia de áreas en el inventario del track, no profundidad
 
 ### Huecos y límites reportados
 
-- El repositorio contiene 101 temas en 21 módulos; 47 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
+- El repositorio contiene 101 temas en 21 módulos; 51 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
 - No hay base para afirmar que el track esté completo: la comparación con la fuente de referencia está pendiente de revisión humana módulo por módulo.
 - Los elementos de la fuente que todavía deben verificarse de forma explícita están enumerados en la tabla anterior; cualquier técnica crítica que no tenga tema propio debe añadirse conservando el currículo base.
 - La ejecución de ejemplos, el comportamiento con brokers/plataformas reales y la calidad pedagógica humana se registran por separado.

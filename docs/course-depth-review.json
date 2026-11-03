@@ -7578,7 +7578,7 @@
       "file": "web/public/content/java/modulo-11.md",
       "line": 6,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7589,9 +7589,9 @@
       "module": 11,
       "title": "Tema 2: Java Flight Recorder y JIT compilation",
       "file": "web/public/content/java/modulo-11.md",
-      "line": 72,
+      "line": 76,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7602,9 +7602,9 @@
       "module": 11,
       "title": "Tema 3: Referencias especiales y heap dumps",
       "file": "web/public/content/java/modulo-11.md",
-      "line": 136,
+      "line": 146,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7615,9 +7615,9 @@
       "module": 11,
       "title": "Tema 4: Foreign Function & Memory API (Java 22)",
       "file": "web/public/content/java/modulo-11.md",
-      "line": 200,
+      "line": 216,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

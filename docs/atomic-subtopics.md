@@ -2,7 +2,7 @@
 
 > Auditoría estructural. Un encabezado o criterio detectado no demuestra que el ejemplo se haya ejecutado ni que la explicación sea pedagógicamente suficiente.
 
-Temas conformes a cuatro pasos: **64/1185**. Tracks inventariados: **14**.
+Temas conformes a cuatro pasos: **68/1185**. Tracks inventariados: **14**.
 
 | Track | Temas conformes | Temas inventariados | Subtemas detectados | Subtemas con estructura completa |
 |---|---:|---:|---:|---:|
@@ -13,7 +13,7 @@ Temas conformes a cuatro pasos: **64/1185**. Tracks inventariados: **14**.
 | flutter | 1 | 106 | 3 | 3 |
 | foundations | 0 | 99 | 0 | 0 |
 | ios | 0 | 56 | 0 | 0 |
-| java | 47 | 101 | 143 | 143 |
+| java | 51 | 101 | 155 | 155 |
 | javascript | 0 | 88 | 0 | 0 |
 | kotlin-multiplatform | 0 | 56 | 0 | 0 |
 | node | 2 | 83 | 6 | 6 |
@@ -704,10 +704,6 @@ Temas conformes a cuatro pasos: **64/1185**. Tracks inventariados: **14**.
 
 ### java
 
-- M11 ### Tema 1: Generaciones de memoria y recolectores: tiene 0 subtemas
-- M11 ### Tema 2: Java Flight Recorder y JIT compilation: tiene 0 subtemas
-- M11 ### Tema 3: Referencias especiales y heap dumps: tiene 0 subtemas
-- M11 ### Tema 4: Foreign Function & Memory API (Java 22): tiene 0 subtemas
 - M12 ### Tema 1: Builder — configuración paso a paso y validación: tiene 0 subtemas
 - M12 ### Tema 2: Factory Method y Strategy: tiene 0 subtemas
 - M12 ### Tema 3: Abstract Factory y familias de productos compatibles: tiene 0 subtemas

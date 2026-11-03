@@ -86,9 +86,9 @@
     },
     "java": {
       "topics": 101,
-      "code": 91,
-      "commentedCode": 30,
-      "mermaid": 27,
+      "code": 88,
+      "commentedCode": 26,
+      "mermaid": 25,
       "archifyVisual": 1,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
@@ -2010,6 +2010,34 @@
       "topic": "Tema 3: opens para acceso reflexivo controlado de frameworks",
       "missingCode": true,
       "missingComments": false
+    },
+    {
+      "track": "java",
+      "module": 11,
+      "topic": "Tema 1: Generaciones de memoria y recolectores",
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "java",
+      "module": 11,
+      "topic": "Tema 2: Java Flight Recorder y JIT compilation",
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "java",
+      "module": 11,
+      "topic": "Tema 3: Referencias especiales y heap dumps",
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "java",
+      "module": 11,
+      "topic": "Tema 4: Foreign Function & Memory API (Java 22)",
+      "missingCode": false,
+      "missingComments": true
     },
     {
       "track": "java",
