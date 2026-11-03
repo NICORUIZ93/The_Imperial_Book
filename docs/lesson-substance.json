@@ -647,10 +647,20 @@
       "track": "flutter"
     },
     {
+      "legacySections": [],
+      "module": 19,
+      "track": "flutter"
+    },
+    {
       "legacySections": [
         "**Errores comunes y soluciones**"
       ],
       "module": 2,
+      "track": "flutter"
+    },
+    {
+      "legacySections": [],
+      "module": 20,
       "track": "flutter"
     },
     {
@@ -1660,7 +1670,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "ed21aa1490b4bd20bcecf1b5059deb1ea60c3a992d2d093773dd7ad455930d22",
+    "fingerprint": "a8cc85bbe0f41d60ec8f4ae8ee174eb8dc8f1170dce4ee18e189dfd9e58c2894",
     "issues": {
       "andamiaje-generico": 128,
       "bloque-repetido": 218,
@@ -1673,9 +1683,9 @@
       "## Ruta de proyecto progresivo desde carpeta vacía": 12,
       "**Errores comunes y soluciones**": 179
     },
-    "modules": 249,
+    "modules": 251,
     "modulesWithLegacySections": 181,
-    "topics": 1139,
+    "topics": 1151,
     "topicsWithIssues": 470
   },
   "topics": {
@@ -5279,6 +5289,48 @@
         "words": 702
       },
       {
+        "issues": [],
+        "module": 19,
+        "tailWords": 177,
+        "topic": "Tema 1: estado de la jornada con Riverpod",
+        "words": 524
+      },
+      {
+        "issues": [],
+        "module": 19,
+        "tailWords": 191,
+        "topic": "Tema 2: mapa y permiso de ubicación",
+        "words": 545
+      },
+      {
+        "issues": [],
+        "module": 19,
+        "tailWords": 185,
+        "topic": "Tema 3: posiciones en tiempo real con Socket.IO",
+        "words": 543
+      },
+      {
+        "issues": [],
+        "module": 19,
+        "tailWords": 181,
+        "topic": "Tema 4: animar el marcador sin saltos",
+        "words": 502
+      },
+      {
+        "issues": [],
+        "module": 19,
+        "tailWords": 181,
+        "topic": "Tema 5: confirmaciones offline y sincronización",
+        "words": 507
+      },
+      {
+        "issues": [],
+        "module": 19,
+        "tailWords": 216,
+        "topic": "Tema 6: carga de evidencia con Dio y notificaciones",
+        "words": 580
+      },
+      {
         "issues": [
           "bloque-repetido",
           "cola-tras-cierre"
@@ -5307,6 +5359,48 @@
         "tailWords": 612,
         "topic": "Tema 3: Breakpoints propios y SafeArea",
         "words": 963
+      },
+      {
+        "issues": [],
+        "module": 20,
+        "tailWords": 142,
+        "topic": "Tema 1: pruebas unitarias y de widget con Flutter Test",
+        "words": 481
+      },
+      {
+        "issues": [],
+        "module": 20,
+        "tailWords": 168,
+        "topic": "Tema 2: golden e integración de un flujo real",
+        "words": 498
+      },
+      {
+        "issues": [],
+        "module": 20,
+        "tailWords": 162,
+        "topic": "Tema 3: perfilado y presupuesto de rendimiento",
+        "words": 502
+      },
+      {
+        "issues": [],
+        "module": 20,
+        "tailWords": 154,
+        "topic": "Tema 4: Clean Architecture y sustitución de dependencias",
+        "words": 475
+      },
+      {
+        "issues": [],
+        "module": 20,
+        "tailWords": 156,
+        "topic": "Tema 5: internacionalización y formatos locales",
+        "words": 468
+      },
+      {
+        "issues": [],
+        "module": 20,
+        "tailWords": 170,
+        "topic": "Tema 6: builds por plataforma, firma y entrega",
+        "words": 527
       },
       {
         "issues": [

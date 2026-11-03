@@ -2004,6 +2004,32 @@
         "fragment": "tema-7-monitoreo-de-rendimiento-en-una-version-publicada"
       }
     ],
+    "19": [
+      {
+        "title": "estado de la jornada con Riverpod",
+        "fragment": "tema-1-estado-de-la-jornada-con-riverpod"
+      },
+      {
+        "title": "mapa y permiso de ubicación",
+        "fragment": "tema-2-mapa-y-permiso-de-ubicacion"
+      },
+      {
+        "title": "posiciones en tiempo real con Socket.IO",
+        "fragment": "tema-3-posiciones-en-tiempo-real-con-socket-io"
+      },
+      {
+        "title": "animar el marcador sin saltos",
+        "fragment": "tema-4-animar-el-marcador-sin-saltos"
+      },
+      {
+        "title": "confirmaciones offline y sincronización",
+        "fragment": "tema-5-confirmaciones-offline-y-sincronizacion"
+      },
+      {
+        "title": "carga de evidencia con Dio y notificaciones",
+        "fragment": "tema-6-carga-de-evidencia-con-dio-y-notificaciones"
+      }
+    ],
     "2": [
       {
         "title": "MediaQuery vs LayoutBuilder",
@@ -2016,6 +2042,32 @@
       {
         "title": "Breakpoints propios y SafeArea",
         "fragment": "tema-3-breakpoints-propios-y-safearea"
+      }
+    ],
+    "20": [
+      {
+        "title": "pruebas unitarias y de widget con Flutter Test",
+        "fragment": "tema-1-pruebas-unitarias-y-de-widget-con-flutter-test"
+      },
+      {
+        "title": "golden e integración de un flujo real",
+        "fragment": "tema-2-golden-e-integracion-de-un-flujo-real"
+      },
+      {
+        "title": "perfilado y presupuesto de rendimiento",
+        "fragment": "tema-3-perfilado-y-presupuesto-de-rendimiento"
+      },
+      {
+        "title": "Clean Architecture y sustitución de dependencias",
+        "fragment": "tema-4-clean-architecture-y-sustitucion-de-dependencias"
+      },
+      {
+        "title": "internacionalización y formatos locales",
+        "fragment": "tema-5-internacionalizacion-y-formatos-locales"
+      },
+      {
+        "title": "builds por plataforma, firma y entrega",
+        "fragment": "tema-6-builds-por-plataforma-firma-y-entrega"
       }
     ],
     "3": [

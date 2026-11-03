@@ -15,7 +15,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 | spring-boot | 99 | 14 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
 | android | 58 | 0 | Kotlin antes de Compose; distinguir recomposición, recreación y muerte de proceso | App instalable con permisos, restauración, persistencia y pruebas en dispositivo |
 | ios | 56 | 4 | Swift antes de SwiftUI; explicitar macOS/Xcode y destino | Cancelación, estados de red, persistencia y accesibilidad comprobados en simulador |
-| flutter | 82 | 8 | Dart antes de widgets; ejemplo con main y destino de ejecución | Restauración, red, pruebas de widget, integración y publicación por plataforma |
+| flutter | 94 | 8 | Dart antes de widgets; ejemplo con main y destino de ejecución | Restauración, red, pruebas de widget, integración y publicación por plataforma |
 | kotlin-multiplatform | 56 | 2 | Kotlin y source sets antes de interoperabilidad | Política común sin dependencias nativas; reloj controlado y pruebas por destino |
 | cloud | 156 | 2 | Terminal/HTTP/Docker antes de servicios; emulación distinta de cloud real | Infraestructura, permisos mínimos, restauración ensayada, RPO/RTO y costes observados |
 | devops | 113 | 3 | Aplicación ejecutable antes de CI/CD; código de salida y artefactos identificables | Pipeline con promoción, rollback comprobado, observabilidad e incidente ensayado |
@@ -477,9 +477,21 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | flutter / 18 | [Tema 5: reportes de fallos con Crashlytics y Sentry](../web/public/content/flutter/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 18 | [Tema 6: analítica con privacidad y consentimiento](../web/public/content/flutter/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 18 | [Tema 7: monitoreo de rendimiento en una versión publicada](../web/public/content/flutter/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 19 | [Tema 1: estado de la jornada con Riverpod](../web/public/content/flutter/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 19 | [Tema 2: mapa y permiso de ubicación](../web/public/content/flutter/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 19 | [Tema 3: posiciones en tiempo real con Socket.IO](../web/public/content/flutter/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 19 | [Tema 4: animar el marcador sin saltos](../web/public/content/flutter/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 19 | [Tema 5: confirmaciones offline y sincronización](../web/public/content/flutter/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 19 | [Tema 6: carga de evidencia con Dio y notificaciones](../web/public/content/flutter/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 2 | [Tema 1: MediaQuery vs LayoutBuilder](../web/public/content/flutter/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 2 | [Tema 2: Cómo Flutter calcula tamaños](../web/public/content/flutter/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 2 | [Tema 3: Breakpoints propios y SafeArea](../web/public/content/flutter/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 20 | [Tema 1: pruebas unitarias y de widget con Flutter Test](../web/public/content/flutter/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 20 | [Tema 2: golden e integración de un flujo real](../web/public/content/flutter/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 20 | [Tema 3: perfilado y presupuesto de rendimiento](../web/public/content/flutter/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 20 | [Tema 4: Clean Architecture y sustitución de dependencias](../web/public/content/flutter/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 20 | [Tema 5: internacionalización y formatos locales](../web/public/content/flutter/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 20 | [Tema 6: builds por plataforma, firma y entrega](../web/public/content/flutter/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 3 | [Tema 1: go_router: navegación como función de la URL](../web/public/content/flutter/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 3 | [Tema 2: Guards y deep linking](../web/public/content/flutter/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 3 | [Tema 3: Transiciones personalizadas](../web/public/content/flutter/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |

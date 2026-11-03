@@ -145,16 +145,16 @@
       "officialSource": 56
     },
     "flutter": {
-      "topics": 82,
-      "code": 82,
+      "topics": 94,
+      "code": 94,
       "commentedCode": 33,
-      "mermaid": 63,
+      "mermaid": 75,
       "archifyVisual": 0,
       "asciiVisual": 15,
       "misleadingDiagramLabel": 0,
-      "filePath": 82,
-      "runCommand": 79,
-      "officialSource": 63
+      "filePath": 94,
+      "runCommand": 91,
+      "officialSource": 71
     },
     "rutaflow": {
       "topics": 29,
@@ -2860,6 +2860,48 @@
     },
     {
       "track": "flutter",
+      "module": 19,
+      "topic": "Tema 1: estado de la jornada con Riverpod",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 19,
+      "topic": "Tema 2: mapa y permiso de ubicación",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 19,
+      "topic": "Tema 3: posiciones en tiempo real con Socket.IO",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 19,
+      "topic": "Tema 4: animar el marcador sin saltos",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 19,
+      "topic": "Tema 5: confirmaciones offline y sincronización",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 19,
+      "topic": "Tema 6: carga de evidencia con Dio y notificaciones",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
       "module": 2,
       "topic": "Tema 1: MediaQuery vs LayoutBuilder",
       "missingCode": false,
@@ -2876,6 +2918,48 @@
       "track": "flutter",
       "module": 2,
       "topic": "Tema 3: Breakpoints propios y SafeArea",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 20,
+      "topic": "Tema 1: pruebas unitarias y de widget con Flutter Test",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 20,
+      "topic": "Tema 2: golden e integración de un flujo real",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 20,
+      "topic": "Tema 3: perfilado y presupuesto de rendimiento",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 20,
+      "topic": "Tema 4: Clean Architecture y sustitución de dependencias",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 20,
+      "topic": "Tema 5: internacionalización y formatos locales",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 20,
+      "topic": "Tema 6: builds por plataforma, firma y entrega",
       "missingCode": false,
       "missingComments": true
     },

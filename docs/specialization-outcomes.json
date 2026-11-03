@@ -544,7 +544,9 @@
             6,
             16,
             17,
-            18
+            18,
+            19,
+            20
           ],
           "evidence": [
             "migraciones y rollback",
@@ -990,7 +992,7 @@
         {
           "id": "FLUTTER-4",
           "level": "Experto",
-          "statement": "Publicar y operar Flutter con seguridad, isolates, sincronización, FFI, generación y paquetes reutilizables.",
+          "statement": "Construir, probar, localizar, publicar y operar Flutter con seguridad, sincronización, FFI y paquetes reutilizables.",
           "moduleIds": [
             11,
             12,
@@ -999,7 +1001,9 @@
             15,
             16,
             17,
-            18
+            18,
+            19,
+            20
           ],
           "evidence": [
             "builds firmados y matriz de targets FFI",

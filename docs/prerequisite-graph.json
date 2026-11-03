@@ -9255,6 +9255,138 @@
       ]
     },
     {
+      "id": "flutter:19:1",
+      "track": "flutter",
+      "module": 19,
+      "position": 1,
+      "title": "estado de la jornada con Riverpod",
+      "file": "web/public/content/flutter/modulo-19.md",
+      "requires": [
+        "flutter:18:7"
+      ]
+    },
+    {
+      "id": "flutter:19:2",
+      "track": "flutter",
+      "module": 19,
+      "position": 2,
+      "title": "mapa y permiso de ubicación",
+      "file": "web/public/content/flutter/modulo-19.md",
+      "requires": [
+        "flutter:19:1"
+      ]
+    },
+    {
+      "id": "flutter:19:3",
+      "track": "flutter",
+      "module": 19,
+      "position": 3,
+      "title": "posiciones en tiempo real con Socket.IO",
+      "file": "web/public/content/flutter/modulo-19.md",
+      "requires": [
+        "flutter:19:2"
+      ]
+    },
+    {
+      "id": "flutter:19:4",
+      "track": "flutter",
+      "module": 19,
+      "position": 4,
+      "title": "animar el marcador sin saltos",
+      "file": "web/public/content/flutter/modulo-19.md",
+      "requires": [
+        "flutter:19:3"
+      ]
+    },
+    {
+      "id": "flutter:19:5",
+      "track": "flutter",
+      "module": 19,
+      "position": 5,
+      "title": "confirmaciones offline y sincronización",
+      "file": "web/public/content/flutter/modulo-19.md",
+      "requires": [
+        "flutter:19:4"
+      ]
+    },
+    {
+      "id": "flutter:19:6",
+      "track": "flutter",
+      "module": 19,
+      "position": 6,
+      "title": "carga de evidencia con Dio y notificaciones",
+      "file": "web/public/content/flutter/modulo-19.md",
+      "requires": [
+        "flutter:19:5"
+      ]
+    },
+    {
+      "id": "flutter:20:1",
+      "track": "flutter",
+      "module": 20,
+      "position": 1,
+      "title": "pruebas unitarias y de widget con Flutter Test",
+      "file": "web/public/content/flutter/modulo-20.md",
+      "requires": [
+        "flutter:19:6"
+      ]
+    },
+    {
+      "id": "flutter:20:2",
+      "track": "flutter",
+      "module": 20,
+      "position": 2,
+      "title": "golden e integración de un flujo real",
+      "file": "web/public/content/flutter/modulo-20.md",
+      "requires": [
+        "flutter:20:1"
+      ]
+    },
+    {
+      "id": "flutter:20:3",
+      "track": "flutter",
+      "module": 20,
+      "position": 3,
+      "title": "perfilado y presupuesto de rendimiento",
+      "file": "web/public/content/flutter/modulo-20.md",
+      "requires": [
+        "flutter:20:2"
+      ]
+    },
+    {
+      "id": "flutter:20:4",
+      "track": "flutter",
+      "module": 20,
+      "position": 4,
+      "title": "Clean Architecture y sustitución de dependencias",
+      "file": "web/public/content/flutter/modulo-20.md",
+      "requires": [
+        "flutter:20:3"
+      ]
+    },
+    {
+      "id": "flutter:20:5",
+      "track": "flutter",
+      "module": 20,
+      "position": 5,
+      "title": "internacionalización y formatos locales",
+      "file": "web/public/content/flutter/modulo-20.md",
+      "requires": [
+        "flutter:20:4"
+      ]
+    },
+    {
+      "id": "flutter:20:6",
+      "track": "flutter",
+      "module": 20,
+      "position": 6,
+      "title": "builds por plataforma, firma y entrega",
+      "file": "web/public/content/flutter/modulo-20.md",
+      "requires": [
+        "flutter:20:5"
+      ]
+    },
+    {
       "id": "devops:0:1",
       "track": "devops",
       "module": 0,
