@@ -51,10 +51,10 @@
     },
     "java": {
       "topics": 101,
-      "completeTopics": 96,
-      "topicsWith3to6Subtopics": 96,
-      "subtopics": 292,
-      "completeSubtopics": 292
+      "completeTopics": 97,
+      "topicsWith3to6Subtopics": 97,
+      "subtopics": 295,
+      "completeSubtopics": 295
     },
     "javascript": {
       "topics": 88,
@@ -8230,9 +8230,52 @@
       {
         "module": 20,
         "topic": "### Tema 9: Streams terminales: encontrar, contar y combinar resultados",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "9.1",
+            "title": "#### Subtema 9.1: Encontrar el primer resultado · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "9.2",
+            "title": "#### Subtema 9.2: Sumar con reduce · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "9.3",
+            "title": "#### Subtema 9.3: Ejecutar una acción · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 20,

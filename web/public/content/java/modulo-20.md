@@ -1138,11 +1138,10 @@ Una operación terminal hace que el Stream recorra los datos. Algunas devuelven 
 
 #### Paso 4 · Ejercicio 1
 
-##### Subtema 9.1: Encontrar el primer resultado · 5-10 min
+#### Subtema 9.1: Encontrar el primer resultado · 10 min
+**1. Contexto** busca el primer paquete que supera el límite.
 
-**Contexto:** busca el primer paquete que supera el límite.
-
-**Hazlo tú:** crea `java-funcional-t09/src/Encontrar.java`:
+**2. Hazlo tú** crea `java-funcional-t09/src/Encontrar.java`:
 
 ```java
 import java.util.List;
@@ -1163,15 +1162,18 @@ Ejecuta `cd java-funcional-t09 && java src/Encontrar.java`.
 
 **Fallo deliberado:** cambia el límite a 50. **Resultado del fallo:** `ninguno`. **Diagnóstico:** `findFirst` devuelve vacío si ningún elemento cumple.
 
-**Entiende:** `findFirst` puede parar cuando encuentra el primer dato que sirve.
+**3. Entiende** `findFirst` puede parar cuando encuentra el primer dato que sirve.
+
+**4. Cierra**
+
+Guarda el resultado terminal y explica si produjo un valor, un conteo, una combinación o un efecto.
 
 #### Paso 5 · Ejercicio 2
 
-##### Subtema 9.2: Sumar con reduce · 5-10 min
+#### Subtema 9.2: Sumar con reduce · 10 min
+**1. Contexto** calcula el total de kilos que van en el camión.
 
-**Contexto:** calcula el total de kilos que van en el camión.
-
-**Hazlo tú:** crea `java-funcional-t09/src/Sumar.java`:
+**2. Hazlo tú** crea `java-funcional-t09/src/Sumar.java`:
 
 ```java
 import java.util.List;
@@ -1190,15 +1192,18 @@ Ejecuta `cd java-funcional-t09 && java src/Sumar.java`.
 
 **Fallo deliberado:** elimina el `0` inicial. **Resultado del fallo:** Java devuelve `Optional<Integer>`, por lo que no puedes guardarlo directamente en `int`. **Diagnóstico:** sin valor inicial, la lista podría estar vacía.
 
-**Entiende:** el valor inicial es el resultado para una lista vacía y el punto desde el cual se combinan los demás números.
+**3. Entiende** el valor inicial es el resultado para una lista vacía y el punto desde el cual se combinan los demás números.
+
+**4. Cierra**
+
+Guarda el resultado terminal y explica si produjo un valor, un conteo, una combinación o un efecto.
 
 #### Paso 6 · Ejercicio 3
 
-##### Subtema 9.3: Ejecutar una acción · 5-10 min
+#### Subtema 9.3: Ejecutar una acción · 10 min
+**1. Contexto** imprime cada guía de un lote.
 
-**Contexto:** imprime cada guía de un lote.
-
-**Hazlo tú:** crea `java-funcional-t09/src/Imprimir.java`:
+**2. Hazlo tú** crea `java-funcional-t09/src/Imprimir.java`:
 
 ```java
 import java.util.List;
@@ -1216,7 +1221,11 @@ Ejecuta `cd java-funcional-t09 && java src/Imprimir.java`.
 
 **Fallo deliberado:** cambia a `parallelStream().forEach(...)`. **Resultado del fallo:** el orden puede cambiar. **Diagnóstico:** si necesitas conservar el orden, usa `forEachOrdered` o un bucle normal.
 
-**Entiende:** `forEach` produce una acción; no lo uses para construir una lista que `collect` ya puede devolver.
+**3. Entiende** `forEach` produce una acción; no lo uses para construir una lista que `collect` ya puede devolver.
+
+**4. Cierra**
+
+Guarda el resultado terminal y explica si produjo un valor, un conteo, una combinación o un efecto.
 
 #### Paso 7 · Cierre y evidencia
 

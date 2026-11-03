@@ -1698,7 +1698,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "65ba67c741087889e9eedaf3d48bace84ce8121eb843c58ffce098f525ca4e71",
+    "fingerprint": "a5bd43755bf316ce25b7fce74a2821d6de7dd82a2563f270a76f9b752b4ca0a5",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -7639,7 +7639,7 @@
         "module": 20,
         "tailWords": 55,
         "topic": "Tema 9: Streams terminales: encontrar, contar y combinar resultados",
-        "words": 545
+        "words": 608
       },
       {
         "issues": [],
