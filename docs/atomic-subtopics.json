@@ -51,10 +51,10 @@
     },
     "java": {
       "topics": 101,
-      "completeTopics": 90,
-      "topicsWith3to6Subtopics": 90,
-      "subtopics": 274,
-      "completeSubtopics": 274
+      "completeTopics": 91,
+      "topicsWith3to6Subtopics": 91,
+      "subtopics": 277,
+      "completeSubtopics": 277
     },
     "javascript": {
       "topics": 88,
@@ -7930,9 +7930,52 @@
       {
         "module": 20,
         "topic": "### Tema 3: Streams como composición: pereza, orden y efectos que se esconden",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "3.1",
+            "title": "#### Subtema 3.1: Observar cuándo empieza el trabajo · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "3.2",
+            "title": "#### Subtema 3.2: No reutilizar un Stream consumido · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "3.3",
+            "title": "#### Subtema 3.3: Dejar los efectos en el borde del flujo · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 20,

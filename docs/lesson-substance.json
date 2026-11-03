@@ -1698,7 +1698,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "b0eb0943473e7d24051681c0666a591c3be7901664d44ae3ea52db788566d03f",
+    "fingerprint": "5580b5f2f786d620d5336f4390c46105ddd820fc41f3ab2480db26affe2e1288",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -7597,7 +7597,7 @@
         "module": 20,
         "tailWords": 179,
         "topic": "Tema 3: Streams como composición: pereza, orden y efectos que se esconden",
-        "words": 1018
+        "words": 1201
       },
       {
         "issues": [],

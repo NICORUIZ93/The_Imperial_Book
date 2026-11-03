@@ -362,7 +362,14 @@ flowchart LR
 
 #### Paso 4 · Demostración guiada desde cero
 
-##### Subtema 3.1: Observar cuándo empieza el trabajo · 10-15 min
+#### Subtema 3.1: Observar cuándo empieza el trabajo · 10 min
+**1. Contexto**
+
+Un informe de envíos puede definir varias transformaciones antes de producir una sola salida.
+
+**2. Hazlo tú**
+
+Crea `Pereza.java` desde una carpeta vacía, ejecútalo y compara el momento en que se declara el filtro con el momento en que se llama a `count`.
 
 Desde una carpeta vacía:
 
@@ -426,17 +433,26 @@ Al ejecutar, la JVM responde:
 Exception in thread "main" java.lang.IllegalStateException: stream has already been operated upon or closed
 ```
 
-El diagnóstico es que `count` es terminal y cierra el Stream. No es un problema de `count`: es que un Stream no es una colección reutilizable. Corrige guardando el resultado en una variable o creando un Stream nuevo desde la lista.
+**Diagnóstico:** `count` es una operación terminal y consume el Stream; para un segundo recorrido vuelve a crearlo desde la lista. No es un problema de `count`: es que un Stream no es una colección reutilizable. Corrige guardando el resultado en una variable o creando un Stream nuevo desde la lista.
 
 **Conceptos clave:** operación perezosa, operación terminal, consumo único, `peek` para depurar.
 
+**3. Entiende**
+
+Las operaciones intermedias describen el trabajo; una operación terminal lo ejecuta y consume ese Stream.
+
+**Diagnóstico:** busca dónde se crea la terminal y comprueba si hubo un recorrido previo que consumió el Stream.
+
+**4. Cierra**
+
+Guarda el orden de los mensajes y la excepción que aparece al intentar reutilizar el flujo.
+
 #### Paso 5 · Práctica guiada
 
-##### Subtema 3.2: No reutilizar un Stream consumido · 5-10 min
+#### Subtema 3.2: No reutilizar un Stream consumido · 10 min
+**1. Contexto** cada informe debe crear su propio recorrido; un Stream solo sirve para una operación terminal.
 
-**Contexto:** cada informe debe crear su propio recorrido; un Stream solo sirve para una operación terminal.
-
-**Hazlo tú:** crea `src/UnaVez.java` dentro de `java-streams`:
+**2. Hazlo tú** crea `src/UnaVez.java` dentro de `java-streams`:
 
 ```java
 import java.util.List;
@@ -457,15 +473,20 @@ Ejecuta `javac -d out src/UnaVez.java && java -cp out UnaVez`.
 
 **Fallo deliberado:** mantén ambas llamadas a `count`. **Error esperado:** la JVM informa que el Stream ya se usó o cerró. **Diagnóstico:** el primer `count` es terminal; vuelve a crear el Stream desde la lista para el segundo cálculo.
 
-**Entiende:** conserva la colección como dato reutilizable y crea desde ella un Stream nuevo para cada recorrido.
+**3. Entiende** conserva la colección como dato reutilizable y crea desde ella un Stream nuevo para cada recorrido.
+
+**Diagnóstico:** busca dónde se crea la terminal y comprueba si hubo un recorrido previo que consumió el Stream.
+
+**4. Cierra**
+
+Guarda el orden de los mensajes y la excepción que aparece al intentar reutilizar el flujo.
 
 #### Paso 6 · Práctica independiente
 
-##### Subtema 3.3: Dejar los efectos en el borde del flujo · 5-10 min
+#### Subtema 3.3: Dejar los efectos en el borde del flujo · 10 min
+**1. Contexto** una transformación calcula una etiqueta; el registro la imprime solo cuando se consume el resultado.
 
-**Contexto:** una transformación calcula una etiqueta; el registro la imprime solo cuando se consume el resultado.
-
-**Hazlo tú:** crea `src/Efectos.java` dentro de `java-streams`:
+**2. Hazlo tú** crea `src/Efectos.java` dentro de `java-streams`:
 
 ```java
 import java.util.List;
@@ -486,7 +507,13 @@ Ejecuta `javac -d out src/Efectos.java && java -cp out Efectos`.
 
 **Fallo deliberado:** declara el pipeline con `.map(etiqueta)` pero elimina `.toList()` y `forEach`. **Resultado del fallo:** no aparece ninguna guía porque no hay operación terminal. **Diagnóstico:** `map` describe la conversión; una terminal consume el flujo y hace visible el resultado.
 
-**Entiende:** mantén `map` para transformar; ejecuta notificaciones o escrituras en una terminal explícita.
+**3. Entiende** mantén `map` para transformar; ejecuta notificaciones o escrituras en una terminal explícita.
+
+**Diagnóstico:** busca dónde se crea la terminal y comprueba si hubo un recorrido previo que consumió el Stream.
+
+**4. Cierra**
+
+Guarda el orden de los mensajes y la excepción que aparece al intentar reutilizar el flujo.
 
 #### Paso 7 · Cierre y evidencia
 
