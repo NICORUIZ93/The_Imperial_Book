@@ -88,8 +88,9 @@ creación y lectura de `saludo.txt` también pasó en Bash.
 
 Se amplió la auditoría para aceptar los comandos de terminal usados en estos
 ejemplos y la extensión `.txt`. `./scripts/validate.sh` pasa con 23 pruebas
-unitarias auxiliares (4 omitidas) y el perfil editorial y la metodología marcan
-1.098/1.098 temas. La revisión de navegador sigue pendiente: Chrome es terminado
+unitarias auxiliares (4 omitidas). El perfil editorial marca 1.096/1.098 temas
+practicables (2 pendientes) y la metodología 1.095/1.098 completos (3 pendientes).
+La revisión de navegador sigue pendiente: Chrome es terminado
 por el entorno antes de abrir las páginas.
 
 En esta pasada se simplificaron los temas 4–6 de Cloud 0. El tema de Floci ahora
