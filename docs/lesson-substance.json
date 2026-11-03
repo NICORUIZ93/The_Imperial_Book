@@ -1698,7 +1698,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "1156c74b49d7e04e60f3268031f7f145d685d3f4a7e4b4c2460297b753f9bef9",
+    "fingerprint": "b0eb0943473e7d24051681c0666a591c3be7901664d44ae3ea52db788566d03f",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -7590,7 +7590,7 @@
         "module": 20,
         "tailWords": 190,
         "topic": "Tema 2: Componer sin anidar: andThen, compose, negate y reglas encadenadas",
-        "words": 1007
+        "words": 1183
       },
       {
         "issues": [],

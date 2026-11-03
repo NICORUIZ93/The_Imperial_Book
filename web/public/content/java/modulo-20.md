@@ -172,7 +172,14 @@ Componer con las interfaces de Java hace visible ese orden en una sola expresió
 
 #### Paso 4 · Demostración guiada desde cero
 
-##### Subtema 2.1: Encadenar una validación y una transformación · 10-15 min
+#### Subtema 2.1: Encadenar una validación y una transformación · 10 min
+**1. Contexto**
+
+Un correo con espacios puede ser válido después de limpiarlo; el orden de composición determina si el validador lo acepta.
+
+**2. Hazlo tú**
+
+Desde una carpeta vacía, crea `Composicion.java` y ejecuta primero la función compuesta y luego el caso invertido.
 
 Desde una carpeta vacía:
 
@@ -230,13 +237,22 @@ sospechoso vacío: true
 
 **Conceptos clave:** `andThen`, `compose`, `and`, `or`, `negate`, orden de evaluación.
 
+**3. Entiende**
+
+Identifica qué función recibe primero el dato y qué cambia si inviertes el orden.
+
+**Diagnóstico:** sigue el valor de entrada en cada paso; comprueba cuál regla recibió el dato crudo y cuál recibió el valor normalizado.
+
+**4. Cierra**
+
+Guarda la entrada, el resultado con composición y el resultado al cambiar el orden.
+
 #### Paso 5 · Práctica guiada
 
-##### Subtema 2.2: Combinar dos condiciones · 5-10 min
+#### Subtema 2.2: Combinar dos condiciones · 10 min
+**1. Contexto** RutaFlow acepta destinos habilitados solo si el nombre está presente y tiene el prefijo del país.
 
-**Contexto:** RutaFlow acepta destinos habilitados solo si el nombre está presente y tiene el prefijo del país.
-
-**Hazlo tú:** crea `src/Destino.java` dentro de `java-composicion`:
+**2. Hazlo tú** crea `src/Destino.java` dentro de `java-composicion`:
 
 ```java
 import java.util.function.Predicate;
@@ -258,15 +274,20 @@ Ejecuta `javac -d out src/Destino.java && java -cp out Destino`.
 
 **Fallo deliberado:** cambia `.and` por `.or`. **Resultado del fallo:** `MX-CDMX` también queda habilitado. **Diagnóstico:** `or` permite que una sola regla pase; aquí las dos condiciones son obligatorias.
 
-**Entiende:** nombra cada regla por separado; así puedes comprobar cuál condición estás combinando.
+**3. Entiende** nombra cada regla por separado; así puedes comprobar cuál condición estás combinando.
+
+**Diagnóstico:** sigue el valor de entrada en cada paso; comprueba cuál regla recibió el dato crudo y cuál recibió el valor normalizado.
+
+**4. Cierra**
+
+Guarda la entrada, el resultado con composición y el resultado al cambiar el orden.
 
 #### Paso 6 · Práctica independiente
 
-##### Subtema 2.3: Hacer visible el orden de ejecución · 5-10 min
+#### Subtema 2.3: Hacer visible el orden de ejecución · 10 min
+**1. Contexto** el correo del formulario puede traer espacios y mayúsculas; la regla solo acepta el texto limpio.
 
-**Contexto:** el correo del formulario puede traer espacios y mayúsculas; la regla solo acepta el texto limpio.
-
-**Hazlo tú:** crea `src/OrdenCorreo.java` dentro de `java-composicion`:
+**2. Hazlo tú** crea `src/OrdenCorreo.java` dentro de `java-composicion`:
 
 ```java
 import java.util.function.Function;
@@ -291,7 +312,13 @@ Ejecuta `javac -d out src/OrdenCorreo.java && java -cp out OrdenCorreo`.
 
 **Fallo deliberado:** usa `flujoIncorrecto` para decidir si guarda el correo. **Resultado del fallo:** una entrada válida se rechaza. **Diagnóstico:** la función de validación recibió el texto sin limpiar; conecta `limpiar.andThen(...)` antes de guardar.
 
-**Entiende:** las funciones se ejecutan en el orden de la composición; el compilador no puede decidir si ese orden tiene sentido para el negocio.
+**3. Entiende** las funciones se ejecutan en el orden de la composición; el compilador no puede decidir si ese orden tiene sentido para el negocio.
+
+**Diagnóstico:** sigue el valor de entrada en cada paso; comprueba cuál regla recibió el dato crudo y cuál recibió el valor normalizado.
+
+**4. Cierra**
+
+Guarda la entrada, el resultado con composición y el resultado al cambiar el orden.
 
 #### Paso 7 · Cierre y evidencia
 

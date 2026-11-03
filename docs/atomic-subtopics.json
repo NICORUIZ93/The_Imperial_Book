@@ -51,10 +51,10 @@
     },
     "java": {
       "topics": 101,
-      "completeTopics": 89,
-      "topicsWith3to6Subtopics": 89,
-      "subtopics": 271,
-      "completeSubtopics": 271
+      "completeTopics": 90,
+      "topicsWith3to6Subtopics": 90,
+      "subtopics": 274,
+      "completeSubtopics": 274
     },
     "javascript": {
       "topics": 88,
@@ -7880,9 +7880,52 @@
       {
         "module": 20,
         "topic": "### Tema 2: Componer sin anidar: andThen, compose, negate y reglas encadenadas",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "2.1",
+            "title": "#### Subtema 2.1: Encadenar una validación y una transformación · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "2.2",
+            "title": "#### Subtema 2.2: Combinar dos condiciones · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "2.3",
+            "title": "#### Subtema 2.3: Hacer visible el orden de ejecución · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 20,
