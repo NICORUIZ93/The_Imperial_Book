@@ -51,10 +51,10 @@
     },
     "java": {
       "topics": 101,
-      "completeTopics": 95,
-      "topicsWith3to6Subtopics": 95,
-      "subtopics": 289,
-      "completeSubtopics": 289
+      "completeTopics": 96,
+      "topicsWith3to6Subtopics": 96,
+      "subtopics": 292,
+      "completeSubtopics": 292
     },
     "javascript": {
       "topics": 88,
@@ -8180,9 +8180,52 @@
       {
         "module": 20,
         "topic": "### Tema 8: Streams intermedios: filtrar, transformar, aplanar y ordenar",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "8.1",
+            "title": "#### Subtema 8.1: Filtrar y convertir · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "8.2",
+            "title": "#### Subtema 8.2: Aplanar varias paradas · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "8.3",
+            "title": "#### Subtema 8.3: Ordenar un reporte · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 20,

@@ -2,7 +2,7 @@
 
 > Auditoría estructural. Un encabezado o criterio detectado no demuestra que el ejemplo se haya ejecutado ni que la explicación sea pedagógicamente suficiente.
 
-Temas conformes a cuatro pasos: **112/1185**. Tracks inventariados: **14**.
+Temas conformes a cuatro pasos: **113/1185**. Tracks inventariados: **14**.
 
 | Track | Temas conformes | Temas inventariados | Subtemas detectados | Subtemas con estructura completa |
 |---|---:|---:|---:|---:|
@@ -13,7 +13,7 @@ Temas conformes a cuatro pasos: **112/1185**. Tracks inventariados: **14**.
 | flutter | 1 | 106 | 3 | 3 |
 | foundations | 0 | 99 | 0 | 0 |
 | ios | 0 | 56 | 0 | 0 |
-| java | 95 | 101 | 289 | 289 |
+| java | 96 | 101 | 292 | 292 |
 | javascript | 0 | 88 | 0 | 0 |
 | kotlin-multiplatform | 0 | 56 | 0 | 0 |
 | node | 2 | 83 | 6 | 6 |
@@ -704,7 +704,6 @@ Temas conformes a cuatro pasos: **112/1185**. Tracks inventariados: **14**.
 
 ### java
 
-- M20 ### Tema 8: Streams intermedios: filtrar, transformar, aplanar y ordenar: tiene 0 subtemas
 - M20 ### Tema 9: Streams terminales: encontrar, contar y combinar resultados: tiene 0 subtemas
 - M20 ### Tema 10: Collectors: formar listas, mapas, grupos y texto: tiene 0 subtemas
 - M20 ### Tema 11: Streams paralelos: comparar antes de acelerarlos: tiene 0 subtemas

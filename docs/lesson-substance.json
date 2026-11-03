@@ -1698,7 +1698,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "681ef7a7c573c5b68271b09ae49875fd8f30e9153ee1c889723b0216b2b094d7",
+    "fingerprint": "65ba67c741087889e9eedaf3d48bace84ce8121eb843c58ffce098f525ca4e71",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -7632,7 +7632,7 @@
         "module": 20,
         "tailWords": 56,
         "topic": "Tema 8: Streams intermedios: filtrar, transformar, aplanar y ordenar",
-        "words": 639
+        "words": 696
       },
       {
         "issues": [],

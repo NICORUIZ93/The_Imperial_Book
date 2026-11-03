@@ -1020,11 +1020,10 @@ Al finalizar podrás transformar una lista de entregas con `filter`, `map`, `fla
 
 #### Paso 4 · Ejercicio 1
 
-##### Subtema 8.1: Filtrar y convertir · 5-10 min
+#### Subtema 8.1: Filtrar y convertir · 10 min
+**1. Contexto** la pantalla muestra solo envíos de más de 20 kg y sus guías.
 
-**Contexto:** la pantalla muestra solo envíos de más de 20 kg y sus guías.
-
-**Hazlo tú:** crea `java-funcional-t08/src/Pesados.java`:
+**2. Hazlo tú** crea `java-funcional-t08/src/Pesados.java`:
 
 ```java
 import java.util.List;
@@ -1047,15 +1046,18 @@ Ejecuta `cd java-funcional-t08 && java src/Pesados.java`.
 
 **Fallo deliberado:** cambia `.filter` por `.map`. **Error esperado:** el compilador dice que el resultado de `map` no es `boolean`. **Diagnóstico:** `filter` recibe una condición; `map` necesita producir un valor.
 
-**Entiende:** primero decides cuáles pasan y luego eliges qué dato mostrar.
+**3. Entiende** primero decides cuáles pasan y luego eliges qué dato mostrar.
+
+**4. Cierra**
+
+Guarda la colección inicial, la salida final y el orden de operaciones que la produjo.
 
 #### Paso 5 · Ejercicio 2
 
-##### Subtema 8.2: Aplanar varias paradas · 5-10 min
+#### Subtema 8.2: Aplanar varias paradas · 10 min
+**1. Contexto** cada ruta tiene varias ciudades y el reporte necesita una sola lista.
 
-**Contexto:** cada ruta tiene varias ciudades y el reporte necesita una sola lista.
-
-**Hazlo tú:** crea `java-funcional-t08/src/Paradas.java`:
+**2. Hazlo tú** crea `java-funcional-t08/src/Paradas.java`:
 
 ```java
 import java.util.List;
@@ -1078,15 +1080,18 @@ Ejecuta `cd java-funcional-t08 && java src/Paradas.java`.
 
 **Fallo deliberado:** cambia `flatMap` por `map`. **Resultado del fallo:** imprime dos listas internas, no una lista de ciudades. **Diagnóstico:** `map` conserva un resultado por ruta; `flatMap` combina las listas.
 
-**Entiende:** `flatMap` abre cada lista pequeña y las reúne en una sola secuencia.
+**3. Entiende** `flatMap` abre cada lista pequeña y las reúne en una sola secuencia.
+
+**4. Cierra**
+
+Guarda la colección inicial, la salida final y el orden de operaciones que la produjo.
 
 #### Paso 6 · Ejercicio 3
 
-##### Subtema 8.3: Ordenar un reporte · 5-10 min
+#### Subtema 8.3: Ordenar un reporte · 10 min
+**1. Contexto** los paquetes se agrupan en la pantalla por peso ascendente.
 
-**Contexto:** los paquetes se agrupan en la pantalla por peso ascendente.
-
-**Hazlo tú:** crea `java-funcional-t08/src/Ordenar.java`:
+**2. Hazlo tú** crea `java-funcional-t08/src/Ordenar.java`:
 
 ```java
 import java.util.List;
@@ -1107,7 +1112,11 @@ Ejecuta `cd java-funcional-t08 && java src/Ordenar.java`.
 
 **Fallo deliberado:** elimina `.sorted(java.util.Comparator.comparingInt(Envio::kg))`. **Error esperado:** el resultado deja de estar ordenado; este código no lanza excepción porque `Stream.toList()` conserva el orden de encuentro. **Diagnóstico:** `sorted` necesita una regla de comparación para cambiar el orden; elimina también la salida esperada anterior y comprueba que el orden original se conserva.
 
-**Entiende:** ordena con una regla que tenga sentido para el reporte; no dependas del orden incidental de una lista.
+**3. Entiende** ordena con una regla que tenga sentido para el reporte; no dependas del orden incidental de una lista.
+
+**4. Cierra**
+
+Guarda la colección inicial, la salida final y el orden de operaciones que la produjo.
 
 #### Paso 7 · Cierre y evidencia
 
