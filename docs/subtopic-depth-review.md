@@ -2,8 +2,8 @@
 
 > Las señales automáticas no prueban profundidad ni ausencia de ella. Un tema sólo queda revisado mediante el registro humano con mapa de subtemas críticos, evidencia y fuentes.
 
-- Temas inventariados: 1164
-- Revisados humanamente para subtemas: 341
+- Temas inventariados: 1165
+- Revisados humanamente para subtemas: 342
 - Pendientes: 823
 - Candidatos prioritarios por señales: 782
 
@@ -24,7 +24,7 @@
 | node | 77 | 0 | 77 |
 | react | 58 | 0 | 58 |
 | rutaflow | 29 | 0 | 29 |
-| spring-boot | 98 | 98 | 0 |
+| spring-boot | 99 | 99 | 0 |
 
 ## Cola prioritaria
 
@@ -1154,3 +1154,4 @@
 - `spring-boot/modulo-9` — Tema 1: Mono y Flux · Intermedio · 40 min — Mono vs Flux; evaluación perezosa (cold)
 - `spring-boot/modulo-9` — Tema 2: WebClient y composición no bloqueante · Avanzado · 45 min — WebClient.Builder; composición con flatMap
 - `spring-boot/modulo-9` — Tema 3: Cuándo WebFlux vale la complejidad, y R2DBC · Avanzado · 40 min — WebFlux vs WebMVC decisión; R2DBC no bloqueante
+- `spring-boot/modulo-9` — Tema 4: Virtual threads como alternativa a WebFlux · Avanzado · 35 min — spring.threads.virtual.enabled (false por defecto); Thread.currentThread().isVirtual(); verificacion requiere servidor real, no MockMvc; pinning de hilos virtuales en secciones synchronized largas; virtual threads (secuencial) vs WebFlux (reactivo)

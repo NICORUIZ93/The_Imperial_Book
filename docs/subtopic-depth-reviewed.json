@@ -4866,6 +4866,22 @@
         "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-config/interceptors.html",
         "docs/AUDITORIA-COBERTURA-SPRING-20261101.md"
       ]
+    },
+    "spring-boot/modulo-9::Tema 4: Virtual threads como alternativa a WebFlux · Avanzado · 35 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Lote 2 (MEDIA #17) de docs/AUDITORIA-COBERTURA-SPRING-20261101.md: 'Virtual threads (spring.threads.virtual) -> M9 o nuevo'. Virtual threads ya se mencionaba conceptualmente varias veces en el Tema 3 como punto de comparacion con WebFlux, pero nunca se activaba ni verificaba con codigo real -- este tema cierra eso. Ejecutado de verdad con servidor real (no MockMvc, que puede ejecutar el handler en el hilo de la prueba): @SpringBootTest RANDOM_PORT + @LocalServerPort + java.net.http.HttpClient real contra el puerto real. Con spring.threads.virtual.enabled=true, Thread.currentThread().isVirtual() en el controller real es true (confirmado, no asumido). Fallo deliberado tambien ejecutado: con enabled=false (el valor por defecto), el mismo test falla porque el hilo es de plataforma -- confirma que virtual threads NUNCA se activa automaticamente solo por correr en Java 21+. mvn test: BUILD SUCCESS sobre Spring Boot 4.1.1 / JDK 27.0.1.0.3.",
+      "criticalSubtopics": [
+        "spring.threads.virtual.enabled (false por defecto)",
+        "Thread.currentThread().isVirtual()",
+        "verificacion requiere servidor real, no MockMvc",
+        "pinning de hilos virtuales en secciones synchronized largas",
+        "virtual threads (secuencial) vs WebFlux (reactivo)"
+      ],
+      "sources": [
+        "https://docs.spring.io/spring-boot/reference/features/task-execution-and-scheduling.html",
+        "docs/AUDITORIA-COBERTURA-SPRING-20261101.md"
+      ]
     }
   }
 }

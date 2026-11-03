@@ -122,7 +122,7 @@ export const SPRING_BOOT_MODULES: CourseModule[] = [
     'Servicio que publica y consume eventos vía Kafka con productor idempotente, consumer groups resilientes y manejo de errores.'),
   m(9, 'Programación reactiva con WebFlux', 'WebFlux', 'Experto', '3 h', '#6db33f',
     'El modelo no bloqueante de Spring para alta concurrencia con recursos limitados.',
-    ['Mono y Flux', 'WebClient reactivo', 'Cuándo WebFlux vale la complejidad frente a MVC', 'R2DBC para acceso reactivo a datos'],
+    ['Mono y Flux', 'WebClient reactivo', 'Cuándo WebFlux vale la complejidad frente a MVC', 'R2DBC para acceso reactivo a datos', 'Virtual threads como alternativa a WebFlux'],
     [
       'Crea un endpoint reactivo que devuelva Mono<Tarea> y otro que devuelva Flux<Tarea>',
       'Usa WebClient (no RestTemplate) para componer dos llamadas HTTP externas de forma no bloqueante con flatMap',

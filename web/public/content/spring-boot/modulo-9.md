@@ -741,6 +741,182 @@ String resultado = Mono.just("dato").____();
 
 **Transferencia al proyecto integrador:** esta decisión (WebFlux o MVC) es la misma que deberás justificar explícitamente para el microservicio productivo (Módulo 12).
 
+### Tema 4: Virtual threads como alternativa a WebFlux · Avanzado · 35 min
+
+**Prerrequisito:** Tema 3 de este módulo (cuándo WebFlux vale la complejidad).
+
+**Al terminar podrás:** activar `spring.threads.virtual.enabled=true` y confirmar con una petición HTTP real, contra un servidor embebido real, que el hilo que atiende la petición es un hilo virtual de Java, no un hilo de plataforma tradicional.
+
+#### Aprende
+
+**¿Por qué es importante?** El Tema 3 mencionó virtual threads como alternativa a WebFlux para alta concurrencia dominada por I/O, pero "mencionar" no es lo mismo que activarlo y confirmarlo: un equipo que asume que está usando virtual threads simplemente por correr en Java 21+ (sin haber activado la propiedad) sigue limitado por el pool de threads de plataforma tradicional de Tomcat, sin ningún error que lo señale.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `spring.threads.virtual.enabled` | Núcleo | en `true`, el hilo que atiende `/hilo` reporta `Thread.currentThread().isVirtual() == true` |
+| Valor por defecto: `false` | Diagnóstico | sin la propiedad explícita, el mismo endpoint reporta un hilo de plataforma, sin ningún error |
+| Requiere servidor real, no `MockMvc` | Prerrequisito | la verificación usa un puerto real (`@LocalServerPort`) y una petición HTTP real, no un `MockMvc` simulado |
+| Virtual threads vs WebFlux: mismo problema, modelo distinto | Variante | virtual threads mantiene el modelo de programación secuencial de Spring MVC; WebFlux exige un modelo reactivo distinto |
+| Dónde virtual threads NO ayuda | Límite | código con secciones `synchronized` largas puede "pinnear" el hilo virtual a uno de plataforma, perdiendo el beneficio |
+| Cuándo justifica el cambio | Decisión | alta concurrencia dominada por I/O (llamadas HTTP salientes, consultas a BD) se beneficia; CPU-bound no se beneficia |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`spring.threads.virtual.enabled` (núcleo).** Con esta propiedad en `true`, Spring Boot configura el executor de Tomcat (o el servidor embebido que corresponda) para atender cada petición HTTP sobre un hilo virtual de la JVM (Project Loom, Java 21+) en vez de un hilo de plataforma del pool tradicional. El demo confirma esto directamente: un endpoint que llama a `Thread.currentThread().isVirtual()` responde `true` cuando la propiedad está activa.
+
+**Valor por defecto: `false` (diagnóstico).** Sin declarar explícitamente `spring.threads.virtual.enabled: true`, Spring Boot NO activa virtual threads por defecto, incluso corriendo sobre una JVM que los soporta (Java 21+). El fallo deliberado de este tema confirma esto: con la propiedad en `false` (o ausente), el mismo endpoint responde `"plataforma"`, sin ningún error ni advertencia que indique que el cambio de modelo de hilos no ocurrió.
+
+**Requiere servidor real, no `MockMvc` (prerrequisito).** La verificación de este tema usa `@SpringBootTest(webEnvironment = RANDOM_PORT)` junto con `@LocalServerPort` y un `java.net.http.HttpClient` real contra ese puerto, porque `MockMvc` puede ejecutar el handler en el propio hilo de la prueba sin pasar por el pool de ejecución real del servidor embebido. Solo una petición HTTP real contra un servidor real confirma en qué hilo realmente se ejecuta el código del controller.
+
+**Virtual threads vs WebFlux: mismo problema, modelo distinto (variante).** Ambos enfoques atacan el mismo problema (threads de plataforma limitados bajo alta concurrencia de I/O), pero con modelos radicalmente distintos: WebFlux exige reescribir el código en un estilo reactivo (`Mono`/`Flux`, sin bloqueo en ningún punto); virtual threads permite mantener EXACTAMENTE el mismo código secuencial de Spring MVC de siempre, con la JVM gestionando la multiplexación de hilos virtuales sobre un pool pequeño de hilos de plataforma por debajo, de forma transparente al código de la aplicación.
+
+**Dónde virtual threads NO ayuda (límite).** Un bloque `synchronized` de larga duración puede causar que un hilo virtual quede "pinneado" (fijado) a su hilo de plataforma subyacente durante toda esa sección, bloqueando ese hilo de plataforma para otros hilos virtuales — perdiendo exactamente el beneficio de escalabilidad que motivó adoptar virtual threads en primer lugar. Código con bloqueos largos y sincronización pesada necesita revisión antes de asumir que virtual threads resuelve su problema de concurrencia sin cambios.
+
+**Cuándo justifica el cambio (decisión).** Virtual threads beneficia específicamente cargas dominadas por I/O (esperar una respuesta HTTP externa, una consulta a base de datos, lectura de archivos) donde el hilo real pasaría la mayoría del tiempo esperando; para trabajo intensivo de CPU (cálculos, procesamiento de imágenes), virtual threads no ofrece ningún beneficio porque no hay espera de I/O que multiplexar.
+
+**Conceptos clave:** `spring.threads.virtual.enabled`, `Thread.isVirtual()`, pinning de hilos virtuales.
+
+`spring.threads.virtual.enabled: true` hace que Spring Boot atienda cada petición HTTP sobre un hilo virtual de Java (Project Loom) en vez de un hilo de plataforma tradicional, manteniendo el mismo modelo de programación secuencial de Spring MVC (a diferencia de WebFlux, que exige un modelo reactivo distinto). El valor por defecto es `false`; sin activarlo explícitamente, no hay ningún cambio de comportamiento ni ningún error que lo señale. Un bloque `synchronized` largo puede "pinnear" un hilo virtual, anulando parcialmente el beneficio.
+
+**Analogía:** un hilo de plataforma tradicional es como un empleado dedicado que debe quedarse físicamente esperando frente a una ventanilla hasta que el tramite externo termine, sin poder atender a nadie más mientras espera; un hilo virtual es como un empleado que, al delegar el trámite y quedar en espera, libera inmediatamente la ventanilla física para atender a otra persona, y retoma exactamente donde quedó cuando el trámite externo finalmente responde.
+
+**Diagrama:**
+
+```text
+┌ Hilo de plataforma (tradicional) ──────────────┐
+│ 1 hilo del SO ocupado durante TODA la espera   │
+│ de I/O; pool limitado a cientos de hilos       │
+└─────────────────────────────────────────────────┘
+┌ Hilo virtual (spring.threads.virtual.enabled) ─┐
+│ el hilo del SO se libera durante la espera de  │
+│ I/O; millones de hilos virtuales son viables   │
+└─────────────────────────────────────────────────┘
+```
+
+#### Practica
+
+**Demo paso a paso.** Desde una carpeta vacía, genera el proyecto:
+
+```bash
+mkdir virtual-threads-demo && cd virtual-threads-demo
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web -d javaVersion=27 -o app.zip
+unzip -q app.zip
+```
+
+Crea `src/main/resources/application.yml`:
+
+```yaml
+spring:
+  threads:
+    virtual:
+      enabled: true
+```
+
+Crea `src/main/java/com/academia/vthreads/HiloController.java`:
+
+```java
+package com.academia.vthreads;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class HiloController {
+    @GetMapping("/hilo")
+    public String tipoDeHilo() {
+        return Thread.currentThread().isVirtual() ? "virtual" : "plataforma";
+    }
+}
+```
+
+Agrega la dependencia real de testing (`spring-boot-webmvc-test`, ver Módulo 2 Tema 7) y crea `src/test/java/com/academia/vthreads/HiloControllerTest.java`:
+
+```java
+package com.academia.vthreads;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
+
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+class HiloControllerTest {
+
+    @LocalServerPort
+    private int puerto;
+
+    @Test
+    void laPeticionHttpSeAtiendeEnUnHiloVirtualReal() throws Exception {
+        HttpClient cliente = HttpClient.newHttpClient();
+        HttpRequest peticion = HttpRequest.newBuilder(URI.create("http://localhost:" + puerto + "/hilo")).build();
+
+        HttpResponse<String> respuesta = cliente.send(peticion, HttpResponse.BodyHandlers.ofString());
+
+        assertThat(respuesta.body()).isEqualTo("virtual");
+    }
+}
+```
+
+```bash
+./mvnw test
+```
+
+**Resultado esperado:** `Tests run: 1, Failures: 0, Errors: 0` (verificado con Spring Boot 4.1.1 sobre JDK 27.0.1): la petición HTTP real contra el servidor embebido real confirma que el hilo que atendió `/hilo` es un hilo virtual.
+
+**Fallo deliberado:** cambia `spring.threads.virtual.enabled` a `false` (o elimínalo, su valor por defecto) y ejecuta de nuevo. El test FALLA porque la respuesta es `"plataforma"`, no `"virtual"`. Diagnostica confirmando que virtual threads NUNCA se activa automáticamente, incluso corriendo sobre una JVM que los soporta: sin la propiedad explícita, Spring Boot sigue usando el pool de hilos de plataforma tradicional de Tomcat, sin ningún error que señale la diferencia. Restaura la propiedad en `true` antes de continuar.
+
+**Ejercicios.**
+
+1. Agrega un segundo endpoint que realice una operación de CPU intensiva (un bucle de cálculo largo, sin ningún I/O) y documenta, basándote en el Paso 3, por qué virtual threads no ofrece ningún beneficio medible para ESE endpoint específico.
+2. Simula una sección `synchronized` dentro del controller y documenta, basándote en la fuente oficial, por qué podría "pinnear" el hilo virtual a uno de plataforma durante esa sección.
+3. Compara (leyendo la documentación oficial, sin necesidad de benchmarks propios) el modelo de programación que exige virtual threads (secuencial, igual a MVC tradicional) frente al que exige WebFlux (reactivo, Mono/Flux) para el mismo problema de concurrencia.
+4. Escribe de memoria (sin mirar) un endpoint que reporte si su hilo es virtual, la propiedad que lo activa, y un test contra un servidor real que lo confirme. Compara después contra el patrón del Paso 4.
+
+**Pista:** si no estás seguro de si virtual threads está realmente activo, no lo asumas por la versión de Java: confirma con `Thread.currentThread().isVirtual()` dentro del código que realmente se ejecuta en producción.
+
+**Completa el código:** rellena la propiedad que activa virtual threads para peticiones HTTP:
+
+```yaml
+spring:
+  threads:
+    virtual:
+      ____: true
+```
+
+**Reto de memoria:** cierra este documento y escribe, solo de memoria, la propiedad que activa virtual threads, un endpoint que confirme el tipo de hilo, y un test contra un servidor real (no `MockMvc`) que lo verifique.
+
+#### Aplica
+
+**Reto abierto.** Para el microservicio productivo de RutaFlow, evalúa si activar virtual threads sería suficiente para la carga esperada (dominada por llamadas HTTP salientes a servicios de tarifas y geocodificación) frente a migrar a WebFlux. Documenta la decisión con el mismo criterio del Tema 3 (concurrencia esperada, tipo de I/O, costo de depuración), y demuestra con un test real que el endpoint crítico del servicio corre sobre un hilo virtual.
+
+**Checklist de salida.**
+
+- [ ] `spring.threads.virtual.enabled: true` está explícito en la configuración (no asumido por la versión de Java).
+- [ ] Un test contra un servidor real (no `MockMvc`) confirma `Thread.isVirtual() == true` para una petición real.
+- [ ] Reprodujiste el fallo silencioso de omitir la propiedad y entendés por qué no produce ningún error.
+- [ ] Podés explicar la diferencia de modelo de programación entre virtual threads (secuencial) y WebFlux (reactivo) para el mismo problema.
+- [ ] Sabés identificar al menos un escenario (CPU-bound, secciones `synchronized` largas) donde virtual threads no ayuda o puede perder su beneficio.
+
+**Si falla.** Si el hilo reportado siempre es "plataforma", confirma que `spring.threads.virtual.enabled` esté en `true` en el `application.yml` que realmente se está cargando. Si el test con `MockMvc` reporta resultados inconsistentes, cambia a una petición HTTP real contra un servidor real (`RANDOM_PORT` + `@LocalServerPort`).
+
+**Siguiente paso:** el Módulo 10 aborda microservicios con Spring Cloud.
+
+**Errores comunes:** asumir que virtual threads está activo solo por correr en Java 21+, sin haber puesto la propiedad explícita; usar `MockMvc` para intentar verificar en qué hilo real se ejecuta el código, cuando puede ejecutarse en el propio hilo de la prueba; migrar a virtual threads cargas CPU-bound esperando el mismo beneficio que en cargas I/O-bound.
+
+**Límites y decisión de uso:** para trabajo intensivo de CPU sin espera de I/O, virtual threads no ofrece ningún beneficio medible; se justifica específicamente para alta concurrencia dominada por I/O donde el modelo secuencial de Spring MVC se quiere conservar sin reescribir a un estilo reactivo.
+
+**Fuente oficial:** [Spring Boot — Virtual Threads](https://docs.spring.io/spring-boot/reference/features/task-execution-and-scheduling.html#features.task-execution-and-scheduling.virtual-threads).
+
+**Transferencia al proyecto integrador:** la decisión de activar virtual threads (o no) para el microservicio productivo se toma con el mismo criterio práctico que este tema demuestra con evidencia real.
+
 ## Proyecto de cierre del módulo
 
 **Objetivo:** entregar una API reactiva ejecutable que guarde y consulte entregas con R2DBC, componga llamadas externas sin bloquear y documente con evidencia cuándo WebFlux es la elección correcta.

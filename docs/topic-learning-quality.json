@@ -221,18 +221,18 @@
       "repeatedDemo": 0
     },
     "spring-boot": {
-      "topics": 98,
-      "explanation": 98,
-      "code": 98,
-      "visual": 78,
-      "filePath": 98,
-      "runCommand": 96,
-      "expectedResult": 98,
-      "practice": 98,
-      "project": 98,
-      "modelMental": 98,
-      "limitsDecision": 98,
-      "practicable": 96,
+      "topics": 99,
+      "explanation": 99,
+      "code": 99,
+      "visual": 79,
+      "filePath": 99,
+      "runCommand": 97,
+      "expectedResult": 99,
+      "practice": 99,
+      "project": 99,
+      "modelMental": 99,
+      "limitsDecision": 99,
+      "practicable": 97,
       "genericScaffold": 0,
       "repeatedDemo": 0
     }
@@ -25854,6 +25854,28 @@
       {
         "module": 9,
         "topic": "Tema 3: Cuándo WebFlux vale la complejidad, y R2DBC · Avanzado · 40 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 9,
+        "topic": "Tema 4: Virtual threads como alternativa a WebFlux · Avanzado · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,

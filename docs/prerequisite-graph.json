@@ -4606,6 +4606,17 @@
       ]
     },
     {
+      "id": "spring-boot:9:4",
+      "track": "spring-boot",
+      "module": 9,
+      "position": 4,
+      "title": "Virtual threads como alternativa a WebFlux · Avanzado · 35 min",
+      "file": "web/public/content/spring-boot/modulo-9.md",
+      "requires": [
+        "spring-boot:9:3"
+      ]
+    },
+    {
       "id": "spring-boot:10:1",
       "track": "spring-boot",
       "module": 10,
@@ -4613,7 +4624,7 @@
       "title": "Config Server y service discovery · Intermedio · 45 min",
       "file": "web/public/content/spring-boot/modulo-10.md",
       "requires": [
-        "spring-boot:9:3"
+        "spring-boot:9:4"
       ]
     },
     {

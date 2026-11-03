@@ -1677,7 +1677,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "8d6677ad10e0524c49671d76908c3d9b084a03357f97fcf6965914d86c56e92d",
+    "fingerprint": "eaf7ef267fc0874c856fc9f14b1165b8e09b667fea8f90b72ec3770359fac9a3",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
@@ -1686,7 +1686,7 @@
     },
     "modules": 254,
     "modulesWithLegacySections": 179,
-    "topics": 1164,
+    "topics": 1165,
     "topicsWithIssues": 0
   },
   "topics": {
@@ -9864,6 +9864,13 @@
         "tailWords": 344,
         "topic": "Tema 3: Cuándo WebFlux vale la complejidad, y R2DBC · Avanzado · 40 min",
         "words": 2072
+      },
+      {
+        "issues": [],
+        "module": 9,
+        "tailWords": 384,
+        "topic": "Tema 4: Virtual threads como alternativa a WebFlux · Avanzado · 35 min",
+        "words": 1894
       }
     ]
   }

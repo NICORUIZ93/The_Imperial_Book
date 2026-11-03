@@ -97,16 +97,16 @@
       "officialSource": 108
     },
     "spring-boot": {
-      "topics": 98,
-      "code": 98,
+      "topics": 99,
+      "code": 99,
       "commentedCode": 82,
       "mermaid": 59,
       "archifyVisual": 4,
-      "asciiVisual": 18,
+      "asciiVisual": 19,
       "misleadingDiagramLabel": 0,
-      "filePath": 98,
-      "runCommand": 98,
-      "officialSource": 98
+      "filePath": 99,
+      "runCommand": 99,
+      "officialSource": 99
     },
     "kotlin-multiplatform": {
       "topics": 56,
@@ -1805,6 +1805,13 @@
       "track": "spring-boot",
       "module": 6,
       "topic": "Tema 4: Slices adicionales — @JsonTest, @RestClientTest y @TestConfiguration · Avanzado · 40 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 9,
+      "topic": "Tema 4: Virtual threads como alternativa a WebFlux · Avanzado · 35 min",
       "missingCode": false,
       "missingComments": true
     },

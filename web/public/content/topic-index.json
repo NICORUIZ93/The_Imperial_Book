@@ -5188,6 +5188,10 @@
       {
         "title": "Cuándo WebFlux vale la complejidad, y R2DBC",
         "fragment": "tema-3-cuando-webflux-vale-la-complejidad-y-r2dbc"
+      },
+      {
+        "title": "Virtual threads como alternativa a WebFlux",
+        "fragment": "tema-4-virtual-threads-como-alternativa-a-webflux"
       }
     ]
   }
