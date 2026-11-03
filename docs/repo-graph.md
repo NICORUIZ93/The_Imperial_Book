@@ -1,9 +1,9 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-11-03 20:20 UTC
+Generated: 2026-11-03 20:32 UTC
 Root: `The_Imperial_Book`
-Indexed files: 944
-Import edges: 56
+Indexed files: 955
+Import edges: 60
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
 
@@ -19,26 +19,26 @@ For automated lookups, use `docs/repo-graph.json`.
 - `automation-script`: 34 files
 - `course-content`: 262 files
 - `documentation`: 56 files
-- `example`: 478 files
+- `example`: 489 files
 - `local-infra`: 1 files
 - `project-file`: 54 files
 
 ## File Types
 
-- `.md`: 326
+- `.md`: 327
 - `.py`: 160
-- `.json`: 67
+- `.json`: 68
 - `.ts`: 66
 - `.java`: 63
 - `.js`: 54
 - `.html`: 38
+- `.mjs`: 26
 - `.rs`: 25
 - `.go`: 24
 - `.dart`: 22
 - `.swift`: 20
-- `.mjs`: 18
 - `.kt`: 13
-- `.yaml`: 9
+- `.yaml`: 10
 - `.scss`: 8
 - `.sh`: 7
 - `.jsx`: 6
@@ -51,7 +51,7 @@ For automated lookups, use `docs/repo-graph.json`.
 
 ## High Signal Files
 
-- `README.md` (311 lines, documentation)
+- `README.md` (312 lines, documentation)
   - headings: # The_Imperial_Book, ## Como empezar, ## Levantar Floci, # 1. Levantar todos los servicios, # 2. Verificar Floci AWS
 - `scripts/validate.sh` (136 lines, automation-script)
 - `scripts/build_repo_graph.py` (477 lines, automation-script)
@@ -82,6 +82,10 @@ For automated lookups, use `docs/repo-graph.json`.
 - `examples/javascript-master/src/main.ts` -> `examples/javascript-master/src/ui/delivery-button.ts`
 - `examples/javascript-master/src/ui/delivery-button.test.ts` -> `examples/javascript-master/src/ui/delivery-button.ts`
 - `examples/node-federation/federation.test.mjs` -> `examples/node-federation/server.mjs`
+- `examples/node-messaging/kafka/consumer.mjs` -> `examples/node-messaging/kafka/client.mjs`
+- `examples/node-messaging/kafka/producer.mjs` -> `examples/node-messaging/kafka/client.mjs`
+- `examples/node-messaging/rabbit/producer.mjs` -> `examples/node-messaging/rabbit/topology.mjs`
+- `examples/node-messaging/rabbit/worker.mjs` -> `examples/node-messaging/rabbit/topology.mjs`
 - `examples/professional-bridges/node/pagina.test.mjs` -> `examples/professional-bridges/node/pagina.mjs`
 - `examples/professional-bridges/rutaflow/contrato.test.mjs` -> `examples/professional-bridges/rutaflow/contrato.mjs`
 - `examples/rutaflow-material/deployment-strategies/deployment.test.mjs` -> `examples/rutaflow-material/deployment-strategies/deployment.mjs`
@@ -137,6 +141,8 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/src/app/app.ts`: in=2, out=1
 - `web/src/app/catalog/course-catalog.ts`: in=2, out=0
 - `examples/rutaflow-material/socketio/gateway.mjs`: in=2, out=0
+- `examples/node-messaging/rabbit/topology.mjs`: in=2, out=0
+- `examples/node-messaging/kafka/client.mjs`: in=2, out=0
 - `examples/javascript-master/src/ui/delivery-button.ts`: in=2, out=0
 - `examples/javascript-master/src/domain/delivery-status.ts`: in=2, out=0
 - `web/src/app/progress.service.ts`: in=1, out=1
@@ -146,8 +152,6 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/src/app/project-bootstrap.spec.ts`: in=0, out=2
 - `web/src/app/tracks/spring-boot.track.ts`: in=1, out=0
 - `web/src/app/tracks/rutaflow.track.ts`: in=1, out=0
-- `web/src/app/tracks/react.track.ts`: in=1, out=0
-- `web/src/app/tracks/node.track.ts`: in=1, out=0
 
 ## Files By Area
 
@@ -225,7 +229,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `CLAUDE.md` (119 lines) - headings: # CLAUDE.md, ## What this is, ## First step for any repo exploration, ## Commands
 - `CODE_OF_CONDUCT.md` (25 lines) - headings: # Código de conducta, ## Compromiso, ## Conducta esperada, ## Aplicación
 - `CONTRIBUTING.md` (31 lines) - headings: # Contribuir a The Imperial Book, ## Antes de abrir un cambio, ## Licencias
-- `README.md` (311 lines) - headings: # The_Imperial_Book, ## Como empezar, ## Levantar Floci, # 1. Levantar todos los servicios
+- `README.md` (312 lines) - headings: # The_Imperial_Book, ## Como empezar, ## Levantar Floci, # 1. Levantar todos los servicios
 - `docs/CONTINUAR-7-PASOS.md` (76 lines) - headings: # Continuación de la metodología de siete pasos, ## Qué se corrigió en el auditor (no repetir), ## Regla de oro, ## Los 5 temas que faltaban (resueltos)
 - `docs/ESTANDAR-DE-CODIGO.md` (56 lines) - headings: # Estándar transversal de código y diseño, ## Prioridades, ## Clean Code con criterio, ## SOLID cuando aporta valor
 - `docs/MATRIZ-CURRICULAR.md` (73 lines) - headings: # Matriz curricular auditable, ## Progresión de competencia, ## Cobertura por módulo, ## Método de evaluación
@@ -260,7 +264,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `examples/archify/temas/cloud/modulo-22-tema-5-edge-routes.review-2/modulo-22-tema-5-edge-routes.finalize.json` (1012 lines)
 - `examples/archify/temas/foundations/modulo-12-tema-10-lazo-p.workflow.json` (183 lines)
 - `examples/archify/temas/foundations/modulo-12-tema-17-plc-scan.workflow.json` (189 lines)
-- ... 460 more files
+- ... 471 more files
 
 ### local-infra
 
@@ -274,16 +278,16 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/biblioteca/catalogo.json` (564 lines)
 - `docs/biblioteca/imagenes.json` (577 lines)
 - `docs/browser-course-review.json` (2660 lines)
-- `docs/code-visual-quality.json` (3262 lines)
-- `docs/course-depth-review.json` (13340 lines)
+- `docs/code-visual-quality.json` (3332 lines)
+- `docs/course-depth-review.json` (13450 lines)
 - `docs/curriculum-matrix.json` (394 lines)
 - `docs/floci-official-curriculum.json` (14 lines)
 - `docs/lesson-substance-baseline.json` (1693 lines)
-- `docs/lesson-substance.json` (11171 lines)
+- `docs/lesson-substance.json` (11241 lines)
 - `docs/merged-pdf-index.json` (426 lines)
 - `docs/official-learning-guides.json` (22 lines)
 - `docs/official-sources.json` (195 lines)
 - `docs/official-topic-atlas.json` (175 lines)
-- `docs/prerequisite-graph.json` (12933 lines)
+- `docs/prerequisite-graph.json` (13043 lines)
 - `docs/requested-master-topics.json` (189 lines)
 - ... 36 more files

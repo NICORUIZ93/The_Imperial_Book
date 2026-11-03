@@ -3066,6 +3066,116 @@
       ]
     },
     {
+      "id": "java:20:4",
+      "track": "java",
+      "module": 20,
+      "position": 4,
+      "title": "Function y BiFunction: transformar uno o dos datos",
+      "file": "web/public/content/java/modulo-20.md",
+      "requires": [
+        "java:20:3"
+      ]
+    },
+    {
+      "id": "java:20:5",
+      "track": "java",
+      "module": 20,
+      "position": 5,
+      "title": "UnaryOperator y BinaryOperator: la salida conserva el tipo",
+      "file": "web/public/content/java/modulo-20.md",
+      "requires": [
+        "java:20:4"
+      ]
+    },
+    {
+      "id": "java:20:6",
+      "track": "java",
+      "module": 20,
+      "position": 6,
+      "title": "Referencias a métodos: escribir la operación sin repetirla",
+      "file": "web/public/content/java/modulo-20.md",
+      "requires": [
+        "java:20:5"
+      ]
+    },
+    {
+      "id": "java:20:7",
+      "track": "java",
+      "module": 20,
+      "position": 7,
+      "title": "Optional: buscar un envío que puede no existir",
+      "file": "web/public/content/java/modulo-20.md",
+      "requires": [
+        "java:20:6"
+      ]
+    },
+    {
+      "id": "java:20:8",
+      "track": "java",
+      "module": 20,
+      "position": 8,
+      "title": "Streams intermedios: filtrar, transformar, aplanar y ordenar",
+      "file": "web/public/content/java/modulo-20.md",
+      "requires": [
+        "java:20:7"
+      ]
+    },
+    {
+      "id": "java:20:9",
+      "track": "java",
+      "module": 20,
+      "position": 9,
+      "title": "Streams terminales: encontrar, contar y combinar resultados",
+      "file": "web/public/content/java/modulo-20.md",
+      "requires": [
+        "java:20:8"
+      ]
+    },
+    {
+      "id": "java:20:10",
+      "track": "java",
+      "module": 20,
+      "position": 10,
+      "title": "Collectors: formar listas, mapas, grupos y texto",
+      "file": "web/public/content/java/modulo-20.md",
+      "requires": [
+        "java:20:9"
+      ]
+    },
+    {
+      "id": "java:20:11",
+      "track": "java",
+      "module": 20,
+      "position": 11,
+      "title": "Streams paralelos: comparar antes de acelerarlos",
+      "file": "web/public/content/java/modulo-20.md",
+      "requires": [
+        "java:20:10"
+      ]
+    },
+    {
+      "id": "java:20:12",
+      "track": "java",
+      "module": 20,
+      "position": 12,
+      "title": "Pureza y efectos: calcular separado de guardar o imprimir",
+      "file": "web/public/content/java/modulo-20.md",
+      "requires": [
+        "java:20:11"
+      ]
+    },
+    {
+      "id": "java:20:13",
+      "track": "java",
+      "module": 20,
+      "position": 13,
+      "title": "Flow API: publicar datos con demanda y cierre",
+      "file": "web/public/content/java/modulo-20.md",
+      "requires": [
+        "java:20:12"
+      ]
+    },
+    {
       "id": "node:0:1",
       "track": "node",
       "module": 0,
@@ -3986,7 +4096,7 @@
       "title": "Inversión de control y el contenedor de Spring",
       "file": "web/public/content/spring-boot/modulo-0.md",
       "requires": [
-        "java:20:3"
+        "java:20:13"
       ]
     },
     {
@@ -6626,7 +6736,7 @@
       "title": "Null safety real",
       "file": "web/public/content/kotlin-multiplatform/modulo-0.md",
       "requires": [
-        "java:20:3"
+        "java:20:13"
       ]
     },
     {
@@ -7242,7 +7352,7 @@
       "title": "Estructura de un proyecto Android Studio",
       "file": "web/public/content/android/modulo-0.md",
       "requires": [
-        "java:20:3"
+        "java:20:13"
       ]
     },
     {

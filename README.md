@@ -3,7 +3,7 @@
 Academia en español para estudiar desarrollo profesional y cloud local. La
 experiencia oficial es una aplicación Angular con lecciones Markdown.
 
-La academia reúne 14 rutas, 256 módulos y 1175 temas editoriales en formato de
+La academia reúne 14 rutas, 256 módulos y 1185 temas editoriales en formato de
 libro. La presencia de criterios editoriales y la completitud de los siete pasos
 se reportan por separado; ninguna métrica automática sustituye la revisión técnica
 ni demuestra por sí sola que un ejemplo se ejecutó.
@@ -11,6 +11,7 @@ ni demuestra por sí sola que un ejemplo se ejecutó.
 - [Material solicitado de Proyecto-RutaFlow y destinos](docs/rutaflow-source-index.md)
 - [Revisión de profundidad de todos los temas](docs/course-depth-review.md)
 - [Revisión de cobertura de cursos prioritarios](docs/revision-cursos-prioritarios.md)
+- [Temario Java completo y reporte de exhaustividad](docs/java-temario-completo.md)
 - [Plan total de cambio y estado](docs/PLAN-TOTAL-DE-CAMBIO.md)
 - [Sustancia de las lecciones: repetición, cola y andamiaje](docs/lesson-substance.md)
 - [Continuación de la metodología de siete pasos](docs/CONTINUAR-7-PASOS.md)
@@ -148,7 +149,7 @@ El contrato editorial que debe alcanzar cada tema es:
 
 La versión Angular tiene su propio contenido, más amplio, en formato Markdown
 (`web/public/content/<track>/modulo-N.md`), organizado en 14 tracks, 256
-módulos y 1175 temas editoriales visibles. Cada módulo prioriza una secuencia de
+módulos y 1185 temas editoriales visibles. Cada módulo prioriza una secuencia de
 temas prácticos. El sílabo y el estándar de calidad viven en documentos
 centrales; las fuentes específicas permanecen junto al tema que sustentan. No
 existen rutas separadas de cuestionarios, rúbricas o laboratorios repetidos.
@@ -157,9 +158,9 @@ Los conteos se verifican contra los tracks y el Markdown desde
 `scripts/validate_learning_priorities.py`; la validación falla si README vuelve
 a quedar desincronizado. La auditoría de criterios editoriales informa presencia
 estructural detectada por heurísticas, no calidad ni ejecución: al corte actual
-registra 1169/1175 temas practicables según sus señales editoriales (la detección no
+registra 1169/1185 temas practicables según sus señales editoriales (la detección no
 demuestra que el ejemplo se haya ejecutado). La auditoría independiente de metodología
-de siete pasos registra 1166/1175 temas completos según sus marcadores
+de siete pasos registra 1160/1185 temas completos según sus marcadores
 (el auditor reconoce el andamiaje real de cada ecosistema: `npm create vite`, `create-next-app`,
 «Nuevo proyecto» de Xcode y `xcodebuild`, las CLIs de nube `aws`/`az`/`gcloud` que crean el
 recurso base del tema, y la evidencia concreta que entrega el artefacto de un paso, además de

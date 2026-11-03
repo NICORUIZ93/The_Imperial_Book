@@ -141,23 +141,23 @@
       "complete": 56
     },
     "java": {
-      "topics": 91,
-      "objective": 91,
-      "prerequisites": 91,
-      "context": 91,
+      "topics": 101,
+      "objective": 101,
+      "prerequisites": 101,
+      "context": 101,
       "theoryAnalogy": 91,
       "guidedDemo": 89,
-      "codeExplanation": 91,
+      "codeExplanation": 101,
       "execution": 91,
-      "expectedResult": 91,
-      "deliberateFailure": 89,
+      "expectedResult": 101,
+      "deliberateFailure": 99,
       "guidedPractice": 91,
       "independentPractice": 91,
-      "closure": 91,
+      "closure": 92,
       "commonErrors": 91,
       "resources": 91,
       "standaloneExample": 87,
-      "learningEvidence": 91,
+      "learningEvidence": 94,
       "complete": 86
     },
     "javascript": {
@@ -19067,6 +19067,266 @@
         "classification": {
           "stepsPassed": 16,
           "complete": true
+        }
+      },
+      {
+        "module": 20,
+        "topic": "Tema 4: Function y BiFunction: transformar uno o dos datos",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": false,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 7,
+          "complete": false
+        }
+      },
+      {
+        "module": 20,
+        "topic": "Tema 5: UnaryOperator y BinaryOperator: la salida conserva el tipo",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": false,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 7,
+          "complete": false
+        }
+      },
+      {
+        "module": 20,
+        "topic": "Tema 6: Referencias a métodos: escribir la operación sin repetirla",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": false,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
+        },
+        "classification": {
+          "stepsPassed": 6,
+          "complete": false
+        }
+      },
+      {
+        "module": 20,
+        "topic": "Tema 7: Optional: buscar un envío que puede no existir",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": false,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 7,
+          "complete": false
+        }
+      },
+      {
+        "module": 20,
+        "topic": "Tema 8: Streams intermedios: filtrar, transformar, aplanar y ordenar",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": false,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
+        },
+        "classification": {
+          "stepsPassed": 6,
+          "complete": false
+        }
+      },
+      {
+        "module": 20,
+        "topic": "Tema 9: Streams terminales: encontrar, contar y combinar resultados",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": false,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
+        },
+        "classification": {
+          "stepsPassed": 6,
+          "complete": false
+        }
+      },
+      {
+        "module": 20,
+        "topic": "Tema 10: Collectors: formar listas, mapas, grupos y texto",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": false,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
+        },
+        "classification": {
+          "stepsPassed": 6,
+          "complete": false
+        }
+      },
+      {
+        "module": 20,
+        "topic": "Tema 11: Streams paralelos: comparar antes de acelerarlos",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": false,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
+        },
+        "classification": {
+          "stepsPassed": 6,
+          "complete": false
+        }
+      },
+      {
+        "module": 20,
+        "topic": "Tema 12: Pureza y efectos: calcular separado de guardar o imprimir",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": false,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
+        },
+        "classification": {
+          "stepsPassed": 6,
+          "complete": false
+        }
+      },
+      {
+        "module": 20,
+        "topic": "Tema 13: Flow API: publicar datos con demanda y cierre",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": false,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": true,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
+        },
+        "classification": {
+          "stepsPassed": 7,
+          "complete": false
         }
       },
       {

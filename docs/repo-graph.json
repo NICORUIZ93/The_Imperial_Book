@@ -82,7 +82,7 @@
     },
     {
       "path": "README.md",
-      "lines": 311,
+      "lines": 312,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -560,7 +560,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3262,
+      "lines": 3332,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -596,7 +596,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13340,
+      "lines": 13450,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -604,7 +604,7 @@
     },
     {
       "path": "docs/course-depth-review.md",
-      "lines": 1205,
+      "lines": 1215,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -637,7 +637,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 53,
+      "lines": 63,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -731,7 +731,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 11171,
+      "lines": 11241,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -820,7 +820,7 @@
     },
     {
       "path": "docs/prerequisite-graph.json",
-      "lines": 12933,
+      "lines": 13043,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -950,7 +950,7 @@
     },
     {
       "path": "docs/seven-step-methodology.json",
-      "lines": 30865,
+      "lines": 31125,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -985,7 +985,7 @@
     },
     {
       "path": "docs/topic-learning-quality.json",
-      "lines": 26121,
+      "lines": 26341,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -3768,6 +3768,123 @@
         "@apollo/subgraph",
         "graphql-tag",
         "node:url"
+      ],
+      "headings": []
+    },
+    {
+      "path": "examples/node-messaging/README.md",
+      "lines": 34,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Laboratorio Node, Kafka y RabbitMQ",
+        "## Kafka",
+        "## RabbitMQ",
+        "## Pruebas locales"
+      ]
+    },
+    {
+      "path": "examples/node-messaging/compose.rabbit.yaml",
+      "lines": 12,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/node-messaging/kafka/client.mjs",
+      "lines": 11,
+      "kind": "example",
+      "symbols": [
+        "createKafkaClient"
+      ],
+      "imports": [
+        "@confluentinc/kafka-javascript"
+      ],
+      "headings": []
+    },
+    {
+      "path": "examples/node-messaging/kafka/consumer.mjs",
+      "lines": 33,
+      "kind": "example",
+      "symbols": [],
+      "imports": [
+        "./client.mjs"
+      ],
+      "headings": []
+    },
+    {
+      "path": "examples/node-messaging/kafka/producer.mjs",
+      "lines": 19,
+      "kind": "example",
+      "symbols": [],
+      "imports": [
+        "./client.mjs"
+      ],
+      "headings": []
+    },
+    {
+      "path": "examples/node-messaging/package.json",
+      "lines": 17,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/node-messaging/rabbit/producer.mjs",
+      "lines": 20,
+      "kind": "example",
+      "symbols": [],
+      "imports": [
+        "amqplib",
+        "./topology.mjs"
+      ],
+      "headings": []
+    },
+    {
+      "path": "examples/node-messaging/rabbit/topology.mjs",
+      "lines": 15,
+      "kind": "example",
+      "symbols": [
+        "declareTopology"
+      ],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/node-messaging/rabbit/worker.mjs",
+      "lines": 38,
+      "kind": "example",
+      "symbols": [],
+      "imports": [
+        "amqplib",
+        "./topology.mjs"
+      ],
+      "headings": []
+    },
+    {
+      "path": "examples/node-messaging/test/kafka-client.test.mjs",
+      "lines": 10,
+      "kind": "example",
+      "symbols": [],
+      "imports": [
+        "node:test",
+        "node:assert/strict",
+        "../kafka/client.mjs"
+      ],
+      "headings": []
+    },
+    {
+      "path": "examples/node-messaging/test/topology.test.mjs",
+      "lines": 25,
+      "kind": "example",
+      "symbols": [],
+      "imports": [
+        "node:test",
+        "node:assert/strict",
+        "../rabbit/topology.mjs"
       ],
       "headings": []
     },
@@ -9533,7 +9650,7 @@
     },
     {
       "path": "web/public/content/java/modulo-20.md",
-      "lines": 380,
+      "lines": 1471,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -11675,7 +11792,7 @@
     },
     {
       "path": "web/public/content/topic-index.json",
-      "lines": 5243,
+      "lines": 5283,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -13093,7 +13210,7 @@
     },
     {
       "path": "web/src/app/tracks/java.track.ts",
-      "lines": 283,
+      "lines": 289,
       "kind": "angular-app",
       "symbols": [],
       "imports": [
@@ -13274,6 +13391,22 @@
     {
       "source": "examples/node-federation/federation.test.mjs",
       "target": "examples/node-federation/server.mjs"
+    },
+    {
+      "source": "examples/node-messaging/kafka/consumer.mjs",
+      "target": "examples/node-messaging/kafka/client.mjs"
+    },
+    {
+      "source": "examples/node-messaging/kafka/producer.mjs",
+      "target": "examples/node-messaging/kafka/client.mjs"
+    },
+    {
+      "source": "examples/node-messaging/rabbit/producer.mjs",
+      "target": "examples/node-messaging/rabbit/topology.mjs"
+    },
+    {
+      "source": "examples/node-messaging/rabbit/worker.mjs",
+      "target": "examples/node-messaging/rabbit/topology.mjs"
     },
     {
       "source": "examples/professional-bridges/node/pagina.test.mjs",

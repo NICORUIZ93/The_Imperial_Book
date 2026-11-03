@@ -11,7 +11,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 | node | 83 | 16 | HTTP y validación antes de autenticación e integraciones | API con límites de carga, paginación estable, pruebas y cierre ordenado |
 | angular | 71 | 3 | HTML/CSS/TypeScript explícitos; RxJS y estado con ejemplos completos | Rutas, formularios, datos remotos y cambios sin guardar comprobados con navegador |
 | react | 58 | 46 | JSX y estado antes de efectos; proveedor, dependencias y API visibles | Carga, error, vacío y carrera de respuestas; caché observada, no supuesta |
-| java | 91 | 49 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
+| java | 101 | 49 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
 | spring-boot | 111 | 14 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
 | android | 58 | 0 | Kotlin antes de Compose; distinguir recomposición, recreación y muerte de proceso | App instalable con permisos, restauración, persistencia y pruebas en dispositivo |
 | ios | 56 | 4 | Swift antes de SwiftUI; explicitar macOS/Xcode y destino | Cancelación, estados de red, persistencia y accesibilidad comprobados en simulador |
@@ -749,6 +749,16 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | java / 20 | [Tema 1: Las cuatro formas: Predicate, Function, Consumer y Supplier](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 20 | [Tema 2: Componer sin anidar: andThen, compose, negate y reglas encadenadas](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 20 | [Tema 3: Streams como composición: pereza, orden y efectos que se esconden](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 20 | [Tema 4: Function y BiFunction: transformar uno o dos datos](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 20 | [Tema 5: UnaryOperator y BinaryOperator: la salida conserva el tipo](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 20 | [Tema 6: Referencias a métodos: escribir la operación sin repetirla](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 20 | [Tema 7: Optional: buscar un envío que puede no existir](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 20 | [Tema 8: Streams intermedios: filtrar, transformar, aplanar y ordenar](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 20 | [Tema 9: Streams terminales: encontrar, contar y combinar resultados](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 20 | [Tema 10: Collectors: formar listas, mapas, grupos y texto](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 20 | [Tema 11: Streams paralelos: comparar antes de acelerarlos](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 20 | [Tema 12: Pureza y efectos: calcular separado de guardar o imprimir](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 20 | [Tema 13: Flow API: publicar datos con demanda y cierre](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 3 | [Tema 1: Checked vs unchecked exceptions](../web/public/content/java/modulo-3.md) | clase-java-no-visible |
 | java / 3 | [Tema 2: try-with-resources](../web/public/content/java/modulo-3.md) | clase-java-no-visible |
 | java / 3 | [Tema 3: Excepciones personalizadas y no tragar excepciones](../web/public/content/java/modulo-3.md) | clase-java-no-visible |

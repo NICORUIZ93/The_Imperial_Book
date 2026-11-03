@@ -1695,7 +1695,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "4f4d50dba1434928db899e1f4dfa6ad48d68765a3aaf826eb5a1cb60bc7b79de",
+    "fingerprint": "6c704e1828016c6a7d3b315f99473a34bcfefbb1f63c598569670f824834a207",
     "issues": {
       "andamiaje-generico": 128,
       "bloque-repetido": 218,
@@ -1710,7 +1710,7 @@
     },
     "modules": 256,
     "modulesWithLegacySections": 181,
-    "topics": 1175,
+    "topics": 1185,
     "topicsWithIssues": 470
   },
   "topics": {
@@ -7630,16 +7630,86 @@
       {
         "issues": [],
         "module": 20,
-        "tailWords": 151,
+        "tailWords": 190,
         "topic": "Tema 2: Componer sin anidar: andThen, compose, negate y reglas encadenadas",
-        "words": 715
+        "words": 754
       },
       {
         "issues": [],
         "module": 20,
-        "tailWords": 149,
+        "tailWords": 179,
         "topic": "Tema 3: Streams como composición: pereza, orden y efectos que se esconden",
-        "words": 752
+        "words": 782
+      },
+      {
+        "issues": [],
+        "module": 20,
+        "tailWords": 72,
+        "topic": "Tema 4: Function y BiFunction: transformar uno o dos datos",
+        "words": 626
+      },
+      {
+        "issues": [],
+        "module": 20,
+        "tailWords": 59,
+        "topic": "Tema 5: UnaryOperator y BinaryOperator: la salida conserva el tipo",
+        "words": 544
+      },
+      {
+        "issues": [],
+        "module": 20,
+        "tailWords": 60,
+        "topic": "Tema 6: Referencias a métodos: escribir la operación sin repetirla",
+        "words": 580
+      },
+      {
+        "issues": [],
+        "module": 20,
+        "tailWords": 62,
+        "topic": "Tema 7: Optional: buscar un envío que puede no existir",
+        "words": 605
+      },
+      {
+        "issues": [],
+        "module": 20,
+        "tailWords": 56,
+        "topic": "Tema 8: Streams intermedios: filtrar, transformar, aplanar y ordenar",
+        "words": 639
+      },
+      {
+        "issues": [],
+        "module": 20,
+        "tailWords": 55,
+        "topic": "Tema 9: Streams terminales: encontrar, contar y combinar resultados",
+        "words": 545
+      },
+      {
+        "issues": [],
+        "module": 20,
+        "tailWords": 50,
+        "topic": "Tema 10: Collectors: formar listas, mapas, grupos y texto",
+        "words": 593
+      },
+      {
+        "issues": [],
+        "module": 20,
+        "tailWords": 60,
+        "topic": "Tema 11: Streams paralelos: comparar antes de acelerarlos",
+        "words": 616
+      },
+      {
+        "issues": [],
+        "module": 20,
+        "tailWords": 68,
+        "topic": "Tema 12: Pureza y efectos: calcular separado de guardar o imprimir",
+        "words": 606
+      },
+      {
+        "issues": [],
+        "module": 20,
+        "tailWords": 78,
+        "topic": "Tema 13: Flow API: publicar datos con demanda y cierre",
+        "words": 846
       },
       {
         "issues": [

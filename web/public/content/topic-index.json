@@ -3210,6 +3210,46 @@
       {
         "title": "Streams como composición: pereza, orden y efectos que se esconden",
         "fragment": "tema-3-streams-como-composicion-pereza-orden-y-efectos-que-se-esconden"
+      },
+      {
+        "title": "Function y BiFunction: transformar uno o dos datos",
+        "fragment": "tema-4-function-y-bifunction-transformar-uno-o-dos-datos"
+      },
+      {
+        "title": "UnaryOperator y BinaryOperator: la salida conserva el tipo",
+        "fragment": "tema-5-unaryoperator-y-binaryoperator-la-salida-conserva-el-tipo"
+      },
+      {
+        "title": "Referencias a métodos: escribir la operación sin repetirla",
+        "fragment": "tema-6-referencias-a-metodos-escribir-la-operacion-sin-repetirla"
+      },
+      {
+        "title": "Optional: buscar un envío que puede no existir",
+        "fragment": "tema-7-optional-buscar-un-envio-que-puede-no-existir"
+      },
+      {
+        "title": "Streams intermedios: filtrar, transformar, aplanar y ordenar",
+        "fragment": "tema-8-streams-intermedios-filtrar-transformar-aplanar-y-ordenar"
+      },
+      {
+        "title": "Streams terminales: encontrar, contar y combinar resultados",
+        "fragment": "tema-9-streams-terminales-encontrar-contar-y-combinar-resultados"
+      },
+      {
+        "title": "Collectors: formar listas, mapas, grupos y texto",
+        "fragment": "tema-10-collectors-formar-listas-mapas-grupos-y-texto"
+      },
+      {
+        "title": "Streams paralelos: comparar antes de acelerarlos",
+        "fragment": "tema-11-streams-paralelos-comparar-antes-de-acelerarlos"
+      },
+      {
+        "title": "Pureza y efectos: calcular separado de guardar o imprimir",
+        "fragment": "tema-12-pureza-y-efectos-calcular-separado-de-guardar-o-imprimir"
+      },
+      {
+        "title": "Flow API: publicar datos con demanda y cierre",
+        "fragment": "tema-13-flow-api-publicar-datos-con-demanda-y-cierre"
       }
     ],
     "3": [
