@@ -178,102 +178,213 @@ Entrega el archivo, la salida válida y el fallo reproducido. Para una clase que
 
 ### Tema 2: Herencia y sobreescritura
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás demostrar polimorfismo de subtipo con `extends`/`@Override`, y diagnosticar el error de olvidar `@Retention(RUNTIME)` en una anotación propia. Prerrequisitos: JDK 25, Maven y un editor. Comprueba java --version.
+**Duración estimada:** 40 min.
+**¿Por qué es importante?** La herencia expresa una relación entre tipos y el polimorfismo permite que una misma operación use el comportamiento del objeto concreto. También practicarás cómo el compilador verifica una sobreescritura y cómo una herramienta de auditoría puede leer metadatos de un método.
+**Prerrequisitos:** M1 T1. Proyecto continuo: el motor permitirá distintos tipos de vehículo y dejará preparada una acción de entrega auditable.
 
-#### Paso 2 · Contexto y caso real
-Un sistema de reparto trata conductores y vehículos de forma polimórfica (todos "hablan"/operan igual desde afuera), pero cada tipo concreto responde distinto; además, auditar acciones sensibles (confirmar una entrega) requiere una anotación propia correctamente configurada para que un interceptor pueda descubrirla.
+#### Subtema 2.1: Extiende una clase y hereda su comportamiento · 10 min
 
-#### Paso 3 · Teoría, modelo mental y analogía
-El tipo real del objeto en tiempo de ejecución decide qué versión sobreescrita se ejecuta, no el tipo declarado de la variable. La analogía es una plantilla de formulario: la subclase personaliza ciertas secciones manteniendo el resto de la plantilla original.
+**1. Contexto**
+Una bicicleta de reparto comparte con otros vehículos un identificador y una operación de entrega.
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
-```bash
-mkdir ejemplo-herencia-anotacion
-cd ejemplo-herencia-anotacion
-mkdir -p src/main/java/academia/animales
-```
-
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
-
-```bash
-# Maven
-mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-cd app && mvn test
-# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
-```
-
-Crea `Animal`/`Perro` con `@Override` (código en "Código del ejemplo") y, en un segundo archivo, la anotación `@Auditable` con `@Retention(RUNTIME)` y `EntregaService` que la usa. Compila ambos y ejecuta una clase `Main` que invoque `hablar()` sobre una referencia `Animal` que apunta a un `Perro`.
-
-#### Paso 5 · Práctica guiada
-Pista: quita deliberadamente `@Retention(RUNTIME)` de `@Auditable` para provocar un fallo diagnosticable; una consulta por reflexión que buscaba la anotación deja de encontrarla, aunque el código compile igual. Resultado esperado: identificas que la causa es la política de retención, no el `@Target`.
-
-#### Paso 6 · Práctica independiente
-Agrega una tercera subclase de `Animal` (por ejemplo `Gato`) y confirma que invocar `hablar()` sobre las tres referencias `Animal` ejecuta la versión correcta de cada una; agrega una segunda anotación propia con `@Target(ElementType.FIELD)`.
-
-#### Paso 7 · Cierre y evidencia
-Guarda las clases, la anotación, la salida del polimorfismo y el diagnóstico del fallo de retención; como siguiente paso estudia interfaces y clases abstractas. Errores comunes: herencia por reutilización sin relación "es un" real, olvidar `@Override`, y anotaciones sin la retención correcta para su consumidor. Fuentes oficiales: https://dev.java/learn/classes-objects/ y https://docs.oracle.com/javase/tutorial/java/IandI/.
-
-El patrón de anotación propia + interceptor por reflexión es el mismo mecanismo que usa Spring (track de Spring Boot) para funcionalidad transversal como auditoría o seguridad, aplicado aquí en Java puro antes de depender de un framework que lo automatice.
-
-**Cuándo no usarlo:** crear una anotación propia con reflexión agrega una capa de indirección; para una única llamada de auditoría en un único lugar, invocar directamente el código de registro es más simple y más fácil de rastrear que una anotación que un interceptor debe descubrir.
-**¿Por qué es importante?** Porque el polimorfismo de subtipo permite que el mismo código funcione correctamente con cualquier subclase futura sin modificarse, y una anotación propia sin la retención correcta falla en silencio para quien la consume por reflexión, aunque el código compile sin ningún error.
-**Evidencia de aprendizaje:** entrega las clases con herencia y `@Override`, la salida del polimorfismo de subtipo sobre las tres subclases, y el diagnóstico del fallo al quitar `@Retention(RUNTIME)` de `@Auditable`.
-**Conceptos clave:** `extends`, `@Override`, polimorfismo de subtipo.
-
-`class Perro extends Animal` establece que `Perro` hereda todos los miembros no privados de `Animal`, pudiendo además sobreescribir (`@Override`) el comportamiento de métodos heredados para especializarlo: `Animal` define `hablar()` devolviendo `"..."`, y `Perro` sobreescribe ese mismo método para devolver `"Guau"`, de modo que invocar `hablar()` sobre una referencia de tipo `Animal` que en realidad apunta a un objeto `Perro` en tiempo de ejecución invoca la versión sobreescrita de `Perro`, no la de `Animal`, un comportamiento llamado polimorfismo de subtipo: el método que efectivamente se ejecuta se determina por el tipo real del objeto en tiempo de ejecución, no por el tipo declarado de la variable que lo referencia.
-
-La anotación `@Override` no es estrictamente obligatoria para que la sobreescritura funcione, pero es una buena práctica fuertemente recomendada: le pide al compilador que verifique que el método efectivamente sobreescribe uno existente en la superclase con la misma firma exacta, detectando en tiempo de compilación errores comunes como escribir mal el nombre del método (creando accidentalmente un método nuevo no relacionado en vez de sobreescribir el esperado) o usar una firma ligeramente distinta a la de la superclase.
-
-#### Enfoque técnico: qué significa `@` en Java
-
-El carácter `@` introduce una **anotación**: metadatos asociados a una declaración o a un uso de tipo. Una anotación no es un comentario y tampoco ejecuta comportamiento por sí sola. Su efecto aparece únicamente cuando alguna herramienta la interpreta: el compilador (`@Override`), un procesador durante el build, una librería que usa reflexión en runtime o un framework como Spring. Por eso escribir una anotación cuyo consumidor no está configurado puede compilar y, aun así, no producir el efecto que la persona esperaba.
-
-Java incluye anotaciones del lenguaje como `@Override`, `@Deprecated`, `@SuppressWarnings`, `@SafeVarargs` y `@FunctionalInterface`. También permite declarar anotaciones propias con `@interface`. `@Target` limita dónde se pueden colocar —clase, método, campo, parámetro o uso de tipo— y `@Retention` decide cuánto tiempo existen: solo en el código fuente (`SOURCE`), dentro del archivo `.class` (`CLASS`) o disponibles mediante reflexión durante la ejecución (`RUNTIME`). Esta decisión importa: un framework que inspecciona anotaciones al ejecutar no puede encontrar una anotación retenida únicamente en el código fuente.
+**2. Hazlo tú**
+Crea `java-motor-poo/src/EntregaDemo.java` con este archivo completo:
 
 ```java
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Auditable {
-    String accion();
+class Vehiculo {
+    String codigo;
+    Vehiculo(String codigo) { this.codigo = codigo; }
+    String entregar() { return codigo + " entrega paquete"; }
 }
 
-final class EntregaService {
-    @Auditable(accion = "confirmar-entrega")
-    void confirmar(String entregaId) {
-        // La anotación solo describe intención.
-        // Un interceptor o componente de auditoría debe interpretarla.
+class Bicicleta extends Vehiculo {
+    Bicicleta(String codigo) { super(codigo); }
+}
+
+public class EntregaDemo {
+    public static void main(String[] args) {
+        Bicicleta bici = new Bicicleta("BI-7");
+        System.out.println(bici.entregar());
     }
 }
 ```
 
-En este ejemplo, `@Auditable` tiene un elemento obligatorio llamado `accion`. Su retención `RUNTIME` permite que un interceptor la descubra mediante reflexión; `METHOD` impide usarla accidentalmente sobre una clase o un campo. La lógica de auditoría no debe esconder reglas del dominio dentro de la anotación: confirmar una entrega sigue siendo responsabilidad del caso de uso. La anotación sirve para conectar una preocupación transversal —registrar quién realizó una acción— sin mezclar esa infraestructura con la regla principal.
+Desde `java-motor-poo/`, ejecuta:
 
-**Error que debes saber diagnosticar:** crear `@Auditable` sin `@Retention(RUNTIME)` y esperar que un interceptor la encuentre. El código compila, pero la consulta por reflexión devuelve que la anotación no existe. Comprueba primero su política de retención, después el `@Target` y finalmente que el procesador, interceptor o framework encargado de interpretarla esté realmente registrado.
+```bash
+mkdir -p out
+javac -d out src/EntregaDemo.java
+java -cp out EntregaDemo
+```
 
-**Analogía:** la herencia es como una plantilla base de un formulario que las subclases pueden personalizar, manteniendo la mayoría de los campos originales pero reescribiendo ciertas secciones específicas según sus necesidades particulares; `@Override` es como marcar explícitamente que una sección personalizada efectivamente reemplaza una sección existente de la plantilla original, y no una sección completamente nueva sin relación con la plantilla base.
+**Resultado esperado:** `BI-7 entrega paquete`.
 
-**¿Por qué es importante?** El polimorfismo de subtipo permite que el mismo código que opera sobre una referencia `Animal` ejecute automáticamente el comportamiento específico de la subclase real en tiempo de ejecución, sin necesidad de conocer de antemano esa subclase concreta.
+**Fallo deliberado:** cambia `super(codigo)` por `super()`. **Error esperado:** el constructor de `Vehiculo` requiere un `String`. **Diagnóstico:** como definimos un constructor propio en la clase base, la subclase debe llamarlo con `super(codigo)`.
 
-**Código del ejemplo:**
+**3. Entiende**
+`extends` declara que `Bicicleta` es una clase más específica de `Vehiculo`. `super(codigo)` llama al constructor base para inicializar el código compartido; la subclase hereda `entregar()`.
+
+**4. Cierra**
+Dibuja la relación entre ambas clases y marca qué inicializa el constructor base.
+
+#### Subtema 2.2: Sobrescribe una operación · 10 min
+
+**1. Contexto**
+Una bicicleta y una furgoneta pueden completar la misma tarea de formas diferentes; el nombre de la operación común permite tratarlas de manera uniforme.
+
+**2. Hazlo tú**
+Reemplaza `java-motor-poo/src/EntregaDemo.java` por este archivo completo:
 
 ```java
-class Animal {
-    String hablar() { return "..."; }
+class Vehiculo {
+    String codigo;
+    Vehiculo(String codigo) { this.codigo = codigo; }
+    String entregar() { return codigo + " entrega paquete"; }
 }
-class Perro extends Animal {
+
+class Bicicleta extends Vehiculo {
+    Bicicleta(String codigo) { super(codigo); }
     @Override
-    String hablar() { return "Guau"; }
+    String entregar() { return codigo + " entrega en bicicleta"; }
+}
+
+public class EntregaDemo {
+    public static void main(String[] args) {
+        Bicicleta bici = new Bicicleta("BI-7");
+        System.out.println(bici.entregar());
+    }
 }
 ```
 
-**Transferencia al proyecto integrador «Motor de asignación de entregas»:** Sustituye dos estrategias de asignación mediante un contrato común. Prueba ambas con el mismo conjunto de entregas y verifica invariantes compartidas sin depender de detalles de una subclase.
+Compila y ejecuta con los comandos del subtema 2.1.
+
+**Resultado esperado:** `BI-7 entrega en bicicleta`.
+
+**Fallo deliberado:** cambia el nombre del método de la subclase a `entregarr` y deja `@Override`. **Error esperado:** `method does not override or implement a method from a supertype`. **Diagnóstico:** los nombres no coinciden; `@Override` hace que el compilador detecte el error de escritura.
+
+**3. Entiende**
+Sobrescribir reemplaza el comportamiento heredado para esa subclase. `@Override` no crea el polimorfismo; le pide al compilador que compruebe que realmente estás sobrescribiendo un método existente.
+
+**4. Cierra**
+Entrega la salida y el error del nombre mal escrito, luego restaura `entregar`.
+
+#### Subtema 2.3: Observa el polimorfismo con varios vehículos · 10 min
+
+**1. Contexto**
+El asignador puede operar sobre una lista de vehículos sin preguntar en cada línea qué clase concreta recibió.
+
+**2. Hazlo tú**
+Reemplaza `java-motor-poo/src/EntregaDemo.java` por este archivo completo:
+
+```java
+import java.util.List;
+
+class Vehiculo {
+    String codigo;
+    Vehiculo(String codigo) { this.codigo = codigo; }
+    String entregar() { return codigo + " entrega paquete"; }
+}
+
+class Bicicleta extends Vehiculo {
+    Bicicleta(String codigo) { super(codigo); }
+    @Override String entregar() { return codigo + " entrega en bicicleta"; }
+}
+
+class Furgoneta extends Vehiculo {
+    Furgoneta(String codigo) { super(codigo); }
+    @Override String entregar() { return codigo + " entrega en furgoneta"; }
+}
+
+public class EntregaDemo {
+    public static void main(String[] args) {
+        List<Vehiculo> flota = List.of(
+            new Bicicleta("BI-7"), new Furgoneta("FU-2"));
+        for (Vehiculo vehiculo : flota) {
+            System.out.println(vehiculo.entregar());
+        }
+    }
+}
+```
+
+Compila y ejecuta:
+
+```bash
+javac -d out src/EntregaDemo.java
+java -cp out EntregaDemo
+```
+
+**Resultado esperado:** `BI-7 entrega en bicicleta` y `FU-2 entrega en furgoneta`.
+
+**Fallo deliberado:** quita `@Override` y cambia accidentalmente el método de `Furgoneta` a `entregarr`. **Error esperado:** la lista imprime para esa furgoneta el comportamiento base `FU-2 entrega paquete`. **Diagnóstico:** sin `@Override`, el método nuevo compila pero no reemplaza `entregar`; restaura la anotación para que el compilador detecte el fallo.
+
+**3. Entiende**
+La variable tiene tipo `Vehiculo`, pero cada objeto conserva su tipo concreto. Java selecciona el método sobrescrito según el objeto en tiempo de ejecución.
+
+**4. Cierra**
+Explica por qué el ciclo `for` no necesita distinguir bicicleta de furgoneta y conserva la salida de ambas.
+
+#### Subtema 2.4: Declara una anotación que pueda leer una auditoría · 10 min
+
+**1. Contexto**
+Un interceptor puede leer metadatos de `confirmar` para registrar una acción sensible sin mezclar esa tarea con la regla de negocio.
+
+**2. Hazlo tú**
+Reemplaza `java-motor-poo/src/EntregaDemo.java` por este archivo completo:
+
+```java
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.annotation.ElementType;
+import java.lang.reflect.Method;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+@interface Auditable {
+    String accion();
+}
+
+class ServicioEntrega {
+    @Auditable(accion = "confirmar-entrega")
+    public void confirmar() { }
+}
+
+public class EntregaDemo {
+    public static void main(String[] args) throws Exception {
+        Method metodo = ServicioEntrega.class.getMethod("confirmar");
+        Auditable marca = metodo.getAnnotation(Auditable.class);
+        System.out.println(marca.accion());
+    }
+}
+```
+
+Desde `java-motor-poo/`, compila y ejecuta:
+
+```bash
+javac -d out src/EntregaDemo.java
+java -cp out EntregaDemo
+```
+
+**Resultado esperado:** `confirmar-entrega`.
+
+**Fallo deliberado:** elimina `@Retention(RetentionPolicy.RUNTIME)` y ejecuta otra vez. **Error esperado:** `NullPointerException` al leer `marca.accion()`, porque la reflexión devuelve `null`. **Diagnóstico:** sin retención `RUNTIME`, la anotación no está disponible para inspección durante la ejecución; restaura la política y vuelve a ejecutar.
+
+**3. Entiende**
+Una anotación describe metadatos; no hace nada por sí sola. `@Target` limita su uso a métodos y `@Retention(RUNTIME)` permite que un interceptor la descubra mediante reflexión. Una acción aislada también puede invocar una auditoría directa; la anotación tiene sentido cuando un componente común interpreta muchas marcas.
+
+**4. Cierra**
+Entrega la salida, la excepción reproducida y una frase que explique qué componente debe leer la anotación para que tenga efecto.
+
+**Hito del tema:**
+
+- [ ] Extendí `Vehiculo` y llamé al constructor base con `super`.
+- [ ] Sobrescribí `entregar` y usé `@Override` para descubrir un error de escritura.
+- [ ] Ejecuté una lista de tipos distintos y observé despacho polimórfico.
+- [ ] Leí `@Auditable` con reflexión y expliqué para qué sirve `RUNTIME`.
+
+**Fuentes oficiales:** [clases y objetos en dev.java](https://dev.java/learn/classes-objects/), [herencia en Java](https://docs.oracle.com/javase/tutorial/java/IandI/subclasses.html) y [política de retención de anotaciones](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/annotation/Retention.html).
+
+**Transferencia al proyecto integrador:** sustituye distintos tipos de vehículo mediante un mismo ciclo de asignación y registra qué acción queda marcada para auditoría.
 
 ### Tema 3: Interfaces, clases abstractas y cuándo usar cada una
 

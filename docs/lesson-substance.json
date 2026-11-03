@@ -1695,11 +1695,11 @@
     }
   ],
   "summary": {
-    "fingerprint": "67b6ffd088c6d5d28650ed624a4f277064d247879ab6532c9a612c9464385655",
+    "fingerprint": "387bfdd23a204345a1f4b69c10cb512c36ca2cf0060aa99541f0ec94c3288a94",
     "issues": {
       "andamiaje-generico": 125,
-      "bloque-repetido": 216,
-      "cola-tras-cierre": 374,
+      "bloque-repetido": 215,
+      "cola-tras-cierre": 373,
       "parrafo-repetido": 5,
       "tema-breve": 2
     },
@@ -1711,7 +1711,7 @@
     "modules": 256,
     "modulesWithLegacySections": 181,
     "topics": 1185,
-    "topicsWithIssues": 465
+    "topicsWithIssues": 464
   },
   "topics": {
     "android": [
@@ -7184,14 +7184,11 @@
         "words": 860
       },
       {
-        "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 1,
-        "tailWords": 927,
+        "tailWords": 0,
         "topic": "Tema 2: Herencia y sobreescritura",
-        "words": 1284
+        "words": 1098
       },
       {
         "issues": [

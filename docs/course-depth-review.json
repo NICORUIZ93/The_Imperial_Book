@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 176,
+    "topicsWithSignals": 177,
     "newLaboratories": 25
   },
   "priorities": {
@@ -7489,7 +7489,9 @@
       "title": "Tema 2: Herencia y sobreescritura",
       "file": "web/public/content/java/modulo-1.md",
       "line": 179,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -7499,7 +7501,7 @@
       "module": 1,
       "title": "Tema 3: Interfaces, clases abstractas y cuándo usar cada una",
       "file": "web/public/content/java/modulo-1.md",
-      "line": 278,
+      "line": 389,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7510,7 +7512,7 @@
       "module": 1,
       "title": "Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso",
       "file": "web/public/content/java/modulo-1.md",
-      "line": 346,
+      "line": 457,
       "signals": [
         "clase-java-no-visible"
       ],

@@ -132,11 +132,11 @@
       "filePath": 101,
       "runCommand": 91,
       "expectedResult": 101,
-      "practice": 99,
+      "practice": 98,
       "project": 88,
       "modelMental": 101,
-      "limitsDecision": 94,
-      "practicable": 88,
+      "limitsDecision": 93,
+      "practicable": 87,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
@@ -14959,14 +14959,14 @@
           "filePath": true,
           "runCommand": true,
           "expectedResult": true,
-          "practice": true,
+          "practice": false,
           "project": true,
           "modelMental": true,
-          "limitsDecision": true
+          "limitsDecision": false
         },
         "classification": {
-          "rubricScore": 14,
-          "practicable": true,
+          "rubricScore": 11,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }

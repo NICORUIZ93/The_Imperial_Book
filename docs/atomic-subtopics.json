@@ -51,10 +51,10 @@
     },
     "java": {
       "topics": 101,
-      "completeTopics": 4,
-      "topicsWith3to6Subtopics": 5,
-      "subtopics": 15,
-      "completeSubtopics": 14
+      "completeTopics": 5,
+      "topicsWith3to6Subtopics": 6,
+      "subtopics": 19,
+      "completeSubtopics": 18
     },
     "javascript": {
       "topics": 88,
@@ -5009,9 +5009,66 @@
       {
         "module": 1,
         "topic": "### Tema 2: Herencia y sobreescritura",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 4,
+        "subtopics": [
+          {
+            "id": "2.1",
+            "title": "#### Subtema 2.1: Extiende una clase y hereda su comportamiento · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "2.2",
+            "title": "#### Subtema 2.2: Sobrescribe una operación · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "2.3",
+            "title": "#### Subtema 2.3: Observa el polimorfismo con varios vehículos · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "2.4",
+            "title": "#### Subtema 2.4: Declara una anotación que pueda leer una auditoría · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 1,
