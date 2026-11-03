@@ -289,7 +289,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 11638,
+      "lines": 11767,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -297,7 +297,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1178,
+      "lines": 1175,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -619,7 +619,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13521,
+      "lines": 13523,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -660,7 +660,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 116,
+      "lines": 119,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -767,7 +767,7 @@
     },
     {
       "path": "docs/java-temario-completo.md",
-      "lines": 423,
+      "lines": 432,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -9854,7 +9854,7 @@
     },
     {
       "path": "web/public/content/java/modulo-13.md",
-      "lines": 188,
+      "lines": 242,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9862,15 +9862,15 @@
         "# M\u00f3dulo 13: Proyecto integrador",
         "## Aprende construyendo",
         "### Tema 1: Arquitectura por capas del proyecto integrador",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Subtema 1.1: Separa entrada, caso de uso y dominio \u00b7 10 min",
+        "#### Subtema 1.2: Invierte la dependencia del repositorio \u00b7 10 min",
+        "#### Subtema 1.3: Exp\u00f3n una frontera de entrada \u00b7 10 min",
         "### Tema 2: Integrando concurrencia, modelado y testing",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+        "#### Subtema 2.1: Env\u00eda trabajos acotados a un executor \u00b7 10 min",
+        "#### Subtema 2.2: Conserva el orden y diagnostica una tarea fallida \u00b7 10 min",
+        "#### Subtema 2.3: Prueba coordinaci\u00f3n sin Thread.sleep \u00b7 10 min",
+        "### Tema 3: Build reproducible y cierre del track",
+        "#### Subtema 3.1: Fija herramientas y dependencias \u00b7 10 min"
       ]
     },
     {

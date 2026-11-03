@@ -28,7 +28,7 @@ def evaluate(block: str) -> dict[str, bool]:
         block,
     )
     has_file = matches(
-        r"(?:src/|lib/|examples/|test/|web/|app/)[\w./-]+\.[\w]+|`[\w./-]+\.(?:java|kt|js|mjs|ts|tsx|dart|sql|ya?ml|json)`",
+        r"(?:src/|lib/|examples/|test/|web/|app/|docs/)[\w./-]+\.[\w]+|`[\w./-]+\.(?:java|kt|js|mjs|ts|tsx|dart|sql|ya?ml|json|xml|md|sh)`",
         block,
     )
     return {

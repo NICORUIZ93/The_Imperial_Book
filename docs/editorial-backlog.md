@@ -9,15 +9,15 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | Criterio | Cubierto | Pendiente |
 |---|---:|---:|
 | Explicación | 1185 | 0 |
-| Código | 1166 | 19 |
+| Código | 1163 | 22 |
 | Ruta | 1185 | 0 |
-| Ejecución | 1142 | 43 |
+| Ejecución | 1139 | 46 |
 | Resultado | 1183 | 2 |
-| Modificación | 1149 | 36 |
-| Conexión con un proyecto | 1133 | 52 |
-| Modelo mental | 1159 | 26 |
-| Límites | 1148 | 37 |
-| **Perfil de criterios detectado** | **1116** | **69** |
+| Modificación | 1146 | 39 |
+| Conexión con un proyecto | 1131 | 54 |
+| Modelo mental | 1156 | 29 |
+| Límites | 1146 | 39 |
+| **Perfil de criterios detectado** | **1113** | **72** |
 
 ## Prioridad por track
 
@@ -30,7 +30,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | flutter | 106 | 0 | 0 | 0 | 0 | 0 | 1 | 1 |
 | foundations | 99 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ios | 56 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| java | 101 | 19 | 0 | 38 | 0 | 30 | 40 | 27 |
+| java | 101 | 22 | 0 | 41 | 0 | 33 | 42 | 29 |
 | javascript | 88 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | kotlin-multiplatform | 56 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | node | 83 | 0 | 0 | 0 | 0 | 1 | 2 | 1 |
@@ -61,6 +61,9 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 - [java · módulo 12](../web/public/content/java/modulo-12.md) · Tema 4: SOLID y cuándo NO aplicar un patrón: código, ejecución, modificación, conexión con un proyecto, modelo mental.
 - [java · módulo 12](../web/public/content/java/modulo-12.md) · Tema 5: Prototype: copiar un objeto sin compartir sus datos: código, ejecución, conexión con un proyecto, modelo mental, límites.
 - [java · módulo 12](../web/public/content/java/modulo-12.md) · Tema 6: Patrones estructurales para conectar piezas existentes: código, ejecución, conexión con un proyecto, modelo mental, límites.
+- [java · módulo 13](../web/public/content/java/modulo-13.md) · Tema 1: Arquitectura por capas del proyecto integrador: código, ejecución, modificación, modelo mental, límites.
+- [java · módulo 13](../web/public/content/java/modulo-13.md) · Tema 2: Integrando concurrencia, modelado y testing: código, ejecución, modificación, conexión con un proyecto, modelo mental.
+- [java · módulo 13](../web/public/content/java/modulo-13.md) · Tema 3: Build reproducible y cierre del track: código, ejecución, modificación, conexión con un proyecto, modelo mental, límites.
 - [java · módulo 2](../web/public/content/java/modulo-2.md) · Tema 1: List, Set, Map y sus implementaciones: modificación, límites.
 - [java · módulo 2](../web/public/content/java/modulo-2.md) · Tema 2: Genéricos, wildcards y type erasure: modificación.
 - [java · módulo 2](../web/public/content/java/modulo-2.md) · Tema 3: Comparable vs Comparator, e iteración: límites.

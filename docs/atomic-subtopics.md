@@ -2,7 +2,7 @@
 
 > Auditoría estructural. Un encabezado o criterio detectado no demuestra que el ejemplo se haya ejecutado ni que la explicación sea pedagógicamente suficiente.
 
-Temas conformes a cuatro pasos: **74/1185**. Tracks inventariados: **14**.
+Temas conformes a cuatro pasos: **77/1185**. Tracks inventariados: **14**.
 
 | Track | Temas conformes | Temas inventariados | Subtemas detectados | Subtemas con estructura completa |
 |---|---:|---:|---:|---:|
@@ -13,7 +13,7 @@ Temas conformes a cuatro pasos: **74/1185**. Tracks inventariados: **14**.
 | flutter | 1 | 106 | 3 | 3 |
 | foundations | 0 | 99 | 0 | 0 |
 | ios | 0 | 56 | 0 | 0 |
-| java | 57 | 101 | 173 | 173 |
+| java | 60 | 101 | 182 | 182 |
 | javascript | 0 | 88 | 0 | 0 |
 | kotlin-multiplatform | 0 | 56 | 0 | 0 |
 | node | 2 | 83 | 6 | 6 |
@@ -704,9 +704,6 @@ Temas conformes a cuatro pasos: **74/1185**. Tracks inventariados: **14**.
 
 ### java
 
-- M13 ### Tema 1: Arquitectura por capas del proyecto integrador: tiene 0 subtemas
-- M13 ### Tema 2: Integrando concurrencia, modelado y testing: tiene 0 subtemas
-- M13 ### Tema 3: Build reproducible y cierre del track: tiene 0 subtemas
 - M14 ### Tema 1: Compartir memoria requiere orden y visibilidad: tiene 0 subtemas
 - M14 ### Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo: tiene 0 subtemas
 - M14 ### Tema 3: Deserializar es permitir construcción y comportamiento: tiene 0 subtemas

@@ -86,15 +86,15 @@
     },
     "java": {
       "topics": 101,
-      "code": 82,
+      "code": 79,
       "commentedCode": 21,
-      "mermaid": 22,
+      "mermaid": 21,
       "archifyVisual": 1,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
-      "filePath": 101,
+      "filePath": 100,
       "runCommand": 101,
-      "officialSource": 21
+      "officialSource": 18
     },
     "spring-boot": {
       "topics": 111,
@@ -2085,22 +2085,22 @@
       "track": "java",
       "module": 13,
       "topic": "Tema 1: Arquitectura por capas del proyecto integrador",
-      "missingCode": false,
-      "missingComments": true
+      "missingCode": true,
+      "missingComments": false
     },
     {
       "track": "java",
       "module": 13,
       "topic": "Tema 2: Integrando concurrencia, modelado y testing",
-      "missingCode": false,
-      "missingComments": true
+      "missingCode": true,
+      "missingComments": false
     },
     {
       "track": "java",
       "module": 13,
       "topic": "Tema 3: Build reproducible y cierre del track",
-      "missingCode": false,
-      "missingComments": true
+      "missingCode": true,
+      "missingComments": false
     },
     {
       "track": "java",

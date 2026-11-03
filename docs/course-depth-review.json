@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 199,
+    "topicsWithSignals": 200,
     "newLaboratories": 25
   },
   "priorities": {
@@ -7708,7 +7708,7 @@
       "file": "web/public/content/java/modulo-13.md",
       "line": 6,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7719,9 +7719,9 @@
       "module": 13,
       "title": "Tema 2: Integrando concurrencia, modelado y testing",
       "file": "web/public/content/java/modulo-13.md",
-      "line": 64,
+      "line": 76,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7732,8 +7732,10 @@
       "module": 13,
       "title": "Tema 3: Build reproducible y cierre del track",
       "file": "web/public/content/java/modulo-13.md",
-      "line": 125,
-      "signals": [],
+      "line": 146,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"

@@ -127,16 +127,16 @@
     "java": {
       "topics": 101,
       "explanation": 101,
-      "code": 82,
-      "visual": 23,
+      "code": 79,
+      "visual": 22,
       "filePath": 101,
-      "runCommand": 63,
+      "runCommand": 60,
       "expectedResult": 101,
-      "practice": 71,
-      "project": 61,
-      "modelMental": 75,
-      "limitsDecision": 74,
-      "practicable": 53,
+      "practice": 68,
+      "project": 59,
+      "modelMental": 72,
+      "limitsDecision": 72,
+      "practicable": 50,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
@@ -15306,19 +15306,19 @@
         "topic": "Tema 1: Arquitectura por capas del proyecto integrador",
         "criteria": {
           "explanation": true,
-          "code": true,
-          "visual": true,
+          "code": false,
+          "visual": false,
           "filePath": true,
-          "runCommand": true,
+          "runCommand": false,
           "expectedResult": true,
-          "practice": true,
+          "practice": false,
           "project": true,
-          "modelMental": true,
-          "limitsDecision": true
+          "modelMental": false,
+          "limitsDecision": false
         },
         "classification": {
-          "rubricScore": 16,
-          "practicable": true,
+          "rubricScore": 7,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -15328,19 +15328,19 @@
         "topic": "Tema 2: Integrando concurrencia, modelado y testing",
         "criteria": {
           "explanation": true,
-          "code": true,
+          "code": false,
           "visual": false,
           "filePath": true,
-          "runCommand": true,
+          "runCommand": false,
           "expectedResult": true,
-          "practice": true,
-          "project": true,
-          "modelMental": true,
+          "practice": false,
+          "project": false,
+          "modelMental": false,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 14,
-          "practicable": true,
+          "rubricScore": 5,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -15350,19 +15350,19 @@
         "topic": "Tema 3: Build reproducible y cierre del track",
         "criteria": {
           "explanation": true,
-          "code": true,
+          "code": false,
           "visual": false,
           "filePath": true,
-          "runCommand": true,
+          "runCommand": false,
           "expectedResult": true,
-          "practice": true,
-          "project": true,
-          "modelMental": true,
-          "limitsDecision": true
+          "practice": false,
+          "project": false,
+          "modelMental": false,
+          "limitsDecision": false
         },
         "classification": {
-          "rubricScore": 14,
-          "practicable": true,
+          "rubricScore": 5,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }

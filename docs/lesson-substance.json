@@ -1698,13 +1698,13 @@
     }
   ],
   "summary": {
-    "fingerprint": "d185a58f2c3eca6f70935f62ecd65d48c8d7494448c11db24a97eef62a989865",
+    "fingerprint": "a4af2c9f0daef5c895c128d9b744c76cc0b3bcea354adc11d6cd170d46f7ff78",
     "issues": {
       "andamiaje-generico": 124,
-      "bloque-repetido": 175,
-      "cola-tras-cierre": 337,
+      "bloque-repetido": 173,
+      "cola-tras-cierre": 335,
       "parrafo-repetido": 5,
-      "sin-fuente": 7,
+      "sin-fuente": 10,
       "tema-breve": 9
     },
     "legacySections": {
@@ -1715,7 +1715,7 @@
     "modules": 256,
     "modulesWithLegacySections": 182,
     "topics": 1185,
-    "topicsWithIssues": 431
+    "topicsWithIssues": 432
   },
   "topics": {
     "android": [
@@ -7305,30 +7305,30 @@
       },
       {
         "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
+          "sin-fuente"
         ],
         "module": 13,
-        "tailWords": 526,
+        "tailWords": 0,
         "topic": "Tema 1: Arquitectura por capas del proyecto integrador",
-        "words": 991
+        "words": 523
       },
       {
         "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
+          "sin-fuente"
         ],
         "module": 13,
-        "tailWords": 540,
+        "tailWords": 0,
         "topic": "Tema 2: Integrando concurrencia, modelado y testing",
-        "words": 985
+        "words": 479
       },
       {
-        "issues": [],
+        "issues": [
+          "sin-fuente"
+        ],
         "module": 13,
-        "tailWords": 167,
+        "tailWords": 0,
         "topic": "Tema 3: Build reproducible y cierre del track",
-        "words": 590
+        "words": 468
       },
       {
         "issues": [
