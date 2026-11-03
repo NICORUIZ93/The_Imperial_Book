@@ -51,10 +51,10 @@
     },
     "java": {
       "topics": 101,
-      "completeTopics": 86,
-      "topicsWith3to6Subtopics": 86,
-      "subtopics": 262,
-      "completeSubtopics": 262
+      "completeTopics": 87,
+      "topicsWith3to6Subtopics": 87,
+      "subtopics": 265,
+      "completeSubtopics": 265
     },
     "javascript": {
       "topics": 88,
@@ -7516,9 +7516,52 @@
       {
         "module": 19,
         "topic": "### Tema 5: ServiceLoader: plugins sin acoplar implementaciones",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "5.1",
+            "title": "#### Subtema 5.1: Descubrir proveedores por el classpath · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "5.2",
+            "title": "#### Subtema 5.2: Añadir una transportadora sin cambiar el cotizador · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "5.3",
+            "title": "#### Subtema 5.3: Diagnosticar un archivo de servicios ausente · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 19,

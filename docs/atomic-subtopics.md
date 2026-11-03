@@ -2,7 +2,7 @@
 
 > Auditoría estructural. Un encabezado o criterio detectado no demuestra que el ejemplo se haya ejecutado ni que la explicación sea pedagógicamente suficiente.
 
-Temas conformes a cuatro pasos: **103/1185**. Tracks inventariados: **14**.
+Temas conformes a cuatro pasos: **104/1185**. Tracks inventariados: **14**.
 
 | Track | Temas conformes | Temas inventariados | Subtemas detectados | Subtemas con estructura completa |
 |---|---:|---:|---:|---:|
@@ -13,7 +13,7 @@ Temas conformes a cuatro pasos: **103/1185**. Tracks inventariados: **14**.
 | flutter | 1 | 106 | 3 | 3 |
 | foundations | 0 | 99 | 0 | 0 |
 | ios | 0 | 56 | 0 | 0 |
-| java | 86 | 101 | 262 | 262 |
+| java | 87 | 101 | 265 | 265 |
 | javascript | 0 | 88 | 0 | 0 |
 | kotlin-multiplatform | 0 | 56 | 0 | 0 |
 | node | 2 | 83 | 6 | 6 |
@@ -704,7 +704,6 @@ Temas conformes a cuatro pasos: **103/1185**. Tracks inventariados: **14**.
 
 ### java
 
-- M19 ### Tema 5: ServiceLoader: plugins sin acoplar implementaciones: tiene 0 subtemas
 - M19 ### Tema 6: Proxies dinámicos: así funcionan @Transactional y los mocks: tiene 0 subtemas
 - M19 ### Tema 7: Internacionalización: números, monedas, fechas y orden de texto: tiene 0 subtemas
 - M20 ### Tema 2: Componer sin anidar: andThen, compose, negate y reglas encadenadas: tiene 0 subtemas

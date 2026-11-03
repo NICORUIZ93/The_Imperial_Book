@@ -5,7 +5,7 @@
 **Proyecto continuo:** Motor de asignación de entregas.
 **Prerrequisito de entrada:** Fundamentos de programación; el módulo 0 comienza con JDK y terminal..
 **Duración objetivo:** temas de 20–45 minutos; cada tema se divide en 3–6 acciones de 5–15 minutos.
-**Estado estructural:** 86/101 temas migrados; auditoría estructural actualizada el 2026-11-03.
+**Estado estructural:** 87/101 temas migrados; auditoría estructural actualizada el 2026-11-03.
 
 ## Índice de módulos y temas
 
@@ -454,7 +454,10 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 4.1: Proteger entradas públicas y revisar invariantes · 10 min
   - ✓ Subtema 4.2: Comprobar una postcondición · 10 min
   - ✓ Subtema 4.3: Ver el efecto de `-ea` · 10 min
-- [pendiente de migrar] Tema 5: ServiceLoader: plugins sin acoplar implementaciones
+- [4 pasos] Tema 5: ServiceLoader: plugins sin acoplar implementaciones
+  - ✓ Subtema 5.1: Descubrir proveedores por el classpath · 10 min
+  - ✓ Subtema 5.2: Añadir una transportadora sin cambiar el cotizador · 10 min
+  - ✓ Subtema 5.3: Diagnosticar un archivo de servicios ausente · 10 min
 - [pendiente de migrar] Tema 6: Proxies dinámicos: así funcionan @Transactional y los mocks
 - [pendiente de migrar] Tema 7: Internacionalización: números, monedas, fechas y orden de texto
 
@@ -501,7 +504,7 @@ La tabla registra presencia de áreas en el inventario del track, no profundidad
 
 ### Huecos y límites reportados
 
-- El repositorio contiene 101 temas en 21 módulos; 86 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
+- El repositorio contiene 101 temas en 21 módulos; 87 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
 - No hay base para afirmar que el track esté completo: la comparación con la fuente de referencia está pendiente de revisión humana módulo por módulo.
 - Los elementos de la fuente que todavía deben verificarse de forma explícita están enumerados en la tabla anterior; cualquier técnica crítica que no tenga tema propio debe añadirse conservando el currículo base.
 - La ejecución de ejemplos, el comportamiento con brokers/plataformas reales y la calidad pedagógica humana se registran por separado.

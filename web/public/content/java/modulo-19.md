@@ -808,7 +808,15 @@ flowchart LR
 
 #### Paso 4 · Demostración guiada desde cero
 
-##### Subtema 5.1: Descubrir proveedores por el classpath · 10-15 min
+#### Subtema 5.1: Descubrir proveedores por el classpath · 10 min
+**1. Contexto**
+
+El cotizador debe descubrir transportadoras nuevas sin editar su código cada vez que se incorpora una empresa.
+
+**2. Hazlo tú**
+
+En una carpeta vacía, crea las interfaces, proveedores y descriptor de servicio mostrados; compila y ejecuta ambos destinos.
+
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
 
 ```bash
@@ -903,16 +911,25 @@ Implementaciones descubiertas: 2
 
 `Cotizador` nunca escribe `new Moto()`; para agregar una transportadora basta con una clase nueva y una línea en el archivo de servicios.
 
-**Fallo deliberado:** Compila en otra carpeta sin copiar los servicios: `javac -d out2 src/rutaflow/*.java && java -cp out2 rutaflow.Cotizador`. Imprime `Implementaciones descubiertas: 0` y ninguna cotización, sin errores. El archivo de servicios no está en el classpath: es la causa más común de "mi plugin no carga".
+**Fallo deliberado:** Compila en otra carpeta sin copiar los servicios: `javac -d out2 src/rutaflow/*.java && java -cp out2 rutaflow.Cotizador`. Imprime `Implementaciones descubiertas: 0` y ninguna cotización, sin errores. **Diagnóstico:** el descriptor `META-INF/services` no quedó dentro del directorio que se pasa a `-cp`; copiar las clases por sí solo no registra proveedores.
+
+**3. Entiende**
+
+`ServiceLoader` lee el contrato compartido y el registro de proveedores que acompaña a las clases.
+
+**Diagnóstico:** compara las clases compiladas con el registro dentro del classpath y verifica el nombre totalmente calificado.
+
+**4. Cierra**
+
+Guarda cuántos proveedores se descubrieron y qué archivos permitieron cargarlos.
 
 #### Paso 5 · Práctica guiada
 Agrega la transportadora `Bicicleta` que solo cubre Bogotá y pedidos de hasta 5 kg, sin modificar `Cotizador`. **Pista:** crea la clase, agrega `rutaflow.Bicicleta` al archivo de servicios y vuelve a compilar y copiar `META-INF`.
 
-##### Subtema 5.2: Añadir una transportadora sin cambiar el cotizador · 5-10 min
+#### Subtema 5.2: Añadir una transportadora sin cambiar el cotizador · 10 min
+**1. Contexto** el equipo incorpora bicicletas de reparto urbano y conserva el mismo contrato.
 
-**Contexto:** el equipo incorpora bicicletas de reparto urbano y conserva el mismo contrato.
-
-**Hazlo tú:** en el proyecto `plugins`, crea `src/rutaflow/Bicicleta.java`:
+**2. Hazlo tú** en el proyecto `plugins`, crea `src/rutaflow/Bicicleta.java`:
 
 ```java
 package rutaflow;
@@ -933,16 +950,21 @@ Agrega `rutaflow.Bicicleta` a `src/META-INF/services/rutaflow.Transportadora`. E
 
 **Fallo deliberado:** escribe `rutaflow.Bicleta` en el archivo. **Error esperado:** `ServiceConfigurationError` indica que no se pudo encontrar o cargar la clase. **Diagnóstico:** el nombre del proveedor debe coincidir exactamente con su nombre de paquete y clase.
 
-**Entiende:** el contrato compartido permite añadir un proveedor sin editar el cotizador.
+**3. Entiende** el contrato compartido permite añadir un proveedor sin editar el cotizador.
+
+**Diagnóstico:** compara las clases compiladas con el registro dentro del classpath y verifica el nombre totalmente calificado.
+
+**4. Cierra**
+
+Guarda cuántos proveedores se descubrieron y qué archivos permitieron cargarlos.
 
 #### Paso 6 · Práctica independiente
 Convierte el ejemplo a módulos con `module-info.java` usando `uses` y `provides ... with ...`, y explica qué ventaja da frente al archivo de texto.
 
-##### Subtema 5.3: Diagnosticar un archivo de servicios ausente · 5-10 min
+#### Subtema 5.3: Diagnosticar un archivo de servicios ausente · 10 min
+**1. Contexto** compilar proveedores no basta; `ServiceLoader` también necesita encontrarlos en el classpath.
 
-**Contexto:** compilar proveedores no basta; `ServiceLoader` también necesita encontrarlos en el classpath.
-
-**Hazlo tú:** vuelve a compilar el proyecto sin copiar `META-INF/services`:
+**2. Hazlo tú** vuelve a compilar el proyecto sin copiar `META-INF/services`:
 
 ```bash
 javac -d out2 src/rutaflow/*.java
@@ -953,7 +975,13 @@ java -cp out2 rutaflow.Cotizador
 
 **Fallo deliberado:** asume que el plugin está instalado porque `Moto.class` aparece en `out2`. **Resultado del fallo:** no hay cotizaciones aunque las clases estén compiladas. **Diagnóstico:** copia también el descriptor `src/META-INF/services/rutaflow.Transportadora` al classpath.
 
-**Entiende:** el registro del proveedor es parte del artefacto ejecutable, junto con las clases.
+**3. Entiende** el registro del proveedor es parte del artefacto ejecutable, junto con las clases.
+
+**Diagnóstico:** compara las clases compiladas con el registro dentro del classpath y verifica el nombre totalmente calificado.
+
+**4. Cierra**
+
+Guarda cuántos proveedores se descubrieron y qué archivos permitieron cargarlos.
 
 #### Paso 7 · Cierre y evidencia
 Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque es el mecanismo estándar de extensión de Java y explica por qué un driver aparece o no aparece en tiempo de ejecución.
