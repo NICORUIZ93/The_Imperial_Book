@@ -145,16 +145,16 @@
       "officialSource": 56
     },
     "flutter": {
-      "topics": 75,
-      "code": 75,
-      "commentedCode": 32,
-      "mermaid": 56,
+      "topics": 82,
+      "code": 82,
+      "commentedCode": 33,
+      "mermaid": 63,
       "archifyVisual": 0,
       "asciiVisual": 15,
       "misleadingDiagramLabel": 0,
-      "filePath": 75,
-      "runCommand": 72,
-      "officialSource": 58
+      "filePath": 82,
+      "runCommand": 79,
+      "officialSource": 63
     },
     "rutaflow": {
       "topics": 29,
@@ -2813,6 +2813,48 @@
       "track": "flutter",
       "module": 17,
       "topic": "Tema 6: diseñar y validar un paquete Dart",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 18,
+      "topic": "Tema 1: la frontera entre Dart y el código nativo",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 18,
+      "topic": "Tema 3: fluidez y presupuesto de frames",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 18,
+      "topic": "Tema 4: protocolo, telemetría y contención",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 18,
+      "topic": "Tema 5: reportes de fallos con Crashlytics y Sentry",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 18,
+      "topic": "Tema 6: analítica con privacidad y consentimiento",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 18,
+      "topic": "Tema 7: monitoreo de rendimiento en una versión publicada",
       "missingCode": false,
       "missingComments": true
     },

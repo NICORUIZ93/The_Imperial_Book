@@ -642,6 +642,11 @@
       "track": "flutter"
     },
     {
+      "legacySections": [],
+      "module": 18,
+      "track": "flutter"
+    },
+    {
       "legacySections": [
         "**Errores comunes y soluciones**"
       ],
@@ -1655,7 +1660,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "c157f1f8f090f7e527fcfa012b4fcb9b9ec431c82033813ff8ae2d1fef4ddfab",
+    "fingerprint": "ed21aa1490b4bd20bcecf1b5059deb1ea60c3a992d2d093773dd7ad455930d22",
     "issues": {
       "andamiaje-generico": 128,
       "bloque-repetido": 218,
@@ -1668,9 +1673,9 @@
       "## Ruta de proyecto progresivo desde carpeta vacía": 12,
       "**Errores comunes y soluciones**": 179
     },
-    "modules": 248,
+    "modules": 249,
     "modulesWithLegacySections": 181,
-    "topics": 1132,
+    "topics": 1139,
     "topicsWithIssues": 470
   },
   "topics": {
@@ -5223,6 +5228,55 @@
         "tailWords": 134,
         "topic": "Tema 6: diseñar y validar un paquete Dart",
         "words": 642
+      },
+      {
+        "issues": [],
+        "module": 18,
+        "tailWords": 211,
+        "topic": "Tema 1: la frontera entre Dart y el código nativo",
+        "words": 719
+      },
+      {
+        "issues": [],
+        "module": 18,
+        "tailWords": 243,
+        "topic": "Tema 2: secretos fuera del binario",
+        "words": 805
+      },
+      {
+        "issues": [],
+        "module": 18,
+        "tailWords": 181,
+        "topic": "Tema 3: fluidez y presupuesto de frames",
+        "words": 554
+      },
+      {
+        "issues": [],
+        "module": 18,
+        "tailWords": 215,
+        "topic": "Tema 4: protocolo, telemetría y contención",
+        "words": 590
+      },
+      {
+        "issues": [],
+        "module": 18,
+        "tailWords": 226,
+        "topic": "Tema 5: reportes de fallos con Crashlytics y Sentry",
+        "words": 729
+      },
+      {
+        "issues": [],
+        "module": 18,
+        "tailWords": 208,
+        "topic": "Tema 6: analítica con privacidad y consentimiento",
+        "words": 590
+      },
+      {
+        "issues": [],
+        "module": 18,
+        "tailWords": 207,
+        "topic": "Tema 7: monitoreo de rendimiento en una versión publicada",
+        "words": 702
       },
       {
         "issues": [

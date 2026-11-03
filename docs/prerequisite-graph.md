@@ -31,9 +31,9 @@ flowchart LR
 | kotlin-multiplatform | 56 |
 | android | 58 |
 | ios | 56 |
-| flutter | 75 |
+| flutter | 82 |
 | devops | 113 |
 | cloud | 156 |
 | rutaflow | 29 |
 
-**Total:** 1132 temas.
+**Total:** 1139 temas.

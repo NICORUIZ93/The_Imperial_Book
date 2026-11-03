@@ -81,24 +81,24 @@
       "complete": 113
     },
     "flutter": {
-      "topics": 75,
-      "objective": 75,
-      "prerequisites": 75,
-      "context": 75,
-      "theoryAnalogy": 75,
-      "guidedDemo": 75,
-      "codeExplanation": 75,
-      "execution": 75,
-      "expectedResult": 75,
-      "deliberateFailure": 75,
-      "guidedPractice": 75,
-      "independentPractice": 75,
-      "closure": 75,
-      "commonErrors": 75,
-      "resources": 75,
-      "standaloneExample": 75,
-      "learningEvidence": 75,
-      "complete": 75
+      "topics": 82,
+      "objective": 82,
+      "prerequisites": 82,
+      "context": 82,
+      "theoryAnalogy": 82,
+      "guidedDemo": 82,
+      "codeExplanation": 82,
+      "execution": 82,
+      "expectedResult": 82,
+      "deliberateFailure": 82,
+      "guidedPractice": 82,
+      "independentPractice": 82,
+      "closure": 82,
+      "commonErrors": 82,
+      "resources": 82,
+      "standaloneExample": 82,
+      "learningEvidence": 82,
+      "complete": 82
     },
     "foundations": {
       "topics": 99,
@@ -11786,6 +11786,188 @@
       {
         "module": 17,
         "topic": "Tema 6: diseñar y validar un paquete Dart",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 18,
+        "topic": "Tema 1: la frontera entre Dart y el código nativo",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 18,
+        "topic": "Tema 2: secretos fuera del binario",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 18,
+        "topic": "Tema 3: fluidez y presupuesto de frames",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 18,
+        "topic": "Tema 4: protocolo, telemetría y contención",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 18,
+        "topic": "Tema 5: reportes de fallos con Crashlytics y Sentry",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 18,
+        "topic": "Tema 6: analítica con privacidad y consentimiento",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 18,
+        "topic": "Tema 7: monitoreo de rendimiento en una versión publicada",
         "criteria": {
           "objective": true,
           "prerequisites": true,

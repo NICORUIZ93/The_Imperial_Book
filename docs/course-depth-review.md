@@ -15,7 +15,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 | spring-boot | 99 | 14 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
 | android | 58 | 0 | Kotlin antes de Compose; distinguir recomposición, recreación y muerte de proceso | App instalable con permisos, restauración, persistencia y pruebas en dispositivo |
 | ios | 56 | 4 | Swift antes de SwiftUI; explicitar macOS/Xcode y destino | Cancelación, estados de red, persistencia y accesibilidad comprobados en simulador |
-| flutter | 75 | 8 | Dart antes de widgets; ejemplo con main y destino de ejecución | Restauración, red, pruebas de widget, integración y publicación por plataforma |
+| flutter | 82 | 8 | Dart antes de widgets; ejemplo con main y destino de ejecución | Restauración, red, pruebas de widget, integración y publicación por plataforma |
 | kotlin-multiplatform | 56 | 2 | Kotlin y source sets antes de interoperabilidad | Política común sin dependencias nativas; reloj controlado y pruebas por destino |
 | cloud | 156 | 2 | Terminal/HTTP/Docker antes de servicios; emulación distinta de cloud real | Infraestructura, permisos mínimos, restauración ensayada, RPO/RTO y costes observados |
 | devops | 113 | 3 | Aplicación ejecutable antes de CI/CD; código de salida y artefactos identificables | Pipeline con promoción, rollback comprobado, observabilidad e incidente ensayado |
@@ -470,6 +470,13 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | flutter / 17 | [Tema 4: recorrer el AST de Dart con analyzer](../web/public/content/flutter/modulo-17.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 17 | [Tema 5: crear un builder pequeño para build_runner](../web/public/content/flutter/modulo-17.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 17 | [Tema 6: diseñar y validar un paquete Dart](../web/public/content/flutter/modulo-17.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 18 | [Tema 1: la frontera entre Dart y el código nativo](../web/public/content/flutter/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 18 | [Tema 2: secretos fuera del binario](../web/public/content/flutter/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 18 | [Tema 3: fluidez y presupuesto de frames](../web/public/content/flutter/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 18 | [Tema 4: protocolo, telemetría y contención](../web/public/content/flutter/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 18 | [Tema 5: reportes de fallos con Crashlytics y Sentry](../web/public/content/flutter/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 18 | [Tema 6: analítica con privacidad y consentimiento](../web/public/content/flutter/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 18 | [Tema 7: monitoreo de rendimiento en una versión publicada](../web/public/content/flutter/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 2 | [Tema 1: MediaQuery vs LayoutBuilder](../web/public/content/flutter/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 2 | [Tema 2: Cómo Flutter calcula tamaños](../web/public/content/flutter/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 2 | [Tema 3: Breakpoints propios y SafeArea](../web/public/content/flutter/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |

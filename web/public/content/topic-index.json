@@ -1974,6 +1974,36 @@
         "fragment": "tema-6-disenar-y-validar-un-paquete-dart"
       }
     ],
+    "18": [
+      {
+        "title": "la frontera entre Dart y el código nativo",
+        "fragment": "tema-1-la-frontera-entre-dart-y-el-codigo-nativo"
+      },
+      {
+        "title": "secretos fuera del binario",
+        "fragment": "tema-2-secretos-fuera-del-binario"
+      },
+      {
+        "title": "fluidez y presupuesto de frames",
+        "fragment": "tema-3-fluidez-y-presupuesto-de-frames"
+      },
+      {
+        "title": "protocolo, telemetría y contención",
+        "fragment": "tema-4-protocolo-telemetria-y-contencion"
+      },
+      {
+        "title": "reportes de fallos con Crashlytics y Sentry",
+        "fragment": "tema-5-reportes-de-fallos-con-crashlytics-y-sentry"
+      },
+      {
+        "title": "analítica con privacidad y consentimiento",
+        "fragment": "tema-6-analitica-con-privacidad-y-consentimiento"
+      },
+      {
+        "title": "monitoreo de rendimiento en una versión publicada",
+        "fragment": "tema-7-monitoreo-de-rendimiento-en-una-version-publicada"
+      }
+    ],
     "2": [
       {
         "title": "MediaQuery vs LayoutBuilder",

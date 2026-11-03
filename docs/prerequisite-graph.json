@@ -9178,6 +9178,83 @@
       ]
     },
     {
+      "id": "flutter:18:1",
+      "track": "flutter",
+      "module": 18,
+      "position": 1,
+      "title": "la frontera entre Dart y el código nativo",
+      "file": "web/public/content/flutter/modulo-18.md",
+      "requires": [
+        "flutter:17:6"
+      ]
+    },
+    {
+      "id": "flutter:18:2",
+      "track": "flutter",
+      "module": 18,
+      "position": 2,
+      "title": "secretos fuera del binario",
+      "file": "web/public/content/flutter/modulo-18.md",
+      "requires": [
+        "flutter:18:1"
+      ]
+    },
+    {
+      "id": "flutter:18:3",
+      "track": "flutter",
+      "module": 18,
+      "position": 3,
+      "title": "fluidez y presupuesto de frames",
+      "file": "web/public/content/flutter/modulo-18.md",
+      "requires": [
+        "flutter:18:2"
+      ]
+    },
+    {
+      "id": "flutter:18:4",
+      "track": "flutter",
+      "module": 18,
+      "position": 4,
+      "title": "protocolo, telemetría y contención",
+      "file": "web/public/content/flutter/modulo-18.md",
+      "requires": [
+        "flutter:18:3"
+      ]
+    },
+    {
+      "id": "flutter:18:5",
+      "track": "flutter",
+      "module": 18,
+      "position": 5,
+      "title": "reportes de fallos con Crashlytics y Sentry",
+      "file": "web/public/content/flutter/modulo-18.md",
+      "requires": [
+        "flutter:18:4"
+      ]
+    },
+    {
+      "id": "flutter:18:6",
+      "track": "flutter",
+      "module": 18,
+      "position": 6,
+      "title": "analítica con privacidad y consentimiento",
+      "file": "web/public/content/flutter/modulo-18.md",
+      "requires": [
+        "flutter:18:5"
+      ]
+    },
+    {
+      "id": "flutter:18:7",
+      "track": "flutter",
+      "module": 18,
+      "position": 7,
+      "title": "monitoreo de rendimiento en una versión publicada",
+      "file": "web/public/content/flutter/modulo-18.md",
+      "requires": [
+        "flutter:18:6"
+      ]
+    },
+    {
       "id": "devops:0:1",
       "track": "devops",
       "module": 0,
