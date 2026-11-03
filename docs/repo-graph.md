@@ -1,6 +1,6 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-11-03 22:49 UTC
+Generated: 2026-11-03 22:59 UTC
 Root: `The_Imperial_Book`
 Indexed files: 990
 Import edges: 60
@@ -180,7 +180,7 @@ For automated lookups, use `docs/repo-graph.json`.
 
 ### automation-script
 
-- `scripts/audit_atomic_subtopics.py` (150 lines) - symbols: matches, evaluate, build, render, main; imports: __future__, argparse, json, re, collections, pathlib
+- `scripts/audit_atomic_subtopics.py` (151 lines) - symbols: matches, evaluate, build, render, main; imports: __future__, argparse, json, re, collections, pathlib
 - `scripts/audit_code_visual_quality.py` (138 lines) - symbols: student_visible_content, structural_text, blocks, evaluate, build, render, main; imports: __future__, argparse, json, re, collections, pathlib, audit_topic_learning_quality
 - `scripts/audit_course_depth.py` (103 lines) - symbols: signals, build, markdown, main; imports: __future__, argparse, collections, json, pathlib, re, audit_topic_learning_quality
 - `scripts/audit_lesson_substance.py` (347 lines) - symbols: norm, paragraphs, count_words, evaluate_topic, module_level_sections, topic_key, build, render_markdown; imports: __future__, argparse, hashlib, json, re, sys, collections, pathlib
@@ -240,7 +240,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/RUNBOOKS-CLOUD.md` (1633 lines) - headings: # Cloud Runbooks — Troubleshooting Operacional, ## Runbook 1: DynamoDB Throttling, ### Síntomas, ### Diagnosis
 - `docs/RUNBOOKS-DEVOPS.md` (1409 lines) - headings: # DevOps Runbooks — Troubleshooting Operacional, ## Runbook 1: Docker Image Build Failures, ### Síntomas, ### Diagnosis
 - `docs/SKILLS-VISUALES-Y-ESTUDIO.md` (94 lines) - headings: # Skills para visuales y estudio desde cero, ## Selección y uso, ## Recorrido que debe comprobarse, ## Cómo usar las skills en una revisión
-- `docs/atomic-subtopics.md` (1208 lines) - headings: # Auditoría de subtemas atómicos, ## Temas pendientes, ### android, ### angular
+- `docs/atomic-subtopics.md` (1194 lines) - headings: # Auditoría de subtemas atómicos, ## Temas pendientes, ### android, ### angular
 - `docs/auditoria-profundidad-cobertura.md` (213 lines) - headings: # Auditoría de profundidad y cobertura — The Imperial Book, ## Resumen ejecutivo (sin adornos), ## Eje 1 — PROFUNDIDAD (¿el Paso 4 es ejecutable de cero a profesional?), ### Evidencia directa (leída, no inferida)
 - ... 43 more files
 
@@ -275,16 +275,16 @@ For automated lookups, use `docs/repo-graph.json`.
 - `.env.example` (8 lines)
 - `.github/workflows/ci.yml` (62 lines)
 - `docs/app-flow-inspection.json` (13830 lines)
-- `docs/atomic-subtopics.json` (10348 lines)
+- `docs/atomic-subtopics.json` (10950 lines)
 - `docs/biblioteca/catalogo.json` (564 lines)
 - `docs/biblioteca/imagenes.json` (577 lines)
 - `docs/browser-course-review.json` (2660 lines)
-- `docs/code-visual-quality.json` (3507 lines)
-- `docs/course-depth-review.json` (13503 lines)
+- `docs/code-visual-quality.json` (3563 lines)
+- `docs/course-depth-review.json` (13513 lines)
 - `docs/curriculum-matrix.json` (394 lines)
 - `docs/floci-official-curriculum.json` (14 lines)
 - `docs/lesson-substance-baseline.json` (1693 lines)
-- `docs/lesson-substance.json` (11171 lines)
+- `docs/lesson-substance.json` (11150 lines)
 - `docs/merged-pdf-index.json` (426 lines)
 - `docs/official-learning-guides.json` (22 lines)
 - `docs/official-sources.json` (195 lines)

@@ -7,18 +7,19 @@ defectos detectados tampoco acredita haber sido comprendida.
 | Métrica | Valor |
 |---|---:|
 | Temas analizados | 1185 |
-| Temas con algún defecto | 445 |
+| Temas con algún defecto | 438 |
 | Módulos con apéndices heredados | 181/256 |
 
 ## Defectos por tipo
 
 | Código | Temas |
 |---|---:|
-| `andamiaje-generico` | 125 |
-| `bloque-repetido` | 196 |
-| `cola-tras-cierre` | 356 |
+| `andamiaje-generico` | 124 |
+| `bloque-repetido` | 185 |
+| `cola-tras-cierre` | 348 |
 | `parrafo-repetido` | 5 |
-| `tema-breve` | 2 |
+| `sin-fuente` | 2 |
+| `tema-breve` | 5 |
 
 ## Apéndices heredados más frecuentes
 
@@ -56,7 +57,6 @@ defectos detectados tampoco acredita haber sido comprendida.
 | foundations / 7 | Tema 2: Arquitectura guiada por atributos de calidad | 1010 | 582 | andamiaje-generico, bloque-repetido, cola-tras-cierre |
 | foundations / 6 | Tema 1: Activos, amenazas, riesgos y límites de confianza | 938 | 552 | andamiaje-generico, bloque-repetido, cola-tras-cierre |
 | devops / 14 | Tema 3: Construir una imagen no demuestra de dónde proviene | 950 | 544 | andamiaje-generico, bloque-repetido, cola-tras-cierre |
-| java / 5 | Tema 5: Structured Concurrency (StructuredTaskScope, Java 25) | 1036 | 541 | andamiaje-generico, bloque-repetido, cola-tras-cierre |
 | devops / 14 | Tema 2: Una alerta debe conducir a una acción | 937 | 524 | andamiaje-generico, bloque-repetido, cola-tras-cierre |
 | flutter / 11 | Tema 2: Iconos y splash screens | 828 | 519 | andamiaje-generico, bloque-repetido, cola-tras-cierre |
 | node / 13 | Tema 4: Webhooks verificables y recuperación por reconciliación | 872 | 507 | bloque-repetido, cola-tras-cierre, parrafo-repetido |
@@ -72,6 +72,7 @@ defectos detectados tampoco acredita haber sido comprendida.
 | foundations / 3 | Tema 3: HTML semántico, formularios y el DOM | 1391 | 797 | bloque-repetido, cola-tras-cierre |
 | cloud / 5 | Tema 3: Runtimes — Node.js, Python, Java, Go | 1303 | 792 | bloque-repetido, cola-tras-cierre |
 | cloud / 22 | Tema 5: Cómo se integran los cuatro servicios en una arquitectura de borde real | 1199 | 783 | andamiaje-generico, cola-tras-cierre |
+| react / 6 | Tema 3: Optimistic updates | 1179 | 779 | bloque-repetido, cola-tras-cierre |
 
 ## Cómo se corrige
 
@@ -81,4 +82,4 @@ defectos detectados tampoco acredita haber sido comprendida.
 4. `--strict` compara contra `docs/lesson-substance-baseline.json`: ningún
    tema nuevo puede nacer con estos defectos.
 
-Huella del contenido: `ec2bd69128a8e378a8f7d10dffab2dc2a9dcd171ec5d0ad26126a680bcb460bd`
+Huella del contenido: `1ad463b2b545e36f2118cace0b19d39e323e4c33f89e8e0fc19f3ac5a2a499e5`

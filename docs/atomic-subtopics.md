@@ -2,7 +2,7 @@
 
 > Auditoría estructural. Un encabezado o criterio detectado no demuestra que el ejemplo se haya ejecutado ni que la explicación sea pedagógicamente suficiente.
 
-Temas conformes a cuatro pasos: **44/1185**. Tracks inventariados: **14**.
+Temas conformes a cuatro pasos: **58/1185**. Tracks inventariados: **14**.
 
 | Track | Temas conformes | Temas inventariados | Subtemas detectados | Subtemas con estructura completa |
 |---|---:|---:|---:|---:|
@@ -13,7 +13,7 @@ Temas conformes a cuatro pasos: **44/1185**. Tracks inventariados: **14**.
 | flutter | 1 | 106 | 3 | 3 |
 | foundations | 0 | 99 | 0 | 0 |
 | ios | 0 | 56 | 0 | 0 |
-| java | 27 | 101 | 83 | 83 |
+| java | 41 | 101 | 125 | 125 |
 | javascript | 0 | 88 | 0 | 0 |
 | kotlin-multiplatform | 0 | 56 | 0 | 0 |
 | node | 2 | 83 | 6 | 6 |
@@ -761,20 +761,6 @@ Temas conformes a cuatro pasos: **44/1185**. Tracks inventariados: **14**.
 - M20 ### Tema 11: Streams paralelos: comparar antes de acelerarlos: tiene 0 subtemas
 - M20 ### Tema 12: Pureza y efectos: calcular separado de guardar o imprimir: tiene 0 subtemas
 - M20 ### Tema 13: Flow API: publicar datos con demanda y cierre: tiene 0 subtemas
-- M5 ### Tema 5: Structured Concurrency (StructuredTaskScope, Java 25): tiene 0 subtemas
-- M5 ### Tema 6: Scoped Values frente a ThreadLocal (Java 25): tiene 0 subtemas
-- M5 ### Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos: tiene 0 subtemas
-- M6 ### Tema 1: NIO.2 — Path y Files: tiene 0 subtemas
-- M6 ### Tema 2: Serialización con Jackson: tiene 0 subtemas
-- M6 ### Tema 3: Archivos grandes y recursos del classpath: tiene 0 subtemas
-- M7 ### Tema 1: record — modelos inmutables sin boilerplate: tiene 0 subtemas
-- M7 ### Tema 2: sealed — jerarquías cerradas y exhaustividad: tiene 0 subtemas
-- M7 ### Tema 3: Pattern matching exhaustivo y para instanceof: tiene 0 subtemas
-- M7 ### Tema 4: Unnamed variables y patterns (_, Java 22): tiene 0 subtemas
-- M8 ### Tema 1: pom.xml vs build.gradle.kts: tiene 0 subtemas
-- M8 ### Tema 2: Ciclo de vida de build y scopes: tiene 0 subtemas
-- M8 ### Tema 3: Proyectos multi-módulo: tiene 0 subtemas
-- M8 ### Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas: tiene 0 subtemas
 - M9 ### Tema 1: JUnit 5 — anotaciones y ciclo de vida: tiene 0 subtemas
 - M9 ### Tema 2: Mockito — aislar dependencias: tiene 0 subtemas
 - M9 ### Tema 3: Tests parametrizados y cobertura: tiene 0 subtemas

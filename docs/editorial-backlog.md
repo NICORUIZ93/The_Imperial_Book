@@ -9,15 +9,15 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | Criterio | Cubierto | Pendiente |
 |---|---:|---:|
 | Explicación | 1185 | 0 |
-| Código | 1185 | 0 |
+| Código | 1181 | 4 |
 | Ruta | 1185 | 0 |
-| Ejecución | 1170 | 15 |
+| Ejecución | 1158 | 27 |
 | Resultado | 1183 | 2 |
-| Modificación | 1173 | 12 |
-| Conexión con un proyecto | 1160 | 25 |
-| Modelo mental | 1185 | 0 |
-| Límites | 1165 | 20 |
-| **Perfil de criterios detectado** | **1146** | **39** |
+| Modificación | 1161 | 24 |
+| Conexión con un proyecto | 1149 | 36 |
+| Modelo mental | 1175 | 10 |
+| Límites | 1157 | 28 |
+| **Perfil de criterios detectado** | **1132** | **53** |
 
 ## Prioridad por track
 
@@ -30,7 +30,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | flutter | 106 | 0 | 0 | 0 | 0 | 0 | 1 | 1 |
 | foundations | 99 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ios | 56 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| java | 101 | 0 | 0 | 10 | 0 | 6 | 13 | 10 |
+| java | 101 | 4 | 0 | 22 | 0 | 18 | 24 | 18 |
 | javascript | 88 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | kotlin-multiplatform | 56 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | node | 83 | 0 | 0 | 0 | 0 | 1 | 2 | 1 |
@@ -61,6 +61,20 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 - [java · módulo 20](../web/public/content/java/modulo-20.md) · Tema 11: Streams paralelos: comparar antes de acelerarlos: ejecución, conexión con un proyecto, límites.
 - [java · módulo 20](../web/public/content/java/modulo-20.md) · Tema 12: Pureza y efectos: calcular separado de guardar o imprimir: ejecución, conexión con un proyecto, límites.
 - [java · módulo 20](../web/public/content/java/modulo-20.md) · Tema 13: Flow API: publicar datos con demanda y cierre: ejecución, conexión con un proyecto.
+- [java · módulo 5](../web/public/content/java/modulo-5.md) · Tema 5: Structured Concurrency (StructuredTaskScope, Java 25): modificación, conexión con un proyecto, modelo mental, límites.
+- [java · módulo 5](../web/public/content/java/modulo-5.md) · Tema 6: Scoped Values frente a ThreadLocal (Java 25): ejecución, modificación, conexión con un proyecto, modelo mental.
+- [java · módulo 5](../web/public/content/java/modulo-5.md) · Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos: ejecución, modificación.
+- [java · módulo 6](../web/public/content/java/modulo-6.md) · Tema 1: NIO.2 — Path y Files: ejecución, modificación.
+- [java · módulo 6](../web/public/content/java/modulo-6.md) · Tema 2: Serialización con Jackson: ejecución, modificación, conexión con un proyecto.
+- [java · módulo 6](../web/public/content/java/modulo-6.md) · Tema 3: Archivos grandes y recursos del classpath: ejecución, modificación, límites.
+- [java · módulo 7](../web/public/content/java/modulo-7.md) · Tema 1: record — modelos inmutables sin boilerplate: ejecución, conexión con un proyecto, modelo mental, límites.
+- [java · módulo 7](../web/public/content/java/modulo-7.md) · Tema 2: sealed — jerarquías cerradas y exhaustividad: ejecución, modificación, conexión con un proyecto, modelo mental, límites.
+- [java · módulo 7](../web/public/content/java/modulo-7.md) · Tema 3: Pattern matching exhaustivo y para instanceof: ejecución, modificación, conexión con un proyecto, modelo mental, límites.
+- [java · módulo 7](../web/public/content/java/modulo-7.md) · Tema 4: Unnamed variables y patterns (_, Java 22): ejecución, modificación, conexión con un proyecto, modelo mental, límites.
+- [java · módulo 8](../web/public/content/java/modulo-8.md) · Tema 1: pom.xml vs build.gradle.kts: código, modificación, conexión con un proyecto, modelo mental, límites.
+- [java · módulo 8](../web/public/content/java/modulo-8.md) · Tema 2: Ciclo de vida de build y scopes: código, ejecución, modificación, conexión con un proyecto, modelo mental.
+- [java · módulo 8](../web/public/content/java/modulo-8.md) · Tema 3: Proyectos multi-módulo: código, ejecución, conexión con un proyecto, modelo mental, límites.
+- [java · módulo 8](../web/public/content/java/modulo-8.md) · Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas: código, ejecución, modificación, conexión con un proyecto, modelo mental.
 - [node · módulo 14](../web/public/content/node/modulo-14.md) · Tema 7: Kafka desde Node: clave, grupo consumidor y offset: conexión con un proyecto, límites.
 - [node · módulo 14](../web/public/content/node/modulo-14.md) · Tema 8: RabbitMQ desde Node: exchange, cola y confirmaciones: modificación, conexión con un proyecto.
 - [spring-boot · módulo 10](../web/public/content/spring-boot/modulo-10.md) · Tema 1: Config Server y service discovery: límites.

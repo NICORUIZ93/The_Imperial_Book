@@ -5,251 +5,283 @@
 
 ### Tema 1: pom.xml vs build.gradle.kts
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás generar un proyecto Maven desde cero y declarar una dependencia externa fijada por versión. Prerrequisitos: JDK 25, Maven o Gradle y un editor. Comprueba java --version y mvn --version.
+**Por qué importa:** el build describe cómo cualquier persona del equipo compila el mismo programa y obtiene sus dependencias.
 
-#### Paso 2 · Contexto y caso real
-Un equipo necesita compilar, probar y publicar el mismo artefacto en su máquina local y en CI, con dependencias exactamente reproducibles, no versiones que puedan resolver a un artefacto distinto según el día.
+#### Subtema 1.1: Compila una clase con Maven · 10 min
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Maven declara dependencias en XML estructurado (`pom.xml`); Gradle las declara con su Kotlin DSL, más conciso y programable. La analogía: un formulario impreso con casillas fijas (Maven) frente a una hoja de cálculo programable con fórmulas (Gradle).
+**1. Contexto**
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía. El mismo proyecto se crea con cualquiera de las dos herramientas:
-```bash
-# Maven
-mkdir ejemplo-maven-quickstart
-cd ejemplo-maven-quickstart
-mvn -B archetype:generate -DgroupId=academia.build -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-cd app
-mvn test
-```
-```bash
-# Gradle (equivalente)
-mkdir ejemplo-gradle-quickstart && cd ejemplo-gradle-quickstart
-gradle init --type java-application --dsl kotlin --test-framework junit-jupiter --project-name app --package academia.build
-./gradlew test
-```
-`mvn` es el comando que ejecuta Maven (aquí, `archetype:generate` crea un proyecto desde una plantilla, y `test` corre las pruebas); `gradle init` + `./gradlew test` hace lo mismo en Gradle. Agrega `jackson-databind` fijada a una versión exacta —en `pom.xml` con `<dependency>` o en `build.gradle.kts` con `implementation("...")`— y ejecuta de nuevo `mvn test` / `./gradlew test`. (Equivalencias completas en el Tema 4.)
+Un proyecto necesita reproducir su compilación en tu portátil y en CI.
 
-#### Paso 5 · Práctica guiada
-Pista: fija deliberadamente una versión inexistente de `jackson-databind` (por ejemplo `99.99.99`) para provocar un fallo de resolución de dependencias; lee el mensaje de Maven, que identifica exactamente qué versión no pudo resolver. Resultado esperado: restaurar una versión real hace que el build vuelva a estar verde.
+**2. Hazlo tú**
 
-#### Paso 6 · Práctica independiente
-Crea el mismo proyecto pero con Gradle (`gradle init`) y declara la misma dependencia en `build.gradle.kts`; compara ambas sintaxis lado a lado.
+Crea `pom.xml` con `groupId` `academia`, `artifactId` `rutas`, versión `1.0` y `maven.compiler.release` `25`. Crea `src/main/java/Saludo.java` con `public class Saludo { public static void main(String[] args) { System.out.println("Ruta lista"); } }`. Ejecuta `mvn package` y `java -cp target/classes Saludo`.
 
-#### Paso 7 · Cierre y evidencia
-Guarda ambos proyectos (Maven y Gradle), la dependencia fijada y el fallo de resolución provocado; como siguiente paso estudia el ciclo de vida de build. Errores comunes: versiones flotantes, scopes incorrectos, plugin sin fijar y módulos acoplados circularmente. Fuentes oficiales: https://maven.apache.org/guides/ y https://docs.gradle.org/current/userguide/.
-**¿Por qué es importante?** Porque un build reproducible es parte del producto y de la cadena de suministro.
-**Evidencia de aprendizaje:** entrega build verde, fallo corregido, árbol multi-módulo y explicación.
-**Conceptos clave:** declaración de dependencias, XML declarativo frente a DSL de Kotlin.
+**Resultado esperado:** Maven compila y aparece `Ruta lista`.
 
-Fijar versiones exactas de cada dependencia es un requisito del proyecto integrador de este track: un build que resuelve a una versión distinta en cada máquina no es reproducible ni auditable.
+**Fallo deliberado:** cambia el release a un JDK no instalado. **Diagnóstico:** Maven no encuentra ese compilador; compara `mvn --version` con el JDK activo.
 
-**Cuándo no usarlo:** para un script de un solo archivo sin dependencias externas, ni Maven ni Gradle aportan nada; `java` ejecutando directamente el archivo (sin build tool) es suficiente y más simple.
+**3. Entiende**
 
-Maven declara dependencias en un archivo `pom.xml` estructurado en XML: `<dependency><groupId>com.fasterxml.jackson.core</groupId><artifactId>jackson-databind</artifactId><version>2.17.0</version></dependency>`, un formato completamente declarativo donde el orden de las secciones sigue una convención estricta impuesta por Maven, con relativamente poca flexibilidad para lógica de configuración condicional o dinámica dentro del propio archivo de configuración.
+`pom.xml` declara coordenadas, dependencias, plugins y opciones del proyecto en XML.
 
-Gradle, usando su Kotlin DSL, declara las mismas dependencias con una sintaxis considerablemente más concisa (`implementation("com.fasterxml.jackson.core:jackson-databind:2.17.0")`) y, al ser efectivamente código Kotlin ejecutable (no solo datos declarativos estáticos), permite expresar lógica de configuración condicional o programática cuando resulta necesaria (por ejemplo, aplicar cierta configuración solo bajo ciertas condiciones específicas del entorno de build), una flexibilidad que el XML puramente declarativo de Maven no ofrece con la misma naturalidad, aunque a cambio de una curva de aprendizaje inicial ligeramente mayor para quien no está familiarizado con Kotlin como lenguaje de configuración.
+**4. Cierra**
 
-**Analogía:** `pom.xml` es como un formulario impreso con casillas fijas y un orden estricto predefinido, apropiado para casos estándar pero rígido ante necesidades especiales; el DSL de Gradle es como una hoja de cálculo programable donde se pueden escribir fórmulas y lógica condicional según se necesite, ofreciendo mayor flexibilidad a costa de requerir familiaridad con su sintaxis de programación.
+Conserva `pom.xml` y la salida de Maven.
 
-**¿Por qué es importante?** Gradle (Kotlin DSL) ofrece mayor flexibilidad para lógica de configuración condicional que el XML puramente declarativo de Maven, a cambio de una curva de aprendizaje ligeramente mayor y menor previsibilidad estructural que la rigidez estándar de Maven.
+#### Subtema 1.2: Declara el mismo proyecto con Gradle · 10 min
 
-**Configuración del ejemplo:**
+**1. Contexto**
 
-```xml
-<dependencies>
-  <dependency>
-    <groupId>com.fasterxml.jackson.core</groupId>
-    <artifactId>jackson-databind</artifactId>
-    <version>2.17.0</version>
-  </dependency>
-</dependencies>
-```
-```kotlin
-dependencies {
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.17.0")
-    testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
-}
-```
+El equipo compara una segunda herramienta de build para el mismo código Java.
+
+**2. Hazlo tú**
+
+En una carpeta nueva crea `settings.gradle.kts` con `rootProject.name = "rutas"` y `build.gradle.kts` con `plugins { application }`, `java { toolchain { languageVersion.set(JavaLanguageVersion.of(25)) } }`, `application { mainClass.set("Saludo") }`. Copia `src/main/java/Saludo.java`. Ejecuta `gradle wrapper` y `./gradlew run`.
+
+**Resultado esperado:** sale `Ruta lista`; el wrapper fija la versión de Gradle usada por el proyecto.
+
+**Fallo deliberado:** cambia `mainClass` por `SaludoInexistente`. **Diagnóstico:** Gradle puede compilar la fuente, pero no puede iniciar una clase principal que no existe.
+
+**3. Entiende**
+
+Gradle usa Kotlin DSL; el wrapper permite que CI y el equipo usen la misma versión de Gradle.
+
+**4. Cierra**
+
+Compara las instrucciones Maven y Gradle necesarias para compilar y arrancar.
+
+#### Subtema 1.3: Fija una dependencia directa · 10 min
+
+**1. Contexto**
+
+La aplicación necesita Jackson para convertir un objeto de entrega a JSON.
+
+**2. Hazlo tú**
+
+En `pom.xml` declara Jackson Databind `2.22.4`; en el build Gradle declara `implementation("com.fasterxml.jackson.core:jackson-databind:2.22.4")`. Crea `src/main/java/Entrega.java` que importe `ObjectMapper` y serialice `Map.of("guia", "RT-1")`. Corre `mvn package` y `./gradlew build` en sus carpetas correspondientes.
+
+**Resultado esperado:** ambos builds resuelven la misma versión y compilan el import de Jackson.
+
+**Fallo deliberado:** usa `99.99.99`. **Diagnóstico:** el repositorio no ofrece esa versión; restaura una versión publicada.
+
+**3. Entiende**
+
+Una dependencia directa debe tener versión controlada. Las transitivas que trae esa librería se muestran con `mvn dependency:tree` o `./gradlew dependencies`.
+
+**4. Cierra**
+
+Guarda el árbol de dependencias de una herramienta. Fuentes: [guía Maven](https://maven.apache.org/guides/) y [manual Gradle](https://docs.gradle.org/current/userguide/).
 
 ### Tema 2: Ciclo de vida de build y scopes
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás demostrar que una dependencia con scope de test no llega al artefacto final de producción. Prerrequisitos: JDK 25, Maven y un editor. Comprueba java --version y mvn --version.
+**Por qué importa:** una dependencia de prueba no debe filtrarse al artefacto de producción.
 
-#### Paso 2 · Contexto y caso real
-Un equipo descubre en una auditoría de seguridad que su `.jar` de producción incluye una librería de testing con una vulnerabilidad conocida, porque alguien declaró esa dependencia sin scope y quedó embebida en el artefacto que se despliega.
+#### Subtema 2.1: Sigue las fases de Maven · 10 min
 
-#### Paso 3 · Teoría, modelo mental y analogía
-El ciclo de vida de Maven encadena fases obligatorias (`clean compile test package`); cada fase implica las anteriores. El scope de una dependencia decide en qué fases participa: `test` la limita a compilación y ejecución de pruebas, sin incluirla en el paquete final. La analogía: una línea de producción donde pedir el producto empaquetado implica que ya pasó por control de calidad, pero las herramientas de control de calidad no viajan dentro de la caja.
+**1. Contexto**
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
-```bash
-mkdir ejemplo-scope-test
-cd ejemplo-scope-test
-mvn -B archetype:generate -DgroupId=academia.build -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-cd app
-mvn clean compile test package
-```
-```bash
-# Gradle (equivalente): el ciclo clean + build prueba y empaqueta
-./gradlew clean build
-```
-`mvn clean compile test package` ejecuta las cuatro fases en orden; `./gradlew clean build` cubre el mismo ciclo en Gradle. Revisa el `.jar` generado (`target/app-1.0-SNAPSHOT.jar` en Maven; `build/libs/*.jar` en Gradle) con `jar tf <ruta>` y confirma que las clases de JUnit (scope `test` / `testImplementation`) no aparecen en el listado; el código fuente generado vive en `src/main/java/academia/build/App.java`.
+Quieres saber qué ejecuta Maven cuando empaqueta una aplicación.
 
-#### Paso 5 · Práctica guiada
-Pista: cambia deliberadamente el scope de JUnit de `test` a la ausencia de scope (compile por defecto) y reempaqueta. **Fallo deliberado:** al provocar este cambio, las clases de JUnit se filtran al jar de producción — un error real de empaquetado que infla el artefacto y mezcla dependencias de prueba con las de ejecución. Diagnostícalo comparando `jar tf` antes y después: la presencia de `org/junit/...` en el jar final es la señal del problema. Resultado esperado: restaurar `scope=test` deja el jar sin las clases de prueba, confirmando qué hace el scope en la práctica.
-#### Paso 6 · Práctica independiente
-Agrega una segunda dependencia real (por ejemplo `jackson-databind`) sin scope, verifica que sí queda en el jar por ser necesaria en runtime, y documenta la diferencia frente a una dependencia de test.
+**2. Hazlo tú**
 
-#### Paso 7 · Cierre y evidencia
-Guarda ambos listados de `jar tf` (con y sin scope test) y el pom.xml modificado; como siguiente paso divide el proyecto en módulos. Errores comunes: declarar dependencias de test sin scope, asumir que `package` no ejecuta `test` antes, y omitir `clean` entre builds con cambios de dependencias. Fuentes oficiales: https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html.
-**¿Por qué es importante?** Porque un artefacto de producción con dependencias de testing embebidas aumenta su superficie de ataque sin necesidad.
-**Evidencia de aprendizaje:** entrega dos listados de `jar tf` comparados y la explicación de la diferencia.
-**Conceptos clave:** fases secuenciales, `mvn clean compile test package`, dependencias por scope.
+Usa `src/main/java/Saludo.java` del Tema 1. Ejecuta `mvn clean compile test package` y después lista el resultado con `jar tf target/rutas-1.0.jar`.
 
-Maven define un ciclo de vida de build compuesto por fases secuenciales estándar y predefinidas: `mvn clean compile test package` ejecuta, en orden, la limpieza de artefactos de builds anteriores, la compilación del código fuente, la ejecución de las pruebas, y el empaquetado del resultado final (típicamente un `.jar`), donde cada fase posterior implica automáticamente la ejecución de todas las fases anteriores necesarias (invocar `package` directamente ejecuta también `compile` y `test` primero, sin necesidad de invocarlas explícitamente por separado).
+**Resultado esperado:** aparece el `.class` dentro del JAR; Maven ejecuta cada fase anterior al llegar a `package`.
 
-Las dependencias declaradas para un proyecto pueden restringirse a un scope específico según en qué momento del ciclo de vida son necesarias: `testImplementation` en Gradle (o `<scope>test</scope>` en Maven) declara que una dependencia (como JUnit) es necesaria únicamente para compilar y ejecutar las pruebas, no para el artefacto final de producción, garantizando que esa dependencia no se incluya en el `.jar` final que efectivamente se despliega, reduciendo su tamaño y evitando exponer dependencias de testing (que podrían tener sus propias vulnerabilidades de seguridad o simplemente peso innecesario) en el artefacto que efectivamente llega a producción.
+**Fallo deliberado:** borra el archivo de origen antes de compilar. **Diagnóstico:** el build falla en compilación antes de empaquetar; revisa la primera fase fallida.
 
-**Analogía:** el ciclo de vida de build es como una línea de producción con etapas secuenciales obligatorias (limpiar, ensamblar, probar, empaquetar), donde solicitar el producto empaquetado final automáticamente implica que todas las etapas anteriores necesarias ya se completaron; un scope de dependencia es como especificar que cierta herramienta solo se necesita durante el control de calidad interno de la línea de producción, sin que esa herramienta específica se incluya dentro de la caja final que efectivamente se envía al cliente.
+**3. Entiende**
 
-**¿Por qué es importante?** Separar dependencias por scope (compile, test, runtime) evita incluir dependencias innecesarias en el artefacto final de producción, reduciendo su tamaño y su superficie de exposición a vulnerabilidades no relevantes para producción.
+`clean`, `compile`, `test` y `package` son fases del ciclo Maven; `package` ejecuta las anteriores del mismo ciclo.
 
-**Prueba en terminal:**
+**4. Cierra**
 
-```bash
-mvn clean compile test package   # ciclo de vida: limpia, compila, prueba, empaqueta
-```
+Guarda el listado del JAR y el primer error deliberado.
 
-Verificar los scopes de dependencia antes de empaquetar es un paso de calidad que el proyecto integrador de este track exige en su pipeline de build.
+#### Subtema 2.2: Mantén JUnit en test scope · 10 min
 
-**Cuándo no usarlo:** en un prototipo descartable de un solo archivo sin dependencias de test, distinguir scopes es sobreingeniería; solo importa una vez que hay una suite de pruebas real.
+**1. Contexto**
+
+JUnit solo se necesita para ejecutar pruebas, no para correr el programa.
+
+**2. Hazlo tú**
+
+Añade JUnit Jupiter a `pom.xml` con `<scope>test</scope>`, crea `src/test/java/SaludoTest.java` con un test pequeño y ejecuta `mvn test` y `mvn package`.
+
+**Resultado esperado:** JUnit corre durante las pruebas, mientras `Saludo` funciona con `java -cp target/classes Saludo`.
+
+**Fallo deliberado:** elimina `<scope>test</scope>` y prueba a empaquetar. **Diagnóstico:** la dependencia pasa al classpath de producción; devuelve el scope `test`.
+
+**3. Entiende**
+
+El scope indica cuándo una dependencia está disponible. El JAR Maven normal no empaqueta por sí solo todas sus dependencias; verifica el tipo de artefacto antes de sacar conclusiones sobre su contenido.
+
+**4. Cierra**
+
+Guarda el `pom.xml` final y la salida de `mvn test`.
+
+#### Subtema 2.3: Inspecciona scopes en Gradle · 10 min
+
+**1. Contexto**
+
+La misma regla se debe expresar en el build Gradle.
+
+**2. Hazlo tú**
+
+En `build.gradle.kts` agrega JUnit a `testImplementation`, activa `useJUnitPlatform()` para `tasks.test` y coloca una prueba en `src/test/java/SaludoTest.java`. Ejecuta `./gradlew test` y `./gradlew dependencies --configuration runtimeClasspath`.
+
+**Resultado esperado:** JUnit está en `testRuntimeClasspath`, no en `runtimeClasspath`.
+
+**Fallo deliberado:** declara JUnit con `implementation`. **Diagnóstico:** aparece en runtime; usa `testImplementation` para dependencia exclusiva de pruebas.
+
+**3. Entiende**
+
+`testImplementation` restringe la librería de prueba a las configuraciones del test.
+
+**4. Cierra**
+
+Anota una diferencia entre `implementation` y `testImplementation`.
 
 ### Tema 3: Proyectos multi-módulo
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás dividir un proyecto Maven en dos módulos (`core` y `api`) con una dependencia explícita entre ellos. Prerrequisitos: JDK 25, Maven y un editor. Comprueba java --version y mvn --version.
+**Por qué importa:** separar contratos y aplicación ayuda a detectar dependencias circulares antes de crecer el producto.
 
-#### Paso 2 · Contexto y caso real
-Un proyecto de un solo módulo crece hasta que cualquier cambio en la lógica de dominio obliga a recompilar y volver a probar toda la capa HTTP también; separar `core` de `api` en módulos de build distintos hace explícito qué depende de qué y permite compilar y probar cada uno por separado.
+#### Subtema 3.1: Separa modelo y aplicación con Maven · 10 min
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Un proyecto multi-módulo agrupa subproyectos bajo un POM padre; cada módulo declara explícitamente sus propias dependencias, incluidas las dependencias hacia otros módulos del mismo proyecto. La analogía: departamentos con presupuesto propio que deben solicitar formalmente los recursos de otro departamento, en vez de compartirlo todo automáticamente.
+**1. Contexto**
 
-#### Paso 4 · Demostración guiada desde cero
-**Actualiza** `core/src/main/java/academia/build/App.java` (generado por el archetype) agregando un método público `saludo()` que `api` podrá invocar una vez declarada la dependencia explícita entre módulos.
+La aplicación y los tipos de dominio cambian a ritmos distintos, pero comparten el mismo contrato.
 
-Parte de una carpeta vacía:
-```bash
-mkdir ejemplo-multimodulo && cd ejemplo-multimodulo
-mvn -B archetype:generate -DgroupId=academia.build -DartifactId=core -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-mvn -B archetype:generate -DgroupId=academia.build -DartifactId=api -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-```
-Crea un `pom.xml` raíz con `<modules><module>core</module><module>api</module></modules>`, y en `api/pom.xml` agrega una `<dependency>` hacia `academia.build:core`. Ejecuta `mvn -pl api -am compile` desde la raíz: `-am` (also-make) construye primero `core` porque `api` depende de él.
+**2. Hazlo tú**
 
-#### Paso 5 · Práctica guiada
-Pista: elimina deliberadamente la dependencia de `api` hacia `core` en su pom.xml y compila `api` referenciando una clase de `core`; provocarás un fallo de compilación por símbolo no encontrado. Resultado esperado: restaurar la dependencia explícita corrige el fallo.
-#### Paso 6 · Práctica independiente
-Agrega un tercer módulo `infra` que dependa de `api`, y documenta por qué `core` no debería depender nunca de `infra` ni de `api`.
+Crea un `pom.xml` padre con packaging `pom` y módulos `modelo` y `app`. Crea `modelo/pom.xml` con artefacto `modelo`, `modelo/src/main/java/Guia.java`, y `app/pom.xml` que dependa de `academia:modelo:1.0`. Crea `app/src/main/java/Main.java` que use `Guia`. Ejecuta `mvn -q -pl app -am package` desde la raíz.
 
-#### Paso 7 · Cierre y evidencia
-Guarda la estructura de los tres módulos, el pom.xml raíz y el fallo de compilación provocado al romper la dependencia; como siguiente paso conecta el multi-módulo a un pipeline de CI. Errores comunes: dependencias circulares entre módulos, olvidar `-am` al compilar un módulo específico, y permitir que `core` dependa de módulos que deberían depender de él. Fuentes oficiales: https://maven.apache.org/guides/mini/guide-multiple-modules.html.
-**¿Por qué es importante?** Porque separar módulos de build impone, a nivel de herramienta, los mismos límites arquitectónicos que el equipo diseñó a nivel de capas.
-**Evidencia de aprendizaje:** entrega los tres módulos, el fallo de compilación provocado y su corrección.
-**Conceptos clave:** separación de responsabilidades entre módulos, dependencias explícitas entre ellos.
+**Resultado esperado:** Maven compila primero `modelo` y luego `app`.
 
-Un proyecto multi-módulo divide una aplicación grande en subproyectos independientes que se compilan como parte de un mismo build coordinado, pero con límites explícitos entre ellos: un módulo `core` conteniendo la lógica de dominio central, y un módulo `api` que depende de `core` para exponer esa lógica a través de HTTP, con la configuración raíz compartida (`build.gradle.kts` en la raíz del proyecto) coordinando cómo se construyen ambos módulos juntos, mientras cada módulo mantiene su propio conjunto de dependencias específicas, declaradas explícitamente según lo que ese módulo particular efectivamente necesita, sin heredar automáticamente dependencias de otros módulos que no declaró explícitamente requerir.
+**Fallo deliberado:** elimina la dependencia `modelo` del POM de `app`. **Diagnóstico:** el tipo no está disponible en el classpath de ese módulo.
 
-Esta estructura refleja a nivel de proyecto completo el mismo principio de límites explícitos estudiado para JPMS en el Módulo 10: separar `core` de `api` en módulos de build distintos (no solo en paquetes distintos dentro de un único módulo) impone una verificación adicional a nivel de herramienta de build de que `api` efectivamente declara su dependencia hacia `core` de forma explícita, y previene que código de `core` acceda accidentalmente a tipos definidos únicamente en `api` (una dirección de dependencia que normalmente no tendría sentido en una arquitectura por capas bien diseñada), dado que `core`, al no declarar una dependencia hacia `api`, simplemente no tiene acceso a su código en tiempo de compilación.
+**3. Entiende**
 
-**Analogía:** un proyecto multi-módulo es como una empresa organizada en departamentos separados con presupuestos y recursos propios declarados explícitamente, donde un departamento que necesita recursos de otro debe solicitarlos formalmente (declarar la dependencia), en vez de que todos los departamentos compartan automáticamente todos los recursos de todos los demás sin ninguna distinción ni control.
+El POM padre ordena módulos; la dependencia entre módulos declara el flujo del build.
 
-**¿Por qué es importante?** Un proyecto multi-módulo impone límites explícitos de dependencia entre subproyectos, verificados por la herramienta de build, previniendo dependencias accidentales en direcciones no deseadas dentro de la arquitectura del proyecto.
+**4. Cierra**
 
-**Diagrama:**
+Dibuja con flechas qué módulo necesita a cuál.
 
-```mermaid
-flowchart LR
-    API["app-api"] --> APP["app-application"]
-    APP --> CORE["app-domain"]
-    INFRA["app-infrastructure"] --> APP
-    API --> INFRA
-```
+#### Subtema 3.2: Encuentra y rompe un ciclo · 10 min
 
-La estructura `core`/`api` de este tema es, en miniatura, la misma separación que el Proyecto integrador (Módulo 13) exige entre la lógica de dominio y la capa que la expone.
+**1. Contexto**
 
-**Cuándo no usarlo:** para una aplicación pequeña de un solo equipo y despliegue único, un multi-módulo añade sobrecarga de configuración sin beneficio; un solo módulo con paquetes bien organizados es suficiente hasta que el proyecto realmente lo justifique.
+Si el modelo depende de la aplicación y la aplicación del modelo, el build no puede ordenar una compilación limpia.
+
+**2. Hazlo tú**
+
+En `app/src/main/java/Main.java` y el ejemplo `modelo`/`app`, añade una dependencia inversa solo para observar el ciclo y ejecuta `mvn validate`. Luego quítala. Busca las dependencias declaradas con `mvn dependency:tree`.
+
+**Resultado esperado:** el ciclo es visible y se elimina al dejar el contrato en `modelo`.
+
+**Fallo deliberado:** resuelve la dependencia inversa copiando clases entre módulos. **Diagnóstico:** duplicar contratos crea divergencia; mueve el contrato compartido a un módulo que no dependa de ambos lados.
+
+**3. Entiende**
+
+Un grafo de dependencias dirigido debe tener un orden de construcción; los ciclos borran ese orden.
+
+**4. Cierra**
+
+Guarda el árbol antes y después de eliminar el ciclo.
+
+#### Subtema 3.3: Construye solo lo que necesita cambio · 10 min
+
+**1. Contexto**
+
+En CI un cambio pequeño de `app` no debería obligar a reconstruir a mano cada componente sin relación.
+
+**2. Hazlo tú**
+
+Modifica `app/src/main/java/Main.java`, ejecuta `mvn -pl app -am test` y observa qué módulos se construyen. Ejecuta `mvn -pl app test` para comparar si `modelo` ya está instalado en el repositorio local.
+
+**Resultado esperado:** `-am` incluye los módulos requeridos por `app` en el reactor actual.
+
+**Fallo deliberado:** omite `-am` cuando la dependencia local no está instalada. **Diagnóstico:** Maven no puede resolver el módulo hermano; incluye sus dependencias en el reactor.
+
+**3. Entiende**
+
+Los filtros de módulos aceleran tareas, pero el entorno debe contener o construir todas las dependencias necesarias.
+
+**4. Cierra**
+
+Registra el comando que usarías en CI para validar la app y sus dependencias.
 
 ### Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás construir el mismo proyecto con Maven y con Gradle, traducir cualquier comando de uno al otro con una tabla de equivalencias, y decidir cuál usar según el contexto. Prerrequisitos: JDK 25, Maven y Gradle instalados. Comprueba `java --version`, `mvn --version` y `gradle --version`.
+**Por qué importa:** elegir build requiere comparar resultados y mantenimiento, no solo la longitud de la configuración.
 
-#### Paso 2 · Contexto y caso real
-Casi todo proyecto Java que encontrarás usa Maven **o** Gradle, no los dos, y rara vez eliges tú: lo heredas. Un backend corporativo suele venir en Maven; un proyecto Android o Spring moderno, en Gradle. Saber leer y operar ambos —aunque prefieras uno— es lo que te permite entrar a cualquier repositorio sin quedarte bloqueado en el primer `./gradlew build` que no reconoces.
+#### Subtema 4.1: Ejecuta el mismo test en ambas herramientas · 10 min
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Maven y Gradle resuelven el mismo problema (compilar, resolver dependencias, probar, empaquetar) con dos filosofías: Maven es **convención sobre configuración** (estructura fija, XML declarativo, previsible); Gradle es **configuración programable** (Kotlin DSL, tareas componibles, caché incremental más agresiva). Ambos leen de los mismos repositorios (Maven Central), así que una misma dependencia se declara distinto pero resuelve el mismo artefacto.
+**1. Contexto**
 
-**Analogía:** es como conducir un coche automático (Maven: menos decisiones, comportamiento predecible) frente a uno manual (Gradle: más control y rendimiento, a cambio de aprender a usar el embrague). El destino es el mismo; cambia cómo llegas.
+El equipo debe saber si el proyecto entrega el mismo resultado tras migrar de build.
 
-**Tabla de equivalencias de comandos (referencia para todo el track):**
+**2. Hazlo tú**
 
-| Tarea | Maven | Gradle (Kotlin DSL) |
-|---|---|---|
-| Compilar | `mvn compile` | `./gradlew compileJava` |
-| Ejecutar pruebas | `mvn test` | `./gradlew test` |
-| Empaquetar (.jar) | `mvn package` | `./gradlew build` |
-| Limpiar artefactos | `mvn clean` | `./gradlew clean` |
-| Limpiar + empaquetar | `mvn clean package` | `./gradlew clean build` |
-| Correr un test | `mvn test -Dtest=MiTest` | `./gradlew test --tests MiTest` |
-| Saltar pruebas | `mvn package -DskipTests` | `./gradlew build -x test` |
-| Ver árbol de dependencias | `mvn dependency:tree` | `./gradlew dependencies` |
-| Instalar en repo local | `mvn install` | `./gradlew publishToMavenLocal` |
-| Ejecutar la app (Spring Boot) | `mvn spring-boot:run` | `./gradlew bootRun` |
+Usa la clase `src/main/java/Saludo.java` y el test `src/test/java/SaludoTest.java` en una carpeta Maven y otra Gradle. Corre `mvn clean test` y `./gradlew clean test`.
 
-> `./gradlew` (el *wrapper*) ejecuta la versión exacta de Gradle fijada en el proyecto, sin instalar nada global; su equivalente conceptual en Maven es `./mvnw`. Úsalos siempre en vez de `gradle`/`mvn` globales para builds reproducibles.
+**Resultado esperado:** las dos herramientas reportan la misma prueba aprobada.
 
-#### Paso 4 · Demostración guiada desde cero
-Construye el mismo proyecto dos veces, una con cada herramienta, en carpetas separadas:
+**Fallo deliberado:** cambia el texto esperado solo en uno de los proyectos. **Diagnóstico:** la diferencia es del código o expectativa, no del build; sincroniza la prueba.
 
-```bash
-# --- Con Maven ---
-mkdir ejemplo-dual-maven && cd ejemplo-dual-maven
-mvn -B archetype:generate -DgroupId=academia.build -DartifactId=app \
-  -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-cd app
-mvn clean test package          # limpia, prueba y empaqueta
-cd ../..
+**3. Entiende**
 
-# --- Con Gradle (mismo resultado) ---
-mkdir ejemplo-dual-gradle && cd ejemplo-dual-gradle
-gradle init --type java-application --dsl kotlin --test-framework junit-jupiter \
-  --project-name app --package academia.build
-./gradlew clean build           # limpia, prueba y empaqueta (equivalente)
-```
+Mismos fuentes y pruebas permiten que la comparación mida la herramienta, no dos aplicaciones distintas.
 
-**Resultado esperado:** ambos builds terminan en verde y producen un `.jar` (`target/app-1.0-SNAPSHOT.jar` en Maven; `app/build/libs/app.jar` en Gradle). Mismo código, misma dependencia resuelta desde Maven Central, dos rutas de salida distintas. **Fallo deliberado y diagnóstico:** en el proyecto Gradle ejecuta `mvn test` (el comando del otro sistema); falla con "no existe pom.xml". Confirma que cada herramienta solo entiende su propio archivo de build (`pom.xml` vs `build.gradle.kts`), y que por eso identificar cuál usa un repo es lo primero que haces al clonarlo.
+**4. Cierra**
 
-#### Paso 5 · Práctica guiada
-Pista: declara la misma dependencia (`jackson-databind`) en ambos proyectos —en `pom.xml` con el bloque `<dependency>` y en `build.gradle.kts` con `implementation("...")`— y ejecuta `mvn dependency:tree` y `./gradlew dependencies`. Compara cómo cada herramienta muestra el mismo árbol de dependencias resuelto.
+Guarda ambas salidas de test.
 
-#### Paso 6 · Práctica independiente
-Toma cualquier comando `mvn` de los temas anteriores de este módulo y tradúcelo a su equivalente Gradle usando la tabla del Paso 3; ejecútalo en tu proyecto Gradle y confirma que produce el mismo efecto. Entrega al menos tres pares de comandos equivalentes con su salida.
+#### Subtema 4.2: Compara dependencias resueltas · 10 min
 
-#### Paso 7 · Cierre y evidencia
-Guarda los dos proyectos (Maven y Gradle), los dos `.jar` generados y tu tabla de al menos tres comandos equivalentes verificados; como siguiente paso, cualquier tema del track que muestre un comando `mvn` ya sabes traducirlo a Gradle. Errores comunes: usar `gradle`/`mvn` global en vez del wrapper; buscar `target/` en un proyecto Gradle (está en `build/`); asumir que un comando de un sistema funciona en el otro. Fuentes oficiales: [Maven — Guides](https://maven.apache.org/guides/), [Gradle — User Manual](https://docs.gradle.org/current/userguide/userguide.html) y [Gradle — Migrating from Maven](https://docs.gradle.org/current/userguide/migrating_from_maven.html).
-**¿Por qué es importante?** Porque en un trabajo real no eliges la herramienta de build: la heredas del proyecto. Operar ambas con fluidez es lo que te hace productivo en cualquier repositorio Java desde el primer día.
-**Evidencia de aprendizaje:** entrega los dos proyectos construidos, ambos `.jar`, y tres comandos equivalentes Maven↔Gradle verificados.
-**Conceptos clave:** equivalencia de comandos, wrapper (`./gradlew`, `./mvnw`), convención (Maven) frente a configuración programable (Gradle).
+**1. Contexto**
 
-Este tema comparativo es la base para el proyecto integrador de este track: el build debe ser reproducible con la herramienta que el proyecto adopte, y la evidencia se entrega con el wrapper, no con una instalación global.
+Una migración puede cambiar una dependencia transitiva aunque el código fuente siga igual.
 
-**Cuándo no usarlo:** no mantengas los dos sistemas de build en paralelo en un mismo proyecto real (dos archivos de build que se desincronizan es una fuente de errores); elige uno. Este tema enseña ambos para que sepas leerlos, no para que los uses juntos en producción.
+**2. Hazlo tú**
+
+Declara la misma versión de Jackson en `pom.xml`, `build.gradle.kts` y el consumidor `src/main/java/Entrega.java`. Ejecuta `mvn dependency:tree` y `./gradlew dependencies --configuration runtimeClasspath`.
+
+**Resultado esperado:** la dependencia directa aparece en ambos reportes con la versión declarada.
+
+**Fallo deliberado:** fija Jackson en una versión diferente en Gradle. **Diagnóstico:** compara coordenadas y versión directa antes de atribuir diferencias a transitivas.
+
+**3. Entiende**
+
+El árbol completo incluye dependencias que llegan a través de otras librerías; mantener la misma directa no garantiza idéntico grafo total.
+
+**4. Cierra**
+
+Anota una diferencia encontrada en los árboles.
+
+#### Subtema 4.3: Decide con evidencia del equipo · 10 min
+
+**1. Contexto**
+
+El equipo mantiene un servicio durante años; la elección de build afecta a todo cambio futuro.
+
+**2. Hazlo tú**
+
+En `src/main/java/Saludo.java` verifica que la fuente es igual en ambos proyectos; en `docs/build-comparison.md` registra los comandos de test, duración observada localmente, dificultad de añadir una dependencia y versión fijada del wrapper. Ejecuta `mvn test` y `./gradlew test` antes de cerrar la nota.
+
+**Resultado esperado:** la recomendación incluye evidencia reproducible, no solo “XML vs Kotlin”.
+
+**Fallo deliberado:** recomienda una herramienta según una sola medición. **Diagnóstico:** repite la comparación en CI y cuenta la experiencia del equipo.
+
+**3. Entiende**
+
+Maven ofrece convenciones estrictas; Gradle da un DSL programable y wrapper. Ninguno es automáticamente más rápido para todo proyecto.
+
+**4. Cierra**
+
+Entrega la nota y la razón de la elección. Fuentes: [Maven](https://maven.apache.org/guides/) y [Gradle](https://docs.gradle.org/current/userguide/).
 
 ---
 

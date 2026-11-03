@@ -5,7 +5,7 @@
 **Proyecto continuo:** Motor de asignación de entregas.
 **Prerrequisito de entrada:** Fundamentos de programación; el módulo 0 comienza con JDK y terminal..
 **Duración objetivo:** temas de 20–45 minutos; cada tema se divide en 3–6 acciones de 5–15 minutos.
-**Estado estructural:** 27/101 temas migrados; auditoría estructural actualizada el 2026-11-03.
+**Estado estructural:** 41/101 temas migrados; auditoría estructural actualizada el 2026-11-03.
 
 ## Índice de módulos y temas
 
@@ -146,35 +146,77 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 4.1: Reproduce un retiro duplicado de forma controlada · 10 min
   - ✓ Subtema 4.2: Protege la operación completa con synchronized · 10 min
   - ✓ Subtema 4.3: Usa AtomicInteger para un contador · 10 min
-- [pendiente de migrar] Tema 5: Structured Concurrency (StructuredTaskScope, Java 25)
-- [pendiente de migrar] Tema 6: Scoped Values frente a ThreadLocal (Java 25)
-- [pendiente de migrar] Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos
+- [4 pasos] Tema 5: Structured Concurrency (StructuredTaskScope, Java 25)
+  - ✓ Subtema 5.1: Espera resultados de tareas relacionadas · 10 min
+  - ✓ Subtema 5.2: Propaga el fallo y cancela trabajo hermano · 10 min
+  - ✓ Subtema 5.3: Activa preview para la versión correcta · 10 min
+- [4 pasos] Tema 6: Scoped Values frente a ThreadLocal (Java 25)
+  - ✓ Subtema 6.1: Comparte contexto durante una llamada · 10 min
+  - ✓ Subtema 6.2: Anida un valor y vuelve al anterior · 10 min
+  - ✓ Subtema 6.3: Compara el ciclo de vida con ThreadLocal · 10 min
+- [4 pasos] Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos
+  - ✓ Subtema 7.1: Limita cuánto espera el hilo coordinador · 10 min
+  - ✓ Subtema 7.2: Haz que el trabajo responda a una interrupción · 10 min
+  - ✓ Subtema 7.3: Distingue timeout de CompletableFuture y cancelación real · 10 min
 
 ### Módulo 6: I/O, NIO.2 y serialización
 
 [Abrir lección completa](../web/public/content/java/modulo-6.md)
 
-- [pendiente de migrar] Tema 1: NIO.2 — Path y Files
-- [pendiente de migrar] Tema 2: Serialización con Jackson
-- [pendiente de migrar] Tema 3: Archivos grandes y recursos del classpath
+- [4 pasos] Tema 1: NIO.2 — Path y Files
+  - ✓ Subtema 1.1: Lee y escribe un archivo pequeño · 10 min
+  - ✓ Subtema 1.2: Rechaza una ruta que sale del directorio · 10 min
+  - ✓ Subtema 1.3: Recorre una carpeta y cierra el stream · 10 min
+- [4 pasos] Tema 2: Serialización con Jackson
+  - ✓ Subtema 2.1: Convierte un record a JSON y de vuelta · 10 min
+  - ✓ Subtema 2.2: Rechaza JSON mal formado · 10 min
+  - ✓ Subtema 2.3: Decide qué hacer con campos nuevos · 10 min
+- [4 pasos] Tema 3: Archivos grandes y recursos del classpath
+  - ✓ Subtema 3.1: Procesa un archivo línea por línea · 10 min
+  - ✓ Subtema 3.2: Carga un archivo empacado en el JAR · 10 min
+  - ✓ Subtema 3.3: Elige entre leer todo o transmitir · 10 min
 
 ### Módulo 7: Records, sealed classes y pattern matching
 
 [Abrir lección completa](../web/public/content/java/modulo-7.md)
 
-- [pendiente de migrar] Tema 1: record — modelos inmutables sin boilerplate
-- [pendiente de migrar] Tema 2: sealed — jerarquías cerradas y exhaustividad
-- [pendiente de migrar] Tema 3: Pattern matching exhaustivo y para instanceof
-- [pendiente de migrar] Tema 4: Unnamed variables y patterns (_, Java 22)
+- [4 pasos] Tema 1: record — modelos inmutables sin boilerplate
+  - ✓ Subtema 1.1: Construye un record de guía · 10 min
+  - ✓ Subtema 1.2: Comprueba igualdad por valor · 10 min
+  - ✓ Subtema 1.3: Produce una versión actualizada · 10 min
+- [4 pasos] Tema 2: sealed — jerarquías cerradas y exhaustividad
+  - ✓ Subtema 2.1: Declara estados permitidos · 10 min
+  - ✓ Subtema 2.2: Añade un estado con intención · 10 min
+  - ✓ Subtema 2.3: Distingue jerarquía cerrada de abierta · 10 min
+- [4 pasos] Tema 3: Pattern matching exhaustivo y para instanceof
+  - ✓ Subtema 3.1: Calcula una regla con switch · 10 min
+  - ✓ Subtema 3.2: Extrae el tipo con instanceof · 10 min
+  - ✓ Subtema 3.3: Compara con casteo clásico · 10 min
+- [4 pasos] Tema 4: Unnamed variables y patterns (_, Java 22)
+  - ✓ Subtema 4.1: Descarta un componente de record pattern · 10 min
+  - ✓ Subtema 4.2: Ignora una excepción sin ocultar el caso · 10 min
+  - ✓ Subtema 4.3: Escribe texto multilínea legible · 10 min
 
 ### Módulo 8: Build tools — Maven y Gradle
 
 [Abrir lección completa](../web/public/content/java/modulo-8.md)
 
-- [pendiente de migrar] Tema 1: pom.xml vs build.gradle.kts
-- [pendiente de migrar] Tema 2: Ciclo de vida de build y scopes
-- [pendiente de migrar] Tema 3: Proyectos multi-módulo
-- [pendiente de migrar] Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas
+- [4 pasos] Tema 1: pom.xml vs build.gradle.kts
+  - ✓ Subtema 1.1: Compila una clase con Maven · 10 min
+  - ✓ Subtema 1.2: Declara el mismo proyecto con Gradle · 10 min
+  - ✓ Subtema 1.3: Fija una dependencia directa · 10 min
+- [4 pasos] Tema 2: Ciclo de vida de build y scopes
+  - ✓ Subtema 2.1: Sigue las fases de Maven · 10 min
+  - ✓ Subtema 2.2: Mantén JUnit en test scope · 10 min
+  - ✓ Subtema 2.3: Inspecciona scopes en Gradle · 10 min
+- [4 pasos] Tema 3: Proyectos multi-módulo
+  - ✓ Subtema 3.1: Separa modelo y aplicación con Maven · 10 min
+  - ✓ Subtema 3.2: Encuentra y rompe un ciclo · 10 min
+  - ✓ Subtema 3.3: Construye solo lo que necesita cambio · 10 min
+- [4 pasos] Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas
+  - ✓ Subtema 4.1: Ejecuta el mismo test en ambas herramientas · 10 min
+  - ✓ Subtema 4.2: Compara dependencias resueltas · 10 min
+  - ✓ Subtema 4.3: Decide con evidencia del equipo · 10 min
 
 ### Módulo 9: Testing con JUnit 5 y Mockito
 
@@ -322,7 +364,7 @@ La tabla registra presencia de áreas en el inventario del track, no profundidad
 
 ### Huecos y límites reportados
 
-- El repositorio contiene 101 temas en 21 módulos; 27 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
+- El repositorio contiene 101 temas en 21 módulos; 41 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
 - No hay base para afirmar que el track esté completo: la comparación con la fuente de referencia está pendiente de revisión humana módulo por módulo.
 - Los elementos de la fuente que todavía deben verificarse de forma explícita están enumerados en la tabla anterior; cualquier técnica crítica que no tenga tema propio debe añadirse conservando el currículo base.
 - La ejecución de ejemplos, el comportamiento con brokers/plataformas reales y la calidad pedagógica humana se registran por separado.

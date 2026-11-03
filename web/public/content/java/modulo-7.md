@@ -5,285 +5,346 @@
 
 ### Tema 1: record — modelos inmutables sin boilerplate
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás modelar una entidad inmutable con `record`, con constructor compacto que valida sus invariantes. Prerrequisitos: JDK 25 y un editor. Comprueba java --version.
+**Por qué importa:** una guía de envío es un dato con valor; compararla por campos y proteger sus invariantes no debería exigir decenas de líneas repetidas.
 
-#### Paso 2 · Contexto y caso real
-Una guía de entrega (número, peso, estado) no debería cambiar sus datos una vez creada; cualquier "actualización" real debería producir una nueva instancia, nunca mutar la existente en un lugar donde otro código todavía la referencia.
+#### Subtema 1.1: Construye un record de guía · 10 min
 
-#### Paso 3 · Teoría, modelo mental y analogía
-`record Guia(String numero, double pesoKg) {}` genera automáticamente constructor, getters (`numero()`, `pesoKg()`), `equals`/`hashCode`/`toString`, sin boilerplate manual. La analogía: un formulario impreso con campos en tinta permanente — para datos distintos, imprimes uno nuevo, no tachas el existente.
+**1. Contexto**
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
-```bash
-mkdir ejemplo-record-guia
-cd ejemplo-record-guia
-mkdir -p src/main/java/academia/records
-```
-Crea `Guia.java` como `record` con un constructor compacto que valide `numero` no vacío y `pesoKg` positivo. Compila y ejecuta un `Main` que cree dos instancias con los mismos valores y confirme `equals()` por valor:
-```bash
-javac -d out src/main/java/academia/records/Guia.java
-java -cp out academia.records.Main
-```
+El centro de despacho recibe número y peso de cada paquete. No se debe poder crear una guía vacía ni con peso cero.
 
-#### Paso 5 · Práctica guiada
-Pista: intenta asignar directamente `guia.pesoKg = 10` para provocar un fallo deliberado de compilación; los componentes de un record no tienen setters. Resultado esperado: confirmas que la única forma de "cambiar" un valor es construir una nueva instancia.
+**2. Hazlo tú**
 
-#### Paso 6 · Práctica independiente
-Agrega un segundo record `Destinatario` y anídalo dentro de `Guia`; escribe una prueba que confirme que dos `Guia` con el mismo `Destinatario` (mismos valores) son `equals()`, aunque sean instancias distintas.
-
-#### Paso 7 · Cierre y evidencia
-Guarda `Guia`, la validación del constructor compacto y la prueba de igualdad por valor; como siguiente paso estudia sealed interfaces. Errores comunes: usar un `record` para una entidad que genuinamente necesita mutar su estado (un ORM que actualiza campos), intentar agregar un setter a un componente del record, y validar invariantes fuera del constructor compacto en vez de dentro de él. Fuentes oficiales: https://dev.java/learn/classes-objects/records/ y https://openjdk.org/jeps/409.
-**¿Por qué es importante?** Porque `record` elimina el boilerplate de constructor/getters/`equals`/`hashCode`/`toString` mientras impone inmutabilidad estructural, de modo que "cambiar" un dato siempre significa construir una instancia nueva, nunca mutar la existente en un lugar donde otro código ya la referencia.
-**Evidencia de aprendizaje:** entrega `Guia` como `record` con su constructor compacto validando invariantes, y la prueba de igualdad por valor entre dos instancias con los mismos datos.
-**Conceptos clave:** generación automática de constructor/getters/equals/hashCode/toString, inmutabilidad.
-
-Cada entidad de solo-datos del proyecto integrador de este track (una guía, una tarifa, una dirección) que no necesite identidad mutable debería modelarse como `record`, no como una clase tradicional con getters/setters manuales.
-
-**Cuándo no usarlo:** un `record` no es apropiado para una entidad que genuinamente necesita mutar su estado a lo largo del tiempo (por ejemplo, una entidad gestionada por un ORM que actualiza campos en la base de datos); para esos casos, una clase tradicional con campos mutables sigue siendo la herramienta correcta.
-
-`record Punto(int x, int y) {}` declara una clase inmutable completa en una única línea: el compilador genera automáticamente un constructor que acepta ambos componentes, métodos de acceso con el mismo nombre que cada componente (`p.x()`, `p.y()`, en vez de la convención `getX()`/`getY()` de una clase tradicional), y sobreescribe `equals()`, `hashCode()` y `toString()` basándose en el valor de todos los componentes declarados, reemplazando por completo el boilerplate que una clase POJO (Plain Old Java Object) tradicional requeriría escribir manualmente (o generar con un IDE, o delegar a una librería externa como Lombok) para lograr exactamente el mismo resultado.
-
-Los componentes de un record son inherentemente inmutables (no existe ningún método generado automáticamente para modificar `x` o `y` después de construir el `Punto`), reflejando la intención de diseño de que un record modele datos que, una vez creados, no cambian — cualquier "modificación" real requiere construir una nueva instancia del record con los valores actualizados, en vez de mutar la instancia existente, el mismo principio de inmutabilidad estudiado de forma más general para signals en el Módulo 2 del track de Angular, aquí aplicado como una característica estructural del propio lenguaje Java para modelar datos.
-
-**Analogía:** un record es como un formulario impreso con campos ya fijados en tinta permanente en el momento de imprimirse: puedes leer cualquier campo cuantas veces quieras, pero no puedes tachar y reescribir un valor existente; si necesitas datos distintos, imprimes un formulario completamente nuevo con los valores correctos, en vez de modificar el existente.
-
-**¿Por qué es importante?** `record` elimina el boilerplate que una clase POJO tradicional requeriría para constructor, getters, `equals`, `hashCode` y `toString`, mientras impone inmutabilidad estructural como parte del diseño del lenguaje.
-
-**Código del ejemplo:**
+Crea `src/Guia.java`:
 
 ```java
-record Punto(int x, int y) {}
-// genera automáticamente: constructor, getters (x(), y()), equals, hashCode y toString
-
-Punto p = new Punto(3, 4);
-p.x(); // 3
+public record Guia(String numero, double pesoKg) {
+    public Guia {
+        if (numero == null || numero.isBlank()) throw new IllegalArgumentException("Falta número");
+        if (pesoKg <= 0) throw new IllegalArgumentException("Peso debe ser positivo");
+    }
+    public static void main(String[] args) {
+        System.out.println(new Guia("RT-1", 2.5));
+    }
+}
 ```
+
+Desde la raíz ejecuta `javac -d out src/Guia.java` y `java -cp out Guia`.
+
+**Resultado esperado:** imprime `Guia[numero=RT-1, pesoKg=2.5]`.
+
+**Fallo deliberado:** crea `new Guia("", 0)`. **Diagnóstico:** el constructor compacto valida antes de que exista un objeto inválido.
+
+**3. Entiende**
+
+`record` genera constructor, accesores, `equals`, `hashCode` y `toString`; el constructor compacto sirve para validar los componentes.
+
+**4. Cierra**
+
+Guarda la salida válida y el error de validación.
+
+#### Subtema 1.2: Comprueba igualdad por valor · 10 min
+
+**1. Contexto**
+
+Dos servicios pueden construir dos objetos distintos que representen la misma guía; el sistema debe compararlos por sus datos.
+
+**2. Hazlo tú**
+
+En `src/Guia.java`, en `main`, crea dos `Guia("RT-1", 2.5)` y muestra `primera.equals(segunda)` y `primera == segunda`. Ejecuta `javac -d out src/Guia.java` y `java -cp out Guia`.
+
+**Resultado esperado:** `equals` imprime `true`; `==` imprime `false` porque son objetos diferentes.
+
+**Fallo deliberado:** compara solo con `==`. **Diagnóstico:** esa operación compara identidad, no los componentes que describen la guía.
+
+**3. Entiende**
+
+La igualdad generada por el record usa sus componentes. Si un componente mutable se guarda dentro, el record no vuelve inmutable ese objeto interno.
+
+**4. Cierra**
+
+Anota qué comparación usarías en un `Set<Guia>` y por qué.
+
+#### Subtema 1.3: Produce una versión actualizada · 10 min
+
+**1. Contexto**
+
+La guía no se modifica en sitio cuando cambia el peso medido: se emite un nuevo valor para conservar las referencias anteriores.
+
+**2. Hazlo tú**
+
+En `src/Guia.java` conserva `original = new Guia("RT-1", 2.5)` y crea `recalculada = new Guia(original.numero(), 3.0)`. Imprime ambos pesos; ejecuta `javac -d out src/Guia.java` y `java -cp out Guia`.
+
+**Resultado esperado:** `2.5` y `3.0`; el objeto original conserva sus datos.
+
+**Fallo deliberado:** intenta asignar `original.pesoKg = 3.0`. **Diagnóstico:** los componentes no tienen setters; construye un valor nuevo.
+
+**3. Entiende**
+
+Usa records para valores que se describen por sus datos. Una entidad con identidad persistente y cambios durante su ciclo de vida puede necesitar una clase tradicional.
+
+**4. Cierra**
+
+Entrega los dos valores y explica por qué elegiste record. Fuente: [records en Dev.java](https://dev.java/learn/classes-objects/records/).
 
 ### Tema 2: sealed — jerarquías cerradas y exhaustividad
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás cerrar una jerarquía de estados con `sealed`/`permits`, de modo que agregar un estado nuevo sin actualizar el código existente falle en compilación. Prerrequisitos: JDK 25 y un editor. Comprueba java --version.
+**Por qué importa:** estados de negocio conocidos no deben quedar sin manejar cuando el dominio crece.
 
-#### Paso 2 · Contexto y caso real
-Una entrega tiene un conjunto fijo de estados posibles (creada, en tránsito, entregada); si el código que procesa esos estados no se entera cuando alguien agrega un estado nuevo (cancelada), el nuevo estado queda silenciosamente sin manejar en producción.
+#### Subtema 2.1: Declara estados permitidos · 10 min
 
-#### Paso 3 · Teoría, modelo mental y analogía
-`sealed interface EstadoEntrega permits Creada, EnTransito, Entregada {}` restringe qué tipos pueden implementar la interfaz, verificado por el compilador. La analogía: una lista cerrada y oficial de sucursales autorizadas de una franquicia, donde no se permite abrir una nueva sin actualizar esa lista.
+**1. Contexto**
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
-```bash
-mkdir ejemplo-sealed-estados
-cd ejemplo-sealed-estados
-mkdir -p src/main/java/academia/estados
-```
-Crea `EstadoEntrega.java` como `sealed interface` con tres records implementándola (`Creada`, `EnTransito`, `Entregada`), y un método que use un `switch` exhaustivo sobre esos estados sin rama `default`. Compila y ejecuta:
-```bash
-javac -d out src/main/java/academia/estados/EstadoEntrega.java
-java -cp out academia.estados.Main
-```
+Una entrega del prototipo tiene exactamente los estados creada, en ruta o entregada.
 
-#### Paso 5 · Práctica guiada
-Pista: agrega un cuarto record `Cancelada implements EstadoEntrega` a la cláusula `permits` sin actualizar el `switch` existente para provocar un fallo deliberado de compilación; el compilador señala exactamente qué switch no cubre el caso nuevo. Resultado esperado: agregar la rama faltante restaura la compilación.
+**2. Hazlo tú**
 
-#### Paso 6 · Práctica independiente
-Intenta declarar una quinta implementación de `EstadoEntrega` en otro archivo sin agregarla a `permits`; confirma que el compilador la rechaza inmediatamente.
-
-#### Paso 7 · Cierre y evidencia
-Guarda la jerarquía sellada, el error de compilación al agregar un estado nuevo sin manejarlo, y la corrección; como siguiente paso estudia pattern matching. Errores comunes: declarar una jerarquía abierta (sin `sealed`) cuando el conjunto de casos es en realidad fijo y conocido, agregar una implementación nueva a `permits` sin revisar qué switches existentes dejaron de ser exhaustivos, y usar `sealed` para un conjunto de tipos que legítimamente terceros deberían poder extender. Fuentes oficiales: https://dev.java/learn/classes-objects/records/ y https://openjdk.org/jeps/409.
-**¿Por qué es importante?** Porque `sealed` convierte el olvido de manejar un estado nuevo en un error de compilación inmediato en cada switch existente, en vez de un bug silencioso que solo se descubre en producción cuando ese estado nuevo efectivamente ocurre.
-**Evidencia de aprendizaje:** entrega la jerarquía sellada con `permits`, el error de compilación al agregar `Cancelada` sin actualizar el switch, y la corrección que restaura la exhaustividad.
-**Conceptos clave:** `permits`, lista explícita de implementaciones válidas, verificación de exhaustividad.
-
-Cada conjunto cerrado de estados del proyecto integrador de este track (estado de una entrega, tipo de notificación, rol de usuario) debería modelarse como `sealed`, para que el compilador obligue a manejar un estado nuevo en cada switch existente.
-
-**Cuándo no usarlo:** `sealed` no tiene sentido para un conjunto de tipos genuinamente abierto a extensión externa (por ejemplo, un plugin que terceros pueden implementar); en ese caso una interfaz normal, sin restricción de `permits`, es la elección correcta.
-
-`sealed interface Forma permits Circulo, Cuadrado {}` declara explícitamente, mediante la cláusula `permits`, exactamente qué clases o interfaces tienen permitido implementar o extender `Forma`, una restricción verificada por el compilador: ningún otro código, en ningún otro lugar del proyecto, puede crear una implementación adicional no listada en esa cláusula `permits`, a diferencia de una interfaz normal sin `sealed`, que cualquier clase en cualquier lugar puede implementar libremente sin ninguna restricción del compilador.
-
-Esta restricción deliberada habilita una capacidad adicional en el pattern matching de switch (Tema 3): dado que el compilador conoce exactamente el conjunto completo y cerrado de implementaciones posibles de una sealed interface, puede verificar en tiempo de compilación que un switch sobre esa interfaz cubre absolutamente todos los casos posibles, sin necesidad de una rama `default` como red de seguridad — si en el futuro se agrega una nueva implementación a la lista `permits` pero se olvida agregar su caso correspondiente en algún switch existente en el código, el compilador falla inmediatamente en ese punto, señalando exactamente dónde falta cubrir el nuevo caso, en vez de dejar ese olvido como un bug silencioso que solo se manifestaría en producción cuando efectivamente se procese un objeto de ese nuevo tipo no contemplado.
-
-**Analogía:** `sealed` es como una lista cerrada y oficial de sucursales autorizadas de una franquicia, donde no se permite abrir una sucursal nueva no autorizada explícitamente en esa lista; esto permite que cualquier proceso que dependa de conocer todas las sucursales existentes (como un switch exhaustivo) pueda confiar con certeza en que esa lista está efectivamente completa y no puede haber una sucursal adicional no contemplada apareciendo por sorpresa.
-
-**¿Por qué es importante?** `sealed` permite que el compilador verifique exhaustividad en un switch sin necesidad de una rama `default`, detectando en tiempo de compilación cualquier caso nuevo agregado a la jerarquía que se haya olvidado cubrir en algún switch existente.
-
-**Código del ejemplo:**
+Crea `src/EstadoEntrega.java`:
 
 ```java
-sealed interface Forma permits Circulo, Cuadrado {}
-record Circulo(double radio) implements Forma {}
-record Cuadrado(double lado) implements Forma {}
+sealed interface EstadoEntrega permits Creada, EnRuta, Entregada {}
+record Creada() implements EstadoEntrega {}
+record EnRuta(String zona) implements EstadoEntrega {}
+record Entregada(String receptor) implements EstadoEntrega {}
+
+public class EstadoEntregaDemo {
+    public static void main(String[] args) {
+        EstadoEntrega estado = new EnRuta("Norte");
+        System.out.println(estado);
+    }
+}
 ```
+
+Ejecuta `javac -d out src/EstadoEntrega.java` y `java -cp out EstadoEntregaDemo`.
+
+**Resultado esperado:** imprime `EnRuta[zona=Norte]`.
+
+**Fallo deliberado:** declara otra clase `class Devuelto implements EstadoEntrega {}` sin añadirla a `permits`. **Diagnóstico:** el compilador rechaza implementaciones fuera de la lista.
+
+**3. Entiende**
+
+`sealed` limita las implementaciones; cada subtipo debe ser `final`, `sealed` o `non-sealed` (los records ya son finales).
+
+**4. Cierra**
+
+Guarda el error del compilador y la lista de estados autorizados.
+
+#### Subtema 2.2: Añade un estado con intención · 10 min
+
+**1. Contexto**
+
+Operaciones necesita representar una entrega cancelada y revisar todos los puntos donde el estado se procesa.
+
+**2. Hazlo tú**
+
+En `src/EstadoEntrega.java`, añade `Cancelada(String motivo)` a `permits` y declara el record correspondiente. Ejecuta `javac -d out src/EstadoEntrega.java` y `java -cp out EstadoEntregaDemo`. Después busca `EstadoEntrega` en el archivo para revisar consumidores.
+
+**Resultado esperado:** la jerarquía compila y la cancelación solo puede crearse con el motivo indicado.
+
+**Fallo deliberado:** añade el record, pero olvida incluirlo en `permits`. **Diagnóstico:** permiso y subtipo deben concordar.
+
+**3. Entiende**
+
+La lista cerrada es adecuada para un dominio controlado por el mismo equipo; un punto de extensión de plugins de terceros suele necesitar una interfaz abierta.
+
+**4. Cierra**
+
+Registra quién puede ampliar esta jerarquía en el producto real.
+
+#### Subtema 2.3: Distingue jerarquía cerrada de abierta · 10 min
+
+**1. Contexto**
+
+El equipo debe decidir si transportistas externos podrán añadir sus propios estados.
+
+**2. Hazlo tú**
+
+En `src/EstadoEntrega.java`, comenta `sealed` y `permits`, compila con `javac -d out src/EstadoEntrega.java` y observa que una implementación nueva deja de ser rechazada por la jerarquía. Restaura `sealed` y recompila.
+
+**Resultado esperado:** identificas el cambio de contrato entre jerarquía abierta y cerrada.
+
+**Fallo deliberado:** deja la jerarquía abierta aunque todos los consumidores dependen de conocer cada estado. **Diagnóstico:** el compilador ya no puede probar que los switches cubren todos los casos.
+
+**3. Entiende**
+
+La decisión afecta extensibilidad y exhaustividad; `sealed` no es una mejora automática para toda interfaz.
+
+**4. Cierra**
+
+Escribe una frase que justifique la decisión de RutaFlow. Fuente: [JEP 409](https://openjdk.org/jeps/409).
 
 ### Tema 3: Pattern matching exhaustivo y para instanceof
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás calcular el costo de envío según el estado sellado de una entrega usando pattern matching, sin casteo manual. Prerrequisitos: JDK 25 y un editor. Comprueba java --version.
+**Por qué importa:** manejar cada estado evita que una regla de negocio asigne un resultado incorrecto a un tipo nuevo.
 
-#### Paso 2 · Contexto y caso real
-Calcular si una entrega puede reprogramarse depende de su estado exacto (no se puede reprogramar una ya `Entregada`); expresar esa lógica con casteos manuales anidados es más verboso y propenso a errores que un switch con pattern matching.
+#### Subtema 3.1: Calcula una regla con switch · 10 min
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Un `switch` con pattern matching extrae directamente el valor ya tipado de cada rama, y el compilador verifica exhaustividad contra la jerarquía `sealed` (Tema 2), sin necesitar `default`. La analogía: verificar la identidad de alguien y recibir simultáneamente su credencial ya lista para usar, sin un paso adicional redundante.
+**1. Contexto**
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
-```bash
-mkdir ejemplo-pattern-matching
-cd ejemplo-pattern-matching
-mkdir -p src/main/java/academia/patrones
-```
-Crea `CalculadoraReprogramacion.java` con un método `puedeReprogramarse(EstadoEntrega estado)` que use un `switch` exhaustivo sobre la jerarquía sellada del Tema 2 (`Creada` y `EnTransito` devuelven `true`, `Entregada` devuelve `false`). Compila y ejecuta:
-```bash
-javac -d out src/main/java/academia/patrones/CalculadoraReprogramacion.java
-java -cp out academia.patrones.CalculadoraReprogramacion
-```
+Solo las entregas aún activas se pueden reprogramar.
 
-#### Paso 5 · Práctica guiada
-Pista: agrega el estado `Cancelada` (del Tema 2) a la jerarquía sin actualizar este switch para provocar un fallo deliberado de compilación; el compilador señala que `puedeReprogramarse` no cubre `Cancelada`. Resultado esperado: agregar esa rama restaura la compilación exhaustiva.
+**2. Hazlo tú**
 
-#### Paso 6 · Práctica independiente
-Reescribe una comprobación equivalente usando el patrón clásico (`instanceof` + casteo manual) y compara la legibilidad con la versión de pattern matching; documenta en una frase cuál preferirías mantener.
-
-#### Paso 7 · Cierre y evidencia
-Guarda ambas versiones (pattern matching y casteo clásico) y el error de exhaustividad al agregar `Cancelada`; como siguiente paso estudia módulos y JPMS. Errores comunes: agregar una rama `default` "por si acaso" a un switch exhaustivo sobre una sealed interface (anula la verificación de exhaustividad que `sealed` habilita), usar el casteo manual clásico (`instanceof` + cast) donde pattern matching ya elimina esa redundancia, y olvidar que un switch con pattern matching debe cubrir la jerarquía completa para omitir `default`. Fuentes oficiales: https://dev.java/learn/classes-objects/records/ y https://openjdk.org/jeps/409.
-**¿Por qué es importante?** Porque un switch exhaustivo sin `default`, verificado contra una jerarquía `sealed`, convierte un estado nuevo sin manejar en un error de compilación inmediato, mientras que un `default` oculta ese mismo olvido dejándolo pasar en silencio.
-**Evidencia de aprendizaje:** entrega `puedeReprogramarse` con pattern matching exhaustivo, la versión equivalente con casteo clásico para comparar, y el error de compilación al agregar `Cancelada` sin actualizar el switch.
-**Conceptos clave:** switch sin default verificado, eliminación del casteo manual clásico.
-
-Cada regla de negocio del proyecto integrador de este track que dependa del estado exacto de una entidad sellada se beneficiará de este mismo patrón: switch exhaustivo, sin `default`, verificado por el compilador.
-
-**Cuándo no usarlo:** agregar una rama `default` a un switch exhaustivo sobre una sealed interface, "por si acaso", anula justamente la verificación de exhaustividad que `sealed` habilita — solo omite `default` cuando genuinamente quieres que el compilador te obligue a cubrir cada caso nuevo.
+Crea `src/Reprogramar.java` con `EstadoEntrega` y sus records del Tema 2. Añade:
 
 ```java
-double area(Forma forma) {
-    return switch (forma) {
-        case Circulo c -> Math.PI * c.radio() * c.radio();
-        case Cuadrado q -> q.lado() * q.lado();
+static boolean sePuedeReprogramar(EstadoEntrega e) {
+    return switch (e) {
+        case Creada c -> true;
+        case EnRuta r -> true;
+        case Entregada x -> false;
     };
 }
-```
-
-Este switch combina pattern matching (extrayendo directamente `c`/`q` ya tipados correctamente según cada caso, sin casteo manual explícito) con la verificación de exhaustividad habilitada por `sealed` (Tema 2): el compilador verifica que este switch efectivamente cubre absolutamente todos los casos posibles de la sealed interface `Forma` (`Circulo` y `Cuadrado`, y ningún otro caso posible dado que `permits` los restringe exactamente a esos dos), permitiendo omitir por completo una rama `default`, dado que no existe ningún caso adicional posible que esa rama tendría que cubrir.
-
-```java
-if (obj instanceof Circulo c) {
-    System.out.println(c.radio());
+public static void main(String[] args) {
+    System.out.println(sePuedeReprogramar(new EnRuta("Norte")));
 }
 ```
 
-Este pattern matching para `instanceof` reemplaza el patrón clásico anterior (`if (obj instanceof Circulo) { Circulo c = (Circulo) obj; ... }`, que requería un casteo manual explícito y redundante inmediatamente después de la verificación `instanceof`) con una única expresión que verifica el tipo y simultáneamente declara una variable ya correctamente tipada (`c`) disponible directamente dentro del bloque donde la verificación resultó verdadera, eliminando la redundancia y el riesgo de un casteo manual incorrecto que el patrón clásico anterior conllevaba.
+Compila `EstadoEntrega.java` y `Reprogramar.java` juntos: `javac -d out src/EstadoEntrega.java src/Reprogramar.java`; ejecuta `java -cp out Reprogramar`.
 
-**Analogía:** un switch exhaustivo verificado por el compilador es como un formulario de clasificación que garantiza automáticamente que cada categoría posible de un conjunto cerrado y conocido tiene su propio casillero correspondiente, sin necesidad de un casillero genérico de "otros" como respaldo; pattern matching para instanceof es como verificar la identidad de alguien y recibir simultáneamente su credencial ya lista para usar, en vez de verificar la identidad y luego tener que solicitar la credencial por separado en un paso adicional redundante.
+**Resultado esperado:** `true`, sin casteos manuales ni rama `default`.
 
-**¿Por qué es importante?** El pattern matching exhaustivo garantiza, verificado por el compilador, que ningún caso posible de una sealed interface quede sin cubrir; el pattern matching para instanceof elimina la redundancia y el riesgo del casteo manual clásico.
+**Fallo deliberado:** añade `Cancelada` al `permits` sin rama al `switch`. **Diagnóstico:** vuelve a compilar; el error señala el switch no exhaustivo.
 
-**Código del ejemplo:**
+**3. Entiende**
 
-```java
-double area(Forma forma) {
-    return switch (forma) {
-        case Circulo c -> Math.PI * c.radio() * c.radio();
-        case Cuadrado q -> q.lado() * q.lado();
-        // sin default: el compilador verifica que cubriste TODOS los casos posibles de Forma
-    };
-}
+El patrón del `case` comprueba el subtipo y declara una variable con tipo correcto. `sealed` permite que el compilador conozca todos los casos.
 
-if (obj instanceof Circulo c) {
-    System.out.println(c.radio()); // sin casteo manual: c ya es de tipo Circulo aquí
-}
-```
+**4. Cierra**
+
+Guarda el error de exhaustividad y la corrección.
+
+#### Subtema 3.2: Extrae el tipo con instanceof · 10 min
+
+**1. Contexto**
+
+Un resumen necesita mostrar la zona solo cuando el estado es `EnRuta`.
+
+**2. Hazlo tú**
+
+En `src/Reprogramar.java` agrega `if (estado instanceof EnRuta ruta) System.out.println(ruta.zona());` y ejecútalo con `new EnRuta("Norte")`. Usa `javac -d out src/EstadoEntrega.java src/Reprogramar.java` y `java -cp out Reprogramar`.
+
+**Resultado esperado:** imprime `Norte` sin casteo posterior.
+
+**Fallo deliberado:** usa `estado.zona()` antes de verificar su tipo. **Diagnóstico:** `EstadoEntrega` no define ese método; primero comprueba `instanceof EnRuta`.
+
+**3. Entiende**
+
+La variable `ruta` solo existe donde la comprobación garantiza que el objeto es de ese tipo.
+
+**4. Cierra**
+
+Conserva el fragmento y señala la comprobación que hace seguro el acceso.
+
+#### Subtema 3.3: Compara con casteo clásico · 10 min
+
+**1. Contexto**
+
+Revisas código heredado que comprueba el tipo y después realiza un cast explícito.
+
+**2. Hazlo tú**
+
+En `src/Reprogramar.java` implementa una segunda versión con `if (estado instanceof EnRuta) { EnRuta ruta = (EnRuta) estado; ... }`. Ejecuta ambas variantes con `EnRuta` y `Entregada` usando `javac -d out src/EstadoEntrega.java src/Reprogramar.java` y `java -cp out Reprogramar`.
+
+**Resultado esperado:** ambas dan el mismo resultado; pattern matching elimina el cast repetido.
+
+**Fallo deliberado:** cambia el tipo del cast por `Entregada`. **Diagnóstico:** el patrón clásico puede fallar en ejecución si el cast no coincide; usa el tipo ligado por `instanceof`.
+
+**3. Entiende**
+
+Usa switch para clasificar todos los casos; usa `instanceof` cuando solo necesitas una rama condicional.
+
+**4. Cierra**
+
+Elige una forma para la regla completa y justifica tu elección. Fuente: [pattern matching en Java](https://docs.oracle.com/en/java/javase/25/language/pattern-matching.html).
 
 ### Tema 4: Unnamed variables y patterns (_, Java 22)
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a usar el patrón `_` (unnamed variables, Java 22) para descartar explícitamente un componente de un record pattern que no necesitás, y en un bloque `catch` que no necesita la excepción. Prerrequisitos: JDK 22+ y Tema 2 de este módulo.
+**Por qué importa:** distinguir lo que se descarta intencionalmente de una variable olvidada reduce ruido y hace visibles errores reales.
 
-#### Paso 2 · Contexto y caso real
-Al deconstruir un record `Paquete(Dimensiones dim, String destino)` con pattern matching, un método solo necesita `destino`; nombrar la parte que no usás con un identificador real genera una advertencia de "variable no utilizada" que el equipo aprendió a ignorar — y esa misma advertencia ignorada por costumbre ocultó, en un cambio reciente, una variable genuinamente olvidada en otro método completamente distinto.
+#### Subtema 4.1: Descarta un componente de record pattern · 10 min
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Las unnamed patterns (`_`, finalizadas en Java 22) permiten descartar explícitamente un binding de un pattern match (record pattern, catch, o lambda) que no se va a usar, dejando una sintaxis reservada exclusivamente para "esto es deliberado", distinta de cualquier variable nombrada. La analogía: una casilla de formulario marcada "N/A" frente a una casilla vacía — nadie puede distinguir si la dejaron vacía a propósito o si se olvidaron de completarla.
+**1. Contexto**
 
-#### Paso 4 · Demostración guiada desde cero
-Crea `src/main/java/academia/patrones/ExtractorDestino.java`:
+El aviso solo requiere mostrar el destino; las dimensiones del paquete no intervienen.
+
+**2. Hazlo tú**
+
+Crea `src/ResumenPaquete.java`:
+
 ```java
-String resumen(Paquete paquete) {
-    return switch (paquete) {
-        case Paquete(Dimensiones _, String destino) -> "Destino: " + destino;
-    };
+record Dimensiones(int x, int y, int z) {}
+record Paquete(Dimensiones dimensiones, String destino) {}
+public class ResumenPaquete {
+    static String resumen(Object valor) {
+        return switch (valor) {
+            case Paquete(Dimensiones _, String destino) -> "Destino: " + destino;
+            default -> "No es un paquete";
+        };
+    }
+    public static void main(String[] args) {
+        System.out.println(resumen(new Paquete(new Dimensiones(1, 2, 3), "Norte")));
+    }
 }
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+Compila y ejecuta con `javac -d out src/ResumenPaquete.java` y `java -cp out ResumenPaquete`.
 
-```bash
-# Maven
-mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-cd app && mvn test
-# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
-```
+**Resultado esperado:** `Destino: Norte`.
 
-Resultado esperado: el compilador acepta `_` como un marcador explícito de "este componente del record pattern es deliberadamente ignorado", sin generar ninguna advertencia de variable no utilizada, y sin que `_` quede disponible como variable dentro del bloque.
+**Fallo deliberado:** intenta usar `_` como variable dentro del resultado. **Diagnóstico:** el guion bajo marca un valor descartado y no crea un binding.
 
-Además, Java 15 introdujo los **text blocks** (`"""`) para escribir texto multilínea sin concatenar ni escapar comillas. Declara en el mismo archivo una consulta de ejemplo:
-```java
-String consulta = """
-    SELECT numero, estado
-    FROM entregas
-    WHERE estado = 'EN_RUTA'
-    """;
-```
-Resultado esperado: `consulta` contiene las tres líneas separadas por salto de línea, sin ningún `\n` ni `+` explícito en el código; Java elimina automáticamente la sangría común a todas las líneas, tomando como referencia la sangría de la comilla de cierre. **Fallo deliberado:** desalinea la comilla de cierre `""";` moviéndola una columna más a la izquierda que el texto interior. El compilador deja de eliminar correctamente la sangría incidental y cada línea del resultado aparece con un espacio extra al inicio que no estaba en la intención original — la sangría del delimitador de cierre, y no la del texto, es la que determina cuánto se recorta.
+**3. Entiende**
 
-#### Paso 5 · Práctica guiada
-Pista: nombrá la parte descartada con un identificador real sin uso (`Dimensiones dimensionesSinUsar`) en varios métodos distintos del proyecto, "para que quede más descriptivo". Ese es el fallo deliberado: el linter ahora reporta "variable no utilizada" en cada uno de esos métodos junto con las advertencias legítimas de variables genuinamente olvidadas, y el equipo termina ignorando TODAS las advertencias de esa categoría por volumen, incluyendo la que señalaba un error real.
+El record pattern separa la forma del dato de los componentes que necesita el código.
 
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 reemplazando cada binding deliberadamente descartado por `_`, y confirmá que el linter ahora reporta únicamente las advertencias de variables genuinamente olvidadas, sin el ruido de las deliberadamente ignoradas.
+**4. Cierra**
 
-#### Paso 7 · Cierre y evidencia
-Entregá el record pattern con `_` del Paso 4, el text block de la consulta SQL con su fallo de sangría corregido, el ruido de advertencias por nombrar variables descartadas del Paso 5, y la señal limpia del linter del Paso 6; explicá por qué una sintaxis reservada exclusivamente para "descartado a propósito" reduce el ruido que oculta advertencias legítimas. Siguiente paso: aplica records, sealed interfaces, pattern matching, text blocks y unnamed variables juntos en el dominio del proyecto integrador (Módulo 13). Errores comunes: nombrar bindings descartados con nombres reales que generan ruido de lint, usar `_` para un binding que SÍ se usa más adelante (no compila), asumir que `_` es una variable utilizable (es un marcador, no un identificador), y desalinear la comilla de cierre de un text block esperando que la sangría se ajuste sola. Fuentes oficiales: https://openjdk.org/jeps/456 y https://docs.oracle.com/en/java/javase/22/language/unnamed-variables-and-patterns.html.
-**¿Por qué es importante?** Porque el lenguaje puede hacer que estados imposibles sean difíciles de representar, y también que lo deliberadamente ignorado sea indistinguible de lo olvidado si no existe una sintaxis reservada para expresar esa intención.
-**Evidencia de aprendizaje:** entrega record pattern con _, el text block SQL con su fallo de sangría corregido, ruido de advertencias reproducido y señal limpia del linter confirmada.
-**Conceptos clave:** unnamed variables, unnamed patterns, _, catch sin binding, descartar un componente de un record pattern, text blocks (`"""`).
+Guarda la salida y marca qué componente se ignoró deliberadamente.
 
-Cada deconstrucción del proyecto integrador de este track que no necesite todos los componentes de un record pattern debería usar `_` para los que descarta, en vez de nombrarlos igual sin usarlos.
+#### Subtema 4.2: Ignora una excepción sin ocultar el caso · 10 min
 
-**Cuándo no usarlo:** si existe cualquier posibilidad de que el binding se use más adelante en el mismo bloque, nómbralo normalmente; `_` no es una variable y el compilador rechaza cualquier intento de leerlo.
+**1. Contexto**
 
-```java
-try {
-    return Integer.parseInt(texto);
-} catch (NumberFormatException _) {
-    return 0; // no necesitamos el detalle de la excepción, solo saber que ocurrió
-}
-```
+El programa convierte una cantidad opcional y usa un valor predeterminado ante texto inválido; no necesita imprimir el stack trace en esta demo.
 
-```mermaid
-flowchart LR
-  P["Paquete(dim, destino)"] --> D{necesito dim?}
-  D -->|no| U["_ (descartado explícito)"]
-  D -->|sí| N["var dim (nombrado)"]
-```
+**2. Hazlo tú**
 
-Esta sintaxis también aplica a bloques `catch`, lambdas con parámetros no usados, y bucles `for` tradicionales con un índice no usado; en todos los casos, `_` deja una señal explícita e inconfundible de que ese binding es deliberadamente ignorado, distinta de cualquier variable nombrada (que el compilador y los linters tratan como potencialmente usada en otra parte).
+Crea `src/Convertir.java` con `try { System.out.println(Integer.parseInt(args[0])); } catch (NumberFormatException _) { System.out.println("Cantidad inválida"); }`. Ejecuta `javac -d out src/Convertir.java`, luego `java -cp out Convertir abc`.
 
-**Analogía:** `_` es como una casilla de formulario marcada explícitamente "N/A"; una variable nombrada sin usar es como una casilla vacía — nadie puede distinguir con certeza si fue dejada vacía a propósito o si simplemente se olvidó completarla.
+**Resultado esperado:** imprime `Cantidad inválida` sin declarar una excepción que no se usa.
 
-**¿Por qué es importante?** `_` elimina la ambigüedad entre "deliberadamente ignorado" y "olvidado", reduciendo el ruido de advertencias de variables no utilizadas que puede ocultar advertencias legítimas.
+**Fallo deliberado:** captura `Exception _` y continúa como si nada para cualquier error. **Diagnóstico:** captura la excepción concreta que sabes manejar; no escondas fallos de programación.
 
-**Código del ejemplo:**
+**3. Entiende**
 
-```java
-String resumen(Paquete paquete) {
-    return switch (paquete) {
-        case Paquete(Dimensiones _, String destino) -> "Destino: " + destino;
-    };
-}
-```
+`_` indica descarte deliberado, pero no convierte automáticamente una recuperación segura en tal.
+
+**4. Cierra**
+
+Explica por qué se captura `NumberFormatException` y no `Exception`.
+
+#### Subtema 4.3: Escribe texto multilínea legible · 10 min
+
+**1. Contexto**
+
+Una consulta SQL de reporte es más fácil de revisar en varias líneas que como concatenación larga.
+
+**2. Hazlo tú**
+
+Crea `src/Consulta.java` y asigna a `String sql` el text block `"""\nSELECT numero, estado\nFROM entregas\nWHERE estado = 'EN_RUTA'\n""";`. Imprime el texto y ejecuta `javac -d out src/Consulta.java` y `java -cp out Consulta`.
+
+**Resultado esperado:** tres líneas legibles; no necesitas concatenar ni escapar cada salto de línea.
+
+**Fallo deliberado:** mueve la comilla de cierre al inicio de línea y compara sangría. **Diagnóstico:** la posición del cierre participa en qué sangría incidental se elimina.
+
+**3. Entiende**
+
+Los text blocks sirven para texto multilínea; no validan ni parametrizan una consulta SQL.
+
+**4. Cierra**
+
+Guarda la consulta y anota qué mecanismo usarías para valores dinámicos. Fuente: [variables y patrones sin nombre](https://openjdk.org/jeps/456).
 
 ---
 

@@ -484,130 +484,225 @@ Explica por qué el contador admite una operación atómica y el retiro necesita
 
 ### Tema 5: Structured Concurrency (StructuredTaskScope, Java 25)
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a lanzar dos subtareas relacionadas (distancia y disponibilidad del conductor) con `StructuredTaskScope`, cancelando automáticamente la otra si cualquiera falla. Prerrequisitos: JDK 25 y un editor. Comprueba java --version. **`StructuredTaskScope` todavía es una feature en preview (JEP 505, quinta ronda) en Java 25**, no finalizada: compilar y ejecutar requiere las banderas `--enable-preview --release 25` explícitas.
+**Aviso de versión:** `StructuredTaskScope` es una API preview en Java 25. Compila y ejecuta con `--enable-preview --release 25`; no la trates como API estable.
 
-#### Paso 2 · Contexto y caso real
-El servicio de tracking lanza dos llamadas relacionadas con `CompletableFuture` por separado (distancia y disponibilidad del conductor); si la de distancia falla, la de disponibilidad sigue corriendo en segundo plano sin que nadie la cancele, consumiendo recursos para un resultado que ya no se va a usar.
+#### Subtema 5.1: Espera resultados de tareas relacionadas · 10 min
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Structured concurrency trata un grupo de subtareas relacionadas como una única unidad: todas nacen dentro del mismo scope y ese scope no termina hasta que todas terminan (o se cancelan). La analogía: un padre que lleva a sus hijos a un museo — si uno se pierde, no se va dejando a los demás dispersos; reúne o cancela el paseo completo antes de continuar.
+**1. Contexto**
 
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/main/java/academia/concurrencia/CalculoTarifaEstructurado.java` dentro.
-```bash
-mkdir ejemplo && cd ejemplo && gradle init --type java-application
-```
+Para cotizar una entrega necesitas conocer distancia y disponibilidad antes de responder.
 
-Crea `src/main/java/academia/concurrencia/CalculoTarifaEstructurado.java`:
-```java
-try (var scope = StructuredTaskScope.open(StructuredTaskScope.Joiner.<Object>allSuccessfulOrThrow())) {
-    Subtask<Double> distancia = scope.fork(() -> obtenerDistancia(ruta));
-    Subtask<Boolean> disponible = scope.fork(() -> verificarDisponibilidad(conductorId));
-    scope.join();
-    return calcularTarifa(distancia.get(), disponible.get());
-}
-```
-```bash
-javac --release 25 --enable-preview -d out src/main/java/academia/concurrencia/CalculoTarifaEstructurado.java
-java --enable-preview -cp out academia.concurrencia.CalculoTarifaEstructurado
-```
-Resultado esperado: si `obtenerDistancia` lanza una excepción, `scope.join()` cancela automáticamente `verificarDisponibilidad` (si todavía no terminó) y relanza la excepción original, sin dejar ninguna subtarea corriendo de forma huérfana en segundo plano. La JVM además imprime una advertencia de que estás usando funcionalidades en preview.
+**2. Hazlo tú**
 
-```mermaid
-flowchart LR
-  S[StructuredTaskScope] --> D[fork: obtenerDistancia]
-  S --> V[fork: verificarDisponibilidad]
-  D -->|falla| J[scope.join]
-  V -.->|cancelada| J
-  J --> E[excepción relanzada, sin huérfanos]
-```
-
-#### Paso 5 · Práctica guiada
-Pista: reemplazá el `StructuredTaskScope` por dos `CompletableFuture.supplyAsync(...)` independientes sin ningún scope que los agrupe, y hacé que el primero lance una excepción. Ese es el fallo deliberado: el segundo `CompletableFuture` sigue ejecutándose completo en segundo plano, sin que nadie lo cancele ni lo espere, consumiendo el carrier thread para un resultado que la tarifa final ya no va a usar porque el cálculo ya falló.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 volviendo a `StructuredTaskScope` con `fork`/`join`, y agregá una tercera subtarea (por ejemplo, registrar el intento en un log de auditoría) confirmando que las tres se cancelan juntas si cualquiera falla.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el scope con cancelación conjunta del Paso 4, la subtarea huérfana del Paso 5, y la tercera subtarea agregada del Paso 6; explicá por qué estructurar la concurrencia como un árbol (con el mismo ciclo de vida que su scope padre) elimina las fugas de subtareas que `CompletableFuture` suelto no previene. Siguiente paso: estudia Scoped Values, el complemento de structured concurrency para propagar contexto sin ThreadLocal. Errores comunes: lanzar subtareas con CompletableFuture sin ningún scope que las agrupe y cancele juntas, no leer `Subtask.get()` solo después de `join()`, y usar structured concurrency para tareas que no están genuinamente relacionadas entre sí. Fuentes oficiales: https://openjdk.org/jeps/505 y https://docs.oracle.com/en/java/javase/25/core/structured-concurrency.html. **Actualización de plataforma (octubre 2026):** en JDK 27 (la entrega más reciente, liberada en septiembre de 2026) esta misma feature avanzó a su séptima ronda de preview (JEP 533) y ya fue propuesta como candidata a finalizarse sin cambios adicionales — el código de este Tema, compilado con `--release 25 --enable-preview`, sigue siendo válido; solo cambia el número de JEP y de ronda si migrás a una JDK más reciente.
-**¿Por qué es importante?** Un grupo de subtareas relacionadas que no comparte un ciclo de vida común puede dejar trabajo huérfano corriendo en segundo plano cuando una falla, consumiendo recursos para un resultado que ya nadie espera.
-**Evidencia de aprendizaje:** entrega scope con cancelación conjunta funcionando, subtarea huérfana reproducida y tercera subtarea agregada correctamente.
-**Conceptos clave:** StructuredTaskScope, fork, join, Joiner, cancelación conjunta, árbol de tareas.
-
-Cada operación del proyecto integrador de este track que dependa de varias subtareas relacionadas (ej. validar un pedido consultando stock y precio a la vez) debería usar structured concurrency en vez de lanzar `CompletableFuture` sueltos sin ningún scope que los agrupe.
-
-**Cuándo no usarlo:** para una única tarea asíncrona sin ninguna otra subtarea relacionada, `StructuredTaskScope` agrega ceremonia sin beneficio; basta con `Executors.newVirtualThreadPerTaskExecutor()` y esperar ese único resultado.
-
-Structured concurrency (todavía en preview en Java 25 — JEP 505, quinta ronda) trata un conjunto de subtareas lanzadas dentro de un mismo `StructuredTaskScope` como una única unidad de trabajo con un ciclo de vida compartido: el scope no puede cerrarse (saliendo del bloque `try`) hasta que todas sus subtareas hayan terminado, y un `Joiner` como `allSuccessfulOrThrow()` cancela automáticamente las subtareas restantes en cuanto cualquiera falla, en vez de dejarlas corriendo de forma huérfana sin que el código que las lanzó se entere o las controle.
-
-**Analogía:** `StructuredTaskScope` es como un padre que lleva a sus hijos a un museo: todos entran juntos y el padre no se va hasta reunir a todos (o decide terminar el paseo para todos si uno se pierde), en vez de que cada hijo deambule de forma independiente sin que nadie sepa cuándo terminaron ni pueda reunirlos si algo sale mal.
-
-**¿Por qué es importante?** `StructuredTaskScope` garantiza que un grupo de subtareas relacionadas comparta un ciclo de vida común, cancelando el resto automáticamente si cualquiera falla, eliminando las subtareas huérfanas que `CompletableFuture` suelto no previene.
-
-**Código del ejemplo:**
+Crea `src/Cotizar.java`:
 
 ```java
-try (var scope = StructuredTaskScope.open(StructuredTaskScope.Joiner.<Object>allSuccessfulOrThrow())) {
-    Subtask<Double> distancia = scope.fork(() -> obtenerDistancia(ruta));
-    Subtask<Boolean> disponible = scope.fork(() -> verificarDisponibilidad(conductorId));
-    scope.join();
-    return calcularTarifa(distancia.get(), disponible.get());
+import java.util.concurrent.StructuredTaskScope;
+
+public class Cotizar {
+    public static void main(String[] args) throws InterruptedException {
+        try (var scope = StructuredTaskScope.open(
+                StructuredTaskScope.Joiner.<String>allSuccessfulOrThrow())) {
+            var distancia = scope.fork(() -> "12 km");
+            var conductor = scope.fork(() -> "disponible");
+            scope.join();
+            System.out.println(distancia.get() + ", " + conductor.get());
+        }
+    }
 }
 ```
 
-### Tema 6: Scoped Values frente a ThreadLocal (Java 25)
+Desde la carpeta del proyecto compila y ejecuta:
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a propagar un ID de correlación a través de virtual threads hijos con `ScopedValue`, evitando el crecimiento de memoria que produce `ThreadLocal` heredable con cientos de miles de virtual threads. Prerrequisitos: Tema 3 y Tema 5 de este módulo.
+```bash
+javac --enable-preview --release 25 -d out src/Cotizar.java
+java --enable-preview -cp out Cotizar
+```
 
-#### Paso 2 · Contexto y caso real
-El servicio usa un `ThreadLocal<String>` heredable para propagar el ID de correlación de cada solicitud a los virtual threads que lanza para procesarla; bajo una carga de 500.000 virtual threads simultáneos, el heap crece de forma sostenida porque cada copia heredada del `ThreadLocal` queda retenida hasta que el hilo específico termine y sea recolectado.
+**Resultado esperado:** muestra ambos resultados; el bloque no termina antes de que las tareas finalicen.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-`ScopedValue` vincula un valor a una porción específica y acotada de código (no al hilo completo como `ThreadLocal`): el valor es inmutable durante ese scope, se propaga automáticamente a los virtual threads hijos lanzados dentro de él, y se libera automáticamente al salir del bloque, sin retenerlo indefinidamente. La analogía: un gafete de visitante que solo es válido dentro del edificio y se devuelve automáticamente al salir, en vez de una llave que el visitante se queda y alguien debe recordar reclamar después.
+**Fallo deliberado:** quita `scope.join()` e intenta leer los resultados. **Diagnóstico:** falta esperar a que las subtareas completen; vuelve a unir el scope antes de llamar a `get()`.
 
-#### Paso 4 · Demostración guiada desde cero
-Crea `src/main/java/academia/concurrencia/ContextoCorrelacion.java`:
+**3. Entiende**
+
+El scope agrupa subtareas dentro de un alcance. `join()` espera por ellas y el bloque de recursos mantiene su ciclo de vida contenido.
+
+**4. Cierra**
+
+Anota qué resultados deben estar listos antes de responder al cliente.
+
+#### Subtema 5.2: Propaga el fallo y cancela trabajo hermano · 10 min
+
+**1. Contexto**
+
+Si la distancia falla, la cotización completa no se puede entregar. La otra subtarea no debe seguir trabajando sin que nadie use el resultado.
+
+**2. Hazlo tú**
+
+En `src/Cotizar.java`, reemplaza las tareas por estas y conserva el mismo `scope.join()`:
+
 ```java
-static final ScopedValue<String> ID_CORRELACION = ScopedValue.newInstance();
-
-ScopedValue.where(ID_CORRELACION, generarId()).run(() -> {
-    try (var scope = StructuredTaskScope.open()) {
-        scope.fork(() -> procesarEnvio());   // ID_CORRELACION.get() funciona aquí también
-        scope.join();
+var distancia = scope.fork(() -> {
+    throw new IllegalStateException("no hay ruta");
+});
+var conductor = scope.fork(() -> {
+    try {
+        Thread.sleep(5000);
+        return "disponible";
+    } catch (InterruptedException cancelada) {
+        System.out.println("consulta cancelada");
+        throw cancelada;
     }
 });
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+Envuelve `scope.join()` en un `catch (StructuredTaskScope.FailedException error)` que imprima `error.getCause().getMessage()`. Compila con las banderas preview.
+
+**Resultado esperado:** se informa `no hay ruta`; la segunda tarea recibe interrupción, imprime `consulta cancelada` y termina antes del cierre del scope.
+
+**Fallo deliberado:** captura `InterruptedException` dentro de la segunda tarea y no termina ni vuelve a lanzar. **Diagnóstico:** la tarea ignora la cancelación y puede retrasar el cierre; coopera con la interrupción.
+
+**3. Entiende**
+
+El scope coordina el fallo, pero no puede obligar a terminar un cálculo que ignora interrupciones.
+
+**4. Cierra**
+
+Registra cuál tarea falló y cómo respondió la otra a la interrupción.
+
+#### Subtema 5.3: Activa preview para la versión correcta · 10 min
+
+**1. Contexto**
+
+El compilador solo permite APIs preview si declaras que las aceptas para esa versión.
+
+**2. Hazlo tú**
+
+Compila `src/Cotizar.java` primero sin preview y luego con:
 
 ```bash
-# Maven
-mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-cd app && mvn test
-# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
+javac --enable-preview --release 25 -d out src/Cotizar.java
+java --enable-preview -cp out Cotizar
 ```
 
-Resultado esperado: dentro del bloque `run`, cualquier código (incluidas las subtareas lanzadas con `StructuredTaskScope`) puede leer `ID_CORRELACION.get()` con el mismo valor, y ese valor deja de existir automáticamente apenas el bloque `run` termina, sin ninguna llamada manual de limpieza.
+**Resultado esperado:** sin la bandera, Java rechaza el uso de preview; con ella, compila y ejecuta.
 
-```mermaid
-flowchart LR
-  R["ScopedValue.where(...).run"] --> F[fork: procesarEnvio]
-  F --> G[ID_CORRELACION.get funciona dentro del scope]
-  R --> X[fin del run: valor liberado automáticamente]
+**Fallo deliberado:** usa `--release 21` con JDK 25. **Diagnóstico:** la API no existía en esa versión objetivo; compila para Java 25 y habilita preview.
+
+**3. Entiende**
+
+Preview puede cambiar o retirarse en una versión futura. Registra la versión de JDK y las banderas en el build.
+
+**4. Cierra**
+
+Guarda el comando reproducible y la versión usada. Fuente oficial: [StructuredTaskScope, Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/StructuredTaskScope.html).
+
+### Tema 6: Scoped Values frente a ThreadLocal (Java 25)
+
+#### Subtema 6.1: Comparte contexto durante una llamada · 10 min
+
+**1. Contexto**
+
+Varios métodos que atienden una solicitud necesitan consultar su guía sin pasarla por cada firma.
+
+**2. Hazlo tú**
+
+Crea `src/Contexto.java`:
+
+```java
+import java.lang.ScopedValue;
+
+public class Contexto {
+    static final ScopedValue<String> GUIA = ScopedValue.newInstance();
+
+    static void registrar() {
+        System.out.println("registro " + GUIA.get());
+    }
+
+    public static void main(String[] args) {
+        ScopedValue.where(GUIA, "RT-8").run(Contexto::registrar);
+        System.out.println(GUIA.isBound());
+    }
+}
 ```
 
-#### Paso 5 · Práctica guiada
-Pista: reemplazá `ScopedValue` por un `InheritableThreadLocal<String>` para propagar el mismo ID de correlación, y lanzá 500.000 virtual threads que lo hereden. Ese es el fallo deliberado: cada virtual thread retiene su propia copia heredada del `ThreadLocal` durante toda su vida, y con esa cantidad de virtual threads simultáneos el heap crece de forma medible y sostenida, justo el problema de memoria que los virtual threads estaban destinados a evitar.
+Compila y ejecuta `javac -d out src/Contexto.java` y `java -cp out Contexto`.
 
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 volviendo a `ScopedValue`, y medí el uso de heap antes y después del cambio lanzando la misma carga de 500.000 virtual threads, confirmando que `ScopedValue` no muestra ese crecimiento sostenido.
+**Resultado esperado:** imprime `registro RT-8` y después `false`; el valor solo está ligado durante la llamada.
 
-#### Paso 7 · Cierre y evidencia
-Entregá la propagación con `ScopedValue` del Paso 4, el crecimiento de heap con `ThreadLocal` heredable del Paso 5, y la medición comparativa del Paso 6; explicá por qué un valor inmutable y acotado a un scope es más apropiado que un valor mutable heredado por cientos de miles de virtual threads. Siguiente paso: estudia NIO.2 para completar el manejo de datos del proyecto integrador. Errores comunes: usar `ThreadLocal` heredable como propagación de contexto por defecto con virtual threads, intentar mutar un `ScopedValue` desde dentro de su propio scope (son inmutables por diseño), y no medir el uso real de memoria antes de descartar el problema como "poco probable". Fuentes oficiales: https://openjdk.org/jeps/506 y https://docs.oracle.com/en/java/javase/25/core/scoped-values.html.
-**¿Por qué es importante?** `ThreadLocal` heredable retiene una copia por cada hilo que lo hereda durante toda su vida; con cientos de miles de virtual threads esa retención se vuelve un problema de memoria real que `ScopedValue` evita por diseño.
-**Evidencia de aprendizaje:** entrega propagación con ScopedValue funcionando, crecimiento de heap con ThreadLocal heredable reproducido y medición comparativa confirmada.
+**Fallo deliberado:** llama `GUIA.get()` después del bloque. **Diagnóstico:** el valor ya no está ligado; mueve la lectura dentro del alcance.
+
+**3. Entiende**
+
+ScopedValue comparte un valor de solo lectura durante un alcance dinámico y lo desliga cuando el bloque termina.
+
+**4. Cierra**
+
+Identifica qué método leyó el valor sin recibirlo como parámetro.
+
+#### Subtema 6.2: Anida un valor y vuelve al anterior · 10 min
+
+**1. Contexto**
+
+Una operación interna puede necesitar un contexto temporal distinto y luego regresar al contexto original.
+
+**2. Hazlo tú**
+
+En `src/Contexto.java`, ejecuta estos bloques dentro de `main`:
+
+```java
+ScopedValue.where(GUIA, "RT-8").run(() -> {
+    System.out.println(GUIA.get());
+    ScopedValue.where(GUIA, "RT-9").run(() -> System.out.println(GUIA.get()));
+    System.out.println(GUIA.get());
+});
+```
+
+Compila y ejecuta de nuevo.
+
+**Resultado esperado:** imprime `RT-8`, `RT-9`, `RT-8`.
+
+**Fallo deliberado:** espera que la llamada interna cambie permanentemente el valor externo. **Diagnóstico:** la ligadura anidada dura solo en su propio bloque y al salir se restaura la anterior.
+
+**3. Entiende**
+
+La re-ligadura tiene alcance limitado; evita mutar un contexto global compartido.
+
+**4. Cierra**
+
+Dibuja el alcance exterior y el interior y marca cuándo termina cada valor.
+
+#### Subtema 6.3: Compara el ciclo de vida con ThreadLocal · 10 min
+
+**1. Contexto**
+
+ThreadLocal conserva un valor por hilo hasta que se quite; con hilos reutilizados puede filtrarse contexto entre solicitudes.
+
+**2. Hazlo tú**
+
+En `src/Contexto.java`, añade una operación con `ThreadLocal<String>`: llama `set("RT-8")`, imprime `get()` y llama `remove()` en un `finally`. Compárala con `ScopedValue.where`.
+
+```java
+ThreadLocal<String> guiaLocal = new ThreadLocal<>();
+try {
+    guiaLocal.set("RT-8");
+    System.out.println(guiaLocal.get());
+} finally {
+    guiaLocal.remove();
+}
+```
+
+**Resultado esperado:** ambas técnicas permiten leer el valor durante la operación; ThreadLocal requiere que el código limpie el estado manualmente.
+
+**Fallo deliberado:** quita `remove()` y reutiliza el mismo hilo para una segunda operación. **Diagnóstico:** la segunda operación puede ver el valor anterior; restaura la limpieza o usa un valor de alcance limitado.
+
+**3. Entiende**
+
+ScopedValue es de solo lectura y ligado a un bloque; ThreadLocal permite mutación y su limpieza es responsabilidad del código. No son intercambiables en todos los casos.
+
+**4. Cierra**
+
+Elige una opción para un identificador de solicitud inmutable y explica tu decisión. Fuentes oficiales: [ScopedValue, Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/ScopedValue.html) y [ThreadLocal](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/ThreadLocal.html).
 
 ## Construcción guiada del capítulo
 
@@ -642,69 +737,147 @@ Entregá la propagación con `ScopedValue` del Paso 4, el crecimiento de heap co
 
 ### Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar limitarás una espera y comprobarás que una tarea acepta la interrupción antes de cerrar su executor. **Prerrequisitos:** excepciones, try/finally y Future. JDK 25; comprueba `java --version` y `javac --version`. Ejemplo independiente desde carpeta vacía.
+**¿Por qué es importante?** Una pantalla no debe esperar indefinidamente, y cancelar una espera no garantiza que el trabajo de fondo se haya detenido.
 
-#### Paso 2 · Contexto y caso real
-El proyecto integrador consulta un proveedor que puede tardar demasiado. Dejar de esperar no significa que ese trabajo se haya detenido. **¿Por qué es importante?** Tareas abandonadas siguen consumiendo conexiones, CPU o memoria.
+#### Subtema 7.1: Limita cuánto espera el hilo coordinador · 10 min
 
-#### Paso 3 · Teoría, modelo mental y analogía
-`get` con timeout limita cuánto espera quien llama. `cancel(true)` solicita interrupción; no mata un hilo de forma segura. La tarea debe responder a esa señal. Las esperas interrumpibles, como `sleep`, lanzan `InterruptedException`; si la capturas y finalizas, puedes restaurar la marca de interrupción.
+**1. Contexto**
 
-**Analogía:** un plazo vence en recepción, pero hay que avisar también a quien ejecuta el encargo. El límite es que el aviso requiere cooperación; una tarea que ignora interrupciones puede seguir activa.
+El motor solicita una tarifa; si no llega pronto, debe mostrar que el servicio está demorando.
 
-#### Paso 4 · Demostración guiada desde cero
-```bash
-mkdir timeout-java
-cd timeout-java
-```
-Crea `Plazo.java` completo:
+**2. Hazlo tú**
+
+Crea `src/Plazo.java`:
+
 ```java
-import java.util.concurrent.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class Plazo {
     public static void main(String[] args) throws Exception {
-        ExecutorService pool = Executors.newSingleThreadExecutor();
-        CountDownLatch started = new CountDownLatch(1);
-        Future<String> result = pool.submit(() -> {
-            started.countDown();
-            try {
-                Thread.sleep(10_000);
-                return "Respuesta";
-            } catch (InterruptedException error) {
-                Thread.currentThread().interrupt();
-                return "Cancelada";
-            }
+        var executor = Executors.newSingleThreadExecutor();
+        var futuro = executor.submit(() -> {
+            Thread.sleep(5000);
+            return "tarifa lista";
         });
         try {
-            started.await();
-            System.out.println(result.get(50, TimeUnit.MILLISECONDS));
-        } catch (TimeoutException error) {
-            result.cancel(true); // Solicita la interrupción de la tarea.
-            System.out.println("Plazo agotado");
+            System.out.println(futuro.get(100, TimeUnit.MILLISECONDS));
+        } catch (TimeoutException tarde) {
+            futuro.cancel(true);
+            System.out.println("consulta cancelada");
         } finally {
-            pool.shutdownNow();
-            if (!pool.awaitTermination(2, TimeUnit.SECONDS)) {
-                throw new IllegalStateException("La tarea no cooperó");
-            }
+            executor.shutdownNow();
+            executor.awaitTermination(1, TimeUnit.SECONDS);
         }
-        System.out.println("Executor terminado");
     }
 }
 ```
-```bash
-javac Plazo.java
-java Plazo
+
+Compila y ejecuta `javac -d out src/Plazo.java` y `java -cp out Plazo`.
+
+**Resultado esperado:** imprime `consulta cancelada` y el proceso termina sin esperar cinco segundos.
+
+**Fallo deliberado:** quita el argumento de timeout de `get`. **Diagnóstico:** `get()` espera sin límite hasta que la tarea termine; restaura el límite explícito.
+
+**3. Entiende**
+
+El timeout limita cuánto espera quien llama. `cancel(true)` solicita interrupción; la tarea debe cooperar para terminar.
+
+**4. Cierra**
+
+Registra la duración aproximada y distingue timeout de respuesta exitosa.
+
+#### Subtema 7.2: Haz que el trabajo responda a una interrupción · 10 min
+
+**1. Contexto**
+
+Cancelar una tarea es una petición. Si el código ignora la interrupción, el recurso puede seguir ocupado.
+
+**2. Hazlo tú**
+
+En `src/Cooperar.java`, inicia una tarea que duerma en un ciclo, espera a que señale que comenzó y cancélala con `cancel(true)`. Dentro de `catch (InterruptedException)` imprime `trabajo detenido` y termina.
+
+```java
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+
+public class Cooperar {
+    public static void main(String[] args) throws Exception {
+        var inicio = new CountDownLatch(1);
+        try (var executor = Executors.newSingleThreadExecutor()) {
+            var tarea = executor.submit(() -> {
+                inicio.countDown();
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException cancelada) {
+                    System.out.println("trabajo detenido");
+                }
+            });
+            inicio.await();
+            tarea.cancel(true);
+        }
+    }
+}
 ```
-**Resultado esperado:** `Plazo agotado` y `Executor terminado`, sin esperar diez segundos. Explica cada bloque: el latch confirma que empezó la tarea, `get` limita la espera y `finally` comprueba terminación. Un timeout no afirma que un servicio remoto haya deshecho nada.
 
-#### Paso 5 · Práctica guiada
-**Fallo deliberado:** elimina el catch del timeout y conserva `finally`. El programa informa `TimeoutException`; comprueba que el executor sigue cerrándose. **Pista:** el manejo del resultado y la limpieza son responsabilidades distintas. Repón el catch y el mensaje de negocio.
+Compila y ejecuta `javac -d out src/Cooperar.java` y `java -cp out Cooperar`.
 
-#### Paso 6 · Práctica independiente
-Haz una variante rápida con espera de 10 ms y timeout de 2 segundos. Debe mostrar `Respuesta` y terminar. Escribe qué harías si el proveedor no coopera y qué límite pondrías al número de peticiones simultáneas.
+**Resultado esperado:** imprime `trabajo detenido` y sale del bloque sin esperar los cinco segundos.
 
-#### Paso 7 · Cierre y evidencia
-**Evidencia de aprendizaje:** ambas salidas, duración aproximada y explicación de timeout frente a cancelación. El siguiente paso es propagar un presupuesto de tiempo entre llamadas. **Errores comunes:** asumir que `cancel` garantiza terminación, tragarse interrupciones y cerrar un pool sin comprobar tareas pendientes. **Límites y decisión de uso:** tiempos exactos dependen del planificador; verifica resultados y terminación, no una duración exacta al milisegundo.
+**Fallo deliberado:** captura `InterruptedException` y continúa con otro `Thread.sleep`. **Diagnóstico:** el trabajo desatiende la cancelación; termina al capturar la interrupción o vuelve a propagarla.
 
-**Fuentes oficiales:** [ExecutorService](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/ExecutorService.html) y [Future](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Future.html).
+**3. Entiende**
+
+La cancelación no mata un hilo a la fuerza. El código debe revisar o propagar la interrupción y liberar sus recursos.
+
+**4. Cierra**
+
+Entrega la salida y señala dónde se atendió la interrupción.
+
+#### Subtema 7.3: Distingue timeout de CompletableFuture y cancelación real · 10 min
+
+**1. Contexto**
+
+Una interfaz puede necesitar una respuesta límite, pero el proveedor remoto puede seguir procesando después de que tu futuro haya expirado.
+
+**2. Hazlo tú**
+
+Crea `src/FuturoConPlazo.java` con `CompletableFuture.supplyAsync` que espere un segundo, aplica `orTimeout(100, TimeUnit.MILLISECONDS)` y maneja `TimeoutException` con `exceptionally` para mostrar `servicio lento`.
+
+```java
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+
+public class FuturoConPlazo {
+    public static void main(String[] args) {
+        var respuesta = CompletableFuture.supplyAsync(() -> {
+            try {
+                Thread.sleep(1000);
+                return "tarifa lista";
+            } catch (InterruptedException cancelada) {
+                Thread.currentThread().interrupt();
+                throw new IllegalStateException(cancelada);
+            }
+        }).orTimeout(100, TimeUnit.MILLISECONDS)
+          .exceptionally(error -> "servicio lento");
+        System.out.println(respuesta.join());
+    }
+}
+```
+
+Compila y ejecuta `javac -d out src/FuturoConPlazo.java` y `java -cp out FuturoConPlazo`.
+
+**Resultado esperado:** la salida para el llamador es `servicio lento`. El timeout completa el futuro excepcionalmente; no prueba por sí solo que una operación externa se haya cancelado.
+
+**Fallo deliberado:** interpreta `orTimeout` como confirmación de que el servicio remoto dejó de trabajar. **Diagnóstico:** el futuro limita el resultado local; usa la cancelación propia del cliente de red y comprueba cómo libera recursos.
+
+**3. Entiende**
+
+`orTimeout` completa el futuro con un error cuando vence el plazo. Para llamadas HTTP o base de datos, configura también un timeout en el cliente que realiza la operación.
+
+**4. Cierra**
+
+Explica qué terminó: la espera del llamador, el futuro local o el trabajo remoto. Fuente oficial: [CompletableFuture](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletableFuture.html).
+
+**Proyecto integrador:** aplica límites a las consultas de tarifa y ubicación, y registra si hubo respuesta, timeout o cancelación cooperativa.

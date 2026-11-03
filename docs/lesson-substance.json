@@ -1695,13 +1695,14 @@
     }
   ],
   "summary": {
-    "fingerprint": "ec2bd69128a8e378a8f7d10dffab2dc2a9dcd171ec5d0ad26126a680bcb460bd",
+    "fingerprint": "1ad463b2b545e36f2118cace0b19d39e323e4c33f89e8e0fc19f3ac5a2a499e5",
     "issues": {
-      "andamiaje-generico": 125,
-      "bloque-repetido": 196,
-      "cola-tras-cierre": 356,
+      "andamiaje-generico": 124,
+      "bloque-repetido": 185,
+      "cola-tras-cierre": 348,
       "parrafo-repetido": 5,
-      "tema-breve": 2
+      "sin-fuente": 2,
+      "tema-breve": 5
     },
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
@@ -1711,7 +1712,7 @@
     "modules": 256,
     "modulesWithLegacySections": 181,
     "topics": 1185,
-    "topicsWithIssues": 445
+    "topicsWithIssues": 438
   },
   "topics": {
     "android": [
@@ -7754,133 +7755,111 @@
         "words": 683
       },
       {
-        "issues": [
-          "andamiaje-generico",
-          "bloque-repetido",
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 5,
-        "tailWords": 541,
+        "tailWords": 0,
         "topic": "Tema 5: Structured Concurrency (StructuredTaskScope, Java 25)",
-        "words": 1036
+        "words": 557
       },
       {
         "issues": [],
         "module": 5,
-        "tailWords": 188,
+        "tailWords": 0,
         "topic": "Tema 6: Scoped Values frente a ThreadLocal (Java 25)",
-        "words": 680
+        "words": 527
       },
       {
         "issues": [],
         "module": 5,
-        "tailWords": 101,
+        "tailWords": 0,
         "topic": "Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos",
-        "words": 520
+        "words": 709
       },
       {
-        "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 6,
-        "tailWords": 627,
+        "tailWords": 0,
         "topic": "Tema 1: NIO.2 — Path y Files",
-        "words": 1084
+        "words": 585
       },
       {
-        "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 6,
-        "tailWords": 529,
+        "tailWords": 0,
         "topic": "Tema 2: Serialización con Jackson",
-        "words": 852
+        "words": 696
       },
       {
-        "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 6,
-        "tailWords": 650,
+        "tailWords": 0,
         "topic": "Tema 3: Archivos grandes y recursos del classpath",
-        "words": 960
+        "words": 660
       },
       {
-        "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 7,
-        "tailWords": 556,
+        "tailWords": 0,
         "topic": "Tema 1: record — modelos inmutables sin boilerplate",
-        "words": 840
+        "words": 481
       },
       {
         "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
+          "tema-breve"
         ],
         "module": 7,
-        "tailWords": 579,
+        "tailWords": 0,
         "topic": "Tema 2: sealed — jerarquías cerradas y exhaustividad",
-        "words": 872
+        "words": 443
       },
       {
-        "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 7,
-        "tailWords": 625,
+        "tailWords": 0,
         "topic": "Tema 3: Pattern matching exhaustivo y para instanceof",
-        "words": 924
+        "words": 460
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 7,
-        "tailWords": 496,
+        "tailWords": 0,
         "topic": "Tema 4: Unnamed variables y patterns (_, Java 22)",
-        "words": 1079
-      },
-      {
-        "issues": [
-          "bloque-repetido"
-        ],
-        "module": 8,
-        "tailWords": 464,
-        "topic": "Tema 1: pom.xml vs build.gradle.kts",
-        "words": 824
-      },
-      {
-        "issues": [
-          "bloque-repetido"
-        ],
-        "module": 8,
-        "tailWords": 473,
-        "topic": "Tema 2: Ciclo de vida de build y scopes",
-        "words": 909
-      },
-      {
-        "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
-        ],
-        "module": 8,
-        "tailWords": 518,
-        "topic": "Tema 3: Proyectos multi-módulo",
-        "words": 871
+        "words": 477
       },
       {
         "issues": [],
         "module": 8,
-        "tailWords": 255,
+        "tailWords": 0,
+        "topic": "Tema 1: pom.xml vs build.gradle.kts",
+        "words": 455
+      },
+      {
+        "issues": [
+          "sin-fuente",
+          "tema-breve"
+        ],
+        "module": 8,
+        "tailWords": 0,
+        "topic": "Tema 2: Ciclo de vida de build y scopes",
+        "words": 389
+      },
+      {
+        "issues": [
+          "sin-fuente"
+        ],
+        "module": 8,
+        "tailWords": 0,
+        "topic": "Tema 3: Proyectos multi-módulo",
+        "words": 453
+      },
+      {
+        "issues": [
+          "tema-breve"
+        ],
+        "module": 8,
+        "tailWords": 0,
         "topic": "Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas",
-        "words": 909
+        "words": 436
       },
       {
         "issues": [

@@ -24,7 +24,8 @@ def matches(pattern: str, text: str) -> bool:
 def evaluate(block: str) -> dict[str, bool]:
     has_action = matches(r"\*\*2\. Hazlo t[uú]\*\*|\*\*Hazlo t[uú]:\*\*", block)
     has_code_or_command = matches(r"```(?:bash|sh|java|js|ts|dart|sql|ya?ml)", block) or matches(
-        r"\./mvnw|\./gradlew|\bnpm\s|\bnode\s|\bflutter\s|\bdart\s|\bdocker\s|\bpodman\s", block
+        r"\./mvnw|\./gradlew|\bjavac\s|\bjava\s|\bmvn\s|\bgradle\s|\bnpm\s|\bnode\s|\bflutter\s|\bdart\s|\bdocker\s|\bpodman\s",
+        block,
     )
     has_file = matches(
         r"(?:src/|lib/|examples/|test/|web/|app/)[\w./-]+\.[\w]+|`[\w./-]+\.(?:java|kt|js|mjs|ts|tsx|dart|sql|ya?ml|json)`",

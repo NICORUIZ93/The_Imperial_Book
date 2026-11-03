@@ -86,15 +86,15 @@
     },
     "java": {
       "topics": 101,
-      "code": 101,
-      "commentedCode": 41,
-      "mermaid": 32,
+      "code": 97,
+      "commentedCode": 33,
+      "mermaid": 28,
       "archifyVisual": 1,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
       "filePath": 101,
       "runCommand": 101,
-      "officialSource": 28
+      "officialSource": 23
     },
     "spring-boot": {
       "topics": 111,
@@ -2266,6 +2266,20 @@
     {
       "track": "java",
       "module": 5,
+      "topic": "Tema 5: Structured Concurrency (StructuredTaskScope, Java 25)",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 5,
+      "topic": "Tema 6: Scoped Values frente a ThreadLocal (Java 25)",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 5,
       "topic": "Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos",
       "missingCode": false,
       "missingComments": true
@@ -2294,16 +2308,58 @@
     {
       "track": "java",
       "module": 7,
+      "topic": "Tema 1: record — modelos inmutables sin boilerplate",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 7,
       "topic": "Tema 2: sealed — jerarquías cerradas y exhaustividad",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
-      "module": 8,
-      "topic": "Tema 3: Proyectos multi-módulo",
+      "module": 7,
+      "topic": "Tema 3: Pattern matching exhaustivo y para instanceof",
       "missingCode": false,
       "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 7,
+      "topic": "Tema 4: Unnamed variables y patterns (_, Java 22)",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 8,
+      "topic": "Tema 1: pom.xml vs build.gradle.kts",
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "java",
+      "module": 8,
+      "topic": "Tema 2: Ciclo de vida de build y scopes",
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "java",
+      "module": 8,
+      "topic": "Tema 3: Proyectos multi-módulo",
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "java",
+      "module": 8,
+      "topic": "Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas",
+      "missingCode": true,
+      "missingComments": false
     },
     {
       "track": "java",

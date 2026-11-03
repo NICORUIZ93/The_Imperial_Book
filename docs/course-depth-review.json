@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 190,
+    "topicsWithSignals": 195,
     "newLaboratories": 25
   },
   "priorities": {
@@ -8406,7 +8406,7 @@
       "file": "web/public/content/java/modulo-5.md",
       "line": 485,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8417,9 +8417,9 @@
       "module": 5,
       "title": "Tema 6: Scoped Values frente a ThreadLocal (Java 25)",
       "file": "web/public/content/java/modulo-5.md",
-      "line": 559,
+      "line": 600,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8430,8 +8430,10 @@
       "module": 5,
       "title": "Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos",
       "file": "web/public/content/java/modulo-5.md",
-      "line": 643,
-      "signals": [],
+      "line": 738,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": true,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -8442,7 +8444,9 @@
       "title": "Tema 1: NIO.2 — Path y Files",
       "file": "web/public/content/java/modulo-6.md",
       "line": 6,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -8452,9 +8456,9 @@
       "module": 6,
       "title": "Tema 2: Serialización con Jackson",
       "file": "web/public/content/java/modulo-6.md",
-      "line": 108,
+      "line": 124,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8465,9 +8469,9 @@
       "module": 6,
       "title": "Tema 3: Archivos grandes y recursos del classpath",
       "file": "web/public/content/java/modulo-6.md",
-      "line": 166,
+      "line": 247,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8480,7 +8484,7 @@
       "file": "web/public/content/java/modulo-7.md",
       "line": 6,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8491,9 +8495,9 @@
       "module": 7,
       "title": "Tema 2: sealed — jerarquías cerradas y exhaustividad",
       "file": "web/public/content/java/modulo-7.md",
-      "line": 64,
+      "line": 90,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8504,9 +8508,9 @@
       "module": 7,
       "title": "Tema 3: Pattern matching exhaustivo y para instanceof",
       "file": "web/public/content/java/modulo-7.md",
-      "line": 120,
+      "line": 176,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8517,9 +8521,9 @@
       "module": 7,
       "title": "Tema 4: Unnamed variables y patterns (_, Java 22)",
       "file": "web/public/content/java/modulo-7.md",
-      "line": 199,
+      "line": 261,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8531,7 +8535,9 @@
       "title": "Tema 1: pom.xml vs build.gradle.kts",
       "file": "web/public/content/java/modulo-8.md",
       "line": 6,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -8541,9 +8547,9 @@
       "module": 8,
       "title": "Tema 2: Ciclo de vida de build y scopes",
       "file": "web/public/content/java/modulo-8.md",
-      "line": 77,
+      "line": 76,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8554,8 +8560,10 @@
       "module": 8,
       "title": "Tema 3: Proyectos multi-módulo",
       "file": "web/public/content/java/modulo-8.md",
-      "line": 132,
-      "signals": [],
+      "line": 146,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -8565,8 +8573,10 @@
       "module": 8,
       "title": "Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas",
       "file": "web/public/content/java/modulo-8.md",
-      "line": 187,
-      "signals": [],
+      "line": 216,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"

@@ -11,7 +11,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 | node | 83 | 17 | HTTP y validación antes de autenticación e integraciones | API con límites de carga, paginación estable, pruebas y cierre ordenado |
 | angular | 71 | 3 | HTML/CSS/TypeScript explícitos; RxJS y estado con ejemplos completos | Rutas, formularios, datos remotos y cambios sin guardar comprobados con navegador |
 | react | 58 | 46 | JSX y estado antes de efectos; proveedor, dependencias y API visibles | Carga, error, vacío y carrera de respuestas; caché observada, no supuesta |
-| java | 101 | 61 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
+| java | 101 | 66 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
 | spring-boot | 111 | 27 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
 | android | 58 | 0 | Kotlin antes de Compose; distinguir recomposición, recreación y muerte de proceso | App instalable con permisos, restauración, persistencia y pruebas en dispositivo |
 | ios | 56 | 4 | Swift antes de SwiftUI; explicitar macOS/Xcode y destino | Cancelación, estados de red, persistencia y accesibilidad comprobados en simulador |
@@ -770,20 +770,20 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | java / 5 | [Tema 2: CompletableFuture](../web/public/content/java/modulo-5.md) | demostracion-no-delimitada |
 | java / 5 | [Tema 3: Virtual threads](../web/public/content/java/modulo-5.md) | demostracion-no-delimitada |
 | java / 5 | [Tema 4: Condiciones de carrera y sincronización](../web/public/content/java/modulo-5.md) | demostracion-no-delimitada |
-| java / 5 | [Tema 5: Structured Concurrency (StructuredTaskScope, Java 25)](../web/public/content/java/modulo-5.md) | clase-java-no-visible |
-| java / 5 | [Tema 6: Scoped Values frente a ThreadLocal (Java 25)](../web/public/content/java/modulo-5.md) | clase-java-no-visible |
-| java / 5 | [Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos](../web/public/content/java/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 6 | [Tema 1: NIO.2 — Path y Files](../web/public/content/java/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 6 | [Tema 2: Serialización con Jackson](../web/public/content/java/modulo-6.md) | clase-java-no-visible |
-| java / 6 | [Tema 3: Archivos grandes y recursos del classpath](../web/public/content/java/modulo-6.md) | clase-java-no-visible |
-| java / 7 | [Tema 1: record — modelos inmutables sin boilerplate](../web/public/content/java/modulo-7.md) | clase-java-no-visible |
-| java / 7 | [Tema 2: sealed — jerarquías cerradas y exhaustividad](../web/public/content/java/modulo-7.md) | clase-java-no-visible |
-| java / 7 | [Tema 3: Pattern matching exhaustivo y para instanceof](../web/public/content/java/modulo-7.md) | clase-java-no-visible |
-| java / 7 | [Tema 4: Unnamed variables y patterns (_, Java 22)](../web/public/content/java/modulo-7.md) | clase-java-no-visible |
-| java / 8 | [Tema 1: pom.xml vs build.gradle.kts](../web/public/content/java/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 8 | [Tema 2: Ciclo de vida de build y scopes](../web/public/content/java/modulo-8.md) | clase-java-no-visible |
-| java / 8 | [Tema 3: Proyectos multi-módulo](../web/public/content/java/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 8 | [Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas](../web/public/content/java/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 5 | [Tema 5: Structured Concurrency (StructuredTaskScope, Java 25)](../web/public/content/java/modulo-5.md) | demostracion-no-delimitada |
+| java / 5 | [Tema 6: Scoped Values frente a ThreadLocal (Java 25)](../web/public/content/java/modulo-5.md) | demostracion-no-delimitada |
+| java / 5 | [Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos](../web/public/content/java/modulo-5.md) | demostracion-no-delimitada |
+| java / 6 | [Tema 1: NIO.2 — Path y Files](../web/public/content/java/modulo-6.md) | demostracion-no-delimitada |
+| java / 6 | [Tema 2: Serialización con Jackson](../web/public/content/java/modulo-6.md) | demostracion-no-delimitada |
+| java / 6 | [Tema 3: Archivos grandes y recursos del classpath](../web/public/content/java/modulo-6.md) | demostracion-no-delimitada |
+| java / 7 | [Tema 1: record — modelos inmutables sin boilerplate](../web/public/content/java/modulo-7.md) | demostracion-no-delimitada |
+| java / 7 | [Tema 2: sealed — jerarquías cerradas y exhaustividad](../web/public/content/java/modulo-7.md) | demostracion-no-delimitada |
+| java / 7 | [Tema 3: Pattern matching exhaustivo y para instanceof](../web/public/content/java/modulo-7.md) | demostracion-no-delimitada |
+| java / 7 | [Tema 4: Unnamed variables y patterns (_, Java 22)](../web/public/content/java/modulo-7.md) | demostracion-no-delimitada |
+| java / 8 | [Tema 1: pom.xml vs build.gradle.kts](../web/public/content/java/modulo-8.md) | demostracion-no-delimitada |
+| java / 8 | [Tema 2: Ciclo de vida de build y scopes](../web/public/content/java/modulo-8.md) | demostracion-no-delimitada |
+| java / 8 | [Tema 3: Proyectos multi-módulo](../web/public/content/java/modulo-8.md) | demostracion-no-delimitada |
+| java / 8 | [Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas](../web/public/content/java/modulo-8.md) | demostracion-no-delimitada |
 | java / 9 | [Tema 1: JUnit 5 — anotaciones y ciclo de vida](../web/public/content/java/modulo-9.md) | clase-java-no-visible |
 | java / 9 | [Tema 2: Mockito — aislar dependencias](../web/public/content/java/modulo-9.md) | clase-java-no-visible |
 | java / 9 | [Tema 3: Tests parametrizados y cobertura](../web/public/content/java/modulo-9.md) | clase-java-no-visible |
