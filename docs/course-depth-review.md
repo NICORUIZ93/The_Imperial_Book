@@ -17,7 +17,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 | ios | 56 | 4 | Swift antes de SwiftUI; explicitar macOS/Xcode y destino | Cancelación, estados de red, persistencia y accesibilidad comprobados en simulador |
 | flutter | 63 | 6 | Dart antes de widgets; ejemplo con main y destino de ejecución | Restauración, red, pruebas de widget, integración y publicación por plataforma |
 | kotlin-multiplatform | 56 | 2 | Kotlin y source sets antes de interoperabilidad | Política común sin dependencias nativas; reloj controlado y pruebas por destino |
-| cloud | 156 | 1 | Terminal/HTTP/Docker antes de servicios; emulación distinta de cloud real | Infraestructura, permisos mínimos, restauración ensayada, RPO/RTO y costes observados |
+| cloud | 156 | 2 | Terminal/HTTP/Docker antes de servicios; emulación distinta de cloud real | Infraestructura, permisos mínimos, restauración ensayada, RPO/RTO y costes observados |
 | devops | 113 | 3 | Aplicación ejecutable antes de CI/CD; código de salida y artefactos identificables | Pipeline con promoción, rollback comprobado, observabilidad e incidente ensayado |
 | rutaflow | 29 | 1 | Integrar una especialidad por incremento; dominio y contratos antes de microservicios | Flujo completo con versión antigua/nueva, fallo y recuperación sin pérdida semántica |
 
@@ -159,7 +159,7 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | cloud / 0 | [Tema 1: Fundamentos absolutos — qué es una terminal, un comando y un sistema operativo](../web/public/content/cloud/modulo-0.md) | ejemplo-breve-revisar-contexto |
 | cloud / 0 | [Tema 2: Fundamentos de redes — direcciones IP, puertos, HTTP y APIs](../web/public/content/cloud/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 0 | [Tema 3: Qué vas a aprender y cómo está estructurado el curso](../web/public/content/cloud/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| cloud / 0 | [Tema 4: Qué es Floci — definición, propósito y comparativa con LocalStack](../web/public/content/cloud/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
+| cloud / 0 | [Tema 4: Qué es Floci — definición, propósito y comparativa con LocalStack](../web/public/content/cloud/modulo-0.md) | ejemplo-breve-revisar-contexto |
 | cloud / 0 | [Tema 5: Servicios que emula Floci — AWS, Azure y GCP](../web/public/content/cloud/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 0 | [Tema 6: Ventajas y limitaciones de practicar con un emulador local](../web/public/content/cloud/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 0 | [Tema 7: Metodología de estudio — teoría, laboratorio y evaluación en cada módulo](../web/public/content/cloud/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
