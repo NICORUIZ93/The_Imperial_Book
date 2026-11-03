@@ -1501,7 +1501,7 @@
     },
     {
       "path": "docs/subtopic-depth-review.json",
-      "lines": 21750,
+      "lines": 21751,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1522,7 +1522,7 @@
     },
     {
       "path": "docs/subtopic-depth-reviewed.json",
-      "lines": 4870,
+      "lines": 4871,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -12496,7 +12496,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-1.md",
-      "lines": 683,
+      "lines": 723,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

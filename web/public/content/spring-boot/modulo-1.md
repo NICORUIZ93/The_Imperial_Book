@@ -306,6 +306,7 @@ ____:
 | Configuración base en `application.yml` | Prerrequisito | la base declara `server.port: 8080` y `spring.datasource.url` apuntando a `app` |
 | Perfil como sobreescritura parcial | Núcleo | `application-dev.yml` solo declara `spring.datasource.url` apuntando a `app_dev` |
 | Activación explícita del perfil | Núcleo | `--spring.profiles.active=dev` y el log `The following 1 profile is active: "dev"` |
+| `spring.profiles.group` activa varios perfiles a la vez | Variante | activar `produccion` activa también `metrica` y `seguridad`: el log reporta 3 perfiles activos |
 | Configuración fusionada efectiva | Variante | `/actuator/env` reporta `app_dev` para la URL y `8080` heredado para el puerto |
 | Perfil nunca activo por defecto | Diagnóstico | arrancar sin la bandera usa la URL base `app`, no `app_dev` |
 | Olvidar activar el perfil al desplegar | Error frecuente | el entorno equivocado surge de no pasar `--spring.profiles.active` |
@@ -320,6 +321,8 @@ Cada fila tiene su explicación individual a continuación.
 
 **Activación explícita del perfil (núcleo).** Un perfil se activa al arrancar con `java -jar target/*.jar --spring.profiles.active=dev`, sin recompilar para cada entorno. El log de arranque muestra `The following 1 profile is active: "dev"`, evidencia directa de qué archivo de perfil se cargó además de la base.
 
+**`spring.profiles.group` activa varios perfiles a la vez (variante).** Declarar en `application.yml` `spring.profiles.group.produccion: "metrica,seguridad"` convierte a `produccion` en un perfil "paraguas": activarlo con `--spring.profiles.active=produccion` activa automáticamente también `metrica` y `seguridad`, confirmado en el log de arranque real (`The following 3 profiles are active: "produccion", "metrica", "seguridad"`) y con `Environment.getActiveProfiles()`/`acceptsProfiles(...)`. Esto evita que un despliegue olvide activar uno de varios perfiles relacionados que siempre deberían ir juntos.
+
 **Configuración fusionada efectiva (variante).** Para ver la configuración ya fusionada el tema agrega el starter `actuator`, expone el endpoint `env` con `management.endpoints.web.exposure.include: env` y consulta `/actuator/env`. Esa variante reporta `spring.datasource.url` con el valor del perfil (`.../app_dev`) y `server.port` con el valor base `8080`, exponiendo la fusión sin inferencias.
 
 **Perfil nunca activo por defecto (diagnóstico).** El fallo deliberado consiste en arrancar sin `--spring.profiles.active=dev`: la aplicación usa la `spring.datasource.url` del `application.yml` base apuntando a `app`, no a `app_dev`. Diagnosticar esto deja claro que un perfil nunca se activa automáticamente y que olvidar la bandera es la causa típica de arrancar contra el entorno equivocado.
@@ -330,9 +333,9 @@ Cada fila tiene su explicación individual a continuación.
 
 **Perfiles solo cuando hay varios entornos (decisión).** La decisión profesional es no multiplicar perfiles sin necesidad: para una aplicación que siempre corre en un único entorno fijo, mantener varios perfiles agrega complejidad sin beneficio y basta un único `application.yml`. Cuando sí hay varios entornos, el reto pide tres perfiles (`dev`, `test`, `prod`) que cambien solo lo suyo sobre el mismo jar.
 
-**Conceptos clave:** perfil (`application-{perfil}.yml`), sobreescritura parcial, estructura por capas.
+**Conceptos clave:** perfil (`application-{perfil}.yml`), sobreescritura parcial, `spring.profiles.group`, estructura por capas.
 
-Un perfil (`application-dev.yml`, `application-prod.yml`) sobreescribe únicamente los valores que declara, manteniendo intacto el resto de la configuración base de `application.yml`; `java -jar app.jar --spring.profiles.active=dev` activa el perfil al arrancar, sin recompilar para cada entorno. La estructura por capas (`controller/` traduciendo HTTP hacia/desde DTOs, `service/` con la lógica de negocio sin conocimiento de HTTP, `repository/` con el acceso a datos) establece responsabilidades delimitadas: el controller no debería contener lógica de negocio y el service no debería conocer códigos de estado HTTP.
+Un perfil (`application-dev.yml`, `application-prod.yml`) sobreescribe únicamente los valores que declara, manteniendo intacto el resto de la configuración base de `application.yml`; `java -jar app.jar --spring.profiles.active=dev` activa el perfil al arrancar, sin recompilar para cada entorno. `spring.profiles.group.<nombre>: "perfilA,perfilB"` define un perfil paraguas que, al activarse, activa también todos los perfiles miembro del grupo. La estructura por capas (`controller/` traduciendo HTTP hacia/desde DTOs, `service/` con la lógica de negocio sin conocimiento de HTTP, `repository/` con el acceso a datos) establece responsabilidades delimitadas: el controller no debería contener lógica de negocio y el service no debería conocer códigos de estado HTTP.
 
 **Analogía:** los perfiles son conjuntos de ajustes preconfigurados para el mismo dispositivo, seleccionables según el contexto sin reconfigurar cada ajuste; la estructura por capas es una cadena de producción donde cada estación tiene una responsabilidad delimitada y no necesita conocer los detalles internos de las demás.
 
@@ -396,12 +399,49 @@ curl -s http://localhost:8080/actuator/env/server.port | grep -o '"value":[0-9]*
 
 **Resultado esperado:** `spring.datasource.url` reporta el valor del perfil (`.../app_dev`), mientras `server.port` reporta `8080`, el valor heredado sin cambios. El endpoint `/actuator/env` expone la configuración fusionada sin inferencias.
 
+Agrega al mismo `application.yml` base un grupo de perfiles y confirma con un test real que activar el grupo activa a todos sus miembros:
+
+```yaml
+spring:
+  profiles:
+    group:
+      produccion: "metrica,seguridad"
+```
+
+```java
+// src/test/java/com/academia/PerfilGrupoTest.java
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.Profiles;
+import org.springframework.test.context.ActiveProfiles;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+@SpringBootTest
+@ActiveProfiles("produccion")
+class PerfilGrupoTest {
+    @Autowired
+    private Environment environment;
+
+    @Test
+    void activarElGrupoActivaAmbosPerfilesMiembro() {
+        assertThat(environment.acceptsProfiles(Profiles.of("metrica"))).isTrue();
+        assertThat(environment.acceptsProfiles(Profiles.of("seguridad"))).isTrue();
+    }
+}
+```
+
+**Resultado esperado del grupo:** el log de arranque muestra `The following 3 profiles are active: "produccion", "metrica", "seguridad"` (verificado con Spring Boot 4.1.1 sobre JDK 27.0.1), y el test confirma ambos perfiles miembro activos sin haberlos pasado explícitamente en `--spring.profiles.active`.
+
 **Ejercicios.**
 
 1. Agrega un perfil `test` que sobreescriba únicamente el puerto y confirma con `/actuator/env` qué claves cambian.
 2. Declara la misma clave en la base y en el perfil, arranca con el perfil activo y confirma cuál gana.
 3. Organiza un endpoint existente en las tres capas (`controller`/`service`/`repository`) y documenta la responsabilidad de cada una.
 4. Escribe de memoria un `application-test.yml` que sobreescriba únicamente una clave base.
+5. Declara un segundo grupo `staging: "metrica"` (solo un miembro) y confirma con un test que activar `staging` NO activa `seguridad`, solo `metrica`.
 
 **Pista:** antes de desplegar, verifica con el log `The following N profile(s) are active` con qué perfil arrancó la aplicación, en vez de asumirlo.
 

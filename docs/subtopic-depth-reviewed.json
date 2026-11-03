@@ -2096,7 +2096,7 @@
     "spring-boot/modulo-1::Tema 3: Perfiles y estructura por capas · Intermedio · 30 min": {
       "status": "reviewed",
       "reviewDate": "2026-11-02",
-      "execution": "Verificado que la mecánica de perfiles (application-{perfil}.yml, --spring.profiles.active, /actuator/env) sigue vigente en Spring Boot 4.1.2; independiente del rename de starters. Requiere el mismo -d type=maven-project corregido en el laboratorio del módulo para que el jar generado use Maven.",
+      "execution": "Verificado que la mecánica de perfiles (application-{perfil}.yml, --spring.profiles.active, /actuator/env) sigue vigente en Spring Boot 4.1.2; independiente del rename de starters. Requiere el mismo -d type=maven-project corregido en el laboratorio del módulo para que el jar generado use Maven. Actualizado para Lote 2 (MEDIA #12 de docs/AUDITORIA-COBERTURA-SPRING-20261101.md: '@Profile y grupos de perfiles (spring.profiles.group) -> M1 T3'): agregado spring.profiles.group, ejecutado de verdad -- activar un perfil 'produccion' con spring.profiles.group.produccion=metrica,seguridad activa automaticamente ambos perfiles miembro, confirmado en el log real de arranque ('The following 3 profiles are active') y con Environment.acceptsProfiles(...) en un test real sobre Spring Boot 4.1.1 / JDK 27.0.1.",
       "criticalSubtopics": [
         "Configuración base en application.yml",
         "Perfil como sobreescritura parcial",
@@ -2105,7 +2105,8 @@
         "Perfil nunca activo por defecto",
         "Olvidar activar el perfil al desplegar",
         "Separación por capas controller/service/repository",
-        "Perfiles solo cuando hay varios entornos"
+        "Perfiles solo cuando hay varios entornos",
+        "spring.profiles.group (perfil paraguas)"
       ],
       "sources": [
         "https://start.spring.io/metadata/client",

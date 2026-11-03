@@ -1677,7 +1677,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "b979e92d487bef96e6873b4463510c1d75116dced0f0b57b6a9ce1605f93c710",
+    "fingerprint": "8d6677ad10e0524c49671d76908c3d9b084a03357f97fcf6965914d86c56e92d",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
@@ -9233,7 +9233,7 @@
         "module": 1,
         "tailWords": 286,
         "topic": "Tema 3: Perfiles y estructura por capas · Intermedio · 30 min",
-        "words": 1634
+        "words": 1939
       },
       {
         "issues": [],
