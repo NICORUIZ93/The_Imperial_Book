@@ -5,7 +5,7 @@
 **Proyecto continuo:** Motor de asignación de entregas.
 **Prerrequisito de entrada:** Fundamentos de programación; el módulo 0 comienza con JDK y terminal..
 **Duración objetivo:** temas de 20–45 minutos; cada tema se divide en 3–6 acciones de 5–15 minutos.
-**Estado estructural:** 60/101 temas migrados; auditoría estructural actualizada el 2026-11-03.
+**Estado estructural:** 64/101 temas migrados; auditoría estructural actualizada el 2026-11-03.
 
 ## Índice de módulos y temas
 
@@ -323,10 +323,22 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
 
 [Abrir lección completa](../web/public/content/java/modulo-14.md)
 
-- [pendiente de migrar] Tema 1: Compartir memoria requiere orden y visibilidad
-- [pendiente de migrar] Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo
-- [pendiente de migrar] Tema 3: Deserializar es permitir construcción y comportamiento
-- [pendiente de migrar] Tema 4: El runtime es parte del artefacto y necesita ciclo de vida
+- [4 pasos] Tema 1: Compartir memoria requiere orden y visibilidad
+  - ✓ Subtema 1.1: Detén un hilo con un flag visible · 10 min
+  - ✓ Subtema 1.2: Distingue visibilidad de atomicidad · 10 min
+  - ✓ Subtema 1.3: Protege un invariante con synchronized · 10 min
+- [4 pasos] Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo
+  - ✓ Subtema 2.1: Observa por qué un cronómetro ingenuo engaña · 10 min
+  - ✓ Subtema 2.2: Escribe un benchmark consumible por JMH · 10 min
+  - ✓ Subtema 2.3: Compara algoritmos con el mismo trabajo · 10 min
+- [4 pasos] Tema 3: Deserializar es permitir construcción y comportamiento
+  - ✓ Subtema 3.1: Reconoce por qué evitar datos nativos no confiables · 10 min
+  - ✓ Subtema 3.2: Filtra un formato legado · 10 min
+  - ✓ Subtema 3.3: Limita tamaño y valida después de parsear · 10 min
+- [4 pasos] Tema 4: El runtime es parte del artefacto y necesita ciclo de vida
+  - ✓ Subtema 4.1: Averigua qué módulos necesita el programa · 10 min
+  - ✓ Subtema 4.2: Construye un runtime mínimo con jlink · 10 min
+  - ✓ Subtema 4.3: Actualiza y valida el runtime como artefacto · 10 min
 
 ### Módulo 15: Java Master — builds, pruebas y observabilidad
 
@@ -421,7 +433,7 @@ La tabla registra presencia de áreas en el inventario del track, no profundidad
 
 ### Huecos y límites reportados
 
-- El repositorio contiene 101 temas en 21 módulos; 60 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
+- El repositorio contiene 101 temas en 21 módulos; 64 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
 - No hay base para afirmar que el track esté completo: la comparación con la fuente de referencia está pendiente de revisión humana módulo por módulo.
 - Los elementos de la fuente que todavía deben verificarse de forma explícita están enumerados en la tabla anterior; cualquier técnica crítica que no tenga tema propio debe añadirse conservando el currículo base.
 - La ejecución de ejemplos, el comportamiento con brokers/plataformas reales y la calidad pedagógica humana se registran por separado.

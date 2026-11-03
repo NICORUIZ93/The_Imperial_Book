@@ -86,9 +86,9 @@
     },
     "java": {
       "topics": 101,
-      "code": 79,
-      "commentedCode": 21,
-      "mermaid": 21,
+      "code": 75,
+      "commentedCode": 18,
+      "mermaid": 17,
       "archifyVisual": 1,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
@@ -2105,9 +2105,30 @@
     {
       "track": "java",
       "module": 14,
+      "topic": "Tema 1: Compartir memoria requiere orden y visibilidad",
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "java",
+      "module": 14,
       "topic": "Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo",
-      "missingCode": false,
-      "missingComments": true
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "java",
+      "module": 14,
+      "topic": "Tema 3: Deserializar es permitir construcción y comportamiento",
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "java",
+      "module": 14,
+      "topic": "Tema 4: El runtime es parte del artefacto y necesita ciclo de vida",
+      "missingCode": true,
+      "missingComments": false
     },
     {
       "track": "java",

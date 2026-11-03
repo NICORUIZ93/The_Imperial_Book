@@ -127,16 +127,16 @@
     "java": {
       "topics": 101,
       "explanation": 101,
-      "code": 79,
-      "visual": 22,
+      "code": 75,
+      "visual": 18,
       "filePath": 101,
-      "runCommand": 60,
+      "runCommand": 56,
       "expectedResult": 101,
-      "practice": 68,
-      "project": 59,
-      "modelMental": 72,
-      "limitsDecision": 72,
-      "practicable": 50,
+      "practice": 66,
+      "project": 55,
+      "modelMental": 68,
+      "limitsDecision": 70,
+      "practicable": 46,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
@@ -15372,19 +15372,19 @@
         "topic": "Tema 1: Compartir memoria requiere orden y visibilidad",
         "criteria": {
           "explanation": true,
-          "code": true,
-          "visual": true,
+          "code": false,
+          "visual": false,
           "filePath": true,
-          "runCommand": true,
+          "runCommand": false,
           "expectedResult": true,
-          "practice": true,
-          "project": true,
-          "modelMental": true,
-          "limitsDecision": true
+          "practice": false,
+          "project": false,
+          "modelMental": false,
+          "limitsDecision": false
         },
         "classification": {
-          "rubricScore": 16,
-          "practicable": true,
+          "rubricScore": 5,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -15394,19 +15394,19 @@
         "topic": "Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo",
         "criteria": {
           "explanation": true,
-          "code": true,
-          "visual": true,
+          "code": false,
+          "visual": false,
           "filePath": true,
-          "runCommand": true,
+          "runCommand": false,
           "expectedResult": true,
-          "practice": true,
-          "project": true,
-          "modelMental": true,
+          "practice": false,
+          "project": false,
+          "modelMental": false,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 16,
-          "practicable": true,
+          "rubricScore": 5,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -15416,19 +15416,19 @@
         "topic": "Tema 3: Deserializar es permitir construcción y comportamiento",
         "criteria": {
           "explanation": true,
-          "code": true,
-          "visual": true,
+          "code": false,
+          "visual": false,
           "filePath": true,
-          "runCommand": true,
+          "runCommand": false,
           "expectedResult": true,
           "practice": true,
-          "project": true,
-          "modelMental": true,
+          "project": false,
+          "modelMental": false,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 16,
-          "practicable": true,
+          "rubricScore": 7,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -15438,19 +15438,19 @@
         "topic": "Tema 4: El runtime es parte del artefacto y necesita ciclo de vida",
         "criteria": {
           "explanation": true,
-          "code": true,
-          "visual": true,
+          "code": false,
+          "visual": false,
           "filePath": true,
-          "runCommand": true,
+          "runCommand": false,
           "expectedResult": true,
           "practice": true,
-          "project": true,
-          "modelMental": true,
-          "limitsDecision": true
+          "project": false,
+          "modelMental": false,
+          "limitsDecision": false
         },
         "classification": {
-          "rubricScore": 16,
-          "practicable": true,
+          "rubricScore": 7,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }

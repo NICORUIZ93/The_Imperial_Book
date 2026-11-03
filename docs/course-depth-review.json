@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 200,
+    "topicsWithSignals": 202,
     "newLaboratories": 25
   },
   "priorities": {
@@ -7747,7 +7747,7 @@
       "file": "web/public/content/java/modulo-14.md",
       "line": 8,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7758,8 +7758,10 @@
       "module": 14,
       "title": "Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo",
       "file": "web/public/content/java/modulo-14.md",
-      "line": 109,
-      "signals": [],
+      "line": 78,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -7769,9 +7771,9 @@
       "module": 14,
       "title": "Tema 3: Deserializar es permitir construcción y comportamiento",
       "file": "web/public/content/java/modulo-14.md",
-      "line": 193,
+      "line": 150,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7782,8 +7784,10 @@
       "module": 14,
       "title": "Tema 4: El runtime es parte del artefacto y necesita ciclo de vida",
       "file": "web/public/content/java/modulo-14.md",
-      "line": 279,
-      "signals": [],
+      "line": 220,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"

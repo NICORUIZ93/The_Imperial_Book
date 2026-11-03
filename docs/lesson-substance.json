@@ -1698,11 +1698,11 @@
     }
   ],
   "summary": {
-    "fingerprint": "a4af2c9f0daef5c895c128d9b744c76cc0b3bcea354adc11d6cd170d46f7ff78",
+    "fingerprint": "9c7d1e3c7441774432902e393802267e76f27876c7fe710bac1b699664fd715b",
     "issues": {
       "andamiaje-generico": 124,
-      "bloque-repetido": 173,
-      "cola-tras-cierre": 335,
+      "bloque-repetido": 169,
+      "cola-tras-cierre": 331,
       "parrafo-repetido": 5,
       "sin-fuente": 10,
       "tema-breve": 9
@@ -1715,7 +1715,7 @@
     "modules": 256,
     "modulesWithLegacySections": 182,
     "topics": 1185,
-    "topicsWithIssues": 432
+    "topicsWithIssues": 428
   },
   "topics": {
     "android": [
@@ -7331,44 +7331,32 @@
         "words": 468
       },
       {
-        "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 14,
-        "tailWords": 600,
+        "tailWords": 0,
         "topic": "Tema 1: Compartir memoria requiere orden y visibilidad",
-        "words": 995
+        "words": 523
       },
       {
-        "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 14,
-        "tailWords": 517,
+        "tailWords": 0,
         "topic": "Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo",
-        "words": 945
+        "words": 466
       },
       {
-        "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 14,
-        "tailWords": 536,
+        "tailWords": 0,
         "topic": "Tema 3: Deserializar es permitir construcción y comportamiento",
-        "words": 905
+        "words": 488
       },
       {
-        "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 14,
-        "tailWords": 745,
+        "tailWords": 0,
         "topic": "Tema 4: El runtime es parte del artefacto y necesita ciclo de vida",
-        "words": 1136
+        "words": 464
       },
       {
         "issues": [
