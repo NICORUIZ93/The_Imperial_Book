@@ -1695,7 +1695,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "6c704e1828016c6a7d3b315f99473a34bcfefbb1f63c598569670f824834a207",
+    "fingerprint": "1359d1144f579c9227963b7e54c4cafd796c5a2d3c9f696b47be3cb5bab77a10",
     "issues": {
       "andamiaje-generico": 128,
       "bloque-repetido": 218,
@@ -7625,21 +7625,21 @@
         "module": 20,
         "tailWords": 168,
         "topic": "Tema 1: Las cuatro formas: Predicate, Function, Consumer y Supplier",
-        "words": 924
+        "words": 1095
       },
       {
         "issues": [],
         "module": 20,
         "tailWords": 190,
         "topic": "Tema 2: Componer sin anidar: andThen, compose, negate y reglas encadenadas",
-        "words": 754
+        "words": 1007
       },
       {
         "issues": [],
         "module": 20,
         "tailWords": 179,
         "topic": "Tema 3: Streams como composición: pereza, orden y efectos que se esconden",
-        "words": 782
+        "words": 1018
       },
       {
         "issues": [],

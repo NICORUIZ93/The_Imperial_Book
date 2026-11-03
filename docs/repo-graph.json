@@ -722,6 +722,27 @@
       ]
     },
     {
+      "path": "docs/java-temario-completo.md",
+      "lines": 255,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Java \u2014 temario completo y reporte de cobertura",
+        "## Portada",
+        "## \u00cdndice y temas preservados",
+        "### M0 \u00b7 M\u00f3dulo 0: Sintaxis, tipos y el modelo de la JVM",
+        "### M1 \u00b7 M\u00f3dulo 1: Programaci\u00f3n orientada a objetos",
+        "### M2 \u00b7 M\u00f3dulo 2: Colecciones y gen\u00e9ricos",
+        "### M3 \u00b7 M\u00f3dulo 3: Excepciones y manejo de recursos",
+        "### M4 \u00b7 M\u00f3dulo 4: Streams y programaci\u00f3n funcional",
+        "### M5 \u00b7 M\u00f3dulo 5: Concurrencia \u2014 hilos y virtual threads",
+        "### M6 \u00b7 M\u00f3dulo 6: I/O, NIO.2 y serializaci\u00f3n",
+        "### M7 \u00b7 M\u00f3dulo 7: Records, sealed classes y pattern matching",
+        "### M8 \u00b7 M\u00f3dulo 8: Build tools \u2014 Maven y Gradle"
+      ]
+    },
+    {
       "path": "docs/lesson-substance-baseline.json",
       "lines": 1693,
       "kind": "project-file",
@@ -9650,7 +9671,7 @@
     },
     {
       "path": "web/public/content/java/modulo-20.md",
-      "lines": 1471,
+      "lines": 1618,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

@@ -160,7 +160,7 @@ a quedar desincronizado. La auditoría de criterios editoriales informa presenci
 estructural detectada por heurísticas, no calidad ni ejecución: al corte actual
 registra 1169/1185 temas practicables según sus señales editoriales (la detección no
 demuestra que el ejemplo se haya ejecutado). La auditoría independiente de metodología
-de siete pasos registra 1160/1185 temas completos según sus marcadores
+de siete pasos registra 1157/1185 temas completos según sus marcadores
 (el auditor reconoce el andamiaje real de cada ecosistema: `npm create vite`, `create-next-app`,
 «Nuevo proyecto» de Xcode y `xcodebuild`, las CLIs de nube `aws`/`az`/`gcloud` que crean el
 recurso base del tema, y la evidencia concreta que entrega el artefacto de un paso, además de

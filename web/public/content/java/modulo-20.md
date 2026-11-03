@@ -2,7 +2,7 @@
 
 ## Aprende construyendo
 
-El módulo se amplía de 3 a 13 temas para cubrir el inventario del prompt: funciones de una y dos entradas, operadores, referencias a métodos, `Optional`, operaciones intermedias y terminales de Streams, Collectors, paralelismo, efectos y Flow API. Los temas 4–13 tienen tres subtemas ejecutables de 5–15 minutos; los temas 1–3 conservan sus lecciones originales y su hito, pero aún requieren descomponer cada práctica en el mismo formato atómico.
+El módulo se amplía de 3 a 13 temas para cubrir el inventario del prompt: funciones de una y dos entradas, operadores, referencias a métodos, `Optional`, operaciones intermedias y terminales de Streams, Collectors, paralelismo, efectos y Flow API. Cada uno de los 13 temas tiene tres subtemas de 5–15 minutos; los temas 1–3 reutilizan la carpeta creada en su demostración inicial y los temas 4–13 tienen proyectos independientes.
 
 Cada Tema parte de una carpeta vacía y se compila con `javac` para ver el error real, no para describirlo.
 
@@ -12,7 +12,7 @@ Cada Tema parte de una carpeta vacía y se compila con `javac` para ver el error
 
 Al finalizar vas a elegir la interfaz funcional correcta para cada intención —decidir, transformar, notificar o proveer— y a compilar un ejemplo que use las cuatro sin envolver lambdas a mano.
 
-**Conocimiento previo:** Java 21 o superior, lambdas y `javac`/`java` en el `PATH`. Comprueba `java -version` y `javac -version`.
+**Conocimiento previo:** Java M0 (variables, clases y métodos), lambdas y `javac`/`java` en el `PATH`. Comprueba `java -version` y `javac -version` (JDK 21 o superior).
 
 #### Paso 2 · Contexto y caso real
 
@@ -42,6 +42,8 @@ flowchart LR
 ```
 
 #### Paso 4 · Demostración guiada desde cero
+
+##### Subtema 1.1: Escoger una forma por lo que hace · 10-15 min
 
 Desde una carpeta vacía:
 
@@ -113,15 +115,59 @@ El diagnóstico es que `Function` declara un único parámetro. El compilador no
 
 #### Paso 5 · Práctica guiada
 
-**Pista:** cambia `Predicate<Envio>` por `Function<Envio, Boolean>` y observa el error: `boolean cannot be dereferenced` o un fallo al llamar `test`. La interfaz correcta se elige por la pregunta que responde, no por el tipo que devuelve.
+##### Subtema 1.2: Transformar una etiqueta con Function · 5-10 min
 
-**Resultado esperado:** documentas el error de compilación y explicas en una frase por qué `Predicate` expresa mejor la decisión.
+**Contexto:** una pantalla necesita mostrar las guías siempre en mayúsculas.
+
+**Hazlo tú:** crea `src/Etiqueta.java` dentro de `java-funcional`:
+
+```java
+import java.util.function.Function;
+
+public class Etiqueta {
+    public static void main(String[] args) {
+        Function<String, String> normalizar = texto -> texto.trim().toUpperCase();
+        System.out.println(normalizar.apply(" rt-8 "));
+    }
+}
+```
+
+Ejecuta `javac -d out src/Etiqueta.java && java -cp out Etiqueta`.
+
+**Resultado esperado:** `RT-8`.
+
+**Fallo deliberado:** cambia el argumento por `normalizar.apply(8)`. **Error esperado:** el compilador indica que `int` no se puede convertir a `String`. **Diagnóstico:** el primer tipo de `Function<String, String>` determina qué acepta `apply`.
+
+**Entiende:** `Function` transforma y devuelve un dato; `Predicate` responde una pregunta con `true` o `false`.
 
 #### Paso 6 · Práctica independiente
 
-Crea `src/Reglas.java` con un `Predicate<String>` que valide un correo, una `Function<String, String>` que lo normalice, un `Consumer<String>` que registre el resultado y un `Supplier<LocalDate>` que devuelva la fecha de hoy. Ejecuta con `-cp out Reglas`.
+##### Subtema 1.3: Proveer un dato y registrar una acción · 5-10 min
 
-**Resultado esperado:** el correo normalizado se registra una sola vez y la fecha aparece en el formato ISO.
+**Contexto:** el registro agrega el turno actual a una guía, pero la función que genera el turno no recibe entrada.
+
+**Hazlo tú:** crea `src/Registro.java` dentro de `java-funcional`:
+
+```java
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+public class Registro {
+    public static void main(String[] args) {
+        Supplier<String> turno = () -> "Turno AM";
+        Consumer<String> registrar = guia -> System.out.println(turno.get() + " | " + guia);
+        registrar.accept("RT-8");
+    }
+}
+```
+
+Ejecuta `javac -d out src/Registro.java && java -cp out Registro`.
+
+**Resultado esperado:** `Turno AM | RT-8`.
+
+**Fallo deliberado:** cambia `registrar.accept("RT-8")` por `registrar.get()`. **Error esperado:** `cannot find symbol: method get()` en `Consumer`. **Diagnóstico:** `Consumer` se ejecuta con `accept`; `get` pertenece a `Supplier`.
+
+**Entiende:** el método de llamada también comunica la intención: `get` obtiene, `accept` realiza la acción.
 
 #### Paso 7 · Cierre y evidencia
 
@@ -139,7 +185,7 @@ Siguiente paso: componer estas formas sin anidar lambdas. **Evidencia de aprendi
 
 Al finalizar vas a encadenar reglas con `and`, `or`, `negate`, `andThen` y `compose`, y a explicar por qué el orden de composición cambia el resultado.
 
-**Conocimiento previo:** Tema 1 de este módulo; `javac` funcionando.
+**Conocimiento previo:** Java M20 Tema 1 y Java M0 (lambdas, métodos y genéricos); `javac` funcionando.
 
 #### Paso 2 · Contexto y caso real
 
@@ -154,6 +200,8 @@ Componer con las interfaces de Java hace visible ese orden en una sola expresió
 **Analogía:** es una cadena de montaje. `andThen` añade una estación al final; `compose` declara que la estación actual va después de otra. El límite es que la cadena no valida la semántica: si el orden es incorrecto, compila y produce el resultado equivocado.
 
 #### Paso 4 · Demostración guiada desde cero
+
+##### Subtema 2.1: Encadenar una validación y una transformación · 10-15 min
 
 Desde una carpeta vacía:
 
@@ -213,15 +261,66 @@ sospechoso vacío: true
 
 #### Paso 5 · Práctica guiada
 
-**Pista:** añade una regla `terminaEnCom` con `correo.and(texto -> texto.endsWith(".com"))` y comprueba con `"ana@academia.com"` y `"ana@academia.org"`.
+##### Subtema 2.2: Combinar dos condiciones · 5-10 min
 
-**Resultado esperado:** el primer texto pasa y el segundo no; puedes señalar qué regla lo rechazó.
+**Contexto:** RutaFlow acepta destinos habilitados solo si el nombre está presente y tiene el prefijo del país.
+
+**Hazlo tú:** crea `src/Destino.java` dentro de `java-composicion`:
+
+```java
+import java.util.function.Predicate;
+
+public class Destino {
+    public static void main(String[] args) {
+        Predicate<String> noVacio = texto -> !texto.isBlank();
+        Predicate<String> empiezaConCo = texto -> texto.startsWith("CO-");
+        Predicate<String> habilitado = noVacio.and(empiezaConCo);
+        System.out.println(habilitado.test("CO-BOG"));
+        System.out.println(habilitado.test("MX-CDMX"));
+    }
+}
+```
+
+Ejecuta `javac -d out src/Destino.java && java -cp out Destino`.
+
+**Resultado esperado:** `true` y luego `false`.
+
+**Fallo deliberado:** cambia `.and` por `.or`. **Resultado del fallo:** `MX-CDMX` también queda habilitado. **Diagnóstico:** `or` permite que una sola regla pase; aquí las dos condiciones son obligatorias.
+
+**Entiende:** nombra cada regla por separado; así puedes comprobar cuál condición estás combinando.
 
 #### Paso 6 · Práctica independiente
 
-Crea `src/ReglasEnvio.java` con tres `Predicate<Envio>` (peso, destino y estado) y una función que devuelva el motivo del rechazo en lugar de un `boolean`. Ejecuta con `java -cp out ReglasEnvio`.
+##### Subtema 2.3: Hacer visible el orden de ejecución · 5-10 min
 
-**Resultado esperado:** cada envío rechazado muestra el motivo, y un envío válido no produce ningún mensaje.
+**Contexto:** el correo del formulario puede traer espacios y mayúsculas; la regla solo acepta el texto limpio.
+
+**Hazlo tú:** crea `src/OrdenCorreo.java` dentro de `java-composicion`:
+
+```java
+import java.util.function.Function;
+import java.util.function.Predicate;
+
+public class OrdenCorreo {
+    public static void main(String[] args) {
+        Function<String, String> limpiar = texto -> texto.trim().toLowerCase();
+        Predicate<String> contieneArroba = texto -> texto.contains("@");
+        Function<String, Boolean> flujoCorrecto = limpiar.andThen(contieneArroba::test);
+        Function<String, Boolean> flujoIncorrecto = contieneArroba::test;
+        String entrada = " ANA@RUTAFLOW.COM ";
+        System.out.println(flujoCorrecto.apply(entrada));
+        System.out.println(flujoIncorrecto.apply(entrada));
+    }
+}
+```
+
+Ejecuta `javac -d out src/OrdenCorreo.java && java -cp out OrdenCorreo`.
+
+**Resultado esperado:** `true` y luego `false`.
+
+**Fallo deliberado:** usa `flujoIncorrecto` para decidir si guarda el correo. **Resultado del fallo:** una entrada válida se rechaza. **Diagnóstico:** la función de validación recibió el texto sin limpiar; conecta `limpiar.andThen(...)` antes de guardar.
+
+**Entiende:** las funciones se ejecutan en el orden de la composición; el compilador no puede decidir si ese orden tiene sentido para el negocio.
 
 #### Paso 7 · Cierre y evidencia
 
@@ -241,7 +340,7 @@ Siguiente paso: aplicar composición a colecciones con Streams. **Evidencia de a
 
 Al finalizar vas a explicar por qué un Stream no ejecuta nada hasta la operación terminal, a depurar un pipeline con `peek` sin confundirlo con un `for`, y a diagnosticar el error de reutilizar un Stream consumido.
 
-**Conocimiento previo:** Temas 1 y 2; `javac` y `java` funcionando.
+**Conocimiento previo:** Java M20 Temas 1–2 y Java M2 (colecciones); `javac` y `java` funcionando.
 
 #### Paso 2 · Contexto y caso real
 
@@ -264,6 +363,8 @@ flowchart LR
 ```
 
 #### Paso 4 · Demostración guiada desde cero
+
+##### Subtema 3.1: Observar cuándo empieza el trabajo · 10-15 min
 
 Desde una carpeta vacía:
 
@@ -333,15 +434,61 @@ El diagnóstico es que `count` es terminal y cierra el Stream. No es un problema
 
 #### Paso 5 · Práctica guiada
 
-**Pista:** añade `.map(Envio::guia)` antes de `peek` y observa que `peek` ya recibe un `String`; el pipeline cambia de tipo en cada estación.
+##### Subtema 3.2: No reutilizar un Stream consumido · 5-10 min
 
-**Resultado esperado:** el mensaje de depuración muestra solo la guía, y el `count` sigue siendo 1.
+**Contexto:** cada informe debe crear su propio recorrido; un Stream solo sirve para una operación terminal.
+
+**Hazlo tú:** crea `src/UnaVez.java` dentro de `java-streams`:
+
+```java
+import java.util.List;
+import java.util.stream.Stream;
+
+public class UnaVez {
+    public static void main(String[] args) {
+        Stream<String> guias = List.of("RT-1", "RT-2").stream();
+        System.out.println(guias.count());
+        System.out.println(guias.count());
+    }
+}
+```
+
+Ejecuta `javac -d out src/UnaVez.java && java -cp out UnaVez`.
+
+**Resultado esperado:** imprime `2` y después termina con `IllegalStateException: stream has already been operated upon or closed`.
+
+**Fallo deliberado:** mantén ambas llamadas a `count`. **Error esperado:** la JVM informa que el Stream ya se usó o cerró. **Diagnóstico:** el primer `count` es terminal; vuelve a crear el Stream desde la lista para el segundo cálculo.
+
+**Entiende:** conserva la colección como dato reutilizable y crea desde ella un Stream nuevo para cada recorrido.
 
 #### Paso 6 · Práctica independiente
 
-Crea `src/Informe.java` que calcule el peso total de los envíos con `mapToDouble` y `sum`, y que cuente cuántos superan 20 kg sin recorrer la lista dos veces. Ejecuta con `java -cp out Informe`.
+##### Subtema 3.3: Dejar los efectos en el borde del flujo · 5-10 min
 
-**Resultado esperado:** el programa imprime el total y el conteo en una sola pasada, y puedes explicar dónde ocurrió el trabajo.
+**Contexto:** una transformación calcula una etiqueta; el registro la imprime solo cuando se consume el resultado.
+
+**Hazlo tú:** crea `src/Efectos.java` dentro de `java-streams`:
+
+```java
+import java.util.List;
+import java.util.function.Function;
+
+public class Efectos {
+    public static void main(String[] args) {
+        Function<String, String> etiqueta = guia -> "Guía " + guia;
+        var etiquetas = List.of("RT-1", "RT-2").stream().map(etiqueta).toList();
+        etiquetas.forEach(System.out::println);
+    }
+}
+```
+
+Ejecuta `javac -d out src/Efectos.java && java -cp out Efectos`.
+
+**Resultado esperado:** `Guía RT-1` y luego `Guía RT-2`.
+
+**Fallo deliberado:** declara el pipeline con `.map(etiqueta)` pero elimina `.toList()` y `forEach`. **Resultado del fallo:** no aparece ninguna guía porque no hay operación terminal. **Diagnóstico:** `map` describe la conversión; una terminal consume el flujo y hace visible el resultado.
+
+**Entiende:** mantén `map` para transformar; ejecuta notificaciones o escrituras en una terminal explícita.
 
 #### Paso 7 · Cierre y evidencia
 

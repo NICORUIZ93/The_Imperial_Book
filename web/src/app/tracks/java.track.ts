@@ -266,7 +266,7 @@ export const JAVA_MODULES: CourseModule[] = [
     ['JDK 25', 'java.lang.reflect', 'java.util.regex', 'java.math', 'java.text'],
     'Librería de utilidades de producción para el motor de asignación con validación por anotaciones, regex, dinero exacto, invariantes, plugins, proxy de registro y formatos localizados.'),
   m(20, 'Java funcional: interfaces que componen comportamiento', 'Java funcional', 'Aplicación', '7 h', '#6d5dfc',
-    'Aprende las formas funcionales del JDK con archivos Java ejecutables: transforma y combina valores, maneja ausencias y procesa datos con Streams y Flow. El módulo mantiene los tres temas base y amplía el inventario a trece temas; los temas 1–3 aún necesitan descomposición atómica equivalente.',
+    'Aprende las formas funcionales del JDK con archivos Java ejecutables: transforma y combina valores, maneja ausencias y procesa datos con Streams y Flow. El módulo mantiene los tres temas base y amplía el inventario a trece temas; cada tema incluye tres subtemas atómicos de 5–15 minutos.',
     ['Predicate, Function, Consumer y Supplier', 'Composición con andThen, compose, and, or y negate', 'Streams: pereza, orden y efectos', 'Function y BiFunction', 'UnaryOperator y BinaryOperator', 'Referencias a métodos', 'Optional y búsquedas que pueden faltar', 'Streams intermedios: filter, map, flatMap y sorted', 'Streams terminales: findFirst, forEach y reduce', 'Collectors: listas, mapas, grupos y texto', 'Streams paralelos: resultados, orden y medición', 'Pureza y efectos', 'Flow API y demanda'],
     [
       'Modela una regla de revisión como Predicate y compruébala con dos envíos',

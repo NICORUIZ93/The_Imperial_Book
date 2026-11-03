@@ -228,7 +228,7 @@ El cierre integrador se conserva en cada módulo y en el proyecto Java del catá
 
 - **Módulos base preservados:** 21/21 (M0–M20).
 - **Temas estructurales encontrados:** 101; no se quitaron temas para esta expansión.
-- **M20:** 13 temas, cada uno con tres subtemas accionables en los temas 4–13. M20 temas 1–3 conservan sus lecciones y requieren todavía la descomposición explícita en 3–6 subtemas con código completo, fallo y diagnóstico por subtema.
+- **M20:** 13 temas, cada uno con tres subtemas accionables de 5–15 minutos. Se ejecutaron 39 archivos Java completos de sus ejemplos y subtemas; `Exigir.java` y `UnaVez.java` producen intencionalmente las excepciones documentadas.
 - **Cobertura atómica del resto del track:** pendiente de una auditoría tema por tema. Los siete pasos de una lección son una estructura parental y no cuentan por sí solos como subtemas atómicos completos.
 - **Ejecución de ejemplos:** no se afirma que todos los ejemplos de todos los módulos hayan sido ejecutados. Las pruebas de laboratorios se reportan por separado.
 - **Pruebas de navegador y revisión pedagógica humana:** separadas de la auditoría estructural; pendientes para validar el recorrido completo de Java.
@@ -238,15 +238,15 @@ El cierre integrador se conserva en cada módulo y en el proyecto Java del catá
 | Fuente | Temas que exige o enfatiza | Cotejo visible en este track |
 |---|---|---|
 | [roadmap.sh/Java](https://roadmap.sh/java) | lenguaje y POO, colecciones, JVM, concurrencia, bases de datos, APIs y prácticas profesionales | El inventario Java M0–M20 incluye fundamentos/POO, colecciones, JVM, concurrencia, persistencia JDBC/JPA, HTTP, pruebas, módulos y producción. Esta comparación valida amplitud del índice, no profundidad ejecutada. |
-| [Oracle Java 25 — java.util.function](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/package-summary.html) | Predicate, Function, Consumer, Supplier, aridades dobles y operadores especializados | M20 temas 1, 4 y 5. Faltan subtemas atómicos explícitos para las formas base del tema 1. |
-| [Oracle Java 25 — java.util.stream](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/stream/package-summary.html) | operaciones intermedias y terminales, reducción, colectores, pereza y paralelismo | M20 temas 3 y 8–12. Tema 3 ya enseña pereza y consumo; requiere partición en subtemas atómicos. Gatherers también existe en M4 y debe cotejarse con su disponibilidad JDK. |
-| [Oracle Java 25 — java.util.concurrent.Flow](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.html) | Publisher, Subscriber, Subscription y demanda/backpressure | M20 tema 13. Los ejemplos de demanda y cancelación necesitan ejecución automatizada y revisión de salida. |
+| [Oracle Java 25 — java.util.function](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/package-summary.html) | Predicate, Function, Consumer, Supplier, aridades dobles y operadores especializados | M20 temas 1, 4 y 5; los ejemplos básicos muestran selección de interfaz, transformación, provisión y efecto. |
+| [Oracle Java 25 — java.util.stream](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/stream/package-summary.html) | operaciones intermedias y terminales, reducción, colectores, pereza y paralelismo | M20 temas 3 y 8–12. Gatherers también existe en M4 y debe cotejarse con la versión JDK de cada ejercicio. |
+| [Oracle Java 25 — java.util.concurrent.Flow](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.html) | Publisher, Subscriber, Subscription y demanda/backpressure | M20 tema 13; `Estados.java`, `Demanda.java` y `Cancelar.java` se ejecutaron y produjeron las salidas esperadas. |
 | *Core Java, Volume I/II* (Horstmann); *Java a fondo* (Sznajdleder) | reflexión, anotaciones, regex, números exactos, plugins, proxies e internacionalización | M19 agrega siete de estos vacíos; la serialización binaria nativa queda identificada como baja prioridad y con cobertura parcial. Referencia resumida en [`biblioteca-externa-gaps-java.md`](biblioteca-externa-gaps-java.md). |
 
 ### Pendientes explícitos; Java no se declara completo
 
 1. Expandir todos los temas M0–M19 a 3–6 subtemas de 5–15 minutos con contexto, archivo y código completo, comando, salida exacta, fallo reproducible y diagnóstico.
-2. Completar la atomización de M20 temas 1–3 y ejecutar los ejemplos nuevos, incluida la sincronización asíncrona de Flow.
+2. Auditar errores y salidas deliberadas de los 39 ejemplos de M20; la ejecución normal de archivos no prueba los fallos indicados en prosa.
 3. Resolver del inventario de roadmap cualquier diferencia de versión, herramienta o tópico avanzado con evidencia primaria; registrar por qué se incluye o excluye cada elemento.
 4. Revisar prerrequisitos cruzados, incrementos del proyecto RutaFlow y criterios observables de salida por módulo.
 5. Separar y registrar revisión humana de claridad, ejecución de todos los ejemplos y pruebas del navegador.

@@ -151,14 +151,14 @@
       "execution": 91,
       "expectedResult": 101,
       "deliberateFailure": 99,
-      "guidedPractice": 91,
+      "guidedPractice": 88,
       "independentPractice": 91,
       "closure": 92,
       "commonErrors": 91,
       "resources": 91,
       "standaloneExample": 87,
       "learningEvidence": 94,
-      "complete": 86
+      "complete": 83
     },
     "javascript": {
       "topics": 88,
@@ -19004,7 +19004,7 @@
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
+          "guidedPractice": false,
           "independentPractice": true,
           "closure": true,
           "commonErrors": true,
@@ -19013,8 +19013,8 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 15,
+          "complete": false
         }
       },
       {
@@ -19030,7 +19030,7 @@
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
+          "guidedPractice": false,
           "independentPractice": true,
           "closure": true,
           "commonErrors": true,
@@ -19039,8 +19039,8 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 15,
+          "complete": false
         }
       },
       {
@@ -19056,7 +19056,7 @@
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
+          "guidedPractice": false,
           "independentPractice": true,
           "closure": true,
           "commonErrors": true,
@@ -19065,8 +19065,8 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 15,
+          "complete": false
         }
       },
       {
