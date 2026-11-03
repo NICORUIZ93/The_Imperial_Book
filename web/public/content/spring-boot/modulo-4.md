@@ -8,7 +8,7 @@ Cada tema declara su nivel, su duración y un proyecto verificable. La frontera 
 
 **Prerrequisito:** Spring Initializr y starters (Módulo 1); `@RestController` básico (Módulo 1).
 
-**Al terminar podrás:** declarar un `SecurityFilterChain` como `@Bean` que permite rutas públicas y exige autenticación en el resto, y confirmar con `MockMvc` real los códigos 200 y 401 correspondientes.
+**Al terminar podrás:** declarar un `SecurityFilterChain` como `@Bean` que permite rutas públicas y exige autenticación en el resto, y confirmar con `MockMvc` real los códigos 200 y 401 correspondientes. Esto es autenticación básica; el Módulo 18, Tema 1 añade autorización por rol, 403, `@PreAuthorize` y OAuth2 resource server.
 
 #### Aprende
 

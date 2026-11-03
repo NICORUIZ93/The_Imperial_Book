@@ -1682,7 +1682,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "3a7f1088236aa88f5da637b20a6118968dedaeb8a94e1d9d6c561b90b74e1a66",
+    "fingerprint": "14d9d9d2f183fa4fba782864d3d32c9f523605957c1b92e6ce0c0dc61baaa53b",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
@@ -9301,7 +9301,7 @@
         "module": 10,
         "tailWords": 411,
         "topic": "Tema 8: Orquestación de microservicios con Temporal y Spring Boot · Experto · 60 min",
-        "words": 2880
+        "words": 2956
       },
       {
         "issues": [],
@@ -9455,7 +9455,7 @@
         "module": 15,
         "tailWords": 310,
         "topic": "Tema 5: Saga con compensación real · Experto · 2 h 10 min",
-        "words": 1714
+        "words": 1736
       },
       {
         "issues": [],
@@ -9490,7 +9490,7 @@
         "module": 16,
         "tailWords": 294,
         "topic": "Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso · Avanzado · 1 h 40 min",
-        "words": 1571
+        "words": 1594
       },
       {
         "issues": [],
@@ -9504,14 +9504,14 @@
         "module": 17,
         "tailWords": 299,
         "topic": "Tema 2: `@Transactional`, rollback y límites de transacción · Avanzado · 1 h 20 min",
-        "words": 1402
+        "words": 1421
       },
       {
         "issues": [],
         "module": 18,
         "tailWords": 296,
         "topic": "Tema 1: SecurityFilterChain y autorización · Avanzado · 1 h 30 min",
-        "words": 1564
+        "words": 1581
       },
       {
         "issues": [],
@@ -9728,7 +9728,7 @@
         "module": 3,
         "tailWords": 278,
         "topic": "Tema 2: El problema N+1 y su corrección · Avanzado · 50 min",
-        "words": 1715
+        "words": 1737
       },
       {
         "issues": [],
@@ -9749,7 +9749,7 @@
         "module": 4,
         "tailWords": 269,
         "topic": "Tema 1: SecurityFilterChain moderno · Intermedio · 40 min",
-        "words": 1828
+        "words": 1847
       },
       {
         "issues": [],

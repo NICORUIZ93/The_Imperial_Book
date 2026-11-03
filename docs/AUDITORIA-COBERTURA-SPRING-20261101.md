@@ -35,12 +35,27 @@ logging estructurado, graceful shutdown · 23. Caché 2º nivel Hibernate (vs Sp
 
 ## Solapamientos a resolver
 
-- N+1 (M3 T2 ↔ M16 T2): CONSOLIDAR — fundamento en M3, ángulo diferencial en M16.
-- SecurityFilterChain (M4 T1 ↔ M18 T1): DIFERENCIAR — M4 esencial, M18 solo autorización avanzada.
-- Kafka núcleo (M8 ↔ M21): CONSOLIDAR — recorrido único producer/consumer/DLT/idempotencia; M21 experto/outbox.
-- Transacciones (M17 T2 ↔ M13 T1): DIFERENCIAR + remisión explícita M17→M13.
-- Hexagonal/DDD (M10 T7 ↔ M15 T3/T8 ↔ M22 T1): CONSOLIDAR fuente única del fundamento.
-- Saga (M10 T8 ↔ M15 T5/T7): DIFERENCIAR; añadir coreografía como contraste.
+- [x] N+1 (M3 T2 ↔ M16 T2): CONSOLIDAR — fundamento en M3, ángulo diferencial en M16.
+  Resuelto 2026-11-02: nota cruzada explícita en ambos Temas; ya eran una progresión legítima
+  (M3 T2 básico con `JOIN FETCH`, M16 T2 con `@EntityGraph`, paginación y DTOs).
+- [x] SecurityFilterChain (M4 T1 ↔ M18 T1): DIFERENCIAR — M4 esencial, M18 solo autorización avanzada.
+  Resuelto 2026-11-02: nota cruzada en ambos Temas (M4 autenticación básica; M18 autorización por
+  rol, `@PreAuthorize`, OAuth2 resource server).
+- [x] Kafka núcleo (M8 ↔ M21): CONSOLIDAR — recorrido único producer/consumer/DLT/idempotencia; M21 experto/outbox.
+  Resuelto 2026-11-02: nota cruzada en la intro de ambos módulos (M8 recorrido único; M21 retoma a
+  nivel experto con outbox/inbox y Docker Compose).
+- [x] Transacciones (M17 T2 ↔ M13 T1): DIFERENCIAR + remisión explícita M17→M13.
+  Resuelto 2026-11-02: nota añadida en M17 T2 remitiendo a M13 T1 para proxies/autoinvocación/propagación.
+- [x] Hexagonal/DDD (M10 T7 ↔ M15 T3/T8 ↔ M22 T1): CONSOLIDAR fuente única del fundamento.
+  Resuelto 2026-11-02: la cadena de prerrequisitos ya encadenaba M10 T7 → M15 T3 → M15 T8 → M22 T1
+  con ángulos distintos (límites DDD → verificación ArchUnit → Clean Architecture táctico → puertos).
+  Se corrigió además un error real de referencia: M15 T3 citaba "Módulo 10 Tema 6" (que es Spring
+  gRPC, no DDD) en vez de Tema 7.
+- [x] Saga (M10 T8 ↔ M15 T5/T7): DIFERENCIAR; añadir coreografía como contraste.
+  Resuelto 2026-11-02: nota cruzada en M10 T8 y M15 T5 diferenciando orquestación con Temporal
+  (M10 T8) de un orquestador manual sin motor de workflow (M15 T5), y contraste explícito con saga
+  **coreografiada** (sin coordinador central, participantes reactivos a eventos) — cobertura
+  completa de coreografía queda en el hueco BAJA #25.
 - WebFlux (M9↔M15T1), Testcontainers (M6↔M15T2), Observabilidad (M7↔M13T4): DEJAR (progresión legítima).
 
 ## Reparto de módulos entre tracks/cursos

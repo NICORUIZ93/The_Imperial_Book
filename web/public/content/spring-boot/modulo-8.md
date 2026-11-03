@@ -1,6 +1,6 @@
 # Módulo 8: Mensajería — Kafka/RabbitMQ
 
-Cada tema se practica por separado con su propia repetición progresiva y su propio reto de memoria, verificado contra un broker real (`@EmbeddedKafka` para Kafka, sin necesitar Docker; `RabbitMQContainer` de Testcontainers para RabbitMQ), para que "el evento se publicó y se consumió" sea comprobable, no solo descrito.
+Cada tema se practica por separado con su propia repetición progresiva y su propio reto de memoria, verificado contra un broker real (`@EmbeddedKafka` para Kafka, sin necesitar Docker; `RabbitMQContainer` de Testcontainers para RabbitMQ), para que "el evento se publicó y se consumió" sea comprobable, no solo descrito. Este módulo es el recorrido único de Kafka producer/consumer/DLT/idempotencia; el Módulo 21 lo retoma a nivel experto con outbox, consumer groups y recuperación de fallos reales.
 
 
 ## Aprende construyendo

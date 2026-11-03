@@ -234,7 +234,7 @@ public interface TareaRepository extends JpaRepository<Tarea, Long> {
 
 **Prerrequisito:** Tema 1 de este módulo (entidades y repositorios).
 
-**Al terminar podrás:** reproducir el problema N+1 con una relación `@OneToMany`, medir el número real de consultas y corregirlo con `JOIN FETCH`.
+**Al terminar podrás:** reproducir el problema N+1 con una relación `@OneToMany`, medir el número real de consultas y corregirlo con `JOIN FETCH`. Este es el fundamento del problema; el Módulo 16, Tema 2 retoma N+1 con `@EntityGraph`, paginación de colecciones y proyecciones DTO.
 
 #### Aprende
 

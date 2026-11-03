@@ -1453,7 +1453,7 @@ if (status == JourneyStatus.CLOSED) {
 
 **Prerrequisito:** Tema 3 de este módulo (circuit breaker con Resilience4j); el patrón Saga del track se introduce aquí de forma ejecutable. Nociones de microservicios que se comunican por red (Temas 1-7).
 
-**Al terminar podrás:** orquestar una transacción distribuida que cruza varios microservicios (aceptar un pedido, asignar un repartidor, cobrar y notificar) con un **Workflow de Temporal**, de forma que el proceso sobreviva a caídas y reinicios, reintente automáticamente los pasos que fallan de forma transitoria, y **compense** (deshaga) los pasos ya completados si uno posterior falla de forma definitiva, todo confirmado con el servidor de pruebas embebido de Temporal.
+**Al terminar podrás:** orquestar una transacción distribuida que cruza varios microservicios (aceptar un pedido, asignar un repartidor, cobrar y notificar) con un **Workflow de Temporal**, de forma que el proceso sobreviva a caídas y reinicios, reintente automáticamente los pasos que fallan de forma transitoria, y **compense** (deshaga) los pasos ya completados si uno posterior falla de forma definitiva, todo confirmado con el servidor de pruebas embebido de Temporal. Esta es una saga **orquestada**: un coordinador central (Temporal) conoce y dirige la secuencia completa. En una saga **coreografiada**, no existe ese coordinador: cada servicio reacciona a eventos de los demás y decide su propio siguiente paso, sin que nadie tenga la vista completa del proceso — más desacoplado, pero más difícil de seguir cuando algo falla. El Módulo 15, Tema 5 muestra un orquestador saga manual (sin motor de workflow) como variante intermedia entre ambos extremos.
 
 #### Aprende
 

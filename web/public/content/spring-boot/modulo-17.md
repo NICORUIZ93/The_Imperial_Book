@@ -146,7 +146,7 @@ Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el
 
 **Prerrequisito:** Tema 1 de este módulo; continúa con su esquema y repository JDBC.
 
-**Al terminar podrás:** delimitar una operación que inserta un cobro y actualiza un envío, verificando el rollback cuando una escritura falla.
+**Al terminar podrás:** delimitar una operación que inserta un cobro y actualiza un envío, verificando el rollback cuando una escritura falla. Esto cubre el límite transaccional básico con JDBC; el Módulo 13, Tema 1 profundiza en proxies, autoinvocación y propagación.
 
 #### Aprende
 

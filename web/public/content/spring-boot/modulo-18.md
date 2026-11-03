@@ -15,7 +15,7 @@ El rol permite entrar a una clase de operación; la comprobación de propiedad a
 
 **Prerrequisito:** Módulo 17 de este track, JDK 27+ y Maven.
 
-**Al terminar podrás:** proteger endpoints, distinguir 401 de 403 y probar reglas con MockMvc.
+**Al terminar podrás:** proteger endpoints, distinguir 401 de 403 y probar reglas con MockMvc. Continúa el `SecurityFilterChain` del Módulo 4, Tema 1 con autorización por rol, `@PreAuthorize` y OAuth2 resource server.
 
 #### Aprende
 

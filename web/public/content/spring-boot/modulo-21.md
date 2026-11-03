@@ -2,7 +2,7 @@
 
 ## Aprende construyendo
 
-Vas a seguir un envío desde una API hasta una proyección de ruteo. Primero entenderás productor, contrato, key, particiones y consumer groups; después provocarás duplicados y errores; al final cerrarás la ventana entre PostgreSQL y Kafka con outbox/inbox.
+Vas a seguir un envío desde una API hasta una proyección de ruteo. Primero entenderás productor, contrato, key, particiones y consumer groups; después provocarás duplicados y errores; al final cerrarás la ventana entre PostgreSQL y Kafka con outbox/inbox. Este módulo asume el recorrido producer/consumer/DLT/idempotencia del Módulo 8 y lo retoma a nivel experto con outbox, consumer groups y recuperación de fallos reales con Docker Compose.
 
 Cada práctica parte de una carpeta vacía: generarás el proyecto Maven y escribirás manualmente el contrato, el esquema SQL, la configuración, Compose y las pruebas. Las pruebas usan Kafka embebido y H2; el flujo manual con PostgreSQL y el broker de Compose requiere contenedores.
 

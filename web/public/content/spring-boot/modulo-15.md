@@ -311,7 +311,7 @@ Reutilizar contenedores Testcontainers entre clases es la optimización que mant
 
 ### Tema 3: Arquitectura hexagonal verificada con ArchUnit · Experto · 1 h 50 min
 
-**Prerrequisito:** Módulo 10 Tema 6 de este track (DDD y contextos delimitados).
+**Prerrequisito:** Módulo 10 Tema 7 de este track (DDD y contextos delimitados).
 
 **Al terminar podrás:** escribir una regla de ArchUnit (la librería oficial de test de arquitectura para Java) que falla automáticamente si el paquete de dominio depende de infraestructura, congelando la regla hexagonal como código verificable, no como una convención de equipo no forzada.
 
@@ -669,7 +669,7 @@ Bulkhead y RateLimiter son los mecanismos que protegerían al proyecto integrado
 
 **Prerrequisito:** Módulo 13 de este track (transacciones distribuidas e idempotencia).
 
-**Al terminar podrás:** ejecutar un orquestador de saga real que, ante el fallo de un paso intermedio, ejecuta las compensaciones de los pasos ya completados en orden inverso, confirmado con una lista real de acciones ejecutadas.
+**Al terminar podrás:** ejecutar un orquestador de saga real que, ante el fallo de un paso intermedio, ejecuta las compensaciones de los pasos ya completados en orden inverso, confirmado con una lista real de acciones ejecutadas. Aquí el orquestador es código propio, sin motor de workflow; el Módulo 10, Tema 8 muestra la misma idea delegada a Temporal.
 
 #### Aprende
 

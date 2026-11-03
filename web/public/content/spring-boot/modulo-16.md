@@ -137,7 +137,7 @@ Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el
 
 **Prerrequisito:** Tema 1 de este módulo; continúa con sus entidades.
 
-**Al terminar podrás:** reproducir N+1, elegir una carga apropiada para una pantalla y verificar el plan mediante SQL medido.
+**Al terminar podrás:** reproducir N+1, elegir una carga apropiada para una pantalla y verificar el plan mediante SQL medido. Continúa el N+1 del Módulo 3, Tema 2 con `@EntityGraph`, los límites de paginar una colección y la decisión de proyectar DTOs.
 
 #### Aprende
 
