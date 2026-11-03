@@ -5227,7 +5227,7 @@
         "https://start.spring.io/starter.zip"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 420,
+      "line": 435,
       "originalProseUrls": [
         "https://resilience4j.readme.io/docs/circuitbreaker",
         "https://start.spring.io/starter.zip"
@@ -5243,7 +5243,7 @@
         "https://martinfowler.com/bliki/DDD_Aggregate.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 1222,
+      "line": 1240,
       "originalProseUrls": [
         "https://martinfowler.com/bliki/DDD_Aggregate.html"
       ],
@@ -5260,7 +5260,7 @@
         "https://docs.temporal.io/develop/java/workflows/basics"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 1434,
+      "line": 1452,
       "originalProseUrls": [
         "https://central.sonatype.com/artifact/io.temporal/temporal-spring-boot-starter",
         "https://docs.temporal.io/design-patterns/saga-pattern",

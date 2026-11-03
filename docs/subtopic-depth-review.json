@@ -19630,11 +19630,12 @@
       "review": {
         "status": "reviewed",
         "reviewDate": "2026-11-02",
-        "execution": "@HttpExchange/@GetExchange, RestClientAdapter, HttpServiceProxyFactory, ClientHttpRequestFactorySettings.withReadTimeout: todas APIs estables de Spring 6/7, sin cambios Boot 4.",
+        "execution": "@HttpExchange/@GetExchange, RestClientAdapter, HttpServiceProxyFactory, ClientHttpRequestFactorySettings.withReadTimeout: todas APIs estables de Spring 6/7, sin cambios Boot 4. Actualizado para Lote 2 (MEDIA #11: 'RestClient vs WebClient vs RestTemplate -> M9/M10'): agregada una decision explicita de los tres clientes HTTP de Spring. No requirio nueva ejecucion -- el comportamiento de cada cliente ya estaba verificado individualmente en sus propios temas (RestClient aqui, WebClient en Modulo 9, RestTemplate marcado legado en Modulo 9); esta adicion es sintesis de decision, no un nuevo mecanismo. Tambien corregido en este mismo lote: el import de TestRestTemplate en Modulo 10 Tema 1 estaba en el paquete viejo de Boot 3.x (org.springframework.boot.test.web.client), corregido a org.springframework.boot.resttestclient con @AutoConfigureTestRestTemplate y las dos dependencias explicitas que requiere en Boot 4 (spring-boot-restclient + spring-boot-resttestclient), verificado con un proyecto Maven real.",
         "criticalSubtopics": [
           "@HttpExchange proxy",
           "withReadTimeout",
-          "ResourceAccessException"
+          "ResourceAccessException",
+          "RestClient vs WebClient vs RestTemplate (decision)"
         ],
         "sources": [
           "https://docs.spring.io/spring-grpc/reference/client.html",

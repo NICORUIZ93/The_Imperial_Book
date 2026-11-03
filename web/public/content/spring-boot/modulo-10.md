@@ -109,7 +109,20 @@ public class ConfigServerApplication {
 }
 ```
 
-Confirma con un test real que el Config Server efectivamente sirve ese valor por HTTP, y que `SimpleDiscoveryClient` efectivamente resuelve un nombre lógico:
+Confirma con un test real que el Config Server efectivamente sirve ese valor por HTTP, y que `SimpleDiscoveryClient` efectivamente resuelve un nombre lógico. **Nota (Spring Boot 4):** `TestRestTemplate` requiere agregar explícitamente `spring-boot-restclient` (scope normal, provee `RestTemplateBuilder`) y `spring-boot-resttestclient` (scope `test`) al `pom.xml`, además de anotar el test con `@AutoConfigureTestRestTemplate` — ninguno de los tres se infiere automáticamente desde `spring-boot-starter-test`:
+
+```xml
+<!-- dentro de <dependencies> del pom.xml -->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-restclient</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-resttestclient</artifactId>
+    <scope>test</scope>
+</dependency>
+```
 
 ```java
 // src/test/java/io/academia/config/ConfigServerTest.java
@@ -117,7 +130,8 @@ package io.academia.config;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.resttestclient.TestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
@@ -129,6 +143,7 @@ import static org.assertj.core.api.Assertions.assertThat;
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     properties = "spring.cloud.discovery.client.simple.instances.servicio-pedidos[0].uri=http://localhost:8081"
 )
+@AutoConfigureTestRestTemplate
 class ConfigServerTest {
 
     @LocalServerPort
@@ -844,6 +859,7 @@ mockMvc.perform(post("/api/journeys/1/positions")
 | Abortar con `ResourceAccessException` | Núcleo | `assertThatThrownBy(() -> cliente.find("RF-001"))` espera `ResourceAccessException` |
 | Sin timeout explícito espera indefinidamente | Error frecuente | el fallo deliberado quita `.withReadTimeout` y la llamada espera los 800 ms completos |
 | Retries no coordinados amplifican latencia | Límite | el ejercicio 3 documenta cómo reintentar sin coordinar multiplica la latencia total |
+| `RestClient` vs `WebClient` vs `RestTemplate` | Decisión | tres clientes HTTP de Spring con un criterio de elección explícito, no por familiaridad |
 | Llamada local sin componente de red | Decisión | el apartado de límites: ni `@HttpExchange` ni el deadline aportan valor |
 
 Cada fila tiene su explicación individual a continuación.
@@ -861,6 +877,8 @@ Cada fila tiene su explicación individual a continuación.
 **Sin timeout explícito espera indefinidamente (Error frecuente).** El fallo deliberado quita `.withReadTimeout(deadline)`: la llamada entonces espera los 800 ms completos y la aserción `assertThatThrownBy` falla porque no se lanza ninguna excepción. Confirma que sin un timeout de lectura explícito el cliente queda limitado solo por el timeout por defecto del sistema operativo, típicamente varios minutos, justo el riesgo que el tema previene.
 
 **Retries no coordinados amplifican latencia (Límite).** El ejercicio 3 pide documentar por qué agregar retries automáticos sobre una llamada con deadline, sin coordinarlos con el resto del sistema, puede multiplicar la latencia total percibida por el usuario. El reto abierto refuerza el límite: la suma de los deadlines de los saltos internos debe caber dentro del deadline total que percibe el cliente externo.
+
+**`RestClient` vs `WebClient` vs `RestTemplate` (Decisión).** Spring ofrece tres clientes HTTP con roles distintos, no intercambiables por preferencia: `RestClient` (el cliente síncrono moderno, usado en este tema vía `RestClientAdapter`) es la elección por defecto para aplicaciones Spring MVC tradicionales que necesitan una API fluida y actual; `WebClient` (Módulo 9) es exclusivamente para flujos no bloqueantes/reactivos (`Mono`/`Flux`) — usarlo en una aplicación puramente síncrona agrega la complejidad del modelo reactivo sin ningún beneficio, porque de cualquier forma se bloqueará en algún punto para obtener el resultado; `RestTemplate` es el cliente histórico, considerado legado desde que `RestClient` cubre el mismo caso de uso síncrono con una API más moderna — ya no es la recomendación por defecto para código nuevo, aunque sigue siendo soportado para proyectos existentes que ya lo usan extensamente. El criterio de elección es el modelo de ejecución de la aplicación (síncrona vs reactiva) y si el código es nuevo o ya depende de `RestTemplate`, no la familiaridad del equipo con una API en particular.
 
 **Llamada local sin componente de red (Decisión).** El apartado de límites indica que para una llamada local sin ningún componente de red real, ni `@HttpExchange` ni un deadline aportan valor. La decisión de aplicar estos patrones depende de que exista una dependencia remota cuya lentitud pueda bloquear la petición del usuario.
 

@@ -1501,7 +1501,7 @@
     },
     {
       "path": "docs/subtopic-depth-review.json",
-      "lines": 21778,
+      "lines": 21779,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1522,7 +1522,7 @@
     },
     {
       "path": "docs/subtopic-depth-reviewed.json",
-      "lines": 4887,
+      "lines": 4888,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -12517,7 +12517,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-10.md",
-      "lines": 1808,
+      "lines": 1826,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12559,7 +12559,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-12.md",
-      "lines": 700,
+      "lines": 702,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

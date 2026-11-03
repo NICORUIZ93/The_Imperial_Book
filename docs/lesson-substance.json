@@ -1677,7 +1677,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "eaf7ef267fc0874c856fc9f14b1165b8e09b667fea8f90b72ec3770359fac9a3",
+    "fingerprint": "268a5f2babddddc5719230b550c8a90a3edb6884eb2867683ce38bae2a9e9e0e",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
@@ -9247,7 +9247,7 @@
         "module": 10,
         "tailWords": 332,
         "topic": "Tema 1: Config Server y service discovery · Intermedio · 45 min",
-        "words": 2172
+        "words": 2255
       },
       {
         "issues": [],
@@ -9275,7 +9275,7 @@
         "module": 10,
         "tailWords": 317,
         "topic": "Tema 5: HTTP Interfaces, deadlines y descubrimiento según el entorno · Avanzado · 45 min",
-        "words": 2002
+        "words": 2188
       },
       {
         "issues": [],
@@ -9324,7 +9324,7 @@
         "module": 12,
         "tailWords": 282,
         "topic": "Tema 1: Arquitectura del microservicio integrador · Experto · 3 h",
-        "words": 2168
+        "words": 2212
       },
       {
         "issues": [],

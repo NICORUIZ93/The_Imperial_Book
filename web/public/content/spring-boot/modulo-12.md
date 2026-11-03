@@ -178,7 +178,7 @@ public class TareaController {
 }
 ```
 
-Confirma con `@SpringBootTest` + Testcontainers (el mismo patrón real de PostgreSQL efímero del Módulo 6) que el endpoint persiste de verdad, con el esquema gestionado por Flyway:
+Confirma con `@SpringBootTest` + Testcontainers (el mismo patrón real de PostgreSQL efímero del Módulo 6) que el endpoint persiste de verdad, con el esquema gestionado por Flyway. **Nota (Spring Boot 4):** `TestRestTemplate` requiere `spring-boot-restclient` (scope normal) + `spring-boot-resttestclient` (scope `test`) en el `pom.xml`, y `@AutoConfigureTestRestTemplate` explícito en el test — ver Módulo 10 Tema 1 para el detalle completo de esta dependencia:
 
 ```java
 // src/test/java/io/academia/integrador/ArquitecturaIntegradaTest.java
@@ -188,7 +188,8 @@ import io.academia.integrador.repository.TareaRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.resttestclient.TestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -200,6 +201,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureTestRestTemplate
 class ArquitecturaIntegradaTest {
 
     @Container

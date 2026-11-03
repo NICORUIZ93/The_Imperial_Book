@@ -1069,7 +1069,7 @@
 - `spring-boot/modulo-10` — Tema 2: Spring Cloud Gateway · Intermedio · 40 min — rutas programáticas; predicates/filters
 - `spring-boot/modulo-10` — Tema 3: Circuit breaker con Resilience4j · Avanzado · 45 min — CircuitBreaker standalone; estados CLOSED/OPEN/HALF_OPEN
 - `spring-boot/modulo-10` — Tema 4: OAuth2/OIDC, Keycloak y Token Relay sin perder la frontera de autorización · Avanzado · 50 min — oauth2-resource-server; Token Relay; frontera de autorización
-- `spring-boot/modulo-10` — Tema 5: HTTP Interfaces, deadlines y descubrimiento según el entorno · Avanzado · 45 min — @HttpExchange proxy; withReadTimeout; ResourceAccessException
+- `spring-boot/modulo-10` — Tema 5: HTTP Interfaces, deadlines y descubrimiento según el entorno · Avanzado · 45 min — @HttpExchange proxy; withReadTimeout; ResourceAccessException; RestClient vs WebClient vs RestTemplate (decision)
 - `spring-boot/modulo-10` — Tema 6: Spring gRPC para comunicación interna de alta frecuencia (Spring Boot 4.1) · Avanzado · 50 min — @GrpcService; GrpcChannelFactory.createChannel; identidad de campo por número (protobuf)
 - `spring-boot/modulo-10` — Tema 7: DDD para decidir límites y propiedad de datos · Avanzado · 45 min — agregado con invariante encapsulada; propiedad de datos entre servicios
 - `spring-boot/modulo-10` — Tema 8: Orquestación de microservicios con Temporal y Spring Boot · Experto · 60 min — @WorkflowImpl(workers=...); @ActivityImpl(workers=...); Saga.addCompensation; TestWorkflowEnvironment
