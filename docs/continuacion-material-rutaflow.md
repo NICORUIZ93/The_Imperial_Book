@@ -93,6 +93,32 @@ practicables (2 pendientes) y la metodología 1.095/1.098 completos (3 pendiente
 La revisión de navegador sigue pendiente: Chrome es terminado
 por el entorno antes de abrir las páginas.
 
+## Revisión de cursos prioritarios — 2026-11-03
+
+Se cotejó el prompt maestro contra el contenido visible real de Java, Node.js,
+Spring Boot y Flutter. El inventario revela diferencias que la auditoría de siete
+pasos no detecta: Java 83 temas frente a 122 elementos cronometrados, Node 15
+módulos frente a 16, Spring Boot 23 módulos/91 temas frente a 26/161, y Flutter
+16 módulos/63 temas frente a 23/155. Las diferencias por módulo quedan en
+`revision-cursos-prioritarios.md`; son candidatos de omisión que requieren cotejo
+individual, no una certificación automática.
+
+Como primera corrección de Java, M12 incorpora lecciones de Prototype y patrones
+estructurales; se ejecutaron ambas demostraciones con JDK 25. En Node M14, la
+lección compuesta sobre mensajería y sagas se acotó a Saga y ahora tiene un
+ejemplo JavaScript completo con fallo de pago y compensaciones. Este lote no cierra
+la revisión: faltan las brechas de Java M16/M17/M19/M20, Kafka y RabbitMQ por
+separado, módulos Spring Boot 23–25, Flutter 16–22 y el cotejo del resto del
+inventario prioritario.
+
+Los ejemplos Prototype, StructuralPatternsDemo (incluido Flyweight) y las dos
+rutas de la saga Node se ejecutaron con salida esperada. `./scripts/validate.sh`
+terminó correctamente con 23 pruebas Python (4 omitidas), 1.095/1.100 temas
+marcados como practicables y 1.094/1.100 con metodología completa. Build Angular
+y 17 pruebas unitarias pasaron. El build mantiene la advertencia existente del
+bundle inicial: 625,71 kB frente al presupuesto de 600 kB. No se probó Kafka o
+RabbitMQ contra brokers; Docker no está instalado en este entorno.
+
 En esta pasada se simplificaron los temas 4–6 de Cloud 0. El tema de Floci ahora
 enciende, consulta y detiene solo el servicio AWS definido en el Compose del
 proyecto; el siguiente tema enseña a leer los tres nombres y puertos; el tercero

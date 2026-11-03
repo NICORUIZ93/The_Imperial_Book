@@ -2846,6 +2846,14 @@
       {
         "title": "SOLID y cuándo NO aplicar un patrón",
         "fragment": "tema-4-solid-y-cuando-no-aplicar-un-patron"
+      },
+      {
+        "title": "Prototype: copiar un objeto sin compartir sus datos",
+        "fragment": "tema-5-prototype-copiar-un-objeto-sin-compartir-sus-datos"
+      },
+      {
+        "title": "Patrones estructurales para conectar piezas existentes",
+        "fragment": "tema-6-patrones-estructurales-para-conectar-piezas-existentes"
       }
     ],
     "13": [
@@ -3902,8 +3910,8 @@
         "fragment": "tema-2-graphql-avanzado-y-federation"
       },
       {
-        "title": "Microservicios, Kafka, RabbitMQ y sagas",
-        "fragment": "tema-3-microservicios-kafka-rabbitmq-y-sagas"
+        "title": "Compensar una entrega cuando falla un paso",
+        "fragment": "tema-3-compensar-una-entrega-cuando-falla-un-paso"
       },
       {
         "title": "Serverless multi-cloud",

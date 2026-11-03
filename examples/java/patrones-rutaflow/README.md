@@ -7,6 +7,7 @@ java examples/java/patrones-rutaflow/StrategyDemo.java
 java examples/java/patrones-rutaflow/SingletonDemo.java
 java examples/java/patrones-rutaflow/ObserverDemo.java
 java examples/java/patrones-rutaflow/CreationalPatternsDemo.java
+java examples/java/patrones-rutaflow/PrototypeDemo.java
 java examples/java/patrones-rutaflow/StructuralPatternsDemo.java
 java examples/java/patrones-rutaflow/BehavioralPatternsDemo.java
 ```
@@ -45,7 +46,8 @@ campos obligatorios, una opción predeterminada y validación final; no implemen
 un director ni representa varias formas de un mismo producto.
 
 `StructuralPatternsDemo` ejecuta Adapter, Decorator, Facade, Composite, Proxy y
-Bridge. `BehavioralPatternsDemo` ejecuta Observer, Strategy, Command, Template
+Bridge y Flyweight. `PrototypeDemo` comprueba que una copia tenga su propia lista.
+`BehavioralPatternsDemo` ejecuta Observer, Strategy, Command, Template
 Method, Chain of Responsibility, State, Iterator, Mediator, Memento y Visitor.
 Cada salida comienza con el nombre del patrón para hacer verificable la
 comparación desde terminal.
@@ -72,6 +74,13 @@ iterator=CREATED,IN_TRANSIT
 mediator=cliente:DELIVERED
 memento=Calle 1
 visitor=zona:NORTE,demora:15
+```
+
+Salidas esperadas de `PrototypeDemo.java`:
+
+```text
+original=RF-7:fragil
+copia=RF-7:fragil,prioritario
 ```
 
 El [Módulo 12 de Java](../../../web/public/content/java/modulo-12.md) amplía

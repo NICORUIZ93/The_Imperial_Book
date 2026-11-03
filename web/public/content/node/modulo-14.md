@@ -142,87 +142,59 @@ Levantá ambos subgrafos con `node src/conductores/index.js` y `node src/pedidos
 
 **Transferencia al proyecto integrador «API operativa de entregas»:** Divide Conductores y Pedidos en subgrafos Federation propios, cada uno con su propio despliegue, y compón el supergrafo que el panel del operador consulta como si fuera un único servicio.
 
-### Tema 3: Microservicios, Kafka, RabbitMQ y sagas
+### Tema 3: Compensar una entrega cuando falla un paso
 
 #### Paso 1 · Objetivo y preparación
-
-Al finalizar podrás implementar una saga orquestada (con compensación explícita) para la operación "crear pedido → reservar conductor → cobrar", confirmando que un fallo en cualquier paso revierte correctamente los pasos ya completados. Prerrequisitos: Tema 2 de este módulo.
+Al terminar podrás ejecutar una operación con tres pasos y revertir los que ya se completaron cuando falla el cobro. Necesitas Node.js 24 LTS. Desde la raíz del proyecto crea `ejemplo-saga/` y copia allí `examples/node-sagas/saga.mjs`.
 
 #### Paso 2 · Contexto y caso real
+Una entrega puede crear un pedido, reservar un conductor y cobrar. Si el cobro se rechaza, dejar el pedido abierto y el conductor ocupado confunde al equipo y al cliente. El programa debe saber qué hacer con lo que ya alcanzó a cambiar.
 
-La operación de crear un pedido involucra tres servicios independientes (Pedidos, Conductores, Pagos); una transacción de base de datos tradicional no puede abarcar los tres porque cada uno tiene su propia base de datos — si el cobro falla después de que el conductor ya fue reservado, esa reserva queda inconsistente a menos que algo la revierta explícitamente.
+#### Paso 3 · Explicación con una analogía
+Una **saga** es una lista de pasos en la que cada paso tiene una acción para deshacerlo. Es parecido a reservar vuelo y hotel por separado: si la segunda reserva falla, cancelas la primera explícitamente. La base de datos de un servicio no puede deshacer por sí sola un cambio que hizo otro servicio.
 
-#### Paso 3 · Teoría, modelo mental y analogía
+El archivo guarda tres estados simples y dos compensaciones: cancelar el pedido y liberar al conductor. `undo.reverse()` las ejecuta en orden inverso. Este ejemplo ayuda a entender la idea; todavía no se conecta a microservicios, Kafka ni RabbitMQ.
 
-Una saga coordina una secuencia de pasos locales, cada uno con su propia transacción local y una acción de COMPENSACIÓN explícita que revierte su efecto si un paso posterior falla; en una saga orquestada, un coordinador central dirige la secuencia completa y decide cuándo compensar. La analogía: una serie de reservas de un viaje (vuelo, hotel, auto) donde, si la reserva del auto falla, alguien debe cancelar explícitamente el vuelo y el hotel ya reservados, no asumir que se cancelan solos.
-
-#### Paso 4 · Demostración guiada desde cero
-
-Crea `src/saga/crearPedidoSaga.js`:
+#### Paso 4 · Demostración guiada
+El archivo `ejemplo-saga/saga.mjs` contiene el programa completo. Revisa estas acciones:
 
 ```js
-async function crearPedidoSaga(pedido) {
-  const pasosCompletados = [];
-  try {
-    await crearPedido(pedido); pasosCompletados.push("pedido");
-    await reservarConductor(pedido.conductorId); pasosCompletados.push("conductor");
-    await cobrar(pedido.montoTotal); pasosCompletados.push("pago");
-  } catch (error) {
-    for (const paso of pasosCompletados.reverse()) {
-      await compensar(paso, pedido);
-    }
-    throw error;
-  }
+async function createOrder() {
+  state.order = "CREATED";
+  undo.push(async () => { state.order = "CANCELLED"; });
+}
+
+async function reserveDriver() {
+  state.driver = "RESERVED";
+  undo.push(async () => { state.driver = "FREE"; });
 }
 ```
 
-**Ejecuta el ejemplo** (monta el proyecto Node y córrelo):
+Ejecuta desde la raíz del proyecto (las órdenes crean la carpeta de práctica y copian el archivo):
 
 ```bash
-npm init -y && npm install
-node index.js
+mkdir -p ejemplo-saga
+cp examples/node-sagas/saga.mjs ejemplo-saga/saga.mjs
+node ejemplo-saga/saga.mjs
+node ejemplo-saga/saga.mjs --fail-payment
 ```
-Para las pruebas: `npm test`.
 
-
-**Resultado esperado:** si `cobrar` lanza una excepción (tarjeta rechazada), el `catch` compensa en orden inverso los pasos ya completados (`liberarConductor`, luego `cancelarPedido`), dejando el sistema en un estado consistente sin un pedido fantasma ni un conductor reservado indefinidamente.
+La primera ejecución muestra pedido creado, conductor reservado y pago aprobado. La segunda imprime `fallo=Pago rechazado | pedido:CANCELLED,conductor:FREE,pago:DECLINED`: el fallo de cobro activó las dos compensaciones.
 
 #### Paso 5 · Práctica guiada
-
-Pista: quitá el bloque `catch` completo (o dejalo vacío sin llamar a `compensar`) y simulá el mismo fallo de cobro. Ese es el fallo deliberado: el pedido queda creado y el conductor queda reservado permanentemente en la base de datos, aunque el cobro nunca se completó, y nadie revierte esos dos pasos porque ninguna compensación se ejecutó.
+1. Antes de correr el segundo comando, predice qué estado tendrá el conductor.
+2. Cambia el orden de `undo.reverse()` por `undo` y vuelve a ejecutar. Anota en qué orden se revierten los cambios.
+3. Quita temporalmente la llamada a las compensaciones. El pedido queda `CREATED` y el conductor `RESERVED` después del rechazo. Restáurala.
+4. Explica por qué un mensaje de error no cancela automáticamente los pasos previos.
 
 #### Paso 6 · Práctica independiente
-
-Corregí el Paso 5 restaurando el bloque `catch` con compensación en orden inverso, y agregá un caso donde la COMPENSACIÓN MISMA falla (por ejemplo, `liberarConductor` lanza una excepción) documentando por qué ese caso requiere reintentos con backoff o alerta a un humano, no simplemente propagar el error hacia arriba.
+Agrega una etapa `notificarCliente` después del cobro. Define qué estado guardarías si falla la notificación y si ese fallo debería cancelar el pedido ya cobrado. Escribe una salida que permita comprobar tu decisión.
 
 #### Paso 7 · Cierre y evidencia
+Guarda las dos salidas y tu explicación de cuándo se ejecutan las compensaciones. En un sistema real, cada servicio conserva sus propios datos y el proceso puede reiniciarse a mitad de la operación: harían falta almacenamiento duradero, reintentos, idempotencia y alertas. La demostración actual solo enseña la secuencia en memoria. **Fuentes:** [Node.js: ejecución de programas](https://nodejs.org/en/learn/command-line/run-nodejs-scripts-from-the-command-line) y [patrón Saga](https://microservices.io/patterns/data/saga.html).
 
-Entregá la saga con compensación del Paso 4, el estado inconsistente sin compensación del Paso 5, y el manejo del fallo de compensación del Paso 6; explicá por qué una saga orquestada necesita que CADA paso tenga una compensación explícita, no solo el último. Siguiente paso: empaqueta estos mismos servicios en contenedores productivos. Errores comunes: no definir una compensación para cada paso de la saga, compensar en el mismo orden en que se ejecutaron los pasos (debe ser inverso), y no manejar el caso donde la compensación misma falla. Fuentes oficiales: [Saga pattern — microservices.io](https://microservices.io/patterns/data/saga.html) y [KafkaJS — Getting started](https://kafka.js.org/docs/getting-started).
-
-**¿Por qué es importante?** Sin compensación explícita por cada paso, un fallo a mitad de una operación distribuida entre varios servicios deja el sistema en un estado inconsistente permanente, sin que nada lo revierta automáticamente.
-
-**Evidencia de aprendizaje:** entrega la saga con compensación funcionando, el estado inconsistente sin compensación reproducido y el manejo del fallo de compensación documentado.
-
-**Conceptos clave:** saga orquestada, compensación, transacción local, coordinador, estado inconsistente distribuido.
-
-**Diagrama:**
-
-```mermaid
-sequenceDiagram
-  participant S as Saga
-  participant Pe as Pedidos
-  participant Co as Conductores
-  participant Pa as Pagos
-  S->>Pe: crear
-  S->>Co: reservar
-  S->>Pa: cobrar (falla)
-  S->>Co: compensar: liberar
-  S->>Pe: compensar: cancelar
-```
-
-Ejecutá el ejemplo con `node src/saga/crearPedidoSaga.js`. Este mismo patrón de compensación es el que coordinará las operaciones distribuidas del proyecto propio entre Pedidos, Conductores y Pagos.
-
-**Transferencia al proyecto integrador «API operativa de entregas»:** Implementa la saga de creación de pedido como coordinador explícito entre los microservicios de Pedidos, Conductores y Pagos, y prueba que un fallo en el cobro revierte correctamente la reserva del conductor sin dejar un pedido a medio crear.
+**Idea clave:** una falla no deshace cambios de otros servicios; el diseño debe explicar cómo compensarlos.
+**¿Por qué es importante?** Si no defines la compensación, un pago rechazado puede dejar al conductor reservado y al pedido abierto.
 
 ### Tema 4: Serverless multi-cloud
 

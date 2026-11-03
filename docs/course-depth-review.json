@@ -3,8 +3,8 @@
   "totals": {
     "tracks": 14,
     "modules": 245,
-    "topics": 1098,
-    "topicsWithSignals": 150,
+    "topics": 1100,
+    "topicsWithSignals": 149,
     "newLaboratories": 25
   },
   "priorities": {
@@ -7172,6 +7172,28 @@
     },
     {
       "track": "java",
+      "module": 12,
+      "title": "Tema 5: Prototype: copiar un objeto sin compartir sus datos",
+      "file": "web/public/content/java/modulo-12.md",
+      "line": 419,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "java",
+      "module": 12,
+      "title": "Tema 6: Patrones estructurales para conectar piezas existentes",
+      "file": "web/public/content/java/modulo-12.md",
+      "line": 463,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "java",
       "module": 13,
       "title": "Tema 1: Arquitectura por capas del proyecto integrador",
       "file": "web/public/content/java/modulo-13.md",
@@ -9877,12 +9899,10 @@
     {
       "track": "node",
       "module": 14,
-      "title": "Tema 3: Microservicios, Kafka, RabbitMQ y sagas",
+      "title": "Tema 3: Compensar una entrega cuando falla un paso",
       "file": "web/public/content/node/modulo-14.md",
       "line": 145,
-      "signals": [
-        "comprobar-script-test"
-      ],
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -9892,7 +9912,7 @@
       "module": 14,
       "title": "Tema 4: Serverless multi-cloud",
       "file": "web/public/content/node/modulo-14.md",
-      "line": 227,
+      "line": 199,
       "signals": [
         "comprobar-script-test"
       ],
@@ -9905,7 +9925,7 @@
       "module": 14,
       "title": "Tema 5: Docker productivo con Node",
       "file": "web/public/content/node/modulo-14.md",
-      "line": 312,
+      "line": 284,
       "signals": [
         "comprobar-script-test"
       ],
@@ -9918,7 +9938,7 @@
       "module": 14,
       "title": "Tema 6: CI/CD y promoción de artefactos",
       "file": "web/public/content/node/modulo-14.md",
-      "line": 398,
+      "line": 370,
       "signals": [
         "comprobar-script-test"
       ],

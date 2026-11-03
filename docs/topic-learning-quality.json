@@ -125,17 +125,17 @@
       "repeatedDemo": 0
     },
     "java": {
-      "topics": 83,
-      "explanation": 83,
-      "code": 83,
+      "topics": 85,
+      "explanation": 85,
+      "code": 85,
       "visual": 27,
-      "filePath": 83,
-      "runCommand": 83,
-      "expectedResult": 83,
-      "practice": 83,
-      "project": 83,
-      "modelMental": 83,
-      "limitsDecision": 83,
+      "filePath": 85,
+      "runCommand": 85,
+      "expectedResult": 84,
+      "practice": 85,
+      "project": 84,
+      "modelMental": 85,
+      "limitsDecision": 84,
       "practicable": 83,
       "genericScaffold": 0,
       "repeatedDemo": 0
@@ -176,15 +176,15 @@
       "topics": 77,
       "explanation": 77,
       "code": 77,
-      "visual": 27,
+      "visual": 26,
       "filePath": 77,
       "runCommand": 77,
-      "expectedResult": 77,
+      "expectedResult": 76,
       "practice": 77,
-      "project": 77,
+      "project": 76,
       "modelMental": 77,
       "limitsDecision": 77,
-      "practicable": 77,
+      "practicable": 76,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
@@ -14312,6 +14312,50 @@
         }
       },
       {
+        "module": 12,
+        "topic": "Tema 5: Prototype: copiar un objeto sin compartir sus datos",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 11,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 12,
+        "topic": "Tema 6: Patrones estructurales para conectar piezas existentes",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": false,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 12,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 13,
         "topic": "Tema 1: Arquitectura por capas del proyecto integrador",
         "criteria": {
@@ -19511,22 +19555,22 @@
       },
       {
         "module": 14,
-        "topic": "Tema 3: Microservicios, Kafka, RabbitMQ y sagas",
+        "topic": "Tema 3: Compensar una entrega cuando falla un paso",
         "criteria": {
           "explanation": true,
           "code": true,
-          "visual": true,
+          "visual": false,
           "filePath": true,
           "runCommand": true,
-          "expectedResult": true,
+          "expectedResult": false,
           "practice": true,
-          "project": true,
+          "project": false,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 16,
-          "practicable": true,
+          "rubricScore": 10,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }

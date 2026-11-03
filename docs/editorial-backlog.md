@@ -8,16 +8,16 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 
 | Criterio | Cubierto | Pendiente |
 |---|---:|---:|
-| Explicación | 1098 | 0 |
-| Código | 1098 | 0 |
-| Ruta | 1098 | 0 |
-| Ejecución | 1098 | 0 |
-| Resultado | 1096 | 2 |
-| Modificación | 1098 | 0 |
-| Conexión con un proyecto | 1098 | 0 |
-| Modelo mental | 1098 | 0 |
-| Límites | 1097 | 1 |
-| **Perfil de criterios detectado** | **1096** | **2** |
+| Explicación | 1100 | 0 |
+| Código | 1100 | 0 |
+| Ruta | 1100 | 0 |
+| Ejecución | 1100 | 0 |
+| Resultado | 1096 | 4 |
+| Modificación | 1100 | 0 |
+| Conexión con un proyecto | 1098 | 2 |
+| Modelo mental | 1100 | 0 |
+| Límites | 1098 | 2 |
+| **Perfil de criterios detectado** | **1095** | **5** |
 
 ## Prioridad por track
 
@@ -30,10 +30,10 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | flutter | 63 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | foundations | 99 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ios | 56 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| java | 83 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| java | 85 | 0 | 0 | 0 | 1 | 0 | 1 | 1 |
 | javascript | 88 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | kotlin-multiplatform | 56 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| node | 77 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| node | 77 | 0 | 0 | 0 | 1 | 0 | 1 | 0 |
 | react | 58 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | rutaflow | 29 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | spring-boot | 91 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -42,6 +42,9 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 
 - [cloud · módulo 0](../web/public/content/cloud/modulo-0.md) · Tema 4: Qué es Floci — definición, propósito y comparativa con LocalStack: resultado.
 - [cloud · módulo 0](../web/public/content/cloud/modulo-0.md) · Tema 5: Servicios que emula Floci — AWS, Azure y GCP: resultado, límites.
+- [java · módulo 12](../web/public/content/java/modulo-12.md) · Tema 5: Prototype: copiar un objeto sin compartir sus datos: conexión con un proyecto, límites.
+- [java · módulo 12](../web/public/content/java/modulo-12.md) · Tema 6: Patrones estructurales para conectar piezas existentes: resultado.
+- [node · módulo 14](../web/public/content/node/modulo-14.md) · Tema 3: Compensar una entrega cuando falla un paso: resultado, conexión con un proyecto.
 
 ## Regla de cierre
 

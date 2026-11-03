@@ -1,5 +1,7 @@
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class StructuralPatternsDemo {
     interface Etiquetador {
@@ -104,6 +106,22 @@ public class StructuralPatternsDemo {
         String alert(String state) { return channel.send("estado=" + state); }
     }
 
+    record MarkerStyle(String icon, String color) {}
+
+    static final class MarkerStyleCache {
+        private final Map<String, MarkerStyle> styles = new ConcurrentHashMap<>();
+
+        MarkerStyle get(String type) {
+            return styles.computeIfAbsent(type, key -> switch (key) {
+                case "paquete" -> new MarkerStyle("caja.svg", "azul");
+                case "camion" -> new MarkerStyle("camion.svg", "naranja");
+                default -> throw new IllegalArgumentException("tipo desconocido: " + key);
+            });
+        }
+
+        int size() { return styles.size(); }
+    }
+
     public static void main(String[] args) {
         System.out.println("adapter=" + new LabelAdapter(new LegacyLabelService()).crear("RF-42"));
         System.out.println("decorator=" + new LoggedNotification(new Email()).enviar("RF-1"));
@@ -112,5 +130,8 @@ public class StructuralPatternsDemo {
                 new Item("RF-1"), new PackageGroup(new Item("RF-2"), new Item("RF-3"))).describe());
         System.out.println("proxy=" + new AuthorizedQuoteProxy(new RealQuote(), true).cents());
         System.out.println("bridge=" + new TrackingAlert(new SmsChannel()).alert("EN_CAMINO"));
+        MarkerStyleCache cache = new MarkerStyleCache();
+        for (int i = 0; i < 1_000; i++) cache.get(i % 2 == 0 ? "paquete" : "camion");
+        System.out.println("flyweight=1000-markers," + cache.size() + "-shared-styles");
     }
 }

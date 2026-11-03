@@ -141,23 +141,23 @@
       "complete": 56
     },
     "java": {
-      "topics": 83,
+      "topics": 85,
       "objective": 83,
       "prerequisites": 83,
-      "context": 83,
+      "context": 85,
       "theoryAnalogy": 83,
       "guidedDemo": 83,
-      "codeExplanation": 83,
-      "execution": 83,
-      "expectedResult": 83,
-      "deliberateFailure": 83,
+      "codeExplanation": 85,
+      "execution": 85,
+      "expectedResult": 84,
+      "deliberateFailure": 84,
       "guidedPractice": 83,
-      "independentPractice": 83,
+      "independentPractice": 85,
       "closure": 83,
       "commonErrors": 83,
       "resources": 83,
       "standaloneExample": 83,
-      "learningEvidence": 83,
+      "learningEvidence": 84,
       "complete": 83
     },
     "javascript": {
@@ -202,23 +202,23 @@
     },
     "node": {
       "topics": 77,
-      "objective": 77,
-      "prerequisites": 77,
+      "objective": 76,
+      "prerequisites": 76,
       "context": 77,
-      "theoryAnalogy": 77,
+      "theoryAnalogy": 76,
       "guidedDemo": 77,
       "codeExplanation": 77,
       "execution": 77,
-      "expectedResult": 77,
-      "deliberateFailure": 77,
-      "guidedPractice": 77,
+      "expectedResult": 76,
+      "deliberateFailure": 76,
+      "guidedPractice": 76,
       "independentPractice": 77,
-      "closure": 77,
-      "commonErrors": 77,
-      "resources": 77,
-      "standaloneExample": 77,
-      "learningEvidence": 77,
-      "complete": 77
+      "closure": 76,
+      "commonErrors": 76,
+      "resources": 76,
+      "standaloneExample": 76,
+      "learningEvidence": 76,
+      "complete": 76
     },
     "react": {
       "topics": 58,
@@ -16912,6 +16912,58 @@
         }
       },
       {
+        "module": 12,
+        "topic": "Tema 5: Prototype: copiar un objeto sin compartir sus datos",
+        "criteria": {
+          "objective": false,
+          "prerequisites": false,
+          "context": true,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": false,
+          "guidedPractice": false,
+          "independentPractice": true,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
+        },
+        "classification": {
+          "stepsPassed": 5,
+          "complete": false
+        }
+      },
+      {
+        "module": 12,
+        "topic": "Tema 6: Patrones estructurales para conectar piezas existentes",
+        "criteria": {
+          "objective": false,
+          "prerequisites": false,
+          "context": true,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": false,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": true,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 6,
+          "complete": false
+        }
+      },
+      {
         "module": 13,
         "topic": "Tema 1: Arquitectura por capas del proyecto integrador",
         "criteria": {
@@ -23055,28 +23107,28 @@
       },
       {
         "module": 14,
-        "topic": "Tema 3: Microservicios, Kafka, RabbitMQ y sagas",
+        "topic": "Tema 3: Compensar una entrega cuando falla un paso",
         "criteria": {
-          "objective": true,
-          "prerequisites": true,
+          "objective": false,
+          "prerequisites": false,
           "context": true,
-          "theoryAnalogy": true,
+          "theoryAnalogy": false,
           "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
-          "expectedResult": true,
-          "deliberateFailure": true,
-          "guidedPractice": true,
+          "expectedResult": false,
+          "deliberateFailure": false,
+          "guidedPractice": false,
           "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 5,
+          "complete": false
         }
       },
       {

@@ -52,13 +52,13 @@
       "topics": 77,
       "code": 77,
       "commentedCode": 36,
-      "mermaid": 23,
+      "mermaid": 22,
       "archifyVisual": 0,
       "asciiVisual": 13,
       "misleadingDiagramLabel": 0,
       "filePath": 77,
       "runCommand": 77,
-      "officialSource": 46
+      "officialSource": 47
     },
     "angular": {
       "topics": 71,
@@ -85,15 +85,15 @@
       "officialSource": 39
     },
     "java": {
-      "topics": 83,
-      "code": 83,
+      "topics": 85,
+      "code": 85,
       "commentedCode": 58,
       "mermaid": 24,
       "archifyVisual": 3,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
-      "filePath": 83,
-      "runCommand": 83,
+      "filePath": 85,
+      "runCommand": 85,
       "officialSource": 41
     },
     "spring-boot": {
@@ -1573,7 +1573,7 @@
     {
       "track": "node",
       "module": 14,
-      "topic": "Tema 3: Microservicios, Kafka, RabbitMQ y sagas",
+      "topic": "Tema 3: Compensar una entrega cuando falla un paso",
       "missingCode": false,
       "missingComments": true
     },
@@ -1896,6 +1896,20 @@
       "track": "java",
       "module": 1,
       "topic": "Tema 1: Clases, objetos, constructores y encapsulación",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 12,
+      "topic": "Tema 5: Prototype: copiar un objeto sin compartir sus datos",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 12,
+      "topic": "Tema 6: Patrones estructurales para conectar piezas existentes",
       "missingCode": false,
       "missingComments": true
     },

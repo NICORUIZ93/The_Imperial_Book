@@ -8,10 +8,10 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 |---|---:|---:|---|---|
 | foundations | 99 | 8 | HTML/CSS antes de frameworks; archivos y ejecución antes de persistencia avanzada | Interfaz semántica operable por teclado, algoritmo con casos límite y SQL reproducible |
 | javascript | 88 | 6 | Formularios, DOM y errores de red antes de patrones avanzados | Cliente que conserva entrada, anuncia errores y distingue cancelación de fallo |
-| node | 77 | 15 | HTTP y validación antes de autenticación e integraciones | API con límites de carga, paginación estable, pruebas y cierre ordenado |
+| node | 77 | 14 | HTTP y validación antes de autenticación e integraciones | API con límites de carga, paginación estable, pruebas y cierre ordenado |
 | angular | 71 | 3 | HTML/CSS/TypeScript explícitos; RxJS y estado con ejemplos completos | Rutas, formularios, datos remotos y cambios sin guardar comprobados con navegador |
 | react | 58 | 46 | JSX y estado antes de efectos; proveedor, dependencias y API visibles | Carga, error, vacío y carrera de respuestas; caché observada, no supuesta |
-| java | 83 | 46 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
+| java | 85 | 46 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
 | spring-boot | 91 | 8 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
 | android | 58 | 0 | Kotlin antes de Compose; distinguir recomposición, recreación y muerte de proceso | App instalable con permisos, restauración, persistencia y pruebas en dispositivo |
 | ios | 56 | 4 | Swift antes de SwiftUI; explicitar macOS/Xcode y destino | Cancelación, estados de red, persistencia y accesibilidad comprobados en simulador |
@@ -666,6 +666,8 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | java / 12 | [Tema 2: Factory Method y Strategy](../web/public/content/java/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 12 | [Tema 3: Abstract Factory y familias de productos compatibles](../web/public/content/java/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 12 | [Tema 4: SOLID y cuándo NO aplicar un patrón](../web/public/content/java/modulo-12.md) | clase-java-no-visible |
+| java / 12 | [Tema 5: Prototype: copiar un objeto sin compartir sus datos](../web/public/content/java/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 12 | [Tema 6: Patrones estructurales para conectar piezas existentes](../web/public/content/java/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 13 | [Tema 1: Arquitectura por capas del proyecto integrador](../web/public/content/java/modulo-13.md) | clase-java-no-visible |
 | java / 13 | [Tema 2: Integrando concurrencia, modelado y testing](../web/public/content/java/modulo-13.md) | clase-java-no-visible |
 | java / 13 | [Tema 3: Build reproducible y cierre del track](../web/public/content/java/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
@@ -902,7 +904,7 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | node / 13 | [Tema 5: OpenAPI como contrato ejecutable](../web/public/content/node/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 14 | [Tema 1: TypeScript en Node.js](../web/public/content/node/modulo-14.md) | comprobar-script-test |
 | node / 14 | [Tema 2: GraphQL avanzado y Federation](../web/public/content/node/modulo-14.md) | comprobar-script-test |
-| node / 14 | [Tema 3: Microservicios, Kafka, RabbitMQ y sagas](../web/public/content/node/modulo-14.md) | comprobar-script-test |
+| node / 14 | [Tema 3: Compensar una entrega cuando falla un paso](../web/public/content/node/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 14 | [Tema 4: Serverless multi-cloud](../web/public/content/node/modulo-14.md) | comprobar-script-test |
 | node / 14 | [Tema 5: Docker productivo con Node](../web/public/content/node/modulo-14.md) | comprobar-script-test |
 | node / 14 | [Tema 6: CI/CD y promoción de artefactos](../web/public/content/node/modulo-14.md) | comprobar-script-test |
