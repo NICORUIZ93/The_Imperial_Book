@@ -5000,6 +5000,10 @@
       {
         "title": "HandlerInterceptor frente a Filter y @ControllerAdvice",
         "fragment": "tema-7-handlerinterceptor-frente-a-filter-y-controlleradvice"
+      },
+      {
+        "title": "Negociación de contenido con HttpMessageConverters",
+        "fragment": "tema-8-negociacion-de-contenido-con-httpmessageconverters"
       }
     ],
     "20": [

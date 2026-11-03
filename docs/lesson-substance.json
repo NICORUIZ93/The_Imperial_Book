@@ -1677,7 +1677,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "268a5f2babddddc5719230b550c8a90a3edb6884eb2867683ce38bae2a9e9e0e",
+    "fingerprint": "133c866799472c61641d51d686b26514eddc864b23788f223c292fb007312c7a",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
@@ -1686,7 +1686,7 @@
     },
     "modules": 254,
     "modulesWithLegacySections": 179,
-    "topics": 1165,
+    "topics": 1166,
     "topicsWithIssues": 0
   },
   "topics": {
@@ -9567,9 +9567,16 @@
       {
         "issues": [],
         "module": 2,
-        "tailWords": 327,
+        "tailWords": 331,
         "topic": "Tema 7: HandlerInterceptor frente a Filter y @ControllerAdvice · Avanzado · 35 min",
-        "words": 2285
+        "words": 2289
+      },
+      {
+        "issues": [],
+        "module": 2,
+        "tailWords": 333,
+        "topic": "Tema 8: Negociación de contenido con HttpMessageConverters · Avanzado · 35 min",
+        "words": 1838
       },
       {
         "issues": [],

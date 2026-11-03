@@ -4298,6 +4298,17 @@
       ]
     },
     {
+      "id": "spring-boot:2:8",
+      "track": "spring-boot",
+      "module": 2,
+      "position": 8,
+      "title": "Negociación de contenido con HttpMessageConverters · Avanzado · 35 min",
+      "file": "web/public/content/spring-boot/modulo-2.md",
+      "requires": [
+        "spring-boot:2:7"
+      ]
+    },
+    {
       "id": "spring-boot:3:1",
       "track": "spring-boot",
       "module": 3,
@@ -4305,7 +4316,7 @@
       "title": "Entidades y repositorios derivados · Intermedio · 35 min",
       "file": "web/public/content/spring-boot/modulo-3.md",
       "requires": [
-        "spring-boot:2:7"
+        "spring-boot:2:8"
       ]
     },
     {

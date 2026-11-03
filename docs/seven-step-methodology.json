@@ -248,22 +248,22 @@
       "complete": 29
     },
     "spring-boot": {
-      "topics": 99,
+      "topics": 100,
       "objective": 0,
-      "prerequisites": 99,
+      "prerequisites": 100,
       "context": 0,
       "theoryAnalogy": 0,
       "guidedDemo": 0,
-      "codeExplanation": 99,
-      "execution": 97,
-      "expectedResult": 99,
-      "deliberateFailure": 99,
+      "codeExplanation": 100,
+      "execution": 98,
+      "expectedResult": 100,
+      "deliberateFailure": 100,
       "guidedPractice": 0,
       "independentPractice": 0,
       "closure": 0,
-      "commonErrors": 99,
-      "resources": 99,
-      "standaloneExample": 96,
+      "commonErrors": 100,
+      "resources": 100,
+      "standaloneExample": 97,
       "complete": 0
     }
   },
@@ -28323,6 +28323,31 @@
       {
         "module": 2,
         "topic": "Tema 7: HandlerInterceptor frente a Filter y @ControllerAdvice · Avanzado · 35 min",
+        "criteria": {
+          "objective": false,
+          "prerequisites": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 8,
+          "complete": false
+        }
+      },
+      {
+        "module": 2,
+        "topic": "Tema 8: Negociación de contenido con HttpMessageConverters · Avanzado · 35 min",
         "criteria": {
           "objective": false,
           "prerequisites": true,

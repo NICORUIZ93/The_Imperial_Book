@@ -4883,6 +4883,21 @@
         "https://docs.spring.io/spring-boot/reference/features/task-execution-and-scheduling.html",
         "docs/AUDITORIA-COBERTURA-SPRING-20261101.md"
       ]
+    },
+    "spring-boot/modulo-2::Tema 8: Negociación de contenido con HttpMessageConverters · Avanzado · 35 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Lote 2 (MEDIA #8) de docs/AUDITORIA-COBERTURA-SPRING-20261101.md: 'Binding MVC completo + HttpMessageConverters + content negotiation -> M2'. Tema nuevo, completamente ausente antes (cero menciones de HttpMessageConverter en todo el track). Ejecutado de verdad: mvn test, Tests run: 3, Failures: 0, Errors: 0 sobre Spring Boot 4.1.1 / Spring Framework 7.0.9 / jackson-dataformat-xml 2.21.5 / JDK 27.0.1.0.3. Confirmado con tests reales: Accept: application/json produce JSON real; Accept: application/xml produce XML real (agregar la dependencia jackson-dataformat-xml es SUFICIENTE, sin configuracion manual, para que el converter XML se autoconfigure); Accept: application/pdf produce 406 Not Acceptable real (log capturado: HttpMediaTypeNotAcceptableException). Fallo deliberado tambien ejecutado: quitar jackson-dataformat-xml del classpath hace que Accept: application/xml tambien responda 406 aunque el metodo siga declarando ese formato en produces -- confirma que produces declara intencion, pero el converter real debe existir en el classpath.",
+      "criticalSubtopics": [
+        "produces en @GetMapping",
+        "HttpMessageConverter autoconfigurado por classpath",
+        "406 Not Acceptable",
+        "mismo DTO/controller, distinta representacion por converter"
+      ],
+      "sources": [
+        "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-config/content-negotiation.html",
+        "docs/AUDITORIA-COBERTURA-SPRING-20261101.md"
+      ]
     }
   }
 }

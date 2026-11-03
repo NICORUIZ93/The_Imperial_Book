@@ -2,8 +2,8 @@
 
 > Las señales automáticas no prueban profundidad ni ausencia de ella. Un tema sólo queda revisado mediante el registro humano con mapa de subtemas críticos, evidencia y fuentes.
 
-- Temas inventariados: 1165
-- Revisados humanamente para subtemas: 342
+- Temas inventariados: 1166
+- Revisados humanamente para subtemas: 343
 - Pendientes: 823
 - Candidatos prioritarios por señales: 782
 
@@ -24,7 +24,7 @@
 | node | 77 | 0 | 77 |
 | react | 58 | 0 | 58 |
 | rutaflow | 29 | 0 | 29 |
-| spring-boot | 99 | 99 | 0 |
+| spring-boot | 100 | 100 | 0 |
 
 ## Cola prioritaria
 
@@ -1112,6 +1112,7 @@
 - `spring-boot/modulo-2` — Tema 5: OpenAPI con springdoc: el contrato como prueba · Intermedio · 40 min — springdoc-openapi-starter-webmvc-ui 3.x; /v3/api-docs; swagger-ui.html
 - `spring-boot/modulo-2` — Tema 6: Paginación HTTP con validación y un límite de recursos explícito · Intermedio · 35 min — Validación de page/size; 400 vs 200 en tamaño inválido; Orden estable con desempate; Offset vs cursor
 - `spring-boot/modulo-2` — Tema 7: HandlerInterceptor frente a Filter y @ControllerAdvice · Avanzado · 35 min — preHandle/postHandle/afterCompletion; preHandle=false corta la cadena y omite afterCompletion; Filter vs HandlerInterceptor: acceso al handler resuelto; WebMvcConfigurer.addInterceptors; spring-boot-webmvc-test (dependencia explicita en Boot 4)
+- `spring-boot/modulo-2` — Tema 8: Negociación de contenido con HttpMessageConverters · Avanzado · 35 min — produces en @GetMapping; HttpMessageConverter autoconfigurado por classpath; 406 Not Acceptable; mismo DTO/controller, distinta representacion por converter
 - `spring-boot/modulo-20` — Tema 1: Scheduling y tareas periódicas · Avanzado · 1 h 10 min — @Scheduled
 - `spring-boot/modulo-20` — Tema 2: Eventos locales, eventos transaccionales y mensajería · Avanzado · 1 h 20 min — @TransactionalEventListener
 - `spring-boot/modulo-20` — Tema 3: Correo con Spring Mail y entrega recuperable · Avanzado · 1 h 10 min — JavaMailSender

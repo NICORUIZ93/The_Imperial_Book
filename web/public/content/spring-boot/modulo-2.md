@@ -1263,7 +1263,7 @@ public void ____(HttpServletRequest request, HttpServletResponse response, Objec
 
 **Si falla.** Si el interceptor parece no activarse nunca, confirma que esté registrado en `WebMvcConfigurer.addInterceptors` (ser `@Component` no es suficiente). Si `afterCompletion` no aparece donde se esperaba, confirma si `preHandle` de ese mismo interceptor retornó `false` en ese camino.
 
-**Siguiente paso:** el Módulo 3 profundiza en la persistencia con Spring Data JPA.
+**Siguiente paso:** el Tema 8 de este módulo cierra la capa web con negociación de contenido real.
 
 **Errores comunes:** asumir que `afterCompletion` es una garantía tipo `finally` incondicional, cuando documentadamente depende de que `preHandle` haya retornado `true`; usar un `Filter` cuando la lógica necesita el `handler` resuelto; usar `@ControllerAdvice` para intentar bloquear una petición antes de que el controller se ejecute.
 
@@ -1272,6 +1272,201 @@ public void ____(HttpServletRequest request, HttpServletResponse response, Objec
 **Fuente oficial:** [Spring MVC — Interceptors](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-config/interceptors.html).
 
 **Transferencia al proyecto integrador:** el `HandlerInterceptor` de medición de este tema es el que instrumentará el tiempo de respuesta del microservicio productivo (Módulo 12).
+
+### Tema 8: Negociación de contenido con HttpMessageConverters · Avanzado · 35 min
+
+**Prerrequisito:** Tema 1 de este módulo (DTOs).
+
+**Al terminar podrás:** exponer el mismo endpoint en JSON y XML según la cabecera `Accept` del cliente, confirmar con tests reales ambas representaciones, y diagnosticar un `406 Not Acceptable` cuando el cliente pide un formato que ningún `HttpMessageConverter` registrado soporta.
+
+#### Aprende
+
+**¿Por qué es importante?** Un consumidor externo de la API (un sistema legado que solo habla XML, por ejemplo) no debería forzar que toda la API se reescriba para un formato distinto; la negociación de contenido permite que el MISMO endpoint, con el MISMO código, sirva JSON a unos clientes y XML a otros según lo que cada cliente declare aceptar.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `produces` declara los formatos soportados | Prerrequisito | `@GetMapping(produces = {APPLICATION_JSON_VALUE, APPLICATION_XML_VALUE})` |
+| `HttpMessageConverter` serializa según `Accept` | Núcleo | el header `Accept: application/xml` produce una respuesta `Content-Type: application/xml` real |
+| Un converter adicional en el classpath se registra solo | Núcleo | agregar `jackson-dataformat-xml` basta para que XML funcione, sin configuración manual |
+| `Accept` no soportado produce 406 | Diagnóstico | pedir `application/pdf` (sin converter registrado) responde `406 Not Acceptable` |
+| Mismo objeto, misma lógica, distinta representación | Variante | el DTO y el controller NO cambian entre ambos formatos; solo cambia qué converter actúa |
+| Cuándo múltiples formatos no se justifican | Decisión | una API interna con un único consumidor conocido no necesita negociar nada |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`produces` declara los formatos soportados (prerrequisito).** `@GetMapping(value = "/tarifas/BO-004512", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})` declara explícitamente qué tipos de contenido este endpoint puede producir. Es el prerrequisito: sin declarar `produces`, Spring MVC no sabría qué formatos ofrecer al negociar con el cliente.
+
+**`HttpMessageConverter` serializa según `Accept` (núcleo).** Spring MVC mantiene una lista de `HttpMessageConverter` registrados (uno por formato: JSON, XML, texto plano, entre otros); al recibir una petición, compara el header `Accept` del cliente contra los `produces` del método y los converters disponibles, y delega la serialización al converter cuyo tipo coincide. El test confirma esto literalmente: `Accept: application/json` produce un `Content-Type: application/json` con el cuerpo JSON; `Accept: application/xml` produce `Content-Type: application/xml` con el mismo objeto serializado como XML.
+
+**Un converter adicional en el classpath se registra solo (núcleo).** Agregar la dependencia `jackson-dataformat-xml` es SUFICIENTE para que Spring Boot autoconfigure un `HttpMessageConverter` capaz de XML, sin ningún `@Bean` manual ni configuración adicional — el mismo patrón de autoconfiguración condicional por classpath que ya se vio en el Módulo 1 (Tema 4), aplicado aquí a converters en vez de a toda una auto-configuración.
+
+**`Accept` no soportado produce 406 (diagnóstico).** El fallo deliberado de este tema pide el endpoint con `Accept: application/pdf`, un formato para el que no hay ningún `HttpMessageConverter` registrado ni declarado en `produces`. La respuesta real es `406 Not Acceptable` (confirmado en el log real: `HttpMediaTypeNotAcceptableException: No acceptable representation`), la señal HTTP estándar de que el servidor no puede satisfacer lo que el cliente dice aceptar.
+
+**Mismo objeto, misma lógica, distinta representación (variante).** El `TarifaDto` y el método del controller son EXACTAMENTE el mismo código para ambos formatos; la diferencia entre la respuesta JSON y XML ocurre enteramente en la capa de serialización (el `HttpMessageConverter` elegido), nunca en la lógica de negocio ni en el controller. Esta separación es lo que hace posible agregar un formato nuevo sin tocar ninguna línea de lógica existente.
+
+**Cuándo múltiples formatos no se justifican (decisión).** Para una API interna con un único consumidor conocido (un frontend propio que siempre habla JSON), declarar soporte para XML u otros formatos agrega una dependencia y una superficie de prueba sin ningún consumidor real que la necesite. La negociación de contenido se justifica cuando existen múltiples consumidores externos con necesidades de formato genuinamente distintas.
+
+**Conceptos clave:** `HttpMessageConverter`, negociación de contenido, header `Accept`, `406 Not Acceptable`.
+
+`produces` en `@GetMapping` declara los formatos que un endpoint puede servir; Spring MVC elige el `HttpMessageConverter` adecuado comparando el header `Accept` del cliente contra esos formatos declarados y los converters realmente registrados. Agregar un converter nuevo al classpath (como `jackson-dataformat-xml` para XML) es suficiente para habilitar un formato adicional, sin cambiar el controller ni el DTO. Si el cliente pide un formato que ningún converter soporta, la respuesta es `406 Not Acceptable`.
+
+**Analogía:** un mismo documento legal traducido simultáneamente a varios idiomas por traductores especializados distintos es como `HttpMessageConverter`: el contenido (el DTO) es el mismo, pero cada traductor (converter) produce la representación en su idioma (formato) específico según lo que el lector (cliente) declaró entender.
+
+**Diagrama:**
+
+```text
+Cliente: Accept: application/xml
+         │
+         ▼
+┌─ Spring MVC compara Accept vs produces ──────┐
+│  JSON converter   -> no coincide             │
+│  XML converter    -> coincide -> se usa      │
+└────────────────────────────────────────────────┘
+         │
+         ▼
+Respuesta: Content-Type: application/xml
+```
+
+#### Practica
+
+**Demo paso a paso.** Desde una carpeta vacía, genera el proyecto y agrega el converter de XML:
+
+```bash
+mkdir content-negotiation-demo && cd content-negotiation-demo
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web -d javaVersion=27 -o app.zip
+unzip -q app.zip
+```
+
+```xml
+<!-- dentro de <dependencies> del pom.xml -->
+<dependency>
+    <groupId>com.fasterxml.jackson.dataformat</groupId>
+    <artifactId>jackson-dataformat-xml</artifactId>
+</dependency>
+```
+
+Crea `src/main/java/com/academia/negotiation/TarifaDto.java` y `TarifaController.java`:
+
+```java
+package com.academia.negotiation;
+
+public record TarifaDto(String id, int monto) {
+}
+```
+
+```java
+package com.academia.negotiation;
+
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class TarifaController {
+    @GetMapping(value = "/tarifas/BO-004512", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    public TarifaDto obtener() {
+        return new TarifaDto("BO-004512", 15000);
+    }
+}
+```
+
+Agrega la dependencia real de testing (`spring-boot-webmvc-test`, ver Tema 7) y crea el test en `src/test/java/com/academia/negotiation/ContentNegotiationTest.java`:
+
+```java
+package com.academia.negotiation;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@SpringBootTest
+@AutoConfigureMockMvc
+class ContentNegotiationTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Test
+    void aceptarJsonDevuelveJson() throws Exception {
+        mockMvc.perform(get("/tarifas/BO-004512").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().json("{\"id\":\"BO-004512\",\"monto\":15000}"));
+    }
+
+    @Test
+    void aceptarXmlDevuelveXml() throws Exception {
+        mockMvc.perform(get("/tarifas/BO-004512").accept(MediaType.APPLICATION_XML))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_XML))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("<TarifaDto>")));
+    }
+
+    @Test
+    void aceptarTipoNoSoportadoDevuelve406() throws Exception {
+        mockMvc.perform(get("/tarifas/BO-004512").accept(MediaType.APPLICATION_PDF))
+                .andExpect(status().isNotAcceptable());
+    }
+}
+```
+
+```bash
+./mvnw test
+```
+
+**Resultado esperado:** `Tests run: 3, Failures: 0, Errors: 0` (verificado con Spring Boot 4.1.1 / Spring Framework 7.0.9 / jackson-dataformat-xml 2.21.5 sobre JDK 27.0.1): `Accept: application/json` produce JSON real, `Accept: application/xml` produce XML real con el elemento `<TarifaDto>`, y `Accept: application/pdf` produce `406 Not Acceptable` (confirmado en el log real: `HttpMediaTypeNotAcceptableException: No acceptable representation`).
+
+**Fallo deliberado:** quita `jackson-dataformat-xml` del `pom.xml` (dejando solo el starter `web`) y ejecuta de nuevo el test de XML. FALLA: sin ese converter en el classpath, Spring Boot no tiene ningún `HttpMessageConverter` capaz de producir `application/xml`, así que la petición con `Accept: application/xml` ahora también responde `406 Not Acceptable`, aunque el método siga declarando `produces` con ese tipo. Diagnostica confirmando que `produces` declara una INTENCIÓN, pero el converter real debe existir en el classpath para que esa intención se cumpla. Restaura la dependencia antes de continuar.
+
+**Ejercicios.**
+
+1. Agrega un tercer formato (texto plano, `MediaType.TEXT_PLAIN_VALUE`) con un método que devuelva un `String` directamente, y confirma con un test que `Accept: text/plain` lo produce correctamente.
+2. Declara `produces` solo con JSON (quita XML de la lista) sin quitar la dependencia de XML del classpath, y confirma con un test que `Accept: application/xml` ahora responde `406` — el converter está disponible, pero el método no lo ofrece.
+3. Investiga (sin necesidad de implementarlo) qué controla `spring.mvc.contentnegotiation.favor-parameter` y documenta un escenario donde negociar por parámetro de query (`?format=xml`) en vez de por header `Accept` sería preferible.
+4. Escribe de memoria (sin mirar) un endpoint con `produces` para dos formatos, y tres tests que confirmen cada formato soportado más el caso `406`. Compara después contra el patrón del Paso 4.
+
+**Pista:** si un formato declarado en `produces` responde `406` de todas formas, la causa casi siempre es que el converter correspondiente no está en el classpath (como `jackson-dataformat-xml` para XML), no un error en la anotación.
+
+**Completa el código:** rellena el atributo que declara los formatos que un endpoint puede producir:
+
+```java
+@GetMapping(value = "/tarifas/{id}", ____ = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+```
+
+**Reto de memoria:** cierra este documento y escribe, solo de memoria, un endpoint con `produces` para JSON y XML, y un test que confirme ambos formatos más el caso `406 Not Acceptable`.
+
+#### Aplica
+
+**Reto abierto.** Para el panel de envíos de RutaFlow, diseña un endpoint que sirva el mismo recurso en JSON (para el frontend web) y XML (para un sistema de facturación externo que solo acepta XML). Demuestra con tests reales ambos formatos y el caso `406` para un tercer formato no soportado, y documenta por qué este endpoint específico sí justifica la negociación de contenido mientras otros endpoints internos de RutaFlow no la necesitarían.
+
+**Checklist de salida.**
+
+- [ ] El mismo endpoint sirve JSON y XML según el header `Accept`, sin duplicar lógica.
+- [ ] Un test confirma el `Content-Type` real de cada formato.
+- [ ] Un test confirma `406 Not Acceptable` para un formato no soportado.
+- [ ] Reprodujiste el caso donde `produces` declara un formato pero el converter real no está en el classpath.
+- [ ] Podés explicar por qué el DTO y el controller no cambian entre formatos.
+
+**Si falla.** Si un formato declarado en `produces` sigue respondiendo `406`, confirma que el converter correspondiente esté realmente en el classpath (`jackson-dataformat-xml` para XML). Si el XML no tiene la estructura esperada, confirma que el DTO sea serializable sin anotaciones adicionales (un `record` simple funciona por defecto).
+
+**Siguiente paso:** el Módulo 3 profundiza en la persistencia con Spring Data JPA.
+
+**Errores comunes:** asumir que declarar un formato en `produces` es suficiente sin verificar que el converter correspondiente esté en el classpath; duplicar lógica de negocio por formato en vez de dejar que los converters manejen la serialización.
+
+**Límites y decisión de uso:** para una API interna con un único consumidor conocido que siempre habla el mismo formato, agregar soporte multi-formato es una dependencia y una superficie de prueba sin beneficio real; se justifica con consumidores externos genuinamente distintos.
+
+**Fuente oficial:** [Spring MVC — Content Negotiation](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-config/content-negotiation.html).
+
+**Transferencia al proyecto integrador:** si el microservicio productivo necesita servir a un consumidor externo con un formato distinto a JSON, este es el mecanismo que lo habilita sin duplicar el controller.
 
 ## Laboratorio práctico
 
