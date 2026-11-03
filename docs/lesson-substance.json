@@ -1695,11 +1695,11 @@
     }
   ],
   "summary": {
-    "fingerprint": "387bfdd23a204345a1f4b69c10cb512c36ca2cf0060aa99541f0ec94c3288a94",
+    "fingerprint": "2da08c0099cd6fe908e3fbee5a9adb5c2f2ac4c4207d7b805641920c201de5e3",
     "issues": {
       "andamiaje-generico": 125,
-      "bloque-repetido": 215,
-      "cola-tras-cierre": 373,
+      "bloque-repetido": 214,
+      "cola-tras-cierre": 372,
       "parrafo-repetido": 5,
       "tema-breve": 2
     },
@@ -1711,7 +1711,7 @@
     "modules": 256,
     "modulesWithLegacySections": 181,
     "topics": 1185,
-    "topicsWithIssues": 464
+    "topicsWithIssues": 463
   },
   "topics": {
     "android": [
@@ -7191,14 +7191,11 @@
         "words": 1098
       },
       {
-        "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 1,
-        "tailWords": 539,
+        "tailWords": 0,
         "topic": "Tema 3: Interfaces, clases abstractas y cuándo usar cada una",
-        "words": 881
+        "words": 846
       },
       {
         "issues": [

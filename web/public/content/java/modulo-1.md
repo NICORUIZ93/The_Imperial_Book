@@ -388,71 +388,181 @@ Entrega la salida, la excepción reproducida y una frase que explique qué compo
 
 ### Tema 3: Interfaces, clases abstractas y cuándo usar cada una
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás elegir entre interfaz y clase abstracta según si existe comportamiento compartido real, e implementar ambas con una jerarquía `Forma`. Prerrequisitos: JDK 25, Maven y un editor. Comprueba java --version.
+**Duración estimada:** 35 min.
+**¿Por qué es importante?** Una interfaz expresa qué operación ofrece un tipo; una clase abstracta permite compartir estado o código cuando las clases sí tienen una base común.
+**Prerrequisitos:** M1 T2. Proyecto continuo: definir el contrato con que el motor programa entregas y compartir solo los datos que todas necesitan.
 
-#### Paso 2 · Contexto y caso real
-El sistema necesita que tipos no relacionados (un `Pajaro` y un `Avion`, por ejemplo) cumplan un contrato común (`Volador`) sin compartir jerarquía; y necesita que figuras geométricas relacionadas (`Circulo`, `Cuadrado`) compartan una implementación común (`describir()`) además de un método propio (`area()`).
+#### Subtema 3.1: Define un contrato con una interfaz · 10 min
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Una interfaz es un contrato puro sin implementación; una clase abstracta combina comportamiento compartido real con métodos que cada subclase debe completar. La analogía: la interfaz es un contrato de servicio que empresas no relacionadas pueden firmar; la clase abstracta es una franquicia que comparte infraestructura real entre sucursales.
+**1. Contexto**
+El motor debe solicitar confirmación de entrega tanto a una clase local como a un adaptador externo sin conocer sus detalles internos.
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
-```bash
-mkdir ejemplo-interfaz-abstracta
-cd ejemplo-interfaz-abstracta
-mkdir -p src/main/java/academia/formas
-```
-
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
-
-```bash
-# Maven
-mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-cd app && mvn test
-# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
-```
-
-Crea `Volador`/`Pajaro` (interfaz) y `Forma`/`Circulo`/`Cuadrado` (clase abstracta con `area()` abstracto y `describir()` concreto). Compila y ejecuta una clase `Main` que invoque `describir()` sobre un `Circulo` y un `Cuadrado`.
-
-#### Paso 5 · Práctica guiada
-Pista: intenta instanciar `new Forma()` directamente para provocar un fallo deliberado de compilación; una clase abstracta no puede instanciarse. Resultado esperado: el compilador rechaza la instanciación directa y exige una subclase concreta.
-
-#### Paso 6 · Práctica independiente
-Agrega una segunda implementación de `Volador` (por ejemplo `Avion`, sin relación de herencia con `Pajaro`) y una tercera subclase de `Forma` (`Triangulo`); confirma que `describir()` funciona igual para las tres sin reescribirlo.
-
-#### Paso 7 · Cierre y evidencia
-Guarda las clases, la salida de `describir()` para cada forma y el error de instanciación directa; como siguiente paso estudia sobrecarga y modificadores de acceso. Errores comunes: usar clase abstracta cuando bastaba una interfaz, y duplicar comportamiento compartido en cada implementación de una interfaz en vez de centralizarlo en una clase abstracta. Fuentes oficiales: https://dev.java/learn/classes-objects/ y https://docs.oracle.com/javase/tutorial/java/IandI/.
-**¿Por qué es importante?** Porque elegir mal entre interfaz y clase abstracta duplica comportamiento compartido real entre subclases relacionadas, o fuerza una relación de herencia innecesaria donde solo hacía falta un contrato puro.
-**Evidencia de aprendizaje:** entrega la interfaz `Volador` implementada por tipos no relacionados, la clase abstracta `Forma` con sus subclases concretas, y el error de compilación al intentar instanciar `Forma` directamente.
-**Conceptos clave:** contrato sin implementación, comportamiento compartido parcial, múltiple implementación de interfaces.
-
-Una interfaz (`interface Volador { void volar(); }`) define un contrato puro: qué métodos debe tener cualquier clase que la implemente, sin proporcionar ninguna implementación propia por defecto (salvo métodos `default` explícitamente marcados como tales, un caso especial más avanzado), permitiendo que clases completamente no relacionadas entre sí en su jerarquía de herencia (una clase `Pajaro` y una clase `Avion`, por ejemplo, sin ninguna relación de herencia común) implementen el mismo contrato `Volador`, algo que Java permite hacer con múltiples interfaces simultáneamente (`class Pajaro implements Volador, Comestible`), a diferencia de la herencia de clases, donde Java solo permite extender una única superclase.
-
-Una clase abstracta (`abstract class Forma { abstract double area(); void describir() {...} }`) es apropiada en cambio cuando existe comportamiento genuinamente compartido entre subclases relacionadas entre sí (el método `describir()`, con una implementación concreta compartida por todas las subclases de `Forma`), combinado con métodos abstractos que cada subclase concreta debe implementar por su cuenta (`area()`, sin implementación en la clase abstracta, dado que el cálculo específico depende de qué forma geométrica concreta sea cada subclase). La elección entre ambas se resume en si existe comportamiento compartido real que valga la pena centralizar (clase abstracta) frente a un contrato puro que clases potencialmente no relacionadas deben cumplir (interfaz).
-
-**Analogía:** una interfaz es como un contrato de servicio que múltiples empresas completamente distintas y no relacionadas entre sí pueden firmar, comprometiéndose a ofrecer ciertos servicios específicos sin que el contrato les dicte cómo implementarlos internamente; una clase abstracta es como una franquicia que comparte cierta infraestructura y procedimientos comunes reales entre todas sus sucursales, dejando que cada sucursal específica implemente únicamente los detalles particulares de su operación local.
-
-**¿Por qué es importante?** Elegir entre clase abstracta e interfaz según si existe comportamiento compartido real (clase abstracta) o solo un contrato puro (interfaz) produce un diseño de jerarquía de clases más claro y correctamente alineado con la relación real entre los tipos involucrados.
-
-**Código del ejemplo:**
+**2. Hazlo tú**
+Crea `java-motor-poo/src/ContratoDemo.java` con este archivo completo:
 
 ```java
-interface Volador {
-    void volar();
-}
-class Pajaro implements Volador {
-    public void volar() { System.out.println("Vuela"); }
+interface Confirmable {
+    String confirmar();
 }
 
-abstract class Forma {
-    abstract double area();              // sin implementación: cada subclase la define
-    void describir() { System.out.println("Área: " + area()); } // con implementación, compartida
+class EntregaLocal implements Confirmable {
+    public String confirmar() { return "Entrega local confirmada"; }
+}
+
+class AdaptadorMovil implements Confirmable {
+    public String confirmar() { return "Confirmación recibida del móvil"; }
+}
+
+public class ContratoDemo {
+    static void procesar(Confirmable entrega) {
+        System.out.println(entrega.confirmar());
+    }
+
+    public static void main(String[] args) {
+        procesar(new EntregaLocal());
+        procesar(new AdaptadorMovil());
+    }
 }
 ```
 
-**Transferencia al proyecto integrador «Motor de asignación de entregas»:** Define una interfaz de asignación y decide qué comportamiento merece una base abstracta. Una implementación falsa debe poder probar el consumidor sin heredar campos que no necesita.
+Desde `java-motor-poo/`, ejecuta:
+
+```bash
+mkdir -p out
+javac -d out src/ContratoDemo.java
+java -cp out ContratoDemo
+```
+
+**Resultado esperado:** `Entrega local confirmada` y `Confirmación recibida del móvil`.
+
+**Fallo deliberado:** cambia `implements Confirmable` por `extends Confirmable` en `EntregaLocal`. **Error esperado:** `no interface expected here`. **Diagnóstico:** las clases implementan interfaces con `implements`; `extends` se usa para extender otra clase.
+
+**3. Entiende**
+La interfaz declara el método que ambas implementaciones deben ofrecer. `procesar` depende del contrato, así que puede aceptar cualquier implementación sin cambiar su código.
+
+**4. Cierra**
+Agrega una implementación `ConfirmacionPrueba` y comprueba que `procesar` funciona sin editarse.
+
+#### Subtema 3.2: Comparte estado y comportamiento con una clase abstracta · 10 min
+
+**1. Contexto**
+Las dos modalidades de envío comparten el identificador y la validación de una guía, aunque cada una calcula distinto el tiempo estimado.
+
+**2. Hazlo tú**
+Reemplaza `java-motor-poo/src/ContratoDemo.java` por este archivo completo:
+
+```java
+abstract class ServicioEntrega {
+    private final String guia;
+
+    ServicioEntrega(String guia) {
+        if (guia == null || guia.isBlank()) {
+            throw new IllegalArgumentException("La guia es obligatoria");
+        }
+        this.guia = guia;
+    }
+
+    String guia() { return guia; }
+    abstract int minutosEstimados();
+    String resumen() { return guia + ": " + minutosEstimados() + " min"; }
+}
+
+class EntregaLocal extends ServicioEntrega {
+    EntregaLocal(String guia) { super(guia); }
+    int minutosEstimados() { return 45; }
+}
+
+public class ContratoDemo {
+    public static void main(String[] args) {
+        System.out.println(new EntregaLocal("RF-201").resumen());
+    }
+}
+```
+
+Compila y ejecuta con los mismos comandos del subtema 3.1.
+
+**Resultado esperado:** `RF-201: 45 min`.
+
+**Fallo deliberado:** cambia `new EntregaLocal("RF-201")` por `new ServicioEntrega("RF-201")`. **Error esperado:** `ServicioEntrega is abstract; cannot be instantiated`. **Diagnóstico:** la clase base deja pendiente `minutosEstimados`; crea una subclase concreta que complete ese método.
+
+**3. Entiende**
+La clase abstracta comparte el campo validado `guia` y el método `resumen`. Cada modalidad debe implementar la operación que depende del tipo de servicio.
+
+**4. Cierra**
+Marca qué parte se reutiliza y qué método queda a cargo de cada tipo de entrega.
+
+#### Subtema 3.3: Combina contrato e implementación compartida · 15 min
+
+**1. Contexto**
+El motor puede depender de un contrato desacoplado y, cuando dos servicios comparten estado real, reutilizar una base abstracta que también cumple ese contrato.
+
+**2. Hazlo tú**
+Reemplaza `java-motor-poo/src/ContratoDemo.java` por este archivo completo:
+
+```java
+import java.util.List;
+
+interface Confirmable {
+    String confirmar();
+}
+
+abstract class ServicioEntrega implements Confirmable {
+    private final String guia;
+    ServicioEntrega(String guia) { this.guia = guia; }
+    abstract int minutosEstimados();
+    public String confirmar() { return guia + " confirmada en " + minutosEstimados() + " min"; }
+}
+
+class EntregaLocal extends ServicioEntrega {
+    EntregaLocal(String guia) { super(guia); }
+    int minutosEstimados() { return 45; }
+}
+
+class EntregaExpress extends ServicioEntrega {
+    EntregaExpress(String guia) { super(guia); }
+    int minutosEstimados() { return 20; }
+}
+
+public class ContratoDemo {
+    static void procesar(List<Confirmable> entregas) {
+        for (Confirmable entrega : entregas) {
+            System.out.println(entrega.confirmar());
+        }
+    }
+
+    public static void main(String[] args) {
+        procesar(List.of(new EntregaLocal("RF-201"), new EntregaExpress("RF-202")));
+    }
+}
+```
+
+Desde `java-motor-poo/`, compila y ejecuta:
+
+```bash
+javac -d out src/ContratoDemo.java
+java -cp out ContratoDemo
+```
+
+**Resultado esperado:** `RF-201 confirmada en 45 min` y `RF-202 confirmada en 20 min`.
+
+**Fallo deliberado:** quita `minutosEstimados()` de `EntregaExpress`. **Error esperado:** `EntregaExpress is not abstract and does not override abstract method minutosEstimados()`. **Diagnóstico:** una clase concreta debe completar todos los métodos abstractos heredados.
+
+**3. Entiende**
+El consumidor recibe `Confirmable`, una capacidad que puede cumplir cualquier objeto. La clase abstracta agrega estado común a esta familia concreta de servicios; el contrato por sí solo no obliga a heredar esa base.
+
+**4. Cierra**
+Entrega el archivo y la salida. Justifica por qué `Confirmable` es una interfaz y por qué `ServicioEntrega` sí tiene sentido como clase abstracta.
+
+**Hito del tema:**
+
+- [ ] Implementé una interfaz en dos clases sin relación de herencia entre sí.
+- [ ] Usé una clase abstracta para compartir estado validado y un método común.
+- [ ] Combiné ambos tipos en un consumidor que depende del contrato.
+- [ ] Reproduje el error por no implementar un método abstracto.
+
+**Fuentes oficiales:** [interfaces en dev.java](https://dev.java/learn/interfaces/) y [clases abstractas e interfaces](https://docs.oracle.com/javase/tutorial/java/IandI/abstract.html).
+
+**Transferencia al proyecto integrador:** define un contrato de asignación que admita una implementación real y una falsa para practicar sin heredar datos innecesarios.
 
 ### Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso
 

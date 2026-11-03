@@ -2,7 +2,7 @@
 
 > Auditoría estructural. Un encabezado o criterio detectado no demuestra que el ejemplo se haya ejecutado ni que la explicación sea pedagógicamente suficiente.
 
-Temas conformes a cuatro pasos: **16/1185**. Tracks inventariados: **14**.
+Temas conformes a cuatro pasos: **17/1185**. Tracks inventariados: **14**.
 
 | Track | Temas conformes | Temas inventariados | Subtemas detectados | Subtemas con estructura completa |
 |---|---:|---:|---:|---:|
@@ -13,7 +13,7 @@ Temas conformes a cuatro pasos: **16/1185**. Tracks inventariados: **14**.
 | flutter | 1 | 106 | 3 | 3 |
 | foundations | 0 | 99 | 0 | 0 |
 | ios | 0 | 56 | 0 | 0 |
-| java | 5 | 101 | 19 | 18 |
+| java | 6 | 101 | 22 | 21 |
 | javascript | 0 | 88 | 0 | 0 |
 | kotlin-multiplatform | 0 | 56 | 0 | 0 |
 | node | 2 | 83 | 6 | 6 |
@@ -710,7 +710,6 @@ Temas conformes a cuatro pasos: **16/1185**. Tracks inventariados: **14**.
 - M0 ### Tema 6: Operadores, precedencia y control de flujo: tiene 0 subtemas
 - M0 ### Tema 7: Arreglos, wrappers y paso de argumentos: tiene 0 subtemas
 - M0 ### Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`): tiene 0 subtemas
-- M1 ### Tema 3: Interfaces, clases abstractas y cuándo usar cada una: tiene 0 subtemas
 - M1 ### Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso: tiene 0 subtemas
 - M10 ### Tema 1: module-info.java y encapsulación fuerte: tiene 0 subtemas
 - M10 ### Tema 2: Migración incremental y cuándo JPMS aporta valor: tiene 0 subtemas

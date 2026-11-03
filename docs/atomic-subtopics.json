@@ -51,10 +51,10 @@
     },
     "java": {
       "topics": 101,
-      "completeTopics": 5,
-      "topicsWith3to6Subtopics": 6,
-      "subtopics": 19,
-      "completeSubtopics": 18
+      "completeTopics": 6,
+      "topicsWith3to6Subtopics": 7,
+      "subtopics": 22,
+      "completeSubtopics": 21
     },
     "javascript": {
       "topics": 88,
@@ -5073,9 +5073,52 @@
       {
         "module": 1,
         "topic": "### Tema 3: Interfaces, clases abstractas y cuándo usar cada una",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "3.1",
+            "title": "#### Subtema 3.1: Define un contrato con una interfaz · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "3.2",
+            "title": "#### Subtema 3.2: Comparte estado y comportamiento con una clase abstracta · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "3.3",
+            "title": "#### Subtema 3.3: Combina contrato e implementación compartida · 15 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 1,

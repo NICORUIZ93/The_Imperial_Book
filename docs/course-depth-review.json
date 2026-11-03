@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 177,
+    "topicsWithSignals": 178,
     "newLaboratories": 25
   },
   "priorities": {
@@ -7502,7 +7502,9 @@
       "title": "Tema 3: Interfaces, clases abstractas y cuándo usar cada una",
       "file": "web/public/content/java/modulo-1.md",
       "line": 389,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -7512,7 +7514,7 @@
       "module": 1,
       "title": "Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso",
       "file": "web/public/content/java/modulo-1.md",
-      "line": 457,
+      "line": 567,
       "signals": [
         "clase-java-no-visible"
       ],

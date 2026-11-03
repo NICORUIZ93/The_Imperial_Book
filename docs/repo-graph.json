@@ -289,7 +289,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 9173,
+      "lines": 9216,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -297,7 +297,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1236,
+      "lines": 1235,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -583,7 +583,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3388,
+      "lines": 3395,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -619,7 +619,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13478,
+      "lines": 13480,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -660,7 +660,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 77,
+      "lines": 78,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -767,7 +767,7 @@
     },
     {
       "path": "docs/java-temario-completo.md",
-      "lines": 269,
+      "lines": 272,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -796,7 +796,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 11226,
+      "lines": 11223,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -9770,7 +9770,7 @@
     },
     {
       "path": "web/public/content/java/modulo-1.md",
-      "lines": 544,
+      "lines": 654,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
