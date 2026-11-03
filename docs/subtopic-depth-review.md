@@ -3,9 +3,9 @@
 > Las señales automáticas no prueban profundidad ni ausencia de ella. Un tema sólo queda revisado mediante el registro humano con mapa de subtemas críticos, evidencia y fuentes.
 
 - Temas inventariados: 1159
-- Revisados humanamente para subtemas: 156
-- Pendientes: 1003
-- Candidatos prioritarios por señales: 960
+- Revisados humanamente para subtemas: 202
+- Pendientes: 957
+- Candidatos prioritarios por señales: 915
 
 ## Cobertura por track
 
@@ -24,7 +24,7 @@
 | node | 77 | 0 | 77 |
 | react | 58 | 0 | 58 |
 | rutaflow | 29 | 0 | 29 |
-| spring-boot | 93 | 47 | 46 |
+| spring-boot | 93 | 93 | 0 |
 
 ## Cola prioritaria
 
@@ -943,51 +943,6 @@
 - `rutaflow/modulo-7` — Tema 2: SLO y respuesta a incidentes — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `rutaflow/modulo-7` — Tema 3: Pruebas end-to-end del sistema completo (app ↔ backend) — lista conceptos clave sin mapa interno verificable
 - `rutaflow/modulo-7` — Tema 4: Continuidad, costes y proyecto final — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-11` — Tema 1: Fat JAR vs capas de Docker · Intermedio · 45 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-11` — Tema 2: GraalVM native image · Avanzado · 45 min — lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-11` — Tema 3: Health checks para Kubernetes · Intermedio · 40 min — lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-12` — Tema 1: Arquitectura del microservicio integrador · Experto · 3 h — lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-12` — Tema 2: Integrando seguridad, persistencia y observabilidad · Experto · 2 h 40 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-12` — Tema 3: Cierre del track y próximos pasos · Experto · 1 h 20 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-13` — Tema 1: `@Transactional` funciona en una frontera, no como encantamiento · Experto · 1 h 55 min — lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-13` — Tema 2: Recuperación implica duplicación segura · Experto · 2 h 35 min — lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-13` — Tema 3: Contratos ejecutables protegen despliegues independientes · Experto · 1 h 45 min — lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-13` — Tema 4: Observabilidad sirve a un objetivo y a una decisión · Experto · 1 h 45 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-14` — Tema 1: CRUD API y contratos · Experto · 2 h 15 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-14` — Tema 2: MySQL y datos espaciales · Experto · 1 h 45 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-14` — Tema 3: JPA e Hibernate Spatial · Experto · 2 h 15 min — lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-14` — Tema 4: JWT Bearer y autorización por roles · Experto · 1 h 55 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-14` — Tema 5: Tiempo real con STOMP · Experto · 2 h 15 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-14` — Tema 6: Archivos y notificaciones push · Experto · 1 h 35 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-15` — Tema 1: Backpressure real en WebFlux con reactor-test · Experto · 1 h 30 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-15` — Tema 2: Contenedores Testcontainers reutilizados entre clases · Experto · 1 h 40 min — lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-15` — Tema 3: Arquitectura hexagonal verificada con ArchUnit · Experto · 1 h 50 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-15` — Tema 4: Bulkhead y RateLimiter de Resilience4j · Experto · 1 h 55 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-15` — Tema 5: Saga con compensación real · Experto · 2 h 10 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-15` — Tema 6: Event Sourcing con replay real · Experto · 2 h — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-15` — Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar · Experto · 1 h 15 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `spring-boot/modulo-15` — Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework · Experto · 1 h 50 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `spring-boot/modulo-16` — Tema 1: Relaciones, lado propietario y ciclo de vida · Avanzado · 1 h 50 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `spring-boot/modulo-16` — Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso · Avanzado · 1 h 40 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `spring-boot/modulo-17` — Tema 1: DataSource, JdbcTemplate y DAO · Avanzado · 1 h 40 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `spring-boot/modulo-17` — Tema 2: `@Transactional`, rollback y límites de transacción · Avanzado · 1 h 20 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `spring-boot/modulo-18` — Tema 1: SecurityFilterChain y autorización · Avanzado · 1 h 30 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `spring-boot/modulo-18` — Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP · Avanzado · 1 h 20 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `spring-boot/modulo-19` — Tema 1: Job, Step, Tasklet y chunk processing · Avanzado · 1 h 40 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `spring-boot/modulo-19` — Tema 2: Reinicio, JobParameters, retry, skip y listeners · Avanzado · 1 h 20 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `spring-boot/modulo-20` — Tema 1: Scheduling y tareas periódicas · Avanzado · 1 h 10 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `spring-boot/modulo-20` — Tema 2: Eventos locales, eventos transaccionales y mensajería · Avanzado · 1 h 20 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `spring-boot/modulo-20` — Tema 3: Correo con Spring Mail y entrega recuperable · Avanzado · 1 h 10 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `spring-boot/modulo-20` — Tema 4: Caché con Spring Cache, Caffeine y Redis · Avanzado · 1 h 20 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `spring-boot/modulo-20` — Tema 5: @Async y ejecutores: trabajo en segundo plano con límites · Avanzado · 1 h 40 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-20` — Tema complementario: Integraciones empresariales, SOAP y fronteras de protocolo · Avanzado · 50 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `spring-boot/modulo-20` — Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo · Avanzado · 1 h 30 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `spring-boot/modulo-20` — Tema 7: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar · Avanzado · 1 h 10 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `spring-boot/modulo-21` — Tema 1: Productor, tópico, key y consumidor · Experto · 1 h 20 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `spring-boot/modulo-21` — Tema 3: Outbox transaccional y flujo de negocio · Experto · 1 h 50 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `spring-boot/modulo-22` — Tema 1: Hexagonal: puertos que hablan el idioma del dominio · Experto · 1 h 10 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-22` — Tema 2: C4: contexto, contenedores, componentes y código · Experto · 1 h 20 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-22` — Tema 3: ADR: decisiones con contexto, alternativas y consecuencias · Experto · 1 h 10 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 
 ## Revisados
 
@@ -1116,12 +1071,58 @@
 - `spring-boot/modulo-10` — Tema 6: Spring gRPC para comunicación interna de alta frecuencia (Spring Boot 4.1) · Avanzado · 50 min — @GrpcService; GrpcChannelFactory.createChannel; identidad de campo por número (protobuf)
 - `spring-boot/modulo-10` — Tema 7: DDD para decidir límites y propiedad de datos · Avanzado · 45 min — agregado con invariante encapsulada; propiedad de datos entre servicios
 - `spring-boot/modulo-10` — Tema 8: Orquestación de microservicios con Temporal y Spring Boot · Experto · 60 min — @WorkflowImpl(workers=...); @ActivityImpl(workers=...); Saga.addCompensation; TestWorkflowEnvironment
+- `spring-boot/modulo-11` — Tema 1: Fat JAR vs capas de Docker · Intermedio · 45 min — spring-boot-jarmode layertools
+- `spring-boot/modulo-11` — Tema 2: GraalVM native image · Avanzado · 45 min — spring-boot:process-aot; @ImportRuntimeHints; limitación explícita sin GraalVM instalado
+- `spring-boot/modulo-11` — Tema 3: Health checks para Kubernetes · Intermedio · 40 min — liveness/readiness probes
+- `spring-boot/modulo-12` — Tema 1: Arquitectura del microservicio integrador · Experto · 3 h — integración de módulos previos
+- `spring-boot/modulo-12` — Tema 2: Integrando seguridad, persistencia y observabilidad · Experto · 2 h 40 min — integración seguridad+persistencia+observabilidad
+- `spring-boot/modulo-12` — Tema 3: Cierre del track y próximos pasos · Experto · 1 h 20 min — checklist de cierre del track
+- `spring-boot/modulo-13` — Tema 1: `@Transactional` funciona en una frontera, no como encantamiento · Experto · 1 h 55 min — @Transactional como frontera explícita
+- `spring-boot/modulo-13` — Tema 2: Recuperación implica duplicación segura · Experto · 2 h 35 min — idempotencia en recuperación
+- `spring-boot/modulo-13` — Tema 3: Contratos ejecutables protegen despliegues independientes · Experto · 1 h 45 min — contract testing ejecutable
+- `spring-boot/modulo-13` — Tema 4: Observabilidad sirve a un objetivo y a una decisión · Experto · 1 h 45 min — observabilidad orientada a objetivo
+- `spring-boot/modulo-14` — Tema 1: CRUD API y contratos · Experto · 2 h 15 min — CRUD con contrato DTO
+- `spring-boot/modulo-14` — Tema 2: MySQL y datos espaciales · Experto · 1 h 45 min — tipos espaciales MySQL
+- `spring-boot/modulo-14` — Tema 3: JPA e Hibernate Spatial · Experto · 2 h 15 min — org.hibernate.orm:hibernate-spatial; tipos JTS
+- `spring-boot/modulo-14` — Tema 4: JWT Bearer y autorización por roles · Experto · 1 h 55 min — ownership vs rol
+- `spring-boot/modulo-14` — Tema 5: Tiempo real con STOMP · Experto · 2 h 15 min — @EnableWebSocketMessageBroker; WebSocketStompClient; STOMP != Socket.IO
+- `spring-boot/modulo-14` — Tema 6: Archivos y notificaciones push · Experto · 1 h 35 min — detección real de MIME
+- `spring-boot/modulo-15` — Tema 1: Backpressure real en WebFlux con reactor-test · Experto · 1 h 30 min — reactor-test StepVerifier
+- `spring-boot/modulo-15` — Tema 2: Contenedores Testcontainers reutilizados entre clases · Experto · 1 h 40 min — contenedor singleton reutilizado
+- `spring-boot/modulo-15` — Tema 3: Arquitectura hexagonal verificada con ArchUnit · Experto · 1 h 50 min — archunit-junit5; ArchRuleDefinition.noClasses
+- `spring-boot/modulo-15` — Tema 4: Bulkhead y RateLimiter de Resilience4j · Experto · 1 h 55 min — Bulkhead; RateLimiter
+- `spring-boot/modulo-15` — Tema 5: Saga con compensación real · Experto · 2 h 10 min — Saga.addCompensation / compensate en orden inverso
+- `spring-boot/modulo-15` — Tema 6: Event Sourcing con replay real · Experto · 2 h — replay desde el log de eventos
+- `spring-boot/modulo-15` — Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar · Experto · 1 h 15 min — reintento idempotente de compensación
+- `spring-boot/modulo-15` — Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework · Experto · 1 h 50 min — caso de uso independiente de framework
+- `spring-boot/modulo-16` — Tema 1: Relaciones, lado propietario y ciclo de vida · Avanzado · 1 h 50 min — lado propietario de la relación
+- `spring-boot/modulo-16` — Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso · Avanzado · 1 h 40 min — FetchType; N+1
+- `spring-boot/modulo-17` — Tema 1: DataSource, JdbcTemplate y DAO · Avanzado · 1 h 40 min — JdbcTemplate; patrón DAO
+- `spring-boot/modulo-17` — Tema 2: `@Transactional`, rollback y límites de transacción · Avanzado · 1 h 20 min — propagación transaccional
+- `spring-boot/modulo-18` — Tema 1: SecurityFilterChain y autorización · Avanzado · 1 h 30 min — SecurityFilterChain
+- `spring-boot/modulo-18` — Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP · Avanzado · 1 h 20 min — validación DTO + OIDC
+- `spring-boot/modulo-19` — Tema 1: Job, Step, Tasklet y chunk processing · Avanzado · 1 h 40 min — chunk-oriented processing
+- `spring-boot/modulo-19` — Tema 2: Reinicio, JobParameters, retry, skip y listeners · Avanzado · 1 h 20 min — JobParameters; retry/skip policy
 - `spring-boot/modulo-2` — Tema 1: Por qué DTOs en vez de entidades directamente · Intermedio · 30 min — DTO de entrada/salida; Acoplamiento entidad-contrato; Mapeo manual vs herramienta
 - `spring-boot/modulo-2` — Tema 2: Validación con Bean Validation y ResponseEntity · Intermedio · 25 min — @Valid en controller; ResponseEntity.status(); jakarta.validation constraints
 - `spring-boot/modulo-2` — Tema 3: Manejo centralizado de errores con @ControllerAdvice · Intermedio · 30 min — @RestControllerAdvice; @ExceptionHandler; MethodArgumentNotValidException
 - `spring-boot/modulo-2` — Tema 4: Lombok y MapStruct sin exponer datos internos · Intermedio · 40 min — lombok-mapstruct-binding orden; MapStruct componentModel=spring; unmappedTargetPolicy=ERROR
 - `spring-boot/modulo-2` — Tema 5: OpenAPI con springdoc: el contrato como prueba · Intermedio · 40 min — springdoc-openapi-starter-webmvc-ui 3.x; /v3/api-docs; swagger-ui.html
 - `spring-boot/modulo-2` — Tema 6: Paginación HTTP con validación y un límite de recursos explícito · Intermedio · 35 min — Validación de page/size; 400 vs 200 en tamaño inválido; Orden estable con desempate; Offset vs cursor
+- `spring-boot/modulo-20` — Tema 1: Scheduling y tareas periódicas · Avanzado · 1 h 10 min — @Scheduled
+- `spring-boot/modulo-20` — Tema 2: Eventos locales, eventos transaccionales y mensajería · Avanzado · 1 h 20 min — @TransactionalEventListener
+- `spring-boot/modulo-20` — Tema 3: Correo con Spring Mail y entrega recuperable · Avanzado · 1 h 10 min — JavaMailSender
+- `spring-boot/modulo-20` — Tema 4: Caché con Spring Cache, Caffeine y Redis · Avanzado · 1 h 20 min — @Cacheable; Caffeine vs Redis
+- `spring-boot/modulo-20` — Tema 5: @Async y ejecutores: trabajo en segundo plano con límites · Avanzado · 1 h 40 min — @Async; ThreadPoolTaskExecutor
+- `spring-boot/modulo-20` — Tema complementario: Integraciones empresariales, SOAP y fronteras de protocolo · Avanzado · 50 min — Spring Integration; SOAP legacy
+- `spring-boot/modulo-20` — Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo · Avanzado · 1 h 30 min — spring-ai-bom 2.0.2; ChatClient.builder(chatModel); @Tool con autorización fuera del modelo
+- `spring-boot/modulo-20` — Tema 7: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar · Avanzado · 1 h 10 min — autorización antes de recuperar evidencia para RAG
+- `spring-boot/modulo-21` — Tema 1: Productor, tópico, key y consumidor · Experto · 1 h 20 min — key de partición
+- `spring-boot/modulo-21` — Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia · Experto · 1 h 50 min — at-least-once + idempotencia
+- `spring-boot/modulo-21` — Tema 3: Outbox transaccional y flujo de negocio · Experto · 1 h 50 min — outbox pattern transaccional
+- `spring-boot/modulo-22` — Tema 1: Hexagonal: puertos que hablan el idioma del dominio · Experto · 1 h 10 min — puertos del dominio
+- `spring-boot/modulo-22` — Tema 2: C4: contexto, contenedores, componentes y código · Experto · 1 h 20 min — niveles del modelo C4
+- `spring-boot/modulo-22` — Tema 3: ADR: decisiones con contexto, alternativas y consecuencias · Experto · 1 h 10 min — estructura de un ADR
 - `spring-boot/modulo-3` — Tema 1: Entidades y repositorios derivados · Intermedio · 35 min — @Entity/@Id/@GeneratedValue; JpaRepository; @DataJpaTest
 - `spring-boot/modulo-3` — Tema 2: El problema N+1 y su corrección · Avanzado · 50 min — Hibernate Statistics; FetchType; JOIN FETCH / EntityGraph
 - `spring-boot/modulo-3` — Tema 3: Migraciones con Flyway · Intermedio · 35 min — db/migration naming; spring.flyway.enabled; reparación de migración fallida

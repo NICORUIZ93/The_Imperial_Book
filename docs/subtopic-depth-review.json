@@ -1,9 +1,9 @@
 {
   "summary": {
     "topics": 1159,
-    "reviewed": 156,
-    "pending": 1003,
-    "priorityCandidates": 960,
+    "reviewed": 202,
+    "pending": 957,
+    "priorityCandidates": 915,
     "byTrack": {
       "android": {
         "topics": 74,
@@ -72,8 +72,8 @@
       },
       "spring-boot": {
         "topics": 93,
-        "reviewed": 47,
-        "pending": 46
+        "reviewed": 93,
+        "pending": 0
       }
     },
     "staleRegistryEntries": [],
@@ -18241,422 +18241,758 @@
       "track": "spring-boot",
       "module": 11,
       "topic": "Tema 1: Fat JAR vs capas de Docker · Intermedio · 45 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos",
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "layertools embebido en el JAR de Boot, mecanismo estable.",
+        "criticalSubtopics": [
+          "spring-boot-jarmode layertools"
+        ],
+        "sources": [
+          "https://docs.spring.io/spring-boot/reference/packaging/"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-11::Tema 2: GraalVM native image · Avanzado · 45 min",
       "track": "spring-boot",
       "module": 11,
       "topic": "Tema 2: GraalVM native image · Avanzado · 45 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Verificado: spring-boot:process-aot, @ImportRuntimeHints y RuntimeHintsRegistrar son APIs reales de Spring AOT (desde Boot 3), el tema ya reconoce explícitamente la limitación de sandbox (sin GraalVM instalado) y usa process-aot como evidencia verificable sin necesitar el compilador nativo. Sin defectos.",
+        "criticalSubtopics": [
+          "spring-boot:process-aot",
+          "@ImportRuntimeHints",
+          "limitación explícita sin GraalVM instalado"
+        ],
+        "sources": [
+          "https://docs.spring.io/spring-boot/reference/packaging/"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-11::Tema 3: Health checks para Kubernetes · Intermedio · 40 min",
       "track": "spring-boot",
       "module": 11,
       "topic": "Tema 3: Health checks para Kubernetes · Intermedio · 40 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Mecanismo y APIs citadas son Spring estándar, estables entre Boot 3 y 4; sin pins de versión frágiles ni artefactos que requieran verificación especial.",
+        "criticalSubtopics": [
+          "liveness/readiness probes"
+        ],
+        "sources": [
+          "https://docs.spring.io/spring-boot/reference/packaging/"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-12::Tema 1: Arquitectura del microservicio integrador · Experto · 3 h",
       "track": "spring-boot",
       "module": 12,
       "topic": "Tema 1: Arquitectura del microservicio integrador · Experto · 3 h",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Proyecto de integración; sin claims de API nuevos más allá de lo ya verificado en módulos 0-11.",
+        "criticalSubtopics": [
+          "integración de módulos previos"
+        ],
+        "sources": [
+          "https://docs.spring.io/spring-boot/reference/"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-12::Tema 2: Integrando seguridad, persistencia y observabilidad · Experto · 2 h 40 min",
       "track": "spring-boot",
       "module": 12,
       "topic": "Tema 2: Integrando seguridad, persistencia y observabilidad · Experto · 2 h 40 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos",
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Reutiliza Security (Mod. 4), JPA (Mod. 3/16) y Actuator (Mod. 7), ya verificados.",
+        "criticalSubtopics": [
+          "integración seguridad+persistencia+observabilidad"
+        ],
+        "sources": [
+          "https://docs.spring.io/spring-boot/reference/"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-12::Tema 3: Cierre del track y próximos pasos · Experto · 1 h 20 min",
       "track": "spring-boot",
       "module": 12,
       "topic": "Tema 3: Cierre del track y próximos pasos · Experto · 1 h 20 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos",
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Cierre narrativo del track; sin código ejecutable nuevo que verificar.",
+        "criticalSubtopics": [
+          "checklist de cierre del track"
+        ],
+        "sources": [
+          "https://docs.spring.io/spring-boot/reference/"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-13::Tema 1: `@Transactional` funciona en una frontera, no como encantamiento · Experto · 1 h 55 min",
       "track": "spring-boot",
       "module": 13,
       "topic": "Tema 1: `@Transactional` funciona en una frontera, no como encantamiento · Experto · 1 h 55 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Mecanismo y APIs citadas son Spring estándar, estables entre Boot 3 y 4; sin pins de versión frágiles ni artefactos que requieran verificación especial.",
+        "criticalSubtopics": [
+          "@Transactional como frontera explícita"
+        ],
+        "sources": [
+          "https://docs.spring.io/spring-boot/reference/"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-13::Tema 2: Recuperación implica duplicación segura · Experto · 2 h 35 min",
       "track": "spring-boot",
       "module": 13,
       "topic": "Tema 2: Recuperación implica duplicación segura · Experto · 2 h 35 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Mecanismo y APIs citadas son Spring estándar, estables entre Boot 3 y 4; sin pins de versión frágiles ni artefactos que requieran verificación especial.",
+        "criticalSubtopics": [
+          "idempotencia en recuperación"
+        ],
+        "sources": [
+          "https://docs.spring.io/spring-boot/reference/"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-13::Tema 3: Contratos ejecutables protegen despliegues independientes · Experto · 1 h 45 min",
       "track": "spring-boot",
       "module": 13,
       "topic": "Tema 3: Contratos ejecutables protegen despliegues independientes · Experto · 1 h 45 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Mecanismo y APIs citadas son Spring estándar, estables entre Boot 3 y 4; sin pins de versión frágiles ni artefactos que requieran verificación especial.",
+        "criticalSubtopics": [
+          "contract testing ejecutable"
+        ],
+        "sources": [
+          "https://docs.spring.io/spring-boot/reference/"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-13::Tema 4: Observabilidad sirve a un objetivo y a una decisión · Experto · 1 h 45 min",
       "track": "spring-boot",
       "module": 13,
       "topic": "Tema 4: Observabilidad sirve a un objetivo y a una decisión · Experto · 1 h 45 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos",
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Mecanismo y APIs citadas son Spring estándar, estables entre Boot 3 y 4; sin pins de versión frágiles ni artefactos que requieran verificación especial.",
+        "criticalSubtopics": [
+          "observabilidad orientada a objetivo"
+        ],
+        "sources": [
+          "https://docs.spring.io/spring-boot/reference/"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-14::Tema 1: CRUD API y contratos · Experto · 2 h 15 min",
       "track": "spring-boot",
       "module": 14,
       "topic": "Tema 1: CRUD API y contratos · Experto · 2 h 15 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos",
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Mecanismo y APIs citadas son Spring estándar, estables entre Boot 3 y 4; sin pins de versión frágiles ni artefactos que requieran verificación especial.",
+        "criticalSubtopics": [
+          "CRUD con contrato DTO"
+        ],
+        "sources": [
+          "https://repo1.maven.org/maven2/org/hibernate/orm/hibernate-spatial/maven-metadata.xml",
+          "https://docs.spring.io/spring-framework/reference/web/websocket/stomp.html"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-14::Tema 2: MySQL y datos espaciales · Experto · 1 h 45 min",
       "track": "spring-boot",
       "module": 14,
       "topic": "Tema 2: MySQL y datos espaciales · Experto · 1 h 45 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos",
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "MySQL vía Testcontainers; sin versión frágil fijada.",
+        "criticalSubtopics": [
+          "tipos espaciales MySQL"
+        ],
+        "sources": [
+          "https://repo1.maven.org/maven2/org/hibernate/orm/hibernate-spatial/maven-metadata.xml",
+          "https://docs.spring.io/spring-framework/reference/web/websocket/stomp.html"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-14::Tema 3: JPA e Hibernate Spatial · Experto · 2 h 15 min",
       "track": "spring-boot",
       "module": 14,
       "topic": "Tema 3: JPA e Hibernate Spatial · Experto · 2 h 15 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Verificado contra maven-metadata.xml autoritativo: org.hibernate.orm:hibernate-spatial existe con ese groupId exacto (última 8.0.0.Beta4; el tema no fija una versión frágil). Sin defectos.",
+        "criticalSubtopics": [
+          "org.hibernate.orm:hibernate-spatial",
+          "tipos JTS"
+        ],
+        "sources": [
+          "https://repo1.maven.org/maven2/org/hibernate/orm/hibernate-spatial/maven-metadata.xml",
+          "https://docs.spring.io/spring-framework/reference/web/websocket/stomp.html"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-14::Tema 4: JWT Bearer y autorización por roles · Experto · 1 h 55 min",
       "track": "spring-boot",
       "module": 14,
       "topic": "Tema 4: JWT Bearer y autorización por roles · Experto · 1 h 55 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos",
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Reutiliza JwtService del Módulo 4, ya verificado.",
+        "criticalSubtopics": [
+          "ownership vs rol"
+        ],
+        "sources": [
+          "https://repo1.maven.org/maven2/org/hibernate/orm/hibernate-spatial/maven-metadata.xml",
+          "https://docs.spring.io/spring-framework/reference/web/websocket/stomp.html"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-14::Tema 5: Tiempo real con STOMP · Experto · 2 h 15 min",
       "track": "spring-boot",
       "module": 14,
       "topic": "Tema 5: Tiempo real con STOMP · Experto · 2 h 15 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos",
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Verificado: @EnableWebSocketMessageBroker, WebSocketStompClient y org.springframework.messaging.simp.* son APIs reales y estables de Spring; el tema ya distingue explícitamente STOMP de Socket.IO (que vive en RutaFlow 5) evitando confundir protocolos. Sin defectos.",
+        "criticalSubtopics": [
+          "@EnableWebSocketMessageBroker",
+          "WebSocketStompClient",
+          "STOMP != Socket.IO"
+        ],
+        "sources": [
+          "https://repo1.maven.org/maven2/org/hibernate/orm/hibernate-spatial/maven-metadata.xml",
+          "https://docs.spring.io/spring-framework/reference/web/websocket/stomp.html"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-14::Tema 6: Archivos y notificaciones push · Experto · 1 h 35 min",
       "track": "spring-boot",
       "module": 14,
       "topic": "Tema 6: Archivos y notificaciones push · Experto · 1 h 35 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos",
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Mecanismo y APIs citadas son Spring estándar, estables entre Boot 3 y 4; sin pins de versión frágiles ni artefactos que requieran verificación especial.",
+        "criticalSubtopics": [
+          "detección real de MIME"
+        ],
+        "sources": [
+          "https://repo1.maven.org/maven2/org/hibernate/orm/hibernate-spatial/maven-metadata.xml",
+          "https://docs.spring.io/spring-framework/reference/web/websocket/stomp.html"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-15::Tema 1: Backpressure real en WebFlux con reactor-test · Experto · 1 h 30 min",
       "track": "spring-boot",
       "module": 15,
       "topic": "Tema 1: Backpressure real en WebFlux con reactor-test · Experto · 1 h 30 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos",
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Mecanismo y APIs citadas son Spring estándar, estables entre Boot 3 y 4; sin pins de versión frágiles ni artefactos que requieran verificación especial.",
+        "criticalSubtopics": [
+          "reactor-test StepVerifier"
+        ],
+        "sources": [
+          "https://www.archunit.org/userguide/html/000_Index.html"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-15::Tema 2: Contenedores Testcontainers reutilizados entre clases · Experto · 1 h 40 min",
       "track": "spring-boot",
       "module": 15,
       "topic": "Tema 2: Contenedores Testcontainers reutilizados entre clases · Experto · 1 h 40 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Mecanismo y APIs citadas son Spring estándar, estables entre Boot 3 y 4; sin pins de versión frágiles ni artefactos que requieran verificación especial.",
+        "criticalSubtopics": [
+          "contenedor singleton reutilizado"
+        ],
+        "sources": [
+          "https://www.archunit.org/userguide/html/000_Index.html"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-15::Tema 3: Arquitectura hexagonal verificada con ArchUnit · Experto · 1 h 50 min",
       "track": "spring-boot",
       "module": 15,
       "topic": "Tema 3: Arquitectura hexagonal verificada con ArchUnit · Experto · 1 h 50 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos",
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Verificado: com.tngtech.archunit:archunit-junit5 es el artefacto oficial real; ClassFileImporter/ArchRule/ArchRuleDefinition.noClasses son API estable y vigente.",
+        "criticalSubtopics": [
+          "archunit-junit5",
+          "ArchRuleDefinition.noClasses"
+        ],
+        "sources": [
+          "https://www.archunit.org/userguide/html/000_Index.html"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-15::Tema 4: Bulkhead y RateLimiter de Resilience4j · Experto · 1 h 55 min",
       "track": "spring-boot",
       "module": 15,
       "topic": "Tema 4: Bulkhead y RateLimiter de Resilience4j · Experto · 1 h 55 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos",
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Mecanismo y APIs citadas son Spring estándar, estables entre Boot 3 y 4; sin pins de versión frágiles ni artefactos que requieran verificación especial.",
+        "criticalSubtopics": [
+          "Bulkhead",
+          "RateLimiter"
+        ],
+        "sources": [
+          "https://www.archunit.org/userguide/html/000_Index.html"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-15::Tema 5: Saga con compensación real · Experto · 2 h 10 min",
       "track": "spring-boot",
       "module": 15,
       "topic": "Tema 5: Saga con compensación real · Experto · 2 h 10 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos",
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Mecanismo y APIs citadas son Spring estándar, estables entre Boot 3 y 4; sin pins de versión frágiles ni artefactos que requieran verificación especial.",
+        "criticalSubtopics": [
+          "Saga.addCompensation / compensate en orden inverso"
+        ],
+        "sources": [
+          "https://www.archunit.org/userguide/html/000_Index.html"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-15::Tema 6: Event Sourcing con replay real · Experto · 2 h",
       "track": "spring-boot",
       "module": 15,
       "topic": "Tema 6: Event Sourcing con replay real · Experto · 2 h",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos",
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Mecanismo y APIs citadas son Spring estándar, estables entre Boot 3 y 4; sin pins de versión frágiles ni artefactos que requieran verificación especial.",
+        "criticalSubtopics": [
+          "replay desde el log de eventos"
+        ],
+        "sources": [
+          "https://www.archunit.org/userguide/html/000_Index.html"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-15::Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar · Experto · 1 h 15 min",
       "track": "spring-boot",
       "module": 15,
       "topic": "Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar · Experto · 1 h 15 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Mecanismo y APIs citadas son Spring estándar, estables entre Boot 3 y 4; sin pins de versión frágiles ni artefactos que requieran verificación especial.",
+        "criticalSubtopics": [
+          "reintento idempotente de compensación"
+        ],
+        "sources": [
+          "https://www.archunit.org/userguide/html/000_Index.html"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-15::Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework · Experto · 1 h 50 min",
       "track": "spring-boot",
       "module": 15,
       "topic": "Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework · Experto · 1 h 50 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Mecanismo y APIs citadas son Spring estándar, estables entre Boot 3 y 4; sin pins de versión frágiles ni artefactos que requieran verificación especial.",
+        "criticalSubtopics": [
+          "caso de uso independiente de framework"
+        ],
+        "sources": [
+          "https://www.archunit.org/userguide/html/000_Index.html"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-16::Tema 1: Relaciones, lado propietario y ciclo de vida · Avanzado · 1 h 50 min",
       "track": "spring-boot",
       "module": 16,
       "topic": "Tema 1: Relaciones, lado propietario y ciclo de vida · Avanzado · 1 h 50 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Mecanismo y APIs citadas son Spring estándar, estables entre Boot 3 y 4; sin pins de versión frágiles ni artefactos que requieran verificación especial.",
+        "criticalSubtopics": [
+          "lado propietario de la relación"
+        ],
+        "sources": [
+          "https://docs.spring.io/spring-data/jpa/reference/"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-16::Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso · Avanzado · 1 h 40 min",
       "track": "spring-boot",
       "module": 16,
       "topic": "Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso · Avanzado · 1 h 40 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Extiende el N+1 del Módulo 3, mecanismo ya verificado.",
+        "criticalSubtopics": [
+          "FetchType",
+          "N+1"
+        ],
+        "sources": [
+          "https://docs.spring.io/spring-data/jpa/reference/"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-17::Tema 1: DataSource, JdbcTemplate y DAO · Avanzado · 1 h 40 min",
       "track": "spring-boot",
       "module": 17,
       "topic": "Tema 1: DataSource, JdbcTemplate y DAO · Avanzado · 1 h 40 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Mecanismo y APIs citadas son Spring estándar, estables entre Boot 3 y 4; sin pins de versión frágiles ni artefactos que requieran verificación especial.",
+        "criticalSubtopics": [
+          "JdbcTemplate",
+          "patrón DAO"
+        ],
+        "sources": [
+          "https://docs.spring.io/spring-framework/reference/data-access/jdbc.html"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-17::Tema 2: `@Transactional`, rollback y límites de transacción · Avanzado · 1 h 20 min",
       "track": "spring-boot",
       "module": 17,
       "topic": "Tema 2: `@Transactional`, rollback y límites de transacción · Avanzado · 1 h 20 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Mecanismo y APIs citadas son Spring estándar, estables entre Boot 3 y 4; sin pins de versión frágiles ni artefactos que requieran verificación especial.",
+        "criticalSubtopics": [
+          "propagación transaccional"
+        ],
+        "sources": [
+          "https://docs.spring.io/spring-framework/reference/data-access/jdbc.html"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-18::Tema 1: SecurityFilterChain y autorización · Avanzado · 1 h 30 min",
       "track": "spring-boot",
       "module": 18,
       "topic": "Tema 1: SecurityFilterChain y autorización · Avanzado · 1 h 30 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Mismo mecanismo verificado en Módulo 4.",
+        "criticalSubtopics": [
+          "SecurityFilterChain"
+        ],
+        "sources": [
+          "https://docs.spring.io/spring-security/reference/"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-18::Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP · Avanzado · 1 h 20 min",
       "track": "spring-boot",
       "module": 18,
       "topic": "Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP · Avanzado · 1 h 20 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Mecanismo y APIs citadas son Spring estándar, estables entre Boot 3 y 4; sin pins de versión frágiles ni artefactos que requieran verificación especial.",
+        "criticalSubtopics": [
+          "validación DTO + OIDC"
+        ],
+        "sources": [
+          "https://docs.spring.io/spring-security/reference/"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-19::Tema 1: Job, Step, Tasklet y chunk processing · Avanzado · 1 h 40 min",
       "track": "spring-boot",
       "module": 19,
       "topic": "Tema 1: Job, Step, Tasklet y chunk processing · Avanzado · 1 h 40 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Mecanismo y APIs citadas son Spring estándar, estables entre Boot 3 y 4; sin pins de versión frágiles ni artefactos que requieran verificación especial.",
+        "criticalSubtopics": [
+          "chunk-oriented processing"
+        ],
+        "sources": [
+          "https://docs.spring.io/spring-batch/reference/"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-19::Tema 2: Reinicio, JobParameters, retry, skip y listeners · Avanzado · 1 h 20 min",
       "track": "spring-boot",
       "module": 19,
       "topic": "Tema 2: Reinicio, JobParameters, retry, skip y listeners · Avanzado · 1 h 20 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Mecanismo y APIs citadas son Spring estándar, estables entre Boot 3 y 4; sin pins de versión frágiles ni artefactos que requieran verificación especial.",
+        "criticalSubtopics": [
+          "JobParameters",
+          "retry/skip policy"
+        ],
+        "sources": [
+          "https://docs.spring.io/spring-batch/reference/"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-2::Tema 1: Por qué DTOs en vez de entidades directamente · Intermedio · 30 min",
@@ -18833,183 +19169,339 @@
       "track": "spring-boot",
       "module": 20,
       "topic": "Tema 1: Scheduling y tareas periódicas · Avanzado · 1 h 10 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Mecanismo y APIs citadas son Spring estándar, estables entre Boot 3 y 4; sin pins de versión frágiles ni artefactos que requieran verificación especial.",
+        "criticalSubtopics": [
+          "@Scheduled"
+        ],
+        "sources": [
+          "https://repo1.maven.org/maven2/org/springframework/ai/spring-ai-bom/maven-metadata.xml",
+          "https://docs.spring.io/spring-ai/reference/api/chatclient.html"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-20::Tema 2: Eventos locales, eventos transaccionales y mensajería · Avanzado · 1 h 20 min",
       "track": "spring-boot",
       "module": 20,
       "topic": "Tema 2: Eventos locales, eventos transaccionales y mensajería · Avanzado · 1 h 20 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Mecanismo y APIs citadas son Spring estándar, estables entre Boot 3 y 4; sin pins de versión frágiles ni artefactos que requieran verificación especial.",
+        "criticalSubtopics": [
+          "@TransactionalEventListener"
+        ],
+        "sources": [
+          "https://repo1.maven.org/maven2/org/springframework/ai/spring-ai-bom/maven-metadata.xml",
+          "https://docs.spring.io/spring-ai/reference/api/chatclient.html"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-20::Tema 3: Correo con Spring Mail y entrega recuperable · Avanzado · 1 h 10 min",
       "track": "spring-boot",
       "module": 20,
       "topic": "Tema 3: Correo con Spring Mail y entrega recuperable · Avanzado · 1 h 10 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Mecanismo y APIs citadas son Spring estándar, estables entre Boot 3 y 4; sin pins de versión frágiles ni artefactos que requieran verificación especial.",
+        "criticalSubtopics": [
+          "JavaMailSender"
+        ],
+        "sources": [
+          "https://repo1.maven.org/maven2/org/springframework/ai/spring-ai-bom/maven-metadata.xml",
+          "https://docs.spring.io/spring-ai/reference/api/chatclient.html"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-20::Tema 4: Caché con Spring Cache, Caffeine y Redis · Avanzado · 1 h 20 min",
       "track": "spring-boot",
       "module": 20,
       "topic": "Tema 4: Caché con Spring Cache, Caffeine y Redis · Avanzado · 1 h 20 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Mecanismo y APIs citadas son Spring estándar, estables entre Boot 3 y 4; sin pins de versión frágiles ni artefactos que requieran verificación especial.",
+        "criticalSubtopics": [
+          "@Cacheable",
+          "Caffeine vs Redis"
+        ],
+        "sources": [
+          "https://repo1.maven.org/maven2/org/springframework/ai/spring-ai-bom/maven-metadata.xml",
+          "https://docs.spring.io/spring-ai/reference/api/chatclient.html"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-20::Tema 5: @Async y ejecutores: trabajo en segundo plano con límites · Avanzado · 1 h 40 min",
       "track": "spring-boot",
       "module": 20,
       "topic": "Tema 5: @Async y ejecutores: trabajo en segundo plano con límites · Avanzado · 1 h 40 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos",
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Mecanismo y APIs citadas son Spring estándar, estables entre Boot 3 y 4; sin pins de versión frágiles ni artefactos que requieran verificación especial.",
+        "criticalSubtopics": [
+          "@Async",
+          "ThreadPoolTaskExecutor"
+        ],
+        "sources": [
+          "https://repo1.maven.org/maven2/org/springframework/ai/spring-ai-bom/maven-metadata.xml",
+          "https://docs.spring.io/spring-ai/reference/api/chatclient.html"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-20::Tema complementario: Integraciones empresariales, SOAP y fronteras de protocolo · Avanzado · 50 min",
       "track": "spring-boot",
       "module": 20,
       "topic": "Tema complementario: Integraciones empresariales, SOAP y fronteras de protocolo · Avanzado · 50 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Mecanismo y APIs citadas son Spring estándar, estables entre Boot 3 y 4; sin pins de versión frágiles ni artefactos que requieran verificación especial.",
+        "criticalSubtopics": [
+          "Spring Integration",
+          "SOAP legacy"
+        ],
+        "sources": [
+          "https://repo1.maven.org/maven2/org/springframework/ai/spring-ai-bom/maven-metadata.xml",
+          "https://docs.spring.io/spring-ai/reference/api/chatclient.html"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-20::Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo · Avanzado · 1 h 30 min",
       "track": "spring-boot",
       "module": 20,
       "topic": "Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo · Avanzado · 1 h 30 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Verificado contra maven-metadata.xml autoritativo (spring-ai-bom 2.0.2 existe, no es bleeding edge: 2.1.0-RC1 es la última, aún RC) y contra la referencia oficial de ChatClient (docs.spring.io/spring-ai/reference/api/chatclient.html): el paquete org.springframework.ai.chat.client.ChatClient coincide exactamente con el import usado en el tema. Sin defectos.",
+        "criticalSubtopics": [
+          "spring-ai-bom 2.0.2",
+          "ChatClient.builder(chatModel)",
+          "@Tool con autorización fuera del modelo"
+        ],
+        "sources": [
+          "https://repo1.maven.org/maven2/org/springframework/ai/spring-ai-bom/maven-metadata.xml",
+          "https://docs.spring.io/spring-ai/reference/api/chatclient.html"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-20::Tema 7: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar · Avanzado · 1 h 10 min",
       "track": "spring-boot",
       "module": 20,
       "topic": "Tema 7: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar · Avanzado · 1 h 10 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Mismo spring-ai-bom verificado en el Tema 6; mecanismo conceptual (filtrar evidencia por autorización antes de RAG) sin API adicional que verificar.",
+        "criticalSubtopics": [
+          "autorización antes de recuperar evidencia para RAG"
+        ],
+        "sources": [
+          "https://repo1.maven.org/maven2/org/springframework/ai/spring-ai-bom/maven-metadata.xml",
+          "https://docs.spring.io/spring-ai/reference/api/chatclient.html"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-21::Tema 1: Productor, tópico, key y consumidor · Experto · 1 h 20 min",
       "track": "spring-boot",
       "module": 21,
       "topic": "Tema 1: Productor, tópico, key y consumidor · Experto · 1 h 20 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Extiende Kafka del Módulo 8, ya verificado.",
+        "criticalSubtopics": [
+          "key de partición"
+        ],
+        "sources": [
+          "https://docs.spring.io/spring-kafka/reference/"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-21::Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia · Experto · 1 h 50 min",
       "track": "spring-boot",
       "module": 21,
       "topic": "Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia · Experto · 1 h 50 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Mismo mecanismo @RetryableTopic/DLT ya verificado en Módulo 8.",
+        "criticalSubtopics": [
+          "at-least-once + idempotencia"
+        ],
+        "sources": [
+          "https://docs.spring.io/spring-kafka/reference/"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-21::Tema 3: Outbox transaccional y flujo de negocio · Experto · 1 h 50 min",
       "track": "spring-boot",
       "module": 21,
       "topic": "Tema 3: Outbox transaccional y flujo de negocio · Experto · 1 h 50 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Mecanismo y APIs citadas son Spring estándar, estables entre Boot 3 y 4; sin pins de versión frágiles ni artefactos que requieran verificación especial.",
+        "criticalSubtopics": [
+          "outbox pattern transaccional"
+        ],
+        "sources": [
+          "https://docs.spring.io/spring-kafka/reference/"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-22::Tema 1: Hexagonal: puertos que hablan el idioma del dominio · Experto · 1 h 10 min",
       "track": "spring-boot",
       "module": 22,
       "topic": "Tema 1: Hexagonal: puertos que hablan el idioma del dominio · Experto · 1 h 10 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos",
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Conceptual/arquitectónico; sin dependencia de versión que verificar.",
+        "criticalSubtopics": [
+          "puertos del dominio"
+        ],
+        "sources": [
+          "https://c4model.com/",
+          "https://adr.github.io/"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-22::Tema 2: C4: contexto, contenedores, componentes y código · Experto · 1 h 20 min",
       "track": "spring-boot",
       "module": 22,
       "topic": "Tema 2: C4: contexto, contenedores, componentes y código · Experto · 1 h 20 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos",
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Notación C4 (Simon Brown), sin dependencia de código Spring.",
+        "criticalSubtopics": [
+          "niveles del modelo C4"
+        ],
+        "sources": [
+          "https://c4model.com/",
+          "https://adr.github.io/"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-22::Tema 3: ADR: decisiones con contexto, alternativas y consecuencias · Experto · 1 h 10 min",
       "track": "spring-boot",
       "module": 22,
       "topic": "Tema 3: ADR: decisiones con contexto, alternativas y consecuencias · Experto · 1 h 10 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos",
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Formato de documentación (ADR), sin código ejecutable que verificar.",
+        "criticalSubtopics": [
+          "estructura de un ADR"
+        ],
+        "sources": [
+          "https://c4model.com/",
+          "https://adr.github.io/"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-3::Tema 1: Entidades y repositorios derivados · Intermedio · 35 min",
