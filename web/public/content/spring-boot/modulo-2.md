@@ -1007,6 +1007,272 @@ curl -i 'http://localhost:8080/envios?size=1000000'
 
 **Transferencia al proyecto integrador:** el panel de envíos del microservicio productivo consumirá este contrato paginado.
 
+### Tema 7: HandlerInterceptor frente a Filter y @ControllerAdvice · Avanzado · 35 min
+
+**Prerrequisito:** Tema 3 de este módulo (`@ControllerAdvice`); Módulo 4 Tema 2 de este track (filtro JWT con `OncePerRequestFilter`).
+
+**Al terminar podrás:** implementar un `HandlerInterceptor` con sus tres métodos (`preHandle`/`postHandle`/`afterCompletion`), confirmar con un test real el orden exacto de ejecución, y diagnosticar por qué devolver `false` desde `preHandle` también impide que `afterCompletion` se ejecute para ese mismo interceptor.
+
+#### Aprende
+
+**¿Por qué es importante?** Un equipo que necesita medir cuánto tarda cada petición HTTP, o registrar en qué controller terminó, tiene al menos tres mecanismos disponibles en Spring MVC (`Filter`, `HandlerInterceptor`, `@ControllerAdvice`) que suenan similares pero operan en capas distintas del pipeline; elegir el mecanismo equivocado produce código que no tiene acceso a la información que necesita (un `Filter` no sabe qué método de controller va a manejar la petición; un `@ControllerAdvice` no puede interceptar ANTES de que el controller se ejecute).
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `preHandle`/`postHandle`/`afterCompletion` | Núcleo | tres métodos que se ejecutan en tres momentos distintos del ciclo de una petición |
+| `preHandle` devuelve `false` corta la cadena | Núcleo | el controller NUNCA se ejecuta; el test confirma `403` sin que el método del controller corra |
+| `afterCompletion` NO se ejecuta si `preHandle` devolvió `false` | Diagnóstico | para ESE interceptor, solo `preHandle` aparece en la secuencia registrada; `afterCompletion` nunca llega |
+| `Filter` vs `HandlerInterceptor`: qué conoce cada uno | Prerrequisito | un `Filter` no conoce el `handler` (método de controller) que atenderá la petición; un `HandlerInterceptor` sí |
+| `@ControllerAdvice` opera después, no antes | Variante | solo intercepta excepciones ya lanzadas por un controller; nunca puede prevenir que el controller se ejecute |
+| `WebMvcConfigurer.addInterceptors` | Prerrequisito | el mecanismo de registro real, sin el cual el interceptor nunca se aplica a ninguna ruta |
+| Cuándo cada capa es la herramienta correcta | Decisión | Filter para preocupaciones independientes de Spring MVC (CORS, compresión); Interceptor para lógica que necesita el handler; ControllerAdvice para traducir excepciones |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`preHandle`/`postHandle`/`afterCompletion` (núcleo).** `HandlerInterceptor` define tres métodos correspondientes a tres momentos: `preHandle` se ejecuta ANTES de que el controller reciba la petición (puede inspeccionar o bloquear); `postHandle` se ejecuta DESPUÉS de que el controller retorna, pero antes de que la respuesta se envíe (puede inspeccionar o modificar el `ModelAndView`); `afterCompletion` se ejecuta SIEMPRE AL FINAL, incluso si ocurrió una excepción, apropiado para limpieza de recursos. El test confirma la secuencia exacta `["preHandle", "postHandle", "afterCompletion"]` para una petición permitida.
+
+**`preHandle` devuelve `false` corta la cadena (núcleo).** Si `preHandle` retorna `false`, Spring MVC detiene inmediatamente el procesamiento: el controller NUNCA recibe la petición, y la respuesta HTTP debe configurarse manualmente dentro del propio `preHandle` (en el demo, `response.setStatus(HttpServletResponse.SC_FORBIDDEN)`) antes de retornar `false`, porque ningún otro componente completará la respuesta.
+
+**`afterCompletion` NO se ejecuta si `preHandle` devolvió `false` (diagnóstico).** Este es el hallazgo contraintuitivo del tema, confirmado con un test real: cuando `preHandle` retorna `false`, Spring MVC NO invoca `afterCompletion` para ESE MISMO interceptor (otros interceptores anteriores en la cadena, si los hay, sí reciben su `afterCompletion`). El test lo confirma: la secuencia registrada para la ruta bloqueada es únicamente `["preHandle"]`, nunca `["preHandle", "afterCompletion"]`. Un desarrollador que asuma que `afterCompletion` es una garantía tipo `finally` incondicional para su propio interceptor construye lógica de limpieza que silenciosamente no se ejecuta en el camino de rechazo.
+
+**`Filter` vs `HandlerInterceptor`: qué conoce cada uno (prerrequisito).** Un `Filter` (como el filtro JWT de `OncePerRequestFilter` del Módulo 4) opera en la capa de Servlet, ANTES de que Spring MVC determine qué controller atenderá la petición; por eso un `Filter` nunca tiene acceso al objeto `handler` (el método específico del controller). Un `HandlerInterceptor` opera DENTRO del `DispatcherServlet` de Spring MVC, después de que el handler ya fue resuelto, por lo que SÍ recibe ese `handler` como parámetro (útil, por ejemplo, para leer anotaciones personalizadas puestas sobre el método del controller).
+
+**`@ControllerAdvice` opera después, no antes (variante).** `@ControllerAdvice` con `@ExceptionHandler` (ya visto en el Tema 3) intercepta EXCEPCIONES que un controller ya lanzó; no tiene ningún mecanismo para ejecutarse ANTES de que el controller corra, ni para bloquear la ejecución del controller por una condición que no sea una excepción. No es un sustituto de `HandlerInterceptor` para lógica de autorización o medición que debe ocurrir antes de que el controller se invoque.
+
+**`WebMvcConfigurer.addInterceptors` (prerrequisito).** Declarar la clase `TiempoRespuestaInterceptor` con `@Component` no es suficiente por sí solo: un `WebMvcConfigurer` debe registrarlo explícitamente con `registry.addInterceptor(interceptor)` dentro de `addInterceptors`, el mecanismo real que lo conecta al pipeline de peticiones. Sin este registro, el interceptor existe como bean pero nunca intercepta ninguna petición.
+
+**Cuándo cada capa es la herramienta correcta (decisión).** Un `Filter` es apropiado para preocupaciones que deberían funcionar incluso sin Spring MVC presente (CORS, compresión, encabezados de seguridad genéricos); un `HandlerInterceptor` es apropiado cuando la lógica necesita conocer qué controller/método específico atenderá la petición (autorización por anotación personalizada, métricas por endpoint); `@ControllerAdvice` es apropiado específicamente para traducir excepciones lanzadas por controllers a respuestas HTTP consistentes.
+
+**Conceptos clave:** `preHandle`/`postHandle`/`afterCompletion`, corte de cadena con `false`, `Filter` vs `HandlerInterceptor`, `WebMvcConfigurer.addInterceptors`.
+
+`HandlerInterceptor.preHandle` se ejecuta antes del controller y puede bloquear la petición retornando `false` (sin que `afterCompletion` llegue a ejecutarse para ese interceptor); `postHandle` se ejecuta después del controller pero antes de completar la respuesta; `afterCompletion` se ejecuta al final, solo si `preHandle` retornó `true`. A diferencia de un `Filter` (capa de Servlet, sin acceso al handler resuelto) y de `@ControllerAdvice` (solo traduce excepciones ya lanzadas), un `HandlerInterceptor` opera dentro del pipeline de Spring MVC con acceso al handler específico, registrado explícitamente vía `WebMvcConfigurer.addInterceptors`.
+
+**Analogía:** un `Filter` es el guardia en la entrada principal del edificio, que revisa a todos antes de que sepan a qué piso o oficina se dirigen; un `HandlerInterceptor` es el recepcionista del piso específico, que ya sabe a qué oficina exacta va cada visitante y puede actuar en consecuencia; `@ControllerAdvice` es el protocolo de emergencia que se activa solo después de que algo salió mal dentro de una oficina, nunca antes de que el visitante entre.
+
+**Diagrama:**
+
+```mermaid
+sequenceDiagram
+  participant F as Filter (capa Servlet)
+  participant D as DispatcherServlet
+  participant I as HandlerInterceptor
+  participant C as Controller
+  F->>D: petición HTTP
+  D->>I: preHandle
+  alt preHandle retorna true
+    I->>C: invoca el handler
+    C-->>I: retorna
+    I->>I: postHandle
+    I->>I: afterCompletion
+  else preHandle retorna false
+    I->>D: respuesta ya configurada (ej. 403)
+    Note over I: postHandle y afterCompletion NUNCA se ejecutan para este interceptor
+  end
+  D-->>F: respuesta HTTP
+```
+
+#### Practica
+
+**Demo paso a paso.** Desde una carpeta vacía, genera el proyecto:
+
+```bash
+mkdir interceptor-demo && cd interceptor-demo
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web -d javaVersion=27 -o app.zip
+unzip -q app.zip
+```
+
+Crea `src/main/java/com/academia/interceptor/TiempoRespuestaInterceptor.java`:
+
+```java
+package com.academia.interceptor;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.ModelAndView;
+
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+@Component
+public class TiempoRespuestaInterceptor implements HandlerInterceptor {
+    private final List<String> eventos = new CopyOnWriteArrayList<>();
+
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        eventos.add("preHandle");
+        if ("/bloqueado".equals(request.getRequestURI())) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            return false; // corta la cadena: el controller NUNCA se ejecuta
+        }
+        return true;
+    }
+
+    @Override
+    public void postHandle(HttpServletRequest request, HttpServletResponse response,
+                            Object handler, ModelAndView modelAndView) {
+        eventos.add("postHandle");
+    }
+
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response,
+                                 Object handler, Exception ex) {
+        eventos.add("afterCompletion");
+    }
+
+    public List<String> getEventos() { return eventos; }
+    public void limpiar() { eventos.clear(); }
+}
+```
+
+Crea `src/main/java/com/academia/interceptor/WebConfig.java`:
+
+```java
+package com.academia.interceptor;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+@Configuration
+public class WebConfig implements WebMvcConfigurer {
+    private final TiempoRespuestaInterceptor interceptor;
+
+    public WebConfig(TiempoRespuestaInterceptor interceptor) { this.interceptor = interceptor; }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(interceptor);
+    }
+}
+```
+
+Crea `src/main/java/com/academia/interceptor/SaludoController.java`:
+
+```java
+package com.academia.interceptor;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class SaludoController {
+    @GetMapping("/saludo")
+    public String saludo() { return "hola"; }
+
+    @GetMapping("/bloqueado")
+    public String bloqueado() { return "nunca deberías ver esto"; }
+}
+```
+
+Agrega la dependencia real de testing (Spring Boot 4 requiere `spring-boot-webmvc-test` explícito para `@AutoConfigureMockMvc`) y crea el test en `src/test/java/com/academia/interceptor/TiempoRespuestaInterceptorTest.java`:
+
+```xml
+<!-- dentro de <dependencies> del pom.xml -->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-webmvc-test</artifactId>
+    <scope>test</scope>
+</dependency>
+```
+
+```java
+package com.academia.interceptor;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.test.web.servlet.MockMvc;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@SpringBootTest
+@AutoConfigureMockMvc
+class TiempoRespuestaInterceptorTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+    @Autowired
+    private TiempoRespuestaInterceptor interceptor;
+
+    @BeforeEach
+    void limpiar() { interceptor.limpiar(); }
+
+    @Test
+    void peticionPermitidaDisparaLosTresMetodosEnOrden() throws Exception {
+        mockMvc.perform(get("/saludo")).andExpect(status().isOk());
+
+        assertThat(interceptor.getEventos()).containsExactly("preHandle", "postHandle", "afterCompletion");
+    }
+
+    @Test
+    void preHandleFalseCortaLaCadenaYElControllerNuncaSeEjecuta() throws Exception {
+        mockMvc.perform(get("/bloqueado")).andExpect(status().isForbidden());
+
+        // postHandle NUNCA se ejecuta porque preHandle devolvió false;
+        // afterCompletion TAMPOCO se ejecuta para ESTE interceptor en ese caso
+        assertThat(interceptor.getEventos()).containsExactly("preHandle");
+    }
+}
+```
+
+```bash
+./mvnw test
+```
+
+**Resultado esperado:** `Tests run: 2, Failures: 0, Errors: 0` (verificado con Spring Boot 4.1.1 / Spring Framework 7.0.9 sobre JDK 27.0.1): el primer test confirma la secuencia completa `["preHandle", "postHandle", "afterCompletion"]` para `/saludo`; el segundo confirma que `/bloqueado` solo registra `["preHandle"]`, nunca llegando al controller ni a `postHandle`/`afterCompletion`.
+
+**Fallo deliberado:** cambia la aserción del segundo test a `containsExactly("preHandle", "afterCompletion")` (asumiendo que `afterCompletion` SÍ se ejecuta como una garantía tipo `finally`) y ejecuta de nuevo. El test FALLA porque la lista real solo contiene `["preHandle"]`. Diagnostica confirmando que `afterCompletion`, pese a su nombre que sugiere "siempre al completar", documentadamente solo se invoca si el `preHandle` del MISMO interceptor retornó `true` — no es una garantía incondicional de limpieza para el interceptor que bloqueó la petición. Restaura la aserción original antes de continuar.
+
+**Ejercicios.**
+
+1. Agrega un segundo `HandlerInterceptor` registrado DESPUÉS del primero en `addInterceptors`, y confirma con un test el orden relativo de ejecución de ambos `preHandle` (en el orden de registro) frente al orden de ambos `afterCompletion` (inverso al de registro).
+2. Lanza una excepción deliberada dentro del controller de `/saludo` y confirma con un test que `afterCompletion` SÍ se ejecuta (recibe la excepción como parámetro `ex`), a diferencia del caso de `preHandle` devolviendo `false`.
+3. Usa el parámetro `handler` de `preHandle` (cástalo a `HandlerMethod`) para leer el nombre del método del controller que atenderá la petición, y documenta por qué un `Filter` no podría hacer esto.
+4. Escribe de memoria (sin mirar) un `HandlerInterceptor` con sus tres métodos, su registro vía `WebMvcConfigurer`, y un test que confirme que `preHandle=false` corta la cadena sin disparar `afterCompletion`. Compara después contra el patrón del Paso 4.
+
+**Pista:** si tu lógica de limpieza en `afterCompletion` parece no ejecutarse en el camino de rechazo, verifica primero si fue TU PROPIO `preHandle` el que devolvió `false` — en ese caso, es el comportamiento documentado, no un bug.
+
+**Completa el código:** rellena el método que se ejecuta DESPUÉS del controller pero ANTES de completar la respuesta:
+
+```java
+@Override
+public void ____(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView mav) { }
+```
+
+**Reto de memoria:** cierra este documento y escribe, solo de memoria, un `HandlerInterceptor` que bloquee una ruta específica devolviendo `false` desde `preHandle`, y un test que confirme que ni el controller ni `afterCompletion` se ejecutaron para esa ruta.
+
+#### Aplica
+
+**Reto abierto.** Implementa un `HandlerInterceptor` para RutaFlow que mida el tiempo de cada petición (diferencia entre `preHandle` y `afterCompletion`) y lo registre solo para peticiones que tardaron más de un umbral configurable, sin bloquear ninguna petición. Contrasta por escrito esta solución con una alternativa basada en `Filter`, explicando qué información del `handler` específico se perdería si se implementara como `Filter` en vez de `HandlerInterceptor`.
+
+**Checklist de salida.**
+
+- [ ] Los tres métodos (`preHandle`/`postHandle`/`afterCompletion`) están implementados y registrados vía `WebMvcConfigurer`.
+- [ ] Un test confirma la secuencia completa para una petición permitida.
+- [ ] Un test confirma que `preHandle=false` impide que el controller, `postHandle` Y `afterCompletion` se ejecuten para ese interceptor.
+- [ ] Podés explicar con precisión la diferencia entre lo que conoce un `Filter` y lo que conoce un `HandlerInterceptor`.
+- [ ] Podés explicar por qué `@ControllerAdvice` no es un sustituto de `HandlerInterceptor` para lógica previa al controller.
+
+**Si falla.** Si el interceptor parece no activarse nunca, confirma que esté registrado en `WebMvcConfigurer.addInterceptors` (ser `@Component` no es suficiente). Si `afterCompletion` no aparece donde se esperaba, confirma si `preHandle` de ese mismo interceptor retornó `false` en ese camino.
+
+**Siguiente paso:** el Módulo 3 profundiza en la persistencia con Spring Data JPA.
+
+**Errores comunes:** asumir que `afterCompletion` es una garantía tipo `finally` incondicional, cuando documentadamente depende de que `preHandle` haya retornado `true`; usar un `Filter` cuando la lógica necesita el `handler` resuelto; usar `@ControllerAdvice` para intentar bloquear una petición antes de que el controller se ejecute.
+
+**Límites y decisión de uso:** para preocupaciones completamente independientes de Spring MVC (CORS genérico, compresión, logging de bajo nivel de toda petición HTTP sin importar si Spring la resuelve), un `Filter` es más apropiado que un `HandlerInterceptor`, que solo se activa dentro del pipeline de Spring MVC.
+
+**Fuente oficial:** [Spring MVC — Interceptors](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-config/interceptors.html).
+
+**Transferencia al proyecto integrador:** el `HandlerInterceptor` de medición de este tema es el que instrumentará el tiempo de respuesta del microservicio productivo (Módulo 12).
+
 ## Laboratorio práctico
 
 **Objetivo del laboratorio:** construir una API REST con validación de entrada y manejo centralizado de errores.

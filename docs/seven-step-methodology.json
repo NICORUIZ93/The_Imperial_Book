@@ -248,22 +248,22 @@
       "complete": 29
     },
     "spring-boot": {
-      "topics": 97,
+      "topics": 98,
       "objective": 0,
-      "prerequisites": 97,
+      "prerequisites": 98,
       "context": 0,
       "theoryAnalogy": 0,
       "guidedDemo": 0,
-      "codeExplanation": 97,
-      "execution": 95,
-      "expectedResult": 97,
-      "deliberateFailure": 97,
+      "codeExplanation": 98,
+      "execution": 96,
+      "expectedResult": 98,
+      "deliberateFailure": 98,
       "guidedPractice": 0,
       "independentPractice": 0,
       "closure": 0,
-      "commonErrors": 97,
-      "resources": 97,
-      "standaloneExample": 94,
+      "commonErrors": 98,
+      "resources": 98,
+      "standaloneExample": 95,
       "complete": 0
     }
   },
@@ -28298,6 +28298,31 @@
       {
         "module": 2,
         "topic": "Tema 6: Paginación HTTP con validación y un límite de recursos explícito · Intermedio · 35 min",
+        "criteria": {
+          "objective": false,
+          "prerequisites": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 8,
+          "complete": false
+        }
+      },
+      {
+        "module": 2,
+        "topic": "Tema 7: HandlerInterceptor frente a Filter y @ControllerAdvice · Avanzado · 35 min",
         "criteria": {
           "objective": false,
           "prerequisites": true,

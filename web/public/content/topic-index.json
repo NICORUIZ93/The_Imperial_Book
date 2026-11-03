@@ -4996,6 +4996,10 @@
       {
         "title": "Paginación HTTP con validación y un límite de recursos explícito",
         "fragment": "tema-6-paginacion-http-con-validacion-y-un-limite-de-recursos-explicito"
+      },
+      {
+        "title": "HandlerInterceptor frente a Filter y @ControllerAdvice",
+        "fragment": "tema-7-handlerinterceptor-frente-a-filter-y-controlleradvice"
       }
     ],
     "20": [

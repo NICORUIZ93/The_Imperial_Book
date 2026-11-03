@@ -4287,6 +4287,17 @@
       ]
     },
     {
+      "id": "spring-boot:2:7",
+      "track": "spring-boot",
+      "module": 2,
+      "position": 7,
+      "title": "HandlerInterceptor frente a Filter y @ControllerAdvice · Avanzado · 35 min",
+      "file": "web/public/content/spring-boot/modulo-2.md",
+      "requires": [
+        "spring-boot:2:6"
+      ]
+    },
+    {
       "id": "spring-boot:3:1",
       "track": "spring-boot",
       "module": 3,
@@ -4294,7 +4305,7 @@
       "title": "Entidades y repositorios derivados · Intermedio · 35 min",
       "file": "web/public/content/spring-boot/modulo-3.md",
       "requires": [
-        "spring-boot:2:6"
+        "spring-boot:2:7"
       ]
     },
     {

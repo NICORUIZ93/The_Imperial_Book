@@ -4849,6 +4849,22 @@
         "https://repo1.maven.org/maven2/org/springframework/boot/spring-boot-starter-aspectj/maven-metadata.xml",
         "docs/AUDITORIA-COBERTURA-SPRING-20261101.md"
       ]
+    },
+    "spring-boot/modulo-2::Tema 7: HandlerInterceptor frente a Filter y @ControllerAdvice · Avanzado · 35 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Lote 2 (MEDIA) de docs/AUDITORIA-COBERTURA-SPRING-20261101.md: 'Filtros vs HandlerInterceptor vs @ControllerAdvice (falta HandlerInterceptor) -> M2/M4'. Tema nuevo ejecutado de verdad: mvn test, Tests run: 2, Failures: 0, Errors: 0 sobre Spring Boot 4.1.1 / Spring Framework 7.0.9 / JDK 27.0.1.0.3. Confirmado con los dos tests reales: preHandle/postHandle/afterCompletion se ejecutan en orden para una peticion permitida; preHandle=false corta la cadena y NO dispara afterCompletion para ese interceptor (hallazgo verificado, no asumido -- se probo explicitamente con una aserción que esperaba lo contrario y fallo como se predijo). Corrección repo-wide encontrada mientras se cerraba el hueco MEDIA #9 (HandlerInterceptor): @WebMvcTest y @AutoConfigureMockMvc se movieron en Spring Boot 4 de org.springframework.boot.test.autoconfigure.web.servlet a org.springframework.boot.webmvc.test.autoconfigure, y requieren la dependencia explicita spring-boot-webmvc-test (ya no incluida en spring-boot-starter-test). Confirmado de forma autoritativa inspeccionando directamente el jar real spring-boot-webmvc-test-4.1.1.jar (no un sitio de documentacion que pudiera estar desactualizado), y verificado con mvn test-compile que el paquete viejo NO EXISTE en 4.1.1 (falla con 'package ... does not exist'). Corregido el import en este tema y agregada la nota de dependencia explicita donde correspondia.",
+      "criticalSubtopics": [
+        "preHandle/postHandle/afterCompletion",
+        "preHandle=false corta la cadena y omite afterCompletion",
+        "Filter vs HandlerInterceptor: acceso al handler resuelto",
+        "WebMvcConfigurer.addInterceptors",
+        "spring-boot-webmvc-test (dependencia explicita en Boot 4)"
+      ],
+      "sources": [
+        "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-config/interceptors.html",
+        "docs/AUDITORIA-COBERTURA-SPRING-20261101.md"
+      ]
     }
   }
 }

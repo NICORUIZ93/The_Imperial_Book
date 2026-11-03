@@ -120,7 +120,16 @@ public class ServicioExternoHealthIndicator implements HealthIndicator {
 
 **Explicación línea por línea:** `ServicioExterno` simula una dependencia real con un estado mutable (`marcarComoNoDisponible()`/`marcarComoDisponible()`, expuesto para que el test controle el escenario); `@Component("servicioExterno")` registra el indicador bajo ese nombre, que Actuator usa como clave dentro de la respuesta JSON de `/actuator/health` (`{"components": {"servicioExterno": {"status": "UP"}}}`); `Health.down().withDetail(...)` adjunta información de diagnóstico adicional visible cuando `show-details=always`.
 
-Confirma con `MockMvc` real que `/actuator/health` refleja el estado real de la dependencia simulada, en ambos escenarios:
+Confirma con `MockMvc` real que `/actuator/health` refleja el estado real de la dependencia simulada, en ambos escenarios. **Nota (Spring Boot 4):** `AutoConfigureMockMvc` requiere agregar explícitamente `spring-boot-webmvc-test` (scope `test`) al `pom.xml` — en Boot 3.x venía incluido en `spring-boot-starter-test`:
+
+```xml
+<!-- dentro de <dependencies> del pom.xml -->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-webmvc-test</artifactId>
+    <scope>test</scope>
+</dependency>
+```
 
 ```java
 // src/test/java/com/academia/observabilidad/ActuatorHealthTest.java
@@ -128,7 +137,7 @@ package com.academia.observabilidad;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -334,7 +343,7 @@ package com.academia.observabilidad;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -535,7 +544,7 @@ package com.academia.observabilidad;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 

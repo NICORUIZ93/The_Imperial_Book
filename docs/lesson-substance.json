@@ -1677,7 +1677,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "43ce26ed2b11d7239b43009704a08dfe1e862af7acf836deb9a36810b09093f1",
+    "fingerprint": "b979e92d487bef96e6873b4463510c1d75116dced0f0b57b6a9ce1605f93c710",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
@@ -1686,7 +1686,7 @@
     },
     "modules": 254,
     "modulesWithLegacySections": 179,
-    "topics": 1163,
+    "topics": 1164,
     "topicsWithIssues": 0
   },
   "topics": {
@@ -9268,7 +9268,7 @@
         "module": 10,
         "tailWords": 301,
         "topic": "Tema 4: OAuth2/OIDC, Keycloak y Token Relay sin perder la frontera de autorización · Avanzado · 50 min",
-        "words": 2289
+        "words": 2339
       },
       {
         "issues": [],
@@ -9317,7 +9317,7 @@
         "module": 11,
         "tailWords": 294,
         "topic": "Tema 3: Health checks para Kubernetes · Intermedio · 40 min",
-        "words": 1997
+        "words": 2047
       },
       {
         "issues": [],
@@ -9331,7 +9331,7 @@
         "module": 12,
         "tailWords": 323,
         "topic": "Tema 2: Integrando seguridad, persistencia y observabilidad · Experto · 2 h 40 min",
-        "words": 2124
+        "words": 2174
       },
       {
         "issues": [],
@@ -9359,7 +9359,7 @@
         "module": 13,
         "tailWords": 358,
         "topic": "Tema 3: Contratos ejecutables protegen despliegues independientes · Experto · 1 h 45 min",
-        "words": 1845
+        "words": 1895
       },
       {
         "issues": [],
@@ -9373,7 +9373,7 @@
         "module": 14,
         "tailWords": 316,
         "topic": "Tema 1: CRUD API y contratos · Experto · 2 h 15 min",
-        "words": 1714
+        "words": 1765
       },
       {
         "issues": [],
@@ -9394,7 +9394,7 @@
         "module": 14,
         "tailWords": 332,
         "topic": "Tema 4: JWT Bearer y autorización por roles · Experto · 1 h 55 min",
-        "words": 1765
+        "words": 1764
       },
       {
         "issues": [],
@@ -9566,6 +9566,13 @@
       },
       {
         "issues": [],
+        "module": 2,
+        "tailWords": 327,
+        "topic": "Tema 7: HandlerInterceptor frente a Filter y @ControllerAdvice · Avanzado · 35 min",
+        "words": 2285
+      },
+      {
+        "issues": [],
         "module": 20,
         "tailWords": 307,
         "topic": "Tema 1: Scheduling y tareas periódicas · Avanzado · 1 h 10 min",
@@ -9688,21 +9695,21 @@
         "module": 4,
         "tailWords": 269,
         "topic": "Tema 1: SecurityFilterChain moderno · Intermedio · 40 min",
-        "words": 1757
+        "words": 1828
       },
       {
         "issues": [],
         "module": 4,
         "tailWords": 277,
         "topic": "Tema 2: Filtro JWT y autorización por rol · Avanzado · 55 min",
-        "words": 2172
+        "words": 2171
       },
       {
         "issues": [],
         "module": 4,
         "tailWords": 295,
         "topic": "Tema 3: CORS y CSRF · Intermedio · 35 min",
-        "words": 1813
+        "words": 1812
       },
       {
         "issues": [],
@@ -9716,7 +9723,7 @@
         "module": 4,
         "tailWords": 287,
         "topic": "Tema 5: Flujo de login completo — de `/api/auth/login` a una ruta protegida · Avanzado · 45 min",
-        "words": 2069
+        "words": 2068
       },
       {
         "issues": [],
@@ -9737,14 +9744,14 @@
         "module": 5,
         "tailWords": 303,
         "topic": "Tema 3: Manejo global de excepciones consistente entre entornos · Avanzado · 40 min",
-        "words": 2067
+        "words": 2117
       },
       {
         "issues": [],
         "module": 6,
         "tailWords": 272,
         "topic": "Tema 1: Slices de testing — @WebMvcTest · Intermedio · 35 min",
-        "words": 1917
+        "words": 1966
       },
       {
         "issues": [],
@@ -9758,7 +9765,7 @@
         "module": 6,
         "tailWords": 316,
         "topic": "Tema 3: @SpringBootTest completo y estrategia de pirámide de tests · Avanzado · 45 min",
-        "words": 1944
+        "words": 1943
       },
       {
         "issues": [],
@@ -9772,21 +9779,21 @@
         "module": 7,
         "tailWords": 277,
         "topic": "Tema 1: Actuator y health checks personalizados · Intermedio · 35 min",
-        "words": 1951
+        "words": 2001
       },
       {
         "issues": [],
         "module": 7,
         "tailWords": 283,
         "topic": "Tema 2: Métricas de negocio con Micrometer · Avanzado · 45 min",
-        "words": 1833
+        "words": 1832
       },
       {
         "issues": [],
         "module": 7,
         "tailWords": 283,
         "topic": "Tema 3: Liveness vs readiness · Intermedio · 30 min",
-        "words": 1861
+        "words": 1860
       },
       {
         "issues": [],

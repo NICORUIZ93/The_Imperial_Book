@@ -5243,7 +5243,7 @@
         "https://martinfowler.com/bliki/DDD_Aggregate.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 1213,
+      "line": 1222,
       "originalProseUrls": [
         "https://martinfowler.com/bliki/DDD_Aggregate.html"
       ],
@@ -5260,7 +5260,7 @@
         "https://docs.temporal.io/develop/java/workflows/basics"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 1425,
+      "line": 1434,
       "originalProseUrls": [
         "https://central.sonatype.com/artifact/io.temporal/temporal-spring-boot-starter",
         "https://docs.temporal.io/design-patterns/saga-pattern",
@@ -5278,7 +5278,7 @@
         "https://start.spring.io/starter.zip"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 213,
+      "line": 222,
       "originalProseUrls": [
         "https://dev.mysql.com/doc/refman/8.0/en/spatial-type-overview.html",
         "https://start.spring.io/starter.zip"
@@ -5295,7 +5295,7 @@
         "https://start.spring.io/starter.zip"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 379,
+      "line": 388,
       "originalProseUrls": [
         "https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#spatial",
         "https://start.spring.io/starter.zip"
@@ -5529,7 +5529,7 @@
         "https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.1-Release-Notes"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 654,
+      "line": 663,
       "originalProseUrls": [
         "http://169.254.169.254/latest/meta-data/iam/security-credentials/",
         "https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.1-Release-Notes"
@@ -5545,7 +5545,7 @@
         "https://java.testcontainers.org/modules/databases/postgres/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 206,
+      "line": 217,
       "originalProseUrls": [
         "https://java.testcontainers.org/modules/databases/postgres/"
       ],

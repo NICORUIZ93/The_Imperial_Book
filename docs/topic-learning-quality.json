@@ -221,18 +221,18 @@
       "repeatedDemo": 0
     },
     "spring-boot": {
-      "topics": 97,
-      "explanation": 97,
-      "code": 97,
-      "visual": 77,
-      "filePath": 97,
-      "runCommand": 95,
-      "expectedResult": 97,
-      "practice": 97,
-      "project": 97,
-      "modelMental": 97,
-      "limitsDecision": 97,
-      "practicable": 95,
+      "topics": 98,
+      "explanation": 98,
+      "code": 98,
+      "visual": 78,
+      "filePath": 98,
+      "runCommand": 96,
+      "expectedResult": 98,
+      "practice": 98,
+      "project": 98,
+      "modelMental": 98,
+      "limitsDecision": 98,
+      "practicable": 96,
       "genericScaffold": 0,
       "repeatedDemo": 0
     }
@@ -24922,6 +24922,28 @@
         },
         "classification": {
           "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 2,
+        "topic": "Tema 7: HandlerInterceptor frente a Filter y @ControllerAdvice · Avanzado · 35 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
