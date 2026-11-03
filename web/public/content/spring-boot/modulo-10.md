@@ -680,10 +680,8 @@ cd demo-cloud/http-client
 // src/main/java/io/academia/routes/RouteClient.java
 package io.academia.routes;
 
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
-import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.client.support.ClientHttpRequestFactoryBuilder;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.service.annotation.GetExchange;
@@ -698,8 +696,8 @@ public interface RouteClient {
     String find(@PathVariable String journeyId);
 
     static RouteClient with(String baseUrl, Duration deadline) {
-        ClientHttpRequestFactory factory = ClientHttpRequestFactoryBuilder.detect().build(
-            ClientHttpRequestFactorySettings.defaults().withReadTimeout(deadline));
+        var factory = ClientHttpRequestFactoryBuilder.detect().build(
+            HttpClientSettings.defaults().withReadTimeout(deadline));
         RestClient restClient = RestClient.builder().baseUrl(baseUrl).requestFactory(factory).build();
         HttpServiceProxyFactory proxyFactory = HttpServiceProxyFactory
             .builderFor(RestClientAdapter.create(restClient)).build();
@@ -790,7 +788,7 @@ ClientHttpRequestFactorySettings.defaults().____(deadline);
 
 #### Paso 7 · Cierre y evidencia
 
-Ya declaras contratos HTTP explícitos con `@HttpExchange` y confirmas, con medición cronométrica real, que un deadline configurado corta esperas indefinidas. El siguiente tema explora gRPC con Spring gRPC (Boot 4.1) como alternativa binaria para comunicación interna de alta frecuencia entre servicios. **Evidencia:** entrega el resultado de `RouteClientDeadlineTest` en verde, y la falta de excepción real que produce el fallo deliberado al quitar el timeout. Fuente oficial: [Spring Framework — HTTP Interface](https://docs.spring.io/spring-framework/reference/integration/rest-clients.html#rest-http-interface).
+Ya declaras contratos HTTP explícitos con `@HttpExchange` y confirmas, con medición cronométrica real, que un deadline configurado corta esperas indefinidas. El siguiente tema explora gRPC con Spring gRPC (Boot 4.1) como alternativa binaria para comunicación interna de alta frecuencia entre servicios. **Evidencia:** entrega el resultado de `RouteClientDeadlineTest` en verde, y la falta de excepción real que produce el fallo deliberado al quitar el timeout. Fuentes oficiales: [Spring Framework — HTTP Interface](https://docs.spring.io/spring-framework/reference/integration/rest-clients.html#rest-http-interface) y [Spring Boot — ClientHttpRequestFactoryBuilder](https://docs.spring.io/spring-boot/api/java/org/springframework/boot/http/client/ClientHttpRequestFactoryBuilder.html).
 
 **Errores comunes:** no configurar ningún timeout explícito, dependiendo del timeout por defecto del sistema (a menudo demasiado largo para ser útil); agregar retries en múltiples capas (móvil, gateway, cada servicio) sin coordinación, multiplicando la latencia real ante un fallo.
 

@@ -1695,7 +1695,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "cb708871165fffab7727fd500f922f83883f5f65cd5fadb56d53972ef4f92b4d",
+    "fingerprint": "fd0bfe79e139de0601d50e2383fc1184a17e1c82f274bfb76749f459f9639d5f",
     "issues": {
       "andamiaje-generico": 125,
       "bloque-repetido": 210,
@@ -10479,9 +10479,9 @@
       {
         "issues": [],
         "module": 10,
-        "tailWords": 170,
+        "tailWords": 189,
         "topic": "Tema 5: HTTP Interfaces, deadlines y descubrimiento según el entorno",
-        "words": 1202
+        "words": 1208
       },
       {
         "issues": [],
