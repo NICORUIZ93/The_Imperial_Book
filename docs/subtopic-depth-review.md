@@ -2,8 +2,8 @@
 
 > Las señales automáticas no prueban profundidad ni ausencia de ella. Un tema sólo queda revisado mediante el registro humano con mapa de subtemas críticos, evidencia y fuentes.
 
-- Temas inventariados: 1159
-- Revisados humanamente para subtemas: 336
+- Temas inventariados: 1160
+- Revisados humanamente para subtemas: 337
 - Pendientes: 823
 - Candidatos prioritarios por señales: 782
 
@@ -24,7 +24,7 @@
 | node | 77 | 0 | 77 |
 | react | 58 | 0 | 58 |
 | rutaflow | 29 | 0 | 29 |
-| spring-boot | 93 | 93 | 0 |
+| spring-boot | 94 | 94 | 0 |
 
 ## Cola prioritaria
 
@@ -1064,6 +1064,7 @@
 - `spring-boot/modulo-1` — Tema 1: Spring Initializr y starters · Básico · 20 min — Spring Initializr como generador; Starter como dependencia curada; BOM y resolución de versiones; Starter web vs otros starters; Anotación ausente sin el starter; Dependencia suelta vs starter; Cuándo no usar starters; Starters mínimos del proyecto
 - `spring-boot/modulo-1` — Tema 2: application.yml vs application.properties · Básico · 20 min — Pares clave-valor en .properties; Indentación jerárquica en .yml; Equivalencia funcional de ambos formatos; Detección automática del archivo; Sensibilidad a la indentación de YAML; Error de indentación silencioso; Mezclar .properties y .yml; Elección de formato por legibilidad
 - `spring-boot/modulo-1` — Tema 3: Perfiles y estructura por capas · Intermedio · 30 min — Configuración base en application.yml; Perfil como sobreescritura parcial; Activación explícita del perfil; Configuración fusionada efectiva; Perfil nunca activo por defecto; Olvidar activar el perfil al desplegar; Separación por capas controller/service/repository; Perfiles solo cuando hay varios entornos
+- `spring-boot/modulo-1` — Tema 4: Crear tu propia auto-configuración condicional · Avanzado · 40 min — @AutoConfiguration como marca de clase candidata; AutoConfiguration.imports; @ConditionalOnProperty; ApplicationContextRunner; ausencia de registro vs condicion no cumplida
 - `spring-boot/modulo-10` — Tema 1: Config Server y service discovery · Intermedio · 45 min — Config Server; service discovery
 - `spring-boot/modulo-10` — Tema 2: Spring Cloud Gateway · Intermedio · 40 min — rutas programáticas; predicates/filters
 - `spring-boot/modulo-10` — Tema 3: Circuit breaker con Resilience4j · Avanzado · 45 min — CircuitBreaker standalone; estados CLOSED/OPEN/HALF_OPEN

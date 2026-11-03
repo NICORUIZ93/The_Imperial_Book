@@ -16,7 +16,7 @@ export const SPRING_BOOT_MODULES: CourseModule[] = [
     'Aplicación Spring Boot mínima con dos beans inyectados por constructor.'),
   m(1, 'Spring Boot CLI y estructura de proyecto', 'Estructura de proyecto', 'Fundamentos', '1 h 30 min', '#6db33f',
     'Genera y entiende la estructura estándar de un proyecto Spring Boot productivo.',
-    ['Spring Initializr y starters', 'application.yml vs application.properties', 'Perfiles (dev/test/prod)', 'Estructura por capas (controller/service/repository)'],
+    ['Spring Initializr y starters', 'application.yml vs application.properties', 'Perfiles (dev/test/prod)', 'Estructura por capas (controller/service/repository)', 'Crear tu propia auto-configuración condicional (@AutoConfiguration, AutoConfiguration.imports)'],
     [
       'Genera un proyecto desde start.spring.io con los starters web, data-jpa y postgresql',
       'Convierte application.properties a application.yml y compara la legibilidad',

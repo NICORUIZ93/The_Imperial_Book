@@ -428,7 +428,7 @@ java -jar app.jar --spring.____=dev
 
 **Si falla.** Si el perfil no se aplica, revisa el nombre del archivo (`application-dev.yml`) y la bandera (`--spring.profiles.active=dev`). Si `/actuator/env` no responde, el endpoint no está expuesto. Si el controller acumula lógica, mueve la decisión al service y deja en el controller solo la traducción HTTP.
 
-**Siguiente paso:** el Módulo 2 profundiza en la capa web y el manejo de peticiones HTTP.
+**Siguiente paso:** el Tema 4 de este módulo abre el starter por dentro: cómo crear tu propia auto-configuración condicional, el mismo mecanismo que hace posible `spring-boot-starter-web` o cualquier starter de terceros.
 
 **Errores comunes:** olvidar activar el perfil correcto al desplegar; poner lógica de negocio en el controller, mezclando responsabilidades entre capas.
 
@@ -437,6 +437,201 @@ java -jar app.jar --spring.____=dev
 **Fuente oficial:** [Spring Boot — Profiles](https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.profiles).
 
 **Transferencia al proyecto integrador:** la estructura por capas de este tema organiza el microservicio productivo.
+
+### Tema 4: Crear tu propia auto-configuración condicional · Avanzado · 40 min
+
+**Prerrequisito:** Tema 1 de este módulo (starter como dependencia curada).
+
+**Al terminar podrás:** escribir una `@AutoConfiguration` propia que registre un bean solo cuando una propiedad lo habilita, y confirmar con `ApplicationContextRunner` que el bean aparece o no aparece según el valor exacto de esa propiedad, sin arrancar nunca una aplicación completa.
+
+#### Aprende
+
+**¿Por qué es importante?** `spring-boot-starter-web` no es magia: es exactamente este mismo mecanismo (una clase `@AutoConfiguration` con condiciones, registrada en un archivo de recursos) aplicado por el equipo de Spring Boot. Un equipo que publica una librería interna compartida entre varios microservicios de la empresa (por ejemplo, un cliente HTTP preconfigurado hacia un servicio de tarifas) puede ofrecer la misma experiencia de "agregar la dependencia y que se autoconfigure" sin que cada equipo consumidor copie manualmente la misma configuración en cada proyecto.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `@AutoConfiguration` como marca de clase candidata | Prerrequisito | `FeatureAutoConfiguration` anotada `@AutoConfiguration`, sin lógica de negocio propia |
+| Registro en `AutoConfiguration.imports` | Núcleo | `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports` lista la clase por nombre completo |
+| `@ConditionalOnProperty` decide si el bean existe | Núcleo | con `app.feature.enabled=true` el contexto SÍ tiene `FeatureService`; sin la propiedad, no |
+| Tres valores posibles de la propiedad | Variante | ausente, `false` y `true` producen los tres resultados distintos que el test verifica |
+| `ApplicationContextRunner` sin arrancar la app completa | Núcleo | `new ApplicationContextRunner().withConfiguration(...)` construye un contexto mínimo en milisegundos |
+| Clase nunca registrada en el archivo de imports | Diagnóstico | aunque la propiedad esté en `true`, el bean nunca aparece: Spring Boot ni siquiera sabe que la clase existe |
+| Starters de terceros usan el mismo mecanismo | Decisión | `spring-boot-starter-web` es una `@AutoConfiguration` con condiciones, no un mecanismo especial distinto |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`@AutoConfiguration` como marca de clase candidata (prerrequisito).** `FeatureAutoConfiguration` es una clase de configuración normal (declara beans con `@Bean`), pero anotada `@AutoConfiguration` en vez de `@Configuration` para señalar que es candidata a aplicarse automáticamente, no algo que un desarrollador deba importar manualmente con `@Import`. Por sí sola, la anotación no hace que Spring Boot la encuentre: ese es el rol del archivo de registro.
+
+**Registro en `AutoConfiguration.imports` (núcleo).** El archivo `src/main/resources/META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports` lista, una por línea, el nombre completamente calificado de cada clase `@AutoConfiguration` que el classpath debe considerar al arrancar. Este archivo (introducido en Spring Boot 3.0, reemplazando `spring.factories`) es el mecanismo real por el que cualquier starter —incluido uno propio— se vuelve "autoconfigurable" al simple hecho de estar en el classpath, sin que nadie escriba `@Import(FeatureAutoConfiguration.class)` en su aplicación.
+
+**`@ConditionalOnProperty` decide si el bean existe (núcleo).** `@ConditionalOnProperty(prefix = "app.feature", name = "enabled", havingValue = "true")` sobre el método `@Bean` hace que Spring Boot evalúe esa condición al momento de construir el contexto: solo si `app.feature.enabled` vale exactamente `"true"` el bean `FeatureService` se registra. El test `conLaPropiedadEnTrueRegistraElBean` lo confirma con `assertThat(context).hasSingleBean(FeatureService.class)`.
+
+**Tres valores posibles de la propiedad (variante).** El mismo mecanismo produce tres resultados distintos y verificados por tres tests: sin la propiedad (`sinLaPropiedadNoRegistraElBean`), con `false` (`conLaPropiedadEnFalseNoRegistraElBean`) y con `true`. Que "ausente" y "false" produzcan el mismo resultado (bean ausente) no es casualidad: `@ConditionalOnProperty` sin `matchIfMissing = true` exige el valor explícito `"true"`, tratando la ausencia como un "no" por defecto.
+
+**`ApplicationContextRunner` sin arrancar la app completa (núcleo).** `new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(FeatureAutoConfiguration.class))` construye un `ApplicationContext` mínimo específicamente para probar una auto-configuración, sin el costo de arrancar un servidor Tomcat ni cargar toda una aplicación real. Es el mismo mecanismo que el propio equipo de Spring Boot usa para probar sus starters oficiales.
+
+**Clase nunca registrada en el archivo de imports (diagnóstico).** El fallo deliberado de este tema confirma algo contraintuitivo: si la clase `FeatureAutoConfiguration` nunca se lista en el archivo `AutoConfiguration.imports`, el bean `FeatureService` NUNCA aparece en el contexto, incluso con `app.feature.enabled=true` configurado explícitamente. La condición `@ConditionalOnProperty` ni siquiera llega a evaluarse, porque Spring Boot nunca consideró esa clase como candidata en primer lugar: el registro en el archivo es un prerrequisito previo e independiente de la condición misma.
+
+**Starters de terceros usan el mismo mecanismo (decisión).** No hay una API "especial" que usen `spring-boot-starter-web` o `spring-boot-starter-data-jpa` que esté vedada a un desarrollador de aplicación: son clases `@AutoConfiguration` con condiciones (`@ConditionalOnClass`, `@ConditionalOnMissingBean`, `@ConditionalOnProperty`, entre otras), registradas exactamente en el mismo tipo de archivo. Entender este tema es entender cómo funciona cada starter que ya se ha usado en los Temas 1-3.
+
+**Conceptos clave:** `@AutoConfiguration`, `AutoConfiguration.imports`, `@ConditionalOnProperty`, `ApplicationContextRunner`.
+
+Una auto-configuración propia es una clase `@AutoConfiguration` con beans condicionales (`@ConditionalOnProperty`, `@ConditionalOnClass`, `@ConditionalOnMissingBean`), registrada en `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports` para que Spring Boot la considere automáticamente al arrancar, sin que la aplicación consumidora la importe manualmente. `ApplicationContextRunner` permite probar esa auto-configuración en aislamiento, construyendo un contexto mínimo con distintas combinaciones de propiedades y classpath simulado.
+
+**Analogía:** `AutoConfiguration.imports` es como una lista de invitados que la recepción de un edificio consulta automáticamente antes de dejar pasar a alguien; `@ConditionalOnProperty` es el guardia en la puerta de una sala específica dentro del edificio, que solo deja entrar si se cumple una condición adicional — pero si el nombre nunca estuvo en la lista de invitados de recepción, nunca llega siquiera a la puerta de la sala para que el guardia evalúe nada.
+
+**Diagrama:**
+
+```mermaid
+flowchart TD
+  A["Classpath: FeatureAutoConfiguration"] -->|"¿está en AutoConfiguration.imports?"| B{Registrada}
+  B -->|No| X["Nunca se evalúa — bean ausente"]
+  B -->|Sí| C{"¿app.feature.enabled=true?"}
+  C -->|No| X
+  C -->|Sí| D["FeatureService se registra"]
+```
+
+#### Practica
+
+**Demo paso a paso.** Desde una carpeta vacía, genera el proyecto con el starter base:
+
+```bash
+mkdir auto-config-demo && cd auto-config-demo
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web -d javaVersion=27 -o app.zip
+unzip -q app.zip
+```
+
+Crea `src/main/java/com/academia/autoconfig/FeatureService.java`:
+
+```java
+package com.academia.autoconfig;
+
+public class FeatureService {
+    public String saludo() {
+        return "feature activa";
+    }
+}
+```
+
+Crea `src/main/java/com/academia/autoconfig/FeatureAutoConfiguration.java`:
+
+```java
+package com.academia.autoconfig;
+
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Bean;
+
+@AutoConfiguration
+public class FeatureAutoConfiguration {
+
+    @Bean
+    @ConditionalOnProperty(prefix = "app.feature", name = "enabled", havingValue = "true")
+    public FeatureService featureService() {
+        return new FeatureService();
+    }
+}
+```
+
+Registra la clase creando `src/main/resources/META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports` con una sola línea:
+
+```text
+com.academia.autoconfig.FeatureAutoConfiguration
+```
+
+Crea el test en `src/test/java/com/academia/autoconfig/FeatureAutoConfigurationTest.java`:
+
+```java
+package com.academia.autoconfig;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+class FeatureAutoConfigurationTest {
+
+    private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+            .withConfiguration(AutoConfigurations.of(FeatureAutoConfiguration.class));
+
+    @Test
+    void sinLaPropiedadNoRegistraElBean() {
+        contextRunner.run(context -> assertThat(context).doesNotHaveBean(FeatureService.class));
+    }
+
+    @Test
+    void conLaPropiedadEnTrueRegistraElBean() {
+        contextRunner.withPropertyValues("app.feature.enabled=true")
+                .run(context -> {
+                    assertThat(context).hasSingleBean(FeatureService.class);
+                    assertThat(context.getBean(FeatureService.class).saludo()).isEqualTo("feature activa");
+                });
+    }
+
+    @Test
+    void conLaPropiedadEnFalseNoRegistraElBean() {
+        contextRunner.withPropertyValues("app.feature.enabled=false")
+                .run(context -> assertThat(context).doesNotHaveBean(FeatureService.class));
+    }
+}
+```
+
+```bash
+./mvnw test
+```
+
+**Resultado esperado:** `Tests run: 3, Failures: 0, Errors: 0` (verificado con Spring Boot 4.1.1 / Spring Framework 7.0.9 sobre JDK 27.0.1): los tres tests confirman que el bean aparece únicamente con `app.feature.enabled=true`, y que tanto la ausencia de la propiedad como `false` producen el mismo resultado (ausente).
+
+**Fallo deliberado:** renombra temporalmente el archivo `AutoConfiguration.imports` (o bórralo) y cambia el test para usar un `ApplicationContextRunner` "pelado" (sin `.withConfiguration(AutoConfigurations.of(...))`, simulando que la clase solo se descubre por classpath real) con `app.feature.enabled=true`. El bean sigue ausente. Diagnostica confirmando que `@ConditionalOnProperty` nunca llegó a evaluarse: sin el registro en el archivo de imports, Spring Boot no tiene ninguna noticia de que `FeatureAutoConfiguration` existe, independientemente de qué condiciones declare o de qué valor tenga la propiedad. Restaura el archivo antes de continuar.
+
+**Ejercicios.**
+
+1. Agrega una segunda condición con `@ConditionalOnMissingBean(FeatureService.class)` y confirma que si la aplicación consumidora ya define su propio `FeatureService`, la auto-configuración no lo sobreescribe.
+2. Cambia `havingValue = "true"` por `matchIfMissing = true` y confirma con un test que ahora la AUSENCIA de la propiedad activa el bean (el comportamiento inverso al de este tema).
+3. Agrega un segundo bean condicionado con `@ConditionalOnClass` a una clase que sabés que no está en el classpath, y confirma que ese bean nunca se registra sin importar el valor de ninguna propiedad.
+4. Escribe de memoria (sin mirar) una `@AutoConfiguration` con un bean condicionado por propiedad, su archivo de registro, y un test con `ApplicationContextRunner` que confirme ambos casos (presente/ausente). Compara después contra el patrón del Paso 4.
+
+**Pista:** si un test de auto-configuración pasa o falla de forma que no esperabas, verifica primero que el archivo `AutoConfiguration.imports` tenga el nombre completamente calificado EXACTO de la clase (un error de tipeo ahí falla en silencio, sin ningún error de compilación).
+
+**Completa el código:** rellena la anotación que marca una clase como candidata a auto-configuración:
+
+```java
+@____
+public class FeatureAutoConfiguration {
+    @Bean
+    @ConditionalOnProperty(prefix = "app.feature", name = "enabled", havingValue = "true")
+    public FeatureService featureService() { return new FeatureService(); }
+}
+```
+
+**Reto de memoria:** cierra este documento y escribe, solo de memoria, una `@AutoConfiguration` con un bean condicionado por `@ConditionalOnProperty`, su archivo de registro en `META-INF/spring`, y el test con `ApplicationContextRunner` que prueba los tres casos (ausente/false/true).
+
+#### Aplica
+
+**Reto abierto.** Extrae la auto-configuración de un starter interno imaginario para RutaFlow: un `TarifaClient` preconfigurado que solo se active cuando `rutaflow.tarifas.client.enabled=true` esté presente, y que no sobreescriba un `TarifaClient` que la aplicación consumidora ya haya declarado manualmente. Demuestra con `ApplicationContextRunner` los tres escenarios: propiedad ausente, en `false`, y en `true` sin y con un bean propio ya declarado.
+
+**Checklist de salida.**
+
+- [ ] La clase está anotada `@AutoConfiguration` y registrada en `AutoConfiguration.imports`.
+- [ ] El bean solo se registra cuando la propiedad vale exactamente `true`.
+- [ ] Un test confirma que sin registro en el archivo de imports, la condición nunca se evalúa.
+- [ ] `ApplicationContextRunner` prueba los tres escenarios sin arrancar una aplicación completa.
+- [ ] Podés explicar en una frase qué mecanismo hace que `spring-boot-starter-web` se autoconfigure.
+
+**Si falla.** Si el bean nunca aparece aunque la propiedad esté en `true`, revisa primero el archivo `AutoConfiguration.imports`: un nombre de clase mal escrito falla en silencio. Si el bean aparece siempre sin importar la propiedad, revisa que `@ConditionalOnProperty` esté sobre el método `@Bean` (no sobre la clase) con el `prefix`/`name`/`havingValue` correctos.
+
+**Siguiente paso:** el Módulo 2 profundiza en la capa web y el manejo de peticiones HTTP.
+
+**Errores comunes:** anotar la clase con `@Configuration` en vez de `@AutoConfiguration` y esperar que se aplique sola sin `@Import`; olvidar el archivo `AutoConfiguration.imports` y asumir que la anotación por sí sola es suficiente; escribir mal el nombre completamente calificado de la clase en el archivo de registro.
+
+**Límites y decisión de uso:** para un bean que la propia aplicación siempre necesita y controla directamente, una auto-configuración agrega indirección sin beneficio; este mecanismo se justifica cuando la configuración se comparte entre múltiples proyectos o equipos como una librería/starter reutilizable.
+
+**Fuente oficial:** [Spring Boot — Creating Your Own Auto-configuration](https://docs.spring.io/spring-boot/reference/features/developing-auto-configuration.html).
+
+**Transferencia al proyecto integrador:** si el microservicio productivo se divide en librerías internas compartidas (por ejemplo, un cliente HTTP común entre varios servicios de RutaFlow), este es el mecanismo para que cada una se autoconfigure al agregarla como dependencia.
 
 ## Laboratorio práctico
 

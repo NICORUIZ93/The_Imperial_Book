@@ -1677,7 +1677,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "af66865ad1bac6c1af6879de65c75aa36c5c09d1f1c7d56cd2f83f5d5bc3b36e",
+    "fingerprint": "c44949cf540dbdfad6152db669f606fe74e87448b4dc113775d62ebf01b46de1",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
@@ -1686,7 +1686,7 @@
     },
     "modules": 254,
     "modulesWithLegacySections": 179,
-    "topics": 1159,
+    "topics": 1160,
     "topicsWithIssues": 0
   },
   "topics": {
@@ -9231,9 +9231,16 @@
       {
         "issues": [],
         "module": 1,
-        "tailWords": 267,
+        "tailWords": 286,
         "topic": "Tema 3: Perfiles y estructura por capas · Intermedio · 30 min",
-        "words": 1615
+        "words": 1634
+      },
+      {
+        "issues": [],
+        "module": 1,
+        "tailWords": 350,
+        "topic": "Tema 4: Crear tu propia auto-configuración condicional · Avanzado · 40 min",
+        "words": 1954
       },
       {
         "issues": [],

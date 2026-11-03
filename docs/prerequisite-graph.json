@@ -4210,6 +4210,17 @@
       ]
     },
     {
+      "id": "spring-boot:1:4",
+      "track": "spring-boot",
+      "module": 1,
+      "position": 4,
+      "title": "Crear tu propia auto-configuración condicional · Avanzado · 40 min",
+      "file": "web/public/content/spring-boot/modulo-1.md",
+      "requires": [
+        "spring-boot:1:3"
+      ]
+    },
+    {
       "id": "spring-boot:2:1",
       "track": "spring-boot",
       "module": 2,
@@ -4217,7 +4228,7 @@
       "title": "Por qué DTOs en vez de entidades directamente · Intermedio · 30 min",
       "file": "web/public/content/spring-boot/modulo-2.md",
       "requires": [
-        "spring-boot:1:3"
+        "spring-boot:1:4"
       ]
     },
     {

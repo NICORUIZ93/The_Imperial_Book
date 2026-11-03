@@ -4779,6 +4779,23 @@
       "sources": [
         "https://docs.flutter.dev/testing"
       ]
+    },
+    "spring-boot/modulo-1::Tema 4: Crear tu propia auto-configuración condicional · Avanzado · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Lote 2 de docs/AUDITORIA-COBERTURA-SPRING-20261101.md (hueco ALTA #3: auto-configuracion propia). Tema nuevo escrito y ejecutado de verdad: proyecto Maven real generado desde cero (no plantilla), @AutoConfiguration + @ConditionalOnProperty + archivo META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports, probado con ApplicationContextRunner. mvn test: Tests run: 3, Failures: 0, Errors: 0 sobre Spring Boot 4.1.1 / Spring Framework 7.0.9 / JDK 27.0.1.0.2 (resueltos via mvn dependency:tree, no asumidos). Fallo deliberado tambien ejecutado de verdad: con el archivo de imports eliminado y un ApplicationContextRunner sin AutoConfigurations.of(...) (simulando descubrimiento real por classpath), el bean permanece ausente aun con app.feature.enabled=true -- confirma que @ConditionalOnProperty nunca se evalua si la clase no esta registrada. Sincronizado spring-boot.track.ts (preview de topicos del Modulo 1).",
+      "criticalSubtopics": [
+        "@AutoConfiguration como marca de clase candidata",
+        "AutoConfiguration.imports",
+        "@ConditionalOnProperty",
+        "ApplicationContextRunner",
+        "ausencia de registro vs condicion no cumplida"
+      ],
+      "sources": [
+        "https://docs.spring.io/spring-boot/reference/features/developing-auto-configuration.html",
+        "docs/AUDITORIA-COBERTURA-SPRING-20261101.md",
+        "docs/TEMARIO-REFERENCIA-SPRING-PROFESIONAL.md"
+      ]
     }
   }
 }

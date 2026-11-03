@@ -221,18 +221,18 @@
       "repeatedDemo": 0
     },
     "spring-boot": {
-      "topics": 93,
-      "explanation": 93,
-      "code": 93,
-      "visual": 74,
-      "filePath": 93,
-      "runCommand": 91,
-      "expectedResult": 93,
-      "practice": 93,
-      "project": 93,
-      "modelMental": 93,
-      "limitsDecision": 93,
-      "practicable": 91,
+      "topics": 94,
+      "explanation": 94,
+      "code": 94,
+      "visual": 75,
+      "filePath": 94,
+      "runCommand": 92,
+      "expectedResult": 94,
+      "practice": 94,
+      "project": 94,
+      "modelMental": 94,
+      "limitsDecision": 94,
+      "practicable": 92,
       "genericScaffold": 0,
       "repeatedDemo": 0
     }
@@ -23874,6 +23874,28 @@
       {
         "module": 1,
         "topic": "Tema 3: Perfiles y estructura por capas · Intermedio · 30 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 1,
+        "topic": "Tema 4: Crear tu propia auto-configuración condicional · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,

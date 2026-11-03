@@ -248,22 +248,22 @@
       "complete": 29
     },
     "spring-boot": {
-      "topics": 93,
+      "topics": 94,
       "objective": 0,
-      "prerequisites": 93,
+      "prerequisites": 94,
       "context": 0,
       "theoryAnalogy": 0,
       "guidedDemo": 0,
-      "codeExplanation": 93,
-      "execution": 91,
-      "expectedResult": 93,
-      "deliberateFailure": 93,
+      "codeExplanation": 94,
+      "execution": 92,
+      "expectedResult": 94,
+      "deliberateFailure": 94,
       "guidedPractice": 0,
       "independentPractice": 0,
       "closure": 0,
-      "commonErrors": 93,
-      "resources": 93,
-      "standaloneExample": 90,
+      "commonErrors": 94,
+      "resources": 94,
+      "standaloneExample": 91,
       "complete": 0
     }
   },
@@ -27123,6 +27123,31 @@
       {
         "module": 1,
         "topic": "Tema 3: Perfiles y estructura por capas · Intermedio · 30 min",
+        "criteria": {
+          "objective": false,
+          "prerequisites": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 8,
+          "complete": false
+        }
+      },
+      {
+        "module": 1,
+        "topic": "Tema 4: Crear tu propia auto-configuración condicional · Avanzado · 40 min",
         "criteria": {
           "objective": false,
           "prerequisites": true,
