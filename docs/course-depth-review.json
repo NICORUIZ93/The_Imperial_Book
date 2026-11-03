@@ -2,8 +2,8 @@
   "method": "Lectura automática de todos los bloques visibles; alertas para revisión, no veredictos de corrección ni aprendizaje. Una demo breve puede ser suficiente. La ausencia de alertas no acredita ejecutabilidad.",
   "totals": {
     "tracks": 14,
-    "modules": 247,
-    "topics": 1126,
+    "modules": 248,
+    "topics": 1132,
     "topicsWithSignals": 162,
     "newLaboratories": 25
   },
@@ -4896,6 +4896,72 @@
       "title": "Tema 6: propiedad de memoria, liberación y errores",
       "file": "web/public/content/flutter/modulo-16.md",
       "line": 254,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "flutter",
+      "module": 17,
+      "title": "Tema 1: macros de Dart y alternativas disponibles",
+      "file": "web/public/content/flutter/modulo-17.md",
+      "line": 9,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "flutter",
+      "module": 17,
+      "title": "Tema 2: generación avanzada con build_runner",
+      "file": "web/public/content/flutter/modulo-17.md",
+      "line": 95,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "flutter",
+      "module": 17,
+      "title": "Tema 3: reflexión limitada y registro tipado",
+      "file": "web/public/content/flutter/modulo-17.md",
+      "line": 184,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "flutter",
+      "module": 17,
+      "title": "Tema 4: recorrer el AST de Dart con analyzer",
+      "file": "web/public/content/flutter/modulo-17.md",
+      "line": 281,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "flutter",
+      "module": 17,
+      "title": "Tema 5: crear un builder pequeño para build_runner",
+      "file": "web/public/content/flutter/modulo-17.md",
+      "line": 371,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "flutter",
+      "module": 17,
+      "title": "Tema 6: diseñar y validar un paquete Dart",
+      "file": "web/public/content/flutter/modulo-17.md",
+      "line": 470,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

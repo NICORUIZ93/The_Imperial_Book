@@ -81,24 +81,24 @@
       "complete": 113
     },
     "flutter": {
-      "topics": 69,
-      "objective": 69,
-      "prerequisites": 69,
-      "context": 69,
-      "theoryAnalogy": 69,
-      "guidedDemo": 69,
-      "codeExplanation": 69,
-      "execution": 69,
-      "expectedResult": 69,
-      "deliberateFailure": 69,
-      "guidedPractice": 69,
-      "independentPractice": 69,
-      "closure": 69,
-      "commonErrors": 69,
-      "resources": 69,
-      "standaloneExample": 69,
-      "learningEvidence": 69,
-      "complete": 69
+      "topics": 75,
+      "objective": 75,
+      "prerequisites": 75,
+      "context": 75,
+      "theoryAnalogy": 75,
+      "guidedDemo": 75,
+      "codeExplanation": 75,
+      "execution": 75,
+      "expectedResult": 75,
+      "deliberateFailure": 75,
+      "guidedPractice": 75,
+      "independentPractice": 75,
+      "closure": 75,
+      "commonErrors": 75,
+      "resources": 75,
+      "standaloneExample": 75,
+      "learningEvidence": 75,
+      "complete": 75
     },
     "foundations": {
       "topics": 99,
@@ -11630,6 +11630,162 @@
       {
         "module": 16,
         "topic": "Tema 6: propiedad de memoria, liberación y errores",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 17,
+        "topic": "Tema 1: macros de Dart y alternativas disponibles",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 17,
+        "topic": "Tema 2: generación avanzada con build_runner",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 17,
+        "topic": "Tema 3: reflexión limitada y registro tipado",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 17,
+        "topic": "Tema 4: recorrer el AST de Dart con analyzer",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 17,
+        "topic": "Tema 5: crear un builder pequeño para build_runner",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 17,
+        "topic": "Tema 6: diseñar y validar un paquete Dart",
         "criteria": {
           "objective": true,
           "prerequisites": true,

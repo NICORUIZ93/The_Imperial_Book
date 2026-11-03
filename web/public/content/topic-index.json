@@ -1948,6 +1948,32 @@
         "fragment": "tema-6-propiedad-de-memoria-liberacion-y-errores"
       }
     ],
+    "17": [
+      {
+        "title": "macros de Dart y alternativas disponibles",
+        "fragment": "tema-1-macros-de-dart-y-alternativas-disponibles"
+      },
+      {
+        "title": "generación avanzada con build_runner",
+        "fragment": "tema-2-generacion-avanzada-con-build-runner"
+      },
+      {
+        "title": "reflexión limitada y registro tipado",
+        "fragment": "tema-3-reflexion-limitada-y-registro-tipado"
+      },
+      {
+        "title": "recorrer el AST de Dart con analyzer",
+        "fragment": "tema-4-recorrer-el-ast-de-dart-con-analyzer"
+      },
+      {
+        "title": "crear un builder pequeño para build_runner",
+        "fragment": "tema-5-crear-un-builder-pequeno-para-build-runner"
+      },
+      {
+        "title": "diseñar y validar un paquete Dart",
+        "fragment": "tema-6-disenar-y-validar-un-paquete-dart"
+      }
+    ],
     "2": [
       {
         "title": "MediaQuery vs LayoutBuilder",

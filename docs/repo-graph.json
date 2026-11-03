@@ -560,7 +560,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 2961,
+      "lines": 2968,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -579,7 +579,7 @@
     },
     {
       "path": "docs/continuacion-material-rutaflow.md",
-      "lines": 133,
+      "lines": 134,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -596,7 +596,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 12799,
+      "lines": 12865,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -604,7 +604,7 @@
     },
     {
       "path": "docs/course-depth-review.md",
-      "lines": 1156,
+      "lines": 1162,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -731,7 +731,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 10783,
+      "lines": 10830,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -820,7 +820,7 @@
     },
     {
       "path": "docs/prerequisite-graph.json",
-      "lines": 12394,
+      "lines": 12460,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -897,7 +897,7 @@
     },
     {
       "path": "docs/revision-cursos-prioritarios.md",
-      "lines": 122,
+      "lines": 123,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -950,7 +950,7 @@
     },
     {
       "path": "docs/seven-step-methodology.json",
-      "lines": 29591,
+      "lines": 29747,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -977,7 +977,7 @@
     },
     {
       "path": "docs/specialization-outcomes.json",
-      "lines": 1296,
+      "lines": 1297,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -985,7 +985,7 @@
     },
     {
       "path": "docs/topic-learning-quality.json",
-      "lines": 25043,
+      "lines": 25175,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -8219,6 +8219,27 @@
       ]
     },
     {
+      "path": "web/public/content/flutter/modulo-16.md",
+      "lines": 311,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 16: Flutter FFI: conectar Dart con c\u00f3digo nativo",
+        "## Aprende construyendo",
+        "### Tema 1: reconocer cu\u00e1ndo usar FFI y crear el paquete",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
+        "#### Paso 2 \u00b7 Contexto y caso real",
+        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental, analog\u00eda y decisi\u00f3n",
+        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
+        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
+        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
+        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "### Tema 2: generar bindings C seguros para Dart",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+      ]
+    },
+    {
       "path": "web/public/content/flutter/modulo-2.md",
       "lines": 283,
       "kind": "course-content",
@@ -11391,7 +11412,7 @@
     },
     {
       "path": "web/public/content/topic-index.json",
-      "lines": 5029,
+      "lines": 5055,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12779,7 +12800,7 @@
     },
     {
       "path": "web/src/app/tracks/flutter.track.ts",
-      "lines": 202,
+      "lines": 216,
       "kind": "angular-app",
       "symbols": [],
       "imports": [

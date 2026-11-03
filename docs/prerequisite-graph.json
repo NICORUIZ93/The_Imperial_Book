@@ -9112,6 +9112,72 @@
       ]
     },
     {
+      "id": "flutter:17:1",
+      "track": "flutter",
+      "module": 17,
+      "position": 1,
+      "title": "macros de Dart y alternativas disponibles",
+      "file": "web/public/content/flutter/modulo-17.md",
+      "requires": [
+        "flutter:16:6"
+      ]
+    },
+    {
+      "id": "flutter:17:2",
+      "track": "flutter",
+      "module": 17,
+      "position": 2,
+      "title": "generación avanzada con build_runner",
+      "file": "web/public/content/flutter/modulo-17.md",
+      "requires": [
+        "flutter:17:1"
+      ]
+    },
+    {
+      "id": "flutter:17:3",
+      "track": "flutter",
+      "module": 17,
+      "position": 3,
+      "title": "reflexión limitada y registro tipado",
+      "file": "web/public/content/flutter/modulo-17.md",
+      "requires": [
+        "flutter:17:2"
+      ]
+    },
+    {
+      "id": "flutter:17:4",
+      "track": "flutter",
+      "module": 17,
+      "position": 4,
+      "title": "recorrer el AST de Dart con analyzer",
+      "file": "web/public/content/flutter/modulo-17.md",
+      "requires": [
+        "flutter:17:3"
+      ]
+    },
+    {
+      "id": "flutter:17:5",
+      "track": "flutter",
+      "module": 17,
+      "position": 5,
+      "title": "crear un builder pequeño para build_runner",
+      "file": "web/public/content/flutter/modulo-17.md",
+      "requires": [
+        "flutter:17:4"
+      ]
+    },
+    {
+      "id": "flutter:17:6",
+      "track": "flutter",
+      "module": 17,
+      "position": 6,
+      "title": "diseñar y validar un paquete Dart",
+      "file": "web/public/content/flutter/modulo-17.md",
+      "requires": [
+        "flutter:17:5"
+      ]
+    },
+    {
       "id": "devops:0:1",
       "track": "devops",
       "module": 0,

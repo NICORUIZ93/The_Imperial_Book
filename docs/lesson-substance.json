@@ -637,6 +637,11 @@
       "track": "flutter"
     },
     {
+      "legacySections": [],
+      "module": 17,
+      "track": "flutter"
+    },
+    {
       "legacySections": [
         "**Errores comunes y soluciones**"
       ],
@@ -1650,7 +1655,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "8a61ca5a0909795c02cebb9be442d8b6cab034413d3c2d0f6685ff0212cf5a90",
+    "fingerprint": "c157f1f8f090f7e527fcfa012b4fcb9b9ec431c82033813ff8ae2d1fef4ddfab",
     "issues": {
       "andamiaje-generico": 128,
       "bloque-repetido": 218,
@@ -1663,9 +1668,9 @@
       "## Ruta de proyecto progresivo desde carpeta vacía": 12,
       "**Errores comunes y soluciones**": 179
     },
-    "modules": 247,
+    "modules": 248,
     "modulesWithLegacySections": 181,
-    "topics": 1126,
+    "topics": 1132,
     "topicsWithIssues": 470
   },
   "topics": {
@@ -5176,6 +5181,48 @@
         "tailWords": 175,
         "topic": "Tema 6: propiedad de memoria, liberación y errores",
         "words": 668
+      },
+      {
+        "issues": [],
+        "module": 17,
+        "tailWords": 143,
+        "topic": "Tema 1: macros de Dart y alternativas disponibles",
+        "words": 645
+      },
+      {
+        "issues": [],
+        "module": 17,
+        "tailWords": 122,
+        "topic": "Tema 2: generación avanzada con build_runner",
+        "words": 593
+      },
+      {
+        "issues": [],
+        "module": 17,
+        "tailWords": 118,
+        "topic": "Tema 3: reflexión limitada y registro tipado",
+        "words": 630
+      },
+      {
+        "issues": [],
+        "module": 17,
+        "tailWords": 123,
+        "topic": "Tema 4: recorrer el AST de Dart con analyzer",
+        "words": 591
+      },
+      {
+        "issues": [],
+        "module": 17,
+        "tailWords": 122,
+        "topic": "Tema 5: crear un builder pequeño para build_runner",
+        "words": 642
+      },
+      {
+        "issues": [],
+        "module": 17,
+        "tailWords": 134,
+        "topic": "Tema 6: diseñar y validar un paquete Dart",
+        "words": 642
       },
       {
         "issues": [

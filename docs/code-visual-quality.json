@@ -145,16 +145,16 @@
       "officialSource": 56
     },
     "flutter": {
-      "topics": 69,
-      "code": 69,
-      "commentedCode": 27,
-      "mermaid": 52,
+      "topics": 75,
+      "code": 75,
+      "commentedCode": 32,
+      "mermaid": 56,
       "archifyVisual": 0,
       "asciiVisual": 15,
       "misleadingDiagramLabel": 0,
-      "filePath": 69,
-      "runCommand": 69,
-      "officialSource": 57
+      "filePath": 75,
+      "runCommand": 72,
+      "officialSource": 58
     },
     "rutaflow": {
       "topics": 29,
@@ -2806,6 +2806,13 @@
       "track": "flutter",
       "module": 16,
       "topic": "Tema 4: compilar y empaquetar bibliotecas por plataforma",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 17,
+      "topic": "Tema 6: diseñar y validar un paquete Dart",
       "missingCode": false,
       "missingComments": true
     },

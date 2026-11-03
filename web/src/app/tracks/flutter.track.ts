@@ -198,4 +198,18 @@ export const FLUTTER_MODULES: CourseModule[] = [
     ['¿En qué caso elegirías FFI frente a un plugin o MethodChannel?', '¿Qué puede salir mal si la firma del header y la de Dart usan tipos distintos?', '¿Por qué un benchmark de escritorio no garantiza más fluidez en un teléfono?'],
     ['dart:ffi', 'ffigen', 'build hooks', 'Rust ABI C'],
     'Paquete FFI con función C o Rust, binding generado, prueba de memoria y matriz de compilación por plataforma.'),
+  m(17, 'Dart avanzado: generación, AST y paquetes', 'Generación y paquetes', 'Experto', '3 h', '#02569b',
+    'Comprende el estado de los macros, genera serialización, reemplaza reflexión con tipos explícitos, recorre AST con analyzer, crea un builder y valida un paquete antes de publicarlo.',
+    ['Macros experimentales: estado actual y alternativas', 'build_runner y configuración de salida generada', 'Reflexión limitada en Flutter y registros tipados', 'AST y visitors con package:analyzer', 'Builders propios con build_runner', 'API pública, pruebas, documentación y publicación dry-run'],
+    [
+      'Genera JSON para Delivery con json_serializable y explica por qué los macros detenidos no son una opción actual',
+      'Cambia una anotación, reconstruye y verifica que el .g.dart nace de la fuente y no de edición manual',
+      'Registra decoders permitidos y rechaza un tipo JSON desconocido con un error legible',
+      'Recorre un archivo Dart con RecursiveAstVisitor y prueba que una clase escrita en comentario no cuenta como declaración',
+      'Implementa un builder que transforma lib/route_names.routes en una constante Dart y diagnostica una extensión mal registrada',
+      'Crea route_labels con API pública, example, tests y docs; revisa el inventario de dart pub publish --dry-run sin publicar',
+    ],
+    ['¿Por qué el código generado resuelve casos de Flutter que `dart:mirrors` no cubre?', '¿Qué diferencia hay entre leer texto con regex y recorrer nodos del AST?', '¿Qué debe permanecer estable para quien consume un paquete aunque reorganices `lib/src`?'],
+    ['build_runner', 'json_serializable', 'package:analyzer', 'package:build'],
+    'Paquete de etiquetas de ruta con generación repetible, visitor probado, builder propio y publicación revisada en dry-run.'),
 ];

@@ -77,18 +77,18 @@
       "repeatedDemo": 0
     },
     "flutter": {
-      "topics": 69,
-      "explanation": 69,
-      "code": 69,
-      "visual": 53,
-      "filePath": 69,
-      "runCommand": 69,
-      "expectedResult": 69,
-      "practice": 69,
-      "project": 69,
-      "modelMental": 69,
-      "limitsDecision": 69,
-      "practicable": 69,
+      "topics": 75,
+      "explanation": 75,
+      "code": 75,
+      "visual": 57,
+      "filePath": 75,
+      "runCommand": 75,
+      "expectedResult": 75,
+      "practice": 75,
+      "project": 75,
+      "modelMental": 75,
+      "limitsDecision": 75,
+      "practicable": 75,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
@@ -9842,6 +9842,138 @@
       {
         "module": 16,
         "topic": "Tema 6: propiedad de memoria, liberación y errores",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 17,
+        "topic": "Tema 1: macros de Dart y alternativas disponibles",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 17,
+        "topic": "Tema 2: generación avanzada con build_runner",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 17,
+        "topic": "Tema 3: reflexión limitada y registro tipado",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 17,
+        "topic": "Tema 4: recorrer el AST de Dart con analyzer",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 17,
+        "topic": "Tema 5: crear un builder pequeño para build_runner",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 17,
+        "topic": "Tema 6: diseñar y validar un paquete Dart",
         "criteria": {
           "explanation": true,
           "code": true,
