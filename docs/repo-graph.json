@@ -752,7 +752,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 11241,
+      "lines": 11235,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -11561,7 +11561,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-21.md",
-      "lines": 362,
+      "lines": 423,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -11645,7 +11645,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-25.md",
-      "lines": 280,
+      "lines": 363,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

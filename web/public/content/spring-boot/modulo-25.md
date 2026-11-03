@@ -23,6 +23,10 @@ Bindings separan una función de nombres físicos de tópicos/colas. La abstracc
 Una `Function<I,O>` recibe mensajes y emite mensajes. Spring deriva nombres de bindings como `planRoute-in-0` y `planRoute-out-0`; el `destination` los conecta a topic o exchange/cola. El `group` hace que instancias trabajen como grupo de consumidores en vez de recibir una copia independiente.
 
 #### Paso 4 · Demostración guiada
+##### Subtema 1.1 · Transformar el evento con una función · 5-10 min
+
+**Contexto:** el planificador deriva una región antes de solicitar una ruta. Guarda el `record` y `Function` siguientes en `src/main/java/dev/rutaflow/RouteFunctions.java`.
+
 Crea `src/main/java/dev/rutaflow/RouteFunctions.java`:
 
 ```java
@@ -45,6 +49,14 @@ class RouteFunctions {
 }
 ```
 
+**Resultado esperado:** `ShipmentCreated("sh-42", "10ABC")` produce `RoutePlanningRequested("sh-42", "10")`.
+**Fallo deliberado:** usa un código postal vacío. **Diagnóstico:** `substring(0, 2)` falla; valida la entrada antes de derivar región.
+**Entiende:** la función transforma datos; no escoge tópico ni cola.
+
+##### Subtema 1.2 · Conectar función y destinos · 5-10 min
+
+**Contexto:** los bindings tienen nombre lógico y destino físico. Guarda el bloque en `src/main/resources/application.yml`.
+
 Configura `src/main/resources/application.yml`:
 
 ```yaml
@@ -61,7 +73,18 @@ spring:
           destination: routes.requested
 ```
 
+**Resultado esperado:** `planRoute-in-0` lee `shipments.created` y `planRoute-out-0` publica `routes.requested` para el grupo `route-planner`.
+**Fallo deliberado:** renombra el bean sin cambiar los bindings. **Diagnóstico:** el nombre se deriva de la función y deja de enlazarse.
+**Entiende:** binding es el puerto lógico; `destination` es el recurso físico.
+
+##### Subtema 1.3 · Comprobar la transformación · 5-10 min
+
+**Contexto:** una prueba rápida verifica mapping sin depender del broker.
+
 Ejecuta `./mvnw test`; el test binder del Tema 4 permitirá probar entrada/salida sin broker. Observa nombres lógicos y `destination` separado en el YAML.
+**Resultado esperado:** el test recibe la salida con el mismo `shipmentId` y región derivada.
+**Fallo deliberado:** cambia la región esperada. **Diagnóstico:** separa el fallo del mapping de los problemas de conexión al broker.
+**Entiende:** test binder prueba la función enlazada en memoria, no Kafka o Rabbit reales.
 
 #### Paso 5 · Práctica guiada
 Agrega `region` al mensaje de salida y prueba un código postal inválido. **Pista:** el binding name se deriva del nombre de la función y la posición de entrada/salida; conserva el nombre cuando renombres la función o actualiza su configuración.
@@ -101,6 +124,10 @@ Una abstracción puede ocultar detalles repetidos, no debe borrar cómo se conse
 El binder implementa el enlace entre aplicación y sistema de mensajes. Kafka se parece a un registro particionado con offsets; RabbitMQ, a un cartero que enruta a colas. Usa perfiles para seleccionar binder y broker; nunca cargues un test binder como evidencia de conectividad real.
 
 #### Paso 4 · Demostración guiada
+##### Subtema 2.1 · Enlazar Kafka · 5-10 min
+
+**Contexto:** Kafka conserva registros por partición y el grupo avanza con offsets.
+
 Agrega en `pom.xml` `spring-cloud-starter-stream-kafka` y `spring-cloud-starter-stream-rabbit` con versiones gestionadas. En `application-kafka.yml` usa:
 
 ```yaml
@@ -115,7 +142,23 @@ spring:
       default-binder: kafka
 ```
 
+**Resultado esperado:** el perfil Kafka conecta al topic y el grupo `route-planner` conserva su offset.
+**Fallo deliberado:** configura un puerto sin servicio. **Diagnóstico:** connection refused ocurre antes de invocar la función.
+**Entiende:** partición y offset son conceptos del binder Kafka.
+
+##### Subtema 2.2 · Enlazar RabbitMQ · 5-10 min
+
+**Contexto:** RabbitMQ enruta publicaciones a colas y confirma trabajo mediante acknowledgements.
+
 En `application-rabbit.yml` configura `spring.rabbitmq.host=localhost`, puerto `5672`, usuario/clave solo desde variables de entorno y `spring.cloud.stream.default-binder=rabbit`. Levanta cada broker con su documentación oficial, arranca `./mvnw spring-boot:run -Dspring-boot.run.profiles=kafka` y repite con `rabbit`. Publica un evento y observa el topic Kafka o exchange/queue Rabbit en sus herramientas de inspección.
+
+**Resultado esperado:** Rabbit muestra el exchange y la cola para el perfil activo.
+**Fallo deliberado:** inicia sin broker. **Diagnóstico:** verifica host/puerto; no cambies la función.
+**Entiende:** las credenciales vienen del entorno, no del YAML versionado.
+
+##### Subtema 2.3 · Comparar los dos recorridos · 5-10 min
+
+**Contexto:** compilar un perfil no prueba conexión al broker.
 
 #### Paso 5 · Práctica guiada
 Registra el mismo evento en ambos perfiles y compara nombre/destino, grupo, ack/replay disponible y herramienta usada para inspeccionar. **Pista:** solo marca “broker probado” cuando existe evidencia del broker y el proceso recibió/publicó el mensaje.
@@ -156,6 +199,10 @@ Reintento sin límite puede bloquear particiones, aumentar cola y repetir efecto
 Spring Cloud Stream puede volver a invocar el handler con `max-attempts`; tras fallar, cada binder configura su propio destino DLQ. Kafka requiere group explícito y `enable-dlq`; Rabbit usa `auto-bind-dlq`. Los soportes y headers difieren por binder.
 
 #### Paso 4 · Demostración guiada
+##### Subtema 3.1 · Limitar reintentos · 5-10 min
+
+**Contexto:** un error transitorio puede recuperarse; una región inválida no cambia al repetir.
+
 Para Kafka, en `application-kafka.yml` agrega:
 
 ```yaml
@@ -174,7 +221,23 @@ spring:
               enable-dlq: true
 ```
 
+**Resultado esperado:** `max-attempts: 3` limita una excepción temporal a tres ejecuciones.
+**Fallo deliberado:** deja permanente el error. **Diagnóstico:** clasifica validación como no recuperable para no reintentarla sin fin.
+**Entiende:** reintentar es una política finita.
+
+##### Subtema 3.2 · DLQ en Kafka · 5-10 min
+
+**Contexto:** el grupo necesita dejar visible el payload agotado para revisión.
+
 Para Rabbit configura `spring.cloud.stream.rabbit.bindings.planRoute-in-0.consumer.auto-bind-dlq=true`; conserva `group` para nombre/consumo del destino y consulta las opciones específicas de republish. Haz que `planRoute` lance `IllegalArgumentException` solo para una región `XX`; observa intentos y el destino DLQ en el broker.
+
+**Resultado esperado:** Kafka con grupo y `enable-dlq` configurados envía el fallo agotado al destino DLQ.
+**Fallo deliberado:** quita `group` o `enable-dlq`. **Diagnóstico:** revisa propiedades específicas del binder.
+**Entiende:** DLQ depende de las opciones del binder, no solo del binding común.
+
+##### Subtema 3.3 · DLQ en Rabbit y replay · 5-10 min
+
+**Contexto:** RabbitMQ enruta fallos a un dead-letter exchange.
 
 #### Paso 5 · Práctica guiada
 Crea un fallo transitorio que desaparezca en un intento y un error permanente que termine en DLQ. **Pista:** no reintentes errores de validación; idempotencia controla que un reintento tras timeout no aplique dos veces el negocio.
@@ -214,6 +277,10 @@ El test binder es broker en memoria basado en Spring Integration; no valida cone
 `@EnableTestBinder`, `InputDestination` y `OutputDestination` conectan prueba a función con payloads. Es como probar el circuito con fuente de laboratorio: detecta cables lógicos, no garantiza que la planta eléctrica del proveedor esté disponible.
 
 #### Paso 4 · Demostración guiada
+##### Subtema 4.1 · Probar mapping en memoria · 5-10 min
+
+**Contexto:** una prueba rápida debe validar transformación sin iniciar broker.
+
 Agrega dependencia test `org.springframework.cloud:spring-cloud-stream-test-binder`. Crea `src/test/java/dev/rutaflow/RouteFunctionsTest.java`:
 
 ```java
@@ -245,7 +312,23 @@ class RouteFunctionsTest {
 }
 ```
 
+**Resultado esperado:** la salida contiene `sh-42` y región `10`.
+**Fallo deliberado:** espera región `11`. **Diagnóstico:** el test falla sin requerir Kafka o Rabbit.
+**Entiende:** test binder cubre mapping y conexión en memoria.
+
+##### Subtema 4.2 · Diagnosticar JSON inválido · 5-10 min
+
+**Contexto:** la conversión puede fallar antes de invocar la función.
+
 Corre `./mvnw -Dtest=RouteFunctionsTest test`. Luego crea una prueba de integración separada con Kafka Testcontainers o RabbitMQ Testcontainers cuando Docker esté disponible y comprueba que el test binder no esté reemplazando al binder real.
+
+**Resultado esperado:** JSON inválido da un error de conversión visible y la prueba del broker real se mantiene separada.
+**Fallo deliberado:** apunta la prueba rápida a un broker ausente. **Diagnóstico:** separa test binder e integración.
+**Entiende:** una prueba en memoria no comprueba protocolo ni durabilidad.
+
+##### Subtema 4.3 · Marcar límites de la suite · 5-10 min
+
+**Contexto:** cada capa responde una pregunta distinta.
 
 #### Paso 5 · Práctica guiada
 Envía un JSON inválido y verifica el error de conversión. **Pista:** separa la prueba del mapper/handler de la prueba del binder; revisa payload y content-type antes de cambiar el código de negocio.

@@ -1695,9 +1695,9 @@
     }
   ],
   "summary": {
-    "fingerprint": "59da7dbee57457e635ad0826c9e7cc38061e7eba0d3644ddd1b7299cf2742508",
+    "fingerprint": "259631c982fcdda5ecaa96f76e0d83a40a12957fce62a47d15fa164551649f3d",
     "issues": {
-      "andamiaje-generico": 128,
+      "andamiaje-generico": 125,
       "bloque-repetido": 218,
       "cola-tras-cierre": 376,
       "parrafo-repetido": 5,
@@ -1711,7 +1711,7 @@
     "modules": 256,
     "modulesWithLegacySections": 181,
     "topics": 1185,
-    "topicsWithIssues": 470
+    "topicsWithIssues": 467
   },
   "topics": {
     "android": [
@@ -10901,31 +10901,25 @@
         "words": 758
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 21,
         "tailWords": 176,
         "topic": "Tema 1: Productor, tópico, key y consumidor",
-        "words": 1332
+        "words": 1529
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 21,
         "tailWords": 135,
         "topic": "Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia",
-        "words": 995
+        "words": 1241
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 21,
         "tailWords": 140,
         "topic": "Tema 3: Outbox transaccional y flujo de negocio",
-        "words": 981
+        "words": 1256
       },
       {
         "issues": [],
@@ -11009,28 +11003,28 @@
         "module": 25,
         "tailWords": 172,
         "topic": "Tema 1: bindings y destinations",
-        "words": 591
+        "words": 814
       },
       {
         "issues": [],
         "module": 25,
         "tailWords": 170,
         "topic": "Tema 2: binder Kafka y binder RabbitMQ",
-        "words": 587
+        "words": 722
       },
       {
         "issues": [],
         "module": 25,
         "tailWords": 176,
         "topic": "Tema 3: reintentos, error handler y dead-letter",
-        "words": 537
+        "words": 675
       },
       {
         "issues": [],
         "module": 25,
         "tailWords": 165,
         "topic": "Tema 4: test binder y límites de la prueba",
-        "words": 584
+        "words": 719
       },
       {
         "issues": [],
