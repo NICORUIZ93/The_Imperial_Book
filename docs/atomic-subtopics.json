@@ -51,10 +51,10 @@
     },
     "java": {
       "topics": 101,
-      "completeTopics": 44,
-      "topicsWith3to6Subtopics": 44,
-      "subtopics": 134,
-      "completeSubtopics": 134
+      "completeTopics": 47,
+      "topicsWith3to6Subtopics": 47,
+      "subtopics": 143,
+      "completeSubtopics": 143
     },
     "javascript": {
       "topics": 88,
@@ -5388,23 +5388,152 @@
       {
         "module": 10,
         "topic": "### Tema 1: module-info.java y encapsulación fuerte",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "1.1",
+            "title": "#### Subtema 1.1: Declara un módulo pequeño · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "1.2",
+            "title": "#### Subtema 1.2: Ejecuta una aplicación modular · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "1.3",
+            "title": "#### Subtema 1.3: Distingue public de exported · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 10,
         "topic": "### Tema 2: Migración incremental y cuándo JPMS aporta valor",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "2.1",
+            "title": "#### Subtema 2.1: Inspecciona un JAR antes de modularizar · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "2.2",
+            "title": "#### Subtema 2.2: Migra un consumidor por etapas · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "2.3",
+            "title": "#### Subtema 2.3: Decide si JPMS resuelve un problema real · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 10,
-        "topic": "### Tema 3: `opens` para acceso reflexivo controlado de frameworks",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "topic": "### Tema 3: opens para acceso reflexivo controlado de frameworks",
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "3.1",
+            "title": "#### Subtema 3.1: Distingue exports de opens · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "3.2",
+            "title": "#### Subtema 3.2: Limita la apertura a un consumidor · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "3.3",
+            "title": "#### Subtema 3.3: Diagnostica una reflexión bloqueada · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 11,

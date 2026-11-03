@@ -2994,7 +2994,7 @@
         "fragment": "tema-2-migracion-incremental-y-cuando-jpms-aporta-valor"
       },
       {
-        "title": "`opens` para acceso reflexivo controlado de frameworks",
+        "title": "opens para acceso reflexivo controlado de frameworks",
         "fragment": "tema-3-opens-para-acceso-reflexivo-controlado-de-frameworks"
       }
     ],

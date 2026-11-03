@@ -2564,7 +2564,7 @@
       "track": "java",
       "module": 10,
       "position": 3,
-      "title": "`opens` para acceso reflexivo controlado de frameworks",
+      "title": "opens para acceso reflexivo controlado de frameworks",
       "file": "web/public/content/java/modulo-10.md",
       "requires": [
         "java:10:2"

@@ -7539,7 +7539,7 @@
       "file": "web/public/content/java/modulo-10.md",
       "line": 6,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7550,9 +7550,9 @@
       "module": 10,
       "title": "Tema 2: Migración incremental y cuándo JPMS aporta valor",
       "file": "web/public/content/java/modulo-10.md",
-      "line": 74,
+      "line": 76,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7561,11 +7561,11 @@
     {
       "track": "java",
       "module": 10,
-      "title": "Tema 3: `opens` para acceso reflexivo controlado de frameworks",
+      "title": "Tema 3: opens para acceso reflexivo controlado de frameworks",
       "file": "web/public/content/java/modulo-10.md",
-      "line": 138,
+      "line": 146,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

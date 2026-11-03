@@ -1695,13 +1695,13 @@
     }
   ],
   "summary": {
-    "fingerprint": "3110bb4737829e2e591802f07dfe0d26f33d69bdc4a0859e75b574c93a32ca9b",
+    "fingerprint": "db4cbd370109a14752cdbbfb387e3436727ff68a47f453f3c6571f472b6c500c",
     "issues": {
       "andamiaje-generico": 124,
-      "bloque-repetido": 182,
-      "cola-tras-cierre": 346,
+      "bloque-repetido": 179,
+      "cola-tras-cierre": 343,
       "parrafo-repetido": 5,
-      "sin-fuente": 2,
+      "sin-fuente": 3,
       "tema-breve": 5
     },
     "legacySections": {
@@ -1712,7 +1712,7 @@
     "modules": 256,
     "modulesWithLegacySections": 181,
     "topics": 1185,
-    "topicsWithIssues": 435
+    "topicsWithIssues": 433
   },
   "topics": {
     "android": [
@@ -7195,34 +7195,27 @@
         "words": 882
       },
       {
-        "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 10,
-        "tailWords": 581,
+        "tailWords": 0,
         "topic": "Tema 1: module-info.java y encapsulación fuerte",
-        "words": 975
+        "words": 511
       },
       {
         "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
+          "sin-fuente"
         ],
         "module": 10,
-        "tailWords": 626,
+        "tailWords": 0,
         "topic": "Tema 2: Migración incremental y cuándo JPMS aporta valor",
-        "words": 1021
+        "words": 494
       },
       {
-        "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 10,
-        "tailWords": 608,
-        "topic": "Tema 3: `opens` para acceso reflexivo controlado de frameworks",
-        "words": 1003
+        "tailWords": 0,
+        "topic": "Tema 3: opens para acceso reflexivo controlado de frameworks",
+        "words": 592
       },
       {
         "issues": [

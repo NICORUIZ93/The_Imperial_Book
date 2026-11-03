@@ -9,15 +9,15 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | Criterio | Cubierto | Pendiente |
 |---|---:|---:|
 | Explicación | 1185 | 0 |
-| Código | 1178 | 7 |
+| Código | 1175 | 10 |
 | Ruta | 1185 | 0 |
-| Ejecución | 1155 | 30 |
+| Ejecución | 1152 | 33 |
 | Resultado | 1183 | 2 |
-| Modificación | 1159 | 26 |
-| Conexión con un proyecto | 1146 | 39 |
-| Modelo mental | 1172 | 13 |
-| Límites | 1155 | 30 |
-| **Perfil de criterios detectado** | **1129** | **56** |
+| Modificación | 1156 | 29 |
+| Conexión con un proyecto | 1143 | 42 |
+| Modelo mental | 1169 | 16 |
+| Límites | 1154 | 31 |
+| **Perfil de criterios detectado** | **1126** | **59** |
 
 ## Prioridad por track
 
@@ -30,7 +30,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | flutter | 106 | 0 | 0 | 0 | 0 | 0 | 1 | 1 |
 | foundations | 99 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ios | 56 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| java | 101 | 7 | 0 | 25 | 0 | 20 | 27 | 20 |
+| java | 101 | 10 | 0 | 28 | 0 | 23 | 30 | 21 |
 | javascript | 88 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | kotlin-multiplatform | 56 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | node | 83 | 0 | 0 | 0 | 0 | 1 | 2 | 1 |
@@ -48,6 +48,9 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 - [java · módulo 1](../web/public/content/java/modulo-1.md) · Tema 1: Clases, objetos, constructores y encapsulación: modificación, conexión con un proyecto.
 - [java · módulo 1](../web/public/content/java/modulo-1.md) · Tema 2: Herencia y sobreescritura: modificación, límites.
 - [java · módulo 1](../web/public/content/java/modulo-1.md) · Tema 3: Interfaces, clases abstractas y cuándo usar cada una: modificación.
+- [java · módulo 10](../web/public/content/java/modulo-10.md) · Tema 1: module-info.java y encapsulación fuerte: código, ejecución, modificación, conexión con un proyecto, modelo mental, límites.
+- [java · módulo 10](../web/public/content/java/modulo-10.md) · Tema 2: Migración incremental y cuándo JPMS aporta valor: código, ejecución, modificación, conexión con un proyecto, modelo mental.
+- [java · módulo 10](../web/public/content/java/modulo-10.md) · Tema 3: opens para acceso reflexivo controlado de frameworks: código, ejecución, modificación, conexión con un proyecto, modelo mental.
 - [java · módulo 2](../web/public/content/java/modulo-2.md) · Tema 1: List, Set, Map y sus implementaciones: modificación, límites.
 - [java · módulo 2](../web/public/content/java/modulo-2.md) · Tema 2: Genéricos, wildcards y type erasure: modificación.
 - [java · módulo 2](../web/public/content/java/modulo-2.md) · Tema 3: Comparable vs Comparator, e iteración: límites.

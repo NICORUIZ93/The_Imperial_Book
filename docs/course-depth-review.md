@@ -698,9 +698,9 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | java / 1 | [Tema 2: Herencia y sobreescritura](../web/public/content/java/modulo-1.md) | demostracion-no-delimitada |
 | java / 1 | [Tema 3: Interfaces, clases abstractas y cuándo usar cada una](../web/public/content/java/modulo-1.md) | demostracion-no-delimitada |
 | java / 1 | [Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso](../web/public/content/java/modulo-1.md) | demostracion-no-delimitada |
-| java / 10 | [Tema 1: module-info.java y encapsulación fuerte](../web/public/content/java/modulo-10.md) | clase-java-no-visible |
-| java / 10 | [Tema 2: Migración incremental y cuándo JPMS aporta valor](../web/public/content/java/modulo-10.md) | clase-java-no-visible |
-| java / 10 | [Tema 3: `opens` para acceso reflexivo controlado de frameworks](../web/public/content/java/modulo-10.md) | clase-java-no-visible |
+| java / 10 | [Tema 1: module-info.java y encapsulación fuerte](../web/public/content/java/modulo-10.md) | demostracion-no-delimitada |
+| java / 10 | [Tema 2: Migración incremental y cuándo JPMS aporta valor](../web/public/content/java/modulo-10.md) | demostracion-no-delimitada |
+| java / 10 | [Tema 3: opens para acceso reflexivo controlado de frameworks](../web/public/content/java/modulo-10.md) | demostracion-no-delimitada |
 | java / 11 | [Tema 1: Generaciones de memoria y recolectores](../web/public/content/java/modulo-11.md) | clase-java-no-visible |
 | java / 11 | [Tema 2: Java Flight Recorder y JIT compilation](../web/public/content/java/modulo-11.md) | clase-java-no-visible |
 | java / 11 | [Tema 3: Referencias especiales y heap dumps](../web/public/content/java/modulo-11.md) | clase-java-no-visible |

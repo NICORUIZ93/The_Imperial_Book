@@ -127,16 +127,16 @@
     "java": {
       "topics": 101,
       "explanation": 101,
-      "code": 94,
-      "visual": 29,
+      "code": 91,
+      "visual": 28,
       "filePath": 101,
-      "runCommand": 76,
+      "runCommand": 73,
       "expectedResult": 101,
-      "practice": 81,
-      "project": 74,
-      "modelMental": 88,
-      "limitsDecision": 81,
-      "practicable": 66,
+      "practice": 78,
+      "project": 71,
+      "modelMental": 85,
+      "limitsDecision": 80,
+      "practicable": 63,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
@@ -15020,19 +15020,19 @@
         "topic": "Tema 1: module-info.java y encapsulación fuerte",
         "criteria": {
           "explanation": true,
-          "code": true,
+          "code": false,
           "visual": false,
           "filePath": true,
-          "runCommand": true,
+          "runCommand": false,
           "expectedResult": true,
-          "practice": true,
-          "project": true,
-          "modelMental": true,
-          "limitsDecision": true
+          "practice": false,
+          "project": false,
+          "modelMental": false,
+          "limitsDecision": false
         },
         "classification": {
-          "rubricScore": 14,
-          "practicable": true,
+          "rubricScore": 5,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -15042,41 +15042,41 @@
         "topic": "Tema 2: Migración incremental y cuándo JPMS aporta valor",
         "criteria": {
           "explanation": true,
-          "code": true,
-          "visual": true,
+          "code": false,
+          "visual": false,
           "filePath": true,
-          "runCommand": true,
+          "runCommand": false,
           "expectedResult": true,
-          "practice": true,
-          "project": true,
-          "modelMental": true,
+          "practice": false,
+          "project": false,
+          "modelMental": false,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 16,
-          "practicable": true,
+          "rubricScore": 5,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }
       },
       {
         "module": 10,
-        "topic": "Tema 3: `opens` para acceso reflexivo controlado de frameworks",
+        "topic": "Tema 3: opens para acceso reflexivo controlado de frameworks",
         "criteria": {
           "explanation": true,
-          "code": true,
+          "code": false,
           "visual": false,
           "filePath": true,
-          "runCommand": true,
+          "runCommand": false,
           "expectedResult": true,
-          "practice": true,
-          "project": true,
-          "modelMental": true,
+          "practice": false,
+          "project": false,
+          "modelMental": false,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 14,
-          "practicable": true,
+          "rubricScore": 5,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }
