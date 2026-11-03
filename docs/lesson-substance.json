@@ -1698,7 +1698,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "017c0623112a05af03ea5fe52b9016013339062143c983bea16bc86217391e63",
+    "fingerprint": "7d6fa48ff557242adab2d9e8d28993daf9e776dbee1592ed1beefe488478f8dd",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -7611,7 +7611,7 @@
         "module": 20,
         "tailWords": 59,
         "topic": "Tema 5: UnaryOperator y BinaryOperator: la salida conserva el tipo",
-        "words": 544
+        "words": 652
       },
       {
         "issues": [],

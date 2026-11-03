@@ -660,11 +660,10 @@ Al finalizar podrás usar `UnaryOperator<T>` para transformar un valor de tipo `
 
 #### Paso 4 · Ejercicio 1
 
-##### Subtema 5.1: Normalizar una cadena · 5-10 min
+#### Subtema 5.1: Normalizar una cadena · 10 min
+**1. Contexto** las ciudades deben compararse sin espacios sobrantes.
 
-**Contexto:** las ciudades deben compararse sin espacios sobrantes.
-
-**Hazlo tú:** crea `java-funcional-t05/src/Ciudad.java`:
+**2. Hazlo tú** crea `java-funcional-t05/src/Ciudad.java`:
 
 ```java
 import java.util.function.UnaryOperator;
@@ -683,15 +682,20 @@ Ejecuta `cd java-funcional-t05 && java src/Ciudad.java`.
 
 **Fallo deliberado:** cambia la lambda a `texto -> texto.length()`. **Error esperado:** `int cannot be converted to String`. **Diagnóstico:** la salida de `UnaryOperator<String>` también debe ser `String`.
 
-**Entiende:** usa este alias si el tipo de entrada y salida es el mismo.
+**3. Entiende** usa este alias si el tipo de entrada y salida es el mismo.
+
+**Diagnóstico:** compara los tipos de entrada y salida; el operador debe devolver el mismo tipo `T` declarado.
+
+**4. Cierra**
+
+Guarda los valores de entrada, el tipo `T` y el valor que produjo el operador.
 
 #### Paso 5 · Ejercicio 2
 
-##### Subtema 5.2: Sumar dos importes · 5-10 min
+#### Subtema 5.2: Sumar dos importes · 10 min
+**1. Contexto** el total reúne tarifa y seguro.
 
-**Contexto:** el total reúne tarifa y seguro.
-
-**Hazlo tú:** crea `java-funcional-t05/src/Total.java`:
+**2. Hazlo tú** crea `java-funcional-t05/src/Total.java`:
 
 ```java
 import java.math.BigDecimal;
@@ -711,15 +715,20 @@ Ejecuta `cd java-funcional-t05 && java src/Total.java`.
 
 **Fallo deliberado:** pasa `350` como entero. **Error esperado:** no se encuentra un método `apply(BigDecimal, int)`. **Diagnóstico:** convierte el segundo dato a `BigDecimal` antes de llamar al operador.
 
-**Entiende:** `BinaryOperator<T>` recibe dos valores `T` y devuelve un valor `T`.
+**3. Entiende** `BinaryOperator<T>` recibe dos valores `T` y devuelve un valor `T`.
+
+**Diagnóstico:** compara los tipos de entrada y salida; el operador debe devolver el mismo tipo `T` declarado.
+
+**4. Cierra**
+
+Guarda los valores de entrada, el tipo `T` y el valor que produjo el operador.
 
 #### Paso 6 · Ejercicio 3
 
-##### Subtema 5.3: Comparar dos valores del mismo tipo · 5-10 min
+#### Subtema 5.3: Comparar dos valores del mismo tipo · 10 min
+**1. Contexto** escoge la tarifa menor entre dos cotizaciones.
 
-**Contexto:** escoge la tarifa menor entre dos cotizaciones.
-
-**Hazlo tú:** crea `java-funcional-t05/src/Minimo.java`:
+**2. Hazlo tú** crea `java-funcional-t05/src/Minimo.java`:
 
 ```java
 import java.math.BigDecimal;
@@ -739,7 +748,13 @@ Ejecuta `cd java-funcional-t05 && java src/Minimo.java`.
 
 **Fallo deliberado:** cambia `BigDecimal::compareTo` por `(a, b) -> a`. **Error esperado:** el compilador rechaza que la comparación devuelva `BigDecimal` en vez de `int`. **Diagnóstico:** el comparador debe indicar cuál valor va primero.
 
-**Entiende:** `minBy` necesita una regla que compare los dos valores y devuelve uno de ellos.
+**3. Entiende** `minBy` necesita una regla que compare los dos valores y devuelve uno de ellos.
+
+**Diagnóstico:** compara los tipos de entrada y salida; el operador debe devolver el mismo tipo `T` declarado.
+
+**4. Cierra**
+
+Guarda los valores de entrada, el tipo `T` y el valor que produjo el operador.
 
 #### Paso 7 · Cierre y evidencia
 

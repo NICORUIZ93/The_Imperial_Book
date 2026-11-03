@@ -51,10 +51,10 @@
     },
     "java": {
       "topics": 101,
-      "completeTopics": 92,
-      "topicsWith3to6Subtopics": 92,
-      "subtopics": 280,
-      "completeSubtopics": 280
+      "completeTopics": 93,
+      "topicsWith3to6Subtopics": 93,
+      "subtopics": 283,
+      "completeSubtopics": 283
     },
     "javascript": {
       "topics": 88,
@@ -8030,9 +8030,52 @@
       {
         "module": 20,
         "topic": "### Tema 5: UnaryOperator y BinaryOperator: la salida conserva el tipo",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "5.1",
+            "title": "#### Subtema 5.1: Normalizar una cadena · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "5.2",
+            "title": "#### Subtema 5.2: Sumar dos importes · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "5.3",
+            "title": "#### Subtema 5.3: Comparar dos valores del mismo tipo · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 20,

@@ -5,7 +5,7 @@
 **Proyecto continuo:** Motor de asignación de entregas.
 **Prerrequisito de entrada:** Fundamentos de programación; el módulo 0 comienza con JDK y terminal..
 **Duración objetivo:** temas de 20–45 minutos; cada tema se divide en 3–6 acciones de 5–15 minutos.
-**Estado estructural:** 92/101 temas migrados; auditoría estructural actualizada el 2026-11-03.
+**Estado estructural:** 93/101 temas migrados; auditoría estructural actualizada el 2026-11-03.
 
 ## Índice de módulos y temas
 
@@ -487,7 +487,10 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 4.1: Transformar una entrada · 10 min
   - ✓ Subtema 4.2: Combinar dos entradas · 10 min
   - ✓ Subtema 4.3: Calcular un valor con ambos datos · 10 min
-- [pendiente de migrar] Tema 5: UnaryOperator y BinaryOperator: la salida conserva el tipo
+- [4 pasos] Tema 5: UnaryOperator y BinaryOperator: la salida conserva el tipo
+  - ✓ Subtema 5.1: Normalizar una cadena · 10 min
+  - ✓ Subtema 5.2: Sumar dos importes · 10 min
+  - ✓ Subtema 5.3: Comparar dos valores del mismo tipo · 10 min
 - [pendiente de migrar] Tema 6: Referencias a métodos: escribir la operación sin repetirla
 - [pendiente de migrar] Tema 7: Optional: buscar un envío que puede no existir
 - [pendiente de migrar] Tema 8: Streams intermedios: filtrar, transformar, aplanar y ordenar
@@ -519,7 +522,7 @@ La tabla registra presencia de áreas en el inventario del track, no profundidad
 
 ### Huecos y límites reportados
 
-- El repositorio contiene 101 temas en 21 módulos; 92 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
+- El repositorio contiene 101 temas en 21 módulos; 93 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
 - No hay base para afirmar que el track esté completo: la comparación con la fuente de referencia está pendiente de revisión humana módulo por módulo.
 - Los elementos de la fuente que todavía deben verificarse de forma explícita están enumerados en la tabla anterior; cualquier técnica crítica que no tenga tema propio debe añadirse conservando el currículo base.
 - La ejecución de ejemplos, el comportamiento con brokers/plataformas reales y la calidad pedagógica humana se registran por separado.
