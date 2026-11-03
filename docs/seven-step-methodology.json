@@ -248,22 +248,22 @@
       "complete": 29
     },
     "spring-boot": {
-      "topics": 95,
+      "topics": 96,
       "objective": 0,
-      "prerequisites": 95,
+      "prerequisites": 96,
       "context": 0,
       "theoryAnalogy": 0,
       "guidedDemo": 0,
-      "codeExplanation": 95,
-      "execution": 93,
-      "expectedResult": 95,
-      "deliberateFailure": 95,
+      "codeExplanation": 96,
+      "execution": 94,
+      "expectedResult": 96,
+      "deliberateFailure": 96,
       "guidedPractice": 0,
       "independentPractice": 0,
       "closure": 0,
-      "commonErrors": 95,
-      "resources": 95,
-      "standaloneExample": 92,
+      "commonErrors": 96,
+      "resources": 96,
+      "standaloneExample": 93,
       "complete": 0
     }
   },
@@ -29223,6 +29223,31 @@
       {
         "module": 8,
         "topic": "Tema 5: Kafka frente a RabbitMQ · Intermedio · 35 min",
+        "criteria": {
+          "objective": false,
+          "prerequisites": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 8,
+          "complete": false
+        }
+      },
+      {
+        "module": 8,
+        "topic": "Tema 6: RabbitMQ a fondo — exchanges, routing keys y dead-letter exchange · Avanzado · 50 min",
         "criteria": {
           "objective": false,
           "prerequisites": true,

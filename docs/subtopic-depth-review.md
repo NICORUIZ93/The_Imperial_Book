@@ -2,8 +2,8 @@
 
 > Las señales automáticas no prueban profundidad ni ausencia de ella. Un tema sólo queda revisado mediante el registro humano con mapa de subtemas críticos, evidencia y fuentes.
 
-- Temas inventariados: 1161
-- Revisados humanamente para subtemas: 338
+- Temas inventariados: 1162
+- Revisados humanamente para subtemas: 339
 - Pendientes: 823
 - Candidatos prioritarios por señales: 782
 
@@ -24,7 +24,7 @@
 | node | 77 | 0 | 77 |
 | react | 58 | 0 | 58 |
 | rutaflow | 29 | 0 | 29 |
-| spring-boot | 95 | 95 | 0 |
+| spring-boot | 96 | 96 | 0 |
 
 ## Cola prioritaria
 
@@ -1148,6 +1148,7 @@
 - `spring-boot/modulo-8` — Tema 3: Productor idempotente y transacciones (exactly-once) · Experto · 50 min — enable.idempotence; KafkaTransactionManager; exactly-once semantics
 - `spring-boot/modulo-8` — Tema 4: Rebalanceo de consumer groups y partition assignment · Avanzado · 45 min — ConsumerRebalanceListener; cooperative-sticky assignor
 - `spring-boot/modulo-8` — Tema 5: Kafka frente a RabbitMQ · Intermedio · 35 min — modelo de log vs cola; orden vs enrutamiento flexible
+- `spring-boot/modulo-8` — Tema 6: RabbitMQ a fondo — exchanges, routing keys y dead-letter exchange · Avanzado · 50 min — TopicExchange + routing key con patron (* vs #); ackMode=MANUAL + basicAck/basicNack; x-dead-letter-exchange en la cola; mensaje sin binding coincidente se pierde en silencio; requeue=true en bucle infinito vs requeue=false + DLX
 - `spring-boot/modulo-9` — Tema 1: Mono y Flux · Intermedio · 40 min — Mono vs Flux; evaluación perezosa (cold)
 - `spring-boot/modulo-9` — Tema 2: WebClient y composición no bloqueante · Avanzado · 45 min — WebClient.Builder; composición con flatMap
 - `spring-boot/modulo-9` — Tema 3: Cuándo WebFlux vale la complejidad, y R2DBC · Avanzado · 40 min — WebFlux vs WebMVC decisión; R2DBC no bloqueante

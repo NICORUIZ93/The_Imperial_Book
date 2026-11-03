@@ -1,7 +1,7 @@
 {
   "summary": {
-    "topics": 1161,
-    "reviewed": 338,
+    "topics": 1162,
+    "reviewed": 339,
     "pending": 823,
     "priorityCandidates": 782,
     "byTrack": {
@@ -71,8 +71,8 @@
         "pending": 29
       },
       "spring-boot": {
-        "topics": 95,
-        "reviewed": 95,
+        "topics": 96,
+        "reviewed": 96,
         "pending": 0
       }
     },
@@ -21578,6 +21578,36 @@
         ],
         "sources": [
           "https://docs.spring.io/spring-kafka/reference/"
+        ]
+      }
+    },
+    {
+      "id": "spring-boot/modulo-8::Tema 6: RabbitMQ a fondo — exchanges, routing keys y dead-letter exchange · Avanzado · 50 min",
+      "track": "spring-boot",
+      "module": 8,
+      "topic": "Tema 6: RabbitMQ a fondo — exchanges, routing keys y dead-letter exchange · Avanzado · 50 min",
+      "status": "reviewed",
+      "semanticHeadings": [],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Lote 2 de docs/AUDITORIA-COBERTURA-SPRING-20261101.md (hueco ALTA #6: RabbitMQ/Spring AMQP real -- SUPERFICIAL, solo Queue basica en Tema 5 -- ampliado con exchanges/routing keys/DLX). Verificacion PARCIAL por limitacion de entorno, declarada honestamente: el codigo compilo correctamente (mvn test-compile, BUILD SUCCESS) contra Spring Boot 4.1.1 con todas las clases reales (TopicExchange, QueueBuilder, BindingBuilder, Channel.basicAck/basicNack, RabbitMQContainer), y cada API se verifico contra la referencia oficial de Spring AMQP (exchange-queue-binding.html) y RabbitMQ (dlx). La ejecucion de punta a punta contra un broker real via Testcontainers NO pudo completarse en este sandbox: el daemon Docker responde correctamente a curl directo sobre el socket y al CLI (docker ps), pero el cliente docker-java de Testcontainers falla con un 400 de /info con todos los campos vacios -- incompatibilidad especifica del cliente Java en este entorno, no del codigo del tema. Declarado explicitamente en el tema (bloque 'Nota de verificacion') para que quien lo use sepa que debe correr ./mvnw test con Docker local antes de darlo por cerrado. Sincronizado spring-boot.track.ts (preview del Modulo 8).",
+        "criticalSubtopics": [
+          "TopicExchange + routing key con patron (* vs #)",
+          "ackMode=MANUAL + basicAck/basicNack",
+          "x-dead-letter-exchange en la cola",
+          "mensaje sin binding coincidente se pierde en silencio",
+          "requeue=true en bucle infinito vs requeue=false + DLX"
+        ],
+        "sources": [
+          "https://docs.spring.io/spring-amqp/reference/amqp/exchange-queue-binding.html",
+          "https://www.rabbitmq.com/docs/dlx",
+          "docs/AUDITORIA-COBERTURA-SPRING-20261101.md"
         ]
       }
     },

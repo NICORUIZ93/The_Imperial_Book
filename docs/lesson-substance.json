@@ -1677,7 +1677,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "80b35e481ae0509066f5b6d4852b0e278ae1518b18e347946a3e7218fe6de7ba",
+    "fingerprint": "b0ed9b8bfdb4fa1b627c56759a7363773ec67a3cd3b508ef66236a7b0c93b3e5",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
@@ -1686,7 +1686,7 @@
     },
     "modules": 254,
     "modulesWithLegacySections": 179,
-    "topics": 1161,
+    "topics": 1162,
     "topicsWithIssues": 0
   },
   "topics": {
@@ -9822,6 +9822,13 @@
         "tailWords": 324,
         "topic": "Tema 5: Kafka frente a RabbitMQ · Intermedio · 35 min",
         "words": 2025
+      },
+      {
+        "issues": [],
+        "module": 8,
+        "tailWords": 396,
+        "topic": "Tema 6: RabbitMQ a fondo — exchanges, routing keys y dead-letter exchange · Avanzado · 50 min",
+        "words": 2465
       },
       {
         "issues": [],

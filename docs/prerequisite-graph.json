@@ -4540,6 +4540,17 @@
       ]
     },
     {
+      "id": "spring-boot:8:6",
+      "track": "spring-boot",
+      "module": 8,
+      "position": 6,
+      "title": "RabbitMQ a fondo — exchanges, routing keys y dead-letter exchange · Avanzado · 50 min",
+      "file": "web/public/content/spring-boot/modulo-8.md",
+      "requires": [
+        "spring-boot:8:5"
+      ]
+    },
+    {
       "id": "spring-boot:9:1",
       "track": "spring-boot",
       "module": 9,
@@ -4547,7 +4558,7 @@
       "title": "Mono y Flux · Intermedio · 40 min",
       "file": "web/public/content/spring-boot/modulo-9.md",
       "requires": [
-        "spring-boot:8:5"
+        "spring-boot:8:6"
       ]
     },
     {

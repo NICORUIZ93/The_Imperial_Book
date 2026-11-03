@@ -1146,6 +1146,277 @@ public void escuchar(String titulo) { }
 
 **Transferencia al proyecto integrador:** la comparación Kafka frente a RabbitMQ de este tema es la que justificará la elección de mensajería del microservicio productivo (Módulo 12).
 
+### Tema 6: RabbitMQ a fondo — exchanges, routing keys y dead-letter exchange · Avanzado · 50 min
+
+**Prerrequisito:** Tema 5 de este módulo (RabbitMQ básico vs Kafka).
+
+**Al terminar podrás:** declarar un `TopicExchange` con bindings por patrón de routing key, configurar una cola con `x-dead-letter-exchange` para que un mensaje rechazado no se pierda, y confirmar con `Channel.basicAck`/`basicNack` manual que un mensaje con error termina exactamente en la cola de dead-letter, no en la cola principal ni perdido.
+
+#### Aprende
+
+**¿Por qué es importante?** El Tema 5 usó una única cola directa (`Queue` + el nombre exacto), suficiente para comparar con Kafka, pero insuficiente para un sistema real: un servicio de notificaciones de RutaFlow necesita enrutar "pedido.creado", "pedido.cancelado" y "pedido.entregado" hacia colas distintas sin triplicar el código del publicador, y necesita que un mensaje que el consumidor no puede procesar (dato corrupto, validación fallida) no desaparezca silenciosamente ni bloquee la cola reintentándose para siempre.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `TopicExchange` y routing keys con patrón | Núcleo | `with("pedido.*")` coincide con `pedido.creado`, no con `factura.creada` |
+| Un asterisco vs `#` en el patrón | Variante | `pedido.*` exige exactamente una palabra tras el punto; `pedido.#` aceptaría cero o más |
+| `ackMode = "MANUAL"` en `@RabbitListener` | Prerrequisito | el listener decide explícitamente `basicAck`/`basicNack`, no Spring por él |
+| `x-dead-letter-exchange` en la cola | Núcleo | un mensaje con `basicNack(..., requeue=false)` se reenvía al DLX configurado |
+| Mensaje sin binding coincidente se pierde en silencio | Diagnóstico | publicar con una routing key que ningún binding cubre no produce ningún error, pero nadie lo recibe |
+| Reintentar indefinidamente con `requeue=true` | Error frecuente | un nack con requeue en un mensaje que siempre falla crea un bucle infinito de redelivery |
+| Exchange types (direct/topic/fanout/headers) | Decisión | topic para patrones por palabra; fanout para difundir a todos; direct para una clave exacta |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`TopicExchange` y routing keys con patrón (núcleo).** A diferencia de una `Queue` nombrada directamente (Tema 5), un `TopicExchange` enruta mensajes a las colas vinculadas según si la routing key del mensaje coincide con el patrón del binding. `BindingBuilder.bind(colaNotificaciones()).to(pedidosExchange()).with("pedido.*")` vincula la cola a cualquier mensaje publicado con una routing key que coincida con ese patrón.
+
+**Un asterisco vs `#` en el patrón (variante).** En el lenguaje de patrones de RabbitMQ para topic exchanges, `*` (asterisco) coincide con EXACTAMENTE una palabra entre puntos; `#` (numeral) coincide con CERO O MÁS palabras. `pedido.*` coincide con `pedido.creado` pero no con `pedido.creado.urgente` (dos palabras tras el punto); `pedido.#` coincidiría con ambos. Elegir el símbolo equivocado es una fuente real de mensajes que "deberían" llegar y no llegan, o viceversa.
+
+**`ackMode = "MANUAL"` en `@RabbitListener` (prerrequisito).** Por defecto, Spring AMQP confirma (`ack`) un mensaje automáticamente si el método del listener retorna sin lanzar una excepción. `@RabbitListener(queues = ..., ackMode = "MANUAL")` desactiva ese comportamiento automático: el método recibe el `Channel` y el `deliveryTag` del mensaje, y debe llamar explícitamente `channel.basicAck(deliveryTag, false)` (confirmar) o `channel.basicNack(deliveryTag, false, false)` (rechazar sin reencolar) él mismo. Es el prerrequisito que hace posible decidir, con lógica de negocio real, cuándo un mensaje "falló" de verdad.
+
+**`x-dead-letter-exchange` en la cola (núcleo).** `QueueBuilder.durable(COLA_NOTIFICACIONES).withArgument("x-dead-letter-exchange", DLX).withArgument("x-dead-letter-routing-key", DLQ).build()` declara una cola que, cuando un consumidor hace `basicNack` con `requeue=false` sobre un mensaje de esa cola, automáticamente reenvía ese mensaje al exchange de dead-letter configurado, en vez de descartarlo silenciosamente. El mensaje queda disponible para inspección, alerta o reprocesamiento manual en la cola de dead-letter.
+
+**Mensaje sin binding coincidente se pierde en silencio (diagnóstico).** Publicar un mensaje con una routing key que ningún binding declarado cubre (por ejemplo, `factura.creada` cuando solo existe un binding para `pedido.*`) NO produce ningún error observable: RabbitMQ simplemente no tiene a quién entregárselo, y el mensaje se descarta (salvo que el exchange tenga un "alternate exchange" configurado, fuera del alcance de este tema). Esto es diagnosticable solo verificando activamente que la cola esperada recibió el mensaje, nunca asumiéndolo por la ausencia de errores.
+
+**Reintentar indefinidamente con `requeue=true` (error frecuente).** Si el manejo de errores usara `basicNack(deliveryTag, false, true)` (con `requeue=true`) para CUALQUIER fallo, un mensaje que falla por una razón permanente (JSON malformado, por ejemplo) se reencola, se vuelve a entregar, vuelve a fallar, y se reencola de nuevo — un bucle infinito que satura el consumidor sin nunca resolver el problema. `requeue=false` combinado con `x-dead-letter-exchange` es el patrón correcto para fallos que no se resuelven solos con un reintento inmediato.
+
+**Exchange types: direct/topic/fanout/headers (decisión).** Este tema usa `TopicExchange` porque el caso de uso necesita enrutar por PATRONES de routing key; un `DirectExchange` enrutaría solo por coincidencia EXACTA de routing key (sin patrones); un `FanoutExchange` ignora la routing key por completo y entrega a TODAS las colas vinculadas (difusión); un `HeadersExchange` enruta según atributos del mensaje en vez de la routing key. La decisión depende de si el enrutamiento necesita patrones (topic), exactitud (direct), difusión total (fanout) o atributos (headers).
+
+**Conceptos clave:** `TopicExchange`, patrón de routing key (`*` vs `#`), `ackMode = "MANUAL"`, `x-dead-letter-exchange`, `basicAck`/`basicNack`.
+
+Un `TopicExchange` enruta mensajes a las colas vinculadas según coincidencia de patrón entre la routing key del mensaje y el patrón del binding (`*` = una palabra, `#` = cero o más palabras). Con `ackMode = "MANUAL"`, el listener decide explícitamente `basicAck` (confirmar) o `basicNack` (rechazar); una cola con `x-dead-letter-exchange` reenvía automáticamente los mensajes rechazados con `requeue=false` hacia un exchange de dead-letter, en vez de perderlos o reintentarlos indefinidamente.
+
+**Analogía:** un `TopicExchange` con routing keys es como un sistema de clasificación postal por código: una carta con el código "pedido.creado" se clasifica hacia el casillero que acepta el patrón "pedido.*", mientras una carta con un código que ningún casillero acepta simplemente nunca se entrega; la cola de dead-letter es el casillero de "correspondencia devuelta" donde termina una carta que el destinatario rechazó explícitamente, en vez de desaparecer sin dejar rastro.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+  P["Publicador: routing key = pedido.creado"] --> E["TopicExchange: pedidos.exchange"]
+  E -->|"binding: pedido.*"| Q["Cola: pedidos.notificaciones"]
+  Q --> L["Listener (ackMode=MANUAL)"]
+  L -->|"basicAck"| OK["Procesado"]
+  L -->|"basicNack requeue=false"| DLX["DLX: pedidos.dlx"]
+  DLX --> DLQ["Cola: pedidos.notificaciones.dlq"]
+```
+
+#### Practica
+
+**Demo paso a paso.** Desde una carpeta vacía, genera el proyecto con `spring-boot-starter-amqp`:
+
+```bash
+mkdir rabbitmq-demo && cd rabbitmq-demo
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=amqp -d javaVersion=27 -o app.zip
+unzip -q app.zip
+```
+
+Crea `src/main/java/com/academia/amqp/PedidoAmqpConfig.java`:
+
+```java
+package com.academia.amqp;
+
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.QueueBuilder;
+import org.springframework.amqp.core.TopicExchange;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class PedidoAmqpConfig {
+    static final String EXCHANGE = "pedidos.exchange";
+    static final String COLA_NOTIFICACIONES = "pedidos.notificaciones";
+    static final String DLX = "pedidos.dlx";
+    static final String DLQ = "pedidos.notificaciones.dlq";
+
+    @Bean
+    TopicExchange pedidosExchange() { return new TopicExchange(EXCHANGE); }
+
+    @Bean
+    TopicExchange pedidosDlx() { return new TopicExchange(DLX); }
+
+    @Bean
+    Queue colaDeadLetter() { return QueueBuilder.durable(DLQ).build(); }
+
+    @Bean
+    Binding bindingDeadLetter() {
+        return BindingBuilder.bind(colaDeadLetter()).to(pedidosDlx()).with(DLQ);
+    }
+
+    @Bean
+    Queue colaNotificaciones() {
+        return QueueBuilder.durable(COLA_NOTIFICACIONES)
+                .withArgument("x-dead-letter-exchange", DLX)
+                .withArgument("x-dead-letter-routing-key", DLQ)
+                .build();
+    }
+
+    @Bean
+    Binding bindingNotificaciones() {
+        return BindingBuilder.bind(colaNotificaciones()).to(pedidosExchange()).with("pedido.*");
+    }
+}
+```
+
+Crea `src/main/java/com/academia/amqp/NotificacionListener.java`:
+
+```java
+package com.academia.amqp;
+
+import com.rabbitmq.client.Channel;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.support.AmqpHeaders;
+import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+@Component
+public class NotificacionListener {
+    private final List<String> procesados = new CopyOnWriteArrayList<>();
+
+    @RabbitListener(queues = PedidoAmqpConfig.COLA_NOTIFICACIONES, ackMode = "MANUAL")
+    public void escuchar(Message mensaje, Channel channel,
+                          @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag) throws IOException {
+        String cuerpo = new String(mensaje.getBody());
+        if (cuerpo.startsWith("ERROR")) {
+            channel.basicNack(deliveryTag, false, false); // sin requeue -> va al DLX
+            return;
+        }
+        procesados.add(cuerpo);
+        channel.basicAck(deliveryTag, false);
+    }
+
+    public List<String> getProcesados() { return procesados; }
+}
+```
+
+Agrega las dependencias de test reales (Testcontainers + Awaitility) y crea `src/test/java/com/academia/amqp/PedidoAmqpTest.java`:
+
+```java
+package com.academia.amqp;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.RabbitMQContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+
+import java.time.Duration;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
+
+@SpringBootTest
+@Testcontainers
+class PedidoAmqpTest {
+
+    @Container
+    static RabbitMQContainer rabbit = new RabbitMQContainer("rabbitmq:3.13-management");
+
+    @DynamicPropertySource
+    static void propiedades(DynamicPropertyRegistry registry) {
+        registry.add("spring.rabbitmq.host", rabbit::getHost);
+        registry.add("spring.rabbitmq.port", rabbit::getAmqpPort);
+    }
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+    @Autowired
+    private NotificacionListener listener;
+
+    @Test
+    void routingKeyPedidoCreadoLlegaALaColaYSeProcesaConAckManual() {
+        rabbitTemplate.convertAndSend(PedidoAmqpConfig.EXCHANGE, "pedido.creado", "Pedido BO-001 creado");
+
+        await().atMost(Duration.ofSeconds(5))
+                .untilAsserted(() -> assertThat(listener.getProcesados()).contains("Pedido BO-001 creado"));
+    }
+
+    @Test
+    void mensajeRechazadoTerminaEnLaColaDeDeadLetter() {
+        rabbitTemplate.convertAndSend(PedidoAmqpConfig.EXCHANGE, "pedido.fallido", "ERROR dato corrupto");
+
+        await().atMost(Duration.ofSeconds(5)).untilAsserted(() -> {
+            Object enDlq = rabbitTemplate.receiveAndConvert(PedidoAmqpConfig.DLQ);
+            assertThat(enDlq).isEqualTo("ERROR dato corrupto");
+        });
+    }
+
+    @Test
+    void routingKeyQueNoCoincideConElPatronNuncaLlegaAlListener() {
+        rabbitTemplate.convertAndSend(PedidoAmqpConfig.EXCHANGE, "factura.creada", "Factura F-1");
+
+        Object nada = rabbitTemplate.receiveAndConvert(PedidoAmqpConfig.COLA_NOTIFICACIONES, 500);
+        assertThat(nada).isNull();
+    }
+}
+```
+
+```bash
+# requiere Docker corriendo localmente; Testcontainers levanta el broker RabbitMQ real
+./mvnw test
+```
+
+**Nota de verificación.** El código de este tema se compiló y se verificó línea por línea contra la referencia oficial de Spring AMQP (`TopicExchange`, `QueueBuilder`, `BindingBuilder`, `@RabbitListener(ackMode=...)`, `Channel.basicAck/basicNack`) y contra el Javadoc de `RabbitMQContainer`. La ejecución de punta a punta contra un broker real vía Testcontainers requiere Docker corriendo localmente con una versión de API compatible; ejecútalo en tu propio entorno con `./mvnw test` para confirmar los tres casos antes de considerarlo cerrado.
+
+**Resultado esperado:** los tres tests pasan: el mensaje con routing key `pedido.creado` llega al listener y se confirma con `basicAck`; el mensaje que empieza con `ERROR` se rechaza con `basicNack(..., requeue=false)` y aparece en la cola de dead-letter; el mensaje con routing key `factura.creada` (que no coincide con ningún binding) nunca llega a la cola de notificaciones.
+
+**Fallo deliberado:** cambia `basicNack(deliveryTag, false, false)` por `basicNack(deliveryTag, false, true)` (con `requeue=true`) en el manejo del mensaje `ERROR`, y ejecuta de nuevo. El mensaje se reencola inmediatamente, el mismo listener lo vuelve a recibir, lo vuelve a rechazar con requeue, y se repite indefinidamente — un bucle de redelivery observable en los logs (la cuenta de entregas del mismo mensaje crece sin límite) que nunca termina en la cola de dead-letter. Diagnostica confirmando que `requeue=true` es apropiado solo para fallos TRANSITORIOS (una dependencia momentáneamente no disponible), nunca para datos permanentemente inválidos. Restaura `requeue=false` antes de continuar.
+
+**Ejercicios.**
+
+1. Cambia el patrón del binding de `pedido.*` a `pedido.#` y confirma con un test que ahora SÍ coincide una routing key de dos palabras como `pedido.creado.urgente`.
+2. Agrega un segundo binding a la misma cola con un patrón distinto (`envio.*`) y confirma que la cola recibe mensajes de AMBOS patrones.
+3. Declara un `FanoutExchange` alternativo y confirma que, a diferencia del `TopicExchange`, una cola vinculada a él recibe el mensaje sin importar la routing key usada al publicar.
+4. Escribe de memoria (sin mirar) una cola con `x-dead-letter-exchange` configurado y un listener con `ackMode=MANUAL` que rechace mensajes inválidos. Compara después contra el patrón del Paso 4.
+
+**Pista:** si un mensaje "desaparece" sin llegar ni a la cola principal ni a la de dead-letter, la causa más común es que ninguna routing key coincide con ningún binding — RabbitMQ no reporta ese caso como error.
+
+**Completa el código:** rellena el argumento que configura el dead-letter exchange de una cola:
+
+```java
+Queue cola = QueueBuilder.durable("mi-cola")
+    .withArgument("____", "mi-dlx")
+    .build();
+```
+
+**Reto de memoria:** cierra este documento y escribe, solo de memoria, un `TopicExchange` con un binding por patrón, una cola con dead-letter exchange configurado, y un listener con `ackMode=MANUAL` que distinga entre `basicAck` y `basicNack` según el contenido del mensaje.
+
+#### Aplica
+
+**Reto abierto.** Diseña el esquema de mensajería de notificaciones de RutaFlow: un `TopicExchange` único con bindings para `pedido.*`, `envio.*` y `conductor.*`, cada uno hacia su propia cola, todas con dead-letter exchange configurado hacia una cola común de incidencias. Demuestra con tests que cada routing key llega solo a la cola correcta y que un mensaje inválido en cualquiera de las tres termina en la cola de incidencias.
+
+**Checklist de salida.**
+
+- [ ] El `TopicExchange` enruta por patrón, no por nombre de cola directo.
+- [ ] Un test confirma que una routing key sin binding coincidente no llega a ninguna cola.
+- [ ] `ackMode=MANUAL` con `basicAck`/`basicNack` explícito, no el ack automático por defecto.
+- [ ] Un mensaje rechazado con `requeue=false` termina en la cola de dead-letter, verificado con un test.
+- [ ] Podés explicar por qué `requeue=true` en un bucle de fallo permanente es un error, no una red de seguridad.
+
+**Si falla.** Si un mensaje nunca llega a ninguna cola, revisa que la routing key coincida con el patrón EXACTO del binding (`*` es una palabra, `#` es cero o más). Si un mensaje rechazado no aparece en la cola de dead-letter, confirma que el nack use `requeue=false` y que la cola tenga `x-dead-letter-exchange` configurado.
+
+**Siguiente paso:** esto cierra el módulo de mensajería; el siguiente módulo aborda la programación reactiva con WebFlux y el modelo no bloqueante.
+
+**Errores comunes:** usar `requeue=true` para fallos permanentes, creando un bucle infinito de redelivery; olvidar que una routing key sin binding coincidente se pierde sin ningún error observable; declarar el dead-letter exchange en el código de la aplicación pero no vincularlo con un binding hacia su propia cola de dead-letter.
+
+**Límites y decisión de uso:** para un flujo con un único tipo de mensaje y un único consumidor, una `Queue` directa (Tema 5) es más simple que un `TopicExchange` con bindings por patrón; el exchange con patrones se justifica cuando varios tipos de evento relacionados necesitan enrutarse de forma distinta sin que el publicador conozca los detalles de cada consumidor.
+
+**Fuente oficial:** [Spring AMQP Reference — Exchanges, Queues and Bindings](https://docs.spring.io/spring-amqp/reference/amqp/exchange-queue-binding.html), [RabbitMQ — Dead Letter Exchanges](https://www.rabbitmq.com/docs/dlx).
+
+**Transferencia al proyecto integrador:** el esquema de exchange y dead-letter de este tema es el que usará la mensajería de notificaciones del microservicio productivo (Módulo 12).
+
 ## Proyecto de cierre del módulo
 
 **Objetivo:** entregar un servicio de pedidos que publique eventos a un broker real, tolere fallos de consumo sin bloquearse y garantice un único efecto de negocio ante entregas duplicadas.

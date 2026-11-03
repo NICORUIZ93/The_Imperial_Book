@@ -985,7 +985,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 14231,
+      "lines": 14243,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -993,7 +993,7 @@
     },
     {
       "path": "docs/course-depth-review.md",
-      "lines": 1192,
+      "lines": 1193,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1160,7 +1160,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 9850,
+      "lines": 9857,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1332,7 +1332,7 @@
     },
     {
       "path": "docs/prerequisite-graph.json",
-      "lines": 12779,
+      "lines": 12790,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1451,7 +1451,7 @@
     },
     {
       "path": "docs/seven-step-methodology.json",
-      "lines": 29326,
+      "lines": 29351,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1501,7 +1501,7 @@
     },
     {
       "path": "docs/subtopic-depth-review.json",
-      "lines": 21661,
+      "lines": 21691,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1509,7 +1509,7 @@
     },
     {
       "path": "docs/subtopic-depth-review.md",
-      "lines": 1154,
+      "lines": 1155,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1522,7 +1522,7 @@
     },
     {
       "path": "docs/subtopic-depth-reviewed.json",
-      "lines": 4820,
+      "lines": 4837,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1590,7 +1590,7 @@
     },
     {
       "path": "docs/topic-learning-quality.json",
-      "lines": 25813,
+      "lines": 25835,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -12912,7 +12912,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-8.md",
-      "lines": 1202,
+      "lines": 1473,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12954,7 +12954,7 @@
     },
     {
       "path": "web/public/content/topic-index.json",
-      "lines": 5183,
+      "lines": 5187,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

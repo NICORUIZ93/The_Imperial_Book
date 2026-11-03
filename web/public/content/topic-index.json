@@ -5162,6 +5162,10 @@
       {
         "title": "Kafka frente a RabbitMQ",
         "fragment": "tema-5-kafka-frente-a-rabbitmq"
+      },
+      {
+        "title": "RabbitMQ a fondo — exchanges, routing keys y dead-letter exchange",
+        "fragment": "tema-6-rabbitmq-a-fondo-exchanges-routing-keys-y-dead-letter-exchange"
       }
     ],
     "9": [

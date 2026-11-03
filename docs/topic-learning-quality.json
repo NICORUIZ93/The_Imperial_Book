@@ -221,18 +221,18 @@
       "repeatedDemo": 0
     },
     "spring-boot": {
-      "topics": 95,
-      "explanation": 95,
-      "code": 95,
-      "visual": 75,
-      "filePath": 95,
-      "runCommand": 93,
-      "expectedResult": 95,
-      "practice": 95,
-      "project": 95,
-      "modelMental": 95,
-      "limitsDecision": 95,
-      "practicable": 93,
+      "topics": 96,
+      "explanation": 96,
+      "code": 96,
+      "visual": 76,
+      "filePath": 96,
+      "runCommand": 94,
+      "expectedResult": 96,
+      "practice": 96,
+      "project": 96,
+      "modelMental": 96,
+      "limitsDecision": 96,
+      "practicable": 94,
       "genericScaffold": 0,
       "repeatedDemo": 0
     }
@@ -25722,6 +25722,28 @@
       {
         "module": 8,
         "topic": "Tema 5: Kafka frente a RabbitMQ · Intermedio · 35 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 8,
+        "topic": "Tema 6: RabbitMQ a fondo — exchanges, routing keys y dead-letter exchange · Avanzado · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,

@@ -107,7 +107,7 @@ export const SPRING_BOOT_MODULES: CourseModule[] = [
     'API con Actuator expuesto y al menos una métrica de negocio custom.'),
   m(8, 'Mensajería profesional: Kafka exactly-once, rebalanceo y RabbitMQ', 'Mensajería', 'Experto', '4 h 30 min', '#6db33f',
     'Desacopla servicios con mensajería asíncrona desde Spring, con productores idempotentes, consumer groups resilientes y dead-letter queues reales.',
-    ['Spring Kafka: producers y consumers', 'Spring AMQP (RabbitMQ)', 'Serialización de mensajes', 'Manejo de errores y dead-letter', 'Productor idempotente y transacciones (exactly-once)', 'Rebalanceo de consumer groups y static group membership'],
+    ['Spring Kafka: producers y consumers', 'Spring AMQP (RabbitMQ)', 'Serialización de mensajes', 'Manejo de errores y dead-letter', 'Productor idempotente y transacciones (exactly-once)', 'Rebalanceo de consumer groups y static group membership', 'RabbitMQ a fondo: TopicExchange, routing keys y dead-letter exchange'],
     [
       'Levanta Kafka en Docker Compose y configura un KafkaTemplate para publicar un evento desde tu API',
       'Implementa un @KafkaListener que consuma esos eventos y procese su contenido',
