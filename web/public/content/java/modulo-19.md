@@ -1023,7 +1023,15 @@ sequenceDiagram
 
 #### Paso 4 · Demostración guiada desde cero
 
-##### Subtema 6.1: Registrar las llamadas sin tocar el servicio · 10-15 min
+#### Subtema 6.1: Registrar las llamadas sin tocar el servicio · 10 min
+**1. Contexto**
+
+El equipo necesita registrar cotizaciones sin añadir lógica de logging a la implementación real de tarifas.
+
+**2. Hazlo tú**
+
+En una carpeta vacía, crea `Proxies.java`, ejecuta el ejemplo y observa una llamada exitosa y otra que lanza una excepción.
+
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
 
 ```bash
@@ -1103,16 +1111,25 @@ El llamador recibe: IllegalArgumentException: máximo 30 kg
 
 La excepción llegó al llamador como `IllegalArgumentException`, igual que si no hubiera proxy.
 
-**Fallo deliberado:** En el `catch` cambia `throw e.getCause();` por `throw e;`. Ahora el llamador recibe `java.lang.reflect.UndeclaredThrowableException` en vez de la excepción original, y su `catch (IllegalArgumentException e)` ya no la atrapa. Un proxy mal hecho cambia el contrato de errores de la interfaz.
+**Fallo deliberado:** En el `catch` cambia `throw e.getCause();` por `throw e;`. Ahora el llamador recibe `java.lang.reflect.UndeclaredThrowableException` en vez de la excepción original, y su `catch (IllegalArgumentException e)` ya no la atrapa. Un proxy mal hecho cambia el contrato de errores de la interfaz. **Diagnóstico:** desenvuelve `InvocationTargetException` y relanza `getCause()` para conservar el tipo que declara la interfaz.
+
+**3. Entiende**
+
+Toda llamada externa entra al manejador; el manejador puede registrar, delegar y conservar el contrato de la interfaz.
+
+**Diagnóstico:** identifica si el método llegó al `InvocationHandler`, qué argumentos recibió y qué excepción o resultado volvió.
+
+**4. Cierra**
+
+Registra el orden de interceptación y el resultado o error que observó el llamador.
 
 #### Paso 5 · Práctica guiada
 Agrega al proxy una caché: si `cotizar` se llama dos veces con los mismos argumentos, devuelve el resultado guardado. **Pista:** usa un `Map<List<Object>, Object>` con `List.of(argumentos)` como clave y aplica la caché solo cuando `metodo.getName()` sea `cotizar`.
 
-##### Subtema 6.2: Guardar el resultado de una llamada repetida · 5-10 min
+#### Subtema 6.2: Guardar el resultado de una llamada repetida · 10 min
+**1. Contexto** una pantalla puede pedir dos veces la misma cotización; el proxy puede reutilizarla mientras los datos no cambien.
 
-**Contexto:** una pantalla puede pedir dos veces la misma cotización; el proxy puede reutilizarla mientras los datos no cambien.
-
-**Hazlo tú:** crea `java-dia-a-dia/CacheProxy.java`:
+**2. Hazlo tú** crea `java-dia-a-dia/CacheProxy.java`:
 
 ```java
 import java.lang.reflect.*;
@@ -1147,16 +1164,21 @@ Ejecuta `cd java-dia-a-dia && java CacheProxy.java`.
 
 **Fallo deliberado:** elimina `cache.put(clave, resultado)`. **Resultado del fallo:** aparece `cálculo nuevo` dos veces. **Diagnóstico:** el resultado se calculó, pero el proxy nunca lo guardó.
 
-**Entiende:** la clave incluye los argumentos; esta caché local no reemplaza una caché compartida ni considera vencimiento.
+**3. Entiende** la clave incluye los argumentos; esta caché local no reemplaza una caché compartida ni considera vencimiento.
+
+**Diagnóstico:** identifica si el método llegó al `InvocationHandler`, qué argumentos recibió y qué excepción o resultado volvió.
+
+**4. Cierra**
+
+Registra el orden de interceptación y el resultado o error que observó el llamador.
 
 #### Paso 6 · Práctica independiente
 Escribe una clase con un método que llame a otro método propio y explica por qué el segundo no pasa por el proxy (la auto-invocación de `@Transactional`).
 
-##### Subtema 6.3: Ver una llamada interna que salta el proxy · 5-10 min
+#### Subtema 6.3: Ver una llamada interna que salta el proxy · 10 min
+**1. Contexto** Spring aplica su interceptación cuando una llamada entra desde fuera del objeto proxy.
 
-**Contexto:** Spring aplica su interceptación cuando una llamada entra desde fuera del objeto proxy.
-
-**Hazlo tú:** crea `java-dia-a-dia/AutoLlamada.java`:
+**2. Hazlo tú** crea `java-dia-a-dia/AutoLlamada.java`:
 
 ```java
 import java.lang.reflect.*;
@@ -1185,7 +1207,13 @@ Ejecuta `cd java-dia-a-dia && java AutoLlamada.java`.
 
 **Fallo deliberado:** supone que la llamada interna también inicia otra transacción. **Resultado del fallo:** la llamada a `interna` ocurre directamente en el objeto real. **Diagnóstico:** llama a través de un proxy desde otro bean o mueve la operación a otro servicio.
 
-**Entiende:** las llamadas propias no vuelven a atravesar el proxy que recibió la llamada externa.
+**3. Entiende** las llamadas propias no vuelven a atravesar el proxy que recibió la llamada externa.
+
+**Diagnóstico:** identifica si el método llegó al `InvocationHandler`, qué argumentos recibió y qué excepción o resultado volvió.
+
+**4. Cierra**
+
+Registra el orden de interceptación y el resultado o error que observó el llamador.
 
 #### Paso 7 · Cierre y evidencia
 Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque explica el comportamiento de frameworks que usas a diario y errores clásicos de entrevistas como la auto-invocación.

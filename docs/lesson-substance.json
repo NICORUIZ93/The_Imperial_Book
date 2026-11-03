@@ -1698,7 +1698,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "37ce36dd55f760e2928d0e96d6f7dedeb8cbe7b91b5956fa9cb1e77f30af4b87",
+    "fingerprint": "1d3dae58295d6a0f0843d9efa8920898923e90ff33fbf7439572644f51327152",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -7548,7 +7548,7 @@
         "module": 19,
         "tailWords": 210,
         "topic": "Tema 6: Proxies dinámicos: así funcionan @Transactional y los mocks",
-        "words": 1336
+        "words": 1514
       },
       {
         "issues": [],

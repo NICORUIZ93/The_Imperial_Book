@@ -51,10 +51,10 @@
     },
     "java": {
       "topics": 101,
-      "completeTopics": 87,
-      "topicsWith3to6Subtopics": 87,
-      "subtopics": 265,
-      "completeSubtopics": 265
+      "completeTopics": 88,
+      "topicsWith3to6Subtopics": 88,
+      "subtopics": 268,
+      "completeSubtopics": 268
     },
     "javascript": {
       "topics": 88,
@@ -7566,9 +7566,52 @@
       {
         "module": 19,
         "topic": "### Tema 6: Proxies dinámicos: así funcionan @Transactional y los mocks",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "6.1",
+            "title": "#### Subtema 6.1: Registrar las llamadas sin tocar el servicio · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "6.2",
+            "title": "#### Subtema 6.2: Guardar el resultado de una llamada repetida · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "6.3",
+            "title": "#### Subtema 6.3: Ver una llamada interna que salta el proxy · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 19,
