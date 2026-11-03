@@ -1250,7 +1250,15 @@ flowchart LR
 
 #### Paso 4 · Demostración guiada desde cero
 
-##### Subtema 7.1: Mostrar importes y fechas según Locale · 10-15 min
+#### Subtema 7.1: Mostrar importes y fechas según Locale · 10 min
+**1. Contexto**
+
+La misma tarifa debe verse con separadores, moneda y fecha que entiende cada cliente.
+
+**2. Hazlo tú**
+
+En una carpeta vacía, crea `Formatos.java`, ejecútalo y compara los tres locales, la lista ordenada y los mensajes.
+
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
 
 ```bash
@@ -1315,16 +1323,25 @@ Hay 1.500 entregas para Ana
 
 Los espacios del símbolo de moneda y algunos detalles pueden variar según la versión del JDK, porque los datos vienen de CLDR y se actualizan.
 
-**Fallo deliberado:** Cambia `Locale.forLanguageTag("es-CO")` de la lista por `new Locale("es-CO")`. El compilador avisa que el constructor está obsoleto (`warning: [deprecation]`) y la primera fila sale como `und número=1,234,567.891 moneda=¤ 1,234,567.89`: "es-CO" se tomó como un idioma inexistente y se usaron las reglas genéricas. Usa siempre `forLanguageTag` u `Locale.of`.
+**Fallo deliberado:** Cambia `Locale.forLanguageTag("es-CO")` de la lista por `new Locale("es-CO")`. El compilador avisa que el constructor está obsoleto (`warning: [deprecation]`) y la primera fila sale como `und número=1,234,567.891 moneda=¤ 1,234,567.89`: "es-CO" se tomó como un idioma inexistente y se usaron las reglas genéricas. Usa siempre `forLanguageTag` u `Locale.of`. **Diagnóstico:** un `Locale` mostrado como `und` indica que la cadena entera `es-CO` se interpretó como código de idioma, no como etiqueta de idioma-región.
+
+**3. Entiende**
+
+Los datos no cambian; el locale, la zona horaria y los recursos determinan cómo se presentan al usuario.
+
+**Diagnóstico:** compara qué parte del resultado depende del idioma, de la región o de la zona horaria.
+
+**4. Cierra**
+
+Guarda una salida para cada locale probado y anota qué convención cambió.
 
 #### Paso 5 · Práctica guiada
 Formatea la hora de una entrega (`ZonedDateTime`) en Bogotá y en Berlín con el mismo `Instant`. **Pista:** crea un `Instant`, conviértelo con `atZone(ZoneId.of("America/Bogota"))` y con `Europe/Berlin`, y formatea cada uno con su `Locale`.
 
-##### Subtema 7.2: Mostrar el mismo instante en dos ciudades · 5-10 min
+#### Subtema 7.2: Mostrar el mismo instante en dos ciudades · 10 min
+**1. Contexto** una misma entrega llega a horas locales diferentes sin cambiar el instante guardado.
 
-**Contexto:** una misma entrega llega a horas locales diferentes sin cambiar el instante guardado.
-
-**Hazlo tú:** crea `java-dia-a-dia/HorasLocales.java`:
+**2. Hazlo tú** crea `java-dia-a-dia/HorasLocales.java`:
 
 ```java
 import java.time.*;
@@ -1347,16 +1364,21 @@ Ejecuta `cd java-dia-a-dia && java HorasLocales.java`.
 
 **Fallo deliberado:** agrega ocho horas a una cadena de texto para calcular Berlín. **Resultado del fallo:** el desfase deja de ser correcto al cambiar el horario de verano. **Diagnóstico:** convierte desde el mismo `Instant` con `ZoneId`; no sumes horas a mano.
 
-**Entiende:** un instante es único; zona e idioma solo cambian cómo se muestra.
+**3. Entiende** un instante es único; zona e idioma solo cambian cómo se muestra.
+
+**Diagnóstico:** compara qué parte del resultado depende del idioma, de la región o de la zona horaria.
+
+**4. Cierra**
+
+Guarda una salida para cada locale probado y anota qué convención cambió.
 
 #### Paso 6 · Práctica independiente
 Mueve los mensajes a dos archivos `mensajes_es.properties` y `mensajes_en.properties` y cárgalos con `ResourceBundle.getBundle`.
 
-##### Subtema 7.3: Cargar mensajes en dos idiomas · 5-10 min
+#### Subtema 7.3: Cargar mensajes en dos idiomas · 10 min
+**1. Contexto** las etiquetas de la aplicación deben cambiar de idioma sin duplicar la lógica Java.
 
-**Contexto:** las etiquetas de la aplicación deben cambiar de idioma sin duplicar la lógica Java.
-
-**Hazlo tú:** crea `java-dia-a-dia/Mensajes.java`:
+**2. Hazlo tú** crea `java-dia-a-dia/Mensajes.java`:
 
 ```java
 import java.util.Locale;
@@ -1378,7 +1400,13 @@ Crea `java-dia-a-dia/mensajes_es.properties` con `saludo=Hola, Ana` y `java-dia-
 
 **Fallo deliberado:** escribe `saludos` en el programa en vez de `saludo`. **Error esperado:** `MissingResourceException`. **Diagnóstico:** la clave solicitada debe existir en cada archivo de recursos.
 
-**Entiende:** `ResourceBundle` escoge el archivo según el locale; conserva las claves iguales entre idiomas.
+**3. Entiende** `ResourceBundle` escoge el archivo según el locale; conserva las claves iguales entre idiomas.
+
+**Diagnóstico:** compara qué parte del resultado depende del idioma, de la región o de la zona horaria.
+
+**4. Cierra**
+
+Guarda una salida para cada locale probado y anota qué convención cambió.
 
 #### Paso 7 · Cierre y evidencia
 Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque cualquier producto que crece cruza fronteras, y los errores de formato de dinero o fecha generan cobros y entregas equivocados.

@@ -5,7 +5,7 @@
 **Proyecto continuo:** Motor de asignación de entregas.
 **Prerrequisito de entrada:** Fundamentos de programación; el módulo 0 comienza con JDK y terminal..
 **Duración objetivo:** temas de 20–45 minutos; cada tema se divide en 3–6 acciones de 5–15 minutos.
-**Estado estructural:** 88/101 temas migrados; auditoría estructural actualizada el 2026-11-03.
+**Estado estructural:** 89/101 temas migrados; auditoría estructural actualizada el 2026-11-03.
 
 ## Índice de módulos y temas
 
@@ -462,7 +462,10 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 6.1: Registrar las llamadas sin tocar el servicio · 10 min
   - ✓ Subtema 6.2: Guardar el resultado de una llamada repetida · 10 min
   - ✓ Subtema 6.3: Ver una llamada interna que salta el proxy · 10 min
-- [pendiente de migrar] Tema 7: Internacionalización: números, monedas, fechas y orden de texto
+- [4 pasos] Tema 7: Internacionalización: números, monedas, fechas y orden de texto
+  - ✓ Subtema 7.1: Mostrar importes y fechas según Locale · 10 min
+  - ✓ Subtema 7.2: Mostrar el mismo instante en dos ciudades · 10 min
+  - ✓ Subtema 7.3: Cargar mensajes en dos idiomas · 10 min
 
 ### Módulo 20: Java funcional — interfaces que componen comportamiento
 
@@ -507,7 +510,7 @@ La tabla registra presencia de áreas en el inventario del track, no profundidad
 
 ### Huecos y límites reportados
 
-- El repositorio contiene 101 temas en 21 módulos; 88 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
+- El repositorio contiene 101 temas en 21 módulos; 89 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
 - No hay base para afirmar que el track esté completo: la comparación con la fuente de referencia está pendiente de revisión humana módulo por módulo.
 - Los elementos de la fuente que todavía deben verificarse de forma explícita están enumerados en la tabla anterior; cualquier técnica crítica que no tenga tema propio debe añadirse conservando el currículo base.
 - La ejecución de ejemplos, el comportamiento con brokers/plataformas reales y la calidad pedagógica humana se registran por separado.

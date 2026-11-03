@@ -1698,7 +1698,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "1d3dae58295d6a0f0843d9efa8920898923e90ff33fbf7439572644f51327152",
+    "fingerprint": "1156c74b49d7e04e60f3268031f7f145d685d3f4a7e4b4c2460297b753f9bef9",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -7555,7 +7555,7 @@
         "module": 19,
         "tailWords": 218,
         "topic": "Tema 7: Internacionalización: números, monedas, fechas y orden de texto",
-        "words": 1293
+        "words": 1472
       },
       {
         "issues": [],

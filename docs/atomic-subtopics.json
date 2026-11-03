@@ -51,10 +51,10 @@
     },
     "java": {
       "topics": 101,
-      "completeTopics": 88,
-      "topicsWith3to6Subtopics": 88,
-      "subtopics": 268,
-      "completeSubtopics": 268
+      "completeTopics": 89,
+      "topicsWith3to6Subtopics": 89,
+      "subtopics": 271,
+      "completeSubtopics": 271
     },
     "javascript": {
       "topics": 88,
@@ -7616,9 +7616,52 @@
       {
         "module": 19,
         "topic": "### Tema 7: Internacionalización: números, monedas, fechas y orden de texto",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "7.1",
+            "title": "#### Subtema 7.1: Mostrar importes y fechas según Locale · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "7.2",
+            "title": "#### Subtema 7.2: Mostrar el mismo instante en dos ciudades · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "7.3",
+            "title": "#### Subtema 7.3: Cargar mensajes en dos idiomas · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 2,
