@@ -416,6 +416,8 @@ Socket.IO añade handshake, eventos, acknowledgements y salas sobre sus transpor
 
 **Analogía:** dos radios necesitan el mismo protocolo de conversación, no solo una antena. El límite es que reconectar la radio no reproduce mensajes perdidos. El número de secuencia evita aplicar un dato anterior; un producto también necesita snapshot o replay, persistencia, backpressure y límites por identidad.
 
+**Recorrido del evento:** `┌─ HTTP autenticado → validar coordenadas y secuencia ─┐`<br>`└─ emitir a sala autorizada → cliente Socket.IO aplica ─┘`. Una nueva conexión necesita recuperar un snapshot; la sala y la secuencia de este ejemplo no ofrecen persistencia.
+
 #### Paso 4 · Demostración guiada desde cero
 Desde una copia del repositorio prepara una carpeta propia:
 ```bash
@@ -539,7 +541,7 @@ Debes ver 202 en HTTP y el evento en Dart. El servidor solo escucha loopback: el
 Añade un segundo envío con un mapa de permisos por identidad de prueba, y demuestra que una identidad de A no se puede unir a B aunque conozca su ID. Añade una consulta de snapshot para recuperar la secuencia actual al reconectar. No deduzcas que «se conectó» significa «no perdió datos».
 
 #### Paso 7 · Cierre y evidencia
-**Evidencia de aprendizaje:** salida de prueba, 202/401/409, suscripción rechazada y evento recibido. El siguiente tema conecta las posiciones con una ruta calculada. **Errores comunes:** conectar socket_io_client al endpoint STOMP, confiar en IDs del cliente y registrar tokens completos. **Límites y decisión de uso:** el gateway usa memoria y credencial fija solo para aislar compatibilidad; no es una implementación lista para Internet ni una garantía de entrega durable.
+**Evidencia de aprendizaje:** salida de prueba, 202/401/409, suscripción rechazada y evento recibido. **Transferencia al proyecto integrador RutaFlow:** conecta el evento de posición con el mapa solo después de verificar identidad, permisos, versión y secuencia; al reconectar, solicita estado actual antes de reanudar la animación. El siguiente tema conecta las posiciones con una ruta calculada. **Errores comunes:** conectar socket_io_client al endpoint STOMP, confiar en IDs del cliente y registrar tokens completos. **Límites y decisión de uso:** el gateway usa memoria y credencial fija solo para aislar compatibilidad; no es una implementación lista para Internet ni una garantía de entrega durable.
 
 **Fuentes oficiales:** [Socket.IO](https://socket.io/docs/v4/) y [compatibilidad Dart/servidor](https://pub.dev/packages/socket_io_client).
 

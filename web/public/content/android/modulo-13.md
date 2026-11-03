@@ -581,6 +581,8 @@ Un SoC integra varias unidades de cómputo; CPU y GPU no son recursos ilimitados
 
 **Analogía:** una cocina comparte energía, espacio y ventilación. Añadir más encargos no aumenta la capacidad física. El límite es que ese modelo no identifica un cuello de botella: hay que medir y correlacionar, sin forzar temperaturas peligrosas ni desactivar protecciones.
 
+**Mapa del diagnóstico:** `┌─ flujo reproducible → memoria + estado térmico + estado de arranque ─┐`<br>`└─ correlación con hora y acción → hipótesis que se vuelve a medir ─────┘`. Cada fuente observa una parte distinta; ninguna salida aislada prueba la causa.
+
 #### Paso 4 · Demostración guiada desde cero
 Crea una carpeta vacía para conservar evidencia y confirma el dispositivo autorizado:
 ```bash
@@ -603,7 +605,7 @@ Explica cada bloque: ADB identifica el destino, dumpsys consulta servicios dispo
 **Fallo deliberado:** sustituye el paquete por `com.example.noexiste`. Observa que no hay proceso correspondiente y compáralo con `adb shell pidof com.example.restauracion`. **Pista:** comprueba identidad y estado de ejecución antes de inferir que la app consume cero memoria. Corrige el paquete y abre la app.
 
 #### Paso 6 · Práctica independiente
-Toma dos muestras durante un flujo normal de prueba, sin calentamiento artificial ni estrés peligroso. Relaciona los tiempos y las acciones con lo observado; no concluyas causalidad solo porque dos valores cambiaron. Define qué información complementaria recogerías con profiler, trazas y pruebas en dispositivo físico.
+Toma dos muestras durante un flujo normal de prueba, sin calentamiento artificial ni estrés peligroso. Relaciona los tiempos y las acciones con lo observado; no concluyas causalidad solo porque dos valores cambiaron. Define qué información complementaria recogerías con profiler, trazas y pruebas en dispositivo físico. **Transferencia al proyecto integrador Android:** añade este registro al flujo de restauración de una copia de prueba y adjunta versión, dispositivo y acción reproducible al reporte de rendimiento; no recojas identificadores personales ni datos de otros paquetes.
 
 #### Paso 7 · Cierre y evidencia
 **Evidencia de aprendizaje:** tres archivos, condiciones, fallo de paquete y limitaciones de visibilidad. El siguiente paso es vincular la adaptación de carga a APIs de estado térmico y un presupuesto de rendimiento medido. **Errores comunes:** comparar emulador y teléfono como equivalentes, interpretar una propiedad vacía como garantía y desactivar medidas de protección. **Límites y decisión de uso:** no se ensaya root, desbloqueo de bootloader ni atestación; esas acciones no son necesarias para este diagnóstico.

@@ -66,6 +66,8 @@ El proyecto integrador tiene límites.
 
     def test_real_file_types_and_commands_are_recognized(self):
         for filename, command in [("index.html", "python3 -m http.server"),
+                                  ("contrato.mjs", "node --test contrato.test.mjs"),
+                                  ("worker.cjs", "node worker.cjs"),
                                   ("styles.css", "curl localhost:8000"),
                                   ("schema.sql", "psql -f schema.sql"),
                                   ("backup.sql", "pg_dump db"),

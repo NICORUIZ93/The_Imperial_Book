@@ -77,7 +77,7 @@ def evaluate(block: str) -> dict[str, bool]:
             or bool(re.search(r"[┌┐└┘├┤┬┴┼─│]", block))
             or any(resolve_archify_visual_link(href) for href in ARCHIFY_VISUAL_LINK.findall(block))
         ),
-        "filePath": bool(re.search(r"(?:src/|lib/|app/|\.github/|[\w-]+\.(?:ts|tsx|js|java|kt|swift|dart|py|tf|ya?ml|json|html|css|sql|sh|properties|kts|conf|service|env|ini|toml|md|cs|csproj))", block)),
+        "filePath": bool(re.search(r"(?:src/|lib/|app/|\.github/|[\w-]+\.(?:ts|tsx|js|mjs|cjs|java|kt|swift|dart|py|tf|ya?ml|json|html|css|sql|sh|properties|kts|conf|service|env|ini|toml|md|cs|csproj))", block)),
         # runCommand: exige un comando de ejecución REAL al inicio de una línea
         # (opcionalmente tras `$ ` o `cd ... && `), no una palabra suelta en prosa
         # ni un marcador de lenguaje como ```swift o ```java. Esto evita el falso

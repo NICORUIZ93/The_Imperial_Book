@@ -1029,6 +1029,8 @@ la cocina no debe cambiar la receta. El límite es que una arquitectura limpia n
 garantiza buen modelado: una entidad anémica o un caso de uso que solo reenvía
 llamadas sigue siendo diseño débil aunque tenga muchos paquetes.
 
+**Dirección de dependencias:** `┌─ HTTP/Spring → adaptador → caso de uso → puerto ← adaptador memoria/JPA ─┐`<br>`└─ dominio dentro del caso de uso; no importa Spring ───────────────────────┘`. La flecha indica quién conoce la interfaz, no necesariamente quién invoca en tiempo de ejecución.
+
 #### Paso 4 · Demostración guiada desde cero
 
 Desde una carpeta vacía crea `Main.java` y `test.sh` con el contenido completo de abajo:
@@ -1133,7 +1135,9 @@ está demasiado adentro.
 
 **Evidencia de aprendizaje:** entrega la compilación con `bash test.sh`, el diagrama de la
 dirección de dependencias, test de la transición inválida y una tabla que
-separe dominio, aplicación, adaptadores y drivers. El siguiente paso es revisar
+separe dominio, aplicación, adaptadores y drivers. **Transferencia al proyecto integrador RutaFlow:** implementa la asignación de un envío como caso de uso
+Java, conserva el dominio independiente de Spring y agrega el adaptador REST
+solo después de que la prueba pura pase. El siguiente paso es revisar
 la regla con ArchUnit en el Tema 3 y conectar el caso de uso a una API REST sin
 exponer entidades JPA.
 

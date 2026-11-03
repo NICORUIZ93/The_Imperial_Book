@@ -54,6 +54,24 @@ de esta anotación.
 En esta continuación, Chrome fue cerrado por el entorno antes de completar la
 prueba E2E; no se cuenta como validación E2E. La ejecución anterior de 42 pruebas
 indicada arriba corresponde a la sesión anterior y no valida el cambio CSS de
-esta fecha. La compilación y las pruebas unitarias actuales quedan sujetas al
-resultado del cierre de esta revisión. No se verificó en esta sesión un viewport
-móvil con navegador.
+esta fecha. No se verificó en esta sesión un viewport móvil con navegador.
+
+## Revisión pedagógica siguiente — 2026-11-03
+
+Se corrigió el perfil editorial de los seis temas que el auditor marcaba como
+no practicables. Android diagnóstico, A/B/shadow, latencia/throughput, Socket.IO,
+tokenización de pagos y Clean Architecture ahora muestran transferencia al
+proyecto correspondiente; cuatro tienen un mapa de flujo que explica límites,
+no una ilustración decorativa. El auditor reconoció rutas `.mjs` y `.cjs`, antes
+omitidas pese a que el material ya las nombraba. Perfil estructural: 1.098/1.098.
+
+La auditoría de sustancia sigue marcando 476 temas para revisión y detecta
+apéndices heredados en 184/245 módulos. Son señales automatizadas para priorizar,
+no una evaluación humana. La suite E2E de 46 pruebas se intentó después del
+rebase; Chrome recibió `SIGKILL` al iniciar, antes de abrir páginas. No se cuenta
+como resultado de navegación ni como inspección visual posterior al ajuste de la
+barra de progreso.
+
+Compilación Angular, 17 pruebas unitarias, `./scripts/validate.sh`, cinco
+laboratorios locales relevantes y `test.sh` de Java pasan. El bundle inicial
+sigue por encima del presupuesto configurado.

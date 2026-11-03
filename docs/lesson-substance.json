@@ -1647,7 +1647,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "33bf68372cff8f036d5afb0ac844436b09fa3de3a03152f632d6f71c8f0e3d6d",
+    "fingerprint": "c3497a36fedfd848ccee26c24d831fd91c039ec46bc7048f9b0536e159618e09",
     "issues": {
       "andamiaje-generico": 128,
       "bloque-repetido": 218,
@@ -1823,7 +1823,7 @@
         "module": 13,
         "tailWords": 105,
         "topic": "Tema 5: Del dispositivo al diagnóstico: SoC, memoria, límites térmicos y arranque verificado",
-        "words": 624
+        "words": 696
       },
       {
         "issues": [],
@@ -4619,9 +4619,9 @@
       {
         "issues": [],
         "module": 5,
-        "tailWords": 139,
+        "tailWords": 184,
         "topic": "Tema 7: A/B testing y shadow traffic: medir sin convertir usuarios en cobayas",
-        "words": 1070
+        "words": 1151
       },
       {
         "issues": [],
@@ -5564,9 +5564,9 @@
       {
         "issues": [],
         "module": 10,
-        "tailWords": 77,
+        "tailWords": 106,
         "topic": "Tema 6: Latencia y throughput: medir concurrencia sin confundirla con capacidad ilimitada",
-        "words": 617
+        "words": 681
       },
       {
         "issues": [
@@ -9854,9 +9854,9 @@
       {
         "issues": [],
         "module": 5,
-        "tailWords": 87,
+        "tailWords": 119,
         "topic": "Tema 4: Socket.IO extremo a extremo: un gateway compatible con el cliente móvil",
-        "words": 1270
+        "words": 1338
       },
       {
         "issues": [],
@@ -9891,7 +9891,7 @@
         "module": 6,
         "tailWords": 79,
         "topic": "Tema 4: Tokenización de pagos: un identificador opaco no sustituye autorización ni confirmación",
-        "words": 625
+        "words": 658
       },
       {
         "issues": [],
@@ -10187,9 +10187,9 @@
       {
         "issues": [],
         "module": 15,
-        "tailWords": 146,
+        "tailWords": 181,
         "topic": "Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework",
-        "words": 963
+        "words": 1036
       },
       {
         "issues": [

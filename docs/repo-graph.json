@@ -579,7 +579,7 @@
     },
     {
       "path": "docs/continuacion-material-rutaflow.md",
-      "lines": 60,
+      "lines": 78,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -588,7 +588,8 @@
         "## Referencias examinadas",
         "## Implementaci\u00f3n",
         "## Evidencia y l\u00edmites",
-        "## Revisi\u00f3n de continuaci\u00f3n \u2014 2026-11-03"
+        "## Revisi\u00f3n de continuaci\u00f3n \u2014 2026-11-03",
+        "## Revisi\u00f3n pedag\u00f3gica siguiente \u2014 2026-11-03"
       ]
     },
     {
@@ -634,7 +635,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 53,
+      "lines": 48,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -894,7 +895,7 @@
     },
     {
       "path": "docs/revision-prompt-academia.md",
-      "lines": 88,
+      "lines": 96,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -5874,7 +5875,7 @@
     },
     {
       "path": "scripts/tests/test_editorial_validation.py",
-      "lines": 90,
+      "lines": 92,
       "kind": "automation-script",
       "symbols": [
         "EditorialValidationTests"
@@ -6271,7 +6272,7 @@
     },
     {
       "path": "web/public/content/android/modulo-13.md",
-      "lines": 612,
+      "lines": 614,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7888,7 +7889,7 @@
     },
     {
       "path": "web/public/content/devops/modulo-5.md",
-      "lines": 728,
+      "lines": 735,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8391,7 +8392,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-10.md",
-      "lines": 724,
+      "lines": 726,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10785,7 +10786,7 @@
     },
     {
       "path": "web/public/content/rutaflow/modulo-5.md",
-      "lines": 653,
+      "lines": 655,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10806,7 +10807,7 @@
     },
     {
       "path": "web/public/content/rutaflow/modulo-6.md",
-      "lines": 490,
+      "lines": 492,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10995,7 +10996,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-15.md",
-      "lines": 1148,
+      "lines": 1152,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

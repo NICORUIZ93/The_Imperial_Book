@@ -19,9 +19,11 @@ del usuario ni las reglas de trabajo de este repositorio.
   pasan. Ese control cubre 12 rutas y no equivale a verificar todos los temas de
   los 14 cursos.
 - Al integrar los diez commits que ya estaban en el remoto, el inventario quedó
-  en 14 rutas, 245 módulos y 1.098 temas. La validación registra 476 temas con
-  defectos de sustancia y apéndices heredados en 184 módulos; estas son señales
-  para revisión, no veredictos pedagógicos por sí solas.
+  en 14 rutas, 245 módulos y 1.098 temas. La auditoría de sustancia marca 476
+  temas para revisión y detecta apéndices heredados en 184 módulos; son señales
+  heurísticas, no veredictos pedagógicos. El perfil de criterios editoriales
+  queda en 1.098/1.098 tras corregir seis ausencias, pero también mide estructura,
+  no aprendizaje ni calidad humana.
 - El prompt pide llegar a al menos 1.800 temas. Frente a los 1.098 actuales,
   faltan 702 para alcanzar ese umbral; el listado y los inventarios existentes no
   constituyen por sí solos una especificación completa de esos temas.
@@ -63,15 +65,21 @@ del usuario ni las reglas de trabajo de este repositorio.
 - Se integraron primero los diez commits ya publicados en la rama remota. La
   comparación con esa versión actualizó el baseline de 1.084 a 1.098 temas y de
   241 a 245 módulos.
-- La compilación actual y la suite unitaria se volverán a ejecutar tras el ajuste
-  visual. La prueba E2E de esta continuación se inició, pero Chrome fue terminado
-  por el entorno antes de completar; no se reporta como una ejecución válida.
+- Se completó el perfil estructural de seis temas que carecían de visual o
+  transferencia al proyecto: Android diagnóstico, A/B y shadow, latencia y
+  throughput, gateway Socket.IO, tokenización de pagos y Clean Architecture.
+  Cuatro incorporan mapas de flujo con sus límites explicados.
+- Se corrigió el detector de rutas para reconocer `.mjs` y `.cjs`, con cobertura
+  unitaria de esos formatos.
+- La suite E2E de 46 pruebas se inició, pero Chrome terminó con `SIGKILL` antes de
+  abrir la primera página. Sus casos reportan 0 ms; no cuentan como verificación
+  de navegación. La revisión visual posterior al ajuste CSS queda pendiente.
 
 ## Siguiente trabajo recomendado
 
 1. Acordar una secuencia curricular completa por ruta, módulo y nivel antes de
    intentar satisfacer la cifra de 1.800 temas.
-2. Auditar estructuralmente los 1.084 temas actuales, con conteos por criterio y
+2. Auditar estructuralmente los 1.098 temas actuales, con conteos por criterio y
    sin confundir presencia de marcadores con calidad formativa.
 3. Completar cursos en lotes pequeños: objetivo observable, explicación
    específica, ejemplo ejecutable, práctica guiada, ejercicio independiente,
@@ -82,6 +90,6 @@ del usuario ni las reglas de trabajo de este repositorio.
 ## Límites de esta revisión
 
 El inventario y los validadores aportan evidencia estructural y técnica acotada.
-No certifican que las 1.084 lecciones se hayan ejecutado ni sustituyen una
-revisión pedagógica humana. La sesión actual no pudo completar la suite E2E por
-cierre del navegador durante su arranque.
+No certifican que las 1.098 lecciones se hayan ejecutado ni sustituyen una
+revisión pedagógica humana. La suite E2E no llegó a abrir el navegador; falta
+repetir esa parte cuando Chrome pueda iniciarse en el entorno.
