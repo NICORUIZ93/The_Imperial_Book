@@ -7,197 +7,100 @@ Cada tema se practica por separado con su propia repetición progresiva y su pro
 
 ### Tema 1: Producers y consumers con Spring Kafka
 
-#### Paso 1 · Objetivo y preparación
+**Duración estimada:** 35 min.
+**¿Por qué es importante?** Un evento permite que quien registra un envío continúe sin llamar directamente a cada sistema que lo usa. Kafka conserva los mensajes y varios grupos pueden procesarlos por separado.
+**Prerrequisitos:** Spring Boot M1 T1 y M2 T1. Proyecto continuo: enviar un evento de creación y permitir ruteo y notificaciones independientes.
+**Laboratorio completo:** examples/spring-kafka-rutaflow/. Usa JDK 25, Spring Boot 4.1.2 y el Maven Wrapper del propio proyecto. Copia ese directorio a spring-kafka-practice y provoca los fallos en la copia. Las rutas y comandos de abajo apuntan al laboratorio comprobado; en tu copia conserva la misma estructura.
 
-Al finalizar podrás publicar un evento con `KafkaTemplate` y consumirlo con `@KafkaListener`, confirmando con un broker Kafka real (embebido, sin Docker) que el desacoplamiento entre publicador y consumidor funciona de extremo a extremo.
+#### Subtema 1.1: Publica el evento con la clave del envío · 10 min
 
-**Conocimiento previo:** `@Service` e inyección de dependencias (Módulo 1); manejo global de excepciones (Módulo 2).
+**1. Contexto**
+El identificador del envío sirve de clave para mantener sus eventos relacionados en una misma partición de Kafka.
 
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** La asignación de un conductor y el envío de notificaciones no deben bloquear el request HTTP que crea una tarea; un evento desacopla al publicador de sus consumidores, permitiendo que la notificación se procese de forma independiente sin que el creador de la tarea espere por ella.
-
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** desacoplamiento vía topic, `@KafkaListener`.
-
-```java
-@Service
-public class EventoPublisher {
-    private final KafkaTemplate<String, TareaCreadaEvent> kafka;
-
-    void publicar(TareaCreadaEvent evento) {
-        kafka.send("tareas.creadas", evento);
-    }
-}
-```
-
-Este publicador envía un evento hacia un topic sin que el publicador conozca ni le importe quién está consumiendo ese evento.
+**2. Hazlo tú**
+Abre el archivo completo examples/spring-kafka-rutaflow/src/main/java/academia/rutaflow/event/EnvioEventPublisher.java. Confirma que publicar envía topic, clave y evento:
 
 ```java
-@KafkaListener(topics = "tareas.creadas", groupId = "notificaciones")
-public void escuchar(TareaCreadaEvent evento) {
-    // procesar notificación
-}
+return kafka.send(TOPIC, evento.envioId().toString(), evento);
 ```
 
-Este listener define un consumidor completamente independiente, sin ninguna dependencia directa entre ambos. Sin mensajería, `TareaService` tendría que invocar directamente a `NotificacionService`, requiriendo que ambos estén disponibles simultáneamente.
-
-**Analogía:** la mensajería es publicar un anuncio en un tablón público en vez de llamar personalmente a cada interesado: quien publica no necesita saber quién lo leerá, y se pueden agregar nuevos lectores sin que el publicador original haga nada distinto.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-  A["TareaService.crear(...)"] --> B["EventoPublisher.publicar(evento)"]
-  B --> C["topic: tareas.creadas"]
-  C --> D["@KafkaListener groupId=notificaciones"]
-  C --> E["@KafkaListener groupId=analytics (futuro, sin tocar el publicador)"]
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Desde una carpeta vacía (o continuando en `academia-spring`, o créala con `mkdir -p academia-spring` si es tu primera vez), genera el proyecto con Spring Initializr real (`web`, `kafka`) y crea el evento, el publicador y el consumidor en `src/main/java/com/academia/mensajeria/`:
+Desde examples/spring-kafka-rutaflow/, ejecuta la prueba de integración:
 
 ```bash
-mkdir -p academia-spring/src/main/java/com/academia/mensajeria
-cd academia-spring
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web,kafka -d javaVersion=25 -d artifactId=academia-mensajeria -o app.zip
-unzip -o app.zip
+./mvnw -Dtest=EnvioEventPublisherTest#publicaConKeyDelEnvioYElListenerLaRecibe test
 ```
 
-```java
-// src/main/java/com/academia/mensajeria/TareaCreadaEvent.java
-package com.academia.mensajeria;
+**Resultado esperado:** la prueba confirma topic, clave, partición, offset y el mismo evento recibido por el consumidor.
 
-import java.io.Serializable;
+**Fallo deliberado:** cambia la clave por el identificador del evento. **Error esperado:** la prueba informa que la clave recibida no coincide con el identificador del envío. **Diagnóstico:** el envío y sus eventos deben compartir una clave estable si el negocio requiere procesarlos en el mismo orden.
 
-public record TareaCreadaEvent(String id, String titulo) implements Serializable {}
-```
+**3. Entiende**
+KafkaTemplate devuelve un CompletableFuture<SendResult<...>>; publicar inicia una operación asíncrona. La clave no es el valor del evento: Kafka la usa para decidir la partición.
 
-```java
-// src/main/java/com/academia/mensajeria/EventoPublisher.java
-package com.academia.mensajeria;
+**4. Cierra**
+Anota topic, clave y partición que devolvió la prueba. Verifica qué campo elegirías para conservar juntos los cambios de un mismo envío.
 
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.stereotype.Service;
+#### Subtema 1.2: Conecta dos grupos consumidores · 10 min
 
-@Service
-public class EventoPublisher {
-    private final KafkaTemplate<String, TareaCreadaEvent> kafka;
+**1. Contexto**
+Ruteo y notificaciones reciben el mismo hecho, pero mantienen su avance por separado y pueden procesarlo a ritmos distintos.
 
-    public EventoPublisher(KafkaTemplate<String, TareaCreadaEvent> kafka) { this.kafka = kafka; }
+**2. Hazlo tú**
+Lee los archivos completos:
 
-    public void publicar(TareaCreadaEvent evento) {
-        kafka.send("tareas.creadas", evento.id(), evento); // clave estable: mismo id -> misma partición
-    }
-}
-```
+- examples/spring-kafka-rutaflow/src/main/java/academia/rutaflow/event/RuteoListener.java
+- examples/spring-kafka-rutaflow/src/main/java/academia/rutaflow/event/NotificacionListener.java
 
-```java
-// src/main/java/com/academia/mensajeria/NotificacionListener.java
-package com.academia.mensajeria;
-
-import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.stereotype.Component;
-
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.List;
-
-@Component
-public class NotificacionListener {
-    // lista real (no un mock) donde el listener registra cada evento recibido, consultada por el test
-    private final List<TareaCreadaEvent> eventosRecibidos = new CopyOnWriteArrayList<>();
-
-    @KafkaListener(topics = "tareas.creadas", groupId = "notificaciones")
-    public void escuchar(TareaCreadaEvent evento) {
-        eventosRecibidos.add(evento);
-    }
-
-    public List<TareaCreadaEvent> getEventosRecibidos() { return eventosRecibidos; }
-}
-```
-
-**Explicación línea por línea:** `kafka.send("tareas.creadas", evento.id(), evento)` publica usando el `id` de la tarea como clave, garantizando que eventos de la misma tarea siempre lleguen a la misma partición y por lo tanto se procesen en orden entre sí; `@KafkaListener(topics = "tareas.creadas", groupId = "notificaciones")` registra un consumidor independiente que Spring invoca automáticamente por cada mensaje del topic; `eventosRecibidos` es una lista real (no un mock) que el test consulta directamente para confirmar qué llegó efectivamente al consumidor.
-
-Confirma con `@EmbeddedKafka` (un broker Kafka REAL que corre embebido dentro del proceso de test, sin necesitar Docker ni un Kafka externo) que un evento publicado efectivamente llega al consumidor:
-
-```java
-// src/test/java/com/academia/mensajeria/EventoPublisherTest.java
-package com.academia.mensajeria;
-
-import org.awaitility.Awaitility;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.kafka.test.context.EmbeddedKafka;
-import org.springframework.test.context.TestPropertySource;
-
-import java.time.Duration;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-@SpringBootTest
-@EmbeddedKafka(partitions = 1, topics = "tareas.creadas")
-@TestPropertySource(properties = "spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}")
-class EventoPublisherTest {
-
-    @Autowired
-    private EventoPublisher publisher;
-    @Autowired
-    private NotificacionListener listener;
-
-    @Test
-    void publicarUnEventoLoEntregaAlConsumidorReal() {
-        publisher.publicar(new TareaCreadaEvent("1", "Comprar leche"));
-
-        // el consumo es asíncrono: espera activamente (con timeout real) a que el listener lo reciba
-        Awaitility.await().atMost(Duration.ofSeconds(5))
-            .untilAsserted(() -> assertThat(listener.getEventosRecibidos())
-                .extracting(TareaCreadaEvent::titulo)
-                .contains("Comprar leche"));
-    }
-}
-```
+Compara el valor de groupId en ambos listeners y ejecuta la prueba:
 
 ```bash
-mvn test -Dtest=EventoPublisherTest # Maven
-./gradlew test --tests EventoPublisherTest # Gradle (equivalente)
+./mvnw -Dtest=EnvioEventPublisherTest#publicaConKeyDelEnvioYElListenerLaRecibe test
 ```
 
-**Resultado esperado:** `BUILD SUCCESS` con el test en verde: `@EmbeddedKafka` levantó un broker Kafka real dentro del proceso de test, `EventoPublisher` publicó de verdad hacia el topic `tareas.creadas`, y `NotificacionListener` —un consumidor completamente independiente, sin ninguna referencia directa al publicador— lo recibió y registró, confirmando el desacoplamiento real entre ambos.
+**Resultado esperado:** la prueba recibe el envío en las colas de ruteo y notificaciones; ambas confirmaciones conservan la misma partición y offset del registro publicado.
 
-**Fallo deliberado:** cambia el topic en `@KafkaListener(topics = "tareas.creadas", ...)` a `@KafkaListener(topics = "tareas.otro-topic", ...)` (un topic distinto al que `EventoPublisher` realmente publica) y ejecuta de nuevo. El test FALLA con un timeout de `Awaitility` (`ConditionTimeoutException`, tras esperar los 5 segundos completos sin que la condición se cumpla nunca) porque el consumidor está escuchando un topic que nunca recibe ningún mensaje — diagnostica confirmando que el acoplamiento entre publicador y consumidor, aunque no sea de compilación, SÍ existe implícitamente a través del nombre del topic: si ambos no coinciden exactamente en ese string, el desacoplamiento se convierte en una desconexión silenciosa sin ningún error de compilación que lo señale. Revierte el cambio antes de continuar.
+**Fallo deliberado:** cambia el groupId de notificaciones por el de ruteo. **Error esperado:** la comprobación de la segunda cola queda sin mensaje y vence el timeout. **Diagnóstico:** dos consumidores en el mismo grupo reparten trabajo; dos grupos distintos reciben cada uno una copia lógica del registro.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**3. Entiende**
+Un consumer group representa un lector lógico. Kafka distribuye cada partición entre los consumidores de un grupo; los offsets de grupos distintos son independientes. Un evento no llama un método Java del otro servicio.
 
-1. Agrega un segundo `@KafkaListener` con un `groupId` distinto escuchando el mismo topic, y confirma con el test que AMBOS reciben el mismo evento de forma independiente.
-2. Publica dos eventos con la misma clave (`evento.id()`) y confirma, inspeccionando el orden en `eventosRecibidos`, que llegan en el mismo orden en que se publicaron (garantía de orden por partición cuando comparten clave).
-3. Publica un evento con un `id` nulo o vacío y observa (documentando el resultado) si eso afecta a qué partición se enruta, comparado con un `id` no vacío.
-4. Escribe de memoria (sin mirar) un `EventoPublisher` con `KafkaTemplate`, un `@KafkaListener` independiente, y un test `@EmbeddedKafka` con `Awaitility` que confirme la entrega. Compara después contra el patrón del Paso 4.
+**4. Cierra**
+Escribe qué grupo atiende cada listener y por qué el publicador no tiene que conocer esos nombres.
 
-**Pista:** el consumo de Kafka es inherentemente asíncrono; un test que verifica el resultado inmediatamente después de `publicar(...)` sin ningún mecanismo de espera (como `Awaitility`) es una fuente clásica de tests intermitentes (flaky), porque el consumidor podría no haber procesado el mensaje todavía en ese instante exacto.
+#### Subtema 1.3: Comprueba orden y entrega con un broker · 15 min
 
-#### Paso 6 · Práctica independiente
+**1. Contexto**
+El envío al topic no implica que el listener ya haya terminado. Comprueba el recorrido con un broker embebido y espera a que el consumidor procese el evento.
 
-**Completa el código:** rellena el espacio para registrar el consumidor sobre el topic correcto:
+**2. Hazlo tú**
+Abre examples/spring-kafka-rutaflow/src/test/java/academia/rutaflow/event/EnvioEventPublisherTest.java y estudia conservaParticionYOrdenParaDosEventosDelMismoEnvio. Luego ejecuta:
 
-```java
-@____(topics = "tareas.creadas", groupId = "notificaciones")
-public void escuchar(TareaCreadaEvent evento) { }
+```bash
+./mvnw -Dtest=EnvioEventPublisherTest#conservaParticionYOrdenParaDosEventosDelMismoEnvio test
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un publicador con `KafkaTemplate`, un consumidor con `@KafkaListener`, y un test `@EmbeddedKafka` que confirme la entrega con `Awaitility`. Compara después contra el patrón del Paso 4.
+**Resultado esperado:** los dos eventos comparten partición, el segundo tiene un offset mayor y el listener los recibe en el mismo orden.
 
-#### Paso 7 · Cierre y evidencia
+**Fallo deliberado:** en el publicador usa un UUID aleatorio como clave en vez de envioId. **Error esperado:** la prueba ya no puede confirmar una partición común para los dos eventos. **Diagnóstico:** el particionador recibe claves diferentes; genera la clave a partir del envío que define el orden del negocio.
 
-Ya publicas y consumes eventos desacoplados con Kafka, confirmando con un broker real embebido que la entrega efectivamente ocurre de extremo a extremo. El siguiente tema aborda qué ocurre cuando el consumidor falla al procesar un mensaje. **Evidencia:** entrega el resultado de `EventoPublisherTest` en verde, y el timeout real que produce el fallo deliberado cuando publicador y consumidor no coinciden en el topic. Fuente oficial: [Spring for Apache Kafka — Testing](https://docs.spring.io/spring-kafka/reference/testing.html).
+**3. Entiende**
+El orden está garantizado dentro de una partición, no entre todas las particiones del topic. La misma clave normalmente dirige el registro a la misma partición; la garantía del ejercicio depende de conservar estable esa clave y configuración.
 
-**Errores comunes:** asumir que el consumo es sincrónico y verificar el resultado sin ningún mecanismo de espera, produciendo tests intermitentes; que publicador y consumidor no coincidan exactamente en el nombre del topic, una desconexión silenciosa sin error de compilación.
+**4. Cierra**
+Entrega los resultados de ambas pruebas y describe qué esperarías si publicaras dos eventos del mismo envío con claves distintas.
 
-**Cuándo no usarlo:** para una operación que el llamador necesita confirmar que se completó exitosamente antes de continuar (por ejemplo, verificar el stock disponible antes de confirmar una compra), una llamada síncrona directa es más apropiada que un evento asíncrono desacoplado.
+**Hito del tema:**
 
-Los producers y consumers de Spring Kafka que implementes aquí son los que integrará el proyecto integrador de este track (microservicio productivo, Módulo 12).
+- [ ] Publiqué un evento con KafkaTemplate y clave estable.
+- [ ] Identifiqué los grupos independientes de ruteo y notificaciones.
+- [ ] Verifiqué partición, offset y orden mediante un broker embebido.
+- [ ] Reproduje un fallo por usar una clave incorrecta y lo diagnostiqué.
+
+**Nota del laboratorio:** la suite actual termina con código 0, pero Kafka 4.2.2 registra una advertencia al cerrar el directorio temporal del broker embebido; el recorrido de mensajes sí está probado y el apagado limpio del broker sigue pendiente.
+
+**Fuentes oficiales:** [envío con KafkaTemplate](https://docs.spring.io/spring-kafka/reference/kafka/sending-messages.html), [recepción con listeners](https://docs.spring.io/spring-kafka/reference/kafka/receiving-messages.html) y [pruebas con broker embebido](https://docs.spring.io/spring-kafka/reference/testing.html).
+
+**Transferencia al proyecto integrador:** conecta el evento de envío con consumidores independientes y conserva el identificador del envío como clave para el procesamiento ordenado por partición.
 
 ### Tema 2: Dead-letter queue
 

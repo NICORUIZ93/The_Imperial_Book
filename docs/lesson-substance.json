@@ -1695,7 +1695,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "05a4fe150695a50db101e6b53a32b13d64d5beb271902c9cb8d0d5241c4a6f97",
+    "fingerprint": "e6ed3c27cea8adad84fa4a6568ef44f8a6ee3fa1dadc558757c7f3ac75e0ff27",
     "issues": {
       "andamiaje-generico": 125,
       "bloque-repetido": 210,
@@ -11124,9 +11124,9 @@
       {
         "issues": [],
         "module": 8,
-        "tailWords": 183,
+        "tailWords": 0,
         "topic": "Tema 1: Producers y consumers con Spring Kafka",
-        "words": 1395
+        "words": 874
       },
       {
         "issues": [],

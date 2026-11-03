@@ -289,7 +289,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 9402,
+      "lines": 9445,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -297,7 +297,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1231,
+      "lines": 1230,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -583,7 +583,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3409,
+      "lines": 3416,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -619,7 +619,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13480,
+      "lines": 13482,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -660,7 +660,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 81,
+      "lines": 82,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1071,7 +1071,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 310,
+      "lines": 313,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -12122,7 +12122,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-8.md",
-      "lines": 1280,
+      "lines": 1183,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12130,15 +12130,15 @@
         "# M\u00f3dulo 8: Mensajer\u00eda \u2014 Kafka/RabbitMQ",
         "## Aprende construyendo",
         "### Tema 1: Producers y consumers con Spring Kafka",
+        "#### Subtema 1.1: Publica el evento con la clave del env\u00edo \u00b7 10 min",
+        "#### Subtema 1.2: Conecta dos grupos consumidores \u00b7 10 min",
+        "#### Subtema 1.3: Comprueba orden y entrega con un broker \u00b7 15 min",
+        "### Tema 2: Dead-letter queue",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda con analog\u00eda",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
-        "### Tema 2: Dead-letter queue",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva"
       ]
     },
     {

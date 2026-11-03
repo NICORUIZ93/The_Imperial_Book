@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 103,
+      "objective": 102,
       "prerequisites": 107,
-      "context": 103,
-      "theoryAnalogy": 103,
-      "guidedDemo": 103,
+      "context": 102,
+      "theoryAnalogy": 102,
+      "guidedDemo": 102,
       "codeExplanation": 111,
       "execution": 107,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 103,
-      "independentPractice": 103,
-      "closure": 103,
-      "commonErrors": 103,
+      "guidedPractice": 102,
+      "independentPractice": 102,
+      "closure": 102,
+      "commonErrors": 102,
       "resources": 104,
-      "standaloneExample": 99,
+      "standaloneExample": 98,
       "learningEvidence": 103,
-      "complete": 99
+      "complete": 98
     }
   },
   "topics": {
@@ -30811,26 +30811,26 @@
         "module": 8,
         "topic": "Tema 1: Producers y consumers con Spring Kafka",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
           "resources": true,
-          "standaloneExample": true,
+          "standaloneExample": false,
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 7,
+          "complete": false
         }
       },
       {
