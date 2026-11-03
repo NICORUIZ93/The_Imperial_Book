@@ -169,3 +169,13 @@ Microservicios y Docker/Kubernetes.
 Estado: **planes aprobados, no publicados**. Se construirán módulo a módulo con la
 puerta de calidad completa. Lista total de cursos separados aprobados: Microservicios,
 Docker/Kubernetes, Build (Maven/Gradle), JDBC/Bases de datos.
+
+## Orden explícita posterior: aplicar íntegramente el MASTER PROMPT
+
+Fecha: 2026-11-02. El usuario ordenó que el documento de 3066 líneas entregado como
+`pasted_content.txt` sea el contrato operativo. Desde este punto no basta el formato
+`Aprende/Practica/Aplica` ni un mapa de subtemas: cada tema nuevo o corregido debe usar título con
+verbo, 20–45 minutos, prerrequisito exacto y los siete pasos completos. También exige cinco tipos
+de práctica guiada, reto independiente, fallo con error exacto y diagnóstico, checklist, proyecto
+por módulo con rúbrica y capstone por track. Microservicios M0–M1, publicados antes de esta orden,
+deben corregirse antes de avanzar a M2; su estado actual no acredita cumplimiento del prompt.

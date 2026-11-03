@@ -11,7 +11,9 @@
 >
 > Donde el currículo de abajo diga "Java 21 LTS, Spring Boot 3.4.1", léase "JDK 27, Spring Boot 4.1".
 > Las demás pautas (7 pasos, preservación, nombres, niveles, proyectos, validación) se aplican tal cual.
-> Prioridad de ejecución acordada con el dueño: **Java → Spring Boot → Angular → Flutter**.
+> Decisiones posteriores amplían el alcance. Prioridad vigente: **Java → Spring Boot →
+> Microservicios → Docker/Kubernetes → Flutter**. También quedan aprobados como cursos separados
+> Build (Maven/Gradle) y JDBC/Bases de datos.
 
 Un solo archivo. Todas las reglas. Todos los cursos. Todos los temas.
 
@@ -71,14 +73,16 @@ Cada track termina con capstone de 6 fases que integre el 80% de los temas, con 
 
 ---
 
-## PARTE 2 · CURRÍCULO COMPLETO — 14 TRACKS
+## PARTE 2 · CURRÍCULO COMPLETO — 15 TRACKS PUBLICADOS + CURSOS APROBADOS
 
-El currículo completo de los 14 tracks (Fundamentos, JavaScript, Java, Node, Angular, React,
-Spring Boot, Cloud, DevOps, KMP, Android, iOS, Flutter, RutaFlow) con todos sus módulos y
-~1800 temas objetivo está versionado y es la fuente de verdad del alcance. Recordatorio de
+El currículo incluye los 14 tracks originales (Fundamentos, JavaScript, Java, Node, Angular,
+React, Spring Boot, Cloud, DevOps, KMP, Android, iOS, Flutter y RutaFlow) más Microservicios como
+track separado. Docker/Kubernetes, Build y JDBC/Bases de datos se publicarán módulo a módulo con
+la misma puerta. El objetivo de ~1800 temas se recalcula conservando los originales. Recordatorio de
 versiones: donde diga "Java 21 / Spring Boot 3.4.1", aplicar **JDK 27 / Spring Boot 4.1**.
 
-Prioridad de ejecución acordada: **Java → Spring Boot → Angular → Flutter**, luego el resto.
+Prioridad vigente: **Java → Spring Boot → Microservicios → Docker/Kubernetes → Flutter**, luego
+Build, JDBC y el resto.
 
 El detalle por track (niveles, duraciones, prerrequisitos y lista de temas) se mantiene en el
 temario de referencia y en los planes por curso:
@@ -98,10 +102,19 @@ Además, por la puerta de calidad de `AGENTS.md`: **Mapa de subtemas críticos**
 individual por fila, y evidencia ejecutada en la versión fijada (JDK 27 / Spring Boot 4.1).
 
 ### 3.2 Orden de ejecución por track
-Prioridad del dueño: Java → Spring Boot → Angular → Flutter → (Fundamentos, JavaScript, Node,
-React, Cloud, DevOps, KMP, Android, iOS, RutaFlow). Para cada track: inventario N → reordenar por
+Prioridad del dueño: Java → Spring Boot → Microservicios → Docker/Kubernetes → Flutter → Build →
+JDBC → (Fundamentos, JavaScript, Node, Angular, React, Cloud, DevOps, KMP, Android, iOS, RutaFlow).
+Para cada track: inventario N → reordenar por
 dependencia → expandir cada tema (§3.1) → proyecto por módulo → capstone → verificar M ≥ N →
 regenerar reportes → `validate.sh` en verde.
+
+### 3.3 Puerta estricta antes de publicar un tema
+
+Un tema no entra al índice web si incumple: título con verbo; duración de 20–45 minutos;
+prerrequisito exacto; siete pasos completos; mapa exhaustivo de subtemas críticos; código completo
+con archivo, versión, comando, salida y fallo/error/diagnóstico exactos; cinco prácticas guiadas;
+reto independiente; checklist de 4–6 ítems; y proyecto de módulo con rúbrica antes de cerrar el
+módulo. Los detectores automáticos pueden rechazar o priorizar, pero no aprobar profundidad humana.
 
 ---
 
@@ -113,7 +126,8 @@ deliberado + diagnóstico; checklist 4-6 ítems; máximo 30% en N1; mínimo 1 en
 módulo con rúbrica; capstone del track; preservación M ≥ N.
 
 ### 4.2 Criterios globales
-14 tracks; `./scripts/validate.sh` verde; `python3 scripts/validate_learning_priorities.py` verde;
+15 tracks publicados actualmente, más cursos separados aprobados; `./scripts/validate.sh` verde;
+`python3 scripts/validate_learning_priorities.py` verde;
 README con cifras reales; 0 temas perdidos; capstones por track (menos Fundamentos y RutaFlow).
 
 ### 4.3 Regla de verificación y honestidad (AGENTS.md)
