@@ -11,8 +11,8 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 | node | 83 | 17 | HTTP y validación antes de autenticación e integraciones | API con límites de carga, paginación estable, pruebas y cierre ordenado |
 | angular | 71 | 3 | HTML/CSS/TypeScript explícitos; RxJS y estado con ejemplos completos | Rutas, formularios, datos remotos y cambios sin guardar comprobados con navegador |
 | react | 58 | 46 | JSX y estado antes de efectos; proveedor, dependencias y API visibles | Carga, error, vacío y carrera de respuestas; caché observada, no supuesta |
-| java | 101 | 50 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
-| spring-boot | 111 | 20 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
+| java | 101 | 51 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
+| spring-boot | 111 | 21 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
 | android | 58 | 0 | Kotlin antes de Compose; distinguir recomposición, recreación y muerte de proceso | App instalable con permisos, restauración, persistencia y pruebas en dispositivo |
 | ios | 56 | 4 | Swift antes de SwiftUI; explicitar macOS/Xcode y destino | Cancelación, estados de red, persistencia y accesibilidad comprobados en simulador |
 | flutter | 106 | 10 | Dart antes de widgets; ejemplo con main y destino de ejecución | Restauración, red, pruebas de widget, integración y publicación por plataforma |
@@ -746,7 +746,7 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | java / 2 | [Tema 1: List, Set, Map y sus implementaciones](../web/public/content/java/modulo-2.md) | clase-java-no-visible |
 | java / 2 | [Tema 2: Genéricos, wildcards y type erasure](../web/public/content/java/modulo-2.md) | clase-java-no-visible |
 | java / 2 | [Tema 3: Comparable vs Comparator, e iteración](../web/public/content/java/modulo-2.md) | clase-java-no-visible |
-| java / 20 | [Tema 1: Las cuatro formas: Predicate, Function, Consumer y Supplier](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 20 | [Tema 1: Las cuatro formas: Predicate, Function, Consumer y Supplier](../web/public/content/java/modulo-20.md) | demostracion-no-delimitada |
 | java / 20 | [Tema 2: Componer sin anidar: andThen, compose, negate y reglas encadenadas](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 20 | [Tema 3: Streams como composición: pereza, orden y efectos que se esconden](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 20 | [Tema 4: Function y BiFunction: transformar uno o dos datos](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
@@ -1109,7 +1109,7 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | spring-boot / 1 | [Tema 3: Perfiles y estructura por capas](../web/public/content/spring-boot/modulo-1.md) | ejemplo-breve-revisar-contexto |
 | spring-boot / 10 | [Tema 1: Config Server y service discovery](../web/public/content/spring-boot/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 10 | [Tema 2: Spring Cloud Gateway](../web/public/content/spring-boot/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 10 | [Tema 3: Circuit breaker con Resilience4j](../web/public/content/spring-boot/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 10 | [Tema 3: Circuit breaker con Resilience4j](../web/public/content/spring-boot/modulo-10.md) | demostracion-no-delimitada |
 | spring-boot / 10 | [Tema 4: OAuth2/OIDC, Keycloak y Token Relay sin perder la frontera de autorización](../web/public/content/spring-boot/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 10 | [Tema 5: HTTP Interfaces, deadlines y descubrimiento según el entorno](../web/public/content/spring-boot/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 10 | [Tema 6: Spring gRPC para comunicación interna de alta frecuencia (Spring Boot 4.1)](../web/public/content/spring-boot/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |

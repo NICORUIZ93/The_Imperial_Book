@@ -8,51 +8,17 @@ Cada Tema parte de una carpeta vacía y se compila con `javac` para ver el error
 
 ### Tema 1: Las cuatro formas: Predicate, Function, Consumer y Supplier
 
-#### Paso 1 · Objetivo y preparación
+**Duración:** 30 min. **Prerrequisitos:** Java M0 T1–T3 (clases, métodos y tipos). **Proyecto continuo:** Motor de asignación de entregas.
 
-Al finalizar vas a elegir la interfaz funcional correcta para cada intención —decidir, transformar, notificar o proveer— y a compilar un ejemplo que use las cuatro sin envolver lambdas a mano.
+**¿Por qué es importante?** Estas cuatro interfaces convierten reglas pequeñas en piezas que se pueden pasar y probar sin mezclar todo en un solo método.
 
-**Conocimiento previo:** Java M0 (variables, clases y métodos), lambdas y `javac`/`java` en el `PATH`. Comprueba `java -version` y `javac -version` (JDK 21 o superior).
+#### Subtema 1.1: Elige una interfaz por la salida que necesitas · 10 min
 
-#### Paso 2 · Contexto y caso real
+**1. Contexto**
+Para revisar envíos, el programa debe decidir si un paquete pesa demasiado, transformar sus datos, registrar el aviso y obtener el turno actual.
 
-**¿Por qué es importante?** En un caso real, el equipo de RutaFlow necesita aplicar reglas distintas por cliente: unas deciden si un envío requiere revisión, otras transforman la guía para imprimirla, otras registran la decisión y otras proveen la fecha del turno. Si cada regla se modela con la interfaz equivocada, el código compila pero obliga a envolver lambdas y a repetir `if` por todas partes.
-
-Elegir la forma correcta convierte una regla de negocio en un valor que se pasa, se compone y se prueba por separado. Ese es el primer paso para que el proyecto integrador no acumule lógica en un método de mil líneas.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-`java.util.function` define cuatro formas base:
-
-- `Predicate<T>`: recibe un valor y decide (`boolean`). Es un portero.
-- `Function<T, R>`: recibe un valor y devuelve otro. Es un traductor.
-- `Consumer<T>`: recibe un valor y no devuelve nada; produce un efecto. Es un notificador.
-- `Supplier<T>`: no recibe nada y devuelve un valor. Es un proveedor.
-
-**Analogía:** en una bodega, el portero decide si un paquete entra (`Predicate`), el traductor reetiqueta el paquete en otro idioma (`Function`), el notificador avisa al sistema (`Consumer`) y el proveedor entrega el turno del día (`Supplier`). La analogía deja de servir si conviertes la interfaz en el modelo del negocio: `Predicate<Envio>` describe una decisión, no un envío.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-    E["Envio"] --> P["Predicate&lt;Envio&gt;<br/>decide"]
-    E --> F["Function&lt;Envio,String&gt;<br/>transforma"]
-    E --> C["Consumer&lt;String&gt;<br/>notifica"]
-    S["Supplier&lt;String&gt;<br/>provee"] --> C
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-##### Subtema 1.1: Escoger una forma por lo que hace · 10-15 min
-
-Desde una carpeta vacía:
-
-```bash
-mkdir java-funcional && cd java-funcional
-mkdir src
-```
-
-Crea `src/Formas.java` con este contenido completo:
+**2. Hazlo tú**
+Crea `java-funcional/src/Formas.java`:
 
 ```java
 import java.util.List;
@@ -65,66 +31,52 @@ public final class Formas {
     record Envio(String guia, String destino, double pesoKg) {}
 
     public static void main(String[] args) {
-        // Predicate: decide si el envío requiere revisión.
-        Predicate<Envio> requiereRevision = envio -> envio.pesoKg() > 20;
-        // Function: transforma el envío en la línea que se imprime.
+        Predicate<Envio> revisar = envio -> envio.pesoKg() > 20;
         Function<Envio, String> etiqueta = envio -> envio.guia() + " -> " + envio.destino();
-        // Consumer: produce un efecto, no devuelve valor.
-        Consumer<String> registrar = linea -> System.out.println("[log] " + linea);
-        // Supplier: entrega un valor cuando se le pide.
+        Consumer<String> registrar = texto -> System.out.println("[log] " + texto);
         Supplier<String> turno = () -> "Turno AM";
 
         List<Envio> envios = List.of(
             new Envio("ENV-1", "Bogotá", 5.5),
             new Envio("ENV-2", "Medellín", 32.0)
         );
-
         for (Envio envio : envios) {
-            if (requiereRevision.test(envio)) {
-                registrar.accept(turno.get() + " | " + etiqueta.apply(envio));
-            }
+            if (revisar.test(envio)) registrar.accept(turno.get() + " | " + etiqueta.apply(envio));
         }
     }
 }
 ```
 
-Compila y ejecuta:
+Desde `java-funcional/`, ejecuta:
 
 ```bash
+mkdir -p out
 javac -d out src/Formas.java
 java -cp out Formas
 ```
 
-**Resultado esperado:** una sola línea, `[log] Turno AM | ENV-2 -> Medellín`. El envío de 5,5 kg no entra al bloque porque `requiereRevision` devuelve `false`.
+**Resultado esperado:** `[log] Turno AM | ENV-2 -> Medellín`.
 
-**Fallo deliberado:** cambia la `Function` por una lambda de dos parámetros:
+**Fallo deliberado:** modifica la declaración a `Function<Envio, String> etiqueta = (guia, destino) -> guia;`. **Resultado esperado:** `javac` indica que la lambda recibe una cantidad de parámetros incompatible. **Diagnóstico:** `Function<T,R>` recibe exactamente un valor; usa `BiFunction` cuando el cálculo necesita dos.
 
-```java
-Function<Envio, String> etiqueta = (guia, destino) -> guia;
-```
+**3. Entiende**
+`Predicate` decide, `Function` transforma, `Consumer` realiza una acción y `Supplier` entrega un valor cuando se lo piden.
 
-Al compilar, `javac` responde:
+**4. Cierra**
+Anota qué método ejecutó cada forma: `test`, `apply`, `accept` o `get`.
 
-```text
-Formas.java:12: error: incompatible types: incompatible parameter types in lambda expression
-```
+#### Subtema 1.2: Normaliza una guía con Function · 10 min
 
-El diagnóstico es que `Function` declara un único parámetro. El compilador no está fallando por la sintaxis de la lambda, sino por su aridad: la interfaz fija la forma. Corrige la lambda a un parámetro y vuelve a compilar.
+**1. Contexto**
+El sistema recibe guías con espacios y distintas mayúsculas; la etiqueta impresa debe tener un formato consistente.
 
-**Conceptos clave:** interfaz funcional, aridad, `apply`, `test`, `accept`, `get`.
-
-#### Paso 5 · Práctica guiada
-
-##### Subtema 1.2: Transformar una etiqueta con Function · 5-10 min
-
-**Contexto:** una pantalla necesita mostrar las guías siempre en mayúsculas.
-
-**Hazlo tú:** crea `src/Etiqueta.java` dentro de `java-funcional`:
+**2. Hazlo tú**
+Crea `java-funcional/src/Etiqueta.java`:
 
 ```java
 import java.util.function.Function;
 
-public class Etiqueta {
+public final class Etiqueta {
     public static void main(String[] args) {
         Function<String, String> normalizar = texto -> texto.trim().toUpperCase();
         System.out.println(normalizar.apply(" rt-8 "));
@@ -132,27 +84,36 @@ public class Etiqueta {
 }
 ```
 
-Ejecuta `javac -d out src/Etiqueta.java && java -cp out Etiqueta`.
+Desde `java-funcional/`, ejecuta:
+
+```bash
+javac -d out src/Etiqueta.java
+java -cp out Etiqueta
+```
 
 **Resultado esperado:** `RT-8`.
 
-**Fallo deliberado:** cambia el argumento por `normalizar.apply(8)`. **Error esperado:** el compilador indica que `int` no se puede convertir a `String`. **Diagnóstico:** el primer tipo de `Function<String, String>` determina qué acepta `apply`.
+**Fallo deliberado:** modifica la llamada `normalizar.apply(" rt-8 ")` a `normalizar.apply(8)`. **Resultado esperado:** error de compilación porque `8` no es un `String`. **Diagnóstico:** el primer tipo de `Function<String, String>` indica qué valor acepta `apply`.
 
-**Entiende:** `Function` transforma y devuelve un dato; `Predicate` responde una pregunta con `true` o `false`.
+**3. Entiende**
+Una función recibe un dato y devuelve otro. `trim()` quita espacios de los extremos; `toUpperCase()` cambia letras a mayúsculas.
 
-#### Paso 6 · Práctica independiente
+**4. Cierra**
+Conserva la salida y explica qué pasaría si quitas `trim()`.
 
-##### Subtema 1.3: Proveer un dato y registrar una acción · 5-10 min
+#### Subtema 1.3: Provee un turno y registra la etiqueta · 10 min
 
-**Contexto:** el registro agrega el turno actual a una guía, pero la función que genera el turno no recibe entrada.
+**1. Contexto**
+El turno se obtiene sin una entrada; el registro sí recibe una guía para imprimirla.
 
-**Hazlo tú:** crea `src/Registro.java` dentro de `java-funcional`:
+**2. Hazlo tú**
+Crea `java-funcional/src/Registro.java`:
 
 ```java
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class Registro {
+public final class Registro {
     public static void main(String[] args) {
         Supplier<String> turno = () -> "Turno AM";
         Consumer<String> registrar = guia -> System.out.println(turno.get() + " | " + guia);
@@ -161,23 +122,33 @@ public class Registro {
 }
 ```
 
-Ejecuta `javac -d out src/Registro.java && java -cp out Registro`.
+Desde `java-funcional/`, ejecuta:
+
+```bash
+javac -d out src/Registro.java
+java -cp out Registro
+```
 
 **Resultado esperado:** `Turno AM | RT-8`.
 
-**Fallo deliberado:** cambia `registrar.accept("RT-8")` por `registrar.get()`. **Error esperado:** `cannot find symbol: method get()` en `Consumer`. **Diagnóstico:** `Consumer` se ejecuta con `accept`; `get` pertenece a `Supplier`.
+**Fallo deliberado:** modifica `registrar.accept("RT-8")` a `registrar.get()`. **Resultado esperado:** `javac` informa que `Consumer` no tiene el método `get`. **Diagnóstico:** `accept` pertenece a `Consumer`; `get` pertenece a `Supplier`.
 
-**Entiende:** el método de llamada también comunica la intención: `get` obtiene, `accept` realiza la acción.
+**3. Entiende**
+`Supplier` no tiene entrada; `Consumer` recibe una entrada y no devuelve un resultado.
 
-#### Paso 7 · Cierre y evidencia
+**4. Cierra**
+Entrega `Formas.java`, `Etiqueta.java`, `Registro.java` y las tres salidas.
 
-Siguiente paso: componer estas formas sin anidar lambdas. **Evidencia de aprendizaje:** entrega `Formas.java`, la salida `[log] Turno AM | ENV-2 -> Medellín` y el error de compilación de la lambda de dos parámetros junto con su diagnóstico.
+**Hito del tema:**
 
-**Errores comunes:** usar `Function` cuando la intención es decidir; olvidar que `Consumer` no devuelve nada; crear un `Supplier` que en realidad depende de un parámetro; asumir que una lambda con dos parámetros encaja en una interfaz de uno.
+- [ ] Asigné cada interfaz según lo que recibe y devuelve.
+- [ ] Compilé y ejecuté los tres ejemplos.
+- [ ] Reproduje un error de tipos y uno de método incorrecto.
+- [ ] Expliqué con mis palabras la diferencia entre `Function` y `Consumer`.
 
-**Límites y decisión de uso:** estas interfaces sirven para pasar comportamiento, no para modelar entidades. Si una regla necesita estado propio o más de dos parámetros, una clase con nombre comunica mejor la intención. En el proyecto integrador, las reglas de revisión se prueban por separado precisamente porque son `Predicate`, no métodos privados.
+**Proyecto integrador:** usa `Predicate` para decidir qué envíos requieren revisión; registra la salida antes de integrarlo con la siguiente regla.
 
-**Fuente oficial:** [java.util.function](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/package-summary.html) y [lambdas en el tutorial de Java](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html).
+**Fuente oficial:** [java.util.function](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/package-summary.html) y [expresiones lambda](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html).
 
 ### Tema 2: Componer sin anidar: andThen, compose, negate y reglas encadenadas
 

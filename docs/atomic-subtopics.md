@@ -2,7 +2,7 @@
 
 > Auditoría estructural. Un encabezado o criterio detectado no demuestra que el ejemplo se haya ejecutado ni que la explicación sea pedagógicamente suficiente.
 
-Temas conformes a cuatro pasos: **11/1185**. Tracks inventariados: **14**.
+Temas conformes a cuatro pasos: **13/1185**. Tracks inventariados: **14**.
 
 | Track | Temas conformes | Temas inventariados | Subtemas detectados | Subtemas con estructura completa |
 |---|---:|---:|---:|---:|
@@ -13,13 +13,13 @@ Temas conformes a cuatro pasos: **11/1185**. Tracks inventariados: **14**.
 | flutter | 1 | 106 | 3 | 3 |
 | foundations | 0 | 99 | 0 | 0 |
 | ios | 0 | 56 | 0 | 0 |
-| java | 1 | 101 | 3 | 3 |
+| java | 2 | 101 | 6 | 6 |
 | javascript | 0 | 88 | 0 | 0 |
 | kotlin-multiplatform | 0 | 56 | 0 | 0 |
 | node | 2 | 83 | 6 | 6 |
 | react | 0 | 58 | 0 | 0 |
 | rutaflow | 0 | 29 | 0 | 0 |
-| spring-boot | 7 | 111 | 21 | 21 |
+| spring-boot | 8 | 111 | 24 | 24 |
 
 ## Temas pendientes
 
@@ -763,7 +763,6 @@ Temas conformes a cuatro pasos: **11/1185**. Tracks inventariados: **14**.
 - M2 ### Tema 1: List, Set, Map y sus implementaciones: tiene 0 subtemas
 - M2 ### Tema 2: Genéricos, wildcards y type erasure: tiene 0 subtemas
 - M2 ### Tema 3: Comparable vs Comparator, e iteración: tiene 0 subtemas
-- M20 ### Tema 1: Las cuatro formas: Predicate, Function, Consumer y Supplier: tiene 0 subtemas
 - M20 ### Tema 2: Componer sin anidar: andThen, compose, negate y reglas encadenadas: tiene 0 subtemas
 - M20 ### Tema 3: Streams como composición: pereza, orden y efectos que se esconden: tiene 0 subtemas
 - M20 ### Tema 4: Function y BiFunction: transformar uno o dos datos: tiene 0 subtemas
@@ -1142,7 +1141,6 @@ Temas conformes a cuatro pasos: **11/1185**. Tracks inventariados: **14**.
 - M1 ### Tema 3: Perfiles y estructura por capas: tiene 0 subtemas
 - M10 ### Tema 1: Config Server y service discovery: tiene 0 subtemas
 - M10 ### Tema 2: Spring Cloud Gateway: tiene 0 subtemas
-- M10 ### Tema 3: Circuit breaker con Resilience4j: tiene 0 subtemas
 - M10 ### Tema 4: OAuth2/OIDC, Keycloak y Token Relay sin perder la frontera de autorización: tiene 0 subtemas
 - M10 ### Tema 5: HTTP Interfaces, deadlines y descubrimiento según el entorno: tiene 0 subtemas
 - M10 ### Tema 6: Spring gRPC para comunicación interna de alta frecuencia (Spring Boot 4.1): tiene 0 subtemas

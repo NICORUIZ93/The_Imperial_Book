@@ -340,130 +340,86 @@ Spring Cloud Gateway es el punto de entrada que expondrá el proyecto integrador
 
 ### Tema 3: Circuit breaker con Resilience4j
 
-#### Paso 1 · Objetivo y preparación
+**Duración:** 30 min. **Prerrequisitos:** Spring Boot M10 T1 y T2 (configuración y gateway). **Proyecto continuo:** RutaFlow protege la consulta de pedidos cuando el servicio remoto falla.
 
-Al finalizar podrás configurar un `CircuitBreaker` real de Resilience4j y confirmar, contando invocaciones reales, que abre el circuito tras superar un umbral de fallos y deja de intentar la llamada real mientras está abierto.
+**¿Por qué es importante?** Si cada petición espera hasta el timeout de un servicio caído, las llamadas pendientes consumen recursos y el fallo se propaga.
 
-**Conocimiento previo:** Temas 1 y 2 de este módulo.
+#### Subtema 3.1: Abre el circuito después de cuatro fallos · 10 min
 
-#### Paso 2 · Contexto y caso real
+**1. Contexto**
+El circuito mide resultados. No se abre por un solo fallo si todavía no alcanza el mínimo de llamadas configurado.
 
-**¿Por qué es importante?** Sin un circuit breaker, un servicio caído puede arrastrar en cascada a todos los servicios que dependen de él: cada petición esperaría su timeout completo antes de fallar, acumulando peticiones en espera activa que agotan threads y conexiones del servicio dependiente.
-
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** abrir el circuito ante fallos repetidos, fallback inmediato sin intentar la llamada real.
-
-Un `CircuitBreaker` observa la tasa de fallo de las últimas N llamadas (la "ventana deslizante"); si esa tasa supera un umbral configurable, el circuito pasa a estado `OPEN`: las siguientes llamadas NO intentan ejecutar la operación real, sino que fallan inmediatamente con `CallNotPermittedException` (o invocan un método de fallback), evitando que las peticiones se acumulen esperando indefinidamente una respuesta de un servicio que, con alta probabilidad, no va a responder exitosamente. `@Retry`, `@RateLimiter`, `@Bulkhead` y `@TimeLimiter` son primitivas complementarias de Resilience4j.
-
-**Analogía:** un circuit breaker es un disyuntor eléctrico que corta automáticamente el circuito ante una sobrecarga detectada, evitando que el problema se propague, y permite reintentar conectar la corriente tras un tiempo prudencial.
-
-**Diagrama:**
-
-```mermaid
-stateDiagram-v2
-  [*] --> CLOSED
-  CLOSED --> OPEN: tasa de fallo supera el umbral
-  OPEN --> HALF_OPEN: pasa waitDurationInOpenState
-  HALF_OPEN --> CLOSED: llamadas de prueba exitosas
-  HALF_OPEN --> OPEN: llamadas de prueba fallan
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Continuando en `demo-cloud` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `mkdir demo-resilience && cd demo-resilience && curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip app.zip` y agrega `io.github.resilience4j:resilience4j-circuitbreaker` al `pom.xml`), crea `src/test/java/io/academia/resilience/CircuitBreakerRealTest.java`; este `CircuitBreaker` se prueba de forma completamente aislada, sin necesitar Spring ni un servidor real:
+**2. Hazlo tú**
+Abre `examples/spring-resilience-rutaflow/src/test/java/academia/rutaflow/resilience/CircuitBreakerBehaviorTest.java` y ejecuta desde `examples/spring-resilience-rutaflow/`:
 
 ```bash
-mkdir -p demo-cloud/resilience/src/test/java/io/academia/resilience
-cd demo-cloud/resilience
+./mvnw -Dtest=CircuitBreakerBehaviorTest#abreDespuesDeCuatroFallosYBloqueaLaQuintaLlamada test
 ```
 
-```java
-// src/test/java/io/academia/resilience/CircuitBreakerRealTest.java
-package io.academia.resilience;
+**Resultado esperado:** cuatro fallos medidos ponen el estado en `OPEN`; la prueba muestra que se ejecutó la llamada remota cuatro veces.
 
-import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
-import io.github.resilience4j.circuitbreaker.CircuitBreaker;
-import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
-import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
-import org.junit.jupiter.api.Test;
+**Fallo deliberado:** modifica `minimumNumberOfCalls(4)` a `minimumNumberOfCalls(10)`. **Resultado esperado:** el test falla porque cuatro llamadas todavía no alcanzan el mínimo de diez. **Diagnóstico:** `minimumNumberOfCalls` y `slidingWindowSize` son límites distintos; la tasa no se calcula antes del mínimo.
 
-import java.time.Duration;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Supplier;
+**3. Entiende**
+La ventana guarda resultados recientes. El mínimo indica cuántos resultados hacen falta antes de decidir si el circuito abre.
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+**4. Cierra**
+Anota el umbral, tamaño de ventana y cantidad mínima de llamadas.
 
-class CircuitBreakerRealTest {
+#### Subtema 3.2: Comprueba que OPEN detiene llamadas reales · 10 min
 
-    @Test
-    void elCircuitoAbreTrasSuperarElUmbralYDejaDeIntentarLaLlamadaReal() {
-        CircuitBreakerConfig config = CircuitBreakerConfig.custom()
-            .failureRateThreshold(50)
-            .slidingWindowSize(4)
-            .minimumNumberOfCalls(4)
-            .waitDurationInOpenState(Duration.ofSeconds(10))
-            .build();
-        CircuitBreaker circuitBreaker = CircuitBreakerRegistry.of(config).circuitBreaker("servicioPedidos");
+**1. Contexto**
+El circuito debe rechazar rápido cuando está abierto, sin volver a invocar el servicio que ya está fallando.
 
-        AtomicInteger llamadasRealesEjecutadas = new AtomicInteger(0);
-        Supplier<String> llamadaProtegida = CircuitBreaker.decorateSupplier(circuitBreaker, () -> {
-            llamadasRealesEjecutadas.incrementAndGet();
-            throw new RuntimeException("servicio-pedidos caído");
-        });
-
-        // 4 llamadas reales, todas fallan (100% > 50% de umbral) -> el circuito abre
-        for (int i = 0; i < 4; i++) {
-            assertThatThrownBy(llamadaProtegida::get).isInstanceOf(RuntimeException.class);
-        }
-
-        assertThat(circuitBreaker.getState()).isEqualTo(CircuitBreaker.State.OPEN);
-        assertThat(llamadasRealesEjecutadas.get()).isEqualTo(4);
-
-        // con el circuito abierto, la QUINTA llamada NO ejecuta la lambda real
-        assertThatThrownBy(llamadaProtegida::get).isInstanceOf(CallNotPermittedException.class);
-        assertThat(llamadasRealesEjecutadas.get()).isEqualTo(4); // sigue en 4: no se ejecutó una quinta vez
-    }
-}
-```
+**2. Hazlo tú**
+Abre `examples/spring-resilience-rutaflow/src/test/java/academia/rutaflow/resilience/CircuitBreakerBehaviorTest.java`. Ejecuta el mismo test desde `examples/spring-resilience-rutaflow/`:
 
 ```bash
-./mvnw test -Dtest=CircuitBreakerRealTest
+./mvnw -Dtest=CircuitBreakerBehaviorTest#abreDespuesDeCuatroFallosYBloqueaLaQuintaLlamada test
 ```
 
-**Resultado esperado:** `BUILD SUCCESS` con el test en verde: el `AtomicInteger` confirma con evidencia real (no una suposición) que las primeras 4 llamadas SÍ ejecutaron la lambda real (fallando cada vez), que el circuito efectivamente pasó a `OPEN` tras superar el umbral del 50% de fallo, y que la quinta llamada NO incrementó el contador — el circuito abierto evitó por completo la ejecución de la lambda real, lanzando `CallNotPermittedException` de inmediato.
+**Resultado esperado:** la quinta llamada lanza `CallNotPermittedException` y el contador permanece en `4`.
 
-**Fallo deliberado:** cambia `minimumNumberOfCalls(4)` por `minimumNumberOfCalls(10)` (sin cambiar el resto) y ejecuta de nuevo. El test FALLA en `assertThat(circuitBreaker.getState()).isEqualTo(CircuitBreaker.State.OPEN)`, porque con solo 4 llamadas realizadas el circuito nunca alcanza el mínimo de 10 llamadas necesarias para evaluar la tasa de fallo, permaneciendo en `CLOSED` — diagnostica confirmando que `minimumNumberOfCalls` es un umbral independiente de `slidingWindowSize`: el circuito no evalúa ninguna tasa de fallo hasta acumular ese mínimo de llamadas. Revierte el cambio antes de continuar.
+**Fallo deliberado:** quita `CircuitBreaker.decorateSupplier(breaker, ...)` y llama al supplier directamente. **Resultado esperado:** el contador llega a `5` y la prueba falla. **Diagnóstico:** la llamada dejó de pasar por el circuito; restaura la decoración.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**3. Entiende**
+`OPEN` no repara el servicio remoto. Deja de enviarle llamadas por un intervalo y protege recursos locales; se puede combinar con timeout y fallback.
 
-1. Agrega un método de fallback (`CircuitBreaker.decorateSupplier` combinado con `.recover(throwable -> "valor por defecto")` de `io.vavr` o un `try/catch` manual) y confirma con un test que, con el circuito abierto, la llamada devuelve el valor por defecto en vez de lanzar una excepción.
-2. Simula que el servicio se recupera: tras `waitDurationInOpenState`, usa `circuitBreaker.transitionToHalfOpenState()` manualmente en el test y confirma que llamadas exitosas en ese estado devuelven el circuito a `CLOSED`.
-3. Configura `slidingWindowType(SlidingWindowType.TIME_BASED)` en vez de `COUNT_BASED` y confirma con un test que el comportamiento de apertura se basa en una ventana de tiempo en vez de un conteo fijo de llamadas.
-4. Escribe de memoria (sin mirar) un `CircuitBreakerConfig` con umbral de fallo y ventana deslizante, y un test que confirme con un contador real que el circuito deja de ejecutar la llamada real una vez abierto. Compara después contra el patrón del Paso 4.
+**4. Cierra**
+Conserva el error de llamada bloqueada y explica qué valor comprobó el contador.
 
-**Pista:** `CircuitBreaker.decorateSupplier(...)` NO ejecuta la lambda al declararla — como con `Mono`/`Flux` del Módulo 9, solo se ejecuta cuando efectivamente invocas `.get()` sobre el `Supplier` decorado.
+#### Subtema 3.3: Prueba recuperación en HALF_OPEN · 10 min
 
-#### Paso 6 · Práctica independiente
+**1. Contexto**
+Tras una pausa, el circuito permite unas pocas llamadas de prueba para saber si el servicio ya se recuperó.
 
-**Completa el código:** rellena el espacio con el estado que debe alcanzar el circuito tras superar el umbral de fallo:
+**2. Hazlo tú**
+Abre `examples/spring-resilience-rutaflow/src/test/java/academia/rutaflow/resilience/CircuitBreakerBehaviorTest.java` y ejecuta desde `examples/spring-resilience-rutaflow/`:
 
-```java
-assertThat(circuitBreaker.getState()).isEqualTo(CircuitBreaker.State.____);
+```bash
+./mvnw -Dtest=CircuitBreakerBehaviorTest#vuelveACerradoCuandoLasDosLlamadasDePruebaTienenExito test
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `CircuitBreakerConfig` y un test con `AtomicInteger` que confirme que el circuito abierto deja de ejecutar la llamada real. Compara después contra el patrón del Paso 4.
+**Resultado esperado:** la prueba fuerza `HALF_OPEN`; dos respuestas correctas devuelven el estado a `CLOSED`.
 
-#### Paso 7 · Cierre y evidencia
+**Fallo deliberado:** modifica el supplier recuperado para que falle en una de las dos llamadas. **Resultado esperado:** la recuperación no cumple las dos respuestas exitosas y el test falla al esperar `CLOSED`. **Diagnóstico:** el circuito solo cierra si sus llamadas de prueba superan la regla configurada.
 
-Ya confirmas, con un contador real, que un `CircuitBreaker` de Resilience4j abre el circuito tras superar un umbral de fallos y deja de ejecutar la llamada real mientras está abierto. El siguiente tema protege las fronteras de autorización entre servicios con OAuth2/OIDC. **Evidencia:** entrega el resultado de `CircuitBreakerRealTest` en verde, y el fallo real que produce cambiar `minimumNumberOfCalls`. Fuente oficial: [Resilience4j — CircuitBreaker](https://resilience4j.readme.io/docs/circuitbreaker).
+**3. Entiende**
+La secuencia es `CLOSED → OPEN → HALF_OPEN → CLOSED` cuando la recuperación tiene éxito. En producción el temporizador y las métricas observan esos cambios.
 
-**Errores comunes:** no configurar un circuit breaker para llamadas entre servicios, dejando que un servicio caído arrastre en cascada a sus dependientes; confundir `minimumNumberOfCalls` con `slidingWindowSize`, dos umbrales independientes.
+**4. Cierra**
+Dibuja los estados y registra cuántas llamadas se permiten en la prueba de recuperación.
 
-**Cuándo no usarlo:** para llamadas locales en memoria sin ningún componente de red o servicio externo involucrado, un circuit breaker no protege contra ningún fallo real y solo agrega complejidad innecesaria.
+**Hito del tema:**
 
-El circuit breaker de Resilience4j es el que protegerá al proyecto integrador de este track (microservicio productivo, Módulo 12) de fallos en cascada.
+- [ ] Cuatro fallos medidos abren el circuito.
+- [ ] `OPEN` bloquea la quinta llamada antes de llegar al servicio.
+- [ ] Dos llamadas de prueba exitosas cierran el circuito.
+- [ ] Expliqué que el circuito limita fallos, no repara el servicio.
+
+**Proyecto integrador:** protege la consulta de pedidos de RutaFlow y registra el fallback que verá la persona usuaria cuando el circuito esté abierto.
+
+**Fuentes oficiales:** [Resilience4j CircuitBreaker](https://resilience4j.readme.io/docs/circuitbreaker) y [roadmap.sh Spring Boot](https://roadmap.sh/spring-boot).
 
 ### Tema 4: OAuth2/OIDC, Keycloak y Token Relay sin perder la frontera de autorización
 

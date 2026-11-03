@@ -1,8 +1,8 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-11-03 21:56 UTC
+Generated: 2026-11-03 22:01 UTC
 Root: `The_Imperial_Book`
-Indexed files: 965
+Indexed files: 988
 Import edges: 60
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -16,32 +16,32 @@ For automated lookups, use `docs/repo-graph.json`.
 ## Project Shape
 
 - `angular-app`: 59 files
-- `automation-script`: 34 files
+- `automation-script`: 36 files
 - `course-content`: 262 files
-- `documentation`: 57 files
-- `example`: 498 files
+- `documentation`: 61 files
+- `example`: 514 files
 - `local-infra`: 1 files
-- `project-file`: 54 files
+- `project-file`: 55 files
 
 ## File Types
 
-- `.md`: 329
-- `.py`: 160
-- `.java`: 70
-- `.json`: 68
+- `.md`: 334
+- `.py`: 162
+- `.java`: 78
+- `.json`: 69
 - `.ts`: 66
 - `.js`: 54
 - `.html`: 38
 - `.mjs`: 26
 - `.rs`: 25
+- `.dart`: 24
 - `.go`: 24
-- `.dart`: 22
 - `.swift`: 20
 - `.kt`: 13
-- `.yaml`: 10
+- `.yaml`: 11
+- `.yml`: 10
 - `.scss`: 8
 - `.sh`: 7
-- `.yml`: 6
 - `.jsx`: 6
 - `.tf`: 4
 - `.example`: 3
@@ -180,6 +180,7 @@ For automated lookups, use `docs/repo-graph.json`.
 
 ### automation-script
 
+- `scripts/audit_atomic_subtopics.py` (150 lines) - symbols: matches, evaluate, build, render, main; imports: __future__, argparse, json, re, collections, pathlib
 - `scripts/audit_code_visual_quality.py` (138 lines) - symbols: student_visible_content, structural_text, blocks, evaluate, build, render, main; imports: __future__, argparse, json, re, collections, pathlib, audit_topic_learning_quality
 - `scripts/audit_course_depth.py` (103 lines) - symbols: signals, build, markdown, main; imports: __future__, argparse, collections, json, pathlib, re, audit_topic_learning_quality
 - `scripts/audit_lesson_substance.py` (347 lines) - symbols: norm, paragraphs, count_words, evaluate_topic, module_level_sections, topic_key, build, render_markdown; imports: __future__, argparse, hashlib, json, re, sys, collections, pathlib
@@ -187,6 +188,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `scripts/audit_topic_learning_quality.py` (233 lines) - symbols: student_visible_content, structural_text, topic_blocks, resolve_archify_visual_link, unresolved_archify_visual_links, evaluate, classify, demo_signature; imports: __future__, argparse, json, re, collections, pathlib
 - `scripts/build_editorial_backlog.py` (99 lines) - symbols: render, main; imports: __future__, argparse, pathlib, audit_topic_learning_quality
 - `scripts/build_prerequisite_graph.py` (114 lines) - symbols: topics_for, build, render, main; imports: __future__, argparse, json, re, pathlib
+- `scripts/build_priority_temarios.py` (191 lines) - symbols: build, main; imports: __future__, argparse, json, re, pathlib
 - `scripts/build_repo_graph.py` (477 lines) - symbols: FileNode, repo_files, read_text, classify, parse_ts_symbols, parse_ts_imports, parse_python_symbols, parse_python_imports; imports: __future__, argparse, ast, json, re, subprocess, collections, dataclasses
 - `scripts/build_web_topic_index.py` (75 lines) - symbols: slugify, clean_topic_title, main; imports: __future__, json, re, sys, unicodedata, collections, pathlib
 - `scripts/catalog_external_library.py` (49 lines) - symbols: main; imports: argparse, hashlib, json, pathlib, pymupdf
@@ -196,9 +198,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `scripts/prepare_study_diagram.py` (39 lines) - symbols: main; imports: argparse, hashlib, json, pathlib
 - `scripts/start.sh` (10 lines)
 - `scripts/tests/test_backup_verified.py` (104 lines) - symbols: BackupVerificationTests; imports: os, shutil, subprocess, tempfile, unittest, pathlib, shlex
-- `scripts/tests/test_course_depth.py` (25 lines) - symbols: DepthSignalsTests; imports: sys, pathlib, unittest, audit_course_depth, audit_seven_step_methodology, audit_topic_learning_quality
-- `scripts/tests/test_editorial_validation.py` (107 lines) - symbols: EditorialValidationTests; imports: sys, tempfile, unittest, pathlib, unittest.mock, audit_topic_learning_quality, audit_code_visual_quality, audit_seven_step_methodology
-- ... 16 more files
+- ... 18 more files
 
 ### course-content
 
@@ -240,9 +240,9 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/RUNBOOKS-CLOUD.md` (1633 lines) - headings: # Cloud Runbooks — Troubleshooting Operacional, ## Runbook 1: DynamoDB Throttling, ### Síntomas, ### Diagnosis
 - `docs/RUNBOOKS-DEVOPS.md` (1409 lines) - headings: # DevOps Runbooks — Troubleshooting Operacional, ## Runbook 1: Docker Image Build Failures, ### Síntomas, ### Diagnosis
 - `docs/SKILLS-VISUALES-Y-ESTUDIO.md` (94 lines) - headings: # Skills para visuales y estudio desde cero, ## Selección y uso, ## Recorrido que debe comprobarse, ## Cómo usar las skills en una revisión
+- `docs/atomic-subtopics.md` (1239 lines) - headings: # Auditoría de subtemas atómicos, ## Temas pendientes, ### android, ### angular
 - `docs/auditoria-profundidad-cobertura.md` (213 lines) - headings: # Auditoría de profundidad y cobertura — The Imperial Book, ## Resumen ejecutivo (sin adornos), ## Eje 1 — PROFUNDIDAD (¿el Paso 4 es ejecutable de cero a profesional?), ### Evidencia directa (leída, no inferida)
-- `docs/biblioteca-externa-gaps-android.md` (31 lines) - headings: # Huecos del track Android frente a la biblioteca externa, ## Estado (2026-10-28), ## Libros cotejados, ## Huecos
-- ... 39 more files
+- ... 43 more files
 
 ### example
 
@@ -264,7 +264,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `examples/archify/temas/cloud/modulo-22-tema-5-edge-routes.review-2/modulo-22-tema-5-edge-routes.finalize.json` (1012 lines)
 - `examples/archify/temas/foundations/modulo-12-tema-10-lazo-p.workflow.json` (183 lines)
 - `examples/archify/temas/foundations/modulo-12-tema-17-plc-scan.workflow.json` (189 lines)
-- ... 480 more files
+- ... 496 more files
 
 ### local-infra
 
@@ -275,11 +275,12 @@ For automated lookups, use `docs/repo-graph.json`.
 - `.env.example` (8 lines)
 - `.github/workflows/ci.yml` (62 lines)
 - `docs/app-flow-inspection.json` (13830 lines)
+- `docs/atomic-subtopics.json` (8987 lines)
 - `docs/biblioteca/catalogo.json` (564 lines)
 - `docs/biblioteca/imagenes.json` (577 lines)
 - `docs/browser-course-review.json` (2660 lines)
-- `docs/code-visual-quality.json` (3353 lines)
-- `docs/course-depth-review.json` (13468 lines)
+- `docs/code-visual-quality.json` (3367 lines)
+- `docs/course-depth-review.json` (13472 lines)
 - `docs/curriculum-matrix.json` (394 lines)
 - `docs/floci-official-curriculum.json` (14 lines)
 - `docs/lesson-substance-baseline.json` (1693 lines)
@@ -289,5 +290,4 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/official-sources.json` (195 lines)
 - `docs/official-topic-atlas.json` (175 lines)
 - `docs/prerequisite-graph.json` (13043 lines)
-- `docs/requested-master-topics.json` (189 lines)
-- ... 36 more files
+- ... 37 more files

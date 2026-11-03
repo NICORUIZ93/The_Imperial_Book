@@ -162,8 +162,8 @@ existen rutas separadas de cuestionarios, rúbricas o laboratorios repetidos.
 Los conteos se verifican contra los tracks y el Markdown desde
 `scripts/validate_learning_priorities.py`; la validación falla si README vuelve
 a quedar desincronizado. La auditoría de presencia editorial informa señales,
-no calidad ni ejecución. La auditoría vigente registra **11/1185** temas con
-3–6 subtemas y cuatro pasos completos; **1174 temas siguen pendientes**. Consulta
+no calidad ni ejecución. La auditoría vigente registra **13/1185** temas con
+3–6 subtemas y cuatro pasos completos; **1172 temas siguen pendientes**. Consulta
 los faltantes por track en [`docs/atomic-subtopics.md`](docs/atomic-subtopics.md).
 Las cifras de siete pasos en [`docs/seven-step-methodology.md`](docs/seven-step-methodology.md)
 son un registro histórico del formato anterior.

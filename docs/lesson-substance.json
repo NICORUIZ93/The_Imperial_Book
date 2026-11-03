@@ -1695,7 +1695,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "55566f20348717b7a23bc915f094159b9375990c9e9a18e10a66498f7f6ef6f8",
+    "fingerprint": "285fa471692904cc8a02ebff3340bd5550583f93e540d3c8520b6ff4c1ef28de",
     "issues": {
       "andamiaje-generico": 125,
       "bloque-repetido": 217,
@@ -7620,9 +7620,9 @@
       {
         "issues": [],
         "module": 20,
-        "tailWords": 168,
+        "tailWords": 0,
         "topic": "Tema 1: Las cuatro formas: Predicate, Function, Consumer y Supplier",
-        "words": 1095
+        "words": 716
       },
       {
         "issues": [],
@@ -10486,9 +10486,9 @@
       {
         "issues": [],
         "module": 10,
-        "tailWords": 152,
+        "tailWords": 0,
         "topic": "Tema 3: Circuit breaker con Resilience4j",
-        "words": 1128
+        "words": 602
       },
       {
         "issues": [],

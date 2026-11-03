@@ -87,8 +87,8 @@
     "java": {
       "topics": 101,
       "code": 101,
-      "commentedCode": 56,
-      "mermaid": 33,
+      "commentedCode": 55,
+      "mermaid": 32,
       "archifyVisual": 2,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
@@ -99,8 +99,8 @@
     "spring-boot": {
       "topics": 111,
       "code": 111,
-      "commentedCode": 80,
-      "mermaid": 54,
+      "commentedCode": 79,
+      "mermaid": 53,
       "archifyVisual": 4,
       "asciiVisual": 20,
       "misleadingDiagramLabel": 0,
@@ -2042,6 +2042,13 @@
     {
       "track": "java",
       "module": 20,
+      "topic": "Tema 1: Las cuatro formas: Predicate, Function, Consumer y Supplier",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 20,
       "topic": "Tema 4: Function y BiFunction: transformar uno o dos datos",
       "missingCode": false,
       "missingComments": true
@@ -2218,6 +2225,13 @@
       "track": "java",
       "module": 9,
       "topic": "Tema 3: Tests parametrizados y cobertura",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 10,
+      "topic": "Tema 3: Circuit breaker con Resilience4j",
       "missingCode": false,
       "missingComments": true
     },

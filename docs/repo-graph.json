@@ -288,6 +288,35 @@
       "headings": []
     },
     {
+      "path": "docs/atomic-subtopics.json",
+      "lines": 8987,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "docs/atomic-subtopics.md",
+      "lines": 1239,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Auditor\u00eda de subtemas at\u00f3micos",
+        "## Temas pendientes",
+        "### android",
+        "### angular",
+        "### cloud",
+        "### devops",
+        "### flutter",
+        "### foundations",
+        "### ios",
+        "### java",
+        "### javascript",
+        "### kotlin-multiplatform"
+      ]
+    },
+    {
       "path": "docs/auditoria-profundidad-cobertura.md",
       "lines": 213,
       "kind": "documentation",
@@ -554,7 +583,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3353,
+      "lines": 3367,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -590,7 +619,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13468,
+      "lines": 13472,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -675,6 +704,27 @@
       "headings": []
     },
     {
+      "path": "docs/flutter-temario-completo.md",
+      "lines": 269,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Temario completo de Flutter \u2014 \u00edndice de expansi\u00f3n",
+        "## \u00cdndice de m\u00f3dulos y temas",
+        "### M\u00f3dulo 0: Fundamentos de Dart",
+        "### M\u00f3dulo 1: Widgets: stateless vs stateful",
+        "### M\u00f3dulo 2: Layout y dise\u00f1o responsive",
+        "### M\u00f3dulo 3: Navegaci\u00f3n y rutas",
+        "### M\u00f3dulo 4: Gesti\u00f3n de estado",
+        "### M\u00f3dulo 5: Networking",
+        "### M\u00f3dulo 6: Persistencia local",
+        "### M\u00f3dulo 7: Integraci\u00f3n con plataformas nativas",
+        "### M\u00f3dulo 8: Animaciones y rendimiento",
+        "### M\u00f3dulo 9: Testing en Flutter"
+      ]
+    },
+    {
       "path": "docs/integracion-biblioteca-externa-progreso.md",
       "lines": 171,
       "kind": "documentation",
@@ -717,7 +767,7 @@
     },
     {
       "path": "docs/java-temario-completo.md",
-      "lines": 253,
+      "lines": 256,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -788,6 +838,27 @@
         "## Pendientes verificables",
         "## Estado de la revisi\u00f3n del proyecto",
         "## Validaci\u00f3n de esta integraci\u00f3n"
+      ]
+    },
+    {
+      "path": "docs/node-temario-completo.md",
+      "lines": 215,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Temario completo de Node.js \u2014 \u00edndice de expansi\u00f3n",
+        "## \u00cdndice de m\u00f3dulos y temas",
+        "### M\u00f3dulo 0: El runtime de Node \u2014 V8, libuv y el Event Loop",
+        "### M\u00f3dulo 1: M\u00f3dulos, npm/pnpm y gesti\u00f3n de dependencias",
+        "### M\u00f3dulo 2: Sistema de archivos y streams",
+        "### M\u00f3dulo 3: Servidores HTTP nativos",
+        "### M\u00f3dulo 4: Express/Fastify \u2014 routing y middleware",
+        "### M\u00f3dulo 5: Bases de datos \u2014 drivers y ORMs",
+        "### M\u00f3dulo 6: Autenticaci\u00f3n y autorizaci\u00f3n",
+        "### M\u00f3dulo 7: Testing e integraci\u00f3n continua",
+        "### M\u00f3dulo 8: Patrones as\u00edncronos avanzados",
+        "### M\u00f3dulo 9: Observabilidad y manejo de errores en producci\u00f3n"
       ]
     },
     {
@@ -997,6 +1068,27 @@
       "symbols": [],
       "imports": [],
       "headings": []
+    },
+    {
+      "path": "docs/spring-boot-temario-completo.md",
+      "lines": 310,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Temario completo de Spring Boot \u2014 \u00edndice de expansi\u00f3n",
+        "## \u00cdndice de m\u00f3dulos y temas",
+        "### M\u00f3dulo 0: Fundamentos de Spring \u2014 IoC y DI",
+        "### M\u00f3dulo 1: Spring Boot CLI y estructura de proyecto",
+        "### M\u00f3dulo 2: REST APIs con Spring Web",
+        "### M\u00f3dulo 3: Persistencia con Spring Data JPA",
+        "### M\u00f3dulo 4: Spring Security",
+        "### M\u00f3dulo 5: Configuraci\u00f3n, perfiles y manejo de errores",
+        "### M\u00f3dulo 6: Testing en Spring Boot",
+        "### M\u00f3dulo 7: Observabilidad con Actuator",
+        "### M\u00f3dulo 8: Mensajer\u00eda \u2014 Kafka/RabbitMQ",
+        "### M\u00f3dulo 9: Programaci\u00f3n reactiva con WebFlux"
+      ]
     },
     {
       "path": "docs/topic-learning-quality.json",
@@ -1644,6 +1736,14 @@
       "headings": []
     },
     {
+      "path": "examples/flutter_rutaflow/lib/features/shift/shift_provider.dart",
+      "lines": 33,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
       "path": "examples/flutter_rutaflow/lib/main.dart",
       "lines": 43,
       "kind": "example",
@@ -1654,6 +1754,14 @@
     {
       "path": "examples/flutter_rutaflow/pubspec.yaml",
       "lines": 34,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/flutter_rutaflow/test/features/shift/shift_provider_test.dart",
+      "lines": 35,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -5349,6 +5457,30 @@
       "headings": []
     },
     {
+      "path": "examples/spring-kafka-rutaflow/src/main/java/academia/rutaflow/inbox/InboxProcessor.java",
+      "lines": 44,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-kafka-rutaflow/src/main/java/academia/rutaflow/outbox/CrearEnvioService.java",
+      "lines": 43,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-kafka-rutaflow/src/main/java/academia/rutaflow/outbox/OutboxDispatcher.java",
+      "lines": 64,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
       "path": "examples/spring-kafka-rutaflow/src/main/resources/application.yml",
       "lines": 24,
       "kind": "example",
@@ -5365,6 +5497,14 @@
       "headings": []
     },
     {
+      "path": "examples/spring-kafka-rutaflow/src/test/resources/application-test.yml",
+      "lines": 7,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
       "path": "examples/spring-ssrf/src/main/java/com/academia/SafeClient.java",
       "lines": 26,
       "kind": "example",
@@ -5375,6 +5515,91 @@
     {
       "path": "examples/spring-ssrf/src/test/java/com/academia/SafeClientTest.java",
       "lines": 43,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-stream-rutaflow/README.md",
+      "lines": 36,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Laboratorio Spring Cloud Stream de RutaFlow",
+        "## Probar funci\u00f3n y mapping sin broker",
+        "## Probar cada broker local",
+        "## L\u00edmites de la prueba"
+      ]
+    },
+    {
+      "path": "examples/spring-stream-rutaflow/compose.yaml",
+      "lines": 31,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-stream-rutaflow/src/main/java/academia/rutaflow/stream/RouteFunctions.java",
+      "lines": 23,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-stream-rutaflow/src/main/java/academia/rutaflow/stream/RoutePlanningRequested.java",
+      "lines": 4,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-stream-rutaflow/src/main/java/academia/rutaflow/stream/ShipmentCreated.java",
+      "lines": 4,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-stream-rutaflow/src/main/java/academia/rutaflow/stream/StreamRutaflowApplication.java",
+      "lines": 12,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-stream-rutaflow/src/main/resources/application-kafka.yml",
+      "lines": 16,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-stream-rutaflow/src/main/resources/application-rabbit.yml",
+      "lines": 19,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-stream-rutaflow/src/main/resources/application.yml",
+      "lines": 14,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-stream-rutaflow/src/test/java/academia/rutaflow/stream/RouteFunctionsTest.java",
+      "lines": 37,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -5847,6 +6072,27 @@
       "headings": []
     },
     {
+      "path": "scripts/audit_atomic_subtopics.py",
+      "lines": 150,
+      "kind": "automation-script",
+      "symbols": [
+        "matches",
+        "evaluate",
+        "build",
+        "render",
+        "main"
+      ],
+      "imports": [
+        "__future__",
+        "argparse",
+        "json",
+        "re",
+        "collections",
+        "pathlib"
+      ],
+      "headings": []
+    },
+    {
       "path": "scripts/audit_code_visual_quality.py",
       "lines": 138,
       "kind": "automation-script",
@@ -5994,6 +6240,23 @@
         "topics_for",
         "build",
         "render",
+        "main"
+      ],
+      "imports": [
+        "__future__",
+        "argparse",
+        "json",
+        "re",
+        "pathlib"
+      ],
+      "headings": []
+    },
+    {
+      "path": "scripts/build_priority_temarios.py",
+      "lines": 191,
+      "kind": "automation-script",
+      "symbols": [
+        "build",
         "main"
       ],
       "imports": [
@@ -9741,7 +10004,7 @@
     },
     {
       "path": "web/public/content/java/modulo-20.md",
-      "lines": 1618,
+      "lines": 1589,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9749,15 +10012,15 @@
         "# M\u00f3dulo 20: Java funcional \u2014 interfaces que componen comportamiento",
         "## Aprende construyendo",
         "### Tema 1: Las cuatro formas: Predicate, Function, Consumer y Supplier",
+        "#### Subtema 1.1: Elige una interfaz por la salida que necesitas \u00b7 10 min",
+        "#### Subtema 1.2: Normaliza una gu\u00eda con Function \u00b7 10 min",
+        "#### Subtema 1.3: Provee un turno y registra la etiqueta \u00b7 10 min",
+        "### Tema 2: Componer sin anidar: andThen, compose, negate y reglas encadenadas",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
-        "### Tema 2: Componer sin anidar: andThen, compose, negate y reglas encadenadas",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada"
       ]
     },
     {
@@ -11379,7 +11642,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-10.md",
-      "lines": 1573,
+      "lines": 1529,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
