@@ -51,10 +51,10 @@
     },
     "java": {
       "topics": 101,
-      "completeTopics": 83,
-      "topicsWith3to6Subtopics": 83,
-      "subtopics": 253,
-      "completeSubtopics": 253
+      "completeTopics": 84,
+      "topicsWith3to6Subtopics": 84,
+      "subtopics": 256,
+      "completeSubtopics": 256
     },
     "javascript": {
       "topics": 88,
@@ -7366,9 +7366,52 @@
       {
         "module": 19,
         "topic": "### Tema 2: Expresiones regulares con Pattern y Matcher",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "2.1",
+            "title": "#### Subtema 2.1: Validar una guía completa · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "2.2",
+            "title": "#### Subtema 2.2: Aceptar teléfonos con longitud exacta · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "2.3",
+            "title": "#### Subtema 2.3: Extraer la guía y la ciudad con grupos · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 19,

@@ -235,7 +235,15 @@ flowchart LR
 
 #### Paso 4 · Demostración guiada desde cero
 
-##### Subtema 2.1: Validar una guía completa · 10-15 min
+#### Subtema 2.1: Validar una guía completa · 10 min
+**1. Contexto**
+
+El manifiesto diario trae códigos válidos e inválidos mezclados; hay que separar coincidencias completas de texto parecido.
+
+**2. Hazlo tú**
+
+En una carpeta vacía, crea `Regex.java`, pega el ejemplo y ejecútalo con `java Regex.java`.
+
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
 
 ```bash
@@ -293,15 +301,24 @@ Despacho 28/10: BO-****** a Chapinero, CA-****** a Cali, bo-1 inválida, ME-1234
 
 `bo-1` y `ME-12345` no coinciden: la primera está en minúsculas y la segunda tiene solo cinco dígitos.
 
-**Fallo deliberado:** En el patrón `GUIA` cambia `\\d{6}` por `\d{6}` (una sola barra). El programa no compila: `error: illegal escape character`. Java interpreta `\d` como un escape de string, no de regex. Diagnostica qué barras son de Java y cuáles del regex.
+**Fallo deliberado:** En el patrón `GUIA` cambia `\\d{6}` por `\d{6}` (una sola barra). El programa no compila: `error: illegal escape character`. Java interpreta `\d` como un escape de string, no de regex. **Diagnóstico:** Java procesa primero el literal; duplica la barra para que el motor regex reciba `\d`.
+
+**3. Entiende**
+
+Explica qué patrón compara el programa y si debe buscar un fragmento o validar toda la entrada.
+
+**Diagnóstico:** compara la entrada observada con la cantidad y el formato exigidos por el patrón.
+
+**4. Cierra**
+
+Guarda una entrada aceptada, una rechazada y la razón por la que el patrón distingue entre ellas.
 
 #### Paso 5 · Práctica guiada
 
-##### Subtema 2.2: Aceptar teléfonos con longitud exacta · 5-10 min
+#### Subtema 2.2: Aceptar teléfonos con longitud exacta · 10 min
+**1. Contexto** el formulario debe aceptar celulares colombianos de diez dígitos que empiecen en 3.
 
-**Contexto:** el formulario debe aceptar celulares colombianos de diez dígitos que empiecen en 3.
-
-**Hazlo tú:** crea `java-dia-a-dia/Telefono.java`:
+**2. Hazlo tú** crea `java-dia-a-dia/Telefono.java`:
 
 ```java
 import java.util.regex.Pattern;
@@ -321,16 +338,21 @@ Ejecuta `cd java-dia-a-dia && java Telefono.java`.
 
 **Fallo deliberado:** cambia `\\d{9}` por `\\d+`. **Resultado del fallo:** se aceptan longitudes incorrectas. **Diagnóstico:** `+` significa “uno o más”; el requisito pide exactamente nueve dígitos después del 3.
 
-**Entiende:** `matches()` valida el texto entero; `find()` busca una coincidencia dentro de un texto más largo.
+**3. Entiende** `matches()` valida el texto entero; `find()` busca una coincidencia dentro de un texto más largo.
 **Pista:** predice qué ocurre con once dígitos antes de ejecutar; el límite de palabra no reemplaza la cantidad exacta del cuantificador.
+
+**Diagnóstico:** compara la entrada observada con la cantidad y el formato exigidos por el patrón.
+
+**4. Cierra**
+
+Guarda una entrada aceptada, una rechazada y la razón por la que el patrón distingue entre ellas.
 
 #### Paso 6 · Práctica independiente
 
-##### Subtema 2.3: Extraer la guía y la ciudad con grupos · 5-10 min
+#### Subtema 2.3: Extraer la guía y la ciudad con grupos · 10 min
+**1. Contexto** el manifiesto guarda la guía y el destino en una línea con formato conocido.
 
-**Contexto:** el manifiesto guarda la guía y el destino en una línea con formato conocido.
-
-**Hazlo tú:** crea `java-dia-a-dia/ExtraerGuia.java`:
+**2. Hazlo tú** crea `java-dia-a-dia/ExtraerGuia.java`:
 
 ```java
 import java.util.regex.Matcher;
@@ -351,9 +373,15 @@ Ejecuta `cd java-dia-a-dia && java ExtraerGuia.java`.
 
 **Fallo deliberado:** cambia `m.matches()` por `m.find()` y agrega texto inválido al final de la línea. **Resultado del fallo:** se acepta un fragmento válido dentro de una línea inválida. **Diagnóstico:** usa `matches()` cuando el formato debe cubrir toda la entrada.
 
-**Entiende:** los grupos con nombre permiten recuperar partes sin depender de índices numéricos.
+**3. Entiende** los grupos con nombre permiten recuperar partes sin depender de índices numéricos.
 
 La prueba de ReDoS sugerida arriba se mantiene como lectura controlada; no aumentes el tamaño de entrada sin un límite de tiempo.
+
+**Diagnóstico:** compara la entrada observada con la cantidad y el formato exigidos por el patrón.
+
+**4. Cierra**
+
+Guarda una entrada aceptada, una rechazada y la razón por la que el patrón distingue entre ellas.
 
 #### Paso 7 · Cierre y evidencia
 Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque las regex aparecen en validaciones, logs, rutas y búsquedas, y un patrón mal escrito es una vulnerabilidad de denegación de servicio.
