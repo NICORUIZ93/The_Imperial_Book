@@ -967,3 +967,18 @@ bootstrap, proyecto progresivo, fuente oficial, icono y puente profesional traza
 actual: **15 tracks, 256 módulos y 1178 temas**. Los cinco temas nuevos permanecen pendientes de
 firma humana en el registro de profundidad; los detectores informan 1164/1178 practicables y la
 deuda editorial se mantiene en 14, por lo que el incremento no elevó esa deuda.
+
+## 30. Microservicios Módulo 1 — monolito modular antes de extraer
+
+Fecha: 2026-11-02. Se publicaron seis temas: clasificación monolito/módulo/servicio/
+microservicio; cohesión, acoplamiento y API; arquitectura hexagonal; grafos y ciclos;
+fitness functions con ArchUnit; y ADR de extracción basado en evidencia. El incremento deja
+**15 tracks, 257 módulos y 1184 temas**. Los seis temas cumplen el perfil practicable del detector,
+la deuda global permanece en 14 y sustancia informa cero señales; continúan 0/6 en el registro
+humano de profundidad hasta ejecutar y revisar individualmente todos sus subtemas críticos.
+
+Evidencia parcial: se preparó un proyecto Maven limpio con módulos `envios`/`facturacion` y la
+regla ArchUnit que prohíbe acceder a `envios.internal`. La ejecución quedó incompleta porque el
+shell no pudo resolver `repo.maven.apache.org` y ArchUnit no estaba en la caché local; Maven falló
+antes de compilar por `DependencyResolutionException`. No se presenta como prueba superada. Las
+fuentes contrastadas fueron Spring Modulith, ArchUnit y Azure Architecture Center.

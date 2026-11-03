@@ -13,7 +13,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 | react | 58 | 46 | JSX y estado antes de efectos; proveedor, dependencias y API visibles | Carga, error, vacío y carrera de respuestas; caché observada, no supuesta |
 | java | 109 | 11 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
 | spring-boot | 107 | 3 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
-| microservices | 5 | 1 | Procesos, red y fallo parcial antes de patrones; monolito modular antes de extracción | Contratos evolutivos, datos propios, idempotencia, recuperación y observabilidad demostradas |
+| microservices | 11 | 1 | Procesos, red y fallo parcial antes de patrones; monolito modular antes de extracción | Contratos evolutivos, datos propios, idempotencia, recuperación y observabilidad demostradas |
 | android | 74 | 1 | Kotlin antes de Compose; distinguir recomposición, recreación y muerte de proceso | App instalable con permisos, restauración, persistencia y pruebas en dispositivo |
 | ios | 56 | 4 | Swift antes de SwiftUI; explicitar macOS/Xcode y destino | Cancelación, estados de red, persistencia y accesibilidad comprobados en simulador |
 | flutter | 63 | 4 | Dart antes de widgets; ejemplo con main y destino de ejecución | Restauración, red, pruebas de widget, integración y publicación por plataforma |
@@ -24,7 +24,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 
 ## Registro tema por tema
 
-Revisión humana firmada: 0/1178 temas. Pre-lectura registrada sin firma: 14. La pre-lectura no acredita ejecución, comprensión ni calidad pedagógica; consulta `docs/manual-review-log.md`.
+Revisión humana firmada: 0/1184 temas. Pre-lectura registrada sin firma: 14. La pre-lectura no acredita ejecución, comprensión ni calidad pedagógica; consulta `docs/manual-review-log.md`.
 Los laboratorios nuevos tienen una verificación técnica separada; la ejecución correcta tampoco demuestra comprensión.
 
 | Curso / módulo | Tema | Señales para revisar |
@@ -936,6 +936,12 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | microservices / 0 | [Tema 3: Fallo parcial, resultado desconocido e idempotencia · Integración · 90 min](../web/public/content/microservices/modulo-0.md) | clase-java-no-visible |
 | microservices / 0 | [Tema 4: Relojes, causalidad, concurrencia y orden · Integración · 80 min](../web/public/content/microservices/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | microservices / 0 | [Tema 5: Serialización, evolución y falacias distribuidas · Experto · 100 min](../web/public/content/microservices/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
+| microservices / 1 | [Tema 1: Monolito, monolito modular, servicio y microservicio · Fundamentos · 75 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
+| microservices / 1 | [Tema 2: Cohesión, acoplamiento y API del módulo · Aplicación · 90 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
+| microservices / 1 | [Tema 3: Arquitectura hexagonal — dominio, puertos y adaptadores · Aplicación · 95 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
+| microservices / 1 | [Tema 4: Dependencias, ciclos y costo de coordinación · Integración · 80 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
+| microservices / 1 | [Tema 5: Fitness functions con ArchUnit · Integración · 110 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
+| microservices / 1 | [Tema 6: Evidencia y ADR para decidir una extracción · Experto · 90 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 0 | [Tema 1: Node no es "JavaScript en el servidor" sin más · Básico · 75 min](../web/public/content/node/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 0 | [Tema 2: Fases del Event Loop de Node · Intermedio · 75 min](../web/public/content/node/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 0 | [Tema 3: process, global y módulos core · Básico · 75 min](../web/public/content/node/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |

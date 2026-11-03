@@ -1,9 +1,9 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-11-03 04:14 UTC
+Generated: 2026-11-03 04:33 UTC
 Root: `Academia_Floci`
-Indexed files: 1054
-Import edges: 61
+Indexed files: 1057
+Import edges: 62
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
 
@@ -15,21 +15,21 @@ For automated lookups, use `docs/repo-graph.json`.
 
 ## Project Shape
 
-- `angular-app`: 67 files
+- `angular-app`: 68 files
 - `automation-script`: 46 files
-- `course-content`: 291 files
+- `course-content`: 292 files
 - `documentation`: 85 files
-- `example`: 495 files
+- `example`: 496 files
 - `local-infra`: 1 files
 - `project-file`: 69 files
 
 ## File Types
 
-- `.md`: 355
+- `.md`: 356
 - `.py`: 172
 - `.json`: 108
-- `.java`: 73
-- `.ts`: 70
+- `.java`: 74
+- `.ts`: 71
 - `.js`: 54
 - `.html`: 46
 - `.rs`: 25
@@ -113,6 +113,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/src/app/course-data.ts` -> `web/src/app/tracks/java.track.ts`
 - `web/src/app/course-data.ts` -> `web/src/app/tracks/javascript.track.ts`
 - `web/src/app/course-data.ts` -> `web/src/app/tracks/kotlin-multiplatform.track.ts`
+- `web/src/app/course-data.ts` -> `web/src/app/tracks/microservices.track.ts`
 - `web/src/app/course-data.ts` -> `web/src/app/tracks/node.track.ts`
 - `web/src/app/course-data.ts` -> `web/src/app/tracks/react.track.ts`
 - `web/src/app/course-data.ts` -> `web/src/app/tracks/rutaflow.track.ts`
@@ -133,7 +134,7 @@ For automated lookups, use `docs/repo-graph.json`.
 
 ## Most Connected Files
 
-- `web/src/app/course-data.ts`: in=4, out=14
+- `web/src/app/course-data.ts`: in=4, out=15
 - `web/src/app/app.routes.ts`: in=2, out=5
 - `web/src/app/app.spec.ts`: in=0, out=5
 - `examples/javascript-master/src/main.ts`: in=0, out=5
@@ -177,7 +178,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/src/app/command-palette.ts` (130 lines) - symbols: CommandPaletteComponent, query, activeIndex, activeResultId, index, results; imports: @angular/common, @angular/core, @angular/forms, @angular/router, lucide-angular, ./course-data, ./command-palette.service, ./topic-index.service
 - `web/src/app/content.service.ts` (40 lines) - symbols: ContentService; imports: @angular/core, marked
 - `web/src/app/course-data.ts` (889 lines) - symbols: ServiceGroup, CloudComparison, AltCloudGroup; imports: ./course-module.model, ./tracks/devops.track, ./tracks/javascript.track, ./tracks/node.track, ./tracks/angular.track, ./tracks/react.track, ./tracks/java.track, ./tracks/spring-boot.track
-- ... 49 more files
+- ... 50 more files
 
 ### automation-script
 
@@ -221,7 +222,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/public/content/android/modulo-3.md` (461 lines) - headings: # Módulo 3: Navegación con Navigation Compose, ## Aprende construyendo, ### Tema 1: NavHost y NavController, #### Paso 1 · Objetivo y preparación
 - `web/public/content/android/modulo-4.md` (438 lines) - headings: # Módulo 4: Estado con StateFlow y Compose, ## Aprende construyendo, ### Tema 1: StateFlow en el ViewModel, #### Paso 1 · Objetivo y preparación
 - `web/public/content/android/modulo-5.md` (365 lines) - headings: # Módulo 5: Networking con Retrofit/Ktor, ## Aprende construyendo, ### Tema 1: Retrofit con coroutines, #### Paso 1 · Objetivo y preparación
-- ... 273 more files
+- ... 274 more files
 
 ### documentation
 
@@ -237,7 +238,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/AUDITORIA-COBERTURA-SPRING-20261101.md` (157 lines) - headings: # Auditoría de cobertura — Track Spring Boot vs temario profesional, ## Resumen de huecos confirmados, ### ALTA (prerrequisitos del núcleo / imprescindibles), ### MEDIA
 - `docs/CONTINUAR-7-PASOS.md` (76 lines) - headings: # Continuación de la metodología de siete pasos, ## Qué se corrigió en el auditor (no repetir), ## Regla de oro, ## Los 5 temas que faltaban (resueltos)
 - `docs/CONTINUIDAD-CHATGPT-PROMPTS-20261101.md` (172 lines) - headings: # Continuidad de ChatGPT: biblioteca, metodología y revisión de prompts, ## Punto exacto del repositorio, ## Qué ya está confirmado, ## Qué contiene la tanda local sin commit
-- `docs/ESTADO-REVISION-MINUCIOSA-20261101.md` (970 lines) - headings: # Estado verificable de la revisión minuciosa, ## 1. Objetivo obligatorio, ### Ejemplo normativo aportado por el usuario, ## 2. Fuentes persistentes de la regla
+- `docs/ESTADO-REVISION-MINUCIOSA-20261101.md` (985 lines) - headings: # Estado verificable de la revisión minuciosa, ## 1. Objetivo obligatorio, ### Ejemplo normativo aportado por el usuario, ## 2. Fuentes persistentes de la regla
 - `docs/ESTANDAR-DE-CODIGO.md` (56 lines) - headings: # Estándar transversal de código y diseño, ## Prioridades, ## Clean Code con criterio, ## SOLID cuando aporta valor
 - `docs/INVENTARIO-CURSOS-TEMAS-SUBTEMAS.md` (11995 lines) - headings: # Inventario completo: cursos, módulos, temas y subtemas, ## 1. RutaFlow — Proyecto integrador logístico, ### Módulo 0 · RutaFlow desde cero: producto, entorno y dominio, #### Tema 1: El proceso logístico como sistema
 - `docs/MATRIZ-CURRICULAR.md` (73 lines) - headings: # Matriz curricular auditable, ## Progresión de competencia, ## Cobertura por módulo, ## Método de evaluación
@@ -265,7 +266,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `examples/archify/temas/cloud/modulo-22-tema-5-edge-routes.review-1/modulo-22-tema-5-edge-routes.finalize.json` (1012 lines)
 - `examples/archify/temas/cloud/modulo-22-tema-5-edge-routes.review-2/modulo-22-tema-5-edge-routes.browser-check.json` (723 lines)
 - `examples/archify/temas/cloud/modulo-22-tema-5-edge-routes.review-2/modulo-22-tema-5-edge-routes.finalize-summary.json` (48 lines)
-- ... 477 more files
+- ... 478 more files
 
 ### local-infra
 
@@ -286,9 +287,9 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/biblioteca/imagenes.json` (577 lines)
 - `docs/book-curriculum-inventory.json` (527350 lines)
 - `docs/browser-course-review.json` (2712 lines)
-- `docs/code-visual-quality.json` (2231 lines)
+- `docs/code-visual-quality.json` (2259 lines)
 - `docs/course-curriculum-inventory.json` (53 lines)
-- `docs/course-depth-review.json` (14441 lines)
+- `docs/course-depth-review.json` (14513 lines)
 - `docs/curriculum-matrix.json` (394 lines)
 - `docs/floci-official-curriculum.json` (14 lines)
 - ... 51 more files

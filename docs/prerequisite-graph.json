@@ -5355,6 +5355,72 @@
       ]
     },
     {
+      "id": "microservices:1:1",
+      "track": "microservices",
+      "module": 1,
+      "position": 1,
+      "title": "Monolito, monolito modular, servicio y microservicio · Fundamentos · 75 min",
+      "file": "web/public/content/microservices/modulo-1.md",
+      "requires": [
+        "microservices:0:5"
+      ]
+    },
+    {
+      "id": "microservices:1:2",
+      "track": "microservices",
+      "module": 1,
+      "position": 2,
+      "title": "Cohesión, acoplamiento y API del módulo · Aplicación · 90 min",
+      "file": "web/public/content/microservices/modulo-1.md",
+      "requires": [
+        "microservices:1:1"
+      ]
+    },
+    {
+      "id": "microservices:1:3",
+      "track": "microservices",
+      "module": 1,
+      "position": 3,
+      "title": "Arquitectura hexagonal — dominio, puertos y adaptadores · Aplicación · 95 min",
+      "file": "web/public/content/microservices/modulo-1.md",
+      "requires": [
+        "microservices:1:2"
+      ]
+    },
+    {
+      "id": "microservices:1:4",
+      "track": "microservices",
+      "module": 1,
+      "position": 4,
+      "title": "Dependencias, ciclos y costo de coordinación · Integración · 80 min",
+      "file": "web/public/content/microservices/modulo-1.md",
+      "requires": [
+        "microservices:1:3"
+      ]
+    },
+    {
+      "id": "microservices:1:5",
+      "track": "microservices",
+      "module": 1,
+      "position": 5,
+      "title": "Fitness functions con ArchUnit · Integración · 110 min",
+      "file": "web/public/content/microservices/modulo-1.md",
+      "requires": [
+        "microservices:1:4"
+      ]
+    },
+    {
+      "id": "microservices:1:6",
+      "track": "microservices",
+      "module": 1,
+      "position": 6,
+      "title": "Evidencia y ADR para decidir una extracción · Experto · 90 min",
+      "file": "web/public/content/microservices/modulo-1.md",
+      "requires": [
+        "microservices:1:5"
+      ]
+    },
+    {
       "id": "angular:0:1",
       "track": "angular",
       "module": 0,

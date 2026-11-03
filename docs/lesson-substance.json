@@ -1310,6 +1310,11 @@
       "track": "microservices"
     },
     {
+      "legacySections": [],
+      "module": 1,
+      "track": "microservices"
+    },
+    {
       "legacySections": [
         "## Ruta de proyecto progresivo desde carpeta vacía"
       ],
@@ -1687,16 +1692,16 @@
     }
   ],
   "summary": {
-    "fingerprint": "c820633023e94c1895fdce5c56e6584e6df10702db42554726e126439fc9d6f3",
+    "fingerprint": "ba3d14a4dd12ede99bcbcd5eebdd9c698e50425b6baa970079530529371e32c3",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
       "## Ruta de proyecto progresivo desde carpeta vacía": 12,
       "**Errores comunes y soluciones**": 173
     },
-    "modules": 256,
+    "modules": 257,
     "modulesWithLegacySections": 179,
-    "topics": 1178,
+    "topics": 1184,
     "topicsWithIssues": 0
   },
   "topics": {
@@ -8069,6 +8074,48 @@
         "tailWords": 0,
         "topic": "Tema 5: Serialización, evolución y falacias distribuidas · Experto · 100 min",
         "words": 586
+      },
+      {
+        "issues": [],
+        "module": 1,
+        "tailWords": 0,
+        "topic": "Tema 1: Monolito, monolito modular, servicio y microservicio · Fundamentos · 75 min",
+        "words": 478
+      },
+      {
+        "issues": [],
+        "module": 1,
+        "tailWords": 0,
+        "topic": "Tema 2: Cohesión, acoplamiento y API del módulo · Aplicación · 90 min",
+        "words": 460
+      },
+      {
+        "issues": [],
+        "module": 1,
+        "tailWords": 0,
+        "topic": "Tema 3: Arquitectura hexagonal — dominio, puertos y adaptadores · Aplicación · 95 min",
+        "words": 466
+      },
+      {
+        "issues": [],
+        "module": 1,
+        "tailWords": 0,
+        "topic": "Tema 4: Dependencias, ciclos y costo de coordinación · Integración · 80 min",
+        "words": 480
+      },
+      {
+        "issues": [],
+        "module": 1,
+        "tailWords": 0,
+        "topic": "Tema 5: Fitness functions con ArchUnit · Integración · 110 min",
+        "words": 499
+      },
+      {
+        "issues": [],
+        "module": 1,
+        "tailWords": 0,
+        "topic": "Tema 6: Evidencia y ADR para decidir una extracción · Experto · 90 min",
+        "words": 456
       }
     ],
     "node": [

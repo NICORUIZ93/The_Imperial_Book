@@ -224,7 +224,7 @@
     },
     {
       "path": "docs/ESTADO-REVISION-MINUCIOSA-20261101.md",
-      "lines": 970,
+      "lines": 985,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -959,7 +959,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 2231,
+      "lines": 2259,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -986,7 +986,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 14441,
+      "lines": 14513,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -994,7 +994,7 @@
     },
     {
       "path": "docs/course-depth-review.md",
-      "lines": 1210,
+      "lines": 1216,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1161,7 +1161,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 9981,
+      "lines": 10028,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1333,7 +1333,7 @@
     },
     {
       "path": "docs/prerequisite-graph.json",
-      "lines": 12967,
+      "lines": 13033,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1452,7 +1452,7 @@
     },
     {
       "path": "docs/seven-step-methodology.json",
-      "lines": 29772,
+      "lines": 29922,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1502,7 +1502,7 @@
     },
     {
       "path": "docs/subtopic-depth-review.json",
-      "lines": 22074,
+      "lines": 22152,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1510,7 +1510,7 @@
     },
     {
       "path": "docs/subtopic-depth-review.md",
-      "lines": 1171,
+      "lines": 1177,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1591,7 +1591,7 @@
     },
     {
       "path": "docs/topic-learning-quality.json",
-      "lines": 26205,
+      "lines": 26337,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -4506,6 +4506,14 @@
     },
     {
       "path": "examples/professional-bridges/kotlin-multiplatform/Vencimiento.kt",
+      "lines": 17,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/professional-bridges/microservices/Servidor.java",
       "lines": 17,
       "kind": "example",
       "symbols": [],
@@ -11677,6 +11685,27 @@
       ]
     },
     {
+      "path": "web/public/content/microservices/modulo-0.md",
+      "lines": 286,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 0: Antes de distribuir \u2014 proceso, red y falacias",
+        "## Aprende construyendo",
+        "## Entorno del m\u00f3dulo",
+        "### Tema 1: Proceso, host, puerto, socket y DNS \u00b7 Fundamentos \u00b7 70 min",
+        "#### Aprende",
+        "#### Practica",
+        "### Tema 2: Latencia, deadline y timeouts por fase \u00b7 Aplicaci\u00f3n \u00b7 80 min",
+        "#### Aprende",
+        "#### Practica",
+        "### Tema 3: Fallo parcial, resultado desconocido e idempotencia \u00b7 Integraci\u00f3n \u00b7 90 min",
+        "#### Aprende",
+        "#### Practica"
+      ]
+    },
+    {
       "path": "web/public/content/node/modulo-0.md",
       "lines": 497,
       "kind": "course-content",
@@ -12977,7 +13006,7 @@
     },
     {
       "path": "web/public/content/topic-index.json",
-      "lines": 5257,
+      "lines": 5283,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14600,6 +14629,16 @@
       "headings": []
     },
     {
+      "path": "web/src/app/tracks/microservices.track.ts",
+      "lines": 34,
+      "kind": "angular-app",
+      "symbols": [],
+      "imports": [
+        "../course-module.model"
+      ],
+      "headings": []
+    },
+    {
       "path": "web/src/app/tracks/node.track.ts",
       "lines": 214,
       "kind": "angular-app",
@@ -14884,6 +14923,10 @@
     {
       "source": "web/src/app/course-data.ts",
       "target": "web/src/app/tracks/spring-boot.track.ts"
+    },
+    {
+      "source": "web/src/app/course-data.ts",
+      "target": "web/src/app/tracks/microservices.track.ts"
     },
     {
       "source": "web/src/app/course-data.ts",

@@ -1,9 +1,9 @@
 {
   "summary": {
-    "topics": 1178,
+    "topics": 1184,
     "reviewed": 350,
-    "pending": 828,
-    "priorityCandidates": 786,
+    "pending": 834,
+    "priorityCandidates": 792,
     "byTrack": {
       "android": {
         "topics": 74,
@@ -56,9 +56,9 @@
         "pending": 56
       },
       "microservices": {
-        "topics": 5,
+        "topics": 11,
         "reviewed": 0,
-        "pending": 5
+        "pending": 11
       },
       "node": {
         "topics": 77,
@@ -16964,6 +16964,84 @@
       "track": "microservices",
       "module": 0,
       "topic": "Tema 5: Serialización, evolución y falacias distribuidas · Experto · 100 min",
+      "status": "pending",
+      "semanticHeadings": [],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos"
+      ],
+      "review": null
+    },
+    {
+      "id": "microservices/modulo-1::Tema 1: Monolito, monolito modular, servicio y microservicio · Fundamentos · 75 min",
+      "track": "microservices",
+      "module": 1,
+      "topic": "Tema 1: Monolito, monolito modular, servicio y microservicio · Fundamentos · 75 min",
+      "status": "pending",
+      "semanticHeadings": [],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos"
+      ],
+      "review": null
+    },
+    {
+      "id": "microservices/modulo-1::Tema 2: Cohesión, acoplamiento y API del módulo · Aplicación · 90 min",
+      "track": "microservices",
+      "module": 1,
+      "topic": "Tema 2: Cohesión, acoplamiento y API del módulo · Aplicación · 90 min",
+      "status": "pending",
+      "semanticHeadings": [],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos"
+      ],
+      "review": null
+    },
+    {
+      "id": "microservices/modulo-1::Tema 3: Arquitectura hexagonal — dominio, puertos y adaptadores · Aplicación · 95 min",
+      "track": "microservices",
+      "module": 1,
+      "topic": "Tema 3: Arquitectura hexagonal — dominio, puertos y adaptadores · Aplicación · 95 min",
+      "status": "pending",
+      "semanticHeadings": [],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos"
+      ],
+      "review": null
+    },
+    {
+      "id": "microservices/modulo-1::Tema 4: Dependencias, ciclos y costo de coordinación · Integración · 80 min",
+      "track": "microservices",
+      "module": 1,
+      "topic": "Tema 4: Dependencias, ciclos y costo de coordinación · Integración · 80 min",
+      "status": "pending",
+      "semanticHeadings": [],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos"
+      ],
+      "review": null
+    },
+    {
+      "id": "microservices/modulo-1::Tema 5: Fitness functions con ArchUnit · Integración · 110 min",
+      "track": "microservices",
+      "module": 1,
+      "topic": "Tema 5: Fitness functions con ArchUnit · Integración · 110 min",
+      "status": "pending",
+      "semanticHeadings": [],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos"
+      ],
+      "review": null
+    },
+    {
+      "id": "microservices/modulo-1::Tema 6: Evidencia y ADR para decidir una extracción · Experto · 90 min",
+      "track": "microservices",
+      "module": 1,
+      "topic": "Tema 6: Evidencia y ADR para decidir una extracción · Experto · 90 min",
       "status": "pending",
       "semanticHeadings": [],
       "prioritySignals": [

@@ -2,10 +2,10 @@
 
 > Las señales automáticas no prueban profundidad ni ausencia de ella. Un tema sólo queda revisado mediante el registro humano con mapa de subtemas críticos, evidencia y fuentes.
 
-- Temas inventariados: 1178
+- Temas inventariados: 1184
 - Revisados humanamente para subtemas: 350
-- Pendientes: 828
-- Candidatos prioritarios por señales: 786
+- Pendientes: 834
+- Candidatos prioritarios por señales: 792
 
 ## Cobertura por track
 
@@ -21,7 +21,7 @@
 | java | 109 | 109 | 0 |
 | javascript | 88 | 0 | 88 |
 | kotlin-multiplatform | 56 | 0 | 56 |
-| microservices | 5 | 0 | 5 |
+| microservices | 11 | 0 | 11 |
 | node | 77 | 0 | 77 |
 | react | 58 | 0 | 58 |
 | rutaflow | 29 | 0 | 29 |
@@ -669,6 +669,12 @@
 - `microservices/modulo-0` — Tema 2: Latencia, deadline y timeouts por fase · Aplicación · 80 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `microservices/modulo-0` — Tema 4: Relojes, causalidad, concurrencia y orden · Integración · 80 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `microservices/modulo-0` — Tema 5: Serialización, evolución y falacias distribuidas · Experto · 100 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `microservices/modulo-1` — Tema 1: Monolito, monolito modular, servicio y microservicio · Fundamentos · 75 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `microservices/modulo-1` — Tema 2: Cohesión, acoplamiento y API del módulo · Aplicación · 90 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `microservices/modulo-1` — Tema 3: Arquitectura hexagonal — dominio, puertos y adaptadores · Aplicación · 95 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `microservices/modulo-1` — Tema 4: Dependencias, ciclos y costo de coordinación · Integración · 80 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `microservices/modulo-1` — Tema 5: Fitness functions con ArchUnit · Integración · 110 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `microservices/modulo-1` — Tema 6: Evidencia y ADR para decidir una extracción · Experto · 90 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `node/modulo-0` — Tema 3: process, global y módulos core · Básico · 75 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `node/modulo-0` — Tema 4: Event-driven architecture y non-blocking I/O · Intermedio · 75 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `node/modulo-1` — Tema 1: package.json y semver · Básico · 50 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
