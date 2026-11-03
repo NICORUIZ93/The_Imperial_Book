@@ -560,7 +560,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 2919,
+      "lines": 2940,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -596,7 +596,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 12627,
+      "lines": 12679,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -604,7 +604,7 @@
     },
     {
       "path": "docs/course-depth-review.md",
-      "lines": 1142,
+      "lines": 1146,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -731,7 +731,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 10684,
+      "lines": 10710,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -820,7 +820,7 @@
     },
     {
       "path": "docs/prerequisite-graph.json",
-      "lines": 12240,
+      "lines": 12284,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -897,7 +897,7 @@
     },
     {
       "path": "docs/revision-cursos-prioritarios.md",
-      "lines": 84,
+      "lines": 101,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -906,6 +906,7 @@
         "## Criterio editorial que se aplicar\u00e1",
         "## Resultado de cotejo estructural",
         "### Lectura manual de Java M16 (JPA)",
+        "### Lectura manual de Spring Boot M8 (Kafka y RabbitMQ)",
         "### Lectura manual de Java M17 (JDBC)",
         "## Verificaci\u00f3n de versiones",
         "## Orden de trabajo",
@@ -948,7 +949,7 @@
     },
     {
       "path": "docs/seven-step-methodology.json",
-      "lines": 29227,
+      "lines": 29331,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -983,7 +984,7 @@
     },
     {
       "path": "docs/topic-learning-quality.json",
-      "lines": 24735,
+      "lines": 24823,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -10233,6 +10234,27 @@
       ]
     },
     {
+      "path": "web/public/content/node/modulo-15.md",
+      "lines": 271,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 15: Deno y Bun",
+        "## Aprende construyendo",
+        "### Tema 1: Deno y permisos expl\u00edcitos",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
+        "#### Paso 2 \u00b7 Contexto y caso real",
+        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
+        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
+        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
+        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "### Tema 2: Bun re\u00fane runtime, paquetes, pruebas y bundler",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+      ]
+    },
+    {
       "path": "web/public/content/node/modulo-2.md",
       "lines": 538,
       "kind": "course-content",
@@ -11326,7 +11348,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-8.md",
-      "lines": 991,
+      "lines": 1280,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -11368,7 +11390,7 @@
     },
     {
       "path": "web/public/content/topic-index.json",
-      "lines": 4971,
+      "lines": 4987,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12846,7 +12868,7 @@
     },
     {
       "path": "web/src/app/tracks/spring-boot.track.ts",
-      "lines": 307,
+      "lines": 311,
       "kind": "angular-app",
       "symbols": [],
       "imports": [

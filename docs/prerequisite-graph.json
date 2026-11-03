@@ -4353,6 +4353,50 @@
       ]
     },
     {
+      "id": "spring-boot:8:6",
+      "track": "spring-boot",
+      "module": 8,
+      "position": 6,
+      "title": "Spring Cloud Stream y binders de Kafka/RabbitMQ",
+      "file": "web/public/content/spring-boot/modulo-8.md",
+      "requires": [
+        "spring-boot:8:5"
+      ]
+    },
+    {
+      "id": "spring-boot:8:7",
+      "track": "spring-boot",
+      "module": 8,
+      "position": 7,
+      "title": "Kafka Streams con Spring para transformar eventos",
+      "file": "web/public/content/spring-boot/modulo-8.md",
+      "requires": [
+        "spring-boot:8:6"
+      ]
+    },
+    {
+      "id": "spring-boot:8:8",
+      "track": "spring-boot",
+      "module": 8,
+      "position": 8,
+      "title": "Avro y Schema Registry para contratos de eventos",
+      "file": "web/public/content/spring-boot/modulo-8.md",
+      "requires": [
+        "spring-boot:8:7"
+      ]
+    },
+    {
+      "id": "spring-boot:8:9",
+      "track": "spring-boot",
+      "module": 8,
+      "position": 9,
+      "title": "RabbitMQ con Spring AMQP: routing, ack y prefetch",
+      "file": "web/public/content/spring-boot/modulo-8.md",
+      "requires": [
+        "spring-boot:8:8"
+      ]
+    },
+    {
       "id": "spring-boot:9:1",
       "track": "spring-boot",
       "module": 9,
@@ -4360,7 +4404,7 @@
       "title": "Mono y Flux",
       "file": "web/public/content/spring-boot/modulo-9.md",
       "requires": [
-        "spring-boot:8:5"
+        "spring-boot:8:9"
       ]
     },
     {

@@ -988,3 +988,292 @@ La comparación Kafka frente a RabbitMQ de este tema es la que justificará la e
 - **No configurar `group.instance.id`.** Sin identidad estable, cada reinicio de instancia dispara un rebalanceo completo que detiene momentáneamente todo el consumer group.
 
 ---
+
+### Tema 6: Spring Cloud Stream y binders de Kafka/RabbitMQ
+
+#### Paso 1 · Objetivo y preparación
+
+Al finalizar crearás una función consumidora y una productora con Spring Cloud Stream, y explicarás qué parte del código queda igual y qué depende del binder. **Prerrequisitos:** una cola Kafka o RabbitMQ, funciones Java y conceptos del Tema 5. Usa el mismo BOM de Spring Cloud y Spring Boot declarado por el proyecto de laboratorio.
+
+#### Paso 2 · Contexto y caso real
+
+Un servicio de pedidos envía actualizaciones a un tópico Kafka hoy, pero un worker de documentos consume una cola RabbitMQ. El equipo quiere mantener clara la lógica de negocio sin ocultar que cada broker tiene configuración y garantías distintas.
+
+#### Paso 3 · Teoría y analogía
+
+Spring Cloud Stream presenta bindings de entrada/salida y un binder que conecta esos bindings con middleware. Hay binders para Kafka y RabbitMQ; al cambiar binder pueden cambiar semánticas, garantías y propiedades. El binder es como un adaptador entre el vocabulario de la función Java y el mecanismo concreto del broker: reduce código de transporte, no vuelve idénticos a los brokers ni resuelve transacciones entre broker y base de datos.
+
+```mermaid
+flowchart LR
+  P[PedidoEvent] --> F[Function bean]
+  F --> B[Binding output]
+  B --> K[Kafka topic]
+  B --> R[Rabbit exchange/queue]
+```
+
+#### Paso 4 · Demostración guiada
+
+Crea `src/main/java/academia/pedidos/EventosPedido.java` con la función y el binding de entrada:
+
+```java
+@Bean
+public Function<PedidoEvento, PedidoEvento> normalizarPedido() {
+    return evento -> new PedidoEvento(evento.id(), evento.estado().trim());
+}
+```
+
+En `src/main/resources/application.yml`, configura:
+
+```yaml
+spring:
+  cloud:
+    function:
+      definition: normalizarPedido
+    stream:
+      bindings:
+        normalizarPedido-in-0:
+          destination: pedidos-entrada
+        normalizarPedido-out-0:
+          destination: pedidos-normalizados
+```
+
+Añade el binder de Kafka y luego, en una configuración de prueba separada, el binder de RabbitMQ. Ejemplo independiente desde cero: crea una aplicación Spring Boot con Spring Cloud Stream y el binder deseado. Ejecuta:
+
+```bash
+./mvnw test
+```
+
+El Test Binder prueba la función sin broker; luego ejecuta una prueba de integración contra el broker elegido. **Resultado esperado:** la función produce el estado normalizado; cada binder publica en su destino configurado.
+
+#### Paso 5 · Práctica guiada
+
+**Fallo deliberado:** elimina la propiedad de destino de salida. **Pista:** el proceso puede arrancar, pero el mensaje no va a la ubicación que espera el consumidor. Diagnostica binding, destino, binder activo y configuración por ambiente; no cambies la función de dominio para reparar una propiedad de despliegue.
+
+#### Paso 6 · Práctica independiente
+
+Configura la función para ejecutarse como consumidor independiente con `spring.cloud.function.definition`; añade un test para datos inválidos y una política de errores específica del binder. Compara el resultado con `KafkaTemplate` y `RabbitTemplate`: anota qué opción deja más visibles las propiedades del broker que necesitas controlar. La abstracción no debe ocultar acknowledgements, grupos, ruteo ni dead lettering cuando son parte del requisito.
+
+#### Paso 7 · Cierre y evidencia
+
+Entrega el bean, su prueba con binder de test, el archivo de configuración y una ejecución contra el broker real. **Proyecto integrador RutaFlow:** decide para cada flujo si conviene Kafka, RabbitMQ o solo una función local; registra destino y garantías en el contrato del evento. Errores comunes: creer que cambiar una dependencia cambia el modelo de entrega, mantener dos binders activos sin decir cuál usa cada binding y probar solo con el binder simulado. Siguiente paso: procesar una secuencia con estado. Fuentes oficiales: [Spring Cloud Stream](https://docs.spring.io/spring-cloud-stream/reference/), [abstracción Binder](https://docs.spring.io/spring-cloud-stream/reference/spring-cloud-stream/overview-binder-abstraction.html) y [Testing](https://docs.spring.io/spring-cloud-stream/reference/spring-cloud-stream/testing.html).
+
+**¿Por qué es importante?** El código de negocio puede ser portable, pero particiones, ack, ruteo y retención siguen perteneciendo al broker.
+**Evidencia de aprendizaje:** entrega test, configuración y resultado real para al menos un binder; registra las diferencias del segundo.
+**Cuándo no usarlo:** si necesitas una función exclusiva y crítica de un broker, la API directa puede comunicar mejor esa decisión.
+
+### Tema 7: Kafka Streams con Spring para transformar eventos
+
+#### Paso 1 · Objetivo y preparación
+
+Al finalizar construirás una topología que filtra eventos, transforma valores y escribe a otro tópico. **Prerrequisitos:** productor/consumidor del Tema 1, clave y partición. Añade Kafka Streams al proyecto y un cluster de desarrollo.
+
+#### Paso 2 · Contexto y caso real
+
+El panel de operaciones necesita un flujo limpio de pedidos despachados. Hacer un consumidor manual que escriba al tópico resultante requiere coordinar lectura, offsets, reintentos y estado local; Kafka Streams ofrece una DSL para describir ese procesamiento.
+
+#### Paso 3 · Teoría y analogía
+
+Kafka Streams forma una topología de procesadores que lee tópicos, transforma registros y escribe resultados. `KStream` representa registros como hechos nuevos; `KTable` representa el estado más reciente por clave. Transformaciones con estado, agregados y ventanas usan estado local y tópicos de changelog; el tamaño y la restauración del estado importan en despliegue. Imagina una cinta transportadora: cada registro recorre las estaciones de filtro y cambio, y la clave determina qué estación conserva el historial del mismo pedido.
+
+#### Paso 4 · Demostración guiada
+
+Crea `src/main/java/academia/pedidos/FlujoDespachados.java` como bean de `StreamsBuilder`:
+
+```java
+import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.streams.kstream.Consumed;
+import org.apache.kafka.streams.kstream.Produced;
+
+@Bean
+KStream<String, String> soloDespachados(StreamsBuilder builder) {
+    KStream<String, String> entrada = builder.stream("pedidos",
+        Consumed.with(Serdes.String(), Serdes.String()));
+    entrada.filter((id, estado) -> "DESPACHADO".equals(estado))
+           .to("pedidos-despachados", Produced.with(Serdes.String(), Serdes.String()));
+    return entrada;
+}
+```
+
+Configura `spring.kafka.streams.application-id=proyeccion-despachos` y bootstrap servers en `application.yml`. Para probar, escribe a `pedidos` un par de valores (`PENDIENTE`, `DESPACHADO`) con claves `p-1`, `p-2` y consume `pedidos-despachados`. Ejemplo independiente desde cero: genera un proyecto con `spring-kafka` y `kafka-streams`, crea `FlujoDespachados.java` y la prueba. Ejecuta:
+
+```bash
+mkdir -p ejemplo-kstreams
+./mvnw test
+```
+
+Con ambos tópicos creados ejecuta la app. **Resultado esperado:** solo se escribe el evento `DESPACHADO`; la clave del pedido se conserva.
+
+```mermaid
+flowchart LR
+  A[pedidos] --> B[KStream]
+  B --> C[filter estado DESPACHADO]
+  C --> D[pedidos-despachados]
+```
+
+#### Paso 5 · Práctica guiada
+
+**Fallo deliberado:** cambia el filtro para aceptar todos los registros. **Pista:** comprueba la salida del tópico, no solo que la app esté conectada. La prueba debe fallar porque `PENDIENTE` aparece donde el contrato prohíbe ese estado; restaura el filtro y diagnostica el registro que se coló.
+
+#### Paso 6 · Práctica independiente
+
+Agrega un conteo por estado con `groupByKey` y `count`, usando un `Materialized` con nombre estable. Reinicia la app y observa cómo restaura el estado. Después cambia nombre de operador o particiones en un entorno aislado y escribe qué migración/reset de estado requiere el despliegue. No confundas esta aplicación de streams con un `@KafkaListener` que solo reenvía mensajes.
+
+#### Paso 7 · Cierre y evidencia
+
+Entrega topología, comandos de producción/consumo y prueba que demuestra la exclusión del estado incorrecto. **Proyecto integrador RutaFlow:** usa Streams para una proyección agregada o transformación continua; reserva el listener simple para efectos discretos. Errores comunes: usar claves inconsistentes, olvidar el `application-id`, cambiar operadores con estado sin plan de upgrade y asumir que los datos locales son la única copia. Siguiente paso: acordar el formato del evento entre equipos. Fuentes oficiales: [Kafka Streams DSL](https://kafka.apache.org/documentation/streams/developer-guide/dsl-api/), [Kafka Streams](https://kafka.apache.org/documentation/streams/) y [Spring Kafka Streams](https://docs.spring.io/spring-kafka/reference/streams.html).
+
+**¿Por qué es importante?** Una topología expresa procesamiento continuo y estado derivado, no solo recibir mensajes.
+**Evidencia de aprendizaje:** prueba de filtro, tópico de salida y recuperación del agregado tras reiniciar.
+**Cuándo no usarlo:** para un flujo corto de trabajos con una acción por mensaje, una cola de tareas suele ser más directa.
+
+### Tema 8: Avro y Schema Registry para contratos de eventos
+
+#### Paso 1 · Objetivo y preparación
+
+Al finalizar registrarás un esquema Avro, serializarás un evento y evaluarás si una modificación es compatible con consumidores anteriores. **Prerrequisitos:** JSON, tópicos Kafka y serialización. Usa el Schema Registry disponible en el entorno de desarrollo y no publiques esquemas reales con datos personales.
+
+#### Paso 2 · Contexto y caso real
+
+Un productor añade `zonaEntrega` al evento de pedido; un consumidor viejo sigue desplegado durante horas. Sin una regla de compatibilidad, el productor puede enviar mensajes que rompan el lector en producción.
+
+#### Paso 3 · Teoría y analogía
+
+Avro describe campos y tipos en un esquema; Schema Registry asigna una versión y comprueba reglas de evolución configuradas. El serializador guarda una referencia para que el lector obtenga el esquema escritor y lo reconcilie con su esquema lector. Un campo nuevo suele necesitar ser opcional con valor predeterminado para ser compatible hacia atrás. Es como cambiar un formulario compartido: agregar una casilla opcional con valor conocido no obliga a los lectores anteriores a responderla.
+
+#### Paso 4 · Demostración guiada
+
+Crea `src/main/avro/PedidoDespachado.avsc`:
+
+```json
+{
+  "type": "record", "name": "PedidoDespachado", "namespace": "academia.eventos",
+  "fields": [
+    {"name": "pedidoId", "type": "string"},
+    {"name": "estado", "type": "string"},
+    {"name": "zonaEntrega", "type": ["null", "string"], "default": null}
+  ]
+}
+```
+
+Configura serializers/deserializers Avro y URL del registry en el perfil de desarrollo. Publica un evento v1, registra v2 con el campo opcional, y consulta la compatibilidad antes de publicar. Ejemplo independiente desde cero: crea un proyecto Spring con dependencia Avro/Registry, agrega el esquema y `src/test/java/academia/pedidos/PedidoSchemaTest.java`. Ejecuta:
+
+```bash
+mkdir -p ejemplo-avro
+./mvnw test -Dtest=PedidoSchemaTest
+```
+
+**Resultado esperado:** el lector v2 puede leer un registro v1 y obtiene `zonaEntrega=null`; una regla incompatible se rechaza al registrar.
+
+```mermaid
+flowchart LR
+  P[Producer con schema v1] --> K[Kafka: evento]
+  K --> C[Consumer con reader v2]
+  C --> R[Registry entrega writer schema]
+  R --> M[zonaEntrega = null]
+```
+
+#### Paso 5 · Práctica guiada
+
+**Fallo deliberado:** agrega `zonaEntrega` como string requerido sin default. **Pista:** los registros existentes no contienen ese campo y el lector nuevo no sabe qué valor dar. Cambia el esquema a unión nullable con default, vuelve a probar y guarda la respuesta de compatibilidad del Registry.
+
+#### Paso 6 · Práctica independiente
+
+Simula despliegue gradual: productor viejo/consumidor nuevo y productor nuevo/consumidor viejo. Anota compatibilidad backward, forward y full según cuál lado debe leer datos del otro. Prueba quitar un campo opcional y renombrar uno; usa alias solo si el formato y la política de tu registry lo soportan. Versiona `.avsc` junto al código y no edites mensajes históricos.
+
+#### Paso 7 · Cierre y evidencia
+
+Entrega esquemas v1/v2, respuesta de compatibilidad y test leyendo datos viejos con el consumidor nuevo. **Proyecto integrador RutaFlow:** versiona los eventos de pedido y acuerda una regla de compatibilidad con los equipos consumidores. Errores comunes: pensar que JSON más una clase Java equivale a validación de esquema en el broker, añadir campos requeridos sin default y cambiar el schema subject por accidente. Siguiente paso: integrar el contrato al CI. Fuentes oficiales: [Spring Cloud Stream Schema Registry](https://docs.spring.io/spring-cloud-stream/reference/schema-registry/spring-cloud-stream-schema-registry.html), [Confluent: evolución de esquemas](https://docs.confluent.io/platform/current/schema-registry/fundamentals/schema-evolution.html) y [Avro](https://avro.apache.org/docs/).
+
+**¿Por qué es importante?** Un evento puede seguir almacenado mucho después de que su productor original cambie de versión.
+**Evidencia de aprendizaje:** demuestra lectura cruzada de dos versiones y rechazo de un cambio incompatible.
+**Cuándo no usarlo:** un formato auto-descriptivo simple puede bastar en un prototipo local sin consumidores independientes; no omitas contrato en eventos duraderos.
+
+### Tema 9: RabbitMQ con Spring AMQP: routing, ack y prefetch
+
+#### Paso 1 · Objetivo y preparación
+
+Al finalizar configurarás exchange, binding y cola durable, confirmarás una publicación y procesarás mensajes con ack manual y prefetch limitado. **Prerrequisitos:** Spring Boot, AMQP básico y RabbitMQ local. Levanta el broker con Docker y usa un perfil de laboratorio.
+
+#### Paso 2 · Contexto y caso real
+
+Un servicio genera guías de envío. Si los trabajadores terminan a ritmos distintos, el broker debe enrutar la tarea a la cola correcta y evitar que una instancia lenta acumule trabajo sin límite.
+
+#### Paso 3 · Teoría y analogía
+
+El exchange enruta mensajes a colas con bindings y routing keys. El consumidor informa éxito con ack; si el proceso cae antes del ack, el broker puede entregar de nuevo. `prefetch` limita mensajes en vuelo. Publisher confirm confirma aceptación del lado del broker y `returns` permite detectar un mensaje sin ruta; ninguno garantiza que la lógica de negocio se haya completado. Son dos recibos distintos: uno de la oficina que acepta el paquete y otro del trabajador que terminó la tarea.
+
+#### Paso 4 · Demostración guiada
+
+Crea `src/main/java/academia/envios/ConfiguracionRabbit.java`:
+
+```java
+@Bean DirectExchange enviosExchange() { return new DirectExchange("envios", true, false); }
+@Bean Queue guiasQueue() { return QueueBuilder.durable("guias").build(); }
+@Bean Binding guiasBinding(Queue guiasQueue, DirectExchange enviosExchange) {
+    return BindingBuilder.bind(guiasQueue).to(enviosExchange).with("guia.crear");
+}
+```
+
+Publica con `rabbitTemplate.convertAndSend("envios", "guia.crear", evento)` y consume con `@RabbitListener(queues="guias")`. Configura listener con ack manual, confirma el mensaje solo después de guardar, y define `prefetch=5` para la prueba. Habilita publisher confirms correlated y returns en `CachingConnectionFactory`. Ejemplo independiente desde cero: crea un proyecto Spring con AMQP y Testcontainers RabbitMQ; agrega `src/test/java/academia/envios/CrearGuiaRabbitTest.java`. Ejecuta:
+
+```bash
+mkdir -p ejemplo-rabbit-spring
+./mvnw test -Dtest=CrearGuiaRabbitTest
+```
+
+**Resultado esperado:** el mensaje con `guia.crear` llega a `guias`, se procesa y se confirma.
+
+Configura en `application.yml` el ack manual y el límite en vuelo:
+
+```yaml
+spring:
+  rabbitmq:
+    publisher-confirm-type: correlated
+    publisher-returns: true
+    listener:
+      simple:
+        acknowledge-mode: manual
+        prefetch: 5
+```
+
+El listener recibe `Channel` y `Message`; llama `basicAck(deliveryTag, false)` después de escribir. Para error final usa `basicNack(deliveryTag, false, false)` con DLX configurado; para un fallo transitorio, reintenta con espera y límite. Con ack manual, si no se confirma antes de cerrar canal, el broker puede reenviar.
+
+```java
+@RabbitListener(queues = "guias")
+void recibir(GuiaEvento evento, Channel channel, Message message) throws IOException {
+    long tag = message.getMessageProperties().getDeliveryTag();
+    try {
+        guiaService.crearUnaVez(evento.eventId(), evento);
+        channel.basicAck(tag, false);
+    } catch (ErrorPermanente ex) {
+        channel.basicNack(tag, false, false); // DLX; sin requeue inmediato.
+    }
+}
+```
+
+La cola de práctica puede declararse con `QueueBuilder.durable("guias").deadLetterExchange("envios.dlx").deadLetterRoutingKey("guia.error").build()` y enlazarse a ese exchange con la misma routing key.
+
+```mermaid
+flowchart LR
+  P[RabbitTemplate] -->|exchange + routing key| E[envios]
+  E -->|binding guia.crear| Q[guias]
+  Q --> C[Listener: guarda]
+  C -->|ack| Q
+  C -->|nack final| D[DLX / guias.dlq]
+```
+
+#### Paso 5 · Práctica guiada
+
+**Fallo deliberado:** publica con routing key `guia.generar` sin binding. **Pista:** el mensaje puede no encontrar cola; habilita returns/mandatory y registra el retorno. Luego configura binding correcto. Fuerza además un fallo del listener y comprueba redelivery/DLQ; evita reencolar un error permanente en ciclo inmediato.
+
+#### Paso 6 · Práctica independiente
+
+Usa `RabbitMQContainer` para probar el exchange y el binding. Configura dead-letter exchange, cola DLQ y `x-dead-letter-routing-key`; comprueba que el error final llega a la DLQ. Detén el listener después de guardar pero antes del ack y verifica que la redelivery no duplica la guía gracias a `eventId` con restricción única. Compara prefetch 1 y 5; conserva métricas de pendientes y tiempo por tarea.
+
+#### Paso 7 · Cierre y evidencia
+
+Entrega prueba con broker real, ruta no encontrada, ack/redelivery y DLQ. **Proyecto integrador RutaFlow:** usa RabbitMQ para trabajos acotados como generar documentos y define idempotencia antes del ack. Errores comunes: auto-ack antes de guardar, confundir publisher confirms con consumer ack, ignorar routing returns y usar prefetch ilimitado. Siguiente paso: compara la operación de RabbitMQ con la retención y offsets de Kafka. Fuentes oficiales: [Spring AMQP](https://docs.spring.io/spring-amqp/reference/), [publisher confirms y returns](https://docs.spring.io/spring-amqp/reference/amqp/connections.html), [RabbitMQ confirms](https://www.rabbitmq.com/docs/confirms) y [RabbitMQ tutorial](https://www.rabbitmq.com/tutorials/tutorial-one-java).
+
+**¿Por qué es importante?** El contrato de un mensaje incluye su destino, cuándo se considera procesado y qué ocurre al fallar.
+**Evidencia de aprendizaje:** entrega pruebas del binding, confirm, ack, DLQ y deduplicación.
+**Cuándo no elegir RabbitMQ:** si necesitas conservar y volver a leer un log por offsets independientes, compara el modelo de Kafka.

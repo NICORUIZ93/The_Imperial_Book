@@ -3,8 +3,8 @@
   "totals": {
     "tracks": 14,
     "modules": 246,
-    "topics": 1112,
-    "topicsWithSignals": 154,
+    "topics": 1116,
+    "topicsWithSignals": 158,
     "newLaboratories": 25
   },
   "priorities": {
@@ -12585,6 +12585,58 @@
       "file": "web/public/content/spring-boot/modulo-8.md",
       "line": 788,
       "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "spring-boot",
+      "module": 8,
+      "title": "Tema 6: Spring Cloud Stream y binders de Kafka/RabbitMQ",
+      "file": "web/public/content/spring-boot/modulo-8.md",
+      "line": 992,
+      "signals": [
+        "clase-java-no-visible"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "spring-boot",
+      "module": 8,
+      "title": "Tema 7: Kafka Streams con Spring para transformar eventos",
+      "file": "web/public/content/spring-boot/modulo-8.md",
+      "line": 1064,
+      "signals": [
+        "clase-java-no-visible"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "spring-boot",
+      "module": 8,
+      "title": "Tema 8: Avro y Schema Registry para contratos de eventos",
+      "file": "web/public/content/spring-boot/modulo-8.md",
+      "line": 1129,
+      "signals": [
+        "clase-java-no-visible"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "spring-boot",
+      "module": 8,
+      "title": "Tema 9: RabbitMQ con Spring AMQP: routing, ack y prefetch",
+      "file": "web/public/content/spring-boot/modulo-8.md",
+      "line": 1191,
+      "signals": [
+        "clase-java-no-visible"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"

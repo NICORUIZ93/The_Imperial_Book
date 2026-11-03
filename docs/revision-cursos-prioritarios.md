@@ -20,14 +20,14 @@ Los conteos comparan elementos con duración enumerados en el prompt con encabez
 |---|---:|---:|---:|---:|
 | Java | 21 módulos, 122 elementos cronometrados | 21 módulos, 91 temas | La granularidad difiere en M12, M16, M17, M19 y M20; M16 se amplió de 2 a 8 lecciones | 46 al iniciar la revisión |
 | Node.js | 16 módulos, 75 elementos cronometrados | 16 módulos, 83 temas | M15 ya existe; M14 separa saga, Kafka y RabbitMQ en lecciones diferentes | 15 |
-| Spring Boot | 26 módulos, 161 elementos cronometrados | 23 módulos, 91 temas | M23–M25 no tienen archivo; granularidad de M2–M22 por cotejar | 8 |
+| Spring Boot | 26 módulos, 161 elementos cronometrados | 23 módulos, 95 temas | M8 se amplió de 5 a 9 lecciones; M23–M25 todavía no tienen archivo | 8 |
 | Flutter | 23 módulos, 155 elementos cronometrados | 16 módulos, 63 temas | M16–M22 no tienen archivo; granularidad de M0–M15 por cotejar | 6 |
 
 **Detalle de diferencias por módulo según cantidad de elementos cronometrados:**
 
 - **Java:** las diferencias de elementos por encabezados son M12 (+2 elementos), M16 (+15), M17 (+10), M19 (+5) y M20 (+10). El cotejo de contenido definirá cuáles son subtemas cubiertos dentro de una lección compuesta y cuáles requieren una lección propia.
 - **Node:** se añadió M15 con Deno, Bun, migración desde Node y criterio de elección. M14 separa saga, Kafka y RabbitMQ para comprobar clave/grupo/offset de Kafka y exchange/cola/ack/prefetch de RabbitMQ por separado; falta ejecutar los labs contra brokers reales.
-- **Spring Boot:** hay diferencias de granularidad que se revisarán por contenido en M2 (2), M3 (5), M4 (5), M6 (5), M7 (3), M8 (3), M9 (3), M10 (4), M11 (1), M16 (6), M17 (6), M18 (5), M19 (6), M20 (2), M21 (3), M22 (2). M23, M24 y M25 no tienen archivo en el contenido web; cada uno enumera 4 elementos en el prompt.
+- **Spring Boot:** hay diferencias de granularidad que se revisarán por contenido en M2 (2), M3 (5), M4 (5), M6 (5), M7 (3), M8 (ahora 9 temas frente a 8 elementos del prompt), M9 (3), M10 (4), M11 (1), M16 (6), M17 (6), M18 (5), M19 (6), M20 (2), M21 (3), M22 (2). M23, M24 y M25 no tienen archivo en el contenido web; cada uno enumera 4 elementos en el prompt.
 - **Flutter:** hay diferencias de granularidad por cotejar en M0 (6), M1 (5), M2 (2), M3 (3), M4 (5), M5 (2), M6 (2), M7 (4), M8 (3), M9 (7), M10 (9), M11 (4), M12 (3), M13 (4), M14 (1), M15 (1). M16, M17, M18, M21 y M22 no tienen archivo en la web; enumeran 6, 6, 7, 6 y 6 elementos. El prompt describe M19 y M20 sin una lista cronometrada reconocible; su proyecto/capstone se revisará directamente.
 
 ### Lectura manual de Java M16 (JPA)
@@ -50,6 +50,22 @@ Los conteos comparan elementos con duración enumerados en el prompt con encabez
 | Pruebas JPA con Testcontainers | Parcial | Se define PostgreSQL temporal y el comando de test; las dependencias y prueba completa aún deben incorporarse al ejemplo real. |
 
 Esta lectura demuestra por qué un módulo con dos encabezados puede cubrir partes de varios elementos y dejar otros ausentes. M16 ahora tiene ocho lecciones y el inventario queda representado; no lo considero completamente cerrado hasta que dependencias, repositorio de ejemplo y pruebas de las filas parciales estén presentes y ejecutadas.
+
+### Lectura manual de Spring Boot M8 (Kafka y RabbitMQ)
+
+| Elemento del prompt | Estado actual | Evidencia/pendiente |
+|---|---|---|
+| Producer y consumer Spring Kafka | Cubierto en lección y tests existentes | `KafkaTemplate`, `@KafkaListener`, tópico, clave y consumer group. |
+| Dead-letter queue | Cubierto en lección y laboratorio | Falla repetida con ruta a DLT; falta ejecución en broker en este turno. |
+| Productor idempotente/transacciones | Cubierto a nivel de lección | Se explican retries, transacción y los límites de exactly-once; ejecución pendiente. |
+| Rebalanceo | Cubierto a nivel de lección | Consumer groups, asignación y static membership; medición real pendiente. |
+| Kafka frente a RabbitMQ | Cubierto | El Tema 5 compara retención/offsets con colas/ack. |
+| Spring Cloud Stream | Añadido en Tema 6 | Bean funcional, destinos y binders Kafka/Rabbit; requiere probar ambos perfiles. |
+| Kafka Streams | Añadido en Tema 7 | Topología filtro y salida, y ejercicio de estado/recuperación; no ejecutado aquí. |
+| Schema Registry y Avro | Añadido en Tema 8 | Esquemas v1/v2, compatibilidad y fallo por campo requerido; integración pendiente. |
+| RabbitMQ nativo Spring AMQP | Añadido en Tema 9 | Exchange, routing key, confirms/returns, ack manual, prefetch, DLX e idempotencia. El test con RabbitMQContainer no se ejecutó. |
+
+La estructura ahora contempla los requisitos del módulo; la matriz distingue las lecciones añadidas de evidencia de broker ejecutada. Los labs de Kafka y RabbitMQ necesitan contenedores disponibles para considerarse validados en ejecución.
 
 ### Lectura manual de Java M17 (JDBC)
 
@@ -80,4 +96,5 @@ El cierre de cada curso requerirá conteo de títulos preservados, matriz de req
 - **Java M16:** se expandió de 2 a 8 lecciones con el mapa completo de temas del prompt; los puntos que requieren laboratorio de integración real quedan identificados como parciales en la matriz. La cobertura de títulos/estructura no se presenta como ejecución completada.
 - **Node M14:** la saga ahora tiene objetivo, analogía, fallo y salida comprobable. Se añadieron lecciones separadas de Kafka y RabbitMQ con código de productor/consumidor, claves/grupos/offsets, exchange/routing, acknowledgements, prefetch, DLQ e idempotencia. Falta ejecutar ambos labs contra brokers disponibles.
 - **Node M15:** se creó la ruta de cuatro temas para Deno, Bun, migración y elección, basada en la documentación primaria actual. La matriz cubre estructura curricular; los ejemplos Deno/Bun aún no se ejecutaron en esos runtimes.
+- **Spring Boot M8:** se amplió de 5 a 9 lecciones con Spring Cloud Stream, Kafka Streams, Avro/Schema Registry y RabbitMQ/Spring AMQP en prácticas separadas. La build valida el catálogo; faltan pruebas reales con Kafka y RabbitMQ.
 - La auditoría de Java, Spring Boot, Flutter y Node no está cerrada. En particular, Flutter y Spring todavía no alcanzan el inventario modular del prompt.

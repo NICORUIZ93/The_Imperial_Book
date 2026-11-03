@@ -12,7 +12,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 | angular | 71 | 3 | HTML/CSS/TypeScript explícitos; RxJS y estado con ejemplos completos | Rutas, formularios, datos remotos y cambios sin guardar comprobados con navegador |
 | react | 58 | 46 | JSX y estado antes de efectos; proveedor, dependencias y API visibles | Carga, error, vacío y carrera de respuestas; caché observada, no supuesta |
 | java | 91 | 49 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
-| spring-boot | 91 | 8 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
+| spring-boot | 95 | 12 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
 | android | 58 | 0 | Kotlin antes de Compose; distinguir recomposición, recreación y muerte de proceso | App instalable con permisos, restauración, persistencia y pruebas en dispositivo |
 | ios | 56 | 4 | Swift antes de SwiftUI; explicitar macOS/Xcode y destino | Cancelación, estados de red, persistencia y accesibilidad comprobados en simulador |
 | flutter | 63 | 6 | Dart antes de widgets; ejemplo con main y destino de ejecución | Restauración, red, pruebas de widget, integración y publicación por plataforma |
@@ -1136,6 +1136,10 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | spring-boot / 8 | [Tema 3: Productor idempotente y transacciones (exactly-once)](../web/public/content/spring-boot/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 8 | [Tema 4: Rebalanceo de consumer groups y partition assignment](../web/public/content/spring-boot/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 8 | [Tema 5: Kafka frente a RabbitMQ](../web/public/content/spring-boot/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 8 | [Tema 6: Spring Cloud Stream y binders de Kafka/RabbitMQ](../web/public/content/spring-boot/modulo-8.md) | clase-java-no-visible |
+| spring-boot / 8 | [Tema 7: Kafka Streams con Spring para transformar eventos](../web/public/content/spring-boot/modulo-8.md) | clase-java-no-visible |
+| spring-boot / 8 | [Tema 8: Avro y Schema Registry para contratos de eventos](../web/public/content/spring-boot/modulo-8.md) | clase-java-no-visible |
+| spring-boot / 8 | [Tema 9: RabbitMQ con Spring AMQP: routing, ack y prefetch](../web/public/content/spring-boot/modulo-8.md) | clase-java-no-visible |
 | spring-boot / 9 | [Tema 1: Mono y Flux](../web/public/content/spring-boot/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 9 | [Tema 2: WebClient y composición no bloqueante](../web/public/content/spring-boot/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 9 | [Tema 3: Cuándo WebFlux vale la complejidad, y R2DBC](../web/public/content/spring-boot/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |

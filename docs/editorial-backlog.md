@@ -8,16 +8,16 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 
 | Criterio | Cubierto | Pendiente |
 |---|---:|---:|
-| Explicación | 1112 | 0 |
-| Código | 1112 | 0 |
-| Ruta | 1112 | 0 |
-| Ejecución | 1112 | 0 |
-| Resultado | 1110 | 2 |
-| Modificación | 1112 | 0 |
-| Conexión con un proyecto | 1112 | 0 |
-| Modelo mental | 1112 | 0 |
-| Límites | 1111 | 1 |
-| **Perfil de criterios detectado** | **1110** | **2** |
+| Explicación | 1116 | 0 |
+| Código | 1116 | 0 |
+| Ruta | 1116 | 0 |
+| Ejecución | 1116 | 0 |
+| Resultado | 1114 | 2 |
+| Modificación | 1116 | 0 |
+| Conexión con un proyecto | 1116 | 0 |
+| Modelo mental | 1116 | 0 |
+| Límites | 1115 | 1 |
+| **Perfil de criterios detectado** | **1114** | **2** |
 
 ## Prioridad por track
 
@@ -36,7 +36,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | node | 83 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | react | 58 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | rutaflow | 29 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| spring-boot | 91 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| spring-boot | 95 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 
 ## Pendientes por tema
 

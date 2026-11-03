@@ -1634,9 +1634,7 @@
       "track": "spring-boot"
     },
     {
-      "legacySections": [
-        "**Errores comunes y soluciones**"
-      ],
+      "legacySections": [],
       "module": 8,
       "track": "spring-boot"
     },
@@ -1649,7 +1647,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "6d6c209fcd1cba27bd7cfd89ce3e9630556353101934801f9c893e0d48012e1a",
+    "fingerprint": "99c46fc0ea3acfa16f1cc42b54d5afa8db8ee76e9309337d9b18e56883a1860e",
     "issues": {
       "andamiaje-generico": 128,
       "bloque-repetido": 218,
@@ -1660,11 +1658,11 @@
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
       "## Ruta de proyecto progresivo desde carpeta vacía": 12,
-      "**Errores comunes y soluciones**": 181
+      "**Errores comunes y soluciones**": 180
     },
     "modules": 246,
-    "modulesWithLegacySections": 183,
-    "topics": 1112,
+    "modulesWithLegacySections": 182,
+    "topics": 1116,
     "topicsWithIssues": 470
   },
   "topics": {
@@ -10656,6 +10654,34 @@
         "tailWords": 204,
         "topic": "Tema 5: Kafka frente a RabbitMQ",
         "words": 1396
+      },
+      {
+        "issues": [],
+        "module": 8,
+        "tailWords": 187,
+        "topic": "Tema 6: Spring Cloud Stream y binders de Kafka/RabbitMQ",
+        "words": 655
+      },
+      {
+        "issues": [],
+        "module": 8,
+        "tailWords": 159,
+        "topic": "Tema 7: Kafka Streams con Spring para transformar eventos",
+        "words": 624
+      },
+      {
+        "issues": [],
+        "module": 8,
+        "tailWords": 173,
+        "topic": "Tema 8: Avro y Schema Registry para contratos de eventos",
+        "words": 609
+      },
+      {
+        "issues": [],
+        "module": 8,
+        "tailWords": 161,
+        "topic": "Tema 9: RabbitMQ con Spring AMQP: routing, ack y prefetch",
+        "words": 776
       },
       {
         "issues": [],

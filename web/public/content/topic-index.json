@@ -4950,6 +4950,22 @@
       {
         "title": "Kafka frente a RabbitMQ",
         "fragment": "tema-5-kafka-frente-a-rabbitmq"
+      },
+      {
+        "title": "Spring Cloud Stream y binders de Kafka/RabbitMQ",
+        "fragment": "tema-6-spring-cloud-stream-y-binders-de-kafka-rabbitmq"
+      },
+      {
+        "title": "Kafka Streams con Spring para transformar eventos",
+        "fragment": "tema-7-kafka-streams-con-spring-para-transformar-eventos"
+      },
+      {
+        "title": "Avro y Schema Registry para contratos de eventos",
+        "fragment": "tema-8-avro-y-schema-registry-para-contratos-de-eventos"
+      },
+      {
+        "title": "RabbitMQ con Spring AMQP: routing, ack y prefetch",
+        "fragment": "tema-9-rabbitmq-con-spring-amqp-routing-ack-y-prefetch"
       }
     ],
     "9": [

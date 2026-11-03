@@ -221,18 +221,18 @@
       "repeatedDemo": 0
     },
     "spring-boot": {
-      "topics": 91,
-      "explanation": 91,
-      "code": 91,
-      "visual": 70,
-      "filePath": 91,
-      "runCommand": 91,
-      "expectedResult": 91,
-      "practice": 91,
-      "project": 91,
-      "modelMental": 91,
-      "limitsDecision": 91,
-      "practicable": 91,
+      "topics": 95,
+      "explanation": 95,
+      "code": 95,
+      "visual": 74,
+      "filePath": 95,
+      "runCommand": 95,
+      "expectedResult": 95,
+      "practice": 95,
+      "project": 95,
+      "modelMental": 95,
+      "limitsDecision": 95,
+      "practicable": 95,
       "genericScaffold": 0,
       "repeatedDemo": 0
     }
@@ -24644,6 +24644,94 @@
       {
         "module": 8,
         "topic": "Tema 5: Kafka frente a RabbitMQ",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 8,
+        "topic": "Tema 6: Spring Cloud Stream y binders de Kafka/RabbitMQ",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 8,
+        "topic": "Tema 7: Kafka Streams con Spring para transformar eventos",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 8,
+        "topic": "Tema 8: Avro y Schema Registry para contratos de eventos",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 8,
+        "topic": "Tema 9: RabbitMQ con Spring AMQP: routing, ack y prefetch",
         "criteria": {
           "explanation": true,
           "code": true,

@@ -97,16 +97,16 @@
       "officialSource": 42
     },
     "spring-boot": {
-      "topics": 91,
-      "code": 91,
-      "commentedCode": 74,
-      "mermaid": 47,
+      "topics": 95,
+      "code": 95,
+      "commentedCode": 75,
+      "mermaid": 51,
       "archifyVisual": 4,
       "asciiVisual": 20,
       "misleadingDiagramLabel": 0,
-      "filePath": 91,
-      "runCommand": 91,
-      "officialSource": 67
+      "filePath": 95,
+      "runCommand": 95,
+      "officialSource": 71
     },
     "kotlin-multiplatform": {
       "topics": 56,
@@ -2225,6 +2225,27 @@
       "track": "spring-boot",
       "module": 21,
       "topic": "Tema 3: Outbox transaccional y flujo de negocio",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 8,
+      "topic": "Tema 7: Kafka Streams con Spring para transformar eventos",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 8,
+      "topic": "Tema 8: Avro y Schema Registry para contratos de eventos",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 8,
+      "topic": "Tema 9: RabbitMQ con Spring AMQP: routing, ack y prefetch",
       "missingCode": false,
       "missingComments": true
     },

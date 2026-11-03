@@ -261,24 +261,24 @@
       "complete": 29
     },
     "spring-boot": {
-      "topics": 91,
-      "objective": 91,
-      "prerequisites": 91,
-      "context": 91,
-      "theoryAnalogy": 91,
-      "guidedDemo": 91,
-      "codeExplanation": 91,
-      "execution": 91,
-      "expectedResult": 91,
-      "deliberateFailure": 91,
-      "guidedPractice": 91,
-      "independentPractice": 91,
-      "closure": 91,
-      "commonErrors": 91,
-      "resources": 91,
-      "standaloneExample": 91,
-      "learningEvidence": 91,
-      "complete": 91
+      "topics": 95,
+      "objective": 95,
+      "prerequisites": 95,
+      "context": 95,
+      "theoryAnalogy": 95,
+      "guidedDemo": 95,
+      "codeExplanation": 95,
+      "execution": 95,
+      "expectedResult": 95,
+      "deliberateFailure": 95,
+      "guidedPractice": 95,
+      "independentPractice": 95,
+      "closure": 95,
+      "commonErrors": 95,
+      "resources": 95,
+      "standaloneExample": 95,
+      "learningEvidence": 95,
+      "complete": 95
     }
   },
   "topics": {
@@ -29120,6 +29120,110 @@
       {
         "module": 8,
         "topic": "Tema 5: Kafka frente a RabbitMQ",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 8,
+        "topic": "Tema 6: Spring Cloud Stream y binders de Kafka/RabbitMQ",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 8,
+        "topic": "Tema 7: Kafka Streams con Spring para transformar eventos",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 8,
+        "topic": "Tema 8: Avro y Schema Registry para contratos de eventos",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 8,
+        "topic": "Tema 9: RabbitMQ con Spring AMQP: routing, ack y prefetch",
         "criteria": {
           "objective": true,
           "prerequisites": true,
