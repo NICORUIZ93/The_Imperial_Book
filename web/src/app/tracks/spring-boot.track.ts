@@ -304,4 +304,18 @@ export const SPRING_BOOT_MODULES: CourseModule[] = [
     ['¿Por qué un puerto que devuelve Page obliga al dominio a depender de Spring Data?', '¿Dónde empieza y termina una transacción en un caso de uso?', '¿Qué debe contener un ADR para que otra persona pueda revocar la decisión?'],
     ['Java', 'Spring Boot', 'Mermaid', 'Markdown'],
     'Caso de uso sin Spring, diagrama C4 de la API de envíos y tres ADR enlazados al código.'),
+  m(23, 'Concurrencia avanzada en Spring', 'Concurrencia', 'Experto', '2 h 50 min', '#6db33f',
+    'Combina resultados asíncronos con CompletableFuture, descubre por qué la autoinvocación rompe @Async, provoca y corrige un deadlock real entre locks, acota concurrencia con Semaphore y propaga MDC a un executor que por defecto lo pierde.',
+    ['CompletableFuture: thenCombine, exceptionally y orTimeout', '@Async y el bug de la autoinvocación que bypasea el proxy', 'Bean orquestador separado para que @Async funcione de verdad', 'ReentrantLock, deadlock por orden inverso y tryLock con límite', 'Orden total consistente para eliminar deadlocks', 'Semaphore para acotar concurrencia y TaskDecorator para propagar MDC'],
+    [
+      'Combina dos consultas @Async con thenCombine y mide que el tiempo total se acerca al de la más lenta, no a la suma',
+      'Provoca el bug de autoinvocación: un método @Async llamado desde la misma clase lanza la excepción de forma síncrona',
+      'Corrige el bug moviendo la llamada a un bean orquestador inyectado y confirma que ahora sí corre en el executor',
+      'Provoca un deadlock real con dos ReentrantLock tomados en orden inverso por hilos en direcciones opuestas',
+      'Corrige el deadlock con un orden total consistente por id y verifica que ambos hilos terminan sin bloquearse',
+      'Acota concurrencia con un Semaphore y propaga un correlationId de MDC a una tarea @Async con un TaskDecorator',
+    ],
+    ['¿Por qué una autoinvocación bypasea el proxy @Async sin ningún error de compilación?', '¿Qué evidencia demuestra un deadlock si no lanza ninguna excepción?', '¿Por qué un orden total consistente elimina el deadlock sin necesitar tryLock?', '¿Por qué MDC no cruza automáticamente a un hilo de executor?'],
+    ['Java', 'Spring Boot', 'CompletableFuture', 'Concurrencia', 'SLF4J'],
+    'Cotización asíncrona con fallback y timeout, deadlock real corregido con orden consistente, y MDC propagado a un executor con TaskDecorator.'),
 ];

@@ -2,15 +2,15 @@
   "method": "Lectura automática de todos los bloques visibles; alertas para revisión, no veredictos de corrección ni aprendizaje. Una demo breve puede ser suficiente. La ausencia de alertas no acredita ejecutabilidad.",
   "totals": {
     "tracks": 14,
-    "modules": 254,
-    "topics": 1169,
+    "modules": 255,
+    "topics": 1171,
     "topicsWithSignals": 104,
     "newLaboratories": 25
   },
   "humanPedagogicalReview": {
     "reviewed": 0,
     "preRead": 14,
-    "total": 1169,
+    "total": 1171,
     "date": "2026-10-31",
     "responsible": "persona revisora pendiente; pre-lectura de agente registrada",
     "evidence": "docs/manual-review-log.md"
@@ -13956,6 +13956,30 @@
       "title": "Tema 3: ADR: decisiones con contexto, alternativas y consecuencias · Experto · 1 h 10 min",
       "file": "web/public/content/spring-boot/modulo-22.md",
       "line": 342,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "spring-boot",
+      "module": 23,
+      "title": "Tema 1: CompletableFuture, @Async y el bug de la autoinvocación · Avanzado · 1 h 20 min",
+      "file": "web/public/content/spring-boot/modulo-23.md",
+      "line": 14,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "spring-boot",
+      "module": 23,
+      "title": "Tema 2: Locks, deadlocks, semáforos y MDC en concurrencia · Experto · 1 h 30 min",
+      "file": "web/public/content/spring-boot/modulo-23.md",
+      "line": 187,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

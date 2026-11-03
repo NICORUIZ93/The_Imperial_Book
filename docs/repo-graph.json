@@ -168,7 +168,7 @@
     },
     {
       "path": "docs/AUDITORIA-COBERTURA-SPRING-20261101.md",
-      "lines": 111,
+      "lines": 122,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -986,7 +986,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 14327,
+      "lines": 14351,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -994,7 +994,7 @@
     },
     {
       "path": "docs/course-depth-review.md",
-      "lines": 1200,
+      "lines": 1202,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1161,7 +1161,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 9906,
+      "lines": 9925,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1333,7 +1333,7 @@
     },
     {
       "path": "docs/prerequisite-graph.json",
-      "lines": 12867,
+      "lines": 12889,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1452,7 +1452,7 @@
     },
     {
       "path": "docs/seven-step-methodology.json",
-      "lines": 29526,
+      "lines": 29576,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1479,7 +1479,7 @@
     },
     {
       "path": "docs/specialization-outcomes.json",
-      "lines": 1325,
+      "lines": 1346,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1502,7 +1502,7 @@
     },
     {
       "path": "docs/subtopic-depth-review.json",
-      "lines": 21892,
+      "lines": 21944,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1510,7 +1510,7 @@
     },
     {
       "path": "docs/subtopic-depth-review.md",
-      "lines": 1162,
+      "lines": 1164,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1523,7 +1523,7 @@
     },
     {
       "path": "docs/subtopic-depth-reviewed.json",
-      "lines": 4952,
+      "lines": 4980,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1591,7 +1591,7 @@
     },
     {
       "path": "docs/topic-learning-quality.json",
-      "lines": 25989,
+      "lines": 26033,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -12957,7 +12957,7 @@
     },
     {
       "path": "web/public/content/topic-index.json",
-      "lines": 5215,
+      "lines": 5225,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14610,7 +14610,7 @@
     },
     {
       "path": "web/src/app/tracks/spring-boot.track.ts",
-      "lines": 308,
+      "lines": 322,
       "kind": "angular-app",
       "symbols": [],
       "imports": [

@@ -1627,6 +1627,11 @@
       "track": "spring-boot"
     },
     {
+      "legacySections": [],
+      "module": 23,
+      "track": "spring-boot"
+    },
+    {
       "legacySections": [
         "**Errores comunes y soluciones**"
       ],
@@ -1677,16 +1682,16 @@
     }
   ],
   "summary": {
-    "fingerprint": "e350feff3bfca42881426a6a4c06835aa7a5c0da196b4e6e6633d10e8b578bd5",
+    "fingerprint": "1b15d3d3b6c1b22ea19fbd5a964c53386eeb48af8982a49daab55f024b525ebb",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
       "## Ruta de proyecto progresivo desde carpeta vacía": 12,
       "**Errores comunes y soluciones**": 173
     },
-    "modules": 254,
+    "modules": 255,
     "modulesWithLegacySections": 179,
-    "topics": 1169,
+    "topics": 1171,
     "topicsWithIssues": 0
   },
   "topics": {
@@ -9689,6 +9694,20 @@
         "tailWords": 325,
         "topic": "Tema 3: ADR: decisiones con contexto, alternativas y consecuencias · Experto · 1 h 10 min",
         "words": 1585
+      },
+      {
+        "issues": [],
+        "module": 23,
+        "tailWords": 317,
+        "topic": "Tema 1: CompletableFuture, @Async y el bug de la autoinvocación · Avanzado · 1 h 20 min",
+        "words": 1705
+      },
+      {
+        "issues": [],
+        "module": 23,
+        "tailWords": 384,
+        "topic": "Tema 2: Locks, deadlocks, semáforos y MDC en concurrencia · Experto · 1 h 30 min",
+        "words": 2064
       },
       {
         "issues": [],

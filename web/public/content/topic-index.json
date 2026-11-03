@@ -5076,6 +5076,16 @@
         "fragment": "tema-3-adr-decisiones-con-contexto-alternativas-y-consecuencias"
       }
     ],
+    "23": [
+      {
+        "title": "CompletableFuture, @Async y el bug de la autoinvocación",
+        "fragment": "tema-1-completablefuture-async-y-el-bug-de-la-autoinvocacion"
+      },
+      {
+        "title": "Locks, deadlocks, semáforos y MDC en concurrencia",
+        "fragment": "tema-2-locks-deadlocks-semaforos-y-mdc-en-concurrencia"
+      }
+    ],
     "3": [
       {
         "title": "Entidades y repositorios derivados",

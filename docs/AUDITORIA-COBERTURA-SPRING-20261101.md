@@ -96,11 +96,22 @@ Total del repo: 1146 → **1148 temas** (2 nuevos). README y `spring-boot.track.
   estático en un paquete que no es el real; el paquete y la instanciación correctos (constructor
   simple) se confirmaron por `javap` sobre `spring-security-config-7.1.1.jar`.
 - [x] **17. Virtual threads** → `spring-boot/M9 Tema 4` (alternativa a WebFlux).
+- [x] **13. Concurrencia avanzada** → nuevo `spring-boot/M23` (módulo propio, 2 Temas). Tema 1:
+  `CompletableFuture` (`thenCombine`/`exceptionally`/`orTimeout`) + bean orquestador separado.
+  Tema 2: deadlock real por locks en orden inverso (verificado con `Thread.join(timeout)`,
+  reproducible de forma estable), orden total consistente como fix, `Semaphore` acotando
+  concurrencia máxima (verificado con contador atómico de pico real), `TaskDecorator` propagando
+  `MDC` a un executor. Fallo deliberado real y orgánico (no fabricado a propósito, surgió al
+  escribir el primer borrador): autoinvocación de un método `@Async` dentro de la misma clase
+  bypasea el proxy CGLIB y la excepción se lanza de forma síncrona en vez de ir a
+  `.exceptionally()`; confirmado con `javap` que `VirtualThreadTaskExecutor` no tiene
+  `setTaskDecorator` (sí `SimpleAsyncTaskExecutor`), lo que descartó el primer diseño del executor.
+  `mvn test` → BUILD SUCCESS, 9/9 tests en ambos Temas.
 
-Total del repo tras Lote 2: 1148 → **1168 temas**. README y `spring-boot.track.ts` sincronizados.
+Total del repo tras Lote 2: 1148 → **1169 temas**. README y `spring-boot.track.ts` sincronizados.
 
 ### Pendiente (próximos lotes)
-MEDIA: 13 (concurrencia avanzada — módulo propio), 14 (consistencia distribuida: inbox, 2PC, CAP → M13).
+MEDIA: 14 (consistencia distribuida: inbox, 2PC, CAP → M13).
 BAJA: 18 a 26 completos (HATEOAS, Spring REST Docs, integraciones JMS/LDAP/JMX/Spring
 Integration/Spring Session/webhooks HMAC, Spring Modulith, i18n/logging estructurado/graceful
 shutdown, caché 2º nivel Hibernate, Spring AI reranking/evaluación/observabilidad, CQRS/saga por

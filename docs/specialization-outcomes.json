@@ -630,6 +630,27 @@
             "Software Architecture",
             "Software Design"
           ]
+        },
+        {
+          "id": "SPRING-6",
+          "level": "Experto",
+          "statement": "Combinar resultados asíncronos con CompletableFuture, corregir un deadlock real con orden consistente de locks, acotar concurrencia con Semaphore y propagar MDC a un executor con TaskDecorator.",
+          "moduleIds": [
+            23
+          ],
+          "evidence": [
+            "deadlock reproducido y corregido con prueba de hilos",
+            "pico de concurrencia verificado contra el límite del semáforo",
+            "correlationId propagado a una tarea @Async"
+          ],
+          "cs2023": [
+            "PDC",
+            "SF"
+          ],
+          "swebok": [
+            "Software Construction",
+            "Software Quality"
+          ]
         }
       ]
     },

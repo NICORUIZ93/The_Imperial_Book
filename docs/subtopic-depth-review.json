@@ -1,7 +1,7 @@
 {
   "summary": {
-    "topics": 1169,
-    "reviewed": 346,
+    "topics": 1171,
+    "reviewed": 348,
     "pending": 823,
     "priorityCandidates": 782,
     "byTrack": {
@@ -71,8 +71,8 @@
         "pending": 29
       },
       "spring-boot": {
-        "topics": 103,
-        "reviewed": 103,
+        "topics": 105,
+        "reviewed": 105,
         "pending": 0
       }
     },
@@ -21101,6 +21101,58 @@
         "sources": [
           "https://c4model.com/",
           "https://adr.github.io/"
+        ]
+      }
+    },
+    {
+      "id": "spring-boot/modulo-23::Tema 1: CompletableFuture, @Async y el bug de la autoinvocación · Avanzado · 1 h 20 min",
+      "track": "spring-boot",
+      "module": 23,
+      "topic": "Tema 1: CompletableFuture, @Async y el bug de la autoinvocación · Avanzado · 1 h 20 min",
+      "status": "reviewed",
+      "semanticHeadings": [],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Demo Maven real con Spring Boot 4.1.1 (plain spring-boot-starter, sin dependencias de datos). TarifaAsyncService con métodos @Async(\"tareaAsincrona\") devolviendo CompletableFuture<BigDecimal>; TarifaCotizacionService como bean orquestador separado que inyecta TarifaAsyncService y combina resultados con thenCombine/exceptionally/orTimeout. `mvn test` -> BUILD SUCCESS, 9/9 tests. Fallo deliberado real y organico (no simulado a propósito, descubierto al escribir el primer borrador del demo): TarifaAsyncService.cotizarConFallbackAutoinvocado llama a un método @Async de la misma clase (autoinvocación); el proxy CGLIB de @Async no intercepta esa llamada, así que la excepción se lanza de forma síncrona y .exceptionally() nunca la ve -- confirmado por un test que espera IllegalStateException directamente en vez de un futuro fallido. El fix real (no solo documentado) es mover la orquestación a un bean inyectado distinto (TarifaCotizacionService), cuya llamada sí cruza el proxy. SimpleAsyncTaskExecutor con setVirtualThreads(true) confirmado por javap sobre spring-core-7.0.10.jar (VirtualThreadTaskExecutor NO tiene setTaskDecorator; SimpleAsyncTaskExecutor sí, lo cual descartó el primer diseño del executor).",
+        "criticalSubtopics": [
+          "autoinvocación bypasea el proxy @Async",
+          "bean orquestador separado restaura el proxy",
+          "thenCombine/exceptionally/orTimeout sobre CompletableFuture"
+        ],
+        "sources": [
+          "https://docs.spring.io/spring-framework/reference/integration/scheduling.html",
+          "javap sobre spring-core-7.0.10.jar (~/.m2): SimpleAsyncTaskExecutor vs VirtualThreadTaskExecutor"
+        ]
+      }
+    },
+    {
+      "id": "spring-boot/modulo-23::Tema 2: Locks, deadlocks, semáforos y MDC en concurrencia · Experto · 1 h 30 min",
+      "track": "spring-boot",
+      "module": 23,
+      "topic": "Tema 2: Locks, deadlocks, semáforos y MDC en concurrencia · Experto · 1 h 30 min",
+      "status": "reviewed",
+      "semanticHeadings": [],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Mismo proyecto Maven que Tema 1. ServicioTransferencias.transferirInseguro bloquea origen y luego destino en orden literal; un test con CyclicBarrier lanza transferirInseguro(A,B) y transferirInseguro(B,A) en hilos simultáneos y confirma con Thread.join(3000) que al menos un hilo queda vivo (deadlock real reproducido, no simulado) -- se agregó una pausa deliberada de 50ms entre el primer y segundo lock() para ensanchar la ventana de carrera y hacer el deadlock reproducible de forma confiable (confirmado estable en 3 ejecuciones repetidas, no solo una). ServicioTransferencias.transferir ordena los locks por id de cuenta (orden total consistente) con tryLock(2, SECONDS); el mismo escenario de hilos opuestos completa sin deadlock y los saldos vuelven a su valor original. PoolConexiones con Semaphore(3) verificado con un AtomicInteger que registra el pico real de ejecuciones concurrentes entre 10 tareas lanzadas, confirmando que nunca supera 3 y efectivamente lo alcanza. MDC: un test confirma que sin TaskDecorator, MDC.get(\"correlationId\") puesto en el hilo llamador es null dentro de una tarea @Async (ThreadLocal no cruza executors); con MdcTaskDecorator registrado en el executor, el mismo valor se propaga intacto. `mvn test` -> BUILD SUCCESS.",
+        "criticalSubtopics": [
+          "deadlock por locks en orden inverso, verificado con join(timeout)",
+          "orden total consistente elimina el deadlock",
+          "Semaphore acota concurrencia máxima",
+          "MDC es ThreadLocal y requiere TaskDecorator para propagarse a un executor"
+        ],
+        "sources": [
+          "https://docs.spring.io/spring-framework/reference/integration/scheduling.html"
         ]
       }
     },

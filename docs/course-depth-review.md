@@ -12,7 +12,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 | angular | 71 | 3 | HTML/CSS/TypeScript explícitos; RxJS y estado con ejemplos completos | Rutas, formularios, datos remotos y cambios sin guardar comprobados con navegador |
 | react | 58 | 46 | JSX y estado antes de efectos; proveedor, dependencias y API visibles | Carga, error, vacío y carrera de respuestas; caché observada, no supuesta |
 | java | 109 | 11 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
-| spring-boot | 103 | 3 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
+| spring-boot | 105 | 3 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
 | android | 74 | 1 | Kotlin antes de Compose; distinguir recomposición, recreación y muerte de proceso | App instalable con permisos, restauración, persistencia y pruebas en dispositivo |
 | ios | 56 | 4 | Swift antes de SwiftUI; explicitar macOS/Xcode y destino | Cancelación, estados de red, persistencia y accesibilidad comprobados en simulador |
 | flutter | 63 | 4 | Dart antes de widgets; ejemplo con main y destino de ejecución | Restauración, red, pruebas de widget, integración y publicación por plataforma |
@@ -23,7 +23,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 
 ## Registro tema por tema
 
-Revisión humana firmada: 0/1169 temas. Pre-lectura registrada sin firma: 14. La pre-lectura no acredita ejecución, comprensión ni calidad pedagógica; consulta `docs/manual-review-log.md`.
+Revisión humana firmada: 0/1171 temas. Pre-lectura registrada sin firma: 14. La pre-lectura no acredita ejecución, comprensión ni calidad pedagógica; consulta `docs/manual-review-log.md`.
 Los laboratorios nuevos tienen una verificación técnica separada; la ejecución correcta tampoco demuestra comprensión.
 
 | Curso / módulo | Tema | Señales para revisar |
@@ -1167,6 +1167,8 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | spring-boot / 22 | [Tema 1: Hexagonal: puertos que hablan el idioma del dominio · Experto · 1 h 10 min](../web/public/content/spring-boot/modulo-22.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 22 | [Tema 2: C4: contexto, contenedores, componentes y código · Experto · 1 h 20 min](../web/public/content/spring-boot/modulo-22.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 22 | [Tema 3: ADR: decisiones con contexto, alternativas y consecuencias · Experto · 1 h 10 min](../web/public/content/spring-boot/modulo-22.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 23 | [Tema 1: CompletableFuture, @Async y el bug de la autoinvocación · Avanzado · 1 h 20 min](../web/public/content/spring-boot/modulo-23.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 23 | [Tema 2: Locks, deadlocks, semáforos y MDC en concurrencia · Experto · 1 h 30 min](../web/public/content/spring-boot/modulo-23.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 3 | [Tema 1: Entidades y repositorios derivados · Intermedio · 35 min](../web/public/content/spring-boot/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 3 | [Tema 2: El problema N+1 y su corrección · Avanzado · 50 min](../web/public/content/spring-boot/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 3 | [Tema 3: Migraciones con Flyway · Intermedio · 35 min](../web/public/content/spring-boot/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |

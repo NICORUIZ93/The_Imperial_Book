@@ -2,8 +2,8 @@
 
 > Las señales automáticas no prueban profundidad ni ausencia de ella. Un tema sólo queda revisado mediante el registro humano con mapa de subtemas críticos, evidencia y fuentes.
 
-- Temas inventariados: 1169
-- Revisados humanamente para subtemas: 346
+- Temas inventariados: 1171
+- Revisados humanamente para subtemas: 348
 - Pendientes: 823
 - Candidatos prioritarios por señales: 782
 
@@ -24,7 +24,7 @@
 | node | 77 | 0 | 77 |
 | react | 58 | 0 | 58 |
 | rutaflow | 29 | 0 | 29 |
-| spring-boot | 103 | 103 | 0 |
+| spring-boot | 105 | 105 | 0 |
 
 ## Cola prioritaria
 
@@ -1129,6 +1129,8 @@
 - `spring-boot/modulo-22` — Tema 1: Hexagonal: puertos que hablan el idioma del dominio · Experto · 1 h 10 min — puertos del dominio
 - `spring-boot/modulo-22` — Tema 2: C4: contexto, contenedores, componentes y código · Experto · 1 h 20 min — niveles del modelo C4
 - `spring-boot/modulo-22` — Tema 3: ADR: decisiones con contexto, alternativas y consecuencias · Experto · 1 h 10 min — estructura de un ADR
+- `spring-boot/modulo-23` — Tema 1: CompletableFuture, @Async y el bug de la autoinvocación · Avanzado · 1 h 20 min — autoinvocación bypasea el proxy @Async; bean orquestador separado restaura el proxy; thenCombine/exceptionally/orTimeout sobre CompletableFuture
+- `spring-boot/modulo-23` — Tema 2: Locks, deadlocks, semáforos y MDC en concurrencia · Experto · 1 h 30 min — deadlock por locks en orden inverso, verificado con join(timeout); orden total consistente elimina el deadlock; Semaphore acota concurrencia máxima; MDC es ThreadLocal y requiere TaskDecorator para propagarse a un executor
 - `spring-boot/modulo-3` — Tema 1: Entidades y repositorios derivados · Intermedio · 35 min — @Entity/@Id/@GeneratedValue; JpaRepository; @DataJpaTest
 - `spring-boot/modulo-3` — Tema 2: El problema N+1 y su corrección · Avanzado · 50 min — Hibernate Statistics; FetchType; JOIN FETCH / EntityGraph
 - `spring-boot/modulo-3` — Tema 3: Migraciones con Flyway · Intermedio · 35 min — db/migration naming; spring.flyway.enabled; reparación de migración fallida

@@ -248,21 +248,21 @@
       "complete": 29
     },
     "spring-boot": {
-      "topics": 103,
+      "topics": 105,
       "objective": 0,
-      "prerequisites": 103,
+      "prerequisites": 105,
       "context": 0,
       "theoryAnalogy": 0,
       "guidedDemo": 0,
-      "codeExplanation": 103,
-      "execution": 101,
-      "expectedResult": 102,
-      "deliberateFailure": 103,
+      "codeExplanation": 105,
+      "execution": 103,
+      "expectedResult": 104,
+      "deliberateFailure": 105,
       "guidedPractice": 0,
       "independentPractice": 0,
       "closure": 0,
-      "commonErrors": 103,
-      "resources": 103,
+      "commonErrors": 105,
+      "resources": 105,
       "standaloneExample": 99,
       "complete": 0
     }
@@ -28767,6 +28767,56 @@
         },
         "classification": {
           "stepsPassed": 8,
+          "complete": false
+        }
+      },
+      {
+        "module": 23,
+        "topic": "Tema 1: CompletableFuture, @Async y el bug de la autoinvocación · Avanzado · 1 h 20 min",
+        "criteria": {
+          "objective": false,
+          "prerequisites": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": false
+        },
+        "classification": {
+          "stepsPassed": 7,
+          "complete": false
+        }
+      },
+      {
+        "module": 23,
+        "topic": "Tema 2: Locks, deadlocks, semáforos y MDC en concurrencia · Experto · 1 h 30 min",
+        "criteria": {
+          "objective": false,
+          "prerequisites": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": false
+        },
+        "classification": {
+          "stepsPassed": 7,
           "complete": false
         }
       },

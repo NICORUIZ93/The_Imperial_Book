@@ -221,18 +221,18 @@
       "repeatedDemo": 0
     },
     "spring-boot": {
-      "topics": 103,
-      "explanation": 103,
-      "code": 103,
+      "topics": 105,
+      "explanation": 105,
+      "code": 105,
       "visual": 82,
-      "filePath": 103,
-      "runCommand": 101,
-      "expectedResult": 103,
-      "practice": 103,
-      "project": 103,
-      "modelMental": 103,
-      "limitsDecision": 103,
-      "practicable": 101,
+      "filePath": 105,
+      "runCommand": 103,
+      "expectedResult": 105,
+      "practice": 105,
+      "project": 105,
+      "modelMental": 105,
+      "limitsDecision": 105,
+      "practicable": 103,
       "genericScaffold": 0,
       "repeatedDemo": 0
     }
@@ -25318,6 +25318,50 @@
         },
         "classification": {
           "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 23,
+        "topic": "Tema 1: CompletableFuture, @Async y el bug de la autoinvocación · Avanzado · 1 h 20 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 23,
+        "topic": "Tema 2: Locks, deadlocks, semáforos y MDC en concurrencia · Experto · 1 h 30 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
