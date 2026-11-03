@@ -5,7 +5,7 @@
 **Proyecto continuo:** Motor de asignación de entregas.
 **Prerrequisito de entrada:** Fundamentos de programación; el módulo 0 comienza con JDK y terminal..
 **Duración objetivo:** temas de 20–45 minutos; cada tema se divide en 3–6 acciones de 5–15 minutos.
-**Estado estructural:** 10/101 temas migrados; auditoría estructural actualizada el 2026-11-03.
+**Estado estructural:** 27/101 temas migrados; auditoría estructural actualizada el 2026-11-03.
 
 ## Índice de módulos y temas
 
@@ -23,15 +23,30 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 2.1: Identifica cada parte de la firma clásica · 10 min
   - ✓ Subtema 2.2: Recibe argumentos sin recompilar · 10 min
   - ✓ Subtema 2.3: Compara una forma abreviada de Java 25 · 10 min
-- [pendiente de migrar] Tema 3: JDK, JRE y JVM
-  - pendiente Subtema 3.1: Comprueba las herramientas instaladas · 10 min
-  - ✓ Subtema 3.2: Mira la máquina virtual que ejecuta el programa · 10 min
-  - ✓ Subtema 3.3: Decide qué instalar en cada máquina · 10 min
-- [pendiente de migrar] Tema 4: Tipos primitivos vs referencias
-- [pendiente de migrar] Tema 5: Variables, conversiones y `String`
-- [pendiente de migrar] Tema 6: Operadores, precedencia y control de flujo
-- [pendiente de migrar] Tema 7: Arreglos, wrappers y paso de argumentos
-- [pendiente de migrar] Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`)
+- [4 pasos] Tema 3: JDK, JRE y JVM
+  - ✓ Subtema 3.1: Comprueba qué herramientas instalaste · 10 min
+  - ✓ Subtema 3.2: Inspecciona la VM que ejecuta tu clase · 10 min
+  - ✓ Subtema 3.3: Separa desarrollo de ejecución · 10 min
+- [4 pasos] Tema 4: Tipos primitivos vs referencias
+  - ✓ Subtema 4.1: Guarda una cantidad primitiva · 10 min
+  - ✓ Subtema 4.2: Usa una referencia para describir un envío · 10 min
+  - ✓ Subtema 4.3: Compara valores, no direcciones por accidente · 10 min
+- [4 pasos] Tema 5: Variables, conversiones y `String`
+  - ✓ Subtema 5.1: Declara y actualiza una variable · 10 min
+  - ✓ Subtema 5.2: Convierte un dato sin perderlo · 10 min
+  - ✓ Subtema 5.3: Lee texto y conviértelo con control · 10 min
+- [4 pasos] Tema 6: Operadores, precedencia y control de flujo
+  - ✓ Subtema 6.1: Protege una comprobación con cortocircuito · 10 min
+  - ✓ Subtema 6.2: Elige una acción con switch · 10 min
+  - ✓ Subtema 6.3: Recorre una lista sin salir de sus límites · 10 min
+- [4 pasos] Tema 7: Arreglos, wrappers y paso de argumentos
+  - ✓ Subtema 7.1: Guarda y recorre varias guías · 10 min
+  - ✓ Subtema 7.2: Convierte entre primitivos y wrappers con cuidado · 10 min
+  - ✓ Subtema 7.3: Observa qué cambia al pasar una referencia · 10 min
+- [4 pasos] Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`)
+  - ✓ Subtema 8.1: Lee una entrada y valida el número · 10 min
+  - ✓ Subtema 8.2: Parsea una fecha de entrega · 10 min
+  - ✓ Subtema 8.3: Distingue un instante de una hora local · 10 min
 
 ### Módulo 1: Programación orientada a objetos
 
@@ -77,27 +92,60 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
 
 [Abrir lección completa](../web/public/content/java/modulo-3.md)
 
-- [pendiente de migrar] Tema 1: Checked vs unchecked exceptions
-- [pendiente de migrar] Tema 2: try-with-resources
-- [pendiente de migrar] Tema 3: Excepciones personalizadas y no tragar excepciones
+- [4 pasos] Tema 1: Checked vs unchecked exceptions
+  - ✓ Subtema 1.1: Maneja un archivo que no existe · 10 min
+  - ✓ Subtema 1.2: Propaga una checked exception hasta quien puede resolverla · 10 min
+  - ✓ Subtema 1.3: Trata una entrada inválida como error de programa · 10 min
+- [4 pasos] Tema 2: try-with-resources
+  - ✓ Subtema 2.1: Lee un archivo y deja que Java lo cierre · 10 min
+  - ✓ Subtema 2.2: Comprueba el cierre aunque ocurra un error · 10 min
+  - ✓ Subtema 2.3: Cierra varios recursos en orden inverso · 10 min
+- [4 pasos] Tema 3: Excepciones personalizadas y no tragar excepciones
+  - ✓ Subtema 3.1: Representa un saldo insuficiente · 10 min
+  - ✓ Subtema 3.2: Atiende el error donde puedes informar al usuario · 10 min
+  - ✓ Subtema 3.3: No ocultes fallos con un catch vacío · 10 min
 
 ### Módulo 4: Streams y programación funcional
 
 [Abrir lección completa](../web/public/content/java/modulo-4.md)
 
-- [pendiente de migrar] Tema 1: Stream API — map, filter, reduce, collect
-- [pendiente de migrar] Tema 2: Optional — evitar null explícitamente
-- [pendiente de migrar] Tema 3: Streams paralelos y referencias a métodos
-- [pendiente de migrar] Tema 4: Stream Gatherers (Java 24)
+- [4 pasos] Tema 1: Stream API — map, filter, reduce, collect
+  - ✓ Subtema 1.1: Filtra y transforma envíos · 10 min
+  - ✓ Subtema 1.2: Suma sin llevar un acumulador externo · 10 min
+  - ✓ Subtema 1.3: No reutilices un stream consumido · 10 min
+- [4 pasos] Tema 2: Optional — evitar null explícitamente
+  - ✓ Subtema 2.1: Representa que una búsqueda puede no encontrar guía · 10 min
+  - ✓ Subtema 2.2: Transforma o usa un valor alternativo · 10 min
+  - ✓ Subtema 2.3: No envuelvas un valor que puede ser null · 10 min
+- [4 pasos] Tema 3: Streams paralelos y referencias a métodos
+  - ✓ Subtema 3.1: Reemplaza una lambda por referencia a método · 10 min
+  - ✓ Subtema 3.2: Compara una suma secuencial y paralela · 10 min
+  - ✓ Subtema 3.3: Conserva el orden cuando lo necesitas · 10 min
+- [4 pasos] Tema 4: Stream Gatherers (Java 24)
+  - ✓ Subtema 4.1: Agrupa elementos consecutivos en ventanas · 10 min
+  - ✓ Subtema 4.2: Compara ventana móvil y grupos separados · 10 min
+  - ✓ Subtema 4.3: Elige la herramienta según la relación entre datos · 10 min
 
 ### Módulo 5: Concurrencia — hilos y virtual threads
 
 [Abrir lección completa](../web/public/content/java/modulo-5.md)
 
-- [pendiente de migrar] Tema 1: ExecutorService y gestión de hilos
-- [pendiente de migrar] Tema 2: CompletableFuture
-- [pendiente de migrar] Tema 3: Virtual threads
-- [pendiente de migrar] Tema 4: Condiciones de carrera y sincronización
+- [4 pasos] Tema 1: ExecutorService y gestión de hilos
+  - ✓ Subtema 1.1: Envía trabajos a un executor · 10 min
+  - ✓ Subtema 1.2: Recoge el resultado con Future · 10 min
+  - ✓ Subtema 1.3: Cierra el executor al completar todas las tareas · 10 min
+- [4 pasos] Tema 2: CompletableFuture
+  - ✓ Subtema 2.1: Transforma un resultado asíncrono · 10 min
+  - ✓ Subtema 2.2: Combina dos resultados independientes · 10 min
+  - ✓ Subtema 2.3: Convierte un fallo en una respuesta visible · 10 min
+- [4 pasos] Tema 3: Virtual threads
+  - ✓ Subtema 3.1: Ejecuta una tarea en un virtual thread · 10 min
+  - ✓ Subtema 3.2: No limites virtual threads como si fueran conexiones · 10 min
+  - ✓ Subtema 3.3: Libera las tareas cuando termina el bloque · 10 min
+- [4 pasos] Tema 4: Condiciones de carrera y sincronización
+  - ✓ Subtema 4.1: Reproduce un retiro duplicado de forma controlada · 10 min
+  - ✓ Subtema 4.2: Protege la operación completa con synchronized · 10 min
+  - ✓ Subtema 4.3: Usa AtomicInteger para un contador · 10 min
 - [pendiente de migrar] Tema 5: Structured Concurrency (StructuredTaskScope, Java 25)
 - [pendiente de migrar] Tema 6: Scoped Values frente a ThreadLocal (Java 25)
 - [pendiente de migrar] Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos
@@ -274,7 +322,7 @@ La tabla registra presencia de áreas en el inventario del track, no profundidad
 
 ### Huecos y límites reportados
 
-- El repositorio contiene 101 temas en 21 módulos; 10 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
+- El repositorio contiene 101 temas en 21 módulos; 27 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
 - No hay base para afirmar que el track esté completo: la comparación con la fuente de referencia está pendiente de revisión humana módulo por módulo.
 - Los elementos de la fuente que todavía deben verificarse de forma explícita están enumerados en la tabla anterior; cualquier técnica crítica que no tenga tema propio debe añadirse conservando el currículo base.
 - La ejecución de ejemplos, el comportamiento con brokers/plataformas reales y la calidad pedagógica humana se registran por separado.

@@ -243,476 +243,709 @@ Anota las versiones con las que verificaste cada archivo y conserva las salidas.
 
 ### Tema 3: JDK, JRE y JVM
 
-**Duración estimada:** 30 min.
-**¿Por qué es importante?** Distinguir las herramientas de desarrollo del entorno que ejecuta la aplicación evita diagnosticar mal una máquina de despliegue y ayuda a elegir un runtime mínimo.
-**Prerrequisitos:** M0 T1. Proyecto continuo: preparar el motor para compilar en desarrollo y ejecutarse en otra máquina. Usa el mismo JDK en ambos ejercicios.
+**¿Por qué es importante?** Saber qué herramienta compila y cuál ejecuta evita buscar un bug en el código cuando falta el JDK. **Modelo mental:** el compilador es el taller que fabrica el bytecode; la JVM es el motor que lo pone en marcha.
 
-#### Subtema 3.1: Comprueba las herramientas instaladas · 10 min
+**Proyecto integrador:** el motor de entregas se compila en desarrollo y CI, y se ejecuta en el servidor. **Límite:** no asumas que todas las distribuciones traen un JRE separado. **Práctica:** registra las versiones de java y javac para comparar equipos.
+
+```bash
+javac -d out src/Entorno.java
+java -cp out Entorno
+```
+
+#### Subtema 3.1: Comprueba qué herramientas instalaste · 10 min
 
 **1. Contexto**
-En tu equipo el motor necesita compilador y lanzador. Comprueba qué ejecutables encuentra realmente la terminal.
+
+Para compilar necesitas el JDK. Comprobar los ejecutables evita confundir un problema de instalación con un error del programa.
 
 **2. Hazlo tú**
-Desde una terminal ejecuta:
+
+Crea `java-motor/src/versiones.txt`. En una terminal ejecuta:
 
 ```bash
 java --version
 javac --version
 ```
 
-**Resultado esperado:** ambos comandos existen y muestran la misma versión mayor del JDK.
+**Resultado esperado:** los dos comandos muestran la misma versión mayor.
 
-**Fallo deliberado:** cambia `javac` por `javacc`. **Error esperado:** “command not found” o el mensaje equivalente del sistema. **Diagnóstico:** no es un error del proyecto; el nombre de la herramienta está mal escrito. Si `java` funciona pero `javac` no, revisa que el JDK esté instalado y que su carpeta `bin` esté en `PATH`.
+Registra en `java-motor/src/versiones.txt` la versión que imprimió cada comando.
+
+**Fallo deliberado:** escribe `javacc --version`. **Diagnóstico:** la terminal no encuentra el comando porque el nombre está mal; si solo falta `javac`, instala un JDK o corrige `PATH`.
 
 **3. Entiende**
-`java` lanza programas; `javac` compila fuentes. El JDK reúne estas herramientas y componentes de ejecución; una JVM es la máquina virtual que ejecuta bytecode en una implementación concreta.
+
+`java` ejecuta; `javac` compila. El JDK incluye herramientas de desarrollo y el entorno que necesita el programa para ejecutarse.
 
 **4. Cierra**
-Guarda las dos versiones y anota qué comando usarías para compilar y cuál para iniciar el motor.
 
-#### Subtema 3.2: Mira la máquina virtual que ejecuta el programa · 10 min
+Guarda las dos salidas e identifica cuál comando usarás para cada tarea.
+
+#### Subtema 3.2: Inspecciona la VM que ejecuta tu clase · 10 min
 
 **1. Contexto**
-El mismo bytecode puede ejecutarse en distintas máquinas virtuales compatibles; inspecciona qué implementación y versión tienes activa.
+
+El nombre de la máquina virtual y la versión activa ayudan a resolver diferencias entre equipos.
 
 **2. Hazlo tú**
+
 Crea `java-motor/src/Entorno.java`:
 
 ```java
-public final class Entorno {
+public class Entorno {
     public static void main(String[] args) {
-        System.out.println("VM: " + System.getProperty("java.vm.name"));
-        System.out.println("Java: " + System.getProperty("java.version"));
+        System.out.println(System.getProperty("java.vm.name"));
+        System.out.println(System.getProperty("java.version"));
     }
 }
 ```
 
-Desde `java-motor/`, ejecuta:
+Desde `java-motor` ejecuta:
 
 ```bash
 javac -d out src/Entorno.java
 java -cp out Entorno
 ```
 
-**Resultado esperado:** aparecen el nombre de la VM y la versión utilizada para esa ejecución.
+**Resultado esperado:** se imprimen el nombre de la VM y la versión de Java del proceso.
 
-**Fallo deliberado:** ejecuta `java -cp out Entorno` antes de compilar, con `out/` vacío. **Error esperado:** no se puede encontrar o cargar la clase `Entorno`. **Diagnóstico:** el lanzador existe, pero no hay bytecode en el classpath; compila primero.
+**Fallo deliberado:** lanza `java -cp src Entorno`. **Diagnóstico:** la clase está en `out` porque la compilaste allí; corrige el classpath.
 
 **3. Entiende**
-Las propiedades consultadas describen el proceso que está ejecutando el programa. El JDK aporta herramientas como `javac`; la JVM carga e interpreta o compila bytecode durante la ejecución.
+
+La JVM carga y ejecuta bytecode. La propiedad consultada describe la VM activa; no es el compilador.
 
 **4. Cierra**
-Entrega el archivo fuente, el comando de compilación, el comando de ejecución y las dos líneas que reportó tu VM.
 
-#### Subtema 3.3: Decide qué instalar en cada máquina · 10 min
+Conserva archivo, comandos y las dos líneas de salida.
+
+#### Subtema 3.3: Separa desarrollo de ejecución · 10 min
 
 **1. Contexto**
-La máquina de desarrollo compila código; el servidor necesita ejecutar el artefacto. Las distribuciones modernas suelen entregar un JDK completo y no siempre ofrecen un paquete separado llamado JRE.
+
+La computadora que compila y el servidor que ejecuta el resultado no necesariamente necesitan las mismas herramientas.
 
 **2. Hazlo tú**
-Desde `java-motor/`, compila la clase y comprueba qué herramienta requiere cada acción:
+
+Desde `java-motor` usa el archivo anterior:
 
 ```bash
 javac -d out src/Entorno.java
 java -cp out Entorno
 ```
 
-Anota que el equipo que compila necesita `javac` y el que arranca el programa necesita un runtime compatible. En un proyecto real confirma el proveedor, versión mínima y modo de distribución en el archivo de construcción y en la imagen de despliegue.
+Anota: en desarrollo y CI necesitas `javac`; el proceso de ejecución necesita una JVM y las clases de Java compatibles con la versión objetivo.
 
-**Resultado esperado:** el programa se compila y se ejecuta; puedes explicar por qué el servidor no necesita ejecutar `javac` si recibe bytecode ya construido.
+**Resultado esperado:** `Entorno.class` aparece en `out` y se ejecuta con `java`.
 
-**Fallo deliberado:** intenta ejecutar `javac -d out src/Entorno.java` en un entorno que solo tenga un runtime sin compilador. **Error esperado:** `javac` no se encuentra. **Diagnóstico:** el runtime puede ejecutar artefactos, pero la compilación requiere un JDK; compila en CI o instala el JDK apropiado.
+**Fallo deliberado:** intenta compilar en una máquina que solo ofrece el comando `java`. **Diagnóstico:** ese runtime ejecuta, pero no compila; lleva la compilación a CI o instala un JDK.
 
 **3. Entiende**
-“JRE” describe el conjunto de componentes necesarios para ejecutar Java, pero no es un paquete separado universal en las distribuciones actuales. Para producción se puede usar un runtime del proveedor o construir una imagen reducida compatible; no asumas la forma del paquete sin revisar la distribución elegida.
+
+“JRE” se usa para hablar del runtime necesario para ejecutar Java, pero las distribuciones actuales no siempre ofrecen un paquete separado con ese nombre. Revisa qué incluye el proveedor elegido.
 
 **4. Cierra**
-Escribe una decisión para desarrollo, CI y ejecución, indicando dónde se compila, qué artefacto viaja y qué versión de Java lo ejecutará.
 
-**Hito del tema:**
-
-- [ ] Distinguí JVM, runtime y JDK sin tratarlos como el mismo ejecutable.
-- [ ] Comprobé `java --version` y `javac --version`.
-- [ ] Compilé y ejecuté `Entorno` e inspeccioné las propiedades de su VM.
-- [ ] Expliqué qué herramientas requiere desarrollo y cuál es el contrato del servidor.
-
-**Fuentes oficiales:** [documentación del JDK de Oracle](https://docs.oracle.com/en/java/javase/25/) y [guía de inicio de dev.java](https://dev.java/learn/getting-started/).
-
-#### Paso 6 · Práctica independiente
-Ejecuta `java -XshowSettings:properties -version` y localiza en la salida la propiedad `java.home`. Explica con tus palabras por qué esa ruta corresponde a la instalación completa del JDK y no a un JRE separado.
-
-#### Paso 7 · Cierre y evidencia
-Guarda la salida de `Entorno`, el error provocado por el nombre de herramienta incorrecto y la explicación de JDK/JRE/JVM; como siguiente paso, en el Tema 4 empezarás a distinguir qué guarda cada variable según su tipo. Errores comunes: instalar solo un JRE cuando se necesita compilar, escribir mal el nombre de una herramienta y asumir que es un error de Java, y mezclar instalaciones de distintos proveedores sin que `JAVA_HOME` apunte a la correcta. Fuentes oficiales: https://dev.java/learn/jvm/ y https://docs.oracle.com/en/java/javase/25/.
-**¿Por qué es importante?** Porque un pipeline de CI/CD que falla por falta de `javac` en el servidor de build, o que instala de más un JDK completo en un servidor que solo ejecuta, es un error de configuración que se diagnostica en segundos si se distingue JDK de JRE.
-**Evidencia de aprendizaje:** entrega la salida de `Entorno` con el nombre de la VM, el error provocado por el nombre de herramienta incorrecto, y una frase propia que distinga JDK, JRE y JVM.
-**Conceptos clave:** desarrollo frente a ejecución, herramientas incluidas en cada nivel.
-
-La JVM es específicamente la máquina virtual que ejecuta bytecode, el componente mínimo necesario para correr cualquier programa Java ya compilado; el JRE (Java Runtime Environment) incluye la JVM más las librerías estándar necesarias para que los programas Java se ejecuten correctamente (las clases básicas como `String`, `ArrayList`, etc., que un programa típico necesita en tiempo de ejecución, no solo el motor de ejecución del bytecode en sí); el JDK (Java Development Kit) incluye el JRE completo más las herramientas necesarias específicamente para desarrollar programas Java, no solo ejecutarlos (`javac` el compilador, un debugger, `javap` para inspeccionar bytecode, y otras herramientas de desarrollo).
-
-Para escribir y compilar código Java se necesita el JDK completo, dado que incluye `javac`; para simplemente ejecutar un `.jar` ya compilado por alguien más, en principio bastaría con el JRE, aunque en la práctica moderna la mayoría de entornos instala directamente el JDK completo incluso para casos de solo ejecución, dado que las distribuciones actuales del JDK ya son razonablemente livianas y evitan tener que gestionar dos instalaciones separadas según el caso de uso específico.
-
-**Analogía:** la JVM es como el motor de un vehículo (lo mínimo necesario para moverse); el JRE es el vehículo completo listo para conducir (motor más todo lo necesario para circular); el JDK es ese mismo vehículo más un taller completo de herramientas para repararlo y modificarlo, necesario solo para quien construye o modifica vehículos, no para quien simplemente los conduce.
-
-**¿Por qué es importante?** Distinguir JDK, JRE y JVM aclara exactamente qué instalar según si el objetivo es desarrollar código Java (JDK) o simplemente ejecutar un programa ya compilado (JRE, aunque en la práctica se suele instalar el JDK completo de todas formas).
-
-**Diagrama interactivo:** [Capas de la plataforma Java](/visuals/temas/java/modulo-0-tema-3-jdk-jre-jvm.html).
-
-**Transferencia al proyecto integrador «Motor de asignación de entregas»:** Compila el motor y ejecuta su artefacto con el runtime previsto. Registra versiones del compilador y de ejecución y reproduce un fallo de incompatibilidad en un entorno de laboratorio separado.
+Escribe dónde compilas, qué artefacto despliegas y qué versión lo ejecutará. Consulta [la documentación del JDK](https://docs.oracle.com/en/java/javase/25/) para el proveedor de tu entorno.
 
 ### Tema 4: Tipos primitivos vs referencias
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás predecir, antes de ejecutar, si una variable copia un valor o comparte una referencia a un mismo objeto. Prerrequisitos: JDK 25 y un editor de texto o IDE. Comprueba `java --version`.
+**¿Por qué es importante?** Distinguir valores y referencias ayuda a evitar nulos y comparaciones equivocadas en datos de RutaFlow. **Modelo mental:** un primitivo es el valor escrito en una tarjeta; una referencia es una dirección que apunta al objeto.
 
-#### Paso 2 · Contexto y caso real
-Un reporte de entregas muestra el mismo paquete con pesos distintos en dos pantallas que, según el código, debían ser independientes; la causa es que ambas pantallas comparten el mismo arreglo por referencia, y modificar una posición desde una de ellas también la modifica para la otra.
+**Proyecto integrador:** representa una guía con campos y comprueba su igualdad. **Límite:** == no compara el contenido de objetos. **Práctica:** compara dos guías iguales con equals y con ==.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Un tipo primitivo guarda su valor directamente en la variable; copiarlo produce una copia independiente. Un tipo referencia guarda una dirección hacia un objeto en el heap; copiar la variable copia esa dirección, no el objeto, así que ambas variables terminan apuntando al mismo objeto compartido. La analogía: un primitivo es como llevar el efectivo en el bolsillo; una referencia es como llevar la llave de una caja fuerte — prestar una copia de la llave no crea una segunda caja fuerte.
+#### Subtema 4.1: Guarda una cantidad primitiva · 10 min
 
-#### Paso 4 · Demostración guiada desde cero
-Desde una **carpeta vacía**, crea `src/ValoresYReferencias.java`:
-```bash
-mkdir java-tipos && cd java-tipos
-mkdir src out
-```
+**1. Contexto**
 
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+Una cantidad pequeña como el número de entregas se representa con un valor entero.
 
-```bash
-# Maven
-mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-cd app && mvn test
-# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
-```
+**2. Hazlo tú**
+
+Crea `java-motor/src/Tipos.java`:
 
 ```java
-public final class ValoresYReferencias {
+public class Tipos {
     public static void main(String[] args) {
-        int original = 5;
-        int copia = original;
-        copia = 9; // Cambia la copia del primitivo.
-
-        int[] rutaA = {1, 2};
-        int[] rutaB = rutaA;
-        rutaB[0] = 99; // Ambas variables alcanzan el mismo arreglo.
-        System.out.printf("%d %d | %d %d%n", original, copia, rutaA[0], rutaB[0]);
+        int entregas = 3;
+        double distanciaKm = 12.5;
+        System.out.println(entregas + " entregas, " + distanciaKm + " km");
     }
 }
 ```
-Ejecuta `javac -d out src/ValoresYReferencias.java && java -cp out ValoresYReferencias`. **Salida esperada:** `5 9 | 99 99`. **Fallo deliberado:** declara `Integer intentos = null;` y suma `int total = intentos + 1`; aparece `NullPointerException` durante *unboxing*. Valida la ausencia antes de convertir el wrapper a primitivo.
 
-#### Paso 5 · Práctica guiada
-Pista: en `ValoresYReferencias`, después de `rutaB[0] = 99;` agrega `rutaA = new int[]{5, 6};` y vuelve a imprimir `rutaA[0]` y `rutaB[0]`. Resultado esperado: `rutaA[0]` pasa a ser `5` (ahora apunta a un arreglo nuevo), mientras `rutaB[0]` sigue siendo `99` (sigue apuntando al arreglo original); reasignar una variable de referencia no mueve ni afecta el objeto al que apuntaba antes.
+Desde `java-motor` compila y ejecuta:
 
-#### Paso 6 · Práctica independiente
-Declara `Long totalGuias = null;` dentro de un método que calcule `totalGuias + 1`, sin ejecutarlo todavía. Predice por escrito si lanzará `NullPointerException` y en qué línea exacta; luego ejecútalo para confirmar tu predicción.
-
-#### Paso 7 · Cierre y evidencia
-Guarda `ValoresYReferencias.java`, la salida `5 9 | 99 99`, y el `NullPointerException` del wrapper `null` junto a su corrección; como siguiente paso, en el Tema 5 aplicarás esta misma distinción a conversiones entre tipos y a `String`. Errores comunes: asumir que copiar un arreglo copia sus elementos, usar un wrapper (`Integer`) con `null` como si fuera un primitivo sin validar antes, y confundir reasignar una referencia con mutar el objeto al que apunta. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Integer.html y https://dev.java/learn/language-basics/.
-**¿Por qué es importante?** Porque un `NullPointerException` durante *unboxing* automático, o una mutación compartida de un arreglo que "nadie modificó", son errores de producción que solo se explican entendiendo esta distinción, nunca adivinando.
-**Evidencia de aprendizaje:** entrega `ValoresYReferencias.java`, la salida que demuestra el aliasing del arreglo, y el `NullPointerException` del wrapper `null` junto a la corrección que lo evita.
-**Conceptos clave:** valor directo frente a apuntador a un objeto, wrappers.
-
-Un tipo primitivo (`int edad = 30;`) almacena su valor directamente en la variable (típicamente en la pila de ejecución, un área de memoria de acceso rápido y de ciclo de vida ligado al alcance donde la variable se declara), sin ninguna capa de indirección adicional; un tipo referencia (`String nombre = "Ana";`) almacena en la variable no el dato en sí, sino una referencia (conceptualmente un apuntador) hacia un objeto real ubicado en el heap (un área de memoria separada, gestionada por el recolector de basura, Módulo 11), de modo que la variable "apunta hacia" ese objeto en vez de contenerlo directamente.
-
-Los tipos wrapper (`Integer edadObjeto = 30;`, la versión objeto correspondiente al primitivo `int`) existen específicamente para los casos donde Java requiere que un valor se trate como un objeto (por ejemplo, para almacenarlo dentro de una colección genérica como `List<Integer>`, dado que los genéricos de Java no admiten directamente tipos primitivos, Módulo 2), a costa de la sobrecarga adicional de memoria e indirección que un objeto conlleva frente a un primitivo puro, siendo esta la razón por la que Java sigue ofreciendo primitivos además de sus wrappers correspondientes, en vez de usar únicamente objetos para todo: los primitivos son más eficientes en memoria y velocidad para el caso extremadamente común de valores numéricos simples usados directamente.
-
-**Analogía:** un tipo primitivo es como llevar el efectivo directamente en el bolsillo; un tipo referencia es como llevar una llave de una caja fuerte donde el objeto real está guardado en otro lugar — acceder al contenido real requiere primero seguir esa referencia hasta la caja fuerte correspondiente.
-
-**¿Por qué es importante?** Los tipos primitivos almacenan su valor directamente, siendo más eficientes; los tipos referencia apuntan a objetos en el heap, necesarios cuando Java requiere tratar ese valor como un objeto completo (por ejemplo, dentro de colecciones genéricas).
-
-**Código del ejemplo:**
-
-```java
-int edad = 30;              // primitivo: valor directo en la pila
-String nombre = "Ana";       // referencia: variable apunta a un objeto en el heap
-Integer edadObjeto = 30;     // wrapper: versión objeto del primitivo int
+```bash
+javac -d out src/Tipos.java
+java -cp out Tipos
 ```
 
-**Transferencia al proyecto integrador «Motor de asignación de entregas»:** Distingue cantidad de paquetes de referencias a conductores. Prueba dos variables que apuntan al mismo objeto y documenta cuándo una modificación compartida puede alterar una asignación ya calculada.
+**Resultado esperado:** `3 entregas, 12.5 km`.
+
+**Fallo deliberado:** asigna el texto `"tres"` a `int entregas`. **Diagnóstico:** `int` guarda números enteros; el texto pertenece a `String`.
+
+**3. Entiende**
+
+Un primitivo guarda directamente un valor simple. No puede ser `null`.
+
+**4. Cierra**
+
+Anota cuál dato usa `int` y cuál usa `double`.
+
+#### Subtema 4.2: Usa una referencia para describir un envío · 10 min
+
+**1. Contexto**
+
+Un envío agrupa varios datos y puede no existir todavía. Para representarlo usamos una clase y una referencia.
+
+**2. Hazlo tú**
+
+Reemplaza el contenido de `java-motor/src/Tipos.java` por este archivo completo:
+
+```java
+public class Tipos {
+    record Envio(String guia, String destino) {}
+
+    public static void main(String[] args) {
+        Envio envio = new Envio("RT-8", "Cali");
+        System.out.println(envio.guia() + " -> " + envio.destino());
+    }
+}
+```
+
+Desde `java-motor`, compila y ejecuta `javac -d out src/Tipos.java` y `java -cp out Tipos`.
+
+**Resultado esperado:** `RT-8 -> Cali`.
+
+**Fallo deliberado:** antes de crear el record, asigna `null` a `envio` y llama `envio.guia()`. **Diagnóstico:** `NullPointerException` aparece porque la referencia no apunta a un objeto; crea el objeto o comprueba que exista antes de usarlo.
+
+**3. Entiende**
+
+Una referencia apunta a un objeto; puede valer `null`. El objeto y la variable que lo referencia son conceptos distintos.
+
+**4. Cierra**
+
+Dibuja una variable primitiva con su valor y una referencia que apunta a `Envio`.
+
+#### Subtema 4.3: Compara valores, no direcciones por accidente · 10 min
+
+**1. Contexto**
+
+Dos textos pueden contener la misma guía aunque sean objetos distintos.
+
+**2. Hazlo tú**
+
+Reemplaza `java-motor/src/Tipos.java` por este archivo completo:
+
+```java
+public class Tipos {
+    public static void main(String[] args) {
+        String a = new String("RT-8");
+        String b = new String("RT-8");
+        System.out.println(a.equals(b));
+        System.out.println(a == b);
+    }
+}
+```
+
+Desde `java-motor`, compila y ejecuta `javac -d out src/Tipos.java` y `java -cp out Tipos`.
+
+**Resultado esperado:** imprime `true` y luego `false`.
+
+**Fallo deliberado:** cambia `a.equals(b)` por `a == b` como comparación de contenido. **Diagnóstico:** `==` compara si las referencias apuntan al mismo objeto; para igualdad de texto usa `equals`.
+
+**3. Entiende**
+
+Para primitivos `==` compara valores. Para objetos compara identidad de referencia; cada clase puede definir igualdad de contenido mediante `equals`.
+
+**4. Cierra**
+
+Explica por qué las dos comparaciones imprimen resultados distintos. Revisa [tipos primitivos de Java](https://docs.oracle.com/javase/tutorial/java/nutsandbolts/datatypes.html).
 
 ### Tema 5: Variables, conversiones y `String`
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás convertir texto externo a tipos numéricos de forma segura, elegir `BigDecimal` para dinero en vez de `double`, y comparar `String` por contenido en vez de por identidad. Prerrequisitos: JDK 25 y un editor de texto o IDE. Comprueba `java --version`.
+**¿Por qué es importante?** La conversión incorrecta pierde peso o rechaza entradas válidas antes de cotizar un envío. **Modelo mental:** convertir double a int es recortar decimales, no redondear automáticamente.
 
-#### Paso 2 · Contexto y caso real
-Una tarifa de envío calculada con `double` acumula diferencias de centavos tras miles de operaciones, y al final del mes el total facturado no coincide con la suma manual de cada guía; el origen es representar dinero con un tipo binario de punto flotante en vez de con `BigDecimal`.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-Una conversión ampliadora (`int` a `long`) nunca pierde información; una conversión reductora necesita un *cast* explícito porque puede descartarla. Para texto externo, `Integer.parseInt` convierte o lanza una excepción clara; nunca asumas que el texto ya es válido. La analogía: convertir un `long` a `int` es como intentar guardar el contenido de un depósito grande en uno pequeño — el recipiente no se agranda, y lo que no entra simplemente se pierde.
-
-#### Paso 4 · Demostración guiada desde cero
-Desde una **carpeta vacía**, crea `src/Conversiones.java`:
-```bash
-mkdir java-conversiones && cd java-conversiones
-mkdir src out
-```
-
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+**Proyecto integrador:** lee el peso entregado por el operador y conserva su precisión. **Límite:** parsear texto puede fallar si el formato no es numérico. **Práctica:** ejecuta el caso numérico y el caso inválido.
 
 ```bash
-# Maven
-mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-cd app && mvn test
-# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
+javac -d out src/LeerPeso.java
+java -cp out LeerPeso 2.75
 ```
+
+#### Subtema 5.1: Declara y actualiza una variable · 10 min
+
+**1. Contexto**
+
+El total de paquetes cambia durante una jornada, así que su variable puede actualizarse.
+
+**2. Hazlo tú**
+
+Crea `java-motor/src/Variables.java`:
 
 ```java
-import java.math.BigDecimal;
-
-public final class Conversiones {
+public class Variables {
     public static void main(String[] args) {
-        int cantidad = Integer.parseInt("12"); // Convierte texto validable en número.
-        BigDecimal tarifa = new BigDecimal("19.90");
-        String estado = new String("ENTREGADO");
-        System.out.println(tarifa.multiply(BigDecimal.valueOf(cantidad)));
-        System.out.println(estado.equals("ENTREGADO"));
+        int paquetes = 2;
+        paquetes = paquetes + 1;
+        final String zona = "Norte";
+        System.out.println(zona + ": " + paquetes);
     }
 }
 ```
-Ejecuta `javac -d out src/Conversiones.java && java -cp out Conversiones`. **Resultado esperado:** `238.80` y `true`. **Fallo deliberado:** cambia `"12"` por `"doce"`; `NumberFormatException` identifica una entrada que no puede convertirse. Captúrala en la frontera y pide un dato válido, sin inventar cero como valor silencioso.
 
-#### Paso 5 · Práctica guiada
-Pista: cambia `new BigDecimal("19.90")` por `new BigDecimal(19.90)` (literal `double`, sin comillas) y recompila. Resultado esperado: compila y ejecuta sin lanzar ninguna excepción, pero el resultado ya no es exactamente `238.80`: aparecen dígitos decimales adicionales de imprecisión binaria heredados del `double` — la razón exacta por la que este Tema exige construir `BigDecimal` desde texto, nunca desde un `double`.
+Desde `java-motor` ejecuta `javac -d out src/Variables.java` y `java -cp out Variables`.
 
-#### Paso 6 · Práctica independiente
-Agrega una segunda tarifa escrita con coma decimal (`"19,90"` en vez de `"19.90"`). Predice por escrito si `new BigDecimal("19,90")` lanza una excepción o produce un valor incorrecto; ejecútalo para confirmar tu predicción y explica por qué el formato del texto importa.
+**Resultado esperado:** `Norte: 3`.
 
-#### Paso 7 · Cierre y evidencia
-Guarda `Conversiones.java`, la salida `238.80`/`true`, y el `NumberFormatException` provocado por `"doce"` junto a su corrección; como siguiente paso, en el Tema 6 usarás tipos y comparaciones similares dentro de condiciones y ciclos. Errores comunes: usar `double` para dinero, comparar `String` con `==` en vez de `equals`, y asumir que un texto externo siempre llega en el formato numérico esperado. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/math/BigDecimal.html y https://dev.java/learn/language-basics/.
-**¿Por qué es importante?** Porque un error de redondeo en dinero causado por `double`, o una comparación de `String` con `==` que "funciona en pruebas" por el *string pool* y falla con datos reales, son errores silenciosos que solo una conversión y comparación correctas evitan desde el origen.
-**Evidencia de aprendizaje:** entrega `Conversiones.java`, la salida `238.80`/`true`, y el `NumberFormatException` provocado por una entrada no numérica junto a su corrección.
+**Fallo deliberado:** asigna otro valor a `zona`. **Diagnóstico:** `final` permite asignar la variable una sola vez; elimina la segunda asignación.
 
-Convertir con `BigDecimal` desde texto (nunca `double`) para valores monetarios es exactamente la regla que aplicará el proyecto integrador de este track en cualquier campo de precio o tarifa, evitando errores de precisión que un `double` introduciría silenciosamente.
+**3. Entiende**
 
-**Cuándo no usarlo:** `BigDecimal` es más lento y verboso que `double`; para cálculos donde la precisión decimal exacta no importa (una posición en pantalla, un porcentaje aproximado de progreso), `double` sigue siendo la opción correcta — resérvalo para dinero y cualquier cálculo donde un error de redondeo tenga consecuencias reales.
+Una variable guarda un valor o una referencia. `final` impide reasignar esa variable; no vuelve inmutable cualquier objeto al que apunte.
 
-### Tema 6: Operadores, precedencia y control de flujo
+**4. Cierra**
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás escribir una expresión `switch` exhaustiva sobre un `enum` y explicar por qué `&&` evita un `NullPointerException` que `&` no evita. Prerrequisitos: JDK 25 y un editor de texto o IDE. Comprueba `java --version`.
+Identifica en tu archivo la variable modificable y la que no puede reasignarse.
 
-#### Paso 2 · Contexto y caso real
-Un equipo agrega un nuevo estado `CANCELADA` a las entregas y despliega sin tocar el código que decide qué mensaje mostrar; en producción, cada entrega cancelada pasa silenciosamente sin ningún mensaje, porque el `switch` que las procesa nunca se actualizó para contemplar el caso nuevo.
+#### Subtema 5.2: Convierte un dato sin perderlo · 10 min
 
-#### Paso 3 · Teoría, modelo mental y analogía
-La precedencia decide qué operación se evalúa primero, pero depender de memorizarla dificulta leer el código: los paréntesis explícitos comunican la intención. `&&`/`||` hacen cortocircuito — si el resultado ya está decidido, el lado derecho no se evalúa. Un `switch` exhaustivo sobre un `enum` sin `default` deja que el compilador detecte un caso nuevo sin manejar. La analogía: el cortocircuito es un control de acceso por etapas — si la primera condición ya rechaza la entrada, los controles que necesitan que esa entrada exista nunca llegan a ejecutarse.
+**1. Contexto**
 
-#### Paso 4 · Demostración guiada desde cero
-Desde una **carpeta vacía**, crea `src/ControlEntrega.java`:
-```bash
-mkdir java-control && cd java-control
-mkdir src out
-```
+Un peso puede tener decimales. Guardarlo en un entero quitaría información.
 
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+**2. Hazlo tú**
 
-```bash
-# Maven
-mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-cd app && mvn test
-# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
-```
+En `java-motor/src/Conversion.java`, crea una variable `double pesoKg = 2.75` y conviértela a `int` con `(int) pesoKg`. Imprime ambos valores.
 
 ```java
-public final class ControlEntrega {
-    enum Estado { CREADA, EN_RUTA, ENTREGADA }
-
-    static String mensaje(Estado estado) {
-        return switch (estado) {
-            case CREADA -> "Guía creada";
-            case EN_RUTA -> "Conductor en recorrido";
-            case ENTREGADA -> "Entrega confirmada";
-        };
-    }
-
-    public static void main(String[] args) { System.out.println(mensaje(Estado.EN_RUTA)); }
-}
-```
-Ejecuta `javac -d out src/ControlEntrega.java && java -cp out ControlEntrega`. **Resultado esperado:** `Conductor en recorrido`. **Fallo deliberado:** agrega `CANCELADA` al enum y recompila sin agregar una rama; el compilador detecta que la expresión `switch` dejó de ser exhaustiva. Añade el comportamiento del nuevo estado.
-
-#### Paso 5 · Práctica guiada
-Pista: en vez de agregar la rama para `CANCELADA`, agrega una rama `default -> "Estado desconocido"` al `switch`. Resultado esperado: el programa vuelve a compilar, pero ahora `CANCELADA` cae silenciosamente en esa rama genérica sin que el compilador señale nada — la exhaustividad que detectó el olvido en el Paso 4 queda anulada por el propio `default`, el mismo riesgo descrito en el Paso 2.
-
-#### Paso 6 · Práctica independiente
-Agrega un nuevo estado `DEVUELTA` al `enum Estado`. Antes de tocar el `switch`, predice por escrito el mensaje de error exacto que dará el compilador; luego agrega la rama faltante y confirma que el mensaje predicho coincide con el real.
-
-#### Paso 7 · Cierre y evidencia
-Guarda `ControlEntrega.java`, el error de exhaustividad provocado por `CANCELADA` y su corrección; como siguiente paso, en el Tema 7 aplicarás límites de ciclo igualmente explícitos al recorrer arreglos. Errores comunes: agregar un `default` "por si acaso" que oculta casos nuevos sin manejar, usar `&` en vez de `&&` cuando el lado derecho depende de que el izquierdo ya haya validado algo, y usar `<=` en una condición de ciclo pensada para `<`. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/docs/specs/jls/se21/html/jls-14.html y https://dev.java/learn/language-basics/switch-expressions/.
-**¿Por qué es importante?** Porque un `switch` con `default` oculta en silencio cualquier estado nuevo que el negocio agregue después, mientras un `switch` exhaustivo sin `default` convierte ese mismo olvido en un error de compilación inmediato.
-**Evidencia de aprendizaje:** entrega `ControlEntrega.java`, el mensaje `Conductor en recorrido`, y el error de exhaustividad provocado al agregar `CANCELADA` junto a su corrección.
-**Conceptos clave:** agrupación explícita, cortocircuito, ramas exhaustivas y ciclos terminables.
-
-La precedencia determina qué operación se evalúa primero, pero depender de que el lector memorice toda la tabla dificulta mantener el código. Usa paréntesis para expresar la intención cuando se combinan operadores. `&&` y `||` realizan cortocircuito: la expresión derecha no se evalúa si el resultado ya está decidido. Ese mecanismo permite verificar `paquete != null && paquete.pesoKg() > 0` sin desreferenciar `null`; usar `&` obliga a evaluar ambos lados y produciría `NullPointerException`.
-
-Elige `if` para rangos o reglas heterogéneas y `switch` para decidir según un conjunto discreto. Un `switch` moderno puede ser una expresión que devuelve un valor y evita variables mutables temporales. En ciclos, define antes la condición de salida y comprueba los límites: `i < elementos.length` visita índices válidos; `i <= elementos.length` intenta acceder una posición inexistente.
-
-```java
-enum Estado { CREADO, EN_RUTA, ENTREGADO, CANCELADO }
-
-static String mensaje(Estado estado) {
-    return switch (estado) {
-        case CREADO -> "Guía registrada";
-        case EN_RUTA -> "Conductor en recorrido";
-        case ENTREGADO -> "Entrega confirmada";
-        case CANCELADO -> "Envío cancelado";
-    };
-}
-
-static boolean pesoValido(Paquete paquete) {
-    return paquete != null && paquete.pesoKg() > 0 && paquete.pesoKg() <= 50;
-}
-```
-
-**Fallo deliberado:** reemplaza el primer `&&` por `&` y llama `pesoValido(null)`. Lee la línea exacta del *stack trace* y explica por qué se evaluó `paquete.pesoKg()`. Después agrega un nuevo valor al `enum`: el compilador señalará que el `switch` dejó de ser exhaustivo, convirtiendo una evolución del dominio en feedback inmediato.
-
-**Analogía:** el cortocircuito es un control de acceso por etapas: si la primera condición ya rechaza la entrada, no se ejecutan controles que requieren que esa entrada exista.
-
-**¿Por qué es importante?** Una condición correcta no solo produce `true` o `false`; también controla qué operaciones llegan a ejecutarse y qué fallos quedan imposibilitados.
-
-**Transferencia al proyecto integrador «Motor de asignación de entregas»:** Implementa capacidad y prioridad con expresiones sin ambigüedad. Construye casos límite de capacidad exacta y exceso de una unidad y verifica que ninguna entrega queda asignada por precedencia accidental.
-
-### Tema 7: Arreglos, wrappers y paso de argumentos
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás predecir exactamente qué puede modificar un método al recibir un arreglo, y recorrer una secuencia sin salirte de sus límites válidos. Prerrequisitos: JDK 25 y un editor de texto o IDE. Comprueba `java --version`.
-
-#### Paso 2 · Contexto y caso real
-Un método que "limpia" un arreglo de paradas reasignando el parámetro a un arreglo vacío no limpia nada desde el punto de vista del código que lo llamó; el arreglo original sigue intacto, porque reasignar la referencia local no afecta la variable del llamador — solo mutar el contenido del arreglo sí se observa desde afuera.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-Java siempre pasa argumentos por valor: al pasar un objeto, el método recibe una copia de la referencia, no una segunda referencia independiente ni el objeto mismo. Ambas copias apuntan al mismo objeto, así que mutar el contenido se observa desde ambos lados, pero reasignar el parámetro solo cambia la copia local. La analogía: copiar una referencia es entregar una segunda dirección de la misma bodega, no construir otra bodega — cambiar la mercancía se ve desde ambas direcciones, pero cambiar el papel con la dirección no mueve la bodega original.
-
-#### Paso 4 · Demostración guiada desde cero
-Desde una **carpeta vacía**, crea `src/Argumentos.java`:
-```bash
-mkdir java-argumentos && cd java-argumentos
-mkdir src out
-```
-
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
-
-```bash
-# Maven
-mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-cd app && mvn test
-# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
-```
-
-```java
-import java.util.Arrays;
-
-public final class Argumentos {
-    static void modificar(int[] referenciaCopiada) {
-        referenciaCopiada[0] = 99;       // Muta el arreglo compartido.
-        referenciaCopiada = new int[]{7}; // Solo reasigna el parámetro local.
-    }
+public class Conversion {
     public static void main(String[] args) {
-        int[] paradas = {1, 2, 3};
-        modificar(paradas);
-        System.out.println(Arrays.toString(paradas));
+        double pesoKg = 2.75;
+        int pesoEntero = (int) pesoKg;
+        System.out.println(pesoKg);
+        System.out.println(pesoEntero);
     }
 }
 ```
-Ejecuta `javac -d out src/Argumentos.java && java -cp out Argumentos`. **Salida esperada:** `[99, 2, 3]`, no `[7]`. **Fallo deliberado:** recorre con `i <= paradas.length`; aparece `ArrayIndexOutOfBoundsException` al intentar el índice 3, mientras el último válido es 2.
 
-#### Paso 5 · Práctica guiada
-Pista: cambia la firma de `modificar` para que reciba `int primerElemento` (el valor `paradas[0]`, no el arreglo) e intenta que el método lo modifique igual que antes modificaba el arreglo completo. Resultado esperado: tras llamar `modificar(paradas[0])`, `paradas[0]` sigue siendo `1` — un `int` primitivo se pasa por valor y el método solo modifica su copia local, a diferencia del arreglo, donde la copia de la referencia sigue apuntando al mismo objeto mutable.
+Ejecuta `javac -d out src/Conversion.java` y `java -cp out Conversion`.
 
-#### Paso 6 · Práctica independiente
-Crea un segundo arreglo `int[] pesos` con una posición menos que `paradas`, e intenta recorrer ambos arreglos con el mismo índice `i` dentro de un único ciclo. Identifica en qué iteración exacta ocurre `ArrayIndexOutOfBoundsException` sobre `pesos`, y corrige el límite del ciclo para que use el tamaño correcto de cada arreglo.
+**Resultado esperado:** imprime `2.75` y `2`.
 
-#### Paso 7 · Cierre y evidencia
-Guarda `Argumentos.java`, la salida `[99, 2, 3]` y el `ArrayIndexOutOfBoundsException` provocado por `<=` junto a su corrección; como siguiente paso, en el Tema 8 aplicarás esta misma frontera de validación a entradas externas como fechas y texto. Errores comunes: decir que Java pasa objetos por referencia, usar `<=` en el límite de un ciclo sobre `length`, y asumir que reasignar un parámetro arreglo cambia el arreglo del llamador. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Arrays.html y https://dev.java/learn/arrays/.
-**¿Por qué es importante?** Porque confundir "pasar por referencia" con cómo Java realmente pasa argumentos lleva a predecir mutaciones que no ocurren, o a no anticipar las que sí ocurren, en cualquier método que reciba un arreglo u objeto mutable.
-**Evidencia de aprendizaje:** entrega `Argumentos.java`, la salida `[99, 2, 3]` explicada, y el `ArrayIndexOutOfBoundsException` provocado por recorrer con `<=` junto a su corrección.
-**Conceptos clave:** tamaño fijo, autoboxing, aliasing y Java siempre pasa por valor.
+**Fallo deliberado:** usa el entero para facturar el peso. **Diagnóstico:** el cast descartó la parte decimal; conserva `double` o elige una regla explícita de redondeo.
 
-Un arreglo conserva una secuencia contigua de elementos de un mismo tipo y su longitud no cambia después de crearlo. Los índices comienzan en cero; el último índice válido es `length - 1`. Para una colección que crece o decrece usa `ArrayList` (Módulo 2), no copies arreglos manualmente en cada inserción.
+**3. Entiende**
 
-Java **siempre pasa argumentos por valor**. Al pasar un `int`, el método recibe una copia del número. Al pasar un objeto, recibe una copia de la referencia: ambas referencias apuntan inicialmente al mismo objeto, por lo que el método puede mutarlo si el tipo es mutable, pero reasignar su parámetro no cambia la variable del llamador. Decir “Java pasa objetos por referencia” oculta esta diferencia y produce predicciones equivocadas.
+Una conversión explícita a un tipo más pequeño puede perder datos. Java no puede restaurarlos después.
 
-Los wrappers permiten representar primitivos como objetos y admitir `null`, pero el autounboxing puede fallar. `Integer intentos = null; int total = intentos + 1;` lanza `NullPointerException` al intentar extraer el `int`. No uses `null` como un tercer estado implícito: valida o modela la ausencia explícitamente.
+**4. Cierra**
 
-```java
-static void reemplazar(int[] copiaReferencia) {
-    copiaReferencia[0] = 99;       // muta el mismo arreglo observado por el llamador
-    copiaReferencia = new int[]{7}; // solo reasigna la copia local de la referencia
-}
+Anota el dato perdido y qué regla de negocio decidiría cómo redondear.
 
-int[] paradas = {1, 2, 3};
-reemplazar(paradas);
-System.out.println(java.util.Arrays.toString(paradas)); // [99, 2, 3]
-```
+#### Subtema 5.3: Lee texto y conviértelo con control · 10 min
 
-**Predicción antes de ejecutar:** explica por qué el resultado no es `[7]`. Luego cambia el ciclo que recorre `paradas` de `< paradas.length` a `<= paradas.length`; identifica `ArrayIndexOutOfBoundsException`, el índice solicitado y el rango válido informado por el error.
+**1. Contexto**
 
-**Analogía:** copiar una referencia es entregar una segunda dirección de la misma bodega, no construir otra bodega; cambiar mercancía se observa desde ambas direcciones, pero sustituir el papel con la dirección no mueve la bodega original.
+Los argumentos de terminal llegan como texto, aunque representen números.
 
-**¿Por qué es importante?** Entender qué se copia permite anticipar mutaciones, aliasing y errores de límites antes de ejecutar el programa.
+**2. Hazlo tú**
 
-**Transferencia al proyecto integrador «Motor de asignación de entregas»:** Procesa un arreglo de entregas sin modificar la entrada del llamador. Prueba valores ausentes y wrappers nulos, explicando qué se copia al pasar referencias a un método.
-
-### Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`)
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás validar una fecha recibida como texto con `java.time`, y elegir entre `Random` y `SecureRandom` según si el valor generado protege algo. Prerrequisitos: JDK 25 y un editor de texto o IDE. Comprueba `java --version`.
-
-#### Paso 2 · Contexto y caso real
-Un formulario de reprogramación de entregas acepta la nueva fecha como texto sin validarla antes de guardarla; un cliente escribe `31/02/2026` (un día que no existe) y el sistema lo acepta sin error, hasta que otro proceso que sí usa `java.time` para calcular plazos falla de forma inesperada semanas después.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-Convertir y validar en la frontera significa que el dominio nunca recibe texto sin interpretar: `LocalDate.parse` rechaza una fecha imposible con una excepción clara en el momento de la conversión, no más adelante en un cálculo distinto. La analogía: las APIs de `java.time` son instrumentos de medición distintos — una fecha civil, un instante global y una fecha con zona responden preguntas diferentes, aunque todas parezcan simplemente "tiempo".
-
-#### Paso 4 · Demostración guiada desde cero
-Desde una **carpeta vacía**, crea `src/FechaEntrega.java`:
-```bash
-mkdir java-fechas && cd java-fechas
-mkdir src out
-```
-
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
-
-```bash
-# Maven
-mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-cd app && mvn test
-# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
-```
+Crea `java-motor/src/LeerPeso.java`:
 
 ```java
-import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
-
-public final class FechaEntrega {
+public class LeerPeso {
     public static void main(String[] args) {
         try {
-            LocalDate fecha = LocalDate.parse(args[0]); // ISO: año-mes-día.
-            System.out.println("fecha válida=" + fecha);
-        } catch (DateTimeParseException | ArrayIndexOutOfBoundsException error) {
-            System.out.println("Usa una fecha como 2026-07-22");
+            double peso = Double.parseDouble(args[0]);
+            System.out.println("Peso: " + peso + " kg");
+        } catch (NumberFormatException | ArrayIndexOutOfBoundsException error) {
+            System.out.println("Uso: java LeerPeso <número>");
         }
     }
 }
 ```
-Ejecuta `javac -d out src/FechaEntrega.java && java -cp out FechaEntrega 2026-07-22`. **Resultado esperado:** `fecha válida=2026-07-22`. **Fallo deliberado:** usa `2026-02-31`; `LocalDate.parse` rechaza la fecha imposible y el programa presenta la ayuda controlada. En una aplicación real conserva también la causa técnica en logs internos.
 
-#### Paso 5 · Práctica guiada
-Pista: ejecuta el programa sin ningún argumento (`java -cp out FechaEntrega`). Resultado esperado: el mismo `catch` multi-tipo captura también `ArrayIndexOutOfBoundsException` (declarada junto a `DateTimeParseException`) y muestra el mismo mensaje de ayuda, en vez de que el programa termine abruptamente con una traza sin controlar.
+Desde `java-motor` compila y ejecuta `javac -d out src/LeerPeso.java`, `java -cp out LeerPeso 2.75` y `java -cp out LeerPeso pesado`.
 
-#### Paso 6 · Práctica independiente
-Agrega una segunda validación con `Integer.parseInt(args[1])` para un número de intentos de reentrega, y maneja también `NumberFormatException` dentro del mismo `catch` multi-tipo junto a `DateTimeParseException` y `ArrayIndexOutOfBoundsException`.
+**Resultado esperado:** la entrada numérica se convierte; el texto inválido muestra el mensaje de uso.
 
-#### Paso 7 · Cierre y evidencia
-Guarda `FechaEntrega.java`, la ejecución con una fecha válida y con `2026-02-31`; como siguiente paso, aplica esta misma validación en la frontera al proyecto progresivo del track. Errores comunes: aceptar una fecha como texto sin validarla antes de usarla, usar `Date`/`Calendar` para código nuevo, y usar una semilla fija de `Random` para generar un valor con implicaciones de seguridad. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/LocalDate.html y https://dev.java/learn/date-time/.
-**¿Por qué es importante?** Porque una fecha imposible aceptada sin validar, o un valor sensible generado con una semilla fija predecible, son errores que solo se previenen eligiendo la API correcta en la frontera, no corrigiéndolos después de que ya causaron daño.
-**Evidencia de aprendizaje:** entrega `FechaEntrega.java`, la ejecución con `2026-07-22` y con `2026-02-31`, y una frase propia que explique cuándo usar `Random` frente a `SecureRandom`.
+**Fallo deliberado:** elimina el `try/catch` y ejecuta con `pesado`. **Diagnóstico:** `parseDouble` no puede convertir esa palabra y lanza `NumberFormatException`; valida la entrada en el borde del programa.
 
-Elegir `java.time` sobre `Date`/`Calendar`, y recibir el reloj como dependencia en vez de llamar `LocalDate.now()` directamente, es exactamente lo que necesitará el proyecto integrador de este track para que su lógica de fechas sea probable de forma determinista.
+**3. Entiende**
 
-**Cuándo no usarlo:** `Random` con semilla fija es apropiado para pruebas reproducibles; usar esa misma semilla fija para generar tokens, contraseñas o cualquier valor con implicaciones de seguridad es exactamente el error que `SecureRandom` existe para prevenir — la elección depende de si el valor generado protege algo o no.
+`String` representa texto. `parseDouble` convierte texto válido a número y lanza una excepción cuando el formato no es numérico.
+
+**4. Cierra**
+
+Guarda las dos salidas y explica qué dato llegó originalmente como texto. Consulta [conversión de datos](https://docs.oracle.com/javase/tutorial/java/nutsandbolts/converting.html).
+
+### Tema 6: Operadores, precedencia y control de flujo
+
+**¿Por qué es importante?** Una condición mal agrupada puede aceptar un paquete inválido o detener todo el cálculo. **Modelo mental:** el cortocircuito revisa cada puerta y deja de avanzar cuando una ya está cerrada.
+
+**Proyecto integrador:** valida peso y estado antes de asignar un conductor. **Límite:** un ciclo con <= puede acceder fuera del arreglo. **Práctica:** cambia el límite y diagnostica el índice que falla.
+
+```bash
+javac -d out src/Condicion.java
+java -cp out Condicion
+```
+
+#### Subtema 6.1: Protege una comprobación con cortocircuito · 10 min
+
+**1. Contexto**
+
+Antes de leer el peso de un envío, comprueba que el envío exista.
+
+**2. Hazlo tú**
+
+Crea `java-motor/src/Condicion.java`:
+
+```java
+public class Condicion {
+    record Paquete(double pesoKg) {}
+
+    static boolean pesoValido(Paquete paquete) {
+        return paquete != null && paquete.pesoKg() > 0 && paquete.pesoKg() <= 50;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(pesoValido(null));
+        System.out.println(pesoValido(new Paquete(12.5)));
+    }
+}
+```
+
+Desde `java-motor` compila y ejecuta `javac -d out src/Condicion.java` y `java -cp out Condicion`.
+
+**Resultado esperado:** `false` y `true`.
+
+**Fallo deliberado:** cambia `&&` por `&` entre la comprobación de `null` y el acceso al peso. **Diagnóstico:** `&` evalúa ambos lados y aparece `NullPointerException`; restaura `&&` para que la segunda parte solo se evalúe si el paquete existe.
+
+**3. Entiende**
+
+`&&` hace cortocircuito: si el lado izquierdo ya es falso, no evalúa el derecho. `&` sobre booleanos no tiene esa protección.
+
+**4. Cierra**
+
+Señala qué parte impide desreferenciar `null`.
+
+#### Subtema 6.2: Elige una acción con switch · 10 min
+
+**1. Contexto**
+
+El motor muestra un mensaje según el estado de la entrega.
+
+**2. Hazlo tú**
+
+Crea `java-motor/src/MensajeEstado.java`:
+
+```java
+enum Estado { CREADO, EN_RUTA, ENTREGADO }
+
+public class MensajeEstado {
+    static String mensaje(Estado estado) {
+        return switch (estado) {
+            case CREADO -> "Guía registrada";
+            case EN_RUTA -> "Conductor en recorrido";
+            case ENTREGADO -> "Entrega confirmada";
+        };
+    }
+
+    public static void main(String[] args) {
+        System.out.println(mensaje(Estado.EN_RUTA));
+    }
+}
+```
+
+Compila y ejecuta `javac -d out src/MensajeEstado.java` y `java -cp out MensajeEstado`.
+
+**Resultado esperado:** `Conductor en recorrido`.
+
+**Fallo deliberado:** agrega `CANCELADO` al enum y no agregues su caso al switch. **Diagnóstico:** el compilador indica que la expresión dejó de cubrir todos los estados; define el mensaje para el nuevo estado.
+
+**3. Entiende**
+
+Un `switch` expresión produce un valor. Con un enum cerrado, el compilador puede avisar si falta una alternativa.
+
+**4. Cierra**
+
+Agrega el estado `CANCELADO` y conserva el mensaje correspondiente.
+
+#### Subtema 6.3: Recorre una lista sin salir de sus límites · 10 min
+
+**1. Contexto**
+
+Las posiciones de un arreglo empiezan en cero. La última posición es su longitud menos uno.
+
+**2. Hazlo tú**
+
+Crea `java-motor/src/Recorrido.java`:
+
+```java
+public class Recorrido {
+    public static void main(String[] args) {
+        String[] guias = {"RT-1", "RT-2", "RT-3"};
+        for (int i = 0; i < guias.length; i++) {
+            System.out.println(i + ": " + guias[i]);
+        }
+    }
+}
+```
+
+Compila y ejecuta `javac -d out src/Recorrido.java` y `java -cp out Recorrido`.
+
+**Resultado esperado:** imprime los índices 0, 1 y 2 sin error.
+
+**Fallo deliberado:** cambia `i < guias.length` por `i <= guias.length`. **Diagnóstico:** la iteración intenta leer el índice 3, que no existe; devuelve el límite a `<`.
+
+**3. Entiende**
+
+La longitud cuenta elementos; no es un índice válido. Comprueba el límite antes de cada acceso.
+
+**4. Cierra**
+
+Anota cuántas guías hay y cuál es su último índice. Fuente oficial: [control de flujo](https://docs.oracle.com/javase/tutorial/java/nutsandbolts/flow.html).
+
+### Tema 7: Arreglos, wrappers y paso de argumentos
+
+**¿Por qué es importante?** Arreglos y wrappers aparecen al leer datos externos, pero un índice incorrecto o un wrapper nulo detiene la operación. **Modelo mental:** un arreglo es una fila con longitud fija y casillas numeradas desde cero.
+
+**Proyecto integrador:** conserva varias guías y convierte sus cantidades. **Límite:** usa una colección si el tamaño debe cambiar. **Práctica:** prueba un índice fuera de rango y una conversión inválida.
+
+#### Subtema 7.1: Guarda y recorre varias guías · 10 min
+
+**1. Contexto**
+
+Un arreglo reúne varios valores del mismo tipo bajo una sola variable.
+
+**2. Hazlo tú**
+
+Crea `java-motor/src/Guias.java`:
+
+```java
+public class Guias {
+    public static void main(String[] args) {
+        String[] guias = {"RT-1", "RT-2"};
+        for (String guia : guias) System.out.println(guia);
+        System.out.println("Total: " + guias.length);
+    }
+}
+```
+
+Compila y ejecuta `javac -d out src/Guias.java` y `java -cp out Guias`.
+
+**Resultado esperado:** aparecen las dos guías y `Total: 2`.
+
+**Fallo deliberado:** intenta leer `guias[2]`. **Diagnóstico:** los índices válidos son 0 y 1; para agregar o quitar elementos en ejecución usa una colección, no un arreglo de tamaño fijo.
+
+**3. Entiende**
+
+Un arreglo tiene una longitud fija después de crearse. Su índice inicial es cero.
+
+**4. Cierra**
+
+Entrega la salida y señala el primer y el último índice válido.
+
+#### Subtema 7.2: Convierte entre primitivos y wrappers con cuidado · 10 min
+
+**1. Contexto**
+
+Un formulario entrega números como texto y puede dejar un campo vacío. Convertirlo requiere validar ambos casos.
+
+**2. Hazlo tú**
+
+Crea `java-motor/src/Wrapper.java`:
+
+```java
+public class Wrapper {
+    public static void main(String[] args) {
+        Integer cajas = Integer.valueOf(args[0]);
+        int total = cajas + 1;
+        System.out.println(total);
+    }
+}
+```
+
+Compila y ejecuta `javac -d out src/Wrapper.java` y `java -cp out Wrapper 4`.
+
+**Resultado esperado:** `5`.
+
+**Fallo deliberado:** ejecuta `java -cp out Wrapper cuatro` y luego sin argumento. **Diagnóstico:** el primer caso no se puede convertir a entero; el segundo no tiene `args[0]`. Valida entrada antes de convertir o desenvolver el wrapper.
+
+**3. Entiende**
+
+`Integer` es un objeto que puede ser `null`; `int` es un primitivo. Al sumar, Java desenvuelve el wrapper automáticamente; desenvolver `null` causa `NullPointerException`.
+
+**4. Cierra**
+
+Explica el autoboxing y por qué un wrapper nulo no se debe sumar. Fuente oficial: [clases wrapper](https://docs.oracle.com/javase/tutorial/java/data/numberclasses.html).
+
+#### Subtema 7.3: Observa qué cambia al pasar una referencia · 10 min
+
+**1. Contexto**
+
+Java pasa argumentos por valor. Para un objeto, el valor copiado es una referencia; el método puede cambiar el objeto, pero reasignar su copia no cambia la variable del llamador.
+
+**2. Hazlo tú**
+
+Crea `java-motor/src/PasoValor.java`:
+
+```java
+public class PasoValor {
+    static void cambiar(StringBuilder texto) {
+        texto.append(" listo");
+        texto = new StringBuilder("otro");
+    }
+
+    public static void main(String[] args) {
+        StringBuilder estado = new StringBuilder("pedido");
+        cambiar(estado);
+        System.out.println(estado);
+    }
+}
+```
+
+Compila y ejecuta `javac -d out src/PasoValor.java` y `java -cp out PasoValor`.
+
+**Resultado esperado:** `pedido listo`.
+
+**Fallo deliberado:** espera que imprima `otro`. **Diagnóstico:** el método reasignó su copia local de la referencia; la mutación del objeto compartido sí permanece. Para evitar efectos laterales, prefiere valores inmutables cuando encajen.
+
+**3. Entiende**
+
+Java siempre pasa una copia del argumento. En el caso de un objeto esa copia apunta al mismo objeto, hasta que el parámetro se reasigna.
+
+**4. Cierra**
+
+Dibuja las dos referencias antes y después de llamar a `cambiar`.
+
+### Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`)
+
+**¿Por qué es importante?** Fechas y horas incorrectas cambian promesas de entrega y registros de auditoría. **Modelo mental:** LocalDate es una fecha del calendario; Instant es un momento único del reloj mundial.
+
+**Proyecto integrador:** guarda el día prometido y la hora real de entrega con tipos distintos. **Límite:** una fecha local no incluye zona horaria. **Práctica:** parsea una fecha ISO y muestra el mismo instante en Bogotá.
+
+```bash
+javac -d out src/FechaEntrega.java
+java -cp out FechaEntrega 2026-11-03
+```
+
+#### Subtema 8.1: Lee una entrada y valida el número · 10 min
+
+**1. Contexto**
+
+El operador introduce la cantidad de paquetes por terminal. La entrada puede faltar o no ser un número.
+
+**2. Hazlo tú**
+
+Crea `java-motor/src/Entrada.java`:
+
+```java
+import java.util.Scanner;
+
+public class Entrada {
+    public static void main(String[] args) {
+        try (Scanner entrada = new Scanner(System.in)) {
+            System.out.print("Paquetes: ");
+            if (!entrada.hasNextInt()) {
+                System.out.println("Escribe un número entero");
+                return;
+            }
+            System.out.println("Recibidos: " + entrada.nextInt());
+        }
+    }
+}
+```
+
+Compila y ejecuta `javac -d out src/Entrada.java` y `java -cp out Entrada`. Escribe `3` y luego repite escribiendo `tres`.
+
+**Resultado esperado:** el primer caso muestra `Recibidos: 3`; el segundo informa que se esperaba un número.
+
+**Fallo deliberado:** elimina `hasNextInt()` y escribe `tres`. **Diagnóstico:** `nextInt()` lanza `InputMismatchException` porque la entrada no tiene el formato solicitado.
+
+**3. Entiende**
+
+Leer una línea no garantiza que el texto sea un número. Comprueba el dato antes de convertirlo.
+
+**4. Cierra**
+
+Guarda ambas salidas. Fuente oficial: [Scanner](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Scanner.html).
+
+#### Subtema 8.2: Parsea una fecha de entrega · 10 min
+
+**1. Contexto**
+
+Una fecha de calendario como “2026-11-03” no representa por sí sola una hora ni una zona horaria.
+
+**2. Hazlo tú**
+
+Crea `java-motor/src/FechaEntrega.java`:
+
+```java
+import java.time.LocalDate;
+
+public class FechaEntrega {
+    public static void main(String[] args) {
+        LocalDate entrega = LocalDate.parse(args[0]);
+        System.out.println(entrega.plusDays(1));
+    }
+}
+```
+
+Compila y ejecuta `javac -d out src/FechaEntrega.java` y `java -cp out FechaEntrega 2026-11-03`.
+
+**Resultado esperado:** `2026-11-04`.
+
+**Fallo deliberado:** ejecuta con `03/11/2026`. **Diagnóstico:** `LocalDate.parse` usa ISO `yyyy-MM-dd` por defecto; usa un `DateTimeFormatter` explícito si ese es el formato externo.
+
+**3. Entiende**
+
+`LocalDate` representa una fecha civil sin hora ni zona. No la conviertas a una fecha/hora si el dominio solo necesita el día.
+
+**4. Cierra**
+
+Guarda la fecha original, la calculada y el formato de entrada.
+
+#### Subtema 8.3: Distingue un instante de una hora local · 10 min
+
+**1. Contexto**
+
+La hora “09:00” en Bogotá no es necesariamente el mismo instante que “09:00” en Madrid.
+
+**2. Hazlo tú**
+
+Crea `java-motor/src/Instantes.java`:
+
+```java
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+
+public class Instantes {
+    public static void main(String[] args) {
+        Instant ahora = Instant.now();
+        ZonedDateTime bogota = ahora.atZone(ZoneId.of("America/Bogota"));
+        System.out.println(ahora);
+        System.out.println(bogota);
+    }
+}
+```
+
+Compila y ejecuta `javac -d out src/Instantes.java` y `java -cp out Instantes`.
+
+**Resultado esperado:** imprime un instante UTC y la representación del mismo momento en Bogotá.
+
+**Fallo deliberado:** reemplaza la zona por `America/Desconocida`. **Diagnóstico:** `ZoneId` no reconoce ese identificador; usa un nombre de zona disponible, no una diferencia horaria inventada.
+
+**3. Entiende**
+
+`Instant` identifica un momento global; `ZonedDateTime` muestra ese instante con reglas de una zona. `Date` y `Calendar` son APIs antiguas; para código nuevo usa tipos de `java.time`.
+
+**4. Cierra**
+
+Explica cuál valor guardarías para registrar el momento de una entrega y cuál para guardar el día prometido. Fuente oficial: [java.time](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/package-summary.html).
 
 ## Ruta de proyecto progresivo desde carpeta vacía
 

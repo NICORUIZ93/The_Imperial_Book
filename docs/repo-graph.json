@@ -289,7 +289,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 9660,
+      "lines": 10348,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -297,7 +297,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1225,
+      "lines": 1208,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -583,7 +583,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3451,
+      "lines": 3507,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -619,7 +619,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13492,
+      "lines": 13503,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -767,7 +767,7 @@
     },
     {
       "path": "docs/java-temario-completo.md",
-      "lines": 285,
+      "lines": 333,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -796,7 +796,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 11211,
+      "lines": 11171,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -9749,7 +9749,7 @@
     },
     {
       "path": "web/public/content/java/modulo-0.md",
-      "lines": 761,
+      "lines": 994,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10043,7 +10043,7 @@
     },
     {
       "path": "web/public/content/java/modulo-3.md",
-      "lines": 211,
+      "lines": 461,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10051,20 +10051,20 @@
         "# M\u00f3dulo 3: Excepciones y manejo de recursos",
         "## Aprende construyendo",
         "### Tema 1: Checked vs unchecked exceptions",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Subtema 1.1: Maneja un archivo que no existe \u00b7 10 min",
+        "#### Subtema 1.2: Propaga una checked exception hasta quien puede resolverla \u00b7 10 min",
+        "#### Subtema 1.3: Trata una entrada inv\u00e1lida como error de programa \u00b7 10 min",
         "### Tema 2: try-with-resources",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+        "#### Subtema 2.1: Lee un archivo y deja que Java lo cierre \u00b7 10 min",
+        "#### Subtema 2.2: Comprueba el cierre aunque ocurra un error \u00b7 10 min",
+        "#### Subtema 2.3: Cierra varios recursos en orden inverso \u00b7 10 min",
+        "### Tema 3: Excepciones personalizadas y no tragar excepciones",
+        "#### Subtema 3.1: Representa un saldo insuficiente \u00b7 10 min"
       ]
     },
     {
       "path": "web/public/content/java/modulo-4.md",
-      "lines": 275,
+      "lines": 521,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10072,20 +10072,20 @@
         "# M\u00f3dulo 4: Streams y programaci\u00f3n funcional",
         "## Aprende construyendo",
         "### Tema 1: Stream API \u2014 map, filter, reduce, collect",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Subtema 1.1: Filtra y transforma env\u00edos \u00b7 10 min",
+        "#### Subtema 1.2: Suma sin llevar un acumulador externo \u00b7 10 min",
+        "#### Subtema 1.3: No reutilices un stream consumido \u00b7 10 min",
         "### Tema 2: Optional \u2014 evitar null expl\u00edcitamente",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+        "#### Subtema 2.1: Representa que una b\u00fasqueda puede no encontrar gu\u00eda \u00b7 10 min",
+        "#### Subtema 2.2: Transforma o usa un valor alternativo \u00b7 10 min",
+        "#### Subtema 2.3: No envuelvas un valor que puede ser null \u00b7 10 min",
+        "### Tema 3: Streams paralelos y referencias a m\u00e9todos",
+        "#### Subtema 3.1: Reemplaza una lambda por referencia a m\u00e9todo \u00b7 10 min"
       ]
     },
     {
       "path": "web/public/content/java/modulo-5.md",
-      "lines": 483,
+      "lines": 711,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10093,15 +10093,15 @@
         "# M\u00f3dulo 5: Concurrencia \u2014 hilos y virtual threads",
         "## Aprende construyendo",
         "### Tema 1: ExecutorService y gesti\u00f3n de hilos",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Subtema 1.1: Env\u00eda trabajos a un executor \u00b7 10 min",
+        "#### Subtema 1.2: Recoge el resultado con Future \u00b7 10 min",
+        "#### Subtema 1.3: Cierra el executor al completar todas las tareas \u00b7 10 min",
         "### Tema 2: CompletableFuture",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+        "#### Subtema 2.1: Transforma un resultado as\u00edncrono \u00b7 10 min",
+        "#### Subtema 2.2: Combina dos resultados independientes \u00b7 10 min",
+        "#### Subtema 2.3: Convierte un fallo en una respuesta visible \u00b7 10 min",
+        "### Tema 3: Virtual threads",
+        "#### Subtema 3.1: Ejecuta una tarea en un virtual thread \u00b7 10 min"
       ]
     },
     {

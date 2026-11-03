@@ -11,7 +11,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 | node | 83 | 17 | HTTP y validación antes de autenticación e integraciones | API con límites de carga, paginación estable, pruebas y cierre ordenado |
 | angular | 71 | 3 | HTML/CSS/TypeScript explícitos; RxJS y estado con ejemplos completos | Rutas, formularios, datos remotos y cambios sin guardar comprobados con navegador |
 | react | 58 | 46 | JSX y estado antes de efectos; proveedor, dependencias y API visibles | Carga, error, vacío y carrera de respuestas; caché observada, no supuesta |
-| java | 101 | 55 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
+| java | 101 | 61 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
 | spring-boot | 111 | 27 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
 | android | 58 | 0 | Kotlin antes de Compose; distinguir recomposición, recreación y muerte de proceso | App instalable con permisos, restauración, persistencia y pruebas en dispositivo |
 | ios | 56 | 4 | Swift antes de SwiftUI; explicitar macOS/Xcode y destino | Cancelación, estados de red, persistencia y accesibilidad comprobados en simulador |
@@ -689,11 +689,11 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | java / 0 | [Tema 1: Del código fuente a la JVM](../web/public/content/java/modulo-0.md) | demostracion-no-delimitada |
 | java / 0 | [Tema 2: public static void main — qué significa cada palabra](../web/public/content/java/modulo-0.md) | demostracion-no-delimitada |
 | java / 0 | [Tema 3: JDK, JRE y JVM](../web/public/content/java/modulo-0.md) | demostracion-no-delimitada |
-| java / 0 | [Tema 4: Tipos primitivos vs referencias](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 0 | [Tema 5: Variables, conversiones y `String`](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 0 | [Tema 6: Operadores, precedencia y control de flujo](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 0 | [Tema 7: Arreglos, wrappers y paso de argumentos](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 0 | [Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`)](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 0 | [Tema 4: Tipos primitivos vs referencias](../web/public/content/java/modulo-0.md) | demostracion-no-delimitada |
+| java / 0 | [Tema 5: Variables, conversiones y `String`](../web/public/content/java/modulo-0.md) | demostracion-no-delimitada |
+| java / 0 | [Tema 6: Operadores, precedencia y control de flujo](../web/public/content/java/modulo-0.md) | demostracion-no-delimitada |
+| java / 0 | [Tema 7: Arreglos, wrappers y paso de argumentos](../web/public/content/java/modulo-0.md) | demostracion-no-delimitada |
+| java / 0 | [Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`)](../web/public/content/java/modulo-0.md) | demostracion-no-delimitada |
 | java / 1 | [Tema 1: Clases, objetos, constructores y encapsulación](../web/public/content/java/modulo-1.md) | demostracion-no-delimitada |
 | java / 1 | [Tema 2: Herencia y sobreescritura](../web/public/content/java/modulo-1.md) | demostracion-no-delimitada |
 | java / 1 | [Tema 3: Interfaces, clases abstractas y cuándo usar cada una](../web/public/content/java/modulo-1.md) | demostracion-no-delimitada |
@@ -759,17 +759,17 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | java / 20 | [Tema 11: Streams paralelos: comparar antes de acelerarlos](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 20 | [Tema 12: Pureza y efectos: calcular separado de guardar o imprimir](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 20 | [Tema 13: Flow API: publicar datos con demanda y cierre](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 3 | [Tema 1: Checked vs unchecked exceptions](../web/public/content/java/modulo-3.md) | clase-java-no-visible |
-| java / 3 | [Tema 2: try-with-resources](../web/public/content/java/modulo-3.md) | clase-java-no-visible |
-| java / 3 | [Tema 3: Excepciones personalizadas y no tragar excepciones](../web/public/content/java/modulo-3.md) | clase-java-no-visible |
-| java / 4 | [Tema 1: Stream API — map, filter, reduce, collect](../web/public/content/java/modulo-4.md) | clase-java-no-visible |
-| java / 4 | [Tema 2: Optional — evitar null explícitamente](../web/public/content/java/modulo-4.md) | clase-java-no-visible |
-| java / 4 | [Tema 3: Streams paralelos y referencias a métodos](../web/public/content/java/modulo-4.md) | clase-java-no-visible |
-| java / 4 | [Tema 4: Stream Gatherers (Java 24)](../web/public/content/java/modulo-4.md) | ejemplo-breve-revisar-contexto, clase-java-no-visible |
-| java / 5 | [Tema 1: ExecutorService y gestión de hilos](../web/public/content/java/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 5 | [Tema 2: CompletableFuture](../web/public/content/java/modulo-5.md) | clase-java-no-visible |
-| java / 5 | [Tema 3: Virtual threads](../web/public/content/java/modulo-5.md) | clase-java-no-visible |
-| java / 5 | [Tema 4: Condiciones de carrera y sincronización](../web/public/content/java/modulo-5.md) | clase-java-no-visible |
+| java / 3 | [Tema 1: Checked vs unchecked exceptions](../web/public/content/java/modulo-3.md) | demostracion-no-delimitada |
+| java / 3 | [Tema 2: try-with-resources](../web/public/content/java/modulo-3.md) | demostracion-no-delimitada |
+| java / 3 | [Tema 3: Excepciones personalizadas y no tragar excepciones](../web/public/content/java/modulo-3.md) | demostracion-no-delimitada |
+| java / 4 | [Tema 1: Stream API — map, filter, reduce, collect](../web/public/content/java/modulo-4.md) | demostracion-no-delimitada |
+| java / 4 | [Tema 2: Optional — evitar null explícitamente](../web/public/content/java/modulo-4.md) | demostracion-no-delimitada |
+| java / 4 | [Tema 3: Streams paralelos y referencias a métodos](../web/public/content/java/modulo-4.md) | demostracion-no-delimitada |
+| java / 4 | [Tema 4: Stream Gatherers (Java 24)](../web/public/content/java/modulo-4.md) | demostracion-no-delimitada |
+| java / 5 | [Tema 1: ExecutorService y gestión de hilos](../web/public/content/java/modulo-5.md) | demostracion-no-delimitada |
+| java / 5 | [Tema 2: CompletableFuture](../web/public/content/java/modulo-5.md) | demostracion-no-delimitada |
+| java / 5 | [Tema 3: Virtual threads](../web/public/content/java/modulo-5.md) | demostracion-no-delimitada |
+| java / 5 | [Tema 4: Condiciones de carrera y sincronización](../web/public/content/java/modulo-5.md) | demostracion-no-delimitada |
 | java / 5 | [Tema 5: Structured Concurrency (StructuredTaskScope, Java 25)](../web/public/content/java/modulo-5.md) | clase-java-no-visible |
 | java / 5 | [Tema 6: Scoped Values frente a ThreadLocal (Java 25)](../web/public/content/java/modulo-5.md) | clase-java-no-visible |
 | java / 5 | [Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos](../web/public/content/java/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |

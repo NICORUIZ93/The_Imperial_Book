@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 184,
+    "topicsWithSignals": 190,
     "newLaboratories": 25
   },
   "priorities": {
@@ -7420,8 +7420,10 @@
       "module": 0,
       "title": "Tema 4: Tipos primitivos vs referencias",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 362,
-      "signals": [],
+      "line": 351,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -7431,8 +7433,10 @@
       "module": 0,
       "title": "Tema 5: Variables, conversiones y `String`",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 435,
-      "signals": [],
+      "line": 466,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -7442,8 +7446,10 @@
       "module": 0,
       "title": "Tema 6: Operadores, precedencia y control de flujo",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 492,
-      "signals": [],
+      "line": 584,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -7453,8 +7459,10 @@
       "module": 0,
       "title": "Tema 7: Arreglos, wrappers y paso de argumentos",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 577,
-      "signals": [],
+      "line": 711,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -7464,8 +7472,10 @@
       "module": 0,
       "title": "Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`)",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 658,
-      "signals": [],
+      "line": 824,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -8253,7 +8263,7 @@
       "file": "web/public/content/java/modulo-3.md",
       "line": 6,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8264,9 +8274,9 @@
       "module": 3,
       "title": "Tema 2: try-with-resources",
       "file": "web/public/content/java/modulo-3.md",
-      "line": 64,
+      "line": 164,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8277,9 +8287,9 @@
       "module": 3,
       "title": "Tema 3: Excepciones personalizadas y no tragar excepciones",
       "file": "web/public/content/java/modulo-3.md",
-      "line": 120,
+      "line": 307,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8292,7 +8302,7 @@
       "file": "web/public/content/java/modulo-4.md",
       "line": 6,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8303,9 +8313,9 @@
       "module": 4,
       "title": "Tema 2: Optional — evitar null explícitamente",
       "file": "web/public/content/java/modulo-4.md",
-      "line": 67,
+      "line": 133,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8316,9 +8326,9 @@
       "module": 4,
       "title": "Tema 3: Streams paralelos y referencias a métodos",
       "file": "web/public/content/java/modulo-4.md",
-      "line": 124,
+      "line": 260,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8329,10 +8339,9 @@
       "module": 4,
       "title": "Tema 4: Stream Gatherers (Java 24)",
       "file": "web/public/content/java/modulo-4.md",
-      "line": 183,
+      "line": 379,
       "signals": [
-        "ejemplo-breve-revisar-contexto",
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8344,7 +8353,9 @@
       "title": "Tema 1: ExecutorService y gestión de hilos",
       "file": "web/public/content/java/modulo-5.md",
       "line": 6,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -8354,9 +8365,9 @@
       "module": 5,
       "title": "Tema 2: CompletableFuture",
       "file": "web/public/content/java/modulo-5.md",
-      "line": 68,
+      "line": 132,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8367,9 +8378,9 @@
       "module": 5,
       "title": "Tema 3: Virtual threads",
       "file": "web/public/content/java/modulo-5.md",
-      "line": 137,
+      "line": 247,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8380,9 +8391,9 @@
       "module": 5,
       "title": "Tema 4: Condiciones de carrera y sincronización",
       "file": "web/public/content/java/modulo-5.md",
-      "line": 203,
+      "line": 371,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8393,7 +8404,7 @@
       "module": 5,
       "title": "Tema 5: Structured Concurrency (StructuredTaskScope, Java 25)",
       "file": "web/public/content/java/modulo-5.md",
-      "line": 257,
+      "line": 485,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -8406,7 +8417,7 @@
       "module": 5,
       "title": "Tema 6: Scoped Values frente a ThreadLocal (Java 25)",
       "file": "web/public/content/java/modulo-5.md",
-      "line": 331,
+      "line": 559,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -8419,7 +8430,7 @@
       "module": 5,
       "title": "Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos",
       "file": "web/public/content/java/modulo-5.md",
-      "line": 415,
+      "line": 643,
       "signals": [],
       "newLaboratory": true,
       "humanPedagogicalReview": "pending",

@@ -87,14 +87,14 @@
     "java": {
       "topics": 101,
       "code": 101,
-      "commentedCode": 49,
+      "commentedCode": 41,
       "mermaid": 32,
-      "archifyVisual": 2,
+      "archifyVisual": 1,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
       "filePath": 101,
       "runCommand": 101,
-      "officialSource": 41
+      "officialSource": 28
     },
     "spring-boot": {
       "topics": 111,
@@ -1929,6 +1929,41 @@
     },
     {
       "track": "java",
+      "module": 0,
+      "topic": "Tema 4: Tipos primitivos vs referencias",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 0,
+      "topic": "Tema 5: Variables, conversiones y `String`",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 0,
+      "topic": "Tema 6: Operadores, precedencia y control de flujo",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 0,
+      "topic": "Tema 7: Arreglos, wrappers y paso de argumentos",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 0,
+      "topic": "Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`)",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
       "module": 1,
       "topic": "Tema 1: Clases, objetos, constructores y encapsulación",
       "missingCode": false,
@@ -2161,6 +2196,13 @@
     {
       "track": "java",
       "module": 3,
+      "topic": "Tema 1: Checked vs unchecked exceptions",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 3,
       "topic": "Tema 2: try-with-resources",
       "missingCode": false,
       "missingComments": true
@@ -2176,6 +2218,20 @@
       "track": "java",
       "module": 4,
       "topic": "Tema 2: Optional — evitar null explícitamente",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 4,
+      "topic": "Tema 3: Streams paralelos y referencias a métodos",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 4,
+      "topic": "Tema 4: Stream Gatherers (Java 24)",
       "missingCode": false,
       "missingComments": true
     },

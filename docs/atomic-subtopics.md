@@ -2,7 +2,7 @@
 
 > Auditoría estructural. Un encabezado o criterio detectado no demuestra que el ejemplo se haya ejecutado ni que la explicación sea pedagógicamente suficiente.
 
-Temas conformes a cuatro pasos: **27/1185**. Tracks inventariados: **14**.
+Temas conformes a cuatro pasos: **44/1185**. Tracks inventariados: **14**.
 
 | Track | Temas conformes | Temas inventariados | Subtemas detectados | Subtemas con estructura completa |
 |---|---:|---:|---:|---:|
@@ -13,7 +13,7 @@ Temas conformes a cuatro pasos: **27/1185**. Tracks inventariados: **14**.
 | flutter | 1 | 106 | 3 | 3 |
 | foundations | 0 | 99 | 0 | 0 |
 | ios | 0 | 56 | 0 | 0 |
-| java | 10 | 101 | 35 | 34 |
+| java | 27 | 101 | 83 | 83 |
 | javascript | 0 | 88 | 0 | 0 |
 | kotlin-multiplatform | 0 | 56 | 0 | 0 |
 | node | 2 | 83 | 6 | 6 |
@@ -704,12 +704,6 @@ Temas conformes a cuatro pasos: **27/1185**. Tracks inventariados: **14**.
 
 ### java
 
-- M0 ### Tema 3: JDK, JRE y JVM: 3.1: faltan action
-- M0 ### Tema 4: Tipos primitivos vs referencias: tiene 0 subtemas
-- M0 ### Tema 5: Variables, conversiones y `String`: tiene 0 subtemas
-- M0 ### Tema 6: Operadores, precedencia y control de flujo: tiene 0 subtemas
-- M0 ### Tema 7: Arreglos, wrappers y paso de argumentos: tiene 0 subtemas
-- M0 ### Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`): tiene 0 subtemas
 - M10 ### Tema 1: module-info.java y encapsulación fuerte: tiene 0 subtemas
 - M10 ### Tema 2: Migración incremental y cuándo JPMS aporta valor: tiene 0 subtemas
 - M10 ### Tema 3: `opens` para acceso reflexivo controlado de frameworks: tiene 0 subtemas
@@ -767,17 +761,6 @@ Temas conformes a cuatro pasos: **27/1185**. Tracks inventariados: **14**.
 - M20 ### Tema 11: Streams paralelos: comparar antes de acelerarlos: tiene 0 subtemas
 - M20 ### Tema 12: Pureza y efectos: calcular separado de guardar o imprimir: tiene 0 subtemas
 - M20 ### Tema 13: Flow API: publicar datos con demanda y cierre: tiene 0 subtemas
-- M3 ### Tema 1: Checked vs unchecked exceptions: tiene 0 subtemas
-- M3 ### Tema 2: try-with-resources: tiene 0 subtemas
-- M3 ### Tema 3: Excepciones personalizadas y no tragar excepciones: tiene 0 subtemas
-- M4 ### Tema 1: Stream API — map, filter, reduce, collect: tiene 0 subtemas
-- M4 ### Tema 2: Optional — evitar null explícitamente: tiene 0 subtemas
-- M4 ### Tema 3: Streams paralelos y referencias a métodos: tiene 0 subtemas
-- M4 ### Tema 4: Stream Gatherers (Java 24): tiene 0 subtemas
-- M5 ### Tema 1: ExecutorService y gestión de hilos: tiene 0 subtemas
-- M5 ### Tema 2: CompletableFuture: tiene 0 subtemas
-- M5 ### Tema 3: Virtual threads: tiene 0 subtemas
-- M5 ### Tema 4: Condiciones de carrera y sincronización: tiene 0 subtemas
 - M5 ### Tema 5: Structured Concurrency (StructuredTaskScope, Java 25): tiene 0 subtemas
 - M5 ### Tema 6: Scoped Values frente a ThreadLocal (Java 25): tiene 0 subtemas
 - M5 ### Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos: tiene 0 subtemas

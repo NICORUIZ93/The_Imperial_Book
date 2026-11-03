@@ -1695,11 +1695,11 @@
     }
   ],
   "summary": {
-    "fingerprint": "fd0bfe79e139de0601d50e2383fc1184a17e1c82f274bfb76749f459f9639d5f",
+    "fingerprint": "ec2bd69128a8e378a8f7d10dffab2dc2a9dcd171ec5d0ad26126a680bcb460bd",
     "issues": {
       "andamiaje-generico": 125,
-      "bloque-repetido": 210,
-      "cola-tras-cierre": 368,
+      "bloque-repetido": 196,
+      "cola-tras-cierre": 356,
       "parrafo-repetido": 5,
       "tema-breve": 2
     },
@@ -1711,7 +1711,7 @@
     "modules": 256,
     "modulesWithLegacySections": 181,
     "topics": 1185,
-    "topicsWithIssues": 459
+    "topicsWithIssues": 445
   },
   "topics": {
     "android": [
@@ -7124,57 +7124,46 @@
         "words": 801
       },
       {
-        "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 0,
-        "tailWords": 527,
+        "tailWords": 0,
         "topic": "Tema 3: JDK, JRE y JVM",
-        "words": 1300
+        "words": 556
       },
       {
-        "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 0,
-        "tailWords": 546,
+        "tailWords": 0,
         "topic": "Tema 4: Tipos primitivos vs referencias",
-        "words": 1018
+        "words": 540
       },
       {
         "issues": [],
         "module": 0,
-        "tailWords": 244,
+        "tailWords": 0,
         "topic": "Tema 5: Variables, conversiones y `String`",
-        "words": 728
-      },
-      {
-        "issues": [
-          "bloque-repetido"
-        ],
-        "module": 0,
-        "tailWords": 478,
-        "topic": "Tema 6: Operadores, precedencia y control de flujo",
-        "words": 953
-      },
-      {
-        "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
-        ],
-        "module": 0,
-        "tailWords": 506,
-        "topic": "Tema 7: Arreglos, wrappers y paso de argumentos",
-        "words": 1021
+        "words": 552
       },
       {
         "issues": [],
         "module": 0,
-        "tailWords": 248,
+        "tailWords": 0,
+        "topic": "Tema 6: Operadores, precedencia y control de flujo",
+        "words": 567
+      },
+      {
+        "issues": [],
+        "module": 0,
+        "tailWords": 0,
+        "topic": "Tema 7: Arreglos, wrappers y paso de argumentos",
+        "words": 570
+      },
+      {
+        "issues": [],
+        "module": 0,
+        "tailWords": 0,
         "topic": "Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`)",
-        "words": 713
+        "words": 636
       },
       {
         "issues": [],
@@ -7688,110 +7677,81 @@
         "words": 846
       },
       {
-        "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 3,
-        "tailWords": 600,
+        "tailWords": 0,
         "topic": "Tema 1: Checked vs unchecked exceptions",
-        "words": 902
+        "words": 757
       },
       {
-        "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 3,
-        "tailWords": 540,
+        "tailWords": 0,
         "topic": "Tema 2: try-with-resources",
-        "words": 866
+        "words": 631
       },
       {
-        "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 3,
-        "tailWords": 584,
+        "tailWords": 0,
         "topic": "Tema 3: Excepciones personalizadas y no tragar excepciones",
-        "words": 903
+        "words": 654
       },
       {
-        "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 4,
-        "tailWords": 597,
+        "tailWords": 0,
         "topic": "Tema 1: Stream API — map, filter, reduce, collect",
-        "words": 905
+        "words": 585
       },
       {
-        "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 4,
-        "tailWords": 591,
+        "tailWords": 0,
         "topic": "Tema 2: Optional — evitar null explícitamente",
-        "words": 893
+        "words": 576
       },
       {
-        "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 4,
-        "tailWords": 562,
+        "tailWords": 0,
         "topic": "Tema 3: Streams paralelos y referencias a métodos",
-        "words": 879
+        "words": 605
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 4,
-        "tailWords": 428,
+        "tailWords": 0,
         "topic": "Tema 4: Stream Gatherers (Java 24)",
-        "words": 841
+        "words": 653
       },
       {
         "issues": [],
         "module": 5,
-        "tailWords": 111,
+        "tailWords": 0,
         "topic": "Tema 1: ExecutorService y gestión de hilos",
-        "words": 574
+        "words": 571
       },
       {
-        "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 5,
-        "tailWords": 519,
+        "tailWords": 0,
         "topic": "Tema 2: CompletableFuture",
-        "words": 809
+        "words": 541
       },
       {
-        "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 5,
-        "tailWords": 704,
+        "tailWords": 0,
         "topic": "Tema 3: Virtual threads",
-        "words": 1035
+        "words": 625
       },
       {
-        "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 5,
-        "tailWords": 630,
+        "tailWords": 0,
         "topic": "Tema 4: Condiciones de carrera y sincronización",
-        "words": 923
+        "words": 683
       },
       {
         "issues": [

@@ -128,7 +128,7 @@
       "topics": 101,
       "explanation": 101,
       "code": 101,
-      "visual": 34,
+      "visual": 33,
       "filePath": 101,
       "runCommand": 91,
       "expectedResult": 101,
@@ -14801,7 +14801,7 @@
         "criteria": {
           "explanation": true,
           "code": true,
-          "visual": true,
+          "visual": false,
           "filePath": true,
           "runCommand": true,
           "expectedResult": true,
@@ -14811,7 +14811,7 @@
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 16,
+          "rubricScore": 14,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
