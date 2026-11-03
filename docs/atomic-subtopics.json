@@ -51,10 +51,10 @@
     },
     "java": {
       "topics": 101,
-      "completeTopics": 85,
-      "topicsWith3to6Subtopics": 85,
-      "subtopics": 259,
-      "completeSubtopics": 259
+      "completeTopics": 86,
+      "topicsWith3to6Subtopics": 86,
+      "subtopics": 262,
+      "completeSubtopics": 262
     },
     "javascript": {
       "topics": 88,
@@ -7466,9 +7466,52 @@
       {
         "module": 19,
         "topic": "### Tema 4: Assertions y diseño por contrato",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "4.1",
+            "title": "#### Subtema 4.1: Proteger entradas públicas y revisar invariantes · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "4.2",
+            "title": "#### Subtema 4.2: Comprobar una postcondición · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "4.3",
+            "title": "#### Subtema 4.3: Ver el efecto de `-ea` · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 19,

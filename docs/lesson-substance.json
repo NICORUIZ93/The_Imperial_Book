@@ -1698,7 +1698,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "dd4cbd627d1fa47f8f68623d366a6f50cc996ddd817e0b56c829baa34fbc8559",
+    "fingerprint": "f2c16bcef7767e87cf65b4963671cd25e1e734343c97b6a3fdb344b731abf7c3",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -7534,7 +7534,7 @@
         "module": 19,
         "tailWords": 200,
         "topic": "Tema 4: Assertions y diseño por contrato",
-        "words": 1117
+        "words": 1294
       },
       {
         "issues": [],

@@ -602,7 +602,15 @@ flowchart LR
 
 #### Paso 4 · Demostración guiada desde cero
 
-##### Subtema 4.1: Proteger entradas públicas y revisar invariantes · 10-15 min
+#### Subtema 4.1: Proteger entradas públicas y revisar invariantes · 10 min
+**1. Contexto**
+
+El cargador mantiene un total de kilos; una actualización olvidada puede dejar el estado interno incoherente.
+
+**2. Hazlo tú**
+
+En una carpeta vacía, crea `Contratos.java`; ejecútalo sin opciones y con `-ea` para comparar qué verifica cada modo.
+
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
 
 ```bash
@@ -685,16 +693,25 @@ Rechazado: excede la capacidad de 30 kg
 
 Con y sin `-ea` el resultado es igual porque el código es correcto; la diferencia está en la primera línea.
 
-**Fallo deliberado:** En `bajarUltimo` borra la línea `total -= kilos;`. Sin `-ea` el programa imprime `Total: 22 kg` (incorrecto) sin ningún aviso. Con `java -ea Contratos.java` falla en el momento exacto del bug: `java.lang.AssertionError: total=22 no coincide con [12]`. Por eso las pruebas y el entorno de desarrollo deben correr con `-ea`.
+**Fallo deliberado:** En `bajarUltimo` borra la línea `total -= kilos;`. Sin `-ea` el programa imprime `Total: 22 kg` (incorrecto) sin ningún aviso. Con `java -ea Contratos.java` falla en el momento exacto del bug: `java.lang.AssertionError: total=22 no coincide con [12]`. Por eso las pruebas y el entorno de desarrollo deben correr con `-ea`. **Diagnóstico:** la diferencia entre `22` y la suma de la lista localiza el invariante roto; `-ea` activa la comprobación interna.
+
+**3. Entiende**
+
+Separa las reglas públicas que siempre deben comprobarse de las comprobaciones internas opcionales de la JVM.
+
+**Diagnóstico:** compara el estado antes y después; comprueba si la JVM ejecutó las assertions con `-ea`.
+
+**4. Cierra**
+
+Guarda la salida con y sin `-ea` y apunta qué condición debe cumplirse siempre.
 
 #### Paso 5 · Práctica guiada
 Agrega una postcondición a `subir`: después de subir, `total` debe ser mayor que antes. **Pista:** guarda `int antes = total;` al inicio y escribe `assert total > antes : ...` al final.
 
-##### Subtema 4.2: Comprobar una postcondición · 5-10 min
+#### Subtema 4.2: Comprobar una postcondición · 10 min
+**1. Contexto** cada llamada correcta a `subir` debe aumentar el total en los kilos pedidos.
 
-**Contexto:** cada llamada correcta a `subir` debe aumentar el total en los kilos pedidos.
-
-**Hazlo tú:** crea `java-dia-a-dia/Postcondicion.java`:
+**2. Hazlo tú** crea `java-dia-a-dia/Postcondicion.java`:
 
 ```java
 public class Postcondicion {
@@ -717,16 +734,21 @@ Ejecuta `cd java-dia-a-dia && java -ea Postcondicion.java`.
 
 **Fallo deliberado:** cambia `total += kilos` por `total += 0`. **Resultado del fallo:** `AssertionError: el total no aumentó como se pidió`. **Diagnóstico:** la postcondición compara el resultado con el compromiso anunciado por el método.
 
-**Entiende:** usa excepciones para entradas inválidas y assertions para detectar errores internos.
+**3. Entiende** usa excepciones para entradas inválidas y assertions para detectar errores internos.
+
+**Diagnóstico:** compara el estado antes y después; comprueba si la JVM ejecutó las assertions con `-ea`.
+
+**4. Cierra**
+
+Guarda la salida con y sin `-ea` y apunta qué condición debe cumplirse siempre.
 
 #### Paso 6 · Práctica independiente
 Configura tu herramienta de pruebas (Maven Surefire o Gradle) para ejecutar con `-ea` y comprueba que una invariante rota hace fallar una prueba.
 
-##### Subtema 4.3: Ver el efecto de `-ea` · 5-10 min
+#### Subtema 4.3: Ver el efecto de `-ea` · 10 min
+**1. Contexto** las assertions vienen apagadas si no se activa la opción de la JVM.
 
-**Contexto:** las assertions vienen apagadas si no se activa la opción de la JVM.
-
-**Hazlo tú:** crea `java-dia-a-dia/ActivarAssert.java`:
+**2. Hazlo tú** crea `java-dia-a-dia/ActivarAssert.java`:
 
 ```java
 public class ActivarAssert {
@@ -743,7 +765,13 @@ Ejecuta primero `cd java-dia-a-dia && java ActivarAssert.java`, luego `java -ea 
 
 **Fallo deliberado:** corre las pruebas sin `-ea`. **Resultado del fallo:** la invariante rota no detiene el programa. **Diagnóstico:** habilita assertions en la JVM de pruebas; no uses `assert` para validar la entrada del usuario.
 
-**Entiende:** `assert` es una alarma de desarrollo, no una barrera de seguridad siempre activa.
+**3. Entiende** `assert` es una alarma de desarrollo, no una barrera de seguridad siempre activa.
+
+**Diagnóstico:** compara el estado antes y después; comprueba si la JVM ejecutó las assertions con `-ea`.
+
+**4. Cierra**
+
+Guarda la salida con y sin `-ea` y apunta qué condición debe cumplirse siempre.
 
 #### Paso 7 · Cierre y evidencia
 Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque separar validación de entrada y verificación interna hace el código más honesto y encuentra bugs cerca de su causa.
