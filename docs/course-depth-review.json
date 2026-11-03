@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 202,
+    "topicsWithSignals": 203,
     "newLaboratories": 25
   },
   "priorities": {
@@ -7799,7 +7799,7 @@
       "file": "web/public/content/java/modulo-15.md",
       "line": 7,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7810,8 +7810,10 @@
       "module": 15,
       "title": "Tema 2: Gradle y builds reproducibles",
       "file": "web/public/content/java/modulo-15.md",
-      "line": 62,
-      "signals": [],
+      "line": 77,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -7821,9 +7823,9 @@
       "module": 15,
       "title": "Tema 3: Proyectos multi-módulo sin ciclos",
       "file": "web/public/content/java/modulo-15.md",
-      "line": 132,
+      "line": 147,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7834,9 +7836,9 @@
       "module": 15,
       "title": "Tema 4: JUnit 5, Mockito y assertions expresivas",
       "file": "web/public/content/java/modulo-15.md",
-      "line": 197,
+      "line": 217,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7847,9 +7849,9 @@
       "module": 15,
       "title": "Tema 5: Pruebas de integración reproducibles",
       "file": "web/public/content/java/modulo-15.md",
-      "line": 265,
+      "line": 289,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7860,9 +7862,9 @@
       "module": 15,
       "title": "Tema 6: SLF4J, Logback, MDC y logging estructurado",
       "file": "web/public/content/java/modulo-15.md",
-      "line": 330,
+      "line": 380,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

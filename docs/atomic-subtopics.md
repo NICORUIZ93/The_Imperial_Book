@@ -2,7 +2,7 @@
 
 > Auditoría estructural. Un encabezado o criterio detectado no demuestra que el ejemplo se haya ejecutado ni que la explicación sea pedagógicamente suficiente.
 
-Temas conformes a cuatro pasos: **81/1185**. Tracks inventariados: **14**.
+Temas conformes a cuatro pasos: **87/1185**. Tracks inventariados: **14**.
 
 | Track | Temas conformes | Temas inventariados | Subtemas detectados | Subtemas con estructura completa |
 |---|---:|---:|---:|---:|
@@ -13,7 +13,7 @@ Temas conformes a cuatro pasos: **81/1185**. Tracks inventariados: **14**.
 | flutter | 1 | 106 | 3 | 3 |
 | foundations | 0 | 99 | 0 | 0 |
 | ios | 0 | 56 | 0 | 0 |
-| java | 64 | 101 | 194 | 194 |
+| java | 70 | 101 | 212 | 212 |
 | javascript | 0 | 88 | 0 | 0 |
 | kotlin-multiplatform | 0 | 56 | 0 | 0 |
 | node | 2 | 83 | 6 | 6 |
@@ -704,12 +704,6 @@ Temas conformes a cuatro pasos: **81/1185**. Tracks inventariados: **14**.
 
 ### java
 
-- M15 ### Tema 1: Maven avanzado: tiene 0 subtemas
-- M15 ### Tema 2: Gradle y builds reproducibles: tiene 0 subtemas
-- M15 ### Tema 3: Proyectos multi-módulo sin ciclos: tiene 0 subtemas
-- M15 ### Tema 4: JUnit 5, Mockito y assertions expresivas: tiene 0 subtemas
-- M15 ### Tema 5: Pruebas de integración reproducibles: tiene 0 subtemas
-- M15 ### Tema 6: SLF4J, Logback, MDC y logging estructurado: tiene 0 subtemas
 - M16 ### Tema 1: Entidades y relaciones JPA: tiene 0 subtemas
 - M16 ### Tema 2: FetchType.LAZY, EAGER y el problema N+1: tiene 0 subtemas
 - M16 ### Tema 3: Relaciones uno a uno, muchos a muchos y herencia: tiene 0 subtemas

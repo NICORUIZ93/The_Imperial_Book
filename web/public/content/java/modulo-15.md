@@ -6,395 +6,455 @@ Este capítulo endurece el proyecto multi-módulo del Módulo 14 como producto m
 
 ### Tema 1: Maven avanzado
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás usar Maven Enforcer para bloquear un build con versiones divergentes de una dependencia. Prerrequisitos: JDK 25, Maven y un editor. Verifica java --version y mvn --version.
+**Por qué importa:** el reactor y el control de versiones permiten fallar el build antes de que un módulo publique dependencias incompatibles.
 
-#### Paso 2 · Contexto y caso real
-Dos módulos de un mismo proyecto multi-módulo declaran versiones distintas de Jackson sin que nadie lo note, hasta que en producción una clase serializa con un comportamiento y otra con otro, según qué versión ganó la resolución de dependencias transitivas de Maven.
+#### Subtema 1.1: Construye el reactor Maven · 10 min
 
-#### Paso 3 · Teoría, modelo mental y analogía
-`dependencyManagement` fija la versión que usarán los módulos sin añadir la dependencia por sí solo; un BOM coordina familias compatibles; Maven Enforcer puede exigir versión de JDK y prohibir dependencias divergentes, deteniendo el build antes de producir un artefacto aparentemente correcto. La analogía: un catálogo de compras corporativo que fija qué versión exacta de cada proveedor está autorizada, en vez de que cada departamento negocie la suya por separado.
+**1. Contexto**
 
-#### Paso 4 · Demostración guiada desde cero
-**Crea** `app/src/main/java/academia/App.java` con un método `main` que imprime `ObjectMapper.class.getPackage().getImplementationVersion()`, para confirmar en tiempo de ejecución cuál versión de Jackson ganó la resolución transitiva antes de que Enforcer la bloquee.
+`app` y `domain` deben compilarse en un orden que Maven pueda resolver.
 
-Desde la raíz del repositorio copia el ejemplo independiente con sus tres POM completos:
-```bash
-cp -R examples/java-maven ejemplo-maven-enforcer
-cd ejemplo-maven-enforcer
-mvn -pl app -am clean verify
-```
-`pom.xml` declara el reactor y Enforcer; `domain/pom.xml` depende de Jackson y `app/pom.xml` depende tanto de domain como de Jackson. Así existen dos caminos hacia EL MISMO artefacto en el árbol de app. La propiedad común `jackson.version` fija 2.19.2; `domain.jackson` hereda ese valor y permite introducir el conflicto controlado.
+**2. Hazlo tú**
 
-**Resultado esperado:** `BUILD SUCCESS`. Crea el wrapper solo si deseas usarlo después: `mvn wrapper:wrapper -Dmaven=3.9.11`. Los comandos del laboratorio usan `mvn`, disponible como prerrequisito.
+Desde la raíz del repositorio copia el ejemplo completo, incluida `examples/java-maven/pom.xml`: `cp -R examples/java-maven ejemplo-maven-avanzado`, entra con `cd ejemplo-maven-avanzado` y ejecuta `mvn -pl app -am clean verify`.
 
-#### Paso 5 · Práctica guiada
-Pista: provoca el fallo deliberado con una versión diferente en el camino transitivo:
-```bash
-mvn -pl app -am verify -Ddomain.jackson=2.18.3
-```
-**Resultado esperado:** Enforcer falla en app con `Dependency convergence error`, mostrando el camino directo a 2.19.2 y el transitivo por domain a 2.18.3. El conflicto está en un mismo árbol, no simplemente en dos módulos independientes. Corrige retirando la sobreescritura y ejecuta otra vez `mvn -pl app -am verify`; ambas ramas vuelven a la propiedad común.
+**Resultado esperado:** los módulos se construyen en orden y `app` puede usar `domain`.
 
-#### Paso 6 · Práctica independiente
-Ejecuta `mvn validate '-Drequired.java=[99,)'` para provocar un requisito imposible con tu JDK 25; restaura el valor por defecto. No uses `[22,)` para hacer fallar JDK 25, porque sí lo cumple. Genera `mvn help:effective-pom` y explica la versión resultante. Como extensión, sustituye la propiedad compartida por un BOM en dependencyManagement y elimina las versiones explícitas de los hijos antes de comprobar su efecto.
+**Fallo deliberado:** ejecuta `mvn -pl app verify` sin instalar `domain`. **Diagnóstico:** usa `-am` para incluir dependencias internas del reactor.
 
-#### Paso 7 · Cierre y evidencia
-Guarda el fallo de Enforcer por versiones divergentes, la corrección con la versión común, y el fallo por versión de JDK incompatible; como siguiente paso compara el mismo problema resuelto con Gradle. Errores comunes: usar perfiles de Maven para secretos o reglas de negocio en vez de solo diferencias del proceso de build, y mantener dos builds de producción (Maven y Gradle) en paralelo sin necesidad. Fuentes oficiales: https://maven.apache.org/enforcer/maven-enforcer-plugin/.
-**¿Por qué es importante?** Un build empresarial debe detectar versiones divergentes y entornos inválidos antes de producir un artefacto aparentemente correcto.
-**Evidencia de aprendizaje:** entrega el fallo de Enforcer, su corrección con la versión común y el fallo por JDK incompatible.
-**Conceptos clave:** reactor, `dependencyManagement`, BOM, perfiles, Enforcer y wrapper.
+**3. Entiende**
 
-Maven distingue declarar una versión administrada de incorporar una dependencia: `dependencyManagement` fija la versión que usarán los módulos cuando declaren el artefacto, pero no lo añade al classpath. Un BOM coordina familias compatibles. El reactor calcula el orden de construcción entre módulos; `mvn -pl api -am verify` construye el módulo elegido y sus dependencias internas.
+`-pl` selecciona módulos; `-am` añade los proyectos que necesitan para compilar.
 
-Los perfiles no deben convertir el build en una configuración secreta por ambiente. Úsalos para diferencias del proceso de construcción, no para contraseñas ni reglas de negocio. Maven Enforcer puede exigir JDK, prohibir dependencias duplicadas o vulnerables y detener un entorno incompatible antes de compilar.
+**4. Cierra**
 
-> **Equivalente en Gradle:** lo que Enforcer hace con reglas, Gradle lo logra con *resolution strategies* (`configurations.all { resolutionStrategy.failOnVersionConflict() }`), *version catalogs* (`libs.versions.toml`) para versiones centralizadas, y *platforms* (`platform("grupo:bom:version")`) como equivalente del BOM. El `java { toolchain { languageVersion.set(JavaLanguageVersion.of(25)) } }` exige una versión de JDK, igual que la regla `requireJavaVersion` de Enforcer. Este tema usa Maven por ser el estándar empresarial de este tipo de control; la tabla de equivalencias general está en el Módulo 8, Tema 4.
+Guarda el resumen del reactor.
 
-**¿Por qué es importante?** Un build empresarial debe detectar versiones divergentes y entornos inválidos antes de producir un artefacto aparentemente correcto.
+#### Subtema 1.2: Detecta versiones divergentes · 10 min
 
-#### Aplicación práctica
-Usa los POM de `examples/java-maven` como referencia. Conserva las salidas del reactor alineado, el conflicto transitivo y el requisito de Java rechazado. La comparación con Gradle es un laboratorio: no obliga a mantener dos builds de producción.
+**1. Contexto**
 
-Este mismo Enforcer es el que protegería al Proyecto integrador (Módulo 13) de un despliegue con dependencias silenciosamente divergentes entre módulos.
+Un módulo puede recibir Jackson por dependencia directa y transitiva en versiones distintas.
 
-**Cuándo no usarlo:** en un proyecto de un solo módulo sin riesgo real de divergencia de versiones, Enforcer con reglas estrictas es ceremonia adicional sin beneficio proporcional.
+**2. Hazlo tú**
+
+En `ejemplo-maven-avanzado/domain/pom.xml` y `ejemplo-maven-avanzado/app/pom.xml`, revisa la propiedad Jackson; en la copia ejecuta `mvn -pl app -am verify -Ddomain.jackson=2.18.3`. Después restaura la propiedad compartida y corre `mvn -pl app -am clean verify`.
+
+**Resultado esperado:** Enforcer rechaza la convergencia con el override y el build pasa al restaurar la versión administrada.
+
+**Fallo deliberado:** excluye la regla de convergencia para “arreglar” el build. **Diagnóstico:** revisa qué versión carga cada módulo; no ocultes la divergencia.
+
+**3. Entiende**
+
+`dependencyManagement` administra versiones, pero no agrega la dependencia por sí solo. Enforcer aplica la regla a cada build.
+
+**4. Cierra**
+
+Guarda ambos resultados y el árbol de dependencia. Fuente: [Maven Enforcer](https://maven.apache.org/enforcer/maven-enforcer-plugin/).
+
+#### Subtema 1.3: Bloquea un JDK incompatible · 10 min
+
+**1. Contexto**
+
+CI debe rechazar una versión de Java fuera del rango soportado antes de crear un artefacto.
+
+**2. Hazlo tú**
+
+En `ejemplo-maven-avanzado/pom.xml` revisa la regla `requireJavaVersion`; ejecuta `mvn validate '-Drequired.java=[99,)'` y luego `mvn validate` con el rango normal.
+
+**Resultado esperado:** falla el requisito artificial y vuelve a pasar al restaurarlo.
+
+**Fallo deliberado:** usa `[22,)` esperando fallar con Java 25. **Diagnóstico:** ese rango sí incluye Java 25; utiliza un rango que excluya el JDK activo.
+
+**3. Entiende**
+
+El requisito del runtime de Maven y `maven.compiler.release` cumplen funciones distintas: ejecutar Maven y compilar el código.
+
+**4. Cierra**
+
+Conserva la salida de ambas validaciones y anota el rango admitido.
 
 ### Tema 2: Gradle y builds reproducibles
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás producir un JAR con hash idéntico en dos builds sucesivos usando Gradle. Prerrequisitos: JDK 25, Gradle y un editor. Verifica java --version.
+**Por qué importa:** un mismo commit debe producir el mismo artefacto y usar dependencias verificables en una laptop y en CI.
 
-#### Paso 2 · Contexto y caso real
-Un pipeline de CI reconstruye el mismo commit dos veces (una en la laptop de un desarrollador, otra en el runner de CI) y obtiene JARs con hashes distintos, porque el manifest incluye un timestamp de compilación que cambia en cada build, dificultando verificar que el artefacto desplegado es realmente el que se probó.
+#### Subtema 2.1: Genera y usa el Gradle Wrapper · 10 min
 
-#### Paso 3 · Teoría, modelo mental y analogía
-El wrapper fija la versión de Gradle; toolchains selecciona el JDK de compilación; el bloqueo de dependencias registra versiones resueltas. Un build reproducible evita timestamps u orden no determinista. La analogía: una receta de cocina que produce exactamente el mismo plato sin importar quién la siga, porque cada ingrediente y cada paso están fijados sin ambigüedad.
+**1. Contexto**
 
-#### Paso 4 · Demostración guiada desde cero
-Requisitos precisos: JDK 25 tanto para ejecutar Gradle como para compilar, y Gradle 9.1.0 para generar el wrapper. Gradle 8.10 no puede ejecutarse con JDK 25. Si usas otro JDK para el proceso Gradle, verifica primero su matriz de compatibilidad; la toolchain no cambia esa JVM.
+El build no debe depender de la versión Gradle que cada persona instaló globalmente.
 
-```bash
-cp -R examples/java-gradle ejemplo-gradle-reproducible
-cd ejemplo-gradle-reproducible
-gradle --version
-gradle wrapper --gradle-version 9.1.0
-./gradlew clean build
-shasum -a 256 build/libs/*.jar
-./gradlew clean build
-shasum -a 256 build/libs/*.jar
-```
-Crea o inspecciona `build.gradle.kts`:
-```kotlin
-plugins { java }
-version = "1.0.0"
-java { toolchain { languageVersion = JavaLanguageVersion.of(25) } }
-tasks.withType<Jar>().configureEach {
-    isPreserveFileTimestamps = false
-    isReproducibleFileOrder = true
-}
-```
-**Resultado esperado:** los hashes de ambos JAR coinciden. `shasum` está disponible en macOS; en Linux también puedes usar `sha256sum`. No dependemos de un Gradle global distinto después de generar el wrapper. Fuente oficial: https://docs.gradle.org/9.1.0/release-notes.html.
+**2. Hazlo tú**
 
-#### Paso 5 · Práctica guiada
-Pista: agrega deliberadamente la hora actual (`System.currentTimeMillis()`) al manifest del JAR para provocar hashes distintos entre builds sucesivos; compara los `sha256sum`. Resultado esperado: quitar la hora del manifest (o usar un valor de versión estable) hace que ambos hashes coincidan.
-#### Paso 6 · Práctica independiente
-Ejecuta `./gradlew --write-verification-metadata sha256 help` para fijar checksums de dependencias, y `./gradlew build --configuration-cache`; si aparece una advertencia de lectura no declarada, identifica la tarea responsable y corrígela.
+Desde la raíz copia `examples/java-gradle/build.gradle.kts` y los otros archivos de `examples/java-gradle` a `ejemplo-gradle-reproducible`, entra a la carpeta y corre `gradle wrapper --gradle-version 9.1.0`, `./gradlew --version` y `./gradlew clean build`.
 
-#### Paso 7 · Cierre y evidencia
-Guarda ambos hashes SHA-256 (antes y después de quitar el timestamp), y el archivo de verification metadata generado; como siguiente paso organiza el proyecto en módulos sin ciclos. Errores comunes: subir credenciales a `gradle.properties`, y asumir que la caché de build acelera tareas no deterministas. Fuentes oficiales: https://docs.gradle.org/current/userguide/build_cache.html.
-**¿Por qué es importante?** El mismo commit debe producir el mismo contenido y dependencias tanto en una laptop limpia como en CI.
-**Evidencia de aprendizaje:** entrega los hashes comparados antes/después de eliminar el timestamp del manifest.
-**Conceptos clave:** wrapper, toolchains, dependency locking, verification metadata, build cache y configuration cache.
+**Resultado esperado:** el wrapper informa Gradle 9.1.0 y el build ejecuta con esa versión.
 
-El wrapper fija la versión de Gradle y toolchains selecciona el JDK de compilación. El bloqueo de dependencias registra versiones resueltas; la verificación valida checksum o firma para detectar artefactos modificados. Un build reproducible también evita timestamps o orden no determinista dentro de archivos y separa entradas/salidas de cada tarea.
+**Fallo deliberado:** ejecuta `gradle build` después de cambiar la versión global. **Diagnóstico:** usa `./gradlew` para el proyecto y evita depender de la instalación personal.
 
-La caché acelera solo tareas deterministas. Una tarea que consulta la hora o una variable no declarada puede devolver un resultado viejo. `--configuration-cache` exige que la configuración no conserve objetos no serializables ni lea estado externo arbitrariamente.
+**3. Entiende**
 
-**¿Por qué es importante?** El mismo commit debe producir el mismo contenido y dependencias tanto en una laptop limpia como en CI.
+El wrapper fija Gradle; la toolchain define el JDK usado para compilar. El JDK que ejecuta Gradle también debe ser compatible.
 
-#### Aplicación práctica
+**4. Cierra**
 
-En `gradle/wrapper/gradle-wrapper.properties` fija la distribución; en `build.gradle.kts` declara toolchain Java 25 y activa JAR reproducible:
+Guarda salida del wrapper y resultado del build.
 
-```kotlin
-java { toolchain { languageVersion = JavaLanguageVersion.of(25) } }
-tasks.withType<Jar> { isPreserveFileTimestamps = false; isReproducibleFileOrder = true }
-```
+#### Subtema 2.2: Repite el build y compara artefactos · 10 min
 
-Ejecuta `./gradlew dependencies --write-locks`, `./gradlew --write-verification-metadata sha256 help` y dos veces `./gradlew clean build --build-cache`. Compara `sha256sum` del JAR: el resultado esperado es idéntico si entradas y entorno contractual no cambian.
+**1. Contexto**
 
-Agrega la hora actual al manifest y observa hashes distintos; elimínala o recibe un valor de versión estable. Como modificación, ejecuta `./gradlew build --configuration-cache` y corrige lecturas no declaradas. No subas credenciales a propiedades de Gradle: el proyecto recibe secretos únicamente en runtime.
+Timestamps o contenido variable en el JAR hacen difícil verificar qué artefacto se desplegó.
 
-Un build reproducible es lo que permite firmar y auditar con confianza el artefacto final del Proyecto integrador (Módulo 13).
+**2. Hazlo tú**
 
-**Cuándo no usarlo:** para un prototipo interno que nunca se despliega ni se audita, perseguir reproducibilidad bit a bit del JAR es esfuerzo desproporcionado.
+En `ejemplo-gradle-reproducible/build.gradle.kts` comprueba que `isPreserveFileTimestamps = false` y `isReproducibleFileOrder = true`. Ejecuta dos veces `./gradlew clean build`; compara `shasum -a 256 build/libs/*.jar` en macOS o `sha256sum build/libs/*.jar` en Linux.
+
+**Resultado esperado:** ambos hashes coinciden para la misma fuente y configuración.
+
+**Fallo deliberado:** añade la hora actual al manifest y repite. **Diagnóstico:** elimina el timestamp o sustitúyelo por un valor estable.
+
+**3. Entiende**
+
+Reproducibilidad depende de entradas declaradas y pasos deterministas, no solo de activar la caché.
+
+**4. Cierra**
+
+Guarda hashes antes y después de quitar el dato variable.
+
+#### Subtema 2.3: Verifica dependencias descargadas · 10 min
+
+**1. Contexto**
+
+Una coordenada fija no detecta por sí sola que el archivo descargado cambió.
+
+**2. Hazlo tú**
+
+En `ejemplo-gradle-reproducible`, ejecuta `./gradlew --write-verification-metadata sha256 help`, conserva `gradle/verification-metadata.xml` y luego corre `./gradlew clean build`.
+
+**Resultado esperado:** el build compara checksums declarados con los artefactos resueltos.
+
+**Fallo deliberado:** edita un checksum en `gradle/verification-metadata.xml`. **Diagnóstico:** la verificación falla; restaura el valor obtenido de una fuente confiable.
+
+**3. Entiende**
+
+Dependency locking registra versiones; verification metadata controla integridad de los bytes. No subas credenciales al repositorio.
+
+**4. Cierra**
+
+Guarda el archivo generado y explica qué riesgo cubre cada mecanismo. Fuente: [Gradle dependency verification](https://docs.gradle.org/current/userguide/dependency_verification.html).
 
 ### Tema 3: Proyectos multi-módulo sin ciclos
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás escribir una prueba ArchUnit que impida que `domain` dependa de `infrastructure`. Prerrequisitos: JDK 25, Gradle y un editor. Verifica java --version.
+**Por qué importa:** límites protegidos evitan que reglas de negocio dependan directamente de bases de datos y frameworks.
 
-#### Paso 2 · Contexto y caso real
-Un desarrollador nuevo, bajo presión de tiempo, importa una clase de `infrastructure` (un cliente HTTP) directamente en `domain` para resolver rápido un caso de uso; nadie lo nota en el code review y la arquitectura por capas empieza a erosionarse silenciosamente.
+#### Subtema 3.1: Escribe una regla de dependencias con ArchUnit · 10 min
 
-#### Paso 3 · Teoría, modelo mental y analogía
-`domain` no conoce frameworks; `application` depende de domain; adaptadores implementan puertos; `api` ensambla. `api(project(...))` expone tipos a consumidores, mientras `implementation` mantiene la dependencia interna oculta. La analogía: un organigrama donde cada departamento solo puede solicitar recursos de los departamentos que tiene explícitamente autorizados, nunca al revés.
+**1. Contexto**
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
-```bash
-mkdir ejemplo-archunit-capas
-cd ejemplo-archunit-capas
-mkdir -p domain/src/main/java application/src/main/java infrastructure/src/main/java api/src/main/java architecture-tests/src/test/java
-```
+`domain` no debe importar clases de `infrastructure`.
 
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+**2. Hazlo tú**
 
-```bash
-# Maven
-mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-cd app && mvn test
-# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
-```
+En `build.gradle.kts` añade `testImplementation("com.tngtech.archunit:archunit-junit6:1.5.1")` a `build.gradle.kts`. Crea `src/test/java/architecture/DependencyRulesTest.java` con un test JUnit 6 que importe `new ClassFileImporter().importPackages("com.academia")` y aplique `noClasses().that().resideInAPackage("..domain..").should().dependOnClassesThat().resideInAPackage("..infrastructure..").check(clases)`. Ejecuta `./gradlew test`.
 
-En `settings.gradle.kts` incluye los cuatro módulos. Crea `architecture-tests/src/test/java/academia/arquitectura/DependencyRulesTest.java` con ArchUnit: una regla `noClasses().that().resideInAPackage("..domain..").should().dependOnClassesThat().resideInAPackage("..infrastructure..")`.
+**Resultado esperado:** la regla pasa mientras el dominio no importe infraestructura.
 
-#### Paso 5 · Práctica guiada
-Pista: importa deliberadamente una clase de `infrastructure` desde `domain` para provocar que la prueba ArchUnit falle con un mensaje que señala exactamente la clase y el paquete infractor. Resultado esperado: eliminar el import prohibido hace que la prueba de arquitectura vuelva a pasar.
-#### Paso 6 · Práctica independiente
-Ejecuta `./gradlew projects` y `./gradlew build`, confirma que el grafo de dependencias coincide con el diagrama esperado, y agrega una segunda regla ArchUnit que impida un ciclo entre `application` e `infrastructure`.
+**Fallo deliberado:** añade `import com.academia.infrastructure.HttpClient` a una clase en domain. **Diagnóstico:** el test señala origen y destino de la dependencia prohibida.
 
-#### Paso 7 · Cierre y evidencia
-Guarda el fallo de ArchUnit provocado por el import prohibido, su corrección, y la salida de `./gradlew projects` confirmando el grafo sin ciclos; como siguiente paso escribe pruebas unitarias con JUnit y Mockito. Errores comunes: convertir cada paquete en un módulo sin que el límite lo justifique, y dejar convention plugins que expresan decisiones inestables. Fuentes oficiales: https://www.archunit.org/.
-**¿Por qué es importante?** Un ciclo entre módulos revela responsabilidades mal ubicadas y dificulta pruebas, despliegue y evolución independiente.
-**Evidencia de aprendizaje:** entrega el fallo de ArchUnit, su corrección y el grafo de módulos verificado.
-**Conceptos clave:** API frente a implementación, dirección de dependencia, convenciones y pruebas de arquitectura.
+**3. Entiende**
 
-Separar módulos solo aporta valor cuando cada límite tiene una responsabilidad y una API pequeña. `domain` no conoce frameworks; `application` depende de domain; adaptadores implementan puertos; `api` ensambla. `api(project(...))` expone tipos a consumidores, mientras `implementation` mantiene la dependencia interna.
+ArchUnit importa bytecode compilado y prueba reglas arquitectónicas con la misma suite Java.
 
-Los convention plugins evitan copiar veinte archivos de build, pero deben expresar decisiones comunes estables. Un catálogo de versiones centraliza coordenadas sin convertir cada librería en dependencia global.
+**4. Cierra**
 
-```mermaid
-flowchart LR
-    API["api"] --> APP["application"]
-    API --> INFRA["infrastructure"]
-    INFRA --> APP
-    APP --> DOMAIN["domain"]
-```
+Guarda el fallo y el test de arquitectura. Fuente: [ArchUnit](https://www.archunit.org/getting-started).
 
-**¿Por qué es importante?** Un ciclo entre módulos revela responsabilidades mal ubicadas y dificulta pruebas, despliegue y evolución independiente.
+#### Subtema 3.2: Detecta ciclos entre paquetes · 10 min
 
-#### Aplicación práctica
+**1. Contexto**
 
-En `settings.gradle.kts` incluye los cuatro módulos y crea `build-logic/src/main/kotlin/academia.java-conventions.gradle.kts`. Ejecuta `./gradlew projects` y `./gradlew build`; el grafo debe coincidir con Mermaid. Intenta importar una clase de infraestructura desde domain: el error de compilación esperado protege la dirección.
+`application` e `infrastructure` pueden empezar a depender uno del otro con cambios pequeños.
 
-Como modificación, mueve el contrato requerido a application y haz que infraestructura lo implemente. Añade una prueba ArchUnit en `architecture-tests/src/test/java/.../DependencyRulesTest.java`. No conviertas cada paquete en módulo: el costo solo se justifica cuando el límite necesita propiedad y dependencias distintas.
+**2. Hazlo tú**
 
-Esta es la misma estructura de módulos (domain/application/infrastructure/api) que organiza el Proyecto integrador (Módulo 13).
+En `src/test/java/architecture/DependencyRulesTest.java` importa `slices()` de ArchUnit y añade `slices().matching("com.academia.(*)..").should().beFreeOfCycles()`. Ejecuta `./gradlew test`.
 
-**Cuándo no usarlo:** en un proyecto pequeño de un solo equipo, dividir en cuatro módulos con reglas ArchUnit es sobre-ingeniería; paquetes bien organizados dentro de un módulo bastan hasta que el proyecto crece.
+**Resultado esperado:** el grafo sin ciclos mantiene la prueba en verde.
+
+**Fallo deliberado:** añade una dependencia inversa de prueba y vuelve a correr. **Diagnóstico:** extrae el contrato común a una capa interior; no “arregles” el ciclo ignorándolo.
+
+**3. Entiende**
+
+Un ciclo elimina un orden claro para compilar y cambiar módulos de forma independiente.
+
+**4. Cierra**
+
+Guarda el grafo antes y después de romper el ciclo.
+
+#### Subtema 3.3: Comprueba el grafo del build · 10 min
+
+**1. Contexto**
+
+El grafo de dependencias del build debe coincidir con el límite que documenta el equipo.
+
+**2. Hazlo tú**
+
+En `src/main/java/com/academia/Main.java` y la raíz del proyecto ejecuta `./gradlew projects` y `./gradlew dependencies --configuration runtimeClasspath`; compara la salida con el árbol `api → application → domain` y adaptadores que implementan contratos interiores.
+
+**Resultado esperado:** cada dependencia puede explicarse desde el grafo, y no aparece un ciclo.
+
+**Fallo deliberado:** agrega una dependencia runtime a domain solo porque el IDE la resuelve desde otro módulo. **Diagnóstico:** revisa la configuración del módulo; no confundas classpath del IDE con API permitida.
+
+**3. Entiende**
+
+`api` expone tipos a consumidores; `implementation` conserva dependencias internas.
+
+**4. Cierra**
+
+Guarda `projects` y una decisión de arquitectura. Fuente: [ArchUnit User Guide](https://www.archunit.org/userguide/html/000_Index.html).
 
 ### Tema 4: JUnit 5, Mockito y assertions expresivas
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás escribir un test que combine un fake de repositorio y un mock de notificación para un caso de uso real. Prerrequisitos: JDK 25, Gradle y un editor. Verifica java --version.
+**Por qué importa:** las pruebas detectan regresiones del comportamiento sin acoplar la suite a cada llamada interna.
 
-#### Paso 2 · Contexto y caso real
-Un caso de uso `ConfirmarEntrega` debe confirmar la entrega en el repositorio y notificar al cliente; probarlo con una base de datos real y un servicio de notificación real sería lento y frágil, pero probarlo mockeando absolutamente todo (incluida la lógica de dominio) no demostraría nada real.
+**Preparación:** usa JUnit `6.0.2` y Surefire/Gradle JUnit Platform como en el Módulo 9; para Mockito usa `mockito-junit-jupiter:5.24.0`. Consulta las [versiones de Mockito](https://github.com/mockito/mockito/releases).
 
-#### Paso 3 · Teoría, modelo mental y analogía
-JUnit ejecuta pruebas; Mockito reemplaza colaboradores; AssertJ expresa resultados legibles. Prefiere objetos reales o fakes simples para repositorios, y mocks solo cuando la interacción (que se llamó a algo) forma parte del contrato observable. La analogía: un ensayo de teatro donde el protagonista (el caso de uso) es real, el escenario (el repositorio) es una maqueta funcional, y solo se verifica que ciertas señales específicas (la notificación) efectivamente se dispararon.
+#### Subtema 4.1: Prueba un caso de uso real · 10 min
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
-```bash
-mkdir ejemplo-confirmar-entrega
-cd ejemplo-confirmar-entrega
-mkdir -p application/src/main/java application/src/test/java
-```
+**1. Contexto**
 
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+`ConfirmarEntrega` guarda el nuevo estado y publica una notificación.
 
-```bash
-# Maven
-mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-cd app && mvn test
-# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
-```
+**2. Hazlo tú**
 
-Crea `application/src/test/java/academia/application/ConfirmarEntregaTest.java` con un fake en memoria de `RepositorioGuias` (una `Map` simple) y un `@Mock PuertoNotificacion notificacion`. Escribe `@Test void confirma_y_notifica()` que llame `casoDeUso.confirmar("GUIA-1")`, verifique `assertThat(resultado.estado()).isEqualTo(ENTREGADA)` y `verify(notificacion).enviar(any(EventoEntrega.class))`. Ejecuta `./gradlew :application:test`.
+Crea `src/test/java/ConfirmarEntregaTest.java` con un fake de `RepositorioGuias` en memoria y un mock `PuertoNotificacion`. Ejecuta el caso `confirmar("RT-1")`; comprueba estado `ENTREGADA` y `verify(notificacion).enviar(any(EventoEntrega.class))`. Ejecuta `./gradlew test`.
 
-#### Paso 5 · Práctica guiada
-Pista: elimina deliberadamente la llamada real al fake de repositorio dentro del caso de uso (deja el método vacío) para provocar que el test falle en la aserción de estado, no en la de notificación; observa cuál aserción específica detecta la regresión. Resultado esperado: restaurar la llamada al repositorio corrige el fallo.
+**Resultado esperado:** la regla y la colaboración importante se prueban sin base real ni HTTP.
 
-#### Paso 6 · Práctica independiente
-Agrega `verifyNoMoreInteractions(notificacion)` después del `verify` y observa cómo bloquea un refactor inocuo que agrega una segunda notificación legítima; documenta cuándo esa aserción estricta vale la pena y cuándo no.
+**Fallo deliberado:** mockea también el caso de uso. **Diagnóstico:** ya no se ejecuta la lógica que la prueba debía proteger; conserva real la clase bajo prueba.
 
-#### Paso 7 · Cierre y evidencia
-Guarda el test completo, el fallo provocado al vaciar el repositorio y su corrección, y el análisis de `verifyNoMoreInteractions`; como siguiente paso escribe una prueba de integración real con Testcontainers. Errores comunes: mockear la clase bajo prueba en vez de sus dependencias, y verificar cada llamada privada acoplando la suite a la implementación. Fuentes oficiales: https://junit.org/junit5/docs/current/user-guide/ y https://assertj.github.io/doc/.
-**¿Por qué es importante?** Una suite rápida pierde valor si permite falsos positivos o se rompe ante cualquier refactor interno.
-**Evidencia de aprendizaje:** entrega el test, el fallo detectado por la aserción de estado y el análisis de `verifyNoMoreInteractions`.
-**Conceptos clave:** pirámide de pruebas, extensión, fakes, mocks, captors y aserciones de dominio.
+**3. Entiende**
 
-JUnit ejecuta pruebas; Mockito reemplaza colaboradores; AssertJ expresa resultados. Un mock no demuestra que SQL, JSON o HTTP funcionen. Prefiere objetos reales para valores y fakes para repositorios sencillos; usa mocks cuando la interacción forma parte del contrato o provocar el caso real resulta lento o inseguro.
+Un fake sencillo es útil para datos; un mock demuestra una interacción solo si esta es parte del contrato.
 
-Las pruebas deben observar comportamiento. Verificar cada llamada privada acopla la suite a la implementación. Un `ArgumentCaptor` ayuda a inspeccionar un mensaje enviado, pero una aserción sobre el resultado suele ser más estable.
+**4. Cierra**
 
-**¿Por qué es importante?** Una suite rápida pierde valor si permite falsos positivos o se rompe ante cualquier refactor interno.
+Conserva test, fallo y salida de Gradle.
 
-#### Aplicación práctica
+#### Subtema 4.2: Expresa el resultado sin atarte a llamadas internas · 10 min
 
-Crea `application/src/test/java/com/academia/application/ConfirmarEntregaTest.java`. Usa un fake de repositorio y un mock de `PuertoNotificacion`:
+**1. Contexto**
 
-```java
-@Test void confirma_y_notifica() {
-    var resultado = casoDeUso.confirmar("GUIA-1");
-    assertThat(resultado.estado()).isEqualTo(ENTREGADA);
-    verify(notificacion).enviar(any(EventoEntrega.class));
-}
-```
+`verifyNoMoreInteractions` puede hacer fallar una prueba aunque el comportamiento visible no haya cambiado.
 
-Ejecuta `./gradlew :application:test`; deben pasar casos normal, duplicado y fallo de notificación definido por el contrato.
+**2. Hazlo tú**
 
-Elimina la llamada real al repositorio y observa qué prueba detecta la regresión. Añade luego `verifyNoMoreInteractions` indiscriminadamente y comprueba cómo bloquea un refactor inocuo; elimínalo salvo que llamadas extra sean un riesgo real. Como modificación, crea una aserción `assertThat(entrega).isEntregada()` que muestre contexto de dominio al fallar.
+En `src/test/java/ConfirmarEntregaTest.java`, añade `verifyNoMoreInteractions(notificacion)`, ejecuta `./gradlew test`, agrega una segunda llamada legítima a `notificacion` y vuelve a correr.
 
-Esta suite es la que protege el caso de uso central del Proyecto integrador (Módulo 13) en cada cambio.
+**Resultado esperado:** observas que una regla excesivamente estricta acopla el test a la implementación.
 
-**Cuándo no usarlo:** mockear un objeto de valor simple sin comportamiento (un `record` inmutable) es más ceremonia que usar directamente una instancia real.
+**Fallo deliberado:** elimina toda verificación de estado y deja solo el mock. **Diagnóstico:** prueba también el resultado de dominio para detectar una regresión real.
+
+**3. Entiende**
+
+Assertions de dominio suelen sobrevivir a refactors mejor que verificar cada interacción.
+
+**4. Cierra**
+
+Anota cuándo una llamada extra sería un error observable para el usuario.
+
+#### Subtema 4.3: Aísla una excepción del colaborador · 10 min
+
+**1. Contexto**
+
+La notificación puede fallar después de guardar la entrega; el sistema necesita una política explícita.
+
+**2. Hazlo tú**
+
+En `src/test/java/ConfirmarEntregaTest.java`, configura `doThrow(new IllegalStateException("sin conexión")).when(notificacion).enviar(any())`; ejecuta el caso y comprueba si la operación devuelve error, reintenta o deja un evento pendiente según el contrato elegido. Ejecuta `./gradlew test`.
+
+**Resultado esperado:** el test fija qué ocurre si el servicio de avisos falla.
+
+**Fallo deliberado:** atrapa cualquier excepción y reporta éxito. **Diagnóstico:** decide si la entrega quedó confirmada y preserva el fallo de notificación de forma observable.
+
+**3. Entiende**
+
+Mocks ayudan a reproducir fallos; no prueban transporte real ni persistencia atómica.
+
+**4. Cierra**
+
+Guarda el contrato y la prueba de error. Fuente: [JUnit User Guide](https://docs.junit.org/current/user-guide/).
 
 ### Tema 5: Pruebas de integración reproducibles
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás probar un repositorio contra una base de datos PostgreSQL real usando Testcontainers. Prerrequisitos: JDK 25, Gradle, Docker en ejecución y un editor. Verifica java --version y docker --version.
+**Por qué importa:** la base real puede interpretar tipos, SQL y transacciones distinto a un mock.
 
-#### Paso 2 · Contexto y caso real
-Un repositorio probado únicamente con mocks de método nunca detecta que una migración de Flyway tiene un nombre de columna mal escrito, o que un tipo `NUMERIC` de PostgreSQL redondea de forma distinta a como el desarrollador asumió al leerlo como `double`.
+**Preparación:** Testcontainers `2.0.5`; añade `testcontainers-junit-jupiter`, `testcontainers-postgresql`, pgJDBC `42.7.14` y JUnit a la configuración de test. Imagen fijada: `postgres:17.11-alpine3.24`. En `build.gradle.kts` crea el source set `integrationTest`, extiende su configuración desde `testImplementation` y registra su tarea:
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Una integración ejercita al menos dos componentes reales y el protocolo entre ellos. Testcontainers levanta una versión explícita de PostgreSQL en Docker; una migración crea el esquema real usado en producción. La analogía: probar un puente construyendo una sección real y pasando peso real sobre ella, en vez de solo calcular en papel que debería soportarlo.
+```kotlin
+val integrationTest by sourceSets.creating {
+    java.srcDir("src/integrationTest/java")
+    resources.srcDir("src/integrationTest/resources")
+    compileClasspath += sourceSets.main.get().output
+    runtimeClasspath += output + compileClasspath
+}
+configurations[integrationTest.implementationConfigurationName]
+    .extendsFrom(configurations.testImplementation.get())
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
-```bash
-mkdir ejemplo-testcontainers-postgres
-cd ejemplo-testcontainers-postgres
-mkdir -p infrastructure/src/integrationTest/java infrastructure/src/main/resources/db/migration
-```
-
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
-
-```bash
-# Maven
-mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-cd app && mvn test
-# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
-```
-
-Crea una migración Flyway `V1__crear_guias.sql` con una tabla `guias(id, monto NUMERIC(10,2), fecha DATE)`. Crea `infrastructure/src/integrationTest/java/academia/infrastructure/RepositorioGuiasIT.java` con `@Container static PostgreSQLContainer<?> db = new PostgreSQLContainer<>("postgres:17-alpine")`, que inserte y recupere una guía verificando que el monto decimal y la fecha coincidan exactamente. Ejecuta `./gradlew :infrastructure:integrationTest`.
-
-#### Paso 5 · Práctica guiada
-Pista: rompe deliberadamente el nombre de una columna en la migración (`monto` → `montoo`) para provocar un fallo de SQL real al ejecutar el test contra PostgreSQL real; lee el mensaje de error SQL exacto. Resultado esperado: corregir el nombre de la columna en la migración restaura el test en verde.
-
-#### Paso 6 · Práctica independiente
-Agrega WireMock simulando una respuesta HTTP `429 Too Many Requests` seguida de una respuesta exitosa, y verifica que tu cliente HTTP reintenta con un límite acotado en vez de reintentar indefinidamente.
-
-#### Paso 7 · Cierre y evidencia
-Guarda el fallo de SQL provocado por el nombre de columna incorrecto, su corrección, y la prueba de reintento acotado con WireMock; como siguiente paso configura logging estructurado para diagnosticar en producción. Errores comunes: reutilizar una base mutable compartida entre pruebas, y usar esperas fijas en vez de esperar una condición observable. Fuentes oficiales: https://testcontainers.com/ y https://wiremock.org/.
-**¿Por qué es importante?** Los adaptadores fallan en sus contratos concretos, no en la interfaz idealizada por una prueba unitaria.
-**Evidencia de aprendizaje:** entrega el fallo SQL provocado, su corrección y la prueba de reintento con WireMock.
-**Conceptos clave:** frontera real, Testcontainers, migraciones, WireMock, aislamiento y contrato.
-
-Una integración ejercita al menos dos componentes reales y el protocolo entre ellos. Testcontainers levanta una versión explícita de PostgreSQL; una migración crea el esquema usado en producción; WireMock simula HTTP a nivel de red. Esto detecta problemas que un mock de método no puede representar: tipos SQL, headers, timeouts y serialización.
-
-Cada prueba debe controlar datos y tiempo. Reutilizar una base mutable compartida introduce dependencia de orden. Esperas fijas vuelven la suite lenta y frágil; espera una condición observable con límite.
-
-**¿Por qué es importante?** Los adaptadores fallan en sus contratos concretos, no en la interfaz idealizada por una prueba unitaria.
-
-#### Aplicación práctica
-
-Crea `infrastructure/src/integrationTest/java/com/academia/infrastructure/RepositorioGuiasIT.java`, configura PostgreSQL Testcontainers y Flyway:
-
-```java
-@Container static PostgreSQLContainer<?> db =
-    new PostgreSQLContainer<>("postgres:17-alpine");
-```
-
-Ejecuta `./gradlew :infrastructure:integrationTest`; el resultado esperado inserta y recupera una guía con decimales y fecha exactos.
-
-Rompe el nombre de una columna en la migración y conserva el error SQL como evidencia; corrige la migración antes de avanzar. Añade WireMock para respuesta 429 seguida de éxito y verifica reintento acotado. Como modificación, ejecuta dos veces y en paralelo para comprobar aislamiento. En CI, separa unitarias rápidas de integración sin omitir estas últimas para publicar.
-
-Estas pruebas de integración son las que dan confianza real al desplegar el Proyecto integrador (Módulo 13) contra su base de datos de producción.
-
-**Cuándo no usarlo:** para lógica de dominio pura sin ningún componente externo real, una prueba de integración con Testcontainers es más lenta y menos útil que una prueba unitaria simple.
-
-### Tema 6: SLF4J, Logback, MDC y logging estructurado
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás configurar logging JSON con `traceId` correlacionado y detectar contexto MDC contaminado entre solicitudes. Prerrequisitos: JDK 25, Gradle y un editor. Verifica java --version.
-
-#### Paso 2 · Contexto y caso real
-Durante un incidente en producción, un equipo necesita reconstruir exactamente qué pasó con la guía `GUIA-42`, pero los logs no tienen ningún identificador común entre las líneas de las distintas capas que procesaron esa solicitud, obligando a adivinar por timestamp cuáles líneas pertenecen al mismo request.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-SLF4J es una fachada; Logback es una implementación. MDC adjunta `traceId` al hilo actual, pero debe limpiarse explícitamente o un pool de hilos puede filtrar contexto de una operación anterior a la siguiente. La analogía: una etiqueta de seguimiento de paquete que viaja adjunta a cada escaneo del envío, pero que debe retirarse al entregar para no confundirse con el siguiente paquete que use la misma cinta transportadora.
-
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
-```bash
-mkdir ejemplo-mdc-correlacion
-cd ejemplo-mdc-correlacion
-mkdir -p api/src/main/resources api/src/main/java/academia/api
-```
-
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
-
-```bash
-# Maven
-mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-cd app && mvn test
-# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
-```
-
-Crea `api/src/main/resources/logback.xml` con un encoder JSON. Crea `api/src/main/java/academia/api/CorrelationFilter.java` con `try (var ignored = MDC.putCloseable("traceId", traceId)) { chain.doFilter(request, response); }`. Ejecuta `./gradlew :api:run`, procesa dos solicitudes con distinto `traceId` y verifica en los logs los campos `timestamp`, `level`, `traceId` y `message`.
-
-#### Paso 5 · Práctica guiada
-Pista: **Fallo deliberado:** quita el `try-with-resources` y usa `MDC.put(...)` sin `MDC.remove(...)` al final, en un servidor con pool de hilos reutilizados. Esto provoca un error de contaminación de contexto: una segunda solicitud procesada por el mismo hilo hereda el `traceId` de la primera. Diagnostícalo observando el `traceId` incorrecto en los logs de la segunda solicitud — el fallo es silencioso (no lanza excepción), solo se detecta leyendo los logs con atención. Resultado esperado: restaurar `try-with-resources` (que limpia el MDC automáticamente al salir) corrige el contexto contaminado.
-#### Paso 6 · Práctica independiente
-Agrega un appender en memoria a la configuración de test, escribe una prueba que confirme que ningún campo del log contiene un token o email completo, y verifica que un stack trace de una excepción aparece una sola vez (no una vez por cada capa que la propaga).
-
-#### Paso 7 · Cierre y evidencia
-Guarda el `traceId` contaminado provocado por el pool de hilos, su corrección con `try-with-resources`, y la prueba que rechaza datos sensibles en los logs; como siguiente paso ejecuta el laboratorio completo del capítulo. Errores comunes: registrar tokens o documentos de identidad en texto plano, y loguear la misma excepción en cada capa multiplicando ruido. Fuentes oficiales: https://logback.qos.ch/manual/mdc.html.
-**¿Por qué es importante?** Durante un incidente se necesita reconstruir una operación sin exponer datos personales ni buscar texto ambiguo entre millones de líneas.
-**Evidencia de aprendizaje:** entrega el `traceId` contaminado, su corrección y la prueba de datos sensibles.
-**Conceptos clave:** fachada, implementación, niveles, contexto, JSON, datos sensibles y cardinalidad.
-
-SLF4J es una fachada; Logback es una implementación. Parametrizar `log.info("guia={} estado={}", guia, estado)` evita concatenar cuando el nivel está deshabilitado. MDC adjunta `traceId`, `guiaId` o centro al hilo actual, pero debe limpiarse; con pools o virtual threads, un contexto abandonado puede contaminar otra operación.
-
-Logs estructurados producen campos consultables. No registres tokens, direcciones completas ni documentos. Un error debe incluir contexto y excepción una sola vez; registrarlo en cada capa multiplica ruido. Logs complementan métricas y trazas, no las reemplazan.
-
-**¿Por qué es importante?** Durante un incidente se necesita reconstruir una operación sin exponer datos personales ni buscar texto ambiguo entre millones de líneas.
-
-#### Aplicación práctica
-
-Crea `api/src/main/resources/logback.xml` con salida JSON y `api/src/main/java/com/academia/api/CorrelationFilter.java`, que cierre el contexto:
-
-```java
-try (var ignored = MDC.putCloseable("traceId", traceId)) {
-    chain.doFilter(request, response);
+tasks.register<Test>("integrationTest") {
+    testClassesDirs = integrationTest.output.classesDirs
+    classpath = integrationTest.runtimeClasspath
+    useJUnitPlatform()
 }
 ```
 
-Ejecuta `./gradlew :api:run`, procesa dos solicitudes y verifica campos `timestamp`, `level`, `traceId`, `guiaId` y `message` sin secretos.
+Fuentes: [Testcontainers PostgreSQL](https://java.testcontainers.org/modules/databases/postgres/) y [Jupiter](https://java.testcontainers.org/test_framework_integration/junit_5/).
 
-Omite temporalmente el cierre del MDC y ejecuta solicitudes sobre un pool: identifica contexto heredado incorrecto y restáuralo con try-with-resources. Como modificación, añade una prueba con appender en memoria que rechace claves sensibles y confirma que un stack trace aparece una sola vez. El proyecto limita identificadores de alta cardinalidad en métricas, aunque sí puedan vivir controladamente en logs.
+#### Subtema 5.1: Levanta PostgreSQL al ejecutar el test · 10 min
 
-Este logging correlacionado es lo que permitiría diagnosticar un incidente real en el Proyecto integrador (Módulo 13) sin adivinar qué líneas pertenecen a qué solicitud.
+**1. Contexto**
 
-**Cuándo no usarlo:** en un script de línea de comandos de un solo uso sin concurrencia ni solicitudes paralelas, la correlación con MDC no aporta nada; un `println` es suficiente.
+El test debe iniciar una base conocida y cerrarla al finalizar.
+
+**2. Hazlo tú**
+
+Crea `src/integrationTest/java/RepositorioPostgresIT.java` con `@Testcontainers`, `@Container static PostgreSQLContainer<?> db = new PostgreSQLContainer<>("postgres:17.11-alpine3.24")` y un test que compruebe `db.isRunning()`. Ejecuta `./gradlew integrationTest` con Docker activo.
+
+**Resultado esperado:** Testcontainers inicia la imagen exacta durante el test y luego la elimina.
+
+**Fallo deliberado:** ejecuta el test con Docker apagado. **Diagnóstico:** comprueba el runtime de contenedores antes de interpretar el fallo como error de SQL.
+
+**3. Entiende**
+
+La prueba usa un servicio real en contenedor aislado, no un mock del driver.
+
+**4. Cierra**
+
+Guarda log de la versión de imagen y cierre del contenedor.
+
+#### Subtema 5.2: Prueba el SQL y la migración reales · 10 min
+
+**1. Contexto**
+
+Una columna decimal y una fecha deben conservar sus valores con PostgreSQL real.
+
+**2. Hazlo tú**
+
+En `src/integrationTest/resources/db/migration/V1__guias.sql` crea tabla `guias` con `monto NUMERIC(10,2)` y `fecha DATE`; en `src/integrationTest/java/RepositorioPostgresIT.java`, inserta y recupera `123.45` y una fecha fija mediante JDBC. Ejecuta `./gradlew integrationTest`.
+
+**Resultado esperado:** el monto y la fecha recuperados coinciden exactamente.
+
+**Fallo deliberado:** cambia `monto` por `montoo` en la consulta. **Diagnóstico:** el motor real informa la columna inexistente; corrige la consulta y conserva la migración.
+
+**3. Entiende**
+
+Una base real detecta diferencias de dialecto y tipos que no aparecen con una implementación simulada.
+
+**4. Cierra**
+
+Guarda el resultado antes y después de reparar el nombre de columna.
+
+#### Subtema 5.3: Repite la prueba sin compartir estado · 10 min
+
+**1. Contexto**
+
+Una prueba debe poder repetirse en CI sin depender de una base que quedó de la ejecución anterior.
+
+**2. Hazlo tú**
+
+En `src/integrationTest/java/RepositorioPostgresIT.java`, ejecuta dos veces `./gradlew clean integrationTest`; configura esquema y datos dentro del ciclo de test y no uses una base local persistente.
+
+**Resultado esperado:** ambas ejecuciones parten de PostgreSQL limpio y terminan con los mismos assertions.
+
+**Fallo deliberado:** deja una fila fija y ejecuta dos veces un test que asume tabla vacía. **Diagnóstico:** crea/reset el esquema por ejecución o diseña fixture aislado.
+
+**3. Entiende**
+
+Contenedores desechables y datos controlados eliminan dependencia del orden; en CI sigue siendo necesario Docker.
+
+**4. Cierra**
+
+Conserva los dos resultados y el comando usado.
+
+### Tema 6: SLF4J, Logback, MDC y logging estructurado
+
+**Por qué importa:** logs correlacionados ayudan a seguir una solicitud sin registrar secretos ni mezclar operaciones en hilos reutilizados.
+
+**Preparación:** añade `implementation("org.slf4j:slf4j-api:2.0.18")` y `runtimeOnly("ch.qos.logback:logback-classic:1.6.6")`. El ejemplo emite pares key-value con `%kvp`; no necesita un encoder JSON adicional. La versión de Logback contiene correcciones de seguridad recientes; revisa sus [notas oficiales](https://github.com/qos-ch/logback/releases).
+
+#### Subtema 6.1: Emite campos estructurados · 10 min
+
+**1. Contexto**
+
+Un incidente requiere buscar guía y estado sin procesar texto ambiguo.
+
+**2. Hazlo tú**
+
+Crea `src/main/resources/logback.xml` con encoder `<encoder><pattern>%d %-5level %logger{36} %kvp - %msg%n</pattern></encoder>` y `src/main/java/ProcesarEntrega.java` con `LoggerFactory.getLogger(...)`; escribe `log.atInfo().addKeyValue("guia", guia).addKeyValue("estado", estado).log("delivery processed")`. Ejecuta `./gradlew run` y confirma campos `level`, `message` y pares `key=value` de guía.
+
+**Resultado esperado:** el evento se puede consultar por guía sin concatenar valores al mensaje.
+
+**Fallo deliberado:** registra dirección completa y token. **Diagnóstico:** elimina datos sensibles y deja solo identificadores necesarios para investigar.
+
+**3. Entiende**
+
+SLF4J es la fachada; Logback produce los eventos y define su formato.
+
+**4. Cierra**
+
+Guarda una línea JSON de ejemplo sin secretos.
+
+#### Subtema 6.2: Correlaciona solicitudes con MDC · 10 min
+
+**1. Contexto**
+
+Una solicitud pasa por varias capas y todas sus líneas deben compartir `traceId`.
+
+**2. Hazlo tú**
+
+En `src/main/java/ProcesarEntrega.java`, envuelve el manejo con `try (var ignored = MDC.putCloseable("traceId", traceId)) { ... }`. Ejecuta `./gradlew run` con dos IDs distintos y comprueba que aparecen en sus eventos.
+
+**Resultado esperado:** cada operación lleva su propio `traceId`.
+
+**Fallo deliberado:** llama `MDC.put` sin quitar el valor. **Diagnóstico:** un pool reutiliza hilos; cierra el contexto para no contaminar la solicitud siguiente.
+
+**3. Entiende**
+
+MDC normalmente asocia contexto al hilo. Para trabajo asíncrono hay que propagarlo explícitamente con la integración usada.
+
+**4. Cierra**
+
+Guarda dos eventos y confirma que no comparten el ID.
+
+#### Subtema 6.3: Evita registrar el mismo error en todas las capas · 10 min
+
+**1. Contexto**
+
+Un error que se loguea en cada nivel genera varias copias del mismo stack trace.
+
+**2. Hazlo tú**
+
+En `src/main/java/ProcesarEntrega.java`, propaga una excepción de repositorio hasta el límite de la solicitud y registra una vez allí con `log.error("No se pudo procesar guia={}", guia, error)`. Ejecuta `./gradlew run` con el fallo preparado.
+
+**Resultado esperado:** aparece un stack trace con contexto de guía una sola vez.
+
+**Fallo deliberado:** añade `log.error` y relanza en cada capa. **Diagnóstico:** registra en el límite que puede resolver o reportar el error, y propaga entre capas internas.
+
+**3. Entiende**
+
+Logs complementan métricas y trazas; un ID de alta cardinalidad puede ser útil en logs y costoso como etiqueta de métrica.
+
+**4. Cierra**
+
+Conserva la salida y una regla de datos que nunca registrarás.
+
+---
+
 
 ## Construcción guiada del capítulo
 
-Ejecuta `./gradlew clean check integrationTest`, inspecciona dependencias y artefactos, y arranca el proyecto con logging JSON. La entrega incluye hashes reproducibles, grafo de módulos, reportes unitarios/integración y dos logs correlacionados. Si otra persona necesita una configuración manual no documentada, el capítulo aún no está completo.
+Ejecuta `./gradlew clean check integrationTest`, inspecciona dependencias y artefactos, y arranca el proyecto con logging key-value. La entrega incluye hashes reproducibles, grafo de módulos, reportes unitarios/integración y dos logs correlacionados. Si otra persona necesita una configuración manual no documentada, el capítulo aún no está completo.
 
 ## Trazabilidad de la auditoría original
 

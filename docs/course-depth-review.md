@@ -11,7 +11,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 | node | 83 | 17 | HTTP y validación antes de autenticación e integraciones | API con límites de carga, paginación estable, pruebas y cierre ordenado |
 | angular | 71 | 3 | HTML/CSS/TypeScript explícitos; RxJS y estado con ejemplos completos | Rutas, formularios, datos remotos y cambios sin guardar comprobados con navegador |
 | react | 58 | 46 | JSX y estado antes de efectos; proveedor, dependencias y API visibles | Carga, error, vacío y carrera de respuestas; caché observada, no supuesta |
-| java | 101 | 73 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
+| java | 101 | 74 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
 | spring-boot | 111 | 27 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
 | android | 58 | 0 | Kotlin antes de Compose; distinguir recomposición, recreación y muerte de proceso | App instalable con permisos, restauración, persistencia y pruebas en dispositivo |
 | ios | 56 | 4 | Swift antes de SwiftUI; explicitar macOS/Xcode y destino | Cancelación, estados de red, persistencia y accesibilidad comprobados en simulador |
@@ -718,12 +718,12 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | java / 14 | [Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo](../web/public/content/java/modulo-14.md) | demostracion-no-delimitada |
 | java / 14 | [Tema 3: Deserializar es permitir construcción y comportamiento](../web/public/content/java/modulo-14.md) | demostracion-no-delimitada |
 | java / 14 | [Tema 4: El runtime es parte del artefacto y necesita ciclo de vida](../web/public/content/java/modulo-14.md) | demostracion-no-delimitada |
-| java / 15 | [Tema 1: Maven avanzado](../web/public/content/java/modulo-15.md) | clase-java-no-visible |
-| java / 15 | [Tema 2: Gradle y builds reproducibles](../web/public/content/java/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 15 | [Tema 3: Proyectos multi-módulo sin ciclos](../web/public/content/java/modulo-15.md) | clase-java-no-visible |
-| java / 15 | [Tema 4: JUnit 5, Mockito y assertions expresivas](../web/public/content/java/modulo-15.md) | clase-java-no-visible |
-| java / 15 | [Tema 5: Pruebas de integración reproducibles](../web/public/content/java/modulo-15.md) | clase-java-no-visible |
-| java / 15 | [Tema 6: SLF4J, Logback, MDC y logging estructurado](../web/public/content/java/modulo-15.md) | clase-java-no-visible |
+| java / 15 | [Tema 1: Maven avanzado](../web/public/content/java/modulo-15.md) | demostracion-no-delimitada |
+| java / 15 | [Tema 2: Gradle y builds reproducibles](../web/public/content/java/modulo-15.md) | demostracion-no-delimitada |
+| java / 15 | [Tema 3: Proyectos multi-módulo sin ciclos](../web/public/content/java/modulo-15.md) | demostracion-no-delimitada |
+| java / 15 | [Tema 4: JUnit 5, Mockito y assertions expresivas](../web/public/content/java/modulo-15.md) | demostracion-no-delimitada |
+| java / 15 | [Tema 5: Pruebas de integración reproducibles](../web/public/content/java/modulo-15.md) | demostracion-no-delimitada |
+| java / 15 | [Tema 6: SLF4J, Logback, MDC y logging estructurado](../web/public/content/java/modulo-15.md) | demostracion-no-delimitada |
 | java / 16 | [Tema 1: Entidades y relaciones JPA](../web/public/content/java/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 16 | [Tema 2: FetchType.LAZY, EAGER y el problema N+1](../web/public/content/java/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 16 | [Tema 3: Relaciones uno a uno, muchos a muchos y herencia](../web/public/content/java/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |

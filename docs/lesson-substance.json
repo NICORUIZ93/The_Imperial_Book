@@ -1698,14 +1698,14 @@
     }
   ],
   "summary": {
-    "fingerprint": "9c7d1e3c7441774432902e393802267e76f27876c7fe710bac1b699664fd715b",
+    "fingerprint": "19672849593d54809e09960b93c89b0d24984d44e4e286e13a69c4b1cc475d09",
     "issues": {
       "andamiaje-generico": 124,
-      "bloque-repetido": 169,
+      "bloque-repetido": 163,
       "cola-tras-cierre": 331,
       "parrafo-repetido": 5,
       "sin-fuente": 10,
-      "tema-breve": 9
+      "tema-breve": 12
     },
     "legacySections": {
       "## Construcción guiada del capítulo": 42,
@@ -1715,7 +1715,7 @@
     "modules": 256,
     "modulesWithLegacySections": 182,
     "topics": 1185,
-    "topicsWithIssues": 428
+    "topicsWithIssues": 425
   },
   "topics": {
     "android": [
@@ -7360,57 +7360,51 @@
       },
       {
         "issues": [
-          "bloque-repetido"
+          "tema-breve"
         ],
         "module": 15,
-        "tailWords": 419,
+        "tailWords": 0,
         "topic": "Tema 1: Maven avanzado",
-        "words": 907
+        "words": 417
       },
       {
         "issues": [
-          "bloque-repetido"
+          "tema-breve"
         ],
         "module": 15,
-        "tailWords": 378,
+        "tailWords": 0,
         "topic": "Tema 2: Gradle y builds reproducibles",
-        "words": 787
+        "words": 420
       },
       {
         "issues": [
-          "bloque-repetido"
+          "tema-breve"
         ],
         "module": 15,
-        "tailWords": 359,
+        "tailWords": 0,
         "topic": "Tema 3: Proyectos multi-módulo sin ciclos",
-        "words": 713
+        "words": 426
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 15,
-        "tailWords": 371,
+        "tailWords": 0,
         "topic": "Tema 4: JUnit 5, Mockito y assertions expresivas",
-        "words": 780
+        "words": 454
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 15,
-        "tailWords": 366,
+        "tailWords": 0,
         "topic": "Tema 5: Pruebas de integración reproducibles",
-        "words": 758
+        "words": 520
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 15,
-        "tailWords": 393,
+        "tailWords": 0,
         "topic": "Tema 6: SLF4J, Logback, MDC y logging estructurado",
-        "words": 855
+        "words": 484
       },
       {
         "issues": [],

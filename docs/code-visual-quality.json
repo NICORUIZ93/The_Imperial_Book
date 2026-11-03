@@ -86,9 +86,9 @@
     },
     "java": {
       "topics": 101,
-      "code": 75,
-      "commentedCode": 18,
-      "mermaid": 17,
+      "code": 70,
+      "commentedCode": 14,
+      "mermaid": 16,
       "archifyVisual": 1,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
@@ -2134,15 +2134,43 @@
       "track": "java",
       "module": 15,
       "topic": "Tema 1: Maven avanzado",
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "java",
+      "module": 15,
+      "topic": "Tema 2: Gradle y builds reproducibles",
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "java",
+      "module": 15,
+      "topic": "Tema 3: Proyectos multi-módulo sin ciclos",
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "java",
+      "module": 15,
+      "topic": "Tema 4: JUnit 5, Mockito y assertions expresivas",
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "java",
+      "module": 15,
+      "topic": "Tema 5: Pruebas de integración reproducibles",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 15,
-      "topic": "Tema 2: Gradle y builds reproducibles",
-      "missingCode": false,
-      "missingComments": true
+      "topic": "Tema 6: SLF4J, Logback, MDC y logging estructurado",
+      "missingCode": true,
+      "missingComments": false
     },
     {
       "track": "java",

@@ -9,15 +9,15 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | Criterio | Cubierto | Pendiente |
 |---|---:|---:|
 | Explicación | 1185 | 0 |
-| Código | 1159 | 26 |
+| Código | 1154 | 31 |
 | Ruta | 1185 | 0 |
-| Ejecución | 1135 | 50 |
+| Ejecución | 1129 | 56 |
 | Resultado | 1183 | 2 |
-| Modificación | 1144 | 41 |
-| Conexión con un proyecto | 1127 | 58 |
-| Modelo mental | 1152 | 33 |
-| Límites | 1144 | 41 |
-| **Perfil de criterios detectado** | **1109** | **76** |
+| Modificación | 1138 | 47 |
+| Conexión con un proyecto | 1121 | 64 |
+| Modelo mental | 1146 | 39 |
+| Límites | 1142 | 43 |
+| **Perfil de criterios detectado** | **1103** | **82** |
 
 ## Prioridad por track
 
@@ -30,7 +30,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | flutter | 106 | 0 | 0 | 0 | 0 | 0 | 1 | 1 |
 | foundations | 99 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ios | 56 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| java | 101 | 26 | 0 | 45 | 0 | 35 | 46 | 31 |
+| java | 101 | 31 | 0 | 51 | 0 | 41 | 52 | 33 |
 | javascript | 88 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | kotlin-multiplatform | 56 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | node | 83 | 0 | 0 | 0 | 0 | 1 | 2 | 1 |
@@ -68,6 +68,12 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 - [java · módulo 14](../web/public/content/java/modulo-14.md) · Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo: código, ejecución, modificación, conexión con un proyecto, modelo mental.
 - [java · módulo 14](../web/public/content/java/modulo-14.md) · Tema 3: Deserializar es permitir construcción y comportamiento: código, ejecución, conexión con un proyecto, modelo mental.
 - [java · módulo 14](../web/public/content/java/modulo-14.md) · Tema 4: El runtime es parte del artefacto y necesita ciclo de vida: código, ejecución, conexión con un proyecto, modelo mental, límites.
+- [java · módulo 15](../web/public/content/java/modulo-15.md) · Tema 1: Maven avanzado: código, ejecución, modificación, conexión con un proyecto, modelo mental, límites.
+- [java · módulo 15](../web/public/content/java/modulo-15.md) · Tema 2: Gradle y builds reproducibles: código, ejecución, modificación, conexión con un proyecto, modelo mental, límites.
+- [java · módulo 15](../web/public/content/java/modulo-15.md) · Tema 3: Proyectos multi-módulo sin ciclos: código, ejecución, modificación, conexión con un proyecto, modelo mental.
+- [java · módulo 15](../web/public/content/java/modulo-15.md) · Tema 4: JUnit 5, Mockito y assertions expresivas: código, ejecución, modificación, conexión con un proyecto, modelo mental.
+- [java · módulo 15](../web/public/content/java/modulo-15.md) · Tema 5: Pruebas de integración reproducibles: ejecución, modificación, conexión con un proyecto, modelo mental.
+- [java · módulo 15](../web/public/content/java/modulo-15.md) · Tema 6: SLF4J, Logback, MDC y logging estructurado: código, ejecución, modificación, conexión con un proyecto, modelo mental.
 - [java · módulo 2](../web/public/content/java/modulo-2.md) · Tema 1: List, Set, Map y sus implementaciones: modificación, límites.
 - [java · módulo 2](../web/public/content/java/modulo-2.md) · Tema 2: Genéricos, wildcards y type erasure: modificación.
 - [java · módulo 2](../web/public/content/java/modulo-2.md) · Tema 3: Comparable vs Comparator, e iteración: límites.
