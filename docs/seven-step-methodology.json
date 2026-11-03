@@ -248,22 +248,22 @@
       "complete": 29
     },
     "spring-boot": {
-      "topics": 100,
+      "topics": 101,
       "objective": 0,
-      "prerequisites": 100,
+      "prerequisites": 101,
       "context": 0,
       "theoryAnalogy": 0,
       "guidedDemo": 0,
-      "codeExplanation": 100,
-      "execution": 98,
-      "expectedResult": 100,
-      "deliberateFailure": 100,
+      "codeExplanation": 101,
+      "execution": 99,
+      "expectedResult": 101,
+      "deliberateFailure": 101,
       "guidedPractice": 0,
       "independentPractice": 0,
       "closure": 0,
-      "commonErrors": 100,
-      "resources": 100,
-      "standaloneExample": 97,
+      "commonErrors": 101,
+      "resources": 101,
+      "standaloneExample": 98,
       "complete": 0
     }
   },
@@ -28773,6 +28773,31 @@
       {
         "module": 3,
         "topic": "Tema 3: Migraciones con Flyway · Intermedio · 35 min",
+        "criteria": {
+          "objective": false,
+          "prerequisites": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 8,
+          "complete": false
+        }
+      },
+      {
+        "module": 3,
+        "topic": "Tema 4: Proyecciones, Specifications y auditoría de entidades · Avanzado · 45 min",
         "criteria": {
           "objective": false,
           "prerequisites": true,

@@ -43,7 +43,7 @@ export const SPRING_BOOT_MODULES: CourseModule[] = [
     'API REST con validación de entrada y manejo centralizado de errores.'),
   m(3, 'Persistencia con Spring Data JPA', 'Spring Data JPA', 'Aplicación', '3 h 30 min', '#6db33f',
     'Persiste entidades sin escribir SQL repetitivo, sin perder de vista qué genera Hibernate por debajo.',
-    ['Entidades y mapeo JPA', 'Repositorios derivados y @Query', 'Relaciones (OneToMany, ManyToMany) y N+1', 'Migraciones con Flyway/Liquibase', 'JPQL, Native Queries, Criteria API y QueryDSL', 'Paginación con Pageable y Page', '@Valid, @Validated y anotaciones de Bean Validation (@NotNull, @Size, @Email)'],
+    ['Entidades y mapeo JPA', 'Repositorios derivados y @Query', 'Relaciones (OneToMany, ManyToMany) y N+1', 'Migraciones con Flyway/Liquibase', 'Proyecciones, Specifications y auditoría de entidades', 'Paginación con Pageable y Page', '@Valid, @Validated y anotaciones de Bean Validation (@NotNull, @Size, @Email)'],
     [
       'Define una entidad @Entity Tarea con sus campos mapeados y un JpaRepository<Tarea, Long>',
       'Usa un método derivado (findByCompletadaFalse) y luego el equivalente con @Query para comparar',

@@ -286,7 +286,7 @@ flowchart LR
 
 #### Practica
 
-**Demo paso a paso.** Reutiliza `academia-spring` (o créalo desde una carpeta vacía con `mkdir -p academia-spring` si es tu primera vez), agrega las dependencias reales `org.testcontainers:postgresql` y `org.testcontainers:junit-jupiter`, y crea el test de repositorio en `src/test/java/com/academia/tarea/`:
+**Demo paso a paso.** Reutiliza `academia-spring` (o créalo desde una carpeta vacía con `mkdir -p academia-spring` si es tu primera vez), agrega las dependencias reales `org.testcontainers:postgresql`, `org.testcontainers:junit-jupiter` y `spring-boot-data-jpa-test` (**Nota Spring Boot 4:** este último ya no viene incluido en `spring-boot-starter-test`), y crea el test de repositorio en `src/test/java/com/academia/tarea/`:
 
 ```bash
 mkdir -p academia-spring/src/test/java/com/academia/tarea
@@ -320,7 +320,7 @@ package com.academia.tarea;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;

@@ -221,18 +221,18 @@
       "repeatedDemo": 0
     },
     "spring-boot": {
-      "topics": 100,
-      "explanation": 100,
-      "code": 100,
-      "visual": 80,
-      "filePath": 100,
-      "runCommand": 98,
-      "expectedResult": 100,
-      "practice": 100,
-      "project": 100,
-      "modelMental": 100,
-      "limitsDecision": 100,
-      "practicable": 98,
+      "topics": 101,
+      "explanation": 101,
+      "code": 101,
+      "visual": 81,
+      "filePath": 101,
+      "runCommand": 99,
+      "expectedResult": 101,
+      "practice": 101,
+      "project": 101,
+      "modelMental": 101,
+      "limitsDecision": 101,
+      "practicable": 99,
       "genericScaffold": 0,
       "repeatedDemo": 0
     }
@@ -25326,6 +25326,28 @@
       {
         "module": 3,
         "topic": "Tema 3: Migraciones con Flyway · Intermedio · 35 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 3,
+        "topic": "Tema 4: Proyecciones, Specifications y auditoría de entidades · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,

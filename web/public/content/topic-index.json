@@ -5080,6 +5080,10 @@
       {
         "title": "Migraciones con Flyway",
         "fragment": "tema-3-migraciones-con-flyway"
+      },
+      {
+        "title": "Proyecciones, Specifications y auditoría de entidades",
+        "fragment": "tema-4-proyecciones-specifications-y-auditoria-de-entidades"
       }
     ],
     "4": [

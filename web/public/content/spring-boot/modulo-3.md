@@ -134,7 +134,16 @@ public interface TareaRepository extends JpaRepository<Tarea, Long> {
 
 **Explicación línea por línea:** `@Id @GeneratedValue` delega en la base la generación del identificador; el constructor protegido sin argumentos es requerido por JPA para reconstruir instancias desde filas, mientras el constructor público controla la creación válida desde código; `findByCompletadaFalse()` no tiene cuerpo porque Spring Data genera la implementación a partir del nombre en tiempo de arranque.
 
-3. Escribe un test real con `@DataJpaTest` (levanta un contexto JPA contra H2, sin mockear nada):
+3. Escribe un test real con `@DataJpaTest` (levanta un contexto JPA contra H2, sin mockear nada). **Nota (Spring Boot 4):** `@DataJpaTest` requiere agregar explícitamente `spring-boot-data-jpa-test` (scope `test`) al `pom.xml` — en Boot 3.x venía incluido en `spring-boot-starter-test`:
+
+```xml
+<!-- dentro de <dependencies> del pom.xml -->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-data-jpa-test</artifactId>
+    <scope>test</scope>
+</dependency>
+```
 
 ```java
 // src/test/java/com/academia/tarea/TareaRepositoryTest.java
@@ -142,7 +151,7 @@ package com.academia.tarea;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -333,7 +342,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.stat.Statistics;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
@@ -514,7 +523,7 @@ package com.academia.tarea;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
@@ -586,6 +595,254 @@ spring.jpa.hibernate.ddl-auto=____
 **Fuente oficial:** [Flyway — Migrations](https://documentation.red-gate.com/flyway/flyway-concepts/migrations).
 
 **Transferencia al proyecto integrador:** estas migraciones versionan el esquema del microservicio productivo.
+
+### Tema 4: Proyecciones, Specifications y auditoría de entidades · Avanzado · 45 min
+
+**Prerrequisito:** Tema 1 de este módulo (entidades y repositorios derivados).
+
+**Al terminar podrás:** devolver una proyección DTO que consulta solo las columnas necesarias (confirmado en el SQL real generado), combinar filtros dinámicos con `Specification`, y confirmar que `@CreatedDate`/`@LastModifiedDate` se rellenan automáticamente sin código manual.
+
+#### Aprende
+
+**¿Por qué es importante?** Un listado paginado de miles de entregas que trae la entidad completa (todas las columnas, todas las relaciones potencialmente perezosas) cuando la vista solo necesita referencia y estado desperdicia ancho de banda y memoria en cada petición; un endpoint de búsqueda que necesita combinar filtros opcionales (por estado, por rango de monto, por fecha) sin un mecanismo dedicado termina con un método de repositorio por cada combinación posible de filtros, o con concatenación manual de SQL insegura.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Proyección basada en interfaz | Núcleo | el SQL real generado selecciona SOLO `referencia` y `estado`, no todas las columnas |
+| `JpaSpecificationExecutor` + `Specification` | Núcleo | `where(especificacionA).and(especificacionB)` combina dos filtros en una sola consulta dinámica |
+| `@CreatedDate`/`@LastModifiedDate` + `@EnableJpaAuditing` | Núcleo | guardar una entidad nueva rellena ambos campos automáticamente, sin código manual |
+| `AuditingEntityListener` como mecanismo | Prerrequisito | `@EntityListeners(AuditingEntityListener.class)` es el enganche que hace que la auditoría se dispare |
+| Querydsl: proyecto original sin mantenimiento activo | Decisión | la comunidad migró a un fork (`io.github.openfeign.querydsl`) con soporte "best-effort" de Spring Data |
+| Cuándo Specification es suficiente sin Querydsl | Decisión | para filtros dinámicos de complejidad moderada, `Specification` ya resuelve el problema sin una dependencia adicional |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Proyección basada en interfaz (núcleo).** Declarar una interfaz `EntregaResumen` con solo `getReferencia()`/`getEstado()`, y un método de repositorio `List<EntregaResumen> findByEstado(String estado)` que la devuelve en vez de `Entrega`, hace que Spring Data genere una consulta SQL que selecciona ÚNICAMENTE esas dos columnas. El log real del test lo confirma: `select e1_0.referencia,e1_0.estado from entrega e1_0 where e1_0.estado=?`, sin ninguna otra columna de la entidad completa.
+
+**`JpaSpecificationExecutor` + `Specification` (núcleo).** Extender el repositorio con `JpaSpecificationExecutor<Entrega>` habilita `findAll(Specification<Entrega>)`; cada `Specification` es una función `(root, query, cb) -> Predicate` componible con `.and()`/`.or()`. El test confirma con el SQL real generado (`where e1_0.estado=? and e1_0.monto_centavos>?`) que combinar `conEstado("creada")` y `montoMayorQue(20000)` produce una única consulta con ambos filtros aplicados, sin necesidad de un método de repositorio dedicado para esa combinación específica.
+
+**`@CreatedDate`/`@LastModifiedDate` + `@EnableJpaAuditing` (núcleo).** Anotar campos con `@CreatedDate` y `@LastModifiedDate`, y activar `@EnableJpaAuditing` en la configuración de la aplicación, hace que Spring Data rellene esos campos automáticamente al guardar (creación) y actualizar (modificación), sin ningún código manual en el servicio o el repositorio. El test confirma que ambos campos NO son `null` inmediatamente después de `repository.save(...)`.
+
+**`AuditingEntityListener` como mecanismo (prerrequisito).** `@EntityListeners(AuditingEntityListener.class)` sobre la entidad es el enganche real que conecta el ciclo de vida JPA (eventos de persistencia) con la lógica de auditoría de Spring Data; sin esta anotación en la entidad, `@EnableJpaAuditing` por sí solo no tiene ningún punto de entrada para actuar sobre esa entidad específica.
+
+**Querydsl: proyecto original sin mantenimiento activo (decisión).** El proyecto histórico `com.querydsl` prácticamente dejó de recibir mantenimiento activo; la comunidad lo migró a un fork mantenido bajo OpenFeign (`io.github.openfeign.querydsl`, confirmado existente y activo en Maven Central), al que Spring Data da soporte "best-effort" (sin garantías formales), según la documentación oficial de Spring Data. Un tutorial que recomiende `com.querydsl:querydsl-jpa` para un proyecto nuevo probablemente está desactualizado.
+
+**Cuándo Specification es suficiente sin Querydsl (decisión).** Para filtros dinámicos de complejidad moderada (como el ejemplo de este tema), `Specification` del propio Spring Data JPA ya resuelve el problema con type-safety parcial (los nombres de atributo siguen siendo strings) y sin agregar ninguna dependencia ni paso de generación de código adicional. Querydsl (o su fork) se justifica cuando se necesita type-safety completo (sin strings) sobre consultas muy complejas, a costa de configurar generación de clases `Q*` en el build.
+
+**Conceptos clave:** proyección por interfaz, `Specification`, `@EnableJpaAuditing`, `AuditingEntityListener`.
+
+Una proyección basada en interfaz (`List<EntregaResumen> findByEstado(...)`) hace que Spring Data genere SQL que selecciona solo las columnas de esa interfaz, no la entidad completa. `JpaSpecificationExecutor` + `Specification` permiten combinar filtros dinámicos (`where(a).and(b)`) en una sola consulta sin un método por combinación. `@CreatedDate`/`@LastModifiedDate` con `@EnableJpaAuditing` y `@EntityListeners(AuditingEntityListener.class)` rellenan metadatos de auditoría automáticamente. Querydsl, el proyecto histórico para consultas type-safe, perdió mantenimiento activo; su fork comunitario (`io.github.openfeign.querydsl`) tiene soporte best-effort de Spring Data, no garantizado.
+
+**Analogía:** una proyección por interfaz es como pedir solo el resumen de una factura en vez de todos sus anexos completos; combinar `Specification` con `.and()` es como apilar filtros de búsqueda en un buscador de productos (talla + color + precio), cada uno independiente pero combinable; la auditoría automática es como un sello de fecha que una máquina registradora aplica sola, sin que el cajero tenga que escribirla a mano cada vez.
+
+**Diagrama:**
+
+```text
+┌ Entidad completa ──────────────────┐   SELECT id, referencia, estado,
+│ (sin proyección)                   │   monto_centavos, creada_en, ...
+└─────────────────────────────────────┘
+┌ Proyección EntregaResumen ─────────┐   SELECT referencia, estado
+│ (solo getters de la interfaz)      │   (SOLO esas dos columnas)
+└─────────────────────────────────────┘
+```
+
+#### Practica
+
+**Demo paso a paso.** Desde una carpeta vacía, genera el proyecto:
+
+```bash
+mkdir jpa-advanced-demo && cd jpa-advanced-demo
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=data-jpa,h2 -d javaVersion=27 -o app.zip
+unzip -q app.zip
+```
+
+Crea la entidad auditada en `src/main/java/com/academia/jpaavanzado/Entrega.java`:
+
+```java
+package com.academia.jpaavanzado;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.Instant;
+
+@Entity
+@EntityListeners(AuditingEntityListener.class)
+public class Entrega {
+    @Id @GeneratedValue
+    private Long id;
+    private String referencia;
+    private String estado;
+    private int montoCentavos;
+
+    @CreatedDate
+    private Instant creadaEn;
+    @LastModifiedDate
+    private Instant actualizadaEn;
+
+    protected Entrega() {}
+    public Entrega(String referencia, String estado, int montoCentavos) {
+        this.referencia = referencia; this.estado = estado; this.montoCentavos = montoCentavos;
+    }
+    public Long getId() { return id; }
+    public String getReferencia() { return referencia; }
+    public String getEstado() { return estado; }
+    public int getMontoCentavos() { return montoCentavos; }
+    public Instant getCreadaEn() { return creadaEn; }
+    public Instant getActualizadaEn() { return actualizadaEn; }
+}
+```
+
+Crea la proyección, el repositorio y las Specifications:
+
+```java
+// src/main/java/com/academia/jpaavanzado/EntregaResumen.java
+package com.academia.jpaavanzado;
+
+public interface EntregaResumen {
+    String getReferencia();
+    String getEstado();
+}
+```
+
+```java
+// src/main/java/com/academia/jpaavanzado/EntregaRepository.java
+package com.academia.jpaavanzado;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import java.util.List;
+
+public interface EntregaRepository extends JpaRepository<Entrega, Long>, JpaSpecificationExecutor<Entrega> {
+    List<EntregaResumen> findByEstado(String estado);
+}
+```
+
+```java
+// src/main/java/com/academia/jpaavanzado/EntregaSpecifications.java
+package com.academia.jpaavanzado;
+
+import org.springframework.data.jpa.domain.Specification;
+
+public class EntregaSpecifications {
+    public static Specification<Entrega> conEstado(String estado) {
+        return (root, query, cb) -> cb.equal(root.get("estado"), estado);
+    }
+    public static Specification<Entrega> montoMayorQue(int centavos) {
+        return (root, query, cb) -> cb.greaterThan(root.get("montoCentavos"), centavos);
+    }
+}
+```
+
+Activa la auditoría en la clase principal con `@EnableJpaAuditing`, agrega la dependencia real de testing (ver Tema 1 de este módulo) y crea el test en `src/test/java/com/academia/jpaavanzado/EntregaRepositoryTest.java`:
+
+```java
+package com.academia.jpaavanzado;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.data.jpa.domain.Specification.where;
+
+@DataJpaTest
+class EntregaRepositoryTest {
+
+    @Autowired
+    private EntregaRepository repository;
+
+    @Test
+    void laProyeccionSoloExponeReferenciaYEstado() {
+        repository.save(new Entrega("BO-001", "creada", 15000));
+        repository.save(new Entrega("BO-002", "entregada", 20000));
+
+        List<EntregaResumen> resumen = repository.findByEstado("creada");
+
+        assertThat(resumen).hasSize(1);
+        assertThat(resumen.get(0).getReferencia()).isEqualTo("BO-001");
+    }
+
+    @Test
+    void laSpecificationCombinadaFiltraPorEstadoYMonto() {
+        repository.save(new Entrega("BO-001", "creada", 10000));
+        repository.save(new Entrega("BO-002", "creada", 30000));
+        repository.save(new Entrega("BO-003", "entregada", 30000));
+
+        List<Entrega> resultado = repository.findAll(
+                where(EntregaSpecifications.conEstado("creada"))
+                        .and(EntregaSpecifications.montoMayorQue(20000)));
+
+        assertThat(resultado).hasSize(1);
+        assertThat(resultado.get(0).getReferencia()).isEqualTo("BO-002");
+    }
+
+    @Test
+    void laAuditoriaRellenaCreadaEnAutomaticamente() {
+        Entrega guardada = repository.save(new Entrega("BO-004", "creada", 5000));
+
+        assertThat(guardada.getCreadaEn()).isNotNull();
+        assertThat(guardada.getActualizadaEn()).isNotNull();
+    }
+}
+```
+
+```bash
+./mvnw test
+```
+
+**Resultado esperado:** `Tests run: 3, Failures: 0, Errors: 0` (verificado con Spring Boot 4.1.1 / Spring Framework 7.0.9 / Hibernate ORM 7.4.5.Final sobre JDK 27.0.1): el log real muestra `select e1_0.referencia,e1_0.estado from entrega e1_0 where e1_0.estado=?` para la proyección (solo dos columnas) y `where e1_0.estado=? and e1_0.monto_centavos>?` para la Specification combinada; `creadaEn`/`actualizadaEn` no son `null` tras guardar.
+
+**Fallo deliberado:** quita `@EnableJpaAuditing` de la clase principal (dejando `@EntityListeners(AuditingEntityListener.class)` intacto en la entidad) y ejecuta de nuevo el tercer test. FALLA porque `creadaEn`/`actualizadaEn` quedan `null`: el listener está conectado a la entidad, pero sin `@EnableJpaAuditing` no hay ningún `AuditingHandler` configurado que realmente rellene los valores. Diagnostica confirmando que ambas piezas (la anotación en la entidad Y la activación a nivel de aplicación) son necesarias, ninguna por sí sola basta. Restaura `@EnableJpaAuditing` antes de continuar.
+
+**Ejercicios.**
+
+1. Agrega un tercer campo a la proyección (`montoCentavos`) y confirma con el log real que la consulta SQL generada ahora selecciona tres columnas, no dos.
+2. Escribe una tercera `Specification` (`creadaDespuesDe(Instant)`) y combínala con `.or()` en vez de `.and()` con una de las existentes, confirmando con un test la diferencia en los resultados.
+3. Implementa `@CreatedBy`/`@LastModifiedBy` (requiere un `AuditorAware<String>` bean) y confirma con un test que el usuario "actual" se registra automáticamente en una entidad nueva.
+4. Escribe de memoria (sin mirar) una proyección por interfaz, una `Specification` simple, y una entidad auditada con `@CreatedDate`. Compara después contra el patrón del Paso 4.
+
+**Pista:** si los campos de auditoría quedan `null` a pesar de tener `@CreatedDate` en la entidad, verifica primero `@EnableJpaAuditing` en la configuración de la aplicación — es la causa más común de este fallo silencioso.
+
+**Completa el código:** rellena el método del repositorio que habilita consultas dinámicas con `Specification`:
+
+```java
+public interface EntregaRepository extends JpaRepository<Entrega, Long>, ____<Entrega> { }
+```
+
+**Reto de memoria:** cierra este documento y escribe, solo de memoria, una proyección por interfaz, una `Specification` combinada con `.and()`, y una entidad con auditoría automática. Compara después contra el patrón del Paso 4.
+
+#### Aplica
+
+**Reto abierto.** Para el panel de operaciones de RutaFlow, diseña un endpoint de búsqueda de envíos con filtros opcionales independientes (estado, rango de fechas, conductor asignado) usando `Specification`, y una proyección DTO para el listado que solo expone los campos que la vista realmente necesita. Documenta por qué `Specification` es suficiente aquí sin necesitar Querydsl.
+
+**Checklist de salida.**
+
+- [ ] Una proyección por interfaz confirma, con el SQL real generado, que solo selecciona las columnas declaradas.
+- [ ] Dos o más `Specification` se combinan con `.and()`/`.or()` en una sola consulta dinámica.
+- [ ] `@CreatedDate`/`@LastModifiedDate` se rellenan automáticamente, confirmado con un test real.
+- [ ] Reprodujiste el fallo de omitir `@EnableJpaAuditing` y entendés por qué los campos quedan `null` sin ningún error.
+- [ ] Podés explicar por qué Querydsl (o su fork) no es la primera opción por defecto hoy.
+
+**Si falla.** Si la proyección devuelve `null` en algún campo, confirma que el nombre del getter en la interfaz coincida con el campo real de la entidad. Si la auditoría no rellena los campos, confirma `@EnableJpaAuditing` en la configuración de la aplicación (no solo `@EntityListeners` en la entidad).
+
+**Siguiente paso:** el Módulo 4 protege estos endpoints con Spring Security.
+
+**Errores comunes:** anotar `@CreatedDate` sin activar `@EnableJpaAuditing`, asumiendo que basta con la anotación en el campo; seguir tutoriales que recomiendan `com.querydsl:querydsl-jpa` para un proyecto nuevo sin verificar su estado de mantenimiento actual.
+
+**Límites y decisión de uso:** para una consulta con un único filtro fijo que nunca cambia, un método derivado simple (`findByEstado`) es más simple que una `Specification`; las Specifications se justifican cuando los filtros son genuinamente dinámicos (el cliente decide cuáles aplicar en cada petición).
+
+**Fuente oficial:** [Spring Data JPA — Specifications](https://docs.spring.io/spring-data/jpa/reference/jpa/specifications.html), [Spring Data JPA — Auditing](https://docs.spring.io/spring-data/jpa/reference/auditing.html).
+
+**Transferencia al proyecto integrador:** el panel de búsqueda del microservicio productivo usará exactamente este patrón de Specifications combinables y proyecciones DTO.
 
 ## Laboratorio práctico
 

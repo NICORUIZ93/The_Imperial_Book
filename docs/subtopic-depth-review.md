@@ -2,8 +2,8 @@
 
 > Las señales automáticas no prueban profundidad ni ausencia de ella. Un tema sólo queda revisado mediante el registro humano con mapa de subtemas críticos, evidencia y fuentes.
 
-- Temas inventariados: 1166
-- Revisados humanamente para subtemas: 343
+- Temas inventariados: 1167
+- Revisados humanamente para subtemas: 344
 - Pendientes: 823
 - Candidatos prioritarios por señales: 782
 
@@ -24,7 +24,7 @@
 | node | 77 | 0 | 77 |
 | react | 58 | 0 | 58 |
 | rutaflow | 29 | 0 | 29 |
-| spring-boot | 100 | 100 | 0 |
+| spring-boot | 101 | 101 | 0 |
 
 ## Cola prioritaria
 
@@ -1130,6 +1130,7 @@
 - `spring-boot/modulo-3` — Tema 1: Entidades y repositorios derivados · Intermedio · 35 min — @Entity/@Id/@GeneratedValue; JpaRepository; @DataJpaTest
 - `spring-boot/modulo-3` — Tema 2: El problema N+1 y su corrección · Avanzado · 50 min — Hibernate Statistics; FetchType; JOIN FETCH / EntityGraph
 - `spring-boot/modulo-3` — Tema 3: Migraciones con Flyway · Intermedio · 35 min — db/migration naming; spring.flyway.enabled; reparación de migración fallida
+- `spring-boot/modulo-3` — Tema 4: Proyecciones, Specifications y auditoría de entidades · Avanzado · 45 min — proyeccion por interfaz (SQL selecciona solo esas columnas); JpaSpecificationExecutor + Specification.where().and(); @EnableJpaAuditing + @EntityListeners(AuditingEntityListener.class); Querydsl original sin mantenimiento, fork OpenFeign best-effort; spring-boot-data-jpa-test (dependencia explicita Boot 4)
 - `spring-boot/modulo-4` — Tema 1: SecurityFilterChain moderno · Intermedio · 40 min — SecurityFilterChain bean; HttpSecurity DSL
 - `spring-boot/modulo-4` — Tema 2: Filtro JWT y autorización por rol · Avanzado · 55 min — jjwt-api/impl/jackson split; OncePerRequestFilter; roles en claims
 - `spring-boot/modulo-4` — Tema 3: CORS y CSRF · Intermedio · 35 min — CorsConfigurationSource; csrf.disable() para API stateless

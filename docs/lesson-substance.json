@@ -1677,7 +1677,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "133c866799472c61641d51d686b26514eddc864b23788f223c292fb007312c7a",
+    "fingerprint": "569b3efd4c4372520be55c6143beaf3a9cd6e50cecab1c90acae3f9909026ac5",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
@@ -1686,7 +1686,7 @@
     },
     "modules": 254,
     "modulesWithLegacySections": 179,
-    "topics": 1166,
+    "topics": 1167,
     "topicsWithIssues": 0
   },
   "topics": {
@@ -9681,7 +9681,7 @@
         "module": 3,
         "tailWords": 266,
         "topic": "Tema 1: Entidades y repositorios derivados · Intermedio · 35 min",
-        "words": 1806
+        "words": 1859
       },
       {
         "issues": [],
@@ -9696,6 +9696,13 @@
         "tailWords": 283,
         "topic": "Tema 3: Migraciones con Flyway · Intermedio · 35 min",
         "words": 1681
+      },
+      {
+        "issues": [],
+        "module": 3,
+        "tailWords": 322,
+        "topic": "Tema 4: Proyecciones, Specifications y auditoría de entidades · Avanzado · 45 min",
+        "words": 2042
       },
       {
         "issues": [],
@@ -9765,7 +9772,7 @@
         "module": 6,
         "tailWords": 287,
         "topic": "Tema 2: @DataJpaTest con Testcontainers · Avanzado · 50 min",
-        "words": 1882
+        "words": 1902
       },
       {
         "issues": [],

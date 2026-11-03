@@ -1,7 +1,7 @@
 {
   "summary": {
-    "topics": 1166,
-    "reviewed": 343,
+    "topics": 1167,
+    "reviewed": 344,
     "pending": 823,
     "priorityCandidates": 782,
     "byTrack": {
@@ -71,8 +71,8 @@
         "pending": 29
       },
       "spring-boot": {
-        "topics": 100,
-        "reviewed": 100,
+        "topics": 101,
+        "reviewed": 101,
         "pending": 0
       }
     },
@@ -21128,6 +21128,37 @@
         "sources": [
           "https://docs.spring.io/spring-data/jpa/reference/",
           "https://documentation.red-gate.com/flyway/flyway-concepts/migrations"
+        ]
+      }
+    },
+    {
+      "id": "spring-boot/modulo-3::Tema 4: Proyecciones, Specifications y auditoría de entidades · Avanzado · 45 min",
+      "track": "spring-boot",
+      "module": 3,
+      "topic": "Tema 4: Proyecciones, Specifications y auditoría de entidades · Avanzado · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Lote 2 (MEDIA #10) de docs/AUDITORIA-COBERTURA-SPRING-20261101.md: 'JPA avanzado: proyecciones, Specifications, Querydsl, auditing -> M3/M16'. Antes solo mencionado como sugerencia de ejercicio ('compara JOIN FETCH, @EntityGraph y una proyeccion DTO'), nunca demostrado con codigo real. Ejecutado de verdad: mvn test, Tests run: 3, Failures: 0, Errors: 0 sobre Spring Boot 4.1.1 / Spring Framework 7.0.9 / Hibernate ORM 7.4.5.Final / JDK 27.0.1.0.3. Confirmado con el SQL REAL generado en el log (no solo el resultado del test): la proyeccion por interfaz genera 'select e1_0.referencia,e1_0.estado from entrega e1_0 where e1_0.estado=?' (solo 2 columnas); la Specification combinada con .and() genera 'where e1_0.estado=? and e1_0.monto_centavos>?' (un solo query con ambos filtros). Fallo deliberado tambien ejecutado: quitar @EnableJpaAuditing deja creadaEn/actualizadaEn en null sin ningun error, aunque @EntityListeners siga en la entidad -- confirma que ambas piezas son necesarias. Hallazgo adicional verificado (no ejecutado con demo propia, documentado con evidencia): el proyecto Querydsl original (com.querydsl) perdio mantenimiento activo; confirmado que el fork comunitario io.github.openfeign.querydsl existe y esta activo en Maven Central (ultima version 7.7), con soporte 'best-effort' de Spring Data segun su propia documentacion oficial -- un hallazgo real sobre el ecosistema, no una demo de codigo. Tambien corregido en este lote: @DataJpaTest estaba importado en el paquete viejo de Boot 3.x (org.springframework.boot.test.autoconfigure.orm.jpa) en 4 ocurrencias ya revisadas (este modulo 3 Temas 1-3, y modulo 6 Tema 2); confirmado via el jar real spring-boot-data-jpa-test-4.1.1.jar que el paquete correcto es org.springframework.boot.data.jpa.test.autoconfigure, y que requiere la dependencia explicita spring-boot-data-jpa-test (ya no incluida en spring-boot-starter-test).",
+        "criticalSubtopics": [
+          "proyeccion por interfaz (SQL selecciona solo esas columnas)",
+          "JpaSpecificationExecutor + Specification.where().and()",
+          "@EnableJpaAuditing + @EntityListeners(AuditingEntityListener.class)",
+          "Querydsl original sin mantenimiento, fork OpenFeign best-effort",
+          "spring-boot-data-jpa-test (dependencia explicita Boot 4)"
+        ],
+        "sources": [
+          "https://docs.spring.io/spring-data/jpa/reference/jpa/specifications.html",
+          "https://docs.spring.io/spring-data/jpa/reference/auditing.html",
+          "https://repo1.maven.org/maven2/io/github/openfeign/querydsl/querydsl-jpa/maven-metadata.xml",
+          "docs/AUDITORIA-COBERTURA-SPRING-20261101.md"
         ]
       }
     },
