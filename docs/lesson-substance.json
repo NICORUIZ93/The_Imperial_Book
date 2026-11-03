@@ -1698,7 +1698,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "a5bd43755bf316ce25b7fce74a2821d6de7dd82a2563f270a76f9b752b4ca0a5",
+    "fingerprint": "36e4700b83db9a1104710c11119f8f261a3f4f3c650944b847291b547083e363",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -7646,7 +7646,7 @@
         "module": 20,
         "tailWords": 50,
         "topic": "Tema 10: Collectors: formar listas, mapas, grupos y texto",
-        "words": 593
+        "words": 650
       },
       {
         "issues": [],

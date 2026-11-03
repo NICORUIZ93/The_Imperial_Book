@@ -1247,11 +1247,10 @@ Un collector junta resultados mientras el Stream recorre datos. Para crear un ma
 
 #### Paso 4 · Ejercicio 1
 
-##### Subtema 10.1: Crear lista y mapa · 5-10 min
+#### Subtema 10.1: Crear lista y mapa · 10 min
+**1. Contexto** exporta las guías y su ciudad de destino.
 
-**Contexto:** exporta las guías y su ciudad de destino.
-
-**Hazlo tú:** crea `java-funcional-t10/src/Mapa.java`:
+**2. Hazlo tú** crea `java-funcional-t10/src/Mapa.java`:
 
 ```java
 import java.util.List;
@@ -1275,15 +1274,18 @@ Ejecuta `cd java-funcional-t10 && java src/Mapa.java`.
 
 **Fallo deliberado:** cambia la primera guía a `RT-2`. **Error esperado:** `IllegalStateException: Duplicate key`. **Diagnóstico:** `toMap` exige llaves únicas o una regla para resolver choques.
 
-**Entiende:** una lista admite repetidos; un mapa necesita una llave única o una política explícita.
+**3. Entiende** una lista admite repetidos; un mapa necesita una llave única o una política explícita.
+
+**4. Cierra**
+
+Guarda la estructura final y anota qué datos se usaron como elemento, clave o grupo.
 
 #### Paso 5 · Ejercicio 2
 
-##### Subtema 10.2: Agrupar por ciudad · 5-10 min
+#### Subtema 10.2: Agrupar por ciudad · 10 min
+**1. Contexto** calcula cuántos paquetes van a cada ciudad.
 
-**Contexto:** calcula cuántos paquetes van a cada ciudad.
-
-**Hazlo tú:** crea `java-funcional-t10/src/Agrupar.java`:
+**2. Hazlo tú** crea `java-funcional-t10/src/Agrupar.java`:
 
 ```java
 import java.util.List;
@@ -1305,15 +1307,18 @@ Ejecuta `cd java-funcional-t10 && java src/Agrupar.java`.
 
 **Fallo deliberado:** usa `Collectors.toMap(Envio::ciudad, Envio::guia)` sin regla de duplicados. **Error esperado:** `Duplicate key Cali`. **Diagnóstico:** varias guías pueden compartir la ciudad; agrupa una colección por llave.
 
-**Entiende:** `groupingBy` guarda todos los resultados que pertenecen a la misma categoría.
+**3. Entiende** `groupingBy` guarda todos los resultados que pertenecen a la misma categoría.
+
+**4. Cierra**
+
+Guarda la estructura final y anota qué datos se usaron como elemento, clave o grupo.
 
 #### Paso 6 · Ejercicio 3
 
-##### Subtema 10.3: Unir resultados en texto · 5-10 min
+#### Subtema 10.3: Unir resultados en texto · 10 min
+**1. Contexto** imprime las ciudades en un resumen que pueda leerse en pantalla.
 
-**Contexto:** imprime las ciudades en un resumen que pueda leerse en pantalla.
-
-**Hazlo tú:** crea `java-funcional-t10/src/Unir.java`:
+**2. Hazlo tú** crea `java-funcional-t10/src/Unir.java`:
 
 ```java
 import java.util.List;
@@ -1334,7 +1339,11 @@ Ejecuta `cd java-funcional-t10 && java src/Unir.java`.
 
 **Fallo deliberado:** elimina el delimitador. **Resultado del fallo:** los nombres quedan pegados. **Diagnóstico:** `joining` necesita un separador que haga visible el límite entre elementos.
 
-**Entiende:** el collector transforma muchos textos en una sola cadena.
+**3. Entiende** el collector transforma muchos textos en una sola cadena.
+
+**4. Cierra**
+
+Guarda la estructura final y anota qué datos se usaron como elemento, clave o grupo.
 
 #### Paso 7 · Cierre y evidencia
 

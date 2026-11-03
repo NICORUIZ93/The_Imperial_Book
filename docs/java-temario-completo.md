@@ -5,7 +5,7 @@
 **Proyecto continuo:** Motor de asignación de entregas.
 **Prerrequisito de entrada:** Fundamentos de programación; el módulo 0 comienza con JDK y terminal..
 **Duración objetivo:** temas de 20–45 minutos; cada tema se divide en 3–6 acciones de 5–15 minutos.
-**Estado estructural:** 97/101 temas migrados; auditoría estructural actualizada el 2026-11-03.
+**Estado estructural:** 98/101 temas migrados; auditoría estructural actualizada el 2026-11-03.
 
 ## Índice de módulos y temas
 
@@ -507,7 +507,10 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 9.1: Encontrar el primer resultado · 10 min
   - ✓ Subtema 9.2: Sumar con reduce · 10 min
   - ✓ Subtema 9.3: Ejecutar una acción · 10 min
-- [pendiente de migrar] Tema 10: Collectors: formar listas, mapas, grupos y texto
+- [4 pasos] Tema 10: Collectors: formar listas, mapas, grupos y texto
+  - ✓ Subtema 10.1: Crear lista y mapa · 10 min
+  - ✓ Subtema 10.2: Agrupar por ciudad · 10 min
+  - ✓ Subtema 10.3: Unir resultados en texto · 10 min
 - [pendiente de migrar] Tema 11: Streams paralelos: comparar antes de acelerarlos
 - [pendiente de migrar] Tema 12: Pureza y efectos: calcular separado de guardar o imprimir
 - [pendiente de migrar] Tema 13: Flow API: publicar datos con demanda y cierre
@@ -534,7 +537,7 @@ La tabla registra presencia de áreas en el inventario del track, no profundidad
 
 ### Huecos y límites reportados
 
-- El repositorio contiene 101 temas en 21 módulos; 97 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
+- El repositorio contiene 101 temas en 21 módulos; 98 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
 - No hay base para afirmar que el track esté completo: la comparación con la fuente de referencia está pendiente de revisión humana módulo por módulo.
 - Los elementos de la fuente que todavía deben verificarse de forma explícita están enumerados en la tabla anterior; cualquier técnica crítica que no tenga tema propio debe añadirse conservando el currículo base.
 - La ejecución de ejemplos, el comportamiento con brokers/plataformas reales y la calidad pedagógica humana se registran por separado.
