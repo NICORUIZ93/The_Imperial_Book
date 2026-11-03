@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 195,
+    "topicsWithSignals": 199,
     "newLaboratories": 25
   },
   "priorities": {
@@ -7630,7 +7630,7 @@
       "file": "web/public/content/java/modulo-12.md",
       "line": 6,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7641,8 +7641,10 @@
       "module": 12,
       "title": "Tema 2: Factory Method y Strategy",
       "file": "web/public/content/java/modulo-12.md",
-      "line": 70,
-      "signals": [],
+      "line": 76,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -7652,8 +7654,10 @@
       "module": 12,
       "title": "Tema 3: Abstract Factory y familias de productos compatibles",
       "file": "web/public/content/java/modulo-12.md",
-      "line": 158,
-      "signals": [],
+      "line": 146,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -7663,9 +7667,9 @@
       "module": 12,
       "title": "Tema 4: SOLID y cuándo NO aplicar un patrón",
       "file": "web/public/content/java/modulo-12.md",
-      "line": 229,
+      "line": 216,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7676,8 +7680,10 @@
       "module": 12,
       "title": "Tema 5: Prototype: copiar un objeto sin compartir sus datos",
       "file": "web/public/content/java/modulo-12.md",
-      "line": 419,
-      "signals": [],
+      "line": 286,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -7687,8 +7693,10 @@
       "module": 12,
       "title": "Tema 6: Patrones estructurales para conectar piezas existentes",
       "file": "web/public/content/java/modulo-12.md",
-      "line": 466,
-      "signals": [],
+      "line": 356,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"

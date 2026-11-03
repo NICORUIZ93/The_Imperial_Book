@@ -86,9 +86,9 @@
     },
     "java": {
       "topics": 101,
-      "code": 88,
-      "commentedCode": 26,
-      "mermaid": 25,
+      "code": 82,
+      "commentedCode": 21,
+      "mermaid": 22,
       "archifyVisual": 1,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
@@ -2042,9 +2042,44 @@
     {
       "track": "java",
       "module": 12,
+      "topic": "Tema 1: Builder — configuración paso a paso y validación",
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "java",
+      "module": 12,
+      "topic": "Tema 2: Factory Method y Strategy",
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "java",
+      "module": 12,
+      "topic": "Tema 3: Abstract Factory y familias de productos compatibles",
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "java",
+      "module": 12,
+      "topic": "Tema 4: SOLID y cuándo NO aplicar un patrón",
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "java",
+      "module": 12,
       "topic": "Tema 5: Prototype: copiar un objeto sin compartir sus datos",
-      "missingCode": false,
-      "missingComments": true
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "java",
+      "module": 12,
+      "topic": "Tema 6: Patrones estructurales para conectar piezas existentes",
+      "missingCode": true,
+      "missingComments": false
     },
     {
       "track": "java",

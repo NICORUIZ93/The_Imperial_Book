@@ -11,7 +11,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 | node | 83 | 17 | HTTP y validación antes de autenticación e integraciones | API con límites de carga, paginación estable, pruebas y cierre ordenado |
 | angular | 71 | 3 | HTML/CSS/TypeScript explícitos; RxJS y estado con ejemplos completos | Rutas, formularios, datos remotos y cambios sin guardar comprobados con navegador |
 | react | 58 | 46 | JSX y estado antes de efectos; proveedor, dependencias y API visibles | Carga, error, vacío y carrera de respuestas; caché observada, no supuesta |
-| java | 101 | 66 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
+| java | 101 | 70 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
 | spring-boot | 111 | 27 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
 | android | 58 | 0 | Kotlin antes de Compose; distinguir recomposición, recreación y muerte de proceso | App instalable con permisos, restauración, persistencia y pruebas en dispositivo |
 | ios | 56 | 4 | Swift antes de SwiftUI; explicitar macOS/Xcode y destino | Cancelación, estados de red, persistencia y accesibilidad comprobados en simulador |
@@ -705,12 +705,12 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | java / 11 | [Tema 2: Java Flight Recorder y JIT compilation](../web/public/content/java/modulo-11.md) | demostracion-no-delimitada |
 | java / 11 | [Tema 3: Referencias especiales y heap dumps](../web/public/content/java/modulo-11.md) | demostracion-no-delimitada |
 | java / 11 | [Tema 4: Foreign Function & Memory API (Java 22)](../web/public/content/java/modulo-11.md) | demostracion-no-delimitada |
-| java / 12 | [Tema 1: Builder — configuración paso a paso y validación](../web/public/content/java/modulo-12.md) | clase-java-no-visible |
-| java / 12 | [Tema 2: Factory Method y Strategy](../web/public/content/java/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 12 | [Tema 3: Abstract Factory y familias de productos compatibles](../web/public/content/java/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 12 | [Tema 4: SOLID y cuándo NO aplicar un patrón](../web/public/content/java/modulo-12.md) | clase-java-no-visible |
-| java / 12 | [Tema 5: Prototype: copiar un objeto sin compartir sus datos](../web/public/content/java/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 12 | [Tema 6: Patrones estructurales para conectar piezas existentes](../web/public/content/java/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 12 | [Tema 1: Builder — configuración paso a paso y validación](../web/public/content/java/modulo-12.md) | demostracion-no-delimitada |
+| java / 12 | [Tema 2: Factory Method y Strategy](../web/public/content/java/modulo-12.md) | demostracion-no-delimitada |
+| java / 12 | [Tema 3: Abstract Factory y familias de productos compatibles](../web/public/content/java/modulo-12.md) | demostracion-no-delimitada |
+| java / 12 | [Tema 4: SOLID y cuándo NO aplicar un patrón](../web/public/content/java/modulo-12.md) | demostracion-no-delimitada |
+| java / 12 | [Tema 5: Prototype: copiar un objeto sin compartir sus datos](../web/public/content/java/modulo-12.md) | demostracion-no-delimitada |
+| java / 12 | [Tema 6: Patrones estructurales para conectar piezas existentes](../web/public/content/java/modulo-12.md) | demostracion-no-delimitada |
 | java / 13 | [Tema 1: Arquitectura por capas del proyecto integrador](../web/public/content/java/modulo-13.md) | clase-java-no-visible |
 | java / 13 | [Tema 2: Integrando concurrencia, modelado y testing](../web/public/content/java/modulo-13.md) | clase-java-no-visible |
 | java / 13 | [Tema 3: Build reproducible y cierre del track](../web/public/content/java/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |

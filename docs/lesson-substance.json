@@ -964,7 +964,10 @@
       "track": "java"
     },
     {
-      "legacySections": [],
+      "legacySections": [
+        "## Construcción guiada del capítulo",
+        "**Errores comunes y soluciones**"
+      ],
       "module": 12,
       "track": "java"
     },
@@ -1695,24 +1698,24 @@
     }
   ],
   "summary": {
-    "fingerprint": "b3bbb752984bef758b6421be0ebb765b1b65c2116095db61103eeb6949294ba9",
+    "fingerprint": "d185a58f2c3eca6f70935f62ecd65d48c8d7494448c11db24a97eef62a989865",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 175,
-      "cola-tras-cierre": 340,
+      "cola-tras-cierre": 337,
       "parrafo-repetido": 5,
-      "sin-fuente": 3,
-      "tema-breve": 6
+      "sin-fuente": 7,
+      "tema-breve": 9
     },
     "legacySections": {
-      "## Construcción guiada del capítulo": 41,
+      "## Construcción guiada del capítulo": 42,
       "## Ruta de proyecto progresivo desde carpeta vacía": 12,
-      "**Errores comunes y soluciones**": 179
+      "**Errores comunes y soluciones**": 180
     },
     "modules": 256,
-    "modulesWithLegacySections": 181,
+    "modulesWithLegacySections": 182,
     "topics": 1185,
-    "topicsWithIssues": 430
+    "topicsWithIssues": 431
   },
   "topics": {
     "android": [
@@ -7249,51 +7252,56 @@
       },
       {
         "issues": [
-          "cola-tras-cierre"
+          "sin-fuente",
+          "tema-breve"
         ],
         "module": 12,
-        "tailWords": 574,
+        "tailWords": 0,
         "topic": "Tema 1: Builder — configuración paso a paso y validación",
-        "words": 982
+        "words": 438
       },
       {
         "issues": [
-          "cola-tras-cierre"
+          "sin-fuente",
+          "tema-breve"
         ],
         "module": 12,
-        "tailWords": 556,
+        "tailWords": 0,
         "topic": "Tema 2: Factory Method y Strategy",
-        "words": 1057
-      },
-      {
-        "issues": [],
-        "module": 12,
-        "tailWords": 272,
-        "topic": "Tema 3: Abstract Factory y familias de productos compatibles",
-        "words": 858
+        "words": 409
       },
       {
         "issues": [
-          "cola-tras-cierre"
+          "sin-fuente",
+          "tema-breve"
         ],
         "module": 12,
-        "tailWords": 506,
+        "tailWords": 0,
+        "topic": "Tema 3: Abstract Factory y familias de productos compatibles",
+        "words": 405
+      },
+      {
+        "issues": [],
+        "module": 12,
+        "tailWords": 0,
         "topic": "Tema 4: SOLID y cuándo NO aplicar un patrón",
-        "words": 1139
+        "words": 463
       },
       {
-        "issues": [],
+        "issues": [
+          "sin-fuente"
+        ],
         "module": 12,
-        "tailWords": 146,
+        "tailWords": 0,
         "topic": "Tema 5: Prototype: copiar un objeto sin compartir sus datos",
-        "words": 594
+        "words": 451
       },
       {
         "issues": [],
         "module": 12,
-        "tailWords": 304,
+        "tailWords": 0,
         "topic": "Tema 6: Patrones estructurales para conectar piezas existentes",
-        "words": 804
+        "words": 451
       },
       {
         "issues": [

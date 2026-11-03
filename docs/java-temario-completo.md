@@ -5,7 +5,7 @@
 **Proyecto continuo:** Motor de asignación de entregas.
 **Prerrequisito de entrada:** Fundamentos de programación; el módulo 0 comienza con JDK y terminal..
 **Duración objetivo:** temas de 20–45 minutos; cada tema se divide en 3–6 acciones de 5–15 minutos.
-**Estado estructural:** 51/101 temas migrados; auditoría estructural actualizada el 2026-11-03.
+**Estado estructural:** 57/101 temas migrados; auditoría estructural actualizada el 2026-11-03.
 
 ## Índice de módulos y temas
 
@@ -277,12 +277,30 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
 
 [Abrir lección completa](../web/public/content/java/modulo-12.md)
 
-- [pendiente de migrar] Tema 1: Builder — configuración paso a paso y validación
-- [pendiente de migrar] Tema 2: Factory Method y Strategy
-- [pendiente de migrar] Tema 3: Abstract Factory y familias de productos compatibles
-- [pendiente de migrar] Tema 4: SOLID y cuándo NO aplicar un patrón
-- [pendiente de migrar] Tema 5: Prototype: copiar un objeto sin compartir sus datos
-- [pendiente de migrar] Tema 6: Patrones estructurales para conectar piezas existentes
+- [4 pasos] Tema 1: Builder — configuración paso a paso y validación
+  - ✓ Subtema 1.1: Crea un envío con un builder · 10 min
+  - ✓ Subtema 1.2: Valida reglas en build() · 10 min
+  - ✓ Subtema 1.3: Decide si Builder es necesario · 10 min
+- [4 pasos] Tema 2: Factory Method y Strategy
+  - ✓ Subtema 2.1: Elige estrategia por interfaz · 10 min
+  - ✓ Subtema 2.2: Crea el objeto con Factory Method · 10 min
+  - ✓ Subtema 2.3: Inyecta la estrategia en el servicio · 10 min
+- [4 pasos] Tema 3: Abstract Factory y familias de productos compatibles
+  - ✓ Subtema 3.1: Define una familia de notificaciones · 10 min
+  - ✓ Subtema 3.2: Construye familias compatibles · 10 min
+  - ✓ Subtema 3.3: Añade una familia nueva sin cambiar el cliente · 10 min
+- [4 pasos] Tema 4: SOLID y cuándo NO aplicar un patrón
+  - ✓ Subtema 4.1: Separa responsabilidades · 10 min
+  - ✓ Subtema 4.2: Sustituye una implementación sin romper el contrato · 10 min
+  - ✓ Subtema 4.3: Invierte la dependencia hacia una abstracción · 10 min
+- [4 pasos] Tema 5: Prototype: copiar un objeto sin compartir sus datos
+  - ✓ Subtema 5.1: Implementa una copia independiente · 10 min
+  - ✓ Subtema 5.2: Copia solo lo que el contrato necesita · 10 min
+  - ✓ Subtema 5.3: Compara Prototype con una fábrica · 10 min
+- [4 pasos] Tema 6: Patrones estructurales para conectar piezas existentes
+  - ✓ Subtema 6.1: Adapta un proveedor antiguo · 10 min
+  - ✓ Subtema 6.2: Añade comportamiento con Decorator · 10 min
+  - ✓ Subtema 6.3: Simplifica una operación con Facade · 10 min
 
 ### Módulo 13: Proyecto integrador
 
@@ -394,7 +412,7 @@ La tabla registra presencia de áreas en el inventario del track, no profundidad
 
 ### Huecos y límites reportados
 
-- El repositorio contiene 101 temas en 21 módulos; 51 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
+- El repositorio contiene 101 temas en 21 módulos; 57 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
 - No hay base para afirmar que el track esté completo: la comparación con la fuente de referencia está pendiente de revisión humana módulo por módulo.
 - Los elementos de la fuente que todavía deben verificarse de forma explícita están enumerados en la tabla anterior; cualquier técnica crítica que no tenga tema propio debe añadirse conservando el currículo base.
 - La ejecución de ejemplos, el comportamiento con brokers/plataformas reales y la calidad pedagógica humana se registran por separado.

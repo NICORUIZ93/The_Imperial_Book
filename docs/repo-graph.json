@@ -289,7 +289,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 11380,
+      "lines": 11638,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -297,7 +297,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1184,
+      "lines": 1178,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -583,7 +583,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3612,
+      "lines": 3647,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -619,7 +619,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13513,
+      "lines": 13521,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -660,7 +660,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 110,
+      "lines": 116,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -767,7 +767,7 @@
     },
     {
       "path": "docs/java-temario-completo.md",
-      "lines": 405,
+      "lines": 423,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -796,7 +796,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 11126,
+      "lines": 11134,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -9833,7 +9833,7 @@
     },
     {
       "path": "web/public/content/java/modulo-12.md",
-      "lines": 529,
+      "lines": 468,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9841,15 +9841,15 @@
         "# M\u00f3dulo 12: Buenas pr\u00e1cticas y patrones de dise\u00f1o",
         "## Aprende construyendo",
         "### Tema 1: Builder \u2014 configuraci\u00f3n paso a paso y validaci\u00f3n",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
-        "# Maven",
-        "# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia"
+        "#### Subtema 1.1: Crea un env\u00edo con un builder \u00b7 10 min",
+        "#### Subtema 1.2: Valida reglas en build() \u00b7 10 min",
+        "#### Subtema 1.3: Decide si Builder es necesario \u00b7 10 min",
+        "### Tema 2: Factory Method y Strategy",
+        "#### Subtema 2.1: Elige estrategia por interfaz \u00b7 10 min",
+        "#### Subtema 2.2: Crea el objeto con Factory Method \u00b7 10 min",
+        "#### Subtema 2.3: Inyecta la estrategia en el servicio \u00b7 10 min",
+        "### Tema 3: Abstract Factory y familias de productos compatibles",
+        "#### Subtema 3.1: Define una familia de notificaciones \u00b7 10 min"
       ]
     },
     {

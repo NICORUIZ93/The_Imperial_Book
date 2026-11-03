@@ -2,7 +2,7 @@
 
 > Auditoría estructural. Un encabezado o criterio detectado no demuestra que el ejemplo se haya ejecutado ni que la explicación sea pedagógicamente suficiente.
 
-Temas conformes a cuatro pasos: **68/1185**. Tracks inventariados: **14**.
+Temas conformes a cuatro pasos: **74/1185**. Tracks inventariados: **14**.
 
 | Track | Temas conformes | Temas inventariados | Subtemas detectados | Subtemas con estructura completa |
 |---|---:|---:|---:|---:|
@@ -13,7 +13,7 @@ Temas conformes a cuatro pasos: **68/1185**. Tracks inventariados: **14**.
 | flutter | 1 | 106 | 3 | 3 |
 | foundations | 0 | 99 | 0 | 0 |
 | ios | 0 | 56 | 0 | 0 |
-| java | 51 | 101 | 155 | 155 |
+| java | 57 | 101 | 173 | 173 |
 | javascript | 0 | 88 | 0 | 0 |
 | kotlin-multiplatform | 0 | 56 | 0 | 0 |
 | node | 2 | 83 | 6 | 6 |
@@ -704,12 +704,6 @@ Temas conformes a cuatro pasos: **68/1185**. Tracks inventariados: **14**.
 
 ### java
 
-- M12 ### Tema 1: Builder — configuración paso a paso y validación: tiene 0 subtemas
-- M12 ### Tema 2: Factory Method y Strategy: tiene 0 subtemas
-- M12 ### Tema 3: Abstract Factory y familias de productos compatibles: tiene 0 subtemas
-- M12 ### Tema 4: SOLID y cuándo NO aplicar un patrón: tiene 0 subtemas
-- M12 ### Tema 5: Prototype: copiar un objeto sin compartir sus datos: tiene 0 subtemas
-- M12 ### Tema 6: Patrones estructurales para conectar piezas existentes: tiene 0 subtemas
 - M13 ### Tema 1: Arquitectura por capas del proyecto integrador: tiene 0 subtemas
 - M13 ### Tema 2: Integrando concurrencia, modelado y testing: tiene 0 subtemas
 - M13 ### Tema 3: Build reproducible y cierre del track: tiene 0 subtemas

@@ -9,15 +9,15 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | Criterio | Cubierto | Pendiente |
 |---|---:|---:|
 | Explicación | 1185 | 0 |
-| Código | 1172 | 13 |
+| Código | 1166 | 19 |
 | Ruta | 1185 | 0 |
-| Ejecución | 1148 | 37 |
+| Ejecución | 1142 | 43 |
 | Resultado | 1183 | 2 |
-| Modificación | 1152 | 33 |
-| Conexión con un proyecto | 1139 | 46 |
-| Modelo mental | 1165 | 20 |
-| Límites | 1153 | 32 |
-| **Perfil de criterios detectado** | **1122** | **63** |
+| Modificación | 1149 | 36 |
+| Conexión con un proyecto | 1133 | 52 |
+| Modelo mental | 1159 | 26 |
+| Límites | 1148 | 37 |
+| **Perfil de criterios detectado** | **1116** | **69** |
 
 ## Prioridad por track
 
@@ -30,7 +30,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | flutter | 106 | 0 | 0 | 0 | 0 | 0 | 1 | 1 |
 | foundations | 99 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ios | 56 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| java | 101 | 13 | 0 | 32 | 0 | 27 | 34 | 22 |
+| java | 101 | 19 | 0 | 38 | 0 | 30 | 40 | 27 |
 | javascript | 88 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | kotlin-multiplatform | 56 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | node | 83 | 0 | 0 | 0 | 0 | 1 | 2 | 1 |
@@ -55,6 +55,12 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 - [java · módulo 11](../web/public/content/java/modulo-11.md) · Tema 2: Java Flight Recorder y JIT compilation: código, ejecución, modificación, conexión con un proyecto, modelo mental.
 - [java · módulo 11](../web/public/content/java/modulo-11.md) · Tema 3: Referencias especiales y heap dumps: código, ejecución, modificación, conexión con un proyecto, modelo mental.
 - [java · módulo 11](../web/public/content/java/modulo-11.md) · Tema 4: Foreign Function & Memory API (Java 22): ejecución, modificación, conexión con un proyecto, modelo mental.
+- [java · módulo 12](../web/public/content/java/modulo-12.md) · Tema 1: Builder — configuración paso a paso y validación: código, ejecución, conexión con un proyecto, modelo mental, límites.
+- [java · módulo 12](../web/public/content/java/modulo-12.md) · Tema 2: Factory Method y Strategy: código, ejecución, modificación, conexión con un proyecto, modelo mental, límites.
+- [java · módulo 12](../web/public/content/java/modulo-12.md) · Tema 3: Abstract Factory y familias de productos compatibles: código, ejecución, modificación, conexión con un proyecto, modelo mental, límites.
+- [java · módulo 12](../web/public/content/java/modulo-12.md) · Tema 4: SOLID y cuándo NO aplicar un patrón: código, ejecución, modificación, conexión con un proyecto, modelo mental.
+- [java · módulo 12](../web/public/content/java/modulo-12.md) · Tema 5: Prototype: copiar un objeto sin compartir sus datos: código, ejecución, conexión con un proyecto, modelo mental, límites.
+- [java · módulo 12](../web/public/content/java/modulo-12.md) · Tema 6: Patrones estructurales para conectar piezas existentes: código, ejecución, conexión con un proyecto, modelo mental, límites.
 - [java · módulo 2](../web/public/content/java/modulo-2.md) · Tema 1: List, Set, Map y sus implementaciones: modificación, límites.
 - [java · módulo 2](../web/public/content/java/modulo-2.md) · Tema 2: Genéricos, wildcards y type erasure: modificación.
 - [java · módulo 2](../web/public/content/java/modulo-2.md) · Tema 3: Comparable vs Comparator, e iteración: límites.
