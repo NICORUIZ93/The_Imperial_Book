@@ -15,8 +15,8 @@
     "cloud": {
       "topics": 156,
       "code": 156,
-      "commentedCode": 71,
-      "mermaid": 80,
+      "commentedCode": 72,
+      "mermaid": 77,
       "archifyVisual": 4,
       "asciiVisual": 18,
       "misleadingDiagramLabel": 0,
@@ -405,13 +405,6 @@
       "track": "cloud",
       "module": 0,
       "topic": "Tema 2: Fundamentos de redes — direcciones IP, puertos, HTTP y APIs",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 0,
-      "topic": "Tema 3: Qué vas a aprender y cómo está estructurado el curso",
       "missingCode": false,
       "missingComments": true
     },

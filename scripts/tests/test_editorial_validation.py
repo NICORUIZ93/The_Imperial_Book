@@ -7,6 +7,7 @@ from unittest.mock import patch
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import audit_topic_learning_quality as audit
 import audit_code_visual_quality as visual_audit
+import audit_seven_step_methodology as methodology
 import fix_lessons
 
 
@@ -77,6 +78,20 @@ El proyecto integrador tiene límites.
                 result = audit.evaluate(f"{filename}\n```bash\n{command}\n```")
                 self.assertTrue(result["filePath"])
                 self.assertTrue(result["runCommand"])
+
+    def test_basic_terminal_commands_are_recognized(self):
+        for command in ("mkdir ejemplo", "cd ejemplo", "pwd", "Get-Location", "cat nota.txt", "Get-Content nota.txt"):
+            with self.subTest(command=command):
+                self.assertTrue(audit.evaluate(f"```bash\n{command}\n```")["runCommand"])
+
+    def test_independent_text_file_example_is_recognized(self):
+        block = """#### Paso 4 · Demostración guiada
+Crea el ejemplo independiente desde una carpeta vacía y guarda el archivo ejemplo-terminal/saludo.txt:
+```bash
+mkdir ejemplo-terminal
+```
+"""
+        self.assertTrue(methodology.evaluate(block)["standaloneExample"])
 
     def test_regex_patterns_are_not_mistaken_for_damaged_prose(self):
         with tempfile.TemporaryDirectory() as directory:

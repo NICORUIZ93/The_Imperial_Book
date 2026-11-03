@@ -71,6 +71,15 @@ del usuario ni las reglas de trabajo de este repositorio.
   Cuatro incorporan mapas de flujo con sus límites explicados.
 - Se corrigió el detector de rutas para reconocer `.mjs` y `.cjs`, con cobertura
   unitaria de esos formatos.
+- Se reescribió el inicio del módulo Cloud 0: instalación por etapas, menos
+  jerga, comandos en Bash y PowerShell, un servidor HTTP pequeño con respuestas
+  200/404 y una bitácora de aprendizaje. Los tres temas quedaron en 1.098/1.098
+  para el perfil editorial y el contrato de siete pasos. Sus ejemplos se
+  ejecutaron en un directorio temporal; la bitácora no se evalúa como prueba de
+  dominio.
+- Las auditorías también se ampliaron para reconocer comandos básicos (`mkdir`,
+  `cd`, `cat`, `Get-Content`, entre otros) y archivos `.txt` como operaciones y
+  artefactos válidos. Se añadieron pruebas para esas detecciones.
 - La suite E2E de 46 pruebas se inició, pero Chrome terminó con `SIGKILL` antes de
   abrir la primera página. Sus casos reportan 0 ms; no cuentan como verificación
   de navegación. La revisión visual posterior al ajuste CSS queda pendiente.

@@ -1,6 +1,6 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-11-03 15:45 UTC
+Generated: 2026-11-03 16:18 UTC
 Root: `The_Imperial_Book`
 Indexed files: 921
 Import edges: 56
@@ -193,7 +193,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `scripts/start.sh` (10 lines)
 - `scripts/tests/test_backup_verified.py` (104 lines) - symbols: BackupVerificationTests; imports: os, shutil, subprocess, tempfile, unittest, pathlib, shlex
 - `scripts/tests/test_course_depth.py` (25 lines) - symbols: DepthSignalsTests; imports: sys, pathlib, unittest, audit_course_depth, audit_seven_step_methodology, audit_topic_learning_quality
-- `scripts/tests/test_editorial_validation.py` (92 lines) - symbols: EditorialValidationTests; imports: sys, tempfile, unittest, pathlib, unittest.mock, audit_topic_learning_quality, audit_code_visual_quality, fix_lessons
+- `scripts/tests/test_editorial_validation.py` (107 lines) - symbols: EditorialValidationTests; imports: sys, tempfile, unittest, pathlib, unittest.mock, audit_topic_learning_quality, audit_code_visual_quality, audit_seven_step_methodology
 - ... 16 more files
 
 ### course-content
@@ -274,12 +274,12 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/biblioteca/catalogo.json` (564 lines)
 - `docs/biblioteca/imagenes.json` (577 lines)
 - `docs/browser-course-review.json` (2660 lines)
-- `docs/code-visual-quality.json` (2884 lines)
-- `docs/course-depth-review.json` (12460 lines)
+- `docs/code-visual-quality.json` (2877 lines)
+- `docs/course-depth-review.json` (12462 lines)
 - `docs/curriculum-matrix.json` (394 lines)
 - `docs/floci-official-curriculum.json` (14 lines)
 - `docs/lesson-substance-baseline.json` (1693 lines)
-- `docs/lesson-substance.json` (10596 lines)
+- `docs/lesson-substance.json` (10590 lines)
 - `docs/merged-pdf-index.json` (426 lines)
 - `docs/official-learning-guides.json` (22 lines)
 - `docs/official-sources.json` (195 lines)

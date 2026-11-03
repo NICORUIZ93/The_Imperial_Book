@@ -75,3 +75,19 @@ barra de progreso.
 Compilación Angular, 17 pruebas unitarias, `./scripts/validate.sh`, cinco
 laboratorios locales relevantes y `test.sh` de Java pasan. El bundle inicial
 sigue por encima del presupuesto configurado.
+
+## Simplificación para principiantes — 2026-11-03
+
+Se redujo la introducción de Cloud 0: la primera práctica solo requiere la
+terminal; Node.js y Docker aparecen cuando se necesitan. Los temas 1–3 ahora
+explican rutas, carpetas, servidor y respuestas HTTP con frases sencillas,
+comandos visibles para macOS/Linux y PowerShell, y una bitácora con resultados
+reales. El Tema 2 se probó desde un directorio temporal: `/salud` devolvió 200,
+una ruta ausente devolvió 404 y la ampliación `/version` funcionó. El comando de
+creación y lectura de `saludo.txt` también pasó en Bash.
+
+Se amplió la auditoría para aceptar los comandos de terminal usados en estos
+ejemplos y la extensión `.txt`. `./scripts/validate.sh` pasa con 23 pruebas
+unitarias auxiliares (4 omitidas) y el perfil editorial y la metodología marcan
+1.098/1.098 temas. La revisión de navegador sigue pendiente: Chrome es terminado
+por el entorno antes de abrir las páginas.

@@ -1,209 +1,225 @@
 # Módulo 0: Introducción y preparación
 
 
-## Antes de comenzar: instalación guiada por sistema operativo
+## Antes de comenzar: prepara solo lo que necesitas
 
-Este laboratorio funciona sin una cuenta AWS y sin tarjeta de crédito. Instala Git, Docker, AWS CLI, Python 3 y Node.js LTS. Usa versiones estables y reinicia la terminal después de cada instalador para que el sistema actualice el `PATH`.
+Ve instalando herramientas cuando el tema las necesite. Para el Tema 1 basta con abrir Terminal en macOS/Linux o PowerShell en Windows. Antes del Tema 2 necesitarás [Node.js](https://nodejs.org/en/download/); antes del Tema 4, Docker. AWS CLI y Python se preparan en los laboratorios que los usan.
 
-| Sistema | Ruta recomendada |
-|---|---|
-| Windows | Docker Desktop con WSL 2, Git for Windows, AWS CLI MSI, Python desde python.org y Node.js LTS |
-| macOS | Docker Desktop y `brew install awscli python node git` |
-| Ubuntu/Debian | Docker Engine oficial, AWS CLI v2 oficial, `python3`, Node LTS y Git |
-
-Verifica uno por uno antes de continuar:
-
-```bash
-docker --version
-docker compose version
-aws --version
-python3 --version
-node --version
-git --version
-```
-
-Clona el repositorio, entra en su carpeta y ejecuta `docker compose up -d`. Después usa `docker compose ps`: el contenedor debe estar en estado saludable. Si un comando “no existe”, corrige su instalación antes de avanzar; si Docker no conecta con el daemon, abre Docker Desktop o inicia el servicio Docker en Linux. No configures credenciales reales de producción para este curso.
+El curso funciona con servicios locales y no requiere una cuenta cloud ni tarjeta. Usa solo las credenciales de prueba que indican los ejemplos; nunca pegues claves de una cuenta real.
 
 ## Aprende construyendo
 
 ### Tema 1: Fundamentos absolutos — qué es una terminal, un comando y un sistema operativo
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás usar una terminal desde cero. Prerrequisitos: Windows, macOS o Linux; verifica `python --version` y `docker --version`.
+Al finalizar podrás crear una carpeta, entrar en ella y guardar un archivo. **Conocimiento previo:** ninguno. Abre Terminal en macOS/Linux o PowerShell en Windows. No necesitas saber programar ni instalar Docker.
+
 #### Paso 2 · Contexto y caso real
-Una persona que opera servicios cloud debe repetir comandos y diagnosticar rutas sin depender de una interfaz gráfica.
-#### Paso 3 · Teoría, modelo mental y analogía
-La terminal es una conversación precisa con el sistema operativo; la analogía es dictar una orden exacta a una cocina.
-#### Paso 4 · Demostración guiada
-Crea `ejemplo-terminal/README.md` desde una carpeta vacía y ejecuta los comandos del bloque de instalación.
+Cuando guardas un proyecto, importa saber en qué carpeta estás. Si ejecutas una orden en otro lugar, el archivo puede terminar donde no lo encuentras. **¿Por qué es importante?** Saber dónde estás evita perder archivos y repetir trabajo.
+
+#### Paso 3 · Teoría sencilla y analogía
+La **terminal** es la ventana donde escribes. Un **comando** es una orden corta. El **sistema operativo** organiza archivos y programas; el **shell** lee la orden y se la entrega al sistema. Si escribes mal una orden, el sistema suele mostrar un mensaje que ayuda a corregirla. **Analogía:** como en una cocina: tú haces el pedido, el shell lo entiende y el sistema lo prepara. Si entraste al restaurante equivocado, la orden no llega a la mesa correcta.
+
+**Recorrido de una orden:** `┌ tú escribes → terminal → shell → sistema operativo ┐`<br>`└ resultado ←────────────────────────────────────────┘`.
+
+#### Paso 4 · Demostración guiada desde cero
+Crea el ejemplo independiente en una carpeta nueva y entra en ella. El archivo de texto se llamará `saludo.txt`:
+
 ```bash
 mkdir ejemplo-terminal
 cd ejemplo-terminal
-python --version
 ```
-Resultado esperado: carpeta creada y versión visible.
+
+En macOS/Linux guarda y muestra el texto:
+
+```bash
+printf 'Hola, ya estoy en mi carpeta\n' > saludo.txt
+pwd
+cat saludo.txt
+```
+
+En PowerShell usa:
+
+```powershell
+"Hola, ya estoy en mi carpeta" | Set-Content saludo.txt
+Get-Location
+Get-Content saludo.txt
+```
+
+`mkdir` crea la carpeta; `cd` entra en ella; las otras órdenes guardan y muestran el texto. `pwd` y `Get-Location` muestran dónde estás. **Resultado esperado:** verás la ruta de `ejemplo-terminal` y el mensaje `Hola, ya estoy en mi carpeta`. El archivo está en `ejemplo-terminal/saludo.txt`.
+
 #### Paso 5 · Práctica guiada
-Pista: escribe deliberadamente una ruta inexistente para provocar un fallo deliberado, lee el mensaje y corrígelo.
+**Fallo deliberado:** pide leer `salud.txt`, sin la letra “o”. Verás un mensaje de error porque ese archivo no existe. **Pista:** compara el nombre que escribiste con `saludo.txt`; corrígelo y vuelve a leerlo.
+
 #### Paso 6 · Práctica independiente
-Repite el flujo en tu sistema operativo, añade un archivo y documenta la salida.
-#### Paso 7 · Cierre y evidencia
-Entrega árbol, comandos, salida, fallo y corrección; explica el resultado. Siguiente paso: redes. Errores comunes: no comprobar el directorio actual, mezclar shells y copiar comandos sin entenderlos. Fuente oficial: https://docs.docker.com/get-started/.
-**Conceptos clave:** sistema operativo, terminal (línea de comandos), shell, comando, directorio de trabajo.
+Guarda una segunda nota y muéstrala. En macOS/Linux:
 
-Un sistema operativo (Windows, macOS o Linux) es el programa que gestiona el hardware de tu computadora —procesador, memoria, disco— y permite que otros programas se ejecuten sobre él. Normalmente interactúas con él haciendo clic en íconos y ventanas: eso es una interfaz gráfica. Una terminal es una forma alternativa de interactuar con el sistema operativo escribiendo instrucciones de texto en vez de hacer clic. Cada instrucción que escribes se llama comando, y el programa que lee ese texto, lo interpreta y lo ejecuta se llama shell (`bash` y `zsh` en macOS/Linux, PowerShell en Windows).
-
-Todo comando se ejecuta dentro de un directorio de trabajo —la carpeta en la que "estás parado" en ese momento—. El comando `pwd` (macOS/Linux) o `Get-Location` (PowerShell) te dice en qué directorio estás; `cd nombre-carpeta` te mueve dentro de una carpeta; `cd ..` te mueve un nivel hacia arriba. Casi todos los comandos de este curso asumen que sabes en qué directorio estás parado, porque muchos leen o crean archivos de forma relativa a esa ubicación (por ejemplo, un `docker-compose.yml` que crees en el Módulo 1).
-
-Por qué los profesionales usan la terminal en vez de solo interfaces gráficas: un comando escrito se puede repetir exactamente igual mil veces, copiar y compartir con un compañero, guardar en un script que se ejecuta solo, y ejecutar en un servidor remoto que no tiene pantalla ni íconos —algo que una interfaz gráfica no puede ofrecer con la misma precisión y automatización—. Todo este curso, desde el primer `docker --version` hasta el último comando del proyecto final, ocurre en una terminal.
-
-**Analogía:** una interfaz gráfica es como pedir comida señalando fotos en un menú; una terminal es como dictarle la orden exacta a la cocina en su propio idioma técnico ("dos tacos, sin cebolla, salsa aparte"). La segunda forma es más rápida y precisa una vez que aprendes el idioma, y es la única opción cuando le hablas a una cocina (un servidor remoto) que no tiene fotos que mostrarte.
-
-**¿Por qué es importante?** Si nunca has usado una terminal, tómate 15 minutos ahora mismo para abrirla y escribir `pwd`, `cd`, y `ls` (macOS/Linux) o `dir` (Windows) antes de continuar. Ese pequeño ejercicio es más importante para tu éxito en este curso que memorizar cualquier concepto de nube: todo lo demás se construye sobre saber moverte con soltura en una terminal.
-
-Dos cosas que vas a escribir constantemente y conviene entender desde ya: la bandera `--version` (a veces abreviada `-v`) le pide a un programa que imprima qué versión tiene instalada, sin ejecutar ninguna otra acción — es la forma más simple de confirmar que una instalación quedó disponible en tu `PATH`, y por eso `docker --version` o `python --version` son casi siempre el primer comando que corres después de instalar algo. Y `python` es el ejecutable de Python, un lenguaje de programación interpretado que vas a usar en varios laboratorios de este curso (junto con su librería `boto3`) para hablar con Floci desde código en vez de solo desde la terminal.
-
-**Diagrama:**
-
-```mermaid
-flowchart TD
-    A["Tú escribes: docker --version"] --> B["El shell interpreta el texto"]
-    B --> C["El sistema operativo ejecuta el programa &quot;docker&quot;"]
-    C --> D["El resultado se imprime en tu pantalla"]
+```bash
+echo 'Mi primer archivo' > nota.txt
+cat nota.txt
 ```
 
-**Límites y decisión de uso:** Un comando interpretado por Bash puede tener otra sintaxis en PowerShell; rutas, variables y comillas no son intercambiables. Ejecuta primero operaciones de inspección y confirma directorio y entorno antes de aplicar una instrucción que modifica recursos.
+En PowerShell:
+
+```powershell
+'Mi primer archivo' | Set-Content nota.txt
+Get-Content nota.txt
+```
+
+Luego cambia a la carpeta anterior e intenta leer `nota.txt`; vuelve a `ejemplo-terminal` y repite. Observa por qué importa la carpeta actual.
+
+#### Paso 7 · Cierre y evidencia
+**Evidencia de aprendizaje:** conserva los dos archivos, la ruta, la salida y el error del Paso 5. **Transferencia al proyecto integrador cloud:** guarda esos comandos en la bitácora y repítelos desde la carpeta donde pondrás los laboratorios. El siguiente tema usa la terminal para probar una conexión. **Errores comunes:** confundir el nombre de la carpeta con el del archivo y olvidar dónde estás. **Límite:** macOS/Linux y Windows escriben algunas órdenes de forma distinta; aquí ves ambas.
+
+**Fuente oficial:** [AWS CLI desde una terminal en Windows, macOS y Linux](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html).
+
 
 ### Tema 2: Fundamentos de redes — direcciones IP, puertos, HTTP y APIs
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás diagnosticar una conexión local desde cero. Prerrequisitos: terminal, `curl` y Docker; verifica `curl --version`.
+Al finalizar distinguirás un servidor apagado de una ruta que no existe. **Prerrequisitos:** Node.js instalado y una terminal. Comprueba `node --version`; en Windows usa `curl.exe`. Este ejemplo independiente empieza en una carpeta vacía.
+
 #### Paso 2 · Contexto y caso real
-Un servicio cloud local puede fallar por puerto, proceso o contrato HTTP incorrecto.
-#### Paso 3 · Teoría, modelo mental y analogía
-IP es edificio, puerto es apartamento y HTTP es el idioma de la solicitud.
-#### Paso 4 · Demostración guiada
-Crea `src/main.mjs` desde una carpeta vacía:
+Si una página local no responde, puede que el programa esté apagado, que uses otra puerta o que la dirección pedida no exista. Vamos a probar cada caso. **¿Por qué es importante?** Separar estos problemas te dice qué corregir primero.
+
+#### Paso 3 · Teoría sencilla y analogía
+Una **dirección IP** señala el computador que recibe el mensaje. `127.0.0.1` significa “este mismo computador”. El **puerto** es como el número de una puerta; usaremos el `3000`.
+
+HTTP es el formato del mensaje entre dos programas. La ruta `/salud` nos servirá para preguntar si todo está listo. Una **API** es el conjunto de rutas que el programa sabe atender. `200` indica que encontró lo que pedimos; `404`, que esa ruta no existe. **Analogía:** IP es la dirección del edificio, el puerto es el número de puerta y HTTP es la manera de hacer la pregunta.
+
+**Recorrido de la petición:** `┌ cliente → 127.0.0.1:3000 → servidor ┐`<br>`└ cliente ← 200 o 404 ←───────────────┘`.
+
+#### Paso 4 · Demostración guiada desde cero
+Crea el ejemplo independiente en una carpeta nueva y entra en ella:
+
 ```bash
-mkdir -p ejemplo-red/src
+mkdir ejemplo-red
 cd ejemplo-red
-node --version
 ```
+
+Crea `server.mjs` dentro de `ejemplo-red` con este contenido:
+
 ```js
 import { createServer } from 'node:http';
+
 const server = createServer((request, response) => {
-  const found = request.method === 'GET' && request.url === '/salud';
-  response.writeHead(found ? 200 : 404, { 'Content-Type': 'application/json' });
-  response.end(JSON.stringify(found ? { estado: 'ok' } : { error: 'No encontrado' }));
+  const existe = request.method === 'GET' && request.url === '/salud';
+  response.writeHead(existe ? 200 : 404, {
+    'Content-Type': 'application/json'
+  });
+  const body = existe
+    ? { estado: 'listo' }
+    : { error: 'Prueba la ruta /salud' };
+  response.end(JSON.stringify(body));
 });
-server.listen(Number(process.env.PORT ?? 3000), '127.0.0.1', () => {
-  console.log(`Servidor en http://127.0.0.1:${server.address().port}`);
+
+server.listen(3000, '127.0.0.1', () => {
+  console.log('Listo en http://127.0.0.1:3000');
 });
-process.on('SIGTERM', () => server.close());
 ```
-Inicia el servidor en esta terminal:
+
+En la primera terminal, entra en `ejemplo-red` e inicia el servidor:
+
 ```bash
-node src/main.mjs
+node server.mjs
 ```
-Desde una segunda terminal:
+
+No cierres esa ventana. En una segunda terminal, prueba:
+
 ```bash
 curl -i http://127.0.0.1:3000/salud
-curl -i http://127.0.0.1:3000/no-existe
+curl -i http://127.0.0.1:3000/otra
 ```
-**Resultado esperado:** 200 con `{"estado":"ok"}` y 404 con `{"error":"No encontrado"}`. Detén el servidor con Ctrl+C en su terminal. El mismo archivo está disponible en `examples/cloud-http/server.mjs` desde la raíz del repositorio.
+
+En PowerShell escribe `curl.exe -i` al inicio de cada línea. **Resultado esperado:** la primera petición muestra `200` y `{"estado":"listo"}`; la segunda, `404`. `createServer` atiende pedidos, `writeHead` elige el número de respuesta y `listen` deja el programa esperando en la puerta 3000. Deténlo con Ctrl+C.
 
 #### Paso 5 · Práctica guiada
-Pista: usa un puerto incorrecto para provocar un fallo deliberado, identifica el diagnóstico y corrígelo.
+**Fallo deliberado:** cambia el puerto `3000` en el comando por `3001`. Verás un error de conexión porque el programa escucha en `3000`. **Pista:** compara el puerto del comando con el de `server.listen`; corrige el número. Un `404` significa que sí llegaste al servidor; “no se pudo conectar” significa que no.
+
 #### Paso 6 · Práctica independiente
-Levanta un servidor local, prueba respuesta válida y documenta un 404.
-#### Paso 7 · Cierre y evidencia
-Entrega comandos, respuesta, fallo y corrección; explica el resultado. Siguiente paso: servicios emulados. Errores comunes: confundir host y puerto, ignorar códigos HTTP y probar solo con navegador. Fuente oficial: https://developer.mozilla.org/es/docs/Web/HTTP.
-**Conceptos clave:** dirección IP, `localhost`, puerto, protocolo HTTP, API, modelo cliente-servidor.
+Agrega `/version`. Cambia estas dos partes del archivo:
 
-Una dirección IP identifica de forma única a una computadora dentro de una red, de forma parecida a como una dirección postal identifica una casa. `localhost` (o la dirección `127.0.0.1`) es una dirección IP especial que siempre significa "esta misma computadora": cuando ejecutas `curl http://localhost:4566`, le estás hablando a un programa que corre en tu propia máquina, no a internet. Una misma computadora puede correr muchos programas que escuchan peticiones de red al mismo tiempo, así que necesita una forma de distinguir a cuál de ellos va dirigida cada petición: ese es el puerto, un número (de 0 a 65535) que funciona como el número de apartamento dentro del edificio que es tu computadora. Cuando Floci "escucha en el puerto 4566", significa que hay un programa dentro de tu máquina esperando peticiones específicamente en esa "puerta numerada".
-
-HTTP es el protocolo —el conjunto de reglas de formato y vocabulario— que usan la mayoría de los programas para pedirse cosas entre sí a través de una red: un cliente envía una petición (`request`) especificando qué quiere (por ejemplo, "dame la lista de objetos de este bucket"), y un servidor responde con una respuesta (`response`) que incluye un código de estado (200 significa éxito, 404 significa "no encontrado", 500 significa error del servidor) y normalmente datos en un formato como JSON. Una API (interfaz de programación de aplicaciones) es, en este contexto, el conjunto específico de peticiones que un servidor entiende y sabe responder: la "API de S3" es el vocabulario específico de peticiones HTTP que entiende un servicio de almacenamiento de objetos, ya sea AWS real o Floci emulándolo.
-
-Cuando ejecutas `aws s3 ls --endpoint-url http://localhost:4566`, en realidad está pasando esto: la AWS CLI traduce tu comando a una petición HTTP con el formato exacto que entiende la API de S3, la envía a la dirección `localhost` en el puerto `4566` (donde escucha Floci), Floci procesa esa petición como si fuera el servicio S3 real, y devuelve una respuesta HTTP que la AWS CLI vuelve a traducir a texto legible en tu terminal. Todo lo que vas a hacer en este curso —cada comando de cada módulo— es, por debajo, exactamente este mismo patrón: petición HTTP, puerto, respuesta.
-
-**Analogía:** una dirección IP es la dirección de un edificio; un puerto es el número de apartamento dentro de ese edificio; HTTP es el idioma y la etiqueta que usas cuando tocas la puerta y pides algo ("buenas tardes, ¿podría darme...?"); una API es la lista específica de cosas que ese apartamento en particular sabe entregarte si se las pides correctamente.
-
-`node` es el ejecutable de Node.js, el entorno de ejecución que corre JavaScript fuera del navegador (en tu terminal, o en un servidor); en este curso lo vas a usar sobre todo para escribir funciones Lambda en el Módulo 5 y para el SDK de AWS en JavaScript.
-
-**¿Por qué es importante?** Entender que un comando de AWS CLI no es magia, sino una petición HTTP a una dirección y puerto específicos, es lo que te permite diagnosticar el 90% de los errores de conexión de este curso: si un comando falla con un error de conexión, casi siempre es porque el puerto no coincide, el programa no está corriendo, o la dirección apunta al lugar equivocado — no porque el concepto de "nube" en sí sea complicado.
-
-**Diagrama:**
-
-```mermaid
-sequenceDiagram
-  participant Tú as Tu terminal
-  participant CLI as AWS CLI
-  participant Floci as Floci (localhost:4566)
-
-  Tú->>CLI: aws s3 ls
-  CLI->>Floci: Petición HTTP GET (API de S3)
-  Floci-->>CLI: Respuesta HTTP 200 + lista de buckets (JSON)
-  CLI-->>Tú: Texto legible en tu terminal
+```js
+const existe = request.method === 'GET' &&
+  (request.url === '/salud' || request.url === '/version');
+const body = existe
+  ? request.url === '/version' ? { version: '1' } : { estado: 'listo' }
+  : { error: 'Prueba /salud o /version' };
 ```
 
-**Transferencia al proyecto integrador «Cloud local multi-nube»:** Registra host, puerto y respuesta HTTP del entorno local de entregas. Detén su proceso y compara conexión rechazada con un 404; el diagnóstico debe distinguir transporte de contrato HTTP.
+Reinicia el servidor y comprueba `/version` y `/no-existe`. Espera `200` con `{"version":"1"}` y `404` para la ruta que no agregaste.
 
-**Límites y decisión de uso:** Una respuesta HTTP satisfactoria solo verifica esa petición; no demuestra disponibilidad continua ni permisos sobre otras operaciones. Un ping tampoco comprueba el puerto de la API: diagnostica nombre, conexión y contrato por separado.
+#### Paso 7 · Cierre y evidencia
+**Evidencia de aprendizaje:** entrega `server.mjs`, las tres respuestas y la corrección del fallo del Paso 5. **Transferencia al proyecto integrador cloud:** al probar Floci, apunta el puerto y la ruta que usaste; así sabrás si el emulador está apagado o si pediste algo que no existe. El siguiente tema muestra cómo se ordena el curso. **Errores comunes:** confundir el puerto con la ruta y creer que `404` significa que el servidor está apagado. **Límite:** este ejemplo solo escucha en tu computador; no lo publiques en Internet.
+
+**Fuentes oficiales:** [servidor HTTP de Node.js](https://nodejs.org/api/http.html) y [códigos de respuesta](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status).
+
 
 ### Tema 3: Qué vas a aprender y cómo está estructurado el curso
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás seguir el curso desde cero. Prerrequisitos: terminal y editor; verifica `node --version`.
+Al finalizar tendrás una bitácora corta para recordar qué probaste y qué sigue. **Conocimiento previo:** ninguno. No necesitas memorizar los servicios antes de comenzar.
+
 #### Paso 2 · Contexto y caso real
-Una ruta clara evita saltos de dificultad en un proyecto cloud.
-#### Paso 3 · Teoría, modelo mental y analogía
-La ruta es un mapa con hitos; cada módulo deja evidencia antes del siguiente.
-#### Paso 4 · Demostración guiada
-Crea `src/learning-plan.js` desde una carpeta vacía.
+En un equipo, otra persona necesita repetir tu prueba y entender qué pasó. Una nota con el comando y el resultado ayuda más que escribir “ya funciona”. **¿Por qué es importante?** Una prueba que otra persona puede repetir da confianza en el cambio.
+
+#### Paso 3 · Teoría sencilla y analogía
+**Analogía:** el orden es parecido a armar una casa: primero aprendes a usar las herramientas, luego instalas las piezas y al final conectas todo.
+
+| Empiezas por | Luego aprendes | Al final puedes |
+|---|---|---|
+| Terminal y redes | Contenedores | Ejecutar servicios en tu computador |
+| Archivos y colas | Bases de datos y funciones | Guardar datos y reaccionar a eventos |
+| APIs y permisos | Servicios avanzados | Conectar sistemas con acceso controlado |
+| Integración | Proyecto multi-nube | Probar el sistema completo y explicar decisiones |
+
+No tienes que aprenderlo todo hoy. Avanza cuando puedas mostrar qué hiciste y qué resultado obtuviste.
+
+**Mapa:** `┌ terminal y redes → servicios individuales → combinar servicios ┐`<br>`└ aprender lo básico ───────────────────────→ proyecto completo ┘`.
+
+#### Paso 4 · Demostración guiada: registra una práctica
+Crea una carpeta nueva para el ejemplo independiente:
+
 ```bash
-mkdir ejemplo-plan
-node --version
+mkdir mi-ruta
+cd mi-ruta
 ```
 
-**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
+Dentro, crea `bitacora.md` con este ejemplo y reemplaza la salida por la tuya:
+
+```markdown
+# Mi bitácora
+
+Tema: terminal
+Archivo: ejemplo-terminal/saludo.txt
+Comando: cat saludo.txt (o Get-Content saludo.txt)
+Resultado: Hola, ya estoy en mi carpeta
+Error que corregí: escribí mal el nombre
+Siguiente paso: probar una petición HTTP
+```
+
+Abre el archivo y comprueba que puedes explicar cada línea. Esta nota no es un examen; te ayuda a retomar donde quedaste.
+
+Para volver a verla, entra a `mi-ruta` y ejecuta en macOS/Linux:
 
 ```bash
-floci up
-aws --endpoint-url http://localhost:4566 sts get-caller-identity
+cd mi-ruta
+cat bitacora.md
 ```
-Confirma la respuesta del servicio emulado.
 
-Resultado esperado: versión visible.
+En PowerShell usa `Get-Content bitacora.md`. **Resultado esperado:** ves los mismos campos que escribiste y reconoces cuál es el siguiente tema.
+
 #### Paso 5 · Práctica guiada
-Pista: salta un prerrequisito para provocar un fallo deliberado y corrígelo.
+**Fallo deliberado:** registra en la bitácora que pediste `/salud` antes de iniciar el servidor; apunta el error de conexión. **Pista:** inicia primero el servidor del Tema 2 y repite la petición. Luego cambia el orden de tus tareas para que el registro coincida con lo que observaste.
+
 #### Paso 6 · Práctica independiente
-Ordena tres tareas y justifica la secuencia.
+Agrega el resultado real de `/salud` o `/otra`. Si algo falló, apunta el mensaje y la corrección; no inventes la salida.
+
 #### Paso 7 · Cierre y evidencia
-Entrega plan, salida, fallo y corrección; explica el resultado. Siguiente paso: conocer Floci. Errores comunes: estudiar sin práctica y no guardar evidencia. Fuente oficial: https://docs.aws.amazon.com/.
-**Conceptos clave:** ruta de aprendizaje, módulo, nivel de dificultad progresivo, entregable.
+**Evidencia de aprendizaje:** entrega `bitacora.md` con dos prácticas y sus resultados. **Transferencia al proyecto integrador cloud:** registra el comando que levantó cada servicio, su salida y el error que corregiste para que alguien pueda repetirlo. El siguiente módulo prepara el entorno. **Errores comunes:** avanzar sin mirar la salida o confundir leer una explicación con haber probado el comando. **Límite:** la bitácora recuerda tu trabajo; por sí sola no demuestra que domines cada servicio.
 
-El curso está organizado en 35 módulos numerados del 0 al 34, y cada uno se apoya en el anterior. La ruta base (Módulos 0-9) te lleva desde la preparación del entorno hasta un primer proyecto integrador, cubriendo Docker, S3, SQS, DynamoDB, Lambda, API Gateway, IAM y una introducción a Azure/GCP. A partir del Módulo 10, el curso continúa con contenido avanzado —Secrets Manager, mensajería Pub/Sub, observabilidad, bases de datos relacionales, contenedores gestionados, infraestructura como código, streaming, autenticación y analítica de datos (Módulos 10-20)— y después con los servicios adicionales que completan la paridad con Floci —cómputo elástico, balanceo de carga y CDN, caché, CI/CD nativo, gobierno de cuenta, FinOps y más (Módulos 21-30)—. El Módulo 31 integra lo aprendido en un proyecto multi-nube. Los módulos 32–34 complementan ese recorrido con actualización de plataforma, contenidos avanzados y recorrido oficial de Floci. Una operación que funciona en el emulador no acredita cuotas, identidad, rendimiento ni comportamiento idéntico en una cuenta real; comprueba el soporte de cada operación antes de trasladar el laboratorio.
+**Fuente oficial:** [guía oficial de AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html).
 
-Esta progresión no es arbitraria. Cada módulo nuevo reutiliza al menos un servicio de un módulo previo. El Módulo 5 (Lambda) asume que ya sabes crear una tabla en DynamoDB (Módulo 4) y subir un archivo a S3 (Módulo 2), porque una función Lambda real casi nunca vive sola: lee de una base de datos, guarda un archivo, o dispara un mensaje en una cola. Si saltas un módulo, es probable que te falte una pieza que el siguiente da por sentada.
-
-Cada módulo comparte la misma estructura interna: primero la teoría de los conceptos nuevos, después un laboratorio práctico con comandos reales que puedes ejecutar contra Floci (con verificación automática de tu evidencia), y por último ejercicios de evaluación que comprueban si puedes aplicar lo aprendido sin que te den el comando exacto. Esta estructura imita el ritmo real de aprender una tecnología de nube en el trabajo: primero entiendes el concepto, después lo usas guiado, y finalmente lo usas solo.
-
-El nivel de dificultad también progresa, agrupado en cuatro niveles: "Fundamentos" (Módulos 0-1), "Aplicación" (Módulos 2-4 y parte del contenido avanzado), "Integración" (módulos que combinan varios servicios, como EC2/Auto Scaling o RDS), y "Experto" (los módulos más avanzados: multi-nube, FinOps, IA, y los proyectos integradores). Esta etiqueta no mide cuánto contenido tiene el módulo, sino cuánto de lo anterior necesitas dominar para aprovecharlo.
-
-**Analogía:** piensa en el curso como aprender a cocinar en una escuela de gastronomía con un programa extenso. No empiezas preparando un menú de cinco platos: primero aprendes a afilar un cuchillo y a manejar el fuego (Módulos 0-1), después dominas técnicas sueltas —cortar, saltear, hornear— (Módulos 2-9), luego combinas técnicas en platos más elaborados (Módulos 10-30), y al final preparas el menú completo de un restaurante real (Módulo 31) usando todo lo anterior a la vez.
-
-**¿Por qué es importante?** Entender la estructura del curso antes de empezar evita dos errores comunes: saltarte módulos porque "ya sabes" el servicio superficialmente, o frustrarte en un módulo avanzado sin darte cuenta de que te falta una base de un módulo anterior. Saber que el curso está diseñado para acumularse te da permiso para ir despacio en los primeros módulos: el tiempo que inviertas en fundamentos, Docker y AWS CLI en este módulo lo vas a recuperar con creces en todos los que siguen.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-  A["Módulos 0-1\nFundamentos"] --> B["Módulos 2-9\nRuta base + proyecto"]
-  B --> C["Módulos 10-20\nContenido avanzado"]
-  C --> D["Módulos 21-30\nParidad completa con Floci"]
-  D --> E["Módulo 31\nProyecto integrador multi-nube"]
-```
-
-**Límites y decisión de uso:** Completar una lectura no acredita operación en producción. Antes de avanzar, repite el laboratorio y explica su fallo; reserva permisos, límites y recuperación reales para pruebas específicas fuera del emulador.
 
 ### Tema 4: Qué es Floci — definición, propósito y comparativa con LocalStack
 

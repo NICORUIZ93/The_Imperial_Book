@@ -1647,11 +1647,11 @@
     }
   ],
   "summary": {
-    "fingerprint": "c3497a36fedfd848ccee26c24d831fd91c039ec46bc7048f9b0536e159618e09",
+    "fingerprint": "18802cacbd19718744b917185b4bfdca7c6f101f8d207f06765782fd59d63092",
     "issues": {
       "andamiaje-generico": 128,
       "bloque-repetido": 218,
-      "cola-tras-cierre": 382,
+      "cola-tras-cierre": 379,
       "parrafo-repetido": 5,
       "tema-breve": 2
     },
@@ -1663,7 +1663,7 @@
     "modules": 245,
     "modulesWithLegacySections": 184,
     "topics": 1098,
-    "topicsWithIssues": 476
+    "topicsWithIssues": 473
   },
   "topics": {
     "android": [
@@ -2593,31 +2593,25 @@
     ],
     "cloud": [
       {
-        "issues": [
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 0,
-        "tailWords": 633,
+        "tailWords": 101,
         "topic": "Tema 1: Fundamentos absolutos — qué es una terminal, un comando y un sistema operativo",
-        "words": 802
+        "words": 519
       },
       {
-        "issues": [
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 0,
-        "tailWords": 736,
+        "tailWords": 115,
         "topic": "Tema 2: Fundamentos de redes — direcciones IP, puertos, HTTP y APIs",
-        "words": 1009
+        "words": 639
       },
       {
-        "issues": [
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 0,
-        "tailWords": 688,
+        "tailWords": 93,
         "topic": "Tema 3: Qué vas a aprender y cómo está estructurado el curso",
-        "words": 845
+        "words": 514
       },
       {
         "issues": [
