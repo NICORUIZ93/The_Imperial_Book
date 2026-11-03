@@ -3,16 +3,16 @@
 > Las señales automáticas no prueban profundidad ni ausencia de ella. Un tema sólo queda revisado mediante el registro humano con mapa de subtemas críticos, evidencia y fuentes.
 
 - Temas inventariados: 1159
-- Revisados humanamente para subtemas: 202
-- Pendientes: 957
-- Candidatos prioritarios por señales: 915
+- Revisados humanamente para subtemas: 219
+- Pendientes: 940
+- Candidatos prioritarios por señales: 898
 
 ## Cobertura por track
 
 | Track | Temas | Revisados | Pendientes |
 |---|---:|---:|---:|
 | android | 74 | 0 | 74 |
-| angular | 71 | 0 | 71 |
+| angular | 71 | 17 | 54 |
 | cloud | 156 | 0 | 156 |
 | devops | 129 | 0 | 129 |
 | flutter | 63 | 0 | 63 |
@@ -97,17 +97,6 @@
 - `android/modulo-9` — Tema 1: Testing de ViewModels con fakes y runTest — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `android/modulo-9` — Tema 2: Compose UI Testing — lista conceptos clave sin mapa interno verificable
 - `android/modulo-9` — Tema 3: Testing end-to-end con Activity real, y fakes vs mocks — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `angular/modulo-0` — Tema 1: El CLI ya no genera NgModules — lista conceptos clave sin mapa interno verificable
-- `angular/modulo-0` — Tema 2: Interpolación y property binding — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `angular/modulo-0` — Tema 3: TypeScript a fondo — unknown, any, never y utility types — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `angular/modulo-0` — Tema 4: Compilador AOT frente a JIT — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `angular/modulo-1` — Tema 1: input()/output() basados en signals — lista conceptos clave sin mapa interno verificable
-- `angular/modulo-1` — Tema 2: Control de flujo nativo — @if, @for, @switch — lista conceptos clave sin mapa interno verificable
-- `angular/modulo-1` — Tema 3: Content projection con ng-content — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `angular/modulo-1` — Tema 4: Ciclo de vida completo de un componente — lista conceptos clave sin mapa interno verificable
-- `angular/modulo-1` — Tema 5: Consultas signal y trabajo posterior al render — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `angular/modulo-1` — Tema 6: Directivas y pipes personalizados — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `angular/modulo-1` — Tema 7: Pipes puros e impuros, AsyncPipe y signals — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `angular/modulo-10` — Tema 1: TestBed y componentes standalone — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `angular/modulo-10` — Tema 2: Angular Testing Library — lista conceptos clave sin mapa interno verificable
 - `angular/modulo-10` — Tema 3: Mockear HttpClient y el nuevo builder basado en Vitest — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
@@ -135,12 +124,6 @@
 - `angular/modulo-16` — Tema 2: Signals, estilos nativos compilados y el preset de Tailwind — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `angular/modulo-16` — Tema 3: Router nativo y servicios de Expo inyectados como servicios Angular — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `angular/modulo-16` — Tema 4: Evaluar la madurez de una tecnología alpha con criterio — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `angular/modulo-2` — Tema 1: signal(), computed() y effect() — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `angular/modulo-2` — Tema 2: Mutación frente a actualización inmutable — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `angular/modulo-2` — Tema 3: Signals frente a Observables — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `angular/modulo-2` — Tema 4: Hacia zoneless change detection — lista conceptos clave sin mapa interno verificable
-- `angular/modulo-2` — Tema 5: linkedSignal — estado derivado que el usuario puede sobrescribir — lista conceptos clave sin mapa interno verificable
-- `angular/modulo-2` — Tema 6: resource() y httpResource — datos asíncronos reactivos — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `angular/modulo-3` — Tema 1: @Injectable y providedIn: root — título agrupa varios conceptos
 - `angular/modulo-3` — Tema 2: inject() frente a inyección por constructor — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `angular/modulo-3` — Tema 3: Jerarquía de inyectores — lista conceptos clave sin mapa interno verificable
@@ -946,6 +929,23 @@
 
 ## Revisados
 
+- `angular/modulo-0` — Tema 1: El CLI ya no genera NgModules — standalone por defecto desde Angular 17
+- `angular/modulo-0` — Tema 2: Interpolación y property binding — property binding vs atributo HTML
+- `angular/modulo-0` — Tema 3: TypeScript a fondo — unknown, any, never y utility types — unknown exige narrowing; never exhaustivo
+- `angular/modulo-0` — Tema 4: Compilador AOT frente a JIT — ng build real con error de plantilla AOT
+- `angular/modulo-1` — Tema 1: input()/output() basados en signals — input()/output() signal-based
+- `angular/modulo-1` — Tema 2: Control de flujo nativo — @if, @for, @switch — @if/@for/@switch nativo (no *ngIf/*ngFor)
+- `angular/modulo-1` — Tema 3: Content projection con ng-content — ng-content
+- `angular/modulo-1` — Tema 4: Ciclo de vida completo de un componente — OnInit/OnDestroy + hooks basados en función
+- `angular/modulo-1` — Tema 5: Consultas signal y trabajo posterior al render — viewChild() signal query; afterNextRender()
+- `angular/modulo-1` — Tema 6: Directivas y pipes personalizados — Directive con input()/effect()
+- `angular/modulo-1` — Tema 7: Pipes puros e impuros, AsyncPipe y signals — AsyncPipe; pipe puro vs impuro
+- `angular/modulo-2` — Tema 1: signal(), computed() y effect() — signal(); computed(); effect()
+- `angular/modulo-2` — Tema 2: Mutación frente a actualización inmutable — signal.set(); signal.update()
+- `angular/modulo-2` — Tema 3: Signals frente a Observables — toSignal; toObservable
+- `angular/modulo-2` — Tema 4: Hacia zoneless change detection — TestBed.tick() (no flushEffects, deprecado); precisión de effect() por dependencia leída; URL canónica /guide/zoneless
+- `angular/modulo-2` — Tema 5: linkedSignal — estado derivado que el usuario puede sobrescribir — linkedSignal() con función de cómputo
+- `angular/modulo-2` — Tema 6: resource() y httpResource — datos asíncronos reactivos — resource({params, loader}) (no request); httpResource() con HttpClient real; HttpTestingController para httpResource
 - `java/modulo-0` — Tema 0: Instalar Eclipse Temurin JDK 27 en macOS, Windows y Ubuntu · Básico · 15 min — JDK frente a runtime; PATH frente a JAVA_HOME; Version, distribucion y arquitectura
 - `java/modulo-0` — Tema 1: Del código fuente a la JVM · Básico · 35 min — archivo fuente .java y nombre de clase public; compilación con javac y -d; bytecode y formato .class; verificación/interpretación/JIT; major version del class file (71=27, 69=25); JDK de compilación vs runtime; nombre binario, paquete y ruta; ClassNotFoundException vs NoClassDefFoundError; compilación manual vs build tool
 - `java/modulo-0` — Tema 2: public static void main — qué significa cada palabra · Básico · 30 min — firma de método; public (accesible al launcher); static (sin instancia previa); void vs código de salida del proceso; nombre main como contrato; String[] args y String... args; sobrecargas de main; clases anidadas y múltiples entry points; lanzamiento de fuente única; errores de firma

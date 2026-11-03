@@ -1501,7 +1501,7 @@
     },
     {
       "path": "docs/subtopic-depth-review.json",
-      "lines": 20141,
+      "lines": 20351,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1522,7 +1522,7 @@
     },
     {
       "path": "docs/subtopic-depth-reviewed.json",
-      "lines": 3190,
+      "lines": 3417,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -7948,7 +7948,7 @@
     },
     {
       "path": "web/public/content/angular/modulo-2.md",
-      "lines": 760,
+      "lines": 815,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

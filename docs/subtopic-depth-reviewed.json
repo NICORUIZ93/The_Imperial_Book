@@ -3185,6 +3185,233 @@
         "https://c4model.com/",
         "https://adr.github.io/"
       ]
+    },
+    "angular/modulo-2::Tema 1: signal(), computed() y effect()": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "signal/computed/effect API núcleo estable desde Angular 16+, sin cambios en v22.",
+      "criticalSubtopics": [
+        "signal()",
+        "computed()",
+        "effect()"
+      ],
+      "sources": [
+        "https://angular.dev/guide/signals/resource",
+        "https://angular.dev/guide/http/http-resource",
+        "https://angular.dev/guide/zoneless",
+        "https://angular.dev/api/core/testing/TestBed?tab=api"
+      ]
+    },
+    "angular/modulo-2::Tema 2: Mutación frente a actualización inmutable": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Mecanismo .set()/.update() estable; sin APIs frágiles.",
+      "criticalSubtopics": [
+        "signal.set()",
+        "signal.update()"
+      ],
+      "sources": [
+        "https://angular.dev/guide/signals/resource",
+        "https://angular.dev/guide/http/http-resource",
+        "https://angular.dev/guide/zoneless",
+        "https://angular.dev/api/core/testing/TestBed?tab=api"
+      ]
+    },
+    "angular/modulo-2::Tema 3: Signals frente a Observables": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "toSignal/toObservable (@angular/core/rxjs-interop) verificados como paquete y export reales.",
+      "criticalSubtopics": [
+        "toSignal",
+        "toObservable"
+      ],
+      "sources": [
+        "https://angular.dev/guide/signals/resource",
+        "https://angular.dev/guide/http/http-resource",
+        "https://angular.dev/guide/zoneless",
+        "https://angular.dev/api/core/testing/TestBed?tab=api"
+      ]
+    },
+    "angular/modulo-2::Tema 4: Hacia zoneless change detection": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Verificado contra angular.dev: la URL oficial citada (/guide/experimental/zoneless) ya no es la canónica -- zoneless graduó a estable en Angular 20.2 y es el valor por defecto en proyectos nuevos desde Angular 21; la URL actual es /guide/zoneless (la antigua redirige, así que no estaba rota, pero sí desactualizada). Corregida la URL. El contenido pedagógico de este tema (precisión del grafo de dependencias de signals vía spies reales) no depende de la bandera y sigue siendo válido. Además: TestBed.flushEffects() usado en el demo está DEPRECADO en la referencia oficial de TestBed a favor de TestBed.tick() -- corregidas las 3 ocurrencias.",
+      "criticalSubtopics": [
+        "TestBed.tick() (no flushEffects, deprecado)",
+        "precisión de effect() por dependencia leída",
+        "URL canónica /guide/zoneless"
+      ],
+      "sources": [
+        "https://angular.dev/guide/signals/resource",
+        "https://angular.dev/guide/http/http-resource",
+        "https://angular.dev/guide/zoneless",
+        "https://angular.dev/api/core/testing/TestBed?tab=api"
+      ]
+    },
+    "angular/modulo-2::Tema 5: linkedSignal — estado derivado que el usuario puede sobrescribir": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "linkedSignal(() => computo) verificado como forma válida de la API estable.",
+      "criticalSubtopics": [
+        "linkedSignal() con función de cómputo"
+      ],
+      "sources": [
+        "https://angular.dev/guide/signals/resource",
+        "https://angular.dev/guide/http/http-resource",
+        "https://angular.dev/guide/zoneless",
+        "https://angular.dev/api/core/testing/TestBed?tab=api"
+      ]
+    },
+    "angular/modulo-2::Tema 6: resource() y httpResource — datos asíncronos reactivos": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Dos defectos reales corregidos tras verificar contra la guía oficial actual (angular.dev/guide/signals/resource): (1) el demo usaba la forma `request: signal` + `loader: ({request}) => ...`, API de Angular <=19; renombrada a `params` en Angular 20 (confirmado por fuentes que documentan el release de v20; la guía oficial vigente para v22 solo documenta `params`, no `request`). Corregido a `params: () => signal()` + `loader: ({params}) => ...}` en el demo y en el ejercicio de completar código. (2) El tema prometía `httpResource()` 'en el módulo de interceptores' pero ese módulo (7) nunca lo implementaba -- un tema titulado 'resource() y httpResource()' que no demostraba la segunda mitad de su propio título. Cerrado el hueco: se agregó una demostración real de httpResource() (import de @angular/common/http, uso con HttpTestingController) dentro de este mismo tema, verificada contra angular.dev/guide/http/http-resource. También corregida la URL de httpResource citada, que apuntaba por error a /guide/signals/rxjs-interop (redirige a una página de RxJS interop sin relación).",
+      "criticalSubtopics": [
+        "resource({params, loader}) (no request)",
+        "httpResource() con HttpClient real",
+        "HttpTestingController para httpResource"
+      ],
+      "sources": [
+        "https://angular.dev/guide/signals/resource",
+        "https://angular.dev/guide/http/http-resource",
+        "https://angular.dev/guide/zoneless",
+        "https://angular.dev/api/core/testing/TestBed?tab=api"
+      ]
+    },
+    "angular/modulo-0::Tema 1: El CLI ya no genera NgModules": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Angular CLI 22 pinned (confirmado contra npm dist-tags: latest=22.2.5, no bleeding edge); API citada estable, sin cambios de versión frágiles.",
+      "criticalSubtopics": [
+        "standalone por defecto desde Angular 17"
+      ],
+      "sources": [
+        "https://angular.dev/guide/templates",
+        "https://www.typescriptlang.org/docs/"
+      ]
+    },
+    "angular/modulo-0::Tema 2: Interpolación y property binding": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Angular CLI 22 pinned (confirmado contra npm dist-tags: latest=22.2.5, no bleeding edge); API citada estable, sin cambios de versión frágiles.",
+      "criticalSubtopics": [
+        "property binding vs atributo HTML"
+      ],
+      "sources": [
+        "https://angular.dev/guide/templates",
+        "https://www.typescriptlang.org/docs/"
+      ]
+    },
+    "angular/modulo-0::Tema 3: TypeScript a fondo — unknown, any, never y utility types": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Fundamentos de TypeScript sin dependencia de versión de Angular.",
+      "criticalSubtopics": [
+        "unknown exige narrowing",
+        "never exhaustivo"
+      ],
+      "sources": [
+        "https://angular.dev/guide/templates",
+        "https://www.typescriptlang.org/docs/"
+      ]
+    },
+    "angular/modulo-0::Tema 4: Compilador AOT frente a JIT": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Angular CLI 22 pinned (confirmado contra npm dist-tags: latest=22.2.5, no bleeding edge); API citada estable, sin cambios de versión frágiles.",
+      "criticalSubtopics": [
+        "ng build real con error de plantilla AOT"
+      ],
+      "sources": [
+        "https://angular.dev/guide/templates",
+        "https://www.typescriptlang.org/docs/"
+      ]
+    },
+    "angular/modulo-1::Tema 1: input()/output() basados en signals": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Angular CLI 22 pinned (confirmado contra npm dist-tags: latest=22.2.5, no bleeding edge); API citada estable, sin cambios de versión frágiles.",
+      "criticalSubtopics": [
+        "input()/output() signal-based"
+      ],
+      "sources": [
+        "https://angular.dev/guide/signals",
+        "https://angular.dev/guide/components/inputs"
+      ]
+    },
+    "angular/modulo-1::Tema 2: Control de flujo nativo — @if, @for, @switch": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Angular CLI 22 pinned (confirmado contra npm dist-tags: latest=22.2.5, no bleeding edge); API citada estable, sin cambios de versión frágiles.",
+      "criticalSubtopics": [
+        "@if/@for/@switch nativo (no *ngIf/*ngFor)"
+      ],
+      "sources": [
+        "https://angular.dev/guide/signals",
+        "https://angular.dev/guide/components/inputs"
+      ]
+    },
+    "angular/modulo-1::Tema 3: Content projection con ng-content": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Angular CLI 22 pinned (confirmado contra npm dist-tags: latest=22.2.5, no bleeding edge); API citada estable, sin cambios de versión frágiles.",
+      "criticalSubtopics": [
+        "ng-content"
+      ],
+      "sources": [
+        "https://angular.dev/guide/signals",
+        "https://angular.dev/guide/components/inputs"
+      ]
+    },
+    "angular/modulo-1::Tema 4: Ciclo de vida completo de un componente": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Angular CLI 22 pinned (confirmado contra npm dist-tags: latest=22.2.5, no bleeding edge); API citada estable, sin cambios de versión frágiles.",
+      "criticalSubtopics": [
+        "OnInit/OnDestroy + hooks basados en función"
+      ],
+      "sources": [
+        "https://angular.dev/guide/signals",
+        "https://angular.dev/guide/components/inputs"
+      ]
+    },
+    "angular/modulo-1::Tema 5: Consultas signal y trabajo posterior al render": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "viewChild()/afterNextRender() verificados como API estable de signal queries.",
+      "criticalSubtopics": [
+        "viewChild() signal query",
+        "afterNextRender()"
+      ],
+      "sources": [
+        "https://angular.dev/guide/signals",
+        "https://angular.dev/guide/components/inputs"
+      ]
+    },
+    "angular/modulo-1::Tema 6: Directivas y pipes personalizados": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Angular CLI 22 pinned (confirmado contra npm dist-tags: latest=22.2.5, no bleeding edge); API citada estable, sin cambios de versión frágiles.",
+      "criticalSubtopics": [
+        "Directive con input()/effect()"
+      ],
+      "sources": [
+        "https://angular.dev/guide/signals",
+        "https://angular.dev/guide/components/inputs"
+      ]
+    },
+    "angular/modulo-1::Tema 7: Pipes puros e impuros, AsyncPipe y signals": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Angular CLI 22 pinned (confirmado contra npm dist-tags: latest=22.2.5, no bleeding edge); API citada estable, sin cambios de versión frágiles.",
+      "criticalSubtopics": [
+        "AsyncPipe",
+        "pipe puro vs impuro"
+      ],
+      "sources": [
+        "https://angular.dev/guide/signals",
+        "https://angular.dev/guide/components/inputs"
+      ]
     }
   }
 }

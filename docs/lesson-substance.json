@@ -1677,7 +1677,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "f4c9bd9a12ce2ba92927686336aaf30e65c182604162bf817342ac39ce7342d0",
+    "fingerprint": "c6474f43c10f8df579f7bccee9134bf3af04a4f5333ea2153bc9b39f46f8dd5b",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
@@ -2340,9 +2340,9 @@
       {
         "issues": [],
         "module": 11,
-        "tailWords": 157,
+        "tailWords": 156,
         "topic": "Tema 4: Zoneless",
-        "words": 1058
+        "words": 1122
       },
       {
         "issues": [],
@@ -2508,9 +2508,9 @@
       {
         "issues": [],
         "module": 2,
-        "tailWords": 184,
+        "tailWords": 183,
         "topic": "Tema 4: Hacia zoneless change detection",
-        "words": 1553
+        "words": 1570
       },
       {
         "issues": [],
@@ -2522,9 +2522,9 @@
       {
         "issues": [],
         "module": 2,
-        "tailWords": 197,
+        "tailWords": 209,
         "topic": "Tema 6: resource() y httpResource — datos asíncronos reactivos",
-        "words": 875
+        "words": 1224
       },
       {
         "issues": [],
