@@ -15,8 +15,8 @@ La prueba real debe incluir timeout, límite de intentos, respuesta inválida y 
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar podrás enviar un GET HTTP con `HttpClient`, timeout acotado, validación del estado y parseo separado de la respuesta. Requiere JDK 25+ y una API de prueba local o simulada.
-**Conocimiento previo:** haber seguido el tema anterior de este módulo y tener instalado el entorno del stack.
+Al finalizar podrás enviar un GET HTTP con `HttpClient`, timeout acotado, validación del estado y parseo separado de la respuesta. Requiere JDK 25+ y una API de prueba local o simulada. Comprueba `java -version` y crea la carpeta `mkdir -p java-http-t01/src`.
+**Conocimiento previo:** Java M0 Temas 1–3 (clases, excepciones y métodos); no se necesita un servidor externo.
 #### Paso 2 · Contexto y caso real
 
 El servicio de envíos consulta una API externa para validar una dirección. Si esa API no responde, los hilos pueden quedar ocupados y acumular solicitudes.
@@ -78,9 +78,182 @@ Ejecuta un servidor local de prueba y llama a `consultar(URI.create("http://loca
 
 Agrega manejo distinto para 4xx, 5xx y timeout. Implementa un retry de máximo dos intentos únicamente para GET ante 502/503/504, con backoff. El test debe verificar el máximo de intentos y que un 400 no se reintenta.
 **Pista:** si el test cuenta más de dos llamadas para un 503, o ve que un 400 también se reintentó, la condición del retry está mal acotada: debe comprobar el código de estado (502/503/504) Y el método (solo GET) antes de reintentar, no solo uno de los dos.
+
+##### Subtema 1.3: Limitar la espera con timeout · 5-10 min
+
+**Contexto:** si una dependencia tarda demasiado, el cliente debe dejar libre el hilo y reportar el timeout.
+
+**Hazlo tú:** crea `java-http-t01/src/Espera.java`:
+
+```java
+import com.sun.net.httpserver.HttpServer;
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.net.http.*;
+import java.net.http.HttpTimeoutException;
+import java.time.Duration;
+
+public class Espera {
+    public static void main(String[] args) throws Exception {
+        var server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        server.createContext("/lento", e -> {
+            try { Thread.sleep(800); } catch (InterruptedException x) { Thread.currentThread().interrupt(); }
+            try { e.sendResponseHeaders(200, -1); } catch (Exception ignored) { }
+            e.close();
+        });
+        server.start();
+        try {
+            var uri = URI.create("http://127.0.0.1:" + server.getAddress().getPort() + "/lento");
+            var request = HttpRequest.newBuilder(uri).timeout(Duration.ofMillis(100)).GET().build();
+            try { HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString()); }
+            catch (HttpTimeoutException e) { System.out.println("timeout: 100 ms"); }
+        } finally { server.stop(0); }
+    }
+}
+```
+
+Ejecuta `java --add-modules jdk.httpserver java-http-t01/src/Espera.java`.
+
+**Resultado esperado:** `timeout: 100 ms`.
+
+**Fallo deliberado:** sube el timeout a 2 segundos. **Resultado del fallo:** el request acaba después de la demora y no informa timeout. **Diagnóstico:** el límite ahora es mayor que los 800 ms simulados.
+
+**Entiende:** timeout limita cuánto espera el cliente; no demuestra que el servidor no recibiera el request.
+
 #### Paso 6 · Práctica independiente
 
 Consume un endpoint de RutaFlow con un DTO validado. Añade correlación de request, límite de tamaño de respuesta y una allowlist de hosts configurada por el servicio. No aceptes URLs arbitrarias del usuario.
+
+##### Subtema 1.1: Consultar un health local · 5-10 min
+
+**Contexto:** prueba el cliente sin depender de internet ni cuentas externas.
+
+**Hazlo tú:** crea `java-http-t01/src/Salud.java`:
+
+```java
+import com.sun.net.httpserver.HttpServer;
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.net.http.*;
+import java.time.Duration;
+
+public class Salud {
+    public static void main(String[] args) throws Exception {
+        var server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        server.createContext("/health", exchange -> {
+            byte[] body = "ok".getBytes();
+            exchange.sendResponseHeaders(200, body.length);
+            exchange.getResponseBody().write(body);
+            exchange.close();
+        });
+        server.start();
+        try {
+            var uri = URI.create("http://127.0.0.1:" + server.getAddress().getPort() + "/health");
+            var request = HttpRequest.newBuilder(uri).timeout(Duration.ofSeconds(2)).GET().build();
+            var response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println("HTTP " + response.statusCode() + ": " + response.body());
+        } finally { server.stop(0); }
+    }
+}
+```
+
+Ejecuta `java --add-modules jdk.httpserver java-http-t01/src/Salud.java`.
+
+**Resultado esperado:** `HTTP 200: ok`.
+
+**Fallo deliberado:** cambia `/health` por `/healthz`. **Resultado del fallo:** el estado pasa a HTTP 404; el servidor devuelve su respuesta 404 por defecto. **Diagnóstico:** la ruta no coincide con la que registró el servidor local.
+
+**Entiende:** el puerto 0 permite que el sistema elija uno libre; el programa consulta el puerto asignado.
+
+##### Subtema 1.2: Mostrar el motivo de un 404 · 5-10 min
+
+**Contexto:** una respuesta HTTP puede llegar bien y comunicar que el recurso no existe.
+
+**Hazlo tú:** crea `java-http-t01/src/NoExiste.java`:
+
+```java
+import com.sun.net.httpserver.HttpServer;
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.net.http.*;
+import java.time.Duration;
+
+public class NoExiste {
+    public static void main(String[] args) throws Exception {
+        var server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        server.createContext("/envios/RT-404", e -> {
+            byte[] body = "Guía no existe".getBytes();
+            e.sendResponseHeaders(404, body.length);
+            e.getResponseBody().write(body);
+            e.close();
+        });
+        server.start();
+        try {
+            var uri = URI.create("http://127.0.0.1:" + server.getAddress().getPort() + "/envios/RT-404");
+            var request = HttpRequest.newBuilder(uri).timeout(Duration.ofSeconds(2)).GET().build();
+            var response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() != 200)
+                throw new IllegalStateException("API respondió HTTP " + response.statusCode() + ": " + response.body());
+        } finally { server.stop(0); }
+    }
+}
+```
+
+Ejecuta `java --add-modules jdk.httpserver java-http-t01/src/NoExiste.java`.
+
+**Resultado esperado:** `IllegalStateException: API respondió HTTP 404: Guía no existe`.
+
+**Fallo deliberado:** acepta cualquier estado menor que 500. **Resultado del fallo:** el 404 pasa como si fuera éxito. **Diagnóstico:** la conexión contestó, pero no encontró el envío.
+
+**Entiende:** comprueba estado y cuerpo antes de entregar una respuesta como resultado válido.
+
+##### Subtema 1.4: Reintentar un GET con un límite · 10-15 min
+
+**Contexto:** un 503 puede ser temporal; repetir indefinidamente aumenta la carga cuando el proveedor está caído.
+
+**Hazlo tú:** crea `java-http-t01/src/Reintento.java`:
+
+```java
+import com.sun.net.httpserver.HttpServer;
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.net.http.*;
+import java.util.concurrent.atomic.AtomicInteger;
+
+public class Reintento {
+    public static void main(String[] args) throws Exception {
+        var llamadas = new AtomicInteger();
+        var server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        server.createContext("/cotizacion", e -> {
+            int status = llamadas.incrementAndGet() == 1 ? 503 : 200;
+            byte[] body = (status == 200 ? "ok" : "temporal").getBytes();
+            e.sendResponseHeaders(status, body.length);
+            e.getResponseBody().write(body);
+            e.close();
+        });
+        server.start();
+        try {
+            var uri = URI.create("http://127.0.0.1:" + server.getAddress().getPort() + "/cotizacion");
+            for (int intento = 1; intento <= 2; intento++) {
+                var request = HttpRequest.newBuilder(uri).GET().build();
+                var response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+                System.out.println("intento=" + intento + " HTTP " + response.statusCode());
+                if (response.statusCode() != 503) break;
+                Thread.sleep(50);
+            }
+            System.out.println("llamadas=" + llamadas.get());
+        } finally { server.stop(0); }
+    }
+}
+```
+
+Ejecuta `java --add-modules jdk.httpserver java-http-t01/src/Reintento.java`.
+
+**Resultado esperado:** `intento=1 HTTP 503`, `intento=2 HTTP 200`, `llamadas=2`.
+
+**Fallo deliberado:** cambia GET por un POST que liquida un pago y conserva el retry. **Resultado del fallo:** el pago podría enviarse dos veces. **Diagnóstico:** un POST de escritura necesita idempotencia y una política acordada antes de repetirlo.
+
+**Entiende:** limita intentos y espera; decide qué operación se puede repetir antes de automatizar el retry.
 
 #### Paso 7 · Cierre y evidencia
 
@@ -95,8 +268,8 @@ Entrega tests de éxito, 404, 503 y timeout con número de intentos comprobado p
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar podrás explicar y probar el transporte seguro de una credencial bearer, validar datos no confiables y distinguir autenticación de autorización. El ejercicio usa una API local de laboratorio; no implementes criptografía propia.
-**Conocimiento previo:** haber seguido el tema anterior de este módulo y tener instalado el entorno del stack.
+Al finalizar podrás explicar y probar el transporte seguro de una credencial bearer, validar datos no confiables y distinguir autenticación de autorización. El ejercicio usa una API local de laboratorio; no implementes criptografía propia. Crea la carpeta `mkdir -p java-http-t02/src`.
+**Conocimiento previo:** Java M18 Tema 1 (cliente HTTP y estados de respuesta) y Java M0 Temas 1–3; usa credenciales ficticias del laboratorio.
 #### Paso 2 · Contexto y caso real
 
 El cliente móvil envía el token de un usuario junto a una solicitud de consulta. Un token válido confirma una identidad, pero no demuestra que ese usuario pueda leer cualquier envío.
@@ -145,6 +318,140 @@ Prueba valores vacíos, excesivamente largos y con formato inválido antes de co
 #### Paso 6 · Práctica independiente
 
 Diseña una matriz de autorización para `envio:leer`, `envio:asignar` y `envio:liquidar`. Escribe pruebas de acceso permitido/denegado y agrega expiración corta al token de test. Explica por qué TLS, expiración, audience y autorización de propiedad resuelven problemas diferentes.
+
+##### Subtema 2.1: Enviar un bearer local sin imprimir el secreto · 5-10 min
+
+**Contexto:** el servidor debe recibir una credencial ficticia sin que el programa la escriba en la terminal.
+
+**Hazlo tú:** crea `java-http-t02/src/BearerLocal.java`:
+
+```java
+import com.sun.net.httpserver.HttpServer;
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.net.http.*;
+
+public class BearerLocal {
+    public static void main(String[] args) throws Exception {
+        String token = System.getenv("ACADEMIA_API_TOKEN");
+        if (token == null || token.isBlank()) throw new IllegalStateException("Falta ACADEMIA_API_TOKEN");
+        var server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        server.createContext("/privado", e -> {
+            boolean presente = ("Bearer " + token).equals(e.getRequestHeaders().getFirst("Authorization"));
+            byte[] body = (presente ? "credencial presente" : "credencial ausente").getBytes();
+            e.sendResponseHeaders(presente ? 200 : 401, body.length);
+            e.getResponseBody().write(body);
+            e.close();
+        });
+        server.start();
+        try {
+            var uri = URI.create("http://127.0.0.1:" + server.getAddress().getPort() + "/privado");
+            var request = HttpRequest.newBuilder(uri).header("Authorization", "Bearer " + token).GET().build();
+            var response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println("HTTP " + response.statusCode() + ": " + response.body());
+        } finally { server.stop(0); }
+    }
+}
+```
+
+Ejecuta `ACADEMIA_API_TOKEN=prueba-local java --add-modules jdk.httpserver java-http-t02/src/BearerLocal.java` (PowerShell: `$env:ACADEMIA_API_TOKEN='prueba-local'; java --add-modules jdk.httpserver java-http-t02/src/BearerLocal.java`).
+
+**Resultado esperado:** `HTTP 200: credencial presente`; la salida nunca muestra el token.
+
+**Fallo deliberado:** agrega `System.out.println(token)`. **Resultado del fallo:** se expone el valor ficticio en la terminal. **Diagnóstico:** registra si hay credencial, nunca su contenido; en producción usa un secreto real solo desde un gestor de secretos y HTTPS.
+
+**Entiende:** el laboratorio usa token inventado y loopback; no pegues secretos reales en comandos o código.
+
+##### Subtema 2.2: Rechazar destinos fuera de una lista permitida · 5-10 min
+
+**Contexto:** no permitas que una URL externa apunte a una consola o base de datos interna.
+
+**Hazlo tú:** crea `java-http-t02/src/DestinoSeguro.java`:
+
+```java
+import java.net.URI;
+import java.util.Set;
+
+public class DestinoSeguro {
+    static URI validar(String valor) {
+        URI uri = URI.create(valor);
+        if (!"https".equalsIgnoreCase(uri.getScheme())) throw new IllegalArgumentException("Se requiere HTTPS");
+        if (!Set.of("api.rutaflow.example").contains(uri.getHost()))
+            throw new IllegalArgumentException("Host fuera de allowlist");
+        if (uri.getUserInfo() != null) throw new IllegalArgumentException("No se permite userinfo");
+        return uri;
+    }
+    public static void main(String[] args) {
+        try { validar("http://127.0.0.1/admin"); }
+        catch (IllegalArgumentException e) { System.out.println("rechazada: " + e.getMessage()); }
+    }
+}
+```
+
+Ejecuta `java java-http-t02/src/DestinoSeguro.java`.
+
+**Resultado esperado:** `rechazada: Se requiere HTTPS`.
+
+**Fallo deliberado:** quita la comprobación del host y prueba `https://127.0.0.1/admin`. **Resultado del fallo:** el destino privado pasa el chequeo de esquema. **Diagnóstico:** HTTPS cifra el canal, no restringe el destino; en producción combina allowlist con bloqueo de rangos privados en red y revisión de DNS/redirecciones.
+
+**Entiende:** una URL con esquema seguro aún puede apuntar a una dirección prohibida.
+
+##### Subtema 2.3: Comprobar quién puede leer cada envío · 5-10 min
+
+**Contexto:** autenticar a Ana no significa que pueda leer los envíos de otras personas.
+
+**Hazlo tú:** crea `java-http-t02/src/Propiedad.java`:
+
+```java
+public class Propiedad {
+    record Envio(String guia, String propietario) {}
+    static boolean puedeLeer(String usuario, Envio envio) {
+        return usuario.equals(envio.propietario());
+    }
+    public static void main(String[] args) {
+        var envio = new Envio("RT-8", "ana");
+        System.out.println("ana=" + puedeLeer("ana", envio));
+        System.out.println("leo=" + puedeLeer("leo", envio));
+    }
+}
+```
+
+Ejecuta `java java-http-t02/src/Propiedad.java`.
+
+**Resultado esperado:** `ana=true` y `leo=false`.
+
+**Fallo deliberado:** haz que `puedeLeer` siempre devuelva `true`. **Resultado del fallo:** Leo obtiene acceso al envío de Ana. **Diagnóstico:** comprobar el rol general no comprueba la propiedad de este objeto.
+
+**Entiende:** decide el permiso para cada envío y acción, además de validar la identidad.
+
+##### Subtema 2.4: Rechazar identificadores con formato inválido · 5-10 min
+
+**Contexto:** valida una guía antes de pasarla a SQL o a otro servicio.
+
+**Hazlo tú:** crea `java-http-t02/src/ValidarGuia.java`:
+
+```java
+public class ValidarGuia {
+    static String validar(String guia) {
+        if (guia == null || !guia.matches("RT-[0-9]{1,6}"))
+            throw new IllegalArgumentException("Guía inválida");
+        return guia;
+    }
+    public static void main(String[] args) {
+        System.out.println(validar("RT-82"));
+        try { System.out.println(validar("RT-82 OR 1=1")); }
+        catch (IllegalArgumentException e) { System.out.println(e.getMessage()); }
+    }
+}
+```
+
+Ejecuta `java java-http-t02/src/ValidarGuia.java`.
+
+**Resultado esperado:** `RT-82` y después `Guía inválida`.
+
+**Fallo deliberado:** reemplaza la expresión completa por `guia.startsWith("RT-")`. **Resultado del fallo:** `RT-82 OR 1=1` pasa. **Diagnóstico:** un prefijo no valida toda la entrada; comprueba el formato completo y usa consultas parametrizadas en la capa de datos.
+
+**Entiende:** formato, autorización y parametrización SQL resuelven problemas distintos.
 
 #### Paso 7 · Cierre y evidencia
 

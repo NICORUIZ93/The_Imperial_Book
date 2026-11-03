@@ -229,7 +229,9 @@ El cierre integrador se conserva en cada módulo y en el proyecto Java del catá
 - **Módulos base preservados:** 21/21 (M0–M20).
 - **Temas estructurales encontrados:** 101; no se quitaron temas para esta expansión.
 - **M20:** 13 temas, cada uno con tres subtemas accionables de 5–15 minutos. Se ejecutaron 39 archivos Java completos de sus ejemplos y subtemas; `Exigir.java` y `UnaVez.java` producen intencionalmente las excepciones documentadas.
+- **M18:** se ampliaron sus dos temas a cuatro subtemas prácticos cada uno. Los ocho ejemplos nuevos se ejecutaron con servidores locales; los fallos 404 se comprueban deliberadamente.
 - **Cobertura atómica del resto del track:** pendiente de una auditoría tema por tema. Los siete pasos de una lección son una estructura parental y no cuentan por sí solos como subtemas atómicos completos.
+- **Diferencia con el esqueleto del prompt:** el prompt reserva M19 para Java funcional y M20 para el proyecto. En este repositorio M19 es “Java del día a día”, M20 contiene Java funcional y el proyecto aparece en M13 y en laboratorios transversales. No se eliminó ni renumeró contenido; queda pendiente reconciliar la secuencia y dar al capstone la ubicación que pide el prompt.
 - **Ejecución de ejemplos:** no se afirma que todos los ejemplos de todos los módulos hayan sido ejecutados. Las pruebas de laboratorios se reportan por separado.
 - **Pruebas de navegador y revisión pedagógica humana:** separadas de la auditoría estructural; pendientes para validar el recorrido completo de Java.
 
@@ -245,8 +247,8 @@ El cierre integrador se conserva en cada módulo y en el proyecto Java del catá
 
 ### Pendientes explícitos; Java no se declara completo
 
-1. Expandir todos los temas M0–M19 a 3–6 subtemas de 5–15 minutos con contexto, archivo y código completo, comando, salida exacta, fallo reproducible y diagnóstico.
-2. Auditar errores y salidas deliberadas de los 39 ejemplos de M20; la ejecución normal de archivos no prueba los fallos indicados en prosa.
+1. Expandir todos los temas M0–M17 y M19 a 3–6 subtemas de 5–15 minutos con contexto, archivo y código completo, comando, salida exacta, fallo reproducible y diagnóstico.
+2. Auditar errores y salidas deliberadas de los 47 ejemplos de M18 y M20; la ejecución normal de archivos no prueba todos los fallos indicados en prosa.
 3. Resolver del inventario de roadmap cualquier diferencia de versión, herramienta o tópico avanzado con evidencia primaria; registrar por qué se incluye o excluye cada elemento.
 4. Revisar prerrequisitos cruzados, incrementos del proyecto RutaFlow y criterios observables de salida por módulo.
 5. Separar y registrar revisión humana de claridad, ejecución de todos los ejemplos y pruebas del navegador.

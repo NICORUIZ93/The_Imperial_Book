@@ -723,7 +723,7 @@
     },
     {
       "path": "docs/java-temario-completo.md",
-      "lines": 255,
+      "lines": 257,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -9608,7 +9608,7 @@
     },
     {
       "path": "web/public/content/java/modulo-18.md",
-      "lines": 158,
+      "lines": 465,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
