@@ -1695,7 +1695,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "c4a3ec383a4c89a8601bbcb1a967c345a5ac5b6bc59d6e4e1f452f3bb5e21f84",
+    "fingerprint": "cb708871165fffab7727fd500f922f83883f5f65cd5fadb56d53972ef4f92b4d",
     "issues": {
       "andamiaje-generico": 125,
       "bloque-repetido": 210,
@@ -10472,9 +10472,9 @@
       {
         "issues": [],
         "module": 10,
-        "tailWords": 171,
+        "tailWords": 0,
         "topic": "Tema 4: OAuth2/OIDC, Keycloak y Token Relay sin perder la frontera de autorización",
-        "words": 1208
+        "words": 1144
       },
       {
         "issues": [],

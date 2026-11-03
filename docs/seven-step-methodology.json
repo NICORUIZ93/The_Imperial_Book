@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 98,
+      "objective": 97,
       "prerequisites": 106,
-      "context": 98,
-      "theoryAnalogy": 98,
-      "guidedDemo": 98,
+      "context": 97,
+      "theoryAnalogy": 97,
+      "guidedDemo": 97,
       "codeExplanation": 111,
-      "execution": 107,
+      "execution": 106,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 98,
-      "independentPractice": 98,
-      "closure": 98,
-      "commonErrors": 98,
+      "guidedPractice": 97,
+      "independentPractice": 97,
+      "closure": 97,
+      "commonErrors": 97,
       "resources": 104,
-      "standaloneExample": 94,
-      "learningEvidence": 102,
-      "complete": 94
+      "standaloneExample": 93,
+      "learningEvidence": 101,
+      "complete": 93
     }
   },
   "topics": {
@@ -28471,26 +28471,26 @@
         "module": 10,
         "topic": "Tema 4: OAuth2/OIDC, Keycloak y Token Relay sin perder la frontera de autorización",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
-          "execution": true,
+          "execution": false,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
           "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 5,
+          "complete": false
         }
       },
       {

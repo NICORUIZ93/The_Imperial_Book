@@ -289,7 +289,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 9617,
+      "lines": 9660,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -297,7 +297,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1226,
+      "lines": 1225,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -583,7 +583,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3444,
+      "lines": 3451,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -619,7 +619,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13490,
+      "lines": 13492,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -660,7 +660,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 85,
+      "lines": 86,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1071,7 +1071,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 325,
+      "lines": 328,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -11660,7 +11660,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-10.md",
-      "lines": 1518,
+      "lines": 1588,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

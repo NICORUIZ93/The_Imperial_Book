@@ -99,10 +99,10 @@
     "spring-boot": {
       "topics": 111,
       "code": 111,
-      "commentedCode": 74,
+      "commentedCode": 73,
       "mermaid": 49,
       "archifyVisual": 4,
-      "asciiVisual": 20,
+      "asciiVisual": 19,
       "misleadingDiagramLabel": 0,
       "filePath": 111,
       "runCommand": 111,
@@ -2288,6 +2288,13 @@
       "track": "spring-boot",
       "module": 10,
       "topic": "Tema 3: Circuit breaker con Resilience4j",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 10,
+      "topic": "Tema 4: OAuth2/OIDC, Keycloak y Token Relay sin perder la frontera de autorización",
       "missingCode": false,
       "missingComments": true
     },

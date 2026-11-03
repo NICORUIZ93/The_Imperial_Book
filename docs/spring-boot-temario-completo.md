@@ -5,7 +5,7 @@
 **Proyecto continuo:** RutaFlow: plataforma de entregas basada en servicios.
 **Prerrequisito de entrada:** Java, HTTP, SQL y pruebas; los módulos iniciales vuelven a presentar cada herramienta..
 **Duración objetivo:** temas de 20–45 minutos; cada tema se divide en 3–6 acciones de 5–15 minutos.
-**Estado estructural:** 13/111 temas migrados; auditoría estructural actualizada el 2026-11-03.
+**Estado estructural:** 14/111 temas migrados; auditoría estructural actualizada el 2026-11-03.
 
 ## Índice de módulos y temas
 
@@ -127,7 +127,10 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 3.1: Abre el circuito después de cuatro fallos · 10 min
   - ✓ Subtema 3.2: Comprueba que OPEN detiene llamadas reales · 10 min
   - ✓ Subtema 3.3: Prueba recuperación en HALF_OPEN · 10 min
-- [pendiente de migrar] Tema 4: OAuth2/OIDC, Keycloak y Token Relay sin perder la frontera de autorización
+- [4 pasos] Tema 4: OAuth2/OIDC, Keycloak y Token Relay sin perder la frontera de autorización
+  - ✓ Subtema 4.1: Protege la API con el emisor de Keycloak · 15 min
+  - ✓ Subtema 4.2: Distingue autenticación de permiso · 10 min
+  - ✓ Subtema 4.3: Comprueba que el recurso pertenece a la persona · 10 min
 - [pendiente de migrar] Tema 5: HTTP Interfaces, deadlines y descubrimiento según el entorno
 - [pendiente de migrar] Tema 6: Spring gRPC para comunicación interna de alta frecuencia (Spring Boot 4.1)
 - [pendiente de migrar] Tema 7: DDD para decidir límites y propiedad de datos
@@ -314,7 +317,7 @@ La tabla registra presencia de áreas en el inventario del track, no profundidad
 
 ### Huecos y límites reportados
 
-- El repositorio contiene 111 temas en 26 módulos; 13 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
+- El repositorio contiene 111 temas en 26 módulos; 14 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
 - No hay base para afirmar que el track esté completo: la comparación con la fuente de referencia está pendiente de revisión humana módulo por módulo.
 - Los elementos de la fuente que todavía deben verificarse de forma explícita están enumerados en la tabla anterior; cualquier técnica crítica que no tenga tema propio debe añadirse conservando el currículo base.
 - La ejecución de ejemplos, el comportamiento con brokers/plataformas reales y la calidad pedagógica humana se registran por separado.
