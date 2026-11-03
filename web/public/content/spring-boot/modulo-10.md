@@ -7,45 +7,30 @@ Cada tema demuestra un patrón de Spring Cloud con verificación real: config se
 
 ### Tema 1: Config Server y service discovery
 
-#### Paso 1 · Objetivo y preparación
+**Duración estimada:** 35 min.
+**¿Por qué es importante?** Un Config Server entrega valores por aplicación y perfil; un DiscoveryClient resuelve nombres de servicio a direcciones sin fijar la URL en cada consumidor.
+**Prerrequisitos:** Spring Boot M0 T1 y Spring Cloud compatible con Spring Boot 4.1.2. Usa JDK 25.
+**Proyecto continuo:** crear un servicio de pedidos que obtiene su configuración y resuelve una instancia de catálogo.
 
-Al finalizar podrás levantar un Config Server real (backend nativo basado en archivos, sin depender de un servidor Git externo) que sirve configuración por HTTP, y resolver un nombre lógico de servicio a una instancia real usando `SimpleDiscoveryClient`, la implementación oficial de Spring Cloud Commons pensada exactamente para este escenario sin Eureka.
+#### Subtema 1.1: Sirve configuración desde archivos · 15 min
 
-**Conocimiento previo:** Módulo 0 de este track (arranque de un proyecto Spring Boot).
+**1. Contexto**
+Un servicio de pedidos debe obtener un valor compartido por HTTP para que puedas cambiarlo sin editar su código fuente.
 
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** En un sistema con muchos microservicios, cada uno con su propio `application.yml` local, cambiar un valor compartido (una URL de un servicio externo común) exigiría modificar y redesplegar cada servicio individual. Un Config Server centraliza esa configuración en un único lugar; el service discovery permite que los servicios se llamen por nombre lógico en vez de por URL fija, tolerando cambios de ubicación o escalado sin tocar código cliente.
-
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** configuración centralizada servida por HTTP, resolución por nombre lógico en vez de URL fija.
-
-Un Config Server expone la configuración de cada aplicación cliente vía un endpoint HTTP (`GET /{aplicacion}/{perfil}`); el backend nativo lee esos valores de archivos locales (`classpath:/config` o una carpeta), el mismo mecanismo que usaría un backend respaldado por Git, pero sin necesidad de un repositorio remoto para un ejemplo verificable. `SimpleDiscoveryClient` resuelve un nombre lógico como `servicio-pedidos` a una lista de instancias reales configuradas explícitamente, el mismo contrato (`DiscoveryClient.getInstances(nombre)`) que usaría Eureka en producción, sin requerir un servidor de registro corriendo para probar la resolución por nombre.
-
-**Analogía:** un Config Server centralizado es un directorio maestro de políticas compartidas entre sucursales de una franquicia, actualizable en un único lugar; el service discovery es un directorio telefónico que traduce el nombre de una sucursal a su dirección física actual, sin que quien llama necesite memorizar esa dirección.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-  C[Cliente pide config] -->|GET /servicio-pedidos/default| S[Config Server]
-  S -->|lee| F[classpath:/config/servicio-pedidos.yml]
-  D[Cliente pide instancias] -->|getInstances 'servicio-pedidos'| DC[SimpleDiscoveryClient]
-  DC -->|resuelve| U[URI real configurada]
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Continuando en `demo-cloud` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `mkdir demo-config-server && cd demo-config-server && curl -fsSL https://start.spring.io/starter.zip -d dependencies=cloud-config-server,web -d javaVersion=25 -o app.zip && unzip app.zip`), crea `src/main/java/io/academia/config/ConfigServerApplication.java` y `src/main/resources/config/servicio-pedidos.yml`:
+**2. Hazlo tú**
+Crea el proyecto demo-config-server con Spring Initializr y las dependencias web y cloud-config-server. Desde una terminal:
 
 ```bash
-mkdir -p demo-cloud/config-server/src/main/resources/config
-cd demo-cloud/config-server
+mkdir -p demo-config-server
+cd demo-config-server
+curl -fsSL https://start.spring.io/starter.zip -d dependencies=web,cloud-config-server -d javaVersion=25 -d artifactId=demo-config-server -o app.zip
+unzip -o app.zip
+mkdir -p src/main/resources/config
 ```
 
+En src/main/resources/application.yml, crea esta configuración completa del servidor:
+
 ```yaml
-# src/main/resources/application.yml
 server:
   port: 8888
 spring:
@@ -60,15 +45,17 @@ spring:
     active: native
 ```
 
+Crea src/main/resources/config/servicio-pedidos.yml:
+
 ```yaml
-# src/main/resources/config/servicio-pedidos.yml
 pedidos:
   descuento-maximo: 15
 ```
 
+Reemplaza src/main/java/com/example/democonfigserver/DemoConfigServerApplication.java por:
+
 ```java
-// src/main/java/io/academia/config/ConfigServerApplication.java
-package io.academia.config;
+package com.example.democonfigserver;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -76,267 +63,269 @@ import org.springframework.cloud.config.server.EnableConfigServer;
 
 @EnableConfigServer
 @SpringBootApplication
-public class ConfigServerApplication {
+public class DemoConfigServerApplication {
     public static void main(String[] args) {
-        SpringApplication.run(ConfigServerApplication.class, args);
+        SpringApplication.run(DemoConfigServerApplication.class, args);
     }
 }
 ```
 
-Confirma con un test real que el Config Server efectivamente sirve ese valor por HTTP, y que `SimpleDiscoveryClient` efectivamente resuelve un nombre lógico:
+Desde la raíz del proyecto, arranca la aplicación:
+
+```bash
+./mvnw spring-boot:run
+```
+
+En otra terminal, consulta el perfil default:
+
+```bash
+curl -i http://localhost:8888/servicio-pedidos/default
+```
+
+**Resultado esperado:** HTTP 200 y un Environment que incluye descuento-maximo con valor 15.
+
+**Fallo deliberado:** cambia search-locations a classpath:/configs y repite la consulta. **Error esperado:** la respuesta no incluye la propiedad descuento-maximo. **Diagnóstico:** el archivo está en config, pero el servidor busca configs; corrige la ruta o mueve el archivo.
+
+**3. Entiende**
+El perfil native permite leer archivos del classpath o del sistema de archivos sin un remoto Git. La ruta HTTP combina el nombre de aplicación y el perfil para construir el Environment que recibe el cliente.
+
+**4. Cierra**
+Guarda la respuesta de curl y señala la propiedad que leyó el servidor.
+
+#### Subtema 1.2: Separa configuración por perfil y diagnostica una app desconocida · 10 min
+
+**1. Contexto**
+El descuento permitido puede cambiar entre desarrollo y producción; un nombre de aplicación mal escrito debe diagnosticarse mirando el Environment que devolvió el servidor.
+
+**2. Hazlo tú**
+Crea src/main/resources/config/servicio-pedidos-produccion.yml:
+
+```yaml
+pedidos:
+  descuento-maximo: 5
+```
+
+Consulta las dos rutas:
+
+```bash
+curl -s http://localhost:8888/servicio-pedidos/default
+curl -s http://localhost:8888/servicio-pedidos/produccion
+curl -i http://localhost:8888/servicio-inexistente/default
+```
+
+**Resultado esperado:** default informa 15 y produccion informa 5. Con la configuración predeterminada, el nombre inexistente puede responder 200 con un Environment sin propertySources útiles.
+
+**Fallo deliberado:** cambia la ruta del perfil produccion a producion. **Resultado erróneo esperado:** la propiedad no toma el valor 5. **Diagnóstico:** compara el nombre escrito en la ruta con el sufijo del archivo; restaura produccion. Si necesitas 404 para aplicaciones desconocidas, configura spring.cloud.config.server.accept-empty=false.
+
+**3. Entiende**
+El perfil corresponde al sufijo del archivo, por ejemplo servicio-pedidos-produccion.yml. El Config Server acepta por defecto configuraciones vacías; el estado HTTP por sí solo no confirma que encontraste la aplicación solicitada.
+
+**4. Cierra**
+Entrega las dos respuestas válidas y explica por qué la respuesta de una app desconocida debe inspeccionarse.
+
+#### Subtema 1.3: Resuelve una instancia por nombre lógico · 10 min
+
+**1. Contexto**
+El servicio de pedidos debe encontrar catálogo mediante su nombre de servicio y una dirección configurada, sin guardar esa URL dentro de su código.
+
+**2. Hazlo tú**
+Crea src/test/java/com/example/democonfigserver/DiscoveryClientTest.java con este test completo:
 
 ```java
-// src/test/java/io/academia/config/ConfigServerTest.java
-package io.academia.config;
+package com.example.democonfigserver;
 
+import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-    properties = "spring.cloud.discovery.client.simple.instances.servicio-pedidos[0].uri=http://localhost:8081"
-)
-class ConfigServerTest {
-
-    @LocalServerPort
-    private int puerto;
-
-    @Autowired
-    private TestRestTemplate restTemplate;
-
+@SpringBootTest(properties =
+    "spring.cloud.discovery.client.simple.instances.catalogo[0].uri=http://localhost:8081")
+class DiscoveryClientTest {
     @Autowired
     private DiscoveryClient discoveryClient;
 
     @Test
-    void elConfigServerSirveElValorRealPorHttp() {
-        String respuesta = restTemplate.getForObject(
-            "http://localhost:" + puerto + "/servicio-pedidos/default", String.class);
-
-        assertThat(respuesta).contains("descuento-maximo");
-        assertThat(respuesta).contains("15");
-    }
-
-    @Test
-    void simpleDiscoveryClientResuelveElNombreLogicoAUnaInstanciaReal() {
-        java.util.List<ServiceInstance> instancias = discoveryClient.getInstances("servicio-pedidos");
+    void encuentraLaInstanciaConfiguradaPorNombre() {
+        List<ServiceInstance> instancias = discoveryClient.getInstances("catalogo");
 
         assertThat(instancias).hasSize(1);
-        assertThat(instancias.get(0).getUri().toString()).isEqualTo("http://localhost:8081");
+        assertThat(instancias.get(0).getUri().toString())
+            .isEqualTo("http://localhost:8081");
     }
 }
 ```
 
+Desde la raíz del proyecto, ejecuta:
+
 ```bash
-./mvnw test -Dtest=ConfigServerTest
+./mvnw test -Dtest=DiscoveryClientTest
 ```
 
-**Resultado esperado:** `BUILD SUCCESS` con ambos tests en verde: el primero confirma con una petición HTTP real (`TestRestTemplate`, no una llamada simulada) que el Config Server, arrancado de verdad en un puerto aleatorio, sirve el valor `descuento-maximo: 15` leído de `servicio-pedidos.yml`; el segundo confirma que `DiscoveryClient.getInstances("servicio-pedidos")` resuelve el nombre lógico a la URI real configurada, el mismo contrato que usaría Eureka en producción.
+**Resultado esperado:** BUILD SUCCESS y una instancia cuyo URI es http://localhost:8081.
 
-**Fallo deliberado:** cambia la URL solicitada en el primer test de `/servicio-pedidos/default` a `/servicio-inexistente/default` y ejecuta de nuevo. El Config Server responde `200 OK` pero con un cuerpo JSON cuyo `propertySources` está vacío (sin el valor `descuento-maximo`), haciendo que la aserción `.contains("15")` falle — diagnostica confirmando el comportamiento real del Config Server: responde `200` incluso para aplicaciones sin configuración específica (no `404`), devolviendo simplemente un conjunto vacío de propiedades, un detalle fácil de pasar por alto si no se prueba explícitamente. Revierte el cambio antes de continuar.
+**Fallo deliberado:** cambia catalogo en getInstances a pedidos. **Error esperado:** la aserción de tamaño falla porque no existe una instancia configurada con ese nombre lógico. **Diagnóstico:** las dos partes deben usar el mismo service ID; comprueba el prefijo de la propiedad simple.instances.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**3. Entiende**
+SimpleDiscoveryClient obtiene instancias desde propiedades y permite probar el contrato DiscoveryClient sin operar un registro como Eureka o Consul. En producción el mecanismo de registro se selecciona según las necesidades de despliegue; este laboratorio solo demuestra la resolución por nombre.
 
-1. Agrega un perfil `produccion` a `servicio-pedidos.yml` (archivo `servicio-pedidos-produccion.yml`) con un valor de `descuento-maximo` distinto, y confirma con un test que pedir `/servicio-pedidos/produccion` devuelve el valor específico de ese perfil, no el de `default`.
-2. Agrega una segunda instancia de `servicio-pedidos` a la propiedad `spring.cloud.discovery.client.simple.instances.servicio-pedidos[1].uri` y confirma con un test que `discoveryClient.getInstances(...)` ahora devuelve una lista de 2 elementos.
-3. Escribe un test que confirme que pedir instancias de un nombre lógico nunca registrado (`discoveryClient.getInstances("servicio-inexistente")`) devuelve una lista vacía, no un error.
-4. Escribe de memoria (sin mirar) un test `TestRestTemplate` contra un Config Server nativo y un test `DiscoveryClient` contra `SimpleDiscoveryClient`. Compara después contra el patrón del Paso 4.
+**4. Cierra**
+Entrega el resultado de la prueba y escribe el nombre lógico y la URI que resolvió.
 
-**Pista:** el backend `native` del Config Server lee archivos de `classpath:/config` en el momento de cada petición (no los cachea de forma permanente en desarrollo), así que agregar un nuevo archivo YAML en esa carpeta es suficiente para que el siguiente test lo detecte, sin reiniciar nada adicional.
+**Hito del tema:**
 
-#### Paso 6 · Práctica independiente
+- [ ] Levanté un Config Server native y serví un YAML por HTTP.
+- [ ] Comparé configuración default y de producción.
+- [ ] Diagnostiqué el resultado vacío para una aplicación inexistente.
+- [ ] Resolví una URI mediante DiscoveryClient y SimpleDiscoveryClient.
 
-**Completa el código:** rellena el espacio con el método real de `DiscoveryClient` que resuelve un nombre lógico a instancias:
-
-```java
-List<ServiceInstance> instancias = discoveryClient.____("servicio-pedidos");
-```
-
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `application.yml` de Config Server con backend `native`, y un test que confirme por HTTP real que sirve un valor esperado. Compara después contra el patrón del Paso 4.
-
-#### Paso 7 · Cierre y evidencia
-
-Ya levantas un Config Server real que sirve configuración por HTTP, y resuelves nombres lógicos a instancias reales con `SimpleDiscoveryClient`. El siguiente tema centraliza el enrutamiento hacia esas instancias con Spring Cloud Gateway. **Evidencia:** entrega el resultado de `ConfigServerTest` en verde, y el JSON con `propertySources` vacío que produce el fallo deliberado. Fuente oficial: [Spring Cloud Config](https://docs.spring.io/spring-cloud-config/reference/) y [Spring Cloud Commons — DiscoveryClient](https://docs.spring.io/spring-cloud-commons/reference/spring-cloud-commons/discovery-client.html).
-
-**Errores comunes:** codificar URLs fijas hacia otros microservicios en vez de resolver por nombre lógico; asumir que el Config Server devuelve `404` para una aplicación sin configuración, cuando en realidad devuelve `200` con propiedades vacías.
-
-**Cuándo no usarlo:** para un sistema con un único servicio (sin microservicios que compartan configuración), un Config Server centralizado agrega una pieza de infraestructura adicional sin ningún beneficio real sobre un `application.yml` local.
-
-Config Server y service discovery son los que coordinarán el proyecto integrador de este track (microservicio productivo, Módulo 12) si se despliega junto a otros servicios.
-
-### Tema 2: Spring Cloud Gateway
-
-#### Paso 1 · Objetivo y preparación
-
-Al finalizar podrás configurar una ruta real de Spring Cloud Gateway y confirmar, con una petición HTTP real de extremo a extremo, que el gateway enruta correctamente según el patrón de la URL solicitada.
-
-**Conocimiento previo:** Tema 1 de este módulo.
-
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** Con varios microservicios independientes, exponer cada uno directamente al cliente externo multiplica la superficie de red y dificulta aplicar responsabilidades transversales (autenticación inicial, rate limiting, trazabilidad) de forma consistente. Un gateway centraliza el punto de entrada, enrutando cada petición hacia el microservicio correcto según su ruta.
-
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** punto de entrada único, enrutamiento centralizado por predicado de ruta.
-
-`spring.cloud.gateway.routes` define una lista de rutas, cada una con un `predicate` (por ejemplo, `Path=/api/pedidos/**`) que decide qué peticiones entrantes redirige hacia qué `uri` de destino. Centralizar el enrutamiento en un gateway único es también un lugar natural para autenticación inicial y trazabilidad, pero verificar un token únicamente en el gateway crea una frontera peligrosa si un servicio puede alcanzarse por otra ruta: cada servicio que protege datos debe validar la credencial y autorizar el recurso que posee.
-
-**Analogía:** un gateway es la recepción única de un complejo de oficinas con múltiples departamentos internos, donde los visitantes se registran una única vez y son dirigidos automáticamente al departamento correcto.
-
-**Diagrama:**
+**Diagrama del flujo:**
 
 ```mermaid
 flowchart LR
-  X[Cliente externo] -->|GET /api/pedidos/1| G[Spring Cloud Gateway]
-  G -->|Path=/api/pedidos/** coincide| P[servicio-pedidos]
-  G -->|ninguna ruta coincide| N[404 NOT_FOUND del propio Gateway]
+  C[Cliente pide config] -->|GET /servicio-pedidos/default| S[Config Server]
+  S -->|lee| F[classpath:/config/servicio-pedidos.yml]
+  D[Cliente pide instancias] -->|getInstances catalogo| DC[SimpleDiscoveryClient]
+  DC -->|resuelve| U[URI configurada]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+**Fuentes oficiales:** [backend nativo de Config Server](https://docs.spring.io/spring-cloud-config/reference/server/environment-repository/file-system-backend.html), [Environment y perfiles](https://docs.spring.io/spring-cloud-config/reference/server/environment-repository.html) y [SimpleDiscoveryClient](https://docs.spring.io/spring-cloud-commons/reference/spring-cloud-commons/common-abstractions.html).
 
-Continuando en `demo-cloud` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `mkdir demo-gateway && cd demo-gateway && curl -fsSL https://start.spring.io/starter.zip -d dependencies=cloud-gateway -d javaVersion=25 -o app.zip && unzip app.zip`), crea `src/main/java/io/academia/gateway/GatewayConfig.java` con una ruta configurada programáticamente (para poder apuntarla al puerto real y dinámico de un backend de prueba):
+**Transferencia al proyecto integrador:** carga el descuento desde configuración externa y resuelve por nombre la instancia del servicio que administra catálogo.
+
+### Tema 2: Spring Cloud Gateway
+
+El gateway recibe una petición y la reenvía al servicio elegido. En este tema vas a levantar dos procesos locales y comprobarlo con `curl`.
+
+**¿Por qué es importante?** Con un gateway puedes ofrecer una dirección de entrada estable aunque los servicios vivan en procesos distintos. Cada petición debe llegar al servicio correcto y el servicio debe seguir autorizando sus propios datos.
+
+#### Subtema 2.1: Crea una ruta para pedidos · 15 min
+
+**1. Contexto**
+
+Piensa en el gateway como una recepción: mira la dirección solicitada y decide a qué servicio entregarla. Aquí `/api/pedidos/**` se envía al servicio que escucha en el puerto `8081`.
+
+**2. Hazlo tú**
+
+Crea un proyecto Spring Boot con el starter oficial `org.springframework.cloud:spring-cloud-starter-gateway-server-webflux` y Spring Cloud BOM compatible con tu versión de Boot. En `src/main/resources/application.yml`, escribe:
+
+```yaml
+server:
+  port: 8080
+spring:
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: pedidos
+              uri: http://localhost:8081
+              predicates:
+                - Path=/api/pedidos/**
+```
+
+En `backend.py`, crea un backend pequeño para ver qué petición recibe:
+
+```python
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
+class Pedidos(BaseHTTPRequestHandler):
+    def do_GET(self):
+        print("Ruta recibida:", self.path)
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.end_headers()
+        self.wfile.write(b'{"id":1,"estado":"EN_RUTA"}')
+
+HTTPServer(("localhost", 8081), Pedidos).serve_forever()
+```
+
+Ejecuta el backend con `python3 backend.py`; en otra terminal ejecuta `./mvnw spring-boot:run` desde el proyecto del gateway. Envía `curl -i http://localhost:8080/api/pedidos/1`.
+
+**Resultado esperado:** la respuesta es `200` con `{"id":1,"estado":"EN_RUTA"}` y el backend imprime `/api/pedidos/1`.
+
+**Fallo deliberado:** en `src/main/resources/application.yml`, cambia `uri` a `http://localhost:8082` y repite el `curl`. **Resultado esperado:** recibes `5xx` y no aparece una petición en el backend del puerto `8081`. **Diagnóstico:** la ruta coincidió, pero el destino no escucha en ese puerto; restaura `8081`.
+
+**3. Entiende**
+
+`Path` decide si la ruta coincide; `uri` indica el destino. El gateway reenvía el mismo path porque todavía no configuramos ningún filtro para cambiarlo.
+
+**4. Cierra**
+
+Guarda la respuesta de `curl` y la línea del backend como evidencia. Esas dos señales confirman que la respuesta atravesó ambos procesos.
+
+#### Subtema 2.2: Cambia el path que recibe el servicio · 10 min
+
+**1. Contexto**
+
+El cliente puede usar `/api/pedidos/1` mientras que el servicio espera `/pedidos/1`. El filtro `StripPrefix=1` quita el primer segmento (`api`) antes de reenviar.
+
+**2. Hazlo tú**
+
+En `src/main/resources/application.yml`, agrega el filtro dentro de la misma ruta:
+
+```yaml
+              filters:
+                - StripPrefix=1
+```
+
+Haz que `backend.py` responda solo cuando recibe `/pedidos/1`; para cualquier otro path responde `404`:
+
+```python
+        if self.path != "/pedidos/1":
+            self.send_error(404)
+            return
+```
+
+Reinicia el backend y prueba `curl -i http://localhost:8080/api/pedidos/1`.
+
+**Resultado esperado:** `curl` recibe `200`; el backend imprime `/pedidos/1`. Si llamas al backend directamente con `/api/pedidos/1`, devuelve `404`.
+
+**Fallo deliberado:** en `src/main/resources/application.yml`, cambia temporalmente `StripPrefix=1` por `StripPrefix=2`. Repite el `curl`. **Resultado esperado:** el backend imprime `/1` y devuelve `404`. **Diagnóstico:** el filtro quitó dos segmentos y el backend espera `/pedidos/1`; restablece `StripPrefix=1`.
+
+**3. Entiende**
+
+El filtro solo transforma el path en el salto del gateway al servicio. El cliente sigue usando `/api/pedidos/1`; el contrato interno del backend puede ser distinto.
+
+**4. Cierra**
+
+Anota ambos paths y explica en una frase dónde se quitó `api`: el registro del backend debe mostrar `/pedidos/1`.
+
+#### Subtema 2.3: Diagnostica una ruta que no coincide · 10 min
+
+**1. Contexto**
+
+Una letra distinta en el predicado puede hacer que la petición no llegue al backend. Primero separa “no hubo ruta” de “el backend respondió con error”.
+
+**2. Hazlo tú**
+
+En `src/main/resources/application.yml`, cambia temporalmente `Path=/api/pedidos/**` por `Path=/api/entregas/**`. Ejecuta:
 
 ```bash
-mkdir -p demo-cloud/gateway/src/main/java/io/academia/gateway
-cd demo-cloud/gateway
+curl -i http://localhost:8080/api/pedidos/1
 ```
 
-```java
-// src/main/java/io/academia/gateway/GatewayConfig.java
-package io.academia.gateway;
+Mira si aparece una nueva línea en la terminal del backend. Luego revierte el cambio y repite.
 
-import org.springframework.cloud.gateway.route.RouteLocator;
-import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+**Resultado esperado:** con el path desalineado el gateway devuelve `404` y el backend no imprime una petición nueva; al restaurar `/api/pedidos/**`, llega al backend y vuelve `200`.
 
-@Configuration
-public class GatewayConfig {
+**Fallo deliberado:** deja configurado `Path=/api/entregas/**` e intenta diagnosticar solo mirando el `404`, sin mirar la terminal del backend. **Diagnóstico:** la respuesta por sí sola no identifica quién la produjo; comprueba si el backend recibió una petición y luego restaura el path de pedidos.
 
-    @Bean
-    RouteLocator routes(RouteLocatorBuilder builder, String backendUri) {
-        return builder.routes()
-            .route("pedidos", r -> r.path("/api/pedidos/**").uri(backendUri))
-            .build();
-    }
-}
-```
+**3. Entiende**
 
-Confirma con `MockWebServer` (backend real) y `WebTestClient` (cliente reactivo real de Spring) que el gateway enruta de extremo a extremo:
+Un `404` puede venir del gateway o del servicio. La línea del backend te ayuda a saber si la petición alcanzó el servicio. En producción, el gateway puede centralizar autenticación de entrada y trazas, pero cada servicio debe autorizar el acceso a los datos que posee.
 
-```java
-// src/test/java/io/academia/gateway/GatewayRoutingTest.java
-package io.academia.gateway;
+**4. Cierra**
 
-import mockwebserver3.MockResponse;
-import mockwebserver3.MockWebServer;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.beans.factory.annotation.Autowired;
+Conserva dos evidencias: respuesta y log del caso correcto; respuesta y ausencia de log del fallo deliberado. El siguiente tema protege llamadas entre servicios cuando el destino falla.
 
-import java.io.IOException;
+**Fuentes oficiales:** [starter y requisitos de Gateway WebFlux](https://docs.spring.io/spring-cloud-gateway/reference/spring-cloud-gateway-server-webflux/starter.html), [rutas y configuración](https://docs.spring.io/spring-cloud-gateway/reference/spring-cloud-gateway-server-webflux/configuration.html).
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ContextConfiguration(initializers = GatewayRoutingTest.BackendUriInitializer.class)
-class GatewayRoutingTest {
-
-    static MockWebServer backend;
-
-    @Autowired
-    private WebTestClient webTestClient;
-
-    @BeforeEach
-    void iniciarBackend() throws IOException {
-        backend = new MockWebServer();
-        backend.start();
-    }
-
-    @AfterEach
-    void detenerBackend() throws IOException {
-        backend.shutdown();
-    }
-
-    static class BackendUriInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
-        @Override
-        public void initialize(ConfigurableApplicationContext context) {
-            TestPropertyValues.of("backendUri=http://localhost:0").applyTo(context); // se ajusta en el test
-        }
-    }
-
-    @Test
-    void elGatewayEnrutaCorrectamenteHaciaElBackendSegunElPath() {
-        backend.enqueue(new MockResponse.Builder()
-            .body("{\"id\":1,\"estado\":\"EN_RUTA\"}")
-            .addHeader("Content-Type", "application/json")
-            .build());
-
-        webTestClient.get().uri("/api/pedidos/1")
-            .exchange()
-            .expectStatus().isOk()
-            .expectBody().jsonPath("$.estado").isEqualTo("EN_RUTA");
-    }
-
-    @Test
-    void elGatewayResponde404ParaUnaRutaSinPredicadoCoincidente() {
-        webTestClient.get().uri("/api/inexistente/1")
-            .exchange()
-            .expectStatus().isNotFound(); // el propio Gateway responde, la petición nunca llega a ningún backend
-    }
-}
-```
-
-```bash
-./mvnw test -Dtest=GatewayRoutingTest
-```
-
-**Resultado esperado:** `BUILD SUCCESS` con ambos tests en verde: el primero confirma que una petición HTTP real a `/api/pedidos/1` es enrutada por el Gateway hacia `MockWebServer` (un backend real y desechable) y la respuesta de ese backend se devuelve sin alterar; el segundo confirma que una ruta sin predicado coincidente recibe `404` directamente del Gateway, sin siquiera intentar contactar ningún backend.
-
-**Fallo deliberado:** cambia el predicado de la ruta de `/api/pedidos/**` a `/api/entregas/**` (sin actualizar el test) y ejecuta de nuevo `elGatewayEnrutaCorrectamenteHaciaElBackendSegunElPath`. La petición a `/api/pedidos/1` ahora recibe `404 NOT_FOUND` del propio Gateway en vez de la respuesta esperada del backend — diagnostica confirmando que el enrutamiento del Gateway depende estrictamente de que el predicado declarado coincida con la ruta solicitada, un desajuste silencioso entre el predicado y las rutas reales usadas por los clientes es indistinguible, desde fuera, de que el backend esté completamente caído. Revierte el cambio antes de continuar.
-
-#### Paso 5 · Práctica guiada — repetición progresiva
-
-1. Agrega un filtro `StripPrefix` a la ruta de pedidos y confirma con un test que la petición que llega al backend real (verificable inspeccionando `backend.takeRequest().getPath()` en `MockWebServer`) ya no incluye el prefijo `/api`.
-2. Agrega una segunda ruta con un predicado de método HTTP (`r.path(...).and().method(HttpMethod.POST)`) y confirma con un test que un `GET` a esa misma ruta NO coincide (recibe `404`), mientras que un `POST` sí.
-3. Configura un timeout de respuesta en la ruta y confirma con `MockWebServer` (usando `.bodyDelay(...)`) que una respuesta demasiado lenta del backend produce un error de gateway, no una espera indefinida.
-4. Escribe de memoria (sin mirar) una ruta de Gateway con un predicado de path, y un test `WebTestClient` + `MockWebServer` que confirme el enrutamiento real. Compara después contra el patrón del Paso 4.
-
-**Pista:** `backend.takeRequest()` de `MockWebServer` devuelve la petición HTTP REAL que el Gateway efectivamente reenvió al backend — inspeccionar su path, headers o cuerpo es la forma más directa de confirmar exactamente qué transformó el Gateway antes de reenviar, sin adivinar.
-
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio con el predicado que enruta según el patrón de la URL:
-
-```java
-builder.routes()
-    .route("pedidos", r -> r.____("/api/pedidos/**").uri(backendUri))
-    .build();
-```
-
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una configuración de ruta de Gateway y un test `WebTestClient` + `MockWebServer` que confirme el enrutamiento correcto y el `404` para una ruta sin predicado coincidente. Compara después contra el patrón del Paso 4.
-
-#### Paso 7 · Cierre y evidencia
-
-Ya configuras rutas reales de Spring Cloud Gateway y confirmas su comportamiento de extremo a extremo contra un backend real. El siguiente tema protege esas llamadas entre servicios contra fallos en cascada con un circuit breaker. **Evidencia:** entrega el resultado de `GatewayRoutingTest` en verde, y el `404` real que produce el fallo deliberado al desalinear el predicado de la ruta. Fuente oficial: [Spring Cloud Gateway](https://docs.spring.io/spring-cloud-gateway/reference/).
-
-**Errores comunes:** confiar toda la seguridad al gateway sin que el servicio propietario también autorice el recurso; desalinear el predicado de una ruta respecto a las rutas realmente usadas por los clientes, produciendo `404` silenciosos indistinguibles de un backend caído.
-
-**Cuándo no usarlo:** con un único servicio expuesto directamente al cliente, un gateway agrega un salto de red adicional sin ningún beneficio de enrutamiento real.
-
-Spring Cloud Gateway es el punto de entrada que expondrá el proyecto integrador de este track (microservicio productivo, Módulo 12) al resto del sistema.
+**Cuándo usarlo:** cuando varios servicios necesitan un punto de entrada con rutas compartidas. Si solo publicas un servicio sencillo, añade el gateway cuando exista una necesidad concreta de enrutamiento o políticas transversales.
 
 ### Tema 3: Circuit breaker con Resilience4j
 

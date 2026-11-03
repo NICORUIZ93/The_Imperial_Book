@@ -1695,7 +1695,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "dbd08b6b4b57a255d7a56d872b7cb507fb7d8be302b8542263d6df22c4190303",
+    "fingerprint": "c4a3ec383a4c89a8601bbcb1a967c345a5ac5b6bc59d6e4e1f452f3bb5e21f84",
     "issues": {
       "andamiaje-generico": 125,
       "bloque-repetido": 210,
@@ -10451,16 +10451,16 @@
       {
         "issues": [],
         "module": 10,
-        "tailWords": 179,
+        "tailWords": 0,
         "topic": "Tema 1: Config Server y service discovery",
-        "words": 1314
+        "words": 1038
       },
       {
         "issues": [],
         "module": 10,
-        "tailWords": 162,
+        "tailWords": 0,
         "topic": "Tema 2: Spring Cloud Gateway",
-        "words": 1242
+        "words": 887
       },
       {
         "issues": [],

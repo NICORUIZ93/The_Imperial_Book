@@ -13,11 +13,11 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | Ruta | 1185 | 0 |
 | Ejecución | 1171 | 14 |
 | Resultado | 1183 | 2 |
-| Modificación | 1175 | 10 |
-| Conexión con un proyecto | 1162 | 23 |
+| Modificación | 1174 | 11 |
+| Conexión con un proyecto | 1161 | 24 |
 | Modelo mental | 1185 | 0 |
-| Límites | 1166 | 19 |
-| **Perfil de criterios detectado** | **1149** | **36** |
+| Límites | 1165 | 20 |
+| **Perfil de criterios detectado** | **1147** | **38** |
 
 ## Prioridad por track
 
@@ -36,7 +36,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | node | 83 | 0 | 0 | 0 | 0 | 1 | 2 | 1 |
 | react | 58 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | rutaflow | 29 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| spring-boot | 111 | 0 | 0 | 4 | 0 | 3 | 7 | 6 |
+| spring-boot | 111 | 0 | 0 | 4 | 0 | 4 | 8 | 7 |
 
 ## Pendientes por tema
 
@@ -63,6 +63,8 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 - [java · módulo 20](../web/public/content/java/modulo-20.md) · Tema 13: Flow API: publicar datos con demanda y cierre: ejecución, conexión con un proyecto.
 - [node · módulo 14](../web/public/content/node/modulo-14.md) · Tema 7: Kafka desde Node: clave, grupo consumidor y offset: conexión con un proyecto, límites.
 - [node · módulo 14](../web/public/content/node/modulo-14.md) · Tema 8: RabbitMQ desde Node: exchange, cola y confirmaciones: modificación, conexión con un proyecto.
+- [spring-boot · módulo 10](../web/public/content/spring-boot/modulo-10.md) · Tema 1: Config Server y service discovery: límites.
+- [spring-boot · módulo 10](../web/public/content/spring-boot/modulo-10.md) · Tema 2: Spring Cloud Gateway: modificación, conexión con un proyecto.
 - [spring-boot · módulo 10](../web/public/content/spring-boot/modulo-10.md) · Tema 9: Spring Modulith para comprobar fronteras antes de separar servicios: ejecución.
 - [spring-boot · módulo 10](../web/public/content/spring-boot/modulo-10.md) · Tema 10: Spring Cloud Bus para propagar cambios de configuración: ejecución.
 - [spring-boot · módulo 10](../web/public/content/spring-boot/modulo-10.md) · Tema 11: Micrometer Tracing entre servicios: ejecución.

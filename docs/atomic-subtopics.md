@@ -2,7 +2,7 @@
 
 > Auditoría estructural. Un encabezado o criterio detectado no demuestra que el ejemplo se haya ejecutado ni que la explicación sea pedagógicamente suficiente.
 
-Temas conformes a cuatro pasos: **24/1185**. Tracks inventariados: **14**.
+Temas conformes a cuatro pasos: **26/1185**. Tracks inventariados: **14**.
 
 | Track | Temas conformes | Temas inventariados | Subtemas detectados | Subtemas con estructura completa |
 |---|---:|---:|---:|---:|
@@ -19,7 +19,7 @@ Temas conformes a cuatro pasos: **24/1185**. Tracks inventariados: **14**.
 | node | 2 | 83 | 6 | 6 |
 | react | 0 | 58 | 0 | 0 |
 | rutaflow | 0 | 29 | 0 | 0 |
-| spring-boot | 11 | 111 | 33 | 33 |
+| spring-boot | 13 | 111 | 39 | 39 |
 
 ## Temas pendientes
 
@@ -1131,8 +1131,6 @@ Temas conformes a cuatro pasos: **24/1185**. Tracks inventariados: **14**.
 - M1 ### Tema 1: Spring Initializr y starters: tiene 0 subtemas
 - M1 ### Tema 2: application.yml vs application.properties: tiene 0 subtemas
 - M1 ### Tema 3: Perfiles y estructura por capas: tiene 0 subtemas
-- M10 ### Tema 1: Config Server y service discovery: tiene 0 subtemas
-- M10 ### Tema 2: Spring Cloud Gateway: tiene 0 subtemas
 - M10 ### Tema 4: OAuth2/OIDC, Keycloak y Token Relay sin perder la frontera de autorización: tiene 0 subtemas
 - M10 ### Tema 5: HTTP Interfaces, deadlines y descubrimiento según el entorno: tiene 0 subtemas
 - M10 ### Tema 6: Spring gRPC para comunicación interna de alta frecuencia (Spring Boot 4.1): tiene 0 subtemas
