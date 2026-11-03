@@ -29,7 +29,13 @@ Un parámetro preparado protege valores, no nombres dinámicos de tabla u ordena
 **Analogía:** un `PreparedStatement` es como un formulario con casillas fijas donde solo rellenas los huecos: nadie puede "reescribir" las preguntas (por eso frena la inyección SQL). El DAO es la ventanilla única que sabe rellenar ese formulario, de modo que el resto de la app no toca SQL directamente.
 #### Paso 4 · Demostración guiada
 
-##### Subtema 1.1: Buscar una referencia con parámetro · 5-10 min
+#### Subtema 1.1: Buscar una referencia con parámetro · 10 min
+
+**1. Contexto**
+
+Una referencia con comillas debe buscarse como dato, no convertirse en parte de la consulta SQL.
+
+**2. Hazlo tú**
 
 Abre `examples/java-jpa-lab/src/main/java/academia/pedidos/EnvioDao.java`:
 
@@ -69,18 +75,30 @@ cd examples/java-jpa-lab
 
 La prueba crea la tabla `envio` en H2 en memoria antes de ejecutarse.
 
-**Resultado esperado:** encuentra `EN_PREPARACION` para la referencia existente y `Optional.empty()` para una ausente. **Fallo deliberado:** sustituye el `?` por concatenación y prueba una referencia como `' OR '1'='1`; el test debe exhibir por qué no se interpolan datos. Restaura `PreparedStatement` y comprueba que una referencia maliciosa se trata como valor literal.
+**Resultado esperado:** encuentra `EN_PREPARACION` para la referencia existente y `Optional.empty()` para una ausente. **Fallo deliberado**: sustituye el `?` por concatenación y prueba una referencia como `' OR '1'='1`; el test debe exhibir por qué no se interpolan datos. **Diagnóstico:** el valor se está mezclando con el texto de la consulta; restaura `PreparedStatement` y confirma que la entrada maliciosa se trata como literal.
+
+**3. Entiende**
+
+El placeholder `?` separa el texto SQL del valor enviado; el DAO mantiene esa consulta fuera del servicio.
+
+**4. Cierra**
+
+Guarda la salida con referencia válida y hostil como literal.
 
 #### Paso 5 · Práctica guiada
 
 Agrega `crear(referencia, estado)` con `executeUpdate()` y comprueba el número de filas afectadas. Extrae el mapeo de filas a un método privado solo cuando haya más de una consulta que realmente lo comparta.
 **Pista:** si `executeUpdate()` devuelve `0`, la fila no se insertó (clave duplicada o `DataSource` equivocado); compara ese conteo contra el `1` esperado antes de asumir que `crear` funcionó.
 
-##### Subtema 1.2: Probar una entrada hostil como dato · 5-10 min
+#### Subtema 1.2: Probar una entrada hostil como dato · 10 min
 
-**Contexto:** una referencia que contiene comillas debe buscarse como un valor literal.
+**1. Contexto**
 
-**Hazlo tú:** en `examples/java-jpa-lab/src/test/java/academia/pedidos/EnvioDaoTest.java`, ejecuta el caso completo que prueba la referencia `RT-1` y el texto `' OR '1'='1`:
+Una referencia que contiene comillas debe buscarse como un valor literal.
+
+**2. Hazlo tú**
+
+En `examples/java-jpa-lab/src/test/java/academia/pedidos/EnvioDaoTest.java`, ejecuta el caso completo que prueba la referencia `RT-1` y el texto `' OR '1'='1`:
 
 ```bash
 cd examples/java-jpa-lab
@@ -91,18 +109,29 @@ La implementación completa está en `src/main/java/academia/pedidos/EnvioDao.ja
 
 **Resultado esperado:** `BUILD SUCCESS`; `RT-1` devuelve `PENDIENTE`, la referencia hostil devuelve `Optional.empty()`.
 
-**Fallo deliberado:** concatena la referencia al SQL. **Resultado del fallo:** el texto hostil puede alterar la condición. **Diagnóstico:** el valor se está interpretando como parte de la consulta; restaura `PreparedStatement`.
+**Fallo deliberado**: concatena la referencia al SQL. **Resultado del fallo:** el texto hostil puede alterar la condición. **Diagnóstico:** el valor se está interpretando como parte de la consulta; restaura `PreparedStatement`.
 
-**Entiende:** las casillas `?` separan la consulta de los valores que llegan desde el usuario.
+**3. Entiende**
+
+Las casillas `?` separan la consulta de los valores que llegan desde el usuario.
+
+**4. Cierra**
+
+Guarda el resultado de entrada válida y de texto hostil.
+
 #### Paso 6 · Práctica independiente
 
 Implementa un DAO con búsqueda paginada y ordenamiento por `fecha_creacion`. El tamaño de página debe tener límite y la columna de orden debe salir de una allowlist (`fecha_creacion`, `referencia`), no del SQL proporcionado por el usuario.
 
-##### Subtema 1.3: Elegir una columna desde una allowlist · 5-10 min
+#### Subtema 1.3: Elegir una columna desde una allowlist · 10 min
 
-**Contexto:** los parámetros SQL no sirven para sustituir nombres de columna; limita las opciones antes de formar el `ORDER BY`.
+**1. Contexto**
 
-**Hazlo tú:** crea `examples/java-jpa-lab/OrdenPermitido.java`:
+Los parámetros SQL no sustituyen nombres de columna; limita las opciones antes de formar el ORDER BY.
+
+**2. Hazlo tú**
+
+Crea `examples/java-jpa-lab/OrdenPermitido.java`:
 
 ```java
 import java.util.Map;
@@ -129,9 +158,15 @@ Ejecuta `cd examples/java-jpa-lab && java OrdenPermitido.java`.
 
 **Resultado esperado:** `select referencia, estado from envio order by fecha_creacion` y `Orden no permitida`.
 
-**Fallo deliberado:** concatena directamente `opcion` en el SQL. **Resultado del fallo:** el texto incluye una instrucción que no estaba en las columnas admitidas. **Diagnóstico:** un identificador SQL dinámico debe elegirse de valores escritos por el programa.
+**Fallo deliberado**: concatena directamente `opcion` en el SQL. **Resultado del fallo:** el texto incluye una instrucción que no estaba en las columnas admitidas. **Diagnóstico:** un identificador SQL dinámico debe elegirse de valores escritos por el programa.
 
-**Entiende:** pasa los datos con `?`; elige nombres de columna con una lista permitida.
+**3. Entiende**
+
+Pasa datos con `?`; elige nombres de columna con una lista permitida.
+
+**4. Cierra**
+
+Guarda la salida segura y el rechazo de la columna inyectada.
 
 #### Paso 7 · Cierre y evidencia
 
@@ -160,7 +195,13 @@ La transacción es como una sola operación de caja: o se registran todas las l�
 **Analogía:** una transacción es como una transferencia bancaria: o se descuenta de una cuenta y se suma en la otra, o no pasa nada; nunca queda a medias. El aislamiento es la cortina que impide que otro cajero vea el saldo mientras la transferencia está a mitad de camino.
 #### Paso 4 · Demostración guiada
 
-##### Subtema 2.1: Confirmar dos escrituras juntas · 5-10 min
+#### Subtema 2.1: Confirmar dos escrituras juntas · 10 min
+
+**1. Contexto**
+
+Cobro y cambio de estado pertenecen a la misma operación de negocio.
+
+**2. Hazlo tú**
 
 Implementa en `src/main/java/academia/envios/LiquidacionDao.java` una operación que inserta un cobro y actualiza el envío usando **la misma conexión**:
 
@@ -187,16 +228,30 @@ cd examples/java-jpa-lab
 
 **Resultado esperado:** cobro y estado se guardan juntos. Para observar el rollback cuando falta el envío, ejecuta `./mvnw -q -Dtest=EnvioDaoTest#revierteElCobroSiNoExisteElEnvio test`; debe quedar cero cobros en la tabla.
 
+**Fallo deliberado**: quita connection.rollback() y repite el caso de envío inexistente. **Diagnóstico**: el cobro parcial confirma que una excepción intermedia debe deshacer ambas escrituras.
+
+**3. Entiende**
+
+Ambas escrituras deben usar la misma conexión y confirmarse juntas.
+
+**4. Cierra**
+
+Conserva el test del commit y el test de rollback.
+
 #### Paso 5 · Práctica guiada
 
 Prueba dos operaciones concurrentes que actualizan el mismo saldo. Reproduce una actualización perdida y corrígela con bloqueo optimista (`version`) o con una operación atómica SQL. Compara `READ_COMMITTED` con el aislamiento predeterminado de tu base.
 **Pista:** si ambas transacciones leen el saldo antes de que la otra confirme su escritura, la segunda sobrescribe silenciosamente el cambio de la primera (actualización perdida); agrega una columna `version` y compara su valor en el `UPDATE ... WHERE version = ?` para detectar el conflicto.
 
-##### Subtema 2.2: Comprobar que el commit guardó ambos cambios · 5-10 min
+#### Subtema 2.2: Comprobar que el commit guardó ambos cambios · 10 min
 
-**Contexto:** el test debe comprobar el estado del envío y el cobro después de cerrar la transacción.
+**1. Contexto**
 
-**Hazlo tú:** ejecuta el caso completo en `examples/java-jpa-lab/src/test/java/academia/pedidos/EnvioDaoTest.java`:
+El test comprueba estado e importe después de cerrar la transacción.
+
+**2. Hazlo tú**
+
+Ejecuta el caso en `examples/java-jpa-lab/src/test/java/academia/pedidos/EnvioDaoTest.java`:
 
 ```bash
 cd examples/java-jpa-lab
@@ -207,18 +262,29 @@ Abre el test para observar las dos comprobaciones: `buscarEstado("RT-1")` y la l
 
 **Resultado esperado:** `BUILD SUCCESS`; estado `LIQUIDADO` e importe `27.50`.
 
-**Fallo deliberado:** quita `connection.commit()`. **Resultado del fallo:** las escrituras se pierden al cerrarse la conexión. **Diagnóstico:** autocommit se desactivó y ninguna orden confirmó el trabajo.
+**Fallo deliberado**: quita `connection.commit()`. **Resultado del fallo:** las escrituras se pierden al cerrarse la conexión. **Diagnóstico:** autocommit se desactivó y ninguna orden confirmó el trabajo.
 
-**Entiende:** una transacción manual necesita un `commit` en el camino correcto.
+**3. Entiende**
+
+Una transacción manual necesita un commit en el camino correcto.
+
+**4. Cierra**
+
+Guarda la salida de commit y rollback.
+
 #### Paso 6 · Práctica independiente
 
 Construye un caso de transferencia entre dos cuentas: valida importe positivo, descuenta una y acredita la otra de forma atómica. Añade pruebas para saldo insuficiente, cuenta inexistente y fallo entre las dos escrituras. Documenta qué invariantes protege la transacción.
 
-##### Subtema 2.3: Revertir el cobro si no existe el envío · 5-10 min
+#### Subtema 2.3: Revertir el cobro si no existe el envío · 10 min
 
-**Contexto:** un cobro sin envío válido no debe quedar guardado.
+**1. Contexto**
 
-**Hazlo tú:** ejecuta `revierteElCobroSiNoExisteElEnvio` en `examples/java-jpa-lab/src/test/java/academia/pedidos/EnvioDaoTest.java`:
+Un cobro sin envío válido no debe quedar guardado.
+
+**2. Hazlo tú**
+
+Ejecuta `revierteElCobroSiNoExisteElEnvio` en `examples/java-jpa-lab/src/test/java/academia/pedidos/EnvioDaoTest.java`:
 
 ```bash
 cd examples/java-jpa-lab
@@ -229,9 +295,15 @@ El caso completo comprueba que `liquidar("RT-404", ...)` falla y que el conteo d
 
 **Resultado esperado:** `BUILD SUCCESS`; la excepción explica que falta el envío y no queda ningún cobro parcial.
 
-**Fallo deliberado:** elimina `connection.rollback()`. **Resultado del fallo:** el cobro puede quedar escrito antes de detectar que el envío no existe. **Diagnóstico:** el error intermedio debe deshacer todas las operaciones de la conexión.
+**Fallo deliberado**: elimina `connection.rollback()`. **Resultado del fallo:** el cobro puede quedar escrito antes de detectar que el envío no existe. **Diagnóstico:** el error intermedio debe deshacer todas las operaciones de la conexión.
 
-**Entiende:** rollback conserva la regla de negocio completa, aunque el segundo paso falle.
+**3. Entiende**
+
+Rollback conserva la regla de negocio completa aunque el segundo paso falle.
+
+**4. Cierra**
+
+Guarda el error esperado y confirma que la tabla de cobros quedó vacía.
 
 #### Paso 7 · Cierre y evidencia
 

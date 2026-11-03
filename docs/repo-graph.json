@@ -289,7 +289,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 12541,
+      "lines": 12627,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -297,7 +297,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1157,
+      "lines": 1155,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -767,7 +767,7 @@
     },
     {
       "path": "docs/java-temario-completo.md",
-      "lines": 486,
+      "lines": 492,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -9917,7 +9917,7 @@
     },
     {
       "path": "web/public/content/java/modulo-16.md",
-      "lines": 581,
+      "lines": 580,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9938,7 +9938,7 @@
     },
     {
       "path": "web/public/content/java/modulo-17.md",
-      "lines": 245,
+      "lines": 317,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9951,10 +9951,10 @@
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda y modelo mental",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
+        "#### Subtema 1.1: Buscar una referencia con par\u00e1metro \u00b7 10 min",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
-        "### Tema 2: Transacciones, ACID y aislamiento"
+        "#### Subtema 1.2: Probar una entrada hostil como dato \u00b7 10 min",
+        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente"
       ]
     },
     {

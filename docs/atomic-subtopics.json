@@ -51,10 +51,10 @@
     },
     "java": {
       "topics": 101,
-      "completeTopics": 78,
-      "topicsWith3to6Subtopics": 78,
-      "subtopics": 236,
-      "completeSubtopics": 236
+      "completeTopics": 80,
+      "topicsWith3to6Subtopics": 80,
+      "subtopics": 242,
+      "completeSubtopics": 242
     },
     "javascript": {
       "topics": 88,
@@ -7088,16 +7088,102 @@
       {
         "module": 17,
         "topic": "### Tema 1: JDBC, PreparedStatement y DAO",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "1.1",
+            "title": "#### Subtema 1.1: Buscar una referencia con parámetro · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "1.2",
+            "title": "#### Subtema 1.2: Probar una entrada hostil como dato · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "1.3",
+            "title": "#### Subtema 1.3: Elegir una columna desde una allowlist · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 17,
         "topic": "### Tema 2: Transacciones, ACID y aislamiento",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "2.1",
+            "title": "#### Subtema 2.1: Confirmar dos escrituras juntas · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "2.2",
+            "title": "#### Subtema 2.2: Comprobar que el commit guardó ambos cambios · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "2.3",
+            "title": "#### Subtema 2.3: Revertir el cobro si no existe el envío · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 18,

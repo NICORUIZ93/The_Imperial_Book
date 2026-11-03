@@ -5,7 +5,7 @@
 **Proyecto continuo:** Motor de asignación de entregas.
 **Prerrequisito de entrada:** Fundamentos de programación; el módulo 0 comienza con JDK y terminal..
 **Duración objetivo:** temas de 20–45 minutos; cada tema se divide en 3–6 acciones de 5–15 minutos.
-**Estado estructural:** 78/101 temas migrados; auditoría estructural actualizada el 2026-11-03.
+**Estado estructural:** 80/101 temas migrados; auditoría estructural actualizada el 2026-11-03.
 
 ## Índice de módulos y temas
 
@@ -410,8 +410,14 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
 
 [Abrir lección completa](../web/public/content/java/modulo-17.md)
 
-- [pendiente de migrar] Tema 1: JDBC, PreparedStatement y DAO
-- [pendiente de migrar] Tema 2: Transacciones, ACID y aislamiento
+- [4 pasos] Tema 1: JDBC, PreparedStatement y DAO
+  - ✓ Subtema 1.1: Buscar una referencia con parámetro · 10 min
+  - ✓ Subtema 1.2: Probar una entrada hostil como dato · 10 min
+  - ✓ Subtema 1.3: Elegir una columna desde una allowlist · 10 min
+- [4 pasos] Tema 2: Transacciones, ACID y aislamiento
+  - ✓ Subtema 2.1: Confirmar dos escrituras juntas · 10 min
+  - ✓ Subtema 2.2: Comprobar que el commit guardó ambos cambios · 10 min
+  - ✓ Subtema 2.3: Revertir el cobro si no existe el envío · 10 min
 
 ### Módulo 18: HTTP, seguridad y backend con Java
 
@@ -475,7 +481,7 @@ La tabla registra presencia de áreas en el inventario del track, no profundidad
 
 ### Huecos y límites reportados
 
-- El repositorio contiene 101 temas en 21 módulos; 78 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
+- El repositorio contiene 101 temas en 21 módulos; 80 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
 - No hay base para afirmar que el track esté completo: la comparación con la fuente de referencia está pendiente de revisión humana módulo por módulo.
 - Los elementos de la fuente que todavía deben verificarse de forma explícita están enumerados en la tabla anterior; cualquier técnica crítica que no tenga tema propio debe añadirse conservando el currículo base.
 - La ejecución de ejemplos, el comportamiento con brokers/plataformas reales y la calidad pedagógica humana se registran por separado.

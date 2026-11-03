@@ -1698,7 +1698,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "6d6ddbcfd0f3baac0c09910facbb29f02fbf66e43e95de35ff773ff419d8ed19",
+    "fingerprint": "6ef3dd03f4f6938ea7d85dc081e956a54e82a556d6ffbb5c2413ec0dd5f01e52",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -7485,14 +7485,14 @@
         "module": 17,
         "tailWords": 199,
         "topic": "Tema 1: JDBC, PreparedStatement y DAO",
-        "words": 1056
+        "words": 1144
       },
       {
         "issues": [],
         "module": 17,
         "tailWords": 228,
         "topic": "Tema 2: Transacciones, ACID y aislamiento",
-        "words": 947
+        "words": 1034
       },
       {
         "issues": [],

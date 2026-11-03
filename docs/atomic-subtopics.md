@@ -2,7 +2,7 @@
 
 > Auditoría estructural. Un encabezado o criterio detectado no demuestra que el ejemplo se haya ejecutado ni que la explicación sea pedagógicamente suficiente.
 
-Temas conformes a cuatro pasos: **95/1185**. Tracks inventariados: **14**.
+Temas conformes a cuatro pasos: **97/1185**. Tracks inventariados: **14**.
 
 | Track | Temas conformes | Temas inventariados | Subtemas detectados | Subtemas con estructura completa |
 |---|---:|---:|---:|---:|
@@ -13,7 +13,7 @@ Temas conformes a cuatro pasos: **95/1185**. Tracks inventariados: **14**.
 | flutter | 1 | 106 | 3 | 3 |
 | foundations | 0 | 99 | 0 | 0 |
 | ios | 0 | 56 | 0 | 0 |
-| java | 78 | 101 | 236 | 236 |
+| java | 80 | 101 | 242 | 242 |
 | javascript | 0 | 88 | 0 | 0 |
 | kotlin-multiplatform | 0 | 56 | 0 | 0 |
 | node | 2 | 83 | 6 | 6 |
@@ -704,8 +704,6 @@ Temas conformes a cuatro pasos: **95/1185**. Tracks inventariados: **14**.
 
 ### java
 
-- M17 ### Tema 1: JDBC, PreparedStatement y DAO: tiene 0 subtemas
-- M17 ### Tema 2: Transacciones, ACID y aislamiento: tiene 0 subtemas
 - M18 ### Tema 1: HttpClient, REST, timeouts y fallos: tiene 0 subtemas
 - M18 ### Tema 2: Tokens, validación y límites de seguridad: tiene 0 subtemas
 - M19 ### Tema 1: Reflexión y anotaciones en tiempo de ejecución: tiene 0 subtemas
