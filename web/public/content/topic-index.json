@@ -4974,6 +4974,10 @@
       {
         "title": "Reinicio, JobParameters, retry, skip y listeners",
         "fragment": "tema-2-reinicio-jobparameters-retry-skip-y-listeners"
+      },
+      {
+        "title": "Particionamiento con múltiples workers y remote chunking",
+        "fragment": "tema-3-particionamiento-con-multiples-workers-y-remote-chunking"
       }
     ],
     "2": [

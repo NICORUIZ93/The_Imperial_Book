@@ -3018,6 +3018,21 @@
         "https://docs.spring.io/spring-batch/reference/"
       ]
     },
+    "spring-boot/modulo-19::Tema 3: Particionamiento con múltiples workers y remote chunking · Experto · 1 h 30 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-02",
+      "execution": "Demo Maven real con Spring Boot 4.1.1 (Spring Batch 6.0.5 resuelto por el BOM): RangoPartitioner + ProcesadorRango (Tasklet) + BatchConfig con masterStep particionado (gridSize 4, SimpleAsyncTaskExecutor) y workerStep @StepScope. `mvn test` -> BUILD SUCCESS; el test lanza el job con JobLauncherTestUtils y verifica con un Set compartido que los 100 items procesados por las 4 particiones son exactamente 1..100, sin huecos ni duplicados. Se confirmaron por inspección directa de los .jar en ~/.m2 (unzip -l, no documentación de terceros) las reubicaciones de paquete de Spring Batch 6 respecto a tutoriales de Batch 5: Job -> org.springframework.batch.core.job.Job, Step -> org.springframework.batch.core.step.Step, StepContribution -> org.springframework.batch.core.step.StepContribution, Partitioner -> org.springframework.batch.core.partition.Partitioner, RepeatStatus y ExecutionContext -> org.springframework.batch.infrastructure.{repeat,item}.* (módulo spring-batch-infrastructure), JobExecution devuelto por JobLauncherTestUtils.launchJob -> org.springframework.batch.core.job.JobExecution (confirmado por javap, existe una segunda clase JobExecution en .core.repository.persistence que NO es la que se usa aquí), JobParametersBuilder -> org.springframework.batch.core.job.parameters.JobParametersBuilder. Fallo deliberado real y documentado en la lección: con solo spring-boot-starter-batch + h2 (sin spring-boot-starter-jdbc) el contexto falla al crear workerStep con NoSuchBeanDefinitionException sobre PlatformTransactionManager; agregar spring-boot-starter-jdbc lo resuelve. Remote chunking se documenta como decisión arquitectónica (requiere middleware de mensajería externo) y no se demuestra con ejecución real, declarado explícitamente en la lección.",
+      "criticalSubtopics": [
+        "Partitioner y ExecutionContext por partición",
+        "verificación de cobertura sin huecos ni duplicados",
+        "reubicación de paquetes en Spring Batch 6",
+        "PlatformTransactionManager requerido por spring-boot-starter-jdbc"
+      ],
+      "sources": [
+        "https://docs.spring.io/spring-batch/reference/",
+        "javap sobre spring-batch-core-6.0.5.jar y spring-batch-infrastructure-6.0.5.jar (~/.m2)"
+      ]
+    },
     "spring-boot/modulo-20::Tema 1: Scheduling y tareas periódicas · Avanzado · 1 h 10 min": {
       "status": "reviewed",
       "reviewDate": "2026-11-02",

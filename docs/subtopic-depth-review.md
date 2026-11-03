@@ -2,8 +2,8 @@
 
 > Las señales automáticas no prueban profundidad ni ausencia de ella. Un tema sólo queda revisado mediante el registro humano con mapa de subtemas críticos, evidencia y fuentes.
 
-- Temas inventariados: 1168
-- Revisados humanamente para subtemas: 345
+- Temas inventariados: 1169
+- Revisados humanamente para subtemas: 346
 - Pendientes: 823
 - Candidatos prioritarios por señales: 782
 
@@ -24,7 +24,7 @@
 | node | 77 | 0 | 77 |
 | react | 58 | 0 | 58 |
 | rutaflow | 29 | 0 | 29 |
-| spring-boot | 102 | 102 | 0 |
+| spring-boot | 103 | 103 | 0 |
 
 ## Cola prioritaria
 
@@ -1106,6 +1106,7 @@
 - `spring-boot/modulo-18` — Tema 3: Levantar tu propio OAuth2 Authorization Server · Experto · 50 min — OAuth2AuthorizationServerConfigurer (instanciado con constructor, sin factory estatico); RegisteredClient con AuthorizationGrantType.CLIENT_CREDENTIALS; JWKSource con clave RSA generada al arrancar; POST /oauth2/token real con httpBasic; 401 ante credenciales invalidas
 - `spring-boot/modulo-19` — Tema 1: Job, Step, Tasklet y chunk processing · Avanzado · 1 h 40 min — chunk-oriented processing
 - `spring-boot/modulo-19` — Tema 2: Reinicio, JobParameters, retry, skip y listeners · Avanzado · 1 h 20 min — JobParameters; retry/skip policy
+- `spring-boot/modulo-19` — Tema 3: Particionamiento con múltiples workers y remote chunking · Experto · 1 h 30 min — Partitioner y ExecutionContext por partición; verificación de cobertura sin huecos ni duplicados; reubicación de paquetes en Spring Batch 6; PlatformTransactionManager requerido por spring-boot-starter-jdbc
 - `spring-boot/modulo-2` — Tema 1: Por qué DTOs en vez de entidades directamente · Intermedio · 30 min — DTO de entrada/salida; Acoplamiento entidad-contrato; Mapeo manual vs herramienta
 - `spring-boot/modulo-2` — Tema 2: Validación con Bean Validation y ResponseEntity · Intermedio · 25 min — @Valid en controller; ResponseEntity.status(); jakarta.validation constraints
 - `spring-boot/modulo-2` — Tema 3: Manejo centralizado de errores con @ControllerAdvice · Intermedio · 30 min — @RestControllerAdvice; @ExceptionHandler; MethodArgumentNotValidException

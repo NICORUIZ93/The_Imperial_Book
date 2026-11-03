@@ -1677,7 +1677,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "897be2f9a7439f62f32e93f124199c06031ef572b4a8e08a567168ac8aedbcbf",
+    "fingerprint": "e350feff3bfca42881426a6a4c06835aa7a5c0da196b4e6e6633d10e8b578bd5",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
@@ -1686,7 +1686,7 @@
     },
     "modules": 254,
     "modulesWithLegacySections": 179,
-    "topics": 1168,
+    "topics": 1169,
     "topicsWithIssues": 0
   },
   "topics": {
@@ -9528,6 +9528,13 @@
         "tailWords": 329,
         "topic": "Tema 2: Reinicio, JobParameters, retry, skip y listeners · Avanzado · 1 h 20 min",
         "words": 1647
+      },
+      {
+        "issues": [],
+        "module": 19,
+        "tailWords": 394,
+        "topic": "Tema 3: Particionamiento con múltiples workers y remote chunking · Experto · 1 h 30 min",
+        "words": 2122
       },
       {
         "issues": [],

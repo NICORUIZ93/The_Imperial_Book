@@ -12,7 +12,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 | angular | 71 | 3 | HTML/CSS/TypeScript explícitos; RxJS y estado con ejemplos completos | Rutas, formularios, datos remotos y cambios sin guardar comprobados con navegador |
 | react | 58 | 46 | JSX y estado antes de efectos; proveedor, dependencias y API visibles | Carga, error, vacío y carrera de respuestas; caché observada, no supuesta |
 | java | 109 | 11 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
-| spring-boot | 102 | 3 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
+| spring-boot | 103 | 3 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
 | android | 74 | 1 | Kotlin antes de Compose; distinguir recomposición, recreación y muerte de proceso | App instalable con permisos, restauración, persistencia y pruebas en dispositivo |
 | ios | 56 | 4 | Swift antes de SwiftUI; explicitar macOS/Xcode y destino | Cancelación, estados de red, persistencia y accesibilidad comprobados en simulador |
 | flutter | 63 | 4 | Dart antes de widgets; ejemplo con main y destino de ejecución | Restauración, red, pruebas de widget, integración y publicación por plataforma |
@@ -23,7 +23,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 
 ## Registro tema por tema
 
-Revisión humana firmada: 0/1168 temas. Pre-lectura registrada sin firma: 14. La pre-lectura no acredita ejecución, comprensión ni calidad pedagógica; consulta `docs/manual-review-log.md`.
+Revisión humana firmada: 0/1169 temas. Pre-lectura registrada sin firma: 14. La pre-lectura no acredita ejecución, comprensión ni calidad pedagógica; consulta `docs/manual-review-log.md`.
 Los laboratorios nuevos tienen una verificación técnica separada; la ejecución correcta tampoco demuestra comprensión.
 
 | Curso / módulo | Tema | Señales para revisar |
@@ -1144,6 +1144,7 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | spring-boot / 18 | [Tema 3: Levantar tu propio OAuth2 Authorization Server · Experto · 50 min](../web/public/content/spring-boot/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 19 | [Tema 1: Job, Step, Tasklet y chunk processing · Avanzado · 1 h 40 min](../web/public/content/spring-boot/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 19 | [Tema 2: Reinicio, JobParameters, retry, skip y listeners · Avanzado · 1 h 20 min](../web/public/content/spring-boot/modulo-19.md) | clase-java-no-visible |
+| spring-boot / 19 | [Tema 3: Particionamiento con múltiples workers y remote chunking · Experto · 1 h 30 min](../web/public/content/spring-boot/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 2 | [Tema 1: Por qué DTOs en vez de entidades directamente · Intermedio · 30 min](../web/public/content/spring-boot/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 2 | [Tema 2: Validación con Bean Validation y ResponseEntity · Intermedio · 25 min](../web/public/content/spring-boot/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 2 | [Tema 3: Manejo centralizado de errores con @ControllerAdvice · Intermedio · 30 min](../web/public/content/spring-boot/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |

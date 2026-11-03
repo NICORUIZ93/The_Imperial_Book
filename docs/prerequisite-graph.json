@@ -5090,6 +5090,17 @@
       ]
     },
     {
+      "id": "spring-boot:19:3",
+      "track": "spring-boot",
+      "module": 19,
+      "position": 3,
+      "title": "Particionamiento con múltiples workers y remote chunking · Experto · 1 h 30 min",
+      "file": "web/public/content/spring-boot/modulo-19.md",
+      "requires": [
+        "spring-boot:19:2"
+      ]
+    },
+    {
       "id": "spring-boot:20:1",
       "track": "spring-boot",
       "module": 20,
@@ -5097,7 +5108,7 @@
       "title": "Scheduling y tareas periódicas · Avanzado · 1 h 10 min",
       "file": "web/public/content/spring-boot/modulo-20.md",
       "requires": [
-        "spring-boot:19:2"
+        "spring-boot:19:3"
       ]
     },
     {

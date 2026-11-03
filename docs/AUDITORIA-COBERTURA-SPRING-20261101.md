@@ -63,10 +63,48 @@ logging estructurado, graceful shutdown · 23. Caché 2º nivel Hibernate (vs Sp
 Total del repo: 1146 → **1148 temas** (2 nuevos). README y `spring-boot.track.ts` sincronizados.
 `validate.sh` EXIT 0; trinquete `--max-pending 1143` OK (los nuevos entran revisados).
 
+### Lote 2 (2026-11-01/02) — ALTA restantes + MEDIA
+
+- [x] **3. Auto-configuración propia** → `spring-boot/M1 Tema 4` (`@Conditional`/`@ConditionalOnProperty`).
+- [x] **4. Tracing distribuido** → `spring-boot/M7 Tema 4` (Micrometer Tracing; fallo deliberado: `@Observed`
+  no hace nada sin `management.observations.annotations.enabled=true`).
+- [x] **5. Testing slices faltantes** → `spring-boot/M6 Tema 4` (`@JsonTest`, `@RestClientTest` +
+  `MockRestServiceServer`, `@TestConfiguration`; paquete `@RestClientTest` reubicado en Boot 4).
+- [x] **6. RabbitMQ real** → `spring-boot/M8 Tema 6` (exchanges, routing keys, DLX). Verificación
+  parcial: solo `mvn test-compile`, ejecución con Testcontainers bloqueada por el sandbox (Docker
+  responde a `curl`/CLI pero no al cliente HTTP de `docker-java`) — declarado explícitamente en la lección.
+- [x] **7. Serialización mensajería** → `spring-boot/M21` (Jackson JSON con `trusted.packages`/
+  `default.type`; sin Schema Registry en el laboratorio, declarado como tal, no como Avro/Protobuf real).
+- [x] **8. Content negotiation** → `spring-boot/M2 Tema 8` (`HttpMessageConverters`).
+- [x] **9. HandlerInterceptor** → `spring-boot/M2 Tema 7` (frente a `Filter` y `@ControllerAdvice`).
+- [x] **10. JPA avanzado** → `spring-boot/M3 Tema 4` (proyecciones, `Specification`, auditing;
+  Querydsl documentado como decisión — el proyecto original perdió mantenimiento activo, fork
+  comunitario `io.github.openfeign.querydsl` con soporte Spring Data "best-effort").
+- [x] **11. RestClient vs WebClient vs RestTemplate** → `spring-boot/M10 Tema 5` (criterio de
+  elección explícito).
+- [x] **12. `spring.profiles.group`** → `spring-boot/M1 Tema 3` (extendido).
+- [x] **15. Spring Batch particionamiento** → `spring-boot/M19 Tema 3` (`Partitioner` + master/worker
+  step + `TaskExecutor`; `mvn test` real → BUILD SUCCESS, verificación de cobertura exacta 1..100
+  sin huecos ni duplicados; remote chunking documentado como decisión, no demostrado — requiere
+  middleware de mensajería externo). Fallo deliberado real: sin `spring-boot-starter-jdbc`,
+  `NoSuchBeanDefinitionException` sobre `PlatformTransactionManager`. Spring Batch 6.0.5 (resuelto
+  por el BOM de Boot 4.1.1) reubicó `Job`/`Step`/`StepContribution`/`Partitioner`/`RepeatStatus`/
+  `ExecutionContext`/`JobExecution`/`JobParametersBuilder` de paquete respecto a Batch 5; confirmado
+  por inspección directa de los `.jar` en `~/.m2` (`unzip -l`, `javap`), no por documentación de terceros.
+- [x] **16. OAuth2 Authorization Server** → `spring-boot/M18 Tema 3`. Fallo deliberado real: la guía
+  oficial de Spring describe `OAuth2AuthorizationServerConfigurer.authorizationServer()` como método
+  estático en un paquete que no es el real; el paquete y la instanciación correctos (constructor
+  simple) se confirmaron por `javap` sobre `spring-security-config-7.1.1.jar`.
+- [x] **17. Virtual threads** → `spring-boot/M9 Tema 4` (alternativa a WebFlux).
+
+Total del repo tras Lote 2: 1148 → **1168 temas**. README y `spring-boot.track.ts` sincronizados.
+
 ### Pendiente (próximos lotes)
-ALTA: auto-configuración propia (@Conditional/AutoConfiguration.imports); tracing distribuido
-(Micrometer Tracing); testing slices (@JsonTest/@RestClientTest/@TestConfiguration); RabbitMQ real;
-serialización mensajería (Avro/Protobuf + Schema Registry).
-MEDIA y BAJA: según lista de huecos arriba.
+MEDIA: 13 (concurrencia avanzada — módulo propio), 14 (consistencia distribuida: inbox, 2PC, CAP → M13).
+BAJA: 18 a 26 completos (HATEOAS, Spring REST Docs, integraciones JMS/LDAP/JMX/Spring
+Integration/Spring Session/webhooks HMAC, Spring Modulith, i18n/logging estructurado/graceful
+shutdown, caché 2º nivel Hibernate, Spring AI reranking/evaluación/observabilidad, CQRS/saga por
+coreografía, CDC/Debezium).
 Solapamientos: pendientes de resolver (N+1, SecurityFilterChain, Kafka núcleo, transacciones,
-hexagonal/DDD, saga/coreografía).
+hexagonal/DDD, saga/coreografía); el séptimo (WebFlux/Testcontainers/Observabilidad) se deja como
+progresión legítima, sin acción.

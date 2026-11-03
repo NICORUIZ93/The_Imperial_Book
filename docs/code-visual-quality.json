@@ -97,16 +97,16 @@
       "officialSource": 108
     },
     "spring-boot": {
-      "topics": 102,
-      "code": 102,
+      "topics": 103,
+      "code": 103,
       "commentedCode": 85,
       "mermaid": 60,
       "archifyVisual": 4,
       "asciiVisual": 21,
       "misleadingDiagramLabel": 0,
-      "filePath": 102,
-      "runCommand": 102,
-      "officialSource": 102
+      "filePath": 103,
+      "runCommand": 103,
+      "officialSource": 103
     },
     "kotlin-multiplatform": {
       "topics": 56,
@@ -1756,6 +1756,13 @@
       "track": "spring-boot",
       "module": 19,
       "topic": "Tema 2: Reinicio, JobParameters, retry, skip y listeners · Avanzado · 1 h 20 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 19,
+      "topic": "Tema 3: Particionamiento con múltiples workers y remote chunking · Experto · 1 h 30 min",
       "missingCode": false,
       "missingComments": true
     },

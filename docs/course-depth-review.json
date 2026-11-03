@@ -3,14 +3,14 @@
   "totals": {
     "tracks": 14,
     "modules": 254,
-    "topics": 1168,
+    "topics": 1169,
     "topicsWithSignals": 104,
     "newLaboratories": 25
   },
   "humanPedagogicalReview": {
     "reviewed": 0,
     "preRead": 14,
-    "total": 1168,
+    "total": 1169,
     "date": "2026-10-31",
     "responsible": "persona revisora pendiente; pre-lectura de agente registrada",
     "evidence": "docs/manual-review-log.md"
@@ -13681,6 +13681,18 @@
       "signals": [
         "clase-java-no-visible"
       ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "spring-boot",
+      "module": 19,
+      "title": "Tema 3: Particionamiento con múltiples workers y remote chunking · Experto · 1 h 30 min",
+      "file": "web/public/content/spring-boot/modulo-19.md",
+      "line": 280,
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,

@@ -168,7 +168,7 @@
     },
     {
       "path": "docs/AUDITORIA-COBERTURA-SPRING-20261101.md",
-      "lines": 73,
+      "lines": 111,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -182,6 +182,7 @@
         "## Reparto de m\u00f3dulos entre tracks/cursos",
         "## Estado de ejecuci\u00f3n del cierre de huecos",
         "### Lote 1 (2026-11-01) \u2014 ALTA, fundamentos del n\u00facleo",
+        "### Lote 2 (2026-11-01/02) \u2014 ALTA restantes + MEDIA",
         "### Pendiente (pr\u00f3ximos lotes)"
       ]
     },
@@ -958,7 +959,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 2177,
+      "lines": 2184,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -985,7 +986,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 14315,
+      "lines": 14327,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -993,7 +994,7 @@
     },
     {
       "path": "docs/course-depth-review.md",
-      "lines": 1199,
+      "lines": 1200,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1160,7 +1161,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 9899,
+      "lines": 9906,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1332,7 +1333,7 @@
     },
     {
       "path": "docs/prerequisite-graph.json",
-      "lines": 12856,
+      "lines": 12867,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1451,7 +1452,7 @@
     },
     {
       "path": "docs/seven-step-methodology.json",
-      "lines": 29501,
+      "lines": 29526,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1501,7 +1502,7 @@
     },
     {
       "path": "docs/subtopic-depth-review.json",
-      "lines": 21865,
+      "lines": 21892,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1509,7 +1510,7 @@
     },
     {
       "path": "docs/subtopic-depth-review.md",
-      "lines": 1161,
+      "lines": 1162,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1522,7 +1523,7 @@
     },
     {
       "path": "docs/subtopic-depth-reviewed.json",
-      "lines": 4937,
+      "lines": 4952,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1590,7 +1591,7 @@
     },
     {
       "path": "docs/topic-learning-quality.json",
-      "lines": 25967,
+      "lines": 25989,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -12704,7 +12705,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-19.md",
-      "lines": 279,
+      "lines": 532,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12719,7 +12720,8 @@
         "### Tema 2: Reinicio, JobParameters, retry, skip y listeners \u00b7 Avanzado \u00b7 1 h 20 min",
         "#### Aprende",
         "#### Practica",
-        "#### Aplica"
+        "#### Aplica",
+        "### Tema 3: Particionamiento con m\u00faltiples workers y remote chunking \u00b7 Experto \u00b7 1 h 30 min"
       ]
     },
     {
@@ -12955,7 +12957,7 @@
     },
     {
       "path": "web/public/content/topic-index.json",
-      "lines": 5211,
+      "lines": 5215,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14608,7 +14610,7 @@
     },
     {
       "path": "web/src/app/tracks/spring-boot.track.ts",
-      "lines": 307,
+      "lines": 308,
       "kind": "angular-app",
       "symbols": [],
       "imports": [

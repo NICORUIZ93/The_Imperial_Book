@@ -221,18 +221,18 @@
       "repeatedDemo": 0
     },
     "spring-boot": {
-      "topics": 102,
-      "explanation": 102,
-      "code": 102,
+      "topics": 103,
+      "explanation": 103,
+      "code": 103,
       "visual": 82,
-      "filePath": 102,
-      "runCommand": 100,
-      "expectedResult": 102,
-      "practice": 102,
-      "project": 102,
-      "modelMental": 102,
-      "limitsDecision": 102,
-      "practicable": 100,
+      "filePath": 103,
+      "runCommand": 101,
+      "expectedResult": 103,
+      "practice": 103,
+      "project": 103,
+      "modelMental": 103,
+      "limitsDecision": 103,
+      "practicable": 101,
       "genericScaffold": 0,
       "repeatedDemo": 0
     }
@@ -24798,6 +24798,28 @@
       {
         "module": 19,
         "topic": "Tema 2: Reinicio, JobParameters, retry, skip y listeners · Avanzado · 1 h 20 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 19,
+        "topic": "Tema 3: Particionamiento con múltiples workers y remote chunking · Experto · 1 h 30 min",
         "criteria": {
           "explanation": true,
           "code": true,

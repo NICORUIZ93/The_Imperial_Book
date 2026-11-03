@@ -248,21 +248,21 @@
       "complete": 29
     },
     "spring-boot": {
-      "topics": 102,
+      "topics": 103,
       "objective": 0,
-      "prerequisites": 102,
+      "prerequisites": 103,
       "context": 0,
       "theoryAnalogy": 0,
       "guidedDemo": 0,
-      "codeExplanation": 102,
-      "execution": 100,
+      "codeExplanation": 103,
+      "execution": 101,
       "expectedResult": 102,
-      "deliberateFailure": 102,
+      "deliberateFailure": 103,
       "guidedPractice": 0,
       "independentPractice": 0,
       "closure": 0,
-      "commonErrors": 102,
-      "resources": 102,
+      "commonErrors": 103,
+      "resources": 103,
       "standaloneExample": 99,
       "complete": 0
     }
@@ -28192,6 +28192,31 @@
         },
         "classification": {
           "stepsPassed": 8,
+          "complete": false
+        }
+      },
+      {
+        "module": 19,
+        "topic": "Tema 3: Particionamiento con múltiples workers y remote chunking · Experto · 1 h 30 min",
+        "criteria": {
+          "objective": false,
+          "prerequisites": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": false,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": false
+        },
+        "classification": {
+          "stepsPassed": 6,
           "complete": false
         }
       },
