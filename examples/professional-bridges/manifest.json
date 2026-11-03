@@ -132,7 +132,7 @@
   {
     "track": "microservices",
     "module": 0,
-    "title": "Proceso, host, puerto, socket y DNS",
+    "title": "Ejecutar dos procesos Java y comprobar su socket HTTP",
     "path": "web/public/content/microservices/modulo-0.md",
     "examples": [
       "examples/professional-bridges/microservices/Servidor.java"

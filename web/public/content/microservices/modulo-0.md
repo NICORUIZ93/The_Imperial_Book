@@ -10,67 +10,131 @@ El laboratorio crece de un servidor local a un flujo que hace visibles latencia,
 
 Crea `academia-labs/microservices`, luego `src/` y `evidence/`. Comprueba `java --version`, `javac --version` y `curl --version`. Todos los comandos parten de esa carpeta. En Windows usa PowerShell para crear archivos y `Get-NetTCPConnection`; los ejemplos de shell siguientes presuponen macOS/Linux.
 
-### Tema 1: Proceso, host, puerto, socket y DNS · Fundamentos · 70 min
+### Tema 1: Ejecutar dos procesos Java y comprobar su socket HTTP · Fundamentos · 45 min
 
-**Prerrequisitos:** terminal, proceso Java básico y diferencia entre archivo y programa en ejecución.
+**Prerrequisito:** ninguno. Este es el primer tema del track.
 
-**Al terminar podrás:** ejecutar cliente y servidor como procesos distintos, identificar cada extremo del socket y diagnosticar por separado nombre, ruta y puerto.
+**Al terminar podrás:** compilar y ejecutar un servidor Java en un proceso independiente, localizar su PID y comprobar qué dirección y puerto escucha antes de enviar una petición HTTP.
 
-**¿Por qué es importante?** Si no distingues proceso, resolución, conexión y aplicación, cualquier incidente termina etiquetado como «la red» y se corrige por ensayo y error.
+#### Paso 1 · Objetivo y preparación
 
-#### Aprende
+Usarás **JDK 25** porque es la LTS fijada para el laboratorio de Microservicios. Comprueba `java --version`, `javac --version`, `curl --version` y crea `academia-labs/microservices/m0-t1/{src,evidence}`. Si no puedes distinguir un archivo `.java` de una JVM en ejecución, vuelve a Java M0 T1 antes de continuar.
 
-| Subtema | Papel | Evidencia observable |
+#### Paso 2 · Contexto y caso real
+
+RutaFlow empieza como un proceso único. Antes de separar servicios, el equipo necesita comprobar qué cambia realmente cuando una capacidad vive tras una conexión. En un incidente, decir «el servidor está arriba» puede significar que existe un proceso, que un puerto escucha o que el endpoint responde correctamente: son evidencias distintas. Confundirlas prolonga el diagnóstico y puede hacer que infraestructura reinicie una aplicación saludable mientras el problema está en DNS, routing o lógica HTTP. En esta práctica se establece la primera frontera observable sin Docker ni Spring: una JVM escucha y otro proceso, `curl`, actúa como cliente.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Explicación, límite y evidencia |
 |---|---|---|
-| Proceso y PID | Prerrequisito | `jps -l` muestra dos JVM con memoria separada |
-| Host e interfaz | Núcleo | `127.0.0.1` limita la escucha al equipo local |
-| Puerto | Núcleo | `lsof -nP -iTCP:8081 -sTCP:LISTEN` muestra quién escucha |
-| Socket y conexión | Núcleo | servidor registra dirección remota y local |
-| DNS | Variante | `localhost` se resuelve antes de intentar TCP |
-| Errores por fase | Diagnóstico | nombre inexistente y puerto cerrado producen fallos distintos |
+| Proceso y PID | Prerrequisito | Una JVM tiene memoria y recursos propios; `jps -l` demuestra su PID, pero no su salud HTTP |
+| Host e interfaz | Núcleo | `127.0.0.1` solo acepta tráfico local; `0.0.0.0` amplía exposición y no es un destino de cliente |
+| Puerto | Núcleo | Identifica el punto de escucha del proceso; un puerto libre no prueba que el protocolo sea correcto |
+| Socket TCP | Núcleo | Combina protocolo, direcciones y puertos local/remoto; TCP transporta bytes, no objetos Java |
+| Endpoint HTTP | Variante | `/health` añade semántica HTTP sobre TCP; `200 UP` es evidencia diferente de `LISTEN` |
+| Puerto ocupado | Diagnóstico | Dos procesos no pueden escuchar el mismo par dirección/puerto sin una opción explícita de reutilización |
 
-**Proceso y PID.** Un proceso es una instancia en ejecución con espacio de memoria y recursos propios. Dos JVM no comparten objetos: pasar `Pedido` exige convertirlo en bytes y reconstruirlo. Error frecuente: dibujar dos cajas pero probar dos clases dentro de la misma JVM; eso no reproduce aislamiento.
+**Proceso** es una instancia ejecutándose; el archivo fuente no consume tráfico. **Host** señala una dirección de red y **puerto** selecciona un punto de comunicación. **Socket** es el extremo concreto que el sistema operativo mantiene. **HTTP** añade método, ruta, estado, headers y cuerpo sobre la conexión TCP.
 
-**Host, interfaz y puerto.** El host identifica la máquina o dirección; el puerto identifica un punto de escucha dentro de ella. Escuchar en `127.0.0.1` no expone el servicio a otras interfaces; `0.0.0.0` solicita escuchar en todas las disponibles y amplía la superficie. Un puerto publicado no implica que la aplicación esté lista.
+**Analogía:** un edificio es el host, un local es el puerto, el negocio abierto es el proceso y la conversación en la puerta es la conexión. Ver luz en el local no demuestra que atienda correctamente tu solicitud.
 
-**Socket y conexión.** Un socket TCP conectado se identifica por protocolo, IP/puerto local e IP/puerto remoto. TCP entrega un flujo de bytes ordenado, no mensajes de negocio: debes delimitar peticiones y limitar tamaños. `accept()` exitoso tampoco confirma que la operación de negocio terminó.
+```text
+curl (proceso cliente) ── TCP 127.0.0.1:puerto-efímero → 127.0.0.1:8081 ── Servidor (JVM/PID)
+                                  GET /health → HTTP 200 + "UP"
+```
 
-**DNS y errores por fase.** DNS traduce un nombre a una o más direcciones; su éxito no garantiza que exista ruta, escucha o respuesta. `UnknownHostException` apunta a resolución; `ConnectException` suele indicar rechazo al conectar; `HttpTimeoutException` indica que la solicitud excedió su presupuesto. No los conviertas todos en «servicio caído».
+#### Paso 4 · Demostración guiada desde cero
 
-#### Practica
+**Paso 4.1 — Setup.**
 
-Crea `src/Servidor.java`:
+```bash
+mkdir -p academia-labs/microservices/m0-t1/{src,evidence}
+cd academia-labs/microservices/m0-t1
+java --version
+```
+
+**Paso 4.2 — Código.** Crea `src/Servidor.java` completo:
 
 ```java
+import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 
-public class Servidor {
-  public static void main(String[] args) throws Exception {
-    var server = HttpServer.create(new InetSocketAddress("127.0.0.1", 8081), 16);
-    server.createContext("/health", exchange -> {
-      byte[] body = "UP".getBytes(StandardCharsets.UTF_8);
-      exchange.sendResponseHeaders(200, body.length);
-      try (var out = exchange.getResponseBody()) { out.write(body); }
-    });
-    server.start();
-    System.out.println("LISTEN 127.0.0.1:8081 pid=" + ProcessHandle.current().pid());
+public final class Servidor {
+  private static final String HOST = "127.0.0.1";
+  private static final int PUERTO = 8081;
+
+  private Servidor() { }
+
+  public static void main(String[] args) throws IOException {
+    // La dirección fija evita exponer el laboratorio fuera del equipo.
+    var direccion = new InetSocketAddress(HOST, PUERTO);
+    var servidor = HttpServer.create(direccion, 16);
+
+    // El handler siempre cierra el body para liberar la conexión.
+    servidor.createContext("/health", Servidor::responderSalud);
+    servidor.start();
+
+    long pid = ProcessHandle.current().pid();
+    System.out.printf("LISTEN http://%s:%d/health pid=%d%n", HOST, PUERTO, pid);
+  }
+
+  private static void responderSalud(HttpExchange intercambio) throws IOException {
+    byte[] cuerpo = "UP".getBytes(StandardCharsets.UTF_8);
+    intercambio.getResponseHeaders().set("Content-Type", "text/plain; charset=utf-8");
+    intercambio.sendResponseHeaders(200, cuerpo.length);
+    try (var salida = intercambio.getResponseBody()) {
+      salida.write(cuerpo);
+    }
   }
 }
 ```
 
-Ejecuta:
+**Paso 4.3 — Verificación.** En la primera terminal:
 
 ```bash
 javac -d out src/Servidor.java
 java -cp out Servidor
-curl -i http://localhost:8081/health
+# Esperado: LISTEN http://127.0.0.1:8081/health pid=<número>
 ```
 
-En otra terminal ejecuta `jps -l` y `lsof -nP -iTCP:8081 -sTCP:LISTEN` (Linux: `ss -ltnp 'sport = :8081'`). Debes observar `HTTP/1.1 200 OK`, cuerpo `UP`, un PID Java y el socket en escucha.
+En otra terminal:
 
-**Fallo deliberado:** prueba `curl http://nombre-que-no-existe.invalid:8081/health` y, después de detener Java, `curl http://127.0.0.1:8081/health`. Guarda ambos errores en `evidence/tema-1.txt` y explica qué fase falló. **Transferencia al proyecto integrador RutaFlow Distribuido:** cambia la escucha a `0.0.0.0`, verifica las interfaces y vuelve a `127.0.0.1`; no dejes exposición innecesaria.
+```bash
+curl -i http://127.0.0.1:8081/health
+# Esperado: HTTP/1.1 200 OK ... Content-type: text/plain; charset=utf-8 ... UP
+jps -l
+lsof -nP -iTCP:8081 -sTCP:LISTEN  # Linux: ss -ltnp 'sport = :8081'
+```
+
+**Fallo deliberado:** sin detener el primer servidor, ejecuta `java -cp out Servidor` en una tercera terminal → **Error esperado:** `java.net.BindException: Address already in use` (Windows puede mostrar `Address already in use: bind`) → **Diagnóstico:** el primer PID ya posee `127.0.0.1:8081`; cambiar el puerto ocultaría el diagnóstico, por lo que primero localiza y detén conscientemente el proceso duplicado.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** cambia el cuerpo a `READY`, recompila y predice el `Content-length`. Pista: cuenta bytes UTF-8.
+2. **Variación:** usa el puerto `8082`; confirma con `lsof`/`ss` que `8081` queda libre. Pista: modifica una sola constante.
+3. **Diagnóstico:** solicita `/no-existe` y explica por qué recibir HTTP `404` demuestra más conectividad que un rechazo TCP. Pista: la JVM sí respondió.
+4. **Integración:** guarda PID, URL, estado y cuerpo en `evidence/tema-1.txt`. Pista: combina `jps`, `curl -i` y la salida del servidor.
+5. **Diseño:** decide si RutaFlow debe escuchar en `127.0.0.1` o `0.0.0.0` durante desarrollo compartido y escribe riesgo, mitigación y condición de uso.
+
+#### Paso 6 · Práctica independiente
+
+Sin copiar el ejemplo, crea `src/ServidorVersion.java` que escuche en `127.0.0.1:8083` y responda exactamente `RutaFlow m0-t1` en `/version`. Entrega el código, la salida de compilación, el PID, el socket en escucha y una petición que demuestre estado, `Content-Type` y cuerpo. No uses Spring, Docker ni dependencias externas.
+
+#### Paso 7 · Cierre
+
+- [ ] Distingo archivo fuente, clase compilada y proceso con PID.
+- [ ] Puedo explicar host, puerto y socket sin llamarlos «la URL».
+- [ ] Compruebo por separado escucha TCP y respuesta HTTP.
+- [ ] Reproduzco y diagnostico el puerto ocupado sin cambiarlo al azar.
+- [ ] Entrego evidencia en `evidence/tema-1.txt`.
+
+Si fallas 2 o más puntos, vuelve al Paso 4 y repite desde una carpeta limpia. **Prerrequisito de:** M0 T2 (diagnosticar DNS, conexión y ruta HTTP). Fuente primaria: [Java 25 `HttpServer`](https://docs.oracle.com/en/java/javase/25/docs/api/jdk.httpserver/com/sun/net/httpserver/HttpServer.html).
 
 ### Tema 2: Latencia, deadline y timeouts por fase · Aplicación · 80 min
 
