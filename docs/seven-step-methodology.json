@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 75,
-      "prerequisites": 88,
-      "context": 75,
-      "theoryAnalogy": 75,
-      "guidedDemo": 75,
+      "objective": 74,
+      "prerequisites": 87,
+      "context": 74,
+      "theoryAnalogy": 74,
+      "guidedDemo": 74,
       "codeExplanation": 111,
       "execution": 105,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 75,
-      "independentPractice": 75,
-      "closure": 75,
-      "commonErrors": 75,
-      "resources": 82,
-      "standaloneExample": 72,
-      "learningEvidence": 84,
-      "complete": 71
+      "guidedPractice": 74,
+      "independentPractice": 74,
+      "closure": 74,
+      "commonErrors": 74,
+      "resources": 81,
+      "standaloneExample": 71,
+      "learningEvidence": 83,
+      "complete": 70
     }
   },
   "topics": {
@@ -30629,26 +30629,26 @@
         "module": 5,
         "topic": "Tema 3: Manejo global de excepciones consistente entre entornos",
         "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "objective": false,
+          "prerequisites": false,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 4,
+          "complete": false
         }
       },
       {

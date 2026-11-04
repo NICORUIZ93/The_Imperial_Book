@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 470,
+      "lines": 485,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 14504,
+      "lines": 14547,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -314,7 +314,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1111,
+      "lines": 1110,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13578,
+      "lines": 13580,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 394,
+      "lines": 397,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -12076,7 +12076,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-5.md",
-      "lines": 508,
+      "lines": 497,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12092,7 +12092,7 @@
         "#### Subtema 4.20 \u00b7 Rechazar tambi\u00e9n un secreto vac\u00edo \u00b7 10 min",
         "#### Subtema 4.21 \u00b7 Quitar la validaci\u00f3n y observar el riesgo \u00b7 10 min",
         "### Tema 3: Manejo global de excepciones consistente entre entornos",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+        "#### Subtema 4.22 \u00b7 Lanzar una excepci\u00f3n del dominio \u00b7 10 min"
       ]
     },
     {

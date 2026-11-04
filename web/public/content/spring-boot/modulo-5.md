@@ -311,177 +311,166 @@ env -u JWT_SECRET_BASE64 ./mvnw -q spring-boot:run
 
 ### Tema 3: Manejo global de excepciones consistente entre entornos
 
-#### Paso 1 · Objetivo y preparación
+**Meta:** añadir una regla de negocio al `GlobalExceptionHandler` del Módulo 2 y comprobar que reutiliza el `ApiError` que ya conoce el cliente.
 
-Al finalizar podrás extender el manejo global de excepciones (Módulo 2) para una nueva excepción de negocio, confirmando con `MockMvc` real que el formato de error permanece consistente.
-
-**Conocimiento previo:** `@ControllerAdvice` y `ResponseEntity` (Módulo 2); Temas 1-2 de este módulo.
-
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** Cada nueva regla de negocio que puede fallar (por ejemplo, exceder el límite de paradas por ruta) necesita comunicar el error al cliente de la API en el MISMO formato que cualquier otro error ya manejado, sin que el consumidor de la API tenga que aprender un formato distinto por cada tipo de excepción nueva.
-
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** el mismo `@RestControllerAdvice` extendido, formato uniforme sin importar el entorno.
-
-El manejo global de excepciones, ya cubierto en el Módulo 2 con `@RestControllerAdvice`, se extiende naturalmente para mapear cualquier excepción de negocio adicional hacia una respuesta HTTP consistente, en el mismo lugar centralizado, garantizando que el formato de error permanezca exactamente el mismo sin importar el entorno (desarrollo, pruebas, producción) ni qué endpoint originó el error. Combinar esto con la configuración tipada y validada de los Temas 1-2 produce una aplicación robusta en su conjunto: los problemas de configuración se detectan al arranque, y los errores de negocio que sí ocurren durante la operación se comunican de forma predecible.
-
-**Analogía:** extender el manejo global de excepciones es ampliar el mismo protocolo unificado de atención de incidencias de una empresa para cubrir cada nuevo tipo de incidencia, en vez de crear un protocolo distinto para cada problema nuevo que aparece.
-
-**Diagrama:**
+**¿Por qué es importante?** Si un endpoint nuevo devuelve un JSON distinto para errores, el consumidor debe aprender otra forma de leerlos. Extender el manejador existente conserva los campos `codigo`, `mensaje` y `campos` para todos.
 
 ```mermaid
 flowchart LR
-  A[LimiteParadasExcedidoException nueva] --> B["mismo @RestControllerAdvice (Módulo 2)"]
-  C[excepciones ya manejadas en Módulo 2] --> B
-  B --> D[mismo formato JSON de error, sin importar el entorno]
+  A["Regla: máximo 20 paradas"] -->|supera 20| B[LimiteParadasExcedidoException]
+  B --> C[GlobalExceptionHandler existente]
+  C --> D["422 + ApiError: codigo, mensaje, campos"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Subtema 4.22 · Lanzar una excepción del dominio · 10 min
 
-Reutiliza `academia-spring` (o créalo desde una carpeta vacía con `mkdir -p academia-spring` si es tu primera vez) y crea la excepción de negocio y su mapeo en `src/main/java/com/academia/errores/`:
+**Contexto:** continúa `academia-spring`, paquete `com.example.demo`. La cadena JWT exige bearer en `/api/**`; los tests enviarán un token real de la `JwtService` del Módulo 4.
 
-```bash
-mkdir -p academia-spring/src/main/java/com/academia/errores
-cd academia-spring
-```
+**Hazlo tú:** crea `src/main/java/com/example/demo/LimiteParadasExcedidoException.java`:
 
 ```java
-// src/main/java/com/academia/errores/LimiteParadasExcedidoException.java
-package com.academia.errores;
+package com.example.demo;
 
 public class LimiteParadasExcedidoException extends RuntimeException {
     public LimiteParadasExcedidoException(int limite) {
-        super("El límite de " + limite + " paradas por ruta fue excedido");
+        super("El límite de " + limite + " paradas por ruta fue excedido.");
     }
 }
 ```
 
-```java
-// src/main/java/com/academia/errores/ManejadorGlobalErrores.java
-package com.academia.errores;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ProblemDetail;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-@RestControllerAdvice
-public class ManejadorGlobalErrores {
-
-    @ExceptionHandler(LimiteParadasExcedidoException.class)
-    public ProblemDetail manejarLimiteExcedido(LimiteParadasExcedidoException ex) {
-        ProblemDetail problema = ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage());
-        problema.setTitle("Límite de paradas excedido");
-        return problema;
-    }
-}
-```
+Crea `src/main/java/com/example/demo/RutasEntregaController.java`:
 
 ```java
-// src/main/java/com/academia/errores/RutasController.java
-package com.academia.errores;
+package com.example.demo;
 
+import java.util.Map;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class RutasController {
+public class RutasEntregaController {
     private static final int LIMITE_PARADAS = 20;
 
     @PostMapping("/api/rutas")
-    public String crearRuta(@RequestParam int numeroDeParadas) {
-        if (numeroDeParadas > LIMITE_PARADAS) throw new LimiteParadasExcedidoException(LIMITE_PARADAS);
-        return "ruta creada con " + numeroDeParadas + " paradas";
+    public Map<String, Object> crear(@RequestParam int numeroDeParadas) {
+        if (numeroDeParadas > LIMITE_PARADAS) {
+            throw new LimiteParadasExcedidoException(LIMITE_PARADAS);
+        }
+        return Map.of("estado", "creada", "paradas", numeroDeParadas);
     }
 }
 ```
 
-**Explicación línea por línea:** `LimiteParadasExcedidoException` es una excepción de negocio específica del dominio; `@ExceptionHandler(LimiteParadasExcedidoException.class)` en el MISMO `@RestControllerAdvice` que ya manejaría otras excepciones (Módulo 2) la mapea a `422 Unprocessable Entity` usando `ProblemDetail` (el formato estándar RFC 7807, el mismo formato que cualquier otro error de esta API); el controller lanza la excepción cuando la regla de negocio se viola, sin necesidad de construir la respuesta de error manualmente en cada endpoint.
+**Resultado esperado:** 10 y 20 paradas siguen el camino de éxito; 21 lanza la excepción de negocio. El controller no construye JSON de error.
 
-Confirma con `MockMvc` real que la excepción se traduce al formato `ProblemDetail` esperado, con el mismo `Content-Type` estándar que cualquier otro error de la API:
+**Fallo deliberado y diagnóstico:** cambia `>` por `>=`. La prueba de límite exacto que agregarás en 4.24 recibirá error para 20; vuelve a `>` porque el límite máximo sí está permitido.
+
+**Entiende:** la excepción describe una regla del dominio. El controller la lanza; el manejador compartido decide el estado y el cuerpo HTTP.
+
+**Cierra:** localiza la condición y el `throw`; el controller no conoce el formato `ApiError`.
+
+#### Subtema 4.23 · Extender el manejador sin cambiar el formato · 10 min
+
+**Contexto:** en Módulo 2 `GlobalExceptionHandler` ya convierte validaciones y tareas inexistentes en `ApiError(codigo, mensaje, campos)`. Añade un método a esa misma clase.
+
+**Hazlo tú:** en `src/main/java/com/example/demo/GlobalExceptionHandler.java`, agrega:
 
 ```java
-// src/test/java/com/academia/errores/ManejadorGlobalErroresTest.java
-package com.academia.errores;
+@ExceptionHandler(LimiteParadasExcedidoException.class)
+public ResponseEntity<ApiError> manejarLimiteParadas(LimiteParadasExcedidoException ex) {
+    ApiError cuerpo = new ApiError("LIMITE_PARADAS", ex.getMessage(), Map.of());
+    return ResponseEntity.unprocessableEntity().body(cuerpo);
+}
+```
+
+`Map` y `ResponseEntity` ya se importaron en Módulo 2. Si no, añádelos junto con `ExceptionHandler` y no crees otro `@RestControllerAdvice`.
+
+Crea `src/test/java/com/example/demo/RutasEntregaControllerTest.java`. Para estos endpoints protegidos, obtén un bearer con el servicio real:
+
+```java
+package com.example.demo;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class ManejadorGlobalErroresTest {
+class RutasEntregaControllerTest {
+    @Autowired MockMvc mockMvc;
+    @Autowired JwtService jwtService;
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Test
-    void excederElLimiteDeParadasDevuelveProblemDetailConsistente() throws Exception {
-        mockMvc.perform(post("/api/rutas").param("numeroDeParadas", "25"))
-            .andExpect(status().isUnprocessableEntity())
-            .andExpect(content().contentTypeCompatibleWith("application/problem+json"))
-            .andExpect(jsonPath("$.title").value("Límite de paradas excedido"))
-            .andExpect(jsonPath("$.status").value(422));
+    private String bearer() {
+        return "Bearer " + jwtService.generar("ana-1", "ADMIN");
     }
 
     @Test
-    void dentroDelLimiteCreaLaRutaCorrectamente() throws Exception {
-        mockMvc.perform(post("/api/rutas").param("numeroDeParadas", "10"))
-            .andExpect(status().isOk());
+    void sobreElLimiteDevuelveElApiErrorCompartido() throws Exception {
+        mockMvc.perform(post("/api/rutas").param("numeroDeParadas", "21")
+                .header("Authorization", bearer()))
+            .andExpect(status().isUnprocessableEntity())
+            .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.codigo").value("LIMITE_PARADAS"))
+            .andExpect(jsonPath("$.mensaje")
+                .value("El límite de 20 paradas por ruta fue excedido."))
+            .andExpect(jsonPath("$.campos").isEmpty());
     }
 }
 ```
 
-```bash
-mvn test -Dtest=ManejadorGlobalErroresTest # Maven
-./gradlew test --tests ManejadorGlobalErroresTest # Gradle (equivalente)
-```
+**Resultado esperado:** la respuesta es `422` y tiene los mismos tres campos JSON del `ApiError` usado por los errores de Módulo 2. Su `Content-Type` es compatible con `application/json`; aquí no se usa `ProblemDetail` ni `application/problem+json`.
 
-**Resultado esperado:** ambos tests pasan: exceder el límite devuelve `422` con el formato `application/problem+json` estándar (el mismo formato RFC 7807 usado por cualquier otro error ya manejado en el Módulo 2), y una petición dentro del límite responde `200` normalmente.
+**Fallo deliberado y diagnóstico:** cambia `ResponseEntity.unprocessableEntity()` por `ResponseEntity.badRequest()`. El test recibe `400` en vez de `422`; restaura el estado que corresponde a la regla de negocio.
 
-**Fallo deliberado:** en `RutasController`, reemplaza `throw new LimiteParadasExcedidoException(LIMITE_PARADAS)` por una respuesta manual de error construida directamente en el método (`return "ERROR: límite excedido"`, con `200 OK` por defecto en vez de un código de error). Ejecuta de nuevo `excederElLimiteDeParadasDevuelveProblemDetailConsistente` — el test FALLA porque `status().isUnprocessableEntity()` no coincide con el `200` real devuelto — diagnostica confirmando por qué construir respuestas de error manualmente dentro de cada endpoint, en vez de lanzar una excepción de negocio hacia el manejador centralizado, produce inconsistencias reales y detectables: un cliente que espera `422` con `ProblemDetail` recibiría un `200` con un texto plano no estructurado. Revierte el cambio antes de continuar.
+**Entiende:** status describe el resultado HTTP; `ApiError` mantiene el cuerpo estable. Si el proyecto decide migrar a RFC 9457 `ProblemDetail`, cambia todos los handlers como una decisión de contrato, no solo este.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**Cierra:** compara `codigo`, `mensaje` y `campos` con el record `ApiError`.
 
-1. Agrega una segunda excepción de negocio distinta al mismo `@RestControllerAdvice` y confirma con un test que ambas producen el mismo formato `application/problem+json`, solo con `title`/`detail` distintos.
-2. Agrega un campo adicional al `ProblemDetail` (`problema.setProperty("limite", LIMITE_PARADAS)`) y confirma con `jsonPath("$.limite")` que aparece en la respuesta.
-3. Provoca el error con un valor límite exacto (`numeroDeParadas=20`, igual al límite, no mayor) y confirma si la condición actual (`>`) lo acepta o lo rechaza; decide si ese es el comportamiento correcto según el enunciado "el límite es 20".
-4. Escribe de memoria (sin mirar) una excepción de negocio, su mapeo en `@RestControllerAdvice` a `ProblemDetail`, y un test `MockMvc` que confirme el código de estado y el `title`. Compara después contra el patrón del Paso 4.
+#### Subtema 4.24 · Comprobar el borde del límite con MockMvc · 10 min
 
-**Pista:** `content().contentTypeCompatibleWith("application/problem+json")` es más robusto que comparar el string exacto del `Content-Type`, porque tolera parámetros adicionales como el charset que Spring puede agregar automáticamente.
+**Contexto:** una condición `>` permite exactamente 20; `>=` la rechaza. Una prueba en el borde evita que una edición cambie esa regla sin que el equipo lo note.
 
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio para mapear la excepción a una respuesta HTTP:
+**Hazlo tú:** agrega al mismo `RutasEntregaControllerTest.java`:
 
 ```java
-@____(LimiteParadasExcedidoException.class)
-public ProblemDetail manejarLimiteExcedido(LimiteParadasExcedidoException ex) {
-    return ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage());
+@Test
+void elLimiteExactoDeVeinteParadasEsAceptado() throws Exception {
+    mockMvc.perform(post("/api/rutas").param("numeroDeParadas", "20")
+            .header("Authorization", bearer()))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.estado").value("creada"))
+        .andExpect(jsonPath("$.paradas").value(20));
 }
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una excepción de negocio mapeada a `ProblemDetail` en un `@RestControllerAdvice`, y un test `MockMvc` que confirme el código de estado y el formato de la respuesta. Compara después contra el patrón del Paso 4.
+Ejecuta desde la raíz:
 
-#### Paso 7 · Cierre y evidencia
+```bash
+./mvnw -q -Dtest=RutasEntregaControllerTest test
+./mvnw -q clean test
+```
 
-Ya extiendes el manejo centralizado de excepciones para una nueva regla de negocio, confirmando con `MockMvc` real que el formato de error permanece consistente sin importar qué endpoint lo originó. Esto cierra el módulo de configuración y manejo de errores; el siguiente módulo aborda cómo probar la aplicación completa de forma automatizada. **Evidencia:** entrega el resultado de ambos tests de `ManejadorGlobalErroresTest` en verde, y el resultado del fallo deliberado mostrando la inconsistencia de un `200` donde se esperaba `422`. Fuente oficial: [Spring — Error Handling for REST with ProblemDetail](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-ann-rest-exceptions.html).
+**Resultado esperado:** 20 recibe `200`; 21 recibe `422` con `ApiError`; ambos usan un bearer válido del contexto de prueba.
 
-**Errores comunes:** construir respuestas de error manualmente dentro de un endpoint específico en vez de lanzar una excepción hacia el manejador centralizado; crear un `@ControllerAdvice` nuevo y separado para cada excepción, en vez de extender el mismo existente.
+**Fallo deliberado y diagnóstico:** cambia `>` por `>=` en `RutasEntregaController` y ejecuta `./mvnw -q -Dtest=RutasEntregaControllerTest#elLimiteExactoDeVeinteParadasEsAceptado test`. El test falla porque recibe `422`; restaura `>` y confirma los dos casos.
 
-**Cuándo no usarlo:** para un error verdaderamente específico de un único endpoint sin ninguna posibilidad de reutilización en otro lugar de la aplicación, manejarlo directamente en el método del controller sin pasar por el mecanismo global puede ser aceptable; reserva el `@RestControllerAdvice` centralizado para excepciones de negocio con sentido a nivel de aplicación.
+**Entiende:** el test comprueba el contrato HTTP completo en un contexto Spring real: seguridad, controller, handler y JSON. No prueba todos los perfiles de despliegue.
+
+**Cierra:** conserva la suite verde y la prueba del valor exacto. Referencias: [Spring MVC — REST Exceptions](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-ann-rest-exceptions.html) y [Spring Boot — Testing Applications](https://docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html).
+
+**Práctica independiente:** agrega otra excepción de negocio al `GlobalExceptionHandler` y confirma que el status cambia pero el JSON conserva `codigo`, `mensaje` y `campos`.
+
+**Proyecto integrador:** usa un handler central para el backend RutaFlow; conserva `ApiError` en todos sus fallos hasta que una migración coordinada defina un nuevo contrato.
 
 ---
-
-El manejo global de excepciones de este tema es el que mantendrá consistente el proyecto integrador de este track (microservicio productivo, Módulo 12) entre entornos.
 
 ## Laboratorio práctico
 
@@ -494,9 +483,9 @@ El manejo global de excepciones de este tema es el que mantendrá consistente el
 | 1 | Crear una clase `@ConfigurationProperties` | Ver Tema 1 | Con valores tipados desde `application.yml` |
 | 2 | Agregar `@Validated` | Ver Tema 2 | Falla al arranque si falta un valor obligatorio |
 | 3 | Provocar la falla intencionalmente | Ver Tema 2 | Confirmado con `ApplicationContextRunner` real |
-| 4 | Centralizar una excepción de negocio adicional | Ver Tema 3 | Mismo formato `ProblemDetail` consistente |
+| 4 | Centralizar una excepción de negocio adicional | Ver Tema 3 | Mismo esquema `ApiError`: `codigo`, `mensaje`, `campos` |
 
-**Verificación:** el laboratorio se considera exitoso si borrar un valor de configuración obligatorio impide que la aplicación arranque, con `BindValidationException` como causa raíz real, y si todos los errores de negocio devuelven el mismo formato `application/problem+json` consistente.
+**Verificación:** confirma el fallo de arranque ante una clave JWT vacía con `BindValidationException`, y comprueba que una infracción de negocio devuelve `422` con el esquema `ApiError` que ya usa el backend. El test cubre un contexto de prueba; no certifica todas las configuraciones del despliegue.
 
 **Errores comunes y soluciones**
 

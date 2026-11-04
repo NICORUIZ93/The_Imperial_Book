@@ -1696,7 +1696,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "37ad7f0852b21c6b1aff38e0dea01fc5ee8152e9fa2da6d2201b2cd82f1ee336",
+    "fingerprint": "24c5b32547eda8223f3863226d6722a756781fb564c6f1572a2adb096aced626",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10941,9 +10941,9 @@
       {
         "issues": [],
         "module": 5,
-        "tailWords": 218,
+        "tailWords": 0,
         "topic": "Tema 3: Manejo global de excepciones consistente entre entornos",
-        "words": 1380
+        "words": 951
       },
       {
         "issues": [],

@@ -93,10 +93,10 @@
     },
     "spring-boot": {
       "topics": 111,
-      "completeTopics": 34,
-      "topicsWith3to6Subtopics": 36,
-      "subtopics": 108,
-      "completeSubtopics": 106
+      "completeTopics": 35,
+      "topicsWith3to6Subtopics": 37,
+      "subtopics": 111,
+      "completeSubtopics": 109
     }
   },
   "topics": {
@@ -14239,9 +14239,52 @@
       {
         "module": 5,
         "topic": "### Tema 3: Manejo global de excepciones consistente entre entornos",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "4.22",
+            "title": "#### Subtema 4.22 · Lanzar una excepción del dominio · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "4.23",
+            "title": "#### Subtema 4.23 · Extender el manejador sin cambiar el formato · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "4.24",
+            "title": "#### Subtema 4.24 · Comprobar el borde del límite con MockMvc · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 6,

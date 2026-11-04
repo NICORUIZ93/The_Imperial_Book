@@ -460,10 +460,25 @@ omisiones. Se quitó `@Validated`; los casos de secreto ausente y vencimiento
 menor al mínimo fallaron al encontrar un contexto que arrancaba. Restaurada la
 anotación, la suite volvió a pasar. Auditorías: **138/1185 temas atómicos**:
 Java 101, Spring Boot 34, Node 2 y Flutter 1; **1093/1185 practicables**, 409
-con señales de defecto de sustancia. Falta correr `./scripts/validate.sh` y
-regenerar el grafo después de esta sección.
+con señales de defecto de sustancia. `./scripts/validate.sh` pasó con 23
+pruebas y 4 omitidas; informes y grafo están regenerados.
 
-**Siguiente tema:** Spring Boot M5 T3, “Manejo global de excepciones consistente
-entre entornos”. Revisa los DTO y el formato `application/problem+json`, ejecuta
-una excepción de negocio y una validación HTTP real, y alinea sus paquetes y
-pruebas con `com.example.demo` y los starters Spring Boot 4 del proyecto.
+Spring Boot M5 T3, “Manejo global de excepciones consistente entre entornos”,
+se alineó con el contrato existente del Módulo 2. Ese backend usa `ApiError`
+(`codigo`, `mensaje`, `campos`), no `ProblemDetail`; la nueva excepción
+`LimiteParadasExcedidoException` se agrega al `GlobalExceptionHandler`
+existente y devuelve `422`. El controller `RutasEntregaController` mantiene
+exactamente 20 paradas y rechaza 21. El test usa MockMvc y bearer creado por el
+`JwtService` real; cubre cuerpo JSON, status y límite exacto. La suite acumulada
+Boot 4.1.2/JDK 25 pasó con **36 pruebas**, sin fallos ni omisiones. Cambiar el
+status a 400 produjo `400` en vez de `422`; cambiar `>` por `>=` hizo fallar el
+test del límite exacto con `422` en vez de `200`; ambos cambios se restauraron.
+Auditorías: **139/1185 temas atómicos**: Java 101, Spring Boot 35, Node 2 y
+Flutter 1; **1093/1185 practicables**, 409 con señales de defecto de sustancia.
+`./scripts/validate.sh` pasó con 23 pruebas y 4 omitidas; informes e índices
+regenerados. Estas medidas no sustituyen revisión humana ni certifican el resto.
+
+**Siguiente tema:** Spring Boot M6 T1, “Slices de testing — `@WebMvcTest`”.
+Revisa qué parte del contexto levanta el slice frente a `@SpringBootTest`, adapta
+el package Boot 4 y ejecuta una petición de controller con dependencias
+simuladas antes de reescribir los ejercicios.
