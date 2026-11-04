@@ -89,8 +89,8 @@ reapliques cambios que ya estén publicados.
 
 ## Estado global honesto
 
-En la auditoría actual: **134/1185 temas** cumplen la estructura atómica en los
-14 tracks: Java 101, Spring Boot 30, Node 2 y Flutter 1. La auditoría pedagógica detecta
+En la auditoría actual: **135/1185 temas** cumplen la estructura atómica en los
+14 tracks: Java 101, Spring Boot 31, Node 2 y Flutter 1. La auditoría pedagógica detecta
 **1095/1185 temas practicables** y deuda en 90. La auditoría de sustancia registra
 409 temas con defectos, deuda histórica repartida entre varios tracks. Ninguna de
 estas cifras certifica que un curso esté completo o que todos los ejemplos se
@@ -352,3 +352,33 @@ con peticiones reales qué respuesta ve el navegador y cuál recibe el servidor.
 Más adelante, M4 T5 conserva una versión antigua de `JwtService` bajo otro
 paquete; al revisar ese tema, alinéala con `com.example.demo.JwtService` y no
 introduzcas una segunda clave ni una segunda implementación.
+
+
+Spring Boot M4 T3, “CORS y CSRF”, se rehízo en tres subtemas: origen/métodos/
+cabeceras y preflight; petición `DELETE` real con JWT y decisión de CSRF; y
+prueba de un método no listado. El `CorsConfigurationSource` se limita a
+`/api/**`, permite `https://web.academia.dev`, `GET/POST/DELETE`,
+`Authorization/Content-Type` y no habilita cookies; `SecurityConfig` conecta
+CORS antes de la autenticación. El texto diferencia bloqueo que aplica el
+navegador de respuestas HTTP del servidor: MockMvc comprueba preflight y headers,
+pero no equivale a ejecutar un navegador. También aclara que JWT en una cookie
+automática vuelve a hacer relevante CSRF.
+
+La suite completa del backend temporal Spring Boot 4.1.2/JDK 25 pasó: **26
+pruebas**, sin fallos ni omisiones. Los ejemplos validaron preflight permitido
+(200 y headers de origen, método y autorización), origen no permitido (403),
+PATCH no permitido (403), y DELETE con bearer JWT (200). Se provocaron y
+restauraron tres fallos: aceptar cualquier origen convirtió el 403 en 200;
+quitar Authorization de los headers admitidos convirtió el preflight esperado
+200 en 403; permitir todos los métodos convirtió el PATCH esperado 403 en 200.
+Tras T3, auditorías: **135/1185 temas atómicos**, Spring Boot 31;
+**1095/1185 practicables**, 409 con defectos de sustancia. Reportes regenerados y
+`./scripts/validate.sh` pasó con 23 pruebas y 4 omitidas. Estas métricas no son
+certificación ni validación de navegador real.
+
+**Siguiente tema:** Spring Boot M4 T4, “Protección SSRF con
+`InetAddressFilter`”. Verifica en documentación primaria que la API y los
+rangos bloqueados corresponden a la versión objetivo; inspecciona el laboratorio
+`examples/spring-ssrf`, compara el Markdown con el código y ejecuta pruebas de
+red/redirects. No afirmes que el filtro bloquea un rango ni que evita DNS
+rebinding sin una prueba que lo demuestre.

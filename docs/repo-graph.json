@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 355,
+      "lines": 385,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 14289,
+      "lines": 14332,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -314,7 +314,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1115,
+      "lines": 1114,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13568,
+      "lines": 13570,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 379,
+      "lines": 382,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -12055,7 +12055,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-4.md",
-      "lines": 996,
+      "lines": 1020,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12071,7 +12071,7 @@
         "#### Subtema 4.5 \u00b7 Poner el filtro dentro de Spring Security \u00b7 10 min",
         "#### Subtema 4.6 \u00b7 Probar identidad, rol y firma \u00b7 10 min",
         "### Tema 3: CORS y CSRF",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+        "#### Subtema 4.7 \u00b7 Permitir un origen y responder al preflight \u00b7 10 min"
       ]
     },
     {

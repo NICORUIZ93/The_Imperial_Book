@@ -93,10 +93,10 @@
     },
     "spring-boot": {
       "topics": 111,
-      "completeTopics": 30,
-      "topicsWith3to6Subtopics": 31,
-      "subtopics": 93,
-      "completeSubtopics": 92
+      "completeTopics": 31,
+      "topicsWith3to6Subtopics": 32,
+      "subtopics": 96,
+      "completeSubtopics": 95
     }
   },
   "topics": {
@@ -13989,9 +13989,52 @@
       {
         "module": 4,
         "topic": "### Tema 3: CORS y CSRF",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "4.7",
+            "title": "#### Subtema 4.7 · Permitir un origen y responder al preflight · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "4.8",
+            "title": "#### Subtema 4.8 · Llamar con el JWT y decidir CSRF · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "4.9",
+            "title": "#### Subtema 4.9 · Ajustar métodos y detectar configuraciones amplias · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 4,

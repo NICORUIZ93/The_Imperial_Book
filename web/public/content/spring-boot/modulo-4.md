@@ -519,84 +519,64 @@ Desde la raíz del proyecto ejecuta `./mvnw -q -Dtest=JwtFilterTest test` y desp
 
 ### Tema 3: CORS y CSRF
 
-#### Paso 1 · Objetivo y preparación
+Al terminar, podrás permitir desde qué sitios web se llama la API y decidir cuándo proteger las peticiones contra CSRF. Continúa el proyecto integrador `academia-spring` con JWT en `Authorization`.
 
-Al finalizar podrás configurar CORS para restringir qué orígenes de navegador consumen la API, y explicar por qué una API stateless con JWT generalmente no necesita protección CSRF.
-
-**Conocimiento previo:** Temas 1 y 2 de este módulo.
-
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** Un frontend servido desde un dominio distinto al de la API necesita permiso explícito del navegador para consumirla (CORS); un atacante no debería poder inducir peticiones no deseadas aprovechando cookies de sesión (CSRF) — dos protecciones distintas que se confunden con frecuencia.
-
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** origen distinto del navegador (CORS), protección específica de sesiones basadas en cookies (CSRF).
-
-CORS controla qué orígenes (protocolo + dominio + puerto) tienen permitido, desde el navegador del usuario, realizar peticiones hacia la API desde un origen distinto: `config.setAllowedOrigins(List.of("https://miapp.com"))` restringe explícitamente qué frontends pueden consumirla desde JavaScript en el navegador — no aplica a llamadas directas entre servidores. CSRF es un ataque relevante específicamente para aplicaciones con sesiones basadas en cookies: el navegador envía automáticamente las cookies de un dominio en cualquier petición hacia él, incluso iniciada desde un sitio malicioso. Una API stateless con JWT (Tema 2) generalmente no necesita esa protección, porque el token debe incluirse explícitamente en el header `Authorization` por el código cliente — algo que un atacante no puede forzar sin conocer el token de la víctima.
-
-**Analogía:** CORS es una lista de invitados autorizados a acceder a un recurso desde direcciones externas específicas; CSRF aprovecha que alguien lleva puesta automáticamente una credencial visible (la cookie) que cualquier lugar reconoce sin verificación adicional, mientras un JWT es una credencial que debe presentarse explícitamente cada vez.
-
-**Diagrama:**
-
-```
-┌── navegador en https://miapp.com ──┐
-│  petición hacia https://api.miapp.com  │
-└──────────┬───────────────────┘
-           │ CORS: ¿https://miapp.com está en allowedOrigins?
-           ▼
-┌── sí: header Access-Control-Allow-Origin devuelto ──┐
-│  no: navegador bloquea la respuesta del lado cliente   │
-└─────────────────────────────────────────────┘
+```mermaid
+flowchart LR
+  B["Navegador: Origin"] --> O["OPTIONS sin JWT"]
+  O -->|origen, método y cabeceras permitidos| R["Petición real con Authorization: Bearer"]
+  O -->|regla CORS no coincide| X["403: el navegador no continúa"]
+  R --> J["Filtro JWT autentica"] --> A["Regla de rol autoriza"]
+  C["Cookie de sesión automática"] --> S["CSRF necesario"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+**¿Por qué es importante?** CORS deja que el navegador de tu frontend lea la API; CSRF evita cambios que un navegador podría enviar usando credenciales que adjunta solo, como una cookie. Son problemas distintos: CORS no autentica usuarios ni reemplaza permisos.
 
-Reutiliza `academia-spring` (o créalo desde una carpeta vacía con `mkdir -p academia-spring` si es tu primera vez) y crea `src/main/java/com/academia/seguridad/CorsConfig.java`:
+#### Subtema 4.7 · Permitir un origen y responder al preflight · 10 min
 
-```bash
-mkdir -p academia-spring/src/main/java/com/academia/seguridad
-cd academia-spring
-```
+**Contexto:** el navegador suele enviar primero una petición `OPTIONS` cuando el frontend usa `Authorization` o un método como `DELETE`. Esa petición previa normalmente no lleva el JWT; Spring debe revisar CORS antes de exigir autenticación.
+
+**Hazlo tú:** en `src/main/java/com/example/demo/CorsConfig.java`, configura el único sitio web aprobado y los métodos/cabeceras que usa el cliente:
 
 ```java
-// src/main/java/com/academia/seguridad/CorsConfig.java
-package com.academia.seguridad;
+package com.example.demo;
 
+import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.cors.CorsConfigurationSource;
-
-import java.util.List;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 public class CorsConfig {
-
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         var config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("https://demo.academia.dev"));
+        config.setAllowedOrigins(List.of("https://web.academia.dev"));
         config.setAllowedMethods(List.of("GET", "POST", "DELETE"));
+        config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        config.setAllowCredentials(false);
+        config.setMaxAge(3600L);
 
         var source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
+        source.registerCorsConfiguration("/api/**", config);
         return source;
     }
 }
 ```
 
-Registra `.cors(cors -> {})` en el `SecurityFilterChain` del Tema 1 para que Spring Security aplique esta configuración, y confirma con `MockMvc` real, enviando el header `Origin`, la diferencia entre un origen permitido y uno no permitido:
+En `src/main/java/com/example/demo/SecurityConfig.java`, añade `.cors(cors -> {})` antes de `.csrf(...)`; conserva el resto de la cadena JWT del Tema 2. Spring Security toma la configuración del `CorsConfigurationSource` y procesa CORS antes de autenticar.
+
+Crea `src/test/java/com/example/demo/CorsConfigTest.java`:
 
 ```java
-// src/test/java/com/academia/seguridad/CorsConfigTest.java
-package com.academia.seguridad;
+package com.example.demo;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
@@ -606,66 +586,110 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 class CorsConfigTest {
-
-    @Autowired
-    private MockMvc mockMvc;
+    @Autowired MockMvc mockMvc;
 
     @Test
-    void origenPermitidoRecibeElHeaderDeAutorizacionCors() throws Exception {
-        mockMvc.perform(options("/public/health")
-                .header("Origin", "https://demo.academia.dev")
-                .header("Access-Control-Request-Method", "GET"))
+    void preflightPermitidoDevuelveOrigenYMetodo() throws Exception {
+        mockMvc.perform(options("/api/entregas/42")
+                .header("Origin", "https://web.academia.dev")
+                .header("Access-Control-Request-Method", "DELETE")
+                .header("Access-Control-Request-Headers", "Authorization"))
             .andExpect(status().isOk())
-            .andExpect(header().string("Access-Control-Allow-Origin", "https://demo.academia.dev"));
+            .andExpect(header().string("Access-Control-Allow-Origin", "https://web.academia.dev"))
+            .andExpect(header().string("Access-Control-Allow-Methods",
+                org.hamcrest.Matchers.containsString("DELETE")))
+            .andExpect(header().string("Access-Control-Allow-Headers",
+                org.hamcrest.Matchers.containsString("Authorization")));
     }
 
     @Test
-    void origenNoPermitidoNoRecibeElHeaderDeAutorizacionCors() throws Exception {
-        mockMvc.perform(options("/public/health")
-                .header("Origin", "https://sitio-no-autorizado.com")
-                .header("Access-Control-Request-Method", "GET"))
-            .andExpect(status().isForbidden());
+    void preflightDeOrigenAjenoRecibe403() throws Exception {
+        mockMvc.perform(options("/api/entregas/42")
+                .header("Origin", "https://sitio-no-autorizado.dev")
+                .header("Access-Control-Request-Method", "DELETE"))
+            .andExpect(status().isForbidden())
+            .andExpect(header().doesNotExist("Access-Control-Allow-Origin"));
     }
 }
 ```
 
+Desde la raíz de `academia-spring`, ejecuta:
+
 ```bash
-mvn test -Dtest=CorsConfigTest           # Maven
-./gradlew test --tests CorsConfigTest    # Gradle (equivalente)
+./mvnw -q -Dtest=CorsConfigTest test
 ```
 
-**Resultado esperado:** `BUILD SUCCESS` con ambos tests en verde: la petición preflight (`OPTIONS`) desde el origen permitido recibe `Access-Control-Allow-Origin: https://demo.academia.dev`, mientras la misma petición desde un origen no listado es rechazada por el propio filtro CORS de Spring Security antes de llegar al controller.
+**Resultado esperado:** los dos tests pasan: el origen aprobado recibe `Access-Control-Allow-Origin`; el origen ajeno recibe `403` y no recibe permiso CORS.
 
-**Fallo deliberado:** cambia `config.setAllowedOrigins(List.of("https://demo.academia.dev"))` por `config.setAllowedOrigins(List.of("*"))` (permitiendo cualquier origen) y ejecuta de nuevo `origenNoPermitidoNoRecibeElHeaderDeAutorizacionCors`. El test FALLA porque ahora CUALQUIER origen, incluido `https://sitio-no-autorizado.com`, recibe el header de autorización — diagnostica confirmando por qué `allowedOrigins("*")` en producción es exactamente el error que la lista explícita de orígenes existe para prevenir. Revierte el cambio antes de continuar.
+**Fallo deliberado y diagnóstico:** cambia `setAllowedOrigins(List.of("https://web.academia.dev"))` por `setAllowedOrigins(List.of("*"))` y ejecuta `./mvnw -q -Dtest=CorsConfigTest#preflightDeOrigenAjenoRecibe403 test`. Obtendrás `200` en vez de `403`: la lista ya acepta cualquier sitio. Restaura el origen exacto.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**Entiende:** `Origin` identifica protocolo, host y puerto. `OPTIONS` pregunta si después puede salir el `DELETE`; el navegador aplica la decisión. Una herramienta como Postman puede enviar la petición aunque el servidor devuelva otra política. Referencias primarias: [Spring Security — integración CORS](https://docs.spring.io/spring-security/reference/servlet/integrations/cors.html) y [Spring Framework — CORS](https://docs.spring.io/spring-framework/reference/web/webmvc-cors.html).
 
-1. Agrega un segundo origen permitido (por ejemplo, un entorno de staging) a `allowedOrigins` y confirma con un test que ambos orígenes reciben el header correspondiente.
-2. Restringe `allowedMethods` a solo `GET` y confirma que una petición preflight con `Access-Control-Request-Method: DELETE` desde el origen permitido es rechazada de todas formas.
-3. Documenta en una frase, basándote en el Paso 3, por qué reactivar CSRF (`csrf(csrf -> {})` en vez de `csrf(csrf -> csrf.disable())`) en la API JWT de este módulo no sería necesario, mientras sí lo sería si la aplicación usara sesiones basadas en cookies.
-4. Escribe de memoria (sin mirar) una configuración de CORS con un único origen permitido, y un test que confirme el rechazo de un origen distinto.
+**Cierra:** anota los orígenes y métodos que necesita el frontend. CORS limita acceso desde navegadores; no impide llamadas directas desde otros servidores.
 
-**Pista:** CORS se aplica del lado del NAVEGADOR del cliente; una herramienta como `curl` o Postman, al no ser un navegador, no aplica la política del mismo origen y puede recibir respuestas que un navegador real bloquearía — por eso este Tema se verifica con `MockMvc`, que sí simula fielmente el comportamiento de preflight que un navegador ejecutaría.
+#### Subtema 4.8 · Llamar con el JWT y decidir CSRF · 10 min
 
-#### Paso 6 · Práctica independiente
+**Contexto:** autorizar el preflight no prueba todavía la petición real. El frontend manda el JWT en un encabezado `Authorization`; el filtro del Tema 2 valida identidad y rol después de que CORS permita ese origen.
 
-**Completa el código:** rellena el espacio para restringir CORS a un único origen específico:
+**Hazlo tú:** añade este test a `CorsConfigTest.java`. Comprueba una operación `DELETE` real con un token ADMIN válido y `Origin` aprobado:
 
 ```java
-config.setAllowedOrigins(List.of("____"));
+@Autowired JwtService jwtService;
+
+@Test
+void deleteConJwtDevuelveElHeaderCors() throws Exception {
+    String token = jwtService.generar("admin-1", "ADMIN");
+    mockMvc.perform(delete("/api/entregas/42")
+            .header("Origin", "https://web.academia.dev")
+            .header("Authorization", "Bearer " + token))
+        .andExpect(status().isOk())
+        .andExpect(header().string("Access-Control-Allow-Origin", "https://web.academia.dev"));
+}
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una configuración de `CorsConfigurationSource` con un origen permitido, y explica en una frase por qué una API JWT stateless generalmente deshabilita CSRF. Compara después contra el patrón del Paso 4.
+Añade los imports estáticos `delete` y `status` si todavía no están. Ejecuta `./mvnw -q -Dtest=CorsConfigTest test`.
 
-#### Paso 7 · Cierre y evidencia
+**Resultado esperado:** la petición real devuelve `200` y el header de origen aprobado. El preflight no lleva token; la petición `DELETE` posterior sí. MockMvc verifica la respuesta del servidor, pero no reemplaza una prueba en navegador.
 
-Ya configuras CORS para restringir qué orígenes de navegador consumen la API, y explicas por qué CSRF es una protección específica de sesiones basadas en cookies que una API JWT stateless generalmente no necesita. Esto cierra el módulo de Spring Security; el siguiente módulo aborda cómo documentar y versionar esta misma API. **Evidencia:** entrega el resultado de ambos tests de `CorsConfigTest` en verde, y el resultado del fallo deliberado mostrando el rechazo esperado convertido en aceptación indebida. Fuente oficial: [Spring — CORS](https://docs.spring.io/spring-framework/reference/web/webmvc-cors.html).
+**Fallo deliberado y diagnóstico:** quita `"Authorization"` de `setAllowedHeaders(...)` y ejecuta `./mvnw -q -Dtest=CorsConfigTest#preflightPermitidoInformaOrigenYHeaders test`. Spring devuelve `403` porque el navegador pregunta permiso para enviar ese encabezado; restaura `"Authorization"`.
 
-**Errores comunes:** desactivar CSRF sin entender el tipo de transporte de sesión que la aplicación realmente usa; configurar CORS con `allowedOrigins("*")` en producción, permitiendo que cualquier sitio consuma la API desde un navegador.
+**Entiende:** CSRF importa cuando el navegador agrega la credencial sin que el código de la página tenga que presentarla; eso sucede con cookies de sesión. Aquí la API no usa sesión, y JavaScript debe enviar el JWT explícitamente en `Authorization`, por eso el Tema 2 desactiva CSRF. Si guardas el JWT en una cookie enviada automáticamente, vuelve a evaluar CSRF y el modo `SameSite`; el hecho de que sea JWT no lo exime.
 
-**Cuándo no usarlo:** para una API consumida exclusivamente por otros servicios backend (nunca desde JavaScript en un navegador), la configuración de CORS no tiene efecto alguno — esa protección es exclusivamente relevante para peticiones iniciadas desde un navegador.
+**Práctica:** cambia el encabezado por un origen ajeno y comprueba que el navegador no podría leer la respuesta aunque el endpoint responda internamente. No confundas ese bloqueo del navegador con un `401` o un `403` de autorización.
 
-**Transferencia al proyecto integrador «Backend profesional de entregas»:** Define los orígenes permitidos del frontend y la protección de las mutaciones según el transporte de sesión. Prueba un origen ajeno y una solicitud sin protección requerida, manteniendo autorización por guía en el servidor.
+**Cierra:** conserva los tests de preflight y petición real en verde.
+
+#### Subtema 4.9 · Ajustar métodos y detectar configuraciones amplias · 10 min
+
+**Contexto:** un origen aprobado tampoco debería poder invocar métodos que el frontend no usa. CORS limita el intercambio del navegador a los métodos y cabeceras declarados.
+
+**Hazlo tú:** añade a `CorsConfigTest.java` una prueba que solicite `PATCH`, método que el cliente no tiene permitido:
+
+```java
+@Test
+void preflightDeMetodoNoListadoRecibe403() throws Exception {
+    mockMvc.perform(options("/api/entregas/42")
+            .header("Origin", "https://web.academia.dev")
+            .header("Access-Control-Request-Method", "PATCH"))
+        .andExpect(status().isForbidden());
+}
+```
+
+Ejecuta `./mvnw -q -Dtest=CorsConfigTest#preflightDeMetodoNoListadoRecibe403 test`.
+
+**Resultado esperado:** `403`; la configuración permite `GET`, `POST` y `DELETE`, pero no `PATCH`.
+
+**Fallo deliberado y diagnóstico:** cambia `setAllowedMethods(List.of("GET", "POST", "DELETE"))` por `setAllowedMethods(List.of("*"))` y repite el test. Falla porque `PATCH` ahora queda permitido: compara los métodos de la petición con la lista y restaura los tres métodos explícitos.
+
+**Entiende:** dar permiso CORS a un origen no le da acceso al endpoint; JWT y `@PreAuthorize` siguen decidiendo autenticación y rol. Evita `*` si no es necesario. Si habilitas cookies con `allowCredentials(true)`, limita todavía más orígenes y cabeceras; Spring no permite combinar credenciales con `allowedOrigins("*")`.
+
+**Práctica:** agrega a la configuración solo un segundo origen real de staging y comprueba preflight para ambos. Explica si cada ambiente necesita `GET`, `POST` o `DELETE`.
+
+**Límite:** CORS solo controla navegadores. No es una barrera para Postman, `curl` ni una petición servidor a servidor.
+
+**Cierra:** entrega los tres resultados de preflight y el `DELETE` autenticado. Referencias: [Spring Security — CORS](https://docs.spring.io/spring-security/reference/servlet/integrations/cors.html) y [Spring Security — CSRF](https://docs.spring.io/spring-security/reference/features/exploits/csrf.html).
+
+---
 
 ### Tema 4: Protección SSRF con InetAddressFilter (Spring Boot 4.1)
 
