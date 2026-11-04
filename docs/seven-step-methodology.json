@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 83,
-      "prerequisites": 95,
-      "context": 83,
-      "theoryAnalogy": 83,
-      "guidedDemo": 83,
+      "objective": 82,
+      "prerequisites": 94,
+      "context": 82,
+      "theoryAnalogy": 82,
+      "guidedDemo": 82,
       "codeExplanation": 111,
       "execution": 105,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 83,
-      "independentPractice": 83,
-      "closure": 83,
-      "commonErrors": 83,
-      "resources": 90,
-      "standaloneExample": 80,
-      "learningEvidence": 91,
-      "complete": 79
+      "guidedPractice": 82,
+      "independentPractice": 82,
+      "closure": 82,
+      "commonErrors": 82,
+      "resources": 89,
+      "standaloneExample": 79,
+      "learningEvidence": 90,
+      "complete": 78
     }
   },
   "topics": {
@@ -30421,26 +30421,26 @@
         "module": 3,
         "topic": "Tema 3: Migraciones con Flyway",
         "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "objective": false,
+          "prerequisites": false,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 4,
+          "complete": false
         }
       },
       {

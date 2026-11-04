@@ -1650,9 +1650,7 @@
       "track": "spring-boot"
     },
     {
-      "legacySections": [
-        "**Errores comunes y soluciones**"
-      ],
+      "legacySections": [],
       "module": 3,
       "track": "spring-boot"
     },
@@ -1698,7 +1696,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "4391b4129ab5eac8b0d0e1f5e0f0408efdf060547344cb15f8221704b54b885d",
+    "fingerprint": "41ebf99fb4081f58936e8df25a998c2ea4960a83bd6cf21f39fb5d8902899995",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -1709,10 +1707,10 @@
     "legacySections": {
       "## Construcción guiada del capítulo": 42,
       "## Ruta de proyecto progresivo desde carpeta vacía": 12,
-      "**Errores comunes y soluciones**": 180
+      "**Errores comunes y soluciones**": 179
     },
     "modules": 256,
-    "modulesWithLegacySections": 182,
+    "modulesWithLegacySections": 181,
     "topics": 1185,
     "topicsWithIssues": 409
   },
@@ -10887,9 +10885,9 @@
       {
         "issues": [],
         "module": 3,
-        "tailWords": 185,
+        "tailWords": 0,
         "topic": "Tema 3: Migraciones con Flyway",
-        "words": 1141
+        "words": 994
       },
       {
         "issues": [],

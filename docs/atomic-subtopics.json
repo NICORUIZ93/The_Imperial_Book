@@ -93,10 +93,10 @@
     },
     "spring-boot": {
       "topics": 111,
-      "completeTopics": 27,
-      "topicsWith3to6Subtopics": 28,
-      "subtopics": 84,
-      "completeSubtopics": 83
+      "completeTopics": 28,
+      "topicsWith3to6Subtopics": 29,
+      "subtopics": 87,
+      "completeSubtopics": 86
     }
   },
   "topics": {
@@ -13839,9 +13839,52 @@
       {
         "module": 3,
         "topic": "### Tema 3: Migraciones con Flyway",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "3.7",
+            "title": "#### Subtema 3.7 · Crear el esquema con V1 · 12 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "3.8",
+            "title": "#### Subtema 3.8 · Aplicar un cambio nuevo con V2 · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "3.9",
+            "title": "#### Subtema 3.9 · Diagnosticar versiones repetidas · 8 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 4,

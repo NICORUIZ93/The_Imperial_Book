@@ -100,13 +100,13 @@
       "topics": 111,
       "code": 111,
       "commentedCode": 67,
-      "mermaid": 53,
+      "mermaid": 54,
       "archifyVisual": 4,
-      "asciiVisual": 16,
+      "asciiVisual": 15,
       "misleadingDiagramLabel": 0,
       "filePath": 111,
       "runCommand": 111,
-      "officialSource": 89
+      "officialSource": 90
     },
     "kotlin-multiplatform": {
       "topics": 56,

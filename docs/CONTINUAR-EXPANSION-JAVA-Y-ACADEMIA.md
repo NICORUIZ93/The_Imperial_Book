@@ -89,8 +89,8 @@ reapliques cambios que ya estén publicados.
 
 ## Estado global honesto
 
-En la auditoría actual: **131/1185 temas** cumplen la estructura atómica en los
-14 tracks: Java 101, Spring Boot 27, Node 2 y Flutter 1. La auditoría pedagógica detecta
+En la auditoría actual: **132/1185 temas** cumplen la estructura atómica en los
+14 tracks: Java 101, Spring Boot 28, Node 2 y Flutter 1. La auditoría pedagógica detecta
 **1095/1185 temas practicables** y deuda en 90. La auditoría de sustancia registra
 409 temas con defectos, deuda histórica repartida entre varios tracks. Ninguna de
 estas cifras certifica que un curso esté completo o que todos los ejemplos se
@@ -282,6 +282,22 @@ defectos de sustancia. Reportes regenerados y `./scripts/validate.sh` pasó con
 23 pruebas y 4 omitidas. Estas cifras siguen siendo indicadores estructurales,
 no certificación de aprendizaje.
 
-**Siguiente tema:** Spring Boot M3 T3, “Migraciones con Flyway”. Revisa desde
-cero si los SQL y dependencias coinciden con el backend acumulado, y contrasta
-la guía con documentación primaria de Flyway y Spring Boot.
+Spring Boot M3 T3, “Migraciones con Flyway”, se rehízo para el mismo backend y
+sus tres entidades. `V1__crear_esquema_inicial.sql` crea `tareas`, `clientes` y
+`pedidos`; `spring-boot-starter-flyway` ejecuta las migraciones y
+`ddl-auto=validate` comprueba el mapeo. V2 agrega un índice y el test confirma
+versiones aplicadas usando `Flyway.info()`. En el proyecto temporal Spring Boot
+4.1.2/JDK 25, la suite completa pasó `./mvnw -q clean test`. También se probaron
+los fallos: renombrar `ubicacion_interna` produjo `Schema validation: missing column [ubicacion_interna] in table [tareas]`; usar tabla `tareaas` falló en V2; duplicar la versión dio
+`Found more than one migration with version 2`. Tras quitar el archivo duplicado,
+`clean test` restauró la suite verde. H2 valida esta práctica, pero no reemplaza
+una verificación contra el motor de base de datos de destino.
+
+Tras M3 T3, la auditoría registra **132/1185 temas atómicos**: Java 101,
+Spring Boot 28, Node 2 y Flutter 1; **1095/1185 practicables** y 409 temas con
+defectos de sustancia. Reportes regenerados y `./scripts/validate.sh` pasó con
+23 pruebas y 4 omitidas. Estas métricas son indicadores estructurales.
+
+**Siguiente tema:** Spring Boot M4 T1, “SecurityFilterChain moderno”. Revisa el
+starter de seguridad, las rutas públicas y protegidas, y prueba estados HTTP
+reales desde el proyecto acumulado antes de continuar a roles y autorización.

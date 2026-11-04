@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 220,
+    "topicsWithSignals": 221,
     "newLaboratories": 25
   },
   "priorities": {
@@ -13250,7 +13250,9 @@
       "title": "Tema 3: Migraciones con Flyway",
       "file": "web/public/content/spring-boot/modulo-3.md",
       "line": 466,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"

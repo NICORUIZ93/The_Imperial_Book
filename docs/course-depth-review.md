@@ -12,7 +12,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 | angular | 71 | 3 | HTML/CSS/TypeScript explícitos; RxJS y estado con ejemplos completos | Rutas, formularios, datos remotos y cambios sin guardar comprobados con navegador |
 | react | 58 | 46 | JSX y estado antes de efectos; proveedor, dependencias y API visibles | Carga, error, vacío y carrera de respuestas; caché observada, no supuesta |
 | java | 101 | 79 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
-| spring-boot | 111 | 39 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
+| spring-boot | 111 | 40 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
 | android | 58 | 0 | Kotlin antes de Compose; distinguir recomposición, recreación y muerte de proceso | App instalable con permisos, restauración, persistencia y pruebas en dispositivo |
 | ios | 56 | 4 | Swift antes de SwiftUI; explicitar macOS/Xcode y destino | Cancelación, estados de red, persistencia y accesibilidad comprobados en simulador |
 | flutter | 106 | 10 | Dart antes de widgets; ejemplo con main y destino de ejecución | Restauración, red, pruebas de widget, integración y publicación por plataforma |
@@ -1185,7 +1185,7 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | spring-boot / 25 | [Tema 4: test binder y límites de la prueba](../web/public/content/spring-boot/modulo-25.md) | demostracion-no-delimitada |
 | spring-boot / 3 | [Tema 1: Entidades y repositorios derivados](../web/public/content/spring-boot/modulo-3.md) | demostracion-no-delimitada |
 | spring-boot / 3 | [Tema 2: El problema N+1 y su corrección](../web/public/content/spring-boot/modulo-3.md) | demostracion-no-delimitada |
-| spring-boot / 3 | [Tema 3: Migraciones con Flyway](../web/public/content/spring-boot/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 3 | [Tema 3: Migraciones con Flyway](../web/public/content/spring-boot/modulo-3.md) | demostracion-no-delimitada |
 | spring-boot / 4 | [Tema 1: SecurityFilterChain moderno](../web/public/content/spring-boot/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 4 | [Tema 2: Filtro JWT y autorización por rol](../web/public/content/spring-boot/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 4 | [Tema 3: CORS y CSRF](../web/public/content/spring-boot/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
