@@ -734,75 +734,169 @@ Entrega una decisión breve para un flujo de reprocesamiento histórico y otra p
 
 ### Tema 6: Spring Cloud Stream y binders de Kafka/RabbitMQ
 
-#### Paso 1 · Objetivo y preparación
+**Duración estimada:** 45 min.
 
-Al finalizar crearás una función consumidora y una productora con Spring Cloud Stream, y explicarás qué parte del código queda igual y qué depende del binder. **Prerrequisitos:** una cola Kafka o RabbitMQ, funciones Java y conceptos del Tema 5. Usa el mismo BOM de Spring Cloud y Spring Boot declarado por el proyecto de laboratorio.
+**Resultado:** sigues una función de negocio desde el binding de entrada hasta su salida y explicas qué cambia al elegir el binder.
 
-#### Paso 2 · Contexto y caso real
+**¿Por qué es importante?** Una función común puede conectarse a más de un broker, pero las garantías y las propiedades de cada broker siguen siendo específicas.
 
-Un servicio de pedidos envía actualizaciones a un tópico Kafka hoy, pero un worker de documentos consume una cola RabbitMQ. El equipo quiere mantener clara la lógica de negocio sin ocultar que cada broker tiene configuración y garantías distintas.
+**Laboratorio:** `examples/spring-stream-rutaflow/`. Usa las versiones declaradas por su `pom.xml` y no cambies el BOM para seguir el ejemplo.
 
-#### Paso 3 · Teoría y analogía
+#### Subtema 6.1 · Recorrer la función y los destinos reales · 10 min
 
-Spring Cloud Stream presenta bindings de entrada/salida y un binder que conecta esos bindings con middleware. Hay binders para Kafka y RabbitMQ; al cambiar binder pueden cambiar semánticas, garantías y propiedades. El binder es como un adaptador entre el vocabulario de la función Java y el mecanismo concreto del broker: reduce código de transporte, no vuelve idénticos a los brokers ni resuelve transacciones entre broker y base de datos.
+**1. Contexto**
 
-```mermaid
-flowchart LR
-  P[PedidoEvent] --> F[Function bean]
-  F --> B[Binding output]
-  B --> K[Kafka topic]
-  B --> R[Rabbit exchange/queue]
-```
+Spring Cloud Stream conecta una función con bindings de entrada/salida. En el laboratorio la función recibe `ShipmentCreated` y devuelve `RoutePlanningRequested`; los nombres de destino están en YAML, no en la clase Java.
 
-#### Paso 4 · Demostración guiada
+**2. Hazlo tú**
 
-Crea `src/main/java/academia/pedidos/EventosPedido.java` con la función y el binding de entrada:
+Abre `src/main/java/academia/rutaflow/stream/RouteFunctions.java` y sigue este código:
 
 ```java
 @Bean
-public Function<PedidoEvento, PedidoEvento> normalizarPedido() {
-    return evento -> new PedidoEvento(evento.id(), evento.estado().trim());
+public Function<ShipmentCreated, RoutePlanningRequested> planRoute() {
+    return shipment -> {
+        if (shipment.postalCode() == null || shipment.postalCode().length() < 2) {
+            throw new IllegalArgumentException("El código postal debe tener dos caracteres");
+        }
+        if (shipment.postalCode().startsWith("XX")) {
+            throw new IllegalArgumentException("La zona XX requiere revisión manual");
+        }
+        return new RoutePlanningRequested(
+                shipment.shipmentId(), shipment.postalCode().substring(0, 2));
+    };
 }
 ```
 
-En `src/main/resources/application.yml`, configura:
+En `src/main/resources/application.yml`, localiza `spring.cloud.function.definition`, `planRoute-in-0`, `planRoute-out-0` y `group: route-planner`. Ejecuta las pruebas del mapping:
 
-```yaml
-spring:
-  cloud:
-    function:
-      definition: normalizarPedido
-    stream:
-      bindings:
-        normalizarPedido-in-0:
-          destination: pedidos-entrada
-        normalizarPedido-out-0:
-          destination: pedidos-normalizados
+```bash
+cd examples/spring-stream-rutaflow
+./mvnw -Dtest=RouteFunctionsTest test
 ```
 
-Añade el binder de Kafka y luego, en una configuración de prueba separada, el binder de RabbitMQ. Ejemplo independiente desde cero: crea una aplicación Spring Boot con Spring Cloud Stream y el binder deseado. Ejecuta:
+**Resultado esperado.** El test envía `ShipmentCreated("sh-42", "10ABC")` y recibe en `routes.requested` una salida con `sh-42` y región `10`.
+
+**Fallo deliberado.** Cambia en una copia el destino de salida a `routes.wrong`, pero deja la prueba leyendo `routes.requested`. **Observa:** `OutputDestination` no recibe el mensaje en el destino esperado. Restaura el YAML.
+
+**3. Entiende**
+
+La función transforma datos; el binding conecta esa función con una dirección. Un error en destino puede dejar correcta la función Java y aun así enviar el mensaje al lugar incorrecto.
+
+**4. Cierra**
+
+Nombra la clase, el binding de entrada y el destino donde aparece la salida.
+
+#### Subtema 6.2 · Cambiar el binder sin cambiar la función · 10 min
+
+**1. Contexto**
+
+La clase de dominio y la función no conocen si el mensaje viaja por Kafka o RabbitMQ. Los perfiles declaran ese detalle de despliegue: `application-kafka.yml` selecciona Kafka y `application-rabbit.yml` selecciona Rabbit.
+
+**2. Hazlo tú**
+
+Compara los perfiles del laboratorio:
+
+```yaml
+# application-kafka.yml
+spring:
+  cloud:
+    stream:
+      default-binder: kafka
+```
+
+```yaml
+# application-rabbit.yml
+spring:
+  cloud:
+    stream:
+      default-binder: rabbit
+```
+
+En ambos perfiles sigue `planRoute-in-0`; después abre la configuración base para comprobar que la función usa el destino `shipments.created` y el grupo `route-planner`. Ejecuta el test binder:
 
 ```bash
 ./mvnw test
 ```
 
-El Test Binder prueba la función sin broker; luego ejecuta una prueba de integración contra el broker elegido. **Resultado esperado:** la función produce el estado normalizado; cada binder publica en su destino configurado.
+**Resultado esperado.** La misma función y sus pruebas de mapping funcionan sin especificar un broker. La prueba valida el código y el binding de prueba en memoria; no demuestra que Kafka ni RabbitMQ estén conectados.
 
-#### Paso 5 · Práctica guiada
+**Fallo deliberado.** Selecciona mentalmente el perfil Kafka pero describe el broker como RabbitMQ. **Diagnóstico:** el nombre de perfil y `default-binder` deben coincidir con el broker que levantaste; confirma la propiedad efectiva antes de atribuir un error a la función.
 
-**Fallo deliberado:** elimina la propiedad de destino de salida. **Pista:** el proceso puede arrancar, pero el mensaje no va a la ubicación que espera el consumidor. Diagnostica binding, destino, binder activo y configuración por ambiente; no cambies la función de dominio para reparar una propiedad de despliegue.
+**3. Entiende**
 
-#### Paso 6 · Práctica independiente
+El binder reemplaza integración y configuración de transporte. No hace equivalentes los offsets Kafka, las colas Rabbit, las confirmaciones o las políticas de reintento.
 
-Configura la función para ejecutarse como consumidor independiente con `spring.cloud.function.definition`; añade un test para datos inválidos y una política de errores específica del binder. Compara el resultado con `KafkaTemplate` y `RabbitTemplate`: anota qué opción deja más visibles las propiedades del broker que necesitas controlar. La abstracción no debe ocultar acknowledgements, grupos, ruteo ni dead lettering cuando son parte del requisito.
+**4. Cierra**
 
-#### Paso 7 · Cierre y evidencia
+Explica qué archivo cambiarías para mover el servicio a RabbitMQ y cuál clase de negocio se mantiene igual.
 
-Entrega el bean, su prueba con binder de test, el archivo de configuración y una ejecución contra el broker real. **Proyecto integrador RutaFlow:** decide para cada flujo si conviene Kafka, RabbitMQ o solo una función local; registra destino y garantías en el contrato del evento. Errores comunes: creer que cambiar una dependencia cambia el modelo de entrega, mantener dos binders activos sin decir cuál usa cada binding y probar solo con el binder simulado. Siguiente paso: procesar una secuencia con estado. Fuentes oficiales: [Spring Cloud Stream](https://docs.spring.io/spring-cloud-stream/reference/), [abstracción Binder](https://docs.spring.io/spring-cloud-stream/reference/spring-cloud-stream/overview-binder-abstraction.html) y [Testing](https://docs.spring.io/spring-cloud-stream/reference/spring-cloud-stream/testing.html).
+#### Subtema 6.3 · Rechazar una entrada y ubicar la política de reintento · 10 min
 
-**¿Por qué es importante?** El código de negocio puede ser portable, pero particiones, ack, ruteo y retención siguen perteneciendo al broker.
-**Evidencia de aprendizaje:** entrega test, configuración y resultado real para al menos un binder; registra las diferencias del segundo.
-**Cuándo no usarlo:** si necesitas una función exclusiva y crítica de un broker, la API directa puede comunicar mejor esa decisión.
+**1. Contexto**
+
+Un código postal inválido o una zona que requiere revisión lanza una excepción. Los perfiles fijan tres intentos y un destino de mensajes fallidos con opciones propias de cada binder.
+
+**2. Hazlo tú**
+
+Lee `RouteFunctionsTest.zonaXXSeRechazaParaRevisionManual` y ejecuta:
+
+```bash
+./mvnw -Dtest=RouteFunctionsTest#zonaXXSeRechazaParaRevisionManual test
+```
+
+Luego compara las propiedades en `application-kafka.yml` (`enable-dlq: true`) y `application-rabbit.yml` (`auto-bind-dlq: true`). El test prueba que la función rechaza la zona; no prueba reintentos ni DLQ del broker.
+
+**Resultado esperado.** La prueba recibe la excepción `La zona XX requiere revisión manual`; encuentras `max-attempts: 3` y la propiedad DLQ de cada perfil.
+
+**Fallo deliberado.** Cambia en una copia la entrada de prueba de `XX101` a `10101`. **Observa:** la prueba deja de recibir la excepción porque la zona es aceptada. Restaura el caso `XX`.
+
+**3. Entiende**
+
+`max-attempts` y dead lettering describen manejo del binder, no la regla de negocio. Kafka DLQ y Rabbit dead-letter queue tienen destinos y configuración distintos. Para confirmar redelivery y destino necesitas broker real; el test binder no es esa evidencia.
+
+**4. Cierra**
+
+Separa en una frase el rechazo del dominio y en otra la política que decide qué hace el binder con el fallo.
+
+#### Subtema 6.4 · Probar en memoria y después contra el broker · 15 min
+
+**1. Contexto**
+
+El test binder ejecuta la aplicación dentro del proceso sin hablar con un broker. Sirve para verificar transformación y mapping; la disponibilidad, la topología y la política del broker requieren una prueba separada.
+
+**2. Hazlo tú**
+
+Desde `examples/spring-stream-rutaflow/`, corre primero `./mvnw test`. Cuando tengas Docker, sigue el README para levantar ambos brokers:
+
+```bash
+docker compose up -d
+./mvnw spring-boot:run -Dspring-boot.run.profiles=kafka
+```
+
+Envía un evento JSON válido a `shipments.created` como indica el README y observa `routes.requested`. Detén esa aplicación y repite con el perfil Rabbit:
+
+```bash
+./mvnw spring-boot:run -Dspring-boot.run.profiles=rabbit
+```
+
+Usa el README para publicar desde la consola RabbitMQ y observar la cola; envía después el caso `XX` y examina el destino de error. La suite de test binder no reemplaza estos pasos.
+
+**Resultado esperado.** Puedes mostrar la salida del test binder y, cuando ejecutas brokers, registrar por separado el mensaje, el destino y el fallo para cada perfil.
+
+**Fallo deliberado.** Afirma que el test binder demuestra que la cola Rabbit existe o que el tópico Kafka recibió bytes. **Diagnóstico:** esas afirmaciones requieren el broker y una observación de su destino; separa ambas evidencias.
+
+**3. Entiende**
+
+La abstracción permite compartir función y modelo de mensaje. El routing, la retención, la DLQ y las confirmaciones requieren decisiones específicas por broker y perfil.
+
+**4. Cierra**
+
+Entrega la prueba de función y una lista breve de lo que todavía debes observar con broker real.
+
+**Fuentes oficiales:** [abstracción Binder de Spring Cloud Stream](https://docs.spring.io/spring-cloud-stream/reference/spring-cloud-stream/overview-binder-abstraction.html), [testing binder](https://docs.spring.io/spring-cloud-stream/reference/spring-cloud-stream/spring_integration_test_binder.html), [Kafka binder](https://docs.spring.io/spring-cloud-stream/reference/kafka/kafka-binder/), [RabbitMQ binder](https://docs.spring.io/spring-cloud-stream/reference/rabbit/spring-cloud-stream-binder-rabbit.html) y [manejo de mensajes en Spring Cloud Stream](https://docs.spring.io/spring-cloud-stream/reference/spring-cloud-stream/overview-error-handling.html).
+
+**Transferencia al proyecto integrador:** deja cada binding con destino, grupo, binder, reintentos y destino de error explícitos; conserva una función de negocio testeable sin broker y añade evidencia de integración separada para los brokers desplegados.
 
 ### Tema 7: Kafka Streams con Spring para transformar eventos
 

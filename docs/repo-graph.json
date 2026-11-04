@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 771,
+      "lines": 787,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 14933,
+      "lines": 14990,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -677,7 +677,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 143,
+      "lines": 144,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 424,
+      "lines": 428,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -5634,7 +5634,7 @@
     },
     {
       "path": "examples/spring-stream-rutaflow/src/test/java/academia/rutaflow/stream/RouteFunctionsTest.java",
-      "lines": 37,
+      "lines": 45,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -12139,7 +12139,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-8.md",
-      "lines": 1023,
+      "lines": 1117,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

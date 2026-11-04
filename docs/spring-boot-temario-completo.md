@@ -195,6 +195,10 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 5.3 · Distinguir confirmación de publicación y confirmación de consumo · 10 min
   - ✓ Subtema 5.4 · Elegir por el flujo y comprobar ambos binders · 15 min
 - [pendiente de migrar] Tema 6: Spring Cloud Stream y binders de Kafka/RabbitMQ
+  - pendiente Subtema 6.1 · Recorrer la función y los destinos reales · 10 min
+  - ✓ Subtema 6.2 · Cambiar el binder sin cambiar la función · 10 min
+  - pendiente Subtema 6.3 · Rechazar una entrada y ubicar la política de reintento · 10 min
+  - pendiente Subtema 6.4 · Probar en memoria y después contra el broker · 15 min
 - [pendiente de migrar] Tema 7: Kafka Streams con Spring para transformar eventos
 - [pendiente de migrar] Tema 8: Avro y Schema Registry para contratos de eventos
 - [pendiente de migrar] Tema 9: RabbitMQ con Spring AMQP: routing, ack y prefetch

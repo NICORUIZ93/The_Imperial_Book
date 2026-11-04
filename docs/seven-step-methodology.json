@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 66,
-      "prerequisites": 80,
-      "context": 66,
-      "theoryAnalogy": 66,
-      "guidedDemo": 66,
+      "objective": 65,
+      "prerequisites": 79,
+      "context": 65,
+      "theoryAnalogy": 65,
+      "guidedDemo": 65,
       "codeExplanation": 111,
       "execution": 105,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 66,
-      "independentPractice": 66,
-      "closure": 66,
-      "commonErrors": 66,
+      "guidedPractice": 65,
+      "independentPractice": 65,
+      "closure": 65,
+      "commonErrors": 65,
       "resources": 75,
-      "standaloneExample": 64,
-      "learningEvidence": 79,
-      "complete": 62
+      "standaloneExample": 63,
+      "learningEvidence": 78,
+      "complete": 61
     }
   },
   "topics": {
@@ -30941,26 +30941,26 @@
         "module": 8,
         "topic": "Tema 6: Spring Cloud Stream y binders de Kafka/RabbitMQ",
         "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "objective": false,
+          "prerequisites": false,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
           "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 5,
+          "complete": false
         }
       },
       {

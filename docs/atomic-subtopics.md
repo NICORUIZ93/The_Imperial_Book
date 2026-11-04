@@ -19,7 +19,7 @@ Temas conformes a cuatro pasos: **140/1185**. Tracks inventariados: **14**.
 | node | 2 | 83 | 6 | 6 |
 | react | 0 | 58 | 0 | 0 |
 | rutaflow | 0 | 29 | 0 | 0 |
-| spring-boot | 36 | 111 | 138 | 115 |
+| spring-boot | 36 | 111 | 142 | 116 |
 
 ## Temas pendientes
 
@@ -1099,7 +1099,7 @@ Temas conformes a cuatro pasos: **140/1185**. Tracks inventariados: **14**.
 - M7 ### Tema 2: Contar operaciones de negocio con Micrometer: 7.4: faltan context, action, deliberateFailure, understand, close, duration; 7.5: faltan context, action, deliberateFailure, understand, close, duration; 7.6: faltan context, action, expectedResult, deliberateFailure, understand, close, duration
 - M8 ### Tema 4: Rebalanceo de consumer groups y asignación de particiones: 4.1: faltan deliberateFailure; 4.2: faltan action, deliberateFailure; 4.3: faltan action, deliberateFailure; 4.4: faltan action
 - M8 ### Tema 5: Kafka frente a RabbitMQ: 5.1: faltan deliberateFailure; 5.2: faltan deliberateFailure
-- M8 ### Tema 6: Spring Cloud Stream y binders de Kafka/RabbitMQ: tiene 0 subtemas
+- M8 ### Tema 6: Spring Cloud Stream y binders de Kafka/RabbitMQ: 6.1: faltan deliberateFailure; 6.3: faltan deliberateFailure; 6.4: faltan action
 - M8 ### Tema 7: Kafka Streams con Spring para transformar eventos: tiene 0 subtemas
 - M8 ### Tema 8: Avro y Schema Registry para contratos de eventos: tiene 0 subtemas
 - M8 ### Tema 9: RabbitMQ con Spring AMQP: routing, ack y prefetch: tiene 0 subtemas

@@ -33,4 +33,12 @@ class RouteFunctionsTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("El código postal debe tener dos caracteres");
     }
+
+    @Test
+    void zonaXXSeRechazaParaRevisionManual() {
+        assertThatThrownBy(() -> new RouteFunctions().planRoute()
+                .apply(new ShipmentCreated("sh-44", "XX101")))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("La zona XX requiere revisión manual");
+    }
 }

@@ -759,12 +759,28 @@ retención; RabbitMQ sobre consumers y confirms; Spring AMQP sobre ack y publish
 confirms; Spring Cloud Stream sobre binder y test binder.
 
 La validación de repo pasó con 23 pruebas de script (4 omitidas). La última
-auditoría registra 140/1185 temas atómicos, 1089/1185 practicables, 1037/1185
+auditoría registra 140/1185 temas atómicos, 1088/1185 practicables, 1036/1185
 completos en metodología de siete pasos y 409 con señales automatizadas de
 defecto de sustancia. La auditoría estructural detecta contenido en 236 temas;
 ninguna de estas cifras certifica la calidad pedagógica o comprensión humana.
 
-**Siguiente tema:** Spring Boot M8 T6, “Spring Cloud Stream y binders de
-Kafka/RabbitMQ”. Revisa código, propiedades y dependencias contra los dos
-perfiles existentes y documentación oficial; separa la prueba en memoria del
-binder de la integración real que exige cada broker.
+Spring Boot M8 T6, “Spring Cloud Stream y binders de Kafka/RabbitMQ”, quedó
+reescrito en cuatro subtemas con ejemplos tomados del laboratorio
+`examples/spring-stream-rutaflow/`: `RouteFunctions`, records de entrada/salida,
+bindings y perfiles Kafka/Rabbit. Se sustituyó el modelo inventado
+`PedidoEvento/normalizarPedido` por `ShipmentCreated → RoutePlanningRequested`.
+El tema aclara que el test binder es en memoria y no demuestra conexión, DLQ ni
+creación de topología real del broker.
+
+Se agregó la prueba `zonaXXSeRechazaParaRevisionManual`; la suite pasó con **3
+pruebas** y sin la advertencia del método `OutputDestination.receive` deprecado.
+En una copia temporal se sustituyó el código postal `XX101` por `10101`; la
+prueba esperó una excepción que ya no ocurrió, como debía. Docker no está
+instalado aquí, así que los perfiles Kafka/Rabbit reales y sus DLQ no se
+verificaron en este entorno; queda explícito en la lección. Fuentes oficiales:
+Spring Cloud Stream binder, test binder y manejo de errores.
+
+**Siguiente tema:** Spring Boot M8 T7, “Kafka Streams con Spring para transformar
+eventos”. Inspecciona la API, dependencias, tópicos y prueba del ejemplo antes
+de conservar comandos; separa el test en memoria del estado/stream realmente
+procesado por Kafka.

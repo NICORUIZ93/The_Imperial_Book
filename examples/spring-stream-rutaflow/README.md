@@ -10,7 +10,7 @@ Desde este directorio, ejecuta:
 ./mvnw test
 ```
 
-Las pruebas usan el binder en memoria. Verifican el JSON de salida y el rechazo de una entrada inválida. No demuestran conexión a Kafka o RabbitMQ.
+Las pruebas usan el binder en memoria. Verifican el JSON de salida, el rechazo de un código postal corto y el rechazo de la zona `XX`. No demuestran conexión a Kafka o RabbitMQ.
 
 ## Probar cada broker local
 

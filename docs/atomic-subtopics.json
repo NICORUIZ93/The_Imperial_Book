@@ -94,9 +94,9 @@
     "spring-boot": {
       "topics": 111,
       "completeTopics": 36,
-      "topicsWith3to6Subtopics": 45,
-      "subtopics": 138,
-      "completeSubtopics": 115
+      "topicsWith3to6Subtopics": 46,
+      "subtopics": 142,
+      "completeSubtopics": 116
     }
   },
   "topics": {
@@ -14881,8 +14881,65 @@
       {
         "module": 8,
         "topic": "### Tema 6: Spring Cloud Stream y binders de Kafka/RabbitMQ",
-        "subtopicCount": 0,
-        "subtopics": [],
+        "subtopicCount": 4,
+        "subtopics": [
+          {
+            "id": "6.1",
+            "title": "#### Subtema 6.1 · Recorrer la función y los destinos reales · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "6.2",
+            "title": "#### Subtema 6.2 · Cambiar el binder sin cambiar la función · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "6.3",
+            "title": "#### Subtema 6.3 · Rechazar una entrada y ubicar la política de reintento · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "6.4",
+            "title": "#### Subtema 6.4 · Probar en memoria y después contra el broker · 15 min",
+            "criteria": {
+              "context": true,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": false
+          }
+        ],
         "complete": false
       },
       {
