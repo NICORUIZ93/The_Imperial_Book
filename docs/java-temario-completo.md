@@ -5,7 +5,7 @@
 **Proyecto continuo:** Motor de asignación de entregas.
 **Prerrequisito de entrada:** Fundamentos de programación; el módulo 0 comienza con JDK y terminal..
 **Duración objetivo:** temas de 20–45 minutos; cada tema se divide en 3–6 acciones de 5–15 minutos.
-**Estado estructural:** 100/101 temas migrados; auditoría estructural actualizada el 2026-11-03.
+**Estado estructural:** 101/101 temas migrados; auditoría estructural actualizada el 2026-11-03.
 
 ## Índice de módulos y temas
 
@@ -519,7 +519,10 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 12.1: Calcular sin cambiar la entrada · 10 min
   - ✓ Subtema 12.2: Hacer visible el efecto · 10 min
   - ✓ Subtema 12.3: Repetir la misma regla · 10 min
-- [pendiente de migrar] Tema 13: Flow API: publicar datos con demanda y cierre
+- [4 pasos] Tema 13: Flow API: publicar datos con demanda y cierre
+  - ✓ Subtema 13.1: Recibir datos de un publicador · 10 min
+  - ✓ Subtema 13.2: Pedir un elemento por vez · 10 min
+  - ✓ Subtema 13.3: Cancelar una suscripción · 10 min
 
 ## Comparación de cobertura con fuentes de referencia
 
@@ -543,7 +546,7 @@ La tabla registra presencia de áreas en el inventario del track, no profundidad
 
 ### Huecos y límites reportados
 
-- El repositorio contiene 101 temas en 21 módulos; 100 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
+- El repositorio contiene 101 temas en 21 módulos; 101 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
 - No hay base para afirmar que el track esté completo: la comparación con la fuente de referencia está pendiente de revisión humana módulo por módulo.
 - Los elementos de la fuente que todavía deben verificarse de forma explícita están enumerados en la tabla anterior; cualquier técnica crítica que no tenga tema propio debe añadirse conservando el currículo base.
 - La ejecución de ejemplos, el comportamiento con brokers/plataformas reales y la calidad pedagógica humana se registran por separado.

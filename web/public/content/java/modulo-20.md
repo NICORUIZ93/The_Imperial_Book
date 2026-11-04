@@ -1593,11 +1593,10 @@ Al finalizar podrás conectar un `Publisher` con un `Subscriber`, pedir datos me
 
 #### Paso 4 · Ejercicio 1
 
-##### Subtema 13.1: Recibir datos de un publicador · 5-10 min
+#### Subtema 13.1: Recibir datos de un publicador · 10 min
+**1. Contexto** imprime los estados que publica un envío.
 
-**Contexto:** imprime los estados que publica un envío.
-
-**Hazlo tú:** crea `java-funcional-t13/src/Estados.java`:
+**2. Hazlo tú** crea `java-funcional-t13/src/Estados.java`:
 
 ```java
 import java.util.concurrent.CountDownLatch;
@@ -1629,15 +1628,18 @@ Ejecuta `cd java-funcional-t13 && java src/Estados.java`.
 
 **Fallo deliberado:** omite `publisher.close()`. **Resultado del fallo:** el callback `onComplete` no llega antes del tiempo límite. **Diagnóstico:** el suscriptor no sabe que el productor terminó.
 
-**Entiende:** el cierre también es una señal del flujo, no solo liberar un recurso.
+**3. Entiende** el cierre también es una señal del flujo, no solo liberar un recurso.
+
+**4. Cierra**
+
+Guarda los eventos recibidos, cuántos elementos solicitaste y cómo terminó o se canceló el flujo.
 
 #### Paso 5 · Ejercicio 2
 
-##### Subtema 13.2: Pedir un elemento por vez · 5-10 min
+#### Subtema 13.2: Pedir un elemento por vez · 10 min
+**1. Contexto** el consumidor procesa cada actualización antes de pedir la siguiente.
 
-**Contexto:** el consumidor procesa cada actualización antes de pedir la siguiente.
-
-**Hazlo tú:** crea `java-funcional-t13/src/Demanda.java`:
+**2. Hazlo tú** crea `java-funcional-t13/src/Demanda.java`:
 
 ```java
 import java.util.concurrent.CountDownLatch;
@@ -1670,15 +1672,18 @@ Ejecuta `cd java-funcional-t13 && java src/Demanda.java`.
 
 **Fallo deliberado:** elimina `subscription.request(1)` al final de `onNext`. **Resultado del fallo:** solo llega `1` y no se completa antes del límite de espera. **Diagnóstico:** se solicitó un solo elemento y no se pidió demanda nueva; restaura la solicitud al final de `onNext`.
 
-**Entiende:** `request(1)` comunica cuántos elementos estás listo para procesar.
+**3. Entiende** `request(1)` comunica cuántos elementos estás listo para procesar.
+
+**4. Cierra**
+
+Guarda los eventos recibidos, cuántos elementos solicitaste y cómo terminó o se canceló el flujo.
 
 #### Paso 6 · Ejercicio 3
 
-##### Subtema 13.3: Cancelar una suscripción · 5-10 min
+#### Subtema 13.3: Cancelar una suscripción · 10 min
+**1. Contexto** una pantalla deja de observar el envío cuando el usuario la cierra.
 
-**Contexto:** una pantalla deja de observar el envío cuando el usuario la cierra.
-
-**Hazlo tú:** crea `java-funcional-t13/src/Cancelar.java`:
+**2. Hazlo tú** crea `java-funcional-t13/src/Cancelar.java`:
 
 ```java
 import java.util.concurrent.CountDownLatch;
@@ -1711,7 +1716,11 @@ Ejecuta `cd java-funcional-t13 && java src/Cancelar.java`.
 
 **Fallo deliberado:** comenta `cancel()` y solicita `Long.MAX_VALUE`. **Resultado del fallo:** el suscriptor sigue recibiendo estados después de que la pantalla ya no los necesita. **Diagnóstico:** deja de pedir cuando se cancela el trabajo.
 
-**Entiende:** cancelar detiene futuras entregas a ese suscriptor; no equivale a cerrar a todos los suscriptores.
+**3. Entiende** cancelar detiene futuras entregas a ese suscriptor; no equivale a cerrar a todos los suscriptores.
+
+**4. Cierra**
+
+Guarda los eventos recibidos, cuántos elementos solicitaste y cómo terminó o se canceló el flujo.
 
 #### Paso 7 · Cierre y evidencia
 

@@ -51,10 +51,10 @@
     },
     "java": {
       "topics": 101,
-      "completeTopics": 100,
-      "topicsWith3to6Subtopics": 100,
-      "subtopics": 304,
-      "completeSubtopics": 304
+      "completeTopics": 101,
+      "topicsWith3to6Subtopics": 101,
+      "subtopics": 307,
+      "completeSubtopics": 307
     },
     "javascript": {
       "topics": 88,
@@ -8430,9 +8430,52 @@
       {
         "module": 20,
         "topic": "### Tema 13: Flow API: publicar datos con demanda y cierre",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "13.1",
+            "title": "#### Subtema 13.1: Recibir datos de un publicador · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "13.2",
+            "title": "#### Subtema 13.2: Pedir un elemento por vez · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "13.3",
+            "title": "#### Subtema 13.3: Cancelar una suscripción · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 3,

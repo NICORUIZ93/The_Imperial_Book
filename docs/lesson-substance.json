@@ -1698,7 +1698,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "1c48c2365fe75a2937f08c6c00f172e08498ec682ee0573f2d76645810190d2f",
+    "fingerprint": "9db394fc203839837dcdb39d027c3c4cea01712f868005c03d52f36b70493c85",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -7667,7 +7667,7 @@
         "module": 20,
         "tailWords": 78,
         "topic": "Tema 13: Flow API: publicar datos con demanda y cierre",
-        "words": 846
+        "words": 903
       },
       {
         "issues": [],
