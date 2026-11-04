@@ -13,11 +13,11 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | Ruta | 1185 | 0 |
 | Ejecución | 1122 | 63 |
 | Resultado | 1183 | 2 |
-| Modificación | 1130 | 55 |
-| Conexión con un proyecto | 1110 | 75 |
+| Modificación | 1129 | 56 |
+| Conexión con un proyecto | 1109 | 76 |
 | Modelo mental | 1185 | 0 |
-| Límites | 1133 | 52 |
-| **Perfil de criterios detectado** | **1091** | **94** |
+| Límites | 1132 | 53 |
+| **Perfil de criterios detectado** | **1090** | **95** |
 
 ## Prioridad por track
 
@@ -36,7 +36,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | node | 83 | 0 | 0 | 0 | 0 | 1 | 2 | 1 |
 | react | 58 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | rutaflow | 29 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| spring-boot | 111 | 0 | 0 | 5 | 0 | 7 | 12 | 10 |
+| spring-boot | 111 | 0 | 0 | 5 | 0 | 8 | 13 | 11 |
 
 ## Pendientes por tema
 
@@ -132,6 +132,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 - [spring-boot · módulo 4](../web/public/content/spring-boot/modulo-4.md) · Tema 5: Flujo de login completo — de `/api/auth/login` a una ruta protegida: límites.
 - [spring-boot · módulo 6](../web/public/content/spring-boot/modulo-6.md) · Tema 1: Probar un controller con `@WebMvcTest`: modificación, conexión con un proyecto, límites.
 - [spring-boot · módulo 6](../web/public/content/spring-boot/modulo-6.md) · Tema 2: Probar el repositorio contra PostgreSQL con `@DataJpaTest`: modificación, conexión con un proyecto, límites.
+- [spring-boot · módulo 6](../web/public/content/spring-boot/modulo-6.md) · Tema 3: Integrar el flujo con `@SpringBootTest`: modificación, conexión con un proyecto, límites.
 - [spring-boot · módulo 8](../web/public/content/spring-boot/modulo-8.md) · Tema 1: Producers y consumers con Spring Kafka: límites.
 - [spring-boot · módulo 8](../web/public/content/spring-boot/modulo-8.md) · Tema 3: Productor idempotente y transacciones (exactly-once): límites.
 

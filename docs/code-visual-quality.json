@@ -99,10 +99,10 @@
     "spring-boot": {
       "topics": 111,
       "code": 111,
-      "commentedCode": 63,
+      "commentedCode": 62,
       "mermaid": 52,
       "archifyVisual": 3,
-      "asciiVisual": 13,
+      "asciiVisual": 12,
       "misleadingDiagramLabel": 0,
       "filePath": 111,
       "runCommand": 111,
@@ -2820,6 +2820,13 @@
       "track": "spring-boot",
       "module": 6,
       "topic": "Tema 2: Probar el repositorio contra PostgreSQL con `@DataJpaTest`",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 6,
+      "topic": "Tema 3: Integrar el flujo con `@SpringBootTest`",
       "missingCode": false,
       "missingComments": true
     },

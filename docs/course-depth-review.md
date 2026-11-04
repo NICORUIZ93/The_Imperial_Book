@@ -1196,7 +1196,7 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | spring-boot / 5 | [Tema 3: Manejo global de excepciones consistente entre entornos](../web/public/content/spring-boot/modulo-5.md) | demostracion-no-delimitada |
 | spring-boot / 6 | [Tema 1: Probar un controller con `@WebMvcTest`](../web/public/content/spring-boot/modulo-6.md) | demostracion-no-delimitada |
 | spring-boot / 6 | [Tema 2: Probar el repositorio contra PostgreSQL con `@DataJpaTest`](../web/public/content/spring-boot/modulo-6.md) | demostracion-no-delimitada |
-| spring-boot / 6 | [Tema 3: @SpringBootTest completo y estrategia de pirámide de tests](../web/public/content/spring-boot/modulo-6.md) | comprobar-fragmento-incompleto |
+| spring-boot / 6 | [Tema 3: Integrar el flujo con `@SpringBootTest`](../web/public/content/spring-boot/modulo-6.md) | demostracion-no-delimitada |
 | spring-boot / 7 | [Tema 1: Actuator y health checks personalizados](../web/public/content/spring-boot/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 7 | [Tema 2: Métricas de negocio con Micrometer](../web/public/content/spring-boot/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 7 | [Tema 3: Liveness vs readiness](../web/public/content/spring-boot/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |

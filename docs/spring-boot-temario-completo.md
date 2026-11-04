@@ -145,7 +145,10 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - pendiente Subtema 6.4 · Conectar el slice a un PostgreSQL desechable (10 min)
   - pendiente Subtema 6.5 · Comprobar motor y operación del repositorio (10 min)
   - pendiente Subtema 6.6 · Detectar que el test cayó en H2 (10 min)
-- [pendiente de migrar] Tema 3: @SpringBootTest completo y estrategia de pirámide de tests
+- [pendiente de migrar] Tema 3: Integrar el flujo con `@SpringBootTest`
+  - pendiente Subtema 6.7 · Crear y consultar con las capas reales (10 min)
+  - pendiente Subtema 6.8 · Separar error de autenticación y flujo válido (10 min)
+  - pendiente Subtema 6.9 · Ver qué integración detecta el test (10 min)
 
 ### Módulo 7: Observabilidad con Actuator
 

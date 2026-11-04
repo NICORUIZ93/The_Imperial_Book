@@ -4368,7 +4368,7 @@
       "track": "spring-boot",
       "module": 6,
       "position": 3,
-      "title": "@SpringBootTest completo y estrategia de pirámide de tests",
+      "title": "Integrar el flujo con `@SpringBootTest`",
       "file": "web/public/content/spring-boot/modulo-6.md",
       "requires": [
         "spring-boot:6:2"

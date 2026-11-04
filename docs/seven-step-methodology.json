@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 72,
-      "prerequisites": 85,
-      "context": 72,
-      "theoryAnalogy": 72,
-      "guidedDemo": 72,
+      "objective": 71,
+      "prerequisites": 84,
+      "context": 71,
+      "theoryAnalogy": 71,
+      "guidedDemo": 71,
       "codeExplanation": 111,
       "execution": 105,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 72,
-      "independentPractice": 72,
-      "closure": 72,
-      "commonErrors": 72,
-      "resources": 79,
-      "standaloneExample": 69,
+      "guidedPractice": 71,
+      "independentPractice": 71,
+      "closure": 71,
+      "commonErrors": 71,
+      "resources": 78,
+      "standaloneExample": 68,
       "learningEvidence": 82,
-      "complete": 68
+      "complete": 67
     }
   },
   "topics": {
@@ -30705,28 +30705,28 @@
       },
       {
         "module": 6,
-        "topic": "Tema 3: @SpringBootTest completo y estrategia de pirámide de tests",
+        "topic": "Tema 3: Integrar el flujo con `@SpringBootTest`",
         "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "objective": false,
+          "prerequisites": false,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 5,
+          "complete": false
         }
       },
       {

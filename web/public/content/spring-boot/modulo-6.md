@@ -240,169 +240,105 @@ En un entorno con Docker Engine o una API compatible activa, ejecuta:
 
 **Evidencia para avanzar:** el test compila, las dos pruebas pasan contra PostgreSQL y, al retirar propiedades dinámicas, se observa H2 y la aserción falla. El equipo requiere Docker o un runtime compatible configurado; si no está disponible, reporta por separado compilación y ejecución. Documentación primaria: [Spring Boot 4.1.2 — `@DataJpaTest`](https://docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html#testing.spring-boot-applications.spring-data-jpa-tests), [Spring Boot 4.1.2 — `@AutoConfigureTestDatabase`](https://docs.spring.io/spring-boot/api/java/org/springframework/boot/jdbc/test/autoconfigure/AutoConfigureTestDatabase.html), [Testcontainers — PostgreSQL](https://java.testcontainers.org/modules/databases/postgres/) y [Testcontainers — JUnit 5](https://java.testcontainers.org/test_framework_integration/junit_5/).
 
-### Tema 3: @SpringBootTest completo y estrategia de pirámide de tests
+### Tema 3: Integrar el flujo con `@SpringBootTest`
 
-#### Paso 1 · Objetivo y preparación
+**¿Por qué es importante?** Un controller y un repositorio pueden pasar sus pruebas por separado y aun así fallar al conectarse. Una prueba de contexto completo comprueba un flujo crítico atravesando la aplicación configurada.
 
-Al finalizar podrás escribir un test end-to-end con `@SpringBootTest` que ejercita controller, servicio y repositorio reales juntos, y explicar por qué debe reservarse para pocos flujos verdaderamente críticos.
+#### Subtema 6.7 · Crear y consultar con las capas reales (10 min)
 
-**Conocimiento previo:** Temas 1 y 2 de este módulo.
+**Contexto.** M6 T1 simuló `ServicioTareas`; M6 T2 aisló el repositorio con PostgreSQL. Ahora conecta controller, filtro JWT, servicio y repositorio. Para este ejemplo, las pruebas usan H2 configurado en `src/test/resources/application.properties`.
 
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** Un flujo crítico de negocio (crear una tarea y confirmar que aparece en la lista de pendientes) involucra el controller, el servicio y el repositorio trabajando juntos; los tests de slice de los Temas 1 y 2 verifican cada capa por separado, pero ninguno confirma que las tres funcionen correctamente coordinadas.
-
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** contexto completo, muchos unitarios/pocos de integración completa.
-
-`@SpringBootTest` levanta absolutamente todo el contexto de la aplicación, incluyendo todas las capas reales configuradas como en producción, apropiado para tests end-to-end que verifican un flujo completo a través de múltiples capas reales interactuando entre sí, pero siendo el nivel más lento de arrancar de los tres disponibles (unitarios con Mockito puro, slices como `@WebMvcTest`/`@DataJpaTest`, y `@SpringBootTest` completo). La estrategia recomendada balancea los tres niveles: muchos tests unitarios rápidos, algunos de slice, y pocos `@SpringBootTest` reservados para los flujos más críticos.
-
-**Analogía:** esta estrategia de pirámide de tests es un proceso de control de calidad con muchas verificaciones rápidas de piezas sueltas (unitarios), algunas verificaciones de subsistemas completos (slices), y pocas pero exhaustivas pruebas del producto ensamblado completo (`@SpringBootTest`).
-
-**Diagrama:**
-
-```
-┌── pocos: @SpringBootTest completo ──────────────────────┐
-│  contexto total, para flujos end-to-end críticos            │
-└──────────────────┬───────────────────────────┘
-┌── algunos: tests de slice (@WebMvcTest, @DataJpaTest) ─┐
-│  contexto parcial, una capa a la vez                       │
-└──────────────────┬───────────────────────────┘
-┌── muchos: tests unitarios con Mockito puro ─────────────┐
-│  sin contexto de Spring — los más rápidos de todos           │
-└─────────────────────────────────────────────────┘
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Reutiliza `academia-spring` (o créalo desde una carpeta vacía con `mkdir -p academia-spring` si es tu primera vez) y completa `TareaService` real (sin mockear nada esta vez), creando el test end-to-end en `src/test/java/com/academia/tarea/`:
-
-```bash
-mkdir -p academia-spring/src/test/java/com/academia/tarea
-cd academia-spring
-```
+**Hazlo tú.** Crea `src/test/java/com/example/demo/TareaFlowEndToEndTest.java`:
 
 ```java
-// src/main/java/com/academia/tarea/TareaService.java (reemplaza la versión del Tema 1)
-package com.academia.tarea;
-
-import org.springframework.stereotype.Service;
-
-@Service
-public class TareaService {
-    private final TareaRepository repositorio;
-
-    public TareaService(TareaRepository repositorio) { this.repositorio = repositorio; }
-
-    public String crear(String titulo) {
-        Tarea guardada = repositorio.save(new Tarea(titulo));
-        return guardada.getId().toString();
-    }
-}
-```
-
-```java
-// src/test/java/com/academia/tarea/CrearTareaEndToEndTest.java
-package com.academia.tarea;
+package com.example.demo;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static com.jayway.jsonpath.JsonPath.read;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest // levanta TODO el contexto real: controller + servicio + repositorio + base de datos H2 embebida
+@SpringBootTest
 @AutoConfigureMockMvc
-class CrearTareaEndToEndTest {
-
-    @Autowired
-    private MockMvc mockMvc;
-    @Autowired
-    private TareaRepository tareaRepository;
+class TareaFlowEndToEndTest {
+    @Autowired MockMvc mockMvc;
+    @Autowired JwtService jwtService;
 
     @Test
-    void crearUnaTareaPersisteRealmenteEnLaBaseDeDatos() throws Exception {
-        mockMvc.perform(post("/api/tareas")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("\"Comprar leche\""))
-            .andExpect(status().isCreated());
+    void creaConJwtYLeeLaTareaPersistida() throws Exception {
+        String token = jwtService.generar("curso@rutaflow.dev", "DRIVER");
 
-        // confirma directamente contra el repositorio REAL, no un mock, que la fila fue persistida
-        assertThat(tareaRepository.findAll()).extracting(Tarea::getTitulo).contains("Comprar leche");
+        MvcResult creada = mockMvc.perform(post("/api/tareas")
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"titulo\":\"Caja térmica\",\"prioridad\":2}"))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.titulo").value("Caja térmica"))
+            .andReturn();
+
+        String id = read(creada.getResponse().getContentAsString(), "$.id").toString();
+        mockMvc.perform(get("/api/tareas/{id}", id)
+                .header("Authorization", "Bearer " + token))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.id").value(Long.parseLong(id)))
+            .andExpect(jsonPath("$.titulo").value("Caja térmica"));
     }
 }
 ```
 
-**Explicación línea por línea:** `@SpringBootTest` (sin especificar una clase concreta como `@WebMvcTest`) levanta el contexto completo: el `TareaController` real, el `TareaService` real (sin ningún `@MockitoBean`) y el `TareaRepository` real contra una base de datos embebida; la aserción final consulta el repositorio REAL directamente, confirmando que la petición HTTP efectivamente persistió datos, no solo que el controller respondió el código esperado.
+Ejecuta desde la raíz del proyecto:
 
 ```bash
-mvn test -Dtest=CrearTareaEndToEndTest # Maven
-./gradlew test --tests CrearTareaEndToEndTest # Gradle (equivalente)
+./mvnw -q -Dtest=TareaFlowEndToEndTest test
 ```
 
-**Resultado esperado:** `BUILD SUCCESS` con el test en verde, pero notablemente más lento de arrancar que `TareaControllerTest` (Tema 1) — confirma con `mvn test -Dtest=TareaControllerTest,CrearTareaEndToEndTest` que el tiempo reportado para el segundo es mayor, evidencia directa del costo de levantar el contexto completo.
+**Resultado esperado.** El POST responde `201`; el GET posterior responde `200` con el mismo ID y título. El request lleva un JWT firmado con el `JwtService` real. No hay mocks: el `TareaController` llama a `ServicioTareas`, que guarda y consulta con `TareaRepository`.
 
-**Fallo deliberado:** en `TareaService.crear`, cambia `repositorio.save(new Tarea(titulo))` por simplemente `new Tarea(titulo)` (sin llamar a `save`, olvidando persistir). El test `mockMvc.perform(...)` seguiría respondiendo `201` (el controller no sabe que el servicio no persistió nada), pero `assertThat(tareaRepository.findAll())` FALLA porque la lista está vacía — diagnostica confirmando por qué un test de solo la capa web (Tema 1, con el servicio mockeado) NUNCA habría detectado este bug: el mock siempre "funciona" según lo que le configuraste, sin importar si la implementación real relacionada con la base de datos está rota. Solo un test end-to-end como este, que usa el servicio y el repositorio reales, expone el problema. Revierte el cambio antes de continuar.
+#### Subtema 6.8 · Separar error de autenticación y flujo válido (10 min)
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**Contexto.** Un caso autenticado que funciona no prueba el rechazo de peticiones anónimas.
 
-1. Agrega un segundo test end-to-end que confirme un flujo de lectura completo: crear una tarea vía POST y luego consultarla vía GET, confirmando que ambos pasan por las tres capas reales.
-2. Compara el tiempo reportado por Maven entre `TareaControllerTest` (Tema 1, slice), `TareaRepositoryTestcontainersTest` (Tema 2, slice con contenedor) y `CrearTareaEndToEndTest` (Tema 3, completo), documentando el orden de velocidad observado.
-3. Identifica, en tu propio criterio, cuál de los tres flujos de tu dominio (por ejemplo: crear pedido, asignar responsable, marcar tarea completada) es el más crítico para tener como `@SpringBootTest` end-to-end, y justifica la elección en una frase.
-4. Escribe de memoria (sin mirar) un `@SpringBootTest` con `MockMvc` que confirme, contra un repositorio real (no mockeado), que una petición HTTP persistió datos correctamente. Compara después contra el patrón del Paso 4.
-
-**Pista:** un bug real donde el mock "esconde" el problema (como el fallo deliberado de este Tema) es la razón principal por la que la pirámide recomienda ALGUNOS `@SpringBootTest`, no CERO — un slice perfectamente verde puede coexistir con un flujo real completamente roto.
-
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio para levantar el contexto completo de la aplicación:
+**Hazlo tú.** Agrega este método al mismo test:
 
 ```java
-@____
-@AutoConfigureMockMvc
-class CrearTareaEndToEndTest { }
+@Test
+void exigeTokenParaConsultarTareas() throws Exception {
+    mockMvc.perform(get("/api/tareas"))
+        .andExpect(status().isUnauthorized());
+}
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un test `@SpringBootTest` con `MockMvc` y una aserción directa contra un repositorio real confirmando persistencia. Compara después contra el patrón del Paso 4.
+Vuelve a ejecutar `./mvnw -q -Dtest=TareaFlowEndToEndTest test`.
 
-#### Paso 7 · Cierre y evidencia
+**Resultado esperado.** Pasan dos métodos: la ruta completa autenticada y el `401` sin token. El primero usa la firma real del JWT, pero crea el token directamente; no prueba el endpoint de login. `MockMvc` ejercita MVC y los filtros en memoria, sin iniciar un servidor ni probar navegador, proxy o TLS.
 
-Ya distingues los tres niveles de la pirámide de tests (unitarios, slices, `@SpringBootTest` completo) y confirmas con evidencia real por qué cada uno responde una pregunta distinta que los otros no cubren. Esto cierra el módulo de testing; el siguiente módulo aborda cómo documentar y observar esta misma API en producción. **Evidencia:** entrega el resultado de `CrearTareaEndToEndTest` en verde, y el resultado del fallo deliberado mostrando cómo un bug de persistencia real pasa desapercibido para un test de slice pero es detectado por el test end-to-end. Fuente oficial: [Spring Boot — Testing Spring Boot Applications](https://docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html).
+#### Subtema 6.9 · Ver qué integración detecta el test (10 min)
 
-**Errores comunes:** usar `@SpringBootTest` para todo, incluso pruebas simples de lógica de negocio que un test unitario con Mockito cubriría igual de bien y mucho más rápido; no tener NINGÚN `@SpringBootTest`, confiando únicamente en slices que, como demuestra el fallo deliberado, pueden dejar pasar bugs de integración entre capas.
+**Contexto.** Un `201 Created` puede ocultar que el servicio nunca guardó los datos.
 
-**Cuándo no usarlo:** para verificar lógica de negocio aislada sin ninguna dependencia de infraestructura real (cálculos, validaciones puras), un test unitario con Mockito puro, sin ningún contexto de Spring involucrado, es preferible por su velocidad.
+**Hazlo tú.** En `src/main/java/com/example/demo/ServicioTareas.java`, sustituye temporalmente el cuerpo de `crear` por:
 
----
+```java
+public TareaDTO crear(CrearTareaRequest request) {
+    return new TareaDTO(999L, request.titulo(), request.prioridad());
+}
+```
 
-La pirámide de tests que diseñes aquí es la misma que aplicará el proyecto integrador de este track (microservicio productivo, Módulo 12).
+Ejecuta solo `./mvnw -q -Dtest=TareaFlowEndToEndTest#creaConJwtYLeeLaTareaPersistida test`.
 
-## Laboratorio práctico
+**Fallo deliberado observado.** El POST todavía devuelve `201`, pero el GET falla: esperaba `200` y recibió `404`, porque la tarea falsa nunca pasó por el repositorio. Restaura el cuerpo original de `ServicioTareas.crear` y verifica los dos métodos en verde.
 
-**Objetivo del laboratorio:** construir una suite de tests de integración con Testcontainers contra PostgreSQL real, balanceando los tres niveles de testing.
+#### Entiende y cierra
 
-**Requisitos previos:** Módulos 0-5 completados.
+`@SpringBootTest` crea el contexto de la aplicación desde `DemoApplication`. Con `@AutoConfigureMockMvc`, usa el contexto completo y MockMvc, pero no abre un puerto. El test confirma que varias piezas del backend colaboran en una operación. Los unit tests aíslan lógica pequeña; los slices prueban MVC o persistencia; esta prueba verifica el cableado de un flujo. Conserva pocas pruebas de este tipo y elige rutas críticas: tienen más componentes que arrancar y sus fallos requieren investigar varias capas. Para probar un servidor real, certificados o puertos, usa `@SpringBootTest(webEnvironment = RANDOM_PORT)` con un cliente HTTP.
 
-| Paso | Acción | Código | Explicación |
-|---|---|---|---|
-| 1 | Escribir un test unitario con Mockito puro | Módulo 9 del track de Java | Sin contexto de Spring |
-| 2 | Escribir un test de slice con `@WebMvcTest` | Ver Tema 1 | Mockea el servicio inyectado |
-| 3 | Usar `MockMvc` para simular una petición completa | Ver Tema 1 | Verifica código de estado y JSON |
-| 4 | Configurar Testcontainers con `@DataJpaTest` | Ver Tema 2 | Contra PostgreSQL real |
-| 5 | Escribir un test con `@SpringBootTest` end-to-end | Ver Tema 3 | Para el flujo más crítico |
-
-**Verificación:** el laboratorio se considera exitoso si la suite completa refleja la pirámide de tests (muchos unitarios, algunos slices, pocos `@SpringBootTest`), y si los tests de repositorio contra Testcontainers verifican comportamiento fiel a PostgreSQL real, no aproximado por H2.
-
-**Errores comunes y soluciones**
-
-- **Usar `@SpringBootTest` para todo, incluso pruebas simples de lógica de negocio.** Prefiere tests unitarios con Mockito puro para lógica aislada.
-- **Confiar en H2 en memoria para verificar comportamiento específico de PostgreSQL.** Usa Testcontainers para fidelidad real con la base de datos de producción.
-- **No mockear el servicio en un test de `@WebMvcTest`.** Sin `@MockitoBean`, Spring intentará resolver la dependencia real, fallando si no está disponible en ese contexto parcial.
-
----
+**Evidencia para avanzar:** los dos métodos pasan, el token real atraviesa el filtro, el POST se lee después de persistirse y el fallo por saltar el repositorio se diagnostica y revierte. La base de este ejemplo es H2; la prueba PostgreSQL de M6 T2 cubre el motor real. Documentación primaria: [Spring Boot 4.1.2 — `@SpringBootTest` y pruebas MVC](https://docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html) y [Spring Framework — MockMvc](https://docs.spring.io/spring/reference/testing/mockmvc.html).

@@ -19,7 +19,7 @@ Temas conformes a cuatro pasos: **139/1185**. Tracks inventariados: **14**.
 | node | 2 | 83 | 6 | 6 |
 | react | 0 | 58 | 0 | 0 |
 | rutaflow | 0 | 29 | 0 | 0 |
-| spring-boot | 35 | 111 | 117 | 109 |
+| spring-boot | 35 | 111 | 120 | 109 |
 
 ## Temas pendientes
 
@@ -1094,7 +1094,7 @@ Temas conformes a cuatro pasos: **139/1185**. Tracks inventariados: **14**.
 - M5 ### Tema 2: Fallar rápido al arranque: 4.21: faltan action
 - M6 ### Tema 1: Probar un controller con `@WebMvcTest`: 6.1: faltan context, action, deliberateFailure, understand, close, duration; 6.2: faltan context, action, deliberateFailure, understand, close, duration; 6.3: faltan context, action, expectedResult, deliberateFailure, understand, close, duration
 - M6 ### Tema 2: Probar el repositorio contra PostgreSQL con `@DataJpaTest`: 6.4: faltan context, action, deliberateFailure, understand, close, duration; 6.5: faltan context, action, deliberateFailure, understand, close, duration; 6.6: faltan context, action, expectedResult, deliberateFailure, understand, close, duration
-- M6 ### Tema 3: @SpringBootTest completo y estrategia de pirámide de tests: tiene 0 subtemas
+- M6 ### Tema 3: Integrar el flujo con `@SpringBootTest`: 6.7: faltan context, action, deliberateFailure, understand, close, duration; 6.8: faltan context, action, deliberateFailure, understand, close, duration; 6.9: faltan context, action, expectedResult, deliberateFailure, understand, close, duration
 - M7 ### Tema 1: Actuator y health checks personalizados: tiene 0 subtemas
 - M7 ### Tema 2: Métricas de negocio con Micrometer: tiene 0 subtemas
 - M7 ### Tema 3: Liveness vs readiness: tiene 0 subtemas

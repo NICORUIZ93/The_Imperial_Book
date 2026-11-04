@@ -1669,9 +1669,7 @@
       "track": "spring-boot"
     },
     {
-      "legacySections": [
-        "**Errores comunes y soluciones**"
-      ],
+      "legacySections": [],
       "module": 6,
       "track": "spring-boot"
     },
@@ -1696,7 +1694,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "013228e933af36676e7194bb7b13bb40e5ba9bcc090b5b389c078db10169ccb9",
+    "fingerprint": "1d97dc3d0ebd6fcd2df16fc60e8808f5ec5198684af96a679ccf25bc0d5cc979",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -1707,10 +1705,10 @@
     "legacySections": {
       "## Construcción guiada del capítulo": 42,
       "## Ruta de proyecto progresivo desde carpeta vacía": 12,
-      "**Errores comunes y soluciones**": 179
+      "**Errores comunes y soluciones**": 178
     },
     "modules": 256,
-    "modulesWithLegacySections": 181,
+    "modulesWithLegacySections": 180,
     "topics": 1185,
     "topicsWithIssues": 409
   },
@@ -10962,9 +10960,9 @@
       {
         "issues": [],
         "module": 6,
-        "tailWords": 214,
-        "topic": "Tema 3: @SpringBootTest completo y estrategia de pirámide de tests",
-        "words": 1256
+        "tailWords": 0,
+        "topic": "Tema 3: Integrar el flujo con `@SpringBootTest`",
+        "words": 727
       },
       {
         "issues": [],

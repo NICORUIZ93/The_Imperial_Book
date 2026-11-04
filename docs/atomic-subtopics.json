@@ -94,8 +94,8 @@
     "spring-boot": {
       "topics": 111,
       "completeTopics": 35,
-      "topicsWith3to6Subtopics": 39,
-      "subtopics": 117,
+      "topicsWith3to6Subtopics": 40,
+      "subtopics": 120,
       "completeSubtopics": 109
     }
   },
@@ -14388,9 +14388,52 @@
       },
       {
         "module": 6,
-        "topic": "### Tema 3: @SpringBootTest completo y estrategia de pirámide de tests",
-        "subtopicCount": 0,
-        "subtopics": [],
+        "topic": "### Tema 3: Integrar el flujo con `@SpringBootTest`",
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "6.7",
+            "title": "#### Subtema 6.7 · Crear y consultar con las capas reales (10 min)",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": false
+            },
+            "complete": false
+          },
+          {
+            "id": "6.8",
+            "title": "#### Subtema 6.8 · Separar error de autenticación y flujo válido (10 min)",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": false
+            },
+            "complete": false
+          },
+          {
+            "id": "6.9",
+            "title": "#### Subtema 6.9 · Ver qué integración detecta el test (10 min)",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": false,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": false
+            },
+            "complete": false
+          }
+        ],
         "complete": false
       },
       {

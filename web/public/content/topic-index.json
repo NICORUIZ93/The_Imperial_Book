@@ -5208,8 +5208,8 @@
         "fragment": "tema-2-probar-el-repositorio-contra-postgresql-con-datajpatest"
       },
       {
-        "title": "@SpringBootTest completo y estrategia de pirámide de tests",
-        "fragment": "tema-3-springboottest-completo-y-estrategia-de-piramide-de-tests"
+        "title": "Integrar el flujo con `@SpringBootTest`",
+        "fragment": "tema-3-integrar-el-flujo-con-springboottest"
       }
     ],
     "7": [

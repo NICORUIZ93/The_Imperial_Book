@@ -535,7 +535,30 @@ estructuralmente completos**, **1091/1185 practicables** y 409 con señales de
 defecto de sustancia. Los indicadores no prueban ejecución de los demás
 laboratorios ni sustituyen revisión humana.
 
-**Siguiente tema:** Spring Boot M6 T3, “`@SpringBootTest` completo y estrategia
-de pirámide”. Reutiliza el mismo proyecto acumulativo, distingue prueba completa
-de slice y unit test, comprueba qué base de datos necesita el contexto total y
-corrige los ejemplos en paquete/imports Boot 4 antes de ejecutar el caso.
+Spring Boot M6 T3, “Integrar el flujo con `@SpringBootTest`”, se rehízo en tres
+subtemas: POST autenticado seguido de GET del registro persistido; ruta protegida
+sin JWT devuelve `401`; fallo deliberado cuando el servicio deja de guardar.
+Reutiliza el `JwtService`, filtro, controller, servicio y repositorio reales del
+proyecto acumulativo, con H2 de pruebas. Se aclara el límite: `@SpringBootTest`
+con MockMvc carga el contexto completo, pero no inicia un servidor real ni prueba
+TLS o el navegador; el token se firma directamente y no prueba login.
+
+Los dos métodos dirigidos pasaron. Al sustituir temporalmente `crear` por un DTO
+falso con ID `999`, el POST conservó `201`, pero el GET recibió `404` en vez de
+`200`; se restauró el guardado en repositorio. La suite acumulada Boot 4.1.2/JDK
+25 pasó con **42 pruebas**, sin fallos ni omisiones; Testcontainers requiere el
+mismo socket Podman y los valores de entorno del tema T2 en este equipo. Los
+cambios fueron solo de contenido y reportes: el backend temporal está en
+`/tmp/imperial-spring-m4-jwt/app`.
+
+`./scripts/validate.sh` pasó con 23 pruebas de script y 4 omitidas; las demás
+validaciones de contenido, trazabilidad, índices y gráficos pasaron.
+`git diff --check` pasó. Las auditorías globales tras M6 T3 registran
+**139/1185 temas estructuralmente completos**, **1090/1185 practicables** y
+409 con señales de defecto de sustancia. Las mediciones estructurales no
+acreditan la ejecución de los demás ejemplos ni una revisión pedagógica humana.
+
+**Siguiente tema:** Spring Boot M7 T1, “Actuator y health checks personalizados”.
+Revisa imports y módulos de Actuator en Boot 4, diferencia disponibilidad de
+proceso y dependencias, y ejecuta los health checks del ejemplo sin publicar
+secretos ni detalles internos en endpoints expuestos.

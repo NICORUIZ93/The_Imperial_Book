@@ -13390,11 +13390,11 @@
     {
       "track": "spring-boot",
       "module": 6,
-      "title": "Tema 3: @SpringBootTest completo y estrategia de pirámide de tests",
+      "title": "Tema 3: Integrar el flujo con `@SpringBootTest`",
       "file": "web/public/content/spring-boot/modulo-6.md",
       "line": 243,
       "signals": [
-        "comprobar-fragmento-incompleto"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
