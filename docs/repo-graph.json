@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 689,
+      "lines": 719,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 14805,
+      "lines": 14819,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -677,7 +677,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 144,
+      "lines": 143,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 415,
+      "lines": 416,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -5507,7 +5507,7 @@
     },
     {
       "path": "examples/spring-kafka-rutaflow/src/test/java/academia/rutaflow/event/EnvioEventPublisherTest.java",
-      "lines": 195,
+      "lines": 263,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -12139,7 +12139,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-8.md",
-      "lines": 1061,
+      "lines": 1155,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12154,8 +12154,8 @@
         "#### Subtema 2.1: Configura reintentos limitados y DLT \u00b7 10 min",
         "#### Subtema 2.2: Provoca un mensaje inv\u00e1lido y comprueba los intentos \u00b7 10 min",
         "#### Subtema 2.3: Ajusta la pol\u00edtica y atiende los mensajes recuperados \u00b7 15 min",
-        "### Tema 3: Productor idempotente y transacciones (exactly-once)",
-        "#### Subtema 3.1: Configura idempotencia del productor \u00b7 10 min"
+        "### Tema 3: Transacciones Kafka y SQL: idempotencia y l\u00edmites de exactly-once",
+        "#### Subtema 3.1 \u00b7 Reintentar el productor sin duplicar registros de Kafka \u00b7 10 min"
       ]
     },
     {

@@ -277,7 +277,7 @@
       "commonErrors": 68,
       "resources": 75,
       "standaloneExample": 65,
-      "learningEvidence": 81,
+      "learningEvidence": 80,
       "complete": 64
     }
   },
@@ -30861,7 +30861,7 @@
       },
       {
         "module": 8,
-        "topic": "Tema 3: Productor idempotente y transacciones (exactly-once)",
+        "topic": "Tema 3: Transacciones Kafka y SQL: idempotencia y límites de exactly-once",
         "criteria": {
           "objective": false,
           "prerequisites": true,
@@ -30878,10 +30878,10 @@
           "commonErrors": false,
           "resources": true,
           "standaloneExample": false,
-          "learningEvidence": true
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 7,
+          "stepsPassed": 6,
           "complete": false
         }
       },

@@ -5236,8 +5236,8 @@
         "fragment": "tema-2-dead-letter-queue"
       },
       {
-        "title": "Productor idempotente y transacciones (exactly-once)",
-        "fragment": "tema-3-productor-idempotente-y-transacciones-exactly-once"
+        "title": "Transacciones Kafka y SQL: idempotencia y límites de exactly-once",
+        "fragment": "tema-3-transacciones-kafka-y-sql-idempotencia-y-limites-de-exactly-once"
       },
       {
         "title": "Rebalanceo de consumer groups y partition assignment",

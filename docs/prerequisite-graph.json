@@ -4434,7 +4434,7 @@
       "track": "spring-boot",
       "module": 8,
       "position": 3,
-      "title": "Productor idempotente y transacciones (exactly-once)",
+      "title": "Transacciones Kafka y SQL: idempotencia y límites de exactly-once",
       "file": "web/public/content/spring-boot/modulo-8.md",
       "requires": [
         "spring-boot:8:2"

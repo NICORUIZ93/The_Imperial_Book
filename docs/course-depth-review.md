@@ -1202,7 +1202,7 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | spring-boot / 7 | [Tema 3: Liveness y readiness sin reinicios en cadena](../web/public/content/spring-boot/modulo-7.md) | demostracion-no-delimitada |
 | spring-boot / 8 | [Tema 1: Producers y consumers con Spring Kafka](../web/public/content/spring-boot/modulo-8.md) | demostracion-no-delimitada |
 | spring-boot / 8 | [Tema 2: Dead-letter queue](../web/public/content/spring-boot/modulo-8.md) | demostracion-no-delimitada |
-| spring-boot / 8 | [Tema 3: Productor idempotente y transacciones (exactly-once)](../web/public/content/spring-boot/modulo-8.md) | demostracion-no-delimitada |
+| spring-boot / 8 | [Tema 3: Transacciones Kafka y SQL: idempotencia y límites de exactly-once](../web/public/content/spring-boot/modulo-8.md) | demostracion-no-delimitada |
 | spring-boot / 8 | [Tema 4: Rebalanceo de consumer groups y partition assignment](../web/public/content/spring-boot/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 8 | [Tema 5: Kafka frente a RabbitMQ](../web/public/content/spring-boot/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 8 | [Tema 6: Spring Cloud Stream y binders de Kafka/RabbitMQ](../web/public/content/spring-boot/modulo-8.md) | clase-java-no-visible |

@@ -13468,7 +13468,7 @@
     {
       "track": "spring-boot",
       "module": 8,
-      "title": "Tema 3: Productor idempotente y transacciones (exactly-once)",
+      "title": "Tema 3: Transacciones Kafka y SQL: idempotencia y límites de exactly-once",
       "file": "web/public/content/spring-boot/modulo-8.md",
       "line": 269,
       "signals": [
@@ -13483,7 +13483,7 @@
       "module": 8,
       "title": "Tema 4: Rebalanceo de consumer groups y partition assignment",
       "file": "web/public/content/spring-boot/modulo-8.md",
-      "line": 367,
+      "line": 461,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -13494,7 +13494,7 @@
       "module": 8,
       "title": "Tema 5: Kafka frente a RabbitMQ",
       "file": "web/public/content/spring-boot/modulo-8.md",
-      "line": 569,
+      "line": 663,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -13505,7 +13505,7 @@
       "module": 8,
       "title": "Tema 6: Spring Cloud Stream y binders de Kafka/RabbitMQ",
       "file": "web/public/content/spring-boot/modulo-8.md",
-      "line": 773,
+      "line": 867,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -13518,7 +13518,7 @@
       "module": 8,
       "title": "Tema 7: Kafka Streams con Spring para transformar eventos",
       "file": "web/public/content/spring-boot/modulo-8.md",
-      "line": 845,
+      "line": 939,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -13531,7 +13531,7 @@
       "module": 8,
       "title": "Tema 8: Avro y Schema Registry para contratos de eventos",
       "file": "web/public/content/spring-boot/modulo-8.md",
-      "line": 910,
+      "line": 1004,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -13544,7 +13544,7 @@
       "module": 8,
       "title": "Tema 9: RabbitMQ con Spring AMQP: routing, ack y prefetch",
       "file": "web/public/content/spring-boot/modulo-8.md",
-      "line": 972,
+      "line": 1066,
       "signals": [
         "clase-java-no-visible"
       ],

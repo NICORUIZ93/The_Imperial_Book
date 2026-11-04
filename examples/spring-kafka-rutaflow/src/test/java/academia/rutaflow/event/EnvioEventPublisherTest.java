@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import static org.awaitility.Awaitility.await;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.kafka.core.DefaultKafkaProducerFactory;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -19,10 +21,13 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
+import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
 import java.time.Duration;
 import java.util.Map;
 
@@ -115,6 +120,60 @@ class EnvioEventPublisherTest {
         }
     }
 
+
+    @Test
+    void transaccionKafkaAbortadaSoloEsVisibleConReadUncommitted() throws Exception {
+        String topic = "rutaflow.tx.abort." + UUID.randomUUID();
+        broker.addTopics(new NewTopic(topic, 1, (short) 1));
+
+        Map<String, Object> producerProps = KafkaTestUtils.producerProps(broker);
+        producerProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        producerProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        var producerFactory = new DefaultKafkaProducerFactory<String, String>(producerProps);
+        producerFactory.setTransactionIdPrefix("rutaflow-tx-" + UUID.randomUUID() + "-");
+        var transactionalTemplate = new KafkaTemplate<>(producerFactory);
+
+        Map<String, Object> committedProps = KafkaTestUtils.consumerProps(
+                broker, "verificador-committed-" + UUID.randomUUID(), false);
+        committedProps.put(org.apache.kafka.clients.consumer.ConsumerConfig.ISOLATION_LEVEL_CONFIG,
+                "read_committed");
+        committedProps.put(org.apache.kafka.clients.consumer.ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
+                StringDeserializer.class);
+        committedProps.put(org.apache.kafka.clients.consumer.ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
+                StringDeserializer.class);
+        Map<String, Object> uncommittedProps = KafkaTestUtils.consumerProps(
+                broker, "verificador-uncommitted-" + UUID.randomUUID(), false);
+        uncommittedProps.put(org.apache.kafka.clients.consumer.ConsumerConfig.ISOLATION_LEVEL_CONFIG,
+                "read_uncommitted");
+        uncommittedProps.put(org.apache.kafka.clients.consumer.ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
+                StringDeserializer.class);
+        uncommittedProps.put(org.apache.kafka.clients.consumer.ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
+                StringDeserializer.class);
+
+        try (Consumer<String, String> committed = new KafkaConsumer<>(committedProps);
+                Consumer<String, String> uncommitted = new KafkaConsumer<>(uncommittedProps)) {
+            broker.consumeFromAnEmbeddedTopic(committed, topic);
+            broker.consumeFromAnEmbeddedTopic(uncommitted, topic);
+            assertThatThrownBy(() -> transactionalTemplate.executeInTransaction(template -> {
+                try {
+                    template.send(topic, "envio-1", "registro-abortado")
+                            .get(10, TimeUnit.SECONDS);
+                } catch (Exception error) {
+                    throw new IllegalStateException("falló el envío de prueba", error);
+                }
+                throw new IllegalStateException("aborto intencional de la transacción");
+            })).isInstanceOf(IllegalStateException.class)
+                    .hasMessage("aborto intencional de la transacción");
+
+            assertThat(committed.poll(Duration.ofSeconds(2))).isEmpty();
+            var abortado = uncommitted.poll(Duration.ofSeconds(2));
+            assertThat(abortado).hasSize(1);
+            assertThat(abortado.iterator().next().value()).isEqualTo("registro-abortado");
+        } finally {
+            producerFactory.destroy();
+        }
+    }
+
     @Test
     void guardaEnvioYOutboxEnLaMismaTransaccion() {
         jdbc.execute("ALTER TABLE outbox_event ADD CONSTRAINT fail_outbox_insert "
@@ -177,12 +236,21 @@ class EnvioEventPublisherTest {
     }
 
     @Test
-    void replayTrasAckConservaUnaSolaProyeccion() throws Exception {
+    void replayTrasFallarLaMarcaDespuesDelAckConservaUnaSolaProyeccion() throws Exception {
         recibidosRuteo.clear();
         var evento = crearEnvio.crear("RT-REPLAY");
-        assertThat(outboxDispatcher.publicarPendientes()).isGreaterThanOrEqualTo(1);
-        jdbc.update("UPDATE outbox_event SET published_at = NULL WHERE event_id = ?", evento.eventId());
+        String eventoIdSql = evento.eventId().toString();
+        jdbc.execute("ALTER TABLE outbox_event ADD CONSTRAINT fail_ack_mark "
+                + "CHECK (event_id <> '" + eventoIdSql + "' OR published_at IS NULL)");
+        try {
+            assertThatThrownBy(() -> outboxDispatcher.publicarPendientes())
+                    .isInstanceOf(org.springframework.dao.DataIntegrityViolationException.class);
+        } finally {
+            jdbc.execute("ALTER TABLE outbox_event DROP CONSTRAINT fail_ack_mark");
+        }
 
+        assertThat(jdbc.queryForObject("SELECT published_at IS NULL FROM outbox_event WHERE event_id = ?",
+                Boolean.class, evento.eventId())).isTrue();
         assertThat(outboxDispatcher.publicarPendientes()).isGreaterThanOrEqualTo(1);
         await().atMost(Duration.ofSeconds(5)).untilAsserted(
                 () -> assertThat(recibidosRuteo.size()).isGreaterThanOrEqualTo(2));

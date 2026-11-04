@@ -179,10 +179,11 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 2.1: Configura reintentos limitados y DLT · 10 min
   - ✓ Subtema 2.2: Provoca un mensaje inválido y comprueba los intentos · 10 min
   - ✓ Subtema 2.3: Ajusta la política y atiende los mensajes recuperados · 15 min
-- [4 pasos] Tema 3: Productor idempotente y transacciones (exactly-once)
-  - ✓ Subtema 3.1: Configura idempotencia del productor · 10 min
-  - ✓ Subtema 3.2: Guarda el envío y el evento con outbox · 15 min
-  - ✓ Subtema 3.3: Deduplica el efecto con inbox y delimita exactly-once · 15 min
+- [4 pasos] Tema 3: Transacciones Kafka y SQL: idempotencia y límites de exactly-once
+  - ✓ Subtema 3.1 · Reintentar el productor sin duplicar registros de Kafka · 10 min
+  - ✓ Subtema 3.2 · Guardar envío y evento en la misma transacción SQL · 15 min
+  - ✓ Subtema 3.3 · Procesar un `eventId` repetido sin duplicar el efecto · 15 min
+  - ✓ Subtema 3.4 · Leer solo registros confirmados de una transacción Kafka · 10 min
 - [pendiente de migrar] Tema 4: Rebalanceo de consumer groups y partition assignment
 - [pendiente de migrar] Tema 5: Kafka frente a RabbitMQ
 - [pendiente de migrar] Tema 6: Spring Cloud Stream y binders de Kafka/RabbitMQ

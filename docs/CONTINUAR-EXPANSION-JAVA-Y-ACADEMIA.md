@@ -682,7 +682,41 @@ M8 T2, las auditorías globales siguen en **140/1185 temas atómicos completos**
 regeneraron los reportes e índice afectados; `./scripts/validate.sh` pasó con 23
 pruebas de script y 4 omitidas, y `git diff --check` pasó.
 
-**Siguiente tema:** Spring Boot M8 T3, “Productor idempotente y transacciones
-(exactly-once)”. Aclara qué garantiza la idempotencia de Kafka, verifica outbox e
-inbox en sus ventanas de fallo, y evita afirmar una transacción global entre
-PostgreSQL y Kafka.
+Spring Boot M8 T3, “Transacciones Kafka y SQL: idempotencia y límites de
+exactly-once”, queda revisado en cuatro subtemas. La lección separa reintentos
+internos del productor, outbox SQL, deduplicación inbox y visibilidad de registros
+abortados. No afirma que el test de idempotencia simule pérdida de ACK ni que una
+transacción Kafka incluya PostgreSQL.
+
+La suite del laboratorio pasó con **9 pruebas, 0 fallos, 0 errores y 0 omitidas**
+mediante `./mvnw -q clean test` (Spring Boot 4.1.2, JDK 25 y Kafka embebido
+4.2.2). El replay ahora fuerza una restricción que impide guardar `published_at`
+después del primer ACK; al retirar la restricción se publica de nuevo el mismo
+`eventId`, y el inbox conserva una sola proyección. Otro test aborta una
+transacción de productor y contrasta dos consumidores: `read_committed` no ve el
+registro y `read_uncommitted` sí.
+
+En copias temporales, desactivar idempotencia dejó pasar la suite (el laboratorio
+no induce la pérdida de ACK necesaria); retirar `@Transactional` hizo fallar el
+rollback porque quedó la fila de envío; quitar la deduplicación inbox produjo
+`DuplicateKeyException`; y configurar el consumer confirmado como
+`read_uncommitted` hizo fallar la aserción porque vio el registro abortado. Las
+mutaciones se restauraron. La suite conserva un `WARN` interno de Kafka al cerrar
+un cliente ya cerrado; no se vio el error anterior de `KafkaStorageException`.
+
+Límites: H2 y broker embebido no sustituyen PostgreSQL ni un clúster real. El test
+de transacción mide visibilidad del productor abortado, no el flujo completo
+Spring Kafka EOS con offsets. La consulta y el insert inbox se probaron
+secuencialmente; la concurrencia requiere estrategia explícita ante conflicto de
+unicidad. Tras regenerar índices y auditorías, la cobertura global queda en **140/1185
+temas estructuralmente completos**, **1089/1185 practicables**, **1039/1185
+completos en la auditoría de siete pasos** y 409 con señales automatizadas de
+defecto de sustancia. Estas señales no miden comprensión humana ni certifican
+los demás laboratorios. `./scripts/validate.sh` pasó con 23 pruebas de script
+y 4 omitidas; `git diff --check` pasó.
+
+**Siguiente tema:** Spring Boot M8 T4, “Rebalanceo de consumer groups y partition
+assignment”. Inspeccionar primero el ejemplo y sus imports/versiones; comprobar
+que ejecuta dos consumidores reales del mismo grupo, observa revocación y nueva
+asignación, y que el fallo deliberado reproduce estado local obsoleto. No aceptar
+comandos o rutas inventados por la lección.

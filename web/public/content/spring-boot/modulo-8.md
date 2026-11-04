@@ -266,103 +266,197 @@ Restaura la configuración del proyecto a FixedBackOff(100L, 2), conserva la sal
 
 **Transferencia al proyecto integrador:** define reintentos según el tipo de fallo y envía los eventos irrecuperables a un DLT monitoreado con un procedimiento de revisión.
 
-### Tema 3: Productor idempotente y transacciones (exactly-once)
+### Tema 3: Transacciones Kafka y SQL: idempotencia y límites de exactly-once
 
-**Duración estimada:** 40 min.
-**¿Por qué es importante?** Reintentar una publicación o recibir dos veces un mensaje no debe duplicar un envío o un cobro. El productor de Kafka, la base de datos y el consumidor tienen garantías distintas.
-**Prerrequisitos:** M8 T1 y M8 T2. Proyecto continuo: registrar un envío y aplicar su evento de forma segura aunque se repita.
-**Laboratorio:** examples/spring-kafka-rutaflow/. Ejecuta los cambios en tu copia para conservar el ejemplo original.
+**Duración estimada:** 50 min.
+**¿Por qué es importante?** Un productor puede repetir un envío y un consumidor puede volver a recibir un evento. Evita duplicar el efecto y distingue la transacción del broker de la transacción de la base de datos.
+**Prerrequisitos:** M8 T1 y M8 T2. Proyecto continuo: guardar un envío, publicar su evento y procesarlo sin duplicar la proyección.
+**Laboratorio:** `examples/spring-kafka-rutaflow/`. Usa la copia de M8 T1. El test usa Kafka embebido y H2; comprueba estas fronteras en una sola máquina, no sustituye pruebas con PostgreSQL ni con un clúster Kafka de producción.
 
-#### Subtema 3.1: Configura idempotencia del productor · 10 min
+#### Subtema 3.1 · Reintentar el productor sin duplicar registros de Kafka · 10 min
 
 **1. Contexto**
-El cliente de Kafka puede reintentar internamente después de perder una confirmación. La idempotencia del productor evita duplicados causados por ese reintento del mismo productor.
+Si el productor pierde una confirmación, puede repetir el envío. La idempotencia permite que Kafka reconozca ese reintento de la misma sesión del productor. No deduplica dos llamadas de negocio que crean dos envíos.
 
 **2. Hazlo tú**
-Abre examples/spring-kafka-rutaflow/src/main/resources/application.yml y revisa esta configuración completa del productor:
+Revisa `spring.kafka.producer` en `examples/spring-kafka-rutaflow/src/main/resources/application.yml`:
 
 ```yaml
 spring:
   kafka:
     producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       acks: all
       properties:
         enable.idempotence: true
 ```
 
-Desde examples/spring-kafka-rutaflow/, ejecuta la suite:
+Ejecuta la prueba de publicación:
 
 ```bash
-./mvnw test
+./mvnw -Dtest=EnvioEventPublisherTest#publicaConKeyDelEnvioYElListenerLaRecibe test
 ```
 
-**Resultado esperado:** Maven termina con BUILD SUCCESS. La configuración usa confirmación all e idempotencia; la prueba publica y verifica metadatos y recepción del evento.
+**Resultado esperado.** La prueba verifica envío, partición, key y recepción. La suite completa también pasa si cambias temporalmente `enable.idempotence` a `false`; no simula perder el ACK del productor y reintentar el mismo envío.
 
-**Fallo deliberado:** en la copia cambia enable.idempotence a false y repite la suite. **Resultado esperado:** la suite sigue pasando. **Diagnóstico:** los tests actuales no fuerzan una pérdida de ack y reintento interno del productor; su resultado no demuestra ni refuta esa garantía. Restaura true después de la comparación.
+**Fallo deliberado:** en la copia apaga la idempotencia y ejecuta la suite. **Diagnóstico:** que la suite siga pasando significa que este test no mide reintentos internos del cliente. Restaura `true`; no presentes esta prueba como evidencia directa de la garantía.
 
 **3. Entiende**
-Idempotencia del productor cubre reintentos internos del cliente con los identificadores de secuencia de Kafka. No deduplica dos llamadas separadas de la aplicación que vuelven a publicar el mismo evento.
+Idempotencia de productor reduce duplicados que Kafka recibiría por retries de una misma sesión. Dos llamadas separadas siguen siendo dos registros posibles; el efecto de negocio requiere su propia clave idempotente.
 
 **4. Cierra**
-Describe qué duplicado cubre esta opción y qué duplicado debe resolver el consumidor.
+Separa en dos frases qué duplicado resuelve Kafka y cuál debe resolver la aplicación.
 
-#### Subtema 3.2: Guarda el envío y el evento con outbox · 15 min
+#### Subtema 3.2 · Guardar envío y evento en la misma transacción SQL · 15 min
 
 **1. Contexto**
-La base de datos y Kafka no comparten una transacción local automática. Si el servicio guarda el envío y después falla al publicar, el sistema debe conservar el evento pendiente.
+PostgreSQL y Kafka no comparten una transacción local. Si guardas primero el envío y falla el proceso antes de publicar, el evento se perdería sin un registro pendiente durable.
 
 **2. Hazlo tú**
-Abre el archivo completo examples/spring-kafka-rutaflow/src/main/java/academia/rutaflow/outbox/CrearEnvioService.java. Sigue crear: la transacción guarda envío y outbox_event juntos. Ejecuta la prueba que provoca un fallo al insertar el evento:
+Abre `examples/spring-kafka-rutaflow/src/main/java/academia/rutaflow/outbox/CrearEnvioService.java`. En `crear`, la transacción cubre ambas escrituras:
+
+```java
+@Transactional
+public EnvioCreado crear(String referencia) {
+    UUID envioId = UUID.randomUUID();
+    EnvioCreado evento = new EnvioCreado(
+            UUID.randomUUID(), envioId, 1, clock.instant(), referencia);
+    try {
+        String payload = json.writeValueAsString(evento);
+        jdbc.update("INSERT INTO envio (envio_id, referencia) VALUES (?, ?)", envioId, referencia);
+        jdbc.update("""
+                INSERT INTO outbox_event
+                    (event_id, aggregate_id, event_type, payload, created_at)
+                VALUES (?, ?, ?, ?, ?)
+                """, evento.eventId(), envioId, "EnvioCreado", payload, evento.occurredAt());
+        return evento;
+    } catch (JsonProcessingException error) {
+        throw new IllegalStateException("No se pudo serializar EnvioCreado", error);
+    }
+}
+```
+
+Este es el flujo real: serializa el evento, inserta el envío y luego outbox dentro de la misma transacción. Ejecuta:
 
 ```bash
 ./mvnw -Dtest=EnvioEventPublisherTest#guardaEnvioYOutboxEnLaMismaTransaccion test
 ```
 
-**Resultado esperado:** la prueba induce una violación de integridad y verifica que no quedan ni la fila de envio ni la de outbox_event con referencia RT-ROLLBACK.
+**Resultado esperado.** El test hace fallar el `INSERT` de outbox con una restricción SQL. Al salir de `crear`, no queda ni el envío ni el evento parcial.
 
-**Fallo deliberado:** en la copia quita @Transactional de crear y repite la prueba. **Error esperado:** queda guardada una de las dos filas cuando falla la inserción en outbox_event. **Diagnóstico:** ambas escrituras SQL necesitan la misma transacción de base de datos.
+**Fallo deliberado:** en la copia quita `@Transactional` de `crear` y repite el test. **Diagnóstico:** con autocommit, la primera escritura SQL ya se confirmó y queda una fila `envio` aunque falle outbox. Restaura la anotación.
 
 **3. Entiende**
-Outbox hace atómica la persistencia del negocio y del evento pendiente dentro de la base de datos. Un dispatcher publica después; si no consigue marcar la fila como publicada, puede volver a publicarla. Por eso el consumidor también debe ser idempotente.
+La outbox guarda el evento pendiente junto con el cambio de negocio en una transacción de la base de datos. Un dispatcher publica después y marca la fila solo tras recibir el ACK; entre el ACK y esa marca puede haber replay. Este dispatcher de laboratorio no reclama filas con lease: no lo ejecutes en varias instancias.
 
 **4. Cierra**
-Guarda la salida del test y explica qué estado persistente permite recuperar el evento si Kafka no está disponible.
+Describe qué dato pendiente permite al dispatcher recuperar la publicación si Kafka está temporalmente fuera de servicio.
 
-#### Subtema 3.3: Deduplica el efecto con inbox y delimita exactly-once · 15 min
+#### Subtema 3.3 · Procesar un `eventId` repetido sin duplicar el efecto · 15 min
 
 **1. Contexto**
-Un dispatcher puede publicar de nuevo tras perder la confirmación. El consumidor debe reconocer el mismo eventId antes de aplicar por segunda vez la actualización de negocio.
+El dispatcher puede publicar dos veces el mismo evento si Kafka confirmó, pero el proceso no alcanzó a guardar `published_at`. El consumidor registra `eventId` en inbox junto a la proyección, dentro de una transacción.
 
 **2. Hazlo tú**
-Abre examples/spring-kafka-rutaflow/src/main/java/academia/rutaflow/inbox/InboxProcessor.java y revisa cómo registra event_id y actualiza route_projection en una transacción. Ejecuta:
+Abre `examples/spring-kafka-rutaflow/src/main/java/academia/rutaflow/inbox/InboxProcessor.java`. Fíjate en el retorno temprano y en la transacción que contiene el registro y el efecto:
+
+```java
+@Transactional
+public boolean procesar(EnvioCreado evento) {
+    Integer existente = jdbc.queryForObject(
+            "SELECT COUNT(*) FROM evento_procesado WHERE event_id = ?",
+            Integer.class, evento.eventId());
+    if (existente != null && existente > 0) {
+        return false;
+    }
+    jdbc.update("INSERT INTO evento_procesado (event_id, processed_at) VALUES (?, ?)",
+            evento.eventId(), clock.instant());
+    int actualizados = jdbc.update("""
+            UPDATE route_projection
+            SET referencia = ?, updated_at = ?
+            WHERE envio_id = ?
+            """, evento.referencia(), clock.instant(), evento.envioId());
+    if (actualizados == 0) {
+        jdbc.update("""
+                INSERT INTO route_projection (envio_id, referencia, updated_at)
+                VALUES (?, ?, ?)
+                """, evento.envioId(), evento.referencia(), clock.instant());
+    }
+    return true;
+}
+```
+
+Ejecuta las pruebas de duplicado y de replay tras fallar la marca SQL después del ACK:
 
 ```bash
 ./mvnw -Dtest=EnvioEventPublisherTest#inboxHaceIdempotenteElEfectoDeNegocio test
-./mvnw -Dtest=EnvioEventPublisherTest#replayTrasAckConservaUnaSolaProyeccion test
+./mvnw -Dtest=EnvioEventPublisherTest#replayTrasFallarLaMarcaDespuesDelAckConservaUnaSolaProyeccion test
 ```
 
-**Resultado esperado:** la primera aplicación devuelve true, repetir el mismo evento devuelve false y queda una sola fila de evento_procesado y una sola proyección. En el replay, el broker recibe dos mensajes y la proyección sigue siendo una.
+La segunda prueba agrega una restricción temporal que impide marcar una fila concreta como publicada; Kafka ya confirmó el primer registro. Al quitar la restricción, el dispatcher lo reenvía y el listener recibe dos mensajes con el mismo `eventId`.
 
-**Fallo deliberado:** en la copia elimina la comprobación de event_id existente y vuelve a ejecutar inboxHaceIdempotenteElEfectoDeNegocio. **Error esperado:** la segunda llamada viola la clave primaria de evento_procesado y no devuelve false. **Diagnóstico:** la identidad del evento y la actualización de negocio deben protegerse en la misma transacción; el esquema usa event_id como clave única.
+**Resultado esperado.** El primer `procesar` devuelve `true`, el duplicado `false`; tras los dos mensajes hay una fila inbox y una sola proyección. La fila de outbox queda pendiente si falla la marca y se cierra después del replay correcto.
+
+**Fallo deliberado:** en la copia quita el `SELECT`/retorno temprano que evita procesar un `eventId` existente. **Diagnóstico:** la segunda inserción choca con la clave primaria de inbox en vez de devolver `false`; restaura la comprobación.
 
 **3. Entiende**
-La transacción inbox protege juntas la marca de evento procesado y la proyección SQL. Exactly-once de Kafka se refiere al flujo read-process-write dentro de Kafka y sus offsets; no incorpora automáticamente una base de datos externa. Outbox e inbox protegen aquí la frontera SQL y asumen entregas que pueden repetirse.
+Outbox evita perder el evento entre el commit SQL y la publicación; inbox hace seguro repetir su efecto SQL. La consulta seguida del insert de este ejemplo se prueba secuencialmente; con consumidores concurrentes hay que manejar el conflicto de unicidad de forma explícita.
 
 **4. Cierra**
-Entrega los dos resultados de prueba y di explícitamente qué parte garantiza Kafka, cuál la base de datos y cuál el código consumidor. La prueba de este ejemplo es secuencial; el esquema tiene clave primaria, pero concurrencia de consumidores requiere probar el conflicto de inserción y la estrategia de recuperación.
+Explica por qué el dispatcher puede publicar al menos una vez y cómo inbox evita que eso duplique la proyección.
+
+#### Subtema 3.4 · Leer solo registros confirmados de una transacción Kafka · 10 min
+
+**1. Contexto**
+Una transacción de Kafka agrupa registros del broker. El consumidor `read_committed` oculta los registros abortados; `read_uncommitted` también puede observarlos. Esto no hace que una base SQL forme parte de la transacción Kafka.
+
+**2. Hazlo tú**
+En `examples/spring-kafka-rutaflow/src/test/java/academia/rutaflow/event/EnvioEventPublisherTest.java`, estudia `transaccionKafkaAbortadaSoloEsVisibleConReadUncommitted`. El test crea un topic único, un `KafkaTemplate` transaccional y dos consumidores con distinto `isolation.level`. `DefaultKafkaProducerFactory` necesita un prefijo transaccional único:
+
+```java
+producerFactory.setTransactionIdPrefix("rutaflow-tx-" + UUID.randomUUID() + "-");
+var transactionalTemplate = new KafkaTemplate<>(producerFactory);
+```
+
+El envío se confirma dentro de la transacción local y luego se provoca el rollback:
+
+```java
+transactionalTemplate.executeInTransaction(template -> {
+    try {
+        template.send(topic, "envio-1", "registro-abortado").get(10, TimeUnit.SECONDS);
+    } catch (Exception error) {
+        throw new IllegalStateException("falló el envío de prueba", error);
+    }
+    throw new IllegalStateException("aborto intencional de la transacción");
+});
+```
+
+Ejecuta:
+
+```bash
+./mvnw -Dtest=EnvioEventPublisherTest#transaccionKafkaAbortadaSoloEsVisibleConReadUncommitted test
+```
+
+**Resultado esperado.** El consumer `read_committed` no recibe el registro; `read_uncommitted` sí observa el valor `registro-abortado`. Ver ambas salidas evita que el test pase solo porque el productor no hubiera enviado nada.
+
+**Fallo deliberado:** en el test cambia temporalmente la configuración del consumidor `committedProps` a `read_uncommitted`. **Diagnóstico:** su aserción de vacío falla porque ahora ve el registro abortado. Restaura `read_committed` y repite el método.
+
+**3. Entiende**
+Esta prueba verifica visibilidad de una transacción de productor abortada; no comprueba por sí sola el flujo completo de lectura, procesamiento y offsets. En Spring Kafka, EOS para ese flujo requiere una transacción de listener que incluya los mensajes producidos y offsets consumidos. Ninguna de estas transacciones incorpora automáticamente PostgreSQL; outbox e inbox cubren esa otra frontera.
+
+**4. Cierra**
+Identifica qué fila ve cada nivel de aislamiento y di qué parte de la garantía de exactly-once no prueba este laboratorio.
 
 **Hito del tema:**
 
-- [ ] Distinguí reintento interno del productor de una segunda llamada de negocio.
-- [ ] Comprobé rollback de envío y outbox en una misma transacción SQL.
-- [ ] Reproduje el replay de un evento y una sola proyección.
-- [ ] Expliqué por qué Kafka EOS no convierte una base de datos externa en parte de su transacción.
+- [ ] Diferencié reintentos internos del productor de otra llamada de negocio.
+- [ ] Comprobé el rollback conjunto de envío y outbox.
+- [ ] Reproduje un fallo de marca posterior al ACK y una sola proyección tras replay.
+- [ ] Comparé `read_committed` y `read_uncommitted` ante un registro abortado.
+- [ ] Expliqué por qué Kafka EOS no hace partícipe a la base de datos SQL.
 
-**Fuentes oficiales:** [idempotencia y productor de Kafka en Spring](https://docs.spring.io/spring-kafka/reference/kafka/transactions.html), [Exactly Once Semantics](https://docs.spring.io/spring-kafka/reference/kafka/exactly-once.html) y [transacciones de KafkaTemplate](https://docs.spring.io/spring-kafka/reference/kafka/transactions.html#using-kafkatemplate-local-transactions).
+**Fuentes oficiales:** [idempotencia del productor Kafka](https://kafka.apache.org/41/configuration/producer-configs/), [Exactly Once Semantics en Spring Kafka 4.0](https://docs.spring.io/spring-kafka/reference/4.0/kafka/exactly-once.html), [transacciones con `KafkaTemplate`](https://docs.spring.io/spring-kafka/reference/4.0/kafka/transactions.html) y [diseño y semántica de Kafka](https://kafka.apache.org/28/design/design/).
 
-**Transferencia al proyecto integrador:** conserva eventos pendientes en outbox, publica con una clave estable y protege el efecto de cada eventId en inbox. No llames exactly-once a una operación que no cubre sus fronteras de persistencia.
+**Transferencia al proyecto integrador:** conserva eventos pendientes en outbox, publica con clave estable y protege cada `eventId` en inbox. Describe la garantía y sus límites por cada frontera; no llames exactly-once a la operación total sin una transacción que cubra su entrada y salida.
 
 ### Tema 4: Rebalanceo de consumer groups y partition assignment
 

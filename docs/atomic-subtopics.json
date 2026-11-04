@@ -95,8 +95,8 @@
       "topics": 111,
       "completeTopics": 36,
       "topicsWith3to6Subtopics": 43,
-      "subtopics": 129,
-      "completeSubtopics": 112
+      "subtopics": 130,
+      "completeSubtopics": 113
     }
   },
   "topics": {
@@ -14688,12 +14688,12 @@
       },
       {
         "module": 8,
-        "topic": "### Tema 3: Productor idempotente y transacciones (exactly-once)",
-        "subtopicCount": 3,
+        "topic": "### Tema 3: Transacciones Kafka y SQL: idempotencia y límites de exactly-once",
+        "subtopicCount": 4,
         "subtopics": [
           {
             "id": "3.1",
-            "title": "#### Subtema 3.1: Configura idempotencia del productor · 10 min",
+            "title": "#### Subtema 3.1 · Reintentar el productor sin duplicar registros de Kafka · 10 min",
             "criteria": {
               "context": true,
               "action": true,
@@ -14707,7 +14707,7 @@
           },
           {
             "id": "3.2",
-            "title": "#### Subtema 3.2: Guarda el envío y el evento con outbox · 15 min",
+            "title": "#### Subtema 3.2 · Guardar envío y evento en la misma transacción SQL · 15 min",
             "criteria": {
               "context": true,
               "action": true,
@@ -14721,7 +14721,21 @@
           },
           {
             "id": "3.3",
-            "title": "#### Subtema 3.3: Deduplica el efecto con inbox y delimita exactly-once · 15 min",
+            "title": "#### Subtema 3.3 · Procesar un `eventId` repetido sin duplicar el efecto · 15 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "3.4",
+            "title": "#### Subtema 3.4 · Leer solo registros confirmados de una transacción Kafka · 10 min",
             "criteria": {
               "context": true,
               "action": true,
