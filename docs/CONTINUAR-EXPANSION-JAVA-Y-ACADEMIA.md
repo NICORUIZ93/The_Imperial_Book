@@ -819,3 +819,44 @@ por la dependencia Guava, sin fallos.
 prefetch”. Inspecciona contra los laboratorios reales de RabbitMQ, publishers
 confirms, acknowledgements, requeue y DLQ; corrige cualquier ejemplo que dependa
 de Testcontainers o APIs que no estén en el módulo.
+
+Spring Boot M8 T9, “RabbitMQ con Spring AMQP: routing, ack y prefetch”, se
+rehízo en cuatro subtemas prácticos y se creó `examples/spring-amqp-rutaflow/`.
+El laboratorio tiene configuración real de Spring Boot AMQP, exchange y colas
+durables, binding, DLX/DLQ, publicador con `CorrelationData`,
+`mandatory` + publisher returns, listener con ack manual y prefetch 5. El README
+marca con precisión cuáles comandos usan broker y cuáles pruebas son unitarias.
+La lección abandona los nombres ficticios `CrearGuiaRabbitTest` y
+`RabbitMQContainer`, enlaza su código a rutas existentes y aclara que el servicio
+solo imprime, sin persistencia ni idempotencia real.
+
+`./mvnw -q clean test` pasó con **4 pruebas**: dos comprueban las declaraciones
+de topología y dos verifican ack/nack con mocks. Se ejecutaron dos mutaciones en
+copias temporales: cambiar el routing key del contrato y activar requeue en el
+rechazo; ambas hicieron fallar la prueba esperada. La primera corrida encontró
+que el test del routing key se comparaba con la misma constante que usaba la
+configuración; se corrigió para contrastar el literal contractual y se repitió
+la mutación con resultado fallido esperado. Mockito/JDK 25 muestra un aviso por
+carga dinámica de agente; no afectó los tests.
+
+Docker no está instalado en este entorno (`docker: command not found`), por lo
+que no se pudieron iniciar RabbitMQ ni comprobar confirm/return, DLQ o prefetch
+en el broker. El código compila y las pruebas no requieren broker; esa cobertura
+no debe reportarse como integración real. Fuentes primarias consultadas:
+Spring Boot AMQP, Spring AMQP confirms/returns y documentación RabbitMQ de
+confirmaciones, ack, requeue, DLX y prefetch.
+
+Se regeneraron auditorías de sustancia, calidad pedagógica, siete pasos, código
+visual, subtemas atómicos, profundidad, backlog, grafo de prerrequisitos,
+prioridades, índice de temas y repo graph. La primera auditoría detectó que cada
+fallo deliberado necesitaba la etiqueta explícita “Diagnóstico”; se añadió y el
+reporte reconoce el tema completo. Cobertura automática actual: 141/1185 temas
+atómicos, 1085/1185 practicables, 1033/1185 completos en la auditoría de siete
+pasos, 409 temas con señales automatizadas de defecto de sustancia. Estas cifras
+describen señales estructurales; no certifican la comprensión ni una revisión
+pedagógica humana completa.
+
+**Siguiente tema:** Spring Boot M9 T1, “Mono y Flux”. Revisar la lección completa,
+contrastar el comportamiento con documentación primaria de Reactor/Spring
+WebFlux y construir un ejemplo que se ejecute y se pruebe antes de marcarlo
+completo.

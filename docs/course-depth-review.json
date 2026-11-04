@@ -13550,7 +13550,7 @@
       "file": "web/public/content/spring-boot/modulo-8.md",
       "line": 1156,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

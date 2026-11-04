@@ -98,9 +98,9 @@
     },
     "spring-boot": {
       "topics": 111,
-      "code": 109,
+      "code": 108,
       "commentedCode": 57,
-      "mermaid": 46,
+      "mermaid": 45,
       "archifyVisual": 3,
       "asciiVisual": 10,
       "misleadingDiagramLabel": 0,
@@ -2904,8 +2904,8 @@
       "track": "spring-boot",
       "module": 8,
       "topic": "Tema 9: RabbitMQ con Spring AMQP: routing, ack y prefetch",
-      "missingCode": false,
-      "missingComments": true
+      "missingCode": true,
+      "missingComments": false
     },
     {
       "track": "kotlin-multiplatform",

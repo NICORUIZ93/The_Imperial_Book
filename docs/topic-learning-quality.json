@@ -223,16 +223,16 @@
     "spring-boot": {
       "topics": 111,
       "explanation": 111,
-      "code": 109,
-      "visual": 60,
+      "code": 108,
+      "visual": 59,
       "filePath": 111,
-      "runCommand": 104,
+      "runCommand": 103,
       "expectedResult": 111,
       "practice": 103,
-      "project": 95,
+      "project": 94,
       "modelMental": 111,
       "limitsDecision": 98,
-      "practicable": 86,
+      "practicable": 85,
       "genericScaffold": 0,
       "repeatedDemo": 0
     }
@@ -26252,19 +26252,19 @@
         "topic": "Tema 9: RabbitMQ con Spring AMQP: routing, ack y prefetch",
         "criteria": {
           "explanation": true,
-          "code": true,
-          "visual": true,
+          "code": false,
+          "visual": false,
           "filePath": true,
-          "runCommand": true,
+          "runCommand": false,
           "expectedResult": true,
           "practice": true,
-          "project": true,
+          "project": false,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 16,
-          "practicable": true,
+          "rubricScore": 8,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }

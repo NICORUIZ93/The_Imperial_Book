@@ -1694,7 +1694,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "ee129b9ce42521d21c0fc8ca0a111dba5dd7583b5baa7eda55eabdd909cddfe2",
+    "fingerprint": "44f217b7216bab7fe749ce2af1e3f9074afc530598b0b5879a3bb31fc7c30ded",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -11044,9 +11044,9 @@
       {
         "issues": [],
         "module": 8,
-        "tailWords": 161,
+        "tailWords": 0,
         "topic": "Tema 9: RabbitMQ con Spring AMQP: routing, ack y prefetch",
-        "words": 776
+        "words": 1289
       },
       {
         "issues": [],

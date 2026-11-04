@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 822,
+      "lines": 863,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 15104,
+      "lines": 15161,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -314,7 +314,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1109,
+      "lines": 1108,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -677,7 +677,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 146,
+      "lines": 147,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 436,
+      "lines": 440,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -5400,6 +5400,136 @@
     {
       "path": "examples/rutaflow-material/verification.json",
       "lines": 91,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-amqp-rutaflow/README.md",
+      "lines": 44,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Spring AMQP: routing, confirm, ack y prefetch",
+        "## Ejecutar pruebas locales",
+        "## Iniciar RabbitMQ",
+        "## Observar prefetch",
+        "## Detener"
+      ]
+    },
+    {
+      "path": "examples/spring-amqp-rutaflow/compose.yaml",
+      "lines": 12,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-amqp-rutaflow/src/main/java/academia/rutaflow/amqp/DispatchListener.java",
+      "lines": 30,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-amqp-rutaflow/src/main/java/academia/rutaflow/amqp/DispatchPublisher.java",
+      "lines": 33,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-amqp-rutaflow/src/main/java/academia/rutaflow/amqp/DispatchService.java",
+      "lines": 14,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-amqp-rutaflow/src/main/java/academia/rutaflow/amqp/InvalidDispatchException.java",
+      "lines": 8,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-amqp-rutaflow/src/main/java/academia/rutaflow/amqp/RabbitTopology.java",
+      "lines": 53,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-amqp-rutaflow/src/main/java/academia/rutaflow/amqp/RutaFlowAmqpApplication.java",
+      "lines": 24,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-amqp-rutaflow/src/main/resources/application.yml",
+      "lines": 15,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-amqp-rutaflow/src/test/java/academia/rutaflow/amqp/DispatchListenerTest.java",
+      "lines": 47,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-amqp-rutaflow/src/test/java/academia/rutaflow/amqp/RabbitTopologyTest.java",
+      "lines": 35,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-avro-rutaflow/README.md",
+      "lines": 45,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Laboratorio Avro y Schema Registry",
+        "## Pruebas locales, sin broker",
+        "## Compatibilidad con un Schema Registry local"
+      ]
+    },
+    {
+      "path": "examples/spring-avro-rutaflow/compose.registry.yaml",
+      "lines": 14,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-avro-rutaflow/src/test/java/academia/rutaflow/avro/PedidoSchemaEvolutionTest.java",
+      "lines": 70,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-avro-rutaflow/src/test/java/academia/rutaflow/avro/SchemaRegistrySerdeTest.java",
+      "lines": 47,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -12183,7 +12313,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-8.md",
-      "lines": 1245,
+      "lines": 1276,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

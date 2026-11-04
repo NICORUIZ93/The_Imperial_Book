@@ -1208,7 +1208,7 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | spring-boot / 8 | [Tema 6: Spring Cloud Stream y binders de Kafka/RabbitMQ](../web/public/content/spring-boot/modulo-8.md) | demostracion-no-delimitada |
 | spring-boot / 8 | [Tema 7: Kafka Streams con Spring para transformar eventos](../web/public/content/spring-boot/modulo-8.md) | demostracion-no-delimitada |
 | spring-boot / 8 | [Tema 8: Avro y Schema Registry para contratos de eventos](../web/public/content/spring-boot/modulo-8.md) | demostracion-no-delimitada |
-| spring-boot / 8 | [Tema 9: RabbitMQ con Spring AMQP: routing, ack y prefetch](../web/public/content/spring-boot/modulo-8.md) | clase-java-no-visible |
+| spring-boot / 8 | [Tema 9: RabbitMQ con Spring AMQP: routing, ack y prefetch](../web/public/content/spring-boot/modulo-8.md) | demostracion-no-delimitada |
 | spring-boot / 9 | [Tema 1: Mono y Flux](../web/public/content/spring-boot/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 9 | [Tema 2: WebClient y composición no bloqueante](../web/public/content/spring-boot/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 9 | [Tema 3: Cuándo WebFlux vale la complejidad, y R2DBC](../web/public/content/spring-boot/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |

@@ -93,10 +93,10 @@
     },
     "spring-boot": {
       "topics": 111,
-      "completeTopics": 36,
-      "topicsWith3to6Subtopics": 48,
-      "subtopics": 150,
-      "completeSubtopics": 117
+      "completeTopics": 37,
+      "topicsWith3to6Subtopics": 49,
+      "subtopics": 154,
+      "completeSubtopics": 121
     }
   },
   "topics": {
@@ -15073,9 +15073,66 @@
       {
         "module": 8,
         "topic": "### Tema 9: RabbitMQ con Spring AMQP: routing, ack y prefetch",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 4,
+        "subtopics": [
+          {
+            "id": "9.1",
+            "title": "#### Subtema 9.1 · Declarar exchange, cola, binding y DLQ · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "9.2",
+            "title": "#### Subtema 9.2 · Publicar y distinguir confirm de return · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "9.3",
+            "title": "#### Subtema 9.3 · Confirmar después del trabajo y mandar fallos permanentes a DLQ · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "9.4",
+            "title": "#### Subtema 9.4 · Limitar entregas en vuelo con prefetch · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 9,

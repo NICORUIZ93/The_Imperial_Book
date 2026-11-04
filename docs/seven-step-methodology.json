@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 63,
+      "objective": 62,
       "prerequisites": 77,
-      "context": 63,
-      "theoryAnalogy": 63,
-      "guidedDemo": 63,
+      "context": 62,
+      "theoryAnalogy": 62,
+      "guidedDemo": 62,
       "codeExplanation": 111,
-      "execution": 103,
+      "execution": 102,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 63,
-      "independentPractice": 63,
-      "closure": 63,
-      "commonErrors": 63,
+      "guidedPractice": 62,
+      "independentPractice": 62,
+      "closure": 62,
+      "commonErrors": 62,
       "resources": 75,
-      "standaloneExample": 61,
+      "standaloneExample": 60,
       "learningEvidence": 77,
-      "complete": 59
+      "complete": 58
     }
   },
   "topics": {
@@ -31019,26 +31019,26 @@
         "module": 8,
         "topic": "Tema 9: RabbitMQ con Spring AMQP: routing, ack y prefetch",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
-          "execution": true,
+          "execution": false,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
           "resources": true,
-          "standaloneExample": true,
+          "standaloneExample": false,
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 6,
+          "complete": false
         }
       },
       {

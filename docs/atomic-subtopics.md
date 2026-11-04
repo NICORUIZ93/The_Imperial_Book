@@ -2,7 +2,7 @@
 
 > Auditoría estructural. Un encabezado o criterio detectado no demuestra que el ejemplo se haya ejecutado ni que la explicación sea pedagógicamente suficiente.
 
-Temas conformes a cuatro pasos: **140/1185**. Tracks inventariados: **14**.
+Temas conformes a cuatro pasos: **141/1185**. Tracks inventariados: **14**.
 
 | Track | Temas conformes | Temas inventariados | Subtemas detectados | Subtemas con estructura completa |
 |---|---:|---:|---:|---:|
@@ -19,7 +19,7 @@ Temas conformes a cuatro pasos: **140/1185**. Tracks inventariados: **14**.
 | node | 2 | 83 | 6 | 6 |
 | react | 0 | 58 | 0 | 0 |
 | rutaflow | 0 | 29 | 0 | 0 |
-| spring-boot | 36 | 111 | 150 | 117 |
+| spring-boot | 37 | 111 | 154 | 121 |
 
 ## Temas pendientes
 
@@ -1102,7 +1102,6 @@ Temas conformes a cuatro pasos: **140/1185**. Tracks inventariados: **14**.
 - M8 ### Tema 6: Spring Cloud Stream y binders de Kafka/RabbitMQ: 6.1: faltan deliberateFailure; 6.3: faltan deliberateFailure; 6.4: faltan action
 - M8 ### Tema 7: Kafka Streams con Spring para transformar eventos: 7.1: faltan deliberateFailure; 7.2: faltan action, deliberateFailure; 7.3: faltan deliberateFailure; 7.4: faltan deliberateFailure
 - M8 ### Tema 8: Avro y Schema Registry para contratos de eventos: 8.1: faltan deliberateFailure; 8.2: faltan deliberateFailure; 8.3: faltan deliberateFailure
-- M8 ### Tema 9: RabbitMQ con Spring AMQP: routing, ack y prefetch: tiene 0 subtemas
 - M9 ### Tema 1: Mono y Flux: tiene 0 subtemas
 - M9 ### Tema 2: WebClient y composición no bloqueante: tiene 0 subtemas
 - M9 ### Tema 3: Cuándo WebFlux vale la complejidad, y R2DBC: tiene 0 subtemas
