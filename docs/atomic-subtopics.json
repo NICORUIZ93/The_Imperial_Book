@@ -93,10 +93,10 @@
     },
     "spring-boot": {
       "topics": 111,
-      "completeTopics": 32,
-      "topicsWith3to6Subtopics": 33,
-      "subtopics": 99,
-      "completeSubtopics": 98
+      "completeTopics": 33,
+      "topicsWith3to6Subtopics": 34,
+      "subtopics": 102,
+      "completeSubtopics": 101
     }
   },
   "topics": {
@@ -14089,9 +14089,52 @@
       {
         "module": 4,
         "topic": "### Tema 5: Flujo de login completo — de `/api/auth/login` a una ruta protegida",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "4.13",
+            "title": "#### Subtema 4.13 · Comparar la contraseña sin guardarla en texto plano · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "4.14",
+            "title": "#### Subtema 4.14 · Usar el token en una ruta protegida · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "4.15",
+            "title": "#### Subtema 4.15 · Rechazar credenciales incorrectas · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 5,

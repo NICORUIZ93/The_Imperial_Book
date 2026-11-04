@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 78,
-      "prerequisites": 91,
-      "context": 78,
-      "theoryAnalogy": 78,
-      "guidedDemo": 78,
+      "objective": 77,
+      "prerequisites": 90,
+      "context": 77,
+      "theoryAnalogy": 77,
+      "guidedDemo": 77,
       "codeExplanation": 111,
       "execution": 105,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 78,
-      "independentPractice": 78,
-      "closure": 78,
-      "commonErrors": 78,
-      "resources": 85,
-      "standaloneExample": 75,
-      "learningEvidence": 87,
-      "complete": 74
+      "guidedPractice": 77,
+      "independentPractice": 77,
+      "closure": 77,
+      "commonErrors": 77,
+      "resources": 84,
+      "standaloneExample": 74,
+      "learningEvidence": 86,
+      "complete": 73
     }
   },
   "topics": {
@@ -30551,26 +30551,26 @@
         "module": 4,
         "topic": "Tema 5: Flujo de login completo — de `/api/auth/login` a una ruta protegida",
         "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "objective": false,
+          "prerequisites": false,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 4,
+          "complete": false
         }
       },
       {

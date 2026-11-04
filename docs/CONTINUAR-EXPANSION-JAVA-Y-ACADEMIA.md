@@ -396,8 +396,30 @@ regeneraron índices e informes y `./scripts/validate.sh` pasó: 23 pruebas, 4
 omitidas. Las cifras son señales estructurales, no certificación ni revisión
 pedagógica humana.
 
-**Siguiente tema:** Spring Boot M4 T5, “Flujo de login completo”. Inspecciona
-primero la implementación y sus pruebas: existe un `JwtService` antiguo bajo
-otro paquete; alinea el flujo con `com.example.demo.JwtService` de M4 T2 y no
-añadas otra clave o implementación. Ejecuta el flujo completo de credenciales,
-emisión del token y acceso a ruta protegida antes de reescribir cada subtema.
+Spring Boot M4 T5, “Flujo de login completo”, se rehízo en tres subtemas: comparar
+contraseña con `PasswordEncoder`; emitir y usar el `JwtService` ya creado en M4
+T2; comprobar errores de credenciales y acceso protegido. Se unificó el paquete
+en `com.example.demo`, se quitó la clase duplicada sugerida por el material
+anterior y se cambió el test a `new ObjectMapper()` porque el starter usado en el
+proyecto no registra ese mapper como bean. El usuario/hash en memoria se marca
+como fixture de laboratorio; el material indica que producción debe usar un hash
+persistido, TLS, límites y manejo estándar de autenticación.
+
+En el backend acumulado Spring Boot 4.1.2/JDK 25, `./mvnw -q clean test` pasó
+con **29 pruebas**, sin fallos ni omisiones. Los tests de login validan `200` y
+token, `401` sin token, `200` con bearer y el mismo `401`/cuerpo ante email
+desconocido o contraseña incorrecta. Se cambió deliberadamente el argumento de
+`PasswordEncoder.matches`; el test del login válido falló con `401` en vez de
+`200`; restaurado el código, el test dirigido volvió a pasar. Auditorías:
+**137/1185 temas atómicos**: Java 101, Spring Boot 33, Node 2 y Flutter 1;
+**1093/1185 practicables**, 409 con señales de defecto de sustancia. Índices e
+informes están regenerados; falta `./scripts/validate.sh` y actualizar el grafo
+del repositorio después de este cambio. Las métricas son señales estructurales,
+no certificación ni revisión pedagógica humana.
+
+**Siguiente tema:** Spring Boot M5 T1, “`@ConfigurationProperties` tipado”.
+Revisa el ejemplo del prefijo `app.jwt`: verifica el paquete, versiones y
+dependencias de validación vigentes, ejecuta el enlace y un fallo de
+configuración, y explica con un ejemplo corto cuándo conviene el objeto tipado
+frente a valores dispersos. Sigue confirmando qué archivo crear, comando y
+resultado antes de cerrar el tema.

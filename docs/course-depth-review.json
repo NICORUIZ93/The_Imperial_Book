@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 225,
+    "topicsWithSignals": 226,
     "newLaboratories": 25
   },
   "priorities": {
@@ -13315,7 +13315,9 @@
       "title": "Tema 5: Flujo de login completo — de `/api/auth/login` a una ruta protegida",
       "file": "web/public/content/spring-boot/modulo-4.md",
       "line": 767,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"

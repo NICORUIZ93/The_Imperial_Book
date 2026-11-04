@@ -2,7 +2,7 @@
 
 > Auditoría estructural. Un encabezado o criterio detectado no demuestra que el ejemplo se haya ejecutado ni que la explicación sea pedagógicamente suficiente.
 
-Temas conformes a cuatro pasos: **136/1185**. Tracks inventariados: **14**.
+Temas conformes a cuatro pasos: **137/1185**. Tracks inventariados: **14**.
 
 | Track | Temas conformes | Temas inventariados | Subtemas detectados | Subtemas con estructura completa |
 |---|---:|---:|---:|---:|
@@ -19,7 +19,7 @@ Temas conformes a cuatro pasos: **136/1185**. Tracks inventariados: **14**.
 | node | 2 | 83 | 6 | 6 |
 | react | 0 | 58 | 0 | 0 |
 | rutaflow | 0 | 29 | 0 | 0 |
-| spring-boot | 32 | 111 | 99 | 98 |
+| spring-boot | 33 | 111 | 102 | 101 |
 
 ## Temas pendientes
 
@@ -1091,7 +1091,6 @@ Temas conformes a cuatro pasos: **136/1185**. Tracks inventariados: **14**.
 - M24 ### Tema 2: data fetchers, relaciones y problema N+1: tiene 0 subtemas
 - M24 ### Tema 3: mutations y subscriptions: tiene 0 subtemas
 - M24 ### Tema 4: pruebas GraphQL con GraphQlTester: tiene 0 subtemas
-- M4 ### Tema 5: Flujo de login completo — de `/api/auth/login` a una ruta protegida: tiene 0 subtemas
 - M5 ### Tema 1: @ConfigurationProperties tipado: tiene 0 subtemas
 - M5 ### Tema 2: Fallar rápido al arranque: tiene 0 subtemas
 - M5 ### Tema 3: Manejo global de excepciones consistente entre entornos: tiene 0 subtemas

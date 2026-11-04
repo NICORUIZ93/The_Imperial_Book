@@ -231,8 +231,8 @@
       "practice": 106,
       "project": 101,
       "modelMental": 111,
-      "limitsDecision": 104,
-      "practicable": 94,
+      "limitsDecision": 103,
+      "practicable": 93,
       "genericScaffold": 0,
       "repeatedDemo": 0
     }
@@ -25864,11 +25864,11 @@
           "practice": true,
           "project": true,
           "modelMental": true,
-          "limitsDecision": true
+          "limitsDecision": false
         },
         "classification": {
-          "rubricScore": 16,
-          "practicable": true,
+          "rubricScore": 15,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }

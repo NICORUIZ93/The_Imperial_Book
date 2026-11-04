@@ -766,127 +766,151 @@ El primer servidor devuelve `302` apuntando al segundo; el cliente debe devolver
 ---
 ### Tema 5: Flujo de login completo — de `/api/auth/login` a una ruta protegida
 
-#### Paso 1 · Objetivo y preparación
+Al final podrás encadenar el login, la emisión del JWT del subtema 4.4 y el acceso protegido del subtema 4.5. Conserva el paquete `com.example.demo` y una única clase `JwtService`.
 
-Al finalizar podrás unir las piezas de los temas anteriores en un flujo real: un endpoint `POST /api/auth/login` que verifica credenciales y devuelve un JWT firmado por el `JwtService` (Tema 2), y un endpoint protegido `GET /api/usuarios` que solo responde cuando ese token viaja en `Authorization: Bearer`, todo confirmado con `MockMvc` real.
-
-**Conocimiento previo:** Temas 1 (SecurityFilterChain) y 2 (filtro JWT) de este módulo.
-
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** En los temas anteriores generaste tokens y protegiste rutas en ejemplos separados. En el backend real de RutaFlow, el panel operativo hace login una sola vez (`POST /api/auth/login`), recibe un token y lo adjunta en cada operación posterior. Ver ese recorrido completo —credenciales → token → petición protegida— es lo que une la seguridad en un sistema que de verdad funciona, no piezas aisladas.
-
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** endpoint de login, emisión de JWT tras verificar credenciales, header `Authorization: Bearer`, flujo stateless de punta a punta.
-
-El flujo tiene tres momentos: (1) **login** — `POST /api/auth/login` recibe email y contraseña, verifica la contraseña contra el hash guardado (como en Node M6 Tema 1; en Spring con `PasswordEncoder`), y si coincide firma un JWT con `JwtService.generar(...)` (Tema 2); (2) **el cliente guarda el token**; (3) **uso** — cada petición a una ruta protegida lleva `Authorization: Bearer <token>`, que el `JwtFilter` (Tema 2) valida y convierte en una identidad en el `SecurityContextHolder` antes de que la ruta responda.
-
-**Analogía:** `/api/auth/login` es la recepción del edificio donde muestras tu documento una vez y recibes una tarjeta temporal; el header `Authorization: Bearer` es pasar esa tarjeta por el lector de cada puerta; el `401` es la puerta que no se abre sin tarjeta válida.
-
-**Diagrama:**
+**¿Por qué es importante?** Una contraseña correcta debe producir un token; ese token debe identificar al mismo usuario en cada petición siguiente. Si se omite cualquiera de las dos verificaciones, una API puede autenticar mal o abrir rutas privadas.
 
 ```mermaid
 sequenceDiagram
-  participant C as Cliente
-  participant A as API (Spring)
-  C->>A: POST /api/auth/login { email, password }
-  A->>A: PasswordEncoder.matches + JwtService.generar (Tema 2)
-  A-->>C: 200 { token }
-  C->>A: GET /api/usuarios (sin token)
-  A-->>C: 401 (SecurityFilterChain, Tema 1)
-  C->>A: GET /api/usuarios + Authorization: Bearer <token>
-  A->>A: JwtFilter valida y puebla SecurityContextHolder (Tema 2)
-  A-->>C: 200 [ usuarios ]
+  Cliente->>API: POST /api/auth/login (email + contraseña)
+  API->>API: PasswordEncoder.matches
+  API->>JwtService: generar(email, rol)
+  API-->>Cliente: 200 { token }
+  Cliente->>API: GET /api/usuarios sin token
+  API-->>Cliente: 401
+  Cliente->>API: GET /api/usuarios con Bearer
+  API-->>Cliente: 200 { email, rol }
 ```
 
-**Diagrama interactivo:** [Flujo de login con JWT: de credenciales a ruta protegida](/visuals/temas/spring-boot/modulo-4-tema-5-login-jwt.html) — secuencia explorable con los tres momentos (login, sin token, con token) y la frontera de seguridad resaltada.
+#### Subtema 4.13 · Comparar la contraseña sin guardarla en texto plano · 10 min
 
-#### Paso 4 · Demostración guiada desde cero
+**Contexto:** `JwtService` ya firma el token y `JwtFilter` ya comprueba su firma. El login solo decide si las credenciales permiten pedir ese token.
 
-Reutiliza `academia-spring` (o créalo con `mkdir -p academia-spring` si es tu primera vez). Reutiliza el `JwtService` del Tema 2 y añade un controlador de login y uno de usuarios:
+**Hazlo tú:** En `src/main/java/com/example/demo/SecurityConfig.java`, registra el comparador que usa Spring Security:
 
 ```java
-// src/main/java/com/academia/seguridad/AuthController.java
-package com.academia.seguridad;
+@Bean
+PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+}
+```
 
-import org.springframework.http.ResponseEntity;
+Añade estos imports si faltan:
+
+```java
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
+```
+
+Crea `src/main/java/com/example/demo/LoginRequest.java`:
+
+```java
+package com.example.demo;
+
+public record LoginRequest(String email, String password) {}
+```
+
+Crea `src/main/java/com/example/demo/AuthController.java`:
+
+```java
+package com.example.demo;
 
 import java.util.Map;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
-
     private final JwtService jwtService;
-    private final PasswordEncoder encoder = new BCryptPasswordEncoder();
-    // Usuario de ejemplo: la contraseña se guarda HASHEADA, nunca en texto plano.
-    private final String emailValido = "ana@rutaflow.dev";
-    private final String hashGuardado = encoder.encode("clave-larga-segura");
+    private final PasswordEncoder passwordEncoder;
+    private final String emailDemo = "ana@rutaflow.dev";
+    private final String hashDemo;
 
-    public AuthController(JwtService jwtService) { this.jwtService = jwtService; }
+    public AuthController(JwtService jwtService, PasswordEncoder passwordEncoder) {
+        this.jwtService = jwtService;
+        this.passwordEncoder = passwordEncoder;
+        this.hashDemo = passwordEncoder.encode("clave-larga-segura");
+    }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> body) {
-        String email = body.getOrDefault("email", "");
-        String password = body.getOrDefault("password", "");
-        // Respuesta idéntica ante email inexistente o contraseña incorrecta.
-        if (!email.equals(emailValido) || !encoder.matches(password, hashGuardado)) {
+    public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequest request) {
+        String email = request.email() == null ? "" : request.email();
+        String password = request.password() == null ? "" : request.password();
+        if (!emailDemo.equals(email) || !passwordEncoder.matches(password, hashDemo)) {
             return ResponseEntity.status(401).body(Map.of("error", "Credenciales inválidas"));
         }
-        String token = jwtService.generar(email, "ADMIN");
-        return ResponseEntity.ok(Map.of("token", token));
+        return ResponseEntity.ok(Map.of("token", jwtService.generar(email, "ADMIN")));
     }
 }
 ```
 
-```java
-// src/main/java/com/academia/seguridad/UsuariosController.java
-package com.academia.seguridad;
+`hashDemo` vive en memoria para que este ejemplo se pueda ejecutar sin una base de usuarios. En una aplicación real se carga el hash persistido de la cuenta; no se vuelve a guardar ni a comparar la contraseña en texto plano. El usuario de demostración es `ana@rutaflow.dev` / `clave-larga-segura`.
 
+**Resultado esperado:** `./mvnw -q compile` termina sin errores. Para probar el login, el `SecurityFilterChain` debe dejar pasar `/api/auth/**` antes de exigir identidad.
+
+**Fallo deliberado y diagnóstico:** cambia el email de demostración en el código por `otra@rutaflow.dev` y ejecuta el test de login válido del subtema siguiente. La respuesta será `401`: revisa qué compara `emailDemo.equals(email)` y restaura el correo.
+
+**Entiende:** BCrypt guarda un hash con salt. `matches(textoIngresado, hashGuardado)` compara la entrada contra ese hash; no hay que “desencriptarlo”. `JwtService` se reutiliza: no crees una segunda clase ni otra clave. Referencias: [Spring Security — Password Storage](https://docs.spring.io/spring-security/reference/features/authentication/password-storage.html) y [Spring Security — Authentication](https://docs.spring.io/spring-security/reference/servlet/authentication/index.html).
+
+**Cierra:** encuentra el punto donde se compara la contraseña y el punto donde solo después se firma el token.
+
+#### Subtema 4.14 · Usar el token en una ruta protegida · 10 min
+
+**Contexto:** el filtro JWT del subtema 4.5 coloca el correo en la identidad de la petición. Devuelve ese correo para ver que el token emitido y la ruta usan el mismo usuario.
+
+**Hazlo tú:** Crea `src/main/java/com/example/demo/UsuariosController.java`:
+
+```java
+package com.example.demo;
+
+import java.util.Map;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.Map;
-
 @RestController
 public class UsuariosController {
-
     @GetMapping("/api/usuarios")
-    public List<Map<String, String>> listar() {
-        // Nunca se devuelve el hash de la contraseña.
-        return List.of(Map.of("email", "ana@rutaflow.dev", "rol", "ADMIN"));
+    public Map<String, String> usuarioActual(Authentication authentication) {
+        String rol = authentication.getAuthorities().iterator().next().getAuthority();
+        return Map.of("email", authentication.getName(), "rol", rol);
     }
 }
 ```
 
-Asegúrate de que el `SecurityFilterChain` (Tema 1) permita `/api/auth/**` sin autenticar y exija token en `/api/usuarios`:
+En `src/main/java/com/example/demo/SecurityConfig.java`, permite solo el endpoint de login y conserva las demás rutas protegidas:
 
 ```java
-.authorizeHttpRequests(auth -> auth
-    .requestMatchers("/api/auth/**", "/public/**").permitAll()
-    .anyRequest().authenticated())
+.requestMatchers("/api/auth/**", "/public/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+.anyRequest().authenticated())
 ```
 
-Confirma el flujo completo con `MockMvc` real, encadenando login → extraer token → usarlo:
+En `src/test/resources/application.properties`, usa la clave de prueba ya usada por `JwtFilterTest` (no es una clave de producción):
+
+```properties
+security.jwt.secret-base64=VVFRc3BzQVFzZXJ0T0xhbkt0ZUd4cHlsU21pSnhhOFM=
+```
+
+Crea `src/test/java/com/example/demo/LoginFlowTest.java` y añade la prueba que encadena login → token → ruta protegida:
 
 ```java
-// src/test/java/com/academia/seguridad/LoginFlowTest.java
-package com.academia.seguridad;
+package com.example.demo;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -894,74 +918,86 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 class LoginFlowTest {
-
-    @Autowired private MockMvc mockMvc;
+    @Autowired MockMvc mockMvc;
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Test
-    void flujoCompletoLoginYRutaProtegida() throws Exception {
-        // 1. Login devuelve un token
+    void loginEntregaTokenQueAbreLaRutaProtegida() throws Exception {
+        String body = """
+            {"email":"ana@rutaflow.dev","password":"clave-larga-segura"}
+            """;
         String respuesta = mockMvc.perform(post("/api/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"email\":\"ana@rutaflow.dev\",\"password\":\"clave-larga-segura\"}"))
+                .contentType(MediaType.APPLICATION_JSON).content(body))
             .andExpect(status().isOk())
             .andReturn().getResponse().getContentAsString();
         JsonNode token = mapper.readTree(respuesta).get("token");
+        assertTrue(token != null && !token.asText().isBlank());
 
-        // 2. Sin token -> 401
         mockMvc.perform(get("/api/usuarios")).andExpect(status().isUnauthorized());
-
-        // 3. Con token -> 200
-        mockMvc.perform(get("/api/usuarios")
+        var protegida = mockMvc.perform(get("/api/usuarios")
                 .header("Authorization", "Bearer " + token.asText()))
-            .andExpect(status().isOk());
-    }
-
-    @Test
-    void credencialesInvalidasResponde401() throws Exception {
-        mockMvc.perform(post("/api/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"email\":\"ana@rutaflow.dev\",\"password\":\"incorrecta\"}"))
-            .andExpect(status().isUnauthorized());
+            .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+        assertEquals("ana@rutaflow.dev", mapper.readTree(protegida).get("email").asText());
+        assertEquals("ROLE_ADMIN", mapper.readTree(protegida).get("rol").asText());
     }
 }
 ```
+
+Ejecuta desde la raíz de `academia-spring`:
 
 ```bash
-mvn test -Dtest=LoginFlowTest           # Maven
-./gradlew test --tests LoginFlowTest    # Gradle (equivalente)
+./mvnw -q -Dtest=LoginFlowTest test
 ```
 
-**Resultado esperado:** `BUILD SUCCESS` con los 2 tests en verde: el flujo completo obtiene un token en el login, recibe `401` sin él y `200` con `Authorization: Bearer`; y las credenciales incorrectas responden `401` sin emitir token. **Fallo deliberado:** cambia en `AuthController` la verificación a `encoder.matches("otra", hashGuardado)` (siempre falsa) y ejecuta `flujoCompletoLoginYRutaProtegida` — el test FALLA en el login con `401` en vez de `200`, confirmando que sin credenciales válidas no se emite token y el resto del flujo no puede continuar. Revierte el cambio.
+**Resultado esperado:** el test ve `200` en el login, `401` al pedir `/api/usuarios` sin token y `200` con el bearer emitido. El correo de la respuesta protegida coincide con el usuario autenticado.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**Fallo deliberado y diagnóstico:** quita `/api/auth/**` de los matchers públicos y vuelve a ejecutar el test. El propio login recibe `401`; restablece el matcher público.
 
-1. Añade a `/api/usuarios` la anotación `@PreAuthorize("hasRole('ADMIN')")` y confirma que un token con rol `DRIVER` recibe `403` mientras el de `ADMIN` recibe `200`.
-2. Devuelve también el `sub` (email) dentro de la respuesta protegida leyéndolo del `SecurityContextHolder`, y confirma que coincide con el usuario que hizo login.
-3. Haz que el login responda lo mismo (`401`, mismo cuerpo) ante un email inexistente y ante una contraseña incorrecta; confirma con dos tests que ningún mensaje revela cuál de los dos falló.
-4. Escribe de memoria (sin mirar) el test que encadena login → token → petición protegida.
+**Entiende:** el cliente extrae el token de la respuesta y lo envía como `Authorization: Bearer ...`. El filtro valida la firma y establece la identidad; el controller no vuelve a leer la contraseña.
 
-**Pista:** extrae el token del JSON de respuesta con un `ObjectMapper`; no lo hardcodees, porque cada login genera un token distinto con una marca de tiempo nueva.
+**Cierra:** conserva el token generado en la variable de la prueba; no lo pegues en el código como una credencial fija.
 
-#### Paso 6 · Práctica independiente
+#### Subtema 4.15 · Rechazar credenciales incorrectas · 10 min
 
-**Completa el código:** rellena el espacio para que el login solo emita token cuando la contraseña coincide con el hash:
+**Contexto:** el token solo se emite si coinciden correo y contraseña. Para quien llama, ambos errores deben dar el mismo estado y mensaje para no revelar qué correo existe.
+
+**Hazlo tú:** En `LoginFlowTest.java`, agrega estas pruebas:
 
 ```java
-if (!email.equals(emailValido) || !encoder.____(password, hashGuardado)) {
-    return ResponseEntity.status(401).body(Map.of("error", "Credenciales inválidas"));
+@Test
+void passwordIncorrectaNoEmiteToken() throws Exception {
+    String body = """
+        {"email":"ana@rutaflow.dev","password":"incorrecta"}
+        """;
+    var respuesta = mockMvc.perform(post("/api/auth/login")
+            .contentType(MediaType.APPLICATION_JSON).content(body))
+        .andExpect(status().isUnauthorized())
+        .andReturn().getResponse();
+    assertEquals("{\"error\":\"Credenciales inválidas\"}", respuesta.getContentAsString());
+}
+
+@Test
+void emailDesconocidoUsaElMismoError() throws Exception {
+    String body = """
+        {"email":"nadie@rutaflow.dev","password":"incorrecta"}
+        """;
+    var respuesta = mockMvc.perform(post("/api/auth/login")
+            .contentType(MediaType.APPLICATION_JSON).content(body))
+        .andExpect(status().isUnauthorized())
+        .andReturn().getResponse();
+    assertEquals("{\"error\":\"Credenciales inválidas\"}", respuesta.getContentAsString());
 }
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `AuthController` con `POST /api/auth/login` que verifique credenciales y emita un JWT, más un test `MockMvc` que confirme el flujo login → `401` sin token → `200` con token. Compara después contra el patrón del Paso 4.
+**Resultado esperado:** `./mvnw -q clean test` termina sin errores; los cuatro recorridos pasan: login válido, ruta sin token, ruta con token y credenciales incorrectas.
 
-#### Paso 7 · Cierre y evidencia
+**Fallo deliberado y diagnóstico:** cambia temporalmente la llamada a `passwordEncoder.matches(password, hashDemo)` por `passwordEncoder.matches("otra", hashDemo)`. `loginEntregaTokenQueAbreLaRutaProtegida` falla en el primer `200` esperado porque el servidor responde `401`. Restaura la entrada `password`.
 
-Ya tienes el flujo de autenticación completo de punta a punta en Spring: `/api/auth/login` verifica credenciales y emite el JWT, y `/api/usuarios` lo exige vía `Authorization: Bearer`, confirmado con `MockMvc` real encadenando los tres pasos. Es el mismo recorrido que protege el proyecto integrador (microservicio productivo, Módulo 12). **Evidencia:** entrega los 2 tests de `LoginFlowTest` en verde y el resultado del fallo deliberado mostrando el login rechazado. Fuente oficial: [Spring Security — Authentication](https://docs.spring.io/spring-security/reference/servlet/authentication/index.html).
+**Entiende:** estos tests verifican estado, cuerpo y recorrido entre componentes; el usuario y hash en memoria son datos de laboratorio. En producción conecta el lookup con persistencia y configura rate limiting, TLS, secretos y política de sesión según el sistema. Dar el mismo error no garantiza que dos caminos tarden lo mismo; el laboratorio no verifica tiempos ni reemplaza el mecanismo estándar de autenticación de una aplicación real.
 
-**Errores comunes:** devolver el hash de la contraseña en la respuesta de `/api/usuarios`; responder distinto ante email inexistente vs contraseña incorrecta (filtra qué correos existen); olvidar permitir `/api/auth/**` en el `SecurityFilterChain` (el propio login quedaría bloqueado con `401`).
+**Cierra:** ejecuta la suite completa y escribe de memoria el recorrido: comparar hash → firmar con `JwtService` → extraer token → validar token → autorizar ruta. Fuentes: [Spring Security — Password Storage](https://docs.spring.io/spring-security/reference/features/authentication/password-storage.html) y [Spring Security — Authentication](https://docs.spring.io/spring-security/reference/servlet/authentication/index.html).
 
-**Cuándo no usarlo:** si delegás la autenticación a un proveedor externo (Keycloak/OIDC, Módulo 10), no implementas el login tú mismo: el proveedor emite el token y tu API solo lo valida como resource server.
+---
 
 ---
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
