@@ -93,10 +93,10 @@
     },
     "spring-boot": {
       "topics": 111,
-      "completeTopics": 16,
-      "topicsWith3to6Subtopics": 16,
-      "subtopics": 48,
-      "completeSubtopics": 48
+      "completeTopics": 17,
+      "topicsWith3to6Subtopics": 17,
+      "subtopics": 51,
+      "completeSubtopics": 51
     }
   },
   "topics": {
@@ -12276,9 +12276,52 @@
       {
         "module": 0,
         "topic": "### Tema 3: Estereotipos, autoconfiguración y scopes",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "3.1",
+            "title": "#### Subtema 3.1: Asigna a cada estereotipo un papel claro · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "3.2",
+            "title": "#### Subtema 3.2: Inspecciona lo que aporta una dependencia · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "3.3",
+            "title": "#### Subtema 3.3: Pide un bean nuevo cuando de verdad lo necesitas · 15 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 1,

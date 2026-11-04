@@ -1698,7 +1698,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "6e0a6f764705d51aca8ce82380f8ee13e0f4dc04842d091699748ae6676d60fb",
+    "fingerprint": "e645d07ddf53b58bf85e6c786c7adb5eedd4c1223aff65b9988dbeeab1eae810",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10291,9 +10291,9 @@
       {
         "issues": [],
         "module": 0,
-        "tailWords": 170,
+        "tailWords": 0,
         "topic": "Tema 3: Estereotipos, autoconfiguración y scopes",
-        "words": 1003
+        "words": 1127
       },
       {
         "issues": [],

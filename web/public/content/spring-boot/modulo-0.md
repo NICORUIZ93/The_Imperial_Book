@@ -9,7 +9,7 @@ Completa primero los fundamentos del track Java o asegúrate de entender clases,
 
 - **Windows:** instala Eclipse Temurin JDK 25, Git e IntelliJ; verifica `java --version` y `javac --version` en PowerShell.
 - **macOS:** usa `brew install --cask temurin` y `brew install git`; instala IntelliJ desde JetBrains Toolbox.
-- **Ubuntu/Debian:** ejecuta `sudo apt install openjdk-21-jdk git`; descarga IntelliJ o usa SDKMAN.
+- **Ubuntu/Debian:** ejecuta `sudo apt install openjdk-25-jdk git`; descarga IntelliJ o usa SDKMAN.
 
 No necesitas instalar Maven si el proyecto incluye `mvnw`/`mvnw.cmd`: ese *wrapper* descarga la versión correcta. En [start.spring.io](https://start.spring.io/) elige Java, Maven, Spring Boot estable, JDK 25 y la dependencia **Spring Web**. Descarga, descomprime y ejecuta:
 
@@ -355,29 +355,92 @@ Para una regla de negocio simple, el constructor facilita un test rápido con un
 
 ### Tema 3: Estereotipos, autoconfiguración y scopes
 
-#### Paso 1 · Objetivo y preparación
+En los temas anteriores Spring encontró beans por sus anotaciones y conectó sus constructores. Ahora revisarás qué significan esas anotaciones, qué prepara Spring Boot al detectar dependencias y cómo cambia el ciclo de vida de un bean.
 
-Al finalizar podrás distinguir `@Component`/`@Service`/`@Repository`, explicar qué autoconfigura `spring-boot-starter-web`, y elegir el scope correcto (`singleton` vs `prototype`) para un bean.
+**¿Por qué es importante?** Un starter puede configurar partes de la aplicación automáticamente y un bean compartido puede atender muchas operaciones. Entender esas reglas evita depender de magia o compartir estado por accidente.
 
-**Conocimiento previo:** Temas 1-2 de este módulo.
+**Conocimiento previo:** Temas 1 y 2 de este módulo.
 
-#### Paso 2 · Contexto y caso real
+#### Subtema 3.1: Asigna a cada estereotipo un papel claro · 10 min
 
-**¿Por qué es importante?** Un contador compartido entre las peticiones necesita ser `singleton` (una instancia por contenedor Spring); un objeto temporal de una operación, como un builder de reporte, puede ser `prototype` (una instancia nueva cada vez que el contenedor lo resuelve). `prototype` no significa una instancia por petición HTTP; confundir esos alcances produce bugs de estado compartido accidental o de recreación innecesaria.
+**1. Contexto**
 
-#### Paso 3 · Teoría con analogía
+Spring reconoce `@Component`, `@Service`, `@Repository` y `@Controller` como componentes gestionados. Las anotaciones específicas dejan claro qué papel cumple cada clase.
 
-**Conceptos clave:** `@Component`/`@Service`/`@Repository`, autoconfiguración de starters, `singleton` vs `prototype`.
+**2. Hazlo tú**
 
-`@Component`, `@Service` y `@Repository` son variantes especializadas de la misma anotación base `@Component`, que le indica a Spring "gestiona esta clase como un bean"; la diferencia es principalmente semántica y documental, con una excepción funcional: `@Repository` traduce automáticamente excepciones específicas de la tecnología de persistencia subyacente a una jerarquía de excepciones propia y consistente de Spring. `spring-boot-starter-web` trae automáticamente un servidor Tomcat embebido, Jackson para JSON, y Spring MVC, autoconfigurados con valores por defecto sensatos, sin la configuración XML extensa que el Spring clásico exigía. `@Scope` controla el ciclo de vida de un bean: `singleton` (por defecto, una instancia por contenedor Spring) o `prototype` (una instancia nueva cada vez que el contenedor resuelve el bean, no cada vez que llega una petición HTTP).
+En `src/main/java/com/example/demo/ServicioEnvios.java`, cambia temporalmente `@Service` por la anotación genérica `@Component` y arranca la aplicación:
 
-**Analogía:** los estereotipos son distintos uniformes de un mismo tipo de empleado, donde el uniforme de `@Repository` además incluye una traducción automática de idioma para comunicarse con sistemas externos de almacenamiento; un bean `singleton` es como una única impresora compartida por toda la oficina, mientras un bean `prototype` es como una hoja de papel nueva que se entrega cada vez que alguien la pide.
+```java
+import org.springframework.stereotype.Component;
 
-**Diagrama:** [Estereotipos, starter web y scopes de Spring](../../visuals/temas/spring-boot/modulo-0-tema-3-stereotypes-scopes.html)
+@Component
+public class ServicioEnvios {
+    // Conserva el constructor y los métodos que ya escribiste.
+}
+```
 
-#### Paso 4 · Demostración guiada desde cero
+Ejecuta `./mvnw spring-boot:run` y, desde otra terminal, consulta `curl http://localhost:8080/envios/RF-42`.
 
-Desde una carpeta vacía (o continuando en `ejemplo-spring-m0`), crea `src/main/java/com/example/demo/GeneradorReporte.java` con un bean de scope `prototype`:
+**Resultado esperado:** la ruta aún responde `En ruta: RF-42`; ambas anotaciones registran la clase como componente.
+
+**Fallo deliberado:** elimina `@Component` y vuelve a arrancar. **Diagnóstico:** `EnviosController` requiere `ServicioEnvios`, pero el escaneo ya no lo registró; restaura `@Service`.
+
+**3. Entiende**
+
+`@Service` comunica que la clase contiene lógica de aplicación; `@Repository` señala acceso a datos y participa en la traducción de excepciones de persistencia cuando esa infraestructura está configurada; `@Controller` o `@RestController` atiende la capa web. `@Component` es la opción general.
+
+**4. Cierra**
+
+Guarda la anotación específica y explica por qué hace más claro el papel de la clase aunque varias sean reconocidas por el escaneo.
+
+**Práctica independiente:** elige `@Service`, `@Repository` o `@Component` para una clase de validación de direcciones y explica qué información comunica esa elección al equipo.
+
+#### Subtema 3.2: Inspecciona lo que aporta una dependencia · 10 min
+
+**1. Contexto**
+
+Spring Boot puede configurar infraestructura cuando las bibliotecas necesarias están en el proyecto y no has reemplazado ya esa configuración. El starter agrupa dependencias comunes; no configura todas las aplicaciones de manera idéntica.
+
+**2. Hazlo tú**
+
+Abre `pom.xml` y localiza la dependencia Spring Web agregada por Spring Initializr. Con Spring Boot 4 el artefacto del starter MVC es `spring-boot-starter-webmvc`; los proyectos de otras versiones pueden tener otro nombre. Usa el que aparece en tu archivo. Desde la raíz del proyecto, imprime el árbol que Maven resolvió:
+
+```bash
+./mvnw dependency:tree
+```
+
+Busca los módulos relacionados con Spring MVC y el servidor embebido. Los nombres concretos pueden variar según la versión de Spring Boot y el starter generado.
+
+**Resultado esperado:** el árbol muestra el starter directo y las bibliotecas transitivas que hacen posible el endpoint HTTP.
+
+**Fallo deliberado:** quita del `pom.xml` la dependencia web y ejecuta `./mvnw test`. **Diagnóstico:** el proyecto ya no encuentra las clases web importadas por `EnviosController`; restaura la dependencia y sincroniza Maven.
+
+**3. Entiende**
+
+`@SpringBootApplication` combina configuración, escaneo de componentes y auto-configuración. Boot usa dependencias, clases y beans existentes para decidir qué configuración condicional aplica. El starter reúne dependencias típicas; la referencia de la versión del proyecto explica qué módulos activa.
+
+**4. Cierra**
+
+Guarda una captura o copia del fragmento de árbol que explica cómo llega el soporte web al proyecto. El siguiente subtema cambia el tiempo de vida de un objeto.
+
+```mermaid
+flowchart LR
+    pom[Dependencias en pom.xml] --> cp[Clases disponibles]
+    cp --> cond[Condiciones de auto-configuración]
+    beans[Beans que ya declaraste] --> cond
+    cond --> app[Infraestructura configurada]
+```
+
+#### Subtema 3.3: Pide un bean nuevo cuando de verdad lo necesitas · 15 min
+
+**1. Contexto**
+
+`singleton` es el scope predeterminado: una instancia por definición de bean y contenedor. `prototype` crea una instancia nueva cuando el contenedor recibe cada solicitud de ese bean. Si un bean singleton recibe un prototype por constructor, recibe solo una instancia al crearse; la anotación no la renueva en cada petición HTTP.
+
+**2. Hazlo tú**
+
+Crea `src/main/java/com/example/demo/GeneradorReporte.java`:
 
 ```java
 package com.example.demo;
@@ -389,60 +452,85 @@ import org.springframework.stereotype.Component;
 @Scope("prototype")
 public class GeneradorReporte {
     private final String id = java.util.UUID.randomUUID().toString();
-    public String id() { return id; }
+
+    public String id() {
+        return id;
+    }
 }
 ```
 
-Guarda el archivo y arranca la aplicación con Maven:
+Crea `src/main/java/com/example/demo/ServicioReportes.java`:
 
-```bash
-# compila y ejecuta el proyecto Java, confirma el scope de cada bean vía logs
-cd ejemplo-spring-m0
-./mvnw spring-boot:run
+```java
+package com.example.demo;
+
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.stereotype.Service;
+
+@Service
+public class ServicioReportes {
+    private final GeneradorReporte recibidoAlCrear;
+    private final ObjectProvider<GeneradorReporte> generadores;
+
+    public ServicioReportes(
+            GeneradorReporte recibidoAlCrear,
+            ObjectProvider<GeneradorReporte> generadores) {
+        this.recibidoAlCrear = recibidoAlCrear;
+        this.generadores = generadores;
+    }
+
+    public String comparar() {
+        return "directo=" + recibidoAlCrear.id()
+                + "; nuevos=" + generadores.getObject().id()
+                + "," + generadores.getObject().id();
+    }
+}
 ```
 
-**Explicación línea por línea:** `@Component` marca la clase como bean gestionado; `@Scope("prototype")` sobrescribe el default (`singleton`) indicando que el contenedor debe crear una instancia NUEVA cada vez que algo solicite este bean, en vez de reutilizar una única instancia compartida.
+Crea `src/main/java/com/example/demo/ReporteController.java`:
 
-Inyecta `GeneradorReporte` dos veces en un controlador de prueba (dos parámetros, o dos llamadas a `context.getBean(...)`) y confirma que cada resolución produce un `id()` distinto:
+```java
+package com.example.demo;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class ReporteController {
+    private final ServicioReportes servicio;
+
+    public ReporteController(ServicioReportes servicio) {
+        this.servicio = servicio;
+    }
+
+    @GetMapping("/reporte/comparar")
+    public String comparar() {
+        return servicio.comparar();
+    }
+}
+```
+
+Arranca la aplicación con `./mvnw spring-boot:run` y consulta dos veces desde otra terminal:
 
 ```bash
 curl http://localhost:8080/reporte/comparar
 ```
 
-**Resultado esperado:** la respuesta muestra dos valores de `id()` DISTINTOS, confirmando que `@Scope("prototype")` efectivamente crea una instancia nueva por cada resolución, a diferencia de un bean `singleton` (por defecto) donde ambas resoluciones devolverían el mismo `id()`.
+**Resultado esperado:** en cada respuesta, `directo` conserva el mismo ID. Los dos IDs bajo `nuevos` son distintos, y cambian al repetir la petición porque `ObjectProvider.getObject()` pide otra instancia al contenedor.
 
-**Fallo deliberado:** quita `@Scope("prototype")` (dejando el bean como `singleton` por defecto) y repite la prueba — ahora ambas resoluciones devuelven el MISMO `id()`, porque el contenedor reutiliza la única instancia compartida — diagnostica confirmando que olvidar declarar el scope correcto para un bean que necesita estado nuevo por solicitud produce silenciosamente estado compartido entre operaciones que deberían ser independientes.
+**Fallo deliberado:** cambia `@Scope("prototype")` por `@Scope("singleton")` y repite la petición. **Diagnóstico:** los IDs generados por el provider pasan a ser iguales; el scope vuelve a compartir esa instancia.
 
-Para ver ambos scopes uno junto al otro, declara un segundo bean explícitamente `singleton` en la misma clase de configuración y expón los dos `id()` en el mismo endpoint de comparación, confirmando que solo el bean `prototype` cambia entre resoluciones.
+**3. Entiende**
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+`ObjectProvider` permite pedir otra instancia cuando el método se ejecuta. El campo `recibidoAlCrear` muestra la diferencia: Spring inyectó un prototype una vez al crear el servicio singleton. `prototype` tampoco significa “uno por petición”; Spring tiene un scope `request` separado para ese ciclo de vida. Un singleton mutable compartido necesita protección frente a concurrencia.
 
-1. Agrega un tercer bean con scope `singleton` explícito (redundante con el default) y confirma que el comportamiento no cambia frente a omitirlo.
-2. Cambia `GeneradorReporte` de `prototype` a `singleton` y predice el resultado antes de ejecutar.
-3. Clasifica tres beans reales de un proyecto (un repositorio, un contador global, un builder de un solo reporte) según el scope correcto para cada uno.
-4. Escribe de memoria (sin mirar) dos beans con scopes distintos y el resultado esperado de resolverlos dos veces cada uno.
+**4. Cierra**
 
-**Pista:** si un bean acumula estado que pertenece a una única operación (no compartido entre operaciones distintas), probablemente necesita `prototype`, no el `singleton` por defecto.
+Guarda dos respuestas y marca cuáles IDs se repiten. Elige `singleton` para objetos sin estado por operación y considera `prototype` si el contenedor debe crear otro objeto cada vez que se lo solicitas; para estado HTTP, estudia el scope `request`. Quien recibe un bean `prototype` debe liberar los recursos que retenga cuando termina de usarlo.
 
-#### Paso 6 · Práctica independiente
+**Práctica independiente:** cambia el texto que devuelve `ServicioReportes`, vuelve a consultar el endpoint y explica qué ID permanece fijo y cuáles se crean de nuevo.
 
-**Completa el código:** rellena el espacio para que el bean se cree nuevo en cada solicitud:
-
-```java
-@Component
-@Scope("____")
-public class GeneradorReporte { /* ... */ }
-```
-
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, dos beans (uno `singleton`, uno `prototype`) y traza a mano qué instancia devolvería cada uno tras dos resoluciones consecutivas. Compara después contra el patrón del Paso 4.
-
-#### Paso 7 · Cierre y evidencia
-
-Ya distingues los estereotipos de Spring, qué autoconfigura `spring-boot-starter-web`, y cómo elegir entre `singleton` y `prototype` según si el estado del bean debe compartirse o no entre operaciones. Esto cierra los fundamentos de IoC y DI; el siguiente módulo aplica estos conceptos a la configuración externa de la aplicación. **Evidencia:** entrega el resultado con los dos `id()` distintos del bean `prototype` y el mismo `id()` repetido tras quitar el scope. Fuente oficial: [Spring Framework — Bean scopes](https://docs.spring.io/spring-framework/reference/core/beans/factory-scopes.html).
-
-**Errores comunes:** asumir que todo bean es `singleton` sin considerar si acumula estado por operación; confundir `@Service` con una anotación funcionalmente distinta de `@Component` (solo `@Repository` agrega comportamiento real).
-
-**Cuándo no usarlo:** para un valor inmutable sin ningún estado mutable entre resoluciones, discutir `singleton` vs `prototype` es irrelevante — ambos scopes producirían el mismo comportamiento observable.
+**Fuentes primarias:** [estereotipos y escaneo de componentes](https://docs.spring.io/spring-framework/reference/core/beans/classpath-scanning.html), [scopes y dependencias prototype](https://docs.spring.io/spring-framework/reference/core/beans/factory-scopes.html), [auto-configuración condicional](https://docs.spring.io/spring-boot/reference/using/auto-configuration.html), [aplicaciones web y Spring MVC](https://docs.spring.io/spring-boot/reference/web/servlet.html).
 
 ---
 
@@ -472,16 +560,16 @@ Al iniciar cada laboratorio crea una rama `modulo-N`, implementa el incremento, 
 |---|---|---|---|
 | 1 | Crear un proyecto con start.spring.io y arrancarlo | `./mvnw spring-boot:run` | Verifica el arranque |
 | 2 | Definir `@Service` y `@Repository` con inyección por constructor | Ver Tema 1 | Verifica la conexión automática |
-| 3 | Escribir un test unitario sin levantar el contenedor | Ver Tema 2 | `new ServicioTareas(mock)` directo |
+| 3 | Escribir un test unitario sin levantar el contenedor | Ver Tema 2 | `new ServicioEnvios(falso)` directo |
 | 4 | Declarar un bean `prototype` y confirmar instancias distintas | Ver Tema 3 | Compara contra el default `singleton` |
-| 5 | Investigar qué autoconfigura `spring-boot-starter-web` | Ver Tema 3 | Documenta las dependencias que trae |
+| 5 | Investigar qué autoconfigura el starter web generado para el proyecto | Ver Tema 3 | Documenta las dependencias que trae |
 
 **Verificación:** el laboratorio se considera exitoso si el servicio y el repositorio se conectan correctamente por inyección de constructor, si el test unitario corre sin contenedor, y si el bean `prototype` produce una instancia distinta en cada resolución mientras el `singleton` reutiliza la misma.
 
 **Errores comunes y soluciones**
 
 - **Usar inyección por campo por costumbre.** Prefiere inyección por constructor para inmutabilidad y testabilidad sin contenedor.
-- **Confundir `@Service` con una anotación funcionalmente distinta de `@Component`.** Solo `@Repository` agrega comportamiento funcional adicional (traducción de excepciones).
-- **Asumir que todo bean es `singleton` sin evaluarlo.** Un bean que acumula estado por operación necesita `prototype` explícito.
+- **Confundir `@Service` con una anotación funcionalmente distinta de `@Component`.** `@Repository` identifica persistencia y se usa para traducción de excepciones cuando esa infraestructura está activa.
+- **Asumir que `prototype` significa una instancia por petición HTTP.** Se crea una instancia nueva por solicitud al contenedor; el scope web `request` tiene el ciclo de vida HTTP.
 
 ---
