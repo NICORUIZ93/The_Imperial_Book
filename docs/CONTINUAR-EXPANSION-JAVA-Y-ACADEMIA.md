@@ -478,7 +478,34 @@ Flutter 1; **1093/1185 practicables**, 409 con señales de defecto de sustancia.
 `./scripts/validate.sh` pasó con 23 pruebas y 4 omitidas; informes e índices
 regenerados. Estas medidas no sustituyen revisión humana ni certifican el resto.
 
-**Siguiente tema:** Spring Boot M6 T1, “Slices de testing — `@WebMvcTest`”.
-Revisa qué parte del contexto levanta el slice frente a `@SpringBootTest`, adapta
-el package Boot 4 y ejecuta una petición de controller con dependencias
-simuladas antes de reescribir los ejercicios.
+Spring Boot M6 T1, “Probar un controller con `@WebMvcTest`”, se rehízo en tres
+subtemas atómicos: petición POST con `MockMvc` y `ServicioTareas` simulado;
+validación de título vacío y contrato existente `ApiError`; fallo deliberado al
+retirar `@MockitoBean`. Reutiliza `TareaController`, `CrearTareaRequest`,
+`TareaDTO` y `GlobalExceptionHandler` del proyecto acumulativo. Se corrigieron
+los imports para Boot 4 (`org.springframework.boot.webmvc.test.autoconfigure`)
+y se dejó claro que `addFilters=false` aísla MVC: este slice no vuelve a probar
+JWT ni autorización. `JwtService` requiere mock porque el filtro del contexto lo
+inyecta aunque los filtros no se registren en MockMvc.
+
+La prueba dirigida pasó con dos métodos. Sin `@MockitoBean`, el contexto falló con
+`NoSuchBeanDefinitionException` para `ServicioTareas`; restaurada la anotación,
+la suite acumulada Boot 4.1.2/JDK 25 pasó con **38 pruebas**, sin fallos ni
+omisiones. Se comprobaron `201`, el error `400`/`VALIDACION` y el mensaje de
+campo con el controller y advice reales. El tiempo depende del equipo y no se
+usa como comparación universal. Índices, backlog, temarios y grafos quedaron
+regenerados. `./scripts/validate.sh` pasó: 23 pruebas de script, 4 omitidas;
+las demás validaciones de contenido, trazabilidad, índices y gráficos también
+terminaron correctamente. `git diff --check` pasó. Tras M6 T1 las auditorías
+globales registran **139/1185 temas estructuralmente completos** y
+**1092/1185 practicables**; 409 conservan señales de defectos de sustancia.
+Estos indicadores no acreditan ejecución de todos los ejemplos ni revisión
+pedagógica humana. No se modificó la aplicación del repo para el laboratorio;
+el backend temporal vive en `/tmp/imperial-spring-m4-jwt/app`. Permanecen
+excluidos del commit los dos cambios locales de Flutter ya existentes.
+
+**Siguiente tema:** Spring Boot M6 T2, “`@DataJpaTest` con Testcontainers”.
+Antes de reescribirlo, verifica versiones e imports actuales de Boot 4,
+PostgreSQL y Testcontainers, y confirma Docker disponible para ejecutar el caso.
+Mantén separado el resultado del repositorio temporal del contenido probado en
+la aplicación principal.

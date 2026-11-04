@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 229,
+    "topicsWithSignals": 230,
     "newLaboratories": 25
   },
   "priorities": {
@@ -13364,10 +13364,12 @@
     {
       "track": "spring-boot",
       "module": 6,
-      "title": "Tema 1: Slices de testing — @WebMvcTest",
+      "title": "Tema 1: Probar un controller con `@WebMvcTest`",
       "file": "web/public/content/spring-boot/modulo-6.md",
       "line": 8,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -13377,7 +13379,7 @@
       "module": 6,
       "title": "Tema 2: @DataJpaTest con Testcontainers",
       "file": "web/public/content/spring-boot/modulo-6.md",
-      "line": 168,
+      "line": 110,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -13388,7 +13390,7 @@
       "module": 6,
       "title": "Tema 3: @SpringBootTest completo y estrategia de pirámide de tests",
       "file": "web/public/content/spring-boot/modulo-6.md",
-      "line": 328,
+      "line": 270,
       "signals": [
         "comprobar-fragmento-incompleto"
       ],

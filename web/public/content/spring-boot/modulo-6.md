@@ -1,169 +1,111 @@
 # Módulo 6: Testing en Spring Boot
 
-Cada tema se practica por separado con su propia repetición progresiva y su propio reto de memoria, verificado con `mvn test` real contra cada nivel de la pirámide de tests, para que "un slice es más rápido que el contexto completo" sea una afirmación medible, no solo descrita.
+Este módulo compara pruebas de MVC, persistencia e integración. Cada tema debe indicar qué capas ejecuta y qué deja fuera; la evidencia funcional está en las respuestas y fallos observados.
 
 
 ## Aprende construyendo
 
-### Tema 1: Slices de testing — @WebMvcTest
+### Tema 1: Probar un controller con `@WebMvcTest`
 
-#### Paso 1 · Objetivo y preparación
+Reutiliza la API de tareas construida en M2 y la seguridad de M4. **¿Por qué es importante?** Un fallo del controller debe poder detectarse sin levantar PostgreSQL ni recorrer todas las capas. Este tema prueba la web sin llamar al repositorio y no crea otra aplicación ni otro servicio.
 
-Al finalizar podrás probar la capa web de un controller con `@WebMvcTest`, mockeando el servicio inyectado, y explicar por qué este slice arranca más rápido que el contexto completo de la aplicación.
+#### Subtema 6.1 · Recortar la prueba a la web (10 min)
 
-**Conocimiento previo:** `@RestController` y `ResponseEntity` (Módulo 2); DTOs vs entities (Módulo 2).
+**Contexto.** Un test de controller debe poder comprobar ruta, JSON y respuesta sin conectarse a PostgreSQL. `@WebMvcTest(TareaController.class)` prepara MVC y ese controller. No registra automáticamente `@Service`; declara el colaborador simulado con `@MockitoBean`.
 
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** Una API de entregas necesita detectar rápido si el problema está en el controller (mapeo de rutas, serialización JSON, validación) sin necesitar que la base de datos real ni el servicio de negocio completo estén disponibles para esa prueba específica.
-
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** contexto parcial, más rápido que el contexto completo.
-
-`@WebMvcTest(TareaController.class)` levanta únicamente el contexto necesario para probar la capa web (el controller, sus filtros, la infraestructura de serialización JSON), mockeando automáticamente cualquier otra capa (`@MockitoBean TareaService servicio`), en vez de levantar la aplicación completa con persistencia y configuración real. Esta carga parcial ("slice", en la terminología de Spring Boot Test) arranca considerablemente más rápido que el contexto completo, un factor relevante cuando la suite crece a cientos de pruebas.
-
-**Analogía:** `@WebMvcTest` es poner a prueba únicamente la recepción de un edificio, verificando que recibe correctamente a los visitantes y los dirige apropiadamente, sin necesidad de que el resto del edificio esté operativo, usando actores de reparto (mocks) en lugar del personal real de esos departamentos.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-  A["@WebMvcTest(TareaController.class)"] --> B[levanta SOLO la capa web]
-  B --> C["@MockitoBean TareaService: no se ejecuta lógica real"]
-  C --> D[MockMvc simula la petición HTTP completa]
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Desde una carpeta vacía (o continuando en `academia-spring`, o créala con `mkdir -p academia-spring` si es tu primera vez), genera el proyecto con Spring Initializr real (`web`) y crea el controller junto con su test de slice en `src/main/java` y `src/test/java`:
-
-```bash
-mkdir -p academia-spring/src/main/java/com/academia/tarea
-cd academia-spring
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -d artifactId=academia-testing -o app.zip
-unzip -o app.zip
-```
+**Hazlo tú.** En el proyecto acumulativo, crea `src/test/java/com/example/demo/TareaControllerSliceTest.java`:
 
 ```java
-// src/main/java/com/academia/tarea/TareaController.java
-package com.academia.tarea;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-@RestController
-@RequestMapping("/api/tareas")
-public class TareaController {
-    private final TareaService servicio;
-
-    public TareaController(TareaService servicio) { this.servicio = servicio; }
-
-    @PostMapping
-    public ResponseEntity<String> crear(@RequestBody String titulo) {
-        String id = servicio.crear(titulo);
-        return ResponseEntity.status(HttpStatus.CREATED).body(id);
-    }
-}
-```
-
-```java
-// src/main/java/com/academia/tarea/TareaService.java
-package com.academia.tarea;
-
-import org.springframework.stereotype.Service;
-
-@Service
-public class TareaService {
-    public String crear(String titulo) {
-        // en la app real, guardaría en la base de datos; el test de slice mockea esto por completo
-        throw new UnsupportedOperationException("no implementado aún en este tema");
-    }
-}
-```
-
-**Explicación línea por línea:** `TareaController` depende de `TareaService` por inyección de constructor; en producción, `TareaService.crear` guardaría en la base de datos, pero el test de slice de este Tema jamás ejecuta esa implementación real, porque la reemplaza completamente con un mock.
-
-Escribe el test de slice real que mockea `TareaService` y verifica únicamente el comportamiento de la capa web:
-
-```java
-// src/test/java/com/academia/tarea/TareaControllerTest.java
-package com.academia.tarea;
+package com.example.demo;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(TareaController.class) // solo levanta la capa web, mockea el resto
-class TareaControllerTest {
-
-    @Autowired
-    private MockMvc mockMvc;
-    @MockitoBean
-    private TareaService servicio;
+@WebMvcTest(TareaController.class)
+@AutoConfigureMockMvc(addFilters = false)
+class TareaControllerSliceTest {
+    @Autowired MockMvc mockMvc;
+    @MockitoBean ServicioTareas servicio;
+    @MockitoBean JwtService jwtService;
 
     @Test
-    void creaUnaTareaYDevuelve201() throws Exception {
-        when(servicio.crear("Comprar leche")).thenReturn("tarea-123");
+    void creaTareaYDevuelve201() throws Exception {
+        when(servicio.crear(any(CrearTareaRequest.class)))
+            .thenReturn(new TareaDTO(7L, "Comprar leche", 3));
 
         mockMvc.perform(post("/api/tareas")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("\"Comprar leche\""))
+                .content("{\"titulo\":\"Comprar leche\",\"prioridad\":3}"))
             .andExpect(status().isCreated())
-            .andExpect(content().string("tarea-123"));
+            .andExpect(jsonPath("$.id").value(7))
+            .andExpect(jsonPath("$.titulo").value("Comprar leche"))
+            .andExpect(jsonPath("$.prioridad").value(3));
     }
 }
 ```
 
+Ejecuta desde la raíz del proyecto:
+
 ```bash
-mvn test -Dtest=TareaControllerTest # Maven
-./gradlew test --tests TareaControllerTest # Gradle (equivalente)
+./mvnw -q -Dtest=TareaControllerSliceTest test
 ```
 
-**Resultado esperado:** `BUILD SUCCESS` con el test en verde en una fracción del tiempo que tomaría un `@SpringBootTest` completo (arranca solo el controller y su infraestructura web), confirmando `201 Created` y el cuerpo esperado — sin que `TareaService.crear` real (que lanzaría `UnsupportedOperationException`) llegue a ejecutarse nunca, porque `@MockitoBean` la reemplazó completamente.
+**Resultado esperado.** El test pasa con `201` y el DTO esperado; el repositorio real no participa en esta petición.
 
-**Fallo deliberado:** elimina la anotación `@MockitoBean` de `servicio` (dejando el campo sin anotar) y ejecuta de nuevo `mvn test -Dtest=TareaControllerTest`. El test FALLA porque Spring no puede resolver la dependencia `TareaService` dentro del contexto parcial de `@WebMvcTest` (que no escanea `@Service` por diseño): `NoSuchBeanDefinitionException` — diagnostica confirmando que `@MockitoBean` no es solo una conveniencia, sino el mecanismo específico que hace posible que un slice de solo la capa web pueda satisfacer las dependencias del controller sin levantar la aplicación completa. Revierte el cambio antes de continuar.
+#### Subtema 6.2 · Ver la validación y el error JSON (10 min)
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**Contexto.** Una respuesta inválida también forma parte del contrato HTTP. El proyecto ya tiene `@Valid` en `TareaController` y `GlobalExceptionHandler` convierte el error de `@NotBlank` en el `ApiError` acordado (`codigo`, `mensaje`, `campos`).
 
-1. Agrega un segundo test que confirme un `400 Bad Request` cuando el cuerpo de la petición está vacío, usando `when(servicio.crear("")).thenThrow(new IllegalArgumentException())` junto con un `@ExceptionHandler` que lo mapee.
-2. Mide el tiempo real de ejecución de `TareaControllerTest` (`mvn test -Dtest=TareaControllerTest` reporta el tiempo) y compáralo mentalmente con lo que esperarías de un `@SpringBootTest` completo (Tema 3).
-3. Agrega un segundo endpoint al controller y su test de slice correspondiente, confirmando que ambos tests siguen ejecutándose sin necesitar base de datos ni configuración adicional.
-4. Escribe de memoria (sin mirar) un `@WebMvcTest` con `@MockitoBean` para un servicio, y un test que confirme un código de estado usando `when(...).thenReturn(...)`.
-
-**Pista:** si un test de `@WebMvcTest` falla con `NoSuchBeanDefinitionException`, la causa casi siempre es una dependencia del controller que no está mockeada con `@MockitoBean`.
-
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio para levantar únicamente el contexto de la capa web:
+**Hazlo tú.** En el mismo archivo, agrega este método a `TareaControllerSliceTest`:
 
 ```java
-@____(TareaController.class)
-class TareaControllerTest {
-    @Autowired MockMvc mockMvc;
-    @MockitoBean TareaService servicio;
+@Test
+void devuelveApiErrorCuandoElTituloEstaEnBlanco() throws Exception {
+    mockMvc.perform(post("/api/tareas")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"titulo\":\" \",\"prioridad\":3}"))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.codigo").value("VALIDACION"))
+        .andExpect(jsonPath("$.campos.titulo").value("Escribe un título."));
 }
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un test `@WebMvcTest` con un servicio mockeado y una aserción sobre el código de estado HTTP. Compara después contra el patrón del Paso 4.
+Vuelve a ejecutar `./mvnw -q -Dtest=TareaControllerSliceTest test`.
 
-#### Paso 7 · Cierre y evidencia
+**Resultado esperado.** Los dos métodos pasan; el segundo ve `400`, `VALIDACION` y el mensaje del campo. El servicio no necesita configurarse para este caso: la validación del request ocurre antes de llamar al controller.
 
-Ya pruebas la capa web de forma aislada y rápida con `@WebMvcTest`, confirmando con `MockMvc` real el comportamiento del controller sin depender de la lógica de negocio real. El siguiente tema aborda cómo probar la capa de persistencia contra una base de datos real, no aproximada. **Evidencia:** entrega el resultado de `TareaControllerTest` en verde, y el error real `NoSuchBeanDefinitionException` que produce el fallo deliberado. Fuente oficial: [Spring Boot — Testing the Web Layer](https://docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html#testing.spring-boot-applications.spring-mvc-tests).
+#### Subtema 6.3 · Diagnosticar una dependencia que falta (10 min)
 
-**Errores comunes:** cargar el contexto completo (`@SpringBootTest`) para probar lógica que un slice más rápido cubriría igual de bien; olvidar `@MockitoBean` para una dependencia del controller, causando `NoSuchBeanDefinitionException`.
+**Contexto.** Un slice no significa “Spring simula todas las dependencias”. El controller todavía necesita un bean que satisfaga `ServicioTareas`.
 
-**Cuándo no usarlo:** para verificar que múltiples capas reales (controller, servicio, repositorio, base de datos) funcionan correctamente juntas de principio a fin, un slice de solo la capa web no es suficiente; ese es el propósito de `@SpringBootTest` (Tema 3).
+**Hazlo tú.** Quita solo `@MockitoBean` de esta línea, conserva el campo y ejecuta el método de creación:
 
-Los slices de testing con `@WebMvcTest` son los que probarán la capa web del proyecto integrador de este track (microservicio productivo, Módulo 12).
+```java
+ServicioTareas servicio;
+```
+
+```bash
+./mvnw -q -Dtest=TareaControllerSliceTest#creaTareaYDevuelve201 test
+```
+
+**Fallo deliberado observado.** El contexto no carga y el log contiene `NoSuchBeanDefinitionException: No qualifying bean of type 'com.example.demo.ServicioTareas'`. Restaura `@MockitoBean` y comprueba que los dos métodos vuelven a pasar.
+
+#### Entiende y cierra
+
+`MockMvc` envía una petición de prueba a la infraestructura MVC sin abrir un puerto. `@WebMvcTest` incorpora controller, conversión JSON, validación y advice relevante; el mock decide qué devuelve el colaborador. En Boot 4 los imports son `org.springframework.boot.webmvc.test.autoconfigure.*`, y `@MockitoBean` viene de Spring Test. `@AutoConfigureMockMvc(addFilters = false)` se usa aquí porque aislamos el contrato del controller; por ello estos métodos **no** prueban JWT ni autorización. Esa cobertura pertenece a M4 y debe mantenerse aparte. El `JwtService` simulado satisface la dependencia del filtro detectado por el slice, aunque los filtros no se añadan a MockMvc.
+
+**Evidencia para avanzar:** dos métodos pasan, el fallo por retirar el mock se identifica y revierte, y puedes explicar qué cubre esta prueba y qué queda fuera. No uses este slice para afirmar que repositorio, base de datos, seguridad o todas las capas funcionan juntas; para eso se necesitan pruebas de integración apropiadas. Documentación primaria: [Spring Boot 4.1.2 — `@WebMvcTest`](https://docs.spring.io/spring-boot/api/java/org/springframework/boot/webmvc/test/autoconfigure/WebMvcTest.html) y [Spring Boot 4.1.2 — `@AutoConfigureMockMvc`](https://docs.spring.io/spring-boot/api/java/org/springframework/boot/webmvc/test/autoconfigure/AutoConfigureMockMvc.html).
 
 ### Tema 2: @DataJpaTest con Testcontainers
 

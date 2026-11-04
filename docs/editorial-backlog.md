@@ -13,11 +13,11 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | Ruta | 1185 | 0 |
 | Ejecución | 1122 | 63 |
 | Resultado | 1183 | 2 |
-| Modificación | 1132 | 53 |
-| Conexión con un proyecto | 1112 | 73 |
+| Modificación | 1131 | 54 |
+| Conexión con un proyecto | 1111 | 74 |
 | Modelo mental | 1185 | 0 |
-| Límites | 1135 | 50 |
-| **Perfil de criterios detectado** | **1093** | **92** |
+| Límites | 1134 | 51 |
+| **Perfil de criterios detectado** | **1092** | **93** |
 
 ## Prioridad por track
 
@@ -36,7 +36,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | node | 83 | 0 | 0 | 0 | 0 | 1 | 2 | 1 |
 | react | 58 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | rutaflow | 29 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| spring-boot | 111 | 0 | 0 | 5 | 0 | 5 | 10 | 8 |
+| spring-boot | 111 | 0 | 0 | 5 | 0 | 6 | 11 | 9 |
 
 ## Pendientes por tema
 
@@ -130,6 +130,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 - [spring-boot · módulo 25](../web/public/content/spring-boot/modulo-25.md) · Tema 4: test binder y límites de la prueba: modificación, conexión con un proyecto.
 - [spring-boot · módulo 4](../web/public/content/spring-boot/modulo-4.md) · Tema 4: Reducir SSRF en clientes HTTP con InetAddressFilter: conexión con un proyecto.
 - [spring-boot · módulo 4](../web/public/content/spring-boot/modulo-4.md) · Tema 5: Flujo de login completo — de `/api/auth/login` a una ruta protegida: límites.
+- [spring-boot · módulo 6](../web/public/content/spring-boot/modulo-6.md) · Tema 1: Probar un controller con `@WebMvcTest`: modificación, conexión con un proyecto, límites.
 - [spring-boot · módulo 8](../web/public/content/spring-boot/modulo-8.md) · Tema 1: Producers y consumers con Spring Kafka: límites.
 - [spring-boot · módulo 8](../web/public/content/spring-boot/modulo-8.md) · Tema 3: Productor idempotente y transacciones (exactly-once): límites.
 

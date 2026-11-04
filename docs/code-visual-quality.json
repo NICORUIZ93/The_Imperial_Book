@@ -99,8 +99,8 @@
     "spring-boot": {
       "topics": 111,
       "code": 111,
-      "commentedCode": 65,
-      "mermaid": 54,
+      "commentedCode": 64,
+      "mermaid": 53,
       "archifyVisual": 3,
       "asciiVisual": 13,
       "misleadingDiagramLabel": 0,
@@ -2806,6 +2806,13 @@
       "track": "spring-boot",
       "module": 4,
       "topic": "Tema 4: Reducir SSRF en clientes HTTP con InetAddressFilter",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 6,
+      "topic": "Tema 1: Probar un controller con `@WebMvcTest`",
       "missingCode": false,
       "missingComments": true
     },

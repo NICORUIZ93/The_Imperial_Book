@@ -4346,7 +4346,7 @@
       "track": "spring-boot",
       "module": 6,
       "position": 1,
-      "title": "Slices de testing — @WebMvcTest",
+      "title": "Probar un controller con `@WebMvcTest`",
       "file": "web/public/content/spring-boot/modulo-6.md",
       "requires": [
         "spring-boot:5:3"

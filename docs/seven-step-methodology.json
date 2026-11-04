@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 74,
-      "prerequisites": 87,
-      "context": 74,
-      "theoryAnalogy": 74,
-      "guidedDemo": 74,
+      "objective": 73,
+      "prerequisites": 86,
+      "context": 73,
+      "theoryAnalogy": 73,
+      "guidedDemo": 73,
       "codeExplanation": 111,
       "execution": 105,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 74,
-      "independentPractice": 74,
-      "closure": 74,
-      "commonErrors": 74,
-      "resources": 81,
-      "standaloneExample": 71,
+      "guidedPractice": 73,
+      "independentPractice": 73,
+      "closure": 73,
+      "commonErrors": 73,
+      "resources": 80,
+      "standaloneExample": 70,
       "learningEvidence": 83,
-      "complete": 70
+      "complete": 69
     }
   },
   "topics": {
@@ -30653,28 +30653,28 @@
       },
       {
         "module": 6,
-        "topic": "Tema 1: Slices de testing — @WebMvcTest",
+        "topic": "Tema 1: Probar un controller con `@WebMvcTest`",
         "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "objective": false,
+          "prerequisites": false,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 5,
+          "complete": false
         }
       },
       {

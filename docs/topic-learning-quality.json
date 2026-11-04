@@ -224,15 +224,15 @@
       "topics": 111,
       "explanation": 111,
       "code": 111,
-      "visual": 71,
+      "visual": 70,
       "filePath": 111,
       "runCommand": 106,
       "expectedResult": 111,
-      "practice": 106,
-      "project": 101,
+      "practice": 105,
+      "project": 100,
       "modelMental": 111,
-      "limitsDecision": 103,
-      "practicable": 93,
+      "limitsDecision": 102,
+      "practicable": 92,
       "genericScaffold": 0,
       "repeatedDemo": 0
     }
@@ -25941,22 +25941,22 @@
       },
       {
         "module": 6,
-        "topic": "Tema 1: Slices de testing — @WebMvcTest",
+        "topic": "Tema 1: Probar un controller con `@WebMvcTest`",
         "criteria": {
           "explanation": true,
           "code": true,
-          "visual": true,
+          "visual": false,
           "filePath": true,
           "runCommand": true,
           "expectedResult": true,
-          "practice": true,
-          "project": true,
+          "practice": false,
+          "project": false,
           "modelMental": true,
-          "limitsDecision": true
+          "limitsDecision": false
         },
         "classification": {
-          "rubricScore": 16,
-          "practicable": true,
+          "rubricScore": 9,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }

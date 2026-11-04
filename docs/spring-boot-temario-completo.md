@@ -137,7 +137,10 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
 
 [Abrir lección completa](../web/public/content/spring-boot/modulo-6.md)
 
-- [pendiente de migrar] Tema 1: Slices de testing — @WebMvcTest
+- [pendiente de migrar] Tema 1: Probar un controller con `@WebMvcTest`
+  - pendiente Subtema 6.1 · Recortar la prueba a la web (10 min)
+  - pendiente Subtema 6.2 · Ver la validación y el error JSON (10 min)
+  - pendiente Subtema 6.3 · Diagnosticar una dependencia que falta (10 min)
 - [pendiente de migrar] Tema 2: @DataJpaTest con Testcontainers
 - [pendiente de migrar] Tema 3: @SpringBootTest completo y estrategia de pirámide de tests
 

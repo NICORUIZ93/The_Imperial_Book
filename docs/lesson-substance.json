@@ -1696,7 +1696,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "24c5b32547eda8223f3863226d6722a756781fb564c6f1572a2adb096aced626",
+    "fingerprint": "4cd9d3b1e5acd87991ec1618fcaa1e6aea98a1fe9412c42c1a726e29c03ad98e",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10948,9 +10948,9 @@
       {
         "issues": [],
         "module": 6,
-        "tailWords": 182,
-        "topic": "Tema 1: Slices de testing — @WebMvcTest",
-        "words": 1224
+        "tailWords": 0,
+        "topic": "Tema 1: Probar un controller con `@WebMvcTest`",
+        "words": 731
       },
       {
         "issues": [],

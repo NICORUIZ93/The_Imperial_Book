@@ -94,8 +94,8 @@
     "spring-boot": {
       "topics": 111,
       "completeTopics": 35,
-      "topicsWith3to6Subtopics": 37,
-      "subtopics": 111,
+      "topicsWith3to6Subtopics": 38,
+      "subtopics": 114,
       "completeSubtopics": 109
     }
   },
@@ -14288,9 +14288,52 @@
       },
       {
         "module": 6,
-        "topic": "### Tema 1: Slices de testing — @WebMvcTest",
-        "subtopicCount": 0,
-        "subtopics": [],
+        "topic": "### Tema 1: Probar un controller con `@WebMvcTest`",
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "6.1",
+            "title": "#### Subtema 6.1 · Recortar la prueba a la web (10 min)",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": false
+            },
+            "complete": false
+          },
+          {
+            "id": "6.2",
+            "title": "#### Subtema 6.2 · Ver la validación y el error JSON (10 min)",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": false
+            },
+            "complete": false
+          },
+          {
+            "id": "6.3",
+            "title": "#### Subtema 6.3 · Diagnosticar una dependencia que falta (10 min)",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": false,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": false
+            },
+            "complete": false
+          }
+        ],
         "complete": false
       },
       {

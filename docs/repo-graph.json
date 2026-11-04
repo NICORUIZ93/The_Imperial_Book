@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 485,
+      "lines": 512,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 14547,
+      "lines": 14590,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -600,7 +600,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3766,
+      "lines": 3773,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13580,
+      "lines": 13582,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -677,7 +677,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 139,
+      "lines": 140,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 397,
+      "lines": 400,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -12097,23 +12097,23 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-6.md",
-      "lines": 494,
+      "lines": 436,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
       "headings": [
         "# M\u00f3dulo 6: Testing en Spring Boot",
         "## Aprende construyendo",
-        "### Tema 1: Slices de testing \u2014 @WebMvcTest",
+        "### Tema 1: Probar un controller con `@WebMvcTest`",
+        "#### Subtema 6.1 \u00b7 Recortar la prueba a la web (10 min)",
+        "#### Subtema 6.2 \u00b7 Ver la validaci\u00f3n y el error JSON (10 min)",
+        "#### Subtema 6.3 \u00b7 Diagnosticar una dependencia que falta (10 min)",
+        "#### Entiende y cierra",
+        "### Tema 2: @DataJpaTest con Testcontainers",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda con analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
-        "### Tema 2: @DataJpaTest con Testcontainers",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero"
       ]
     },
     {

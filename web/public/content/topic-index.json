@@ -5200,8 +5200,8 @@
     ],
     "6": [
       {
-        "title": "Slices de testing — @WebMvcTest",
-        "fragment": "tema-1-slices-de-testing-webmvctest"
+        "title": "Probar un controller con `@WebMvcTest`",
+        "fragment": "tema-1-probar-un-controller-con-webmvctest"
       },
       {
         "title": "@DataJpaTest con Testcontainers",
