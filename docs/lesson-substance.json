@@ -1696,7 +1696,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "f0d9c45aa9ec4a0b100990a81d0388235f81e206bc5614be1fd63da8702f7434",
+    "fingerprint": "77957b89b77bf9da96e3336cc593ef1205d5b6c3ed5b18ddf8e5db4291fa23f0",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10899,9 +10899,9 @@
       {
         "issues": [],
         "module": 4,
-        "tailWords": 185,
+        "tailWords": 0,
         "topic": "Tema 2: Filtro JWT y autorización por rol",
-        "words": 1535
+        "words": 1700
       },
       {
         "issues": [],

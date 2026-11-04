@@ -215,89 +215,141 @@ El filtro que definiste protege el backend acumulativo del proyecto integrador; 
 
 ### Tema 2: Filtro JWT y autorización por rol
 
-#### Paso 1 · Objetivo y preparación
+Al terminar, podrás firmar y validar un JWT, conectarlo a la cadena de Spring Security y restringir una operación por rol. El backend de los Temas 1–3 sigue siendo `academia-spring`.
 
-Al finalizar podrás implementar un filtro que valida un JWT real en cada petición, y proteger un endpoint con `@PreAuthorize` según el rol contenido en ese token.
+**¿Por qué es importante?** Una firma válida prueba quién emitió el token y que no se alteró; la autorización separa qué operaciones puede ejecutar cada usuario. Si el filtro no entra en la cadena o el rol se traduce mal, la API puede rechazar a todos o abrir acciones sensibles.
 
-**Conocimiento previo:** Tema 1 de este módulo (SecurityFilterChain).
+#### Subtema 4.4 · Firmar y validar un token · 10 min
 
-#### Paso 2 · Contexto y caso real
+**Contexto:** el Tema 1 dejó las rutas privadas con HTTP Basic. Ahora el cliente enviará un token firmado en cada llamada; no guardaremos una sesión en el servidor.
 
-**¿Por qué es importante?** Una API stateless (sin sesiones en el servidor) necesita identificar al usuario en cada petición sin mantener estado; un JWT firmado transporta esa identidad de forma verificable sin que el servidor necesite recordar nada entre peticiones, y el rol contenido en él determina qué operaciones puede realizar.
+**Hazlo tú:** desde `academia-spring`, añade a `pom.xml` las dependencias de JJWT. Usa la misma versión para los tres módulos:
 
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** validación de token en cada request, `SecurityContextHolder`, `@PreAuthorize`.
-
-Un filtro que extiende `OncePerRequestFilter` (garantizando que se ejecute exactamente una vez por petición) extrae el token JWT del header `Authorization`, lo valida criptográficamente, y si es válido establece la identidad autenticada en el `SecurityContextHolder` — el mecanismo central que el resto de Spring Security consulta para saber quién es el usuario actual. `@PreAuthorize("hasRole('ADMIN')")` sobre un método de controller verifica, antes de ejecutarlo, que el usuario autenticado tenga el rol requerido, devolviendo `403` automáticamente si no lo tiene.
-
-**Analogía:** el filtro JWT es un control de identidad en la entrada que verifica las credenciales de cada visitante y le entrega una etiqueta visible con su identidad verificada; `@PreAuthorize` es un letrero en la puerta de una sala específica que solo permite el paso a visitantes con cierta etiqueta, rechazando automáticamente a cualquiera sin ella.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-  A["Authorization: Bearer <token>"] --> B[JwtFilter extrae y valida el token]
-  B -->|válido| C[SecurityContextHolder: identidad establecida]
-  B -->|inválido/ausente| D[SecurityContextHolder vacío -> 401 en ruta protegida]
-  C --> E["@PreAuthorize verifica el rol -> 200 o 403"]
+```xml
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-api</artifactId>
+    <version>0.13.0</version>
+</dependency>
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-impl</artifactId>
+    <version>0.13.0</version>
+    <scope>runtime</scope>
+</dependency>
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-jackson</artifactId>
+    <version>0.13.0</version>
+    <scope>runtime</scope>
+</dependency>
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+En `src/main/resources/application.properties`, lee el secreto de una variable de entorno. No escribas la clave en Java ni en Git:
 
-Reutiliza `academia-spring` (o créalo desde una carpeta vacía con `mkdir -p academia-spring` si es tu primera vez), agrega la dependencia real `io.jsonwebtoken:jjwt-api` (más `jjwt-impl` y `jjwt-jackson` en runtime) y crea `src/main/java/com/academia/seguridad/JwtService.java`:
+```properties
+security.jwt.secret-base64=${JWT_SECRET_BASE64}
+```
+
+En una terminal local, genera una clave de 32 bytes y arranca los comandos Maven desde `academia-spring`:
 
 ```bash
-mkdir -p academia-spring/src/main/java/com/academia/seguridad
-cd academia-spring
+export JWT_SECRET_BASE64="$(openssl rand -base64 32)"
+./mvnw -q compile
 ```
 
+Crea `src/main/java/com/example/demo/JwtService.java`:
+
 ```java
-// src/main/java/com/academia/seguridad/JwtService.java
-package com.academia.seguridad;
+package com.example.demo;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.stereotype.Service;
-
-import javax.crypto.SecretKey;
+import java.time.Instant;
 import java.util.Date;
+import javax.crypto.SecretKey;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 @Service
 public class JwtService {
-    private final SecretKey clave = Keys.hmacShaKeyFor("clave-de-prueba-academia-floci-32-bytes-min".getBytes());
+    private final SecretKey key;
+
+    public JwtService(@Value("${security.jwt.secret-base64}") String secretBase64) {
+        this.key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretBase64));
+    }
 
     public String generar(String usuario, String rol) {
+        Instant ahora = Instant.now();
         return Jwts.builder()
             .subject(usuario)
             .claim("rol", rol)
-            .issuedAt(new Date())
-            .expiration(new Date(System.currentTimeMillis() + 3_600_000))
-            .signWith(clave)
+            .issuedAt(Date.from(ahora))
+            .expiration(Date.from(ahora.plusSeconds(900)))
+            .signWith(key)
             .compact();
     }
 
-    public io.jsonwebtoken.Claims validar(String token) {
-        return Jwts.parser().verifyWith(clave).build().parseSignedClaims(token).getPayload();
+    public Claims validar(String token) {
+        return Jwts.parser().verifyWith(key).build()
+            .parseSignedClaims(token).getPayload();
     }
 }
 ```
 
-```java
-// src/main/java/com/academia/seguridad/JwtFilter.java
-package com.academia.seguridad;
+Crea `src/test/java/com/example/demo/JwtServiceTest.java` para probar el firmante sin iniciar Spring:
 
+```java
+package com.example.demo;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
+
+class JwtServiceTest {
+    private static final String CLAVE_DE_PRUEBA = "VVFRc3BzQVFzZXJ0T0xhbkt0ZUd4cHlsU21pSnhhOFM=";
+
+    @Test
+    void tokenFirmadoConservaUsuarioYRol() {
+        var service = new JwtService(CLAVE_DE_PRUEBA);
+        var claims = service.validar(service.generar("ana-1", "ADMIN"));
+        assertEquals("ana-1", claims.getSubject());
+        assertEquals("ADMIN", claims.get("rol", String.class));
+    }
+}
+```
+
+**Resultado esperado:** `./mvnw -q -Dtest=JwtServiceTest test` pasa. Un token generado dura 15 minutos; `validar` solo devuelve sus claims después de comprobar firma y vencimiento.
+
+**Fallo deliberado y diagnóstico:** cambia temporalmente `.signWith(key)` por `.signWith(Keys.hmacShaKeyFor(new byte[32]))` y ejecuta `./mvnw -q -Dtest=JwtServiceTest test`. El test lanza error al validar el token recién firmado: compara la clave de firma con la de verificación y restaura `.signWith(key)`.
+
+**Entiende:** Base64 representa los bytes de la clave; no la cifra ni la vuelve secreta. JJWT necesita una clave aleatoria con longitud suficiente y recomienda no convertir una frase común con `getBytes()`. `verifyWith` fija la clave de verificación; `parseSignedClaims` también comprueba las fechas estándar del token. **Analogía:** firma y verificación son una cerradura y su llave compartida. Referencia primaria: [JJWT — instalación y firmas](https://github.com/jwtk/jjwt#installation).
+
+**Cierra:** guarda `JwtService` y comprueba que el valor real de producción no quedó escrito en archivos versionados.
+
+#### Subtema 4.5 · Poner el filtro dentro de Spring Security · 10 min
+
+**Contexto:** validar una cadena no protege rutas por sí solo. Spring debe ejecutar el filtro antes de autorización y crear la identidad de la petición.
+
+**Hazlo tú:** crea `src/main/java/com/example/demo/JwtFilter.java`:
+
+```java
+package com.example.demo;
+
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
-import java.io.IOException;
-import java.util.List;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
@@ -306,32 +358,71 @@ public class JwtFilter extends OncePerRequestFilter {
     public JwtFilter(JwtService jwtService) { this.jwtService = jwtService; }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
-            throws jakarta.servlet.ServletException, IOException {
-        String header = req.getHeader("Authorization");
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+            FilterChain chain) throws ServletException, IOException {
+        String header = request.getHeader("Authorization");
         if (header != null && header.startsWith("Bearer ")) {
             try {
                 var claims = jwtService.validar(header.substring(7));
                 String rol = claims.get("rol", String.class);
-                var auth = new UsernamePasswordAuthenticationToken(
-                    claims.getSubject(), null, List.of(new SimpleGrantedAuthority("ROLE_" + rol)));
-                SecurityContextHolder.getContext().setAuthentication(auth);
-            } catch (Exception tokenInvalido) {
-                // token presente pero inválido: se deja sin autenticar, la ruta protegida rechazará con 401
+                var authentication = new UsernamePasswordAuthenticationToken(
+                    claims.getSubject(), null,
+                    List.of(new SimpleGrantedAuthority("ROLE_" + rol)));
+                SecurityContext context = SecurityContextHolder.createEmptyContext();
+                context.setAuthentication(authentication);
+                SecurityContextHolder.setContext(context);
+            } catch (JwtException | IllegalArgumentException tokenInvalido) {
+                SecurityContextHolder.clearContext();
             }
         }
-        chain.doFilter(req, res);
+        chain.doFilter(request, response);
     }
 }
 ```
 
-**Explicación línea por línea:** `JwtService.generar` firma un token real con una clave HMAC, incluyendo el rol como claim personalizado; `JwtFilter.doFilterInternal` extrae el token del header `Authorization`, lo valida con la MISMA clave, y si es válido construye una identidad autenticada con el rol como `GrantedAuthority` (`ROLE_` es el prefijo que Spring Security espera para `hasRole(...)`); un token ausente o inválido simplemente deja la petición sin autenticar, delegando el rechazo a las reglas de `authorizeHttpRequests` del Tema 1.
-
-Agrega un endpoint protegido por rol y confirma con `MockMvc` real, usando tokens generados por el propio `JwtService`, los tres escenarios: sin token, con token de rol insuficiente, y con token del rol correcto:
+Reemplaza el método `filterChain` de `src/main/java/com/example/demo/SecurityConfig.java`. Conserva los imports de clase y añade los que aparecen aquí; el `FilterRegistrationBean` desactiva el registro automático del servlet para evitar ejecutar el filtro dos veces:
 
 ```java
-// src/main/java/com/academia/seguridad/AdminController.java (agregar al RutasController o en archivo nuevo)
-package com.academia.seguridad;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+@EnableMethodSecurity
+@Configuration
+public class SecurityConfig {
+    @Bean
+    SecurityFilterChain filterChain(HttpSecurity http, JwtFilter jwtFilter) throws Exception {
+        return http
+            .csrf(AbstractHttpConfigurer::disable)
+            .formLogin(AbstractHttpConfigurer::disable)
+            .httpBasic(AbstractHttpConfigurer::disable)
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/public/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                .anyRequest().authenticated())
+            .exceptionHandling(errors -> errors.authenticationEntryPoint(
+                new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
+            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+            .build();
+    }
+
+    @Bean
+    FilterRegistrationBean<JwtFilter> desactivarRegistroDelServlet(JwtFilter jwtFilter) {
+        var registration = new FilterRegistrationBean<>(jwtFilter);
+        registration.setEnabled(false);
+        return registration;
+    }
+}
+```
+
+Agrega a `src/main/java/com/example/demo/AdminController.java` una operación que exija rol:
+
+```java
+package com.example.demo;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -340,21 +431,39 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class AdminController {
-
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @DeleteMapping("/api/entregas/{id}")
-    public void eliminar(@PathVariable Long id) { /* elimina la entrega */ }
+    public void eliminar(@PathVariable long id) { }
 }
 ```
 
+**Resultado esperado:** `./mvnw -q compile` compila el filtro y la regla de rol. La cadena sigue permitiendo salud y OpenAPI; las rutas restantes requieren identidad.
+
+**Fallo deliberado y diagnóstico:** quita `/public/**` de los `requestMatchers` y ejecuta `./mvnw -q -Dtest=SecurityFilterChainTest test`. La ruta de salud deja de ser pública y el test obtiene `401` en vez de `200`; revisa la regla de rutas y restaura el matcher.
+
+**Entiende:** `OncePerRequestFilter` lee el encabezado una vez. `SecurityContextHolder` guarda la identidad para esta petición. `ROLE_ADMIN` es una autoridad; `@EnableMethodSecurity` activa `@PreAuthorize`. Sin identidad, la regla responde `401`; una identidad sin autoridad suficiente recibe `403`. En la práctica, el filtro revisa la credencial en la entrada y `@PreAuthorize` revisa el permiso de esta operación.
+
+**Cierra:** deja el filtro integrado con `addFilterBefore` y los tests del Tema 1 verdes.
+
+#### Subtema 4.6 · Probar identidad, rol y firma · 10 min
+
+**Contexto:** un `@WithMockUser` prueba una regla con identidad simulada, pero no prueba el JWT. Este test firma y valida tokens reales con el servicio del subtema 4.4.
+
+**Hazlo tú:** crea `src/test/resources/application.properties` con una clave de prueba de 32 bytes. Este valor solo es para tests; producción usa `JWT_SECRET_BASE64`:
+
+```properties
+security.jwt.secret-base64=VVFRc3BzQVFzZXJ0T0xhbkt0ZUd4cHlsU21pSnhhOFM=
+```
+
+Crea `src/test/java/com/example/demo/JwtFilterTest.java`:
+
 ```java
-// src/test/java/com/academia/seguridad/JwtFilterTest.java
-package com.academia.seguridad;
+package com.example.demo;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -363,72 +472,50 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 class JwtFilterTest {
-
-    @Autowired
-    private MockMvc mockMvc;
-    @Autowired
-    private JwtService jwtService;
+    @Autowired MockMvc mockMvc;
+    @Autowired JwtService jwtService;
 
     @Test
-    void sinTokenLaRutaProtegidaResponde401() throws Exception {
-        mockMvc.perform(delete("/api/entregas/1")).andExpect(status().isUnauthorized());
+    void sinTokenResponde401() throws Exception {
+        mockMvc.perform(delete("/api/entregas/42")).andExpect(status().isUnauthorized());
     }
 
     @Test
-    void conRolInsuficienteResponde403() throws Exception {
-        String token = jwtService.generar("conductor1", "DRIVER");
-        mockMvc.perform(delete("/api/entregas/1").header("Authorization", "Bearer " + token))
+    void rolDriverResponde403() throws Exception {
+        String token = jwtService.generar("conductor-7", "DRIVER");
+        mockMvc.perform(delete("/api/entregas/42").header("Authorization", "Bearer " + token))
             .andExpect(status().isForbidden());
     }
 
     @Test
-    void conRolAdminResponde200() throws Exception {
-        String token = jwtService.generar("admin1", "ADMIN");
-        mockMvc.perform(delete("/api/entregas/1").header("Authorization", "Bearer " + token))
+    void rolAdminResponde200() throws Exception {
+        String token = jwtService.generar("admin-1", "ADMIN");
+        mockMvc.perform(delete("/api/entregas/42").header("Authorization", "Bearer " + token))
             .andExpect(status().isOk());
+    }
+
+    @Test
+    void firmaAlteradaResponde401() throws Exception {
+        String[] partes = jwtService.generar("admin-1", "ADMIN").split("\\.");
+        String primerCaracter = partes[2].charAt(0) == 'A' ? "B" : "A";
+        String tokenAlterado = partes[0] + "." + partes[1] + "." + primerCaracter + partes[2].substring(1);
+        mockMvc.perform(delete("/api/entregas/42").header("Authorization", "Bearer " + tokenAlterado))
+            .andExpect(status().isUnauthorized());
     }
 }
 ```
 
-```bash
-mvn test -Dtest=JwtFilterTest           # Maven
-./gradlew test --tests JwtFilterTest    # Gradle (equivalente)
-```
+Desde la raíz del proyecto ejecuta `./mvnw -q -Dtest=JwtFilterTest test` y después `./mvnw -q clean test`.
 
-**Resultado esperado:** `BUILD SUCCESS` con los 3 tests en verde: sin token, `401`; con un token real firmado pero de rol `DRIVER`, `403` (autenticado pero sin el rol requerido); con un token real de rol `ADMIN`, `200` — los tres casos usan tokens JWT genuinamente generados y validados por `JwtService`, no simulados.
+**Resultado esperado:** los cuatro tests específicos pasan: `401` sin token, `403` para `DRIVER`, `200` para `ADMIN`, y `401` cuando cambia un carácter de la firma. La suite completa conserva también las pruebas de JPA, Flyway y OpenAPI.
 
-**Fallo deliberado:** en `JwtFilterTest`, genera el token con `jwtService.generar("admin1", "ADMIN")` pero fírmalo con una clave distinta modificando temporalmente `JwtService` para usar `Keys.hmacShaKeyFor("otra-clave-completamente-diferente-32-bytes".getBytes())` solo en la generación (no en la validación). Ejecuta de nuevo `conRolAdminResponde200` — el test FALLA porque `jwtService.validar(...)` lanza una excepción real de firma inválida (`SignatureException`), y el filtro deja la petición sin autenticar, resultando en `401` en vez del `200` esperado — diagnostica confirmando que un JWT no es válido por su estructura o contenido, sino por estar firmado con la clave exacta que el servidor usa para verificarlo. Revierte el cambio antes de continuar.
+**Fallo deliberado y diagnóstico:** cambia `"ROLE_" + rol` por `rol` en `JwtFilter` y ejecuta `./mvnw -q -Dtest=JwtFilterTest#rolAdminResponde200 test`. Obtendrás `403` en lugar de `200`: el controller pide `ROLE_ADMIN`, pero el filtro ya no añade el prefijo. Restaura el prefijo.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**Entiende:** un JWT firmado no está cifrado: no pongas contraseñas ni secretos en sus claims. El HMAC usa el mismo secreto para firmar y verificar; en microservicios reales, repartir ese secreto a cada API también permitiría que cada API emita tokens. Normalmente un proveedor de identidad firma y los servicios validan con claves públicas/JWKS; Spring Security incluye un resource server JWT para ese caso: [Spring Security — JWT Resource Server](https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html).
 
-1. Agrega un segundo rol (`OPERATOR`) al endpoint (`hasAnyRole('ADMIN', 'OPERATOR')`) y confirma con un token de cada rol que ambos obtienen `200`.
-2. Genera un token con `JwtService.generar` pero con una fecha de expiración ya pasada (modifica temporalmente `expiration` a `new Date(System.currentTimeMillis() - 1000)`) y confirma que `validar(...)` lanza una excepción real de token expirado.
-3. Agrega un segundo endpoint protegido con un rol distinto y confirma que un token válido de un rol no da acceso al endpoint del otro rol.
-4. Escribe de memoria (sin mirar) un filtro que extraiga un header `Authorization`, valide un JWT, y establezca la identidad en `SecurityContextHolder`. Compara después contra el patrón del Paso 4.
+**Práctica:** agrega un segundo método que exija `ROLE_DRIVER` y confirma que el mismo token ADMIN obtiene `403` allí. **Cuándo no usar este filtro casero:** si la API valida tokens emitidos por un proveedor de identidad, prefiere el resource server oficial de Spring Security. **Cierra:** conserva la suite verde y la salida del test de firma alterada. En el proyecto integrador, el login del Módulo 4 Tema 5 debe reutilizar `JwtService`; no guardes claves en el repositorio.
 
-**Pista:** un `403` significa "autenticado pero sin permiso"; un `401` significa "no autenticado en absoluto" — si tu test espera uno y obtiene el otro, el problema está en un lugar distinto del que asumías.
-
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio para exigir el rol `ADMIN` antes de ejecutar el método:
-
-```java
-@____("hasRole('ADMIN')")
-@DeleteMapping("/api/entregas/{id}")
-public void eliminar(@PathVariable Long id) { }
-```
-
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un test `MockMvc` que confirme `401` sin token, `403` con rol insuficiente, y `200` con el rol correcto, usando un `JwtService` real. Compara después contra el patrón del Paso 4.
-
-#### Paso 7 · Cierre y evidencia
-
-Ya validas identidad mediante un JWT real firmado criptográficamente, y proteges endpoints por rol con `@PreAuthorize`, confirmando los tres códigos de estado relevantes con tokens genuinamente generados. El siguiente tema aborda dos protecciones adicionales específicas del navegador: CORS y CSRF. **Evidencia:** entrega el resultado de los 3 tests de `JwtFilterTest` en verde, y el resultado del fallo deliberado mostrando el rechazo por firma inválida. Fuente oficial: [Spring Security — JWT](https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html).
-
-**Errores comunes:** guardar el JWT completo en logs de la aplicación, exponiendo el token de sesión de un usuario si esos logs se filtran; confundir `401` (no autenticado) con `403` (autenticado pero sin permiso) al diagnosticar un fallo de acceso.
-
-**Cuándo no usarlo:** para una aplicación con sesiones tradicionales basadas en cookies del lado del servidor (no una API stateless consumida por múltiples clientes), la autenticación por sesión de Spring Security sin JWT es más simple y apropiada.
-
-El filtro JWT y la autorización por rol de este tema son los que protegen el proyecto integrador de este track (microservicio productivo, Módulo 12).
+---
 
 ### Tema 3: CORS y CSRF
 

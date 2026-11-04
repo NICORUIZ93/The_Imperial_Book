@@ -99,8 +99,8 @@
     "spring-boot": {
       "topics": 111,
       "code": 111,
-      "commentedCode": 67,
-      "mermaid": 54,
+      "commentedCode": 66,
+      "mermaid": 53,
       "archifyVisual": 4,
       "asciiVisual": 15,
       "misleadingDiagramLabel": 0,
@@ -2792,6 +2792,13 @@
       "track": "spring-boot",
       "module": 25,
       "topic": "Tema 4: test binder y límites de la prueba",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 4,
+      "topic": "Tema 2: Filtro JWT y autorización por rol",
       "missingCode": false,
       "missingComments": true
     },

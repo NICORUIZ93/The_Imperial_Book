@@ -93,10 +93,10 @@
     },
     "spring-boot": {
       "topics": 111,
-      "completeTopics": 29,
-      "topicsWith3to6Subtopics": 30,
-      "subtopics": 90,
-      "completeSubtopics": 89
+      "completeTopics": 30,
+      "topicsWith3to6Subtopics": 31,
+      "subtopics": 93,
+      "completeSubtopics": 92
     }
   },
   "topics": {
@@ -13939,9 +13939,52 @@
       {
         "module": 4,
         "topic": "### Tema 2: Filtro JWT y autorización por rol",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "4.4",
+            "title": "#### Subtema 4.4 · Firmar y validar un token · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "4.5",
+            "title": "#### Subtema 4.5 · Poner el filtro dentro de Spring Security · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "4.6",
+            "title": "#### Subtema 4.6 · Probar identidad, rol y firma · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 4,

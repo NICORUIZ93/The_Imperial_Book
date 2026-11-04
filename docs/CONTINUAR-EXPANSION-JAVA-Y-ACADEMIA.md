@@ -89,8 +89,8 @@ reapliques cambios que ya estén publicados.
 
 ## Estado global honesto
 
-En la auditoría actual: **133/1185 temas** cumplen la estructura atómica en los
-14 tracks: Java 101, Spring Boot 29, Node 2 y Flutter 1. La auditoría pedagógica detecta
+En la auditoría actual: **134/1185 temas** cumplen la estructura atómica en los
+14 tracks: Java 101, Spring Boot 30, Node 2 y Flutter 1. La auditoría pedagógica detecta
 **1095/1185 temas practicables** y deuda en 90. La auditoría de sustancia registra
 409 temas con defectos, deuda histórica repartida entre varios tracks. Ninguna de
 estas cifras certifica que un curso esté completo o que todos los ejemplos se
@@ -322,3 +322,33 @@ sido ejecutados ni sustituyen revisión pedagógica humana.
 Revisa la implementación completa de token, validación criptográfica, filtro,
 roles y respuestas 401/403; confirma primero versiones y APIs vigentes en
 documentación primaria y ejecuta los ejemplos antes de publicar el tema.
+
+Spring Boot M4 T2, “Filtro JWT y autorización por rol”, se rehízo con tres
+subtemas acumulativos: firmar/verificar con JJWT, conectar `OncePerRequestFilter`
+correctamente a `SecurityFilterChain`, y verificar token/rol/firma con MockMvc.
+Se actualizó JJWT a 0.13.0 según el README primario. La clave HMAC llega por
+`JWT_SECRET_BASE64`, no desde el código; se documentan el modo stateless, el
+registro de filtro desactivado en el contenedor para evitar doble ejecución,
+`@EnableMethodSecurity`, y el prefijo `ROLE_`. El ejemplo responde `401` sin
+identidad o con firma alterada, `403` a `DRIVER` y `200` a `ADMIN`. Se conserva
+CSRF desactivado solo para esta API sin sesión/cookie, y se explica que un HMAC
+compartido no es la opción para repartir confianza entre microservicios; se
+enlaza el resource server oficial como opción de producción.
+
+La suite del backend temporal Boot 4.1.2/JDK 25 pasó completa: **21 pruebas**,
+sin fallos ni omisiones. `JwtServiceTest` también valida localmente el subject y
+el rol del token firmado antes de probar la cadena HTTP. Se provocaron y restauraron los tres fallos deliberados:
+clave de firma distinta hizo que el test ADMIN recibiera `401`; quitar
+`/public/**` hizo que salud recibiera `401`; quitar `ROLE_` hizo que el endpoint
+ADMIN recibiera `403`. También se verificó la firma alterada. Ningún código de
+aplicación temporal se copió al repo. Tras el tema, la auditoría registra
+**134/1185 temas atómicos**: Java 101, Spring Boot 30, Node 2 y Flutter 1;
+**1095/1185 practicables** y 409 temas con defectos de sustancia. Se regeneraron
+reportes y `./scripts/validate.sh` pasó con 23 pruebas y 4 omitidas. Estas métricas no certifican los demás temas ni sustituyen revisión humana.
+
+**Siguiente tema:** Spring Boot M4 T3, “CORS y CSRF”. Revisa si continúa el mismo
+backend y la cadena stateless/JWT de M4 T2, distingue CORS de CSRF, y comprueba
+con peticiones reales qué respuesta ve el navegador y cuál recibe el servidor.
+Más adelante, M4 T5 conserva una versión antigua de `JwtService` bajo otro
+paquete; al revisar ese tema, alinéala con `com.example.demo.JwtService` y no
+introduzcas una segunda clave ni una segunda implementación.

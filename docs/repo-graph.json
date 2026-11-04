@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 325,
+      "lines": 355,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 14246,
+      "lines": 14289,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -314,7 +314,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1116,
+      "lines": 1115,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -600,7 +600,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3752,
+      "lines": 3759,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13566,
+      "lines": 13568,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 376,
+      "lines": 379,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -12055,7 +12055,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-4.md",
-      "lines": 909,
+      "lines": 996,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12067,11 +12067,11 @@
         "#### Subtema 4.2 \u00b7 Verificar 200, 401 y usuario autenticado \u00b7 10 min",
         "#### Subtema 4.3 \u00b7 Decidir qu\u00e9 rutas son p\u00fablicas \u00b7 10 min",
         "### Tema 2: Filtro JWT y autorizaci\u00f3n por rol",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda con analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva"
+        "#### Subtema 4.4 \u00b7 Firmar y validar un token \u00b7 10 min",
+        "#### Subtema 4.5 \u00b7 Poner el filtro dentro de Spring Security \u00b7 10 min",
+        "#### Subtema 4.6 \u00b7 Probar identidad, rol y firma \u00b7 10 min",
+        "### Tema 3: CORS y CSRF",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
