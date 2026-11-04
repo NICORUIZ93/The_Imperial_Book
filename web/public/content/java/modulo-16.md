@@ -13,7 +13,7 @@ La progresión importa: `EAGER` significa que la asociación debe estar disponib
 
 ### Tema 1: Entidades y relaciones JPA
 
-**Por qué importa:** el mapeo conecta objetos con filas; el lado propietario escribe la clave foránea.
+**¿Por qué es importante?** el mapeo conecta objetos con filas; el lado propietario escribe la clave foránea.
 
 #### Subtema 1.1: Guarda una relación de cliente y pedido · 10 min
 
@@ -86,9 +86,11 @@ CascadeType propaga operaciones JPA; no equivale a ON DELETE de la base.
 
 Guarda el test y la política elegida. Fuente: [Jakarta Persistence](https://jakarta.ee/specifications/persistence/).
 
+**Comprueba persistencia:** guarda una entidad dentro de una transacción y vuelve a leerla en un contexto nuevo. Así distingues un objeto en memoria de un cambio confirmado en la base. Usa un DTO si la respuesta HTTP no debe exponer asociaciones internas. Elige relaciones según ciclo de vida: una parada puede pertenecer a un envío; una ciudad suele compartirse. No pongas todas las relaciones en `EAGER`; cada caso de uso debe traer lo que necesita. Fuente: https://jakarta.ee/specifications/persistence/.
+
 ### Tema 2: FetchType.LAZY, EAGER y el problema N+1
 
-**Por qué importa:** cada pedido puede disparar una consulta adicional al cargar su cliente.
+**¿Por qué es importante?** cada pedido puede disparar una consulta adicional al cargar su cliente.
 
 #### Subtema 2.1: Accede a una relación lazy en su contexto · 10 min
 
@@ -156,9 +158,13 @@ La consulta y su fetch plan se eligen según la operación, no para toda la apli
 
 Anota campos de listado y de detalle.
 
+**Cuenta consultas:** carga diez envíos y accede a `paradas` de cada uno. Si aparece una consulta por envío, el total crece con la lista: es N+1. Repite con `EntityGraph` o `join fetch` y compara consultas y filas. No pongas todo en `EAGER`: otra pantalla puede no necesitar paradas. Registra el SQL del caso real y decide qué asociaciones leer antes de serializar. Fuentes: https://docs.hibernate.org/orm/6.6/introduction/html_single/ y https://jakarta.ee/specifications/persistence/4.0/apidocs/jakarta.persistence/jakarta/persistence/entitygraph.
+
+**Comprueba el caso de pantalla:** pide solo los campos que la lista presenta y abre luego un envío para pedir su detalle. Compara ambos SQL; cada vista tiene una necesidad distinta.
+
 ### Tema 3: Relaciones uno a uno, muchos a muchos y herencia
 
-**Por qué importa:** cardinalidad y herencia cambian claves, restricciones y consultas.
+**¿Por qué es importante?** cardinalidad y herencia cambian claves, restricciones y consultas.
 
 #### Subtema 3.1: Impide dos perfiles para el mismo cliente · 10 min
 
@@ -226,9 +232,13 @@ Cada estrategia intercambia joins, columnas nulas y costo de consultas.
 
 Guarda la consulta y el criterio de elección. Fuente: [Jakarta Persistence](https://jakarta.ee/specifications/persistence/).
 
+**Elige por datos y propiedad:** muchos-a-muchos funciona si la unión no tiene datos propios. Si guarda fecha, estado o prioridad, crea una entidad intermedia como `AsignacionEnvio`. En asociaciones bidireccionales identifica el lado que escribe la clave foránea y actualiza ambos objetos desde un método de dominio. Antes de elegir herencia, comprueba el SQL y las tablas de cada estrategia. Fuente: https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2.html.
+
+**Verifica propiedad:** persiste ambos lados y consulta la clave foránea generada. En una relación intermedia revisa que sus campos propios puedan guardarse y consultarse.
+
 ### Tema 4: Ciclo de vida, EntityManager y consultas tipadas
 
-**Por qué importa:** el estado administrado determina si JPA detecta un cambio.
+**¿Por qué es importante?** el estado administrado determina si JPA detecta un cambio.
 
 #### Subtema 4.1: Separa flush de clear · 10 min
 
@@ -296,9 +306,15 @@ Los estados son nuevo, administrado, separado y eliminado.
 
 Anota en qué estado está cada referencia. Fuente: [EntityManager y Jakarta Persistence](https://jakarta.ee/specifications/persistence/).
 
+**Observa estados:** `persist` pasa la entidad nueva a administrada; al cerrar el contexto queda separada. Si la cambias mientras está administrada, el proveedor puede generar `UPDATE` durante `flush`, aunque no llames a `save` otra vez. Prueba `persist`, `find`, `flush` y `clear`; vuelve a leer para ver qué sobrevivió. En JPQL, enlaza parámetros en vez de concatenar datos de usuario. Fuente: https://jakarta.ee/specifications/platform/11/apidocs/jakarta/persistence/EntityManager.html.
+
+**Resultado esperado:** después de `clear`, una lectura nueva muestra solo los cambios confirmados; si no hubo commit, el cambio no debe tratarse como persistido.
+
+Un test debe abrir una transacción, guardar un envío, llamar `flush()` para enviar SQL y luego `clear()` para quitarlo del contexto. Si lees la misma instancia sin limpiar, podrías estar viendo memoria y no la base. Prueba la consulta tipada con un parámetro que no coincide y explica por qué devuelve una lista vacía.
+
 ### Tema 5: Búsquedas dinámicas con Criteria y Querydsl
 
-**Por qué importa:** filtros combinables requieren consultas seguras y mantenibles.
+**¿Por qué es importante?** filtros combinables requieren consultas seguras y mantenibles.
 
 #### Subtema 5.1: Busca por prefijo con Criteria · 10 min
 
@@ -366,9 +382,15 @@ Querydsl agrega generación de código; úsalo si compensa su costo de configura
 
 Registra versión, imports y resultados comparados. Fuente: [Querydsl](https://querydsl.com/).
 
+**Compara consultas:** extrae filtros Criteria en funciones pequeñas como `porCiudad` y pruébalos con y sin valor. Criteria forma parte de Jakarta Persistence; Querydsl requiere plugin y generación de tipos en el build. Confirma que se genere antes de compilar y que CI lo ejecute desde cero. Para una consulta fija y corta, JPQL con parámetros puede ser más legible. Fuente: https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3-2.html.
+
+**Resultado esperado:** quitar un filtro opcional amplía los resultados sin cambiar el orden ni concatenar texto del usuario en la consulta. Registra cuántas filas devolvió cada caso.
+
+Con Querydsl, inspecciona el archivo de tipos generado y confirma que el plugin de generación corre en una copia limpia antes de compilar. Con Criteria, mantén cada filtro opcional en un bloque pequeño y verificable. Si los filtros son fijos y pocos, compara la complejidad con una consulta JPQL parametrizada antes de sumar otra herramienta al build.
+
 ### Tema 6: EntityGraph y cachés de persistencia
 
-**Por qué importa:** el fetch plan selecciona asociaciones por operación; caché requiere medir y controlar consistencia.
+**¿Por qué es importante?** el fetch plan selecciona asociaciones por operación; caché requiere medir y controlar consistencia.
 
 #### Subtema 6.1: Carga detalle con EntityGraph · 10 min
 
@@ -436,9 +458,13 @@ Caché de segundo nivel es opcional y necesita política de consistencia.
 
 Guarda medición y decisión.
 
+**Distingue herramientas:** `EntityGraph` describe asociaciones deseadas para una operación; no es una caché ni obliga al proveedor a traer solo esos datos. La caché de primer nivel vive en el contexto actual; la de segundo nivel requiere configuración e invalidación. Compara SQL con y sin grafo y repite después de limpiar el contexto para no medir una entidad ya administrada. Fuentes: https://jakarta.ee/specifications/persistence/4.0/apidocs/jakarta.persistence/jakarta/persistence/entitygraph y https://docs.hibernate.org/orm/6.6/introduction/html_single/.
+
+**Comprobación:** compara conteo de consultas en un contexto recién creado y en el mismo contexto. Anota si cambió por el grafo o por una entidad ya administrada.
+
 ### Tema 7: Concurrencia, transacciones y propagación
 
-**Por qué importa:** dos operadores pueden cambiar el mismo envío; el sistema debe detectar conflicto y decidir rollback.
+**¿Por qué es importante?** dos operadores pueden cambiar el mismo envío; el sistema debe detectar conflicto y decidir rollback.
 
 #### Subtema 7.1: Detecta una actualización perdida · 10 min
 
@@ -506,9 +532,15 @@ Optimista valida al confirmar; pesimista bloquea durante operación.
 
 Guarda prueba y decisión. Fuente: [Jakarta Persistence](https://jakarta.ee/specifications/persistence/).
 
+**Prueba la última unidad:** ejecuta dos reservas concurrentes con una unidad disponible; solo una puede confirmarse. `@Version` detecta una escritura cambiada desde la lectura y permite devolver conflicto o reintentar con límite. Mantén las transacciones cortas; no retengas una conexión durante una llamada HTTP. Una transacción agrupa trabajo de base de datos, pero no hace seguro un objeto compartido entre hilos. Fuente: https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3-2.html.
+
+**Resultado esperado:** una reserva confirma, la otra recibe conflicto y la cantidad final permanece en cero; repite el caso para descartar un resultado casual.
+
+Una transacción aplicada por proxy afecta llamadas que atraviesan ese proxy; una llamada interna del mismo objeto puede no iniciar el límite esperado. Prueba el caso desde otro servicio. Evita mantener la transacción abierta mientras llamas un proveedor HTTP: registra la intención, confirma cambios de base y coordina lo externo con un mecanismo adecuado al negocio.
+
 ### Tema 8: Migraciones y pruebas JPA con Testcontainers
 
-**Por qué importa:** el esquema de producción debe cambiar con migraciones rastreables y pruebas del motor real.
+**¿Por qué es importante?** el esquema de producción debe cambiar con migraciones rastreables y pruebas del motor real.
 
 #### Subtema 8.1: Versiona un cambio de esquema · 10 min
 
@@ -577,3 +609,4 @@ La prueba del motor real verifica SQL y rollback del proveedor, no solo objetos 
 Guarda migración, error y consulta de comprobación.
 
 ---
+**Alcance de la prueba:** el contenedor comprueba PostgreSQL, pero no certifica la configuración productiva. Fija la imagen, aplica migraciones a una base vacía y prueba actualizar desde una versión anterior. No edites un script aplicado: crea otro con versión siguiente para reproducir el cambio. Explica qué tests necesitan Docker y cómo correrlos junto con pruebas rápidas. Fuentes: https://java.testcontainers.org/modules/databases/postgres/ y https://documentation.red-gate.com/flyway/flyway-concepts/migrations.

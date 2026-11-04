@@ -15,8 +15,8 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | Resultado | 1183 | 2 |
 | Modificación | 1132 | 53 |
 | Conexión con un proyecto | 1113 | 72 |
-| Modelo mental | 1138 | 47 |
-| Límites | 1135 | 50 |
+| Modelo mental | 1185 | 0 |
+| Límites | 1136 | 49 |
 | **Perfil de criterios detectado** | **1095** | **90** |
 
 ## Prioridad por track
@@ -30,7 +30,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | flutter | 106 | 0 | 0 | 0 | 0 | 0 | 1 | 1 |
 | foundations | 99 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ios | 56 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| java | 101 | 39 | 0 | 58 | 0 | 47 | 60 | 40 |
+| java | 101 | 39 | 0 | 58 | 0 | 47 | 60 | 39 |
 | javascript | 88 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | kotlin-multiplatform | 56 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | node | 83 | 0 | 0 | 0 | 0 | 1 | 2 | 1 |
@@ -48,40 +48,40 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 - [java · módulo 1](../web/public/content/java/modulo-1.md) · Tema 1: Clases, objetos, constructores y encapsulación: modificación, conexión con un proyecto.
 - [java · módulo 1](../web/public/content/java/modulo-1.md) · Tema 2: Herencia y sobreescritura: modificación, límites.
 - [java · módulo 1](../web/public/content/java/modulo-1.md) · Tema 3: Interfaces, clases abstractas y cuándo usar cada una: modificación.
-- [java · módulo 10](../web/public/content/java/modulo-10.md) · Tema 1: module-info.java y encapsulación fuerte: código, ejecución, modificación, conexión con un proyecto, modelo mental, límites.
-- [java · módulo 10](../web/public/content/java/modulo-10.md) · Tema 2: Migración incremental y cuándo JPMS aporta valor: código, ejecución, modificación, conexión con un proyecto, modelo mental.
-- [java · módulo 10](../web/public/content/java/modulo-10.md) · Tema 3: opens para acceso reflexivo controlado de frameworks: código, ejecución, modificación, conexión con un proyecto, modelo mental.
-- [java · módulo 11](../web/public/content/java/modulo-11.md) · Tema 1: Generaciones de memoria y recolectores: código, ejecución, modificación, conexión con un proyecto, modelo mental, límites.
-- [java · módulo 11](../web/public/content/java/modulo-11.md) · Tema 2: Java Flight Recorder y JIT compilation: código, ejecución, modificación, conexión con un proyecto, modelo mental.
-- [java · módulo 11](../web/public/content/java/modulo-11.md) · Tema 3: Referencias especiales y heap dumps: código, ejecución, modificación, conexión con un proyecto, modelo mental.
-- [java · módulo 11](../web/public/content/java/modulo-11.md) · Tema 4: Foreign Function & Memory API (Java 22): ejecución, modificación, conexión con un proyecto, modelo mental.
-- [java · módulo 12](../web/public/content/java/modulo-12.md) · Tema 1: Builder — configuración paso a paso y validación: código, ejecución, conexión con un proyecto, modelo mental, límites.
-- [java · módulo 12](../web/public/content/java/modulo-12.md) · Tema 2: Factory Method y Strategy: código, ejecución, modificación, conexión con un proyecto, modelo mental, límites.
-- [java · módulo 12](../web/public/content/java/modulo-12.md) · Tema 3: Abstract Factory y familias de productos compatibles: código, ejecución, modificación, conexión con un proyecto, modelo mental, límites.
-- [java · módulo 12](../web/public/content/java/modulo-12.md) · Tema 4: SOLID y cuándo NO aplicar un patrón: código, ejecución, modificación, conexión con un proyecto, modelo mental.
-- [java · módulo 12](../web/public/content/java/modulo-12.md) · Tema 5: Prototype: copiar un objeto sin compartir sus datos: código, ejecución, conexión con un proyecto, modelo mental, límites.
-- [java · módulo 12](../web/public/content/java/modulo-12.md) · Tema 6: Patrones estructurales para conectar piezas existentes: código, ejecución, conexión con un proyecto, modelo mental, límites.
-- [java · módulo 13](../web/public/content/java/modulo-13.md) · Tema 1: Arquitectura por capas del proyecto integrador: código, ejecución, modificación, modelo mental, límites.
-- [java · módulo 13](../web/public/content/java/modulo-13.md) · Tema 2: Integrando concurrencia, modelado y testing: código, ejecución, modificación, conexión con un proyecto, modelo mental.
-- [java · módulo 13](../web/public/content/java/modulo-13.md) · Tema 3: Build reproducible y cierre del track: código, ejecución, modificación, conexión con un proyecto, modelo mental, límites.
-- [java · módulo 14](../web/public/content/java/modulo-14.md) · Tema 1: Compartir memoria requiere orden y visibilidad: código, ejecución, modificación, conexión con un proyecto, modelo mental, límites.
-- [java · módulo 14](../web/public/content/java/modulo-14.md) · Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo: código, ejecución, modificación, conexión con un proyecto, modelo mental.
-- [java · módulo 14](../web/public/content/java/modulo-14.md) · Tema 3: Deserializar es permitir construcción y comportamiento: código, ejecución, conexión con un proyecto, modelo mental.
-- [java · módulo 14](../web/public/content/java/modulo-14.md) · Tema 4: El runtime es parte del artefacto y necesita ciclo de vida: código, ejecución, conexión con un proyecto, modelo mental, límites.
-- [java · módulo 15](../web/public/content/java/modulo-15.md) · Tema 1: Maven avanzado: código, ejecución, modificación, conexión con un proyecto, modelo mental, límites.
-- [java · módulo 15](../web/public/content/java/modulo-15.md) · Tema 2: Gradle y builds reproducibles: código, ejecución, modificación, conexión con un proyecto, modelo mental, límites.
-- [java · módulo 15](../web/public/content/java/modulo-15.md) · Tema 3: Proyectos multi-módulo sin ciclos: código, ejecución, modificación, conexión con un proyecto, modelo mental.
-- [java · módulo 15](../web/public/content/java/modulo-15.md) · Tema 4: JUnit 5, Mockito y assertions expresivas: código, ejecución, modificación, conexión con un proyecto, modelo mental.
-- [java · módulo 15](../web/public/content/java/modulo-15.md) · Tema 5: Pruebas de integración reproducibles: ejecución, modificación, conexión con un proyecto, modelo mental.
-- [java · módulo 15](../web/public/content/java/modulo-15.md) · Tema 6: SLF4J, Logback, MDC y logging estructurado: código, ejecución, modificación, conexión con un proyecto, modelo mental.
-- [java · módulo 16](../web/public/content/java/modulo-16.md) · Tema 1: Entidades y relaciones JPA: código, modificación, conexión con un proyecto, modelo mental, límites.
-- [java · módulo 16](../web/public/content/java/modulo-16.md) · Tema 2: FetchType.LAZY, EAGER y el problema N+1: código, ejecución, modificación, conexión con un proyecto, modelo mental, límites.
-- [java · módulo 16](../web/public/content/java/modulo-16.md) · Tema 3: Relaciones uno a uno, muchos a muchos y herencia: código, ejecución, modificación, conexión con un proyecto, modelo mental, límites.
-- [java · módulo 16](../web/public/content/java/modulo-16.md) · Tema 4: Ciclo de vida, EntityManager y consultas tipadas: código, ejecución, conexión con un proyecto, modelo mental, límites.
-- [java · módulo 16](../web/public/content/java/modulo-16.md) · Tema 5: Búsquedas dinámicas con Criteria y Querydsl: código, ejecución, modificación, conexión con un proyecto, modelo mental, límites.
-- [java · módulo 16](../web/public/content/java/modulo-16.md) · Tema 6: EntityGraph y cachés de persistencia: código, ejecución, modificación, conexión con un proyecto, modelo mental, límites.
-- [java · módulo 16](../web/public/content/java/modulo-16.md) · Tema 7: Concurrencia, transacciones y propagación: código, ejecución, modificación, conexión con un proyecto, modelo mental.
-- [java · módulo 16](../web/public/content/java/modulo-16.md) · Tema 8: Migraciones y pruebas JPA con Testcontainers: código, ejecución, conexión con un proyecto, modelo mental, límites.
+- [java · módulo 10](../web/public/content/java/modulo-10.md) · Tema 1: module-info.java y encapsulación fuerte: código, ejecución, modificación, conexión con un proyecto, límites.
+- [java · módulo 10](../web/public/content/java/modulo-10.md) · Tema 2: Migración incremental y cuándo JPMS aporta valor: código, ejecución, modificación, conexión con un proyecto.
+- [java · módulo 10](../web/public/content/java/modulo-10.md) · Tema 3: opens para acceso reflexivo controlado de frameworks: código, ejecución, modificación, conexión con un proyecto.
+- [java · módulo 11](../web/public/content/java/modulo-11.md) · Tema 1: Generaciones de memoria y recolectores: código, ejecución, modificación, conexión con un proyecto, límites.
+- [java · módulo 11](../web/public/content/java/modulo-11.md) · Tema 2: Java Flight Recorder y JIT compilation: código, ejecución, modificación, conexión con un proyecto.
+- [java · módulo 11](../web/public/content/java/modulo-11.md) · Tema 3: Referencias especiales y heap dumps: código, ejecución, modificación, conexión con un proyecto.
+- [java · módulo 11](../web/public/content/java/modulo-11.md) · Tema 4: Foreign Function & Memory API (Java 22): ejecución, modificación, conexión con un proyecto.
+- [java · módulo 12](../web/public/content/java/modulo-12.md) · Tema 1: Builder — configuración paso a paso y validación: código, ejecución, conexión con un proyecto, límites.
+- [java · módulo 12](../web/public/content/java/modulo-12.md) · Tema 2: Factory Method y Strategy: código, ejecución, modificación, conexión con un proyecto, límites.
+- [java · módulo 12](../web/public/content/java/modulo-12.md) · Tema 3: Abstract Factory y familias de productos compatibles: código, ejecución, modificación, conexión con un proyecto, límites.
+- [java · módulo 12](../web/public/content/java/modulo-12.md) · Tema 4: SOLID y cuándo NO aplicar un patrón: código, ejecución, modificación, conexión con un proyecto.
+- [java · módulo 12](../web/public/content/java/modulo-12.md) · Tema 5: Prototype: copiar un objeto sin compartir sus datos: código, ejecución, conexión con un proyecto, límites.
+- [java · módulo 12](../web/public/content/java/modulo-12.md) · Tema 6: Patrones estructurales para conectar piezas existentes: código, ejecución, conexión con un proyecto, límites.
+- [java · módulo 13](../web/public/content/java/modulo-13.md) · Tema 1: Arquitectura por capas del proyecto integrador: código, ejecución, modificación, límites.
+- [java · módulo 13](../web/public/content/java/modulo-13.md) · Tema 2: Integrando concurrencia, modelado y testing: código, ejecución, modificación, conexión con un proyecto.
+- [java · módulo 13](../web/public/content/java/modulo-13.md) · Tema 3: Build reproducible y cierre del track: código, ejecución, modificación, conexión con un proyecto, límites.
+- [java · módulo 14](../web/public/content/java/modulo-14.md) · Tema 1: Compartir memoria requiere orden y visibilidad: código, ejecución, modificación, conexión con un proyecto, límites.
+- [java · módulo 14](../web/public/content/java/modulo-14.md) · Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo: código, ejecución, modificación, conexión con un proyecto.
+- [java · módulo 14](../web/public/content/java/modulo-14.md) · Tema 3: Deserializar es permitir construcción y comportamiento: código, ejecución, conexión con un proyecto.
+- [java · módulo 14](../web/public/content/java/modulo-14.md) · Tema 4: El runtime es parte del artefacto y necesita ciclo de vida: código, ejecución, conexión con un proyecto, límites.
+- [java · módulo 15](../web/public/content/java/modulo-15.md) · Tema 1: Maven avanzado: código, ejecución, modificación, conexión con un proyecto, límites.
+- [java · módulo 15](../web/public/content/java/modulo-15.md) · Tema 2: Gradle y builds reproducibles: código, ejecución, modificación, conexión con un proyecto, límites.
+- [java · módulo 15](../web/public/content/java/modulo-15.md) · Tema 3: Proyectos multi-módulo sin ciclos: código, ejecución, modificación, conexión con un proyecto.
+- [java · módulo 15](../web/public/content/java/modulo-15.md) · Tema 4: JUnit 5, Mockito y assertions expresivas: código, ejecución, modificación, conexión con un proyecto.
+- [java · módulo 15](../web/public/content/java/modulo-15.md) · Tema 5: Pruebas de integración reproducibles: ejecución, modificación, conexión con un proyecto.
+- [java · módulo 15](../web/public/content/java/modulo-15.md) · Tema 6: SLF4J, Logback, MDC y logging estructurado: código, ejecución, modificación, conexión con un proyecto.
+- [java · módulo 16](../web/public/content/java/modulo-16.md) · Tema 1: Entidades y relaciones JPA: código, modificación, conexión con un proyecto, límites.
+- [java · módulo 16](../web/public/content/java/modulo-16.md) · Tema 2: FetchType.LAZY, EAGER y el problema N+1: código, ejecución, modificación, conexión con un proyecto, límites.
+- [java · módulo 16](../web/public/content/java/modulo-16.md) · Tema 3: Relaciones uno a uno, muchos a muchos y herencia: código, ejecución, modificación, conexión con un proyecto, límites.
+- [java · módulo 16](../web/public/content/java/modulo-16.md) · Tema 4: Ciclo de vida, EntityManager y consultas tipadas: código, ejecución, conexión con un proyecto, límites.
+- [java · módulo 16](../web/public/content/java/modulo-16.md) · Tema 5: Búsquedas dinámicas con Criteria y Querydsl: código, ejecución, modificación, conexión con un proyecto, límites.
+- [java · módulo 16](../web/public/content/java/modulo-16.md) · Tema 6: EntityGraph y cachés de persistencia: código, ejecución, modificación, conexión con un proyecto, límites.
+- [java · módulo 16](../web/public/content/java/modulo-16.md) · Tema 7: Concurrencia, transacciones y propagación: código, ejecución, modificación, conexión con un proyecto.
+- [java · módulo 16](../web/public/content/java/modulo-16.md) · Tema 8: Migraciones y pruebas JPA con Testcontainers: código, ejecución, conexión con un proyecto, límites.
 - [java · módulo 2](../web/public/content/java/modulo-2.md) · Tema 1: List, Set, Map y sus implementaciones: modificación, límites.
 - [java · módulo 2](../web/public/content/java/modulo-2.md) · Tema 2: Genéricos, wildcards y type erasure: modificación.
 - [java · módulo 2](../web/public/content/java/modulo-2.md) · Tema 3: Comparable vs Comparator, e iteración: límites.
@@ -95,23 +95,23 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 - [java · módulo 20](../web/public/content/java/modulo-20.md) · Tema 11: Streams paralelos: comparar antes de acelerarlos: ejecución, conexión con un proyecto, límites.
 - [java · módulo 20](../web/public/content/java/modulo-20.md) · Tema 12: Pureza y efectos: calcular separado de guardar o imprimir: ejecución, conexión con un proyecto, límites.
 - [java · módulo 20](../web/public/content/java/modulo-20.md) · Tema 13: Flow API: publicar datos con demanda y cierre: ejecución, conexión con un proyecto.
-- [java · módulo 5](../web/public/content/java/modulo-5.md) · Tema 5: Structured Concurrency (StructuredTaskScope, Java 25): modificación, conexión con un proyecto, modelo mental, límites.
-- [java · módulo 5](../web/public/content/java/modulo-5.md) · Tema 6: Scoped Values frente a ThreadLocal (Java 25): ejecución, modificación, conexión con un proyecto, modelo mental.
+- [java · módulo 5](../web/public/content/java/modulo-5.md) · Tema 5: Structured Concurrency (StructuredTaskScope, Java 25): modificación, conexión con un proyecto, límites.
+- [java · módulo 5](../web/public/content/java/modulo-5.md) · Tema 6: Scoped Values frente a ThreadLocal (Java 25): ejecución, modificación, conexión con un proyecto.
 - [java · módulo 5](../web/public/content/java/modulo-5.md) · Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos: ejecución, modificación.
 - [java · módulo 6](../web/public/content/java/modulo-6.md) · Tema 1: NIO.2 — Path y Files: ejecución, modificación.
 - [java · módulo 6](../web/public/content/java/modulo-6.md) · Tema 2: Serialización con Jackson: ejecución, modificación, conexión con un proyecto.
 - [java · módulo 6](../web/public/content/java/modulo-6.md) · Tema 3: Archivos grandes y recursos del classpath: ejecución, modificación, límites.
-- [java · módulo 7](../web/public/content/java/modulo-7.md) · Tema 1: record — modelos inmutables sin boilerplate: ejecución, conexión con un proyecto, modelo mental, límites.
-- [java · módulo 7](../web/public/content/java/modulo-7.md) · Tema 2: sealed — jerarquías cerradas y exhaustividad: ejecución, modificación, conexión con un proyecto, modelo mental, límites.
-- [java · módulo 7](../web/public/content/java/modulo-7.md) · Tema 3: Pattern matching exhaustivo y para instanceof: ejecución, modificación, conexión con un proyecto, modelo mental, límites.
-- [java · módulo 7](../web/public/content/java/modulo-7.md) · Tema 4: Unnamed variables y patterns (_, Java 22): ejecución, modificación, conexión con un proyecto, modelo mental, límites.
-- [java · módulo 8](../web/public/content/java/modulo-8.md) · Tema 1: pom.xml vs build.gradle.kts: código, modificación, conexión con un proyecto, modelo mental, límites.
-- [java · módulo 8](../web/public/content/java/modulo-8.md) · Tema 2: Ciclo de vida de build y scopes: código, ejecución, modificación, conexión con un proyecto, modelo mental.
-- [java · módulo 8](../web/public/content/java/modulo-8.md) · Tema 3: Proyectos multi-módulo: código, ejecución, conexión con un proyecto, modelo mental, límites.
-- [java · módulo 8](../web/public/content/java/modulo-8.md) · Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas: código, ejecución, modificación, conexión con un proyecto, modelo mental.
-- [java · módulo 9](../web/public/content/java/modulo-9.md) · Tema 1: JUnit 5 — anotaciones y ciclo de vida: código, ejecución, conexión con un proyecto, modelo mental, límites.
-- [java · módulo 9](../web/public/content/java/modulo-9.md) · Tema 2: Mockito — aislar dependencias: código, ejecución, modificación, conexión con un proyecto, modelo mental, límites.
-- [java · módulo 9](../web/public/content/java/modulo-9.md) · Tema 3: Tests parametrizados y cobertura: código, ejecución, modificación, conexión con un proyecto, modelo mental.
+- [java · módulo 7](../web/public/content/java/modulo-7.md) · Tema 1: record — modelos inmutables sin boilerplate: ejecución, conexión con un proyecto, límites.
+- [java · módulo 7](../web/public/content/java/modulo-7.md) · Tema 2: sealed — jerarquías cerradas y exhaustividad: ejecución, modificación, conexión con un proyecto.
+- [java · módulo 7](../web/public/content/java/modulo-7.md) · Tema 3: Pattern matching exhaustivo y para instanceof: ejecución, modificación, conexión con un proyecto, límites.
+- [java · módulo 7](../web/public/content/java/modulo-7.md) · Tema 4: Unnamed variables y patterns (_, Java 22): ejecución, modificación, conexión con un proyecto, límites.
+- [java · módulo 8](../web/public/content/java/modulo-8.md) · Tema 1: pom.xml vs build.gradle.kts: código, modificación, conexión con un proyecto, límites.
+- [java · módulo 8](../web/public/content/java/modulo-8.md) · Tema 2: Ciclo de vida de build y scopes: código, ejecución, modificación, conexión con un proyecto.
+- [java · módulo 8](../web/public/content/java/modulo-8.md) · Tema 3: Proyectos multi-módulo: código, ejecución, conexión con un proyecto, límites.
+- [java · módulo 8](../web/public/content/java/modulo-8.md) · Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas: código, ejecución, modificación, conexión con un proyecto.
+- [java · módulo 9](../web/public/content/java/modulo-9.md) · Tema 1: JUnit 5 — anotaciones y ciclo de vida: código, ejecución, conexión con un proyecto, límites.
+- [java · módulo 9](../web/public/content/java/modulo-9.md) · Tema 2: Mockito — aislar dependencias: código, ejecución, modificación, conexión con un proyecto, límites.
+- [java · módulo 9](../web/public/content/java/modulo-9.md) · Tema 3: Tests parametrizados y cobertura: código, ejecución, modificación, conexión con un proyecto.
 - [node · módulo 14](../web/public/content/node/modulo-14.md) · Tema 7: Kafka desde Node: clave, grupo consumidor y offset: conexión con un proyecto, límites.
 - [node · módulo 14](../web/public/content/node/modulo-14.md) · Tema 8: RabbitMQ desde Node: exchange, cola y confirmaciones: modificación, conexión con un proyecto.
 - [spring-boot · módulo 10](../web/public/content/spring-boot/modulo-10.md) · Tema 1: Config Server y service discovery: límites.

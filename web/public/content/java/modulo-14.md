@@ -7,7 +7,7 @@ El proyecto anterior usa concurrencia y produce un artefacto reproducible. Para 
 
 ### Tema 1: Compartir memoria requiere orden y visibilidad
 
-**Por qué importa:** varios hilos pueden observar estado compartido en momentos distintos; `volatile` aporta visibilidad, pero no convierte operaciones compuestas en atómicas.
+**¿Por qué es importante?** varios hilos pueden observar estado compartido en momentos distintos; `volatile` aporta visibilidad, pero no convierte operaciones compuestas en atómicas.
 
 #### Subtema 1.1: Detén un hilo con un flag visible · 10 min
 
@@ -77,7 +77,7 @@ Guarda el invariante antes y después y nombra el lock que lo protege. Fuente: [
 
 ### Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo
 
-**Por qué importa:** el resultado de una medición puede incluir calentamiento o trabajo que el compilador elimina; usa JMH para organizar las mediciones.
+**¿Por qué es importante?** el resultado de una medición puede incluir calentamiento o trabajo que el compilador elimina; usa JMH para organizar las mediciones.
 
 **Preparación:** crea un proyecto Maven con el arquetipo oficial JMH indicado por [OpenJDK JMH](https://openjdk.org/projects/code-tools/jmh/).
 
@@ -149,7 +149,7 @@ Guarda salida, entorno, parámetros y conclusión provisional. Fuente: [OpenJDK 
 
 ### Tema 3: Deserializar es permitir construcción y comportamiento
 
-**Por qué importa:** datos serializados pueden intentar construir tipos inesperados; limitar la entrada antes de aceptar objetos es más seguro que confiar en su origen.
+**¿Por qué es importante?** datos serializados pueden intentar construir tipos inesperados; limitar la entrada antes de aceptar objetos es más seguro que confiar en su origen.
 
 #### Subtema 3.1: Reconoce por qué evitar datos nativos no confiables · 10 min
 
@@ -219,7 +219,7 @@ Conserva los dos tests fallidos y el límite adoptado.
 
 ### Tema 4: El runtime es parte del artefacto y necesita ciclo de vida
 
-**Por qué importa:** el JDK, los módulos incluidos y el proceso de actualización forman parte de lo que se despliega.
+**¿Por qué es importante?** el JDK, los módulos incluidos y el proceso de actualización forman parte de lo que se despliega.
 
 #### Subtema 4.1: Averigua qué módulos necesita el programa · 10 min
 

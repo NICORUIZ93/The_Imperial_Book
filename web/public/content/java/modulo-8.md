@@ -5,7 +5,7 @@
 
 ### Tema 1: pom.xml vs build.gradle.kts
 
-**Por qué importa:** el build describe cómo cualquier persona del equipo compila el mismo programa y obtiene sus dependencias.
+**¿Por qué es importante?** el build describe cómo cualquier persona del equipo compila el mismo programa y obtiene sus dependencias.
 
 #### Subtema 1.1: Compila una clase con Maven · 10 min
 
@@ -75,7 +75,7 @@ Guarda el árbol de dependencias de una herramienta. Fuentes: [guía Maven](http
 
 ### Tema 2: Ciclo de vida de build y scopes
 
-**Por qué importa:** una dependencia de prueba no debe filtrarse al artefacto de producción.
+**¿Por qué es importante?** una dependencia de prueba no debe filtrarse al artefacto de producción.
 
 #### Subtema 2.1: Sigue las fases de Maven · 10 min
 
@@ -143,9 +143,11 @@ En `build.gradle.kts` agrega JUnit a `testImplementation`, activa `useJUnitPlatf
 
 Anota una diferencia entre `implementation` y `testImplementation`.
 
+**Compara classpaths:** `mvn package` ejecuta fases previas y genera artefacto; scope `test` solo participa en pruebas. En Gradle, `testImplementation` expresa una intención parecida y `runtimeClasspath` muestra lo disponible al ejecutar. No supongas que un JAR normal incluye todas sus dependencias: revisa cómo se empaqueta y qué comando lo inicia. Así evitas filtrar JUnit a producción o desplegar sin una librería necesaria. Fuentes: https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html y https://docs.gradle.org/current/userguide/declaring_configurations.html.
+
 ### Tema 3: Proyectos multi-módulo
 
-**Por qué importa:** separar contratos y aplicación ayuda a detectar dependencias circulares antes de crecer el producto.
+**¿Por qué es importante?** separar contratos y aplicación ayuda a detectar dependencias circulares antes de crecer el producto.
 
 #### Subtema 3.1: Separa modelo y aplicación con Maven · 10 min
 
@@ -213,9 +215,11 @@ Los filtros de módulos aceleran tareas, pero el entorno debe contener o constru
 
 Registra el comando que usarías en CI para validar la app y sus dependencias.
 
+**Crea módulos por frontera:** separa `modelo` y `app` si la aplicación consume el modelo, no solo porque haya carpetas distintas. Revisa dependencias con `mvn dependency:tree` o `./gradlew :app:dependencies`; el módulo compartido no debe depender de la aplicación. El orden del build sale de esas relaciones declaradas, no de ejecutar comandos en un orden memorizado. Fuentes: https://maven.apache.org/guides/mini/guide-multiple-modules.html y https://docs.gradle.org/current/userguide/multi_project_builds.html.
+
 ### Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas
 
-**Por qué importa:** elegir build requiere comparar resultados y mantenimiento, no solo la longitud de la configuración.
+**¿Por qué es importante?** elegir build requiere comparar resultados y mantenimiento, no solo la longitud de la configuración.
 
 #### Subtema 4.1: Ejecuta el mismo test en ambas herramientas · 10 min
 
@@ -282,6 +286,8 @@ Maven ofrece convenciones estrictas; Gradle da un DSL programable y wrapper. Nin
 **4. Cierra**
 
 Entrega la nota y la razón de la elección. Fuentes: [Maven](https://maven.apache.org/guides/) y [Gradle](https://docs.gradle.org/current/userguide/).
+
+En esa nota registra versión del JDK, versión de ambos wrappers, comando exacto y salida del test. Si el resultado difiere, compara primero las dependencias resueltas y los argumentos de ejecución. No elijas por una sola medición de duración: repite los builds limpios y considera qué formato entiende y puede mantener el equipo. Revisa también cómo cada herramienta incorpora pruebas y dependencias al artefacto final.
 
 ---
 

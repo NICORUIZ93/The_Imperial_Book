@@ -5,7 +5,7 @@
 
 ### Tema 1: module-info.java y encapsulación fuerte
 
-**Por qué importa:** JPMS permite expresar dependencias y qué paquetes ofrece un componente; una clase pública no se vuelve API pública del módulo automáticamente.
+**¿Por qué es importante?** JPMS permite expresar dependencias y qué paquetes ofrece un componente; una clase pública no se vuelve API pública del módulo automáticamente.
 
 #### Subtema 1.1: Declara un módulo pequeño · 10 min
 
@@ -75,7 +75,7 @@ Conserva el diagnóstico del compilador y enumera el API que sí publicarías. F
 
 ### Tema 2: Migración incremental y cuándo JPMS aporta valor
 
-**Por qué importa:** un módulo explícito mejora límites, pero migrar una aplicación sin mapa de dependencias puede romper builds y librerías.
+**¿Por qué es importante?** un módulo explícito mejora límites, pero migrar una aplicación sin mapa de dependencias puede romper builds y librerías.
 
 #### Subtema 2.1: Inspecciona un JAR antes de modularizar · 10 min
 
@@ -143,9 +143,11 @@ JPMS aporta límites de lectura y publicación y detección de dependencias ause
 
 Escribe una condición concreta que haría valiosa la migración en tu proyecto.
 
+**Comprobación de migración:** antes de convertir otro componente, registra sus `requires`, `exports` y `opens`. `requires java.sql` declara una dependencia; `exports academia.api` publica el contrato; `opens academia.modelo` permite reflexión donde se necesita. Migra una porción pequeña y compila su consumidor. No uses `opens` global como arreglo rápido: oculta qué librería necesita acceso y debilita el encapsulamiento. Fuente primaria: https://openjdk.org/jeps/261.
+
 ### Tema 3: opens para acceso reflexivo controlado de frameworks
 
-**Por qué importa:** algunas librerías leen o escriben campos privados mediante reflexión; `opens` puede habilitar ese acceso de forma limitada.
+**¿Por qué es importante?** algunas librerías leen o escriben campos privados mediante reflexión; `opens` puede habilitar ese acceso de forma limitada.
 
 #### Subtema 3.1: Distingue exports de opens · 10 min
 

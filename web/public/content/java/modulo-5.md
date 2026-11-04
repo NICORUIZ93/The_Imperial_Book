@@ -484,6 +484,8 @@ Explica por qué el contador admite una operación atómica y el retiro necesita
 
 ### Tema 5: Structured Concurrency (StructuredTaskScope, Java 25)
 
+**¿Por qué es importante?** Si varias tareas forman una sola respuesta, su ciclo de vida debe mantenerse junto: un fallo no debería dejar cotizaciones huérfanas trabajando en segundo plano.
+
 **Aviso de versión:** `StructuredTaskScope` es una API preview en Java 25. Compila y ejecuta con `--enable-preview --release 25`; no la trates como API estable.
 
 #### Subtema 5.1: Espera resultados de tareas relacionadas · 10 min
@@ -598,6 +600,8 @@ Preview puede cambiar o retirarse en una versión futura. Registra la versión d
 Guarda el comando reproducible y la versión usada. Fuente oficial: [StructuredTaskScope, Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/StructuredTaskScope.html).
 
 ### Tema 6: Scoped Values frente a ThreadLocal (Java 25)
+
+**¿Por qué es importante?** El contexto de una solicitud debe acompañar su ejecución y dejar de estar disponible al terminar, para no mezclarse con la petición que reutilice el mismo hilo.
 
 #### Subtema 6.1: Comparte contexto durante una llamada · 10 min
 
@@ -750,33 +754,42 @@ El motor solicita una tarifa; si no llega pronto, debe mostrar que el servicio e
 Crea `src/Plazo.java`:
 
 ```java
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 
 public class Plazo {
     public static void main(String[] args) throws Exception {
-        var executor = Executors.newSingleThreadExecutor();
-        var futuro = executor.submit(() -> {
-            Thread.sleep(5000);
-            return "tarifa lista";
+        ExecutorService pool = Executors.newSingleThreadExecutor();
+        CountDownLatch started = new CountDownLatch(1);
+        Future<String> result = pool.submit(() -> {
+            started.countDown();
+            try {
+                Thread.sleep(10_000);
+                return "Respuesta";
+            } catch (InterruptedException error) {
+                Thread.currentThread().interrupt();
+                return "Cancelada";
+            }
         });
         try {
-            System.out.println(futuro.get(100, TimeUnit.MILLISECONDS));
-        } catch (TimeoutException tarde) {
-            futuro.cancel(true);
-            System.out.println("consulta cancelada");
+            started.await();
+            System.out.println(result.get(50, TimeUnit.MILLISECONDS));
+        } catch (TimeoutException error) {
+            result.cancel(true); // Solicita la interrupción de la tarea.
+            System.out.println("Plazo agotado");
         } finally {
-            executor.shutdownNow();
-            executor.awaitTermination(1, TimeUnit.SECONDS);
+            pool.shutdownNow();
+            if (!pool.awaitTermination(2, TimeUnit.SECONDS)) {
+                throw new IllegalStateException("La tarea no cooperó");
+            }
         }
+        System.out.println("Executor terminado");
     }
 }
 ```
 
 Compila y ejecuta `javac -d out src/Plazo.java` y `java -cp out Plazo`.
 
-**Resultado esperado:** imprime `consulta cancelada` y el proceso termina sin esperar cinco segundos.
+**Resultado esperado:** imprime `Plazo agotado` y `Executor terminado`; el ejecutor confirma que la tarea respondió a la interrupción.
 
 **Fallo deliberado:** quita el argumento de timeout de `get`. **Diagnóstico:** `get()` espera sin límite hasta que la tarea termine; restaura el límite explícito.
 

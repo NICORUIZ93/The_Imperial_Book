@@ -1698,14 +1698,13 @@
     }
   ],
   "summary": {
-    "fingerprint": "9db394fc203839837dcdb39d027c3c4cea01712f868005c03d52f36b70493c85",
+    "fingerprint": "b63eafa80dd7585e9eef18c82cad51ad0036f71dbdc89265ffec09172f9321a3",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
       "cola-tras-cierre": 331,
       "parrafo-repetido": 5,
-      "sin-fuente": 12,
-      "tema-breve": 20
+      "tema-breve": 2
     },
     "legacySections": {
       "## Construcción guiada del capítulo": 42,
@@ -1715,7 +1714,7 @@
     "modules": 256,
     "modulesWithLegacySections": 182,
     "topics": 1185,
-    "topicsWithIssues": 433
+    "topicsWithIssues": 409
   },
   "topics": {
     "android": [
@@ -7202,283 +7201,238 @@
         "module": 10,
         "tailWords": 0,
         "topic": "Tema 1: module-info.java y encapsulación fuerte",
-        "words": 511
+        "words": 512
       },
       {
-        "issues": [
-          "sin-fuente"
-        ],
+        "issues": [],
         "module": 10,
         "tailWords": 0,
         "topic": "Tema 2: Migración incremental y cuándo JPMS aporta valor",
-        "words": 494
+        "words": 560
       },
       {
         "issues": [],
         "module": 10,
         "tailWords": 0,
         "topic": "Tema 3: opens para acceso reflexivo controlado de frameworks",
-        "words": 592
+        "words": 593
       },
       {
         "issues": [],
         "module": 11,
         "tailWords": 0,
         "topic": "Tema 1: Generaciones de memoria y recolectores",
-        "words": 481
+        "words": 482
       },
       {
-        "issues": [
-          "tema-breve"
-        ],
+        "issues": [],
         "module": 11,
         "tailWords": 0,
         "topic": "Tema 2: Java Flight Recorder y JIT compilation",
-        "words": 444
+        "words": 531
       },
       {
         "issues": [],
         "module": 11,
         "tailWords": 0,
         "topic": "Tema 3: Referencias especiales y heap dumps",
-        "words": 470
+        "words": 471
       },
       {
         "issues": [],
         "module": 11,
         "tailWords": 0,
         "topic": "Tema 4: Foreign Function & Memory API (Java 22)",
-        "words": 535
+        "words": 536
       },
       {
-        "issues": [
-          "sin-fuente",
-          "tema-breve"
-        ],
+        "issues": [],
         "module": 12,
         "tailWords": 0,
         "topic": "Tema 1: Builder — configuración paso a paso y validación",
-        "words": 438
+        "words": 529
       },
       {
-        "issues": [
-          "sin-fuente",
-          "tema-breve"
-        ],
+        "issues": [],
         "module": 12,
         "tailWords": 0,
         "topic": "Tema 2: Factory Method y Strategy",
-        "words": 409
+        "words": 500
       },
       {
-        "issues": [
-          "sin-fuente",
-          "tema-breve"
-        ],
+        "issues": [],
         "module": 12,
         "tailWords": 0,
         "topic": "Tema 3: Abstract Factory y familias de productos compatibles",
-        "words": 405
+        "words": 489
       },
       {
         "issues": [],
         "module": 12,
         "tailWords": 0,
         "topic": "Tema 4: SOLID y cuándo NO aplicar un patrón",
-        "words": 463
+        "words": 464
       },
       {
-        "issues": [
-          "sin-fuente"
-        ],
+        "issues": [],
         "module": 12,
         "tailWords": 0,
         "topic": "Tema 5: Prototype: copiar un objeto sin compartir sus datos",
-        "words": 451
+        "words": 535
       },
       {
         "issues": [],
         "module": 12,
         "tailWords": 0,
         "topic": "Tema 6: Patrones estructurales para conectar piezas existentes",
-        "words": 451
+        "words": 452
       },
       {
-        "issues": [
-          "sin-fuente"
-        ],
+        "issues": [],
         "module": 13,
         "tailWords": 0,
         "topic": "Tema 1: Arquitectura por capas del proyecto integrador",
-        "words": 523
+        "words": 607
       },
       {
-        "issues": [
-          "sin-fuente"
-        ],
+        "issues": [],
         "module": 13,
         "tailWords": 0,
         "topic": "Tema 2: Integrando concurrencia, modelado y testing",
-        "words": 479
+        "words": 575
       },
       {
-        "issues": [
-          "sin-fuente"
-        ],
+        "issues": [],
         "module": 13,
         "tailWords": 0,
         "topic": "Tema 3: Build reproducible y cierre del track",
-        "words": 468
+        "words": 542
       },
       {
         "issues": [],
         "module": 14,
         "tailWords": 0,
         "topic": "Tema 1: Compartir memoria requiere orden y visibilidad",
-        "words": 523
+        "words": 524
       },
       {
         "issues": [],
         "module": 14,
         "tailWords": 0,
         "topic": "Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo",
-        "words": 466
+        "words": 467
       },
       {
         "issues": [],
         "module": 14,
         "tailWords": 0,
         "topic": "Tema 3: Deserializar es permitir construcción y comportamiento",
-        "words": 488
+        "words": 489
       },
       {
         "issues": [],
         "module": 14,
         "tailWords": 0,
         "topic": "Tema 4: El runtime es parte del artefacto y necesita ciclo de vida",
-        "words": 464
+        "words": 465
       },
       {
-        "issues": [
-          "tema-breve"
-        ],
+        "issues": [],
         "module": 15,
         "tailWords": 0,
         "topic": "Tema 1: Maven avanzado",
-        "words": 417
+        "words": 497
       },
       {
-        "issues": [
-          "tema-breve"
-        ],
+        "issues": [],
         "module": 15,
         "tailWords": 0,
         "topic": "Tema 2: Gradle y builds reproducibles",
-        "words": 420
+        "words": 490
       },
       {
-        "issues": [
-          "tema-breve"
-        ],
+        "issues": [],
         "module": 15,
         "tailWords": 0,
         "topic": "Tema 3: Proyectos multi-módulo sin ciclos",
-        "words": 426
+        "words": 505
       },
       {
         "issues": [],
         "module": 15,
         "tailWords": 0,
         "topic": "Tema 4: JUnit 5, Mockito y assertions expresivas",
-        "words": 454
+        "words": 455
       },
       {
         "issues": [],
         "module": 15,
         "tailWords": 0,
         "topic": "Tema 5: Pruebas de integración reproducibles",
-        "words": 520
+        "words": 521
       },
       {
         "issues": [],
         "module": 15,
         "tailWords": 0,
         "topic": "Tema 6: SLF4J, Logback, MDC y logging estructurado",
-        "words": 484
+        "words": 485
       },
       {
-        "issues": [
-          "tema-breve"
-        ],
+        "issues": [],
         "module": 16,
         "tailWords": 0,
         "topic": "Tema 1: Entidades y relaciones JPA",
-        "words": 385
+        "words": 467
       },
       {
-        "issues": [
-          "sin-fuente",
-          "tema-breve"
-        ],
+        "issues": [],
         "module": 16,
         "tailWords": 0,
         "topic": "Tema 2: FetchType.LAZY, EAGER y el problema N+1",
-        "words": 349
+        "words": 468
       },
       {
-        "issues": [
-          "tema-breve"
-        ],
+        "issues": [],
         "module": 16,
         "tailWords": 0,
         "topic": "Tema 3: Relaciones uno a uno, muchos a muchos y herencia",
-        "words": 365
+        "words": 465
       },
       {
-        "issues": [
-          "tema-breve"
-        ],
+        "issues": [],
         "module": 16,
         "tailWords": 0,
         "topic": "Tema 4: Ciclo de vida, EntityManager y consultas tipadas",
-        "words": 354
+        "words": 504
       },
       {
-        "issues": [
-          "tema-breve"
-        ],
+        "issues": [],
         "module": 16,
         "tailWords": 0,
         "topic": "Tema 5: Búsquedas dinámicas con Criteria y Querydsl",
-        "words": 336
+        "words": 494
       },
       {
-        "issues": [
-          "sin-fuente",
-          "tema-breve"
-        ],
+        "issues": [],
         "module": 16,
         "tailWords": 0,
         "topic": "Tema 6: EntityGraph y cachés de persistencia",
-        "words": 353
+        "words": 465
       },
       {
-        "issues": [
-          "tema-breve"
-        ],
+        "issues": [],
         "module": 16,
         "tailWords": 0,
         "topic": "Tema 7: Concurrencia, transacciones y propagación",
-        "words": 331
+        "words": 487
       },
       {
-        "issues": [
-          "tema-breve"
-        ],
+        "issues": [],
         "module": 16,
         "tailWords": 0,
         "topic": "Tema 8: Migraciones y pruebas JPA con Testcontainers",
-        "words": 417
+        "words": 492
       },
       {
         "issues": [],
@@ -7751,21 +7705,21 @@
         "module": 5,
         "tailWords": 0,
         "topic": "Tema 5: Structured Concurrency (StructuredTaskScope, Java 25)",
-        "words": 557
+        "words": 586
       },
       {
         "issues": [],
         "module": 5,
         "tailWords": 0,
         "topic": "Tema 6: Scoped Values frente a ThreadLocal (Java 25)",
-        "words": 527
+        "words": 558
       },
       {
         "issues": [],
         "module": 5,
         "tailWords": 0,
         "topic": "Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos",
-        "words": 709
+        "words": 740
       },
       {
         "issues": [],
@@ -7793,86 +7747,77 @@
         "module": 7,
         "tailWords": 0,
         "topic": "Tema 1: record — modelos inmutables sin boilerplate",
-        "words": 481
+        "words": 482
       },
       {
-        "issues": [
-          "tema-breve"
-        ],
+        "issues": [],
         "module": 7,
         "tailWords": 0,
         "topic": "Tema 2: sealed — jerarquías cerradas y exhaustividad",
-        "words": 443
+        "words": 512
       },
       {
         "issues": [],
         "module": 7,
         "tailWords": 0,
         "topic": "Tema 3: Pattern matching exhaustivo y para instanceof",
-        "words": 460
+        "words": 461
       },
       {
         "issues": [],
         "module": 7,
         "tailWords": 0,
         "topic": "Tema 4: Unnamed variables y patterns (_, Java 22)",
-        "words": 477
+        "words": 478
       },
       {
         "issues": [],
         "module": 8,
         "tailWords": 0,
         "topic": "Tema 1: pom.xml vs build.gradle.kts",
-        "words": 455
+        "words": 456
       },
       {
-        "issues": [
-          "sin-fuente",
-          "tema-breve"
-        ],
+        "issues": [],
         "module": 8,
         "tailWords": 0,
         "topic": "Tema 2: Ciclo de vida de build y scopes",
-        "words": 389
+        "words": 472
       },
       {
-        "issues": [
-          "sin-fuente"
-        ],
+        "issues": [],
         "module": 8,
         "tailWords": 0,
         "topic": "Tema 3: Proyectos multi-módulo",
-        "words": 453
+        "words": 530
       },
       {
-        "issues": [
-          "tema-breve"
-        ],
+        "issues": [],
         "module": 8,
         "tailWords": 0,
         "topic": "Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas",
-        "words": 436
+        "words": 502
       },
       {
         "issues": [],
         "module": 9,
         "tailWords": 0,
         "topic": "Tema 1: JUnit 5 — anotaciones y ciclo de vida",
-        "words": 509
+        "words": 510
       },
       {
         "issues": [],
         "module": 9,
         "tailWords": 0,
         "topic": "Tema 2: Mockito — aislar dependencias",
-        "words": 501
+        "words": 502
       },
       {
         "issues": [],
         "module": 9,
         "tailWords": 0,
         "topic": "Tema 3: Tests parametrizados y cobertura",
-        "words": 521
+        "words": 522
       }
     ],
     "javascript": [

@@ -5,7 +5,7 @@
 
 ### Tema 1: Builder — configuración paso a paso y validación
 
-**Por qué importa:** cuando un objeto tiene varios datos opcionales, Builder evita constructores largos y deja visibles las opciones elegidas.
+**¿Por qué es importante?** cuando un objeto tiene varios datos opcionales, Builder evita constructores largos y deja visibles las opciones elegidas.
 
 #### Subtema 1.1: Crea un envío con un builder · 10 min
 
@@ -73,9 +73,11 @@ Builder ayuda cuando hay muchas opciones o validación conjunta. Para pocos valo
 
 Escribe el criterio que usaría el equipo antes de añadir Builder.
 
+**Decisión de diseño:** compara `new Envio("RT-1", true, "10-12", false)` con `new Envio.Builder("RT-1").prioritario(true).ventana("10-12").build()`. Builder ayuda si hay varias opciones o combinaciones que deben validarse juntas. Con dos campos obligatorios, un constructor directo puede ser más claro. Lee la llamada desde quien crea el objeto y pregunta si debe recordar el orden de varios booleanos. Prueba que `build()` rechace configuraciones incompletas antes de devolver el objeto. Fuente primaria: https://docs.oracle.com/javase/specs/jls/se25/html/jls-8.html.
+
 ### Tema 2: Factory Method y Strategy
 
-**Por qué importa:** separar la creación de una regla intercambiable reduce condicionales repetidos en el servicio.
+**¿Por qué es importante?** separar la creación de una regla intercambiable reduce condicionales repetidos en el servicio.
 
 #### Subtema 2.1: Elige estrategia por interfaz · 10 min
 
@@ -143,9 +145,11 @@ Separar selección, algoritmo y uso evita que el servicio acumule creación y re
 
 Guarda el ejemplo con estrategia inyectada y di cuál clase ensambla el sistema.
 
+**Comprueba los papeles:** Strategy cambia el cálculo; Factory Method escoge cuál implementación entregar. `Cotizador` recibe `Tarifa` y delega el cálculo, mientras una fábrica convierte el nombre de transportista en una estrategia conocida. Prueba ambas tarifas y un nombre desconocido. Rechaza ese nombre en el borde; no permitas que una cadena del usuario cargue clases arbitrarias. Si solo existe un algoritmo, no añadas fábrica e interfaz hasta que haya variación real que proteger. Fuente: https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/Function.html.
+
 ### Tema 3: Abstract Factory y familias de productos compatibles
 
-**Por qué importa:** una fábrica abstracta crea un grupo de componentes que comparten proveedor o configuración.
+**¿Por qué es importante?** una fábrica abstracta crea un grupo de componentes que comparten proveedor o configuración.
 
 #### Subtema 3.1: Define una familia de notificaciones · 10 min
 
@@ -213,9 +217,11 @@ Añadir una familia puede requerir una nueva fábrica y productos; el contrato d
 
 Guarda la familia nueva y explica por qué es compatible.
 
+**Prueba la familia:** pide `crearMensaje()` y `crearPlantilla()` a la misma fábrica, imprime el proveedor de ambos y comprueba que coincida. Intenta combinar una plantilla cloud con un mensaje local para observar el error que evita la fábrica. Tiene sentido si varios objetos deben cambiar juntos según proveedor o configuración. Si solo hay un producto, la abstracción añade navegación sin proteger una variación real. Deja al cliente dependiente del contrato común. Fuente: https://docs.oracle.com/javase/specs/jls/se25/html/jls-9.html.
+
 ### Tema 4: SOLID y cuándo NO aplicar un patrón
 
-**Por qué importa:** SOLID ayuda a señalar responsabilidades mezcladas y dependencias rígidas; no exige crear una clase por cada línea.
+**¿Por qué es importante?** SOLID ayuda a señalar responsabilidades mezcladas y dependencias rígidas; no exige crear una clase por cada línea.
 
 #### Subtema 4.1: Separa responsabilidades · 10 min
 
@@ -285,7 +291,7 @@ Dibuja la dependencia entre servicio, interfaz e implementación. Fuente: [SOLID
 
 ### Tema 5: Prototype: copiar un objeto sin compartir sus datos
 
-**Por qué importa:** una copia independiente permite partir de una configuración base y modificarla sin contaminar la original.
+**¿Por qué es importante?** una copia independiente permite partir de una configuración base y modificarla sin contaminar la original.
 
 #### Subtema 5.1: Implementa una copia independiente · 10 min
 
@@ -353,9 +359,11 @@ Prototype es útil para objetos costosos o plantillas configuradas; una fábrica
 
 Escribe qué evidencia justificaría usar Prototype en el producto.
 
+**Alcance de la copia:** cambia una etiqueta en la copia y verifica que la lista original no cambie. `new ArrayList<>(original.etiquetas)` crea otra lista, pero no duplica cada objeto mutable que contiene. Para valores inmutables esa copia superficial suele bastar; para elementos modificables, copia también esos elementos o usa tipos inmutables. `List.copyOf` crea una lista no modificable. Documenta la regla antes de implementar `clone`. Fuente: https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html.
+
 ### Tema 6: Patrones estructurales para conectar piezas existentes
 
-**Por qué importa:** adapter, decorator y facade ayudan a integrar sistemas sin mezclar sus contratos y detalles.
+**¿Por qué es importante?** adapter, decorator y facade ayudan a integrar sistemas sin mezclar sus contratos y detalles.
 
 #### Subtema 6.1: Adapta un proveedor antiguo · 10 min
 

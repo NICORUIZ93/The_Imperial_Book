@@ -7563,7 +7563,7 @@
       "module": 10,
       "title": "Tema 3: opens para acceso reflexivo controlado de frameworks",
       "file": "web/public/content/java/modulo-10.md",
-      "line": 146,
+      "line": 148,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -7602,7 +7602,7 @@
       "module": 11,
       "title": "Tema 3: Referencias especiales y heap dumps",
       "file": "web/public/content/java/modulo-11.md",
-      "line": 146,
+      "line": 148,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -7615,7 +7615,7 @@
       "module": 11,
       "title": "Tema 4: Foreign Function & Memory API (Java 22)",
       "file": "web/public/content/java/modulo-11.md",
-      "line": 216,
+      "line": 218,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -7641,7 +7641,7 @@
       "module": 12,
       "title": "Tema 2: Factory Method y Strategy",
       "file": "web/public/content/java/modulo-12.md",
-      "line": 76,
+      "line": 78,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -7654,7 +7654,7 @@
       "module": 12,
       "title": "Tema 3: Abstract Factory y familias de productos compatibles",
       "file": "web/public/content/java/modulo-12.md",
-      "line": 146,
+      "line": 150,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -7667,7 +7667,7 @@
       "module": 12,
       "title": "Tema 4: SOLID y cuándo NO aplicar un patrón",
       "file": "web/public/content/java/modulo-12.md",
-      "line": 216,
+      "line": 222,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -7680,7 +7680,7 @@
       "module": 12,
       "title": "Tema 5: Prototype: copiar un objeto sin compartir sus datos",
       "file": "web/public/content/java/modulo-12.md",
-      "line": 286,
+      "line": 292,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -7693,7 +7693,7 @@
       "module": 12,
       "title": "Tema 6: Patrones estructurales para conectar piezas existentes",
       "file": "web/public/content/java/modulo-12.md",
-      "line": 356,
+      "line": 364,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -7719,7 +7719,7 @@
       "module": 13,
       "title": "Tema 2: Integrando concurrencia, modelado y testing",
       "file": "web/public/content/java/modulo-13.md",
-      "line": 76,
+      "line": 78,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -7732,7 +7732,7 @@
       "module": 13,
       "title": "Tema 3: Build reproducible y cierre del track",
       "file": "web/public/content/java/modulo-13.md",
-      "line": 146,
+      "line": 150,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -7810,7 +7810,7 @@
       "module": 15,
       "title": "Tema 2: Gradle y builds reproducibles",
       "file": "web/public/content/java/modulo-15.md",
-      "line": 77,
+      "line": 79,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -7823,7 +7823,7 @@
       "module": 15,
       "title": "Tema 3: Proyectos multi-módulo sin ciclos",
       "file": "web/public/content/java/modulo-15.md",
-      "line": 147,
+      "line": 151,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -7836,7 +7836,7 @@
       "module": 15,
       "title": "Tema 4: JUnit 5, Mockito y assertions expresivas",
       "file": "web/public/content/java/modulo-15.md",
-      "line": 217,
+      "line": 223,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -7849,7 +7849,7 @@
       "module": 15,
       "title": "Tema 5: Pruebas de integración reproducibles",
       "file": "web/public/content/java/modulo-15.md",
-      "line": 289,
+      "line": 295,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -7862,7 +7862,7 @@
       "module": 15,
       "title": "Tema 6: SLF4J, Logback, MDC y logging estructurado",
       "file": "web/public/content/java/modulo-15.md",
-      "line": 380,
+      "line": 386,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -7888,7 +7888,7 @@
       "module": 16,
       "title": "Tema 2: FetchType.LAZY, EAGER y el problema N+1",
       "file": "web/public/content/java/modulo-16.md",
-      "line": 89,
+      "line": 91,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -7901,7 +7901,7 @@
       "module": 16,
       "title": "Tema 3: Relaciones uno a uno, muchos a muchos y herencia",
       "file": "web/public/content/java/modulo-16.md",
-      "line": 159,
+      "line": 165,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -7914,7 +7914,7 @@
       "module": 16,
       "title": "Tema 4: Ciclo de vida, EntityManager y consultas tipadas",
       "file": "web/public/content/java/modulo-16.md",
-      "line": 229,
+      "line": 239,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -7927,7 +7927,7 @@
       "module": 16,
       "title": "Tema 5: Búsquedas dinámicas con Criteria y Querydsl",
       "file": "web/public/content/java/modulo-16.md",
-      "line": 299,
+      "line": 315,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -7940,7 +7940,7 @@
       "module": 16,
       "title": "Tema 6: EntityGraph y cachés de persistencia",
       "file": "web/public/content/java/modulo-16.md",
-      "line": 369,
+      "line": 391,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -7953,7 +7953,7 @@
       "module": 16,
       "title": "Tema 7: Concurrencia, transacciones y propagación",
       "file": "web/public/content/java/modulo-16.md",
-      "line": 439,
+      "line": 465,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -7966,7 +7966,7 @@
       "module": 16,
       "title": "Tema 8: Migraciones y pruebas JPA con Testcontainers",
       "file": "web/public/content/java/modulo-16.md",
-      "line": 509,
+      "line": 541,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -8442,7 +8442,7 @@
       "module": 5,
       "title": "Tema 6: Scoped Values frente a ThreadLocal (Java 25)",
       "file": "web/public/content/java/modulo-5.md",
-      "line": 600,
+      "line": 602,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -8455,7 +8455,7 @@
       "module": 5,
       "title": "Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos",
       "file": "web/public/content/java/modulo-5.md",
-      "line": 738,
+      "line": 742,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -8533,7 +8533,7 @@
       "module": 7,
       "title": "Tema 3: Pattern matching exhaustivo y para instanceof",
       "file": "web/public/content/java/modulo-7.md",
-      "line": 176,
+      "line": 178,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -8546,7 +8546,7 @@
       "module": 7,
       "title": "Tema 4: Unnamed variables y patterns (_, Java 22)",
       "file": "web/public/content/java/modulo-7.md",
-      "line": 261,
+      "line": 263,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -8585,7 +8585,7 @@
       "module": 8,
       "title": "Tema 3: Proyectos multi-módulo",
       "file": "web/public/content/java/modulo-8.md",
-      "line": 146,
+      "line": 148,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -8598,7 +8598,7 @@
       "module": 8,
       "title": "Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas",
       "file": "web/public/content/java/modulo-8.md",
-      "line": 216,
+      "line": 220,
       "signals": [
         "demostracion-no-delimitada"
       ],

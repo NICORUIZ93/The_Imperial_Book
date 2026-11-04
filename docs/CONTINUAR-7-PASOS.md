@@ -15,6 +15,11 @@ El tema termina con un hito de cuatro comprobaciones. No se declara completo por
 
 ## Estado de migración
 
-La adopción es parcial. `scripts/audit_atomic_subtopics.py` y `docs/atomic-subtopics.md` reportan qué temas ya cumplen la estructura y cuáles faltan; la cifra del reporte no equivale a revisión pedagógica humana ni a ejecución de todos los ejemplos.
+Este archivo conserva evidencia histórica de la migración. El estado vigente y las
+instrucciones para continuar están en
+[`CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md`](CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md).
+Consulta `docs/atomic-subtopics.md` para la cobertura actual; esa cifra no equivale
+a revisión pedagógica humana ni a ejecución de todos los ejemplos.
 
-Los pilotos actuales son Spring Boot M10 T3, M21 y M25, Java M0 T1 y M20 T1, Node M14 T7–T8 y Flutter M19 T1. No se borra ni renombra ningún tema base. Todo el resto del inventario continúa pendiente de migración y revisión.
+No uses la lista de pilotos histórica como estado actual. No se borra ni renombra
+ningún tema base al ampliar el currículo.

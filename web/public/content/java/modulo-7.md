@@ -5,7 +5,7 @@
 
 ### Tema 1: record — modelos inmutables sin boilerplate
 
-**Por qué importa:** una guía de envío es un dato con valor; compararla por campos y proteger sus invariantes no debería exigir decenas de líneas repetidas.
+**¿Por qué es importante?** una guía de envío es un dato con valor; compararla por campos y proteger sus invariantes no debería exigir decenas de líneas repetidas.
 
 #### Subtema 1.1: Construye un record de guía · 10 min
 
@@ -89,7 +89,7 @@ Entrega los dos valores y explica por qué elegiste record. Fuente: [records en 
 
 ### Tema 2: sealed — jerarquías cerradas y exhaustividad
 
-**Por qué importa:** estados de negocio conocidos no deben quedar sin manejar cuando el dominio crece.
+**¿Por qué es importante?** estados de negocio conocidos no deben quedar sin manejar cuando el dominio crece.
 
 #### Subtema 2.1: Declara estados permitidos · 10 min
 
@@ -173,9 +173,11 @@ La decisión afecta extensibilidad y exhaustividad; `sealed` no es una mejora au
 
 Escribe una frase que justifique la decisión de RutaFlow. Fuente: [JEP 409](https://openjdk.org/jeps/409).
 
+**Decide cuándo cerrar:** `sealed` sirve si el equipo controla los estados y puede revisar consumidores al añadir uno. Una interfaz abierta conviene si otras aplicaciones aportan implementaciones. Añade `Cancelada`, busca cada `switch` que usa `EstadoEntrega` y crea una prueba para ese estado. `permits` restringe quién implementa la jerarquía, pero no valida los datos del record. Fuente: https://docs.oracle.com/javase/specs/jls/se25/html/jls-8.html.
+
 ### Tema 3: Pattern matching exhaustivo y para instanceof
 
-**Por qué importa:** manejar cada estado evita que una regla de negocio asigne un resultado incorrecto a un tipo nuevo.
+**¿Por qué es importante?** manejar cada estado evita que una regla de negocio asigne un resultado incorrecto a un tipo nuevo.
 
 #### Subtema 3.1: Calcula una regla con switch · 10 min
 
@@ -260,7 +262,7 @@ Elige una forma para la regla completa y justifica tu elección. Fuente: [patter
 
 ### Tema 4: Unnamed variables y patterns (_, Java 22)
 
-**Por qué importa:** distinguir lo que se descarta intencionalmente de una variable olvidada reduce ruido y hace visibles errores reales.
+**¿Por qué es importante?** distinguir lo que se descarta intencionalmente de una variable olvidada reduce ruido y hace visibles errores reales.
 
 #### Subtema 4.1: Descarta un componente de record pattern · 10 min
 

@@ -5,7 +5,7 @@
 
 ### Tema 1: Generaciones de memoria y recolectores
 
-**Por qué importa:** saber si crece el heap o si el GC solo está limpiando objetos temporales ayuda a investigar pausas y memoria insuficiente.
+**¿Por qué es importante?** saber si crece el heap o si el GC solo está limpiando objetos temporales ayuda a investigar pausas y memoria insuficiente.
 
 #### Subtema 1.1: Observa el heap de una JVM · 10 min
 
@@ -75,7 +75,7 @@ Guarda los dos comandos y una observación medida. Fuente: [logging de GC en Jav
 
 ### Tema 2: Java Flight Recorder y JIT compilation
 
-**Por qué importa:** JFR registra actividad de la JVM con bajo esfuerzo; el JIT compila código caliente y vuelve engañosa una medición sin calentamiento.
+**¿Por qué es importante?** JFR registra actividad de la JVM con bajo esfuerzo; el JIT compila código caliente y vuelve engañosa una medición sin calentamiento.
 
 #### Subtema 2.1: Captura una grabación JFR · 10 min
 
@@ -143,9 +143,11 @@ La grabación aporta contexto de ejecución; usa la misma prueba de carga para q
 
 Guarda el comando y tres datos del resumen. Fuente: [Java Flight Recorder](https://docs.oracle.com/en/java/javase/25/jfapi/).
 
+**Lee la grabación:** `jfr summary trabajo.jfr` muestra duración y eventos; `jfr print --events jdk.ExecutionSample trabajo.jfr` permite inspeccionar muestras. Busca patrones repetidos de CPU, esperas y bloqueos; una muestra no identifica la causa por sí sola. Para comparar JIT, conserva la misma carga y separa rondas de calentamiento de rondas medidas. Una microprueba manual ayuda a aprender, pero no reemplaza un benchmark controlado ni demuestra una mejora en producción. Fuente primaria: https://docs.oracle.com/en/java/javase/25/docs/specs/man/jfr.html.
+
 ### Tema 3: Referencias especiales y heap dumps
 
-**Por qué importa:** retener objetos más tiempo del necesario puede agotar memoria; un heap dump ayuda a encontrar quién conserva referencias.
+**¿Por qué es importante?** retener objetos más tiempo del necesario puede agotar memoria; un heap dump ayuda a encontrar quién conserva referencias.
 
 #### Subtema 3.1: Prueba una referencia débil · 10 min
 
@@ -215,7 +217,7 @@ Registra comando, PID y ruta del dump, sin compartirlo fuera del entorno autoriz
 
 ### Tema 4: Foreign Function & Memory API (Java 22)
 
-**Por qué importa:** FFM permite llamar funciones nativas y administrar memoria fuera del heap con tipos y ciclos de vida explícitos.
+**¿Por qué es importante?** FFM permite llamar funciones nativas y administrar memoria fuera del heap con tipos y ciclos de vida explícitos.
 
 #### Subtema 4.1: Reserva memoria nativa con Arena · 10 min
 

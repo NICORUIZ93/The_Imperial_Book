@@ -111,7 +111,7 @@
     },
     {
       "path": "docs/CONTINUAR-7-PASOS.md",
-      "lines": 21,
+      "lines": 26,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -119,6 +119,23 @@
         "# Migraci\u00f3n a cuatro pasos y subtemas at\u00f3micos",
         "## Formato que se aplica",
         "## Estado de migraci\u00f3n"
+      ]
+    },
+    {
+      "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
+      "lines": 152,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Continuidad: expansi\u00f3n Java y academia",
+        "## Encargo y raz\u00f3n",
+        "## Fuentes de verdad y rutas",
+        "## Contrato de cada tema",
+        "## Estado de Java",
+        "## Estado global honesto",
+        "## Flujo de trabajo y publicaci\u00f3n incremental",
+        "## Siguiente acci\u00f3n recomendada"
       ]
     },
     {
@@ -796,7 +813,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 11134,
+      "lines": 11079,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -804,7 +821,7 @@
     },
     {
       "path": "docs/lesson-substance.md",
-      "lines": 86,
+      "lines": 85,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -9791,7 +9808,7 @@
     },
     {
       "path": "web/public/content/java/modulo-10.md",
-      "lines": 242,
+      "lines": 244,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9812,7 +9829,7 @@
     },
     {
       "path": "web/public/content/java/modulo-11.md",
-      "lines": 328,
+      "lines": 330,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9833,7 +9850,7 @@
     },
     {
       "path": "web/public/content/java/modulo-12.md",
-      "lines": 468,
+      "lines": 476,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9854,7 +9871,7 @@
     },
     {
       "path": "web/public/content/java/modulo-13.md",
-      "lines": 242,
+      "lines": 249,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9896,7 +9913,7 @@
     },
     {
       "path": "web/public/content/java/modulo-15.md",
-      "lines": 464,
+      "lines": 470,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9917,7 +9934,7 @@
     },
     {
       "path": "web/public/content/java/modulo-16.md",
-      "lines": 580,
+      "lines": 613,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10085,7 +10102,7 @@
     },
     {
       "path": "web/public/content/java/modulo-5.md",
-      "lines": 884,
+      "lines": 897,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10127,7 +10144,7 @@
     },
     {
       "path": "web/public/content/java/modulo-7.md",
-      "lines": 377,
+      "lines": 379,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10148,7 +10165,7 @@
     },
     {
       "path": "web/public/content/java/modulo-8.md",
-      "lines": 312,
+      "lines": 318,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

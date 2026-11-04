@@ -5,7 +5,7 @@
 
 ### Tema 1: Arquitectura por capas del proyecto integrador
 
-**Por qué importa:** las reglas del dominio no deberían depender de HTTP, una base de datos o el framework elegido.
+**¿Por qué es importante?** las reglas del dominio no deberían depender de HTTP, una base de datos o el framework elegido.
 
 #### Subtema 1.1: Separa entrada, caso de uso y dominio · 10 min
 
@@ -73,9 +73,11 @@ Una capa útil protege una frontera que cambia; muchas capas sin responsabilidad
 
 Identifica qué cambiarías para añadir una API distinta sin reescribir `CrearGuia`.
 
+**Traza una petición:** sigue `POST /envios` desde controlador a caso de uso, dominio y repositorio. El controlador traduce HTTP; el caso de uso coordina; el dominio protege reglas como peso positivo; el repositorio guarda. Prueba la regla de peso sin levantar servidor y prueba HTTP por separado. Dibuja dependencias desde los imports: si dominio importa Spring o SQL, una regla central depende de un mecanismo externo. Asigna una responsabilidad observable a cada capa. Fuente: https://docs.spring.io/spring-modulith/reference/fundamentals.html.
+
 ### Tema 2: Integrando concurrencia, modelado y testing
 
-**Por qué importa:** la concurrencia debe preservar las reglas de dominio y probar resultados sin depender de pausas arbitrarias.
+**¿Por qué es importante?** la concurrencia debe preservar las reglas de dominio y probar resultados sin depender de pausas arbitrarias.
 
 #### Subtema 2.1: Envía trabajos acotados a un executor · 10 min
 
@@ -143,9 +145,11 @@ Las pruebas concurrentes deben controlar orden y límite de espera, no adivinar 
 
 Conserva la prueba, la señal de coordinación y el timeout que usarías en CI.
 
+**Prueba el caso concurrente:** inicia dos reservas para la última unidad y comprueba que solo una confirme. Controla el executor y espera cada `Future`; `Thread.sleep` no sincroniza y puede ocultar la carrera. Repite el escenario en secuencia para separar un defecto del modelo de uno de coordinación. Si importa el orden, conserva un identificador y el estado observado por cada tarea. La salida debe poder repetirse con datos fijos y un límite de espera claro. Fuente: https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/package-summary.html.
+
 ### Tema 3: Build reproducible y cierre del track
 
-**Por qué importa:** otra persona debe poder obtener el mismo programa sin conocer pasos secretos del entorno del autor.
+**¿Por qué es importante?** otra persona debe poder obtener el mismo programa sin conocer pasos secretos del entorno del autor.
 
 #### Subtema 3.1: Fija herramientas y dependencias · 10 min
 
@@ -212,6 +216,9 @@ La evidencia estructural, ejecución automatizada y revisión humana son estados
 **4. Cierra**
 
 Entrega una lista de lo que sí ejecutaste y lo que todavía necesita revisión humana.
+
+
+**Cierre reproducible:** desde un checkout limpio ejecuta `./mvnw clean verify` o `./gradlew clean check`. Anota la versión del wrapper y JDK; confirma que no necesitas archivos generados a mano antes del build. Si solo funciona en tu carpeta, revisa rutas relativas, configuración local y artefactos no versionados. El comando y sus requisitos deben bastar para que otra persona reconstruya el proyecto. Fuente: https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html.
 
 ---
 

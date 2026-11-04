@@ -5,7 +5,7 @@
 
 ### Tema 1: JUnit 5 — anotaciones y ciclo de vida
 
-**Por qué importa:** una prueba repetible descubre cuando un cambio rompe una regla antes de que el fallo llegue al usuario.
+**¿Por qué es importante?** una prueba repetible descubre cuando un cambio rompe una regla antes de que el fallo llegue al usuario.
 
 **Preparación común del módulo:** usa el proyecto Maven del Módulo 8; para estos ejercicios añade JUnit Jupiter `6.0.2` y Maven Surefire `3.5.5` al `pom.xml`, con JUnit en scope `test`. JUnit 6 requiere Java 17 o superior. Fuente: [guía oficial de JUnit](https://docs.junit.org/current/user-guide/).
 
@@ -77,7 +77,7 @@ Guarda el test válido y el fallo deliberado. Fuente: [anotaciones y assertions 
 
 ### Tema 2: Mockito — aislar dependencias
 
-**Por qué importa:** una prueba de servicio debe poder comprobar una regla de negocio sin arrancar una base de datos ni llamar una API real.
+**¿Por qué es importante?** una prueba de servicio debe poder comprobar una regla de negocio sin arrancar una base de datos ni llamar una API real.
 
 **Preparación:** añade `org.mockito:mockito-junit-jupiter:5.24.0` con scope `test` al mismo `pom.xml`. Referencia: [versiones oficiales Mockito](https://github.com/mockito/mockito/releases).
 
@@ -149,7 +149,7 @@ Guarda el resultado esperado y el error distinguido. Fuente: [documentación Moc
 
 ### Tema 3: Tests parametrizados y cobertura
 
-**Por qué importa:** una regla con límites debe comprobar entradas representativas; la cobertura ayuda a encontrar código aún no ejercitado, pero no demuestra que el test sea correcto.
+**¿Por qué es importante?** una regla con límites debe comprobar entradas representativas; la cobertura ayuda a encontrar código aún no ejercitado, pero no demuestra que el test sea correcto.
 
 **Preparación:** añade al build Maven el plugin JaCoCo `0.8.14` con dos ejecuciones: `prepare-agent` y `report` asociado a la fase `verify`. Esta versión soporta oficialmente Java 25. En el Tema 3 usarás `mvn verify` para producir `target/site/jacoco/index.html`. Fuente: [historial oficial de JaCoCo](https://www.jacoco.org/jacoco/trunk/doc/changes.html).
 

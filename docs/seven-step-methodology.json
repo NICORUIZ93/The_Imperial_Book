@@ -147,7 +147,7 @@
       "context": 23,
       "theoryAnalogy": 13,
       "guidedDemo": 13,
-      "codeExplanation": 89,
+      "codeExplanation": 101,
       "execution": 40,
       "expectedResult": 101,
       "deliberateFailure": 101,
@@ -156,7 +156,7 @@
       "closure": 14,
       "commonErrors": 13,
       "resources": 43,
-      "standaloneExample": 18,
+      "standaloneExample": 19,
       "learningEvidence": 33,
       "complete": 9
     },
@@ -17778,7 +17778,7 @@
           "context": false,
           "theoryAnalogy": false,
           "guidedDemo": false,
-          "codeExplanation": false,
+          "codeExplanation": true,
           "execution": false,
           "expectedResult": true,
           "deliberateFailure": true,
@@ -17791,7 +17791,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 2,
+          "stepsPassed": 3,
           "complete": false
         }
       },
@@ -17934,7 +17934,7 @@
           "context": false,
           "theoryAnalogy": false,
           "guidedDemo": false,
-          "codeExplanation": false,
+          "codeExplanation": true,
           "execution": false,
           "expectedResult": true,
           "deliberateFailure": true,
@@ -17947,7 +17947,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 2,
+          "stepsPassed": 3,
           "complete": false
         }
       },
@@ -17960,7 +17960,7 @@
           "context": false,
           "theoryAnalogy": false,
           "guidedDemo": false,
-          "codeExplanation": false,
+          "codeExplanation": true,
           "execution": false,
           "expectedResult": true,
           "deliberateFailure": true,
@@ -17973,7 +17973,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 2,
+          "stepsPassed": 3,
           "complete": false
         }
       },
@@ -17986,7 +17986,7 @@
           "context": false,
           "theoryAnalogy": false,
           "guidedDemo": false,
-          "codeExplanation": false,
+          "codeExplanation": true,
           "execution": false,
           "expectedResult": true,
           "deliberateFailure": true,
@@ -17999,7 +17999,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 2,
+          "stepsPassed": 3,
           "complete": false
         }
       },
@@ -18038,7 +18038,7 @@
           "context": false,
           "theoryAnalogy": false,
           "guidedDemo": false,
-          "codeExplanation": false,
+          "codeExplanation": true,
           "execution": false,
           "expectedResult": true,
           "deliberateFailure": true,
@@ -18051,7 +18051,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 2,
+          "stepsPassed": 3,
           "complete": false
         }
       },
@@ -18090,7 +18090,7 @@
           "context": false,
           "theoryAnalogy": false,
           "guidedDemo": false,
-          "codeExplanation": false,
+          "codeExplanation": true,
           "execution": false,
           "expectedResult": true,
           "deliberateFailure": true,
@@ -18103,7 +18103,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 2,
+          "stepsPassed": 3,
           "complete": false
         }
       },
@@ -18116,7 +18116,7 @@
           "context": false,
           "theoryAnalogy": false,
           "guidedDemo": false,
-          "codeExplanation": false,
+          "codeExplanation": true,
           "execution": false,
           "expectedResult": true,
           "deliberateFailure": true,
@@ -18129,7 +18129,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 2,
+          "stepsPassed": 3,
           "complete": false
         }
       },
@@ -18142,7 +18142,7 @@
           "context": false,
           "theoryAnalogy": false,
           "guidedDemo": false,
-          "codeExplanation": false,
+          "codeExplanation": true,
           "execution": false,
           "expectedResult": true,
           "deliberateFailure": true,
@@ -18155,7 +18155,7 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 3,
+          "stepsPassed": 4,
           "complete": false
         }
       },
@@ -18454,7 +18454,7 @@
           "context": false,
           "theoryAnalogy": false,
           "guidedDemo": false,
-          "codeExplanation": false,
+          "codeExplanation": true,
           "execution": false,
           "expectedResult": true,
           "deliberateFailure": true,
@@ -18467,7 +18467,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 2,
+          "stepsPassed": 3,
           "complete": false
         }
       },
@@ -18541,11 +18541,11 @@
           "closure": false,
           "commonErrors": false,
           "resources": false,
-          "standaloneExample": false,
+          "standaloneExample": true,
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 3,
+          "stepsPassed": 4,
           "complete": false
         }
       },
@@ -18558,7 +18558,7 @@
           "context": false,
           "theoryAnalogy": false,
           "guidedDemo": false,
-          "codeExplanation": false,
+          "codeExplanation": true,
           "execution": false,
           "expectedResult": true,
           "deliberateFailure": true,
@@ -18571,7 +18571,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 2,
+          "stepsPassed": 3,
           "complete": false
         }
       },
@@ -19910,7 +19910,7 @@
           "context": false,
           "theoryAnalogy": false,
           "guidedDemo": false,
-          "codeExplanation": false,
+          "codeExplanation": true,
           "execution": false,
           "expectedResult": true,
           "deliberateFailure": true,
@@ -19923,7 +19923,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 3,
+          "stepsPassed": 4,
           "complete": false
         }
       },
@@ -19936,7 +19936,7 @@
           "context": false,
           "theoryAnalogy": false,
           "guidedDemo": false,
-          "codeExplanation": false,
+          "codeExplanation": true,
           "execution": false,
           "expectedResult": true,
           "deliberateFailure": true,
@@ -19949,7 +19949,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 2,
+          "stepsPassed": 3,
           "complete": false
         }
       },

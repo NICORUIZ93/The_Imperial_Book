@@ -1,8 +1,8 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-11-04 13:33 UTC
+Generated: 2026-11-04 14:04 UTC
 Root: `The_Imperial_Book`
-Indexed files: 990
+Indexed files: 991
 Import edges: 60
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -18,14 +18,14 @@ For automated lookups, use `docs/repo-graph.json`.
 - `angular-app`: 59 files
 - `automation-script`: 36 files
 - `course-content`: 262 files
-- `documentation`: 61 files
+- `documentation`: 62 files
 - `example`: 516 files
 - `local-infra`: 1 files
 - `project-file`: 55 files
 
 ## File Types
 
-- `.md`: 335
+- `.md`: 336
 - `.py`: 162
 - `.java`: 79
 - `.json`: 69
@@ -230,7 +230,8 @@ For automated lookups, use `docs/repo-graph.json`.
 - `CODE_OF_CONDUCT.md` (25 lines) - headings: # Código de conducta, ## Compromiso, ## Conducta esperada, ## Aplicación
 - `CONTRIBUTING.md` (31 lines) - headings: # Contribuir a The Imperial Book, ## Antes de abrir un cambio, ## Licencias
 - `README.md` (308 lines) - headings: # The_Imperial_Book, ## Como empezar, ## Levantar Floci, # 1. Levantar todos los servicios
-- `docs/CONTINUAR-7-PASOS.md` (21 lines) - headings: # Migración a cuatro pasos y subtemas atómicos, ## Formato que se aplica, ## Estado de migración
+- `docs/CONTINUAR-7-PASOS.md` (26 lines) - headings: # Migración a cuatro pasos y subtemas atómicos, ## Formato que se aplica, ## Estado de migración
+- `docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md` (152 lines) - headings: # Continuidad: expansión Java y academia, ## Encargo y razón, ## Fuentes de verdad y rutas, ## Contrato de cada tema
 - `docs/ESTANDAR-DE-CODIGO.md` (56 lines) - headings: # Estándar transversal de código y diseño, ## Prioridades, ## Clean Code con criterio, ## SOLID cuando aporta valor
 - `docs/MATRIZ-CURRICULAR.md` (73 lines) - headings: # Matriz curricular auditable, ## Progresión de competencia, ## Cobertura por módulo, ## Método de evaluación
 - `docs/METODOLOGIA-DE-APRENDIZAJE.md` (67 lines) - headings: # Metodología Aprende construyendo, ## Estructura de tema y subtema, ### Hito al final de cada tema, ### Ruta del proyecto
@@ -241,8 +242,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/RUNBOOKS-DEVOPS.md` (1409 lines) - headings: # DevOps Runbooks — Troubleshooting Operacional, ## Runbook 1: Docker Image Build Failures, ### Síntomas, ### Diagnosis
 - `docs/SKILLS-VISUALES-Y-ESTUDIO.md` (94 lines) - headings: # Skills para visuales y estudio desde cero, ## Selección y uso, ## Recorrido que debe comprobarse, ## Cómo usar las skills en una revisión
 - `docs/atomic-subtopics.md` (1131 lines) - headings: # Auditoría de subtemas atómicos, ## Temas pendientes, ### android, ### angular
-- `docs/auditoria-profundidad-cobertura.md` (213 lines) - headings: # Auditoría de profundidad y cobertura — The Imperial Book, ## Resumen ejecutivo (sin adornos), ## Eje 1 — PROFUNDIDAD (¿el Paso 4 es ejecutable de cero a profesional?), ### Evidencia directa (leída, no inferida)
-- ... 43 more files
+- ... 44 more files
 
 ### example
 
@@ -284,7 +284,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/curriculum-matrix.json` (394 lines)
 - `docs/floci-official-curriculum.json` (14 lines)
 - `docs/lesson-substance-baseline.json` (1693 lines)
-- `docs/lesson-substance.json` (11134 lines)
+- `docs/lesson-substance.json` (11079 lines)
 - `docs/merged-pdf-index.json` (426 lines)
 - `docs/official-learning-guides.json` (22 lines)
 - `docs/official-sources.json` (195 lines)

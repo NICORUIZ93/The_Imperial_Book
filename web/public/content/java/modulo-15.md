@@ -6,7 +6,7 @@ Este capítulo endurece el proyecto multi-módulo del Módulo 14 como producto m
 
 ### Tema 1: Maven avanzado
 
-**Por qué importa:** el reactor y el control de versiones permiten fallar el build antes de que un módulo publique dependencias incompatibles.
+**¿Por qué es importante?** el reactor y el control de versiones permiten fallar el build antes de que un módulo publique dependencias incompatibles.
 
 #### Subtema 1.1: Construye el reactor Maven · 10 min
 
@@ -74,9 +74,11 @@ El requisito del runtime de Maven y `maven.compiler.release` cumplen funciones d
 
 Conserva la salida de ambas validaciones y anota el rango admitido.
 
+**Prueba el lifecycle:** compara `./mvnw test` con `./mvnw clean verify` y observa qué pasos adicionales corren. Instalar un plugin no ejecuta automáticamente sus objetivos: enlaza cada uno a una fase y guarda la decisión en `pom.xml`. Comprueba desde una copia limpia que pruebas, chequeos y empaquetado corren en el orden esperado. Así puedes explicar qué artefacto produces y evitas depender de comandos locales que CI desconoce. Fuente: https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html.
+
 ### Tema 2: Gradle y builds reproducibles
 
-**Por qué importa:** un mismo commit debe producir el mismo artefacto y usar dependencias verificables en una laptop y en CI.
+**¿Por qué es importante?** un mismo commit debe producir el mismo artefacto y usar dependencias verificables en una laptop y en CI.
 
 #### Subtema 2.1: Genera y usa el Gradle Wrapper · 10 min
 
@@ -144,9 +146,11 @@ Dependency locking registra versiones; verification metadata controla integridad
 
 Guarda el archivo generado y explica qué riesgo cubre cada mecanismo. Fuente: [Gradle dependency verification](https://docs.gradle.org/current/userguide/dependency_verification.html).
 
+**Prueba dos entornos:** usa el Gradle Wrapper y ejecuta `./gradlew clean build` en un checkout limpio. Si difiere la salida, compara JDK, wrapper y `./gradlew dependencies --configuration runtimeClasspath`. El caché acelera descargas, pero no fija la versión resuelta. Declara versiones en catálogo o plataforma y comparte convenciones cuando los módulos repiten configuración. Guarda la tarea que produce el artefacto desplegado. Fuente: https://docs.gradle.org/current/userguide/declaring_configurations.html.
+
 ### Tema 3: Proyectos multi-módulo sin ciclos
 
-**Por qué importa:** límites protegidos evitan que reglas de negocio dependan directamente de bases de datos y frameworks.
+**¿Por qué es importante?** límites protegidos evitan que reglas de negocio dependan directamente de bases de datos y frameworks.
 
 #### Subtema 3.1: Escribe una regla de dependencias con ArchUnit · 10 min
 
@@ -214,9 +218,11 @@ En `src/main/java/com/academia/Main.java` y la raíz del proyecto ejecuta `./gra
 
 Guarda `projects` y una decisión de arquitectura. Fuente: [ArchUnit User Guide](https://www.archunit.org/userguide/html/000_Index.html).
 
+**Revisa el grafo:** dibuja una flecha por dependencia, como `app → dominio → contratos`. Una flecha de regreso forma un ciclo y suele indicar que el contrato quedó en una capa equivocada. Maven construye dependencias con `./mvnw -pl app -am test`; Gradle declara `implementation(project(":dominio"))`. Mantén la raíz como agregadora y evita que un módulo bajo importe la aplicación. Fuentes: https://maven.apache.org/guides/mini/guide-multiple-modules.html y https://docs.gradle.org/current/userguide/multi_project_builds.html.
+
 ### Tema 4: JUnit 5, Mockito y assertions expresivas
 
-**Por qué importa:** las pruebas detectan regresiones del comportamiento sin acoplar la suite a cada llamada interna.
+**¿Por qué es importante?** las pruebas detectan regresiones del comportamiento sin acoplar la suite a cada llamada interna.
 
 **Preparación:** usa JUnit `6.0.2` y Surefire/Gradle JUnit Platform como en el Módulo 9; para Mockito usa `mockito-junit-jupiter:5.24.0`. Consulta las [versiones de Mockito](https://github.com/mockito/mockito/releases).
 
@@ -288,7 +294,7 @@ Guarda el contrato y la prueba de error. Fuente: [JUnit User Guide](https://docs
 
 ### Tema 5: Pruebas de integración reproducibles
 
-**Por qué importa:** la base real puede interpretar tipos, SQL y transacciones distinto a un mock.
+**¿Por qué es importante?** la base real puede interpretar tipos, SQL y transacciones distinto a un mock.
 
 **Preparación:** Testcontainers `2.0.5`; añade `testcontainers-junit-jupiter`, `testcontainers-postgresql`, pgJDBC `42.7.14` y JUnit a la configuración de test. Imagen fijada: `postgres:17.11-alpine3.24`. En `build.gradle.kts` crea el source set `integrationTest`, extiende su configuración desde `testImplementation` y registra su tarea:
 
@@ -379,7 +385,7 @@ Conserva los dos resultados y el comando usado.
 
 ### Tema 6: SLF4J, Logback, MDC y logging estructurado
 
-**Por qué importa:** logs correlacionados ayudan a seguir una solicitud sin registrar secretos ni mezclar operaciones en hilos reutilizados.
+**¿Por qué es importante?** logs correlacionados ayudan a seguir una solicitud sin registrar secretos ni mezclar operaciones en hilos reutilizados.
 
 **Preparación:** añade `implementation("org.slf4j:slf4j-api:2.0.18")` y `runtimeOnly("ch.qos.logback:logback-classic:1.6.6")`. El ejemplo emite pares key-value con `%kvp`; no necesita un encoder JSON adicional. La versión de Logback contiene correcciones de seguridad recientes; revisa sus [notas oficiales](https://github.com/qos-ch/logback/releases).
 

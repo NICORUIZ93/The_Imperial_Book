@@ -134,8 +134,8 @@
       "expectedResult": 101,
       "practice": 54,
       "project": 41,
-      "modelMental": 54,
-      "limitsDecision": 61,
+      "modelMental": 101,
+      "limitsDecision": 62,
       "practicable": 32,
       "genericScaffold": 0,
       "repeatedDemo": 0
@@ -15027,7 +15027,7 @@
           "expectedResult": true,
           "practice": false,
           "project": false,
-          "modelMental": false,
+          "modelMental": true,
           "limitsDecision": false
         },
         "classification": {
@@ -15049,11 +15049,11 @@
           "expectedResult": true,
           "practice": false,
           "project": false,
-          "modelMental": false,
+          "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 5,
+          "rubricScore": 6,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -15071,11 +15071,11 @@
           "expectedResult": true,
           "practice": false,
           "project": false,
-          "modelMental": false,
+          "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 5,
+          "rubricScore": 6,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -15093,7 +15093,7 @@
           "expectedResult": true,
           "practice": false,
           "project": false,
-          "modelMental": false,
+          "modelMental": true,
           "limitsDecision": false
         },
         "classification": {
@@ -15115,11 +15115,11 @@
           "expectedResult": true,
           "practice": false,
           "project": false,
-          "modelMental": false,
+          "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 5,
+          "rubricScore": 6,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -15137,11 +15137,11 @@
           "expectedResult": true,
           "practice": false,
           "project": false,
-          "modelMental": false,
+          "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 5,
+          "rubricScore": 6,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -15159,11 +15159,11 @@
           "expectedResult": true,
           "practice": false,
           "project": false,
-          "modelMental": false,
+          "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 7,
+          "rubricScore": 8,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -15181,7 +15181,7 @@
           "expectedResult": true,
           "practice": true,
           "project": false,
-          "modelMental": false,
+          "modelMental": true,
           "limitsDecision": false
         },
         "classification": {
@@ -15203,7 +15203,7 @@
           "expectedResult": true,
           "practice": false,
           "project": false,
-          "modelMental": false,
+          "modelMental": true,
           "limitsDecision": false
         },
         "classification": {
@@ -15225,7 +15225,7 @@
           "expectedResult": true,
           "practice": false,
           "project": false,
-          "modelMental": false,
+          "modelMental": true,
           "limitsDecision": false
         },
         "classification": {
@@ -15247,11 +15247,11 @@
           "expectedResult": true,
           "practice": false,
           "project": false,
-          "modelMental": false,
+          "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 5,
+          "rubricScore": 6,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -15269,7 +15269,7 @@
           "expectedResult": true,
           "practice": true,
           "project": false,
-          "modelMental": false,
+          "modelMental": true,
           "limitsDecision": false
         },
         "classification": {
@@ -15291,7 +15291,7 @@
           "expectedResult": true,
           "practice": true,
           "project": false,
-          "modelMental": false,
+          "modelMental": true,
           "limitsDecision": false
         },
         "classification": {
@@ -15313,7 +15313,7 @@
           "expectedResult": true,
           "practice": false,
           "project": true,
-          "modelMental": false,
+          "modelMental": true,
           "limitsDecision": false
         },
         "classification": {
@@ -15335,11 +15335,11 @@
           "expectedResult": true,
           "practice": false,
           "project": false,
-          "modelMental": false,
+          "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 5,
+          "rubricScore": 6,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -15357,7 +15357,7 @@
           "expectedResult": true,
           "practice": false,
           "project": false,
-          "modelMental": false,
+          "modelMental": true,
           "limitsDecision": false
         },
         "classification": {
@@ -15379,7 +15379,7 @@
           "expectedResult": true,
           "practice": false,
           "project": false,
-          "modelMental": false,
+          "modelMental": true,
           "limitsDecision": false
         },
         "classification": {
@@ -15401,11 +15401,11 @@
           "expectedResult": true,
           "practice": false,
           "project": false,
-          "modelMental": false,
+          "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 5,
+          "rubricScore": 6,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -15423,11 +15423,11 @@
           "expectedResult": true,
           "practice": true,
           "project": false,
-          "modelMental": false,
+          "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 7,
+          "rubricScore": 8,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -15445,7 +15445,7 @@
           "expectedResult": true,
           "practice": true,
           "project": false,
-          "modelMental": false,
+          "modelMental": true,
           "limitsDecision": false
         },
         "classification": {
@@ -15467,7 +15467,7 @@
           "expectedResult": true,
           "practice": false,
           "project": false,
-          "modelMental": false,
+          "modelMental": true,
           "limitsDecision": false
         },
         "classification": {
@@ -15489,7 +15489,7 @@
           "expectedResult": true,
           "practice": false,
           "project": false,
-          "modelMental": false,
+          "modelMental": true,
           "limitsDecision": false
         },
         "classification": {
@@ -15511,11 +15511,11 @@
           "expectedResult": true,
           "practice": false,
           "project": false,
-          "modelMental": false,
+          "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 5,
+          "rubricScore": 6,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -15533,11 +15533,11 @@
           "expectedResult": true,
           "practice": false,
           "project": false,
-          "modelMental": false,
+          "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 5,
+          "rubricScore": 6,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -15555,11 +15555,11 @@
           "expectedResult": true,
           "practice": false,
           "project": false,
-          "modelMental": false,
+          "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 7,
+          "rubricScore": 8,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -15577,11 +15577,11 @@
           "expectedResult": true,
           "practice": false,
           "project": false,
-          "modelMental": false,
+          "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 5,
+          "rubricScore": 6,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -15599,7 +15599,7 @@
           "expectedResult": true,
           "practice": false,
           "project": false,
-          "modelMental": false,
+          "modelMental": true,
           "limitsDecision": false
         },
         "classification": {
@@ -15621,7 +15621,7 @@
           "expectedResult": true,
           "practice": false,
           "project": false,
-          "modelMental": false,
+          "modelMental": true,
           "limitsDecision": false
         },
         "classification": {
@@ -15643,7 +15643,7 @@
           "expectedResult": true,
           "practice": false,
           "project": false,
-          "modelMental": false,
+          "modelMental": true,
           "limitsDecision": false
         },
         "classification": {
@@ -15665,7 +15665,7 @@
           "expectedResult": true,
           "practice": true,
           "project": false,
-          "modelMental": false,
+          "modelMental": true,
           "limitsDecision": false
         },
         "classification": {
@@ -15687,7 +15687,7 @@
           "expectedResult": true,
           "practice": false,
           "project": false,
-          "modelMental": false,
+          "modelMental": true,
           "limitsDecision": false
         },
         "classification": {
@@ -15709,7 +15709,7 @@
           "expectedResult": true,
           "practice": false,
           "project": false,
-          "modelMental": false,
+          "modelMental": true,
           "limitsDecision": false
         },
         "classification": {
@@ -15731,11 +15731,11 @@
           "expectedResult": true,
           "practice": false,
           "project": false,
-          "modelMental": false,
+          "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 5,
+          "rubricScore": 6,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -15753,7 +15753,7 @@
           "expectedResult": true,
           "practice": true,
           "project": false,
-          "modelMental": false,
+          "modelMental": true,
           "limitsDecision": false
         },
         "classification": {
@@ -16611,7 +16611,7 @@
           "expectedResult": true,
           "practice": false,
           "project": false,
-          "modelMental": false,
+          "modelMental": true,
           "limitsDecision": false
         },
         "classification": {
@@ -16633,11 +16633,11 @@
           "expectedResult": true,
           "practice": false,
           "project": false,
-          "modelMental": false,
+          "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 7,
+          "rubricScore": 8,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -16743,7 +16743,7 @@
           "expectedResult": true,
           "practice": true,
           "project": false,
-          "modelMental": false,
+          "modelMental": true,
           "limitsDecision": false
         },
         "classification": {
@@ -16765,11 +16765,11 @@
           "expectedResult": true,
           "practice": false,
           "project": false,
-          "modelMental": false,
-          "limitsDecision": false
+          "modelMental": true,
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 7,
+          "rubricScore": 8,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -16787,7 +16787,7 @@
           "expectedResult": true,
           "practice": false,
           "project": false,
-          "modelMental": false,
+          "modelMental": true,
           "limitsDecision": false
         },
         "classification": {
@@ -16809,7 +16809,7 @@
           "expectedResult": true,
           "practice": false,
           "project": false,
-          "modelMental": false,
+          "modelMental": true,
           "limitsDecision": false
         },
         "classification": {
@@ -16831,7 +16831,7 @@
           "expectedResult": true,
           "practice": false,
           "project": false,
-          "modelMental": false,
+          "modelMental": true,
           "limitsDecision": false
         },
         "classification": {
@@ -16853,11 +16853,11 @@
           "expectedResult": true,
           "practice": false,
           "project": false,
-          "modelMental": false,
+          "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 5,
+          "rubricScore": 6,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -16875,7 +16875,7 @@
           "expectedResult": true,
           "practice": true,
           "project": false,
-          "modelMental": false,
+          "modelMental": true,
           "limitsDecision": false
         },
         "classification": {
@@ -16897,11 +16897,11 @@
           "expectedResult": true,
           "practice": false,
           "project": false,
-          "modelMental": false,
+          "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 5,
+          "rubricScore": 6,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -16919,7 +16919,7 @@
           "expectedResult": true,
           "practice": true,
           "project": false,
-          "modelMental": false,
+          "modelMental": true,
           "limitsDecision": false
         },
         "classification": {
@@ -16941,7 +16941,7 @@
           "expectedResult": true,
           "practice": false,
           "project": false,
-          "modelMental": false,
+          "modelMental": true,
           "limitsDecision": false
         },
         "classification": {
@@ -16963,11 +16963,11 @@
           "expectedResult": true,
           "practice": false,
           "project": false,
-          "modelMental": false,
+          "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 5,
+          "rubricScore": 6,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
