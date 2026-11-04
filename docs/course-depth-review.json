@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 224,
+    "topicsWithSignals": 225,
     "newLaboratories": 25
   },
   "priorities": {
@@ -13299,10 +13299,12 @@
     {
       "track": "spring-boot",
       "module": 4,
-      "title": "Tema 4: Protección SSRF con InetAddressFilter (Spring Boot 4.1)",
+      "title": "Tema 4: Reducir SSRF en clientes HTTP con InetAddressFilter",
       "file": "web/public/content/spring-boot/modulo-4.md",
       "line": 694,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -13312,7 +13314,7 @@
       "module": 4,
       "title": "Tema 5: Flujo de login completo — de `/api/auth/login` a una ruta protegida",
       "file": "web/public/content/spring-boot/modulo-4.md",
-      "line": 794,
+      "line": 767,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

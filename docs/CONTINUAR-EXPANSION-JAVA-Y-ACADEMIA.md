@@ -376,9 +376,28 @@ Tras T3, auditorías: **135/1185 temas atómicos**, Spring Boot 31;
 `./scripts/validate.sh` pasó con 23 pruebas y 4 omitidas. Estas métricas no son
 certificación ni validación de navegador real.
 
-**Siguiente tema:** Spring Boot M4 T4, “Protección SSRF con
-`InetAddressFilter`”. Verifica en documentación primaria que la API y los
-rangos bloqueados corresponden a la versión objetivo; inspecciona el laboratorio
-`examples/spring-ssrf`, compara el Markdown con el código y ejecuta pruebas de
-red/redirects. No afirmes que el filtro bloquea un rango ni que evita DNS
-rebinding sin una prueba que lo demuestre.
+Spring Boot M4 T4, “Reducir SSRF en clientes HTTP con `InetAddressFilter`”, se
+rehízo con tres subtemas acumulativos: configurar `RestClient` con filtro,
+timeouts y redirects detenidos; probar loopback con servidor local y control
+positivo junto con clasificación de direcciones; verificar que un `302` no
+llega a un segundo servidor. El laboratorio `examples/spring-ssrf` quedó en
+Spring Boot 4.1.2/JDK 25 y ahora incluye Maven Wrapper para que el comando del
+curso funcione desde el clon. No afirma que el filtro cierre SSRF, cubra todos
+los clientes, evite DNS rebinding o sustituya reglas de proxy/egreso. El caso de
+`169.254.169.254` solo prueba clasificación; no se conecta a metadatos reales.
+
+La suite local `./mvnw -q clean test` pasó con tres pruebas. El fallo deliberado
+de `DONT_FOLLOW` a `FOLLOW` fue detectado: la prueba esperaba `302`, recibió
+`200`, y el destino local habría recibido el salto. También se comprobó el
+selector documentado para las dos pruebas de destinos. Las auditorías registran
+**136/1185 temas atómicos**: Java 101, Spring Boot 32, Node 2 y Flutter 1;
+**1094/1185 practicables**, 409 con señales de defecto de sustancia. Se
+regeneraron índices e informes y `./scripts/validate.sh` pasó: 23 pruebas, 4
+omitidas. Las cifras son señales estructurales, no certificación ni revisión
+pedagógica humana.
+
+**Siguiente tema:** Spring Boot M4 T5, “Flujo de login completo”. Inspecciona
+primero la implementación y sus pruebas: existe un `JwtService` antiguo bajo
+otro paquete; alinea el flujo con `com.example.demo.JwtService` de M4 T2 y no
+añadas otra clave o implementación. Ejecuta el flujo completo de credenciales,
+emisión del token y acceso a ruta protegida antes de reescribir cada subtema.

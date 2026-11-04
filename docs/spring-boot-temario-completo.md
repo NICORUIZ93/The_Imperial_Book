@@ -5,7 +5,7 @@
 **Proyecto continuo:** RutaFlow: plataforma de entregas basada en servicios.
 **Prerrequisito de entrada:** Java, HTTP, SQL y pruebas; los módulos iniciales vuelven a presentar cada herramienta..
 **Duración objetivo:** temas de 20–45 minutos; cada tema se divide en 3–6 acciones de 5–15 minutos.
-**Estado estructural:** 31/111 temas migrados; auditoría estructural actualizada el 2026-11-03.
+**Estado estructural:** 32/111 temas migrados; auditoría estructural actualizada el 2026-11-03.
 
 ## Índice de módulos y temas
 
@@ -107,7 +107,10 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 4.7 · Permitir un origen y responder al preflight · 10 min
   - ✓ Subtema 4.8 · Llamar con el JWT y decidir CSRF · 10 min
   - ✓ Subtema 4.9 · Ajustar métodos y detectar configuraciones amplias · 10 min
-- [pendiente de migrar] Tema 4: Protección SSRF con InetAddressFilter (Spring Boot 4.1)
+- [4 pasos] Tema 4: Reducir SSRF en clientes HTTP con InetAddressFilter
+  - ✓ Subtema 4.10 · Crear un RestClient con límites · 10 min
+  - ✓ Subtema 4.11 · Probar destinos internos con un servidor local · 10 min
+  - ✓ Subtema 4.12 · Impedir redirects y definir el límite de protección · 10 min
 - [pendiente de migrar] Tema 5: Flujo de login completo — de `/api/auth/login` a una ruta protegida
 
 ### Módulo 5: Configuración, perfiles y manejo de errores
@@ -371,7 +374,7 @@ La tabla registra presencia de áreas en el inventario del track, no profundidad
 
 ### Huecos y límites reportados
 
-- El repositorio contiene 111 temas en 26 módulos; 31 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
+- El repositorio contiene 111 temas en 26 módulos; 32 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
 - No hay base para afirmar que el track esté completo: la comparación con la fuente de referencia está pendiente de revisión humana módulo por módulo.
 - Los elementos de la fuente que todavía deben verificarse de forma explícita están enumerados en la tabla anterior; cualquier técnica crítica que no tenga tema propio debe añadirse conservando el currículo base.
 - La ejecución de ejemplos, el comportamiento con brokers/plataformas reales y la calidad pedagógica humana se registran por separado.

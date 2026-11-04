@@ -99,14 +99,14 @@
     "spring-boot": {
       "topics": 111,
       "code": 111,
-      "commentedCode": 66,
-      "mermaid": 54,
+      "commentedCode": 65,
+      "mermaid": 53,
       "archifyVisual": 4,
       "asciiVisual": 14,
       "misleadingDiagramLabel": 0,
       "filePath": 111,
       "runCommand": 111,
-      "officialSource": 90
+      "officialSource": 91
     },
     "kotlin-multiplatform": {
       "topics": 56,
@@ -2799,6 +2799,13 @@
       "track": "spring-boot",
       "module": 4,
       "topic": "Tema 2: Filtro JWT y autorización por rol",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 4,
+      "topic": "Tema 4: Reducir SSRF en clientes HTTP con InetAddressFilter",
       "missingCode": false,
       "missingComments": true
     },

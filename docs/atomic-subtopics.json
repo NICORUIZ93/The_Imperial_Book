@@ -93,10 +93,10 @@
     },
     "spring-boot": {
       "topics": 111,
-      "completeTopics": 31,
-      "topicsWith3to6Subtopics": 32,
-      "subtopics": 96,
-      "completeSubtopics": 95
+      "completeTopics": 32,
+      "topicsWith3to6Subtopics": 33,
+      "subtopics": 99,
+      "completeSubtopics": 98
     }
   },
   "topics": {
@@ -14038,10 +14038,53 @@
       },
       {
         "module": 4,
-        "topic": "### Tema 4: Protección SSRF con InetAddressFilter (Spring Boot 4.1)",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "topic": "### Tema 4: Reducir SSRF en clientes HTTP con InetAddressFilter",
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "4.10",
+            "title": "#### Subtema 4.10 · Crear un RestClient con límites · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "4.11",
+            "title": "#### Subtema 4.11 · Probar destinos internos con un servidor local · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "4.12",
+            "title": "#### Subtema 4.12 · Impedir redirects y definir el límite de protección · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 4,

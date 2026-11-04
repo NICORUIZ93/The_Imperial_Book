@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 79,
-      "prerequisites": 92,
-      "context": 79,
-      "theoryAnalogy": 79,
-      "guidedDemo": 79,
+      "objective": 78,
+      "prerequisites": 91,
+      "context": 78,
+      "theoryAnalogy": 78,
+      "guidedDemo": 78,
       "codeExplanation": 111,
       "execution": 105,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 79,
-      "independentPractice": 79,
-      "closure": 79,
-      "commonErrors": 79,
-      "resources": 86,
-      "standaloneExample": 76,
-      "learningEvidence": 88,
-      "complete": 75
+      "guidedPractice": 78,
+      "independentPractice": 78,
+      "closure": 78,
+      "commonErrors": 78,
+      "resources": 85,
+      "standaloneExample": 75,
+      "learningEvidence": 87,
+      "complete": 74
     }
   },
   "topics": {
@@ -30523,28 +30523,28 @@
       },
       {
         "module": 4,
-        "topic": "Tema 4: Protección SSRF con InetAddressFilter (Spring Boot 4.1)",
+        "topic": "Tema 4: Reducir SSRF en clientes HTTP con InetAddressFilter",
         "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "objective": false,
+          "prerequisites": false,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 4,
+          "complete": false
         }
       },
       {

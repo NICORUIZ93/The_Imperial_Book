@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 385,
+      "lines": 404,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 14332,
+      "lines": 14375,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -314,7 +314,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1114,
+      "lines": 1113,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -600,7 +600,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3759,
+      "lines": 3766,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13570,
+      "lines": 13572,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -677,7 +677,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 137,
+      "lines": 138,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 382,
+      "lines": 385,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -5549,7 +5549,7 @@
     },
     {
       "path": "examples/spring-ssrf/src/test/java/com/academia/SafeClientTest.java",
-      "lines": 43,
+      "lines": 75,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -12055,7 +12055,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-4.md",
-      "lines": 1020,
+      "lines": 993,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

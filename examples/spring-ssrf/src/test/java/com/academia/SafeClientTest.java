@@ -38,5 +38,37 @@ class SafeClientTest {
         for (String address : new String[]{"127.0.0.1", "10.0.0.1", "169.254.169.254", "::1"}) {
             assertFalse(filter.matches(InetAddress.getByName(address)), address);
         }
+        assertTrue(filter.matches(InetAddress.getByName("8.8.8.8")), "external IP control");
+    }
+
+    @Test
+    void doesNotFollowRedirectToAnotherAddress() throws Exception {
+        var redirectHits = new AtomicInteger();
+        var target = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        target.createContext("/", exchange -> {
+            redirectHits.incrementAndGet();
+            exchange.sendResponseHeaders(200, -1);
+            exchange.close();
+        });
+        target.start();
+
+        var redirect = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        redirect.createContext("/", exchange -> {
+            exchange.getResponseHeaders().add("Location",
+                "http://127.0.0.1:" + target.getAddress().getPort() + "/");
+            exchange.sendResponseHeaders(302, -1);
+            exchange.close();
+        });
+        redirect.start();
+        try {
+            String url = "http://127.0.0.1:" + redirect.getAddress().getPort() + "/";
+            var response = SafeClient.create(InetAddressFilter.all())
+                .get().uri(url).retrieve().toBodilessEntity();
+            assertEquals(302, response.getStatusCode().value());
+            assertEquals(0, redirectHits.get(), "redirect target must not receive a request");
+        } finally {
+            redirect.stop(0);
+            target.stop(0);
+        }
     }
 }

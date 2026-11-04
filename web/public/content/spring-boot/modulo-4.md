@@ -691,106 +691,79 @@ Ejecuta `./mvnw -q -Dtest=CorsConfigTest#preflightDeMetodoNoListadoRecibe403 tes
 
 ---
 
-### Tema 4: Protección SSRF con InetAddressFilter (Spring Boot 4.1)
+### Tema 4: Reducir SSRF en clientes HTTP con InetAddressFilter
 
-#### Paso 1 · Objetivo y preparación
+**Meta:** configurar un cliente saliente de Spring Boot 4 que rechace direcciones internas, poner límites al tiempo de conexión y comprobar que no sigue redirecciones. Esto reduce una vía de SSRF en ese cliente; no convierte en segura cualquier URL ni reemplaza reglas de salida de red.
 
-Al finalizar podrás configurar un `InetAddressFilter` (Spring Boot 4.1) que bloquee las peticiones salientes de un cliente HTTP hacia direcciones de loopback, link-local y metadatos de nube, cerrando una vulnerabilidad SSRF real en un endpoint que acepta una URL del usuario.
+**¿Por qué es importante?** Una función que obtiene una imagen o consulta un webhook por una URL recibida puede terminar conectándose a servicios internos. El control se coloca en el cliente HTTP usado para hacer la petición. Si el endpoint usa otro cliente, proxy o SDK, este filtro no lo cubre.
 
-**Conocimiento previo:** Tema 2 de este módulo.
+#### Subtema 4.10 · Crear un RestClient con límites · 10 min
 
-#### Paso 2 · Contexto y caso real
+**Contexto:** `InetAddressFilter.externalAddresses()` permite direcciones externas y excluye direcciones internas conocidas. Combínalo con timeouts y redirects desactivados. La allowlist de hosts de negocio y las reglas de egreso siguen siendo controles útiles: una IP pública también puede ser un destino que tu aplicación no debería consultar.
 
-**¿Por qué es importante?** Un endpoint que valida webhooks o genera miniaturas de imágenes a partir de una URL que el usuario proporciona, sin restringir a qué direcciones puede conectarse el cliente HTTP del servidor, permite que un atacante le pida al propio servidor que consulte `http://169.254.169.254/latest/meta-data/iam/security-credentials/` (el endpoint de metadatos de la nube) o un servicio interno sin autenticación, filtrando credenciales o datos que nunca deberían ser accesibles desde fuera.
+**Hazlo tú:** Desde la raíz, copia el laboratorio autocontenido y entra en él:
 
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** Server-Side Request Forgery (SSRF), rango de direcciones bloqueadas, egress controlado, validación de URL insuficiente por sí sola.
-
-```java
-@Bean
-RestClient.Builder restClientBuilder() {
-    HttpClientSettings settings = HttpClientSettings.defaults()
-        .withInetAddressFilter(InetAddressFilter.externalAddresses());
-    return RestClient.builder()
-        .requestFactory(ClientHttpRequestFactoryBuilder.jdk().build(settings));
-}
-```
-
-`InetAddressFilter` (agregado en Spring Boot 4.1) intercepta la resolución DNS/IP de cada petición saliente del cliente HTTP, antes de establecer la conexión, y rechaza cualquier destino que resuelva a loopback (127.0.0.1), link-local, rangos privados (10.0.0.0/8, 192.168.0.0/16) o el rango reservado de metadatos de nube — sin depender de que el código de la aplicación valide correctamente el string de la URL, una validación que un atacante puede evadir con redirects o DNS rebinding.
-
-**Analogía:** validar el string de una URL antes de pedirle al cliente HTTP que la visite es como revisar el nombre escrito en un sobre antes de enviarlo, sin verificar la dirección real a la que viaja el cartero; `InetAddressFilter` es el control en la puerta del cartero mismo, que rechaza la entrega sin importar qué nombre diga el sobre si la dirección real resuelve a una zona prohibida.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-  U["URL del usuario: http://amigo.com/imagen.jpg"] --> R[Resolución DNS]
-  R --> F{"InetAddressFilter: IP pública?"}
-  F -->|sí| C[Conexión permitida]
-  F -->|no: loopback/privada/metadata| B["Bloqueado antes de conectar"]
-```
-
-#### Paso 4 · Demostración guiada desde cero
-Requisitos: JDK 25 y Maven 3.9. Copia el laboratorio independiente con BOM Spring Boot 4.1.1, cliente y pruebas:
 ```bash
-cp -R examples/spring-ssrf ejemplo-ssrf
-cd ejemplo-ssrf
-mvn test          # Maven
-./gradlew test    # Gradle (equivalente)
+cp -R examples/spring-ssrf /tmp/ssrf-lab
+cd /tmp/ssrf-lab
+./mvnw -q -DskipTests package
 ```
-Crea o inspecciona `src/main/java/com/academia/SafeClient.java`:
-```java
-package com.academia;
 
-import java.time.Duration;
-import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
-import org.springframework.boot.http.client.HttpClientSettings;
-import org.springframework.boot.http.client.HttpRedirects;
-import org.springframework.boot.http.client.InetAddressFilter;
-import org.springframework.web.client.RestClient;
+Abre `src/main/java/com/academia/SafeClient.java`. Allí `SafeClient.externalOnly()` crea un `RestClient` JDK con el filtro, timeout de conexión y lectura de dos segundos, y `DONT_FOLLOW` para redirects. Sigue esos métodos desde `SafeClient.create(...)` hasta `ClientHttpRequestFactoryBuilder.jdk()`.
 
-public final class SafeClient {
-    private SafeClient() {}
-    public static RestClient create(InetAddressFilter allowedAddresses) {
-        var settings = HttpClientSettings.defaults()
-            .withConnectTimeout(Duration.ofSeconds(2))
-            .withReadTimeout(Duration.ofSeconds(2))
-            .withRedirects(HttpRedirects.DONT_FOLLOW)
-            .withInetAddressFilter(allowedAddresses);
-        return RestClient.builder()
-            .requestFactory(ClientHttpRequestFactoryBuilder.jdk().build(settings))
-            .build();
-    }
-    public static RestClient externalOnly() {
-        return create(InetAddressFilter.externalAddresses());
-    }
-}
+**Resultado esperado:** Maven termina con código `0`; el laboratorio compila con Spring Boot `4.1.2` y JDK `25`.
+
+**Fallo deliberado y diagnóstico:** cambia temporalmente `externalAddresses()` por `all()` en `externalOnly()` y ejecuta `./mvnw -q -Dtest=SafeClientTest#blocksBeforeRequestAndControlReallyReachesServer test`. La prueba falla porque ahora la petición llega al servidor local en vez de lanzar `FilteredHostException`. Restaura `externalAddresses()`.
+
+**Entiende:** el filtro pertenece a la configuración del cliente saliente; no inspecciona automáticamente todas las peticiones de la aplicación. Los timeouts limitan cuánto espera el cliente. `DONT_FOLLOW` evita que una respuesta lo redirija a otra URL sin una nueva decisión explícita.
+
+**Cierra:** señala las tres opciones en `SafeClient` y describe cuál limita destino, espera y redirección.
+
+#### Subtema 4.11 · Probar destinos internos con un servidor local · 10 min
+
+**Contexto:** una prueba que solo comprueba una excepción podría pasar porque el servidor estaba apagado. El control positivo debe demostrar que el mismo servidor sí responde cuando se permite la dirección local.
+
+**Hazlo tú:** Ejecuta desde `examples/spring-ssrf`:
+
+```bash
+./mvnw -q -Dtest=SafeClientTest#blocksBeforeRequestAndControlReallyReachesServer,SafeClientTest#excludesInternalAndMetadataRangesWithoutConnecting test
 ```
-`externalAddresses()` describe las direcciones permitidas; el transporte rechaza las demás. No confundir una lista de permitidos con una lista de bloqueados. La configuración desactiva redirects y acota tiempos.
 
-En `src/test/java/com/academia/SafeClientTest.java` la prueba inicia un servidor propio en loopback y puerto efímero. Con el filtro exige directamente `FilteredHostException` con el transporte JDK elegido y cero peticiones recibidas; un segundo cliente de control permite la IP local y debe recibir 200 e incrementar el contador. No se consulta ningún servicio de metadatos real.
+Lee `src/test/java/com/academia/SafeClientTest.java`: el servidor escucha solo en `127.0.0.1` en un puerto efímero. Primero el cliente filtrado debe lanzar `FilteredHostException` y el contador debe quedar en cero; luego el control con `InetAddressFilter.all()` recibe `local fixture`. La segunda prueba clasifica loopback, red privada, link-local `169.254.169.254`, IPv6 loopback y una IP externa conocida sin abrir conexiones.
 
-**Resultado esperado:** dos pruebas verdes: bloqueo real del transporte con control positivo y clasificación de IP privadas/metadatos sin conexión. Un timeout genérico no satisface la primera prueba. La aplicación que use este cliente debe clasificar la causa de error; no traduzcas toda `ResourceAccessException` como rechazo por política.
+**Resultado esperado:** las dos pruebas pasan; el rechazo no es un timeout y el control positivo confirma que el servidor estaba disponible. No se llama a servicios cloud ni a terceros.
 
-#### Paso 5 · Práctica guiada
-Pista: provoca el fallo deliberado reemplazando temporalmente `externalAddresses()` por `all()` SOLO en el laboratorio. `mvn test` falla porque la solicitud local ya no lanza `FilteredHostException`. El servidor efímero recibe la petición; restaura el filtro y comprueba el test verde. No pruebes este cambio contra URLs de terceros ni metadatos reales.
+**Fallo deliberado y diagnóstico:** elimina temporalmente la aserción `assertEquals(0, received.get())` y cambia `externalAddresses()` por `all()`. Ejecuta el comando otra vez: verás que el test pierde la garantía de que la petición se detuvo antes de llegar al servidor. Restaura ambos cambios.
 
-#### Paso 6 · Práctica independiente
-Agrega casos para IPv6 privado y redirects, manteniendo el servidor de prueba local. Configura el cliente de tu proyecto integrador a través de una clase equivalente y confirma qué clientes pasan por él. Escribe de memoria una prueba con control positivo y negativo: ambos son necesarios para distinguir bloqueo de un servidor que nunca estuvo disponible.
+**Entiende:** el rechazo de `169.254.169.254` aquí se prueba como clasificación de dirección; no se solicita ese destino real. DNS y transporte tienen detalles propios, así que no presentes esta prueba como cobertura de DNS rebinding.
 
-#### Paso 7 · Cierre y evidencia
+**Cierra:** explica por qué la prueba necesita tanto el contador en cero como el control que alcanza el servidor.
 
-Ya cerrás una vulnerabilidad SSRF real configurando el cliente HTTP para rechazar destinos internos y de metadatos de nube, confirmado con un test local que comprueba el rechazo y un control positivo. Esto cierra el módulo de Spring Security; el siguiente módulo aborda cómo centralizar y validar la configuración del resto de la aplicación. **Evidencia:** entrega el test `SafeClientTest` en verde bloqueando loopback, y el control positivo contra el servidor local. Fuente oficial: [Spring Boot 4.1 Release Notes — InetAddressFilter](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.1-Release-Notes).
+#### Subtema 4.12 · Impedir redirects y definir el límite de protección · 10 min
 
-**Errores comunes:** confiar únicamente en una validación de string de la URL contra una allowlist, vulnerable a DNS rebinding; no probar explícitamente el rango de metadatos de nube (`169.254.169.254`), uno de los destinos más valiosos para un atacante en un entorno cloud real.
+**Contexto:** incluso una primera URL aceptable puede responder con una redirección a otro destino. El laboratorio verifica la decisión del cliente en una pareja de servidores locales.
 
-**Cuándo no usarlo:** para un cliente HTTP que SOLO consume URLs fijas y conocidas en tiempo de compilación (nunca una URL proporcionada por el usuario o un tercero), el riesgo de SSRF no existe en ese flujo específico y el filtro agrega restricción sin beneficio real ahí.
+**Hazlo tú:** ejecuta el caso de redirección:
+
+```bash
+./mvnw -q -Dtest=SafeClientTest#doesNotFollowRedirectToAnotherAddress test
+```
+
+El primer servidor devuelve `302` apuntando al segundo; el cliente debe devolver `302` y el contador del servidor destino debe permanecer en cero. Para cerrar el tema, ejecuta toda la suite:
+
+```bash
+./mvnw -q clean test
+```
+
+**Resultado esperado:** tres pruebas pasan. Si tu producto necesita redirects, valida cada destino y limita la cantidad de saltos con una estrategia explícita antes de habilitarlos.
+
+**Fallo deliberado y diagnóstico:** cambia `HttpRedirects.DONT_FOLLOW` por `HttpRedirects.FOLLOW` en `SafeClient.java` y repite el primer comando. La prueba falla porque obtiene `200` y el servidor destino recibe la solicitud. Restaura `DONT_FOLLOW` y confirma el test verde.
+
+**Entiende:** este filtro solo se aplica a clientes construidos con estos ajustes. Cuando se usa un proxy que resuelve el host por su cuenta, hay que configurar la política de destinos en el proxy o en el egreso de red. Una IP externa aún puede ser indeseada; combina este filtro con una allowlist de hosts/servicios cuando el caso lo requiera. Fuentes: [API oficial de InetAddressFilter](https://docs.spring.io/spring-boot/api/java/org/springframework/boot/http/client/InetAddressFilter.html), [API oficial de HttpClientSettings](https://docs.spring.io/spring-boot/api/java/org/springframework/boot/http/client/HttpClientSettings.html) y [notas de Spring Boot 4.1](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.1-Release-Notes).
+
+**Cierra:** conserva la suite verde y resume qué limita el filtro y qué parte debe cubrir el proxy o la red. No afirmes que un test local certifica el control de todos los destinos de producción.
 
 ---
-
-La configuración de CORS, CSRF e InetAddressFilter de este tema es la que necesitará el frontend y los webhooks que consuma el proyecto integrador de este track (microservicio productivo, Módulo 12).
-**Evidencia de aprendizaje:** entrega la salida de `mvn test` con `SafeClientTest` en verde (bloqueo por `FilteredHostException` y el control positivo recibiendo 200), y la explicación de por qué cambiar `externalAddresses()` por `all()` en el Paso 5 hace que la petición al servidor local deje de bloquearse.
 ### Tema 5: Flujo de login completo — de `/api/auth/login` a una ruta protegida
 
 #### Paso 1 · Objetivo y preparación
@@ -1005,15 +978,15 @@ Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el
 | 3 | Agregar `@PreAuthorize("hasRole('ADMIN')")` | Ver Tema 2 | Verifica el 403 real sin ese rol |
 | 4 | Configurar CORS para el frontend | Ver Tema 3 | Solo el origen esperado, no `"*"` |
 | 5 | Documentar cuándo CSRF es relevante | Ver Tema 3 | Y por qué se deshabilita en esta API |
-| 6 | Configurar `InetAddressFilter` en el cliente HTTP | Ver Tema 4 | Bloquea SSRF hacia metadatos de nube y rangos internos |
+| 6 | Configurar `InetAddressFilter` en el cliente HTTP | Ver Tema 4 | Rechaza direcciones internas en ese cliente saliente; combina con reglas de egreso |
 
-**Verificación:** el laboratorio se considera exitoso si un usuario sin el rol requerido recibe `403` real al intentar acceder a un endpoint protegido, si el filtro JWT rechaza correctamente peticiones con un token inválido o ausente hacia rutas autenticadas, y si una petición saliente hacia la IP de metadatos de nube es bloqueada antes de conectarse, todo confirmado con `MockMvc`.
+**Verificación:** comprueba con MockMvc los contratos HTTP de roles y tokens. Para SSRF ejecuta el laboratorio separado `examples/spring-ssrf`: su servidor local confirma bloqueo de loopback antes de conectar; la dirección de metadatos se clasifica sin intentar acceder a ella. Este ensayo no valida todos los clientes ni las reglas de salida del despliegue.
 
 **Errores comunes y soluciones**
 
 - **Deshabilitar CSRF en una aplicación que usa sesiones basadas en cookies.** CSRF sigue siendo relevante en ese caso; solo deshabilítalo en APIs stateless con JWT.
 - **Configurar CORS con `allowedOrigins("*")` en producción.** Restringe explícitamente a los orígenes reales esperados.
 - **Olvidar `OncePerRequestFilter` para el filtro JWT.** Sin él, el filtro podría ejecutarse más de una vez por petición en ciertas configuraciones de servlets anidados.
-- **Confiar solo en validar el string de una URL de usuario sin `InetAddressFilter`.** Esa validación es evadible con DNS rebinding; el filtro bloquea en la capa de red real.
+- **Afirmar que una validación de URL o este filtro por sí solos detienen DNS rebinding.** Restringe hosts aceptados cuando el caso lo permite y configura el proxy o egreso de red; prueba el comportamiento del cliente usado en producción.
 
 ---

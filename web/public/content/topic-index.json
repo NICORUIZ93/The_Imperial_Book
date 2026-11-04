@@ -5176,8 +5176,8 @@
         "fragment": "tema-3-cors-y-csrf"
       },
       {
-        "title": "Protección SSRF con InetAddressFilter (Spring Boot 4.1)",
-        "fragment": "tema-4-proteccion-ssrf-con-inetaddressfilter-spring-boot-4-1"
+        "title": "Reducir SSRF en clientes HTTP con InetAddressFilter",
+        "fragment": "tema-4-reducir-ssrf-en-clientes-http-con-inetaddressfilter"
       },
       {
         "title": "Flujo de login completo — de `/api/auth/login` a una ruta protegida",

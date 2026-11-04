@@ -224,15 +224,15 @@
       "topics": 111,
       "explanation": 111,
       "code": 111,
-      "visual": 72,
+      "visual": 71,
       "filePath": 111,
       "runCommand": 106,
       "expectedResult": 111,
       "practice": 106,
-      "project": 102,
+      "project": 101,
       "modelMental": 111,
       "limitsDecision": 104,
-      "practicable": 95,
+      "practicable": 94,
       "genericScaffold": 0,
       "repeatedDemo": 0
     }
@@ -25831,22 +25831,22 @@
       },
       {
         "module": 4,
-        "topic": "Tema 4: Protección SSRF con InetAddressFilter (Spring Boot 4.1)",
+        "topic": "Tema 4: Reducir SSRF en clientes HTTP con InetAddressFilter",
         "criteria": {
           "explanation": true,
           "code": true,
-          "visual": true,
+          "visual": false,
           "filePath": true,
           "runCommand": true,
           "expectedResult": true,
           "practice": true,
-          "project": true,
+          "project": false,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 16,
-          "practicable": true,
+          "rubricScore": 12,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }

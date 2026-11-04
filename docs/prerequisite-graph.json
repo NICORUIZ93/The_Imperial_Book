@@ -4291,7 +4291,7 @@
       "track": "spring-boot",
       "module": 4,
       "position": 4,
-      "title": "Protección SSRF con InetAddressFilter (Spring Boot 4.1)",
+      "title": "Reducir SSRF en clientes HTTP con InetAddressFilter",
       "file": "web/public/content/spring-boot/modulo-4.md",
       "requires": [
         "spring-boot:4:3"
