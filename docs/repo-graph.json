@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 271,
+      "lines": 288,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 14117,
+      "lines": 14160,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -314,7 +314,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1119,
+      "lines": 1118,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13560,
+      "lines": 13562,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 367,
+      "lines": 370,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -12034,7 +12034,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-3.md",
-      "lines": 485,
+      "lines": 620,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12046,11 +12046,11 @@
         "#### Subtema 3.2 \u00b7 Filtrar con el nombre del m\u00e9todo \u00b7 10 min",
         "#### Subtema 3.3 \u00b7 Escribir JPQL cuando ayuda a leer \u00b7 10 min",
         "### Tema 2: El problema N+1 y su correcci\u00f3n",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda con analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva"
+        "#### Subtema 3.4 \u00b7 Relacionar clientes y pedidos y medir \u00b7 12 min",
+        "#### Subtema 3.5 \u00b7 Cargar la relaci\u00f3n con `JOIN FETCH` \u00b7 10 min",
+        "#### Subtema 3.6 \u00b7 Elegir `@EntityGraph` y revisar el l\u00edmite \u00b7 10 min",
+        "### Tema 3: Migraciones con Flyway",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {

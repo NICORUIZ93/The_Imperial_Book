@@ -93,10 +93,10 @@
     },
     "spring-boot": {
       "topics": 111,
-      "completeTopics": 26,
-      "topicsWith3to6Subtopics": 27,
-      "subtopics": 81,
-      "completeSubtopics": 80
+      "completeTopics": 27,
+      "topicsWith3to6Subtopics": 28,
+      "subtopics": 84,
+      "completeSubtopics": 83
     }
   },
   "topics": {
@@ -13789,9 +13789,52 @@
       {
         "module": 3,
         "topic": "### Tema 2: El problema N+1 y su corrección",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "3.4",
+            "title": "#### Subtema 3.4 · Relacionar clientes y pedidos y medir · 12 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "3.5",
+            "title": "#### Subtema 3.5 · Cargar la relación con `JOIN FETCH` · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "3.6",
+            "title": "#### Subtema 3.6 · Elegir `@EntityGraph` y revisar el límite · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 3,

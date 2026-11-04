@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 219,
+    "topicsWithSignals": 220,
     "newLaboratories": 25
   },
   "priorities": {
@@ -13237,7 +13237,9 @@
       "title": "Tema 2: El problema N+1 y su corrección",
       "file": "web/public/content/spring-boot/modulo-3.md",
       "line": 180,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -13247,7 +13249,7 @@
       "module": 3,
       "title": "Tema 3: Migraciones con Flyway",
       "file": "web/public/content/spring-boot/modulo-3.md",
-      "line": 331,
+      "line": 466,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

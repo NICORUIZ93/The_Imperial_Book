@@ -89,10 +89,10 @@ reapliques cambios que ya estén publicados.
 
 ## Estado global honesto
 
-En la auditoría actual: **130/1185 temas** cumplen la estructura atómica en los
-14 tracks: Java 101, Spring Boot 26, Node 2 y Flutter 1. La auditoría pedagógica detecta
-**1094/1185 temas practicables** y deuda en 91. La auditoría de sustancia registra
-410 temas con defectos, deuda histórica repartida entre varios tracks. Ninguna de
+En la auditoría actual: **131/1185 temas** cumplen la estructura atómica en los
+14 tracks: Java 101, Spring Boot 27, Node 2 y Flutter 1. La auditoría pedagógica detecta
+**1095/1185 temas practicables** y deuda en 90. La auditoría de sustancia registra
+409 temas con defectos, deuda histórica repartida entre varios tracks. Ninguna de
 estas cifras certifica que un curso esté completo o que todos los ejemplos se
 hayan ejecutado.
 
@@ -265,6 +265,23 @@ defectos de sustancia. Se regeneraron reportes y `./scripts/validate.sh` pasó
 con 23 pruebas y 4 omitidas. Estas cifras son indicadores, no certificación de
 aprendizaje ni ejecución de todas las prácticas.
 
-**Siguiente tema:** Spring Boot M3 T2, “El problema N+1 y su corrección”.
-Revisa todos sus subtemas, confirma que el número de consultas se mide realmente
-con una base de prueba y alinea el ejemplo con las entidades de `academia-spring`.
+Spring Boot M3 T2, “El problema N+1 y su corrección”, se reescribió con tres
+subtemas sobre entidades `Cliente` y `Pedido` agregadas al mismo backend. El
+ejemplo anterior tenía `mappedBy="usuario"` sin propiedad inversa y no definía
+`UsuarioRepository`; se corrigió el mapeo antes de enseñar la consulta. En el
+proyecto temporal Spring Boot 4.1.2/JDK 25, tres pruebas pasaron en H2:
+`getPrepareStatementCount()` midió 4 sentencias con carga perezosa y 1 con
+`LEFT JOIN FETCH` o `@EntityGraph`. Se ejecutaron fallos deliberados de
+`mappedBy`, omitir `fetch` y dar una ruta singular a `@EntityGraph`; cada uno
+produjo el error descrito y se restauró el código. Se usa `getPrepareStatementCount`
+para medir las sentencias de carga de colecciones, no `getQueryExecutionCount`.
+
+Tras M3 T2, la auditoría registra **131/1185 temas atómicos**: Java 101,
+Spring Boot 27, Node 2 y Flutter 1; **1095/1185 practicables** y 409 temas con
+defectos de sustancia. Reportes regenerados y `./scripts/validate.sh` pasó con
+23 pruebas y 4 omitidas. Estas cifras siguen siendo indicadores estructurales,
+no certificación de aprendizaje.
+
+**Siguiente tema:** Spring Boot M3 T3, “Migraciones con Flyway”. Revisa desde
+cero si los SQL y dependencias coinciden con el backend acumulado, y contrasta
+la guía con documentación primaria de Flyway y Spring Boot.

@@ -1698,7 +1698,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "5c3249f1f36545f565f4ee10df9d022fd1df5af72bd68465e78640c322d54a9c",
+    "fingerprint": "4391b4129ab5eac8b0d0e1f5e0f0408efdf060547344cb15f8221704b54b885d",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10880,9 +10880,9 @@
       {
         "issues": [],
         "module": 3,
-        "tailWords": 188,
+        "tailWords": 0,
         "topic": "Tema 2: El problema N+1 y su corrección",
-        "words": 1213
+        "words": 1364
       },
       {
         "issues": [],

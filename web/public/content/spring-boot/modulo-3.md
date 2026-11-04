@@ -179,154 +179,289 @@ La entidad y el repositorio de esta práctica continúan en el proyecto integrad
 
 ### Tema 2: El problema N+1 y su corrección
 
-#### Paso 1 · Objetivo y preparación
+En este tema añadimos `Cliente` y `Pedido` al proyecto `academia-spring` ya existente. Así probamos una relación propia sin alterar la entidad `Tarea` que usa el mapper del API.
 
-Al finalizar podrás reproducir el problema N+1 con una relación `@OneToMany`, medir el número real de queries ejecutadas, y corregirlo con `JOIN FETCH`.
-
-**Conocimiento previo:** Tema 1 de este módulo (entidades y repositorios).
-
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** Iterar sobre una lista de usuarios accediendo a las tareas de cada uno, con una relación cargada perezosamente, dispara una query SQL separada por cada usuario individual — un problema de rendimiento que empeora directamente con el tamaño de los datos y puede pasar desapercibido en desarrollo con pocos registros de prueba.
-
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** carga perezosa (`lazy`), una query adicional por cada elemento de una colección, `JOIN FETCH`.
-
-`@OneToMany(mappedBy = "usuario") private List<Tarea> tareas;` mapea una relación uno-a-muchos, con carga perezosa por defecto: la lista de tareas de un usuario no se carga desde la base de datos hasta que efectivamente se accede a ella (`u.getTareas().size()`). Esto se vuelve problemático al iterar sobre una colección de usuarios: por cada usuario, Hibernate ejecuta una query SQL separada para cargar sus tareas, resultando en N queries adicionales más la query original que cargó la lista de usuarios — de ahí "N+1". `@Query("SELECT u FROM Usuario u JOIN FETCH u.tareas") List<Usuario> buscarConTareas();` corrige esto indicándole a Hibernate que cargue usuarios y tareas relacionadas en una única query con `JOIN` real.
-
-**Analogía:** el problema N+1 es como enviar un mensajero por separado a buscar cada ingrediente de una receta, uno a la vez, en vez de un único mensajero que trae todos los ingredientes en un solo viaje coordinado (`JOIN FETCH`); cada viaje individual tiene un costo fijo que se multiplica innecesariamente.
-
-**Diagrama:**
+**¿Por qué es importante?** Una página que carga clientes y luego consulta los pedidos de cada uno puede hacer muchas llamadas a la base. Con pocos datos parece rápida; al crecer la lista, cada consulta adicional añade demora.
 
 ```mermaid
 flowchart LR
-  A[findAll de N usuarios] --> B["por cada usuario: u.getTareas() dispara 1 query"]
-  B --> C["N+1 queries totales"]
-  D["JOIN FETCH u.tareas"] --> E["1 sola query con JOIN"]
+  A["findAll: 1 consulta"] --> B["cada colección pedidos: 1 consulta"]
+  B --> C["3 clientes: 1 + 3 = 4"]
+  D["LEFT JOIN FETCH"] --> E["clientes y pedidos: 1 consulta"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Subtema 3.4 · Relacionar clientes y pedidos y medir · 12 min
 
-Reutiliza `academia-spring` (o créalo desde una carpeta vacía con `mkdir -p academia-spring` si es tu primera vez) y crea `src/main/java/com/academia/tarea/Usuario.java` con la relación, habilitando además el contador de queries real vía el logger de Hibernate:
+**Contexto:** Una ficha de cliente muestra sus pedidos. La relación debe decir quién es el dueño de la referencia y permitir contar las consultas reales sin confundirlas con las escrituras de datos.
 
-```bash
-mkdir -p academia-spring/src/main/java/com/academia/tarea
-cd academia-spring
-```
+**Hazlo tú:** En `academia-spring`, crea estos archivos en `src/main/java/com/example/demo/`.
+
+`Cliente.java`:
 
 ```java
-// src/main/java/com/academia/tarea/Usuario.java
-package com.academia.tarea;
+package com.example.demo;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
 
+@Getter
 @Entity
-public class Usuario {
+@Table(name = "clientes")
+public class Cliente {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String nombre;
 
-    @OneToMany(mappedBy = "usuario")
-    private List<Tarea> tareas = new ArrayList<>();
+    @OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY)
+    private List<Pedido> pedidos = new ArrayList<>();
 
-    protected Usuario() {}
+    protected Cliente() {}
 
-    public Usuario(String nombre) { this.nombre = nombre; }
-
-    public Long getId() { return id; }
-    public List<Tarea> getTareas() { return tareas; }
-}
-```
-
-```bash
-cat >> src/main/resources/application.properties <<'EOF'
-spring.jpa.properties.hibernate.generate_statistics=true
-logging.level.org.hibernate.stat=DEBUG
-EOF
-```
-
-**Explicación línea por línea:** `@OneToMany(mappedBy = "usuario")` declara la relación uno-a-muchos con carga perezosa (comportamiento por defecto de `@OneToMany`); `hibernate.generate_statistics=true` activa las estadísticas reales de Hibernate, que reportan el número exacto de queries ejecutadas por sesión — la forma real de medir N+1, no una estimación.
-
-Escribe un test real que provoca N+1 deliberadamente, leyendo el conteo real de queries desde `SessionFactory.getStatistics()`:
-
-```java
-// src/test/java/com/academia/tarea/NMasUnoTest.java
-package com.academia.tarea;
-
-import org.hibernate.SessionFactory;
-import org.hibernate.stat.Statistics;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import static org.assertj.core.api.Assertions.assertThat;
-
-@DataJpaTest
-class NMasUnoTest {
-
-    @Autowired
-    private UsuarioRepository usuarioRepository;
-    @Autowired
-    private SessionFactory sessionFactory;
-
-    @Test
-    void iterarSobreUsuariosAccediendoATareasDisparaNMasUnoQueries() {
-        for (int i = 0; i < 3; i++) usuarioRepository.save(new Usuario("usuario-" + i));
-
-        Statistics stats = sessionFactory.getStatistics();
-        stats.clear();
-
-        for (Usuario u : usuarioRepository.findAll()) {
-            u.getTareas().size(); // dispara una query lazy POR CADA usuario
-        }
-
-        // 1 query para findAll() + 3 queries lazy (una por usuario) = 4
-        assertThat(stats.getQueryExecutionCount()).isEqualTo(4L);
+    public Cliente(String nombre) {
+        this.nombre = nombre;
     }
 }
 ```
 
-```bash
-mvn test -Dtest=NMasUnoTest         # Maven
-./gradlew test --tests NMasUnoTest  # Gradle (equivalente)
-```
-
-**Resultado esperado:** el test pasa: `stats.getQueryExecutionCount()` reporta exactamente `4` queries (1 de `findAll()` + 3 de acceso perezoso, una por usuario) — la medición real del problema N+1, no una suposición.
-
-**Fallo deliberado:** cambia el conteo esperado a `assertThat(stats.getQueryExecutionCount()).isEqualTo(1L)` (asumiendo, incorrectamente, que `findAll()` ya trae todo) y ejecuta de nuevo. El test FALLA con `expected: 1L but was: 4L` — diagnostica confirmando con evidencia real, no intuición, que la carga perezosa efectivamente dispara las queries adicionales al iterar. Revierte la aserción a `4L`, luego corrige el método con `JOIN FETCH` en `UsuarioRepository` (`@Query("SELECT u FROM Usuario u JOIN FETCH u.tareas") List<Usuario> buscarConTareas();`) y confirma que, usando ese método en vez de `findAll()`, `stats.getQueryExecutionCount()` baja a `1L`.
-
-#### Paso 5 · Práctica guiada — repetición progresiva
-
-1. Agrega un cuarto usuario y confirma que el conteo de queries sube a `5` (1 + 4) antes de la corrección, y permanece en `1` después de aplicar `JOIN FETCH`.
-2. Prueba `@EntityGraph(attributePaths = "tareas")` sobre `findAll()` como alternativa declarativa a `JOIN FETCH` y confirma con `Statistics` que también reduce el conteo a `1`.
-3. Provoca N+1 con una segunda relación (agrega `@OneToMany` de `Usuario` a una nueva entidad `Comentario`) y confirma que iterar sobre ambas relaciones multiplica el número de queries adicionales.
-4. Escribe de memoria (sin mirar) una entidad con `@OneToMany` y un test que mida el número real de queries con `Statistics` antes y después de `JOIN FETCH`.
-
-**Pista:** `stats.clear()` antes de la sección que quieres medir es imprescindible; sin eso, el conteo incluye queries de configuración previas y el número deja de ser interpretable.
-
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio para cargar usuarios y tareas en una única query:
+`Pedido.java`:
 
 ```java
-@Query("SELECT u FROM Usuario u ____ u.tareas")
-List<Usuario> buscarConTareas();
+package com.example.demo;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.Getter;
+
+@Getter
+@Entity
+@Table(name = "pedidos")
+public class Pedido {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String codigo;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "cliente_id", nullable = false)
+    private Cliente cliente;
+
+    protected Pedido() {}
+
+    public Pedido(String codigo, Cliente cliente) {
+        this.codigo = codigo;
+        this.cliente = cliente;
+    }
+}
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un test que mida con `Statistics.getQueryExecutionCount()` la diferencia entre iterar con carga perezosa y usar `JOIN FETCH`. Compara después contra el patrón del Paso 4.
+Crea los repositorios `ClienteRepository.java` y `PedidoRepository.java` en la misma carpeta:
 
-#### Paso 7 · Cierre y evidencia
+```java
+package com.example.demo;
 
-Ya reproduces el problema N+1 y lo mides con estadísticas reales de Hibernate, en vez de asumir su presencia o ausencia. El siguiente tema aborda cómo versionar cambios de esquema sin depender de la generación automática de Hibernate. **Evidencia:** entrega el resultado del conteo de queries antes (`4`) y después (`1`) de aplicar `JOIN FETCH`, medido con `Statistics` real. Fuente oficial: [Hibernate — Fetching strategies](https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#fetching).
+import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
-**Errores comunes:** no notar el problema N+1 hasta que aparece en producción con datasets grandes, por no haberlo medido durante el desarrollo; usar `EAGER` indiscriminadamente en todas las relaciones como "solución" genérica, lo que puede cargar datos innecesarios incluso cuando no se necesitan.
+public interface ClienteRepository extends JpaRepository<Cliente, Long> {
+    @Query("select c from Cliente c")
+    List<Cliente> buscarSinPedidos();
+}
+```
 
-**Cuándo no usarlo:** para una relación que casi nunca se accede junto con la entidad principal, forzar `JOIN FETCH` en todas las consultas cargaría datos innecesarios la mayoría del tiempo; resérvalo para los accesos donde realmente se sabe que la relación se usará.
+```java
+package com.example.demo;
 
-Detectar y corregir N+1 es una revisión obligatoria antes de dar por completo el proyecto integrador de este track (microservicio productivo, Módulo 12).
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface PedidoRepository extends JpaRepository<Pedido, Long> {}
+```
+
+Crea `src/test/java/com/example/demo/NMasUnoTest.java`:
+
+```java
+package com.example.demo;
+
+import jakarta.persistence.EntityManager;
+import org.hibernate.SessionFactory;
+import org.hibernate.stat.Statistics;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import static org.assertj.core.api.Assertions.assertThat;
+
+@DataJpaTest(properties = "spring.jpa.properties.hibernate.generate_statistics=true")
+class NMasUnoTest {
+    @Autowired ClienteRepository clientes;
+    @Autowired PedidoRepository pedidos;
+    @Autowired EntityManager entityManager;
+    @Autowired SessionFactory sessionFactory;
+
+    private void crearTresClientesConPedido() {
+        for (int i = 1; i <= 3; i++) {
+            Cliente cliente = clientes.save(new Cliente("Cliente " + i));
+            pedidos.save(new Pedido("RF-" + i, cliente));
+        }
+        entityManager.flush();
+        entityManager.clear();
+    }
+
+    @Test
+    void laCargaPerezosaHaceUnaConsultaPorCadaColeccion() {
+        crearTresClientesConPedido();
+        Statistics stats = sessionFactory.getStatistics();
+        stats.clear();
+
+        for (Cliente cliente : clientes.buscarSinPedidos()) {
+            assertThat(cliente.getPedidos()).hasSize(1);
+        }
+
+        assertThat(stats.getPrepareStatementCount()).isEqualTo(4L);
+    }
+}
+```
+
+Desde la raíz, ejecuta:
+
+```bash
+./mvnw -q -Dtest=NMasUnoTest test
+```
+
+**Resultado esperado:** `BUILD SUCCESS`; la aserción muestra cuatro sentencias preparadas: una para `buscarSinPedidos()` y tres para cargar las colecciones. El contador se limpia después de guardar y vaciar el contexto.
+
+**Fallo deliberado y diagnóstico:** cambia `mappedBy = "cliente"` por `mappedBy = "clientee"` en `Cliente.java`. El contexto de persistencia falla al iniciar porque el nombre no coincide con ningún atributo de `Pedido`. Restaura `cliente`.
+
+**Entiende:** `Pedido.cliente` guarda la clave foránea `cliente_id`; `Cliente.pedidos` es el lado inverso y `mappedBy` nombra el atributo dueño. `LAZY` significa que la colección se busca al accederla. `getPrepareStatementCount()` mide sentencias SQL preparadas, incluidas las consultas de carga perezosa; `getQueryExecutionCount()` no es el contador que queremos para estas consultas de colección.
+
+**Cierra:** registra el número 4 y explica qué sentencia corresponde al `+1` y cuáles a las tres colecciones.
+
+#### Subtema 3.5 · Cargar la relación con `JOIN FETCH` · 10 min
+
+**Contexto:** Ya mediste la repetición. Ahora cambia la consulta que carga la página para pedir clientes y pedidos juntos cuando sabes que mostrarás ambos.
+
+**Hazlo tú:** Reemplaza `src/main/java/com/example/demo/ClienteRepository.java` con la versión completa:
+
+```java
+package com.example.demo;
+
+import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+public interface ClienteRepository extends JpaRepository<Cliente, Long> {
+    @Query("select c from Cliente c")
+    List<Cliente> buscarSinPedidos();
+
+    @Query("select distinct c from Cliente c left join fetch c.pedidos")
+    List<Cliente> buscarTodosConPedidos();
+}
+```
+
+En `src/test/java/com/example/demo/NMasUnoTest.java`, añade este método dentro de la clase:
+
+```java
+@Test
+void joinFetchCargaLosPedidosEnLaConsultaPrincipal() {
+    crearTresClientesConPedido();
+    Statistics stats = sessionFactory.getStatistics();
+    stats.clear();
+
+    for (Cliente cliente : clientes.buscarTodosConPedidos()) {
+        assertThat(cliente.getPedidos()).hasSize(1);
+    }
+
+    assertThat(stats.getPrepareStatementCount()).isEqualTo(1L);
+}
+```
+
+Ejecuta desde la raíz:
+
+```bash
+./mvnw -q -Dtest=NMasUnoTest test
+```
+
+**Resultado esperado:** los dos tests pasan; el recorrido normal preparó 4 sentencias y el método con `left join fetch` preparó 1.
+
+**Fallo deliberado y diagnóstico:** quita la palabra `fetch` y deja `left join c.pedidos`. Ejecuta el test: la relación no se inicializa junto con el cliente y la medición vuelve a mostrar 4 sentencias. Restaura `fetch`.
+
+**Entiende:** `join fetch` le pide a JPA que traiga el atributo relacionado en la consulta que devuelve el cliente. `left` conserva también clientes que todavía no tienen pedidos. `distinct` expresa que cada cliente debe aparecer una vez en el resultado aunque tenga varios pedidos.
+
+**Cierra:** entrega las mediciones 4 y 1. La guía de Hibernate explica el [fetch join y las asociaciones](https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#hql-explicit-association-joins).
+
+#### Subtema 3.6 · Elegir `@EntityGraph` y revisar el límite · 10 min
+
+**Contexto:** Puedes declarar qué relación se carga sin escribir el `JOIN` en una cadena JPQL. Compara esa opción cuando la consulta de repositorio ya tiene un nombre que quieres conservar.
+
+**Hazlo tú:** Reemplaza `src/main/java/com/example/demo/ClienteRepository.java` por la versión completa que conserva las consultas anteriores y aplica `@EntityGraph` al `findAll()` heredado:
+
+```java
+package com.example.demo;
+
+import java.util.List;
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+public interface ClienteRepository extends JpaRepository<Cliente, Long> {
+    @Query("select c from Cliente c")
+    List<Cliente> buscarSinPedidos();
+
+    @Query("select distinct c from Cliente c left join fetch c.pedidos")
+    List<Cliente> buscarTodosConPedidos();
+
+    @Override
+    @EntityGraph(attributePaths = "pedidos")
+    List<Cliente> findAll();
+}
+```
+
+En `NMasUnoTest.java`, añade:
+
+```java
+@Test
+void entityGraphCargaLosPedidosEnLaConsulta() {
+    crearTresClientesConPedido();
+    Statistics stats = sessionFactory.getStatistics();
+    stats.clear();
+
+    for (Cliente cliente : clientes.findAll()) {
+        assertThat(cliente.getPedidos()).hasSize(1);
+    }
+
+    assertThat(stats.getPrepareStatementCount()).isEqualTo(1L);
+}
+```
+
+Ejecuta desde la raíz:
+
+```bash
+./mvnw -q -Dtest=NMasUnoTest test
+```
+
+**Resultado esperado:** pasan los tres tests. El fetch plan explícito de `@EntityGraph` evita las tres lecturas posteriores para esta relación.
+
+**Fallo deliberado y diagnóstico:** cambia `attributePaths = "pedidos"` por `attributePaths = "pedido"`. El test falla al ejecutar `findAll()` con `Unable to locate Attribute ... [pedido] on ... Cliente`; `pedido` no coincide con la propiedad `pedidos`. Restaura el plural.
+
+**Entiende:** `JOIN FETCH` deja visible la forma JPQL; `@EntityGraph` declara atributos a cargar en el método. Ambos resuelven este acceso concreto. Una colección grande puede multiplicar filas y `JOIN FETCH` de colección junto con paginación requiere cuidado; mide el caso real y evita cargar relaciones que la pantalla no usa. [Spring Data JPA — `@EntityGraph`](https://docs.spring.io/spring-data/jpa/docs/current/api/org/springframework/data/jpa/repository/EntityGraph.html).
+
+**Cierra:** guarda los tres resultados de la prueba y explica por qué no cambiarías todo a `EAGER`. **Práctica:** en `crearTresClientesConPedido()` cambia el límite del bucle a 4 y ajusta la prueba perezosa a `5L`; ambas pruebas con carga previa deben seguir en `1L`. Ejecuta `./mvnw -q -Dtest=NMasUnoTest test` y luego restaura el límite y la aserción. Integra `Cliente` y `Pedido` al backend acumulativo y lleva la medición al proyecto integrador cuando uses una lista real. El tema siguiente versiona el esquema para que estas dos tablas tengan cambios reproducibles.
 
 ### Tema 3: Migraciones con Flyway
 
