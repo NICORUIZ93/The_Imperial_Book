@@ -99,10 +99,10 @@
     "spring-boot": {
       "topics": 111,
       "code": 111,
-      "commentedCode": 69,
-      "mermaid": 52,
+      "commentedCode": 68,
+      "mermaid": 53,
       "archifyVisual": 4,
-      "asciiVisual": 17,
+      "asciiVisual": 16,
       "misleadingDiagramLabel": 0,
       "filePath": 111,
       "runCommand": 111,
@@ -2554,6 +2554,13 @@
       "track": "spring-boot",
       "module": 1,
       "topic": "Tema 2: application.yml vs application.properties",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 1,
+      "topic": "Tema 3: Perfiles y estructura por capas",
       "missingCode": false,
       "missingComments": true
     },

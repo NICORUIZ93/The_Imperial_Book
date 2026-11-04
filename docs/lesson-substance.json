@@ -1698,7 +1698,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "7454287de9f2e0150b86c755313b079a3048a89f34191b106315df3471afd0ce",
+    "fingerprint": "4ae5c64fd65ae53a44448fe1ed7d2ff449d1a0050aaeaac2269c2bcf21ba5791",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10307,14 +10307,14 @@
         "module": 1,
         "tailWords": 0,
         "topic": "Tema 2: application.yml vs application.properties",
-        "words": 783
+        "words": 795
       },
       {
         "issues": [],
         "module": 1,
-        "tailWords": 178,
+        "tailWords": 0,
         "topic": "Tema 3: Perfiles y estructura por capas",
-        "words": 1015
+        "words": 1023
       },
       {
         "issues": [],

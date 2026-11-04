@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 181,
+      "lines": 187,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 13773,
+      "lines": 13816,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -314,7 +314,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1126,
+      "lines": 1125,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -600,7 +600,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3738,
+      "lines": 3745,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 343,
+      "lines": 346,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -11656,7 +11656,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-1.md",
-      "lines": 400,
+      "lines": 500,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -11672,7 +11672,7 @@
         "#### Subtema 2.2: Escribe la misma clave en Properties y observa prioridad \u00b7 10 min",
         "#### Subtema 2.3: Sobrescribe el archivo desde la terminal \u00b7 10 min",
         "### Tema 3: Perfiles y estructura por capas",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+        "#### Subtema 3.1: Combina una configuraci\u00f3n base con un perfil \u00b7 10 min"
       ]
     },
     {

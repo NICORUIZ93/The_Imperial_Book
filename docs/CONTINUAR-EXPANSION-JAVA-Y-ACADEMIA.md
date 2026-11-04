@@ -89,8 +89,8 @@ reapliques cambios que ya estén publicados.
 
 ## Estado global honesto
 
-En la auditoría actual: **123/1185 temas** cumplen la estructura atómica en los
-14 tracks; Java aporta 101 y Spring Boot 5. La auditoría pedagógica detecta
+En la auditoría actual: **124/1185 temas** cumplen la estructura atómica en los
+14 tracks; Java aporta 101 y Spring Boot 6. La auditoría pedagógica detecta
 **1095/1185 temas practicables** y deuda en 90. La auditoría de sustancia registra
 409 temas con defectos, deuda histórica repartida entre varios tracks. Ninguna de
 estas cifras certifica que un curso esté completo o que todos los ejemplos se
@@ -168,13 +168,19 @@ M1 T2 se reorganizó en tres subtemas con una ruta que lee el valor configurado,
 la equivalencia YAML/Properties para esa clave y las reglas de prioridad. En el
 proyecto temporal M1 T2, `./mvnw test` pasó; YAML y Properties devolvieron
 `En camino`, ambos archivos juntos dieron prioridad a Properties y el argumento de
-consola devolvió `Prueba`. Los fallos deliberados no se ejecutaron; las
-validaciones estructurales sí pasaron antes de publicar.
+consola devolvió `Prueba`. M1 T3 se reorganizó en subtemas para combinar el YAML
+base con un perfil, probar capas controller/service/repository y comprobar la
+ruta resultante. El proyecto temporal pasó `./mvnw test`; sin perfil respondió
+`banner=Base; entorno=compartido`, con `dev` respondió
+`banner=Desarrollo; entorno=compartido` y la ruta de capas respondió `En ruta: RF-42`.
+Se retiró la verificación por `/actuator/env` porque sus valores están
+enmascarados por defecto y el ejemplo no necesita exponer ese endpoint. Los fallos
+deliberados no se ejecutaron; las validaciones estructurales sí pasaron antes de
+publicar.
 
-**Siguiente tema:** Spring Boot M1 T3, “Perfiles y estructura por capas”. Verifica
-la fusión de configuración base y perfil con el mismo proyecto, distingue el
-perfil activo de `default` y comprueba qué salida demuestra el valor efectivo.
-Corrige con cuidado el uso del endpoint Actuator si requiere una dependencia o
-exposición que aún no esté configurada. Revisa también que las capas sean una
-separación útil y no una obligación de crear clases vacías. Mantén 3–6 subtemas y
-sigue por M1 en orden.
+**Siguiente tema:** Spring Boot M2 T1, “Por qué DTOs en vez de entidades
+directamente”. Comprueba con un ejemplo de petición/respuesta qué campos se
+exponen y quién los controla; no presupongas persistencia JPA si el ejemplo no la
+configura. Mantén 3–6 subtemas completos, usa contrato y prueba verificables, y
+explica el costo de mapear DTOs frente a exponer modelos internos. Después sigue
+en orden por M2.

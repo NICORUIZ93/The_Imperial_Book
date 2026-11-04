@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 92,
-      "prerequisites": 103,
-      "context": 92,
-      "theoryAnalogy": 92,
-      "guidedDemo": 92,
+      "objective": 91,
+      "prerequisites": 102,
+      "context": 91,
+      "theoryAnalogy": 91,
+      "guidedDemo": 91,
       "codeExplanation": 111,
       "execution": 106,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 92,
-      "independentPractice": 92,
-      "closure": 92,
-      "commonErrors": 92,
-      "resources": 99,
-      "standaloneExample": 88,
-      "learningEvidence": 97,
-      "complete": 88
+      "guidedPractice": 91,
+      "independentPractice": 91,
+      "closure": 91,
+      "commonErrors": 91,
+      "resources": 98,
+      "standaloneExample": 87,
+      "learningEvidence": 96,
+      "complete": 87
     }
   },
   "topics": {
@@ -28367,26 +28367,26 @@
         "module": 1,
         "topic": "Tema 3: Perfiles y estructura por capas",
         "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "objective": false,
+          "prerequisites": false,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 4,
+          "complete": false
         }
       },
       {

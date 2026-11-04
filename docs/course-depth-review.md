@@ -1106,7 +1106,7 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | spring-boot / 0 | [Tema 3: Estereotipos, autoconfiguración y scopes](../web/public/content/spring-boot/modulo-0.md) | demostracion-no-delimitada |
 | spring-boot / 1 | [Tema 1: Spring Initializr y starters](../web/public/content/spring-boot/modulo-1.md) | demostracion-no-delimitada |
 | spring-boot / 1 | [Tema 2: application.yml vs application.properties](../web/public/content/spring-boot/modulo-1.md) | demostracion-no-delimitada |
-| spring-boot / 1 | [Tema 3: Perfiles y estructura por capas](../web/public/content/spring-boot/modulo-1.md) | ejemplo-breve-revisar-contexto |
+| spring-boot / 1 | [Tema 3: Perfiles y estructura por capas](../web/public/content/spring-boot/modulo-1.md) | demostracion-no-delimitada |
 | spring-boot / 10 | [Tema 1: Config Server y service discovery](../web/public/content/spring-boot/modulo-10.md) | demostracion-no-delimitada |
 | spring-boot / 10 | [Tema 2: Spring Cloud Gateway](../web/public/content/spring-boot/modulo-10.md) | demostracion-no-delimitada |
 | spring-boot / 10 | [Tema 3: Circuit breaker con Resilience4j](../web/public/content/spring-boot/modulo-10.md) | demostracion-no-delimitada |

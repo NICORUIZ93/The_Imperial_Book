@@ -220,7 +220,7 @@ academia.banner=En camino
 server.port=8080
 ```
 
-Arranca otra vez con `./mvnw spring-boot:run` y consulta `curl http://localhost:8080/banner`.
+Arranca otra vez con `./mvnw clean spring-boot:run` y consulta `curl http://localhost:8080/banner`. `clean` borra recursos compilados que pudieron quedar del archivo anterior.
 
 **Resultado esperado:** aparece el mismo texto, `En camino`.
 
@@ -245,7 +245,7 @@ Una opción de la línea de comandos puede sustituir un valor del archivo durant
 Con `src/main/resources/application.properties` y su valor `academia.banner=En camino`, arranca desde la raíz del proyecto:
 
 ```bash
-./mvnw spring-boot:run -Dspring-boot.run.arguments=--academia.banner=Prueba
+./mvnw clean spring-boot:run -Dspring-boot.run.arguments=--academia.banner=Prueba
 ```
 
 Consulta `curl http://localhost:8080/banner` mientras el servidor está activo.
@@ -275,100 +275,200 @@ flowchart TD
 
 ### Tema 3: Perfiles y estructura por capas
 
-#### Paso 1 · Objetivo y preparación
+Un mismo programa puede usar algunos valores distintos en desarrollo y producción. Un perfil selecciona una configuración; las capas separan quién atiende HTTP, quién aplica una regla y quién obtiene datos. Necesitas el proyecto de los temas anteriores.
 
-Al finalizar podrás externalizar configuración por perfil y organizar el código en capas `controller`/`service`/`repository` con responsabilidades delimitadas.
+**¿Por qué es importante?** Promover el mismo artefacto entre entornos reduce diferencias accidentales. Separar HTTP de las reglas y los datos permite cambiar una parte sin convertir el controlador en toda la aplicación.
 
-**Conocimiento previo:** Tema 2 de este módulo.
+#### Subtema 3.1: Combina una configuración base con un perfil · 10 min
 
-#### Paso 2 · Contexto y caso real
+**1. Contexto**
 
-**¿Por qué es importante?** Desplegar exactamente el mismo artefacto compilado en desarrollo y en producción, variando solo la URL de la base de datos y el nivel de logs entre ambos entornos, evita el riesgo de que el artefacto probado en un entorno sea sutilmente distinto al que efectivamente se despliega en producción.
+La configuración base sirve como valor común. Un perfil puede reemplazar una clave concreta y dejar las demás como están.
 
-#### Paso 3 · Teoría con analogía
+**2. Hazlo tú**
 
-**Conceptos clave:** perfil (`application-{perfil}.yml`), sobreescritura parcial, estructura por capas.
-
-Un perfil (`application-dev.yml`, `application-prod.yml`) sobreescribe únicamente los valores específicos que declara explícitamente, manteniendo intacto el resto de la configuración base definida en `application.yml`; `java -jar app.jar --spring.profiles.active=dev` activa el perfil correspondiente al arrancar, sin necesidad de recompilar la aplicación para cada entorno. La estructura por capas (`controller/` traduciendo HTTP hacia/desde DTOs, `service/` con la lógica de negocio sin conocimiento de HTTP, `repository/` con el acceso a datos) establece responsabilidades delimitadas: el controller no debería contener lógica de negocio, y el service no debería conocer detalles HTTP como códigos de estado.
-
-**Analogía:** los perfiles son distintos conjuntos de ajustes preconfigurados para el mismo dispositivo, seleccionables según el contexto de uso sin reconfigurar manualmente cada ajuste; la estructura por capas es una cadena de producción donde cada estación tiene una responsabilidad delimitada y no necesita conocer los detalles internos de las demás estaciones.
-
-**Diagrama:**
-
-```
-┌── application.yml (base) ──────────────────┐
-│  server.port: 8080                            │
-│  spring.datasource.url: .../app               │
-└──────────────┬─────────────────────────┘
-               │ + application-dev.yml (perfil)
-               ▼
-┌── configuración final con perfil dev ──────┐
-│  server.port: 8080 (heredado, sin cambios)    │
-│  spring.datasource.url: .../app_dev (sobreescrito) │
-└──────────────────────────────────────┘
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Desde una carpeta vacía (o continuando en `ejemplo-spring-m1`), crea `src/main/resources/application-dev.yml` con la configuración específica del entorno de desarrollo:
+Retira `src/main/resources/application.properties` si la elegiste en el tema anterior. Conserva un solo formato. En `src/main/resources/application.yml`, guarda:
 
 ```yaml
-spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/app_dev
+academia:
+  banner: "Base"
+  entorno: "compartido"
+server:
+  port: 8080
 ```
 
-Arranca la aplicación activando explícitamente el perfil `dev`:
+En `src/main/resources/application-dev.yml`, guarda:
+
+```yaml
+academia:
+  banner: "Desarrollo"
+```
+
+Crea `src/main/java/com/example/demo/PerfilController.java`:
+
+```java
+package com.example.demo;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class PerfilController {
+    private final String banner;
+    private final String entorno;
+
+    public PerfilController(
+            @Value("${academia.banner:sin-configurar}") String banner,
+            @Value("${academia.entorno:sin-configurar}") String entorno) {
+        this.banner = banner;
+        this.entorno = entorno;
+    }
+
+    @GetMapping("/perfil")
+    public String mostrar() {
+        return "banner=" + banner + "; entorno=" + entorno;
+    }
+}
+```
+
+Arranca sin activar un perfil usando `./mvnw clean spring-boot:run` y consulta `curl http://localhost:8080/perfil`.
+
+**Resultado esperado:** aparece `banner=Base; entorno=compartido`.
+
+**Fallo deliberado:** mueve `entorno: "compartido"` al nivel raíz, alineado con `academia:`. **Diagnóstico:** YAML sigue válido, pero la clave deja de ser `academia.entorno`; la ruta muestra `sin-configurar`. Coloca `entorno` dentro de `academia`.
+
+**3. Entiende**
+
+Spring Boot carga `application.yml` y aplica archivos específicos cuando el perfil correspondiente está activo. La configuración del perfil puede reemplazar una clave; aquí no reemplaza `academia.entorno` ni `server.port`.
+
+**4. Cierra**
+
+Guarda la respuesta base. El siguiente subtema activará `dev` y observará el cambio de una sola clave.
+
+#### Subtema 3.2: Activa el perfil y comprueba el valor aplicado · 10 min
+
+**1. Contexto**
+
+Crear `application-dev.yml` no lo activa. El proceso necesita saber qué perfil usar.
+
+**2. Hazlo tú**
+
+Desde la raíz del proyecto, arranca con el perfil `dev`:
 
 ```bash
-# empaqueta y ejecuta el jar Java con el perfil dev activado
-cd ejemplo-spring-m1
-./mvnw clean package -DskipTests
-java -jar target/*.jar --spring.profiles.active=dev
+./mvnw clean spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=dev
 ```
 
-**Explicación línea por línea:** `application-dev.yml` solo declara `spring.datasource.url`, sobreescribiendo ÚNICAMENTE esa clave; `server.port` (definido en `application.yml` base) permanece sin cambios porque el perfil no lo menciona; `--spring.profiles.active=dev` le indica a Spring Boot qué archivo de perfil cargar además del `application.yml` base.
+En otra terminal, consulta `curl http://localhost:8080/perfil`. Revisa también la línea de perfiles en los logs de inicio.
 
-**Resultado esperado:** los logs de arranque muestran `The following 1 profile is active: "dev"` y la aplicación se conecta a `app_dev` (no a `app`, el valor base) — confirmando que el perfil sobreescribió solo la clave que declaró explícitamente, dejando el resto de la configuración base intacta.
+**Resultado esperado:** aparece `banner=Desarrollo; entorno=compartido`, y el log identifica `dev` como perfil activo.
 
-**Fallo deliberado:** arranca sin `--spring.profiles.active=dev` (sin activar ningún perfil). La aplicación usa `spring.datasource.url` del `application.yml` BASE (apuntando a `app`, no a `app_dev`) — diagnostica confirmando que un perfil nunca se activa automáticamente; olvidar la bandera en el comando de arranque es el error más común al desplegar en el entorno equivocado sin darse cuenta.
+**Fallo deliberado:** cambia el argumento a `--spring.profiles.active=deev`. **Diagnóstico:** aparece el valor base porque no existe `application-deev.yml`; los logs muestran el nombre mal escrito. Corrige a `dev`.
 
-Para ver la configuración final ya fusionada (no solo inferirla), agrega el starter `actuator` al proyecto, expón el endpoint `env` en `application.yml` (`management.endpoints.web.exposure.include: env`), y consulta el entorno efectivo con la aplicación corriendo:
+**3. Entiende**
 
-```bash
-# consulta las propiedades efectivas después de fusionar base + perfil dev
-curl -s http://localhost:8080/actuator/env/spring.datasource.url | grep -o '"value":"[^"]*"'
-curl -s http://localhost:8080/actuator/env/server.port | grep -o '"value":[0-9]*'
+El perfil específico reemplaza la clave que declara y conserva las claves base que no declara. Si no se activa ningún perfil, Spring usa el perfil predeterminado `default`; sin un archivo `application-default.yml`, el proyecto usa los valores base.
+
+**4. Cierra**
+
+Guarda las dos respuestas, con y sin `dev`, y anota qué propiedad cambió. El siguiente paso organiza las clases que reciben y procesan la petición.
+
+#### Subtema 3.3: Separa HTTP, regla y acceso a datos · 15 min
+
+**1. Contexto**
+
+El controlador traduce una petición; el servicio decide qué operación ejecutar; el repositorio entrega los datos. Cada clase tiene una razón principal para cambiar.
+
+**2. Hazlo tú**
+
+Crea `src/main/java/com/example/demo/repository/EstadoRepository.java`:
+
+```java
+package com.example.demo.repository;
+
+import org.springframework.stereotype.Repository;
+
+@Repository
+public class EstadoRepository {
+    public String buscar(String codigo) {
+        return "En ruta: " + codigo;
+    }
+}
 ```
 
-**Resultado esperado:** `spring.datasource.url` reporta el valor del perfil (`.../app_dev`), mientras `server.port` reporta `8080`, el valor heredado de la base sin cambios — el endpoint `/actuator/env` expone exactamente la configuración fusionada que Spring Boot calculó, sin necesidad de inferirla manualmente.
+Crea `src/main/java/com/example/demo/service/EstadoService.java`:
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+```java
+package com.example.demo.service;
 
-1. Agrega un tercer perfil `test` que sobreescriba únicamente el puerto, y confirma con `/actuator/env` qué claves cambian y cuáles no.
-2. Declara la misma clave en `application.yml` base Y en el perfil, arranca con el perfil activo, y confirma con `/actuator/env` cuál de los dos valores gana.
-3. Organiza un endpoint existente en las tres capas (`controller`/`service`/`repository`) y documenta qué responsabilidad tiene cada una.
-4. Escribe de memoria (sin mirar) un `application-test.yml` que sobreescriba únicamente una clave del `application.yml` base.
+import com.example.demo.repository.EstadoRepository;
+import org.springframework.stereotype.Service;
 
-**Pista:** antes de desplegar, siempre verifica explícitamente con qué perfil arrancó la aplicación (revisando el log `The following N profile(s) are active`) en vez de asumirlo.
+@Service
+public class EstadoService {
+    private final EstadoRepository repository;
 
-#### Paso 6 · Práctica independiente
+    public EstadoService(EstadoRepository repository) {
+        this.repository = repository;
+    }
 
-**Completa el código:** rellena el espacio para activar el perfil `dev` al arrancar:
-
-```bash
-java -jar app.jar --spring.____=dev
+    public String consultar(String codigo) {
+        return repository.buscar(codigo);
+    }
+}
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una configuración base y un perfil que sobreescriba una sola clave, y traza a mano qué configuración final resultaría. Compara después contra el patrón del Paso 4.
+Crea `src/main/java/com/example/demo/controller/EstadoController.java`:
 
-#### Paso 7 · Cierre y evidencia
+```java
+package com.example.demo.controller;
 
-Ya externalizas configuración por perfil y organizas el código en capas con responsabilidades delimitadas, confirmando con `/actuator/env` que un perfil sobreescribe solo lo que declara explícitamente. Esto cierra la estructura básica de un proyecto Spring Boot; el siguiente módulo profundiza en la capa web y el manejo de peticiones HTTP. **Evidencia:** entrega el resultado de `/actuator/env` con la configuración final fusionada (puerto heredado, URL sobreescrita) y el comportamiento real al arrancar sin activar ningún perfil. Fuente oficial: [Spring Boot — Profiles](https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.profiles).
+import com.example.demo.service.EstadoService;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
 
-**Errores comunes:** olvidar activar el perfil correcto al desplegar, terminando con la configuración base incorrecta para ese entorno; poner lógica de negocio en el controller, mezclando responsabilidades entre capas.
+@RestController
+public class EstadoController {
+    private final EstadoService service;
 
-**Cuándo no usarlo:** para una aplicación que siempre corre en un único entorno fijo sin ninguna variación de configuración, mantener múltiples perfiles agrega complejidad sin beneficio real; un único `application.yml` basta.
+    public EstadoController(EstadoService service) {
+        this.service = service;
+    }
+
+    @GetMapping("/envios/{codigo}/estado")
+    public String estado(@PathVariable String codigo) {
+        return service.consultar(codigo);
+    }
+}
+```
+
+Ejecuta `./mvnw test` y luego `./mvnw spring-boot:run`. Consulta `curl http://localhost:8080/envios/RF-42/estado`.
+
+**Resultado esperado:** aparece `En ruta: RF-42`; `EstadoController` llama al servicio, que obtiene el dato del repositorio.
+
+**Fallo deliberado:** cambia el constructor de `EstadoController` para recibir `EstadoRepository` y devuelve `repository.buscar(codigo)` directamente. **Diagnóstico:** la ruta aún funciona, pero el controlador ahora conoce acceso a datos y omite `EstadoService`; restaura la dependencia al servicio.
+
+**3. Entiende**
+
+El controlador conoce HTTP y el servicio. El servicio conoce la operación y el repositorio. El repositorio conoce la fuente de datos. No hace falta una capa que no proteja una decisión o una frontera real.
+
+```mermaid
+flowchart LR
+    http[Petición HTTP] --> controller[controller]
+    controller --> service[service]
+    service --> repository[repository]
+    repository --> data[Dato]
+```
+
+**4. Cierra**
+
+**Práctica independiente:** cambia el texto que devuelve `EstadoRepository.buscar` y consulta la ruta otra vez. Luego explica qué capa cambiarías para reemplazar esa respuesta simulada por una consulta real, sin alterar la ruta HTTP. En el proyecto integrador, mantén los valores por entorno separados y agrega capas cuando tengan una responsabilidad concreta.
+
+**Límite:** `/actuator/env` puede mostrar valores de configuración sensibles enmascarados; no lo expongas para verificar secretos. En este ejemplo la ruta propia muestra solo valores ficticios y el perfil activo se comprueba en los logs.
+
+**Fuentes primarias:** [perfiles de Spring Boot](https://docs.spring.io/spring-boot/reference/features/profiles.html), [configuración externa y precedencia](https://docs.spring.io/spring-boot/reference/features/external-config.html), [seguridad y valores del endpoint Actuator `env`](https://docs.spring.io/spring-boot/reference/actuator/endpoints.html).
 
 ---
 
@@ -386,7 +486,7 @@ La estructura por capas de este tema es la que organiza el proyecto integrador d
 | 2 | Convertir a `application.yml` | Ver Tema 2 | Compara la legibilidad |
 | 3 | Crear `application-dev.yml`/`application-prod.yml` | Ver Tema 3 | Arranca con `--spring.profiles.active=dev` |
 | 4 | Organizar en paquetes por capa | Ver Tema 3 | `controller/`, `service/`, `repository/`, `dto/` |
-| 5 | Verificar el perfil activo | `/actuator/env` | Si está habilitado |
+| 5 | Verificar valores y perfil activo | `/perfil` y logs de arranque | No expone propiedades sensibles |
 
 **Verificación:** el laboratorio se considera exitoso si el proyecto arranca correctamente con cada perfil aplicando su configuración específica, y si la estructura por capas separa claramente controller/service/repository sin lógica de negocio filtrada en el controller.
 
