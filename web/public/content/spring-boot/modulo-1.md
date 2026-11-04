@@ -139,113 +139,139 @@ flowchart LR
 
 ### Tema 2: application.yml vs application.properties
 
-#### Paso 1 · Objetivo y preparación
+Spring Boot puede leer configuración de archivos YAML o `.properties`. Aprenderás a representar el mismo valor, detectar qué archivo gana si ambos existen y comprobar una sobrescritura desde la terminal.
 
-Al finalizar podrás elegir entre YAML y properties para configuración externa, y confirmar que ambos formatos son funcionalmente equivalentes para Spring Boot.
+**¿Por qué es importante?** Una aplicación debe cambiar su configuración sin cambiar el código. Si dos archivos declaran valores distintos, saber la prioridad explica cuál recibe realmente la aplicación.
 
-**Conocimiento previo:** Tema 1 de este módulo.
+**Conocimiento previo:** Tema 1 de este módulo y una ruta `GET`.
 
-#### Paso 2 · Contexto y caso real
+#### Subtema 2.1: Lee una clave desde YAML · 10 min
 
-**¿Por qué es importante?** Una configuración con varios niveles de anidación (`spring.datasource.url`, `spring.datasource.username`, `spring.jpa.hibernate.ddl-auto`) se vuelve visualmente repetitiva en `.properties` (el prefijo `spring.` se repite en cada línea) mientras que en `.yml` se agrupa jerárquicamente una sola vez, sin que ninguna de las dos formas cambie qué configuración es efectivamente posible expresar.
+**1. Contexto**
 
-#### Paso 3 · Teoría con analogía
+Un mensaje de estado puede cambiar entre entornos. Primero lo guardarás en un archivo y harás que una ruta lo muestre.
 
-**Conceptos clave:** configuración tipada, indentación jerárquica, equivalencia funcional.
+**2. Hazlo tú**
 
-`application.properties` expresa configuración como pares clave-valor planos con notación de puntos (`spring.datasource.url=jdbc:postgresql://localhost:5432/app`); `application.yml` expresa la misma configuración usando indentación jerárquica (`spring: datasource: url: ...`), agrupando visualmente las claves relacionadas bajo su nodo padre común. Ambos formatos son completamente válidos y Spring Boot los soporta indistintamente (incluso es posible mezclar ambos en el mismo proyecto, aunque no es recomendable por claridad); la elección es principalmente una cuestión de legibilidad del equipo, sin ninguna diferencia funcional real.
-
-**Analogía:** `application.properties` es una lista plana de instrucciones con prefijos repetidos en cada línea; `application.yml` es un índice jerárquico con subcategorías anidadas visualmente bajo su categoría padre, generalmente más fácil de navegar cuanto más profunda es la jerarquía.
-
-**Diagrama:**
-
-```
-┌── application.properties (plano) ──────────┐
-│  spring.datasource.url=...                    │
-│  spring.datasource.username=...                │
-└──────────────────────────────────────┘
-┌── application.yml (jerárquico) ────────────┐
-│  spring:                                      │
-│    datasource:                                │
-│      url: ...                                 │
-│      username: ...                            │
-└──────────────────────────────────────┘
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Desde una carpeta vacía (o continuando en `ejemplo-spring-m1`), crea `src/main/resources/application.yml` con configuración anidada:
+Crea `src/main/resources/application.yml`:
 
 ```yaml
-spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/app
-    username: app_user
+academia:
+  banner: "En camino"
 server:
   port: 8080
 ```
 
-Guarda el archivo (Spring Boot detecta `application.yml` automáticamente al arrancar, sin configuración adicional) y confirma que el puerto configurado se aplica:
+Crea `src/main/java/com/example/demo/ConfigController.java`:
 
-```bash
-# arranca el proyecto Java con Maven usando la configuración de application.yml
-cd ejemplo-spring-m1
-./mvnw spring-boot:run
+```java
+package com.example.demo;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class ConfigController {
+    private final String banner;
+
+    public ConfigController(
+            @Value("${academia.banner:sin-configurar}") String banner) {
+        this.banner = banner;
+    }
+
+    @GetMapping("/banner")
+    public String mostrar() {
+        return banner;
+    }
+}
 ```
 
-**Explicación línea por línea:** la indentación de dos espacios bajo `spring:` y luego bajo `datasource:` expresa la misma jerarquía que `spring.datasource.url=...` en formato plano; `server: port: 8080` funciona idénticamente en ambos formatos, seleccionando el puerto en el que Tomcat escucha.
+Desde la raíz del proyecto, arranca con `./mvnw spring-boot:run`. En otra terminal, consulta:
 
-**Resultado esperado:** la aplicación arranca escuchando en el puerto `8080` (el valor configurado en `application.yml`), confirmando que Spring Boot lee y aplica la configuración anidada sin ninguna diferencia de comportamiento frente al formato plano equivalente.
+```bash
+curl http://localhost:8080/banner
+```
 
-**Fallo deliberado:** desalinea la indentación de `url` (quítale un espacio respecto a `datasource:`) y vuelve a arrancar. YAML es sensible a la indentación exacta: el parser interpreta la línea mal indentada como perteneciente a un nivel de jerarquía distinto del que pretendías, produciendo un error de parseo o una propiedad que termina en la ubicación equivocada — diagnostica confirmando que la ventaja de legibilidad del YAML jerárquico tiene como costo una sensibilidad a la indentación que `.properties` (plano, sin jerarquía visual) no tiene.
+**Resultado esperado:** aparece `En camino`.
 
-Para confirmarlo sin ambigüedad, crea `src/main/resources/application.properties` (en vez del `.yml` anterior) con la forma plana exactamente equivalente:
+**Fallo deliberado:** alinea `banner` con `academia:` en vez de indentarla bajo ese nodo. **Diagnóstico:** YAML todavía es válido, pero ahora el valor está en `banner`, no en `academia.banner`; la ruta muestra el valor por defecto `sin-configurar`. Indenta dos espacios y repite.
+
+**3. Entiende**
+
+La indentación representa niveles: `academia` contiene `banner`. `@Value` solicita esa clave a Spring; la aplicación no lee el archivo manualmente.
+
+**4. Cierra**
+
+Guarda la respuesta y copia la ruta de claves: `academia.banner`. En el siguiente subtema expresarás la misma clave de forma plana.
+
+#### Subtema 2.2: Escribe la misma clave en Properties y observa prioridad · 10 min
+
+**1. Contexto**
+
+El formato cambia cómo se ve el archivo; la clave que recibe el programa debe conservar su nombre.
+
+**2. Hazlo tú**
+
+Detén la aplicación, elimina o renombra `src/main/resources/application.yml` y crea `src/main/resources/application.properties`:
 
 ```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/app
-spring.datasource.username=app_user
+academia.banner=En camino
 server.port=8080
 ```
 
-Arranca la aplicación con este archivo en vez de `application.yml` (mantén solo uno de los dos presente a la vez) y repite la petición de comprobación:
+Arranca otra vez con `./mvnw spring-boot:run` y consulta `curl http://localhost:8080/banner`.
+
+**Resultado esperado:** aparece el mismo texto, `En camino`.
+
+**Fallo deliberado:** vuelve a poner ambos archivos en `src/main/resources`, pero asigna `Desde YAML` en el `.yml` y `Desde Properties` en el `.properties`. **Diagnóstico:** para esos archivos en la misma ubicación, `.properties` tiene prioridad; la ruta responde `Desde Properties`. Borra uno para evitar que el equipo tenga que recordar ese conflicto.
+
+**3. Entiende**
+
+Properties usa pares `clave=valor`; YAML agrupa claves con espacios. Spring puede leer ambos, pero no conviene duplicar claves entre los dos formatos: en la misma ubicación, `.properties` gana.
+
+**4. Cierra**
+
+Deja un solo archivo y registra cuál escogió el equipo. El último paso probará una configuración de mayor prioridad.
+
+#### Subtema 2.3: Sobrescribe el archivo desde la terminal · 10 min
+
+**1. Contexto**
+
+Una opción de la línea de comandos puede sustituir un valor del archivo durante un arranque puntual, por ejemplo, para comparar configuraciones.
+
+**2. Hazlo tú**
+
+Con `src/main/resources/application.properties` y su valor `academia.banner=En camino`, arranca desde la raíz del proyecto:
 
 ```bash
-# arranca el proyecto Java con Maven usando application.properties en vez de application.yml
-cd ejemplo-spring-m1
-./mvnw spring-boot:run
+./mvnw spring-boot:run -Dspring-boot.run.arguments=--academia.banner=Prueba
 ```
 
-**Resultado esperado:** la aplicación arranca exactamente igual, escuchando en el puerto `8080` y con la misma URL de datasource — confirmando en la aplicación real que `spring.datasource.url` (plano) y `spring: datasource: url:` (anidado) son la misma clave interpretada por el mismo mecanismo de Spring Boot, sin ninguna diferencia de comportamiento observable entre ambos formatos.
+Consulta `curl http://localhost:8080/banner` mientras el servidor está activo.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**Resultado esperado:** aparece `Prueba`; el argumento de línea de comandos tiene prioridad sobre el valor del archivo.
 
-1. Agrega una tercera clave anidada (`spring.jpa.hibernate.ddl-auto`) en ambos formatos y confirma que producen la misma clave aplanada.
-2. Desalinea deliberadamente una indentación en YAML y documenta el error de parseo exacto que produce.
-3. Escribe la misma configuración de tres niveles de profundidad en ambos formatos y cuenta cuántos caracteres tiene cada uno.
-4. Escribe de memoria (sin mirar) una configuración anidada de dos niveles en YAML y su equivalente plano en `.properties`.
+**Fallo deliberado:** escribe `--academia.baner=Prueba` (falta una `n`) y repite. **Diagnóstico:** la clave errónea no sustituye `academia.banner`, así que aparece `En camino`; compara el argumento con la clave que lee el constructor.
 
-**Pista:** si te equivocas con la indentación en YAML, el error no siempre es obvio a simple vista — cuenta los espacios exactos en vez de asumir que "se ve bien".
+**3. Entiende**
 
-#### Paso 6 · Práctica independiente
+La precedencia no depende del aspecto YAML o Properties: depende de dónde viene el valor. En este ejemplo, argumento de consola gana sobre el archivo.
 
-**Completa el código:** rellena el espacio para expresar `server.port` en YAML:
-
-```yaml
-____:
-  port: 8080
+```mermaid
+flowchart TD
+    cli[Argumento de consola] -->|gana sobre archivos| result[academia.banner efectivo]
+    prop[application.properties] -->|gana a YAML en la misma ubicación| result
+    yaml[application.yml] -->|se lee si no lo reemplaza otra fuente| result
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, la misma configuración de base de datos en ambos formatos (YAML y properties), y verifica que representan las mismas claves. Compara después contra el patrón del Paso 4.
+**4. Cierra**
 
-#### Paso 7 · Cierre y evidencia
+**Práctica independiente:** cambia el banner del archivo y luego de la terminal, anota los dos resultados y explica cuál fuente prevalece. En el proyecto integrador, mantén valores base en un formato y cambia solo los necesarios por entorno; el próximo tema introduce perfiles.
 
-Ya eliges entre YAML y properties con criterio, confirmando con la aplicación real que ambos formatos representan exactamente la misma información. El siguiente tema usa perfiles para variar esta configuración por entorno. **Evidencia:** entrega el resultado de arrancar la aplicación con `application.yml` y con `application.properties` equivalente, y el error real de indentación del fallo deliberado. Fuente oficial: [Spring Boot — Externalized Configuration](https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.external-config).
+**Límite:** usar dos formatos para declarar la misma propiedad dificulta saber qué valor se aplica. Spring permite leer ambos, pero recomienda mantener un solo formato por aplicación.
 
-**Errores comunes:** mezclar `.properties` y `.yml` en el mismo proyecto sin necesidad, generando confusión sobre cuál tiene prioridad; desalinear la indentación en YAML sin notar el error hasta que la configuración no se aplica como se esperaba.
-
-**Cuándo no usarlo:** para una configuración de una sola clave sin ninguna anidación, la diferencia entre ambos formatos es irrelevante; cualquiera de los dos es igual de simple.
-
-La configuración por perfil que definas aquí es la misma que usará el proyecto integrador de este track (microservicio productivo, Módulo 12) para separar entornos.
+**Fuente primaria:** [configuración externa y precedencia de propiedades en Spring Boot](https://docs.spring.io/spring-boot/reference/features/external-config.html).
 
 ### Tema 3: Perfiles y estructura por capas
 

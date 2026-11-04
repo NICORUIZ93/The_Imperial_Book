@@ -1698,7 +1698,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "118b8154fb69b281418428175c6773016fe7e33fdd9595bd335225e2f3167fee",
+    "fingerprint": "7454287de9f2e0150b86c755313b079a3048a89f34191b106315df3471afd0ce",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10305,9 +10305,9 @@
       {
         "issues": [],
         "module": 1,
-        "tailWords": 168,
+        "tailWords": 0,
         "topic": "Tema 2: application.yml vs application.properties",
-        "words": 993
+        "words": 783
       },
       {
         "issues": [],

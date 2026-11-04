@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 93,
+      "objective": 92,
       "prerequisites": 103,
-      "context": 93,
-      "theoryAnalogy": 93,
-      "guidedDemo": 93,
+      "context": 92,
+      "theoryAnalogy": 92,
+      "guidedDemo": 92,
       "codeExplanation": 111,
       "execution": 106,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 93,
-      "independentPractice": 93,
-      "closure": 93,
-      "commonErrors": 93,
-      "resources": 100,
-      "standaloneExample": 89,
-      "learningEvidence": 98,
-      "complete": 89
+      "guidedPractice": 92,
+      "independentPractice": 92,
+      "closure": 92,
+      "commonErrors": 92,
+      "resources": 99,
+      "standaloneExample": 88,
+      "learningEvidence": 97,
+      "complete": 88
     }
   },
   "topics": {
@@ -28341,26 +28341,26 @@
         "module": 1,
         "topic": "Tema 2: application.yml vs application.properties",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 5,
+          "complete": false
         }
       },
       {

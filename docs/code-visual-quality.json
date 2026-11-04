@@ -99,10 +99,10 @@
     "spring-boot": {
       "topics": 111,
       "code": 111,
-      "commentedCode": 70,
-      "mermaid": 51,
+      "commentedCode": 69,
+      "mermaid": 52,
       "archifyVisual": 4,
-      "asciiVisual": 18,
+      "asciiVisual": 17,
       "misleadingDiagramLabel": 0,
       "filePath": 111,
       "runCommand": 111,
@@ -2547,6 +2547,13 @@
       "track": "spring-boot",
       "module": 1,
       "topic": "Tema 1: Spring Initializr y starters",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 1,
+      "topic": "Tema 2: application.yml vs application.properties",
       "missingCode": false,
       "missingComments": true
     },
