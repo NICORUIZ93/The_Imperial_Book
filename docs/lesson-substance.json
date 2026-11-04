@@ -1694,7 +1694,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "9d1f79e3a5c62803dc3b6dcdab7bfc694ab6110c8ec149313f0b0818d49b900d",
+    "fingerprint": "0549a3ecf52182603d580aa11a17d41f57052c49d81320cf453d5475013b615f",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -11030,9 +11030,9 @@
       {
         "issues": [],
         "module": 8,
-        "tailWords": 159,
+        "tailWords": 0,
         "topic": "Tema 7: Kafka Streams con Spring para transformar eventos",
-        "words": 624
+        "words": 838
       },
       {
         "issues": [],

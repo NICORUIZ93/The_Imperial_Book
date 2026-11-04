@@ -200,6 +200,10 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - pendiente Subtema 6.3 · Rechazar una entrada y ubicar la política de reintento · 10 min
   - pendiente Subtema 6.4 · Probar en memoria y después contra el broker · 15 min
 - [pendiente de migrar] Tema 7: Kafka Streams con Spring para transformar eventos
+  - pendiente Subtema 7.1 · Filtrar sin cambiar la clave del pedido · 10 min
+  - pendiente Subtema 7.2 · Contar por estado dentro de una ventana · 15 min
+  - pendiente Subtema 7.3 · Probar la topología sin confundirla con el clúster · 10 min
+  - pendiente Subtema 7.4 · Configurar Spring y el application.id · 15 min
 - [pendiente de migrar] Tema 8: Avro y Schema Registry para contratos de eventos
 - [pendiente de migrar] Tema 9: RabbitMQ con Spring AMQP: routing, ack y prefetch
 

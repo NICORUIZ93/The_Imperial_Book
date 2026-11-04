@@ -759,7 +759,7 @@ retención; RabbitMQ sobre consumers y confirms; Spring AMQP sobre ack y publish
 confirms; Spring Cloud Stream sobre binder y test binder.
 
 La validación de repo pasó con 23 pruebas de script (4 omitidas). La última
-auditoría registra 140/1185 temas atómicos, 1088/1185 practicables, 1036/1185
+auditoría registra 140/1185 temas atómicos, 1087/1185 practicables, 1035/1185
 completos en metodología de siete pasos y 409 con señales automatizadas de
 defecto de sustancia. La auditoría estructural detecta contenido en 236 temas;
 ninguna de estas cifras certifica la calidad pedagógica o comprensión humana.
@@ -780,7 +780,25 @@ instalado aquí, así que los perfiles Kafka/Rabbit reales y sus DLQ no se
 verificaron en este entorno; queda explícito en la lección. Fuentes oficiales:
 Spring Cloud Stream binder, test binder y manejo de errores.
 
-**Siguiente tema:** Spring Boot M8 T7, “Kafka Streams con Spring para transformar
-eventos”. Inspecciona la API, dependencias, tópicos y prueba del ejemplo antes
-de conservar comandos; separa el test en memoria del estado/stream realmente
-procesado por Kafka.
+Spring Boot M8 T7, “Kafka Streams con Spring para transformar eventos”, se
+implementó en un laboratorio nuevo `examples/spring-kafka-streams-rutaflow/`,
+con `@EnableKafkaStreams`, `StreamsBuilder`, filtrado `KStream` y conteo por
+ventana con un store. Se agregó `TopologyTestDriver` para validar filtro/key y
+conteos con tiempo controlado; su README contiene comandos para broker local,
+creación de tópicos, producción y observación de ambas salidas. La lección quedó
+en cuatro subtemas, distingue driver de broker y enlaza a documentación oficial
+Spring Boot 4.0, Spring Kafka y Kafka 4.2.
+
+`./mvnw -q clean test` pasó con **2 pruebas**. En copias temporales, cambiar el
+filtro para aceptar PENDIENTE hizo fallar la aserción (`pedido-2` esperado,
+`pedido-1/PENDIENTE` recibido); agrupar por pedido en vez de estado hizo fallar
+el conteo (`2` esperado, `1` recibido). Las mutaciones se mantuvieron fuera del
+repositorio. Docker no está instalado aquí, así que no se ejecutó la topología
+contra broker real; el test driver no acredita red, ACL, tópicos ni restauración
+de estado real. La suite muestra una advertencia JVM de acceso nativo de
+RocksDB, sin fallos de test.
+
+**Siguiente tema:** Spring Boot M8 T8, “Avro y Schema Registry para contratos de
+eventos”. Revisa si hay un laboratorio real y versiones compatibles; distingue
+compatibilidad del esquema de compatibilidad del payload y prueba productor y
+consumidor con esquemas concretos.

@@ -98,9 +98,9 @@
     },
     "spring-boot": {
       "topics": 111,
-      "code": 111,
+      "code": 110,
       "commentedCode": 57,
-      "mermaid": 48,
+      "mermaid": 47,
       "archifyVisual": 3,
       "asciiVisual": 10,
       "misleadingDiagramLabel": 0,
@@ -2890,8 +2890,8 @@
       "track": "spring-boot",
       "module": 8,
       "topic": "Tema 7: Kafka Streams con Spring para transformar eventos",
-      "missingCode": false,
-      "missingComments": true
+      "missingCode": true,
+      "missingComments": false
     },
     {
       "track": "spring-boot",

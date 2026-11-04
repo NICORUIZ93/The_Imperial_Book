@@ -94,8 +94,8 @@
     "spring-boot": {
       "topics": 111,
       "completeTopics": 36,
-      "topicsWith3to6Subtopics": 46,
-      "subtopics": 142,
+      "topicsWith3to6Subtopics": 47,
+      "subtopics": 146,
       "completeSubtopics": 116
     }
   },
@@ -14945,8 +14945,65 @@
       {
         "module": 8,
         "topic": "### Tema 7: Kafka Streams con Spring para transformar eventos",
-        "subtopicCount": 0,
-        "subtopics": [],
+        "subtopicCount": 4,
+        "subtopics": [
+          {
+            "id": "7.1",
+            "title": "#### Subtema 7.1 · Filtrar sin cambiar la clave del pedido · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "7.2",
+            "title": "#### Subtema 7.2 · Contar por estado dentro de una ventana · 15 min",
+            "criteria": {
+              "context": true,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "7.3",
+            "title": "#### Subtema 7.3 · Probar la topología sin confundirla con el clúster · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "7.4",
+            "title": "#### Subtema 7.4 · Configurar Spring y el application.id · 15 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": false
+          }
+        ],
         "complete": false
       },
       {

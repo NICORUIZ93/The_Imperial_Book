@@ -13524,7 +13524,7 @@
       "file": "web/public/content/spring-boot/modulo-8.md",
       "line": 901,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -13535,7 +13535,7 @@
       "module": 8,
       "title": "Tema 8: Avro y Schema Registry para contratos de eventos",
       "file": "web/public/content/spring-boot/modulo-8.md",
-      "line": 966,
+      "line": 1027,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -13548,7 +13548,7 @@
       "module": 8,
       "title": "Tema 9: RabbitMQ con Spring AMQP: routing, ack y prefetch",
       "file": "web/public/content/spring-boot/modulo-8.md",
-      "line": 1028,
+      "line": 1089,
       "signals": [
         "clase-java-no-visible"
       ],

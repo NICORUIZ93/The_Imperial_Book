@@ -223,16 +223,16 @@
     "spring-boot": {
       "topics": 111,
       "explanation": 111,
-      "code": 111,
-      "visual": 62,
+      "code": 110,
+      "visual": 61,
       "filePath": 111,
-      "runCommand": 106,
+      "runCommand": 105,
       "expectedResult": 111,
       "practice": 103,
       "project": 95,
       "modelMental": 111,
-      "limitsDecision": 99,
-      "practicable": 88,
+      "limitsDecision": 98,
+      "practicable": 87,
       "genericScaffold": 0,
       "repeatedDemo": 0
     }
@@ -26208,19 +26208,19 @@
         "topic": "Tema 7: Kafka Streams con Spring para transformar eventos",
         "criteria": {
           "explanation": true,
-          "code": true,
-          "visual": true,
+          "code": false,
+          "visual": false,
           "filePath": true,
-          "runCommand": true,
+          "runCommand": false,
           "expectedResult": true,
           "practice": true,
           "project": true,
           "modelMental": true,
-          "limitsDecision": true
+          "limitsDecision": false
         },
         "classification": {
-          "rubricScore": 16,
-          "practicable": true,
+          "rubricScore": 9,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }

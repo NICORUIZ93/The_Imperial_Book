@@ -900,68 +900,129 @@ Entrega la prueba de función y una lista breve de lo que todavía debes observa
 
 ### Tema 7: Kafka Streams con Spring para transformar eventos
 
-#### Paso 1 · Objetivo y preparación
+**Duración estimada:** 50 min.
+**Resultado:** filtras eventos, conservas su clave, agregas por ventana y ejecutas la topología con Spring.
+**¿Por qué es importante?** Una salida de prueba en memoria no comprueba despliegue ni restauración de estado en un clúster.
+**Laboratorio:** examples/spring-kafka-streams-rutaflow/. Requiere Java 25.
 
-Al finalizar construirás una topología que filtra eventos, transforma valores y escribe a otro tópico. **Prerrequisitos:** productor/consumidor del Tema 1, clave y partición. Añade Kafka Streams al proyecto y un cluster de desarrollo.
+#### Subtema 7.1 · Filtrar sin cambiar la clave del pedido · 10 min
 
-#### Paso 2 · Contexto y caso real
+**1. Contexto**
 
-El panel de operaciones necesita un flujo limpio de pedidos despachados. Hacer un consumidor manual que escriba al tópico resultante requiere coordinar lectura, offsets, reintentos y estado local; Kafka Streams ofrece una DSL para describir ese procesamiento.
+KStream procesa registros nuevos de un tópico. La key es el ID del pedido y el value su estado; solo DESPACHADO debe salir.
 
-#### Paso 3 · Teoría y analogía
+**2. Hazlo tú**
 
-Kafka Streams forma una topología de procesadores que lee tópicos, transforma registros y escribe resultados. `KStream` representa registros como hechos nuevos; `KTable` representa el estado más reciente por clave. Transformaciones con estado, agregados y ventanas usan estado local y tópicos de changelog; el tamaño y la restauración del estado importan en despliegue. Imagina una cinta transportadora: cada registro recorre las estaciones de filtro y cambio, y la clave determina qué estación conserva el historial del mismo pedido.
+Abre src/main/java/academia/rutaflow/streams/PedidosTopology.java:
 
-#### Paso 4 · Demostración guiada
+    KStream<String, String> input = builder.stream(
+            INPUT, Consumed.with(Serdes.String(), Serdes.String()));
+    KStream<String, String> dispatched = input
+            .filter((pedidoId, estado) -> "DESPACHADO".equals(estado));
+    dispatched.to(OUTPUT, Produced.with(Serdes.String(), Serdes.String()));
 
-Crea `src/main/java/academia/pedidos/FlujoDespachados.java` como bean de `StreamsBuilder`:
+Desde el laboratorio ejecuta:
 
-```java
-import org.apache.kafka.common.serialization.Serdes;
-import org.apache.kafka.streams.kstream.Consumed;
-import org.apache.kafka.streams.kstream.Produced;
+    ./mvnw -Dtest=PedidosTopologyTest#filtraEstadosYConservaLaClaveEnLaSalida test
 
-@Bean
-KStream<String, String> soloDespachados(StreamsBuilder builder) {
-    KStream<String, String> entrada = builder.stream("pedidos",
-        Consumed.with(Serdes.String(), Serdes.String()));
-    entrada.filter((id, estado) -> "DESPACHADO".equals(estado))
-           .to("pedidos-despachados", Produced.with(Serdes.String(), Serdes.String()));
-    return entrada;
-}
-```
+**Resultado esperado.** PENDIENTE no aparece; DESPACHADO conserva key y value.
 
-Configura `spring.kafka.streams.application-id=proyeccion-despachos` y bootstrap servers en `application.yml`. Para probar, escribe a `pedidos` un par de valores (`PENDIENTE`, `DESPACHADO`) con claves `p-1`, `p-2` y consume `pedidos-despachados`. Ejemplo independiente desde cero: genera un proyecto con `spring-kafka` y `kafka-streams`, crea `FlujoDespachados.java` y la prueba. Ejecuta:
+**Fallo deliberado.** En una copia, cambia el filtro para aceptar PENDIENTE. La prueba falla porque recibe el registro que esperaba descartar.
 
-```bash
-mkdir -p ejemplo-kstreams
-./mvnw test
-```
+**3. Entiende**
 
-Con ambos tópicos creados ejecuta la app. **Resultado esperado:** solo se escribe el evento `DESPACHADO`; la clave del pedido se conserva.
+filter descarta registros que no cumplen el predicado; no cambia el registro que pasa ni sustituye su key.
 
-```mermaid
-flowchart LR
-  A[pedidos] --> B[KStream]
-  B --> C[filter estado DESPACHADO]
-  C --> D[pedidos-despachados]
-```
+**4. Cierra**
 
-#### Paso 5 · Práctica guiada
+Di cuál es la key, cuál el value y qué estado permite la salida.
 
-**Fallo deliberado:** cambia el filtro para aceptar todos los registros. **Pista:** comprueba la salida del tópico, no solo que la app esté conectada. La prueba debe fallar porque `PENDIENTE` aparece donde el contrato prohíbe ese estado; restaura el filtro y diagnostica el registro que se coló.
+#### Subtema 7.2 · Contar por estado dentro de una ventana · 15 min
 
-#### Paso 6 · Práctica independiente
+**1. Contexto**
 
-Agrega un conteo por estado con `groupByKey` y `count`, usando un `Materialized` con nombre estable. Reinicia la app y observa cómo restaura el estado. Después cambia nombre de operador o particiones en un entorno aislado y escribe qué migración/reset de estado requiere el despliegue. No confundas esta aplicación de streams con un `@KafkaListener` que solo reenvía mensajes.
+Una agregación necesita una clave de agrupación y estado local. Aquí los despachos se agrupan por estado en ventanas de un minuto con diez segundos de gracia.
 
-#### Paso 7 · Cierre y evidencia
+**2. Hazlo tú**
 
-Entrega topología, comandos de producción/consumo y prueba que demuestra la exclusión del estado incorrecto. **Proyecto integrador RutaFlow:** usa Streams para una proyección agregada o transformación continua; reserva el listener simple para efectos discretos. Errores comunes: usar claves inconsistentes, olvidar el `application-id`, cambiar operadores con estado sin plan de upgrade y asumir que los datos locales son la única copia. Siguiente paso: acordar el formato del evento entre equipos. Fuentes oficiales: [Kafka Streams DSL](https://kafka.apache.org/documentation/streams/developer-guide/dsl-api/), [Kafka Streams](https://kafka.apache.org/documentation/streams/) y [Spring Kafka Streams](https://docs.spring.io/spring-kafka/reference/streams.html).
+En PedidosTopology.pedidosDespachados localiza:
 
-**¿Por qué es importante?** Una topología expresa procesamiento continuo y estado derivado, no solo recibir mensajes.
-**Evidencia de aprendizaje:** prueba de filtro, tópico de salida y recuperación del agregado tras reiniciar.
-**Cuándo no usarlo:** para un flujo corto de trabajos con una acción por mensaje, una cola de tareas suele ser más directa.
+    dispatched
+            .groupBy((pedidoId, estado) -> estado,
+                    Grouped.with(Serdes.String(), Serdes.String()))
+            .windowedBy(TimeWindows.ofSizeAndGrace(
+                    Duration.ofMinutes(1), Duration.ofSeconds(10)))
+            .count(Materialized.as("conteo-despachados-por-minuto"))
+
+Ejecuta el test con timestamps controlados:
+
+    ./mvnw -Dtest=PedidosTopologyTest#actualizaConteoPorVentanaConTiempoControlado test
+
+**Resultado esperado.** Dos despachos en la misma ventana producen conteos 1 y 2 para DESPACHADO.
+
+**Fallo deliberado.** En una copia, agrupa por pedidoId en vez de estado. El test deja de observar el segundo valor 2 porque cada pedido queda en su propio grupo.
+
+**3. Entiende**
+
+El resultado de una agregación es estado actualizado, no una lista de eventos originales. Kafka Streams guarda el store y usa un changelog para reconstruirlo; este test no prueba recuperación de un broker real.
+
+**4. Cierra**
+
+Explica qué representa la key del conteo y qué cambiarías para medir otra ventana.
+
+#### Subtema 7.3 · Probar la topología sin confundirla con el clúster · 10 min
+
+**1. Contexto**
+
+TopologyTestDriver ejecuta el grafo dentro del proceso. Acepta entradas con timestamps controlados, pero no abre conexión a Kafka ni prueba ACL, particiones, ni el arranque de Spring.
+
+**2. Hazlo tú**
+
+Abre src/test/java/academia/rutaflow/streams/PedidosTopologyTest.java. Comprueba que el test construye PedidosTopology, fija application.id y usa pipeInput. Ejecuta:
+
+    ./mvnw clean test
+
+**Resultado esperado.** Pasan dos pruebas: filtro/key y conteo por ventana. La suite no comprueba que los tópicos existan en el broker.
+
+**Fallo deliberado.** Anota ACL, particiones y creación de tópicos como requisitos que el test driver no verifica. Explica cómo comprobarías cada uno con el broker real.
+
+**3. Entiende**
+
+El test rápido valida lógica determinista; la topología necesita además una prueba con el clúster y las políticas que operará.
+
+**4. Cierra**
+
+Enumera qué verifica TopologyTestDriver y dos cosas que requieren Kafka real.
+
+#### Subtema 7.4 · Configurar Spring y el application.id · 15 min
+
+**1. Contexto**
+
+Spring crea y administra la topología cuando kafka-streams está en el classpath y se activa EnableKafkaStreams. application.id identifica la aplicación y su grupo lógico.
+
+**2. Hazlo tú**
+
+Compara la anotación EnableKafkaStreams en PedidosTopology.java, la dependencia kafka-streams en pom.xml y spring.kafka.streams.application-id en src/main/resources/application.yml. El README del laboratorio incluye comandos para levantar Kafka, crear tópicos, publicar tres registros y observar las salidas.
+
+Desde examples/spring-kafka-streams-rutaflow ejecuta:
+
+    ./mvnw spring-boot:run
+
+**Resultado esperado.** Con Kafka disponible, la aplicación procesa pedidos y publica los valores filtrados y el conteo. Si el broker no está disponible, el arranque no prueba integración.
+
+**Fallo deliberado.** En una copia cambia el nombre del tópico INPUT pero publica al nombre anterior. No llega salida; compara el nombre configurado y el destino de entrada.
+
+**3. Entiende**
+
+application.id, bootstrap servers, SerDes y estado local son decisiones de operación. En producción define particiones, permisos, retención de changelogs y almacenamiento local.
+
+**4. Cierra**
+
+Enumera los tópicos visibles y explica por qué una aplicación aislada necesita un application.id propio.
+
+**Fuentes oficiales:** [Kafka Streams en Spring Boot 4.0](https://docs.spring.io/spring-boot/4.0/reference/messaging/kafka.html), [integración Kafka Streams de Spring Kafka](https://docs.spring.io/spring-kafka/reference/streams.html), [DSL Kafka Streams 4.2](https://kafka.apache.org/42/documentation/streams/developer-guide/dsl-api/) y [TopologyTestDriver](https://kafka.apache.org/42/documentation/streams/developer-guide/testing.html).
+
+**Transferencia al proyecto integrador:** conserva una key estable por pedido, separa evento original de proyección agregada y registra application.id, SerDes, tópicos internos y política de estado.
 
 ### Tema 8: Avro y Schema Registry para contratos de eventos
 
