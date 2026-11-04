@@ -263,7 +263,7 @@
     "spring-boot": {
       "topics": 111,
       "objective": 59,
-      "prerequisites": 74,
+      "prerequisites": 75,
       "context": 59,
       "theoryAnalogy": 59,
       "guidedDemo": 59,
@@ -28420,7 +28420,7 @@
         "topic": "Tema 2: Spring Cloud Gateway",
         "criteria": {
           "objective": false,
-          "prerequisites": false,
+          "prerequisites": true,
           "context": false,
           "theoryAnalogy": false,
           "guidedDemo": false,
@@ -28437,7 +28437,7 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 6,
+          "stepsPassed": 7,
           "complete": false
         }
       },

@@ -965,3 +965,33 @@ lee la lección completa, el proyecto de gateway que ya existe en el repositorio
 la documentación oficial de compatibilidad y rutas. Mantén el mismo contrato de
 4 pasos por subtema, ejecuta fallos deliberados en aislamiento y publica ese tema
 con su laboratorio separado.
+
+
+Spring Boot M10 T2, “Spring Cloud Gateway”, quedó vinculado al laboratorio nuevo
+`examples/spring-gateway-rutaflow/`. La lección identifica la matriz compatible
+con Boot 4.1, el starter WebFlux oficial y la necesidad de Netty. El laboratorio
+usa Boot 4.1.2, Java 25, Spring Cloud 2025.1.4 y una ruta que conserva el
+predicado `/api/pedidos/**` y aplica `StripPrefix=1`. Las pruebas levantan
+Gateway WebFlux en un puerto aleatorio y un backend HTTP de prueba en otro puerto
+libre; comprueban cuerpo, ruta transformada `/pedidos/1`, y que una ruta sin
+coincidencia no alcanza el backend.
+
+`./mvnw -q clean test` pasó con **2 pruebas**. Dos mutaciones aisladas y
+restauradas, `StripPrefix=2` y un predicado que no coincide con el caso, hicieron
+fallar las pruebas previstas; la suite volvió a pasar tras restaurarlas. La
+integración comprobada corre dentro de la suite local; no se inició un segundo
+servicio externo manualmente ni se hizo prueba de carga. Fuentes primarias:
+[matriz Spring Cloud](https://spring.io/projects/spring-cloud), [starter
+Gateway WebFlux](https://docs.spring.io/spring-cloud-gateway/reference/spring-cloud-gateway-server-webflux/starter.html)
+y [configuración de rutas](https://docs.spring.io/spring-cloud-gateway/reference/spring-cloud-gateway-server-webflux/configuration.html).
+
+Cobertura automática después de M10 T2: **144/1185 temas atómicos**, **1082/1185
+practicables**, **1030/1185 completos en siete pasos** y 409 con señales de
+defecto de sustancia. T2 ya pasaba los detectores estructurales, por lo cual la
+cifra de subtemas conformes se mantiene. Los conteos son señales mecánicas, no
+evaluación de aprendizaje.
+
+**Siguiente tema:** Spring Boot M10 T3, Circuit Breaker con Resilience4j. Revisa
+la implementación y las pruebas existentes del laboratorio antes de reescribir
+la lección; valida estados y contadores por comportamiento observable, no solo
+por inspección de la configuración.

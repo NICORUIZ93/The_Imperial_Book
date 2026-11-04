@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 968,
+      "lines": 998,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -5584,6 +5584,43 @@
     {
       "path": "examples/spring-cloud-config-discovery-rutaflow/src/test/java/academia/rutaflow/cloud/ConfigServerAndDiscoveryTest.java",
       "lines": 60,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-gateway-rutaflow/README.md",
+      "lines": 53,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Spring Cloud Gateway \u00b7 RutaFlow",
+        "## Ejecutar las pruebas",
+        "## Ver el gateway manualmente",
+        "## Fallos para diagnosticar"
+      ]
+    },
+    {
+      "path": "examples/spring-gateway-rutaflow/src/main/java/academia/rutaflow/gateway/GatewayApplication.java",
+      "lines": 12,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-gateway-rutaflow/src/main/resources/application.yml",
+      "lines": 17,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-gateway-rutaflow/src/test/java/academia/rutaflow/gateway/GatewayRoutingTest.java",
+      "lines": 103,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -12023,7 +12060,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-10.md",
-      "lines": 1585,
+      "lines": 1588,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

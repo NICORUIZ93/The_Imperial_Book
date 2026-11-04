@@ -228,7 +228,7 @@
       "filePath": 111,
       "runCommand": 100,
       "expectedResult": 111,
-      "practice": 103,
+      "practice": 104,
       "project": 91,
       "modelMental": 111,
       "limitsDecision": 98,
@@ -24057,13 +24057,13 @@
           "filePath": true,
           "runCommand": true,
           "expectedResult": true,
-          "practice": false,
+          "practice": true,
           "project": false,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 10,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false

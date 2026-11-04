@@ -1692,7 +1692,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "a8830fdf168c945fef5ee07bd4a5b0366f6b55958411b7c42aa233c945a8bcd7",
+    "fingerprint": "545e556ac778ac9715e432fcf0edffe61f08d27457b32b2b97ec1689af1438d5",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10322,7 +10322,7 @@
         "module": 10,
         "tailWords": 0,
         "topic": "Tema 2: Spring Cloud Gateway",
-        "words": 887
+        "words": 980
       },
       {
         "issues": [],

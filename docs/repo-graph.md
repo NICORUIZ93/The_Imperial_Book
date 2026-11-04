@@ -1,8 +1,8 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-11-04 23:19 UTC
+Generated: 2026-11-04 23:23 UTC
 Root: `The_Imperial_Book`
-Indexed files: 1031
+Indexed files: 1035
 Import edges: 60
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -19,15 +19,15 @@ For automated lookups, use `docs/repo-graph.json`.
 - `automation-script`: 36 files
 - `course-content`: 262 files
 - `documentation`: 62 files
-- `example`: 556 files
+- `example`: 560 files
 - `local-infra`: 1 files
 - `project-file`: 55 files
 
 ## File Types
 
-- `.md`: 343
+- `.md`: 344
 - `.py`: 162
-- `.java`: 104
+- `.java`: 106
 - `.json`: 69
 - `.ts`: 66
 - `.js`: 54
@@ -37,7 +37,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `.dart`: 24
 - `.go`: 24
 - `.swift`: 20
-- `.yml`: 16
+- `.yml`: 17
 - `.yaml`: 13
 - `.kt`: 13
 - `.scss`: 8
@@ -231,7 +231,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `CONTRIBUTING.md` (31 lines) - headings: # Contribuir a The Imperial Book, ## Antes de abrir un cambio, ## Licencias
 - `README.md` (308 lines) - headings: # The_Imperial_Book, ## Como empezar, ## Levantar Floci, # 1. Levantar todos los servicios
 - `docs/CONTINUAR-7-PASOS.md` (26 lines) - headings: # Migración a cuatro pasos y subtemas atómicos, ## Formato que se aplica, ## Estado de migración
-- `docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md` (968 lines) - headings: # Continuidad: expansión Java y academia, ## Encargo y razón, ## Fuentes de verdad y rutas, ## Contrato de cada tema
+- `docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md` (998 lines) - headings: # Continuidad: expansión Java y academia, ## Encargo y razón, ## Fuentes de verdad y rutas, ## Contrato de cada tema
 - `docs/ESTANDAR-DE-CODIGO.md` (56 lines) - headings: # Estándar transversal de código y diseño, ## Prioridades, ## Clean Code con criterio, ## SOLID cuando aporta valor
 - `docs/MATRIZ-CURRICULAR.md` (73 lines) - headings: # Matriz curricular auditable, ## Progresión de competencia, ## Cobertura por módulo, ## Método de evaluación
 - `docs/METODOLOGIA-DE-APRENDIZAJE.md` (67 lines) - headings: # Metodología Aprende construyendo, ## Estructura de tema y subtema, ### Hito al final de cada tema, ### Ruta del proyecto
@@ -264,7 +264,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `examples/archify/temas/cloud/modulo-22-tema-5-edge-routes.review-2/modulo-22-tema-5-edge-routes.finalize.json` (1012 lines)
 - `examples/archify/temas/foundations/modulo-12-tema-10-lazo-p.workflow.json` (183 lines)
 - `examples/archify/temas/foundations/modulo-12-tema-17-plc-scan.workflow.json` (189 lines)
-- ... 538 more files
+- ... 542 more files
 
 ### local-infra
 

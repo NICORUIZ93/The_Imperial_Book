@@ -13,7 +13,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | Ruta | 1185 | 0 |
 | Ejecución | 1116 | 69 |
 | Resultado | 1183 | 2 |
-| Modificación | 1129 | 56 |
+| Modificación | 1130 | 55 |
 | Conexión con un proyecto | 1102 | 83 |
 | Modelo mental | 1185 | 0 |
 | Límites | 1130 | 55 |
@@ -36,7 +36,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | node | 83 | 0 | 0 | 0 | 0 | 1 | 2 | 1 |
 | react | 58 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | rutaflow | 29 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| spring-boot | 111 | 5 | 0 | 11 | 0 | 8 | 20 | 13 |
+| spring-boot | 111 | 5 | 0 | 11 | 0 | 7 | 20 | 13 |
 
 ## Pendientes por tema
 
@@ -115,7 +115,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 - [node · módulo 14](../web/public/content/node/modulo-14.md) · Tema 7: Kafka desde Node: clave, grupo consumidor y offset: conexión con un proyecto, límites.
 - [node · módulo 14](../web/public/content/node/modulo-14.md) · Tema 8: RabbitMQ desde Node: exchange, cola y confirmaciones: modificación, conexión con un proyecto.
 - [spring-boot · módulo 10](../web/public/content/spring-boot/modulo-10.md) · Tema 1: Config Server y service discovery: límites.
-- [spring-boot · módulo 10](../web/public/content/spring-boot/modulo-10.md) · Tema 2: Spring Cloud Gateway: modificación, conexión con un proyecto.
+- [spring-boot · módulo 10](../web/public/content/spring-boot/modulo-10.md) · Tema 2: Spring Cloud Gateway: conexión con un proyecto.
 - [spring-boot · módulo 10](../web/public/content/spring-boot/modulo-10.md) · Tema 4: OAuth2/OIDC, Keycloak y Token Relay sin perder la frontera de autorización: ejecución, modificación, conexión con un proyecto.
 - [spring-boot · módulo 10](../web/public/content/spring-boot/modulo-10.md) · Tema 9: Spring Modulith para comprobar fronteras antes de separar servicios: ejecución.
 - [spring-boot · módulo 10](../web/public/content/spring-boot/modulo-10.md) · Tema 10: Spring Cloud Bus para propagar cambios de configuración: ejecución.
