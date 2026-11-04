@@ -1480,11 +1480,10 @@ Una función pura devuelve el mismo resultado para los mismos datos y no cambia 
 
 #### Paso 4 · Ejercicio 1
 
-##### Subtema 12.1: Calcular sin cambiar la entrada · 5-10 min
+#### Subtema 12.1: Calcular sin cambiar la entrada · 10 min
+**1. Contexto** redondea una tarifa sin modificar la lista original.
 
-**Contexto:** redondea una tarifa sin modificar la lista original.
-
-**Hazlo tú:** crea `java-funcional-t12/src/Calcular.java`:
+**2. Hazlo tú** crea `java-funcional-t12/src/Calcular.java`:
 
 ```java
 import java.util.List;
@@ -1505,15 +1504,18 @@ Ejecuta `cd java-funcional-t12 && java src/Calcular.java`.
 
 **Fallo deliberado:** reemplaza la lista con `new ArrayList` y cambia sus elementos dentro de un `forEach` paralelo. **Resultado del fallo:** las modificaciones no tienen un orden fiable. **Diagnóstico:** el cálculo comparte y altera un contenedor externo.
 
-**Entiende:** `map` produce una lista nueva; no modifica el origen.
+**3. Entiende** `map` produce una lista nueva; no modifica el origen.
+
+**4. Cierra**
+
+Guarda la entrada, el resultado calculado y el punto donde ocurre el efecto externo.
 
 #### Paso 5 · Ejercicio 2
 
-##### Subtema 12.2: Hacer visible el efecto · 5-10 min
+#### Subtema 12.2: Hacer visible el efecto · 10 min
+**1. Contexto** registra el costo calculado solo después de terminar el cálculo.
 
-**Contexto:** registra el costo calculado solo después de terminar el cálculo.
-
-**Hazlo tú:** crea `java-funcional-t12/src/Registrar.java`:
+**2. Hazlo tú** crea `java-funcional-t12/src/Registrar.java`:
 
 ```java
 import java.util.List;
@@ -1534,15 +1536,18 @@ Ejecuta `cd java-funcional-t12 && java src/Registrar.java`.
 
 **Fallo deliberado:** mueve el `println` dentro de `map`. **Resultado del fallo:** `map` deja de expresar una transformación sencilla y retorna `null` si el lambda no devuelve un valor. **Diagnóstico:** `map` debe transformar; `Consumer` puede hacer el efecto al final.
 
-**Entiende:** puedes probar `costos` sin invocar la acción de registrar.
+**3. Entiende** puedes probar `costos` sin invocar la acción de registrar.
+
+**4. Cierra**
+
+Guarda la entrada, el resultado calculado y el punto donde ocurre el efecto externo.
 
 #### Paso 6 · Ejercicio 3
 
-##### Subtema 12.3: Repetir la misma regla · 5-10 min
+#### Subtema 12.3: Repetir la misma regla · 10 min
+**1. Contexto** una regla decide si una ruta cobra recargo por peso.
 
-**Contexto:** una regla decide si una ruta cobra recargo por peso.
-
-**Hazlo tú:** crea `java-funcional-t12/src/ReglaPura.java`:
+**2. Hazlo tú** crea `java-funcional-t12/src/ReglaPura.java`:
 
 ```java
 import java.util.function.Function;
@@ -1562,7 +1567,11 @@ Ejecuta `cd java-funcional-t12 && java src/ReglaPura.java`.
 
 **Fallo deliberado:** agrega una variable externa que se sume cada vez que corre la regla. **Resultado del fallo:** la segunda salida cambia aunque la entrada sea igual. **Diagnóstico:** el resultado ahora depende de un estado compartido.
 
-**Entiende:** una regla sin cambios externos se vuelve fácil de repetir y comprobar.
+**3. Entiende** una regla sin cambios externos se vuelve fácil de repetir y comprobar.
+
+**4. Cierra**
+
+Guarda la entrada, el resultado calculado y el punto donde ocurre el efecto externo.
 
 #### Paso 7 · Cierre y evidencia
 

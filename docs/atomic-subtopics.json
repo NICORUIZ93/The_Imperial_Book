@@ -51,10 +51,10 @@
     },
     "java": {
       "topics": 101,
-      "completeTopics": 99,
-      "topicsWith3to6Subtopics": 99,
-      "subtopics": 301,
-      "completeSubtopics": 301
+      "completeTopics": 100,
+      "topicsWith3to6Subtopics": 100,
+      "subtopics": 304,
+      "completeSubtopics": 304
     },
     "javascript": {
       "topics": 88,
@@ -8380,9 +8380,52 @@
       {
         "module": 20,
         "topic": "### Tema 12: Pureza y efectos: calcular separado de guardar o imprimir",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "12.1",
+            "title": "#### Subtema 12.1: Calcular sin cambiar la entrada · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "12.2",
+            "title": "#### Subtema 12.2: Hacer visible el efecto · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "12.3",
+            "title": "#### Subtema 12.3: Repetir la misma regla · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 20,

@@ -5,7 +5,7 @@
 **Proyecto continuo:** Motor de asignación de entregas.
 **Prerrequisito de entrada:** Fundamentos de programación; el módulo 0 comienza con JDK y terminal..
 **Duración objetivo:** temas de 20–45 minutos; cada tema se divide en 3–6 acciones de 5–15 minutos.
-**Estado estructural:** 99/101 temas migrados; auditoría estructural actualizada el 2026-11-03.
+**Estado estructural:** 100/101 temas migrados; auditoría estructural actualizada el 2026-11-03.
 
 ## Índice de módulos y temas
 
@@ -515,7 +515,10 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 11.1: Comparar resultados · 10 min
   - ✓ Subtema 11.2: Mantener el orden de salida · 10 min
   - ✓ Subtema 11.3: Medir sin prometer un ganador · 10 min
-- [pendiente de migrar] Tema 12: Pureza y efectos: calcular separado de guardar o imprimir
+- [4 pasos] Tema 12: Pureza y efectos: calcular separado de guardar o imprimir
+  - ✓ Subtema 12.1: Calcular sin cambiar la entrada · 10 min
+  - ✓ Subtema 12.2: Hacer visible el efecto · 10 min
+  - ✓ Subtema 12.3: Repetir la misma regla · 10 min
 - [pendiente de migrar] Tema 13: Flow API: publicar datos con demanda y cierre
 
 ## Comparación de cobertura con fuentes de referencia
@@ -540,7 +543,7 @@ La tabla registra presencia de áreas en el inventario del track, no profundidad
 
 ### Huecos y límites reportados
 
-- El repositorio contiene 101 temas en 21 módulos; 99 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
+- El repositorio contiene 101 temas en 21 módulos; 100 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
 - No hay base para afirmar que el track esté completo: la comparación con la fuente de referencia está pendiente de revisión humana módulo por módulo.
 - Los elementos de la fuente que todavía deben verificarse de forma explícita están enumerados en la tabla anterior; cualquier técnica crítica que no tenga tema propio debe añadirse conservando el currículo base.
 - La ejecución de ejemplos, el comportamiento con brokers/plataformas reales y la calidad pedagógica humana se registran por separado.
