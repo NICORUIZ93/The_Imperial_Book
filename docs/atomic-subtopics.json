@@ -93,10 +93,10 @@
     },
     "spring-boot": {
       "topics": 111,
-      "completeTopics": 33,
-      "topicsWith3to6Subtopics": 34,
-      "subtopics": 102,
-      "completeSubtopics": 101
+      "completeTopics": 34,
+      "topicsWith3to6Subtopics": 35,
+      "subtopics": 105,
+      "completeSubtopics": 104
     }
   },
   "topics": {
@@ -14139,9 +14139,52 @@
       {
         "module": 5,
         "topic": "### Tema 1: @ConfigurationProperties tipado",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "4.16",
+            "title": "#### Subtema 4.16 · Agrupar la configuración JWT existente · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "4.17",
+            "title": "#### Subtema 4.17 · Probar enlace y límites con un contexto pequeño · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "4.18",
+            "title": "#### Subtema 4.18 · Inyectar el record en el JwtService · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 5,

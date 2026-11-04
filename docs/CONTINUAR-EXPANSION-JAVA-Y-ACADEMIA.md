@@ -413,13 +413,37 @@ desconocido o contraseña incorrecta. Se cambió deliberadamente el argumento de
 `200`; restaurado el código, el test dirigido volvió a pasar. Auditorías:
 **137/1185 temas atómicos**: Java 101, Spring Boot 33, Node 2 y Flutter 1;
 **1093/1185 practicables**, 409 con señales de defecto de sustancia. Índices e
-informes están regenerados; falta `./scripts/validate.sh` y actualizar el grafo
-del repositorio después de este cambio. Las métricas son señales estructurales,
-no certificación ni revisión pedagógica humana.
+informes están regenerados y `./scripts/validate.sh` pasó con 23 pruebas y 4
+omitidas. Las métricas son señales estructurales, no certificación ni revisión
+pedagógica humana.
 
-**Siguiente tema:** Spring Boot M5 T1, “`@ConfigurationProperties` tipado”.
-Revisa el ejemplo del prefijo `app.jwt`: verifica el paquete, versiones y
-dependencias de validación vigentes, ejecuta el enlace y un fallo de
-configuración, y explica con un ejemplo corto cuándo conviene el objeto tipado
-frente a valores dispersos. Sigue confirmando qué archivo crear, comando y
-resultado antes de cerrar el tema.
+Spring Boot M5 T1, “`@ConfigurationProperties` tipado”, ahora continúa la misma
+aplicación: `security.jwt.secret-base64` sigue leyendo `JWT_SECRET_BASE64` y el
+nuevo `JwtSettings` agrupa secreto y vencimiento. `DemoApplication` activa
+`@ConfigurationPropertiesScan`; el `JwtService` existente recibe el record y
+usa `expirationSeconds`, sin añadir otra clave ni servicio. El test de contexto
+comprueba enlace correcto, texto que no convierte a `long` y vencimiento bajo
+`@Min(60)`. Se aclaró que la conversión ocurre al enlazar durante el arranque,
+no al compilar, y que `@NestedConfigurationProperty` solo orienta el procesador
+de metadatos. Se actualizó también `src/test/resources/application.properties`:
+reemplaza la configuración principal y debe incluir el nuevo vencimiento.
+
+En el backend acumulado Spring Boot 4.1.2/JDK 25, `./mvnw -q clean test` pasó
+con **32 pruebas**, sin fallos ni omisiones. Se retiró temporalmente `@Validated`
+y la prueba de `59` segundos detectó que el contexto arrancaba cuando debía
+fallar; restaurada la anotación, vuelve a pasar. También se fijó el vencimiento
+del servicio en `900` en vez de leer el tipo: `JwtServiceTest` falló al comparar
+los `120` segundos esperados con `900`; restaurada la configuración, la suite
+completa pasó. El test también exigió actualizar
+`src/test/resources/application.properties`: este archivo reemplaza el principal
+y debe incluir el nuevo vencimiento. Auditorías: **138/1185 temas atómicos**:
+Java 101, Spring Boot 34, Node 2 y Flutter 1; **1093/1185 practicables**, 409
+con señales de defecto de sustancia. `./scripts/validate.sh` pasó con 23 pruebas
+y 4 omitidas; índices, informes y grafo están regenerados. Estas métricas son
+estructurales, no certificación ni revisión humana.
+
+**Siguiente tema:** Spring Boot M5 T2, “Fallar rápido al arranque”. Reutiliza
+`JwtSettings` y los mismos archivos de propiedades; prueba una propiedad
+obligatoria ausente y un valor inválido con `ApplicationContextRunner`, y
+describe el mensaje y la causa que realmente produce Spring Boot antes de
+reescribir el tema.

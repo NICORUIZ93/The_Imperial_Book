@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 226,
+    "topicsWithSignals": 227,
     "newLaboratories": 25
   },
   "priorities": {
@@ -13328,7 +13328,9 @@
       "title": "Tema 1: @ConfigurationProperties tipado",
       "file": "web/public/content/spring-boot/modulo-5.md",
       "line": 8,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -13338,7 +13340,7 @@
       "module": 5,
       "title": "Tema 2: Fallar rápido al arranque",
       "file": "web/public/content/spring-boot/modulo-5.md",
-      "line": 157,
+      "line": 193,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -13349,7 +13351,7 @@
       "module": 5,
       "title": "Tema 3: Manejo global de excepciones consistente entre entornos",
       "file": "web/public/content/spring-boot/modulo-5.md",
-      "line": 273,
+      "line": 309,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

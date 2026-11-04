@@ -7,152 +7,188 @@ Cada tema se practica por separado con su propia repetición progresiva y su pro
 
 ### Tema 1: @ConfigurationProperties tipado
 
-#### Paso 1 · Objetivo y preparación
+**Meta:** agrupar la clave y el vencimiento de JWT que ya existen en el proyecto del Módulo 4, enlazarlos a un `record` validado y usarlos desde el mismo `JwtService`.
 
-Al finalizar podrás agrupar configuración relacionada en un tipo fuertemente tipado con `@ConfigurationProperties`, y confirmar con un test real que los valores de `application.yml` se enlazan correctamente.
-
-**Conocimiento previo:** Spring Initializr y starters (Módulo 1); `application.yml` vs `application.properties` (Módulo 1).
-
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** Una API de entregas cambia URLs, límites y credenciales entre local, pruebas y producción; leer cada valor individual con `@Value("${...}")` disperso en distintas clases dificulta tener una visión centralizada de toda la configuración relacionada con un aspecto específico, como JWT.
-
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** agrupación de configuración relacionada, frente a `@Value` disperso.
-
-`@ConfigurationProperties("app.jwt") @Validated public record JwtConfig(@NotBlank String secreto, @Min(60) long expiracionSegundos) {}` mapea un grupo completo de configuración relacionada (todo bajo el prefijo `app.jwt`) hacia un único tipo fuertemente tipado, en vez de leer cada valor disperso con `@Value` repetido en cada clase que lo necesita. Esta agrupación ofrece verificación de tipos en tiempo de compilación (un valor numérico mal configurado como texto se detecta al mapear) y validación centralizada de todo el grupo en un único lugar.
-
-**Analogía:** `@ConfigurationProperties` es un formulario estructurado con una sección dedicada para cada tema relacionado; `@Value` disperso es anotar valores sueltos en notas adhesivas distribuidas por distintas partes de una oficina, sin ninguna vista centralizada.
-
-**Diagrama:**
+**¿Por qué es importante?** Ahora la clave se lee en un sitio y el vencimiento está escrito como número dentro de `JwtService`. Al agruparlos, es más fácil ver qué necesita JWT y detectar un valor mal formado al iniciar.
 
 ```mermaid
 flowchart LR
-  A["application.yml: app.jwt.secreto, app.jwt.expiracion-segundos"] --> B["JwtConfig record (@ConfigurationProperties)"]
-  B --> C[un único tipo tipado, inyectable donde se necesite]
+  P["application.properties + JWT_SECRET_BASE64"] --> B[Spring Boot enlaza]
+  B --> V["JwtSettings: valida y agrupa"]
+  V --> J["JwtService: firma y calcula vencimiento"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Subtema 4.16 · Agrupar la configuración JWT existente · 10 min
 
-Desde una carpeta vacía (o continuando en `academia-spring`, o créala con `mkdir -p academia-spring` si es tu primera vez), genera el proyecto con Spring Initializr real (`web`, `validation`) y crea `src/main/java/com/academia/config/JwtConfig.java`:
+**Contexto:** continúa el proyecto `academia-spring` de Módulo 4. El secreto sigue llegando desde `JWT_SECRET_BASE64`; crea un tipo para reunirlo con los segundos de vencimiento.
 
-```bash
-mkdir -p academia-spring/src/main/java/com/academia/config
-cd academia-spring
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web,validation -d javaVersion=25 -d artifactId=academia-config -o app.zip
-unzip -o app.zip
-```
+**Hazlo tú:** verifica que `pom.xml` tenga `spring-boot-starter-validation`. Crea `src/main/java/com/example/demo/JwtSettings.java`:
 
 ```java
-// src/main/java/com/academia/config/JwtConfig.java
-package com.academia.config;
+package com.example.demo;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.annotation.Validated;
 
-@ConfigurationProperties("app.jwt")
+@ConfigurationProperties("security.jwt")
 @Validated
-public record JwtConfig(
-    @NotBlank String secreto,
-    @Min(60) long expiracionSegundos
+public record JwtSettings(
+    @NotBlank String secretBase64,
+    @Min(60) long expirationSeconds
 ) {}
 ```
 
-```java
-// src/main/java/com/academia/config/ConfigActivador.java
-package com.academia.config;
-
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
-
-@Configuration
-@EnableConfigurationProperties(JwtConfig.class)
-public class ConfigActivador {}
-```
-
-```yaml
-# src/main/resources/application.yml
-app:
-  jwt:
-    secreto: clave-de-prueba-academia-floci
-    expiracion-segundos: 900
-```
-
-**Explicación línea por línea:** el `record JwtConfig` agrupa ambos valores bajo el prefijo `app.jwt`; `@NotBlank` y `@Min(60)` declaran las restricciones de validación directamente sobre los componentes del record; `@EnableConfigurationProperties(JwtConfig.class)` registra la clase para que Spring la enlace y valide durante el arranque.
-
-Confirma con `ApplicationContextRunner` (la utilidad real de Spring Boot Test para levantar un contexto mínimo y aislado, sin todo el arranque completo de la aplicación) que los valores de `application.yml` se enlazan correctamente al tipo tipado:
+En `src/main/java/com/example/demo/DemoApplication.java`, añade el escaneo para registrar el record:
 
 ```java
-// src/test/java/com/academia/config/JwtConfigTest.java
-package com.academia.config;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
+
+@SpringBootApplication
+@ConfigurationPropertiesScan
+public class DemoApplication { /* conserva aquí el main existente */ }
+```
+
+En `src/main/resources/application.properties`, deja la clave fuera del código y agrégale un vencimiento:
+
+```properties
+security.jwt.secret-base64=${JWT_SECRET_BASE64}
+security.jwt.expiration-seconds=900
+```
+
+Actualiza también `src/test/resources/application.properties`: conserva la clave Base64 de prueba del Módulo 4 y añade `security.jwt.expiration-seconds=900`. Ese archivo de test sustituye el del entorno principal durante las pruebas; si falta la propiedad, `@Min(60)` hace fallar los contextos que construyen `JwtService`.
+
+El nombre Java `secretBase64` corresponde a la propiedad `secret-base64`; ambas están bajo `security.jwt`.
+
+**Resultado esperado:** el proyecto compila con Spring Boot `4.1.2` y JDK `25`. Spring Boot enlaza las propiedades al record al arrancar; la conversión y validación ocurren en ese momento, no en compilación.
+
+**Fallo deliberado y diagnóstico:** cambia temporalmente `expiration-seconds=900` por `expiration-seconds=texto` en la prueba aislada del subtema siguiente. El contexto debe fallar al enlazar `long`; restaura `900`.
+
+**Entiende:** el prefijo reúne propiedades relacionadas; cada componente del record recibe el valor correspondiente. `@ConfigurationPropertiesScan` busca estos tipos desde el paquete de la aplicación. Fuente: [Spring Boot 4.1.2 — ConfigurationPropertiesScan](https://docs.spring.io/spring-boot/api/java/org/springframework/boot/context/properties/ConfigurationPropertiesScan.html).
+
+**Cierra:** identifica en el archivo de propiedades los dos valores y encuentra los campos que los reciben.
+
+#### Subtema 4.17 · Probar enlace y límites con un contexto pequeño · 10 min
+
+**Contexto:** no necesitas levantar web, base de datos ni filtros para revisar solo el enlace de configuración. `ApplicationContextRunner` crea un contexto mínimo con el tipo que quieres probar.
+
+**Hazlo tú:** crea `src/test/java/com/example/demo/JwtSettingsTest.java`:
+
+```java
+package com.example.demo;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-
+import org.springframework.context.annotation.Configuration;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class JwtConfigTest {
-
-    private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-        .withUserConfiguration(ConfigActivador.class);
+class JwtSettingsTest {
+    private final ApplicationContextRunner runner = new ApplicationContextRunner()
+        .withUserConfiguration(SettingsTestConfig.class);
 
     @Test
-    void enlazaLosValoresDeConfiguracionAlTipoTipado() {
-        contextRunner
-            .withPropertyValues("app.jwt.secreto=clave-real", "app.jwt.expiracion-segundos=900")
+    void enlazaLaClaveYElVencimiento() {
+        runner.withPropertyValues(
+                "security.jwt.secret-base64=VVFRc3BzQVFzZXJ0T0xhbkt0ZUd4cHlsU21pSnhhOFM=",
+                "security.jwt.expiration-seconds=900")
             .run(context -> {
-                JwtConfig config = context.getBean(JwtConfig.class);
-                assertThat(config.secreto()).isEqualTo("clave-real");
-                assertThat(config.expiracionSegundos()).isEqualTo(900L);
+                assertThat(context).hasNotFailed();
+                JwtSettings settings = context.getBean(JwtSettings.class);
+                assertThat(settings.secretBase64())
+                    .isEqualTo("VVFRc3BzQVFzZXJ0T0xhbkt0ZUd4cHlsU21pSnhhOFM=");
+                assertThat(settings.expirationSeconds()).isEqualTo(900);
             });
     }
+
+    @Test
+    void textoNoSePuedeEnlazarAUnLong() {
+        runner.withPropertyValues(
+                "security.jwt.secret-base64=test",
+                "security.jwt.expiration-seconds=texto")
+            .run(context -> assertThat(context).hasFailed());
+    }
+
+    @Test
+    void vencimientoMenorAlMinimoEsRechazado() {
+        runner.withPropertyValues(
+                "security.jwt.secret-base64=test",
+                "security.jwt.expiration-seconds=59")
+            .run(context -> assertThat(context).hasFailed());
+    }
+
+    @Configuration(proxyBeanMethods = false)
+    @EnableConfigurationProperties(JwtSettings.class)
+    static class SettingsTestConfig {}
 }
 ```
 
+Ejecuta desde la raíz del proyecto:
+
 ```bash
-mvn test -Dtest=JwtConfigTest       # Maven
-./gradlew test --tests JwtConfigTest # Gradle (equivalente)
+./mvnw -q -Dtest=JwtSettingsTest test
 ```
 
-**Resultado esperado:** `BUILD SUCCESS` con el test en verde, confirmando que `ApplicationContextRunner` levantó un contexto real con esas propiedades y `JwtConfig` las enlazó correctamente a un tipo fuertemente tipado, sin ningún `@Value` disperso.
+**Resultado esperado:** pasan tres pruebas: los dos valores se enlazan, el texto no se convierte a `long`, y `59` no cumple `@Min(60)`. En los dos casos inválidos el contexto registra un fallo; el callback puede comprobarlo con `hasFailed()`.
 
-**Fallo deliberado:** cambia `app.jwt.expiracion-segundos=900` por `app.jwt.expiracion-segundos=texto-no-numerico` en el test y ejecuta de nuevo. El `context.getBean(JwtConfig.class)` lanza una excepción real (`context.run(...)` captura el fallo internamente; verifica con `contextRunner.withPropertyValues(...).run(context -> assertThat(context).hasFailed())`) porque Spring no puede convertir ese texto al tipo `long` declarado — diagnostica confirmando que la verificación de tipos ocurre al enlazar la configuración, antes de que ningún código de negocio intente usar ese valor. Revierte el valor antes de continuar.
+**Fallo deliberado y diagnóstico:** quita temporalmente `@Validated` de `JwtSettings` y repite `JwtSettingsTest#vencimientoMenorAlMinimoEsRechazado`. Ese test falla porque `59` ahora se enlaza sin validación. Restaura la anotación.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**Entiende:** `@Min` y `@NotBlank` son restricciones aplicadas por Bean Validation al enlazar. Un tipo incorrecto es un error de conversión; un número debajo de `60` es un error de validación. Son fallos distintos y el test los separa.
 
-1. Agrega un tercer campo al `record` (`boolean modoDebug`) y confirma con el test que también se enlaza correctamente desde `application.yml`.
-2. Usa `@NestedConfigurationProperty` para agrupar un sub-objeto anidado dentro de `JwtConfig` (por ejemplo, una configuración de reintentos) y confirma que también se enlaza correctamente.
-3. Compara escribir el mismo enlace con `@Value("${app.jwt.secreto}")` y `@Value("${app.jwt.expiracion-segundos}")` disueltos en dos clases distintas, y documenta en una frase qué visión centralizada se pierde frente a `JwtConfig`.
-4. Escribe de memoria (sin mirar) un `record` con `@ConfigurationProperties` y dos campos validados, y un test `ApplicationContextRunner` que confirme el enlace correcto.
+**Cierra:** conserva la salida verde y explica cuál error viene de conversión y cuál de validación.
 
-**Pista:** `ApplicationContextRunner` es más rápido que `@SpringBootTest` para probar configuración aislada porque no levanta toda la aplicación, solo el subconjunto de beans que declares con `withUserConfiguration(...)`.
+#### Subtema 4.18 · Inyectar el record en el JwtService · 10 min
 
-#### Paso 6 · Práctica independiente
+**Contexto:** tener un record que nadie usa no centraliza la configuración del sistema. Cambia el constructor del servicio existente para que reciba ese tipo y usa su vencimiento al firmar.
 
-**Completa el código:** rellena el espacio para declarar el prefijo de configuración correcto:
+**Hazlo tú:** en `src/main/java/com/example/demo/JwtService.java`, reemplaza la lectura con `@Value` por esta inyección:
 
 ```java
-@____("app.jwt")
-@Validated
-public record JwtConfig(@NotBlank String secreto, @Min(60) long expiracionSegundos) {}
+private final SecretKey key;
+private final long expirationSeconds;
+
+public JwtService(JwtSettings settings) {
+    this.key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(settings.secretBase64()));
+    this.expirationSeconds = settings.expirationSeconds();
+}
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `record` con `@ConfigurationProperties` y validación, y un test `ApplicationContextRunner` que confirme el enlace correcto de sus valores. Compara después contra el patrón del Paso 4.
+En el método `generar`, cambia el valor fijo `900` por la configuración:
 
-#### Paso 7 · Cierre y evidencia
+```java
+.expiration(Date.from(ahora.plusSeconds(expirationSeconds)))
+```
 
-Ya agrupas configuración relacionada en un tipo fuertemente tipado y validado, confirmando con un test real que los valores de `application.yml` se enlazan correctamente. El siguiente tema confirma qué ocurre cuando un valor obligatorio falta por completo. **Evidencia:** entrega el resultado de `JwtConfigTest` en verde, y el resultado del fallo deliberado mostrando el contexto fallando ante un tipo incompatible. Fuente oficial: [Spring Boot — Type-safe Configuration Properties](https://docs.spring.io/spring-boot/reference/features/external-config.html#features.external-config.typesafe-configuration-properties).
+Actualiza `src/test/java/com/example/demo/JwtServiceTest.java` para probar un vencimiento de 120 segundos:
 
-**Errores comunes:** usar `@Value` disperso en vez de `@ConfigurationProperties` agrupado, perdiendo visión centralizada; olvidar `@EnableConfigurationProperties` o el escaneo de componentes, dejando la clase sin registrar aunque esté bien declarada.
+```java
+var service = new JwtService(new JwtSettings(CLAVE_DE_PRUEBA, 120));
+var claims = service.validar(service.generar("ana-1", "ADMIN"));
+assertEquals(120L, Duration.between(
+    claims.getIssuedAt().toInstant(), claims.getExpiration().toInstant()).getSeconds());
+```
 
-**Cuándo no usarlo:** para un único valor de configuración aislado sin relación con ningún grupo mayor (por ejemplo, un feature flag booleano suelto), un `@Value` simple es más directo que crear un `record` completo solo para ese valor.
+Añade `import java.time.Duration;` y conserva las aserciones existentes de usuario y rol. Después ejecuta los tests relacionados y la suite:
 
-`@ConfigurationProperties` tipado es como organizará su configuración el proyecto integrador de este track (microservicio productivo, Módulo 12), sin strings mágicos dispersos.
+```bash
+./mvnw -q -Dtest=JwtSettingsTest,JwtServiceTest test
+./mvnw -q clean test
+```
+
+**Resultado esperado:** los tests de firma siguen pasando y ahora `JwtService` obtiene tanto la clave como el tiempo de expiración del mismo objeto validado. Para ejecutar la aplicación, exporta una clave Base64 de 32 bytes fuera del repositorio: `export JWT_SECRET_BASE64="$(openssl rand -base64 32)"`.
+
+**Fallo deliberado y diagnóstico:** cambia temporalmente `ahora.plusSeconds(expirationSeconds)` por `ahora.plusSeconds(900)` y ejecuta `./mvnw -q -Dtest=JwtServiceTest test`. La aserción esperaba `120` segundos y recibe `900`: el servicio volvió a ignorar la configuración. Restaura `expirationSeconds` y confirma el test verde.
+
+**Entiende:** el record no guarda secretos ni crea una segunda clave; agrupa el valor que ya llegaba desde el entorno. Los records anidados se enlazan por estructura; `@NestedConfigurationProperty` es una pista para metadatos y no es necesaria para enlazar un objeto anidado en ejecución. Referencias: [Spring Boot — Type-safe Configuration Properties](https://docs.spring.io/spring-boot/reference/features/external-config.html#features.external-config.typesafe-configuration-properties), [API de ConfigurationPropertiesScan](https://docs.spring.io/spring-boot/api/java/org/springframework/boot/context/properties/ConfigurationPropertiesScan.html) y [API de NestedConfigurationProperty](https://docs.spring.io/spring-boot/api/java/org/springframework/boot/context/properties/NestedConfigurationProperty.html).
+
+**Cierra:** deja en verde los tests y señala una clase que ahora recibe `JwtSettings` en vez de leer strings de configuración.
+
+**Práctica independiente:** agrega `@Min(1) int refreshAfterMinutes` al record y `security.jwt.refresh-after-minutes=20` a los archivos principal y de test. Comprueba el valor con `ApplicationContextRunner`; cambia el test a `0`, confirma `hasFailed()` y restaura `20`.
+
+**Proyecto integrador:** aplica este mismo tipo `JwtSettings` al backend de RutaFlow y conserva `JWT_SECRET_BASE64` como fuente externa. No crees otra propiedad para la misma clave ni otro `JwtService`.
+
+---
 
 ### Tema 2: Fallar rápido al arranque
 

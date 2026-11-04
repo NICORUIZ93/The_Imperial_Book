@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 77,
-      "prerequisites": 90,
-      "context": 77,
-      "theoryAnalogy": 77,
-      "guidedDemo": 77,
+      "objective": 76,
+      "prerequisites": 89,
+      "context": 76,
+      "theoryAnalogy": 76,
+      "guidedDemo": 76,
       "codeExplanation": 111,
       "execution": 105,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 77,
-      "independentPractice": 77,
-      "closure": 77,
-      "commonErrors": 77,
-      "resources": 84,
-      "standaloneExample": 74,
-      "learningEvidence": 86,
-      "complete": 73
+      "guidedPractice": 76,
+      "independentPractice": 76,
+      "closure": 76,
+      "commonErrors": 76,
+      "resources": 83,
+      "standaloneExample": 73,
+      "learningEvidence": 85,
+      "complete": 72
     }
   },
   "topics": {
@@ -30577,26 +30577,26 @@
         "module": 5,
         "topic": "Tema 1: @ConfigurationProperties tipado",
         "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "objective": false,
+          "prerequisites": false,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 4,
+          "complete": false
         }
       },
       {

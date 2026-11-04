@@ -1696,7 +1696,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "b3c113c51b76338801c5993b3b1634716b9d43b0a747edc8a294b2774cb6c891",
+    "fingerprint": "454ac18d269cfd6d99013191a62dc166b20741a8c6578783bd6d92caafd82bb0",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10927,9 +10927,9 @@
       {
         "issues": [],
         "module": 5,
-        "tailWords": 173,
+        "tailWords": 0,
         "topic": "Tema 1: @ConfigurationProperties tipado",
-        "words": 1140
+        "words": 1223
       },
       {
         "issues": [],

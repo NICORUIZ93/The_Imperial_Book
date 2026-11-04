@@ -5,7 +5,7 @@
 **Proyecto continuo:** RutaFlow: plataforma de entregas basada en servicios.
 **Prerrequisito de entrada:** Java, HTTP, SQL y pruebas; los módulos iniciales vuelven a presentar cada herramienta..
 **Duración objetivo:** temas de 20–45 minutos; cada tema se divide en 3–6 acciones de 5–15 minutos.
-**Estado estructural:** 33/111 temas migrados; auditoría estructural actualizada el 2026-11-03.
+**Estado estructural:** 34/111 temas migrados; auditoría estructural actualizada el 2026-11-03.
 
 ## Índice de módulos y temas
 
@@ -120,7 +120,10 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
 
 [Abrir lección completa](../web/public/content/spring-boot/modulo-5.md)
 
-- [pendiente de migrar] Tema 1: @ConfigurationProperties tipado
+- [4 pasos] Tema 1: @ConfigurationProperties tipado
+  - ✓ Subtema 4.16 · Agrupar la configuración JWT existente · 10 min
+  - ✓ Subtema 4.17 · Probar enlace y límites con un contexto pequeño · 10 min
+  - ✓ Subtema 4.18 · Inyectar el record en el JwtService · 10 min
 - [pendiente de migrar] Tema 2: Fallar rápido al arranque
 - [pendiente de migrar] Tema 3: Manejo global de excepciones consistente entre entornos
 
@@ -377,7 +380,7 @@ La tabla registra presencia de áreas en el inventario del track, no profundidad
 
 ### Huecos y límites reportados
 
-- El repositorio contiene 111 temas en 26 módulos; 33 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
+- El repositorio contiene 111 temas en 26 módulos; 34 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
 - No hay base para afirmar que el track esté completo: la comparación con la fuente de referencia está pendiente de revisión humana módulo por módulo.
 - Los elementos de la fuente que todavía deben verificarse de forma explícita están enumerados en la tabla anterior; cualquier técnica crítica que no tenga tema propio debe añadirse conservando el currículo base.
 - La ejecución de ejemplos, el comportamiento con brokers/plataformas reales y la calidad pedagógica humana se registran por separado.
