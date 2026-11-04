@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 210,
+      "lines": 226,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 13902,
+      "lines": 13945,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -314,7 +314,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1124,
+      "lines": 1123,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13550,
+      "lines": 13552,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 352,
+      "lines": 355,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -11887,7 +11887,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-2.md",
-      "lines": 925,
+      "lines": 1024,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -11903,7 +11903,7 @@
         "#### Subtema 2.2: Devuelve 200 o 404 seg\u00fan exista la tarea \u00b7 15 min",
         "#### Subtema 2.3: Comprueba las reglas con casos l\u00edmite \u00b7 10 min",
         "### Tema 3: Manejo centralizado de errores con @ControllerAdvice",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+        "#### Subtema 3.1: Da un formato \u00fatil al error de validaci\u00f3n \u00b7 15 min"
       ]
     },
     {

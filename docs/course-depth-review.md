@@ -12,7 +12,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 | angular | 71 | 3 | HTML/CSS/TypeScript explícitos; RxJS y estado con ejemplos completos | Rutas, formularios, datos remotos y cambios sin guardar comprobados con navegador |
 | react | 58 | 46 | JSX y estado antes de efectos; proveedor, dependencias y API visibles | Carga, error, vacío y carrera de respuestas; caché observada, no supuesta |
 | java | 101 | 79 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
-| spring-boot | 111 | 33 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
+| spring-boot | 111 | 34 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
 | android | 58 | 0 | Kotlin antes de Compose; distinguir recomposición, recreación y muerte de proceso | App instalable con permisos, restauración, persistencia y pruebas en dispositivo |
 | ios | 56 | 4 | Swift antes de SwiftUI; explicitar macOS/Xcode y destino | Cancelación, estados de red, persistencia y accesibilidad comprobados en simulador |
 | flutter | 106 | 10 | Dart antes de widgets; ejemplo con main y destino de ejecución | Restauración, red, pruebas de widget, integración y publicación por plataforma |
@@ -1153,7 +1153,7 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | spring-boot / 19 | [Tema 2: Reinicio, JobParameters, retry, skip y listeners](../web/public/content/spring-boot/modulo-19.md) | clase-java-no-visible |
 | spring-boot / 2 | [Tema 1: Por qué DTOs en vez de entidades directamente](../web/public/content/spring-boot/modulo-2.md) | demostracion-no-delimitada |
 | spring-boot / 2 | [Tema 2: Validación con Bean Validation y ResponseEntity](../web/public/content/spring-boot/modulo-2.md) | demostracion-no-delimitada |
-| spring-boot / 2 | [Tema 3: Manejo centralizado de errores con @ControllerAdvice](../web/public/content/spring-boot/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 2 | [Tema 3: Manejo centralizado de errores con @ControllerAdvice](../web/public/content/spring-boot/modulo-2.md) | demostracion-no-delimitada |
 | spring-boot / 2 | [Tema 4: Lombok y MapStruct sin exponer datos internos](../web/public/content/spring-boot/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 2 | [Tema 5: OpenAPI con springdoc: el contrato como prueba](../web/public/content/spring-boot/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 2 | [Tema 6: Paginación HTTP con validación y un límite de recursos explícito](../web/public/content/spring-boot/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |

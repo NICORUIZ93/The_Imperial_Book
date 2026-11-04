@@ -1698,7 +1698,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "24a4a3222639a95bcd71e180874a108240d7a5406d43bab37ae02f8752b2cc21",
+    "fingerprint": "704f81a5b9f129912e344679e3e90dba8627b8fd582c3cd66d83f021c633e8e0",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10655,9 +10655,9 @@
       {
         "issues": [],
         "module": 2,
-        "tailWords": 196,
+        "tailWords": 0,
         "topic": "Tema 3: Manejo centralizado de errores con @ControllerAdvice",
-        "words": 917
+        "words": 1180
       },
       {
         "issues": [],

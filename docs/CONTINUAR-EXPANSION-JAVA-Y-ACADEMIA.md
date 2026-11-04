@@ -89,8 +89,8 @@ reapliques cambios que ya estén publicados.
 
 ## Estado global honesto
 
-En la auditoría actual: **125/1185 temas** cumplen la estructura atómica en los
-14 tracks: Java 101, Spring Boot 21, Node 2 y Flutter 1. La auditoría pedagógica detecta
+En la auditoría actual: **126/1185 temas** cumplen la estructura atómica en los
+14 tracks: Java 101, Spring Boot 22, Node 2 y Flutter 1. La auditoría pedagógica detecta
 **1095/1185 temas practicables** y deuda en 90. La auditoría de sustancia registra
 409 temas con defectos, deuda histórica repartida entre varios tracks. Ninguna de
 estas cifras certifica que un curso esté completo o que todos los ejemplos se
@@ -201,9 +201,25 @@ las peticiones reales dieron `201` (creación), `400` (entrada inválida), `200`
 practicable y ejecutable. Los fallos deliberados y la práctica independiente no
 se ejecutaron.
 
-**Siguiente tema:** Spring Boot M2 T3, “Manejo centralizado de errores con
-`@ControllerAdvice`”. Revisa las excepciones reales del proyecto del módulo,
-define un formato de error útil para quien consume la API y demuestra con
-peticiones cómo se distinguen validación y recurso ausente. Evita prometer que
-una excepción no manejada siempre devuelve `500`: comprueba el caso y el manejo
-predeterminado de Spring Boot 4 antes de afirmarlo.
+Spring Boot M2 T3, “Manejo centralizado de errores con `@ControllerAdvice`”, se
+rehízo en tres subtemas acumulativos: cuerpo `ApiError` con campos para
+validación, excepción `TareaNoEncontradaException` para búsquedas ausentes y
+comparación del contrato con el manejo predeterminado. El proyecto temporal
+Spring Boot 4.1.2/JDK 25 pasó `./mvnw -q test`; una petición inválida devolvió
+`400` con `codigo=VALIDACION` y errores por campo; un ID ausente devolvió `404`
+con `codigo=TAREA_NO_ENCONTRADA`. No se ejecutaron los fallos deliberados ni la
+práctica independiente. Se contrastó el manejo de excepciones y validación con
+la documentación oficial de Spring Framework; el tema evita prometer un estado
+predeterminado fijo para excepciones sin handler.
+
+La auditoría global actual registra **126/1185 temas atómicos**, **1095/1185
+practicables** y 409 temas con defectos de sustancia. `./scripts/validate.sh`
+pasó tras regenerar los reportes de este cambio (23 pruebas, 4 omitidas); no
+confundir esos indicadores con ejecución de todos los ejemplos ni revisión
+humana completa.
+
+**Siguiente tema:** Spring Boot M2 T4, “Lombok y MapStruct sin exponer datos
+internos”. Antes de editar, verifica las versiones y el procesamiento de
+anotaciones para Spring Boot 4/JDK 25 con fuentes primarias, y comprueba que el
+tema use entidades y DTOs del proyecto acumulativo sin elevar las herramientas a
+regla universal de cada equipo.

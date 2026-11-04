@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 89,
-      "prerequisites": 100,
-      "context": 89,
-      "theoryAnalogy": 89,
-      "guidedDemo": 89,
+      "objective": 88,
+      "prerequisites": 99,
+      "context": 88,
+      "theoryAnalogy": 88,
+      "guidedDemo": 88,
       "codeExplanation": 111,
       "execution": 106,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 89,
-      "independentPractice": 89,
-      "closure": 89,
-      "commonErrors": 89,
-      "resources": 96,
-      "standaloneExample": 86,
-      "learningEvidence": 95,
-      "complete": 85
+      "guidedPractice": 88,
+      "independentPractice": 88,
+      "closure": 88,
+      "commonErrors": 88,
+      "resources": 95,
+      "standaloneExample": 85,
+      "learningEvidence": 94,
+      "complete": 84
     }
   },
   "topics": {
@@ -29589,26 +29589,26 @@
         "module": 2,
         "topic": "Tema 3: Manejo centralizado de errores con @ControllerAdvice",
         "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "objective": false,
+          "prerequisites": false,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 4,
+          "complete": false
         }
       },
       {

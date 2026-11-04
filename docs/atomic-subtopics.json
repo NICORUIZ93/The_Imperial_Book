@@ -93,10 +93,10 @@
     },
     "spring-boot": {
       "topics": 111,
-      "completeTopics": 21,
-      "topicsWith3to6Subtopics": 22,
-      "subtopics": 66,
-      "completeSubtopics": 65
+      "completeTopics": 22,
+      "topicsWith3to6Subtopics": 23,
+      "subtopics": 69,
+      "completeSubtopics": 68
     }
   },
   "topics": {
@@ -13056,9 +13056,52 @@
       {
         "module": 2,
         "topic": "### Tema 3: Manejo centralizado de errores con @ControllerAdvice",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "3.1",
+            "title": "#### Subtema 3.1: Da un formato útil al error de validación · 15 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "3.2",
+            "title": "#### Subtema 3.2: Convierte un ID ausente en 404 con el mismo formato · 15 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "3.3",
+            "title": "#### Subtema 3.3: Sigue el error desde la petición hasta la respuesta · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 2,

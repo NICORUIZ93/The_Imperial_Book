@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 214,
+    "topicsWithSignals": 215,
     "newLaboratories": 25
   },
   "priorities": {
@@ -12872,7 +12872,9 @@
       "title": "Tema 3: Manejo centralizado de errores con @ControllerAdvice",
       "file": "web/public/content/spring-boot/modulo-2.md",
       "line": 384,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -12882,7 +12884,7 @@
       "module": 2,
       "title": "Tema 4: Lombok y MapStruct sin exponer datos internos",
       "file": "web/public/content/spring-boot/modulo-2.md",
-      "line": 489,
+      "line": 588,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -12893,7 +12895,7 @@
       "module": 2,
       "title": "Tema 5: OpenAPI con springdoc: el contrato como prueba",
       "file": "web/public/content/spring-boot/modulo-2.md",
-      "line": 672,
+      "line": 771,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -12904,7 +12906,7 @@
       "module": 2,
       "title": "Tema 6: Paginación HTTP con validación y un límite de recursos explícito",
       "file": "web/public/content/spring-boot/modulo-2.md",
-      "line": 858,
+      "line": 957,
       "signals": [],
       "newLaboratory": true,
       "humanPedagogicalReview": "pending",

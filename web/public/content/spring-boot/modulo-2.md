@@ -383,40 +383,68 @@ La validación del DTO protege la frontera de entrada. El código `400` informa 
 
 ### Tema 3: Manejo centralizado de errores con @ControllerAdvice
 
-#### Paso 1 · Objetivo y preparación
+El Tema 2 ya distingue éxito de error, pero la validación y una tarea ausente todavía producen cuerpos distintos. Harás que ambos errores compartan una forma simple y útil para quien llama la API.
 
-Al finalizar podrás centralizar el manejo de excepciones de toda una API en un único lugar, sin repetir try/catch en cada controller.
+**¿Por qué es importante?** Un formato de error constante permite que el cliente muestre una corrección clara sin conocer detalles del servidor.
 
-**Conocimiento previo:** Tema 2 de este módulo.
+**Resultado del tema:** errores de validación responden `400` y tareas inexistentes `404`; ambos devuelven JSON con `codigo`, `mensaje` y `campos`.
 
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** Sin manejo centralizado, cada controller de una API con decenas de endpoints tendría que repetir su propia lógica de traducción de excepciones a respuestas HTTP, arriesgando formatos de error inconsistentes entre distintos endpoints de la misma API.
-
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** `@RestControllerAdvice`, `@ExceptionHandler`, formato de error consistente.
-
-`@RestControllerAdvice` centraliza en una única clase el manejo de excepciones específicas que pueden ocurrir en cualquier controller de la aplicación, mapeando cada tipo de excepción a una respuesta HTTP consistente mediante métodos anotados con `@ExceptionHandler`, en vez de que cada controller individual envuelva su propia lógica en bloques `try`/`catch` repetidos. Este enfoque garantiza que todos los controllers compartan exactamente el mismo formato de respuesta de error, reduciendo la duplicación de lógica de manejo de errores.
-
-**Analogía:** `@ControllerAdvice` es como un departamento central de atención de reclamos que procesa de forma consistente cualquier tipo de problema reportado desde cualquier sucursal de una empresa, en vez de que cada sucursal improvise su propio procedimiento particular.
-
-**Diagrama:**
+**Modelo mental:** la excepción explica qué falló; `@RestControllerAdvice` la traduce a una respuesta HTTP que entiende el cliente.
 
 ```mermaid
-flowchart TD
-  A["TareaController"] -->|lanza excepción| C["GlobalExceptionHandler"]
-  B["EnvioController"] -->|lanza excepción| C
-  C -->|mismo formato| D["ErrorResponse consistente"]
+flowchart LR
+  A["petición"] --> B{"qué falló"}
+  B -->|DTO inválido| C["400 + VALIDACION"]
+  B -->|ID no existe| D["404 + TAREA_NO_ENCONTRADA"]
+  C --> E["mismo formato JSON"]
+  D --> E
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Subtema 3.1: Da un formato útil al error de validación · 15 min
 
-Desde una carpeta vacía (o continuando en `ejemplo-spring-m2`, generado con `mvn` en el Tema 1), crea `src/main/java/com/example/demo/GlobalExceptionHandler.java`:
+**1. Contexto**
+
+La validación del Tema 2 ya devuelve `400`, pero el cliente también debe saber qué campo corregir. Usa mensajes definidos por la API para que no dependan del idioma predeterminado del proveedor de validación.
+
+**2. Hazlo tú**
+
+En `src/main/java/com/example/demo/CrearTareaRequest.java`, escribe mensajes explícitos:
 
 ```java
 package com.example.demo;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+
+public record CrearTareaRequest(
+        @NotBlank(message = "Escribe un título.")
+        String titulo,
+        @Min(value = 1, message = "La prioridad mínima es 1.")
+        int prioridad) {
+}
+```
+
+Crea `src/main/java/com/example/demo/ApiError.java`:
+
+```java
+package com.example.demo;
+
+import java.util.Map;
+
+public record ApiError(
+        String codigo,
+        String mensaje,
+        Map<String, String> campos) {
+}
+```
+
+Crea `src/main/java/com/example/demo/GlobalExceptionHandler.java`:
+
+```java
+package com.example.demo;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -424,67 +452,138 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> manejarValidacion(MethodArgumentNotValidException ex) {
-        return ResponseEntity.badRequest().body(new ErrorResponse(ex.getMessage()));
-    }
+    public ResponseEntity<ApiError> manejarValidacion(
+            MethodArgumentNotValidException ex) {
+        Map<String, String> campos = new LinkedHashMap<>();
+        ex.getBindingResult().getFieldErrors().forEach(error ->
+                campos.putIfAbsent(error.getField(), error.getDefaultMessage()));
 
-    @ExceptionHandler(RecursoNoEncontradoException.class)
-    public ResponseEntity<ErrorResponse> manejarNoEncontrado(RecursoNoEncontradoException ex) {
-        return ResponseEntity.status(404).body(new ErrorResponse(ex.getMessage()));
+        ApiError cuerpo = new ApiError(
+                "VALIDACION",
+                "Revisa los campos indicados.",
+                campos);
+        return ResponseEntity.badRequest().body(cuerpo);
     }
 }
 ```
 
-**Explicación línea por línea:** `@RestControllerAdvice` marca la clase como manejador global aplicado a todos los controllers; cada método `@ExceptionHandler(Tipo.class)` intercepta ese tipo de excepción específico lanzado desde cualquier controller y lo traduce a una respuesta HTTP con un formato (`ErrorResponse`) consistente en toda la API.
-
-Ejecuta las pruebas reales confirmando que ambos tipos de error usan el mismo formato:
+Desde la carpeta del proyecto ejecuta `./mvnw test`, inicia la app con `./mvnw spring-boot:run` y envía:
 
 ```bash
-# ejecuta las pruebas Java con Maven que verifican el formato de error consistente
-cd ejemplo-spring-m2
-./mvnw test
+curl -i -X POST http://localhost:8080/api/tareas   -H 'Content-Type: application/json'   -d '{"titulo":"   ","prioridad":0}'
 ```
 
-**Resultado esperado:** tanto un error de validación (`400`) como un recurso no encontrado (`404`) devuelven un cuerpo JSON con exactamente la misma estructura de `ErrorResponse`, confirmando que el formato de error es consistente en toda la API sin que cada controller lo implemente por separado.
+**Resultado esperado:** recibes `400 Bad Request` y un JSON con `"codigo":"VALIDACION"` y `campos` que identifica `titulo` y `prioridad`. El formato ya es parte del contrato de esta API.
 
-**Fallo deliberado:** elimina `GlobalExceptionHandler` y deja que `RecursoNoEncontradoException` se propague sin manejar. Spring devuelve su página de error genérica por defecto (`500 Internal Server Error` con un cuerpo que no sigue el formato `ErrorResponse` de la API) — diagnostica confirmando que sin un `@ExceptionHandler` explícito para cada excepción de negocio, el cliente recibe una respuesta inconsistente con el resto del contrato de la API.
+**Fallo deliberado:** cambia el texto de `"VALIDACION"` por `"ERROR"` y repite el comando. **Diagnóstico:** el estado seguirá en 400, pero quien consume la API perderá un código estable para distinguir errores; restaura `"VALIDACION"`.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**3. Entiende**
 
-1. Agrega un tercer `@ExceptionHandler` para una excepción de negocio nueva y confirma que reutiliza el mismo `ErrorResponse`.
-2. Elimina temporalmente el handler de `RecursoNoEncontradoException` y documenta la respuesta genérica real que Spring produce en su lugar.
-3. Compara cuántas líneas de código requeriría manejar el mismo error con `try`/`catch` repetido en tres controllers distintos, frente a un único handler centralizado.
-4. Escribe de memoria (sin mirar) una clase `@RestControllerAdvice` con dos `@ExceptionHandler` que devuelvan el mismo formato de error.
+`@RestControllerAdvice` registra manejadores para los controllers y también convierte sus resultados a cuerpo HTTP. `@ExceptionHandler` elige un método según el tipo de excepción. Aquí las reglas detalladas vienen de los errores de campo; el mensaje general es breve.
 
-**Pista:** cada `@ExceptionHandler` maneja un tipo de excepción específico — si una excepción no tiene un handler correspondiente, cae en el comportamiento genérico de Spring, no en un handler por defecto tuyo.
+**4. Cierra**
 
-#### Paso 6 · Práctica independiente
+Guarda la respuesta real y señala qué valor debe corregir la persona. El mismo formato se reutilizará para el error de búsqueda.
 
-**Completa el código:** rellena el espacio para que la clase intercepte excepciones de todos los controllers:
+#### Subtema 3.2: Convierte un ID ausente en 404 con el mismo formato · 15 min
+
+**1. Contexto**
+
+Si `buscar(id)` encuentra nada, el servicio necesita comunicar esa condición al borde HTTP. Una excepción con nombre explica el motivo mejor que un `null`.
+
+**2. Hazlo tú**
+
+Crea `src/main/java/com/example/demo/TareaNoEncontradaException.java`:
 
 ```java
-@____
-public class GlobalExceptionHandler {
-    @ExceptionHandler(RecursoNoEncontradoException.class)
-    public ResponseEntity<ErrorResponse> manejarNoEncontrado(RecursoNoEncontradoException ex) { ... }
+package com.example.demo;
+
+public class TareaNoEncontradaException extends RuntimeException {
+    public TareaNoEncontradaException(Long id) {
+        super("No existe la tarea " + id + ".");
+    }
 }
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `@RestControllerAdvice` con handlers para una excepción de validación y una de recurso no encontrado. Compara después contra el patrón del Paso 4.
+En `src/main/java/com/example/demo/ServicioTareas.java`, cambia `buscar` para que devuelva una tarea o lance la excepción:
 
-#### Paso 7 · Cierre y evidencia
+```java
+public TareaDTO buscar(Long id) {
+    return repository.findById(id)
+            .map(TareaDTO::from)
+            .orElseThrow(() -> new TareaNoEncontradaException(id));
+}
+```
 
-Ya centralizas el manejo de excepciones de toda una API en un único lugar, con un formato de error consistente y sin repetir try/catch en cada controller. Esto cierra el ciclo básico de una API REST con Spring Web; el siguiente módulo persiste datos reales con JPA. **Evidencia:** entrega el resultado con el `ErrorResponse` consistente entre un error `400` y un `404`, y la respuesta genérica real al quitar el handler correspondiente. Fuentes oficiales: [Spring — Exception Handling](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-exceptionhandler.html).
+En `src/main/java/com/example/demo/TareaController.java`, reemplaza el método GET anterior por:
 
-**Errores comunes:** repetir try/catch en cada controller para el mismo tipo de error, en vez de centralizarlo; capturar `Exception` genérico sin distinguir el tipo real, filtrando detalles internos (stack traces) hacia el cliente.
+```java
+@GetMapping("/{id}")
+public ResponseEntity<TareaDTO> buscar(@PathVariable Long id) {
+    return ResponseEntity.ok(servicio.buscar(id));
+}
+```
 
-**Cuándo no usarlo:** para un endpoint verdaderamente único que necesita un manejo de error muy específico y no reutilizable en ningún otro lugar de la API, un `try`/`catch` local puntual puede ser más simple que agregar un handler global de un solo uso.
+En `GlobalExceptionHandler`, importa `java.util.Map` y añade este método:
 
----
+```java
+@ExceptionHandler(TareaNoEncontradaException.class)
+public ResponseEntity<ApiError> manejarTareaAusente(
+        TareaNoEncontradaException ex) {
+    ApiError cuerpo = new ApiError(
+            "TAREA_NO_ENCONTRADA", ex.getMessage(), Map.of());
+    return ResponseEntity.status(404).body(cuerpo);
+}
+```
 
-El manejo centralizado de errores de este tema es el que unifica las respuestas de error del proyecto integrador de este track (microservicio productivo, Módulo 12).
+Ejecuta `./mvnw test` y consulta `curl -i http://localhost:8080/api/tareas/999`.
+
+**Resultado esperado:** recibes `404 Not Found` con `codigo` igual a `TAREA_NO_ENCONTRADA`, un mensaje entendible y `campos` vacío. `400` y `404` ahora comparten los mismos tres nombres de campo JSON.
+
+**Fallo deliberado:** cambia el handler a `ResponseEntity.ok(cuerpo)`. **Diagnóstico:** el texto dice que la tarea no existe mientras HTTP anuncia `200 OK`; restaura `404`.
+
+**3. Entiende**
+
+El servicio lanza una excepción que nombra la situación; el handler la traduce a HTTP. El controller queda corto porque no necesita construir el error a mano. El cuerpo mantiene la misma estructura y el código distingue el motivo.
+
+**4. Cierra**
+
+Compara las respuestas de `POST` inválido y `GET` inexistente. Registra sus códigos HTTP, valores de `codigo` y campos presentes.
+
+#### Subtema 3.3: Sigue el error desde la petición hasta la respuesta · 10 min
+
+**1. Contexto**
+
+Cuando cambia una respuesta de error, comprueba estado y cuerpo: uno puede ser correcto mientras el otro rompe el contrato.
+
+**2. Hazlo tú**
+
+Con el servidor en marcha, ejecuta los siguientes comandos y compara la estructura JSON:
+
+```bash
+curl -i http://localhost:8080/api/tareas/999
+curl -i -X POST http://localhost:8080/api/tareas   -H 'Content-Type: application/json'   -d '{"titulo":"","prioridad":0}'
+```
+
+Después quita temporalmente `@RestControllerAdvice` de `GlobalExceptionHandler`, reinicia y vuelve a pedir el ID inexistente. Restaura la anotación y vuelve a ejecutar `./mvnw test`.
+
+**Resultado esperado:** con el manejador activo, los dos errores incluyen `codigo`, `mensaje` y `campos`. Sin él, el error de validación conserva su estado `400` pero vuelve al formato predeterminado; la excepción de búsqueda ya no produce nuestro `404` estructurado. Observa el código y cuerpo reales del servidor antes de anotarlos.
+
+**Fallo deliberado:** captura `Exception.class` y responde `200` con el mensaje de excepción. **Diagnóstico:** se pierden los estados específicos y se puede filtrar información interna; elimina ese handler general y conserva manejadores por caso que no expongan trazas.
+
+**3. Entiende**
+
+No devuelvas `ex.getStackTrace()` ni mensajes de base de datos a la API. Si el proyecto necesita formato estándar para varias aplicaciones, evalúa RFC 9457 `ProblemDetail`; para este ejercicio, el DTO pequeño deja visibles las piezas del contrato. **Límite:** este manejador sirve para errores previstos; no conviertas fallos inesperados del programa en errores `400`.
+
+**4. Cierra**
+
+**Práctica independiente:** agrega un error `TAREA_DUPLICADA` y define su estado y mensaje sin cambiar el formato. Prueba una petición y registra evidencia del estado y del cuerpo.
+
+**Transferencia al proyecto integrador:** aplica el mismo esquema a errores previstos del servicio de envíos; documenta los códigos estables y deja detalles internos en los logs del servidor, no en la respuesta pública.
+
+**Fuentes primarias:** [Spring MVC: manejadores de excepción](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-exceptionhandler.html), [Spring MVC: validación de argumentos](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-validation.html), [RFC 9457: Problem Details](https://www.rfc-editor.org/rfc/rfc9457).
+
 
 ### Tema 4: Lombok y MapStruct sin exponer datos internos
 
