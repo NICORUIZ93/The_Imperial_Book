@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 226,
+      "lines": 236,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 13945,
+      "lines": 13988,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -314,7 +314,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1123,
+      "lines": 1122,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13552,
+      "lines": 13554,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 355,
+      "lines": 358,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -11887,7 +11887,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-2.md",
-      "lines": 1024,
+      "lines": 1076,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

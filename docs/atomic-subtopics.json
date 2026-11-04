@@ -93,10 +93,10 @@
     },
     "spring-boot": {
       "topics": 111,
-      "completeTopics": 22,
-      "topicsWith3to6Subtopics": 23,
-      "subtopics": 69,
-      "completeSubtopics": 68
+      "completeTopics": 23,
+      "topicsWith3to6Subtopics": 24,
+      "subtopics": 72,
+      "completeSubtopics": 71
     }
   },
   "topics": {
@@ -13106,9 +13106,52 @@
       {
         "module": 2,
         "topic": "### Tema 4: Lombok y MapStruct sin exponer datos internos",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "4.1",
+            "title": "#### Subtema 4.1: Genera getters durante la compilación · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "4.2",
+            "title": "#### Subtema 4.2: Genera el mapeo con MapStruct · 15 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "4.3",
+            "title": "#### Subtema 4.3: Haz que cada campo interno nuevo exija una decisión · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 2,

@@ -587,186 +587,238 @@ No devuelvas `ex.getStackTrace()` ni mensajes de base de datos a la API. Si el p
 
 ### Tema 4: Lombok y MapStruct sin exponer datos internos
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás reducir código repetitivo con Lombok, generar el mapeo entre modelo y DTO con MapStruct en tiempo de compilación, y hacer que el compilador falle si un campo del DTO queda sin mapear. Prerrequisito: Tema 1 de este módulo (DTOs).
+Ya tienes una entidad, un DTO y una API. En este tema reducirás los métodos repetidos y harás el mapeo con código Java que se genera al compilar.
 
-#### Paso 2 · Contexto y caso real
-El backend de entregas tenía clases de 200 líneas de getters y setters, y mapeos manuales donde un campo nuevo se olvidaba con frecuencia. Además, un `toString()` generado imprimía el costo interno en los logs. Lombok y MapStruct son estándar de facto en proyectos Spring empresariales: un caso real que encontrarás en casi cualquier código existente.
+**¿Por qué es importante?** Menos código repetido ayuda a ver la regla importante: qué datos salen de la aplicación. El DTO sigue siendo el contrato público.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-**Lombok** es un procesador de anotaciones: `@Getter`, `@Setter`, `@Builder` o `@ToString` generan código en el bytecode al compilar. **MapStruct** genera la implementación de una interfaz `@Mapper` con código Java normal (sin reflexión); `componentModel = "spring"` la registra como bean y `unmappedTargetPolicy = ERROR` convierte un campo sin mapear en error de compilación. Como ambos son procesadores de anotaciones, Lombok debe correr primero: de eso se encarga `lombok-mapstruct-binding`.
-
-**Analogía:** Lombok es el molde que fabrica las piezas repetidas; MapStruct es la plantilla de traspaso que dice qué dato del formulario interno va en qué casilla del formulario público.
-
-**Diagrama:**
+**Modelo mental:** Lombok genera métodos de una clase; MapStruct genera una clase mapper a partir de una interfaz.
 
 ```mermaid
 flowchart LR
-    E[Envio con Lombok] --> M[EnvioMapper generado]
-    M --> D[EnvioRespuesta pública]
-    E -. costoInterno .-x D
+  A["Entidad Tarea"] --> B["MapStruct genera mapper"]
+  B --> C["DTO público"]
+  A -. "campo interno" .-> D["queda fuera del DTO"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+#### Subtema 4.1: Genera getters durante la compilación · 10 min
 
-```bash
-mkdir lombok-mapstruct && cd lombok-mapstruct
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web,lombok -d javaVersion=25 -o app.zip
-unzip -q app.zip
-```
+**1. Contexto**
 
-Crea `pom.xml (agrega estos fragmentos)`:
+`Tarea` repite getters escritos a mano. Lombok puede generarlos al compilar; con JDK 23 o posterior hay que registrar el procesador en Maven de forma explícita.
+
+**2. Hazlo tú**
+
+En `pom.xml`, añade la versión a `<properties>`:
 
 ```xml
-<!-- 1) Dentro de <dependencies>: -->
-<dependency>
-  <groupId>org.mapstruct</groupId>
-  <artifactId>mapstruct</artifactId>
-  <version>1.6.3</version>
-</dependency>
+<lombok.version>1.18.48</lombok.version>
+```
 
-<!-- 2) En maven-compiler-plugin, dentro de <annotationProcessorPaths>,
-     junto al path de lombok que ya generó Spring Initializr: -->
+Dentro de `<dependencies>` añade:
+
+```xml
+<dependency>
+    <groupId>org.projectlombok</groupId>
+    <artifactId>lombok</artifactId>
+    <version>${lombok.version}</version>
+    <scope>provided</scope>
+</dependency>
+```
+
+Dentro de `<build><plugins>` añade la configuración al plugin Maven Compiler. Si ya existe ese plugin, agrega solo `<configuration>`:
+
+```xml
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-compiler-plugin</artifactId>
+    <configuration>
+        <annotationProcessorPaths>
+            <path>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+            </path>
+        </annotationProcessorPaths>
+    </configuration>
+</plugin>
+```
+
+En `src/main/java/com/example/demo/Tarea.java` importa `lombok.Getter`, pon `@Getter` sobre la clase y borra solo los cuatro métodos `get...`. Conserva los campos, `@Entity` y los constructores.
+
+$ ./mvnw clean test
+
+**Resultado esperado:** termina en `BUILD SUCCESS`. El servicio y JPA todavía pueden llamar a `getId()`, `getTitulo()` y los demás métodos: Lombok los genera al compilar.
+
+**Fallo deliberado:** quita el path del procesador y ejecuta `./mvnw clean test`. **Diagnóstico:** el compilador no encuentra los getters; en JDK 23+ una dependencia por sí sola no registra automáticamente el procesador. Restáuralo.
+
+**3. Entiende**
+
+`@Getter` crea getters para los campos de la clase. `provided` deja Lombok disponible para compilar sin incluirlo como dependencia de ejecución de la aplicación. No uses `@Data` o `@ToString` a ciegas en entidades: pueden generar setters amplios o imprimir campos internos en logs.
+
+**4. Cierra**
+
+Confirma que desaparecieron los getters escritos a mano y que `clean test` pasa. Más adelante compararás un DTO manual con el mapper generado.
+
+#### Subtema 4.2: Genera el mapeo con MapStruct · 15 min
+
+**1. Contexto**
+
+`TareaDTO.from` copia cada campo con código manual. MapStruct genera esa implementación durante la compilación y Spring puede inyectarla como un bean.
+
+**2. Hazlo tú**
+
+En `pom.xml`, añade esta propiedad:
+
+```xml
+<mapstruct.version>1.6.3</mapstruct.version>
+```
+
+Dentro de `<dependencies>` añade:
+
+```xml
+<dependency>
+    <groupId>org.mapstruct</groupId>
+    <artifactId>mapstruct</artifactId>
+    <version>${mapstruct.version}</version>
+</dependency>
+```
+
+Conserva el procesador Lombok del subtema anterior y agrega estos dos paths al mismo `<annotationProcessorPaths>`:
+
+```xml
 <path>
-  <groupId>org.mapstruct</groupId>
-  <artifactId>mapstruct-processor</artifactId>
-  <version>1.6.3</version>
+    <groupId>org.projectlombok</groupId>
+    <artifactId>lombok-mapstruct-binding</artifactId>
+    <version>0.2.0</version>
 </path>
 <path>
-  <groupId>org.projectlombok</groupId>
-  <artifactId>lombok-mapstruct-binding</artifactId>
-  <version>0.2.0</version>
+    <groupId>org.mapstruct</groupId>
+    <artifactId>mapstruct-processor</artifactId>
+    <version>${mapstruct.version}</version>
 </path>
 ```
 
-Crea `src/main/java/com/example/demo/Envio.java`:
+Reemplaza `src/main/java/com/example/demo/TareaDTO.java` por:
 
 ```java
 package com.example.demo;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-
-import java.math.BigDecimal;
-
-// Modelo interno. Lombok genera getters, setters, constructores y builder al compilar.
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-@ToString(exclude = "costoInterno")       // no imprimir datos sensibles en logs
-public class Envio {
-    private Long id;
-    private String guia;
-    private String ciudadDestino;
-    private int kilos;
-    private BigDecimal costoInterno;      // dato interno: NO debe salir en la API
+public record TareaDTO(Long id, String titulo, int prioridad) {
 }
 ```
 
-Crea `src/main/java/com/example/demo/EnvioRespuesta.java`:
+Crea `src/main/java/com/example/demo/TareaMapper.java`:
 
 ```java
 package com.example.demo;
 
-// DTO público: lo que ve el cliente de la API
-public record EnvioRespuesta(String guia, String destino, int kilos) {}
-```
-
-Crea `src/main/java/com/example/demo/EnvioMapper.java`:
-
-```java
-package com.example.demo;
-
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
-// MapStruct genera la implementación al compilar: código Java normal, sin reflexión
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
-public interface EnvioMapper {
-    @Mapping(source = "ciudadDestino", target = "destino")
-    EnvioRespuesta aRespuesta(Envio envio);
+@Mapper(
+        componentModel = "spring",
+        unmappedTargetPolicy = ReportingPolicy.ERROR)
+public interface TareaMapper {
+    @BeanMapping(ignoreUnmappedSourceProperties = "ubicacionInterna")
+    @Mapping(target = "id", source = "id")
+    @Mapping(target = "titulo", source = "titulo")
+    @Mapping(target = "prioridad", source = "prioridad")
+    TareaDTO toDto(Tarea tarea);
 }
 ```
 
-Crea `src/test/java/com/example/demo/EnvioMapperTest.java`:
+Reemplaza `ServicioTareas.java` por esta versión que recibe el mapper por constructor:
 
 ```java
 package com.example.demo;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
+@Service
+public class ServicioTareas {
+    private final TareaRepository repository;
+    private final TareaMapper mapper;
 
-import static org.assertj.core.api.Assertions.assertThat;
+    public ServicioTareas(TareaRepository repository, TareaMapper mapper) {
+        this.repository = repository;
+        this.mapper = mapper;
+    }
 
-@SpringBootTest
-class EnvioMapperTest {
+    public TareaDTO crear(CrearTareaRequest request) {
+        Tarea tarea = new Tarea(
+                request.titulo(), request.prioridad(), "BODEGA-A");
+        return mapper.toDto(repository.save(tarea));
+    }
 
-    @Autowired
-    EnvioMapper mapper;
-
-    @Test
-    void mapeaCamposPublicosYNoExponeElCostoInterno() {
-        Envio envio = Envio.builder()
-                .id(7L).guia("BO-004512").ciudadDestino("Bogotá").kilos(3)
-                .costoInterno(new BigDecimal("4100.50"))
-                .build();
-
-        EnvioRespuesta respuesta = mapper.aRespuesta(envio);
-
-        assertThat(respuesta).isEqualTo(new EnvioRespuesta("BO-004512", "Bogotá", 3));
-        assertThat(envio.toString()).doesNotContain("4100.50");
-        System.out.println("Respuesta: " + respuesta);
-        System.out.println("Log seguro: " + envio);
+    public TareaDTO buscar(Long id) {
+        return repository.findById(id)
+                .map(mapper::toDto)
+                .orElseThrow(() -> new TareaNoEncontradaException(id));
     }
 }
 ```
 
-**Ejecuta el ejemplo:**
+Ejecuta `./mvnw clean test`, inicia la aplicación y crea una tarea con el `curl` del Tema 1.
 
-```bash
-./mvnw test
+**Resultado esperado:** la app inicia y responde `201` con `id`, `titulo` y `prioridad`, sin `ubicacionInterna`. Maven genera `target/generated-sources/annotations/com/example/demo/TareaMapperImpl.java`; abre el archivo y observa las llamadas a getters y el `new TareaDTO(...)`. No escribiste esa clase a mano.
+
+**Fallo deliberado:** cambia `target` del mapeo de `titulo` a `nombre` y compila. **Diagnóstico:** no existe una propiedad `nombre` en `TareaDTO`; MapStruct falla al compilar. Restaura `titulo`.
+
+**3. Entiende**
+
+`componentModel = "spring"` registra el mapper para inyección por constructor. Las tres anotaciones `@Mapping` traducen nombres del modelo al DTO; el código generado es Java ordinario, no una conversión por reflexión en cada llamada.
+
+**4. Cierra**
+
+Abre la clase generada y encuentra dónde se copian los tres campos. Comprueba que la entidad aún tiene el dato interno y el DTO no.
+
+#### Subtema 4.3: Haz que cada campo interno nuevo exija una decisión · 10 min
+
+**1. Contexto**
+
+El mapper omite `ubicacionInterna` de forma intencional. Configura una regla para que un campo nuevo de la entidad no pase inadvertido en la revisión.
+
+**2. Hazlo tú**
+
+En `TareaMapper.java`, amplía `@Mapper` y declara que un campo de origen sin decisión debe detener la compilación:
+
+Reemplaza en `TareaMapper.java` la anotación `@Mapper` por esta versión; conserva debajo el método `toDto` y su `@BeanMapping`:
+
+```java
+@Mapper(
+        componentModel = "spring",
+        unmappedTargetPolicy = ReportingPolicy.ERROR,
+        unmappedSourcePolicy = ReportingPolicy.ERROR)
 ```
 
-**Resultado esperado:**
+Ejecuta `./mvnw clean test`; después añade temporalmente `private String notaInterna;` a `Tarea` y ejecuta el mismo comando.
 
-```text
-Respuesta: EnvioRespuesta[guia=BO-004512, destino=Bogotá, kilos=3]
-Log seguro: Envio(id=7, guia=BO-004512, ciudadDestino=Bogotá, kilos=3)
-...
-[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
-[INFO] BUILD SUCCESS
+**Resultado esperado:** sin el campo nuevo, la compilación pasa. Con `notaInterna`, MapStruct falla indicando que una propiedad de origen no está mapeada. No se filtró en el JSON; el build te obliga a decidir qué hacer con el campo.
+
+**Fallo deliberado:** silencia el diagnóstico con `unmappedSourcePolicy = ReportingPolicy.IGNORE`. **Diagnóstico:** el build vuelve a pasar aunque nadie revisó el dato nuevo. Restaura `ERROR` y decide de forma explícita si el campo se mapea o se omite con `ignoreUnmappedSourceProperties`.
+
+**3. Entiende**
+
+`unmappedTargetPolicy = ERROR` detiene el build si el DTO tiene una propiedad sin origen. `unmappedSourcePolicy = ERROR` hace lo mismo con una propiedad de entidad no contemplada. El mapper documenta una decisión técnica, pero no reemplaza la revisión del DTO como contrato público.
+
+**4. Cierra**
+
+**Práctica independiente:** agrega `private String notaInterna;` de forma permanente a `Tarea.java` y reemplaza la anotación en `TareaMapper.java` por:
+
+```java
+@BeanMapping(ignoreUnmappedSourceProperties = {
+        "ubicacionInterna", "notaInterna"})
 ```
 
-Las líneas de Maven se resumen: también verás el log de arranque de Spring y la prueba `DemoApplicationTests` que genera Initializr. `costoInterno` no aparece ni en la respuesta ni en el log. Las versiones de MapStruct y del binding son las vigentes al escribir este tema; consulta la documentación si hay una más nueva.
+Después ejecuta `./mvnw clean test` y el `curl` del Tema 1; comprueba que el JSON sigue sin incluir esos campos.
 
-**Fallo deliberado:** Borra la línea `@Mapping(source = "ciudadDestino", target = "destino")`. La compilación falla con `Unmapped target property: "destino".` porque el DTO tiene un campo que MapStruct no sabe llenar. Con la política por defecto (WARN) solo verías una advertencia y la API devolvería `destino: null` en producción.
+**Límite:** Lombok y MapStruct son opcionales. Para una clase pequeña, getters escritos a mano y un método `from` suelen ser más fáciles de leer; adopta procesadores si el equipo puede configurar y revisar el código generado.
 
-#### Paso 5 · Práctica guiada
-Agrega al DTO el campo `estado` y al modelo `estadoActual`, y mapéalos. **Pista:** agrega el campo a ambos lados, ejecuta `./mvnw test` para ver el error de campo sin mapear y luego agrega el `@Mapping` correspondiente.
+**Transferencia al proyecto integrador:** conserva el DTO como lista explícita de datos públicos. Antes de añadir un campo de respuesta, identifica el consumidor y actualiza la prueba de contrato.
 
-#### Paso 6 · Práctica independiente
-Abre `target/generated-sources/annotations/.../EnvioMapperImpl.java` y explica el código que generó MapStruct. Luego investiga por qué `@Data` en entidades JPA con relaciones bidireccionales puede causar `StackOverflowError` en `toString` y `hashCode`.
-
-#### Paso 7 · Cierre y evidencia
-Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque son herramientas presentes en la mayoría del código Spring que vas a mantener, y usarlas mal expone datos o produce errores difíciles de rastrear.
-**Fuente oficial:** [MapStruct Reference Guide](https://mapstruct.org/documentation/stable/reference/html/), [Project Lombok: features](https://projectlombok.org/features/).
-**Conceptos clave:** procesador de anotaciones, Lombok, `@Builder`, `@ToString(exclude)`, MapStruct, `@Mapper`, `unmappedTargetPolicy`, `lombok-mapstruct-binding`.
-**Cuándo no usarlo:** no uses `@Data` en entidades JPA (genera `equals`/`hashCode` sobre todos los campos). Para DTOs simples, un `record` de Java ya no necesita Lombok.
-
-**Transferencia al proyecto integrador «Backend profesional de entregas»:** mapea las entidades de entregas a DTOs con MapStruct y política de error, y excluye de `toString` los datos personales.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** usar `@Data` en una entidad JPA en vez de `@Getter`/`@Setter` explícitos (genera `equals`/`hashCode` sobre todos los campos, incluidas relaciones, y puede producir `StackOverflowError`), y dejar la política de MapStruct en `WARN` en vez de `unmappedTargetPolicy = ERROR`, de modo que un campo nuevo del DTO queda sin mapear y llega como `null` a producción sin que la compilación avise.
+**Fuentes primarias:** [Lombok: configuración Maven](https://projectlombok.org/setup/maven), [MapStruct 1.6.3: guía de referencia](https://mapstruct.org/documentation/stable/reference/pdf/mapstruct-reference-guide.pdf), [MapStruct: preguntas sobre Lombok](https://mapstruct.org/faq/).
 
 ### Tema 5: OpenAPI con springdoc: el contrato como prueba
 

@@ -212,14 +212,24 @@ práctica independiente. Se contrastó el manejo de excepciones y validación co
 la documentación oficial de Spring Framework; el tema evita prometer un estado
 predeterminado fijo para excepciones sin handler.
 
-La auditoría global actual registra **126/1185 temas atómicos**, **1095/1185
-practicables** y 409 temas con defectos de sustancia. `./scripts/validate.sh`
-pasó tras regenerar los reportes de este cambio (23 pruebas, 4 omitidas); no
-confundir esos indicadores con ejecución de todos los ejemplos ni revisión
-humana completa.
+Spring Boot M2 T4, “Lombok y MapStruct sin exponer datos internos”, ahora usa el
+proyecto acumulativo: getters Lombok sobre la entidad, mapper Spring generado,
+DTO de salida y diagnóstico estricto de campos internos no considerados. Las
+versiones se contrastaron con las fuentes primarias: Lombok 1.18.48,
+MapStruct 1.6.3 estable y `lombok-mapstruct-binding` 0.2.0. En el proyecto
+temporal Spring Boot 4.1.2/JDK 25, `./mvnw clean test` pasó y el `POST` real
+devolvió `201` sin los campos internos. Al añadir `notaInterna`, MapStruct detuvo
+la compilación con `Unmapped source property`; al declararlo ignorado de forma
+explícita, las pruebas pasaron de nuevo. No se ejecutó el fallo deliberado de
+renombrar el destino del mapper.
 
-**Siguiente tema:** Spring Boot M2 T4, “Lombok y MapStruct sin exponer datos
-internos”. Antes de editar, verifica las versiones y el procesamiento de
-anotaciones para Spring Boot 4/JDK 25 con fuentes primarias, y comprueba que el
-tema use entidades y DTOs del proyecto acumulativo sin elevar las herramientas a
-regla universal de cada equipo.
+La auditoría global actual registra **127/1185 temas atómicos**, **1095/1185
+practicables** y 409 temas con defectos de sustancia. `./scripts/validate.sh`
+pasó tras los Temas 1–4 (23 pruebas, 4 omitidas); no confundir esos indicadores
+con ejecución de todos los ejemplos ni revisión humana completa.
+
+**Siguiente tema:** Spring Boot M2 T5, “OpenAPI con springdoc: el contrato como
+prueba”. Revísalo con el proyecto acumulativo (sin recrear otra API), verifica
+compatibilidad de springdoc con Spring Boot 4 en documentación primaria, y
+comprueba que el contrato describa los estados y el formato de errores que ya
+implementan los temas anteriores.

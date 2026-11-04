@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 215,
+    "topicsWithSignals": 216,
     "newLaboratories": 25
   },
   "priorities": {
@@ -12885,7 +12885,9 @@
       "title": "Tema 4: Lombok y MapStruct sin exponer datos internos",
       "file": "web/public/content/spring-boot/modulo-2.md",
       "line": 588,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -12895,7 +12897,7 @@
       "module": 2,
       "title": "Tema 5: OpenAPI con springdoc: el contrato como prueba",
       "file": "web/public/content/spring-boot/modulo-2.md",
-      "line": 771,
+      "line": 823,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -12906,7 +12908,7 @@
       "module": 2,
       "title": "Tema 6: Paginación HTTP con validación y un límite de recursos explícito",
       "file": "web/public/content/spring-boot/modulo-2.md",
-      "line": 957,
+      "line": 1009,
       "signals": [],
       "newLaboratory": true,
       "humanPedagogicalReview": "pending",

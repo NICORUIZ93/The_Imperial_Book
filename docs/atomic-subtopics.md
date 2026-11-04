@@ -2,7 +2,7 @@
 
 > Auditoría estructural. Un encabezado o criterio detectado no demuestra que el ejemplo se haya ejecutado ni que la explicación sea pedagógicamente suficiente.
 
-Temas conformes a cuatro pasos: **126/1185**. Tracks inventariados: **14**.
+Temas conformes a cuatro pasos: **127/1185**. Tracks inventariados: **14**.
 
 | Track | Temas conformes | Temas inventariados | Subtemas detectados | Subtemas con estructura completa |
 |---|---:|---:|---:|---:|
@@ -19,7 +19,7 @@ Temas conformes a cuatro pasos: **126/1185**. Tracks inventariados: **14**.
 | node | 2 | 83 | 6 | 6 |
 | react | 0 | 58 | 0 | 0 |
 | rutaflow | 0 | 29 | 0 | 0 |
-| spring-boot | 22 | 111 | 69 | 68 |
+| spring-boot | 23 | 111 | 72 | 71 |
 
 ## Temas pendientes
 
@@ -1072,7 +1072,6 @@ Temas conformes a cuatro pasos: **126/1185**. Tracks inventariados: **14**.
 - M19 ### Tema 1: Job, Step, Tasklet y chunk processing: tiene 0 subtemas
 - M19 ### Tema 2: Reinicio, JobParameters, retry, skip y listeners: tiene 0 subtemas
 - M2 ### Tema 1: Por qué DTOs en vez de entidades directamente: 1.3: faltan action
-- M2 ### Tema 4: Lombok y MapStruct sin exponer datos internos: tiene 0 subtemas
 - M2 ### Tema 5: OpenAPI con springdoc: el contrato como prueba: tiene 0 subtemas
 - M2 ### Tema 6: Paginación HTTP con validación y un límite de recursos explícito: tiene 0 subtemas
 - M20 ### Tema 1: Scheduling y tareas periódicas: tiene 0 subtemas
