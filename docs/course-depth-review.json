@@ -13537,7 +13537,7 @@
       "file": "web/public/content/spring-boot/modulo-8.md",
       "line": 1027,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -13548,7 +13548,7 @@
       "module": 8,
       "title": "Tema 9: RabbitMQ con Spring AMQP: routing, ack y prefetch",
       "file": "web/public/content/spring-boot/modulo-8.md",
-      "line": 1089,
+      "line": 1156,
       "signals": [
         "clase-java-no-visible"
       ],

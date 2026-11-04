@@ -759,7 +759,7 @@ retención; RabbitMQ sobre consumers y confirms; Spring AMQP sobre ack y publish
 confirms; Spring Cloud Stream sobre binder y test binder.
 
 La validación de repo pasó con 23 pruebas de script (4 omitidas). La última
-auditoría registra 140/1185 temas atómicos, 1087/1185 practicables, 1035/1185
+auditoría registra 140/1185 temas atómicos, 1086/1185 practicables, 1034/1185
 completos en metodología de siete pasos y 409 con señales automatizadas de
 defecto de sustancia. La auditoría estructural detecta contenido en 236 temas;
 ninguna de estas cifras certifica la calidad pedagógica o comprensión humana.
@@ -798,7 +798,24 @@ contra broker real; el test driver no acredita red, ACL, tópicos ni restauraci�
 de estado real. La suite muestra una advertencia JVM de acceso nativo de
 RocksDB, sin fallos de test.
 
-**Siguiente tema:** Spring Boot M8 T8, “Avro y Schema Registry para contratos de
-eventos”. Revisa si hay un laboratorio real y versiones compatibles; distingue
-compatibilidad del esquema de compatibilidad del payload y prueba productor y
-consumidor con esquemas concretos.
+Spring Boot M8 T8, “Avro y Schema Registry para contratos de eventos”, se
+implementó en `examples/spring-avro-rutaflow/`. Incluye schemas Avro v1/v2 y uno
+incompatible, pruebas de lectura writer/reader, serde Confluent con
+`MockSchemaRegistry`, un overlay local Registry 7.9.0 compatible con el Kafka
+3.9.1 del compose vecino y comandos REST para comprobar política BACKWARD por
+subject. La lección separa mock, API real y broker real; no presenta el test
+serde como lectura de tópico Kafka.
+
+`./mvnw -q clean test` pasó con **3 pruebas, 0 fallos, 0 errores, 0 omitidas**.
+En copias temporales, quitar el default de zonaEntrega produjo `AvroTypeException`
+por campo requerido ausente; usar scopes `mock://` distintos produjo `Subject
+Not Found` (40401). Docker no está instalado, por lo que no se inició Registry
+real ni se validaron sus respuestas REST en este equipo. Fuentes oficiales
+consultadas: Avro 1.12, Schema Registry API/evolución/serde y matriz Confluent
+7.9 con Kafka 3.9. La suite muestra avisos de SLF4J sin provider y uso de Unsafe
+por la dependencia Guava, sin fallos.
+
+**Siguiente tema:** Spring Boot M8 T9, “RabbitMQ con Spring AMQP: routing, ack y
+prefetch”. Inspecciona contra los laboratorios reales de RabbitMQ, publishers
+confirms, acknowledgements, requeue y DLQ; corrige cualquier ejemplo que dependa
+de Testcontainers o APIs que no estén en el módulo.

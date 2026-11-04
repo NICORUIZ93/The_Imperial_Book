@@ -9,15 +9,15 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | Criterio | Cubierto | Pendiente |
 |---|---:|---:|
 | Explicación | 1185 | 0 |
-| Código | 1145 | 40 |
+| Código | 1144 | 41 |
 | Ruta | 1185 | 0 |
-| Ejecución | 1121 | 64 |
+| Ejecución | 1120 | 65 |
 | Resultado | 1183 | 2 |
 | Modificación | 1129 | 56 |
 | Conexión con un proyecto | 1106 | 79 |
 | Modelo mental | 1185 | 0 |
 | Límites | 1130 | 55 |
-| **Perfil de criterios detectado** | **1087** | **98** |
+| **Perfil de criterios detectado** | **1086** | **99** |
 
 ## Prioridad por track
 
@@ -36,7 +36,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | node | 83 | 0 | 0 | 0 | 0 | 1 | 2 | 1 |
 | react | 58 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | rutaflow | 29 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| spring-boot | 111 | 1 | 0 | 6 | 0 | 8 | 16 | 13 |
+| spring-boot | 111 | 2 | 0 | 7 | 0 | 8 | 16 | 13 |
 
 ## Pendientes por tema
 
@@ -138,6 +138,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 - [spring-boot · módulo 7](../web/public/content/spring-boot/modulo-7.md) · Tema 3: Liveness y readiness sin reinicios en cadena: conexión con un proyecto, límites.
 - [spring-boot · módulo 8](../web/public/content/spring-boot/modulo-8.md) · Tema 6: Spring Cloud Stream y binders de Kafka/RabbitMQ: límites.
 - [spring-boot · módulo 8](../web/public/content/spring-boot/modulo-8.md) · Tema 7: Kafka Streams con Spring para transformar eventos: código, ejecución, límites.
+- [spring-boot · módulo 8](../web/public/content/spring-boot/modulo-8.md) · Tema 8: Avro y Schema Registry para contratos de eventos: código, ejecución.
 
 ## Regla de cierre
 

@@ -94,9 +94,9 @@
     "spring-boot": {
       "topics": 111,
       "completeTopics": 36,
-      "topicsWith3to6Subtopics": 47,
-      "subtopics": 146,
-      "completeSubtopics": 116
+      "topicsWith3to6Subtopics": 48,
+      "subtopics": 150,
+      "completeSubtopics": 117
     }
   },
   "topics": {
@@ -15009,8 +15009,65 @@
       {
         "module": 8,
         "topic": "### Tema 8: Avro y Schema Registry para contratos de eventos",
-        "subtopicCount": 0,
-        "subtopics": [],
+        "subtopicCount": 4,
+        "subtopics": [
+          {
+            "id": "8.1",
+            "title": "#### Subtema 8.1 · Definir el evento en un archivo Avro · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "8.2",
+            "title": "#### Subtema 8.2 · Añadir un campo compatible con registros anteriores · 15 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "8.3",
+            "title": "#### Subtema 8.3 · Serializar usando un Registry de prueba en memoria · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "8.4",
+            "title": "#### Subtema 8.4 · Registrar versiones y consultar compatibilidad real · 15 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
         "complete": false
       },
       {

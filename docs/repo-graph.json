@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 805,
+      "lines": 822,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 15047,
+      "lines": 15104,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -677,7 +677,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 145,
+      "lines": 146,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 432,
+      "lines": 436,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -5516,6 +5516,50 @@
     {
       "path": "examples/spring-kafka-rutaflow/src/test/resources/application-test.yml",
       "lines": 7,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-kafka-streams-rutaflow/README.md",
+      "lines": 50,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Laboratorio Kafka Streams de RutaFlow",
+        "## Comprobar la topolog\u00eda sin broker",
+        "## Conectar a Kafka local"
+      ]
+    },
+    {
+      "path": "examples/spring-kafka-streams-rutaflow/src/main/java/academia/rutaflow/streams/KafkaStreamsRutaflowApplication.java",
+      "lines": 12,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-kafka-streams-rutaflow/src/main/java/academia/rutaflow/streams/PedidosTopology.java",
+      "lines": 45,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-kafka-streams-rutaflow/src/main/resources/application.yml",
+      "lines": 11,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-kafka-streams-rutaflow/src/test/java/academia/rutaflow/streams/PedidosTopologyTest.java",
+      "lines": 66,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -12139,7 +12183,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-8.md",
-      "lines": 1178,
+      "lines": 1245,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

@@ -223,16 +223,16 @@
     "spring-boot": {
       "topics": 111,
       "explanation": 111,
-      "code": 110,
-      "visual": 61,
+      "code": 109,
+      "visual": 60,
       "filePath": 111,
-      "runCommand": 105,
+      "runCommand": 104,
       "expectedResult": 111,
       "practice": 103,
       "project": 95,
       "modelMental": 111,
       "limitsDecision": 98,
-      "practicable": 87,
+      "practicable": 86,
       "genericScaffold": 0,
       "repeatedDemo": 0
     }
@@ -26230,10 +26230,10 @@
         "topic": "Tema 8: Avro y Schema Registry para contratos de eventos",
         "criteria": {
           "explanation": true,
-          "code": true,
-          "visual": true,
+          "code": false,
+          "visual": false,
           "filePath": true,
-          "runCommand": true,
+          "runCommand": false,
           "expectedResult": true,
           "practice": true,
           "project": true,
@@ -26241,8 +26241,8 @@
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 16,
-          "practicable": true,
+          "rubricScore": 10,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }

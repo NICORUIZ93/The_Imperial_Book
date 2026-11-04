@@ -98,15 +98,15 @@
     },
     "spring-boot": {
       "topics": 111,
-      "code": 110,
+      "code": 109,
       "commentedCode": 57,
-      "mermaid": 47,
+      "mermaid": 46,
       "archifyVisual": 3,
       "asciiVisual": 10,
       "misleadingDiagramLabel": 0,
       "filePath": 111,
       "runCommand": 111,
-      "officialSource": 93
+      "officialSource": 92
     },
     "kotlin-multiplatform": {
       "topics": 56,
@@ -2897,8 +2897,8 @@
       "track": "spring-boot",
       "module": 8,
       "topic": "Tema 8: Avro y Schema Registry para contratos de eventos",
-      "missingCode": false,
-      "missingComments": true
+      "missingCode": true,
+      "missingComments": false
     },
     {
       "track": "spring-boot",

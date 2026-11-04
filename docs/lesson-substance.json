@@ -1694,7 +1694,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "0549a3ecf52182603d580aa11a17d41f57052c49d81320cf453d5475013b615f",
+    "fingerprint": "ee129b9ce42521d21c0fc8ca0a111dba5dd7583b5baa7eda55eabdd909cddfe2",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -11037,9 +11037,9 @@
       {
         "issues": [],
         "module": 8,
-        "tailWords": 173,
+        "tailWords": 0,
         "topic": "Tema 8: Avro y Schema Registry para contratos de eventos",
-        "words": 609
+        "words": 954
       },
       {
         "issues": [],

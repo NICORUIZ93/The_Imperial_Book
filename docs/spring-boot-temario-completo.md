@@ -205,6 +205,10 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - pendiente Subtema 7.3 · Probar la topología sin confundirla con el clúster · 10 min
   - pendiente Subtema 7.4 · Configurar Spring y el application.id · 15 min
 - [pendiente de migrar] Tema 8: Avro y Schema Registry para contratos de eventos
+  - pendiente Subtema 8.1 · Definir el evento en un archivo Avro · 10 min
+  - pendiente Subtema 8.2 · Añadir un campo compatible con registros anteriores · 15 min
+  - pendiente Subtema 8.3 · Serializar usando un Registry de prueba en memoria · 10 min
+  - ✓ Subtema 8.4 · Registrar versiones y consultar compatibilidad real · 15 min
 - [pendiente de migrar] Tema 9: RabbitMQ con Spring AMQP: routing, ack y prefetch
 
 ### Módulo 9: Programación reactiva con WebFlux

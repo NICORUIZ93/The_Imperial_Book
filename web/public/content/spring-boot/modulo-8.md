@@ -1026,65 +1026,132 @@ Enumera los tópicos visibles y explica por qué una aplicación aislada necesit
 
 ### Tema 8: Avro y Schema Registry para contratos de eventos
 
-#### Paso 1 · Objetivo y preparación
+**Duración estimada:** 50 min.
+**Resultado:** lees datos Avro con un esquema escritor y otro lector, pruebas una evolución y compruebas compatibilidad en Schema Registry.
+**¿Por qué es importante?** Un cambio de campos puede romper consumidores que siguen leyendo eventos creados con una versión anterior.
+**Laboratorio:** examples/spring-avro-rutaflow/. Para Registry real se requiere Docker.
 
-Al finalizar registrarás un esquema Avro, serializarás un evento y evaluarás si una modificación es compatible con consumidores anteriores. **Prerrequisitos:** JSON, tópicos Kafka y serialización. Usa el Schema Registry disponible en el entorno de desarrollo y no publiques esquemas reales con datos personales.
+#### Subtema 8.1 · Definir el evento en un archivo Avro · 10 min
 
-#### Paso 2 · Contexto y caso real
+**1. Contexto**
 
-Un productor añade `zonaEntrega` al evento de pedido; un consumidor viejo sigue desplegado durante horas. Sin una regla de compatibilidad, el productor puede enviar mensajes que rompan el lector en producción.
+Avro describe el nombre del record y sus campos en un esquema. Los bytes Avro no incluyen nombres de campos: para leerlos se necesita el esquema que los escribió.
 
-#### Paso 3 · Teoría y analogía
+**2. Hazlo tú**
 
-Avro describe campos y tipos en un esquema; Schema Registry asigna una versión y comprueba reglas de evolución configuradas. El serializador guarda una referencia para que el lector obtenga el esquema escritor y lo reconcilie con su esquema lector. Un campo nuevo suele necesitar ser opcional con valor predeterminado para ser compatible hacia atrás. Es como cambiar un formulario compartido: agregar una casilla opcional con valor conocido no obliga a los lectores anteriores a responderla.
+Abre src/main/avro/PedidoDespachado-v1.avsc:
 
-#### Paso 4 · Demostración guiada
+    {
+      "type": "record",
+      "name": "PedidoDespachado",
+      "namespace": "academia.eventos",
+      "fields": [
+        {"name": "pedidoId", "type": "string"},
+        {"name": "estado", "type": "string"}
+      ]
+    }
 
-Crea `src/main/avro/PedidoDespachado.avsc`:
+Ejecuta la prueba que escribe con v1 y lee con v2:
 
-```json
-{
-  "type": "record", "name": "PedidoDespachado", "namespace": "academia.eventos",
-  "fields": [
-    {"name": "pedidoId", "type": "string"},
-    {"name": "estado", "type": "string"},
+    cd examples/spring-avro-rutaflow
+    ./mvnw -Dtest=PedidoSchemaEvolutionTest#lectorV2RellenaElCampoAusenteConSuDefault test
+
+**Resultado esperado.** Se conservan pedidoId y estado; el campo nuevo se completa con null según el esquema lector.
+
+**Fallo deliberado.** Cambia en una copia el nombre del record o namespace solo en el esquema lector. **Observa:** Avro no puede reconciliar los records y la prueba de lectura falla.
+
+**3. Entiende**
+
+El esquema no es un comentario al lado del JSON: determina cómo interpretar el dato binario y resolver campos del escritor frente al lector.
+
+**4. Cierra**
+
+Identifica el namespace, nombre y campos del evento v1.
+
+#### Subtema 8.2 · Añadir un campo compatible con registros anteriores · 15 min
+
+**1. Contexto**
+
+Al desplegar productores por etapas, algunos eventos antiguos no contienen los campos nuevos. Un default del lector permite completar un campo ausente durante la resolución.
+
+**2. Hazlo tú**
+
+Compara src/main/avro/PedidoDespachado-v1.avsc con v2:
+
     {"name": "zonaEntrega", "type": ["null", "string"], "default": null}
-  ]
-}
-```
 
-Configura serializers/deserializers Avro y URL del registry en el perfil de desarrollo. Publica un evento v1, registra v2 con el campo opcional, y consulta la compatibilidad antes de publicar. Ejemplo independiente desde cero: crea un proyecto Spring con dependencia Avro/Registry, agrega el esquema y `src/test/java/academia/pedidos/PedidoSchemaTest.java`. Ejecuta:
+Ejecuta la prueba:
 
-```bash
-mkdir -p ejemplo-avro
-./mvnw test -Dtest=PedidoSchemaTest
-```
+    ./mvnw -Dtest=PedidoSchemaEvolutionTest#lectorV2RellenaElCampoAusenteConSuDefault test
 
-**Resultado esperado:** el lector v2 puede leer un registro v1 y obtiene `zonaEntrega=null`; una regla incompatible se rechaza al registrar.
+Luego ejecuta el caso que muestra qué pasa cuando el lector exige el campo sin default:
 
-```mermaid
-flowchart LR
-  P[Producer con schema v1] --> K[Kafka: evento]
-  K --> C[Consumer con reader v2]
-  C --> R[Registry entrega writer schema]
-  R --> M[zonaEntrega = null]
-```
+    ./mvnw -Dtest=PedidoSchemaEvolutionTest#lectorNoPuedeExigirUnCampoQueNoExisteEnElRegistroAntiguo test
 
-#### Paso 5 · Práctica guiada
+**Resultado esperado.** v2 lee el registro escrito por v1 y usa zonaEntrega=null. El esquema incompatible produce AvroTypeException en lectura.
 
-**Fallo deliberado:** agrega `zonaEntrega` como string requerido sin default. **Pista:** los registros existentes no contienen ese campo y el lector nuevo no sabe qué valor dar. Cambia el esquema a unión nullable con default, vuelve a probar y guarda la respuesta de compatibilidad del Registry.
+**Fallo deliberado.** En una copia quita default y deja zonaEntrega como string requerido. La primera prueba deja de poder leer el registro viejo. Restaura v2 nullable con default null.
 
-#### Paso 6 · Práctica independiente
+**3. Entiende**
 
-Simula despliegue gradual: productor viejo/consumidor nuevo y productor nuevo/consumidor viejo. Anota compatibilidad backward, forward y full según cuál lado debe leer datos del otro. Prueba quitar un campo opcional y renombrar uno; usa alias solo si el formato y la política de tu registry lo soportan. Versiona `.avsc` junto al código y no edites mensajes históricos.
+Avro usa el default del esquema lector cuando el escritor no tenía ese campo. La unión debe poner null primero si null es el valor por defecto. El default ayuda a leer; no hace que el campo desaparezca de registros escritos con v2.
 
-#### Paso 7 · Cierre y evidencia
+**4. Cierra**
 
-Entrega esquemas v1/v2, respuesta de compatibilidad y test leyendo datos viejos con el consumidor nuevo. **Proyecto integrador RutaFlow:** versiona los eventos de pedido y acuerda una regla de compatibilidad con los equipos consumidores. Errores comunes: pensar que JSON más una clase Java equivale a validación de esquema en el broker, añadir campos requeridos sin default y cambiar el schema subject por accidente. Siguiente paso: integrar el contrato al CI. Fuentes oficiales: [Spring Cloud Stream Schema Registry](https://docs.spring.io/spring-cloud-stream/reference/schema-registry/spring-cloud-stream-schema-registry.html), [Confluent: evolución de esquemas](https://docs.confluent.io/platform/current/schema-registry/fundamentals/schema-evolution.html) y [Avro](https://avro.apache.org/docs/).
+Explica qué esquema escribió el dato, cuál lo leyó y de dónde salió null.
 
-**¿Por qué es importante?** Un evento puede seguir almacenado mucho después de que su productor original cambie de versión.
-**Evidencia de aprendizaje:** demuestra lectura cruzada de dos versiones y rechazo de un cambio incompatible.
-**Cuándo no usarlo:** un formato auto-descriptivo simple puede bastar en un prototipo local sin consumidores independientes; no omitas contrato en eventos duraderos.
+#### Subtema 8.3 · Serializar usando un Registry de prueba en memoria · 10 min
+
+**1. Contexto**
+
+El serializer de Confluent registra o recupera el esquema y escribe un identificador junto al payload Avro. El deserializer usa ese identificador para encontrar el esquema escritor. El test de este laboratorio usa un Registry simulado en memoria.
+
+**2. Hazlo tú**
+
+Abre src/test/java/academia/rutaflow/avro/SchemaRegistrySerdeTest.java. Localiza schema.registry.url con mock://, KafkaAvroSerializer y KafkaAvroDeserializer. Ejecuta:
+
+    ./mvnw -Dtest=SchemaRegistrySerdeTest test
+
+**Resultado esperado.** El serializer y deserializer recuperan pedidoId y estado, y el payload usa el encabezado de wire format de Confluent.
+
+**Fallo deliberado.** En una copia usa URLs mock distintas para serializer y deserializer. **Observa:** el deserializer no encuentra el esquema registrado y falla. Restaura el mismo scope.
+
+**3. Entiende**
+
+El mock prueba la biblioteca de serde y el encuadre del payload, pero no prueba HTTP, almacenamiento en _schemas ni compatibilidad configurada en un Schema Registry desplegado.
+
+**4. Cierra**
+
+Nombra qué identificador incluye el wire format y qué servicio resuelve ese ID al leer.
+
+#### Subtema 8.4 · Registrar versiones y consultar compatibilidad real · 15 min
+
+**1. Contexto**
+
+Schema Registry guarda versiones por subject y aplica el nivel de compatibilidad configurado para ese subject o el valor global. Un test con MockSchemaRegistry no prueba esas políticas del servidor.
+
+**2. Hazlo tú**
+
+Desde examples/spring-avro-rutaflow sigue README.md para iniciar el overlay de Schema Registry local y preparar los archivos JSON para la API. Configura el subject pedidos-value como BACKWARD, registra v1, consulta v2 con el endpoint de compatibilidad, regístralo y consulta el esquema incompatible. No publiques la variante incompatible.
+
+    docker compose -f ../spring-kafka-rutaflow/compose.yaml -f compose.registry.yaml up -d
+    curl http://localhost:18081/config
+
+**Resultado esperado.** v2 con zonaEntrega nullable/default se informa compatible; el campo string requerido sin default se informa incompatible. El README separa la verificación REST del test de serde mock.
+
+**Fallo deliberado.** Envía el payload v2 como esquema v1 o consulta otro subject. **Diagnóstico:** compatibilidad se evalúa por subject y contra la versión configurada; verifica pedidos-value y el cuerpo enviado.
+
+**3. Entiende**
+
+La respuesta de compatibilidad no certifica que todos los consumidores tengan código correcto. También prueba lectura cruzada con datos viejos y valida la integración de los serializadores con el Registry real.
+
+**4. Cierra**
+
+Entrega las versiones v1/v2, respuesta de compatibilidad y el resultado local de lectura Avro.
+
+**Fuentes oficiales:** [especificación Avro 1.12: defaults y resolución lector/escritor](https://avro.apache.org/docs/1.12.0/specification/), [API de Schema Registry](https://docs.confluent.io/platform/current/schema-registry/develop/api.html), [evolución y compatibilidad](https://docs.confluent.io/platform/current/schema-registry/fundamentals/schema-evolution.html), [Avro SerDe de Confluent](https://docs.confluent.io/platform/current/schema-registry/fundamentals/serdes-develop/serdes-avro.html) y [compatibilidad Kafka/Confluent 7.9](https://docs.confluent.io/platform/7.9/installation/versions-interoperability.html).
+
+**Transferencia al proyecto integrador:** versiona el .avsc con el código, acuerda subject y compatibilidad con los consumidores, ejecuta lectura cruzada y registra la respuesta de Registry antes de desplegar un productor nuevo.
 
 ### Tema 9: RabbitMQ con Spring AMQP: routing, ack y prefetch
 
