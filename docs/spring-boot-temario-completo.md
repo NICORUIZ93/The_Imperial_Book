@@ -125,6 +125,9 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 4.17 · Probar enlace y límites con un contexto pequeño · 10 min
   - ✓ Subtema 4.18 · Inyectar el record en el JwtService · 10 min
 - [pendiente de migrar] Tema 2: Fallar rápido al arranque
+  - ✓ Subtema 4.19 · Probar el valor obligatorio ausente · 10 min
+  - ✓ Subtema 4.20 · Rechazar también un secreto vacío · 10 min
+  - pendiente Subtema 4.21 · Quitar la validación y observar el riesgo · 10 min
 - [pendiente de migrar] Tema 3: Manejo global de excepciones consistente entre entornos
 
 ### Módulo 6: Testing en Spring Boot

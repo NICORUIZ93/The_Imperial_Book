@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 76,
-      "prerequisites": 89,
-      "context": 76,
-      "theoryAnalogy": 76,
-      "guidedDemo": 76,
+      "objective": 75,
+      "prerequisites": 88,
+      "context": 75,
+      "theoryAnalogy": 75,
+      "guidedDemo": 75,
       "codeExplanation": 111,
       "execution": 105,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 76,
-      "independentPractice": 76,
-      "closure": 76,
-      "commonErrors": 76,
-      "resources": 83,
-      "standaloneExample": 73,
-      "learningEvidence": 85,
-      "complete": 72
+      "guidedPractice": 75,
+      "independentPractice": 75,
+      "closure": 75,
+      "commonErrors": 75,
+      "resources": 82,
+      "standaloneExample": 72,
+      "learningEvidence": 84,
+      "complete": 71
     }
   },
   "topics": {
@@ -30603,26 +30603,26 @@
         "module": 5,
         "topic": "Tema 2: Fallar rápido al arranque",
         "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "objective": false,
+          "prerequisites": false,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 4,
+          "complete": false
         }
       },
       {

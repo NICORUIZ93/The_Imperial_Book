@@ -94,9 +94,9 @@
     "spring-boot": {
       "topics": 111,
       "completeTopics": 34,
-      "topicsWith3to6Subtopics": 35,
-      "subtopics": 105,
-      "completeSubtopics": 104
+      "topicsWith3to6Subtopics": 36,
+      "subtopics": 108,
+      "completeSubtopics": 106
     }
   },
   "topics": {
@@ -14189,8 +14189,51 @@
       {
         "module": 5,
         "topic": "### Tema 2: Fallar rápido al arranque",
-        "subtopicCount": 0,
-        "subtopics": [],
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "4.19",
+            "title": "#### Subtema 4.19 · Probar el valor obligatorio ausente · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "4.20",
+            "title": "#### Subtema 4.20 · Rechazar también un secreto vacío · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "4.21",
+            "title": "#### Subtema 4.21 · Quitar la validación y observar el riesgo · 10 min",
+            "criteria": {
+              "context": true,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": false
+          }
+        ],
         "complete": false
       },
       {

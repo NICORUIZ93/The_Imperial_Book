@@ -434,7 +434,8 @@ y la prueba de `59` segundos detectó que el contexto arrancaba cuando debía
 fallar; restaurada la anotación, vuelve a pasar. También se fijó el vencimiento
 del servicio en `900` en vez de leer el tipo: `JwtServiceTest` falló al comparar
 los `120` segundos esperados con `900`; restaurada la configuración, la suite
-completa pasó. El test también exigió actualizar
+completa pasó. La propiedad de producción usa `${JWT_SECRET_BASE64:}` para que
+una variable ausente llegue vacía a `@NotBlank`. El test también exigió actualizar
 `src/test/resources/application.properties`: este archivo reemplaza el principal
 y debe incluir el nuevo vencimiento. Auditorías: **138/1185 temas atómicos**:
 Java 101, Spring Boot 34, Node 2 y Flutter 1; **1093/1185 practicables**, 409
@@ -442,8 +443,27 @@ con señales de defecto de sustancia. `./scripts/validate.sh` pasó con 23 prueb
 y 4 omitidas; índices, informes y grafo están regenerados. Estas métricas son
 estructurales, no certificación ni revisión humana.
 
-**Siguiente tema:** Spring Boot M5 T2, “Fallar rápido al arranque”. Reutiliza
-`JwtSettings` y los mismos archivos de propiedades; prueba una propiedad
-obligatoria ausente y un valor inválido con `ApplicationContextRunner`, y
-describe el mensaje y la causa que realmente produce Spring Boot antes de
-reescribir el tema.
+Spring Boot M5 T2, “Fallar rápido al arranque”, se rehízo en tres subtemas sobre
+`JwtSettings` existente: propiedad ausente, secreto vacío y prueba de la
+validación quitando `@Validated`. `ApplicationContextRunner` verificó
+`BindValidationException` como causa raíz para valor ausente y vacío; el campo
+`long` con texto y el límite `59` también se rechazan. Se corrigió
+`application.properties` de producción a `${JWT_SECRET_BASE64:}`: cuando falta
+la variable, el placeholder vacío deja que `@NotBlank` detenga el arranque con
+el nombre de propiedad. Se ejecutó `env -u JWT_SECRET_BASE64 ./mvnw -q
+spring-boot:run`; el proceso acabó antes de atender HTTP y el log señaló
+`secretBase64` como vacío. Sin el sufijo `:`, el proceso llegaba al decoder de
+JJWT y fallaba como Base64 inválido, un diagnóstico menos claro.
+
+La suite acumulada Boot 4.1.2/JDK 25 pasó con **34 pruebas**, sin fallos ni
+omisiones. Se quitó `@Validated`; los casos de secreto ausente y vencimiento
+menor al mínimo fallaron al encontrar un contexto que arrancaba. Restaurada la
+anotación, la suite volvió a pasar. Auditorías: **138/1185 temas atómicos**:
+Java 101, Spring Boot 34, Node 2 y Flutter 1; **1093/1185 practicables**, 409
+con señales de defecto de sustancia. Falta correr `./scripts/validate.sh` y
+regenerar el grafo después de esta sección.
+
+**Siguiente tema:** Spring Boot M5 T3, “Manejo global de excepciones consistente
+entre entornos”. Revisa los DTO y el formato `application/problem+json`, ejecuta
+una excepción de negocio y una validación HTTP real, y alinea sus paquetes y
+pruebas con `com.example.demo` y los starters Spring Boot 4 del proyecto.

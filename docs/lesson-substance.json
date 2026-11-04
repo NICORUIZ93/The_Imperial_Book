@@ -1696,7 +1696,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "454ac18d269cfd6d99013191a62dc166b20741a8c6578783bd6d92caafd82bb0",
+    "fingerprint": "37ad7f0852b21c6b1aff38e0dea01fc5ee8152e9fa2da6d2201b2cd82f1ee336",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10929,14 +10929,14 @@
         "module": 5,
         "tailWords": 0,
         "topic": "Tema 1: @ConfigurationProperties tipado",
-        "words": 1223
+        "words": 1250
       },
       {
         "issues": [],
         "module": 5,
-        "tailWords": 216,
+        "tailWords": 0,
         "topic": "Tema 2: Fallar rápido al arranque",
-        "words": 1048
+        "words": 852
       },
       {
         "issues": [],

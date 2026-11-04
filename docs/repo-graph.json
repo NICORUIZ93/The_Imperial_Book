@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 450,
+      "lines": 470,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 14461,
+      "lines": 14504,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13576,
+      "lines": 13578,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 391,
+      "lines": 394,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -12076,7 +12076,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-5.md",
-      "lines": 505,
+      "lines": 508,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12088,11 +12088,11 @@
         "#### Subtema 4.17 \u00b7 Probar enlace y l\u00edmites con un contexto peque\u00f1o \u00b7 10 min",
         "#### Subtema 4.18 \u00b7 Inyectar el record en el JwtService \u00b7 10 min",
         "### Tema 2: Fallar r\u00e1pido al arranque",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda con analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva"
+        "#### Subtema 4.19 \u00b7 Probar el valor obligatorio ausente \u00b7 10 min",
+        "#### Subtema 4.20 \u00b7 Rechazar tambi\u00e9n un secreto vac\u00edo \u00b7 10 min",
+        "#### Subtema 4.21 \u00b7 Quitar la validaci\u00f3n y observar el riesgo \u00b7 10 min",
+        "### Tema 3: Manejo global de excepciones consistente entre entornos",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {

@@ -19,7 +19,7 @@ Temas conformes a cuatro pasos: **138/1185**. Tracks inventariados: **14**.
 | node | 2 | 83 | 6 | 6 |
 | react | 0 | 58 | 0 | 0 |
 | rutaflow | 0 | 29 | 0 | 0 |
-| spring-boot | 34 | 111 | 105 | 104 |
+| spring-boot | 34 | 111 | 108 | 106 |
 
 ## Temas pendientes
 
@@ -1091,7 +1091,7 @@ Temas conformes a cuatro pasos: **138/1185**. Tracks inventariados: **14**.
 - M24 ### Tema 2: data fetchers, relaciones y problema N+1: tiene 0 subtemas
 - M24 ### Tema 3: mutations y subscriptions: tiene 0 subtemas
 - M24 ### Tema 4: pruebas GraphQL con GraphQlTester: tiene 0 subtemas
-- M5 ### Tema 2: Fallar rápido al arranque: tiene 0 subtemas
+- M5 ### Tema 2: Fallar rápido al arranque: 4.21: faltan action
 - M5 ### Tema 3: Manejo global de excepciones consistente entre entornos: tiene 0 subtemas
 - M6 ### Tema 1: Slices de testing — @WebMvcTest: tiene 0 subtemas
 - M6 ### Tema 2: @DataJpaTest con Testcontainers: tiene 0 subtemas

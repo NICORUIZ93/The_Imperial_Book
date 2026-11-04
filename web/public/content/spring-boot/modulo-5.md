@@ -53,11 +53,11 @@ public class DemoApplication { /* conserva aquí el main existente */ }
 En `src/main/resources/application.properties`, deja la clave fuera del código y agrégale un vencimiento:
 
 ```properties
-security.jwt.secret-base64=${JWT_SECRET_BASE64}
+security.jwt.secret-base64=${JWT_SECRET_BASE64:}
 security.jwt.expiration-seconds=900
 ```
 
-Actualiza también `src/test/resources/application.properties`: conserva la clave Base64 de prueba del Módulo 4 y añade `security.jwt.expiration-seconds=900`. Ese archivo de test sustituye el del entorno principal durante las pruebas; si falta la propiedad, `@Min(60)` hace fallar los contextos que construyen `JwtService`.
+El `:` deja el valor vacío si falta la variable; `@NotBlank` lo rechaza con un error de configuración legible, sin poner un secreto falso como valor por defecto. Actualiza también `src/test/resources/application.properties`: conserva la clave Base64 de prueba del Módulo 4 y añade `security.jwt.expiration-seconds=900`. Ese archivo de test sustituye el del entorno principal durante las pruebas; si falta la propiedad, `@Min(60)` hace fallar los contextos que construyen `JwtService`.
 
 El nombre Java `secretBase64` corresponde a la propiedad `secret-base64`; ambas están bajo `security.jwt`.
 
@@ -192,119 +192,122 @@ Añade `import java.time.Duration;` y conserva las aserciones existentes de usua
 
 ### Tema 2: Fallar rápido al arranque
 
-#### Paso 1 · Objetivo y preparación
+**Meta:** provocar y leer el fallo del contexto cuando falta el secreto JWT, y distinguirlo de un arranque correcto con una clave de prueba.
 
-Al finalizar podrás confirmar, con un test real, que la aplicación se niega a arrancar cuando falta un valor de configuración obligatorio, en vez de arrancar con un valor inválido que fallaría más tarde.
+**¿Por qué es importante?** Si una app acepta una clave ausente o vacía, la falla puede aparecer después, al emitir o validar el primer token. Es más fácil corregirlo al arrancar, cuando Spring todavía puede señalar la propiedad.
 
-**Conocimiento previo:** Tema 1 de este módulo (`@ConfigurationProperties`).
-
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** Si `app.jwt.secreto` falta y la aplicación arranca de todas formas, el problema se manifestará mucho más tarde —posiblemente ya en producción bajo tráfico real— cuando algún código intente usar ese valor `null`, en un momento y contexto completamente distinto de donde realmente se originó el problema.
-
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** validación temprana, evitar fallas silenciosas tardías en producción.
-
-Con `@Validated` aplicado a una clase de `@ConfigurationProperties`, si falta un valor marcado `@NotBlank` o `@Min`, la aplicación NO arranca en absoluto: falla inmediatamente durante el arranque con un mensaje claro señalando exactamente qué valor falta o es inválido. Este principio de "fallar rápido" (fail-fast) prioriza detectar el problema en el momento más temprano y controlado posible (el arranque, típicamente supervisado activamente durante un despliegue) en vez de dejar que se manifieste de forma impredecible durante la operación normal.
-
-**Analogía:** fallar rápido al arranque es como que un avión rechace despegar si detecta en la revisión previa en tierra que le falta un componente esencial, en vez de descubrir esa falta a mitad de vuelo, un momento considerablemente más peligroso para resolverlo.
-
-**Diagrama:**
-
-```
-┌── sin @Validated ──────────────────────────────────────┐
-│  falta app.jwt.secreto → app arranca "bien" →               │
-│  falla más tarde en producción (NullPointerException)       │
-└──────────────────────────────────────────────────┘
-┌── con @Validated ──────────────────────────────────────┐
-│  falta app.jwt.secreto → app NO arranca →                    │
-│  error claro inmediato, en el momento del despliegue        │
-└──────────────────────────────────────────────────┘
+```mermaid
+flowchart LR
+  A["JWT_SECRET_BASE64 ausente"] --> B["application.properties: valor vacío"]
+  B --> C["@NotBlank valida JwtSettings"]
+  C --> D["BindValidationException: contexto no inicia"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Subtema 4.19 · Probar el valor obligatorio ausente · 10 min
 
-Reutiliza `academia-spring` (o créalo desde una carpeta vacía con `mkdir -p academia-spring` si es tu primera vez) y crea `src/test/java/com/academia/config/FalloArranqueTest.java`, confirmando con `ApplicationContextRunner` que la ausencia del valor obligatorio impide el arranque:
+**Contexto:** el subtema M5 T1 ya creó `JwtSettingsTest` con `ApplicationContextRunner` y `@EnableConfigurationProperties`. Reutiliza esa configuración de test y su clase `JwtSettings`; no crees `JwtConfig` ni un segundo prefijo.
 
-```bash
-mkdir -p academia-spring/src/test/java/com/academia/config
-cd academia-spring
-```
+**Hazlo tú:** en `src/test/java/com/example/demo/JwtSettingsTest.java`, agrega:
 
 ```java
-// src/test/java/com/academia/config/FalloArranqueTest.java
-package com.academia.config;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.context.properties.bind.validation.BindValidationException;
-import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-class FalloArranqueTest {
-
-    private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-        .withUserConfiguration(ConfigActivador.class);
-
-    @Test
-    void sinElValorObligatorioElContextoNoArranca() {
-        contextRunner
-            .withPropertyValues("app.jwt.expiracion-segundos=900") // falta app.jwt.secreto a propósito
-            .run(context -> {
-                assertThat(context).hasFailed();
-                assertThat(context.getStartupFailure())
-                    .hasRootCauseInstanceOf(BindValidationException.class);
-            });
-    }
-
-    @Test
-    void conTodosLosValoresObligatoriosElContextoArrancaCorrectamente() {
-        contextRunner
-            .withPropertyValues("app.jwt.secreto=clave-real", "app.jwt.expiracion-segundos=900")
-            .run(context -> assertThat(context).hasNotFailed());
-    }
+@Test
+void missingSecretHasValidationFailureAtStartup() {
+    runner.withPropertyValues("security.jwt.expiration-seconds=900")
+        .run(context -> {
+            assertThat(context).hasFailed();
+            assertThat(context.getStartupFailure())
+                .hasRootCauseInstanceOf(BindValidationException.class);
+        });
 }
 ```
 
-```bash
-mvn test -Dtest=FalloArranqueTest   # Maven
-./gradlew test --tests FalloArranqueTest # Gradle (equivalente)
-```
-
-**Resultado esperado:** ambos tests pasan: sin `app.jwt.secreto`, el contexto falla al arrancar con una causa raíz `BindValidationException` (la excepción real que Spring lanza cuando `@Validated` rechaza un valor); con todos los valores obligatorios presentes, el contexto arranca sin fallos — la diferencia medida directamente sobre el resultado real del arranque, no sobre una suposición.
-
-**Fallo deliberado:** quita temporalmente `@Validated` de `JwtConfig` (dejando solo `@ConfigurationProperties`) y ejecuta de nuevo `sinElValorObligatorioElContextoNoArranca`. El test FALLA porque ahora `assertThat(context).hasFailed()` es falso: el contexto arranca "exitosamente" con `secreto = null`, exactamente el escenario peligroso que este Tema previene — diagnostica confirmando que `@Validated` es la línea específica de código responsable de convertir un valor faltante en un fallo de arranque inmediato, en vez de un `null` silencioso que fallaría más tarde en un lugar distinto. Revierte `@Validated` antes de continuar.
-
-#### Paso 5 · Práctica guiada — repetición progresiva
-
-1. Agrega un tercer test que confirme que un valor de `expiracion-segundos` menor a `60` (violando `@Min(60)`) también hace fallar el arranque, con el mismo tipo de causa raíz.
-2. Lee el mensaje completo de `context.getStartupFailure().getMessage()` en un test y confirma que menciona explícitamente el nombre de la propiedad problemática.
-3. Agrega una segunda clase `@ConfigurationProperties` con su propia validación, y confirma que un valor inválido en CUALQUIERA de las dos hace fallar el arranque completo del contexto, no solo el de la clase afectada.
-4. Escribe de memoria (sin mirar) un test `ApplicationContextRunner` que confirme `hasFailed()` con una causa raíz `BindValidationException` ante un valor de configuración faltante. Compara después contra el patrón del Paso 4.
-
-**Pista:** `context.getStartupFailure()` devuelve la excepción completa con toda la cadena de causas; `hasRootCauseInstanceOf(...)` navega hasta la causa más profunda, que es normalmente la más específica y útil para diagnosticar.
-
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio para confirmar que el contexto falló al arrancar:
+Añade el import:
 
 ```java
-contextRunner.withPropertyValues("app.jwt.expiracion-segundos=900")
-    .run(context -> assertThat(context).____());
+import org.springframework.boot.context.properties.bind.validation.BindValidationException;
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, dos tests `ApplicationContextRunner`: uno que confirme el fallo de arranque ante un valor faltante, y otro que confirme el arranque exitoso con todos los valores presentes. Compara después contra el patrón del Paso 4.
+La propiedad del vencimiento está presente; el secreto falta a propósito. Ejecuta el test:
 
-#### Paso 7 · Cierre y evidencia
+```bash
+./mvnw -q -Dtest=JwtSettingsTest#missingSecretHasValidationFailureAtStartup test
+```
 
-Ya confirmas con un test real que un valor de configuración obligatorio faltante impide el arranque completo de la aplicación, en vez de dejarla arrancar con un valor inválido. El siguiente tema aborda cómo comunicar de forma consistente los errores que sí ocurren durante la operación normal, ya con la aplicación arrancada. **Evidencia:** entrega el resultado de ambos tests de `FalloArranqueTest` en verde, y el resultado del fallo deliberado mostrando el arranque "exitoso" indebido al quitar `@Validated`. Fuente oficial: [Spring Boot — Testing auto-configuration](https://docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html#testing.spring-boot-applications.testing-auto-configuration).
+**Resultado esperado:** el test pasa porque Spring informa un contexto fallido y la causa raíz es `BindValidationException`, causada por `@NotBlank` sobre `secretBase64`.
 
-**Errores comunes:** omitir `@Validated` en la clase de configuración, dejando que un valor faltante pase desapercibido hasta usarse en producción; definir valores por defecto inseguros para propiedades que deberían ser explícitamente obligatorias, como secretos o credenciales.
+**Fallo deliberado y diagnóstico:** reemplaza `hasFailed()` por `hasNotFailed()`. El test falla: el secreto ausente no debe permitir construir `JwtSettings`. Restaura `hasFailed()`.
 
-**Cuándo no usarlo:** para un valor de configuración genuinamente opcional con un valor por defecto seguro y razonable (por ejemplo, un tamaño de página de paginación), forzar validación obligatoria sin un valor por defecto sería innecesariamente rígido; reserva `@NotBlank`/`@Min` sin default para valores donde no existe un valor por defecto seguro.
+**Entiende:** `ApplicationContextRunner` levanta un contexto pequeño y captura el fallo en `context`; no lanza la excepción fuera del callback. Por eso se inspecciona `getStartupFailure()`.
 
-Fallar rápido al arranque es la estrategia que adoptará el proyecto integrador de este track (microservicio productivo, Módulo 12) para no desplegar con configuración inválida.
+**Cierra:** conserva la aserción de causa raíz y explica en qué momento se rechaza el secreto.
+
+#### Subtema 4.20 · Rechazar también un secreto vacío · 10 min
+
+**Contexto:** una variable puede existir pero estar vacía. `@NotBlank` debe rechazar ambos casos: propiedad ausente y cadena vacía.
+
+**Hazlo tú:** agrega esta prueba a `JwtSettingsTest.java`:
+
+```java
+@Test
+void blankSecretIsRejectedAtStartup() {
+    runner.withPropertyValues(
+            "security.jwt.secret-base64=",
+            "security.jwt.expiration-seconds=900")
+        .run(context -> {
+            assertThat(context).hasFailed();
+            assertThat(context.getStartupFailure())
+                .hasRootCauseInstanceOf(BindValidationException.class);
+        });
+}
+```
+
+Ejecuta ambos escenarios:
+
+```bash
+./mvnw -q -Dtest=JwtSettingsTest#missingSecretHasValidationFailureAtStartup+blankSecretIsRejectedAtStartup test
+```
+
+Para reproducir el entorno real sin secreto, desde la raíz del proyecto ejecuta:
+
+```bash
+env -u JWT_SECRET_BASE64 ./mvnw -q spring-boot:run
+```
+
+`src/main/resources/application.properties` usa `security.jwt.secret-base64=${JWT_SECRET_BASE64:}`: el sufijo `:` produce una cadena vacía si la variable no existe, y `@NotBlank` detiene el arranque con la propiedad señalada. No pongas un secreto de fallback en el archivo.
+
+**Resultado esperado:** los tests pasan porque ambos contextos fallan con `BindValidationException`. El comando de la aplicación termina con error antes de atender HTTP y el log menciona `security.jwt`/`secretBase64` como propiedad inválida.
+
+**Fallo deliberado y diagnóstico:** cambia `${JWT_SECRET_BASE64:}` por `${JWT_SECRET_BASE64}` y repite el comando con `env -u`. Comprueba el error real que reporta el entorno; restaura el `:` para que el tipo reciba vacío y Bean Validation dé el mensaje controlado.
+
+**Entiende:** el test aislado demuestra el enlace y la validación. El comando ejecuta la app completa. Son comprobaciones relacionadas, pero no significan lo mismo.
+
+**Cierra:** distingue en el log de arranque el nombre de propiedad del nombre de la clase que falló.
+
+#### Subtema 4.21 · Quitar la validación y observar el riesgo · 10 min
+
+**Contexto:** `@ConfigurationProperties` enlaza valores; `@Validated` hace que restricciones como `@NotBlank` y `@Min` se ejecuten durante ese enlace.
+
+**Hazlo tú:** mantén también los tests existentes `vencimientoMenorAlMinimoEsRechazado` y `enlazaLaClaveYElVencimiento`. Ejecuta la clase completa:
+
+```bash
+./mvnw -q -Dtest=JwtSettingsTest test
+```
+
+**Resultado esperado:** los valores válidos arrancan; secreto ausente, vacío, texto que no cabe en `long` y vencimiento `59` fallan. Los callbacks comprueban `hasNotFailed()` o `hasFailed()` según el caso.
+
+**Fallo deliberado y diagnóstico:** quita temporalmente `@Validated` de `JwtSettings` y repite `./mvnw -q -Dtest=JwtSettingsTest#missingSecretHasValidationFailureAtStartup+vencimientoMenorAlMinimoEsRechazado test`. Ambos tests fallan porque el contexto arranca sin aplicar las restricciones. Restaura `@Validated` y corre de nuevo la clase completa.
+
+**Entiende:** una propiedad opcional puede tener un valor por defecto seguro; un secreto no debe tener una clave de fallback. La validación solo funciona si el tipo se registra con `@ConfigurationPropertiesScan` o `@EnableConfigurationProperties`.
+
+**Cierra:** conserva la suite verde y la salida del proceso que falla sin `JWT_SECRET_BASE64`. Referencias: [Spring Boot — Type-safe Configuration Properties](https://docs.spring.io/spring-boot/reference/features/external-config.html#features.external-config.typesafe-configuration-properties), [API de BindValidationException](https://docs.spring.io/spring-boot/api/java/org/springframework/boot/context/properties/bind/validation/BindValidationException.html) y [Spring Boot — Testing auto-configuration](https://docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html#testing.spring-boot-applications.testing-auto-configuration).
+
+**Cuándo no exigirlo:** un valor opcional, como el tamaño de página, puede tener un valor predeterminado seguro. Reserva el fallo de arranque para entradas necesarias donde no hay un default válido, como la clave JWT.
+
+**Práctica independiente:** repite los dos casos con `security.jwt.expiration-seconds=59` y con la propiedad ausente. En cada caso anota la propiedad indicada por el error y restaura `900`.
+
+**Proyecto integrador:** conserva la validación en el backend RutaFlow y entrega configuración secreta desde el entorno del despliegue. La app no debe iniciar si la variable obligatoria está vacía.
+
+---
 
 ### Tema 3: Manejo global de excepciones consistente entre entornos
 
