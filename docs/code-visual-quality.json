@@ -99,8 +99,8 @@
     "spring-boot": {
       "topics": 111,
       "code": 111,
-      "commentedCode": 62,
-      "mermaid": 52,
+      "commentedCode": 61,
+      "mermaid": 51,
       "archifyVisual": 3,
       "asciiVisual": 12,
       "misleadingDiagramLabel": 0,
@@ -2827,6 +2827,13 @@
       "track": "spring-boot",
       "module": 6,
       "topic": "Tema 3: Integrar el flujo con `@SpringBootTest`",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 7,
+      "topic": "Tema 1: Actuator y health checks personalizados",
       "missingCode": false,
       "missingComments": true
     },

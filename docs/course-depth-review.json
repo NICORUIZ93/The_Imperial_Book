@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 231,
+    "topicsWithSignals": 232,
     "newLaboratories": 25
   },
   "priorities": {
@@ -13406,7 +13406,9 @@
       "title": "Tema 1: Actuator y health checks personalizados",
       "file": "web/public/content/spring-boot/modulo-7.md",
       "line": 8,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -13416,7 +13418,7 @@
       "module": 7,
       "title": "Tema 2: Métricas de negocio con Micrometer",
       "file": "web/public/content/spring-boot/modulo-7.md",
-      "line": 185,
+      "line": 175,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -13427,7 +13429,7 @@
       "module": 7,
       "title": "Tema 3: Liveness vs readiness",
       "file": "web/public/content/spring-boot/modulo-7.md",
-      "line": 348,
+      "line": 338,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

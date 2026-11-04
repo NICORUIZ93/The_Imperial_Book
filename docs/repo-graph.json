@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 565,
+      "lines": 589,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 14676,
+      "lines": 14719,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -600,7 +600,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3787,
+      "lines": 3794,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13584,
+      "lines": 13586,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -677,7 +677,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 142,
+      "lines": 143,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 406,
+      "lines": 409,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -12118,7 +12118,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-7.md",
-      "lines": 530,
+      "lines": 520,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12126,15 +12126,15 @@
         "# M\u00f3dulo 7: Observabilidad con Actuator",
         "## Aprende construyendo",
         "### Tema 1: Actuator y health checks personalizados",
+        "#### Subtema 7.1 \u00b7 Registrar una dependencia y su indicador (10 min)",
+        "#### Subtema 7.2 \u00b7 Comprobar `UP`, `DOWN` y acceso protegido (10 min)",
+        "#### Subtema 7.3 \u00b7 Diagnosticar un estado `UP` falso (10 min)",
+        "#### Entiende y cierra",
+        "### Tema 2: M\u00e9tricas de negocio con Micrometer",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda con analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
-        "### Tema 2: M\u00e9tricas de negocio con Micrometer",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero"
       ]
     },
     {

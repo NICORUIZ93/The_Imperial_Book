@@ -1,81 +1,54 @@
 # Módulo 7: Observabilidad con Actuator
 
-Cada tema se practica por separado con su propia repetición progresiva y su propio reto de memoria, verificado con `MockMvc` real contra los endpoints reales de Actuator, para que "health responde UP/DOWN" o "la métrica se incrementó" sean afirmaciones comprobables, no solo descritas.
+Actuator reúne señales técnicas y operativas. Cada práctica debe comprobar qué respuesta produce y qué información revela según el entorno.
 
 
 ## Aprende construyendo
 
 ### Tema 1: Actuator y health checks personalizados
 
-#### Paso 1 · Objetivo y preparación
+**¿Por qué es importante?** Actuator permite distinguir la salud del proceso de una dependencia que dejó de responder. Este ejemplo continúa `com.example.demo`, con seguridad JWT y MockMvc de los módulos anteriores.
 
-Al finalizar podrás exponer `/actuator/health` con un `HealthIndicator` personalizado que refleja la disponibilidad real de una dependencia, y confirmar con `MockMvc` real los estados `UP` y `DOWN`.
+#### Subtema 7.1 · Registrar una dependencia y su indicador (10 min)
 
-**Conocimiento previo:** Spring Initializr y starters (Módulo 1); `@Component` y `@Service` (Módulo 1).
+**Contexto.** La aplicación necesita reportar si la pasarela de pagos responde. Un `HealthIndicator` convierte esa comprobación en un estado que Actuator combina con los demás indicadores.
 
-#### Paso 2 · Contexto y caso real
+**Hazlo tú.** Agrega esta dependencia a `pom.xml`:
 
-**¿Por qué es importante?** Una plataforma de entregas necesita distinguir una aplicación viva de una instancia lista para recibir tráfico; sin señales operativas explícitas, un fallo se descubre por quejas de usuarios en vez de por evidencia observable.
-
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** endpoints estándar de observabilidad, `HealthIndicator` propio.
-
-`spring-boot-starter-actuator`, agregado como dependencia, expone automáticamente endpoints estándar como `/actuator/health` (`{"status": "UP"}` o `"DOWN"`), configurables explícitamente en cuanto a qué endpoints exponer (`management.endpoints.web.exposure.include: health, metrics, info`), dado que no todos deberían estar públicamente expuestos por defecto. `@Component public class ServicioExternoHealthIndicator implements HealthIndicator { public Health health() { return servicioExterno.estaDisponible() ? Health.up().build() : Health.down().build(); } }` extiende el health check estándar para incorporar la disponibilidad real de dependencias externas críticas.
-
-**Analogía:** Actuator es un panel de instrumentos estándar en el tablero de un vehículo, mostrando indicadores comunes esperables; un health indicator personalizado es un sensor adicional específico que verifica una condición particular relevante para ese modelo específico.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-  A["GET /actuator/health"] --> B[Actuator consulta cada HealthIndicator registrado]
-  B --> C["ServicioExternoHealthIndicator.health()"]
-  C -->|disponible| D["UP -> 200"]
-  C -->|no disponible| E["DOWN -> 503"]
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-actuator</artifactId>
+</dependency>
 ```
 
-#### Paso 4 · Demostración guiada desde cero
-
-Desde una carpeta vacía (o continuando en `academia-spring`, o créala con `mkdir -p academia-spring` si es tu primera vez), genera el proyecto con Spring Initializr real (`web`, `actuator`) y crea el health indicator en `src/main/java/com/academia/observabilidad/`:
-
-```bash
-mkdir -p academia-spring/src/main/java/com/academia/observabilidad
-cd academia-spring
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web,actuator -d javaVersion=25 -d artifactId=academia-observabilidad -o app.zip
-unzip -o app.zip
-cat >> src/main/resources/application.properties <<'EOF'
-management.endpoints.web.exposure.include=health,metrics,info
-management.endpoint.health.show-details=always
-EOF
-```
+Crea `src/main/java/com/example/demo/ServicioExterno.java`:
 
 ```java
-// src/main/java/com/academia/observabilidad/ServicioExterno.java
-package com.academia.observabilidad;
+package com.example.demo;
 
 import org.springframework.stereotype.Component;
 
-// simula una dependencia externa (por ejemplo, una pasarela de pago) cuya disponibilidad puede cambiar
 @Component
 public class ServicioExterno {
     private volatile boolean disponible = true;
 
     public boolean estaDisponible() { return disponible; }
-    public void marcarComoNoDisponible() { this.disponible = false; }
-    public void marcarComoDisponible() { this.disponible = true; }
+    public void marcarComoNoDisponible() { disponible = false; }
+    public void marcarComoDisponible() { disponible = true; }
 }
 ```
 
-```java
-// src/main/java/com/academia/observabilidad/ServicioExternoHealthIndicator.java
-package com.academia.observabilidad;
+Crea `src/main/java/com/example/demo/ServicioExternoHealthIndicator.java`:
 
-import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.HealthIndicator;
+```java
+package com.example.demo;
+
+import org.springframework.boot.health.contributor.Health;
+import org.springframework.boot.health.contributor.HealthIndicator;
 import org.springframework.stereotype.Component;
 
-@Component("servicioExterno")
+@Component("pasarelaPagos")
 public class ServicioExternoHealthIndicator implements HealthIndicator {
     private final ServicioExterno servicioExterno;
 
@@ -87,100 +60,117 @@ public class ServicioExternoHealthIndicator implements HealthIndicator {
     public Health health() {
         return servicioExterno.estaDisponible()
             ? Health.up().build()
-            : Health.down().withDetail("razon", "servicio externo no responde").build();
+            : Health.down().withDetail("razon", "pasarela no responde").build();
     }
 }
 ```
 
-**Explicación línea por línea:** `ServicioExterno` simula una dependencia real con un estado mutable (`marcarComoNoDisponible()`/`marcarComoDisponible()`, expuesto para que el test controle el escenario); `@Component("servicioExterno")` registra el indicador bajo ese nombre, que Actuator usa como clave dentro de la respuesta JSON de `/actuator/health` (`{"components": {"servicioExterno": {"status": "UP"}}}`); `Health.down().withDetail(...)` adjunta información de diagnóstico adicional visible cuando `show-details=always`.
+**Resultado esperado.** Spring registra un `ServicioExterno` y un indicador llamado `pasarelaPagos`. En Boot 4, `Health` y `HealthIndicator` se importan desde `org.springframework.boot.health.contributor`. La ruta `/actuator/health` ya está expuesta por defecto; no añadas `metrics`, `info` ni `*` para esta práctica.
 
-Confirma con `MockMvc` real que `/actuator/health` refleja el estado real de la dependencia simulada, en ambos escenarios:
+#### Subtema 7.2 · Comprobar `UP`, `DOWN` y acceso protegido (10 min)
+
+**Contexto.** Un estado falso puede esconder un incidente. Comprueba el componente, el estado general y la respuesta HTTP con la seguridad del proyecto activa.
+
+**Hazlo tú.** En `src/test/resources/application.properties` agrega opciones solo para los tests; el valor productivo predeterminado no muestra detalles:
+
+```properties
+management.endpoint.health.show-details=always
+management.endpoint.health.show-components=always
+```
+
+Crea `src/test/java/com/example/demo/ActuatorHealthTest.java`:
 
 ```java
-// src/test/java/com/academia/observabilidad/ActuatorHealthTest.java
-package com.academia.observabilidad;
+package com.example.demo;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 class ActuatorHealthTest {
+    @Autowired MockMvc mockMvc;
+    @Autowired ServicioExterno servicioExterno;
+    @Autowired JwtService jwtService;
 
-    @Autowired
-    private MockMvc mockMvc;
-    @Autowired
-    private ServicioExterno servicioExterno;
+    @BeforeEach
+    void dejaLaDependenciaDisponible() {
+        servicioExterno.marcarComoDisponible();
+    }
 
     @Test
-    void healthRespondeUpCuandoLaDependenciaEstaDisponible() throws Exception {
-        servicioExterno.marcarComoDisponible();
-
-        mockMvc.perform(get("/actuator/health"))
+    void saludUpCuandoLaDependenciaResponde() throws Exception {
+        mockMvc.perform(get("/actuator/health")
+                .header("Authorization", bearer()))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.status").value("UP"))
-            .andExpect(jsonPath("$.components.servicioExterno.status").value("UP"));
+            .andExpect(jsonPath("$.components.pasarelaPagos.status").value("UP"));
     }
 
     @Test
-    void healthRespondeDownCuandoLaDependenciaNoEstaDisponible() throws Exception {
+    void saludDownCuandoLaDependenciaFalla() throws Exception {
         servicioExterno.marcarComoNoDisponible();
 
-        mockMvc.perform(get("/actuator/health"))
+        mockMvc.perform(get("/actuator/health")
+                .header("Authorization", bearer()))
             .andExpect(status().isServiceUnavailable())
             .andExpect(jsonPath("$.status").value("DOWN"))
-            .andExpect(jsonPath("$.components.servicioExterno.status").value("DOWN"));
+            .andExpect(jsonPath("$.components.pasarelaPagos.status").value("DOWN"));
+    }
 
-        servicioExterno.marcarComoDisponible(); // deja el estado limpio para otros tests
+    @Test
+    void saludNoEsPublicaEnEstaConfiguracion() throws Exception {
+        mockMvc.perform(get("/actuator/health"))
+            .andExpect(status().isUnauthorized());
+    }
+
+    private String bearer() {
+        return "Bearer " + jwtService.generar("monitor@rutaflow.dev", "ADMIN");
     }
 }
 ```
 
+Ejecuta:
+
 ```bash
-mvn test -Dtest=ActuatorHealthTest  # Maven
-./gradlew test --tests ActuatorHealthTest # Gradle (equivalente)
+./mvnw -q -Dtest=ActuatorHealthTest test
 ```
 
-**Resultado esperado:** ambos tests pasan: con la dependencia simulada disponible, `/actuator/health` responde `200` con `status: UP`; al marcarla como no disponible, responde `503 Service Unavailable` con `status: DOWN`, y el componente específico (`servicioExterno`) refleja el mismo estado dentro de `components` — Actuator agrega automáticamente el estado del indicador personalizado al estado general de salud de toda la aplicación.
+**Resultado esperado.** Pasan tres métodos: la dependencia disponible produce `200/UP`, la caída produce `503/DOWN`, y esta cadena de seguridad responde `401` sin JWT. El token se firma con el `JwtService` real.
 
-**Fallo deliberado:** cambia `Health.down()` por `Health.up()` dentro de la rama `else` (invirtiendo la lógica por error: reportar `UP` incluso cuando el servicio NO está disponible) y ejecuta de nuevo `healthRespondeDownCuandoLaDependenciaNoEstaDisponible`. El test FALLA porque `/actuator/health` sigue respondiendo `UP` pese a que `marcarComoNoDisponible()` fue llamado — diagnostica confirmando que un `HealthIndicator` mal implementado no solo no ayuda, sino que activamente esconde un problema real detrás de una señal falsamente positiva, potencialmente peor que no tener ningún health check en absoluto. Revierte el cambio antes de continuar.
+#### Subtema 7.3 · Diagnosticar un estado `UP` falso (10 min)
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**Contexto.** El indicador se llama `pasarelaPagos` para no chocar con el bean `ServicioExterno`. El ID que aparece bajo `components` sale del nombre del bean.
 
-1. Agrega un segundo `HealthIndicator` para una segunda dependencia simulada, y confirma que si SOLO una de las dos está `DOWN`, el estado general (`$.status`) también es `DOWN` (Actuator combina todos los indicadores).
-2. Prueba `management.endpoint.health.show-details=never` en vez de `always` y confirma con un test que `$.components` ya no aparece en la respuesta.
-3. Agrega un `@Component` con nombre distinto (`"basedatos"`) y confirma que aparece bajo esa clave específica en `$.components.basedatos.status`.
-4. Escribe de memoria (sin mirar) un `HealthIndicator` que refleje el estado de un componente simulado, y un test `MockMvc` que confirme `UP` y `DOWN` en ambos escenarios.
-
-**Pista:** el nombre pasado a `@Component("nombre")` es exactamente la clave que aparecerá en `$.components.<nombre>.status` dentro del JSON de `/actuator/health` — Spring lo deriva del nombre del bean, quitando el sufijo `HealthIndicator` si el bean no tiene un nombre explícito.
-
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio para reportar un estado saludable:
+**Hazlo tú.** En `ServicioExternoHealthIndicator`, cambia la rama caída para devolver `Health.up()`:
 
 ```java
-public Health health() {
-    return servicioExterno.estaDisponible() ? Health.____().build() : Health.down().build();
-}
+: Health.up().withDetail("razon", "pasarela no responde").build();
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `HealthIndicator` que dependa del estado de un componente simulado, y un test `MockMvc` que confirme ambos estados posibles. Compara después contra el patrón del Paso 4.
+Ejecuta solo el caso de caída:
 
-#### Paso 7 · Cierre y evidencia
+```bash
+./mvnw -q -Dtest=ActuatorHealthTest#saludDownCuandoLaDependenciaFalla test
+```
 
-Ya expones `/actuator/health` con un indicador personalizado que refleja el estado real de una dependencia, confirmado con `MockMvc` en ambos escenarios. El siguiente tema agrega métricas de negocio, no solo estado binario. **Evidencia:** entrega el resultado de ambos tests de `ActuatorHealthTest` en verde, y el resultado del fallo deliberado mostrando un `UP` falso que esconde una dependencia caída. Fuente oficial: [Spring Boot Actuator — Health Information](https://docs.spring.io/spring-boot/reference/actuator/endpoints.html#actuator.endpoints.health).
+**Fallo deliberado observado.** La prueba esperaba `503` y recibió `200`: el indicador ocultó la dependencia caída. Restaura `Health.down()` y ejecuta los tres métodos.
 
-**Errores comunes:** exponer todos los endpoints de Actuator públicamente sin restricción, algunos de los cuales revelan configuración interna sensible; escribir un `HealthIndicator` con lógica invertida o incompleta, produciendo una señal falsamente positiva peor que no tener ninguna señal.
+#### Entiende y cierra
 
-**Cuándo no usarlo:** para una dependencia interna cuyo fallo la aplicación ya maneja completamente de forma transparente para el usuario (por ejemplo, con un fallback automático sin degradación visible), agregar un `HealthIndicator` que la marque como crítica podría generar alertas innecesarias por un problema que en realidad no afecta el servicio.
+`HealthIndicator.health()` devuelve una señal; Actuator agrega sus indicadores para formar `/actuator/health`. `DOWN` se mapea a HTTP `503`. El nombre explícito `pasarelaPagos` evita colisionar con `ServicioExterno` y fija el ID JSON. Este endpoint sigue protegido por el `SecurityConfig` de la academia, por eso el test usa JWT. En una plataforma real, configura por separado cómo lo consultará el orquestador, por ejemplo en un puerto de gestión y una red limitada.
 
-Los health checks personalizados de Actuator son los que expondrá el proyecto integrador de este track (microservicio productivo, Módulo 12) en producción.
+En producción conserva `management.endpoint.health.show-details=never` o configura `when-authorized` con roles. `always` solo está en recursos de test porque puede revelar nombres y diagnósticos. Un fallo de una dependencia externa suele afectar **readiness**, no **liveness**: reiniciar todas las instancias no arregla una pasarela caída y puede agravar el incidente; el siguiente tema detalla esa diferencia.
+
+**Evidencia para avanzar:** tres tests pasan, puedes explicar `200/UP`, `503/DOWN` y `401` sin token, y el fallo deliberado se detecta y revierte. El resultado cubre MockMvc con el contexto Spring; no prueba una red externa, TLS, el orquestador ni el navegador. Documentación primaria: [Spring Boot 4.1.2 — Health Information y `HealthIndicator`](https://docs.spring.io/spring-boot/reference/actuator/endpoints.html#actuator.endpoints.health), [API `HealthIndicator`](https://docs.spring.io/spring-boot/api/java/org/springframework/boot/health/contributor/HealthIndicator.html) y [Starter Actuator 4.1.2](https://docs.spring.io/spring-boot/appendix/dependency-versions/coordinates.html).
 
 ### Tema 2: Métricas de negocio con Micrometer
 

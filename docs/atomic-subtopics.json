@@ -94,8 +94,8 @@
     "spring-boot": {
       "topics": 111,
       "completeTopics": 35,
-      "topicsWith3to6Subtopics": 40,
-      "subtopics": 120,
+      "topicsWith3to6Subtopics": 41,
+      "subtopics": 123,
       "completeSubtopics": 109
     }
   },
@@ -14439,8 +14439,51 @@
       {
         "module": 7,
         "topic": "### Tema 1: Actuator y health checks personalizados",
-        "subtopicCount": 0,
-        "subtopics": [],
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "7.1",
+            "title": "#### Subtema 7.1 · Registrar una dependencia y su indicador (10 min)",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": false
+            },
+            "complete": false
+          },
+          {
+            "id": "7.2",
+            "title": "#### Subtema 7.2 · Comprobar `UP`, `DOWN` y acceso protegido (10 min)",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": false
+            },
+            "complete": false
+          },
+          {
+            "id": "7.3",
+            "title": "#### Subtema 7.3 · Diagnosticar un estado `UP` falso (10 min)",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": false,
+              "deliberateFailure": true,
+              "understand": false,
+              "close": false,
+              "duration": false
+            },
+            "complete": false
+          }
+        ],
         "complete": false
       },
       {

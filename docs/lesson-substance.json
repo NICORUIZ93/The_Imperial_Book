@@ -1694,7 +1694,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "1d97dc3d0ebd6fcd2df16fc60e8808f5ec5198684af96a679ccf25bc0d5cc979",
+    "fingerprint": "b6ac8155df420f3c60d707b592a63b0e36c66e02f4ec8f3e04c6baa0aabf41c5",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10967,9 +10967,9 @@
       {
         "issues": [],
         "module": 7,
-        "tailWords": 190,
+        "tailWords": 0,
         "topic": "Tema 1: Actuator y health checks personalizados",
-        "words": 1285
+        "words": 873
       },
       {
         "issues": [],

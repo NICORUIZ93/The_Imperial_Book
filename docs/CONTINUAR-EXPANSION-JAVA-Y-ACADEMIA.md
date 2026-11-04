@@ -558,7 +558,31 @@ validaciones de contenido, trazabilidad, índices y gráficos pasaron.
 409 con señales de defecto de sustancia. Las mediciones estructurales no
 acreditan la ejecución de los demás ejemplos ni una revisión pedagógica humana.
 
-**Siguiente tema:** Spring Boot M7 T1, “Actuator y health checks personalizados”.
-Revisa imports y módulos de Actuator en Boot 4, diferencia disponibilidad de
-proceso y dependencias, y ejecuta los health checks del ejemplo sin publicar
-secretos ni detalles internos en endpoints expuestos.
+Spring Boot M7 T1, “Actuator y health checks personalizados”, se rehízo en
+subtemas 7.1–7.3. Usa `spring-boot-starter-actuator` y las APIs Boot 4 bajo
+`org.springframework.boot.health.contributor`. Se corrigió un conflicto del
+borrador: el indicador ahora se llama `pasarelaPagos`, separado del bean
+`ServicioExterno`. El health endpoint queda protegido por el `SecurityConfig`
+existente; el test firma un JWT real, cubre `200/UP`, `503/DOWN` y `401` anónimo.
+Los detalles (`show-details` y `show-components`) se habilitan solo en
+`src/test/resources/application.properties`. En producción el tema conserva el
+predeterminado que oculta detalles y explica la opción de puerto/red de gestión.
+También aclara que la caída de una dependencia afecta readiness, no liveness.
+
+En el backend acumulado Boot 4.1.2/JDK 25, los tres tests dirigidos pasaron. Al
+invertir la rama `DOWN` a `UP`, el caso de caída detectó `200` en vez de `503`;
+restaurada la lógica, `./mvnw -q clean test` pasó con **45 pruebas**, sin fallos
+ni omisiones. Cambios solo en Markdown/reportes del repositorio; código temporal
+en `/tmp/imperial-spring-m4-jwt/app`.
+
+`./scripts/validate.sh` pasó con 23 pruebas de script y 4 omitidas; las demás
+validaciones de contenido, trazabilidad, índices y gráficos también pasaron.
+`git diff --check` pasó. Las auditorías tras M7 T1 registran **139/1185 temas
+estructuralmente completos**, **1089/1185 practicables** y 409 con señales de
+defecto de sustancia.
+
+**Siguiente tema:** Spring Boot M7 T2, “Métricas de negocio con Micrometer”.
+Revisa el starter y API de métricas de Boot 4; no afirmes que una métrica aparece
+por `/actuator/metrics` sin probar nombre, tags y valor en el registry. Mantén
+`metrics` fuera de exposición HTTP pública salvo que haya una decisión de acceso
+y una autenticación verificadas.

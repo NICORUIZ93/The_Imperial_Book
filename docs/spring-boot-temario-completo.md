@@ -155,6 +155,9 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
 [Abrir lección completa](../web/public/content/spring-boot/modulo-7.md)
 
 - [pendiente de migrar] Tema 1: Actuator y health checks personalizados
+  - pendiente Subtema 7.1 · Registrar una dependencia y su indicador (10 min)
+  - pendiente Subtema 7.2 · Comprobar `UP`, `DOWN` y acceso protegido (10 min)
+  - pendiente Subtema 7.3 · Diagnosticar un estado `UP` falso (10 min)
 - [pendiente de migrar] Tema 2: Métricas de negocio con Micrometer
 - [pendiente de migrar] Tema 3: Liveness vs readiness
 
