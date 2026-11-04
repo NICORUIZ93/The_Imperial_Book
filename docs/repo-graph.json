@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 641,
+      "lines": 669,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -677,7 +677,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 145,
+      "lines": 144,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -5507,7 +5507,7 @@
     },
     {
       "path": "examples/spring-kafka-rutaflow/src/test/java/academia/rutaflow/event/EnvioEventPublisherTest.java",
-      "lines": 190,
+      "lines": 192,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -12139,7 +12139,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-8.md",
-      "lines": 1013,
+      "lines": 1048,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

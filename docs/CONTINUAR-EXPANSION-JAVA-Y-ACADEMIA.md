@@ -633,8 +633,36 @@ backlog, índice web, grafo de prerrequisitos, profundidad, subtemas atómicos,
 temarios prioritarios y grafo del repo. Estos indicadores no demuestran la
 comprensión del estudiante ni ejecución de los otros laboratorios.
 
-**Siguiente tema:** Spring Boot M8 T1, “Producers y consumers con Spring Kafka”.
-Lee primero su laboratorio y contrato del broker; verifica versiones y APIs en
-documentación primaria, ejecuta el recorrido con broker real y conserva el
-orden de tres subtemas del curso. No des por probado un mensaje solo porque el
-productor haya aceptado la llamada.
+Spring Boot M8 T1, “Producers y consumers con Spring Kafka”, se revisó tema por
+tema contra el laboratorio `examples/spring-kafka-rutaflow/` y la guía de Spring
+Kafka 4.0. El tema ahora muestra el record, la llamada a `KafkaTemplate`, el
+listener, la clave de agrupación y las aserciones reales de partición/offset; se
+aclara que las colas del test son solo sincronización, no colas de Kafka. También
+se distingue confirmación del envío de procesamiento del consumer, y la
+idempotencia del productor de la idempotencia de negocio.
+
+La prueba del laboratorio dejó ocho casos en verde con `./mvnw -q clean test`
+(JDK 25, Spring Boot 4.1.2, Kafka 4.2.2). Se provocó el fallo reemplazando la
+clave `envioId` por `eventId`: la prueba de orden falló de manera determinista
+con partición 0 esperada y partición 2 observada; el productor se restauró. Al
+investigar un `KafkaStorageException` de cierre, se añadió `@DirtiesContext` al
+test como sugiere Spring Kafka para coordinar cierre de contexto y broker. La
+suite volvió a pasar sin el error de archivos temporales; sigue apareciendo un
+`WARN` interno de Kafka 4.2.2 al cerrar un cliente ya cerrado. Se reemplazó la
+sobrecarga deprecada `KafkaTestUtils.consumerProps` por la versión 4.0. El
+README registra el límite y el resultado; no se oculta la advertencia restante.
+
+El laboratorio reúne código de temas posteriores (DLT, outbox/inbox); la lección
+indica practicar solo las pruebas dirigidas de T1. Los ejemplos siguen usando
+Kafka embebido y H2: esto comprueba contratos del ejercicio, no persistencia ni
+operación en un clúster Kafka de producción.
+
+Tras M8 T1, las auditorías globales registran **140/1185 temas estructuralmente
+completos**, **1088/1185 practicables** y 409 con señales de defecto de sustancia.
+Se regeneraron índices y reportes y `./scripts/validate.sh` pasó con 23 pruebas
+de script y 4 omitidas; `git diff --check` también pasó. No se modificaron los
+archivos locales de Flutter.
+
+**Siguiente tema:** Spring Boot M8 T2, “Dead-letter queue”. Continúa sobre el
+mismo laboratorio; verifica retries, `DefaultErrorHandler`, destino DLT,
+serialización del mensaje recuperado y diagnóstico de mensajes irrecuperables.

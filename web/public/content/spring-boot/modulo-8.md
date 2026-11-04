@@ -10,7 +10,7 @@ Cada tema se practica por separado con su propia repetición progresiva y su pro
 **Duración estimada:** 35 min.
 **¿Por qué es importante?** Un evento permite que quien registra un envío continúe sin llamar directamente a cada sistema que lo usa. Kafka conserva los mensajes y varios grupos pueden procesarlos por separado.
 **Prerrequisitos:** Spring Boot M1 T1 y M2 T1. Proyecto continuo: enviar un evento de creación y permitir ruteo y notificaciones independientes.
-**Laboratorio completo:** examples/spring-kafka-rutaflow/. Usa JDK 25, Spring Boot 4.1.2 y el Maven Wrapper del propio proyecto. Copia ese directorio a spring-kafka-practice y provoca los fallos en la copia. Las rutas y comandos de abajo apuntan al laboratorio comprobado; en tu copia conserva la misma estructura.
+**Laboratorio:** `examples/spring-kafka-rutaflow/`. Usa JDK 25, Spring Boot 4.1.2 y el Maven Wrapper incluido. El mismo proyecto contiene patrones de los temas posteriores (reintentos/DLT y outbox/inbox); en este Tema 1 practica solo los tres subtemas y sus pruebas dirigidas. Si quieres provocar los fallos, copia el directorio a `spring-kafka-practice` y cambia allí las líneas indicadas.
 
 #### Subtema 1.1: Publica el evento con la clave del envío · 10 min
 
@@ -21,10 +21,19 @@ El identificador del envío sirve de clave para mantener sus eventos relacionado
 Abre el archivo completo examples/spring-kafka-rutaflow/src/main/java/academia/rutaflow/event/EnvioEventPublisher.java. Confirma que publicar envía topic, clave y evento:
 
 ```java
-return kafka.send(TOPIC, evento.envioId().toString(), evento);
+public CompletableFuture<SendResult<String, EnvioCreado>> publicar(EnvioCreado evento) {
+    return kafka.send(TOPIC, evento.envioId().toString(), evento);
+}
 ```
 
-En examples/spring-kafka-rutaflow/src/main/resources/application.yml, revisa los serializers y deserializers JSON que permiten escribir y leer EnvioCreado:
+El mensaje contiene dos identificadores distintos: `eventId` identifica este hecho; `envioId` agrupa todos los cambios del envío. El record real vive en `examples/spring-kafka-rutaflow/src/main/java/academia/rutaflow/event/EnvioCreado.java`:
+
+```java
+public record EnvioCreado(
+        UUID eventId, UUID envioId, int version, Instant occurredAt, String referencia) {}
+```
+
+En `examples/spring-kafka-rutaflow/src/main/resources/application.yml`, revisa los serializers y deserializers JSON que permiten escribir y leer EnvioCreado:
 
 ```yaml
 spring:
@@ -63,7 +72,7 @@ Anota topic, clave y partición que devolvió la prueba. Verifica qué campo ele
 #### Subtema 1.2: Conecta dos grupos consumidores · 10 min
 
 **1. Contexto**
-Ruteo y notificaciones reciben el mismo hecho, pero mantienen su avance por separado y pueden procesarlo a ritmos distintos.
+Ruteo y notificaciones deben procesar el mismo hecho, cada grupo con su propio avance. `groupId` nombra al lector lógico; el `@KafkaListener` se suscribe al topic y recibe cada registro asignado a su grupo.
 
 **2. Hazlo tú**
 Lee los archivos completos:
@@ -71,13 +80,27 @@ Lee los archivos completos:
 - examples/spring-kafka-rutaflow/src/main/java/academia/rutaflow/event/RuteoListener.java
 - examples/spring-kafka-rutaflow/src/main/java/academia/rutaflow/event/NotificacionListener.java
 
-Compara el valor de groupId en ambos listeners y ejecuta la prueba:
+Compara el valor de `groupId` en ambos listeners. Este extracto real de `RuteoListener.java` muestra la suscripción y la key que llega en la cabecera:
+
+```java
+@KafkaListener(topics = EnvioEventPublisher.TOPIC, groupId = "rutaflow-ruteo")
+public void alCrear(
+        EnvioCreado evento,
+        @Header(KafkaHeaders.RECEIVED_KEY) String key,
+        @Header(KafkaHeaders.RECEIVED_PARTITION) int partition,
+        @Header(KafkaHeaders.OFFSET) long offset) {
+    inbox.procesar(evento);
+    recibidos.add(new Recibido(key, partition, offset, evento));
+}
+```
+
+`NotificacionListener.java` usa el mismo topic y `groupId = "rutaflow-notificaciones"`. Ejecuta:
 
 ```bash
 ./mvnw -Dtest=EnvioEventPublisherTest#publicaConKeyDelEnvioYElListenerLaRecibe test
 ```
 
-**Resultado esperado:** la prueba recibe el envío en las colas de ruteo y notificaciones; ambas confirmaciones conservan la misma partición y offset del registro publicado.
+**Resultado esperado:** ambos grupos reciben el mismo registro y cada listener pone su copia en una cola de prueba independiente. La prueba compara key, partición, offset y contenido; esas colas solo sincronizan el test, no son colas de Kafka.
 
 **Fallo deliberado:** cambia el groupId de notificaciones por el de ruteo. **Error esperado:** la comprobación de la segunda cola queda sin mensaje y vence el timeout. **Diagnóstico:** dos consumidores en el mismo grupo reparten trabajo; dos grupos distintos reciben cada uno una copia lógica del registro.
 
@@ -93,7 +116,19 @@ Escribe qué grupo atiende cada listener y por qué el publicador no tiene que c
 El envío al topic no implica que el listener ya haya terminado. Comprueba el recorrido con un broker embebido y espera a que el consumidor procese el evento.
 
 **2. Hazlo tú**
-Abre examples/spring-kafka-rutaflow/src/test/java/academia/rutaflow/event/EnvioEventPublisherTest.java y estudia conservaParticionYOrdenParaDosEventosDelMismoEnvio. Luego ejecuta:
+Abre `examples/spring-kafka-rutaflow/src/test/java/academia/rutaflow/event/EnvioEventPublisherTest.java`. La prueba dirige el broker embebido a tres particiones y compara la metadata de Kafka con lo que recibió el consumidor:
+
+```java
+var primero = publisher.publicar(primerEvento).get(10, TimeUnit.SECONDS).getRecordMetadata();
+var segundo = publisher.publicar(segundoEvento).get(10, TimeUnit.SECONDS).getRecordMetadata();
+
+assertThat(primero.partition()).isEqualTo(segundo.partition());
+assertThat(segundo.offset()).isGreaterThan(primero.offset());
+assertThat(recibidoPrimero.evento()).isEqualTo(primerEvento);
+assertThat(recibidoSegundo.evento()).isEqualTo(segundoEvento);
+```
+
+Ejecuta:
 
 ```bash
 ./mvnw -Dtest=EnvioEventPublisherTest#conservaParticionYOrdenParaDosEventosDelMismoEnvio test
@@ -104,7 +139,7 @@ Abre examples/spring-kafka-rutaflow/src/test/java/academia/rutaflow/event/EnvioE
 **Fallo deliberado:** en el publicador usa un UUID aleatorio como clave en vez de envioId. **Error esperado:** la prueba ya no puede confirmar una partición común para los dos eventos. **Diagnóstico:** el particionador recibe claves diferentes; genera la clave a partir del envío que define el orden del negocio.
 
 **3. Entiende**
-El orden está garantizado dentro de una partición, no entre todas las particiones del topic. La misma clave normalmente dirige el registro a la misma partición; la garantía del ejercicio depende de conservar estable esa clave y configuración.
+El orden está garantizado dentro de una partición, no entre todas las particiones del topic. Kafka aplica el particionador a la key; para el mismo topic y número de particiones, una key estable coloca los registros de ese envío juntos. `acks: all` e idempotencia ayudan al productor frente a fallos y reintentos; no hacen que el efecto de negocio del consumidor se ejecute una sola vez. Eso requiere diseño adicional y se estudia después.
 
 **4. Cierra**
 Entrega los resultados de ambas pruebas y describe qué esperarías si publicaras dos eventos del mismo envío con claves distintas.
@@ -116,9 +151,9 @@ Entrega los resultados de ambas pruebas y describe qué esperarías si publicara
 - [ ] Verifiqué partición, offset y orden mediante un broker embebido.
 - [ ] Reproduje un fallo por usar una clave incorrecta y lo diagnostiqué.
 
-**Nota del laboratorio:** la suite actual termina con código 0, pero Kafka 4.2.2 registra una advertencia al cerrar el directorio temporal del broker embebido; el recorrido de mensajes sí está probado y el apagado limpio del broker sigue pendiente.
+**Nota del laboratorio:** `@DirtiesContext` cierra el contexto Spring antes que el broker embebido; en la suite de 8 pruebas ya no aparece el error de `KafkaStorageException` al borrar el directorio temporal. Kafka 4.2.2 aún registra un `WARN` interno al cerrar un cliente que ya se había cerrado. La prueba de la DLT usa la sobrecarga vigente `KafkaTestUtils.consumerProps(broker, "verificador-dlt", false)`, disponible desde Spring Kafka 4.0.
 
-**Fuentes oficiales:** [envío con KafkaTemplate](https://docs.spring.io/spring-kafka/reference/kafka/sending-messages.html), [recepción con listeners](https://docs.spring.io/spring-kafka/reference/kafka/receiving-messages.html) y [pruebas con broker embebido](https://docs.spring.io/spring-kafka/reference/testing.html).
+**Fuentes oficiales:** [envío con KafkaTemplate](https://docs.spring.io/spring-kafka/reference/kafka/sending-messages.html), [recepción con listeners](https://docs.spring.io/spring-kafka/reference/kafka/receiving-messages.html), [pruebas con broker embebido](https://docs.spring.io/spring-kafka/reference/4.0/testing.html) y [KafkaTestUtils 4.0](https://docs.spring.io/spring-kafka/docs/4.0.x/api/org/springframework/kafka/test/utils/KafkaTestUtils.html).
 
 **Transferencia al proyecto integrador:** conecta el evento de envío con consumidores independientes y conserva el identificador del envío como clave para el procesamiento ordenado por partición.
 

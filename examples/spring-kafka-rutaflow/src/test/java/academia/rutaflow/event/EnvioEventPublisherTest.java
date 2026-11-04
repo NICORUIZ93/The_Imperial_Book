@@ -10,6 +10,7 @@ import static org.awaitility.Awaitility.await;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.test.context.EmbeddedKafka;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import academia.rutaflow.inbox.InboxProcessor;
 import academia.rutaflow.outbox.CrearEnvioService;
@@ -27,6 +28,7 @@ import java.util.Map;
 
 @SpringBootTest
 @ActiveProfiles("test")
+@DirtiesContext
 @EmbeddedKafka(partitions = 3, topics = {EnvioEventPublisher.TOPIC, EnvioEventPublisher.TOPIC + "-dlt"},
         bootstrapServersProperty = "spring.kafka.bootstrap-servers")
 class EnvioEventPublisherTest {
@@ -93,7 +95,7 @@ class EnvioEventPublisherTest {
         UUID envioId = UUID.randomUUID();
         var evento = new EnvioCreado(UUID.randomUUID(), envioId, 1,
                 Instant.parse("2026-01-01T00:00:00Z"), "RT-DLT");
-        Map<String, Object> props = KafkaTestUtils.consumerProps("verificador-dlt", "false", broker);
+        Map<String, Object> props = KafkaTestUtils.consumerProps(broker, "verificador-dlt", false);
         props.put("auto.offset.reset", "earliest");
 
         try (Consumer<String, String> consumer = new KafkaConsumer<>(props,

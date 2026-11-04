@@ -21,4 +21,4 @@ Para ejecutar la app manualmente con PostgreSQL y Kafka locales, levanta ambos s
 
 Las pruebas comprueban la transacción SQL, la deduplicación y replay junto al broker embebido. H2 hace rápida la suite; antes de producción, repite migraciones y concurrencia contra PostgreSQL real y prueba la caída real del proceso en cada ventana de outbox. El dispatcher didáctico no reclama filas con lease y no debe ejecutarse con varias instancias.
 
-En este entorno la prueba termina con código 0, aunque Kafka 4.2.2 advierte que el directorio de logs temporal queda fuera de línea durante el cierre del broker embebido. El recorrido de mensajes sí fue comprobado; el cierre limpio del broker queda pendiente de corregir.
+La prueba usa `@DirtiesContext` para cerrar el contexto Spring antes de apagar el broker embebido. La suite de ocho pruebas ya no registra el error de `KafkaStorageException` al borrar el directorio temporal; aún aparece un `WARN` interno de Kafka 4.2.2 al cerrar un cliente que ya estaba cerrado. El consumidor de verificación usa `KafkaTestUtils.consumerProps(broker, group, false)`, la sobrecarga vigente de Spring Kafka 4.0.
