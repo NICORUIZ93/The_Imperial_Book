@@ -5,7 +5,7 @@
 **Proyecto continuo:** RutaFlow: plataforma de entregas basada en servicios.
 **Prerrequisito de entrada:** Java, HTTP, SQL y pruebas; los módulos iniciales vuelven a presentar cada herramienta..
 **Duración objetivo:** temas de 20–45 minutos; cada tema se divide en 3–6 acciones de 5–15 minutos.
-**Estado estructural:** 24/111 temas migrados; auditoría estructural actualizada el 2026-11-03.
+**Estado estructural:** 25/111 temas migrados; auditoría estructural actualizada el 2026-11-03.
 
 ## Índice de módulos y temas
 
@@ -69,7 +69,10 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 5.1: Publica el contrato de tu API · 10 min
   - ✓ Subtema 5.2: Describe éxito y errores en cada endpoint · 15 min
   - ✓ Subtema 5.3: Evita cambios silenciosos con una prueba · 15 min
-- [pendiente de migrar] Tema 6: Paginación HTTP con validación y un límite de recursos explícito
+- [4 pasos] Tema 6: Paginación HTTP con validación y un límite de recursos explícito
+  - ✓ Subtema 6.1: Devuelve una página desde JPA · 15 min
+  - ✓ Subtema 6.2: Rechaza tamaños fuera del contrato · 15 min
+  - ✓ Subtema 6.3: Comprueba el límite y el costo del paginado · 10 min
 
 ### Módulo 3: Persistencia con Spring Data JPA
 
@@ -350,7 +353,7 @@ La tabla registra presencia de áreas en el inventario del track, no profundidad
 
 ### Huecos y límites reportados
 
-- El repositorio contiene 111 temas en 26 módulos; 24 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
+- El repositorio contiene 111 temas en 26 módulos; 25 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
 - No hay base para afirmar que el track esté completo: la comparación con la fuente de referencia está pendiente de revisión humana módulo por módulo.
 - Los elementos de la fuente que todavía deben verificarse de forma explícita están enumerados en la tabla anterior; cualquier técnica crítica que no tenga tema propio debe añadirse conservando el currículo base.
 - La ejecución de ejemplos, el comportamiento con brokers/plataformas reales y la calidad pedagógica humana se registran por separado.

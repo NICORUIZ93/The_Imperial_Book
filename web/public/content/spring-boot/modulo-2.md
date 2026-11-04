@@ -1044,68 +1044,199 @@ Compara la prueba de HTTP con `ContratoOpenApiTest`: una revisa lo que hace el s
 
 ### Tema 6: Paginación HTTP con validación y un límite de recursos explícito
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar expondrás una colección paginada y rechazarás parámetros que exceden el contrato. **Prerrequisitos:** Java, Maven, REST y Bean Validation. JDK 25 y curl; comprueba `java --version`. Ejemplo independiente desde proyecto nuevo con Spring Initializr.
+La ruta de tareas aún no permite pedir pocos resultados. Conectarás una página del navegador a una consulta paginada de Spring Data y limitarás el tamaño de cada petición.
 
-#### Paso 2 · Contexto y caso real
-El proyecto integrador muestra envíos en un panel. Devolver toda la colección carga el servidor y el navegador. **¿Por qué es importante?** El cliente no debería poder pedir un millón de elementos porque cambió un parámetro.
+**¿Por qué es importante?** El servidor debe limitar cuánto consulta y envía; el cliente necesita saber si quedan más resultados.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Una página tiene posición y tamaño. La validación restringe el trabajo solicitado antes de ejecutar la lógica. Un orden estable requiere desempate único. **Analogía:** entregar carpetas en lotes permite controlar cuánto trabajo se hace en cada turno. El límite es que paginación por offset puede desplazarse cuando cambian datos; para recorridos grandes considera cursor y consistencia explícita.
+**Modelo mental:** page indica qué lote pedir; size cuántas filas puede traer ese lote. La base de datos recibe el límite.
 
-#### Paso 4 · Demostración guiada desde cero
-Crea el proyecto desde una carpeta vacía:
-```bash
-curl -fsSL 'https://start.spring.io/starter.zip?type=maven-project&language=java&bootVersion=4.0.9&baseDir=pagina-demo&groupId=com.example&artifactId=pagina-demo&packageName=com.example.pagina&javaVersion=25&dependencies=web,validation' -o pagina-demo.zip
-unzip pagina-demo.zip
-cd pagina-demo
+```mermaid
+flowchart LR
+  A["GET /api/tareas?page=0&size=2"] --> B["PageRequest + orden por ID"]
+  B --> C["SELECT limitado en base de datos"]
+  C --> D["items + total + hasNext"]
+  A -->|size fuera del rango| E["400 + VALIDACION"]
 ```
-Si Initializr ya no ofrece esa versión estable, selecciona una estable compatible con Java 25 en su UI, conserva Web y Validation y registra la versión elegida; no uses una milestone sin declarar el cambio. Crea `src/main/java/com/example/pagina/EnviosController.java`:
+
+#### Subtema 6.1: Devuelve una página desde JPA · 15 min
+
+**1. Contexto**
+
+TareaRepository hereda findAll(Pageable) de JpaRepository. Con eso, la base de datos selecciona las filas de la página; no cargues toda la tabla y la cortes en Java.
+
+**2. Hazlo tú**
+
+Crea src/main/java/com/example/demo/PaginaTareasDTO.java:
+
 ```java
-package com.example.pagina;
+package com.example.demo;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import org.springframework.web.bind.annotation.*;
 import java.util.List;
-import java.util.stream.IntStream;
+import org.springframework.data.domain.Page;
 
-@RestController
-public class EnviosController {
-    record Envio(int id, String estado) {}
-    record Pagina(List<Envio> items, int page, int size, boolean hasNext) {}
-    private final List<Envio> data = IntStream.rangeClosed(1, 5)
-        .mapToObj(id -> new Envio(id, "creado")).toList();
-
-    @GetMapping("/envios")
-    public Pagina listar(@RequestParam(defaultValue = "0") @Min(0) @Max(1000) int page,
-                         @RequestParam(defaultValue = "2") @Min(1) @Max(100) int size) {
-        // El tamaño se valida antes de calcular el corte.
-        long offset = (long) page * size;
-        var items = data.stream().skip(offset).limit(size).toList();
-        return new Pagina(items, page, size, offset + items.size() < data.size());
+public record PaginaTareasDTO(
+        List<TareaDTO> items,
+        int page,
+        int size,
+        long totalElements,
+        int totalPages,
+        boolean hasNext) {
+    public static PaginaTareasDTO from(Page<TareaDTO> resultado) {
+        return new PaginaTareasDTO(
+                resultado.getContent(),
+                resultado.getNumber(),
+                resultado.getSize(),
+                resultado.getTotalElements(),
+                resultado.getTotalPages(),
+                resultado.hasNext());
     }
 }
 ```
-Conserva la clase Application generada. Ejecuta:
-```bash
-./mvnw spring-boot:run
+
+Añade este método a src/main/java/com/example/demo/ServicioTareas.java:
+
+```java
+public Page<TareaDTO> listar(int page, int size) {
+    var pageable = PageRequest.of(
+            page, size, Sort.by(Sort.Direction.ASC, "id"));
+    return repository.findAll(pageable).map(mapper::toDto);
+}
 ```
-En Windows usa `mvnw.cmd spring-boot:run`. En otra terminal:
-```bash
-curl -i 'http://localhost:8080/envios?page=0&size=2'
-curl -i 'http://localhost:8080/envios?page=1&size=2'
-curl -i 'http://localhost:8080/envios?size=1000000'
+
+Importa Page, PageRequest y Sort desde org.springframework.data.domain.
+
+En src/main/java/com/example/demo/TareaController.java, importa Page y agrega este método:
+
+```java
+@GetMapping
+@Operation(summary = "Listar tareas por página")
+@ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Página de tareas"),
+        @ApiResponse(responseCode = "400", description = "Parámetros inválidos",
+                content = @Content(schema = @Schema(implementation = ApiError.class)))})
+public ResponseEntity<PaginaTareasDTO> listar(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "20") int size) {
+    Page<TareaDTO> resultado = servicio.listar(page, size);
+    return ResponseEntity.ok(PaginaTareasDTO.from(resultado));
+}
 ```
-**Resultado esperado:** primera página IDs 1 y 2, segunda 3 y 4; tamaño excesivo produce 400 por validación de método del controlador. Explica cada bloque: DTOs, datos de muestra, parámetros validados y selección. No se presenta como consulta JPA: la colección es en memoria para aislar el contrato HTTP.
 
-#### Paso 5 · Práctica guiada
-**Fallo deliberado:** cambia la llamada a `size=0`. El servidor debe rechazarla. **Pista:** no transformes un tamaño inválido en respuesta vacía con estado 200; revisa validación y que esté instalado el starter Validation. Corrige el parámetro y recupera los datos.
+Desde la carpeta del proyecto ejecuta:
 
-#### Paso 6 · Práctica independiente
-Comprueba última página, página posterior al final, valor negativo y texto en `size`. Después adapta el contrato a un repositorio con Pageable y orden por ID. Comprueba que la base de datos aplica límite y orden antes de cargar resultados.
+    ./mvnw test
 
-#### Paso 7 · Cierre y evidencia
-**Evidencia de aprendizaje:** comandos con estados HTTP y cuerpos de las páginas, fallo/corrección y decisión de límite. El siguiente paso es observar la consulta SQL, índice y coste del recuento. **Errores comunes:** cargar todo antes de paginar, aceptar tamaño ilimitado y mezclar resultados sin orden determinista. **Límites y decisión de uso:** la lista estática no demuestra escalabilidad, concurrencia ni autorización por recurso.
+Inicia la aplicación y crea tres tareas distintas con el POST del Tema 1. Después pide dos páginas:
 
-**Fuentes oficiales:** [Spring Data: consultas y paginación](https://docs.spring.io/spring-data/commons/reference/repositories/query-methods-details.html) y [Spring MVC validación](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-validation.html).
+```bash
+curl -i 'http://localhost:8080/api/tareas?page=0&size=2'
+curl -i 'http://localhost:8080/api/tareas?page=1&size=2'
+```
+
+**Resultado esperado:** la primera respuesta incluye dos tareas, page: 0, size: 2 y hasNext: true; la segunda contiene la siguiente tarea y hasNext: false. Ambas incluyen el total. Las páginas ordenan por id ascendente.
+
+**Fallo deliberado:** quita Sort.by(Sort.Direction.ASC, "id") y repite ambas peticiones. **Diagnóstico:** una consulta sin orden no garantiza el mismo orden entre peticiones; restaura el desempate por id.
+
+**3. Entiende**
+
+PageRequest convierte página, tamaño y orden en un Pageable. repository.findAll(pageable) pide una página al repositorio y Page.map convierte cada entidad en DTO. La respuesta propia evita exponer directamente la forma interna de Page.
+
+**4. Cierra**
+
+Guarda los dos cuerpos JSON y comprueba que sus items no se repiten. Anota qué campo indica si el servidor tiene otra página.
+
+#### Subtema 6.2: Rechaza tamaños fuera del contrato · 15 min
+
+**1. Contexto**
+
+Una página de un millón de filas puede consumir memoria y ancho de banda. Define un tamaño entre 1 y 50 y permite como máximo 1000 páginas por offset.
+
+**2. Hazlo tú**
+
+En el método listar de src/main/java/com/example/demo/TareaController.java, añade las restricciones del framework a los parámetros:
+
+```java
+public ResponseEntity<PaginaTareasDTO> listar(
+        @RequestParam(defaultValue = "0") @Min(0) @Max(1000) int page,
+        @RequestParam(defaultValue = "20") @Min(1) @Max(50) int size) {
+    Page<TareaDTO> resultado = servicio.listar(page, size);
+    return ResponseEntity.ok(PaginaTareasDTO.from(resultado));
+}
+```
+
+Importa jakarta.validation.constraints.Min y Max. No agregues @Validated a la clase: Spring MVC valida directamente los parámetros de controller. En src/main/java/com/example/demo/GlobalExceptionHandler.java, importa org.springframework.web.method.annotation.HandlerMethodValidationException y añade este handler:
+
+```java
+@ExceptionHandler(HandlerMethodValidationException.class)
+public ResponseEntity<ApiError> manejarParametroInvalido(
+        HandlerMethodValidationException ex) {
+    ApiError cuerpo = new ApiError(
+            "VALIDACION",
+            "Usa page entre 0 y 1000, y size entre 1 y 50.",
+            Map.of());
+    return ResponseEntity.badRequest().body(cuerpo);
+}
+```
+
+Ejecuta ./mvnw test y prueba:
+
+```bash
+curl -i 'http://localhost:8080/api/tareas?page=0&size=2'
+curl -i 'http://localhost:8080/api/tareas?size=0'
+curl -i 'http://localhost:8080/api/tareas?size=51'
+```
+
+**Resultado esperado:** tamaño 2 responde 200; 0 y 51 responden 400 con codigo: VALIDACION. El método del controller no recibe los parámetros inválidos.
+
+En ContratoOpenApiTest.java, añade dos comprobaciones para que el contrato incluya la ruta y el error:
+
+```java
+.contains("Listar tareas por página")
+.contains("Parámetros inválidos");
+```
+
+Ejecuta ./mvnw test y confirma que la prueba OpenAPI sigue pasando.
+
+**Fallo deliberado:** cambia @Min(0) de page a @Min(1) y pide page=0. **Diagnóstico:** la página inicial deja de estar permitida y responde 400; restaura @Min(0).
+
+**3. Entiende**
+
+Spring MVC lanza HandlerMethodValidationException cuando falla la validación de parámetros del método. El handler devuelve el mismo formato ApiError que los errores del cuerpo. Un DTO de entrada y parámetros de query son dos puntos distintos de la API, aunque ambos tengan reglas.
+
+**4. Cierra**
+
+Registra los tres estados HTTP. Comprueba que OpenAPI incluye la ruta de lista; añade la descripción del error 400 si tu documento no la muestra.
+
+#### Subtema 6.3: Comprueba el límite y el costo del paginado · 10 min
+
+**1. Contexto**
+
+El paginado reduce filas por respuesta, pero Page también calcula el total para devolver totalElements y totalPages. Esa cuenta puede costar en tablas grandes.
+
+**2. Hazlo tú**
+
+Activa temporalmente el registro SQL en src/main/resources/application.yml:
+
+```yaml
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+```
+
+Pide page=0&size=2 y observa la consulta SELECT con límite/offset y la consulta de recuento. La sintaxis exacta depende del motor. Desactiva el registro después para no llenar la consola en cada inicio.
+
+**Resultado esperado:** el repositorio pide una cantidad acotada de filas y el recuento de elementos. No se imprime primero toda la tabla para cortar la lista en memoria.
+
+**Fallo deliberado:** cambia el tamaño máximo de 50 a 5000 y vuelve a pedir size=51. **Diagnóstico:** la entrada ya no se rechaza, aunque el contrato promete el límite 50; restaura @Max(50) y ejecuta ./mvnw test.
+
+**3. Entiende**
+
+Page es útil si la interfaz necesita total y número de páginas. Para una lista que solo necesita “hay más”, Slice puede evitar contar todas las filas. La paginación por offset puede desplazarse si se insertan datos entre solicitudes; en recorridos grandes o cambiantes, evalúa paginación por cursor.
+
+**4. Cierra**
+
+**Práctica independiente:** cambia el orden por titulo y id, prueba dos páginas y explica por qué un segundo campo único estabiliza empates.
+
+**Transferencia al proyecto integrador:** pagina el listado de envíos con límites explícitos, orden estable y DTO de respuesta; registra cuándo el total de resultados es necesario para la interfaz.
+
+**Fuentes primarias:** [Spring Data: repositorios y paginación](https://docs.spring.io/spring-data/commons/reference/repositories/core-concepts.html), [Spring Data: uso de Pageable y Page](https://docs.spring.io/spring-data/commons/reference/repositories/query-methods-details.html), [Spring MVC: validación de parámetros](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-validation.html).

@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 217,
+    "topicsWithSignals": 218,
     "newLaboratories": 25
   },
   "priorities": {
@@ -12911,7 +12911,9 @@
       "title": "Tema 6: Paginación HTTP con validación y un límite de recursos explícito",
       "file": "web/public/content/spring-boot/modulo-2.md",
       "line": 1045,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": true,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"

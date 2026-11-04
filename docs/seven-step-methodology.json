@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 86,
-      "prerequisites": 97,
-      "context": 86,
-      "theoryAnalogy": 86,
-      "guidedDemo": 86,
+      "objective": 85,
+      "prerequisites": 96,
+      "context": 85,
+      "theoryAnalogy": 85,
+      "guidedDemo": 85,
       "codeExplanation": 111,
       "execution": 105,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 86,
-      "independentPractice": 86,
-      "closure": 86,
-      "commonErrors": 86,
-      "resources": 93,
-      "standaloneExample": 83,
-      "learningEvidence": 92,
-      "complete": 82
+      "guidedPractice": 85,
+      "independentPractice": 85,
+      "closure": 85,
+      "commonErrors": 85,
+      "resources": 92,
+      "standaloneExample": 82,
+      "learningEvidence": 91,
+      "complete": 81
     }
   },
   "topics": {
@@ -29667,26 +29667,26 @@
         "module": 2,
         "topic": "Tema 6: Paginación HTTP con validación y un límite de recursos explícito",
         "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "objective": false,
+          "prerequisites": false,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 4,
+          "complete": false
         }
       },
       {

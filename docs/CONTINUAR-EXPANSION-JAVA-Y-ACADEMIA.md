@@ -237,7 +237,24 @@ practicables** y 409 temas con defectos de sustancia. `./scripts/validate.sh`
 pasó tras los Temas 1–5 (23 pruebas, 4 omitidas). No confundir esos indicadores
 con ejecución de todos los ejemplos ni revisión humana completa.
 
-**Siguiente tema:** Spring Boot M2 T6, “Paginación HTTP con validación y un
-límite de recursos explícito”. Revisa si debe continuar el proyecto JPA actual,
-verifica la validación de parámetros en Spring Framework 7/Spring Boot 4 y
-comprueba que el límite se aplique antes de cargar una colección completa.
+Spring Boot M2 T6, “Paginación HTTP con validación y un límite de recursos
+explícito”, completa el módulo con el mismo backend JPA. La ruta crea un
+PageRequest ordenado por ID, devuelve un DTO de página y limita page a 0–1000 y
+size a 1–50. Se amplió el advice para HandlerMethodValidationException, además
+del error de validación del body. Con Boot 4.1.2/JDK 25, `./mvnw -q clean test`
+pasó; tres tareas dieron páginas ordenadas de 2 y 1 filas, con hasNext true y
+false. size=0 y size=51 respondieron 400 con codigo VALIDACION. Se comprobó la
+validación de parámetros en Spring MVC 7; no se ejecutaron fallos deliberados ni
+la práctica independiente.
+
+La auditoría global actual registra **129/1185 temas atómicos**: Java 101,
+Spring Boot 25, Node 2 y Flutter 1. La auditoría pedagógica detecta 1095/1185
+temas practicables y la de sustancia 409 con defectos. Los reportes se
+regeneraron y `./scripts/validate.sh` pasó tras el Tema 6 (23 pruebas, 4
+omitidas); mantén estas cifras como indicadores estructurales, no como
+certificación de aprendizaje.
+
+**Siguiente tema:** Spring Boot M3 T1, “Entidades y repositorios derivados”.
+Conecta la explicación de entidades y consultas a la API de tareas ya creada;
+verifica los nombres de métodos derivados en Spring Data y ejecuta una búsqueda
+real con datos de prueba antes de explicar la consulta que genera.

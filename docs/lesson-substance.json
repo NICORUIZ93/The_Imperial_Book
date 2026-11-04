@@ -1698,7 +1698,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "9b5938264b7ca383a5506de68eb54c7fad6f39938bfa38999de1d32cd1e74591",
+    "fingerprint": "6b198dd9d7fff4a10285d38008a6c08a7c23ad2b07524b1bfcaa173df57df77a",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10676,9 +10676,9 @@
       {
         "issues": [],
         "module": 2,
-        "tailWords": 101,
+        "tailWords": 0,
         "topic": "Tema 6: Paginación HTTP con validación y un límite de recursos explícito",
-        "words": 680
+        "words": 1213
       },
       {
         "issues": [

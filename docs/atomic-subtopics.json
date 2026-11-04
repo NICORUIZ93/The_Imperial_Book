@@ -93,10 +93,10 @@
     },
     "spring-boot": {
       "topics": 111,
-      "completeTopics": 24,
-      "topicsWith3to6Subtopics": 25,
-      "subtopics": 75,
-      "completeSubtopics": 74
+      "completeTopics": 25,
+      "topicsWith3to6Subtopics": 26,
+      "subtopics": 78,
+      "completeSubtopics": 77
     }
   },
   "topics": {
@@ -13206,9 +13206,52 @@
       {
         "module": 2,
         "topic": "### Tema 6: Paginación HTTP con validación y un límite de recursos explícito",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "6.1",
+            "title": "#### Subtema 6.1: Devuelve una página desde JPA · 15 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "6.2",
+            "title": "#### Subtema 6.2: Rechaza tamaños fuera del contrato · 15 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "6.3",
+            "title": "#### Subtema 6.3: Comprueba el límite y el costo del paginado · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 20,
