@@ -7,40 +7,56 @@ Cada tema se practica por separado con su propia repetición progresiva y su pro
 
 ### Tema 1: Spring Initializr y starters
 
-#### Paso 1 · Objetivo y preparación
+Una aplicación de entregas necesita HTTP y probablemente más adelante validación y persistencia. Spring Initializr genera el esqueleto; los starters agrupan bibliotecas y la gestión de dependencias de Boot aporta versiones recomendadas. Necesitas Java básico, terminal y el Módulo 0.
 
-Al finalizar podrás elegir starters con criterio y explicar por qué evitan el "dependency hell" de resolver manualmente versiones compatibles.
+**¿Por qué es importante?** Elegir dependencias a mano puede juntar versiones que no se probaron entre sí. El proyecto generado reduce ese trabajo, pero una versión escrita explícitamente puede reemplazar la recomendación de Boot.
 
-**Conocimiento previo:** Módulo 0 (contenedor de Spring, `@Service`).
+#### Subtema 1.1: Genera el proyecto y encuentra sus piezas · 10 min
 
-#### Paso 2 · Contexto y caso real
+**1. Contexto**
 
-**¿Por qué es importante?** Un servicio de entregas que necesita exponer HTTP, persistir en PostgreSQL y validar entradas no debería requerir que el equipo investigue manualmente qué versiones de Tomcat, Hibernate y Jackson son compatibles entre sí para la versión de Spring Boot elegida.
+Empiezas un servicio nuevo. Generar un proyecto te entrega estructura, Maven Wrapper y una dependencia web inicial.
 
-#### Paso 3 · Teoría con analogía
+**2. Hazlo tú**
 
-**Conceptos clave:** starter, dependencias preconfiguradas, generación de estructura base.
-
-[start.spring.io](https://start.spring.io) genera la estructura base de un proyecto a partir de starters seleccionados (`web`, `data-jpa`, `security`, `postgresql`), donde cada starter es un conjunto curado de dependencias preconfiguradas que trabajan juntas de forma coherente: `spring-boot-starter-web` trae todo lo necesario para exponer APIs HTTP; `spring-boot-starter-data-jpa` trae Hibernate y la infraestructura de Spring Data para persistencia. Esta curación es el valor añadido de los starters sobre agregar dependencias sueltas manualmente: Spring Boot gestiona internamente qué versiones de cada dependencia son compatibles entre sí para una versión dada, eliminando la necesidad de resolver manualmente esa matriz de compatibilidad (el "dependency hell") mediante su gestión centralizada de versiones (el BOM de Spring Boot).
-
-**Analogía:** un starter es un kit de herramientas preensamblado para un propósito específico, donde todas las herramientas incluidas ya están verificadas para trabajar bien juntas, en vez de comprar cada herramienta individual y verificar manualmente su compatibilidad.
-
-**Diagrama:** [Cómo Initializr genera un proyecto con starters](../../visuals/temas/spring-boot/modulo-1-tema-1-initializr-starters.html)
-
-#### Paso 4 · Demostración guiada desde cero
-
-Desde una carpeta vacía, genera el proyecto real con el starter `web`:
+Crea una carpeta de trabajo y genera un proyecto Java 25 con Maven y la capacidad `web` de [Spring Initializr](https://start.spring.io/):
 
 ```bash
-# descarga y arranca con Maven el proyecto generado por Spring Initializr
 mkdir ejemplo-spring-m1
 cd ejemplo-spring-m1
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip
+curl -fsSL -G 'https://start.spring.io/starter.zip' \
+  -d type=maven-project \
+  -d language=java \
+  -d javaVersion=25 \
+  -d dependencies=web \
+  -o app.zip
 unzip app.zip
-./mvnw spring-boot:run
+./mvnw test
 ```
 
-Crea `src/main/java/com/example/demo/SaludController.java` exponiendo `GET /health`:
+Abre el `pom.xml` que se creó y localiza el parent de Spring Boot, la dependencia web y la dependencia de pruebas.
+
+**Resultado esperado:** Maven termina en `BUILD SUCCESS`; `pom.xml` registra las dependencias que pediste y el Wrapper permite compilar sin instalar Maven globalmente.
+
+**Fallo deliberado:** vuelve a la carpeta padre y ejecuta `./mvnw test`. **Diagnóstico:** la terminal no encuentra el wrapper porque vive dentro de `ejemplo-spring-m1`; usa `pwd`, vuelve a esa carpeta y comprueba que allí existen `mvnw` y `pom.xml`.
+
+**3. Entiende**
+
+Initializr no crea tu producto completo: prepara una estructura inicial con opciones elegidas. El starter web agrega bibliotecas necesarias para HTTP; el código y las reglas de tu aplicación siguen siendo responsabilidad del equipo.
+
+**4. Cierra**
+
+Guarda el `pom.xml` y anota el valor del `<version>` de Spring Boot. El siguiente paso usará el controlador del proyecto para observar qué hizo disponible el starter.
+
+#### Subtema 1.2: Conecta el starter web con una ruta · 10 min
+
+**1. Contexto**
+
+La dependencia web solo se vuelve visible cuando una clase del proyecto usa sus herramientas. Una ruta mínima permite comprobar que la aplicación puede recibir HTTP.
+
+**2. Hazlo tú**
+
+Crea `src/main/java/com/example/demo/SaludController.java` dentro del paquete de la aplicación:
 
 ```java
 package com.example.demo;
@@ -57,50 +73,69 @@ public class SaludController {
 }
 ```
 
-**Explicación línea por línea:** `dependencies=web` en la URL de Initializr selecciona el starter `spring-boot-starter-web`, que trae Tomcat embebido, Jackson y Spring MVC ya autoconfigurados; `@RestController` marca la clase como manejador de peticiones HTTP que serializa directamente los valores de retorno (en vez de resolver una vista); `@GetMapping("/health")` mapea peticiones `GET /health` a este método.
-
-Guarda el archivo, reinicia la aplicación y confirma la respuesta:
+Desde la raíz del proyecto, arranca la aplicación:
 
 ```bash
-curl http://localhost:8080/health
+./mvnw spring-boot:run
 ```
 
-**Resultado esperado:** la respuesta HTTP es `200 OK` con cuerpo `OK` — confirmando que el starter `web` autoconfiguró un servidor HTTP funcional sin ninguna configuración manual de Tomcat, Jackson o Spring MVC por tu parte.
+En otra terminal, consulta:
 
-**Fallo deliberado:** genera un segundo proyecto sin el starter `web` (`-d dependencies=` vacío) e intenta agregar el mismo `SaludController`. La compilación falla porque `org.springframework.web.bind.annotation.RestController` no existe en el classpath — diagnostica confirmando que sin el starter correspondiente, ni siquiera las anotaciones básicas de esa capacidad están disponibles, mucho antes de llegar a un error en tiempo de ejecución.
-
-#### Paso 5 · Práctica guiada — repetición progresiva
-
-1. Agrega el starter `validation` a un proyecto existente y confirma que `@NotBlank`/`@NotNull` quedan disponibles.
-2. Genera un proyecto con `data-jpa` sin `postgresql` (ni ningún driver de base de datos) y observa el error real al intentar arrancar.
-3. Compara el `pom.xml` generado con y sin el starter `security`, identificando qué dependencias nuevas aparecen.
-4. Escribe de memoria (sin mirar) los starters mínimos necesarios para una API HTTP que persiste en una base de datos relacional.
-
-**Pista:** antes de agregar una dependencia suelta manualmente, verifica primero si existe un starter que ya la incluya con las versiones compatibles correctas.
-
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio para que el controlador responda a peticiones HTTP:
-
-```java
-@____
-public class SaludController {
-    @GetMapping("/health")
-    public String health() { return "OK"; }
-}
+```bash
+curl -i http://localhost:8080/health
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un controlador REST mínimo con un endpoint `GET`, y los starters necesarios para que compile y arranque. Compara después contra el patrón del Paso 4.
+**Resultado esperado:** la respuesta comienza con `HTTP/1.1 200` y el cuerpo contiene `OK`.
 
-#### Paso 7 · Cierre y evidencia
+**Fallo deliberado:** elimina la dependencia web del `pom.xml` y ejecuta `./mvnw test`. **Diagnóstico:** el compilador deja de encontrar `RestController` y `GetMapping`; restaura la dependencia para compilar el controlador.
 
-Ya eliges starters con criterio y explicas por qué evitan resolver manualmente versiones compatibles entre dependencias. El siguiente tema compara los dos formatos de configuración externa disponibles. **Evidencia:** entrega la respuesta `200 OK` de `/health` y el fallo real de compilación al usar una anotación sin su starter correspondiente. Fuente oficial: [Spring Initializr](https://docs.spring.io/initializr/docs/current/reference/html/).
+**3. Entiende**
 
-**Errores comunes:** agregar dependencias sueltas manualmente en vez de usar el starter correspondiente, arriesgando incompatibilidades de versión; incluir starters que el proyecto no necesita, aumentando el tiempo de arranque y la superficie de configuración sin beneficio real.
+`@RestController` registra un manejador HTTP. `@GetMapping` conecta la ruta `GET /health` con el método. El starter pone las clases web y el servidor en el proyecto; Boot configura lo habitual si la clase principal tiene `@SpringBootApplication`.
 
-**Cuándo no usarlo:** para una librería que no es una aplicación ejecutable por sí misma (por ejemplo, un módulo compartido consumido por otros proyectos), los starters de Spring Boot como tal no aplican; usa dependencias de Spring Framework más específicas según lo que la librería necesite exponer.
+**4. Cierra**
 
-**Transferencia al proyecto integrador «microservicio productivo»:** Genera el proyecto base con los starters `web`, `data-jpa`, `validation` y `postgresql` desde el principio, confirmando con `pom.xml` que esa combinación trae ya resueltas las versiones compatibles de Tomcat, Hibernate y el driver de PostgreSQL.
+Conserva el controlador y guarda la respuesta HTTP. El siguiente paso mostrará las dependencias que llegaron y quién administra sus versiones.
+
+#### Subtema 1.3: Revisa qué agrupa el starter y quién fija versiones · 10 min
+
+**1. Contexto**
+
+Un starter agrupa dependencias para una tarea. El BOM de Boot administra versiones de bibliotecas que conoce; son funciones relacionadas, pero no significan que cada dependencia quede instalada en cualquier versión.
+
+**2. Hazlo tú**
+
+Desde la carpeta del proyecto, imprime el árbol resuelto y busca el starter web y sus dependencias transitivas:
+
+```bash
+./mvnw dependency:tree
+```
+
+Luego abre `pom.xml` y localiza el parent `spring-boot-starter-parent` o el bloque `dependencyManagement` que importe el BOM. Los nombres de artefactos cambian entre versiones mayores; usa los que realmente generó Initializr. Por ejemplo, Spring Boot 4 genera el starter `spring-boot-starter-webmvc` para la capacidad web.
+
+**Resultado esperado:** el árbol muestra el starter web junto con sus bibliotecas transitivas. El parent/BOM proporciona versiones administradas para dependencias compatibles con esa versión de Boot.
+
+**Fallo deliberado:** cambia el nombre del starter en el `pom.xml` a `spring-boot-starter-webmx` y ejecuta `./mvnw test`. **Diagnóstico:** Maven no puede resolver ese artefacto; compara el nombre con el árbol y restaura el artefacto generado.
+
+**3. Entiende**
+
+El starter selecciona un conjunto útil de dependencias. El parent o BOM recomienda y administra versiones para bibliotecas incluidas en su catálogo; puedes sobrescribirlas, y una sobrescritura puede producir incompatibilidades. Revisa el árbol cuando agregues dependencias manuales.
+
+```mermaid
+flowchart LR
+    initializr[Opciones elegidas] --> starter[Starter agregado]
+    starter --> deps[Dependencias transitivas]
+    bom[Parent o BOM de Boot] --> versions[Versiones administradas]
+    deps --> versions
+```
+
+**4. Cierra**
+
+**Práctica independiente:** añade la capacidad `validation` desde Initializr o el mecanismo de dependencias de tu proyecto y compara los árboles antes y después. En el proyecto integrador, selecciona cada starter por una necesidad concreta y registra en README el nombre exacto que generó esa versión de Boot.
+
+**Límite:** un starter no configura reglas de negocio, datos de conexión o autorización por ti. No agregues `data-jpa` solo por anticipar que quizá se usará; añade persistencia cuando el proyecto la necesite.
+
+**Fuentes primarias:** [Spring Initializr](https://docs.spring.io/initializr/docs/current/reference/html/), [gestión de dependencias en Spring Boot](https://docs.spring.io/spring-boot/reference/using/build-systems.html), [módulos web de Spring Boot](https://docs.spring.io/spring-boot/reference/web/index.html).
 
 ### Tema 2: application.yml vs application.properties
 

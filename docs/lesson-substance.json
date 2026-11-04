@@ -1698,7 +1698,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "e645d07ddf53b58bf85e6c786c7adb5eedd4c1223aff65b9988dbeeab1eae810",
+    "fingerprint": "118b8154fb69b281418428175c6773016fe7e33fdd9595bd335225e2f3167fee",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10298,9 +10298,9 @@
       {
         "issues": [],
         "module": 1,
-        "tailWords": 189,
+        "tailWords": 0,
         "topic": "Tema 1: Spring Initializr y starters",
-        "words": 926
+        "words": 922
       },
       {
         "issues": [],

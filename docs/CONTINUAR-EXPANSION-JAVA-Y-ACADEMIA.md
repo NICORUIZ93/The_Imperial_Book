@@ -89,8 +89,8 @@ reapliques cambios que ya estén publicados.
 
 ## Estado global honesto
 
-En la auditoría actual: **121/1185 temas** cumplen la estructura atómica en los
-14 tracks; Java aporta 101 y Spring Boot 3. La auditoría pedagógica detecta
+En la auditoría actual: **122/1185 temas** cumplen la estructura atómica en los
+14 tracks; Java aporta 101 y Spring Boot 4. La auditoría pedagógica detecta
 **1095/1185 temas practicables** y deuda en 90. La auditoría de sustancia registra
 409 temas con defectos, deuda histórica repartida entre varios tracks. Ninguna de
 estas cifras certifica que un curso esté completo o que todos los ejemplos se
@@ -162,9 +162,15 @@ y `ObjectProvider` entregó IDs nuevos. El árbol de Maven confirmó el starter
 fallos deliberados de la guía no se ejecutaron; las validaciones estructurales
 del repositorio sí pasaron antes de publicar.
 
-**Siguiente tema:** Spring Boot M1 T1, “Spring Initializr y starters”. Revisa
-versiones actuales y artefactos generados por Initializr, explica qué aporta un
-starter con el `pom.xml` real del proyecto y aclara qué configura Boot de forma
-condicional. Mantén 3–6 subtemas con archivo, comando, salida y diagnóstico de
-fallo; contrasta afirmaciones variables con documentación oficial. Después sigue
-por M1 en orden.
+Spring Boot M1 T1 se reorganizó en tres subtemas: generar el esqueleto, agregar
+una ruta HTTP y leer starter/BOM sin asumir nombres iguales entre versiones.
+El mismo proyecto temporal compiló con `./mvnw test` y `/health` respondió
+`200 OK`. Los fallos deliberados de las guías no se ejecutaron; las validaciones
+estructurales del repositorio sí pasaron antes de publicar.
+
+**Siguiente tema:** Spring Boot M1 T2, “application.yml vs application.properties”.
+Revisa equivalencia, precedencia y carga de archivos con la versión vigente de Boot;
+no afirmes que ambos archivos se combinan siempre sin comprobar reglas de carga.
+Usa una aplicación que muestre la propiedad aplicada y separa errores de sintaxis
+YAML de errores de resolución de configuración. Mantén 3–6 subtemas completos y
+sigue por M1 en orden.

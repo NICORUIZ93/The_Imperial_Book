@@ -99,8 +99,8 @@
     "spring-boot": {
       "topics": 111,
       "code": 111,
-      "commentedCode": 71,
-      "mermaid": 50,
+      "commentedCode": 70,
+      "mermaid": 51,
       "archifyVisual": 4,
       "asciiVisual": 18,
       "misleadingDiagramLabel": 0,
@@ -2540,6 +2540,13 @@
       "track": "spring-boot",
       "module": 0,
       "topic": "Tema 2: Inyección por constructor vs por campo",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 1,
+      "topic": "Tema 1: Spring Initializr y starters",
       "missingCode": false,
       "missingComments": true
     },

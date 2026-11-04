@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 211,
+    "topicsWithSignals": 212,
     "newLaboratories": 25
   },
   "priorities": {
@@ -12299,7 +12299,9 @@
       "title": "Tema 1: Spring Initializr y starters",
       "file": "web/public/content/spring-boot/modulo-1.md",
       "line": 8,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -12309,7 +12311,7 @@
       "module": 1,
       "title": "Tema 2: application.yml vs application.properties",
       "file": "web/public/content/spring-boot/modulo-1.md",
-      "line": 105,
+      "line": 140,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -12320,7 +12322,7 @@
       "module": 1,
       "title": "Tema 3: Perfiles y estructura por capas",
       "file": "web/public/content/spring-boot/modulo-1.md",
-      "line": 215,
+      "line": 250,
       "signals": [
         "ejemplo-breve-revisar-contexto"
       ],
