@@ -21,7 +21,7 @@ class RouteFunctionsTest {
     void transformaEnvioEnSolicitudDeRuta() {
         input.send(new GenericMessage<>(new ShipmentCreated("sh-42", "10ABC")));
 
-        var result = output.receive(1_000);
+        var result = output.receive(1_000, "routes.requested");
         assertThat(result).isNotNull();
         assertThat(new String((byte[]) result.getPayload())).contains("sh-42", "10");
     }

@@ -190,6 +190,10 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - pendiente Subtema 4.3 · Ver el rebalanceo al entrar el segundo consumer · 15 min
   - pendiente Subtema 4.4 · Usar membresía estática solo para reinicios breves · 10 min
 - [pendiente de migrar] Tema 5: Kafka frente a RabbitMQ
+  - pendiente Subtema 5.1 · Repartir mensajes o dar una copia a cada grupo · 10 min
+  - pendiente Subtema 5.2 · Releer historial o conservar mensajes pendientes · 10 min
+  - ✓ Subtema 5.3 · Distinguir confirmación de publicación y confirmación de consumo · 10 min
+  - ✓ Subtema 5.4 · Elegir por el flujo y comprobar ambos binders · 15 min
 - [pendiente de migrar] Tema 6: Spring Cloud Stream y binders de Kafka/RabbitMQ
 - [pendiente de migrar] Tema 7: Kafka Streams con Spring para transformar eventos
 - [pendiente de migrar] Tema 8: Avro y Schema Registry para contratos de eventos

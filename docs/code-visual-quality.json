@@ -99,10 +99,10 @@
     "spring-boot": {
       "topics": 111,
       "code": 111,
-      "commentedCode": 58,
+      "commentedCode": 57,
       "mermaid": 49,
       "archifyVisual": 3,
-      "asciiVisual": 11,
+      "asciiVisual": 10,
       "misleadingDiagramLabel": 0,
       "filePath": 111,
       "runCommand": 111,
@@ -2876,6 +2876,13 @@
       "track": "spring-boot",
       "module": 8,
       "topic": "Tema 4: Rebalanceo de consumer groups y asignación de particiones",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 8,
+      "topic": "Tema 5: Kafka frente a RabbitMQ",
       "missingCode": false,
       "missingComments": true
     },

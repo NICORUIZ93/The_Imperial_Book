@@ -737,7 +737,34 @@ practicables, 1038/1185 completos en metodología de siete pasos y 409 temas con
 señales automatizadas de defecto de sustancia. Estas métricas son estructurales,
 no certifican la calidad pedagógica ni la comprensión humana.
 
-**Siguiente tema:** Spring Boot M8 T5, “Kafka frente a RabbitMQ”. Revisa las
-comparaciones de retención, consumo, confirmaciones y reentrega con las fuentes
-y versiones del laboratorio; evita analogías que reduzcan RabbitMQ a borrar un
-mensaje siempre o Kafka a retención permanente.
+Spring Boot M8 T5, “Kafka frente a RabbitMQ”, se reescribió en cuatro
+subtemas atómicos: grupos/colas, retención/relectura, confirmación de publicación
+frente a ack de consumo, y decisión por flujo con dos binders. Se corrigió la
+simplificación falsa de que RabbitMQ no puede hacer fan-out (puede enrutar a
+varias colas) o que siempre elimina al entregar (con ack manual puede reencolar).
+También se acotó la retención Kafka a su política configurada. La guía reutiliza
+código existente en `spring-kafka-rutaflow`, `node-messaging` y
+`spring-stream-rutaflow`, sin prometer un test RabbitMQ/Testcontainers inexistente
+en ese laboratorio.
+
+Las pruebas del módulo Spring Cloud Stream pasaron (2 pruebas) y se cambió el
+`OutputDestination.receive` deprecado por la variante con destino explícito
+`routes.requested`; la advertencia desapareció. `npm test` en
+`examples/node-messaging` pasó con 2 pruebas. No fue posible levantar los brokers
+reales en este entorno: el comando `docker` no está instalado. El README del
+laboratorio conserva la separación entre test binder (función/mapping) y broker
+real. Para afirmar integración Kafka/Rabbit real, ejecutar los perfiles cuando
+Docker esté disponible. Fuentes oficiales: documentación Kafka 4.2 sobre log y
+retención; RabbitMQ sobre consumers y confirms; Spring AMQP sobre ack y publisher
+confirms; Spring Cloud Stream sobre binder y test binder.
+
+La validación de repo pasó con 23 pruebas de script (4 omitidas). La última
+auditoría registra 140/1185 temas atómicos, 1089/1185 practicables, 1037/1185
+completos en metodología de siete pasos y 409 con señales automatizadas de
+defecto de sustancia. La auditoría estructural detecta contenido en 236 temas;
+ninguna de estas cifras certifica la calidad pedagógica o comprensión humana.
+
+**Siguiente tema:** Spring Boot M8 T6, “Spring Cloud Stream y binders de
+Kafka/RabbitMQ”. Revisa código, propiedades y dependencias contra los dos
+perfiles existentes y documentación oficial; separa la prueba en memoria del
+binder de la integración real que exige cada broker.

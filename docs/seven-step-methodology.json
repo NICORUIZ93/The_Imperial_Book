@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 67,
+      "objective": 66,
       "prerequisites": 80,
-      "context": 67,
-      "theoryAnalogy": 67,
-      "guidedDemo": 67,
+      "context": 66,
+      "theoryAnalogy": 66,
+      "guidedDemo": 66,
       "codeExplanation": 111,
       "execution": 105,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 67,
-      "independentPractice": 67,
-      "closure": 67,
-      "commonErrors": 67,
+      "guidedPractice": 66,
+      "independentPractice": 66,
+      "closure": 66,
+      "commonErrors": 66,
       "resources": 75,
       "standaloneExample": 64,
       "learningEvidence": 79,
-      "complete": 63
+      "complete": 62
     }
   },
   "topics": {
@@ -30915,26 +30915,26 @@
         "module": 8,
         "topic": "Tema 5: Kafka frente a RabbitMQ",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
           "resources": true,
           "standaloneExample": true,
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 8,
+          "complete": false
         }
       },
       {

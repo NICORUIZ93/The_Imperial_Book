@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 235,
+    "topicsWithSignals": 236,
     "newLaboratories": 25
   },
   "priorities": {
@@ -13497,7 +13497,9 @@
       "title": "Tema 5: Kafka frente a RabbitMQ",
       "file": "web/public/content/spring-boot/modulo-8.md",
       "line": 597,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -13507,7 +13509,7 @@
       "module": 8,
       "title": "Tema 6: Spring Cloud Stream y binders de Kafka/RabbitMQ",
       "file": "web/public/content/spring-boot/modulo-8.md",
-      "line": 801,
+      "line": 735,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -13520,7 +13522,7 @@
       "module": 8,
       "title": "Tema 7: Kafka Streams con Spring para transformar eventos",
       "file": "web/public/content/spring-boot/modulo-8.md",
-      "line": 873,
+      "line": 807,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -13533,7 +13535,7 @@
       "module": 8,
       "title": "Tema 8: Avro y Schema Registry para contratos de eventos",
       "file": "web/public/content/spring-boot/modulo-8.md",
-      "line": 938,
+      "line": 872,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -13546,7 +13548,7 @@
       "module": 8,
       "title": "Tema 9: RabbitMQ con Spring AMQP: routing, ack y prefetch",
       "file": "web/public/content/spring-boot/modulo-8.md",
-      "line": 1000,
+      "line": 934,
       "signals": [
         "clase-java-no-visible"
       ],

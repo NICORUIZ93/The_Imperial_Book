@@ -94,9 +94,9 @@
     "spring-boot": {
       "topics": 111,
       "completeTopics": 36,
-      "topicsWith3to6Subtopics": 44,
-      "subtopics": 134,
-      "completeSubtopics": 113
+      "topicsWith3to6Subtopics": 45,
+      "subtopics": 138,
+      "completeSubtopics": 115
     }
   },
   "topics": {
@@ -14817,8 +14817,65 @@
       {
         "module": 8,
         "topic": "### Tema 5: Kafka frente a RabbitMQ",
-        "subtopicCount": 0,
-        "subtopics": [],
+        "subtopicCount": 4,
+        "subtopics": [
+          {
+            "id": "5.1",
+            "title": "#### Subtema 5.1 · Repartir mensajes o dar una copia a cada grupo · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "5.2",
+            "title": "#### Subtema 5.2 · Releer historial o conservar mensajes pendientes · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "5.3",
+            "title": "#### Subtema 5.3 · Distinguir confirmación de publicación y confirmación de consumo · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "5.4",
+            "title": "#### Subtema 5.4 · Elegir por el flujo y comprobar ambos binders · 15 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
         "complete": false
       },
       {
