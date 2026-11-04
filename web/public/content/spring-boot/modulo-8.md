@@ -458,207 +458,141 @@ Identifica qué fila ve cada nivel de aislamiento y di qué parte de la garantí
 
 **Transferencia al proyecto integrador:** conserva eventos pendientes en outbox, publica con clave estable y protege cada `eventId` en inbox. Describe la garantía y sus límites por cada frontera; no llames exactly-once a la operación total sin una transacción que cubra su entrada y salida.
 
-### Tema 4: Rebalanceo de consumer groups y partition assignment
+### Tema 4: Rebalanceo de consumer groups y asignación de particiones
 
-#### Paso 1 · Objetivo y preparación
+**Duración estimada:** 45 min.
 
-Al finalizar podrás reproducir un rebalanceo completo de un consumer group al reiniciar una instancia, y configurar static group membership para evitarlo en reinicios breves.
+**Resultado:** observa cómo cambia la propiedad de las particiones cuando entra otro consumer, mantiene correcto el estado local con los callbacks y decide cuándo sirve la membresía estática.
+**¿Por qué es importante?** Un estado local desactualizado puede hacer que una instancia procese datos de una partición que ya pertenece a otro miembro.
 
-**Conocimiento previo:** Tema 1 de este módulo.
+**Necesitas:** M8 T1 y un clon del laboratorio `examples/spring-kafka-rutaflow/`. Prueba el comando desde esa carpeta.
 
-#### Paso 2 · Contexto y caso real
+#### Subtema 4.1 · Una partición pertenece a un consumer del grupo · 10 min
 
-**¿Por qué es importante?** Cada vez que una instancia de un consumer group se une o abandona el grupo (incluyendo un simple restart de un pod en Kubernetes), Kafka reasigna TODAS las particiones entre TODAS las instancias restantes, deteniendo momentáneamente el consumo de todo el grupo — invisible en desarrollo con una sola instancia, pero costoso en producción con varias.
+**1. Contexto**
 
-#### Paso 3 · Teoría con analogía
+Kafka reparte las particiones suscritas entre los miembros de un mismo grupo. Dos grupos distintos pueden leer el mismo tópico; dentro de un grupo, una partición se asigna a un solo miembro a la vez. El resultado exacto depende del protocolo y del asignador.
 
-**Conceptos clave:** consumer group, rebalanceo, partition assignment strategy, static membership.
+**2. Hazlo tú**
 
-```java
-@Bean
-ConsumerFactory<String, Object> consumerFactory() {
-    Map<String, Object> config = new HashMap<>();
-    config.put(ConsumerConfig.GROUP_INSTANCE_ID_CONFIG, "notificaciones-1");
-    config.put(ConsumerConfig.PARTITION_ASSIGNMENT_STRATEGY_CONFIG,
-        CooperativeStickyAssignor.class.getName());
-    return new DefaultKafkaConsumerFactory<>(config);
-}
-```
-
-`group.instance.id` le da a esa instancia una identidad estable entre reinicios: si se reinicia dentro de una ventana de tiempo configurable (`session.timeout.ms`), el broker la trata como la MISMA instancia regresando, sin disparar un rebalanceo completo del grupo; `CooperativeStickyAssignor` además minimiza cuántas particiones efectivamente cambian de dueño cuando un rebalanceo sí ocurre, en vez de reasignar todas desde cero.
-
-**Analogía:** un rebalanceo sin static membership es como reorganizar TODOS los escritorios de una oficina cada vez que una persona sale a almorzar y vuelve; con static membership, su escritorio la espera reservado durante una ausencia breve conocida, sin reorganizar nada si vuelve a tiempo.
-
-**Diagrama:**
-
-```mermaid
-sequenceDiagram
-  participant C1 as Consumer-1
-  participant C2 as Consumer-2
-  participant K as Broker (coordinador)
-  C1->>K: restart (sin group.instance.id)
-  K->>K: rebalanceo completo: reasigna TODAS las particiones
-  Note over C1,C2: ambos detienen el consumo durante el rebalanceo
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Reutiliza `academia-spring` y crea un `ConsumerRebalanceListener` real que registra qué particiones tiene asignadas esta instancia en cada momento, en `src/main/java/com/academia/mensajeria/`, y un test que arranca dos consumidores reales en el mismo `groupId` para forzar un rebalanceo genuino y confirmar qué particiones se revocan y a quién se reasignan:
+Abre `src/test/java/academia/rutaflow/event/EnvioEventPublisherTest.java`. El laboratorio crea un tópico de prueba con dos particiones y consumer group identificable. Ejecuta:
 
 ```bash
-mkdir -p academia-spring/src/main/java/com/academia/mensajeria
-cd academia-spring
+./mvnw -Dtest=EnvioEventPublisherTest#unSegundoConsumidorProvocaRebalanceoYActualizaAsignaciones test
 ```
 
+Al inicio solo está activo el consumer A. El test espera a que su callback registre dos particiones antes de arrancar B.
+
+**Resultado esperado.** Antes de arrancar B, A tiene dos asignaciones. Tras unirse B, el test espera hasta que cada uno tenga una partición.
+
+**Fallo deliberado.** Cambia la creación del tópico de dos particiones a una. **Observa:** el test deja de poder afirmar una partición por consumer; con una partición no se pueden mantener ocupados dos consumers del mismo grupo.
+
+**3. Entiende**
+
+El número de consumers útiles de un grupo no puede superar el número de particiones del tópico que consumen. Tener más consumers puede ayudar con varios tópicos o asignaciones, pero uno de ellos puede quedarse sin particiones.
+
+**4. Cierra**
+
+Explica por qué el segundo consumer recibe trabajo al unirse y qué cambia si el tópico solo tiene una partición.
+
+#### Subtema 4.2 · Mantener el estado local con callbacks reales · 10 min
+
+**1. Contexto**
+
+Cuando una partición deja de pertenecer a esta instancia, una caché o un contador local deben dejar de tratarla como propia. Kafka llama al listener antes de retirar asignaciones y después de asignar las nuevas.
+
+**2. Hazlo tú**
+
+En la clase de prueba `SeguimientoAsignaciones`, localiza los dos callbacks. El listener usa un conjunto concurrente porque los callbacks ocurren en el hilo del consumer:
+
 ```java
-// src/main/java/com/academia/mensajeria/EstadoParticionRebalanceListener.java
-package com.academia.mensajeria;
+@Override
+public void onPartitionsRevoked(Collection<TopicPartition> partitions) {
+    asignadas.removeAll(partitions);
+    revocaciones.incrementAndGet();
+}
 
-import org.apache.kafka.clients.consumer.ConsumerRebalanceListener;
-import org.apache.kafka.common.TopicPartition;
-
-import java.util.Collection;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
-
-public class EstadoParticionRebalanceListener implements ConsumerRebalanceListener {
-    // estado real de esta instancia: qué particiones tiene asignadas AHORA MISMO; se guarda/restaura en cada callback real del broker
-    private final Set<TopicPartition> particionesAsignadasActualmente = ConcurrentHashMap.newKeySet();
-    private final AtomicInteger revocacionesDetectadas = new AtomicInteger(0);
-
-    @Override
-    public void onPartitionsRevoked(Collection<TopicPartition> particiones) {
-        // el broker avisa: estas particiones YA NO son de esta instancia; el estado local debe reflejarlo de inmediato
-        particionesAsignadasActualmente.removeAll(particiones);
-        revocacionesDetectadas.incrementAndGet();
-    }
-
-    @Override
-    public void onPartitionsAssigned(Collection<TopicPartition> particiones) {
-        // el broker avisa: estas particiones SÍ son de esta instancia ahora (asignación inicial o tras el rebalanceo)
-        particionesAsignadasActualmente.addAll(particiones);
-    }
-
-    public Set<TopicPartition> getParticionesAsignadasActualmente() { return particionesAsignadasActualmente; }
-    public int getRevocacionesDetectadas() { return revocacionesDetectadas.get(); }
+@Override
+public void onPartitionsAssigned(Collection<TopicPartition> partitions) {
+    asignadas.addAll(partitions);
 }
 ```
 
-**Explicación línea por línea:** `onPartitionsRevoked` es el callback real que el broker invoca en cada instancia justo antes de que un rebalanceo le quite particiones que tenía asignadas; aquí se usa para mantener `particionesAsignadasActualmente` siempre fiel a la realidad (sin este callback, una instancia podría seguir creyendo que posee una partición que el broker ya reasignó a otra instancia, un bug real de estado obsoleto); `onPartitionsAssigned` es el callback simétrico, invocado tanto en la asignación inicial como después de cada rebalanceo, con la lista de particiones que esta instancia posee a partir de ese momento.
+Busca `containerProps.setConsumerRebalanceListener(rebalanceListener)`: ahí Spring entrega el listener al contenedor. Ejecuta el mismo test focalizado de 4.1.
 
-Arranca dos `KafkaMessageListenerContainer` reales (uno a la vez) en el mismo `groupId`, contra un topic de 2 particiones, para forzar un rebalanceo genuino cuando el segundo se une:
+**Resultado esperado.** Al entrar B, A recibe revocación; ambos reciben callbacks de asignación con la distribución final.
 
-```java
-// src/test/java/com/academia/mensajeria/RebalanceoRealTest.java
-package com.academia.mensajeria;
+**Fallo deliberado.** En una copia, elimina `asignadas.removeAll(partitions)` y repite la prueba. **Observa:** el conjunto de A conserva la partición revocada y la suma temporal/final de asignaciones deja de coincidir con las dos particiones reales.
 
-import org.awaitility.Awaitility;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
-import org.springframework.kafka.listener.ContainerProperties;
-import org.springframework.kafka.listener.KafkaMessageListenerContainer;
-import org.springframework.kafka.listener.MessageListener;
-import org.springframework.kafka.test.EmbeddedKafkaBroker;
-import org.springframework.kafka.test.context.EmbeddedKafka;
-import org.springframework.kafka.test.utils.KafkaTestUtils;
-import org.springframework.test.context.TestPropertySource;
+**3. Entiende**
 
-import java.time.Duration;
-import java.util.Map;
+El callback actualiza conocimiento local; no cambia la propiedad en el broker. La asignación del broker es la autoridad. En aplicaciones reales, usa la revocación para guardar progreso o limpiar estado que dependa de esas particiones.
 
-import static org.assertj.core.api.Assertions.assertThat;
+**4. Cierra**
 
-@SpringBootTest
-@EmbeddedKafka(partitions = 2, topics = "tareas.creadas")
-@TestPropertySource(properties = "spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}")
-class RebalanceoRealTest {
+Di qué debe limpiarse en `onPartitionsRevoked` y qué error aparece si la instancia conserva una partición que ya perdió.
 
-    @Autowired
-    private EmbeddedKafkaBroker embeddedKafkaBroker;
+#### Subtema 4.3 · Ver el rebalanceo al entrar el segundo consumer · 15 min
 
-    @Test
-    void unSegundoConsumidorQueSeUneFuerzaUnRebalanceoRealYRedistribuyeLasParticiones() {
-        var listenerA = new EstadoParticionRebalanceListener();
-        var listenerB = new EstadoParticionRebalanceListener();
+**1. Contexto**
 
-        var contenedorA = crearContenedor(listenerA);
-        contenedorA.start();
-        // sola en el grupo "rebalanceo-demo", esta instancia recibe las 2 particiones del topic
-        Awaitility.await().atMost(Duration.ofSeconds(10))
-            .untilAsserted(() -> assertThat(listenerA.getParticionesAsignadasActualmente()).hasSize(2));
+Un rebalanceo redistribuye asignaciones cuando cambia el grupo o su suscripción. No significa siempre que todas las particiones se quiten y vuelvan a asignarse: el alcance depende del protocolo de grupo y del asignador. La prueba usa dos particiones y consumers dinámicos para observar una redistribución concreta.
 
-        var contenedorB = crearContenedor(listenerB);
-        contenedorB.start(); // forzar el rebalanceo real: el broker reparte las 2 particiones entre A y B
+**2. Hazlo tú**
 
-        try {
-            Awaitility.await().atMost(Duration.ofSeconds(10))
-                .untilAsserted(() -> assertThat(
-                    listenerA.getParticionesAsignadasActualmente().size()
-                        + listenerB.getParticionesAsignadasActualmente().size())
-                    .isEqualTo(2));
-
-            assertThat(listenerA.getRevocacionesDetectadas())
-                .as("la primera instancia debe haber sido notificada de que perdió al menos una partición")
-                .isGreaterThanOrEqualTo(1);
-        } finally {
-            contenedorA.stop();
-            contenedorB.stop();
-        }
-    }
-
-    private KafkaMessageListenerContainer<String, String> crearContenedor(EstadoParticionRebalanceListener listener) {
-        Map<String, Object> config = KafkaTestUtils.consumerProps("rebalanceo-demo", "false", embeddedKafkaBroker);
-        var factory = new DefaultKafkaConsumerFactory<String, String>(config);
-
-        var propiedades = new ContainerProperties("tareas.creadas");
-        propiedades.setConsumerRebalanceListener(listener);
-        propiedades.setMessageListener((MessageListener<String, String>) record -> { });
-
-        return new KafkaMessageListenerContainer<>(factory, propiedades);
-    }
-}
-```
+Lee `unSegundoConsumidorProvocaRebalanceoYActualizaAsignaciones` en el mismo archivo. El test crea un tópico único, espera la asignación inicial de A, arranca B y comprueba callback de revocación y una partición final por instancia.
 
 ```bash
-mvn test -Dtest=RebalanceoRealTest  # Maven
-./gradlew test --tests RebalanceoRealTest # Gradle (equivalente)
+./mvnw -Dtest=EnvioEventPublisherTest#unSegundoConsumidorProvocaRebalanceoYActualizaAsignaciones test
 ```
 
-**Resultado esperado:** `BUILD SUCCESS` con el test en verde: la primera instancia arranca sola y recibe las 2 particiones del topic (`onPartitionsAssigned` real); cuando la segunda se une al mismo `groupId`, el broker fuerza un rebalanceo genuino — la primera instancia recibe `onPartitionsRevoked` real para al menos una partición, y al final las 2 particiones quedan repartidas entre ambas (ninguna se pierde ni se duplica), confirmando que el estado de `particionesAsignadasActualmente` de cada instancia se mantiene fiel a lo que el broker realmente le asignó en cada momento.
+**Resultado esperado.** El broker procesa el nuevo miembro, A recibe una revocación y al estabilizarse el grupo la asignación es una partición para A y una para B. Es una prueba de integración con Kafka embebido, no una medición de pausas, latencia o disponibilidad de producción.
 
-**Fallo deliberado:** en `EstadoParticionRebalanceListener.onPartitionsRevoked`, quita la línea `particionesAsignadasActualmente.removeAll(particiones);` (deja solo el contador) y ejecuta de nuevo `mvn test -Dtest=RebalanceoRealTest`. El test FALLA en la aserción de la suma de particiones (ahora reporta `3` en vez de `2`, porque la primera instancia sigue "creyendo" que conserva una partición que el broker ya reasignó a la segunda) — diagnostica confirmando por qué ignorar `onPartitionsRevoked` deja a una instancia con estado local obsoleto tras un rebalanceo real: seguiría sirviendo, cacheando o contando datos de una partición que ya no le pertenece. Restaura la línea antes de continuar.
+**Fallo deliberado.** En una copia, elimina la limpieza de particiones revocadas o cambia la aserción a esperar dos particiones en A después del rebalanceo. **Observa:** la prueba falla porque el estado local o la expectativa ya no coincide con la asignación final.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**3. Entiende**
 
-1. Repite el experimento con 3 instancias en vez de 2, y cuenta cuántas particiones cambian de dueño con y sin `CooperativeStickyAssignor`.
-2. Configura `session.timeout.ms` deliberadamente corto (ej. 5 segundos) y confirma que un reinicio que tarda más que eso SÍ dispara rebalanceo incluso con static membership.
-3. Documenta qué pasaría si dos instancias distintas usaran accidentalmente el mismo `group.instance.id`.
-4. Escribe de memoria (sin mirar) la configuración de `group.instance.id` y `CooperativeStickyAssignor`. Compara después contra el Paso 4.
+El rebalanceo puede pausar consumo mientras se estabiliza el grupo, y su impacto depende del tamaño del grupo, el protocolo, el asignador y la carga de trabajo. Mide esos tiempos con métricas y pruebas de carga del despliegue; este test solo demuestra callbacks y propiedad final.
 
-**Pista:** static membership protege contra reinicios BREVES y conocidos (deploys, restarts); no reemplaza un diseño que tolere genuinamente la pérdida permanente de una instancia (ese caso siempre necesita un rebalanceo real).
+**4. Cierra**
 
-#### Paso 6 · Práctica independiente
+Describe la secuencia observada: asignación inicial, entrada de B, revocación y nueva asignación.
 
-**Completa el código:** rellena la configuración que da identidad estable a la instancia entre reinicios:
+#### Subtema 4.4 · Usar membresía estática solo para reinicios breves · 10 min
 
-```java
-config.put(ConsumerConfig.____, "notificaciones-1");
+**1. Contexto**
+
+`group.instance.id` identifica de forma estable un miembro estático. Kafka permite que una indisponibilidad transitoria no desencadene la misma respuesta inmediata que la salida de un miembro dinámico; el broker espera el timeout de sesión antes de recuperar sus particiones. No elimina rebalanceos ni debe compartirse entre dos instancias activas.
+
+**2. Hazlo tú**
+
+En un perfil de despliegue, revisa esta propiedad y compárala con la guía oficial de Consumer Configs:
+
+```yaml
+spring:
+  kafka:
+    consumer:
+      properties:
+        group.instance.id: rutaflow-consumer-0
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, la configuración completa de un consumer con static membership y `CooperativeStickyAssignor`. Compara después contra el Paso 4.
+Define un ID estable y único por réplica (por ejemplo, ordinal de StatefulSet). No uses el mismo literal fijo para todas las réplicas de un Deployment. Este laboratorio no simula reinicios ni mide el timeout; no cambies la configuración general de pruebas.
 
-#### Paso 7 · Cierre y evidencia
+**Resultado esperado.** Puedes explicar cuándo el ID reduce cambios por una interrupción corta y por qué la sesión todavía puede expirar y reasignar particiones.
 
-Ya reproducís un rebalanceo real con dos consumidores del mismo grupo y confirmás, con un `ConsumerRebalanceListener` real, que las particiones se revocan y reasignan correctamente entre ambos. El siguiente y último tema de este módulo compara Kafka con RabbitMQ para elegir según el patrón de consumo real necesario. **Evidencia:** entrega el resultado de `RebalanceoRealTest` en verde confirmando que las 2 particiones quedan repartidas entre ambas instancias tras el rebalanceo, y el fallo real (`3` particiones contadas en vez de `2`) que produce ignorar `onPartitionsRevoked`. Fuente oficial: [Kafka Consumer Configs — Apache Kafka](https://kafka.apache.org/documentation/#consumerconfigs).
+**Fallo deliberado.** Escribe el mismo `group.instance.id` en dos réplicas activas en una copia de configuración. **Diagnóstico esperado:** la identidad no es única; Kafka puede cercar una de las instancias y el despliegue deja de representar dos miembros independientes. Restaura IDs distintos.
 
-**Errores comunes:** asumir que un simple restart de un pod no tiene costo en un consumer group con muchas particiones; usar el mismo `group.instance.id` en dos instancias distintas por error de configuración (deben ser únicas).
+**3. Entiende**
 
-**Cuándo no usarlo:** para un consumer group de una sola instancia (sin escalado horizontal), el rebalanceo no es un problema real a evitar; static membership agrega configuración sin beneficio en ese caso.
+Membresía estática y asignación cooperativa son mecanismos diferentes: la primera conserva identidad entre reinicios; un asignador cooperativo puede reducir cuántas particiones cambian de dueño durante un rebalanceo. Ninguno sustituye idempotencia, manejo de revocaciones ni pruebas operativas.
 
-**Transferencia al proyecto integrador «Backend profesional de entregas»:** Ejecuta dos consumidores del grupo y retira uno durante el procesamiento. Comprueba reasignación y repetición segura de mensajes, conservando el orden por clave que necesita cada entrega.
+**4. Cierra**
+
+Anota una situación apropiada para membresía estática, el costo de un timeout más largo y una señal que vigilarías en producción.
+
+**Transferencia al proyecto integrador:** ejecuta el test con dos consumers y explica quién es dueño de cada partición tras el rebalanceo. Para producción, verifica unicidad de `group.instance.id`, duración del rebalanceo, mensajes repetidos y limpieza de recursos por partición.
+
+**Fuentes oficiales:** [Rebalance listeners en Spring Kafka 4.0](https://docs.spring.io/spring-kafka/reference/4.0/kafka/receiving-messages/rebalance-listeners.html), [configuración de consumidores Apache Kafka 4.2](https://kafka.apache.org/42/generated/consumer_config.html) y [protocolo de rebalanceo Apache Kafka 4.3](https://kafka.apache.org/43/operations/consumer-rebalance-protocol/).
 
 ### Tema 5: Kafka frente a RabbitMQ
 

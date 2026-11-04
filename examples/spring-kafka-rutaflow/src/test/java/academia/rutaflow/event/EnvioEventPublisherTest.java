@@ -24,12 +24,22 @@ import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRebalanceListener;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import java.time.Duration;
 import java.util.Map;
+import java.util.Collection;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+import org.springframework.kafka.listener.ContainerProperties;
+import org.springframework.kafka.listener.KafkaMessageListenerContainer;
+import org.springframework.kafka.listener.MessageListener;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -120,6 +130,66 @@ class EnvioEventPublisherTest {
         }
     }
 
+
+    @Test
+    void unSegundoConsumidorProvocaRebalanceoYActualizaAsignaciones() {
+        String topic = "rutaflow.rebalance." + UUID.randomUUID();
+        String group = "rutaflow-rebalance-" + UUID.randomUUID();
+        broker.addTopics(new NewTopic(topic, 2, (short) 1));
+
+        var listenerA = new SeguimientoAsignaciones();
+        var listenerB = new SeguimientoAsignaciones();
+        var containerA = crearConsumerContainer(topic, group, listenerA);
+        var containerB = crearConsumerContainer(topic, group, listenerB);
+        containerA.start();
+        try {
+            await().atMost(Duration.ofSeconds(10))
+                    .untilAsserted(() -> assertThat(listenerA.asignadas()).hasSize(2));
+
+            containerB.start();
+            await().atMost(Duration.ofSeconds(15)).untilAsserted(() -> {
+                assertThat(listenerA.revocaciones()).isGreaterThan(0);
+                assertThat(listenerA.asignadas().size() + listenerB.asignadas().size()).isEqualTo(2);
+                assertThat(listenerA.asignadas()).hasSize(1);
+                assertThat(listenerB.asignadas()).hasSize(1);
+            });
+        } finally {
+            containerB.stop();
+            containerA.stop();
+        }
+    }
+
+    private KafkaMessageListenerContainer<String, String> crearConsumerContainer(
+            String topic, String group, SeguimientoAsignaciones rebalanceListener) {
+        Map<String, Object> props = KafkaTestUtils.consumerProps(broker, group, false);
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        var consumerFactory = new org.springframework.kafka.core.DefaultKafkaConsumerFactory<String, String>(props);
+        var containerProps = new ContainerProperties(topic);
+        containerProps.setConsumerRebalanceListener(rebalanceListener);
+        containerProps.setMessageListener((MessageListener<String, String>) record -> { });
+        return new KafkaMessageListenerContainer<>(consumerFactory, containerProps);
+    }
+
+    private static final class SeguimientoAsignaciones implements ConsumerRebalanceListener {
+        private final Set<TopicPartition> asignadas = ConcurrentHashMap.newKeySet();
+        private final AtomicInteger revocaciones = new AtomicInteger();
+
+        @Override
+        public void onPartitionsRevoked(Collection<TopicPartition> partitions) {
+            asignadas.removeAll(partitions);
+            revocaciones.incrementAndGet();
+        }
+
+        @Override
+        public void onPartitionsAssigned(Collection<TopicPartition> partitions) {
+            asignadas.addAll(partitions);
+        }
+
+        Set<TopicPartition> asignadas() { return Set.copyOf(asignadas); }
+        int revocaciones() { return revocaciones.get(); }
+    }
 
     @Test
     void transaccionKafkaAbortadaSoloEsVisibleConReadUncommitted() throws Exception {

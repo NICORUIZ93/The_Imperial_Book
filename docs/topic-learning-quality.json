@@ -224,7 +224,7 @@
       "topics": 111,
       "explanation": 111,
       "code": 111,
-      "visual": 65,
+      "visual": 64,
       "filePath": 111,
       "runCommand": 106,
       "expectedResult": 111,
@@ -26139,11 +26139,11 @@
       },
       {
         "module": 8,
-        "topic": "Tema 4: Rebalanceo de consumer groups y partition assignment",
+        "topic": "Tema 4: Rebalanceo de consumer groups y asignación de particiones",
         "criteria": {
           "explanation": true,
           "code": true,
-          "visual": true,
+          "visual": false,
           "filePath": true,
           "runCommand": true,
           "expectedResult": true,
@@ -26153,7 +26153,7 @@
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 16,
+          "rubricScore": 14,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false

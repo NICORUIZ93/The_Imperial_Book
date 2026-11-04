@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 68,
-      "prerequisites": 81,
-      "context": 68,
-      "theoryAnalogy": 68,
-      "guidedDemo": 68,
+      "objective": 67,
+      "prerequisites": 80,
+      "context": 67,
+      "theoryAnalogy": 67,
+      "guidedDemo": 67,
       "codeExplanation": 111,
       "execution": 105,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 68,
-      "independentPractice": 68,
-      "closure": 68,
-      "commonErrors": 68,
+      "guidedPractice": 67,
+      "independentPractice": 67,
+      "closure": 67,
+      "commonErrors": 67,
       "resources": 75,
-      "standaloneExample": 65,
-      "learningEvidence": 80,
-      "complete": 64
+      "standaloneExample": 64,
+      "learningEvidence": 79,
+      "complete": 63
     }
   },
   "topics": {
@@ -30887,28 +30887,28 @@
       },
       {
         "module": 8,
-        "topic": "Tema 4: Rebalanceo de consumer groups y partition assignment",
+        "topic": "Tema 4: Rebalanceo de consumer groups y asignación de particiones",
         "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "objective": false,
+          "prerequisites": false,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
           "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 5,
+          "complete": false
         }
       },
       {

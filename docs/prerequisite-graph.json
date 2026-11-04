@@ -4445,7 +4445,7 @@
       "track": "spring-boot",
       "module": 8,
       "position": 4,
-      "title": "Rebalanceo de consumer groups y partition assignment",
+      "title": "Rebalanceo de consumer groups y asignación de particiones",
       "file": "web/public/content/spring-boot/modulo-8.md",
       "requires": [
         "spring-boot:8:3"

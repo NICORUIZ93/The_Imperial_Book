@@ -184,7 +184,11 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 3.2 · Guardar envío y evento en la misma transacción SQL · 15 min
   - ✓ Subtema 3.3 · Procesar un `eventId` repetido sin duplicar el efecto · 15 min
   - ✓ Subtema 3.4 · Leer solo registros confirmados de una transacción Kafka · 10 min
-- [pendiente de migrar] Tema 4: Rebalanceo de consumer groups y partition assignment
+- [pendiente de migrar] Tema 4: Rebalanceo de consumer groups y asignación de particiones
+  - pendiente Subtema 4.1 · Una partición pertenece a un consumer del grupo · 10 min
+  - pendiente Subtema 4.2 · Mantener el estado local con callbacks reales · 10 min
+  - pendiente Subtema 4.3 · Ver el rebalanceo al entrar el segundo consumer · 15 min
+  - pendiente Subtema 4.4 · Usar membresía estática solo para reinicios breves · 10 min
 - [pendiente de migrar] Tema 5: Kafka frente a RabbitMQ
 - [pendiente de migrar] Tema 6: Spring Cloud Stream y binders de Kafka/RabbitMQ
 - [pendiente de migrar] Tema 7: Kafka Streams con Spring para transformar eventos

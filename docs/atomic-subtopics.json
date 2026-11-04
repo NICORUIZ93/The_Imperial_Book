@@ -94,8 +94,8 @@
     "spring-boot": {
       "topics": 111,
       "completeTopics": 36,
-      "topicsWith3to6Subtopics": 43,
-      "subtopics": 130,
+      "topicsWith3to6Subtopics": 44,
+      "subtopics": 134,
       "completeSubtopics": 113
     }
   },
@@ -14752,9 +14752,66 @@
       },
       {
         "module": 8,
-        "topic": "### Tema 4: Rebalanceo de consumer groups y partition assignment",
-        "subtopicCount": 0,
-        "subtopics": [],
+        "topic": "### Tema 4: Rebalanceo de consumer groups y asignación de particiones",
+        "subtopicCount": 4,
+        "subtopics": [
+          {
+            "id": "4.1",
+            "title": "#### Subtema 4.1 · Una partición pertenece a un consumer del grupo · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "4.2",
+            "title": "#### Subtema 4.2 · Mantener el estado local con callbacks reales · 10 min",
+            "criteria": {
+              "context": true,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "4.3",
+            "title": "#### Subtema 4.3 · Ver el rebalanceo al entrar el segundo consumer · 15 min",
+            "criteria": {
+              "context": true,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "4.4",
+            "title": "#### Subtema 4.4 · Usar membresía estática solo para reinicios breves · 10 min",
+            "criteria": {
+              "context": true,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": false
+          }
+        ],
         "complete": false
       },
       {

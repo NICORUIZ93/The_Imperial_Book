@@ -715,8 +715,29 @@ defecto de sustancia. Estas señales no miden comprensión humana ni certifican
 los demás laboratorios. `./scripts/validate.sh` pasó con 23 pruebas de script
 y 4 omitidas; `git diff --check` pasó.
 
-**Siguiente tema:** Spring Boot M8 T4, “Rebalanceo de consumer groups y partition
-assignment”. Inspeccionar primero el ejemplo y sus imports/versiones; comprobar
-que ejecuta dos consumidores reales del mismo grupo, observa revocación y nueva
-asignación, y que el fallo deliberado reproduce estado local obsoleto. No aceptar
-comandos o rutas inventados por la lección.
+Spring Boot M8 T4, “Rebalanceo de consumer groups y asignación de particiones”,
+se revisó con un test de integración en el laboratorio existente. La lección se
+reorganizó en cuatro subtemas 4.1–4.4, en formato Contexto → Hazlo tú → Entiende
+→ Cierra. Se eliminaron afirmaciones absolutas de que todo cambio de miembros
+reasigna todas las particiones, y se separaron membresía estática y asignadores
+cooperativos. El texto aclara que el test mide callbacks y propiedad final en
+Kafka embebido, no latencia de producción ni reinicios.
+
+El test `unSegundoConsumidorProvocaRebalanceoYActualizaAsignaciones` arranca un
+consumer con dos particiones, espera su asignación, une un segundo consumer al
+mismo grupo y comprueba revocación más una partición final por instancia. La
+suite acumulada del laboratorio pasó con **10 pruebas, 0 fallos, 0 errores y 0
+omitidas** mediante `./mvnw -q clean test`. En una copia temporal se eliminó
+`asignadas.removeAll(partitions)`; el test falló con 3 asignaciones locales en
+vez de 2, reproduciendo estado obsoleto. Fuentes contrastadas: Apache Kafka
+Consumer Configs 4.2 y protocolo de rebalanceo, más Spring Kafka 4.0 Rebalance
+Listeners. `./scripts/validate.sh` pasó con 23 pruebas y 4 omitidas; `git diff --check`
+pasó. La última auditoría global registra 140/1185 temas atómicos, 1088/1185
+practicables, 1038/1185 completos en metodología de siete pasos y 409 temas con
+señales automatizadas de defecto de sustancia. Estas métricas son estructurales,
+no certifican la calidad pedagógica ni la comprensión humana.
+
+**Siguiente tema:** Spring Boot M8 T5, “Kafka frente a RabbitMQ”. Revisa las
+comparaciones de retención, consumo, confirmaciones y reentrega con las fuentes
+y versiones del laboratorio; evita analogías que reduzcan RabbitMQ a borrar un
+mensaje siempre o Kafka a retención permanente.

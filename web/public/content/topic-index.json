@@ -5240,8 +5240,8 @@
         "fragment": "tema-3-transacciones-kafka-y-sql-idempotencia-y-limites-de-exactly-once"
       },
       {
-        "title": "Rebalanceo de consumer groups y partition assignment",
-        "fragment": "tema-4-rebalanceo-de-consumer-groups-y-partition-assignment"
+        "title": "Rebalanceo de consumer groups y asignación de particiones",
+        "fragment": "tema-4-rebalanceo-de-consumer-groups-y-asignacion-de-particiones"
       },
       {
         "title": "Kafka frente a RabbitMQ",
