@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 70,
-      "prerequisites": 83,
-      "context": 70,
-      "theoryAnalogy": 70,
-      "guidedDemo": 70,
+      "objective": 69,
+      "prerequisites": 82,
+      "context": 69,
+      "theoryAnalogy": 69,
+      "guidedDemo": 69,
       "codeExplanation": 111,
       "execution": 105,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 70,
-      "independentPractice": 70,
-      "closure": 70,
-      "commonErrors": 70,
-      "resources": 77,
-      "standaloneExample": 67,
+      "guidedPractice": 69,
+      "independentPractice": 69,
+      "closure": 69,
+      "commonErrors": 69,
+      "resources": 76,
+      "standaloneExample": 66,
       "learningEvidence": 82,
-      "complete": 66
+      "complete": 65
     }
   },
   "topics": {
@@ -30757,28 +30757,28 @@
       },
       {
         "module": 7,
-        "topic": "Tema 2: Métricas de negocio con Micrometer",
+        "topic": "Tema 2: Contar operaciones de negocio con Micrometer",
         "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "objective": false,
+          "prerequisites": false,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 5,
+          "complete": false
         }
       },
       {

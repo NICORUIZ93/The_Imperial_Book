@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 589,
+      "lines": 610,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 14719,
+      "lines": 14762,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -600,7 +600,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3794,
+      "lines": 3801,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13586,
+      "lines": 13588,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -677,7 +677,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 143,
+      "lines": 144,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 409,
+      "lines": 412,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -12118,7 +12118,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-7.md",
-      "lines": 520,
+      "lines": 505,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12130,11 +12130,11 @@
         "#### Subtema 7.2 \u00b7 Comprobar `UP`, `DOWN` y acceso protegido (10 min)",
         "#### Subtema 7.3 \u00b7 Diagnosticar un estado `UP` falso (10 min)",
         "#### Entiende y cierra",
-        "### Tema 2: M\u00e9tricas de negocio con Micrometer",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda con analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero"
+        "### Tema 2: Contar operaciones de negocio con Micrometer",
+        "#### Subtema 7.4 \u00b7 Registrar un contador en el servicio real (10 min)",
+        "#### Subtema 7.5 \u00b7 Verificar valor y tag en el endpoint (10 min)",
+        "#### Subtema 7.6 \u00b7 Detectar un contador que nunca sube (10 min)",
+        "#### Entiende y cierra"
       ]
     },
     {

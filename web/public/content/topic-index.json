@@ -5218,8 +5218,8 @@
         "fragment": "tema-1-actuator-y-health-checks-personalizados"
       },
       {
-        "title": "Métricas de negocio con Micrometer",
-        "fragment": "tema-2-metricas-de-negocio-con-micrometer"
+        "title": "Contar operaciones de negocio con Micrometer",
+        "fragment": "tema-2-contar-operaciones-de-negocio-con-micrometer"
       },
       {
         "title": "Liveness vs readiness",

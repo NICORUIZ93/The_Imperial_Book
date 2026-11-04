@@ -158,7 +158,10 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - pendiente Subtema 7.1 · Registrar una dependencia y su indicador (10 min)
   - pendiente Subtema 7.2 · Comprobar `UP`, `DOWN` y acceso protegido (10 min)
   - pendiente Subtema 7.3 · Diagnosticar un estado `UP` falso (10 min)
-- [pendiente de migrar] Tema 2: Métricas de negocio con Micrometer
+- [pendiente de migrar] Tema 2: Contar operaciones de negocio con Micrometer
+  - pendiente Subtema 7.4 · Registrar un contador en el servicio real (10 min)
+  - pendiente Subtema 7.5 · Verificar valor y tag en el endpoint (10 min)
+  - pendiente Subtema 7.6 · Detectar un contador que nunca sube (10 min)
 - [pendiente de migrar] Tema 3: Liveness vs readiness
 
 ### Módulo 8: Mensajería — Kafka/RabbitMQ

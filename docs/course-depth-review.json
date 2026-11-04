@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 232,
+    "topicsWithSignals": 233,
     "newLaboratories": 25
   },
   "priorities": {
@@ -13416,10 +13416,12 @@
     {
       "track": "spring-boot",
       "module": 7,
-      "title": "Tema 2: Métricas de negocio con Micrometer",
+      "title": "Tema 2: Contar operaciones de negocio con Micrometer",
       "file": "web/public/content/spring-boot/modulo-7.md",
       "line": 175,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -13429,7 +13431,7 @@
       "module": 7,
       "title": "Tema 3: Liveness vs readiness",
       "file": "web/public/content/spring-boot/modulo-7.md",
-      "line": 338,
+      "line": 323,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

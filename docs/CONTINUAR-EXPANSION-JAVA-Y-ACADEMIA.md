@@ -581,8 +581,29 @@ validaciones de contenido, trazabilidad, índices y gráficos también pasaron.
 estructuralmente completos**, **1089/1185 practicables** y 409 con señales de
 defecto de sustancia.
 
-**Siguiente tema:** Spring Boot M7 T2, “Métricas de negocio con Micrometer”.
-Revisa el starter y API de métricas de Boot 4; no afirmes que una métrica aparece
-por `/actuator/metrics` sin probar nombre, tags y valor en el registry. Mantén
-`metrics` fuera de exposición HTTP pública salvo que haya una decisión de acceso
-y una autenticación verificadas.
+Spring Boot M7 T2, “Contar operaciones de negocio con Micrometer”, se rehízo en
+subtemas 7.4–7.6. Agrega `MeterRegistry` y un `Counter` de cardinalidad acotada
+a `ServicioTareas.crear`; lo incrementa después del guardado. El test crea una
+tarea por la API, compara el contador antes/después y comprueba nombre/tag/valor
+en `/actuator/metrics`. La exposición `health,metrics` vive solo en propiedades
+de test y el endpoint sigue protegido por JWT; el tema aclara que el counter en
+memoria no reemplaza la fuente persistida de negocio.
+
+En el backend acumulado Boot 4.1.2/JDK 25, los dos métodos dirigidos pasaron. Al
+quitar `tareasCreadas.increment()`, el test detectó `1.0` esperado frente a
+`0.0`. La suite acumulada pasó con **47 pruebas**, sin fallos ni omisiones;
+Testcontainers usó el socket Podman del tema M6 T2. Los cambios de la academia
+son contenido y reportes; el código temporal está en
+`/tmp/imperial-spring-m4-jwt/app`.
+
+`./scripts/validate.sh` pasó con 23 pruebas de script y 4 omitidas; las demás
+validaciones de contenido, trazabilidad, índices y gráficos también pasaron.
+`git diff --check` pasó. Tras M7 T2, las auditorías globales registran
+**139/1185 temas estructuralmente completos**, **1088/1185 practicables** y
+409 con señales de defecto de sustancia.
+
+**Siguiente tema:** Spring Boot M7 T3, “Liveness vs readiness”. Comprueba
+imports/configuración Boot 4 y estados `AvailabilityState`, reproduce cómo una
+señal de liveness puede reiniciar una instancia y una readiness puede retirarla
+del tráfico, y deja explícito por qué una caída externa no debe reiniciar toda
+la flota.

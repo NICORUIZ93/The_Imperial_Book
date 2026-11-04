@@ -1694,7 +1694,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "b6ac8155df420f3c60d707b592a63b0e36c66e02f4ec8f3e04c6baa0aabf41c5",
+    "fingerprint": "e9294280be7102c9df2c20548a197beea9611c6e1f3b8eb52517bcf92da87b58",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10974,9 +10974,9 @@
       {
         "issues": [],
         "module": 7,
-        "tailWords": 194,
-        "topic": "Tema 2: Métricas de negocio con Micrometer",
-        "words": 1174
+        "tailWords": 0,
+        "topic": "Tema 2: Contar operaciones de negocio con Micrometer",
+        "words": 888
       },
       {
         "issues": [],

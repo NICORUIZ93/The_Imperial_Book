@@ -172,168 +172,153 @@ En producción conserva `management.endpoint.health.show-details=never` o config
 
 **Evidencia para avanzar:** tres tests pasan, puedes explicar `200/UP`, `503/DOWN` y `401` sin token, y el fallo deliberado se detecta y revierte. El resultado cubre MockMvc con el contexto Spring; no prueba una red externa, TLS, el orquestador ni el navegador. Documentación primaria: [Spring Boot 4.1.2 — Health Information y `HealthIndicator`](https://docs.spring.io/spring-boot/reference/actuator/endpoints.html#actuator.endpoints.health), [API `HealthIndicator`](https://docs.spring.io/spring-boot/api/java/org/springframework/boot/health/contributor/HealthIndicator.html) y [Starter Actuator 4.1.2](https://docs.spring.io/spring-boot/appendix/dependency-versions/coordinates.html).
 
-### Tema 2: Métricas de negocio con Micrometer
+### Tema 2: Contar operaciones de negocio con Micrometer
 
-#### Paso 1 · Objetivo y preparación
+**¿Por qué es importante?** La cantidad de tareas creadas responde una pregunta del negocio. Sin un contador visible, el equipo solo ve detalles técnicos y no puede seguir esa actividad durante una ventana de tiempo.
 
-Al finalizar podrás registrar una métrica de negocio custom con Micrometer, y confirmar con un test real que se incrementa correctamente y aparece en `/actuator/metrics`.
+#### Subtema 7.4 · Registrar un contador en el servicio real (10 min)
 
-**Conocimiento previo:** Tema 1 de este módulo.
+**Contexto.** Actuator ya agrega Micrometer. El contador se incrementará después de guardar una tarea y llevará un tag fijo `origen=api`. No uses ID de pedido, usuario o texto libre como tag: cada valor nuevo crea otra serie de métricas y puede agotar memoria.
 
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** Las métricas técnicas genéricas que Actuator expone automáticamente (uso de CPU, latencia HTTP) no capturan tendencias de negocio; contar cuántos pedidos se crean por minuto le da valor directo al equipo de producto, no solo al de infraestructura.
-
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** métricas custom, valor para el equipo de producto, no solo infraestructura.
-
-Micrometer, la fachada de métricas integrada en Spring Boot Actuator, permite definir métricas custom específicas del dominio:
+**Hazlo tú.** Modifica `src/main/java/com/example/demo/ServicioTareas.java`. Agrega los imports y el campo:
 
 ```java
-class PedidoService {
-    private final Counter pedidosCreados;
-
-    PedidoService(MeterRegistry registry) {
-        this.pedidosCreados = registry.counter("pedidos.creados");
-    }
-
-    void crear(Pedido p) {
-        pedidosCreados.increment();
-    }
-}
-```
-
-Este código registra un contador que se incrementa en cada creación, expuesto a través de `/actuator/metrics/pedidos.creados`, consumible por sistemas como Prometheus/Grafana.
-
-**Analogía:** las métricas técnicas son los indicadores de funcionamiento interno de una fábrica (temperatura de las máquinas); las métricas de negocio custom son el conteo de productos efectivamente terminados y despachados, información que interesa directamente a quienes gestionan el negocio.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-  A["PedidoService.crear(p)"] --> B["pedidosCreados.increment()"]
-  B --> C["MeterRegistry acumula el contador"]
-  C --> D["GET /actuator/metrics/pedidos.creados"]
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Reutiliza `academia-spring` (o créalo desde una carpeta vacía con `mkdir -p academia-spring` si es tu primera vez) y crea el servicio con la métrica en `src/main/java/com/academia/observabilidad/`:
-
-```bash
-mkdir -p academia-spring/src/main/java/com/academia/observabilidad
-cd academia-spring
-```
-
-```java
-// src/main/java/com/academia/observabilidad/PedidoService.java
-package com.academia.observabilidad;
-
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
-import org.springframework.stereotype.Service;
 
-@Service
-public class PedidoService {
-    private final Counter pedidosCreados;
+private final Counter tareasCreadas;
+```
 
-    public PedidoService(MeterRegistry registry) {
-        this.pedidosCreados = registry.counter("pedidos.creados");
-    }
+Añade `MeterRegistry` al constructor y registra el contador una sola vez:
 
-    public void crear(String descripcion) {
-        pedidosCreados.increment();
-    }
+```java
+public ServicioTareas(
+        TareaRepository repository,
+        TareaMapper mapper,
+        MeterRegistry registry) {
+    this.repository = repository;
+    this.mapper = mapper;
+    this.tareasCreadas = Counter.builder("rutaflow.tareas.creadas")
+        .description("Tareas creadas correctamente")
+        .tag("origen", "api")
+        .register(registry);
 }
 ```
 
-**Explicación línea por línea:** `registry.counter("pedidos.creados")` obtiene (o crea, si no existe) un contador registrado bajo ese nombre en el `MeterRegistry`; `pedidosCreados.increment()` incrementa el contador en 1 cada vez que se llama, acumulando el total desde que la aplicación arrancó.
-
-Confirma con `MockMvc` real que crear pedidos incrementa el contador visible en `/actuator/metrics/pedidos.creados`, usando el `MeterRegistry` real inyectado en el test para verificar el valor exacto además de la respuesta HTTP:
+En `crear`, incrementa solo cuando el guardado regresó correctamente:
 
 ```java
-// src/test/java/com/academia/observabilidad/PedidoServiceMetricaTest.java
-package com.academia.observabilidad;
+public TareaDTO crear(CrearTareaRequest request) {
+    Tarea tarea = new Tarea(request.titulo(), request.prioridad(), "BODEGA-A");
+    TareaDTO creada = mapper.toDto(repository.save(tarea));
+    tareasCreadas.increment();
+    return creada;
+}
+```
+
+**Resultado esperado.** Spring inyecta el `MeterRegistry` y `rutaflow.tareas.creadas` arranca en `0`. El tag es fijo y acotado. La métrica describe actividad del proceso; la base de datos conserva los registros de negocio.
+
+#### Subtema 7.5 · Verificar valor y tag en el endpoint (10 min)
+
+**Contexto.** El registry puede tener datos aunque el endpoint no esté expuesto. En pruebas habilita solo `health,metrics`; en producción la exposición HTTP de `metrics` requiere una decisión y seguridad explícitas.
+
+**Hazlo tú.** En `src/test/resources/application.properties` añade:
+
+```properties
+management.endpoints.web.exposure.include=health,metrics
+```
+
+Crea `src/test/java/com/example/demo/MetricasTareasTest.java`:
+
+```java
+package com.example.demo;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class PedidoServiceMetricaTest {
-
-    @Autowired
-    private MockMvc mockMvc;
-    @Autowired
-    private PedidoService pedidoService;
-    @Autowired
-    private MeterRegistry meterRegistry;
+class MetricasTareasTest {
+    @Autowired MockMvc mockMvc;
+    @Autowired MeterRegistry registry;
+    @Autowired JwtService jwtService;
 
     @Test
-    void crearPedidosIncrementaElContadorRealYApareceEnActuator() throws Exception {
-        double valorInicial = meterRegistry.counter("pedidos.creados").count();
+    void crearTareaIncrementaContadorYSePublicaEnActuator() throws Exception {
+        double antes = registry.find("rutaflow.tareas.creadas")
+            .tag("origen", "api").counter().count();
+        String token = "Bearer " + jwtService.generar("metricas@rutaflow.dev", "ADMIN");
 
-        pedidoService.crear("Comprar leche");
-        pedidoService.crear("Pagar factura");
+        mockMvc.perform(post("/api/tareas")
+                .header("Authorization", token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"titulo\":\"Paquete frágil\",\"prioridad\":2}"))
+            .andExpect(status().isCreated());
 
-        assertThat(meterRegistry.counter("pedidos.creados").count()).isEqualTo(valorInicial + 2);
+        assertThat(registry.find("rutaflow.tareas.creadas")
+            .tag("origen", "api").counter().count()).isEqualTo(antes + 1);
 
-        mockMvc.perform(get("/actuator/metrics/pedidos.creados"))
+        mockMvc.perform(get("/actuator/metrics/rutaflow.tareas.creadas")
+                .header("Authorization", token))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.measurements[0].value").value(valorInicial + 2));
+            .andExpect(jsonPath("$.name").value("rutaflow.tareas.creadas"))
+            .andExpect(jsonPath("$.availableTags[0].tag").value("origen"))
+            .andExpect(jsonPath("$.availableTags[0].values[0]").value("api"))
+            .andExpect(jsonPath("$.measurements[0].value").value(antes + 1));
+    }
+
+    @Test
+    void endpointMetricsRequiereAutenticacion() throws Exception {
+        mockMvc.perform(get("/actuator/metrics/rutaflow.tareas.creadas"))
+            .andExpect(status().isUnauthorized());
     }
 }
 ```
 
+Ejecuta:
+
 ```bash
-mvn test -Dtest=PedidoServiceMetricaTest # Maven
-./gradlew test --tests PedidoServiceMetricaTest # Gradle (equivalente)
+./mvnw -q -Dtest=MetricasTareasTest test
 ```
 
-**Resultado esperado:** `BUILD SUCCESS` con el test en verde: el `MeterRegistry` real confirma que el contador se incrementó exactamente en 2 tras dos llamadas a `crear(...)`, y la misma cifra aparece expuesta en `/actuator/metrics/pedidos.creados`, la ruta real que un sistema de monitoreo consultaría en producción.
+**Resultado esperado.** El primer test crea una tarea real, observa `antes + 1` en `MeterRegistry` y recibe del endpoint el nombre, tag `origen=api` y valor. El segundo confirma `401` sin token. En esta configuración, el endpoint no se expone a usuarios anónimos.
 
-**Fallo deliberado:** en `PedidoService.crear`, elimina la línea `pedidosCreados.increment();` (dejando el método vacío, olvidando registrar la métrica). Ejecuta de nuevo el test — la aserción `assertThat(meterRegistry.counter("pedidos.creados").count()).isEqualTo(valorInicial + 2)` FALLA porque el contador nunca se incrementó — diagnostica confirmando un problema real y común: una métrica de negocio que existe en el código pero cuyo punto de incremento se olvida en un método específico, dejando el conteo silenciosamente incorrecto sin que ningún error visible lo señale hasta que alguien note que el dashboard "no se mueve". Revierte el cambio antes de continuar.
+#### Subtema 7.6 · Detectar un contador que nunca sube (10 min)
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**Contexto.** Un contador registrado pero nunca incrementado puede parecer válido en el tablero mientras pierde todos los eventos.
 
-1. Agrega una métrica de tipo `Timer` (`registry.timer("pedidos.tiempo.procesamiento")`) que mida cuánto tarda `crear(...)`, y confirma con un test que `count()` refleja el número de invocaciones.
-2. Agrega una etiqueta (`tag`) a la métrica (`registry.counter("pedidos.creados", "region", "sur")`) y confirma con un test que dos regiones distintas se acumulan como series separadas, consultables independientemente.
-3. Documenta en una frase, basándote en los errores comunes del laboratorio, por qué una etiqueta con el ID único de cada pedido (en vez de algo como la región) sería un error de alta cardinalidad.
-4. Escribe de memoria (sin mirar) un servicio con un `Counter` de Micrometer, y un test que confirme su valor exacto tras varias invocaciones. Compara después contra el patrón del Paso 4.
-
-**Pista:** `meterRegistry.counter("nombre")` sin etiquetas y `meterRegistry.counter("nombre", "tag", "valor")` con etiquetas son series de métricas DISTINTAS internamente, aunque compartan el mismo nombre base — ten cuidado de consultar la combinación exacta de nombre y etiquetas que registraste.
-
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio para incrementar el contador de negocio:
+**Hazlo tú.** Elimina temporalmente esta línea de `ServicioTareas.crear`:
 
 ```java
-public void crear(String descripcion) {
-    pedidosCreados.____();
-}
+tareasCreadas.increment();
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un servicio con un `Counter` de Micrometer registrado en el constructor, y un test que confirme su incremento exacto tras dos llamadas. Compara después contra el patrón del Paso 4.
+Ejecuta solo el test funcional:
 
-#### Paso 7 · Cierre y evidencia
+```bash
+./mvnw -q -Dtest=MetricasTareasTest#crearTareaIncrementaContadorYSePublicaEnActuator test
+```
 
-Ya registras métricas de negocio custom con Micrometer, confirmando con un test real tanto el valor interno del `MeterRegistry` como su exposición en `/actuator/metrics`. El siguiente y último tema de este módulo distingue dos señales de salud con propósitos operativos distintos. **Evidencia:** entrega el resultado de `PedidoServiceMetricaTest` en verde, y el resultado del fallo deliberado mostrando el contador sin incrementar pese a las llamadas reales. Fuente oficial: [Micrometer — Application Metrics](https://docs.spring.io/spring-boot/reference/actuator/metrics.html).
+**Fallo deliberado observado.** El test esperaba que el contador subiera de `0.0` a `1.0`, pero siguió en `0.0`. Restaura el incremento y vuelve a ejecutar ambos métodos.
 
-**Errores comunes:** exponer solo métricas técnicas genéricas sin ninguna métrica de negocio custom; usar un valor de alta cardinalidad (como un ID de usuario único) como etiqueta, generando una explosión de series de métricas distintas que degrada el sistema de monitoreo.
+#### Entiende y cierra
 
-**Cuándo no usarlo:** para un evento tan infrecuente o de tan bajo valor analítico que ninguna decisión de negocio dependería de observarlo (un caso extremadamente raro sin impacto operativo), agregar una métrica dedicada puede ser esfuerzo sin retorno; reserva las métricas custom para eventos con valor de negocio real.
+`Counter.builder(...)` registra una métrica en el registry; `increment()` suma una unidad. `ServicioTareas` solo lo hace después del guardado, así que un error antes de guardar no cuenta como éxito. `MeterRegistry` muestra el valor dentro del proceso y `/actuator/metrics/{nombre}` lo consulta; un exporter conecta esa métrica a un sistema que la recoge y conserva fuera del proceso.
 
-Las métricas de negocio con Micrometer que definas aquí son las que monitoreará el proyecto integrador de este track (microservicio productivo, Módulo 12).
+Usa tags pequeños y previsibles, como `origen=api`. No pongas IDs únicos en tags ni trates el contador como libro contable: la métrica en memoria no es transaccional ni durable, y el registro persistido sigue siendo la fuente de verdad. Mantén `metrics` fuera de la exposición pública por defecto o protégelo con autenticación/red de gestión.
+
+**Evidencia para avanzar:** un POST real eleva el contador en uno, Actuator devuelve nombre/tag/valor, el endpoint anónimo responde `401` y al retirar `increment()` la prueba falla. Este test comprueba una instancia local; no verifica un exporter ni la recepción por Prometheus. Documentación primaria: [Micrometer — Counters](https://docs.micrometer.io/micrometer/reference/concepts/counters.html), [Spring Boot 4.1.2 — Métricas](https://docs.spring.io/spring-boot/reference/actuator/metrics.html) y [Actuator — Exposición y seguridad de endpoints](https://docs.spring.io/spring-boot/reference/actuator/endpoints.html#actuator.endpoints.exposing).
 
 ### Tema 3: Liveness vs readiness
 

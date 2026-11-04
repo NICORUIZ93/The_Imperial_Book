@@ -94,8 +94,8 @@
     "spring-boot": {
       "topics": 111,
       "completeTopics": 35,
-      "topicsWith3to6Subtopics": 41,
-      "subtopics": 123,
+      "topicsWith3to6Subtopics": 42,
+      "subtopics": 126,
       "completeSubtopics": 109
     }
   },
@@ -14488,9 +14488,52 @@
       },
       {
         "module": 7,
-        "topic": "### Tema 2: Métricas de negocio con Micrometer",
-        "subtopicCount": 0,
-        "subtopics": [],
+        "topic": "### Tema 2: Contar operaciones de negocio con Micrometer",
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "7.4",
+            "title": "#### Subtema 7.4 · Registrar un contador en el servicio real (10 min)",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": false
+            },
+            "complete": false
+          },
+          {
+            "id": "7.5",
+            "title": "#### Subtema 7.5 · Verificar valor y tag en el endpoint (10 min)",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": false
+            },
+            "complete": false
+          },
+          {
+            "id": "7.6",
+            "title": "#### Subtema 7.6 · Detectar un contador que nunca sube (10 min)",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": false,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": false
+            },
+            "complete": false
+          }
+        ],
         "complete": false
       },
       {

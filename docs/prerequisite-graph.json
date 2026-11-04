@@ -4390,7 +4390,7 @@
       "track": "spring-boot",
       "module": 7,
       "position": 2,
-      "title": "Métricas de negocio con Micrometer",
+      "title": "Contar operaciones de negocio con Micrometer",
       "file": "web/public/content/spring-boot/modulo-7.md",
       "requires": [
         "spring-boot:7:1"
