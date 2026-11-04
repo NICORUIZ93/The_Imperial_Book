@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 60,
-      "prerequisites": 75,
-      "context": 60,
-      "theoryAnalogy": 60,
-      "guidedDemo": 60,
+      "objective": 59,
+      "prerequisites": 74,
+      "context": 59,
+      "theoryAnalogy": 59,
+      "guidedDemo": 59,
       "codeExplanation": 111,
-      "execution": 100,
+      "execution": 99,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 60,
-      "independentPractice": 60,
-      "closure": 60,
-      "commonErrors": 60,
+      "guidedPractice": 59,
+      "independentPractice": 59,
+      "closure": 59,
+      "commonErrors": 59,
       "resources": 75,
-      "standaloneExample": 58,
-      "learningEvidence": 76,
-      "complete": 56
+      "standaloneExample": 57,
+      "learningEvidence": 75,
+      "complete": 55
     }
   },
   "topics": {
@@ -31097,26 +31097,26 @@
         "module": 9,
         "topic": "Tema 3: Cuándo WebFlux vale la complejidad, y R2DBC",
         "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "objective": false,
+          "prerequisites": false,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
-          "execution": true,
+          "execution": false,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
           "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 4,
+          "complete": false
         }
       }
     ]

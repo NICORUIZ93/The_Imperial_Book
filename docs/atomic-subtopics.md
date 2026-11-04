@@ -2,7 +2,7 @@
 
 > Auditoría estructural. Un encabezado o criterio detectado no demuestra que el ejemplo se haya ejecutado ni que la explicación sea pedagógicamente suficiente.
 
-Temas conformes a cuatro pasos: **143/1185**. Tracks inventariados: **14**.
+Temas conformes a cuatro pasos: **144/1185**. Tracks inventariados: **14**.
 
 | Track | Temas conformes | Temas inventariados | Subtemas detectados | Subtemas con estructura completa |
 |---|---:|---:|---:|---:|
@@ -19,7 +19,7 @@ Temas conformes a cuatro pasos: **143/1185**. Tracks inventariados: **14**.
 | node | 2 | 83 | 6 | 6 |
 | react | 0 | 58 | 0 | 0 |
 | rutaflow | 0 | 29 | 0 | 0 |
-| spring-boot | 39 | 111 | 162 | 129 |
+| spring-boot | 40 | 111 | 166 | 133 |
 
 ## Temas pendientes
 
@@ -1102,4 +1102,3 @@ Temas conformes a cuatro pasos: **143/1185**. Tracks inventariados: **14**.
 - M8 ### Tema 6: Spring Cloud Stream y binders de Kafka/RabbitMQ: 6.1: faltan deliberateFailure; 6.3: faltan deliberateFailure; 6.4: faltan action
 - M8 ### Tema 7: Kafka Streams con Spring para transformar eventos: 7.1: faltan deliberateFailure; 7.2: faltan action, deliberateFailure; 7.3: faltan deliberateFailure; 7.4: faltan deliberateFailure
 - M8 ### Tema 8: Avro y Schema Registry para contratos de eventos: 8.1: faltan deliberateFailure; 8.2: faltan deliberateFailure; 8.3: faltan deliberateFailure
-- M9 ### Tema 3: Cuándo WebFlux vale la complejidad, y R2DBC: tiene 0 subtemas

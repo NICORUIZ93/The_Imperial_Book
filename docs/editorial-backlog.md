@@ -11,13 +11,13 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | Explicación | 1185 | 0 |
 | Código | 1141 | 44 |
 | Ruta | 1185 | 0 |
-| Ejecución | 1117 | 68 |
+| Ejecución | 1116 | 69 |
 | Resultado | 1183 | 2 |
 | Modificación | 1129 | 56 |
-| Conexión con un proyecto | 1103 | 82 |
+| Conexión con un proyecto | 1102 | 83 |
 | Modelo mental | 1185 | 0 |
 | Límites | 1130 | 55 |
-| **Perfil de criterios detectado** | **1083** | **102** |
+| **Perfil de criterios detectado** | **1082** | **103** |
 
 ## Prioridad por track
 
@@ -36,7 +36,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | node | 83 | 0 | 0 | 0 | 0 | 1 | 2 | 1 |
 | react | 58 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | rutaflow | 29 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| spring-boot | 111 | 5 | 0 | 10 | 0 | 8 | 19 | 13 |
+| spring-boot | 111 | 5 | 0 | 11 | 0 | 8 | 20 | 13 |
 
 ## Pendientes por tema
 
@@ -142,6 +142,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 - [spring-boot · módulo 8](../web/public/content/spring-boot/modulo-8.md) · Tema 9: RabbitMQ con Spring AMQP: routing, ack y prefetch: código, ejecución, conexión con un proyecto.
 - [spring-boot · módulo 9](../web/public/content/spring-boot/modulo-9.md) · Tema 1: Mono y Flux: código, ejecución, conexión con un proyecto.
 - [spring-boot · módulo 9](../web/public/content/spring-boot/modulo-9.md) · Tema 2: WebClient y composición no bloqueante: código, ejecución, conexión con un proyecto.
+- [spring-boot · módulo 9](../web/public/content/spring-boot/modulo-9.md) · Tema 3: Cuándo WebFlux vale la complejidad, y R2DBC: ejecución, conexión con un proyecto.
 
 ## Regla de cierre
 

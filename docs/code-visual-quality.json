@@ -99,14 +99,14 @@
     "spring-boot": {
       "topics": 111,
       "code": 106,
-      "commentedCode": 55,
+      "commentedCode": 54,
       "mermaid": 43,
       "archifyVisual": 3,
-      "asciiVisual": 10,
+      "asciiVisual": 9,
       "misleadingDiagramLabel": 0,
       "filePath": 111,
       "runCommand": 111,
-      "officialSource": 92
+      "officialSource": 93
     },
     "kotlin-multiplatform": {
       "topics": 56,
@@ -2920,6 +2920,13 @@
       "topic": "Tema 2: WebClient y composición no bloqueante",
       "missingCode": true,
       "missingComments": false
+    },
+    {
+      "track": "spring-boot",
+      "module": 9,
+      "topic": "Tema 3: Cuándo WebFlux vale la complejidad, y R2DBC",
+      "missingCode": false,
+      "missingComments": true
     },
     {
       "track": "kotlin-multiplatform",

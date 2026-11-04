@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 909,
+      "lines": 934,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 15275,
+      "lines": 15332,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -314,7 +314,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1106,
+      "lines": 1105,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -600,7 +600,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3836,
+      "lines": 3843,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13598,
+      "lines": 13600,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -677,7 +677,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 149,
+      "lines": 150,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -813,7 +813,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 11075,
+      "lines": 11073,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 448,
+      "lines": 452,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -5869,6 +5869,64 @@
     {
       "path": "examples/spring-webclient-rutaflow/src/test/java/academia/rutaflow/webclient/TarifaClientTest.java",
       "lines": 81,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-webflux-decision-rutaflow/README.md",
+      "lines": 18,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# WebFlux, R2DBC y aislamiento de llamadas bloqueantes"
+      ]
+    },
+    {
+      "path": "examples/spring-webflux-decision-rutaflow/src/main/java/academia/rutaflow/decision/DecisionApplication.java",
+      "lines": 12,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-webflux-decision-rutaflow/src/main/java/academia/rutaflow/decision/Delivery.java",
+      "lines": 4,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-webflux-decision-rutaflow/src/main/java/academia/rutaflow/decision/DeliveryController.java",
+      "lines": 57,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-webflux-decision-rutaflow/src/main/java/academia/rutaflow/decision/DeliveryRepository.java",
+      "lines": 31,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-webflux-decision-rutaflow/src/main/resources/application.yml",
+      "lines": 13,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-webflux-decision-rutaflow/src/test/java/academia/rutaflow/decision/DecisionApplicationTest.java",
+      "lines": 54,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -12394,7 +12452,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-9.md",
-      "lines": 577,
+      "lines": 547,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

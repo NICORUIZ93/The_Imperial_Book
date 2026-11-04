@@ -8,7 +8,7 @@ defectos detectados tampoco acredita haber sido comprendida.
 |---|---:|
 | Temas analizados | 1185 |
 | Temas con algún defecto | 409 |
-| Módulos con apéndices heredados | 180/256 |
+| Módulos con apéndices heredados | 179/256 |
 
 ## Defectos por tipo
 
@@ -26,7 +26,7 @@ defectos detectados tampoco acredita haber sido comprendida.
 |---|---:|
 | ## Construcción guiada del capítulo | 42 |
 | ## Ruta de proyecto progresivo desde carpeta vacía | 12 |
-| **Errores comunes y soluciones** | 178 |
+| **Errores comunes y soluciones** | 177 |
 
 ## Temas con más defectos
 
@@ -81,4 +81,4 @@ defectos detectados tampoco acredita haber sido comprendida.
 4. `--strict` compara contra `docs/lesson-substance-baseline.json`: ningún
    tema nuevo puede nacer con estos defectos.
 
-Huella del contenido: `196d94c7f091cb74c3285dbd55329d6f01a2855803af7ae0e01d3a37ae080544`
+Huella del contenido: `b61a28c89430af0ca984165cb58d8740596b4069d9dae5fec634135c405cc4ff`

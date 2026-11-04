@@ -5,7 +5,7 @@
 **Proyecto continuo:** RutaFlow: plataforma de entregas basada en servicios.
 **Prerrequisito de entrada:** Java, HTTP, SQL y pruebas; los módulos iniciales vuelven a presentar cada herramienta..
 **Duración objetivo:** temas de 20–45 minutos; cada tema se divide en 3–6 acciones de 5–15 minutos.
-**Estado estructural:** 39/111 temas migrados; auditoría estructural actualizada el 2026-11-03.
+**Estado estructural:** 40/111 temas migrados; auditoría estructural actualizada el 2026-11-03.
 
 ## Índice de módulos y temas
 
@@ -229,7 +229,11 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 2.2 · Encadenar dos llamadas dependientes · 10 min
   - ✓ Subtema 2.3 · Dejar que el estado HTTP llegue como error reactivo · 10 min
   - ✓ Subtema 2.4 · Poner un límite a la espera · 10 min
-- [pendiente de migrar] Tema 3: Cuándo WebFlux vale la complejidad, y R2DBC
+- [4 pasos] Tema 3: Cuándo WebFlux vale la complejidad, y R2DBC
+  - ✓ Subtema 3.1 · Elegir el modelo por las dependencias · 10 min
+  - ✓ Subtema 3.2 · Ver el bloqueo que Reactor sí puede detectar · 10 min
+  - ✓ Subtema 3.3 · Mantener la consulta SQL reactiva con R2DBC · 10 min
+  - ✓ Subtema 3.4 · Aislar una operación bloqueante que aún no puedes reemplazar · 10 min
 
 ### Módulo 10: Microservicios con Spring Cloud
 
@@ -437,7 +441,7 @@ La tabla registra presencia de áreas en el inventario del track, no profundidad
 
 ### Huecos y límites reportados
 
-- El repositorio contiene 111 temas en 26 módulos; 39 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
+- El repositorio contiene 111 temas en 26 módulos; 40 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
 - No hay base para afirmar que el track esté completo: la comparación con la fuente de referencia está pendiente de revisión humana módulo por módulo.
 - Los elementos de la fuente que todavía deben verificarse de forma explícita están enumerados en la tabla anterior; cualquier técnica crítica que no tenga tema propio debe añadirse conservando el currículo base.
 - La ejecución de ejemplos, el comportamiento con brokers/plataformas reales y la calidad pedagógica humana se registran por separado.

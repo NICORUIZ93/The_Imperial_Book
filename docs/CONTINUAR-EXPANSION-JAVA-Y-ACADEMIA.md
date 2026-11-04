@@ -856,9 +856,7 @@ pasos, 409 temas con señales automatizadas de defecto de sustancia. Estas cifra
 describen señales estructurales; no certifican la comprensión ni una revisión
 pedagógica humana completa.
 
-**Siguiente tema:** Spring Boot M9 T3, “Cuándo WebFlux vale la complejidad, y R2DBC”.
-Revisar los costos del modelo reactivo, fuentes bloqueantes, driver reactivo,
-pool de conexiones y pruebas que permitan elegir entre MVC/WebFlux con evidencia.
+**Siguiente tema:** Spring Boot M10 T1, revisar el primer tema de “Microservicios Spring Cloud: diseño, comunicación y operación”. Empieza comparando el contenido existente con el alcance y los ejemplos reales del repositorio.
 
 
 Spring Boot M9 T1, “Mono y Flux”, se reescribió en cuatro subtemas con ejemplos
@@ -906,3 +904,30 @@ Spring WebClient/REST clients y código de MockWebServer.
 Cobertura automática después de M9 T2: **143/1185 temas atómicos**, **1083/1185
 practicables**, **1031/1185 completos en la auditoría de siete pasos** y 409 temas
 con señales de defecto de sustancia. Las métricas no sustituyen revisión humana.
+
+
+Spring Boot M9 T3, “Cuándo WebFlux vale la complejidad, y R2DBC”, se reescribió
+en cuatro subtemas y se implementó `examples/spring-webflux-decision-rutaflow/`.
+La guía compara MVC, MVC con virtual threads y WebFlux con dependencias reactivas,
+sin afirmar que WebFlux sea automáticamente más rápido. Reemplaza el consejo
+incorrecto `publishOn(boundedElastic())` + `.block()` por el patrón Reactor
+`Mono.fromCallable(...).subscribeOn(Schedulers.boundedElastic())`. También corrige
+un supuesto: `Mono.just("dato").block()` puede devolver un escalar sin esperar;
+la demostración usa `Mono.delay(...).block()` y reproduce 500 en un handler de
+WebFlux.
+
+`./mvnw -q clean test` pasó con **4 pruebas**: lectura H2 por `DatabaseClient` y
+R2DBC, ruta reactiva normal, rechazo del bloqueo en event loop y aislamiento de
+una operación heredada en un thread `boundedElastic`. Tres mutaciones en copias
+temporales hicieron fallar las pruebas: cambiar el publisher de espera por un
+escalar, retirar `subscribeOn` y desacoplar el bind `:code`. No se hizo benchmark
+MVC/WebFlux ni se probó PostgreSQL; eso queda expresamente como trabajo si se
+necesita una decisión de capacidad. La suite de HTTP confirma contratos, no
+rendimiento.
+
+Fuentes primarias contrastadas: Spring Boot SQL/R2DBC y virtual threads, Spring
+Framework R2DBC y Reactor FAQ sobre aislamiento de llamadas bloqueantes.
+Cobertura automática después de M9 T3: **144/1185 temas atómicos**, **1082/1185
+practicables**, **1030/1185 completos en la auditoría de siete pasos** y 409 temas
+con señales automatizadas de defecto de sustancia. Las cifras describen estructura,
+no comprensión ni validación humana.

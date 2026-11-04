@@ -1686,15 +1686,13 @@
       "track": "spring-boot"
     },
     {
-      "legacySections": [
-        "**Errores comunes y soluciones**"
-      ],
+      "legacySections": [],
       "module": 9,
       "track": "spring-boot"
     }
   ],
   "summary": {
-    "fingerprint": "196d94c7f091cb74c3285dbd55329d6f01a2855803af7ae0e01d3a37ae080544",
+    "fingerprint": "b61a28c89430af0ca984165cb58d8740596b4069d9dae5fec634135c405cc4ff",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -1705,10 +1703,10 @@
     "legacySections": {
       "## Construcción guiada del capítulo": 42,
       "## Ruta de proyecto progresivo desde carpeta vacía": 12,
-      "**Errores comunes y soluciones**": 178
+      "**Errores comunes y soluciones**": 177
     },
     "modules": 256,
-    "modulesWithLegacySections": 180,
+    "modulesWithLegacySections": 179,
     "topics": 1185,
     "topicsWithIssues": 409
   },
@@ -11065,9 +11063,9 @@
       {
         "issues": [],
         "module": 9,
-        "tailWords": 209,
+        "tailWords": 0,
         "topic": "Tema 3: Cuándo WebFlux vale la complejidad, y R2DBC",
-        "words": 1308
+        "words": 1037
       }
     ]
   }

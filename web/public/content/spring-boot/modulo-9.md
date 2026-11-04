@@ -422,155 +422,125 @@ Registra cuánto tarda la respuesta simulada y qué error produjo el timeout. Lu
 
 ### Tema 3: Cuándo WebFlux vale la complejidad, y R2DBC
 
-#### Paso 1 · Objetivo y preparación
+Este tema cierra la decisión con tres piezas ejecutables: una ruta que intenta bloquear el event loop, una consulta R2DBC real contra H2 y la forma de aislar una llamada bloqueante inevitable.
 
-Al finalizar podrás explicar, con evidencia real de una excepción real de Reactor, por qué mezclar código bloqueante dentro de un pipeline reactivo es un antipatrón grave, y cuándo WebFlux justifica su complejidad frente a Spring MVC.
+#### Subtema 3.1 · Elegir el modelo por las dependencias · 10 min
 
-**Conocimiento previo:** Temas 1 y 2 de este módulo.
+**1. Contexto**
 
-#### Paso 2 · Contexto y caso real
+MVC y WebFlux sirven para construir APIs; la elección depende del tipo de I/O, streaming y carga esperada. WebFlux no vuelve más rápida automáticamente una base de datos ni una operación bloqueante.
 
-**¿Por qué es importante?** WebFlux se justifica específicamente para alta concurrencia con recursos de threads limitados; para un CRUD simple, Spring MVC (o virtual threads de Java 21) suele ser suficiente y considerablemente más simple de razonar y depurar. Mezclar código bloqueante dentro de un pipeline reactivo puede agotar el pequeño pool de threads reactivos compartido.
+**2. Hazlo tú**
 
-#### Paso 3 · Teoría con analogía
+Abre `examples/spring-webflux-decision-rutaflow/README.md` y compara estas combinaciones:
 
-**Conceptos clave:** alta concurrencia con recursos limitados frente a CRUD simple, JDBC bloqueante en un pipeline reactivo.
+| Caso | Opción inicial | Qué confirmar |
+|---|---|---|
+| CRUD con JDBC/JPA y dependencias síncronas | Spring MVC | complejidad operativa y latencia suficiente |
+| I/O bloqueante con muchas esperas concurrentes | MVC con virtual threads o WebFlux con aislamiento | conexiones DB, pools y límites del cliente |
+| HTTP y SQL reactivos, streaming o alta concurrencia I/O | WebFlux + WebClient + R2DBC | que las dependencias y el equipo soporten Reactor |
 
-WebFlux brilla en sistemas con muchas conexiones concurrentes dominadas por I/O donde los threads son un recurso limitado; para CRUDs simples con concurrencia moderada, Spring MVC tradicional (con stack traces lineales y legibles) suele ser suficiente, un balance todavía más relevante desde los virtual threads de Java 21. Mezclar código bloqueante tradicional dentro de un pipeline reactivo ocuparía uno de los pocos threads del pool reactivo durante toda la operación bloqueante, afectando a todas las demás peticiones concurrentes que dependen de esos mismos threads limitados. Reactor incluso DETECTA esto activamente en threads específicos (los del event loop de Netty) y lanza una excepción real en vez de permitirlo silenciosamente.
+**Resultado esperado.** Para cada fila puedes nombrar una medida que comprobarías: p95 de latencia, peticiones en vuelo, uso de threads, CPU o saturación del pool de conexiones.
 
-**Analogía:** mezclar código bloqueante en un pipeline reactivo es detener por completo una de las pocas líneas de ensamblaje rápidas y especializadas de una fábrica para realizar manualmente una tarea lenta que debería hacerse en otra área separada.
+**Fallo deliberado.** Recomienda WebFlux solo porque una API tiene muchas rutas. **Diagnóstico:** la cantidad de endpoints no describe concurrencia, tiempo de espera ni dependencias; pide esos datos antes de elegir.
 
-**Diagrama:**
+**3. Entiende**
 
-```
-┌── WebFlux: justificado ────────────────────────────┐
-│  muchas conexiones I/O concurrentes + threads limitados │
-└──────────────────────────────────────────────┘
-┌── Spring MVC / virtual threads: más simple ─────────┐
-│  suficiente para CRUDs de concurrencia moderada          │
-└──────────────────────────────────────────────┘
-```
+WebFlux puede atender muchas esperas de I/O con menos threads dedicados, si el recorrido conserva operaciones no bloqueantes. MVC es más directo para código síncrono. En Java 21+, Spring Boot puede habilitar virtual threads para ciertos servidores Servlet; eso hace más barato esperar con threads, pero no amplía el límite de conexiones de la base de datos ni vuelve JDBC reactivo.
 
-#### Paso 4 · Demostración guiada desde cero
+**4. Cierra**
 
-Continuando en `demo-reactive` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía y genera un proyecto nuevo con `mkdir demo-reactive && cd demo-reactive` seguido de `mvn archetype:generate` o el generador de start.spring.io con `webflux`), crea un endpoint que deliberadamente mezcla una llamada bloqueante dentro del pipeline reactivo, en `src/main/java/io/academia/delivery/`:
+Escribe el patrón de llamadas a base de datos y APIs externas de tu proyecto, y marca cuáles son bloqueantes. La elección queda pendiente hasta tener carga y latencias observadas.
 
-```bash
-mkdir -p demo-reactive/src/main/java/io/academia/delivery
-cd demo-reactive
-```
+#### Subtema 3.2 · Ver el bloqueo que Reactor sí puede detectar · 10 min
 
-```java
-// src/main/java/io/academia/delivery/BloqueoDeliberadoController.java
-package io.academia.delivery;
+**1. Contexto**
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-import reactor.core.publisher.Mono;
+Reactor rechaza operaciones `block()` en threads marcados como no bloqueables, como los del event loop. Un valor inmediato puede resolverse sin esperar; para observar el error, el publisher debe esperar una señal.
 
-@RestController
-public class BloqueoDeliberadoController {
+**2. Hazlo tú**
 
-    // antipatrón deliberado: Mono.block() dentro de un handler reactivo, sobre el event loop de Netty
-    @GetMapping("/test/bloqueo")
-    public Mono<String> conBloqueoIndebido() {
-        String resultado = Mono.just("dato").block(); // BLOQUEA el thread reactivo actual
-        return Mono.just(resultado);
-    }
-}
-```
+Abre `src/main/java/academia/rutaflow/decision/DeliveryController.java` en `examples/spring-webflux-decision-rutaflow`. Ejecuta la prueba HTTP:
 
-**Explicación línea por línea:** `Mono.just("dato").block()` fuerza al thread actual (que en un endpoint de WebFlux es un thread del event loop de Netty, diseñado específicamente para nunca bloquearse) a esperar sincrónicamente el resultado, exactamente el antipatrón que este Tema describe — Reactor incluye un mecanismo de detección activa para este caso específico.
+    ./mvnw -Dtest=DecisionApplicationTest#blockInsideNettyEventLoopIsRejected test
 
-Confirma con `WebTestClient` (el cliente de test reactivo real de Spring, que ejercita el pipeline HTTP completo) que Reactor rechaza esta operación bloqueante con un error real, en vez de simplemente permitirla silenciosamente:
+**Resultado esperado.** `/demo/block` responde 500 porque `Mono.delay(...).block()` intenta esperar en el thread que atiende WebFlux.
 
-```java
-// src/test/java/io/academia/delivery/BloqueoDeliberadoTest.java
-package io.academia.delivery;
+**Fallo deliberado.** Sustituye `Mono.delay(Duration.ofMillis(10)).block()` por `Mono.just("dato").block()` y ejecuta la prueba. **Diagnóstico:** un `Mono.just` puede devolver el valor escalar inmediatamente; esa ruta no demuestra un bloqueo real y el test recibe 200. Restaura la espera con `Mono.delay`.
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.reactive.server.AutoConfigureWebTestClient;
-import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.beans.factory.annotation.Autowired;
+**3. Entiende**
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureWebTestClient
-class BloqueoDeliberadoTest {
+El error `block()/blockFirst()/blockLast() are blocking` se detecta en threads de Reactor marcados como no bloqueables. No es un detector universal de todo código lento: una llamada JDBC directa puede bloquear sin lanzar esta excepción y aun así frenar el event loop.
 
-    @Autowired
-    private WebTestClient webTestClient;
+**4. Cierra**
 
-    @Test
-    void unBlockDentroDelPipelineReactivoEsRechazadoPorReactor() {
-        webTestClient.get().uri("/test/bloqueo")
-            .exchange()
-            .expectStatus().is5xxServerError(); // Reactor detecta el block() y falla la petición
-    }
-}
-```
+Explica qué hace esperar a `Mono.delay` y por qué la versión con `Mono.just` no prueba la misma condición.
 
-```bash
-./mvnw test -Dtest=BloqueoDeliberadoTest
-```
+#### Subtema 3.3 · Mantener la consulta SQL reactiva con R2DBC · 10 min
 
-**Resultado esperado:** `BUILD SUCCESS` con el test en verde: la petición HTTP real, procesada por el pipeline completo de WebFlux (no un test unitario aislado), falla con un error de servidor porque Reactor detecta la llamada a `.block()` sobre un thread reactivo no bloqueable y lanza `IllegalStateException: block()/blockFirst()/blockLast() are blocking, which is not supported in thread reactor-http-nio-...` — Reactor no permite silenciosamente el antipatrón, lo rechaza activamente con una excepción real y diagnosticable.
+**1. Contexto**
 
-**Fallo deliberado (en sentido inverso, para contrastar):** reemplaza `Mono.just("dato").block()` por simplemente `Mono.just("dato")` (sin `.block()`, la versión NO bloqueante correcta) en un segundo endpoint, y confirma con un segundo test que ESE endpoint responde `200 OK` normalmente — la comparación directa entre ambos tests (uno falla con `IllegalStateException` real, el otro responde correctamente) demuestra en código, no solo en teoría, exactamente dónde está la línea entre un pipeline reactivo correcto y uno roto.
+Devolver `Mono` desde un método no vuelve reactiva una consulta JDBC. Para SQL no bloqueante necesitas un driver R2DBC y una API como `DatabaseClient` o un repositorio reactivo.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**2. Hazlo tú**
 
-1. Agrega un tercer endpoint que use `.publishOn(Schedulers.boundedElastic())` antes de un `.block()` interno (moviendo el bloqueo a un scheduler diseñado para tolerarlo) y confirma con un test que, a diferencia del Paso 4, este endpoint SÍ responde `200 OK` — documenta por qué mover el bloqueo a un scheduler apropiado es la forma correcta de integrar código bloqueante inevitable dentro de un pipeline reactivo.
-2. Mide (documentando el resultado, sin necesariamente automatizarlo) cuántas peticiones concurrentes al endpoint bloqueante del Paso 4 empiezan a degradarse notablemente, comparado con el endpoint no bloqueante equivalente.
-3. Documenta en una frase, para el caso de uso específico de `demo-reactive` (un CRUD simple de entregas), si WebFlux está genuinamente justificado o si Spring MVC con virtual threads habría sido una elección más simple y suficiente.
-4. Escribe de memoria (sin mirar) un endpoint que llame a `.block()` indebidamente, y un test `WebTestClient` que confirme el error real que Reactor produce. Compara después contra el patrón del Paso 4.
+Abre `src/main/java/academia/rutaflow/decision/DeliveryRepository.java` y `src/main/resources/application.yml`. Desde la carpeta del laboratorio ejecuta:
 
-**Pista:** el error `block()/blockFirst()/blockLast() are blocking, which is not supported in thread reactor-http-nio-...` solo ocurre en threads que Reactor específicamente marca como no-bloqueables (como el event loop de Netty); el mismo `.block()` ejecutado desde un test JUnit normal (fuera de un pipeline reactivo activo) NO lanza este error, porque el thread del test no tiene esa restricción.
+    ./mvnw -Dtest=DecisionApplicationTest#r2dbcReadsAnExistingDelivery test
 
-#### Paso 6 · Práctica independiente
+**Resultado esperado.** El endpoint `/deliveries/RF-001` devuelve `200` con estado `IN_ROUTE`; la consulta usa `DatabaseClient` y el driver H2 R2DBC en memoria.
 
-**Completa el código:** rellena el espacio con el método que fuerza la espera sincrónica indebida dentro del pipeline:
+**Fallo deliberado.** Cambia el parámetro nombrado `:code` de la consulta a `:trackingCode` sin cambiar `.bind("code", trackingCode)`. **Diagnóstico:** el nombre del parámetro SQL ya no coincide con el valor enlazado y la prueba deja de recibir la entrega. Restaura `:code`.
+
+**3. Entiende**
+
+R2DBC expone operaciones de base de datos con publishers. El driver H2 sirve para validar el ejercicio, no reemplaza pruebas contra PostgreSQL/MySQL, sus límites de conexiones, transacciones o comportamiento de producción. No uses un repositorio JDBC y lo envuelvas en `Mono` para afirmar que la ruta dejó de bloquear.
+
+**4. Cierra**
+
+Anota el starter, driver y URL R2DBC. Explica qué cambiaría al probar el motor de datos real.
+
+#### Subtema 3.4 · Aislar una operación bloqueante que aún no puedes reemplazar · 10 min
+
+**1. Contexto**
+
+A veces una librería heredada solo ofrece una llamada síncrona. Mientras preparas su reemplazo, ejecútala fuera del event loop y no llames `.block()` dentro del controller.
+
+**2. Hazlo tú**
+
+Revisa `isolateBlockingCall` en `DeliveryController.java` y ejecuta:
+
+    ./mvnw -Dtest=DecisionApplicationTest#unavoidableBlockingCallCanBeIsolatedOnBoundedElastic test
+
+El patrón es:
 
 ```java
-String resultado = Mono.just("dato").____();
+Mono.fromCallable(() -> clienteBloqueante.consultar(codigo))
+    .subscribeOn(Schedulers.boundedElastic());
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un endpoint con un `.block()` indebido y un test `WebTestClient` que confirme el error 5xx real que produce. Compara después contra el patrón del Paso 4.
+**Resultado esperado.** `/demo/legacy` devuelve el nombre de un thread `boundedElastic`. El código duerme 25 ms para representar una dependencia síncrona; no es una medición de rendimiento.
 
-#### Paso 7 · Cierre y evidencia
+**Fallo deliberado.** En una copia quita `.subscribeOn(Schedulers.boundedElastic())`. **Diagnóstico:** la prueba deja de recibir un nombre que empieza por `boundedElastic-`; el callable volvió al event loop. Restaura `subscribeOn`.
 
-Ya explicas, con la evidencia de una excepción real de Reactor, por qué mezclar código bloqueante en un pipeline reactivo es un antipatrón activamente rechazado, no solo desaconsejado en teoría. Esto cierra el módulo de programación reactiva; el siguiente módulo aborda cómo estructurar el código de dominio con principios de arquitectura hexagonal. **Evidencia:** entrega el resultado de `BloqueoDeliberadoTest` en verde (confirmando el error real de Reactor), y la comparación con el endpoint no bloqueante equivalente respondiendo `200 OK`. Fuente oficial: [Project Reactor — Blocking calls](https://projectreactor.io/docs/core/release/reference/faq.html#faq.wrap-blocking).
+**3. Entiende**
 
-**Errores comunes:** usar `.block()` dentro de un flujo reactivo para "simplificar" el código, anulando el beneficio no bloqueante y arriesgando la excepción real de Reactor en producción; migrar un CRUD simple a WebFlux sin medir si la concurrencia real del sistema justifica la complejidad adicional.
+`fromCallable` retrasa la llamada hasta la suscripción. `subscribeOn(boundedElastic())` mueve la suscripción y la operación al scheduler pensado para esperas bloqueantes acotadas. No uses `publishOn(...).block()`; el `.block()` sigue siendo una espera sincrónica del thread que lo ejecuta. La solución preferida a largo plazo es una API reactiva compatible, como R2DBC para SQL.
 
-**Cuándo no usarlo:** para un sistema con concurrencia moderada y donde la simplicidad de razonamiento del código importa más que exprimir el último recurso de threads disponible, Spring MVC (posiblemente con virtual threads de Java 21) suele ser la elección más simple y igualmente efectiva.
+**4. Cierra**
+
+Entrega las pruebas de HTTP y R2DBC en verde. Para una elección real, compara MVC/WebFlux con la misma carga y mide p95, conexiones activas, threads, CPU y errores; esta suite funcional no mide capacidad.
+
+**Fuentes oficiales:** [Reactor: envolver llamadas bloqueantes con boundedElastic](https://projectreactor.io/docs/core/release/reference/faq.html#faq.wrap-blocking), [Spring Boot: R2DBC y DatabaseClient](https://docs.spring.io/spring-boot/reference/data/sql.html), [Spring Framework: acceso R2DBC](https://docs.spring.io/spring-framework/reference/data-access/r2dbc.html), [Spring Boot: virtual threads](https://docs.spring.io/spring-boot/reference/features/spring-application.html).
+
+**¿Por qué es importante?** El modelo reactivo solo aporta si la espera bloqueante no vuelve a ocupar el event loop y los límites reales del sistema permiten aprovecharlo.
 
 ---
 
+## Laboratorio del módulo
 
----
+Usa los tres laboratorios enlazados desde sus temas: `spring-reactor-rutaflow`, `spring-webclient-rutaflow` y `spring-webflux-decision-rutaflow`. Prueban publishers, llamadas HTTP y R2DBC local, respectivamente.
 
-Esta decisión (WebFlux o MVC) es la misma que deberás justificar explícitamente para el proyecto integrador de este track (microservicio productivo, Módulo 12).
+**Evidencia:** entrega las suites dirigidas de cada laboratorio y una breve decisión MVC/WebFlux con dependencias identificadas. Para decir cuál soporta más carga, ejecuta un benchmark separado con la misma máquina, base de datos, conexiones y concurrencia, y registra latencia p95/p99, CPU, threads, conexiones activas y errores. Las pruebas funcionales de este módulo no certifican rendimiento ni preparación profesional.
 
-## Laboratorio práctico
-
-**Objetivo del laboratorio:** construir un endpoint reactivo que compone múltiples llamadas no bloqueantes con WebClient.
-
-**Requisitos previos:** Módulos 0-8 completados.
-
-| Paso | Acción | Código | Explicación |
-|---|---|---|---|
-| 1 | Crear endpoints `Mono<Tarea>` y `Flux<Tarea>` | Ver Tema 1 | Verifica la evaluación perezosa |
-| 2 | Componer dos llamadas HTTP con `WebClient`/`flatMap` | Ver Tema 2 | Sin bloquear el thread |
-| 3 | Comparar con el equivalente en Spring MVC | Ver Tema 3 | Documenta la diferencia de modelo mental |
-| 4 | Conectar con R2DBC y ejecutar una query reactiva | Ver Tema 3 | Verifica que no bloquea |
-
-**Verificación:** el laboratorio se considera exitoso si la composición de llamadas con `WebClient` no bloquea ningún thread durante la espera de red, y si puedes explicar concretamente cuándo elegirías WebFlux frente a Spring MVC para un caso de uso real específico.
-
-**Errores comunes y soluciones**
-
-- **Mezclar JDBC bloqueante dentro de un pipeline reactivo.** Usa R2DBC para acceso a datos reactivo consistente.
-- **Adoptar WebFlux para un CRUD simple sin necesidad real de alta concurrencia.** Evalúa si Spring MVC (o virtual threads) sería más simple y suficiente.
-- **Usar `RestTemplate` en vez de `WebClient` para llamadas reactivas.** `RestTemplate` es bloqueante y está considerado legado; usa `WebClient`.
-
----
+**Cierre del módulo:** el siguiente módulo trata arquitectura hexagonal. Lleva el criterio de mantener I/O dentro de adaptadores y evita elegir una tecnología sin una medida del problema que resuelve.
