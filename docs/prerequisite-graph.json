@@ -4401,7 +4401,7 @@
       "track": "spring-boot",
       "module": 7,
       "position": 3,
-      "title": "Liveness vs readiness",
+      "title": "Liveness y readiness sin reinicios en cadena",
       "file": "web/public/content/spring-boot/modulo-7.md",
       "requires": [
         "spring-boot:7:2"

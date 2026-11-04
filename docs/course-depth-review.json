@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 233,
+    "topicsWithSignals": 234,
     "newLaboratories": 25
   },
   "priorities": {
@@ -13429,10 +13429,12 @@
     {
       "track": "spring-boot",
       "module": 7,
-      "title": "Tema 3: Liveness vs readiness",
+      "title": "Tema 3: Liveness y readiness sin reinicios en cadena",
       "file": "web/public/content/spring-boot/modulo-7.md",
       "line": 323,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"

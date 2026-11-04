@@ -320,164 +320,173 @@ Usa tags pequeños y previsibles, como `origen=api`. No pongas IDs únicos en ta
 
 **Evidencia para avanzar:** un POST real eleva el contador en uno, Actuator devuelve nombre/tag/valor, el endpoint anónimo responde `401` y al retirar `increment()` la prueba falla. Este test comprueba una instancia local; no verifica un exporter ni la recepción por Prometheus. Documentación primaria: [Micrometer — Counters](https://docs.micrometer.io/micrometer/reference/concepts/counters.html), [Spring Boot 4.1.2 — Métricas](https://docs.spring.io/spring-boot/reference/actuator/metrics.html) y [Actuator — Exposición y seguridad de endpoints](https://docs.spring.io/spring-boot/reference/actuator/endpoints.html#actuator.endpoints.exposing).
 
-### Tema 3: Liveness vs readiness
+### Tema 3: Liveness y readiness sin reinicios en cadena
 
-#### Paso 1 · Objetivo y preparación
+**¿Por qué es importante?** Si falla un servicio externo, una sonda de liveness mal configurada puede reiniciar todas las instancias al mismo tiempo. Primero separa las dos preguntas: «¿el proceso puede seguir vivo?» y «¿esta instancia debe recibir tráfico ahora?». Al terminar, configurarás ambas señales y demostrarás su independencia con pruebas.
 
-Al finalizar podrás configurar endpoints de liveness y readiness separados, y explicar con evidencia real por qué confundirlos causa reinicios innecesarios en un despliegue orquestado.
+#### Subtema 7.7 · Habilitar las sondas de Spring Boot · 5 min
 
-**Conocimiento previo:** Temas 1 y 2 de este módulo.
+**Contexto:** Actuator publica `/actuator/health/liveness` y `/actuator/health/readiness` como grupos distintos. Liveness observa si Spring Boot considera que el proceso está funcionando; readiness observa si ya puede recibir tráfico. En Kubernetes, este último estado se usa para retirar temporalmente la instancia del servicio.
 
-#### Paso 2 · Contexto y caso real
+**Hazlo tú:** En el proyecto acumulado, agrega a `src/main/resources/application.properties`:
 
-**¿Por qué es importante?** Una aplicación podría estar perfectamente viva (sin necesitar reiniciarse) pero temporalmente no lista para recibir tráfico —por ejemplo, durante el arranque mientras inicializa conexiones— un caso donde reiniciar el pod (liveness fallando) sería contraproducente, mientras sacarlo temporalmente de la rotación (readiness fallando) es el comportamiento correcto.
-
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** ¿debe reiniciarse el pod? vs ¿debe recibir tráfico ahora?
-
-`management.endpoint.health.probes.enabled: true` habilita dos endpoints con propósito distinto: `/actuator/health/liveness` responde "¿está la aplicación en un estado tan roto que debería reiniciarse?" (un fallo dispara un reinicio del contenedor), mientras `/actuator/health/readiness` responde "¿está la aplicación actualmente en condiciones de recibir tráfico?" (un fallo simplemente saca temporalmente al pod de la rotación de balanceo, sin reiniciarlo).
-
-**Analogía:** liveness es verificar si una persona sigue consciente y necesita atención médica de emergencia; readiness es verificar si esa misma persona, consciente y sana, está actualmente disponible para atender clientes en este momento específico.
-
-**Diagrama:**
-
-```
-┌── liveness: ¿debe reiniciarse el pod? ──────────────┐
-│  UP: el proceso está sano, no necesita reinicio          │
-│  DOWN: algo irrecuperable, Kubernetes reinicia el pod    │
-└──────────────────────────────────────────────┘
-┌── readiness: ¿debe recibir tráfico ahora? ──────────┐
-│  UP: listo, recibe tráfico normalmente                   │
-│  DOWN: sacado temporalmente de la rotación, sin reinicio  │
-└──────────────────────────────────────────────┘
+```properties
+management.endpoint.health.probes.enabled=true
 ```
 
-#### Paso 4 · Demostración guiada desde cero
-
-Reutiliza `academia-spring` (o créalo desde una carpeta vacía con `mkdir -p academia-spring` si es tu primera vez) y actualiza `src/main/resources/application.properties` para habilitar las sondas separadas:
+La propiedad habilita los grupos de sondas. Arranca la aplicación y consulta cada ruta desde una terminal. En este proyecto las rutas requieren el JWT de administrador que ya creaste en el Módulo 4. Define `TOKEN` con ese token de prueba en la misma terminal; no lo guardes en `application.properties`:
 
 ```bash
-mkdir -p academia-spring/src/main/java/com/academia/observabilidad
-cd academia-spring
-cat >> src/main/resources/application.properties <<'EOF'
-management.endpoint.health.probes.enabled=true
-management.health.livenessstate.enabled=true
-management.health.readinessstate.enabled=true
-EOF
+export TOKEN='<pega-aqui-tu-jwt-de-prueba>'
+curl -i -H "Authorization: Bearer $TOKEN" http://localhost:8080/actuator/health/liveness
+curl -i -H "Authorization: Bearer $TOKEN" http://localhost:8080/actuator/health/readiness
 ```
 
-```java
-// src/main/java/com/academia/observabilidad/ControlDisponibilidad.java
-package com.academia.observabilidad;
+**Resultado esperado.** Con la aplicación iniciada normalmente, ambas rutas responden `200` y su cuerpo muestra `"status":"UP"`. Si recibes `404`, comprueba primero la propiedad y que `spring-boot-starter-actuator` esté instalado. Si recibes `401`, la ruta está protegida: usa un JWT válido; no abras todos los endpoints para resolverlo.
 
-import org.springframework.boot.availability.AvailabilityChangeEvent;
-import org.springframework.boot.availability.ReadinessState;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+**Fallo deliberado:** comenta temporalmente `management.endpoint.health.probes.enabled=true`, reinicia y consulta la ruta de liveness. **Diagnóstico:** si devuelve `404`, el grupo de sondas no está activo; restaura la propiedad y reinicia.
 
-// endpoint de PRUEBA para forzar readiness a REFUSING_TRAFFIC sin afectar liveness
-@RestController
-public class ControlDisponibilidad {
-    private final ApplicationEventPublisher publisher;
+**Entiende:** El nombre de una sonda no reinicia ni retira nada por sí solo. El orquestador consulta la ruta y decide qué hacer con el resultado. Actuator también publica estados de disponibilidad de la aplicación; en el subtema 7.9 cambiarás uno para observar el efecto.
 
-    public ControlDisponibilidad(ApplicationEventPublisher publisher) { this.publisher = publisher; }
+**Cierra:** Anota las dos URLs y el estado HTTP inicial. No avances hasta poder distinguir qué estado representa cada una.
 
-    @PostMapping("/test/no-listo")
-    public void marcarComoNoListo() {
-        AvailabilityChangeEvent.publish(publisher, this, ReadinessState.REFUSING_TRAFFIC);
-    }
+#### Subtema 7.8 · Revisar la dependencia solo en readiness · 10 min
 
-    @PostMapping("/test/listo")
-    public void marcarComoListo() {
-        AvailabilityChangeEvent.publish(publisher, this, ReadinessState.ACCEPTING_TRAFFIC);
-    }
-}
+**Contexto:** El `HealthIndicator` `pasarelaPagos` del subtema 7.2 detecta una caída externa. Spring Boot no la añade automáticamente a readiness: el equipo decide si esa dependencia es necesaria para atender solicitudes.
+
+**Hazlo tú:** Como en esta práctica la API necesita la pasarela para aceptar nuevas operaciones, agrega a `src/main/resources/application.properties`:
+
+```properties
+management.endpoint.health.group.readiness.include=readinessState,pasarelaPagos
 ```
 
-**Explicación línea por línea:** `management.endpoint.health.probes.enabled=true` activa los grupos `liveness` y `readiness` como endpoints separados; `AvailabilityChangeEvent.publish(publisher, this, ReadinessState.REFUSING_TRAFFIC)` es el mecanismo REAL que Spring Boot expone para cambiar el estado de readiness sin afectar liveness — el mismo mecanismo que usarías internamente durante un apagado ordenado o una recuperación temporal de una dependencia.
+La sonda de liveness queda con su indicador de estado de vida; la pasarela aparece solo en readiness. Reinicia la app para cargar la configuración. No incluyas `pasarelaPagos` en `group.liveness.include`.
 
-Confirma con `MockMvc` real que cambiar readiness NO afecta liveness, la distinción central de este Tema:
+**Resultado esperado.** Cuando la pasarela funciona, readiness sigue `UP`. Si el `HealthIndicator` informa `DOWN`, readiness pasa a estado no saludable y responde `503`; liveness continúa `UP` porque el proceso puede recuperarse sin reinicio. En Kubernetes, la primera señal retira la instancia de los nuevos destinos del Service; la segunda hace que el kubelet reinicie el contenedor.
+
+**Prueba en el despliegue.** En el `Deployment` de Kubernetes, dentro de `spec.template.spec.containers[0]`, configura cada ruta por separado:
+
+```yaml
+livenessProbe:
+  httpGet:
+    path: /actuator/health/liveness
+    port: 8080
+  periodSeconds: 10
+  failureThreshold: 3
+readinessProbe:
+  httpGet:
+    path: /actuator/health/readiness
+    port: 8080
+  periodSeconds: 5
+  failureThreshold: 2
+```
+
+El kubelet no hereda el JWT del usuario de la API. En un despliegue real, permite estas dos rutas de sonda con una regla de seguridad limitada o una interfaz de gestión y restringe su acceso desde la red; no expongas los detalles de salud ni los demás endpoints de Actuator. El bloque es una configuración para insertar en el contenedor del Deployment, no un manifiesto completo; esta lección no ejecuta un clúster de Kubernetes.
+
+**Ojo con la decisión.** Si todas las instancias dependen de una pasarela compartida, ponerla en readiness puede retirar todas del servicio a la vez. Si existen alternativas o circuit breakers, quizá convenga mantenerlas listas y gestionar el error en la solicitud. Readiness expresa una decisión de producto y operación, no una regla universal.
+
+**Fallo deliberado:** agrega temporalmente `management.endpoint.health.group.liveness.include=livenessState,pasarelaPagos` y ejecuta `DisponibilidadProbesTest#unaPasarelaCaidaSoloRetiraLaInstanciaDeReadiness`. **Diagnóstico:** la prueba recibe `503` al consultar liveness porque ahora la dependencia externa decide la señal de reinicio. Quita esa propiedad y repite el test.
+
+**Entiende:** Liveness responde «¿reinicio esta instancia?»; readiness responde «¿le envío tráfico nuevo?». Una caída de red o de un servicio compartido suele ser externa al proceso. Reiniciar instancias que dependen de ese mismo servicio no lo recupera y puede crear una cadena de fallos.
+
+**Cierra:** Escribe qué hace tu API cuando cae la pasarela: ¿puede responder con una alternativa?, ¿debe dejar de recibir operaciones nuevas?, ¿la dependencia es propia de una instancia o compartida? Esa decisión justifica incluirla o no en readiness.
+
+#### Subtema 7.9 · Probar estados distintos y diagnosticar el error · 10 min
+
+**Contexto:** Una configuración que compila aún puede conectar mal los grupos. Prueba tres cambios reales con `MockMvc`: dependencia caída, readiness que deja de aceptar tráfico y liveness rota. `AvailabilityChangeEvent` cambia el estado de disponibilidad administrado por Spring; un `HealthIndicator` informa la salud de una dependencia. Son señales diferentes.
+
+**Hazlo tú:** Crea `src/test/java/com/example/demo/DisponibilidadProbesTest.java`. La prueba reutiliza el `ServicioExterno`, `JwtService` y seguridad del backend acumulado:
 
 ```java
-// src/test/java/com/academia/observabilidad/LivenessReadinessTest.java
-package com.academia.observabilidad;
+package com.example.demo;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.availability.AvailabilityChangeEvent;
+import org.springframework.boot.availability.LivenessState;
+import org.springframework.boot.availability.ReadinessState;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.context.ApplicationContext;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class LivenessReadinessTest {
+class DisponibilidadProbesTest {
+    @Autowired MockMvc mockMvc;
+    @Autowired ApplicationContext context;
+    @Autowired ServicioExterno servicioExterno;
+    @Autowired JwtService jwtService;
 
-    @Autowired
-    private MockMvc mockMvc;
+    @BeforeEach
+    @AfterEach
+    void restableceEstados() {
+        servicioExterno.marcarComoDisponible();
+        AvailabilityChangeEvent.publish(context, ReadinessState.ACCEPTING_TRAFFIC);
+        AvailabilityChangeEvent.publish(context, LivenessState.CORRECT);
+    }
 
     @Test
-    void marcarNoListoAfectaSoloReadinessNoLiveness() throws Exception {
-        mockMvc.perform(post("/test/no-listo"));
-
-        mockMvc.perform(get("/actuator/health/readiness"))
+    void unaPasarelaCaidaSoloRetiraLaInstanciaDeReadiness() throws Exception {
+        servicioExterno.marcarComoNoDisponible();
+        mockMvc.perform(get("/actuator/health/readiness").header("Authorization", bearer()))
             .andExpect(status().isServiceUnavailable())
-            .andExpect(jsonPath("$.status").value("OUT_OF_SERVICE"));
+            .andExpect(jsonPath("$.components.pasarelaPagos.status").value("DOWN"));
+        mockMvc.perform(get("/actuator/health/liveness").header("Authorization", bearer()))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.status").value("UP"));
+    }
 
-        mockMvc.perform(get("/actuator/health/liveness"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.status").value("UP")); // liveness NO se ve afectado
+    @Test
+    void rechazarTraficoNoRompeLiveness() throws Exception {
+        AvailabilityChangeEvent.publish(context, ReadinessState.REFUSING_TRAFFIC);
+        mockMvc.perform(get("/actuator/health/readiness").header("Authorization", bearer()))
+            .andExpect(status().isServiceUnavailable());
+        mockMvc.perform(get("/actuator/health/liveness").header("Authorization", bearer()))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.status").value("UP"));
+    }
 
-        mockMvc.perform(post("/test/listo")); // deja el estado limpio para otros tests
+    @Test
+    void procesoRotoAfectaLivenessPeroNoElEstadoReadiness() throws Exception {
+        AvailabilityChangeEvent.publish(context, LivenessState.BROKEN);
+        mockMvc.perform(get("/actuator/health/liveness").header("Authorization", bearer()))
+            .andExpect(status().isServiceUnavailable());
+        mockMvc.perform(get("/actuator/health/readiness").header("Authorization", bearer()))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    void lasDosRutasSiguenProtegidas() throws Exception {
+        mockMvc.perform(get("/actuator/health/readiness")).andExpect(status().isUnauthorized());
+        mockMvc.perform(get("/actuator/health/liveness")).andExpect(status().isUnauthorized());
+    }
+
+    private String bearer() {
+        return "Bearer " + jwtService.generar("monitor@rutaflow.dev", "ADMIN");
     }
 }
 ```
 
+Ejecuta solo esta prueba:
+
 ```bash
-mvn test -Dtest=LivenessReadinessTest # Maven
-./gradlew test --tests LivenessReadinessTest # Gradle (equivalente)
+./mvnw -q -Dtest=DisponibilidadProbesTest test
 ```
 
-**Resultado esperado:** el test pasa: tras marcar la aplicación como no lista, `/actuator/health/readiness` responde `503` con `OUT_OF_SERVICE`, mientras `/actuator/health/liveness` sigue respondiendo `200` con `UP` — la aplicación sigue perfectamente viva (no necesita reiniciarse), solo temporalmente fuera de la rotación de tráfico, exactamente el comportamiento que este Tema explica.
+**Resultado esperado.** Cuatro pruebas pasan: una avería de la pasarela produce readiness `503` y liveness `200`; `REFUSING_TRAFFIC` solo afecta readiness; `BROKEN` solo afecta liveness; sin JWT ambas rutas devuelven `401`. El mismo método restablece ambos estados antes y después de cada caso para que el contexto Spring compartido no contamine otras pruebas. `MockMvc` valida configuración y seguridad HTTP dentro del contexto; no lanza Kubernetes ni prueba una red o un contenedor real.
 
-**Fallo deliberado:** en un despliegue mal configurado (documenta esto sin modificar código, es un error de configuración de infraestructura, no de la aplicación), apunta la sonda de liveness de Kubernetes hacia `/actuator/health/readiness` en vez de `/actuator/health/liveness`. Con esa configuración incorrecta, el mismo escenario de este test (readiness `DOWN` durante una recuperación temporal) haría que Kubernetes interprete la falla de READINESS como si fuera una falla de LIVENESS, reiniciando el pod innecesariamente en vez de simplemente esperar a que vuelva a estar listo — diagnostica confirmando por qué la distinción de este Tema no es solo conceptual: apuntar la sonda equivocada al endpoint equivocado en la configuración de despliegue produce reinicios reales e innecesarios en producción.
+**Fallo deliberado:** quita temporalmente `@AfterEach` del método `restableceEstados` y ejecuta `./mvnw -q clean test`. **Diagnóstico:** si `BROKEN` queda en el contexto, otro test de health puede recibir `503` aun con la pasarela sana. Restaura `@AfterEach` y repite la suite.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**Entiende:** usa `AvailabilityChangeEvent` para comunicar estados del ciclo de vida de la aplicación —por ejemplo, dejar de aceptar tráfico durante un apagado ordenado—. No lo publiques desde un endpoint público ni cambies liveness al detectar una avería remota. La prueba aisló cada estado y conservó la autenticación. Documentación primaria: [Spring Boot 4.1.2 — Kubernetes Probes](https://docs.spring.io/spring-boot/reference/actuator/kubernetes-probes.html), [AvailabilityChangeEvent API](https://docs.spring.io/spring-boot/api/java/org/springframework/boot/availability/AvailabilityChangeEvent.html) y [ApplicationAvailability API](https://docs.spring.io/spring-boot/api/java/org/springframework/boot/availability/ApplicationAvailability.html).
 
-1. Agrega un test que confirme que, tras `marcarComoListo()`, `/actuator/health/readiness` vuelve a responder `200` con `UP`.
-2. Documenta en una frase, para un escenario de tu elección, cuándo publicarías `LivenessState.BROKEN` (el estado equivalente para liveness) en vez de solo afectar readiness.
-3. Combina este Tema con el Tema 1: haz que `ServicioExternoHealthIndicator` publique automáticamente `REFUSING_TRAFFIC` cuando detecta la dependencia caída, y confirma con un test que readiness refleja ese cambio sin intervención manual.
-4. Escribe de memoria (sin mirar) un test que confirme que cambiar readiness a `REFUSING_TRAFFIC` no afecta el estado de liveness. Compara después contra el patrón del Paso 4.
-
-**Pista:** `AvailabilityChangeEvent` es el mecanismo idiomático de Spring Boot para este propósito; modificar directamente algún estado interno sin pasar por este evento no actualizaría los endpoints de Actuator correctamente.
-
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio para publicar el cambio de estado de readiness:
-
-```java
-AvailabilityChangeEvent.publish(publisher, this, ReadinessState.____);
-```
-
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un test `MockMvc` que confirme que marcar la aplicación como no lista afecta `/actuator/health/readiness` pero no `/actuator/health/liveness`. Compara después contra el patrón del Paso 4.
-
-#### Paso 7 · Cierre y evidencia
-
-Ya distingues liveness de readiness con evidencia real, confirmando que un cambio de disponibilidad afecta la señal correcta sin disparar un reinicio innecesario. Esto cierra el módulo de observabilidad; el siguiente módulo aborda cómo documentar y versionar esta misma API. **Evidencia:** entrega el resultado de `LivenessReadinessTest` en verde, y la explicación de por qué apuntar la sonda de liveness al endpoint de readiness en la configuración de Kubernetes causaría reinicios innecesarios. Fuente oficial: [Spring Boot — Kubernetes Probes](https://docs.spring.io/spring-boot/reference/actuator/kubernetes-probes.html).
-
-**Errores comunes:** usar un único endpoint de salud genérico en Kubernetes en vez de separar liveness de readiness, causando reinicios innecesarios; apuntar por error la sonda de liveness hacia el endpoint de readiness (o viceversa) en la configuración de despliegue.
-
-**Cuándo no usarlo:** para un despliegue que no corre en un orquestador que distinga estas dos sondas (por ejemplo, un servidor tradicional sin Kubernetes ni un mecanismo equivalente), la distinción liveness/readiness no tiene ningún consumidor real que la aproveche; un único endpoint `/actuator/health` sigue siendo suficiente en ese contexto.
+**Cierra:** explica con tus palabras qué estado retira una instancia del tráfico y cuál le pide al orquestador reiniciarla; usa como evidencia los códigos `503` y `200` de las pruebas.
 
 ---
-
-Distinguir liveness de readiness es lo que evitará que Kubernetes reinicie innecesariamente el proyecto integrador de este track (microservicio productivo, Módulo 12).
 
 ## Laboratorio práctico
 

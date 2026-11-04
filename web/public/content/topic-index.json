@@ -5222,8 +5222,8 @@
         "fragment": "tema-2-contar-operaciones-de-negocio-con-micrometer"
       },
       {
-        "title": "Liveness vs readiness",
-        "fragment": "tema-3-liveness-vs-readiness"
+        "title": "Liveness y readiness sin reinicios en cadena",
+        "fragment": "tema-3-liveness-y-readiness-sin-reinicios-en-cadena"
       }
     ],
     "8": [

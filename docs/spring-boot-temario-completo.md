@@ -5,7 +5,7 @@
 **Proyecto continuo:** RutaFlow: plataforma de entregas basada en servicios.
 **Prerrequisito de entrada:** Java, HTTP, SQL y pruebas; los módulos iniciales vuelven a presentar cada herramienta..
 **Duración objetivo:** temas de 20–45 minutos; cada tema se divide en 3–6 acciones de 5–15 minutos.
-**Estado estructural:** 35/111 temas migrados; auditoría estructural actualizada el 2026-11-03.
+**Estado estructural:** 36/111 temas migrados; auditoría estructural actualizada el 2026-11-03.
 
 ## Índice de módulos y temas
 
@@ -162,7 +162,10 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - pendiente Subtema 7.4 · Registrar un contador en el servicio real (10 min)
   - pendiente Subtema 7.5 · Verificar valor y tag en el endpoint (10 min)
   - pendiente Subtema 7.6 · Detectar un contador que nunca sube (10 min)
-- [pendiente de migrar] Tema 3: Liveness vs readiness
+- [4 pasos] Tema 3: Liveness y readiness sin reinicios en cadena
+  - ✓ Subtema 7.7 · Habilitar las sondas de Spring Boot · 5 min
+  - ✓ Subtema 7.8 · Revisar la dependencia solo en readiness · 10 min
+  - ✓ Subtema 7.9 · Probar estados distintos y diagnosticar el error · 10 min
 
 ### Módulo 8: Mensajería — Kafka/RabbitMQ
 
@@ -401,7 +404,7 @@ La tabla registra presencia de áreas en el inventario del track, no profundidad
 
 ### Huecos y límites reportados
 
-- El repositorio contiene 111 temas en 26 módulos; 35 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
+- El repositorio contiene 111 temas en 26 módulos; 36 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
 - No hay base para afirmar que el track esté completo: la comparación con la fuente de referencia está pendiente de revisión humana módulo por módulo.
 - Los elementos de la fuente que todavía deben verificarse de forma explícita están enumerados en la tabla anterior; cualquier técnica crítica que no tenga tema propio debe añadirse conservando el currículo base.
 - La ejecución de ejemplos, el comportamiento con brokers/plataformas reales y la calidad pedagógica humana se registran por separado.

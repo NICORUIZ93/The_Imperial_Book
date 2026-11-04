@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 69,
-      "prerequisites": 82,
-      "context": 69,
-      "theoryAnalogy": 69,
-      "guidedDemo": 69,
+      "objective": 68,
+      "prerequisites": 81,
+      "context": 68,
+      "theoryAnalogy": 68,
+      "guidedDemo": 68,
       "codeExplanation": 111,
       "execution": 105,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 69,
-      "independentPractice": 69,
-      "closure": 69,
-      "commonErrors": 69,
-      "resources": 76,
-      "standaloneExample": 66,
-      "learningEvidence": 82,
-      "complete": 65
+      "guidedPractice": 68,
+      "independentPractice": 68,
+      "closure": 68,
+      "commonErrors": 68,
+      "resources": 75,
+      "standaloneExample": 65,
+      "learningEvidence": 81,
+      "complete": 64
     }
   },
   "topics": {
@@ -30783,28 +30783,28 @@
       },
       {
         "module": 7,
-        "topic": "Tema 3: Liveness vs readiness",
+        "topic": "Tema 3: Liveness y readiness sin reinicios en cadena",
         "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "objective": false,
+          "prerequisites": false,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 4,
+          "complete": false
         }
       },
       {

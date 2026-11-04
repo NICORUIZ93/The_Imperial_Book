@@ -497,7 +497,7 @@ usa como comparación universal. Índices, backlog, temarios y grafos quedaron
 regenerados. `./scripts/validate.sh` pasó: 23 pruebas de script, 4 omitidas;
 las demás validaciones de contenido, trazabilidad, índices y gráficos también
 terminaron correctamente. `git diff --check` pasó. Tras M6 T1 las auditorías
-globales registran **139/1185 temas estructuralmente completos** y
+globales registran **140/1185 temas estructuralmente completos** y
 **1092/1185 practicables**; 409 conservan señales de defectos de sustancia.
 Estos indicadores no acreditan ejecución de todos los ejemplos ni revisión
 pedagógica humana. No se modificó la aplicación del repo para el laboratorio;
@@ -554,7 +554,7 @@ cambios fueron solo de contenido y reportes: el backend temporal está en
 `./scripts/validate.sh` pasó con 23 pruebas de script y 4 omitidas; las demás
 validaciones de contenido, trazabilidad, índices y gráficos pasaron.
 `git diff --check` pasó. Las auditorías globales tras M6 T3 registran
-**139/1185 temas estructuralmente completos**, **1090/1185 practicables** y
+**140/1185 temas estructuralmente completos**, **1090/1185 practicables** y
 409 con señales de defecto de sustancia. Las mediciones estructurales no
 acreditan la ejecución de los demás ejemplos ni una revisión pedagógica humana.
 
@@ -599,11 +599,42 @@ son contenido y reportes; el código temporal está en
 `./scripts/validate.sh` pasó con 23 pruebas de script y 4 omitidas; las demás
 validaciones de contenido, trazabilidad, índices y gráficos también pasaron.
 `git diff --check` pasó. Tras M7 T2, las auditorías globales registran
-**139/1185 temas estructuralmente completos**, **1088/1185 practicables** y
+**140/1185 temas estructuralmente completos**, **1088/1185 practicables** y
 409 con señales de defecto de sustancia.
 
-**Siguiente tema:** Spring Boot M7 T3, “Liveness vs readiness”. Comprueba
-imports/configuración Boot 4 y estados `AvailabilityState`, reproduce cómo una
-señal de liveness puede reiniciar una instancia y una readiness puede retirarla
-del tráfico, y deja explícito por qué una caída externa no debe reiniciar toda
-la flota.
+Spring Boot M7 T3, “Liveness y readiness sin reinicios en cadena”, se rehízo
+en subtemas 7.7–7.9. La guía oficial Boot 4.1.2 confirma que
+`management.endpoint.health.probes.enabled=true` habilita `/actuator/health/liveness`
+y `/actuator/health/readiness`; las dependencias no se agregan solas a readiness.
+El ejercicio decide incluir `pasarelaPagos` únicamente en el grupo readiness y
+advierte que una dependencia compartida caída puede retirar todas las réplicas.
+Incluye un bloque de sondas Kubernetes para insertar dentro del contenedor del
+Deployment y explica que `MockMvc` no valida el clúster ni la red.
+
+`DisponibilidadProbesTest` publica `ReadinessState` y `LivenessState` mediante
+`AvailabilityChangeEvent`, prueba dependencia caída (readiness `503`, liveness
+`200`), `REFUSING_TRAFFIC`, `BROKEN` y autenticación JWT. Los estados se restauran
+antes y después de cada prueba porque el contexto Spring se comparte. Una primera
+suite completa de 51 pruebas encontró contaminación del estado liveness en un
+test preexistente de health; tras añadir la restauración `@AfterEach`, la suite
+completa pasó con **51 pruebas, 0 fallos, 0 errores y 0 omitidas**. También se
+probó deliberadamente agregar `pasarelaPagos` a liveness: la expectativa `200`
+falló al recibir `503`, y se restauró la configuración correcta. El código y los
+tests viven solo en `/tmp/imperial-spring-m4-jwt/app`; el repositorio recibió
+contenido y reportes, no cambios de la app.
+
+Documentación primaria contrastada: Kubernetes Probes, `AvailabilityChangeEvent`
+y `ApplicationAvailability` de Spring Boot 4.1.2. La lección mantiene separadas
+la prueba del contexto Spring y la validación futura en Kubernetes. Tras T3, los
+reportes registran **140/1185 temas estructuralmente completos**, **1087/1185
+practicables** y 409 temas con señales de defecto de sustancia. Se regeneraron
+los reportes de sustancia, calidad pedagógica, metodología, código/visuales,
+backlog, índice web, grafo de prerrequisitos, profundidad, subtemas atómicos,
+temarios prioritarios y grafo del repo. Estos indicadores no demuestran la
+comprensión del estudiante ni ejecución de los otros laboratorios.
+
+**Siguiente tema:** Spring Boot M8 T1, “Producers y consumers con Spring Kafka”.
+Lee primero su laboratorio y contrato del broker; verifica versiones y APIs en
+documentación primaria, ejecuta el recorrido con broker real y conserva el
+orden de tres subtemas del curso. No des por probado un mensaje solo porque el
+productor haya aceptado la llamada.

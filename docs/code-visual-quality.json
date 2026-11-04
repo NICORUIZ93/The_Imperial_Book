@@ -99,10 +99,10 @@
     "spring-boot": {
       "topics": 111,
       "code": 111,
-      "commentedCode": 60,
+      "commentedCode": 59,
       "mermaid": 50,
       "archifyVisual": 3,
-      "asciiVisual": 12,
+      "asciiVisual": 11,
       "misleadingDiagramLabel": 0,
       "filePath": 111,
       "runCommand": 111,
@@ -2841,6 +2841,13 @@
       "track": "spring-boot",
       "module": 7,
       "topic": "Tema 2: Contar operaciones de negocio con Micrometer",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 7,
+      "topic": "Tema 3: Liveness y readiness sin reinicios en cadena",
       "missingCode": false,
       "missingComments": true
     },
