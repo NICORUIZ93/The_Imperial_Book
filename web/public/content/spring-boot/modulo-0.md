@@ -28,42 +28,75 @@ Visita `http://localhost:8080`. Un 404 significa que el servidor sí arrancó pe
 
 ### Tema 1: Inversión de control y el contenedor de Spring
 
-#### Paso 1 · Objetivo y preparación
+Una API de envíos necesita separar la regla de negocio de la fuente de datos. Primero conectaremos un repositorio en memoria y un servicio; después una ruta HTTP permitirá observar el resultado. Necesitas clases, interfaces y constructores de Java.
 
-Al finalizar podrás explicar qué hace el contenedor de Spring por ti (crear y conectar objetos) y por qué eso desacopla cada clase de cómo se construyen sus dependencias.
+**¿Por qué es importante?** Si el servicio crea su propio repositorio, cambiarlo para usar una base de datos o un reemplazo de prueba obliga a editar el servicio. Spring puede crear esos objetos y conectarlos en el punto donde se declara la dependencia.
 
-**Conocimiento previo:** clases, interfaces y constructores (track de Java).
+**Diagrama interactivo:** [Spring crea y conecta los beans](/visuals/temas/spring-boot/modulo-0-tema-1-ioc.html).
 
-#### Paso 2 · Contexto y caso real
+#### Subtema 1.1: Declara el contrato y la primera implementación · 10 min
 
-**¿Por qué es importante?** En una API de entregas, los servicios cambian de implementación entre pruebas y producción (un repositorio real contra la base de datos, uno falso en memoria para tests); el contenedor de Spring administra esas dependencias sin que el controlador que las usa conozca cómo se construyen ni de dónde vienen.
+**1. Contexto**
 
-#### Paso 3 · Teoría con analogía
+Un servicio debe pedir el estado de un envío sin decidir dónde se guarda. La interfaz declara qué dato necesita; la clase concreta sabe responder por ahora desde memoria.
 
-**Conceptos clave:** inversión de control, inyección por constructor, el contenedor crea y conecta objetos.
+**2. Hazlo tú**
 
-En código sin un contenedor de inversión de control, una clase que necesita colaboradores típicamente los crea ella misma directamente (`new RepositorioTareas()`), acoplándose fuertemente a una implementación concreta y haciendo que sustituirla (por ejemplo, por una versión de prueba durante los tests) requiera modificar el código interno de la propia clase que la crea. La inversión de control invierte esa responsabilidad: un contenedor externo (el contenedor de Spring) crea las dependencias centralizadamente y las "inyecta" en cada clase que las declara como necesarias, de modo que la clase consumidora solo declara qué necesita (típicamente a través de su constructor), sin saber ni importarle cómo esa dependencia concreta se construye.
+En el proyecto creado desde [Spring Initializr](https://start.spring.io/) (Java, Maven, dependencia Spring Web), conserva la clase principal que generó el sitio. Dentro de su mismo paquete `com.example.demo`, crea `src/main/java/com/example/demo/RepositorioEnvios.java`:
 
 ```java
-@Service
-public class ServicioTareas {
-    private final RepositorioTareas repositorio;
+package com.example.demo;
 
-    public ServicioTareas(RepositorioTareas repositorio) {
-        this.repositorio = repositorio;
+public interface RepositorioEnvios {
+    String buscarEstado(String codigo);
+}
+```
+
+Ahora crea `src/main/java/com/example/demo/RepositorioMemoriaEnvios.java`:
+
+```java
+package com.example.demo;
+
+import org.springframework.stereotype.Repository;
+
+@Repository
+public class RepositorioMemoriaEnvios implements RepositorioEnvios {
+    @Override
+    public String buscarEstado(String codigo) {
+        return "En ruta: " + codigo;
     }
 }
 ```
 
-Esta clase declara que `ServicioTareas` necesita un `RepositorioTareas`; el contenedor de Spring, al detectar esta clase como un bean gestionado, encuentra (o crea) una instancia de `RepositorioTareas` y la pasa automáticamente al constructor al instanciar `ServicioTareas`.
+Desde la carpeta raíz del proyecto, ejecuta:
 
-**Analogía:** sin inversión de control, cada empleado de una empresa tendría que fabricar personalmente cada herramienta que necesita; con inversión de control, un departamento central de suministros (el contenedor de Spring) entrega automáticamente a cada empleado exactamente las herramientas que declaró necesitar, sin que el empleado sepa de dónde vienen ni cómo se fabricaron.
+```bash
+./mvnw test
+```
 
-**Diagrama interactivo:** [Spring crea y conecta los beans](/visuals/temas/spring-boot/modulo-0-tema-1-ioc.html).
+En Windows PowerShell, usa `./mvnw.cmd test`.
 
-#### Paso 4 · Demostración guiada desde cero
+**Resultado esperado:** Maven termina con `BUILD SUCCESS`; Spring todavía no tiene ningún servicio que solicite este repositorio.
 
-Desde una carpeta vacía, genera el proyecto real en [start.spring.io](https://start.spring.io/) (Java, Maven, Spring Boot estable, JDK 25, dependencia **Spring Web**) y descomprímelo. Crea `src/main/java/com/example/demo/ServicioTareas.java` con este contenido:
+**Fallo deliberado:** cambia `implements RepositorioEnvios` por `implements RepositorioEnviosX`. **Diagnóstico:** el compilador indica que no encuentra ese tipo; revisa el nombre de la interfaz y restáuralo.
+
+**3. Entiende**
+
+`RepositorioEnvios` es el contrato. `RepositorioMemoriaEnvios` es una clase que lo cumple. `@Repository` permite que el escaneo de componentes de Spring la registre como un objeto administrado, llamado *bean*.
+
+**4. Cierra**
+
+Conserva ambos archivos y anota qué método ofrece el contrato. El siguiente paso hará que un servicio solicite esa interfaz.
+
+#### Subtema 1.2: Deja que Spring conecte el servicio · 10 min
+
+**1. Contexto**
+
+El servicio usa el contrato, no crea la implementación. Spring encontrará un bean compatible y lo pasará al constructor.
+
+**2. Hazlo tú**
+
+Crea `src/main/java/com/example/demo/ServicioEnvios.java`:
 
 ```java
 package com.example.demo;
@@ -71,77 +104,96 @@ package com.example.demo;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ServicioTareas {
-    private final RepositorioTareas repositorio; // inyección por constructor
+public class ServicioEnvios {
+    private final RepositorioEnvios repositorio;
 
-    public ServicioTareas(RepositorioTareas repositorio) {
+    public ServicioEnvios(RepositorioEnvios repositorio) {
         this.repositorio = repositorio;
     }
 
-    public String procesar() {
-        return "procesado: " + repositorio.buscar();
+    public String consultar(String codigo) {
+        return repositorio.buscarEstado(codigo);
     }
 }
 ```
 
-Guarda el archivo y arranca la aplicación con Maven:
+Ejecuta desde la raíz del proyecto:
 
 ```bash
-# compila y ejecuta el proyecto Java con el wrapper de Maven
-cd ejemplo-spring-m0
 ./mvnw spring-boot:run
 ```
 
-`mvnw` es el script (el "Maven Wrapper") que descarga y ejecuta la versión exacta de Maven que el proyecto declara, sin requerir una instalación global.
+En PowerShell, usa `./mvnw.cmd spring-boot:run`.
 
-**Explicación línea por línea:** `@Service` marca la clase como un bean que el contenedor de Spring debe crear y gestionar; `public ServicioTareas(RepositorioTareas repositorio)` declara la dependencia como parámetro del constructor — el contenedor detecta esta firma, resuelve `RepositorioTareas` (creándolo si aún no existe) y lo pasa automáticamente al construir `ServicioTareas`, sin que ningún código de la aplicación escriba explícitamente esa conexión.
+**Resultado esperado:** la aplicación termina de arrancar. El servicio recibe el repositorio sin escribir `new RepositorioMemoriaEnvios()`.
 
-Expón `procesar()` en un controlador (`GET /status`) y confirma que el contenedor conecta ambos beans automáticamente:
+**Fallo deliberado:** quita `@Repository` y reinicia. **Diagnóstico:** el contenedor no encuentra un bean para `RepositorioEnvios`; la causa aparece como `NoSuchBeanDefinitionException` dentro del error de creación del servicio. Restaura la anotación.
 
-```bash
-curl http://localhost:8080/status
-```
+**3. Entiende**
 
-`curl` es el comando que hace la petición HTTP desde la terminal para confirmar la respuesta del endpoint.
+`@Service` registra el servicio; el constructor declara lo que necesita. `@SpringBootApplication` activa el escaneo desde el paquete de la clase principal hacia sus subpaquetes. Por eso mantuvimos las tres clases dentro de `com.example.demo`.
 
-**Resultado esperado:** la respuesta HTTP contiene `procesado: ...` con el resultado de `RepositorioTareas.buscar()` — confirmando que Spring creó ambos beans y conectó `ServicioTareas` con su `RepositorioTareas` sin que tú escribieras el `new` que los une.
+**4. Cierra**
 
-**Fallo deliberado:** quita la anotación `@Service` de la clase y vuelve a ejecutar `./mvnw spring-boot:run`. Si algún otro bean depende de `ServicioTareas` por constructor, el arranque falla con `NoSuchBeanDefinitionException` (Spring no encuentra un bean que satisfaga esa dependencia) — diagnostica confirmando que sin la anotación, la clase deja de ser gestionada por el contenedor y ninguna inyección automática puede alcanzarla, aunque el código siga compilando perfectamente.
+Guarda el error observado y confirma que el servicio depende de la interfaz. En el siguiente paso permitirás llamar al servicio desde HTTP.
 
-Confirma también que `ServicioTareas` nunca importa ni instancia ninguna implementación concreta de `RepositorioTareas` con `new`: solo el contenedor de Spring conoce qué implementación concreta existe y decide cuál pasar al constructor, que es exactamente el desacoplamiento que `@Service`/`@Autowired` logran.
+#### Subtema 1.3: Observa el cableado con una petición HTTP · 10 min
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**1. Contexto**
 
-1. Declara un segundo `@Service` que dependa de `ServicioTareas` por constructor y confirma que Spring lo conecta automáticamente al arrancar.
-2. Agrega un método a la implementación real de `RepositorioTareas` y confirma que `ServicioTareas` lo usa sin cambiar su propio código.
-3. Convierte `RepositorioTareas` de clase concreta a interfaz con una única implementación `@Repository`, y confirma que `ServicioTareas` sigue arrancando igual sin ningún cambio en su propio código.
-4. Escribe de memoria (sin mirar) una clase de servicio con una dependencia inyectada por constructor y el estereotipo (`@Service`/`@Component`) que la registra en el contenedor.
+Una ruta permite comprobar el recorrido completo: navegador o cliente HTTP → controlador → servicio → repositorio.
 
-**Pista:** si necesitas escribir `new` para crear una dependencia dentro de una clase gestionada por Spring, probablemente deberías estar declarándola como parámetro del constructor en su lugar.
+**2. Hazlo tú**
 
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio para que el contenedor gestione la clase:
+Crea `src/main/java/com/example/demo/EnviosController.java`:
 
 ```java
-____
-public class ServicioTareas {
-    private final RepositorioTareas repositorio;
-    public ServicioTareas(RepositorioTareas repositorio) { this.repositorio = repositorio; }
+package com.example.demo;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class EnviosController {
+    private final ServicioEnvios servicio;
+
+    public EnviosController(ServicioEnvios servicio) {
+        this.servicio = servicio;
+    }
+
+    @GetMapping("/envios/{codigo}")
+    public String consultar(@PathVariable String codigo) {
+        return servicio.consultar(codigo);
+    }
 }
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una clase de servicio anotada con `@Service` que reciba una dependencia por constructor, sin que la clase sepa qué implementación concreta recibe. Compara después contra el patrón del Paso 4.
+Con la aplicación activa, abre otra terminal y ejecuta:
 
-#### Paso 7 · Cierre y evidencia
+```bash
+curl http://localhost:8080/envios/RF-42
+```
 
-Ya distingues cómo el contenedor de Spring crea y conecta objetos por ti, confirmando con la aplicación real que una clase gestionada nunca necesita conocer la implementación concreta de sus dependencias. El siguiente tema compara este mecanismo (constructor) contra la alternativa de inyección por campo. **Evidencia:** entrega la respuesta HTTP de `/status` y el fallo real (`NoSuchBeanDefinitionException`) al quitar `@Service`. Fuente oficial: [Spring Framework — Beans](https://docs.spring.io/spring-framework/reference/core/beans.html).
+**Resultado esperado:** aparece `En ruta: RF-42`. Sigue el recorrido y señala en qué constructor Spring pasó cada dependencia.
 
-**Errores comunes:** instanciar dependencias manualmente con `new` dentro de una clase gestionada por Spring; olvidar la anotación de estereotipo y descubrir el error solo cuando otro bean intenta depender de esa clase.
+**Fallo deliberado:** quita `@RestController` y repite la petición. **Diagnóstico:** el servidor responde 404 porque esa clase dejó de registrarse como controlador; el servicio sigue existiendo, pero la ruta no. Restaura la anotación.
 
-**Cuándo no usarlo:** para un script pequeño y desechable sin ningún ciclo de vida de aplicación real, levantar un contenedor de IoC completo es más ceremonia de la necesaria; una función simple basta.
+**3. Entiende**
 
-Este mismo mecanismo de inyección es el que usará cada servicio del proyecto integrador de este track (microservicio productivo, Módulo 12): el servicio de entregas declarará por constructor un repositorio de persistencia y un cliente de notificaciones, sin saber nunca qué implementación concreta recibe en cada entorno.
+Spring Boot registra `@Repository`, `@Service` y `@RestController` como beans y conecta sus constructores. La inversión de control describe quién administra la creación; la inyección describe cómo llega una dependencia. Para una aplicación pequeña de una sola función, crear un contenedor completo puede ser innecesario.
+
+**Límite y decisión:** este repositorio guarda el resultado en el código y pierde cualquier cambio al reiniciar. Sirve para observar el cableado, no para guardar envíos reales; una base de datos será necesaria cuando el dato deba sobrevivir al cierre.
+
+**Práctica independiente:** modifica `RepositorioMemoriaEnvios.buscarEstado` para devolver `Entregado: <codigo>` y repite la petición con otro código. El servicio y el controlador no deberían cambiar.
+
+**4. Cierra**
+
+Guarda la respuesta de `curl` y los dos fallos diagnosticados. Explica con tus palabras por qué `ServicioEnvios` conoce el contrato, pero no la clase concreta.
+
+**Fuente primaria:** [Spring Boot: Beans e inyección de dependencias](https://docs.spring.io/spring-boot/reference/using/spring-beans-and-dependency-injection.html); [requisitos de Spring Boot](https://docs.spring.io/spring-boot/system-requirements.html).
+
+Este mismo mecanismo se usará en el proyecto integrador: el servicio de envíos declarará por constructor un repositorio y un cliente de notificaciones, sin decidir qué implementación recibe cada entorno.
 
 ### Tema 2: Inyección por constructor vs por campo
 

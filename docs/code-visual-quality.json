@@ -99,7 +99,7 @@
     "spring-boot": {
       "topics": 111,
       "code": 111,
-      "commentedCode": 73,
+      "commentedCode": 72,
       "mermaid": 49,
       "archifyVisual": 4,
       "asciiVisual": 19,
@@ -2528,6 +2528,13 @@
       "topic": "Tema 3: Tests parametrizados y cobertura",
       "missingCode": true,
       "missingComments": false
+    },
+    {
+      "track": "spring-boot",
+      "module": 0,
+      "topic": "Tema 1: Inversión de control y el contenedor de Spring",
+      "missingCode": false,
+      "missingComments": true
     },
     {
       "track": "spring-boot",

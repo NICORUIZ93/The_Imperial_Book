@@ -1698,7 +1698,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "b63eafa80dd7585e9eef18c82cad51ad0036f71dbdc89265ffec09172f9321a3",
+    "fingerprint": "47ca0558f0765a26bc66d39b1f9cc354e182b5c9ed30cf427b31133aeb297833",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10277,9 +10277,9 @@
       {
         "issues": [],
         "module": 0,
-        "tailWords": 187,
+        "tailWords": 0,
         "topic": "Tema 1: Inversión de control y el contenedor de Spring",
-        "words": 1138
+        "words": 926
       },
       {
         "issues": [],

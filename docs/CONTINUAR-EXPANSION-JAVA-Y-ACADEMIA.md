@@ -89,8 +89,8 @@ reapliques cambios que ya estén publicados.
 
 ## Estado global honesto
 
-En la última auditoría: **118/1185 temas** cumplen la estructura atómica en los
-14 tracks; Java aporta 101 de esos 118. La auditoría pedagógica detecta
+En la auditoría actual: **119/1185 temas** cumplen la estructura atómica en los
+14 tracks; Java aporta 101 y Spring Boot 1. La auditoría pedagógica detecta
 **1095/1185 temas practicables** y deuda en 90. La auditoría de sustancia registra
 409 temas con defectos, deuda histórica repartida entre varios tracks. Ninguna de
 estas cifras certifica que un curso esté completo o que todos los ejemplos se
@@ -142,10 +142,18 @@ pruebas de navegador y revisión visual. Una validación exitosa no demuestra qu
 código de todas las lecciones se haya ejecutado. Declara las pruebas omitidas y
 las limitaciones observadas.
 
-## Siguiente acción recomendada
+## Progreso posterior a Java
 
-Auditar Spring Boot módulo a módulo contra el mismo contrato, empezando por su
-ruta desde cero, entorno, primer endpoint y pruebas. Revisar dependencias con
-Java, evitar repetir temas superficiales y validar cada lección en contexto del
-proyecto acumulativo. Publicar cada tema completo en un commit separado y
-actualizar este documento con los identificadores de commit y la nueva cobertura.
+Spring Boot M0 T1 se reescribió desde la introducción larga de siete pasos a tres
+subtemas: contrato e implementación del repositorio, inyección por constructor y
+consulta HTTP. Usa clases Java completas, comandos y fallos con diagnóstico. Los
+fundamentos y requisitos se contrastaron con documentación oficial de Spring Boot.
+El ejemplo didáctico no se ejecutó como proyecto aparte; las validaciones
+estructurales del repositorio sí deben pasar antes de publicar.
+
+**Siguiente tema:** Spring Boot M0 T2, “Inyección por constructor vs por campo”.
+Audítalo completo: conserva la comparación útil, elimina afirmaciones imprecisas
+(por ejemplo, que un test sin contenedor requiere necesariamente reflexión) y
+organízalo en 3–6 subtemas. Muestra un test pequeño reproducible y explica cuándo
+se usa un test unitario frente a uno de contexto sin hacer afirmaciones absolutas.
+Después sigue en orden por M0 antes de saltar a módulos avanzados.
