@@ -5,7 +5,7 @@
 **Proyecto continuo:** RutaFlow: plataforma de entregas basada en servicios.
 **Prerrequisito de entrada:** Java, HTTP, SQL y pruebas; los módulos iniciales vuelven a presentar cada herramienta..
 **Duración objetivo:** temas de 20–45 minutos; cada tema se divide en 3–6 acciones de 5–15 minutos.
-**Estado estructural:** 25/111 temas migrados; auditoría estructural actualizada el 2026-11-03.
+**Estado estructural:** 26/111 temas migrados; auditoría estructural actualizada el 2026-11-03.
 
 ## Índice de módulos y temas
 
@@ -78,7 +78,10 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
 
 [Abrir lección completa](../web/public/content/spring-boot/modulo-3.md)
 
-- [pendiente de migrar] Tema 1: Entidades y repositorios derivados
+- [4 pasos] Tema 1: Entidades y repositorios derivados
+  - ✓ Subtema 3.1 · Guardar y recuperar una entidad · 8 min
+  - ✓ Subtema 3.2 · Filtrar con el nombre del método · 10 min
+  - ✓ Subtema 3.3 · Escribir JPQL cuando ayuda a leer · 10 min
 - [pendiente de migrar] Tema 2: El problema N+1 y su corrección
 - [pendiente de migrar] Tema 3: Migraciones con Flyway
 
@@ -353,7 +356,7 @@ La tabla registra presencia de áreas en el inventario del track, no profundidad
 
 ### Huecos y límites reportados
 
-- El repositorio contiene 111 temas en 26 módulos; 25 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
+- El repositorio contiene 111 temas en 26 módulos; 26 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
 - No hay base para afirmar que el track esté completo: la comparación con la fuente de referencia está pendiente de revisión humana módulo por módulo.
 - Los elementos de la fuente que todavía deben verificarse de forma explícita están enumerados en la tabla anterior; cualquier técnica crítica que no tenga tema propio debe añadirse conservando el currículo base.
 - La ejecución de ejemplos, el comportamiento con brokers/plataformas reales y la calidad pedagógica humana se registran por separado.

@@ -1698,7 +1698,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "6b198dd9d7fff4a10285d38008a6c08a7c23ad2b07524b1bfcaa173df57df77a",
+    "fingerprint": "5c3249f1f36545f565f4ee10df9d022fd1df5af72bd68465e78640c322d54a9c",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10873,9 +10873,9 @@
       {
         "issues": [],
         "module": 3,
-        "tailWords": 190,
+        "tailWords": 0,
         "topic": "Tema 1: Entidades y repositorios derivados",
-        "words": 1319
+        "words": 1232
       },
       {
         "issues": [],

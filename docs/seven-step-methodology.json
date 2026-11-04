@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 85,
+      "objective": 84,
       "prerequisites": 96,
-      "context": 85,
-      "theoryAnalogy": 85,
-      "guidedDemo": 85,
+      "context": 84,
+      "theoryAnalogy": 84,
+      "guidedDemo": 84,
       "codeExplanation": 111,
       "execution": 105,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 85,
-      "independentPractice": 85,
-      "closure": 85,
-      "commonErrors": 85,
-      "resources": 92,
-      "standaloneExample": 82,
+      "guidedPractice": 84,
+      "independentPractice": 84,
+      "closure": 84,
+      "commonErrors": 84,
+      "resources": 91,
+      "standaloneExample": 81,
       "learningEvidence": 91,
-      "complete": 81
+      "complete": 80
     }
   },
   "topics": {
@@ -30369,26 +30369,26 @@
         "module": 3,
         "topic": "Tema 1: Entidades y repositorios derivados",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 6,
+          "complete": false
         }
       },
       {

@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 261,
+      "lines": 271,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 14074,
+      "lines": 14117,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -314,7 +314,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1120,
+      "lines": 1119,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13558,
+      "lines": 13560,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 364,
+      "lines": 367,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -12034,7 +12034,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-3.md",
-      "lines": 488,
+      "lines": 485,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12042,15 +12042,15 @@
         "# M\u00f3dulo 3: Persistencia con Spring Data JPA",
         "## Aprende construyendo",
         "### Tema 1: Entidades y repositorios derivados",
+        "#### Subtema 3.1 \u00b7 Guardar y recuperar una entidad \u00b7 8 min",
+        "#### Subtema 3.2 \u00b7 Filtrar con el nombre del m\u00e9todo \u00b7 10 min",
+        "#### Subtema 3.3 \u00b7 Escribir JPQL cuando ayuda a leer \u00b7 10 min",
+        "### Tema 2: El problema N+1 y su correcci\u00f3n",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda con analog\u00eda",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
-        "### Tema 2: El problema N+1 y su correcci\u00f3n",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva"
       ]
     },
     {

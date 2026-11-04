@@ -89,10 +89,10 @@ reapliques cambios que ya estén publicados.
 
 ## Estado global honesto
 
-En la auditoría actual: **126/1185 temas** cumplen la estructura atómica en los
-14 tracks: Java 101, Spring Boot 22, Node 2 y Flutter 1. La auditoría pedagógica detecta
-**1095/1185 temas practicables** y deuda en 90. La auditoría de sustancia registra
-409 temas con defectos, deuda histórica repartida entre varios tracks. Ninguna de
+En la auditoría actual: **130/1185 temas** cumplen la estructura atómica en los
+14 tracks: Java 101, Spring Boot 26, Node 2 y Flutter 1. La auditoría pedagógica detecta
+**1094/1185 temas practicables** y deuda en 91. La auditoría de sustancia registra
+410 temas con defectos, deuda histórica repartida entre varios tracks. Ninguna de
 estas cifras certifica que un curso esté completo o que todos los ejemplos se
 hayan ejecutado.
 
@@ -247,14 +247,24 @@ false. size=0 y size=51 respondieron 400 con codigo VALIDACION. Se comprobó la
 validación de parámetros en Spring MVC 7; no se ejecutaron fallos deliberados ni
 la práctica independiente.
 
-La auditoría global actual registra **129/1185 temas atómicos**: Java 101,
-Spring Boot 25, Node 2 y Flutter 1. La auditoría pedagógica detecta 1095/1185
-temas practicables y la de sustancia 409 con defectos. Los reportes se
-regeneraron y `./scripts/validate.sh` pasó tras el Tema 6 (23 pruebas, 4
-omitidas); mantén estas cifras como indicadores estructurales, no como
-certificación de aprendizaje.
+Spring Boot M3 T1, “Entidades y repositorios derivados”, se reescribió en tres
+subtemas acumulativos sobre la API creada en M2: persistencia ida y vuelta,
+consulta derivada `findByPrioridadGreaterThanEqual` y consulta JPQL equivalente.
+En un proyecto temporal Spring Boot 4.1.2/JDK 25, tres pruebas `@DataJpaTest`
+contra H2 pasaron. Se ejecutaron los fallos deliberados: una prioridad esperada
+incorrecta produjo una comparación fallida; `priorid` en el nombre derivado
+produjo `PropertyReferenceException` con sugerencia `prioridad`; y `t.priorid` en
+JPQL produjo `QueryCreationException` al validar el repositorio. Se corrigió el
+paquete de `@DataJpaTest` para Boot 4 (`org.springframework.boot.data.jpa.test.autoconfigure`).
+Fuentes primarias enlazadas en la lección: guía de pruebas de Spring Boot y
+referencia de query methods de Spring Data JPA.
 
-**Siguiente tema:** Spring Boot M3 T1, “Entidades y repositorios derivados”.
-Conecta la explicación de entidades y consultas a la API de tareas ya creada;
-verifica los nombres de métodos derivados en Spring Data y ejecuta una búsqueda
-real con datos de prueba antes de explicar la consulta que genera.
+Tras M3 T1, la auditoría registra **130/1185 temas atómicos**: Java 101,
+Spring Boot 26, Node 2 y Flutter 1; **1095/1185 practicables** y 409 temas con
+defectos de sustancia. Se regeneraron reportes y `./scripts/validate.sh` pasó
+con 23 pruebas y 4 omitidas. Estas cifras son indicadores, no certificación de
+aprendizaje ni ejecución de todas las prácticas.
+
+**Siguiente tema:** Spring Boot M3 T2, “El problema N+1 y su corrección”.
+Revisa todos sus subtemas, confirma que el número de consultas se mide realmente
+con una base de prueba y alinea el ejemplo con las entidades de `academia-spring`.

@@ -1,184 +1,181 @@
 # Módulo 3: Persistencia con Spring Data JPA
 
-Cada tema se practica por separado con su propia repetición progresiva y su propio reto de memoria, verificado contra una base de datos H2 real embebida y `mvn test`, para que cada afirmación sobre queries y migraciones sea comprobable, no solo descrita.
-
+Este módulo continúa el backend `academia-spring` creado en los módulos 1 y 2. Ejecuta los ejemplos con la base H2 de pruebas; el test comprueba datos reales, no repositorios simulados.
 
 ## Aprende construyendo
 
 ### Tema 1: Entidades y repositorios derivados
 
-#### Paso 1 · Objetivo y preparación
+Al terminar, podrás probar que una entidad se guarda y se recupera, escribir un método de búsqueda a partir de propiedades reales y reconocer cuándo una consulta JPQL queda más clara. El tema usa `Tarea(titulo, prioridad, ubicacionInterna)` que ya existe en `academia-spring`.
 
-Al finalizar podrás mapear una clase Java a una tabla con `@Entity`, declarar un repositorio derivado cuyo nombre de método genera la query automáticamente, y explicar cuándo ese mecanismo deja de ser suficiente y se necesita `@Query` explícito.
+**¿Por qué es importante?** Una consulta mal nombrada puede impedir que el servicio arranque; probar con datos reales permite localizar el error antes de conectar la API con otros servicios.
 
-**Conocimiento previo:** Spring Initializr y starters (Módulo 1); DTOs vs entities (Módulo 2).
-
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** Una lista de tareas pendientes necesita persistirse en una base de datos real; escribir SQL manual para cada consulta simple (buscar por estado, por usuario) es repetitivo y propenso a errores tipográficos que solo se detectan en tiempo de ejecución.
-
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** mapeo objeto-relacional (`@Entity`), query derivada del nombre del método, `@Query` explícito para casos complejos.
-
-```java
-@Entity
-public class Tarea {
-    @Id @GeneratedValue
-    private Long id;
-    private String titulo;
-    private boolean completada;
-}
-```
-
-Esta clase mapea una clase Java a una tabla de base de datos: Hibernate (la implementación de JPA que usa Spring Data JPA) traduce automáticamente entre instancias de esta clase y filas de la tabla, gestionando la generación de identificadores (`@GeneratedValue`).
-
-```java
-public interface TareaRepository extends JpaRepository<Tarea, Long> {
-    List<Tarea> findByCompletadaFalse();
-}
-```
-
-Esta interfaz demuestra la capacidad más distintiva de Spring Data: Spring parsea el nombre del método (`findBy` + `Completada` + `False`) y genera la implementación SQL automáticamente, sin ningún cuerpo escrito a mano. Cuando la consulta necesaria es demasiado compleja para expresarse por convención de nombres (agregaciones, joins específicos), `@Query` con JPQL explícito da control total.
-
-**Analogía:** un método derivado es como pedirle a un asistente que entienda automáticamente qué necesitas a partir de cómo formulas tu pedido en lenguaje natural estructurado ("las tareas no completadas"); `@Query` es darle a ese mismo asistente instrucciones explícitas y precisas cuando el pedido es demasiado específico para que lo infiera por sí solo.
-
-**Diagrama:**
+Prerrequisitos: Temas 1–6 del módulo 2. En particular, existe `TareaRepository extends JpaRepository<Tarea, Long>`, H2 está configurado y el proyecto incluye `spring-boot-starter-data-jpa-test`.
 
 ```mermaid
 flowchart LR
-  A["findByCompletadaFalse()"] --> B[Spring parsea el nombre del método]
-  B --> C["SELECT * FROM tarea WHERE completada = false"]
-  D["@Query JPQL explícito"] --> E[control total sobre el SQL exacto]
+  A["Tarea en Java"] -->|saveAndFlush| B[("H2 de prueba")]
+  B -->|findById / consulta| C["Resultado comprobado por el test"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Subtema 3.1 · Guardar y recuperar una entidad · 8 min
 
-Desde una carpeta vacía (o continuando en `academia-spring`, o créala con `mkdir -p academia-spring` si es tu primera vez), genera el proyecto con Spring Initializr real (`data-jpa`, `h2`) y crea la entidad y el repositorio en `src/main/java/com/academia/tarea/`:
+**Contexto:** Antes de filtrar una lista, comprueba el viaje más pequeño: Java guarda una tarea, la base asigna su ID y luego el repositorio la busca. Así separas un problema de persistencia de un problema de consulta.
 
-```bash
-mkdir -p academia-spring
-cd academia-spring
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=data-jpa,h2 -d javaVersion=25 -d artifactId=academia-tareas -o app.zip
-unzip -o app.zip
-mkdir -p src/main/java/com/academia/tarea
-```
+**Hazlo tú:** En `academia-spring`, crea `src/test/java/com/example/demo/TareaRepositoryTest.java`:
 
 ```java
-// src/main/java/com/academia/tarea/Tarea.java
-package com.academia.tarea;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-
-@Entity
-public class Tarea {
-    @Id
-    @GeneratedValue
-    private Long id;
-    private String titulo;
-    private boolean completada;
-
-    protected Tarea() {} // requerido por JPA
-
-    public Tarea(String titulo) {
-        this.titulo = titulo;
-        this.completada = false;
-    }
-
-    public Long getId() { return id; }
-    public String getTitulo() { return titulo; }
-    public boolean isCompletada() { return completada; }
-}
-```
-
-```java
-// src/main/java/com/academia/tarea/TareaRepository.java
-package com.academia.tarea;
-
-import org.springframework.data.jpa.repository.JpaRepository;
-import java.util.List;
-
-public interface TareaRepository extends JpaRepository<Tarea, Long> {
-    List<Tarea> findByCompletadaFalse(); // Spring genera la query a partir del nombre del método
-}
-```
-
-**Explicación línea por línea:** `@Id @GeneratedValue` delega en la base de datos la generación del identificador; el constructor protegido sin argumentos es requerido por JPA para reconstruir instancias desde filas de la base de datos, mientras el constructor público controla la creación válida desde código de aplicación; `findByCompletadaFalse()` no tiene cuerpo porque Spring Data genera la implementación completa a partir del nombre del método en tiempo de arranque.
-
-Escribe un test real con `@DataJpaTest` (levanta un contexto JPA real contra H2 en memoria, sin mockear nada) que guarda tareas y confirma que el método derivado filtra correctamente:
-
-```java
-// src/test/java/com/academia/tarea/TareaRepositoryTest.java
-package com.academia.tarea;
+package com.example.demo;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import java.util.List;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 class TareaRepositoryTest {
-
-    @Autowired
-    private TareaRepository tareaRepository;
+    @Autowired TareaRepository tareas;
 
     @Test
-    void findByCompletadaFalseDevuelveSoloLasPendientes() {
-        tareaRepository.save(new Tarea("Comprar leche"));
-        Tarea pagada = new Tarea("Pagar factura");
-        tareaRepository.save(pagada);
+    void guardaYRecuperaLaTarea() {
+        Tarea guardada = tareas.saveAndFlush(
+            new Tarea("Revisar paquete", 2, "BODEGA-A")
+        );
 
-        List<Tarea> pendientes = tareaRepository.findByCompletadaFalse();
+        Tarea leida = tareas.findById(guardada.getId()).orElseThrow();
 
-        assertThat(pendientes).extracting(Tarea::getTitulo).containsExactlyInAnyOrder("Comprar leche", "Pagar factura");
+        assertThat(leida.getTitulo()).isEqualTo("Revisar paquete");
+        assertThat(leida.getPrioridad()).isEqualTo(2);
     }
 }
 ```
 
+Desde la raíz del proyecto, ejecuta:
+
 ```bash
-mvn test -Dtest=TareaRepositoryTest # Maven
-./gradlew test --tests TareaRepositoryTest # Gradle (equivalente)
+./mvnw -q -Dtest=TareaRepositoryTest test
 ```
 
-`mvn` es el comando que ejecuta Maven; `test` es la fase del ciclo de vida que compila y corre las pruebas, y `-Dtest=` es la propiedad que acota la ejecución a una sola clase de test.
+**Salida esperada:** el comando termina con código 0 y Maven informa `BUILD SUCCESS`. El test obliga a escribir y leer en H2; `saveAndFlush` envía el cambio antes de buscarlo.
 
-**Resultado esperado:** `BUILD SUCCESS` con el test en verde, confirmando que `findByCompletadaFalse()` devuelve exactamente las dos tareas guardadas sin completar, generadas por Spring Data a partir únicamente del nombre del método, sin SQL escrito a mano.
+**Fallo deliberado y diagnóstico:** cambia `isEqualTo(2)` por `isEqualTo(9)` y repite el comando. El test falla con una comparación esperada 9 frente a actual 2. Eso indica que la lectura sí ocurrió y que el valor esperado del test es incorrecto. Restáuralo a 2.
 
-**Fallo deliberado:** cambia el nombre del método en `TareaRepository` a `findByTituloo` (columna inexistente, error tipográfico deliberado) y vuelve a ejecutar `mvn test`. La aplicación falla al ARRANCAR el contexto de Spring (no al ejecutar la query), con `PropertyReferenceException: No property 'tituloo' found for type 'Tarea'` — diagnostica confirmando que Spring Data valida los nombres de método contra las propiedades reales de la entidad en tiempo de arranque, adelantando ese error a un momento mucho más temprano que si hubiera sido SQL manual con un typo en el nombre de columna. Revierte el nombre antes de continuar.
+**Entiende:** `@DataJpaTest` (en Boot 4 se importa desde `org.springframework.boot.data.jpa.test.autoconfigure`) prepara las piezas de persistencia y una base de prueba; no arranca toda la API. `JpaRepository` ya aporta `saveAndFlush` y `findById`. El ID se genera al guardar, por eso se consulta con `guardada.getId()`. La [guía oficial de pruebas de Spring Boot](https://docs.spring.io/spring-boot/4.1/reference/testing/spring-boot-applications.html) confirma que este slice busca entidades, configura repositorios JPA y usa una base embebida disponible.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**Cierra:** conserva el test verde. Puedes mostrar el ID generado y los dos valores leídos; eso es evidencia de ida y vuelta, no solo de que el proyecto compila.
 
-1. Agrega un segundo método derivado (`findByTituloContaining(String fragmento)`) y confirma con un test real que filtra correctamente por coincidencia parcial.
-2. Agrega un método derivado con dos condiciones (`findByCompletadaFalseAndTituloContaining(String fragmento)`) y confirma su comportamiento con datos que solo cumplen una de las dos condiciones.
-3. Reemplaza `findByCompletadaFalse()` por el equivalente exacto en `@Query("SELECT t FROM Tarea t WHERE t.completada = false")` y confirma que el test original sigue pasando sin ninguna otra modificación.
-4. Escribe de memoria (sin mirar) una entidad con dos campos y un repositorio con un método derivado que filtre por uno de ellos.
+#### Subtema 3.2 · Filtrar con el nombre del método · 10 min
 
-**Pista:** si el nombre del método derivado empieza a tener más de dos o tres condiciones encadenadas, es una señal de que `@Query` explícito sería más legible que seguir extendiendo el nombre.
+**Contexto:** La API ya guarda `prioridad`. El listado necesita devolver tareas cuya prioridad sea al menos el mínimo recibido, sin escribir una consulta para una comparación sencilla.
 
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio para que Spring genere la query a partir del nombre del método:
+**Hazlo tú:** En `src/main/java/com/example/demo/TareaRepository.java`, agrega el método señalado:
 
 ```java
+package com.example.demo;
+
+import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+
 public interface TareaRepository extends JpaRepository<Tarea, Long> {
-    List<Tarea> ____CompletadaFalse();
+    List<Tarea> findByPrioridadGreaterThanEqual(int minimo);
 }
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una entidad `@Entity` con `@Id @GeneratedValue`, y un repositorio con un método derivado que filtre por un campo booleano. Compara después contra el patrón del Paso 4.
+En `src/test/java/com/example/demo/TareaRepositoryTest.java`, conserva el test de guardado e imports del subtema anterior. Añade este método antes de la llave final de la clase:
 
-#### Paso 7 · Cierre y evidencia
+```java
+@Test
+void filtraPrioridadMinimaIncluyendoElLimite() {
+    tareas.save(new Tarea("Sobre", 1, "A"));
+    tareas.save(new Tarea("Caja", 2, "B"));
+    tareas.save(new Tarea("Pallet", 3, "C"));
+    tareas.flush();
 
-Ya mapeas una clase Java a una tabla con `@Entity`, declaras repositorios cuya query se genera a partir del nombre del método, y confirmas con un test real contra H2 que el resultado es correcto. El siguiente tema aborda qué ocurre cuando estas queries derivadas se combinan con relaciones entre entidades. **Evidencia:** entrega el resultado de `TareaRepositoryTest` en verde, y el mensaje de error real que produce un nombre de método con una propiedad inexistente. Fuente oficial: [Spring Data JPA — Query methods](https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html).
+    var resultado = tareas.findByPrioridadGreaterThanEqual(2);
 
-**Errores comunes:** escribir SQL manual para consultas simples que un método derivado resolvería automáticamente; encadenar demasiadas condiciones en el nombre del método hasta volverlo ilegible, en vez de cambiar a `@Query`.
+    assertThat(resultado).extracting(Tarea::getTitulo)
+        .containsExactlyInAnyOrder("Caja", "Pallet");
+}
+```
 
-**Cuándo no usarlo:** para una consulta con agregaciones, joins específicos, o lógica que no se expresa naturalmente como una secuencia de condiciones sobre propiedades, un método derivado se vuelve forzado o imposible; usa `@Query` con JPQL explícito desde el principio en esos casos.
+Ejecuta desde la raíz del proyecto:
 
-Las entidades y repositorios que definas aquí son la base de persistencia del proyecto integrador de este track (microservicio productivo, Módulo 12).
+```bash
+./mvnw -q -Dtest=TareaRepositoryTest test
+```
+
+**Salida esperada:** `BUILD SUCCESS`; aparecen Caja y Pallet, pero no Sobre. El sufijo `GreaterThanEqual` incluye el valor límite 2.
+
+**Fallo deliberado y diagnóstico:** cambia `findByPrioridadGreaterThanEqual` a `findByPrioridGreaterThanEqual` en la interfaz y cambia igual la llamada en el test para que el código compile. Al arrancar, Spring muestra `PropertyReferenceException` porque no encuentra `priorid` en `Tarea` y sugiere `prioridad`. La consulta se valida desde el nombre de propiedad; restaura ambas apariciones y ejecuta otra vez.
+
+**Entiende:** Spring Data separa `findBy` del nombre de la propiedad y del operador. La forma de la consulta se lee así:
+
+```text
+findBy | Prioridad | GreaterThanEqual
+buscar | campo    | mayor o igual
+```
+
+El nombre debe corresponder al atributo Java (`prioridad`), no al nombre de columna ni al nombre que llega en JSON. La lista se escribe con `List<Tarea>` porque el filtro puede devolver varias filas.
+
+**Cierra:** entrega el test verde y señala cuál resultado prueba que el límite es inclusivo. La referencia oficial lista los operadores y explica cómo Spring Data interpreta nombres de métodos: [Spring Data JPA — Query methods](https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html).
+
+#### Subtema 3.3 · Escribir JPQL cuando ayuda a leer · 10 min
+
+**Contexto:** El nombre derivado anterior es corto y claro. Cuando la consulta requiere una condición expresada con más detalle, puedes escribir JPQL; JPQL usa nombres de entidades y atributos Java, no nombres directos de tablas y columnas.
+
+**Hazlo tú:** En `src/main/java/com/example/demo/TareaRepository.java`, declara ambos caminos para comparar sus resultados:
+
+```java
+package com.example.demo;
+
+import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+public interface TareaRepository extends JpaRepository<Tarea, Long> {
+    List<Tarea> findByPrioridadGreaterThanEqual(int minimo);
+
+    @Query("select t from Tarea t where t.prioridad >= :minimo")
+    List<Tarea> buscarPrioridadMinima(@Param("minimo") int minimo);
+}
+```
+
+Dentro de `TareaRepositoryTest`, añade este método antes de la última llave:
+
+```java
+@Test
+void jpqlYMetodoDerivadoDevuelvenLasMismasTareas() {
+    tareas.save(new Tarea("Sobre", 1, "A"));
+    tareas.save(new Tarea("Caja", 2, "B"));
+    tareas.save(new Tarea("Pallet", 3, "C"));
+    tareas.flush();
+
+    var derivado = tareas.findByPrioridadGreaterThanEqual(2);
+    var jpql = tareas.buscarPrioridadMinima(2);
+
+    assertThat(jpql).extracting(Tarea::getTitulo)
+        .containsExactlyInAnyOrderElementsOf(
+            derivado.stream().map(Tarea::getTitulo).toList()
+        );
+}
+```
+
+Ejecuta desde la raíz del proyecto:
+
+```bash
+./mvnw -q -Dtest=TareaRepositoryTest test
+```
+
+**Salida esperada:** `BUILD SUCCESS`; las dos consultas encuentran las mismas tareas. Si agregas este método al test existente, conserva los imports de la prueba anterior.
+
+**Fallo deliberado y diagnóstico:** escribe `t.priorid` en la cadena de `@Query` y ejecuta el test. Spring no reconoce ese atributo JPQL y el contexto falla al crear el repositorio con `QueryCreationException: Query validation failed`. El nombre válido es `prioridad`, como en la propiedad Java. Corrígelo y vuelve a ejecutar.
+
+**Entiende:** JPQL consulta entidades (`Tarea t`) y sus propiedades (`t.prioridad`); el proveedor JPA lo traduce a SQL para la base configurada. `@Param` conecta el marcador `:minimo` con el argumento Java. Prefiere un método derivado cuando se entiende de un vistazo; usa `@Query` cuando el nombre se vuelve difícil de leer o necesitas expresar una forma que la convención no cubre. Ninguno da control total del SQL físico: JPQL y SQL son lenguajes distintos.
+
+**Cierra:** conserva las dos pruebas y explica con un ejemplo cuándo elegirías cada versión. Para pasar a una relación entre entidades, revisa el siguiente tema sobre N+1. Referencia oficial: [Spring Data JPA — declarar consultas](https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html).
+
+La entidad y el repositorio de esta práctica continúan en el proyecto integrador del track. La estructura atómica describe actividades verificables; no certifica por sí sola dominio profesional.
 
 ### Tema 2: El problema N+1 y su corrección
 

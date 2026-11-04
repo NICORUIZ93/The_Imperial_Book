@@ -93,10 +93,10 @@
     },
     "spring-boot": {
       "topics": 111,
-      "completeTopics": 25,
-      "topicsWith3to6Subtopics": 26,
-      "subtopics": 78,
-      "completeSubtopics": 77
+      "completeTopics": 26,
+      "topicsWith3to6Subtopics": 27,
+      "subtopics": 81,
+      "completeSubtopics": 80
     }
   },
   "topics": {
@@ -13739,9 +13739,52 @@
       {
         "module": 3,
         "topic": "### Tema 1: Entidades y repositorios derivados",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "3.1",
+            "title": "#### Subtema 3.1 · Guardar y recuperar una entidad · 8 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "3.2",
+            "title": "#### Subtema 3.2 · Filtrar con el nombre del método · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "3.3",
+            "title": "#### Subtema 3.3 · Escribir JPQL cuando ayuda a leer · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 3,

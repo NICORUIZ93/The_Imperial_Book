@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 218,
+    "topicsWithSignals": 219,
     "newLaboratories": 25
   },
   "priorities": {
@@ -13223,8 +13223,10 @@
       "module": 3,
       "title": "Tema 1: Entidades y repositorios derivados",
       "file": "web/public/content/spring-boot/modulo-3.md",
-      "line": 8,
-      "signals": [],
+      "line": 7,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -13234,7 +13236,7 @@
       "module": 3,
       "title": "Tema 2: El problema N+1 y su corrección",
       "file": "web/public/content/spring-boot/modulo-3.md",
-      "line": 183,
+      "line": 180,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -13245,7 +13247,7 @@
       "module": 3,
       "title": "Tema 3: Migraciones con Flyway",
       "file": "web/public/content/spring-boot/modulo-3.md",
-      "line": 334,
+      "line": 331,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
