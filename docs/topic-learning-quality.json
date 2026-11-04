@@ -223,16 +223,16 @@
     "spring-boot": {
       "topics": 111,
       "explanation": 111,
-      "code": 108,
-      "visual": 59,
+      "code": 107,
+      "visual": 58,
       "filePath": 111,
-      "runCommand": 103,
+      "runCommand": 102,
       "expectedResult": 111,
       "practice": 103,
-      "project": 94,
+      "project": 93,
       "modelMental": 111,
       "limitsDecision": 98,
-      "practicable": 85,
+      "practicable": 84,
       "genericScaffold": 0,
       "repeatedDemo": 0
     }
@@ -26274,19 +26274,19 @@
         "topic": "Tema 1: Mono y Flux",
         "criteria": {
           "explanation": true,
-          "code": true,
-          "visual": true,
+          "code": false,
+          "visual": false,
           "filePath": true,
-          "runCommand": true,
+          "runCommand": false,
           "expectedResult": true,
           "practice": true,
-          "project": true,
+          "project": false,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 16,
-          "practicable": true,
+          "rubricScore": 8,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }

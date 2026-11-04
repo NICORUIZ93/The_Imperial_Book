@@ -98,9 +98,9 @@
     },
     "spring-boot": {
       "topics": 111,
-      "code": 108,
-      "commentedCode": 57,
-      "mermaid": 45,
+      "code": 107,
+      "commentedCode": 56,
+      "mermaid": 44,
       "archifyVisual": 3,
       "asciiVisual": 10,
       "misleadingDiagramLabel": 0,
@@ -2904,6 +2904,13 @@
       "track": "spring-boot",
       "module": 8,
       "topic": "Tema 9: RabbitMQ con Spring AMQP: routing, ack y prefetch",
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "spring-boot",
+      "module": 9,
+      "topic": "Tema 1: Mono y Flux",
       "missingCode": true,
       "missingComments": false
     },

@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 863,
+      "lines": 884,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 15161,
+      "lines": 15218,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -314,7 +314,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1108,
+      "lines": 1107,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -600,7 +600,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3822,
+      "lines": 3829,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13594,
+      "lines": 13596,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -677,7 +677,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 147,
+      "lines": 148,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 440,
+      "lines": 444,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -5689,6 +5689,32 @@
     },
     {
       "path": "examples/spring-kafka-streams-rutaflow/src/test/java/academia/rutaflow/streams/PedidosTopologyTest.java",
+      "lines": 66,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-reactor-rutaflow/README.md",
+      "lines": 19,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Spring Reactor: Mono, Flux y demanda"
+      ]
+    },
+    {
+      "path": "examples/spring-reactor-rutaflow/src/main/java/academia/rutaflow/reactor/EntregaFlows.java",
+      "lines": 24,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-reactor-rutaflow/src/test/java/academia/rutaflow/reactor/MonoFluxTest.java",
       "lines": 66,
       "kind": "example",
       "symbols": [],
@@ -12334,7 +12360,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-9.md",
-      "lines": 650,
+      "lines": 631,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

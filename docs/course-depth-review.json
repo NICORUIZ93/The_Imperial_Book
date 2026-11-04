@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 236,
+    "topicsWithSignals": 237,
     "newLaboratories": 25
   },
   "priorities": {
@@ -13562,7 +13562,9 @@
       "title": "Tema 1: Mono y Flux",
       "file": "web/public/content/spring-boot/modulo-9.md",
       "line": 213,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -13572,7 +13574,7 @@
       "module": 9,
       "title": "Tema 2: WebClient y composición no bloqueante",
       "file": "web/public/content/spring-boot/modulo-9.md",
-      "line": 336,
+      "line": 317,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -13583,7 +13585,7 @@
       "module": 9,
       "title": "Tema 3: Cuándo WebFlux vale la complejidad, y R2DBC",
       "file": "web/public/content/spring-boot/modulo-9.md",
-      "line": 496,
+      "line": 477,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

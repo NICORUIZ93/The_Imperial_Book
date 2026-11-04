@@ -1694,7 +1694,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "44f217b7216bab7fe749ce2af1e3f9074afc530598b0b5879a3bb31fc7c30ded",
+    "fingerprint": "bf47cc03b961567506555d06f2635a2d42d3904f5cbbafb013d7dca6cb060e67",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -11051,9 +11051,9 @@
       {
         "issues": [],
         "module": 9,
-        "tailWords": 166,
+        "tailWords": 0,
         "topic": "Tema 1: Mono y Flux",
-        "words": 1048
+        "words": 810
       },
       {
         "issues": [],

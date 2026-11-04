@@ -9,15 +9,15 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | Criterio | Cubierto | Pendiente |
 |---|---:|---:|
 | Explicación | 1185 | 0 |
-| Código | 1143 | 42 |
+| Código | 1142 | 43 |
 | Ruta | 1185 | 0 |
-| Ejecución | 1119 | 66 |
+| Ejecución | 1118 | 67 |
 | Resultado | 1183 | 2 |
 | Modificación | 1129 | 56 |
-| Conexión con un proyecto | 1105 | 80 |
+| Conexión con un proyecto | 1104 | 81 |
 | Modelo mental | 1185 | 0 |
 | Límites | 1130 | 55 |
-| **Perfil de criterios detectado** | **1085** | **100** |
+| **Perfil de criterios detectado** | **1084** | **101** |
 
 ## Prioridad por track
 
@@ -36,7 +36,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | node | 83 | 0 | 0 | 0 | 0 | 1 | 2 | 1 |
 | react | 58 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | rutaflow | 29 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| spring-boot | 111 | 3 | 0 | 8 | 0 | 8 | 17 | 13 |
+| spring-boot | 111 | 4 | 0 | 9 | 0 | 8 | 18 | 13 |
 
 ## Pendientes por tema
 
@@ -140,6 +140,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 - [spring-boot · módulo 8](../web/public/content/spring-boot/modulo-8.md) · Tema 7: Kafka Streams con Spring para transformar eventos: código, ejecución, límites.
 - [spring-boot · módulo 8](../web/public/content/spring-boot/modulo-8.md) · Tema 8: Avro y Schema Registry para contratos de eventos: código, ejecución.
 - [spring-boot · módulo 8](../web/public/content/spring-boot/modulo-8.md) · Tema 9: RabbitMQ con Spring AMQP: routing, ack y prefetch: código, ejecución, conexión con un proyecto.
+- [spring-boot · módulo 9](../web/public/content/spring-boot/modulo-9.md) · Tema 1: Mono y Flux: código, ejecución, conexión con un proyecto.
 
 ## Regla de cierre
 

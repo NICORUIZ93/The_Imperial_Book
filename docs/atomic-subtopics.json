@@ -93,10 +93,10 @@
     },
     "spring-boot": {
       "topics": 111,
-      "completeTopics": 37,
-      "topicsWith3to6Subtopics": 49,
-      "subtopics": 154,
-      "completeSubtopics": 121
+      "completeTopics": 38,
+      "topicsWith3to6Subtopics": 50,
+      "subtopics": 158,
+      "completeSubtopics": 125
     }
   },
   "topics": {
@@ -15137,9 +15137,66 @@
       {
         "module": 9,
         "topic": "### Tema 1: Mono y Flux",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 4,
+        "subtopics": [
+          {
+            "id": "1.1",
+            "title": "#### Subtema 1.1 · Elegir entre un resultado y una secuencia · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "1.2",
+            "title": "#### Subtema 1.2 · Diferenciar vacío, valor y error · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "1.3",
+            "title": "#### Subtema 1.3 · Ver cuándo se calcula un valor · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "1.4",
+            "title": "#### Subtema 1.4 · Pedir una secuencia por partes · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 9,

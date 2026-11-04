@@ -208,130 +208,111 @@ Con esto tienes un proyecto mínimo reproducible. Ahora sí tiene sentido estudi
 
 ## Aprende construyendo
 
-Cada tema se practica por separado con su propia repetición progresiva y su propio reto de memoria, verificado con `StepVerifier` (la herramienta oficial de test de Project Reactor, que suscribe de verdad y verifica cada señal emitida) y `MockWebServer` (un servidor HTTP real y desechable), para que "es perezoso" o "no bloquea el thread" sean afirmaciones comprobables, no solo descritas. Continúa sobre `demo-reactive`, el proyecto construido en la sección anterior.
+Cada tema usa una prueba acorde con lo que enseña: `StepVerifier` verifica las señales de los publishers; un servidor HTTP de prueba se usa en las llamadas salientes. Continúa sobre `demo-reactive`, el proyecto construido en la sección anterior.
 
 ### Tema 1: Mono y Flux
 
-#### Paso 1 · Objetivo y preparación
+Este tema conecta el repositorio del proyecto `demo-reactive` con los tipos de Reactor. El laboratorio aislado comprueba sus señales sin base de datos ni servidor externo.
 
-Al finalizar podrás distinguir `Mono` de `Flux` por su cardinalidad, y confirmar con `StepVerifier` real que ninguno de los dos ejecuta su lógica productora hasta que existe un suscriptor.
+#### Subtema 1.1 · Elegir entre un resultado y una secuencia · 10 min
 
-**Conocimiento previo:** la sección "Comienza desde cero" de este módulo (proyecto `demo-reactive` con `DeliveryRepository` reactivo).
+**1. Contexto**
 
-#### Paso 2 · Contexto y caso real
+Buscar una guía devuelve cero o una entrega. Listar guías puede devolver muchas. `Mono<T>` modela cero o un elemento; `Flux<T>`, cero o más.
 
-**¿Por qué es importante?** Una API de entregas que combina ubicación, tarifa y disponibilidad necesita modelar explícitamente si cada operación espera cero-o-un resultado (`Mono`, como buscar una entrega por código) o cero-a-N resultados (`Flux`, como listar todas las entregas), sin bloquear un thread por cada espera de red o de base de datos.
+**2. Hazlo tú**
 
-#### Paso 3 · Teoría con analogía
+Desde `examples/spring-reactor-rutaflow`, abre `src/main/java/academia/rutaflow/reactor/EntregaFlows.java` y `src/test/java/academia/rutaflow/reactor/MonoFluxTest.java`. Ejecuta:
 
-**Conceptos clave:** 0 o 1 elemento frente a 0 a N elementos, evaluación perezosa con suscripción.
+    ./mvnw -Dtest=MonoFluxTest#monoEntregaCeroOUnaGuia test
 
-`Mono<Delivery> entrega = repository.findByTrackingCode(codigo);` representa un flujo reactivo de cero o un elemento; `Flux<Delivery> entregas = repository.findAll();` representa un flujo de cero a N elementos. Ambos son perezosos por diseño: no ejecutan ninguna lógica productora (ni siquiera la query contra la base de datos) hasta que alguien efectivamente se suscribe, con Spring suscribiéndose automáticamente cuando un `@RestController` reactivo devuelve un `Mono`/`Flux` como resultado de un endpoint.
+**Resultado esperado.** El `Mono` del código `RF-1200` emite una guía y completa. La búsqueda de `1200` completa sin emitir valor.
 
-**Analogía:** `Mono` es un recibo de entrega que promete traer cero o un paquete específico en el futuro; `Flux` es una cinta transportadora que entregará una secuencia de paquetes a lo largo del tiempo, sin que ninguno de los dos comience a producir realmente hasta que alguien se registre para recibirlos.
+**Fallo deliberado.** Cambia la expectativa `Guía RF-1200` por `Guía RF-1201`. **Diagnóstico:** `StepVerifier` muestra el valor esperado y el valor recibido; revisa el código que pasó el test. Restáurala.
 
-**Diagrama:**
+**3. Entiende**
 
-```mermaid
-flowchart LR
-  A["repository.findAll()"] --> B[declara el Flux, NO ejecuta nada aún]
-  B --> C{"¿alguien se suscribe?"}
-  C -->|no| D[la query NUNCA se ejecuta]
-  C -->|sí, ej. StepVerifier.create| E[AHORA se ejecuta la query real]
-```
+`Mono` y `Flux` son publishers: describen señales que recibirá un suscriptor. `Mono` puede emitir un valor o ninguno; ambos casos terminan con `onComplete`. Si falla, termina con `onError`. `Flux` puede emitir varios valores antes de terminar.
 
-#### Paso 4 · Demostración guiada desde cero
+**4. Cierra**
 
-Continuando en `demo-reactive` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `mkdir demo-reactive && cd demo-reactive && curl -fsSL https://start.spring.io/starter.zip -d dependencies=webflux -d javaVersion=25 -o app.zip && unzip app.zip`), agrega el starter de test de Reactor (`io.projectreactor:reactor-test`, incluido por defecto al generar el proyecto con `webflux`) y crea el test de evaluación perezosa en `src/test/java/io/academia/delivery/`:
+Completa la tabla en tus notas: `findByTrackingCode` → `Mono<Delivery>`; `findAll` → `Flux<Delivery>`. Explica qué significa que la búsqueda no encuentre nada.
 
-```bash
-mkdir -p demo-reactive/src/test/java/io/academia/delivery
-cd demo-reactive
-```
+#### Subtema 1.2 · Diferenciar vacío, valor y error · 10 min
 
-```java
-// src/test/java/io/academia/delivery/MonoFluxPerezosoTest.java
-package io.academia.delivery;
+**1. Contexto**
 
-import org.junit.jupiter.api.Test;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
+Una consulta sin coincidencias no es lo mismo que una consulta que falló. El cliente debe poder tratar “no existe” y “ocurrió un error” de maneras distintas.
 
-import java.util.concurrent.atomic.AtomicBoolean;
+**2. Hazlo tú**
 
-class MonoFluxPerezosoTest {
+En `MonoFluxTest.java`, ejecuta:
 
-    @Test
-    void unMonoNoEjecutaSuLogicaHastaQueAlguienSeSuscribe() {
-        AtomicBoolean seEjecuto = new AtomicBoolean(false);
+    ./mvnw -Dtest=MonoFluxTest#errorEsUnaSenalDistintaDeCompletarVacio test
 
-        Mono<String> mono = Mono.fromCallable(() -> {
-            seEjecuto.set(true);
-            return "Comprar leche";
-        });
+**Resultado esperado.** `expectErrorMessage` recibe `código inválido`; el test del subtema anterior verifica un `Mono` vacío con `verifyComplete`.
 
-        // declarar el Mono NO lo ejecuta: la aserción se cumple ANTES de suscribirse
-        assert !seEjecuto.get() : "el Mono se ejecutó sin que nadie se suscribiera";
+**Fallo deliberado.** Sustituye `expectErrorMessage("código inválido")` por `verifyComplete()`. **Diagnóstico:** el publisher terminó con `onError`, no con `onComplete`; StepVerifier reporta que esperaba completar sin error. Restablece la aserción del error.
 
-        StepVerifier.create(mono) // AHORA StepVerifier se suscribe de verdad
-            .expectNext("Comprar leche")
-            .verifyComplete();
+**3. Entiende**
 
-        assert seEjecuto.get() : "el Mono debería haberse ejecutado tras la suscripción real de StepVerifier";
-    }
+Las tres salidas son diferentes: valor seguido de completar, completar sin valor y error. No conviertas un error de base de datos en “sin resultados”; ocultaría un fallo operativo como si la búsqueda hubiese salido bien.
 
-    @Test
-    void unFluxEmiteExactamenteLosElementosDeclarados() {
-        Flux<String> flux = Flux.just("Comprar leche", "Pagar factura", "Lavar el auto");
+**4. Cierra**
 
-        StepVerifier.create(flux)
-            .expectNext("Comprar leche")
-            .expectNext("Pagar factura")
-            .expectNext("Lavar el auto")
-            .verifyComplete();
-    }
-}
-```
+Escribe qué señal devolverías para un código inexistente y cuál ante una conexión perdida a la base de datos. Explica la diferencia.
 
-```bash
-./mvnw test -Dtest=MonoFluxPerezosoTest
-```
+#### Subtema 1.3 · Ver cuándo se calcula un valor · 10 min
 
-**Resultado esperado:** `BUILD SUCCESS` con ambos tests en verde: el primero confirma con evidencia real (`AtomicBoolean`, no una suposición) que `Mono.fromCallable(...)` no ejecuta su lambda hasta que `StepVerifier.create(mono)` se suscribe; el segundo confirma que un `Flux` emite exactamente los elementos declarados, en el orden declarado, y luego completa.
+**1. Contexto**
 
-**Fallo deliberado:** cambia `expectNext("Pagar factura")` por `expectNext("Factura pagada")` (un texto distinto al realmente emitido) y ejecuta de nuevo `unFluxEmiteExactamenteLosElementosDeclarados`. El test FALLA con un mensaje real de `StepVerifier`: `expectation "expectNext(Factura pagada)" failed (expected value: Factura pagada; actual value: Pagar factura)` — diagnostica confirmando que `StepVerifier` verifica cada elemento emitido en su posición exacta de la secuencia, no solo que "algo" fue emitido. Revierte el cambio antes de continuar.
+Un publisher puede capturar un valor al crearse o calcularlo en cada suscripción. La diferencia importa si el origen consulta un servicio, lee el reloj o incrementa un contador.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**2. Hazlo tú**
 
-1. Agrega un test que confirme, con `StepVerifier`, que un `Mono.empty()` completa sin emitir ningún elemento (`verifyComplete()` inmediatamente, sin `expectNext`).
-2. Agrega un test que confirme que un `Flux` con un error (`Flux.error(new RuntimeException("fallo"))`) se verifica con `expectError(RuntimeException.class)` en vez de `verifyComplete()`.
-3. Encadena `.map(...)` sobre el `Flux` del Paso 4 y confirma con `StepVerifier` que la transformación se refleja en cada elemento emitido.
-4. Escribe de memoria (sin mirar) un test `StepVerifier` que confirme la evaluación perezosa de un `Mono.fromCallable(...)` usando un `AtomicBoolean`. Compara después contra el patrón del Paso 4.
+Lee `siguienteNumero` en `EntregaFlows.java` y ejecuta:
 
-**Pista:** `StepVerifier.create(publisher)` no ejecuta nada por sí solo hasta que llamas a `.verifyComplete()`, `.verifyError()` o un método `.verify*()` equivalente al final de la cadena — ese método final es el que dispara la suscripción real.
+    ./mvnw -Dtest=MonoFluxTest#deferEjecutaElCalculoUnaVezPorSuscripcion test
 
-#### Paso 6 · Práctica independiente
+**Resultado esperado.** Antes de suscribirse el contador vale 0. Dos suscripciones separadas reciben 1 y 2.
 
-**Completa el código:** rellena el espacio para verificar que el `Flux` completa exitosamente tras emitir todos sus elementos:
+**Fallo deliberado.** Cambia `Mono.defer(() -> Mono.just(contador.incrementAndGet()))` por `Mono.just(contador.incrementAndGet())`. **Diagnóstico:** el contador aumenta al construir el publisher, antes de `StepVerifier`; restaura `defer`.
 
-```java
-StepVerifier.create(flux)
-    .expectNext("Comprar leche")
-    .____();
-```
+**3. Entiende**
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un test `StepVerifier` que confirme la cardinalidad de un `Mono` (cero o un elemento) y de un `Flux` (varios elementos en orden). Compara después contra el patrón del Paso 4.
+La expresión que se pasa a `Mono.just(valor)` se evalúa al construir el publisher; `just` conserva ese valor para emitirlo cuando se suscriben. `defer` crea el publisher al suscribirse, por eso el cálculo de este ejemplo se repite en cada suscripción. No concluyas que toda fuente es “perezosa” sin mirar cómo se creó.
 
-#### Paso 7 · Cierre y evidencia
+**4. Cierra**
 
-Ya distingues `Mono` de `Flux` por su cardinalidad, y confirmas con `StepVerifier` real que ambos son perezosos hasta la suscripción. El siguiente tema compone llamadas HTTP salientes sin bloquear el thread durante la espera. **Evidencia:** entrega el resultado de ambos tests de `MonoFluxPerezosoTest` en verde, y el mensaje de error real que produce el fallo deliberado. Fuente oficial: [Project Reactor — Testing](https://projectreactor.io/docs/core/release/reference/testing.html).
+Di cuándo escogerías `just` y cuándo `defer` o `fromSupplier`. Nombra qué observaste antes y después de suscribirte.
 
-**Errores comunes:** llamar `.block()` dentro de un flujo reactivo para "simplificar" el código, anulando por completo el beneficio no bloqueante; asumir que declarar un `Mono`/`Flux` ya ejecutó su lógica, sin considerar que nada ocurre hasta la suscripción.
+#### Subtema 1.4 · Pedir una secuencia por partes · 10 min
 
-**Cuándo no usarlo:** para lógica de negocio puramente síncrona sin ninguna espera de I/O real (cálculos en memoria), envolver el resultado en un `Mono` no aporta ningún beneficio y solo agrega complejidad de composición innecesaria.
+**1. Contexto**
 
-`Mono` y `Flux` son los tipos reactivos que usarás si el proyecto integrador de este track (microservicio productivo, Módulo 12) adopta WebFlux.
+Un listado puede tener más elementos de los que el consumidor quiere procesar de inmediato. Reactive Streams permite que el suscriptor pida cuántos elementos está listo para recibir.
+
+**2. Hazlo tú**
+
+En `MonoFluxTest.java`, revisa `fluxRespetaLaDemandaYEmiteEnOrden` y ejecútalo:
+
+    ./mvnw -Dtest=MonoFluxTest#fluxRespetaLaDemandaYEmiteEnOrden test
+
+**Resultado esperado.** El test inicia con demanda cero. Cada `thenRequest(1)` permite observar el siguiente código, en orden, hasta que la secuencia completa.
+
+**Fallo deliberado.** Cambia el primer `thenRequest(1)` a `thenRequest(2)`. **Diagnóstico:** `expectNoEvent` debe detectar que llegó `RF-1201` antes del segundo pedido; el publisher respondió a una demanda de dos. Restaura el valor `1`.
+
+**3. Entiende**
+
+La demanda es cuántos elementos puede recibir el suscriptor en ese momento. Este `Flux.fromIterable` es finito y local; pedir un elemento a la vez demuestra el protocolo, pero no mide una base de datos, red ni el rendimiento de una aplicación.
+
+**4. Cierra**
+
+Entrega la salida de los cuatro tests y explica con tus palabras la diferencia entre `Mono` y `Flux`, una finalización vacía y un error. Siguiente: componer `Mono` de respuestas HTTP con `WebClient`.
+
+**Fuentes oficiales:** [Reactor: introducción y suscripción](https://projectreactor.io/docs/core/release/reference/reactiveProgramming.html), [Reactor: hot y cold publishers](https://projectreactor.io/docs/core/release/reference/advancedFeatures/reactor-hotCold.html), [Reactor: pruebas con StepVerifier](https://projectreactor.io/docs/core/release/reference/testing.html).
+
+**¿Por qué es importante?** Elegir y probar el tipo de publisher ayuda a conservar la diferencia entre ausencia de datos, secuencias y errores sin bloquear la respuesta.
 
 ### Tema 2: WebClient y composición no bloqueante
 

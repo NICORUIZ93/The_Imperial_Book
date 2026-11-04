@@ -856,7 +856,28 @@ pasos, 409 temas con señales automatizadas de defecto de sustancia. Estas cifra
 describen señales estructurales; no certifican la comprensión ni una revisión
 pedagógica humana completa.
 
-**Siguiente tema:** Spring Boot M9 T1, “Mono y Flux”. Revisar la lección completa,
-contrastar el comportamiento con documentación primaria de Reactor/Spring
-WebFlux y construir un ejemplo que se ejecute y se pruebe antes de marcarlo
-completo.
+**Siguiente tema:** Spring Boot M9 T2, “WebClient y composición no bloqueante”.
+Revisar llamadas dependientes, errores HTTP, timeouts y cancelación frente al
+laboratorio real de MockWebServer.
+
+
+Spring Boot M9 T1, “Mono y Flux”, se reescribió en cuatro subtemas con ejemplos
+ejecutables en `examples/spring-reactor-rutaflow/`. Se corrigió la afirmación
+excesiva de que todo `Mono`/`Flux` ejecuta su lógica solo al suscribirse:
+`Mono.just(expresion)` evalúa el argumento al ensamblar; `defer` crea el cálculo
+en cada suscripción. La lección ahora diferencia cardinalidad, señales de valor/vacío/error,
+evaluación por suscripción y demanda controlada.
+
+`./mvnw -q clean test` pasó con **4 pruebas** usando `StepVerifier`, sin base de
+datos ni servidor externo. Dos mutaciones en copias temporales hicieron fallar
+las pruebas esperadas: aumentar la demanda inicial de 1 a 2 expuso un elemento
+durante `expectNoEvent`, y sustituir `defer` por `just` adelantó el cambio del
+contador. No se ejecutó un controlador ni una consulta R2DBC en este laboratorio;
+las pruebas verifican publishers en memoria. Fuentes primarias consultadas:
+Project Reactor Reference para publisher signals, suscripción, hot/cold y
+StepVerifier.
+
+Cobertura automática después de M9 T1: **142/1185 temas atómicos**, **1084/1185
+practicables**, **1032/1185 completos en la auditoría de siete pasos** y 409 temas
+con señales de defecto de sustancia. Son métricas estructurales; no equivalen a
+revisión humana de calidad o comprensión.
