@@ -316,163 +316,109 @@ Entrega la salida de los cuatro tests y explica con tus palabras la diferencia e
 
 ### Tema 2: WebClient y composición no bloqueante
 
-#### Paso 1 · Objetivo y preparación
+Este tema consulta ubicación y luego tarifa: la segunda petición necesita la respuesta de la primera. El laboratorio usa un servidor HTTP local para que puedas ver ambas solicitudes.
 
-Al finalizar podrás componer dos llamadas HTTP dependientes con `WebClient` y `flatMap`, confirmando contra un servidor HTTP real (no simulado en otro lenguaje) que ninguna llamada bloquea el thread.
+#### Subtema 2.1 · Configurar WebClient para un servicio externo · 10 min
 
-**Conocimiento previo:** Tema 1 de este módulo.
+**1. Contexto**
 
-#### Paso 2 · Contexto y caso real
+Una aplicación reactiva necesita la dirección del servicio externo desde configuración, no escrita dentro del método. Spring Boot crea un `WebClient.Builder` para inyectarlo.
 
-**¿Por qué es importante?** Calcular el costo total de una entrega puede requerir consultar primero la ubicación del destinatario y luego, con esa ubicación, consultar la tarifa correspondiente a esa zona — dos llamadas HTTP dependientes entre sí que no deberían bloquear un thread completo durante toda la espera combinada de ambas.
+**2. Hazlo tú**
 
-#### Paso 3 · Teoría con analogía
+Desde `examples/spring-webclient-rutaflow`, abre `src/main/java/academia/rutaflow/webclient/TarifaClient.java`. Observa el constructor: recibe el builder y el valor `tarifa.base-url`, que se convierte en la URL base.
 
-**Conceptos clave:** thread libre mientras espera I/O, composición con `flatMap`.
+Ejecuta la prueba que crea el cliente contra un servidor local:
 
-`WebClient` reemplaza al histórico `RestTemplate` (ahora legado) para llamadas HTTP salientes completamente no bloqueantes: `Mono<Usuario> usuario = webClient.get().uri("/usuarios/{id}", id).retrieve().bodyToMono(Usuario.class);` inicia la petición sin bloquear el thread actual, liberándolo para atender otras peticiones concurrentes. `usuario.flatMap(u -> webClient.get().uri("/pedidos/{id}", u.pedidoId()).retrieve().bodyToMono(Pedido.class))` compone dos llamadas dependientes sin bloquear en ningún punto de la cadena, de forma análoga a `thenCompose` de `CompletableFuture`.
+    ./mvnw -Dtest=TarifaClientTest#composesLocationAndTariffRequestsInOrder test
 
-**Analogía:** `WebClient` es un mensajero que, tras enviar una solicitud, no se queda esperando parado frente a la puerta hasta recibir la respuesta, sino que atiende otras tareas mientras tanto, volviendo a ocuparse de esa solicitud únicamente cuando la respuesta efectivamente llega.
+**Resultado esperado.** El cliente se construye con la dirección asignada por MockWebServer y el test termina sin conectarse a una API de Internet.
 
-**Diagrama:**
+**Fallo deliberado.** En una copia cambia `builder.baseUrl(baseUrl).build()` por `builder.baseUrl(baseUrl + "/incorrecto").build()`. **Diagnóstico:** el servidor recibe una ruta con el prefijo equivocado y las aserciones de `getTarget()` fallan. Restaura la URL base recibida.
 
-```mermaid
-flowchart LR
-  A["webClient.get('/ubicacion/{id}')"] --> B["flatMap: con la ubicación, pide la tarifa"]
-  B --> C["webClient.get('/tarifa?zona=...')"]
-  C --> D[Mono con el resultado combinado, thread NUNCA bloqueado]
-```
+**3. Entiende**
 
-#### Paso 4 · Demostración guiada desde cero
+`WebClient.Builder` configura el cliente. `baseUrl` da una raíz común. En producción define `tarifa.base-url` en la configuración de Spring; el test construye la clase con una URL local para evitar depender de servicios externos.
 
-Continuando en `demo-reactive` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `mkdir demo-reactive && cd demo-reactive && mvn archetype:generate` o el generador de start.spring.io con `webflux`), crea el servicio de tarifas que compone dos llamadas HTTP en `src/main/java/io/academia/delivery/`:
+**4. Cierra**
 
-```bash
-mkdir -p demo-reactive/src/main/java/io/academia/delivery
-cd demo-reactive
-```
+Señala qué objeto configura Spring y de dónde viene la dirección. No confundas la URL de test con la dirección que usaría producción.
 
-```java
-// src/main/java/io/academia/delivery/TarifaClient.java
-package io.academia.delivery;
+#### Subtema 2.2 · Encadenar dos llamadas dependientes · 10 min
 
-import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
+**1. Contexto**
 
-@Service
-public class TarifaClient {
-    private final WebClient webClient;
+La tarifa depende de la zona. Primero se consulta ubicación por código de envío; después se consulta la tarifa con el campo `zone` recibido.
 
-    public TarifaClient(WebClient.Builder builder, String baseUrl) {
-        this.webClient = builder.baseUrl(baseUrl).build();
-    }
+**2. Hazlo tú**
 
-    public Mono<String> obtenerUbicacion(String trackingCode) {
-        return webClient.get().uri("/ubicacion/{codigo}", trackingCode)
-            .retrieve()
-            .bodyToMono(String.class);
-    }
+Lee `calcularTarifaCompleta` en `TarifaClient.java` y el test `composesLocationAndTariffRequestsInOrder`. Ejecútalo:
 
-    public Mono<Double> obtenerTarifa(String zona) {
-        return webClient.get().uri("/tarifa?zona={zona}", zona)
-            .retrieve()
-            .bodyToMono(Double.class);
-    }
+    ./mvnw -Dtest=TarifaClientTest#composesLocationAndTariffRequestsInOrder test
 
-    public Mono<Double> calcularTarifaCompleta(String trackingCode) {
-        return obtenerUbicacion(trackingCode)
-            .flatMap(this::obtenerTarifa); // segunda llamada depende del resultado de la primera, sin bloquear
-    }
-}
-```
+**Resultado esperado.** El test recibe `15.5`; MockWebServer registra primero `/ubicacion/RF-001` y luego `/tarifa?zona=zona-sur`.
 
-**Explicación línea por línea:** `WebClient.Builder builder` se inyecta y configura con la URL base del servicio externo; `obtenerUbicacion` y `obtenerTarifa` son cada una una llamada HTTP no bloqueante independiente; `calcularTarifaCompleta` las compone con `flatMap`, de forma que la segunda llamada solo se dispara cuando la primera efectivamente responde, sin que el thread actual quede bloqueado esperando ninguna de las dos.
+**Fallo deliberado.** En una copia cambia `flatMap` por `map`. **Diagnóstico:** el resultado pasa a ser `Mono<Mono<Double>>`; el método espera `Mono<Double>` y ya no compila. `flatMap` une el resultado reactivo que devuelve la segunda llamada. Restaura `flatMap`.
 
-Confirma con `MockWebServer` (un servidor HTTP real, ligero y desechable, de OkHttp — no una simulación en otro lenguaje, sino un servidor HTTP que responde peticiones reales) que la composición funciona de extremo a extremo:
+**3. Entiende**
 
-```java
-// src/test/java/io/academia/delivery/TarifaClientTest.java
-package io.academia.delivery;
+`map` transforma el valor a otro valor. `flatMap` transforma el valor a otro `Publisher` y aplana el resultado. La segunda petición se inicia cuando llega la zona; por eso estas dos llamadas son secuenciales y dependientes.
 
-import mockwebserver3.MockResponse;
-import mockwebserver3.MockWebServer;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.test.StepVerifier;
+**4. Cierra**
 
-import java.io.IOException;
+Dibuja `código → ubicación → zona → tarifa`. Explica qué tipo devuelve cada método y por qué aquí `map` no sirve.
 
-class TarifaClientTest {
+#### Subtema 2.3 · Dejar que el estado HTTP llegue como error reactivo · 10 min
 
-    private MockWebServer servidor;
-    private TarifaClient cliente;
+**1. Contexto**
 
-    @BeforeEach
-    void iniciar() throws IOException {
-        servidor = new MockWebServer();
-        servidor.start();
-        cliente = new TarifaClient(WebClient.builder(), servidor.url("/").toString());
-    }
+Un servicio externo puede responder `503` en vez de un cuerpo válido. `retrieve()` convierte por defecto las respuestas 4xx/5xx en un error del flujo, para que el consumidor pueda manejarlo.
 
-    @AfterEach
-    void detener() throws IOException {
-        servidor.shutdown();
-    }
+**2. Hazlo tú**
 
-    @Test
-    void calcularTarifaCompletaComponeAmbasLlamadasReales() {
-        servidor.enqueue(new MockResponse.Builder().body("\"zona-sur\"").addHeader("Content-Type", "application/json").build());
-        servidor.enqueue(new MockResponse.Builder().body("15.5").addHeader("Content-Type", "application/json").build());
+En `TarifaClientTest.java`, ejecuta `httpServerErrorArrivesAsReactiveError`:
 
-        StepVerifier.create(cliente.calcularTarifaCompleta("RF-001"))
-            .expectNext(15.5)
-            .verifyComplete();
-    }
-}
-```
+    ./mvnw -Dtest=TarifaClientTest#httpServerErrorArrivesAsReactiveError test
 
-```bash
-./mvnw test -Dtest=TarifaClientTest
-```
+**Resultado esperado.** MockWebServer recibe la primera petición y responde `503`; StepVerifier observa `WebClientResponseException` en el `Mono` compuesto.
 
-**Resultado esperado:** `BUILD SUCCESS` con el test en verde: `MockWebServer` respondió a AMBAS peticiones HTTP reales (primero la ubicación, luego la tarifa de esa zona), y `calcularTarifaCompleta` compuso correctamente ambas respuestas en un único `Mono` que emite `15.5`.
+**Fallo deliberado.** Cambia el estado de respuesta de `503` a `200` sin agregar un cuerpo JSON. **Diagnóstico:** `retrieve()` ya no produce un error por estado HTTP; el body vacío completa sin tarifa y la expectativa `expectError` falla. Restaura `503`.
 
-**Fallo deliberado:** en `TarifaClientTest`, encola solo UNA respuesta (`servidor.enqueue(...)` una sola vez) en vez de dos, y ejecuta de nuevo el test. La segunda llamada HTTP (`obtenerTarifa`, disparada por el `flatMap`) se queda esperando una respuesta que `MockWebServer` no tiene encolada, y el test falla por timeout — diagnostica confirmando que `flatMap` efectivamente dispara una SEGUNDA petición HTTP real y dependiente, no solo transforma un valor en memoria: sin una respuesta real para esa segunda llamada, la composición completa no puede completar. Revierte el cambio antes de continuar.
+**3. Entiende**
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+La respuesta HTTP no se convierte automáticamente en una tarifa. `retrieve()` valida el estado y `bodyToMono` decodifica el cuerpo al tipo pedido. Más adelante puedes usar `onStatus` para transformar errores externos en excepciones propias.
 
-1. Agrega un test que confirme, usando `servidor.enqueue(new MockResponse.Builder().code(500).build())`, que un error HTTP real de la primera llamada se propaga como un error en el `Mono` compuesto (`StepVerifier...verifyError()`).
-2. Agrega un timeout explícito (`.timeout(Duration.ofSeconds(2))`) a `calcularTarifaCompleta` y confirma con `MockWebServer` que, si una respuesta tarda más que ese timeout (`new MockResponse.Builder().bodyDelay(3, TimeUnit.SECONDS)...`), el `Mono` termina en error de timeout en vez de esperar indefinidamente.
-3. Compón tres llamadas en vez de dos usando `Mono.zip(...)` (en vez de `flatMap` encadenado) para dos llamadas independientes entre sí, y confirma con `MockWebServer` que ambas se disparan y combinan correctamente.
-4. Escribe de memoria (sin mirar) un `WebClient` que componga dos llamadas dependientes con `flatMap`, y un test `MockWebServer` + `StepVerifier` que confirme el resultado combinado. Compara después contra el patrón del Paso 4.
+**4. Cierra**
 
-**Pista:** `MockWebServer` entrega las respuestas encoladas en el ORDEN en que las recibe, no según qué endpoint específico se solicitó — si tu test tiene múltiples llamadas a rutas distintas, el orden de `servidor.enqueue(...)` debe coincidir con el orden real en que tu código las dispara.
+Nombra el código HTTP que causó el error y la excepción que vio el test. Explica por qué no se recibió una tarifa numérica.
 
-#### Paso 6 · Práctica independiente
+#### Subtema 2.4 · Poner un límite a la espera · 10 min
 
-**Completa el código:** rellena el espacio para componer la segunda llamada dependiente del resultado de la primera:
+**1. Contexto**
 
-```java
-public Mono<Double> calcularTarifaCompleta(String trackingCode) {
-    return obtenerUbicacion(trackingCode)
-        .____(this::obtenerTarifa);
-}
-```
+Una llamada externa puede tardar demasiado. Un timeout da por terminada la espera y cancela la suscripción al flujo; no garantiza que el servidor remoto deshaga un trabajo que ya empezó.
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `WebClient` con dos llamadas HTTP compuestas por `flatMap`, y un test con `MockWebServer` que confirme el resultado. Compara después contra el patrón del Paso 4.
+**2. Hazlo tú**
 
-#### Paso 7 · Cierre y evidencia
+Revisa `calcularTarifaConPlazo` y `timeoutCancelsAResponseThatArrivesTooLate`. Ejecuta:
 
-Ya compones llamadas HTTP dependientes con `WebClient` sin bloquear el thread, confirmado contra un servidor HTTP real y desechable. El siguiente y último tema de este módulo aborda cuándo esta complejidad adicional realmente vale la pena. **Evidencia:** entrega el resultado de `TarifaClientTest` en verde, y el timeout real que produce el fallo deliberado al faltar una respuesta encolada. Fuente oficial: [Spring — WebClient](https://docs.spring.io/spring-framework/reference/web/webflux-webclient.html).
+    ./mvnw -Dtest=TarifaClientTest#timeoutCancelsAResponseThatArrivesTooLate test
 
-**Errores comunes:** usar `RestTemplate` (bloqueante y legado) en vez de `WebClient` para llamadas reactivas; no considerar qué ocurre si una de las llamadas compuestas falla o tarda demasiado, dejando el flujo completo colgado indefinidamente.
+**Resultado esperado.** La primera respuesta llega; la segunda se retrasa 300 ms. El límite de 80 ms termina el `Mono` con `TimeoutException` antes de la respuesta.
 
-**Cuándo no usarlo:** para una única llamada HTTP aislada sin ninguna composición ni dependencia con otras llamadas, la ganancia de `WebClient` sobre una alternativa más simple es marginal si el resto de la aplicación de todas formas es bloqueante.
+**Fallo deliberado.** En una copia elimina `.timeout(timeout)` y vuelve a ejecutar el test. **Diagnóstico:** sin el límite, el publisher recibe el número cuando termina el retraso en vez de emitir `TimeoutException`. Restaura `.timeout(timeout)`.
 
-`WebClient` y la composición no bloqueante de este tema son los que consumirán servicios externos desde el proyecto integrador de este track (microservicio productivo, Módulo 12).
+**3. Entiende**
+
+El timeout limita el tiempo que esta composición espera. En un sistema real elige el valor según el plazo de negocio, configura timeouts también en el conector HTTP y decide si reintentar. Reintentar una operación no idempotente puede duplicar efectos.
+
+**4. Cierra**
+
+Registra cuánto tarda la respuesta simulada y qué error produjo el timeout. Luego compara con una API real: el test no mide la latencia ni disponibilidad de un proveedor externo.
+
+**Fuentes oficiales:** [Spring WebClient](https://docs.spring.io/spring-framework/reference/web/webflux-webclient.html), [clientes REST de Spring Framework 7](https://docs.spring.io/spring-framework/reference/integration/rest-clients.html), [MockWebServer de OkHttp](https://github.com/square/okhttp/tree/master/mockwebserver).
+
+**¿Por qué es importante?** La composición evita bloquear durante la espera de red, y manejar error y timeout impide que una dependencia lenta o caída deje la operación sin límite.
 
 ### Tema 3: Cuándo WebFlux vale la complejidad, y R2DBC
 

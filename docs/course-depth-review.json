@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 237,
+    "topicsWithSignals": 238,
     "newLaboratories": 25
   },
   "priorities": {
@@ -13575,7 +13575,9 @@
       "title": "Tema 2: WebClient y composición no bloqueante",
       "file": "web/public/content/spring-boot/modulo-9.md",
       "line": 317,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -13585,7 +13587,7 @@
       "module": 9,
       "title": "Tema 3: Cuándo WebFlux vale la complejidad, y R2DBC",
       "file": "web/public/content/spring-boot/modulo-9.md",
-      "line": 477,
+      "line": 423,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

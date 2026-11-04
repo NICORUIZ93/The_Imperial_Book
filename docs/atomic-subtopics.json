@@ -93,10 +93,10 @@
     },
     "spring-boot": {
       "topics": 111,
-      "completeTopics": 38,
-      "topicsWith3to6Subtopics": 50,
-      "subtopics": 158,
-      "completeSubtopics": 125
+      "completeTopics": 39,
+      "topicsWith3to6Subtopics": 51,
+      "subtopics": 162,
+      "completeSubtopics": 129
     }
   },
   "topics": {
@@ -15201,9 +15201,66 @@
       {
         "module": 9,
         "topic": "### Tema 2: WebClient y composición no bloqueante",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 4,
+        "subtopics": [
+          {
+            "id": "2.1",
+            "title": "#### Subtema 2.1 · Configurar WebClient para un servicio externo · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "2.2",
+            "title": "#### Subtema 2.2 · Encadenar dos llamadas dependientes · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "2.3",
+            "title": "#### Subtema 2.3 · Dejar que el estado HTTP llegue como error reactivo · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "2.4",
+            "title": "#### Subtema 2.4 · Poner un límite a la espera · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 9,

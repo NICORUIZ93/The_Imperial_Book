@@ -98,9 +98,9 @@
     },
     "spring-boot": {
       "topics": 111,
-      "code": 107,
-      "commentedCode": 56,
-      "mermaid": 44,
+      "code": 106,
+      "commentedCode": 55,
+      "mermaid": 43,
       "archifyVisual": 3,
       "asciiVisual": 10,
       "misleadingDiagramLabel": 0,
@@ -2911,6 +2911,13 @@
       "track": "spring-boot",
       "module": 9,
       "topic": "Tema 1: Mono y Flux",
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "spring-boot",
+      "module": 9,
+      "topic": "Tema 2: WebClient y composición no bloqueante",
       "missingCode": true,
       "missingComments": false
     },

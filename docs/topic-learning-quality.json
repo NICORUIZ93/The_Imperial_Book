@@ -223,16 +223,16 @@
     "spring-boot": {
       "topics": 111,
       "explanation": 111,
-      "code": 107,
-      "visual": 58,
+      "code": 106,
+      "visual": 57,
       "filePath": 111,
-      "runCommand": 102,
+      "runCommand": 101,
       "expectedResult": 111,
       "practice": 103,
-      "project": 93,
+      "project": 92,
       "modelMental": 111,
       "limitsDecision": 98,
-      "practicable": 84,
+      "practicable": 83,
       "genericScaffold": 0,
       "repeatedDemo": 0
     }
@@ -26296,19 +26296,19 @@
         "topic": "Tema 2: WebClient y composición no bloqueante",
         "criteria": {
           "explanation": true,
-          "code": true,
-          "visual": true,
+          "code": false,
+          "visual": false,
           "filePath": true,
-          "runCommand": true,
+          "runCommand": false,
           "expectedResult": true,
           "practice": true,
-          "project": true,
+          "project": false,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 16,
-          "practicable": true,
+          "rubricScore": 8,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }

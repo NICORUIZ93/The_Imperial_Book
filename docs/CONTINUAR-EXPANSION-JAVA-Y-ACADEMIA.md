@@ -856,9 +856,9 @@ pasos, 409 temas con señales automatizadas de defecto de sustancia. Estas cifra
 describen señales estructurales; no certifican la comprensión ni una revisión
 pedagógica humana completa.
 
-**Siguiente tema:** Spring Boot M9 T2, “WebClient y composición no bloqueante”.
-Revisar llamadas dependientes, errores HTTP, timeouts y cancelación frente al
-laboratorio real de MockWebServer.
+**Siguiente tema:** Spring Boot M9 T3, “Cuándo WebFlux vale la complejidad, y R2DBC”.
+Revisar los costos del modelo reactivo, fuentes bloqueantes, driver reactivo,
+pool de conexiones y pruebas que permitan elegir entre MVC/WebFlux con evidencia.
 
 
 Spring Boot M9 T1, “Mono y Flux”, se reescribió en cuatro subtemas con ejemplos
@@ -881,3 +881,28 @@ Cobertura automática después de M9 T1: **142/1185 temas atómicos**, **1084/11
 practicables**, **1032/1185 completos en la auditoría de siete pasos** y 409 temas
 con señales de defecto de sustancia. Son métricas estructurales; no equivalen a
 revisión humana de calidad o comprensión.
+
+
+Spring Boot M9 T2, “WebClient y composición no bloqueante”, se reescribió en
+cuatro subtemas y se creó `examples/spring-webclient-rutaflow/`. Se corrigieron
+dos defectos del bloque anterior: el constructor Spring recibía un `String` sin
+`@Value` ni propiedades tipadas, y el test por ausencia de la segunda respuesta
+no tenía un plazo de verificación. El laboratorio usa `@Value`, inyecta
+`WebClient.Builder`, compone ubicación → tarifa con `flatMap`, mapea el cuerpo a
+un record, valida un 503 como error y limita el tiempo de respuesta.
+
+`./mvnw -q clean test` pasó con **3 pruebas** contra MockWebServer local. Se
+comprobó la ruta y orden de ambas peticiones, el error HTTP y el timeout de una
+respuesta demorada; el test de timeout confirma que las dos solicitudes sí
+llegaron al servidor. Tres mutaciones en copias temporales fueron detectadas:
+base URL con prefijo incorrecto, `map` en lugar de `flatMap` (error de tipos) y
+retirar la segunda respuesta (StepVerifier vence por timeout). MockWebServer
+puede esperar cuando la cola de respuestas se agota; ahora el test establece un
+límite y cierra el servidor. El código no contacta una API externa ni mide
+concurrencia/carga productiva. Hubo advertencias no fatales de acceso nativo de
+Netty y su resolvedor DNS opcional en macOS. Fuentes primarias contrastadas:
+Spring WebClient/REST clients y código de MockWebServer.
+
+Cobertura automática después de M9 T2: **143/1185 temas atómicos**, **1083/1185
+practicables**, **1031/1185 completos en la auditoría de siete pasos** y 409 temas
+con señales de defecto de sustancia. Las métricas no sustituyen revisión humana.

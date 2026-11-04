@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 884,
+      "lines": 909,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 15218,
+      "lines": 15275,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -314,7 +314,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1107,
+      "lines": 1106,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -600,7 +600,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3829,
+      "lines": 3836,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13596,
+      "lines": 13598,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -677,7 +677,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 148,
+      "lines": 149,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 444,
+      "lines": 448,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -5835,6 +5835,40 @@
     {
       "path": "examples/spring-stream-rutaflow/src/test/java/academia/rutaflow/stream/RouteFunctionsTest.java",
       "lines": 45,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-webclient-rutaflow/README.md",
+      "lines": 14,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# WebClient: llamadas dependientes, errores y timeout"
+      ]
+    },
+    {
+      "path": "examples/spring-webclient-rutaflow/src/main/java/academia/rutaflow/webclient/TarifaClient.java",
+      "lines": 41,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-webclient-rutaflow/src/main/java/academia/rutaflow/webclient/UbicacionResponse.java",
+      "lines": 4,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-webclient-rutaflow/src/test/java/academia/rutaflow/webclient/TarifaClientTest.java",
+      "lines": 81,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -12360,7 +12394,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-9.md",
-      "lines": 631,
+      "lines": 577,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

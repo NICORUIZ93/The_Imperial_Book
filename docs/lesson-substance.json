@@ -1694,7 +1694,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "bf47cc03b961567506555d06f2635a2d42d3904f5cbbafb013d7dca6cb060e67",
+    "fingerprint": "196d94c7f091cb74c3285dbd55329d6f01a2855803af7ae0e01d3a37ae080544",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -11058,9 +11058,9 @@
       {
         "issues": [],
         "module": 9,
-        "tailWords": 172,
+        "tailWords": 0,
         "topic": "Tema 2: WebClient y composición no bloqueante",
-        "words": 1250
+        "words": 860
       },
       {
         "issues": [],

@@ -5,7 +5,7 @@
 **Proyecto continuo:** RutaFlow: plataforma de entregas basada en servicios.
 **Prerrequisito de entrada:** Java, HTTP, SQL y pruebas; los módulos iniciales vuelven a presentar cada herramienta..
 **Duración objetivo:** temas de 20–45 minutos; cada tema se divide en 3–6 acciones de 5–15 minutos.
-**Estado estructural:** 38/111 temas migrados; auditoría estructural actualizada el 2026-11-03.
+**Estado estructural:** 39/111 temas migrados; auditoría estructural actualizada el 2026-11-03.
 
 ## Índice de módulos y temas
 
@@ -224,7 +224,11 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 1.2 · Diferenciar vacío, valor y error · 10 min
   - ✓ Subtema 1.3 · Ver cuándo se calcula un valor · 10 min
   - ✓ Subtema 1.4 · Pedir una secuencia por partes · 10 min
-- [pendiente de migrar] Tema 2: WebClient y composición no bloqueante
+- [4 pasos] Tema 2: WebClient y composición no bloqueante
+  - ✓ Subtema 2.1 · Configurar WebClient para un servicio externo · 10 min
+  - ✓ Subtema 2.2 · Encadenar dos llamadas dependientes · 10 min
+  - ✓ Subtema 2.3 · Dejar que el estado HTTP llegue como error reactivo · 10 min
+  - ✓ Subtema 2.4 · Poner un límite a la espera · 10 min
 - [pendiente de migrar] Tema 3: Cuándo WebFlux vale la complejidad, y R2DBC
 
 ### Módulo 10: Microservicios con Spring Cloud
@@ -433,7 +437,7 @@ La tabla registra presencia de áreas en el inventario del track, no profundidad
 
 ### Huecos y límites reportados
 
-- El repositorio contiene 111 temas en 26 módulos; 38 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
+- El repositorio contiene 111 temas en 26 módulos; 39 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
 - No hay base para afirmar que el track esté completo: la comparación con la fuente de referencia está pendiente de revisión humana módulo por módulo.
 - Los elementos de la fuente que todavía deben verificarse de forma explícita están enumerados en la tabla anterior; cualquier técnica crítica que no tenga tema propio debe añadirse conservando el currículo base.
 - La ejecución de ejemplos, el comportamiento con brokers/plataformas reales y la calidad pedagógica humana se registran por separado.
