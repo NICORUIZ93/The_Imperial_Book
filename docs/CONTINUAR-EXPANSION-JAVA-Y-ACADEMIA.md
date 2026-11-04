@@ -90,7 +90,7 @@ reapliques cambios que ya estén publicados.
 ## Estado global honesto
 
 En la auditoría actual: **124/1185 temas** cumplen la estructura atómica en los
-14 tracks; Java aporta 101 y Spring Boot 6. La auditoría pedagógica detecta
+14 tracks: Java 101, Spring Boot 20, Node 2 y Flutter 1. La auditoría pedagógica detecta
 **1095/1185 temas practicables** y deuda en 90. La auditoría de sustancia registra
 409 temas con defectos, deuda histórica repartida entre varios tracks. Ninguna de
 estas cifras certifica que un curso esté completo o que todos los ejemplos se
@@ -178,9 +178,20 @@ enmascarados por defecto y el ejemplo no necesita exponer ese endpoint. Los fall
 deliberados no se ejecutaron; las validaciones estructurales sí pasaron antes de
 publicar.
 
-**Siguiente tema:** Spring Boot M2 T1, “Por qué DTOs en vez de entidades
-directamente”. Comprueba con un ejemplo de petición/respuesta qué campos se
-exponen y quién los controla; no presupongas persistencia JPA si el ejemplo no la
-configura. Mantén 3–6 subtemas completos, usa contrato y prueba verificables, y
-explica el costo de mapear DTOs frente a exponer modelos internos. Después sigue
-en orden por M2.
+Spring Boot M2 T1, “Por qué DTOs en vez de entidades directamente”, se rehízo en
+tres subtemas con un ejemplo acumulativo y ejecutable: entidad/repositorio JPA en
+H2, contrato `CrearTareaRequest`/`TareaDTO` con un `POST` real y cambio interno
+que deja estable el JSON. Se explicitó que este ejemplo no contiene relaciones
+`LAZY`, así que no se atribuye a ellas un error que no puede reproducir. Un
+proyecto temporal de Spring Initializr con Spring Boot 4.1.2 y JDK 25 pasó
+`./mvnw -q test`; la petición de ejemplo devolvió `201` y
+`{"id":1,"titulo":"Entregar paquete","prioridad":1}` sin el campo interno.
+No se ejecutaron los fallos deliberados. Las auditorías globales pasaron:
+124/1185 temas atómicos, 1095/1185 practicables y 409 temas con defectos de
+sustancia detectados. `./scripts/validate.sh` pasó con 23 pruebas, 4 omitidas.
+
+**Siguiente tema:** Spring Boot M2 T2, “Validación con Bean Validation y
+ResponseEntity”. Reescríbelo con 3–6 subtemas atómicos y un proyecto coherente
+con M2 T1; comprueba el comportamiento de `@Valid`, los errores HTTP y los
+mensajes que ve quien consume la API. No mezcles documentación OpenAPI del tema
+posterior ni presentes ejemplos no ejecutados como verificados.

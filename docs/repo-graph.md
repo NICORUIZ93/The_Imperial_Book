@@ -1,6 +1,6 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-11-04 14:47 UTC
+Generated: 2026-11-04 14:52 UTC
 Root: `The_Imperial_Book`
 Indexed files: 991
 Import edges: 60
@@ -275,12 +275,12 @@ For automated lookups, use `docs/repo-graph.json`.
 - `.env.example` (8 lines)
 - `.github/workflows/ci.yml` (62 lines)
 - `docs/app-flow-inspection.json` (13830 lines)
-- `docs/atomic-subtopics.json` (13816 lines)
+- `docs/atomic-subtopics.json` (13859 lines)
 - `docs/biblioteca/catalogo.json` (564 lines)
 - `docs/biblioteca/imagenes.json` (577 lines)
 - `docs/browser-course-review.json` (2660 lines)
-- `docs/code-visual-quality.json` (3745 lines)
-- `docs/course-depth-review.json` (13548 lines)
+- `docs/code-visual-quality.json` (3752 lines)
+- `docs/course-depth-review.json` (13550 lines)
 - `docs/curriculum-matrix.json` (394 lines)
 - `docs/floci-official-curriculum.json` (14 lines)
 - `docs/lesson-substance-baseline.json` (1693 lines)

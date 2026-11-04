@@ -50,6 +50,9 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
 [Abrir lección completa](../web/public/content/spring-boot/modulo-2.md)
 
 - [pendiente de migrar] Tema 1: Por qué DTOs en vez de entidades directamente
+  - ✓ Subtema 1.1: Crea una entidad y guárdala en H2 · 10 min
+  - ✓ Subtema 1.2: Devuelve solo el contrato público · 15 min
+  - pendiente Subtema 1.3: Cambia el modelo interno sin cambiar la API · 10 min
 - [pendiente de migrar] Tema 2: Validación con Bean Validation y ResponseEntity
 - [pendiente de migrar] Tema 3: Manejo centralizado de errores con @ControllerAdvice
 - [pendiente de migrar] Tema 4: Lombok y MapStruct sin exponer datos internos

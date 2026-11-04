@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 13816,
+      "lines": 13859,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -600,7 +600,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3745,
+      "lines": 3752,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13548,
+      "lines": 13550,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 346,
+      "lines": 349,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -11887,7 +11887,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-2.md",
-      "lines": 761,
+      "lines": 868,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -11895,15 +11895,15 @@
         "# M\u00f3dulo 2: REST APIs con Spring Web",
         "## Aprende construyendo",
         "### Tema 1: Por qu\u00e9 DTOs en vez de entidades directamente",
+        "#### Subtema 1.1: Crea una entidad y gu\u00e1rdala en H2 \u00b7 10 min",
+        "#### Subtema 1.2: Devuelve solo el contrato p\u00fablico \u00b7 15 min",
+        "#### Subtema 1.3: Cambia el modelo interno sin cambiar la API \u00b7 10 min",
+        "### Tema 2: Validaci\u00f3n con Bean Validation y ResponseEntity",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda con analog\u00eda",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
-        "# descarga el proyecto y ejecuta las pruebas Java con Maven",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
-        "### Tema 2: Validaci\u00f3n con Bean Validation y ResponseEntity"
+        "# ejecuta las pruebas Java con Maven, incluyendo la petici\u00f3n inv\u00e1lida"
       ]
     },
     {

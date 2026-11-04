@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 213,
+    "topicsWithSignals": 214,
     "newLaboratories": 25
   },
   "priorities": {
@@ -12846,7 +12846,9 @@
       "title": "Tema 1: Por qué DTOs en vez de entidades directamente",
       "file": "web/public/content/spring-boot/modulo-2.md",
       "line": 8,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -12856,7 +12858,7 @@
       "module": 2,
       "title": "Tema 2: Validación con Bean Validation y ResponseEntity",
       "file": "web/public/content/spring-boot/modulo-2.md",
-      "line": 121,
+      "line": 228,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -12869,7 +12871,7 @@
       "module": 2,
       "title": "Tema 3: Manejo centralizado de errores con @ControllerAdvice",
       "file": "web/public/content/spring-boot/modulo-2.md",
-      "line": 220,
+      "line": 327,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -12880,7 +12882,7 @@
       "module": 2,
       "title": "Tema 4: Lombok y MapStruct sin exponer datos internos",
       "file": "web/public/content/spring-boot/modulo-2.md",
-      "line": 325,
+      "line": 432,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -12891,7 +12893,7 @@
       "module": 2,
       "title": "Tema 5: OpenAPI con springdoc: el contrato como prueba",
       "file": "web/public/content/spring-boot/modulo-2.md",
-      "line": 508,
+      "line": 615,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -12902,7 +12904,7 @@
       "module": 2,
       "title": "Tema 6: Paginación HTTP con validación y un límite de recursos explícito",
       "file": "web/public/content/spring-boot/modulo-2.md",
-      "line": 694,
+      "line": 801,
       "signals": [],
       "newLaboratory": true,
       "humanPedagogicalReview": "pending",

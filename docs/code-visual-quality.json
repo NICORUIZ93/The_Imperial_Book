@@ -99,8 +99,8 @@
     "spring-boot": {
       "topics": 111,
       "code": 111,
-      "commentedCode": 68,
-      "mermaid": 53,
+      "commentedCode": 67,
+      "mermaid": 52,
       "archifyVisual": 4,
       "asciiVisual": 16,
       "misleadingDiagramLabel": 0,
@@ -2659,6 +2659,13 @@
       "track": "spring-boot",
       "module": 19,
       "topic": "Tema 2: Reinicio, JobParameters, retry, skip y listeners",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 2,
+      "topic": "Tema 1: Por qué DTOs en vez de entidades directamente",
       "missingCode": false,
       "missingComments": true
     },

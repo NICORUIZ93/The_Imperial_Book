@@ -19,7 +19,7 @@ Temas conformes a cuatro pasos: **124/1185**. Tracks inventariados: **14**.
 | node | 2 | 83 | 6 | 6 |
 | react | 0 | 58 | 0 | 0 |
 | rutaflow | 0 | 29 | 0 | 0 |
-| spring-boot | 20 | 111 | 60 | 60 |
+| spring-boot | 20 | 111 | 63 | 62 |
 
 ## Temas pendientes
 
@@ -1071,7 +1071,7 @@ Temas conformes a cuatro pasos: **124/1185**. Tracks inventariados: **14**.
 - M18 ### Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP: tiene 0 subtemas
 - M19 ### Tema 1: Job, Step, Tasklet y chunk processing: tiene 0 subtemas
 - M19 ### Tema 2: Reinicio, JobParameters, retry, skip y listeners: tiene 0 subtemas
-- M2 ### Tema 1: Por qué DTOs en vez de entidades directamente: tiene 0 subtemas
+- M2 ### Tema 1: Por qué DTOs en vez de entidades directamente: 1.3: faltan action
 - M2 ### Tema 2: Validación con Bean Validation y ResponseEntity: tiene 0 subtemas
 - M2 ### Tema 3: Manejo centralizado de errores con @ControllerAdvice: tiene 0 subtemas
 - M2 ### Tema 4: Lombok y MapStruct sin exponer datos internos: tiene 0 subtemas

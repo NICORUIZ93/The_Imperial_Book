@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 91,
-      "prerequisites": 102,
-      "context": 91,
-      "theoryAnalogy": 91,
-      "guidedDemo": 91,
+      "objective": 90,
+      "prerequisites": 101,
+      "context": 90,
+      "theoryAnalogy": 90,
+      "guidedDemo": 90,
       "codeExplanation": 111,
       "execution": 106,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 91,
-      "independentPractice": 91,
-      "closure": 91,
-      "commonErrors": 91,
-      "resources": 98,
+      "guidedPractice": 90,
+      "independentPractice": 90,
+      "closure": 90,
+      "commonErrors": 90,
+      "resources": 97,
       "standaloneExample": 87,
-      "learningEvidence": 96,
-      "complete": 87
+      "learningEvidence": 95,
+      "complete": 86
     }
   },
   "topics": {
@@ -29537,26 +29537,26 @@
         "module": 2,
         "topic": "Tema 1: Por qué DTOs en vez de entidades directamente",
         "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "objective": false,
+          "prerequisites": false,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
           "standaloneExample": true,
-          "learningEvidence": true
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 5,
+          "complete": false
         }
       },
       {

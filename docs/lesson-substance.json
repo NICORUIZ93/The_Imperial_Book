@@ -1698,7 +1698,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "4ae5c64fd65ae53a44448fe1ed7d2ff449d1a0050aaeaac2269c2bcf21ba5791",
+    "fingerprint": "9671638696bbb35e7074ff09aa871ebf96fd72ea968c63f7bb22bbded8f2db39",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10641,9 +10641,9 @@
       {
         "issues": [],
         "module": 2,
-        "tailWords": 151,
+        "tailWords": 0,
         "topic": "Tema 1: Por qué DTOs en vez de entidades directamente",
-        "words": 1012
+        "words": 1075
       },
       {
         "issues": [],

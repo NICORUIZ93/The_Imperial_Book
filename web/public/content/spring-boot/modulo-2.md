@@ -7,59 +7,163 @@ Cada tema separa el contrato HTTP (DTOs) de la persistencia interna (entidades),
 
 ### Tema 1: Por qué DTOs en vez de entidades directamente
 
-#### Paso 1 · Objetivo y preparación
+La API recibirá una tarea y devolverá una confirmación. La entidad representa cómo guardamos el dato; el DTO (objeto de transferencia) define qué mandamos por HTTP. Necesitas clases Java, constructores y una ruta REST.
 
-Al finalizar podrás explicar por qué exponer entidades JPA directamente en una API es riesgoso, y separar el contrato HTTP de la persistencia interna usando DTOs.
+**¿Por qué es importante?** Una base de datos puede tener códigos internos que el cliente no debe ver. Si el JSON se arma desde la entidad, cada campo nuevo puede pasar a formar parte del contrato sin que lo hayas decidido.
 
-**Conocimiento previo:** Módulo 1 (Spring Initializr, perfiles). Prerrequisitos: JDK 25, Maven y un editor.
+#### Subtema 1.1: Crea una entidad y guárdala en H2 · 10 min
 
-#### Paso 2 · Contexto y caso real
+**1. Contexto**
 
-**¿Por qué es importante?** Una API de paquetes recibe datos de clientes externos y no debe exponer columnas internas de la base de datos ni aceptar valores imposibles en la entrada; una frontera explícita entre el contrato público y el modelo interno protege ambos lados de ese cambio.
+Primero tendrás una tabla pequeña en una base de datos en memoria. H2 permite practicar sin instalar ni configurar un servidor de base de datos.
 
-#### Paso 3 · Teoría con analogía
+**2. Hazlo tú**
 
-**Conceptos clave:** DTO (Data Transfer Object), desacoplar el contrato HTTP de la persistencia, relaciones `lazy`.
+Desde una carpeta vacía, genera con [Spring Initializr](https://start.spring.io/) un proyecto Maven con Java 25 y capacidades `web`, `data-jpa` y `h2`. Crea `src/main/java/com/example/demo/Tarea.java`:
 
-Un DTO representa el contrato de transporte hacia/desde el cliente HTTP, mientras que una entidad JPA (Módulo 3) representa el modelo de persistencia interno; separarlos evita dos problemas concretos. Primero, exponer entidades directamente filtraría detalles internos de la capa de persistencia hacia el contrato público (campos que existen únicamente por razones de mapeo relacional, o relaciones internas que no deberían ser visibles ni modificables desde fuera). Segundo, puede producir errores de serialización concretos con relaciones marcadas como `lazy` (Módulo 3), donde Jackson podría intentar serializar una relación que Hibernate todavía no cargó, produciendo una excepción en tiempo de ejecución. Los DTOs actúan como una capa de traducción explícita: renombrar un campo interno de la entidad no rompe el contrato público si el DTO correspondiente permanece estable.
+```java
+package com.example.demo;
 
-**Analogía:** exponer entidades directamente es como mostrar a un cliente externo el inventario interno completo de un almacén, con sus códigos internos de ubicación; un DTO es como un catálogo de cara al público, que puede reorganizarse internamente sin que el catálogo público cambie.
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
-**Diagrama:**
+@Entity
+@Table(name = "tareas")
+public class Tarea {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-```mermaid
-flowchart LR
-  A["Cliente HTTP"] -->|"CrearTareaRequest DTO"| B["Controller"]
-  B --> C["Tarea (entidad JPA)"]
-  C -->|"TareaDTO.from"| A
+    private String titulo;
+    private int prioridad;
+
+    @Column(name = "ubicacion_interna")
+    private String ubicacionInterna;
+
+    protected Tarea() {
+    }
+
+    public Tarea(String titulo, int prioridad, String ubicacionInterna) {
+        this.titulo = titulo;
+        this.prioridad = prioridad;
+        this.ubicacionInterna = ubicacionInterna;
+    }
+
+    public Long getId() { return id; }
+    public String getTitulo() { return titulo; }
+    public int getPrioridad() { return prioridad; }
+    public String getUbicacionInterna() { return ubicacionInterna; }
+}
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+Crea `src/main/java/com/example/demo/TareaRepository.java`:
 
-Desde una carpeta vacía, genera el proyecto con los starters `web` y `validation`:
+```java
+package com.example.demo;
 
-```bash
-# descarga el proyecto y ejecuta las pruebas Java con Maven
-mkdir ejemplo-spring-m2
-cd ejemplo-spring-m2
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web,validation -d javaVersion=25 -o app.zip
-unzip app.zip
-./mvnw test
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface TareaRepository extends JpaRepository<Tarea, Long> {
+}
 ```
 
-Crea `src/main/java/com/example/demo/TareaController.java` recibiendo y devolviendo DTOs, nunca la entidad `Tarea` directamente:
+Añade a `src/main/resources/application.yml`:
+
+```yaml
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+```
+
+Desde la carpeta del proyecto, ejecuta `./mvnw test`.
+
+**Resultado esperado:** Maven termina en `BUILD SUCCESS`; Spring encuentra el identificador `id` y configura una base H2 en memoria. `create-drop` crea las tablas al iniciar y las elimina al cerrar: no guardes aquí datos que quieras conservar.
+
+**Fallo deliberado:** quita `@Id` y ejecuta las pruebas. **Diagnóstico:** Hibernate indica que la entidad necesita un identificador; restaura la anotación en `id`.
+
+**3. Entiende**
+
+`@Entity` declara una clase que JPA guarda. `TareaRepository` aprovecha operaciones de Spring Data JPA, como guardar y buscar, sin que escribas SQL para este primer ejemplo.
+
+**4. Cierra**
+
+Conserva entidad y repositorio. Anota cuáles campos sirven al sistema y cuál describe una ubicación interna.
+
+#### Subtema 1.2: Devuelve solo el contrato público · 15 min
+
+**1. Contexto**
+
+El cliente necesita un identificador, título y prioridad. No necesita conocer `ubicacionInterna` ni la forma de la tabla.
+
+**2. Hazlo tú**
+
+Crea `src/main/java/com/example/demo/CrearTareaRequest.java`:
+
+```java
+package com.example.demo;
+
+public record CrearTareaRequest(String titulo, int prioridad) {
+}
+```
+
+Crea `src/main/java/com/example/demo/TareaDTO.java`:
+
+```java
+package com.example.demo;
+
+public record TareaDTO(Long id, String titulo, int prioridad) {
+    public static TareaDTO from(Tarea tarea) {
+        return new TareaDTO(
+                tarea.getId(),
+                tarea.getTitulo(),
+                tarea.getPrioridad());
+    }
+}
+```
+
+Crea `src/main/java/com/example/demo/ServicioTareas.java`:
+
+```java
+package com.example.demo;
+
+import org.springframework.stereotype.Service;
+
+@Service
+public class ServicioTareas {
+    private final TareaRepository repository;
+
+    public ServicioTareas(TareaRepository repository) {
+        this.repository = repository;
+    }
+
+    public TareaDTO crear(CrearTareaRequest request) {
+        Tarea tarea = new Tarea(
+                request.titulo(), request.prioridad(), "BODEGA-A");
+        return TareaDTO.from(repository.save(tarea));
+    }
+}
+```
+
+Crea `src/main/java/com/example/demo/TareaController.java`:
 
 ```java
 package com.example.demo;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/tareas")
 public class TareaController {
-
     private final ServicioTareas servicio;
 
     public TareaController(ServicioTareas servicio) {
@@ -67,56 +171,59 @@ public class TareaController {
     }
 
     @PostMapping
-    public ResponseEntity<TareaDTO> crear(@RequestBody CrearTareaRequest request) {
-        Tarea tarea = servicio.crear(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(TareaDTO.from(tarea));
+    public ResponseEntity<TareaDTO> crear(
+            @RequestBody CrearTareaRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(servicio.crear(request));
     }
 }
 ```
 
-**Explicación línea por línea:** `crear` recibe `CrearTareaRequest` (un DTO de entrada, no la entidad) y devuelve `TareaDTO` (un DTO de salida); `TareaDTO.from(tarea)` traduce explícitamente la entidad interna hacia el contrato público, controlando exactamente qué campos se exponen.
-
-Envía una petición real y confirma que la respuesta expone solo los campos del DTO:
+Arranca la aplicación con `./mvnw spring-boot:run`. En otra terminal envía:
 
 ```bash
-curl -i -X POST http://localhost:8080/api/tareas -H 'Content-Type: application/json' -d '{"titulo":"Entregar paquete","prioridad":1}'
+curl -i -X POST http://localhost:8080/api/tareas \
+  -H 'Content-Type: application/json' \
+  -d '{"titulo":"Entregar paquete","prioridad":1}'
 ```
 
-**Resultado esperado:** la respuesta HTTP es `201 Created` con un cuerpo JSON que contiene únicamente los campos definidos en `TareaDTO` — sin ningún campo interno de la entidad `Tarea` que no esté explícitamente mapeado, confirmando que el DTO controla exactamente la superficie expuesta.
+**Resultado esperado:** recibes `201 Created` con JSON que incluye `id`, `titulo` y `prioridad`; no incluye `ubicacionInterna`.
 
-**Fallo deliberado:** cambia el controller para devolver la entidad `Tarea` directamente en vez de `TareaDTO`. Si `Tarea` tiene una relación `@ManyToOne(fetch = FetchType.LAZY)` hacia otra entidad, Jackson intenta serializarla fuera de una sesión de Hibernate activa, produciendo `LazyInitializationException` — diagnostica confirmando que exponer entidades directamente no es solo un problema de diseño, sino una fuente real de errores en tiempo de ejecución.
+**Fallo deliberado:** cambia el tipo de retorno del controller a `Tarea` y devuelve la entidad guardada. **Diagnóstico:** la respuesta JSON ahora incluye `ubicacionInterna`; vuelve a devolver `TareaDTO` para controlar los campos públicos.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**3. Entiende**
 
-1. Agrega un campo interno a la entidad `Tarea` (por ejemplo `costoInterno`) y confirma que no aparece en la respuesta JSON porque `TareaDTO` no lo mapea.
-2. Renombra un campo de la entidad sin renombrar el campo correspondiente del DTO, y confirma que el contrato público no cambia.
-3. Provoca el fallo deliberado del Paso 4 (devolver la entidad con una relación lazy) y documenta el stack trace exacto de `LazyInitializationException`.
-4. Escribe de memoria (sin mirar) un DTO de entrada y uno de salida para un recurso nuevo, y el método `from()` que traduce la entidad al DTO de salida.
+`CrearTareaRequest` describe lo que recibimos y `TareaDTO` lo que devolvemos. `TareaDTO.from` realiza la traducción en un lugar visible. La entidad no pasa por la respuesta HTTP.
 
-**Pista:** si un campo de la entidad no debería ser visible externamente, la forma más simple de garantizarlo es que el DTO de salida simplemente no lo incluya.
+**4. Cierra**
 
-#### Paso 6 · Práctica independiente
+Guarda la respuesta completa y marca qué campos son parte del contrato. En el último paso comprobarás que añadir un campo interno no cambia el JSON.
 
-**Completa el código:** rellena el espacio para que el método traduzca la entidad al DTO de salida:
+#### Subtema 1.3: Cambia el modelo interno sin cambiar la API · 10 min
 
-```java
-public ResponseEntity<TareaDTO> crear(@RequestBody CrearTareaRequest request) {
-    Tarea tarea = servicio.crear(request);
-    return ResponseEntity.status(HttpStatus.CREATED).body(TareaDTO.____(tarea));
-}
-```
+**1. Contexto**
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un DTO de entrada, un DTO de salida y un controller que use ambos sin exponer la entidad. Compara después contra el patrón del Paso 4.
+El sistema puede reorganizar sus datos sin pedir a cada cliente HTTP que cambie al mismo tiempo.
 
-#### Paso 7 · Cierre y evidencia
+**2. Hazlo tú**
 
-Ya explicas por qué exponer entidades directamente es riesgoso y separas el contrato HTTP de la persistencia con DTOs. El siguiente tema automatiza la validación de esos DTOs de entrada. **Evidencia:** entrega la respuesta `201 Created` con solo los campos del DTO, y el fallo real de `LazyInitializationException` al exponer la entidad directamente. Fuentes oficiales: [Spring Web MVC](https://docs.spring.io/spring-framework/reference/web/webmvc.html).
+Cambia en `src/main/java/com/example/demo/ServicioTareas.java` el valor interno de `"BODEGA-A"` a `"PASILLO-3"`. Vuelve a crear una tarea con el mismo `curl` del subtema anterior.
 
-**Errores comunes:** devolver entidades JPA directamente desde el controller; nombrar el DTO igual que la entidad, generando confusión sobre cuál es cuál.
+**Resultado esperado:** la respuesta conserva los campos `id`, `titulo` y `prioridad`; el cambio interno no aparece.
 
-**Cuándo no usarlo:** para una API interna de solo lectura, sin persistencia relacional detrás (por ejemplo, un proxy que reenvía datos de otro servicio sin transformarlos), el DTO puede ser innecesario si no existe ninguna entidad de persistencia que proteger.
+**Fallo deliberado:** agrega `ubicacionInterna` como componente a `TareaDTO` y pásalo desde `TareaDTO.from`. **Diagnóstico:** el JSON expone ahora un dato interno; quítalo del contrato de salida.
 
-Los DTOs que diseñes aquí son los que expondrá la API del proyecto integrador de este track (microservicio productivo, Módulo 12).
+**3. Entiende**
+
+El DTO mantiene estable la frontera HTTP aunque cambie la entidad. En este ejercicio no hay relaciones JPA; los errores por serializar relaciones `LAZY` dependen de cómo se carguen y de la configuración de persistencia, y se revisan más adelante con esas relaciones.
+
+**4. Cierra**
+
+**Práctica independiente:** añade un campo interno a `Tarea` sin modificar `TareaDTO`; crea otra tarea y comprueba que el JSON no cambia. En el proyecto integrador, trata cada cambio de DTO como un cambio del contrato que debe revisar quien consuma la API.
+
+**Límite:** un DTO extra es útil cuando necesitas controlar nombres, validación o campos expuestos. Un proxy sin transformación ni modelo de persistencia puede reenviar el cuerpo recibido si ese cuerpo ya es el contrato correcto.
+
+**Fuentes primarias:** [Spring MVC y cuerpos de petición](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/requestbody.html), [bases SQL y H2 en Spring Boot](https://docs.spring.io/spring-boot/reference/data/sql.html), [conceptos de repositorio en Spring Data](https://docs.spring.io/spring-data/jpa/reference/repositories/core-concepts.html).
 
 ### Tema 2: Validación con Bean Validation y ResponseEntity
 
