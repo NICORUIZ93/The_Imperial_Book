@@ -227,36 +227,40 @@ El DTO mantiene estable la frontera HTTP aunque cambie la entidad. En este ejerc
 
 ### Tema 2: Validación con Bean Validation y ResponseEntity
 
-#### Paso 1 · Objetivo y preparación
+Una petición HTTP puede estar bien escrita como JSON y aun así pedir algo inválido. En este tema agregarás validación al `POST` de tareas y usarás `ResponseEntity` para que el resultado indique qué ocurrió.
 
-Al finalizar podrás declarar restricciones de validación sobre un DTO de entrada y controlar explícitamente el código de estado HTTP devuelto.
+**¿Por qué es importante?** Sin validación, datos imposibles llegan a la lógica y pueden guardarse; un código HTTP incorrecto confunde al cliente sobre el resultado.
 
-**Conocimiento previo:** Tema 1 de este módulo.
+**Resultado del tema:** un título vacío o una prioridad menor que 1 recibe `400`; crear una tarea recibe `201`; consultar una tarea existente o inexistente recibe `200` o `404`.
 
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** Una API de paquetes no debe aceptar valores imposibles (un título vacío, una prioridad negativa); validar la entrada automáticamente en la frontera de la API evita que datos inválidos lleguen siquiera a la lógica de negocio.
-
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** anotaciones declarativas de validación (`@NotBlank`, `@Min`), `@Valid`, códigos de estado HTTP explícitos.
-
-Bean Validation declara restricciones directamente sobre los campos del DTO mediante anotaciones (`@NotBlank`, `@Min`, `@Size`, `@Email`), verificadas automáticamente por Spring cuando el parámetro del controller se marca con `@Valid`, sin necesidad de código de validación imperativo repetido en cada endpoint. Si la validación falla, Spring lanza automáticamente `MethodArgumentNotValidException` antes de que el código del método del controller siquiera se ejecute. `ResponseEntity` permite controlar explícitamente el código de estado HTTP devuelto según el resultado real de la operación (`201` para creación exitosa, `404` si el recurso no existe), en vez de que Spring infiera un único código genérico para todos los casos.
-
-**Analogía:** Bean Validation es como un formulario que rechaza automáticamente cualquier entrada que no cumpla reglas declaradas explícitamente, sin que un revisor humano verifique manualmente cada regla en cada envío; usar el código de estado HTTP correcto es como usar el sello oficial preciso correspondiente a cada resultado específico de un trámite, en vez de un único sello genérico.
-
-**Diagrama:**
+**Modelo mental:** el DTO es la puerta de entrada; `@Valid` revisa las reglas antes de que el controller guarde la tarea.
 
 ```mermaid
 flowchart LR
-  A["POST /api/tareas"] --> B{"@Valid pasa?"}
-  B -->|no| C["400 + MethodArgumentNotValidException"]
-  B -->|sí| D["201 Created"]
+  A["JSON"] --> B["CrearTareaRequest"]
+  B --> C{"@Valid"}
+  C -->|reglas correctas| D["guardar y responder 201"]
+  C -->|alguna falla| E["responder 400"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Subtema 2.1: Rechaza datos inválidos antes de guardar · 10 min
 
-Desde una carpeta vacía (o continuando en `ejemplo-spring-m2`, generado con `mvn` en el Tema 1), crea `src/main/java/com/example/demo/CrearTareaRequest.java` con restricciones declarativas:
+**1. Contexto**
+
+El controller del Tema 1 recibe `CrearTareaRequest`, pero todavía acepta un título vacío y prioridad cero. Agrega la dependencia de validación al mismo proyecto.
+
+**2. Hazlo tú**
+
+En `pom.xml`, dentro de `<dependencies>`, añade:
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-validation</artifactId>
+</dependency>
+```
+
+Reemplaza `src/main/java/com/example/demo/CrearTareaRequest.java` por:
 
 ```java
 package com.example.demo;
@@ -265,64 +269,117 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 
 public record CrearTareaRequest(
-    @NotBlank String titulo,
-    @Min(1) int prioridad
-) {}
-```
-
-Modifica el controller del Tema 1 para marcar el parámetro con `@Valid`:
-
-```java
-@PostMapping
-public ResponseEntity<TareaDTO> crear(@Valid @RequestBody CrearTareaRequest request) {
-    Tarea tarea = servicio.crear(request);
-    return ResponseEntity.status(HttpStatus.CREATED).body(TareaDTO.from(tarea));
+        @NotBlank String titulo,
+        @Min(1) int prioridad) {
 }
 ```
 
-**Explicación línea por línea:** `@NotBlank` rechaza `titulo` vacío, nulo o solo espacios; `@Min(1)` rechaza `prioridad` menor a 1; `@Valid` en la firma del método le indica a Spring que verifique estas restricciones antes de ejecutar el cuerpo del método.
-
-Ejecuta las pruebas reales y confirma que la validación se aplica:
-
-```bash
-# ejecuta las pruebas Java con Maven, incluyendo la petición inválida
-cd ejemplo-spring-m2
-./mvnw test
-```
-
-**Resultado esperado:** una petición con `titulo` vacío devuelve `400 Bad Request` con un detalle legible del campo que falló, sin que el código del controller haya escrito ninguna verificación manual — confirmando que `@Valid` intercepta la petición inválida antes de que llegue al cuerpo del método.
-
-**Fallo deliberado:** quita `@Valid` de la firma del método y envía la misma petición con `titulo` vacío. La petición llega sin ser rechazada (`201 Created` con un título vacío persistido) — diagnostica confirmando que las anotaciones de Bean Validation por sí solas no verifican nada; sin `@Valid`, Spring simplemente las ignora.
-
-#### Paso 5 · Práctica guiada — repetición progresiva
-
-1. Agrega `@Email` a un campo de correo del DTO y confirma que un valor sin `@` es rechazado con `400`.
-2. Quita `@Valid` deliberadamente y confirma que una entrada inválida ya no es rechazada.
-3. Cambia `ResponseEntity.status(HttpStatus.CREATED)` por `ResponseEntity.ok()` y documenta qué código HTTP cambia en la respuesta.
-4. Escribe de memoria (sin mirar) un DTO con al menos dos restricciones de Bean Validation distintas y un controller que las verifique con `@Valid`.
-
-**Pista:** si una validación no se está aplicando, lo primero que hay que revisar es si `@Valid` está presente en la firma del método — es la causa más común de este fallo.
-
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio para que la validación se aplique automáticamente:
+En `src/main/java/com/example/demo/TareaController.java`, importa `jakarta.validation.Valid` y añade `@Valid` al parámetro del `POST`:
 
 ```java
 @PostMapping
-public ResponseEntity<TareaDTO> crear(@____ @RequestBody CrearTareaRequest request) { ... }
+public ResponseEntity<TareaDTO> crear(
+        @Valid @RequestBody CrearTareaRequest request) {
+    return ResponseEntity.status(HttpStatus.CREATED)
+            .body(servicio.crear(request));
+}
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un DTO con `@NotBlank` y `@Min`, y un controller que lo valide con `@Valid` devolviendo el código HTTP correcto. Compara después contra el patrón del Paso 4.
+Desde la carpeta del proyecto ejecuta `./mvnw test` y luego `./mvnw spring-boot:run`. En otra terminal prueba una petición válida y otra inválida:
 
-#### Paso 7 · Cierre y evidencia
+```bash
+curl -i -X POST http://localhost:8080/api/tareas \\
+  -H 'Content-Type: application/json'   -d '{"titulo":"Entregar paquete","prioridad":1}'
 
-Ya declaras restricciones de validación sobre DTOs de entrada y controlas explícitamente el código de estado HTTP devuelto. El siguiente tema centraliza el manejo de los errores que esta validación produce. **Evidencia:** entrega el resultado real de la respuesta `400` al validar con `@Valid` presente, y la ausencia de ese rechazo al quitarlo. Fuentes oficiales: [Bean Validation (Jakarta)](https://jakarta.ee/specifications/bean-validation/).
+curl -i -X POST http://localhost:8080/api/tareas \\
+  -H 'Content-Type: application/json'   -d '{"titulo":"   ","prioridad":0}'
+```
 
-**Errores comunes:** olvidar `@Valid` en la firma del método, dejando las anotaciones de validación sin efecto; devolver siempre `200` sin importar el resultado real de la operación.
+**Resultado esperado:** la primera petición responde `201 Created`; la segunda responde `400 Bad Request` y no entra al método `crear`. El cuerpo de error predeterminado puede variar según la configuración; en el Tema 3 definirás un formato propio.
 
-**Cuándo no usarlo:** para un DTO que solo transporta datos ya validados por otra capa previa (por ejemplo, un mensaje de una cola interna ya validado en origen), duplicar la validación con Bean Validation puede ser redundante.
+**Fallo deliberado:** quita `@Valid` y repite la petición inválida. **Diagnóstico:** las anotaciones describen reglas, pero no se aplican a este parámetro si Spring no inicia la validación; vuelve a poner `@Valid`.
 
-La validación con Bean Validation que practiques aquí protege cada endpoint del proyecto integrador de este track (microservicio productivo, Módulo 12).
+**3. Entiende**
+
+`@NotBlank` rechaza `null`, `""` y texto compuesto solo por espacios. `@Min(1)` rechaza números menores que 1. `@Valid` pide validar el cuerpo convertido a `CrearTareaRequest` antes de ejecutar el método.
+
+**4. Cierra**
+
+Guarda los dos estados HTTP que observaste y explica qué campo hizo fallar la segunda petición. No dependas del texto del error: su formato aún es responsabilidad del siguiente tema.
+
+#### Subtema 2.2: Devuelve 200 o 404 según exista la tarea · 15 min
+
+**1. Contexto**
+
+El código `200` significa que la consulta encontró y devolvió una tarea. `404` significa que el identificador no existe. Un cliente puede decidir qué mostrar mirando el estado, sin interpretar frases internas del servidor.
+
+**2. Hazlo tú**
+
+En `src/main/java/com/example/demo/ServicioTareas.java`, importa `java.util.Optional` y añade este método a la clase:
+
+```java
+public Optional<TareaDTO> buscar(Long id) {
+    return repository.findById(id).map(TareaDTO::from);
+}
+```
+
+En `src/main/java/com/example/demo/TareaController.java`, añade `GetMapping` y `PathVariable` a los imports y agrega este método:
+
+```java
+@GetMapping("/{id}")
+public ResponseEntity<TareaDTO> buscar(@PathVariable Long id) {
+    return servicio.buscar(id)
+            .map(ResponseEntity::ok)
+            .orElseGet(() -> ResponseEntity.notFound().build());
+}
+```
+
+Reinicia la aplicación. Primero crea una tarea con el `curl` válido del subtema anterior; después consulta el identificador que aparece en su respuesta y luego uno que no exista:
+
+```bash
+curl -i http://localhost:8080/api/tareas/1
+curl -i http://localhost:8080/api/tareas/999
+```
+
+**Resultado esperado:** la tarea existente responde `200 OK` con el DTO; el identificador ausente responde `404 Not Found` sin cuerpo. Si el ID generado no es `1`, usa el que devolvió tu petición `POST`.
+
+**Fallo deliberado:** cambia `ResponseEntity.notFound().build()` por `ResponseEntity.ok().build()`. **Diagnóstico:** el recurso ausente ahora se anuncia como encontrado (`200`); restaura `404` para que el estado describa el resultado real.
+
+**3. Entiende**
+
+`Optional<TareaDTO>` representa “hay un valor o no hay valor”. `map(ResponseEntity::ok)` convierte el valor encontrado en una respuesta `200`; `orElseGet` crea la respuesta `404` cuando está vacío. El DTO evita que esta ruta vuelva a exponer la entidad.
+
+**4. Cierra**
+
+Registra ambos comandos y códigos de respuesta. Di en una frase qué decisión puede tomar el cliente con cada código.
+
+#### Subtema 2.3: Comprueba las reglas con casos límite · 10 min
+
+**1. Contexto**
+
+Probar solo un ejemplo válido no muestra si las reglas cubren el límite ni si la validación sigue activa.
+
+**2. Hazlo tú**
+
+Envía tres `POST` al mismo endpoint: título `"Preparar ruta"` con prioridad `1`, título vacío con prioridad `2`, y título `"Preparar ruta"` con prioridad `0`. Anota el código de cada respuesta. Después restaura cualquier cambio deliberado y vuelve a ejecutar `./mvnw test`.
+
+**Resultado esperado:** solo el primer `POST` crea una tarea (`201`); los otros dos reciben `400`. La ejecución termina en `BUILD SUCCESS`.
+
+**Fallo deliberado:** elimina `@Min(1)` y vuelve a enviar prioridad `0`. **Diagnóstico:** esa petición pasa la regla restante porque `@NotBlank` solo revisa `titulo`; restaura `@Min(1)`.
+
+**3. Entiende**
+
+La validación del DTO protege la frontera de entrada. El código `400` informa que el cliente debe corregir su petición; `201`, `200` y `404` describen resultados distintos. El texto detallado de los errores y la respuesta consistente entre endpoints se agregan con `@RestControllerAdvice` en el Tema 3.
+
+**4. Cierra**
+
+**Evidencia:** conserva los estados HTTP de los tres casos y explica cuál regla se activó. Para practicar por tu cuenta, agrega `@Max(5)` a prioridad y comprueba que `6` se rechaza; todavía no cambies el formato de error.
+
+**Práctica independiente:** agrega `@Max(5)` a `prioridad` en `CrearTareaRequest`, envía prioridad `6` con `curl` y registra el estado HTTP. Explica por qué el controller no crea la tarea.
+
+**Transferencia al proyecto integrador:** aplica estas restricciones a cada DTO de creación de envíos y usa `201` solo cuando la creación se complete; documenta cualquier regla de negocio adicional junto a su prueba.
+
+**Fuentes primarias:** [Spring MVC: validación de argumentos](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-validation.html), [Jakarta Bean Validation](https://jakarta.ee/specifications/bean-validation/).
 
 ### Tema 3: Manejo centralizado de errores con @ControllerAdvice
 

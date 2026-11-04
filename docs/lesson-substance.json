@@ -1698,7 +1698,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "9671638696bbb35e7074ff09aa871ebf96fd72ea968c63f7bb22bbded8f2db39",
+    "fingerprint": "24a4a3222639a95bcd71e180874a108240d7a5406d43bab37ae02f8752b2cc21",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10648,9 +10648,9 @@
       {
         "issues": [],
         "module": 2,
-        "tailWords": 149,
+        "tailWords": 0,
         "topic": "Tema 2: Validación con Bean Validation y ResponseEntity",
-        "words": 882
+        "words": 1075
       },
       {
         "issues": [],

@@ -93,10 +93,10 @@
     },
     "spring-boot": {
       "topics": 111,
-      "completeTopics": 20,
-      "topicsWith3to6Subtopics": 21,
-      "subtopics": 63,
-      "completeSubtopics": 62
+      "completeTopics": 21,
+      "topicsWith3to6Subtopics": 22,
+      "subtopics": 66,
+      "completeSubtopics": 65
     }
   },
   "topics": {
@@ -13006,9 +13006,52 @@
       {
         "module": 2,
         "topic": "### Tema 2: Validación con Bean Validation y ResponseEntity",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "2.1",
+            "title": "#### Subtema 2.1: Rechaza datos inválidos antes de guardar · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "2.2",
+            "title": "#### Subtema 2.2: Devuelve 200 o 404 según exista la tarea · 15 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "2.3",
+            "title": "#### Subtema 2.3: Comprueba las reglas con casos límite · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 2,

@@ -5,7 +5,7 @@
 **Proyecto continuo:** RutaFlow: plataforma de entregas basada en servicios.
 **Prerrequisito de entrada:** Java, HTTP, SQL y pruebas; los módulos iniciales vuelven a presentar cada herramienta..
 **Duración objetivo:** temas de 20–45 minutos; cada tema se divide en 3–6 acciones de 5–15 minutos.
-**Estado estructural:** 20/111 temas migrados; auditoría estructural actualizada el 2026-11-03.
+**Estado estructural:** 21/111 temas migrados; auditoría estructural actualizada el 2026-11-03.
 
 ## Índice de módulos y temas
 
@@ -53,7 +53,10 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 1.1: Crea una entidad y guárdala en H2 · 10 min
   - ✓ Subtema 1.2: Devuelve solo el contrato público · 15 min
   - pendiente Subtema 1.3: Cambia el modelo interno sin cambiar la API · 10 min
-- [pendiente de migrar] Tema 2: Validación con Bean Validation y ResponseEntity
+- [4 pasos] Tema 2: Validación con Bean Validation y ResponseEntity
+  - ✓ Subtema 2.1: Rechaza datos inválidos antes de guardar · 10 min
+  - ✓ Subtema 2.2: Devuelve 200 o 404 según exista la tarea · 15 min
+  - ✓ Subtema 2.3: Comprueba las reglas con casos límite · 10 min
 - [pendiente de migrar] Tema 3: Manejo centralizado de errores con @ControllerAdvice
 - [pendiente de migrar] Tema 4: Lombok y MapStruct sin exponer datos internos
 - [pendiente de migrar] Tema 5: OpenAPI con springdoc: el contrato como prueba
@@ -338,7 +341,7 @@ La tabla registra presencia de áreas en el inventario del track, no profundidad
 
 ### Huecos y límites reportados
 
-- El repositorio contiene 111 temas en 26 módulos; 20 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
+- El repositorio contiene 111 temas en 26 módulos; 21 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
 - No hay base para afirmar que el track esté completo: la comparación con la fuente de referencia está pendiente de revisión humana módulo por módulo.
 - Los elementos de la fuente que todavía deben verificarse de forma explícita están enumerados en la tabla anterior; cualquier técnica crítica que no tenga tema propio debe añadirse conservando el currículo base.
 - La ejecución de ejemplos, el comportamiento con brokers/plataformas reales y la calidad pedagógica humana se registran por separado.

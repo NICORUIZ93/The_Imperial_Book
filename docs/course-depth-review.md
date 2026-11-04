@@ -1152,7 +1152,7 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | spring-boot / 19 | [Tema 1: Job, Step, Tasklet y chunk processing](../web/public/content/spring-boot/modulo-19.md) | clase-java-no-visible |
 | spring-boot / 19 | [Tema 2: Reinicio, JobParameters, retry, skip y listeners](../web/public/content/spring-boot/modulo-19.md) | clase-java-no-visible |
 | spring-boot / 2 | [Tema 1: Por qué DTOs en vez de entidades directamente](../web/public/content/spring-boot/modulo-2.md) | demostracion-no-delimitada |
-| spring-boot / 2 | [Tema 2: Validación con Bean Validation y ResponseEntity](../web/public/content/spring-boot/modulo-2.md) | clase-java-no-visible |
+| spring-boot / 2 | [Tema 2: Validación con Bean Validation y ResponseEntity](../web/public/content/spring-boot/modulo-2.md) | demostracion-no-delimitada |
 | spring-boot / 2 | [Tema 3: Manejo centralizado de errores con @ControllerAdvice](../web/public/content/spring-boot/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 2 | [Tema 4: Lombok y MapStruct sin exponer datos internos](../web/public/content/spring-boot/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 2 | [Tema 5: OpenAPI con springdoc: el contrato como prueba](../web/public/content/spring-boot/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |

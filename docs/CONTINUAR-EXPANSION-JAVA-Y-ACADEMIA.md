@@ -89,8 +89,8 @@ reapliques cambios que ya estén publicados.
 
 ## Estado global honesto
 
-En la auditoría actual: **124/1185 temas** cumplen la estructura atómica en los
-14 tracks: Java 101, Spring Boot 20, Node 2 y Flutter 1. La auditoría pedagógica detecta
+En la auditoría actual: **125/1185 temas** cumplen la estructura atómica en los
+14 tracks: Java 101, Spring Boot 21, Node 2 y Flutter 1. La auditoría pedagógica detecta
 **1095/1185 temas practicables** y deuda en 90. La auditoría de sustancia registra
 409 temas con defectos, deuda histórica repartida entre varios tracks. Ninguna de
 estas cifras certifica que un curso esté completo o que todos los ejemplos se
@@ -190,8 +190,20 @@ No se ejecutaron los fallos deliberados. Las auditorías globales pasaron:
 124/1185 temas atómicos, 1095/1185 practicables y 409 temas con defectos de
 sustancia detectados. `./scripts/validate.sh` pasó con 23 pruebas, 4 omitidas.
 
-**Siguiente tema:** Spring Boot M2 T2, “Validación con Bean Validation y
-ResponseEntity”. Reescríbelo con 3–6 subtemas atómicos y un proyecto coherente
-con M2 T1; comprueba el comportamiento de `@Valid`, los errores HTTP y los
-mensajes que ve quien consume la API. No mezcles documentación OpenAPI del tema
-posterior ni presentes ejemplos no ejecutados como verificados.
+Spring Boot M2 T2, “Validación con Bean Validation y ResponseEntity”, ahora
+continúa el proyecto del Tema 1 con tres subtemas: validar el cuerpo, responder
+`200`/`404` desde una consulta y probar límites de entrada. Se añadió
+`spring-boot-starter-validation`, `@NotBlank`, `@Min` y `@Valid`; el tema aclara
+que el formato por defecto del error puede variar y deja el formato propio para
+M2 T3. En el proyecto temporal Spring Boot 4.1.2/JDK 25, `./mvnw -q test` pasó;
+las peticiones reales dieron `201` (creación), `400` (entrada inválida), `200`
+(tarea existente) y `404` (ID ausente). Las auditorías reconocen el tema como
+practicable y ejecutable. Los fallos deliberados y la práctica independiente no
+se ejecutaron.
+
+**Siguiente tema:** Spring Boot M2 T3, “Manejo centralizado de errores con
+`@ControllerAdvice`”. Revisa las excepciones reales del proyecto del módulo,
+define un formato de error útil para quien consume la API y demuestra con
+peticiones cómo se distinguen validación y recurso ausente. Evita prometer que
+una excepción no manejada siempre devuelve `500`: comprueba el caso y el manejo
+predeterminado de Spring Boot 4 antes de afirmarlo.
