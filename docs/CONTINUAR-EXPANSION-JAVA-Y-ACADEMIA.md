@@ -663,6 +663,26 @@ Se regeneraron índices y reportes y `./scripts/validate.sh` pasó con 23 prueba
 de script y 4 omitidas; `git diff --check` también pasó. No se modificaron los
 archivos locales de Flutter.
 
-**Siguiente tema:** Spring Boot M8 T2, “Dead-letter queue”. Continúa sobre el
-mismo laboratorio; verifica retries, `DefaultErrorHandler`, destino DLT,
-serialización del mensaje recuperado y diagnóstico de mensajes irrecuperables.
+Spring Boot M8 T2, “Dead-letter queue”, se revisó con el comportamiento de
+`DefaultErrorHandler`, `FixedBackOff` y `DeadLetterPublishingRecoverer` de Spring
+Kafka 4.0. El test ahora compara el registro recuperado con el envío original:
+key, partición y contenido JSON. Confirma tres entregas con `FixedBackOff(100L,
+2)` y las mismas tres particiones en el topic original y su DLT.
+
+La suite acumulada del laboratorio pasó con **8 pruebas, 0 fallos, 0 errores y 0
+omitidas**. En copias temporales se ejecutaron tres fallos deliberados: retirar
+`errorHandler` dejó el DLT vacío (`No records found for topic`); reemplazar la
+key incorrecta por el `envioId` válido hizo vencer la espera de tres intentos;
+y consultar `-dlt-mal` produjo error de lectura. También se cambió el backoff a
+cero y se actualizó la expectativa a un intento; esa variante pasó. Las pruebas
+se hicieron en `/tmp/spring-kafka-m8t2-copy`; el laboratorio original quedó
+restaurado salvo la aserción de key/partición, que es el cambio intencional. Tras
+M8 T2, las auditorías globales siguen en **140/1185 temas atómicos completos**,
+**1088/1185 practicables** y 409 con señales de defecto de sustancia. Se
+regeneraron los reportes e índice afectados; `./scripts/validate.sh` pasó con 23
+pruebas de script y 4 omitidas, y `git diff --check` pasó.
+
+**Siguiente tema:** Spring Boot M8 T3, “Productor idempotente y transacciones
+(exactly-once)”. Aclara qué garantiza la idempotencia de Kafka, verifica outbox e
+inbox en sus ventanas de fallo, y evita afirmar una transacción global entre
+PostgreSQL y Kafka.

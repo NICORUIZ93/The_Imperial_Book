@@ -13470,7 +13470,7 @@
       "module": 8,
       "title": "Tema 3: Productor idempotente y transacciones (exactly-once)",
       "file": "web/public/content/spring-boot/modulo-8.md",
-      "line": 256,
+      "line": 269,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -13483,7 +13483,7 @@
       "module": 8,
       "title": "Tema 4: Rebalanceo de consumer groups y partition assignment",
       "file": "web/public/content/spring-boot/modulo-8.md",
-      "line": 354,
+      "line": 367,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -13494,7 +13494,7 @@
       "module": 8,
       "title": "Tema 5: Kafka frente a RabbitMQ",
       "file": "web/public/content/spring-boot/modulo-8.md",
-      "line": 556,
+      "line": 569,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -13505,7 +13505,7 @@
       "module": 8,
       "title": "Tema 6: Spring Cloud Stream y binders de Kafka/RabbitMQ",
       "file": "web/public/content/spring-boot/modulo-8.md",
-      "line": 760,
+      "line": 773,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -13518,7 +13518,7 @@
       "module": 8,
       "title": "Tema 7: Kafka Streams con Spring para transformar eventos",
       "file": "web/public/content/spring-boot/modulo-8.md",
-      "line": 832,
+      "line": 845,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -13531,7 +13531,7 @@
       "module": 8,
       "title": "Tema 8: Avro y Schema Registry para contratos de eventos",
       "file": "web/public/content/spring-boot/modulo-8.md",
-      "line": 897,
+      "line": 910,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -13544,7 +13544,7 @@
       "module": 8,
       "title": "Tema 9: RabbitMQ con Spring AMQP: routing, ack y prefetch",
       "file": "web/public/content/spring-boot/modulo-8.md",
-      "line": 959,
+      "line": 972,
       "signals": [
         "clase-java-no-visible"
       ],

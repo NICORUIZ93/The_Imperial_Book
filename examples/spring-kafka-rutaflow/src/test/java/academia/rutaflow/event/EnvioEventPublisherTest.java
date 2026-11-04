@@ -101,12 +101,15 @@ class EnvioEventPublisherTest {
         try (Consumer<String, String> consumer = new KafkaConsumer<>(props,
                 new StringDeserializer(), new StringDeserializer())) {
             broker.consumeFromAnEmbeddedTopic(consumer, EnvioEventPublisher.TOPIC + "-dlt");
-            kafka.send(EnvioEventPublisher.TOPIC, "key-incorrecta", evento).get(10, TimeUnit.SECONDS);
+            var origen = kafka.send(EnvioEventPublisher.TOPIC, "key-incorrecta", evento)
+                    .get(10, TimeUnit.SECONDS).getRecordMetadata();
             await().atMost(Duration.ofSeconds(5))
                     .untilAsserted(() -> assertThat(ruteoListener.intentos()).isEqualTo(3));
             ConsumerRecord<String, String> deadLetter = KafkaTestUtils.getSingleRecord(
                     consumer, EnvioEventPublisher.TOPIC + "-dlt", Duration.ofSeconds(10));
 
+            assertThat(deadLetter.key()).isEqualTo("key-incorrecta");
+            assertThat(deadLetter.partition()).isEqualTo(origen.partition());
             assertThat(deadLetter.value()).contains("RT-DLT");
             assertThat(ruteoListener.intentos()).isEqualTo(3);
         }

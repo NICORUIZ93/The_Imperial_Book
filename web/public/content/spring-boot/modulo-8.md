@@ -162,12 +162,12 @@ Entrega los resultados de ambas pruebas y describe qué esperarías si publicara
 **Duración estimada:** 35 min.
 **¿Por qué es importante?** Si el consumidor rechaza un mensaje cada vez, los reintentos deben tener un límite y el mensaje requiere un destino donde el equipo pueda investigarlo.
 **Prerrequisitos:** M8 T1. Proyecto continuo: apartar eventos de envío que no pasan la validación del listener.
-**Laboratorio:** examples/spring-kafka-rutaflow/. Trabaja en la copia spring-kafka-practice que preparaste en el Tema 1.
+**Laboratorio:** `examples/spring-kafka-rutaflow/`. Continúa en `spring-kafka-practice`, la copia que preparaste en el Tema 1; allí prueba cambios deliberados sin alterar la versión base.
 
 #### Subtema 2.1: Configura reintentos limitados y DLT · 10 min
 
 **1. Contexto**
-Kafka no crea una dead-letter queue de aplicación automáticamente. El consumidor necesita un manejador que decida cuántos intentos hacer y dónde recuperar el registro que sigue fallando.
+Kafka no crea un DLT de aplicación automáticamente. El listener informa el fallo; un manejador decide si vuelve a ejecutar el listener y dónde deja el registro que sigue fallando.
 
 **2. Hazlo tú**
 Abre examples/spring-kafka-rutaflow/src/main/java/academia/rutaflow/KafkaLabConfiguration.java y estudia el bean completo errorHandler:
@@ -180,7 +180,7 @@ DefaultErrorHandler errorHandler(KafkaTemplate<Object, Object> kafka) {
 }
 ```
 
-Comprueba que la misma configuración declara el topic original y el topic terminado en -dlt. Desde la raíz del laboratorio ejecuta:
+En la misma clase confirma que se crean `rutaflow.envio.creado` y `rutaflow.envio.creado-dlt`, ambos con tres particiones. `FixedBackOff(100L, 2)` define 100 ms entre reintentos y dos reintentos adicionales después del primer intento. Desde la raíz de la copia ejecuta:
 
 ```bash
 ./mvnw -Dtest=EnvioEventPublisherTest#reintentaYPublicaEnDltCuandoLaKeyNoCoincide test
@@ -191,7 +191,7 @@ Comprueba que la misma configuración declara el topic original y el topic termi
 **Fallo deliberado:** comenta el bean errorHandler en la copia del laboratorio y vuelve a ejecutar. **Error esperado:** la prueba no encuentra el registro en la DLT y vence su espera. **Diagnóstico:** sin recoverer configurado no hay una regla que publique el registro fallido en el destino esperado.
 
 **3. Entiende**
-DefaultErrorHandler coordina fallos del listener y FixedBackOff define el intervalo y el máximo de reintentos. DeadLetterPublishingRecoverer publica el registro recuperado en otro topic.
+`DefaultErrorHandler` coordina los fallos del listener; `FixedBackOff` define el intervalo y el máximo de reintentos. `DeadLetterPublishingRecoverer` publica en otro topic cuando se agota la política. Sin un DLT configurado, la aplicación necesita otra estrategia explícita para los mensajes irrecuperables.
 
 **4. Cierra**
 Señala dónde se crea el topic original, dónde se crea el DLT y qué bean conecta el fallo con la recuperación.
@@ -208,9 +208,22 @@ Abre examples/spring-kafka-rutaflow/src/test/java/academia/rutaflow/event/EnvioE
 ./mvnw -Dtest=EnvioEventPublisherTest#reintentaYPublicaEnDltCuandoLaKeyNoCoincide test
 ```
 
-Localiza en la prueba el envío con key incorrecta, la espera por tres intentos y la lectura desde el topic DLT.
+Localiza en la prueba el envío con key incorrecta, la espera por tres intentos y la lectura desde el topic DLT. Este fragmento toma la metadata del topic original y comprueba la key, partición y contenido que recuperó el consumer:
 
-**Resultado esperado:** el test confirma tres entregas fallidas del listener y encuentra el payload RT-DLT en rutaflow.envio.creado-dlt.
+```java
+var origen = kafka.send(EnvioEventPublisher.TOPIC, "key-incorrecta", evento)
+        .get(10, TimeUnit.SECONDS).getRecordMetadata();
+await().atMost(Duration.ofSeconds(5))
+        .untilAsserted(() -> assertThat(ruteoListener.intentos()).isEqualTo(3));
+ConsumerRecord<String, String> deadLetter = KafkaTestUtils.getSingleRecord(
+        consumer, EnvioEventPublisher.TOPIC + "-dlt", Duration.ofSeconds(10));
+
+assertThat(deadLetter.key()).isEqualTo("key-incorrecta");
+assertThat(deadLetter.partition()).isEqualTo(origen.partition());
+assertThat(deadLetter.value()).contains("RT-DLT");
+```
+
+**Resultado esperado:** el test confirma tres entregas fallidas del listener y encuentra el JSON del envío en `rutaflow.envio.creado-dlt`, con la key y partición originales.
 
 **Fallo deliberado:** cambia la key incorrecta del test por envioId.toString(). **Resultado esperado:** la ruta de ruteo acepta el mensaje y la condición de tres fallos vence. **Diagnóstico:** el caso deja de ser inválido; restaura una key que no coincida para que el test ejercite el error y la recuperación.
 
@@ -226,7 +239,7 @@ Anota el total de intentos, el topic de origen y el DLT donde quedó el registro
 El número de reintentos y el tiempo de espera dependen del fallo. Un dato definitivamente inválido no mejora por esperar; un problema temporal sí podría resolverse con otro intento.
 
 **2. Hazlo tú**
-En la copia, edita examples/spring-kafka-rutaflow/src/main/java/academia/rutaflow/KafkaLabConfiguration.java: cambia FixedBackOff(100L, 2) por FixedBackOff(100L, 0). Ajusta en la copia el test para esperar un intento y vuelve a ejecutarlo:
+En `spring-kafka-practice/src/main/java/academia/rutaflow/KafkaLabConfiguration.java`, cambia `FixedBackOff(100L, 2)` por `FixedBackOff(100L, 0)`. En `spring-kafka-practice/src/test/java/academia/rutaflow/event/EnvioEventPublisherTest.java`, cambia la expectativa de `intentos()` de `3` a `1`; vuelve a ejecutar el test:
 
 ```bash
 ./mvnw -Dtest=EnvioEventPublisherTest#reintentaYPublicaEnDltCuandoLaKeyNoCoincide test
@@ -234,10 +247,10 @@ En la copia, edita examples/spring-kafka-rutaflow/src/main/java/academia/rutaflo
 
 **Resultado esperado:** con cero reintentos adicionales, el primer fallo se recupera y el mensaje llega a rutaflow.envio.creado-dlt.
 
-**Fallo deliberado:** cambia el topic del verificador a rutaflow.envio.creado-dlt-mal. **Error esperado:** el consumidor de prueba vence la espera sin encontrar el registro. **Diagnóstico:** comprueba que el recoverer usa el sufijo -dlt y que el test escucha exactamente ese topic.
+**Fallo deliberado:** en esa prueba cambia las dos lecturas de `EnvioEventPublisher.TOPIC + "-dlt"` por `EnvioEventPublisher.TOPIC + "-dlt-mal"`. **Error esperado:** el consumidor agota los diez segundos y la prueba falla porque el topic alternativo no recibió el mensaje. **Diagnóstico:** el recoverer usa el sufijo `-dlt`; restaura la misma ruta en la escucha y en la lectura.
 
 **3. Entiende**
-El recoverer de esta práctica usa por defecto el topic original más el sufijo -dlt, y conserva la partición original cuando está disponible. El DLT necesita monitoreo y un responsable: acumular mensajes sin revisar solo traslada el problema.
+El recoverer de esta práctica usa por defecto el topic original más el sufijo `-dlt`, y conserva key y partición si el topic destino tiene esa partición. El test lo comprueba comparando la metadata del envío original y el registro recuperado. El DLT requiere monitoreo y responsable; acumular mensajes sin revisarlos solo traslada el problema.
 
 **4. Cierra**
 Restaura la configuración del proyecto a FixedBackOff(100L, 2), conserva la salida correcta y explica cuándo dejarías de reintentar un error de validación.
