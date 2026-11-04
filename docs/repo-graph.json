@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 512,
+      "lines": 542,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 14590,
+      "lines": 14633,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -600,7 +600,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3773,
+      "lines": 3780,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13582,
+      "lines": 13584,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -677,7 +677,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 140,
+      "lines": 141,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 400,
+      "lines": 403,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -12097,7 +12097,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-6.md",
-      "lines": 436,
+      "lines": 409,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12109,11 +12109,11 @@
         "#### Subtema 6.2 \u00b7 Ver la validaci\u00f3n y el error JSON (10 min)",
         "#### Subtema 6.3 \u00b7 Diagnosticar una dependencia que falta (10 min)",
         "#### Entiende y cierra",
-        "### Tema 2: @DataJpaTest con Testcontainers",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda con analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero"
+        "### Tema 2: Probar el repositorio contra PostgreSQL con `@DataJpaTest`",
+        "#### Subtema 6.4 \u00b7 Conectar el slice a un PostgreSQL desechable (10 min)",
+        "#### Subtema 6.5 \u00b7 Comprobar motor y operaci\u00f3n del repositorio (10 min)",
+        "#### Subtema 6.6 \u00b7 Detectar que el test cay\u00f3 en H2 (10 min)",
+        "#### Entiende y cierra"
       ]
     },
     {

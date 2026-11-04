@@ -4357,7 +4357,7 @@
       "track": "spring-boot",
       "module": 6,
       "position": 2,
-      "title": "@DataJpaTest con Testcontainers",
+      "title": "Probar el repositorio contra PostgreSQL con `@DataJpaTest`",
       "file": "web/public/content/spring-boot/modulo-6.md",
       "requires": [
         "spring-boot:6:1"

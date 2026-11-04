@@ -107,165 +107,138 @@ ServicioTareas servicio;
 
 **Evidencia para avanzar:** dos métodos pasan, el fallo por retirar el mock se identifica y revierte, y puedes explicar qué cubre esta prueba y qué queda fuera. No uses este slice para afirmar que repositorio, base de datos, seguridad o todas las capas funcionan juntas; para eso se necesitan pruebas de integración apropiadas. Documentación primaria: [Spring Boot 4.1.2 — `@WebMvcTest`](https://docs.spring.io/spring-boot/api/java/org/springframework/boot/webmvc/test/autoconfigure/WebMvcTest.html) y [Spring Boot 4.1.2 — `@AutoConfigureMockMvc`](https://docs.spring.io/spring-boot/api/java/org/springframework/boot/webmvc/test/autoconfigure/AutoConfigureMockMvc.html).
 
-### Tema 2: @DataJpaTest con Testcontainers
+### Tema 2: Probar el repositorio contra PostgreSQL con `@DataJpaTest`
 
-#### Paso 1 · Objetivo y preparación
+**¿Por qué es importante?** El repositorio puede parecer correcto en H2 y fallar con el motor usado en producción. Este slice carga entidades y repositorios; Testcontainers añade una instancia desechable del PostgreSQL elegido.
 
-Al finalizar podrás probar un repositorio contra una base de datos PostgreSQL real y desechable con Testcontainers, y explicar por qué es preferible a H2 en memoria para fidelidad de comportamiento.
+#### Subtema 6.4 · Conectar el slice a un PostgreSQL desechable (10 min)
 
-**Conocimiento previo:** Tema 1 de este módulo; entidades y repositorios (Módulo 3).
+**Contexto.** `@DataJpaTest` configura JPA y repositorios, y suele elegir una base embebida si está disponible. Para probar PostgreSQL de verdad, el test debe enlazar URL, usuario y contraseña del contenedor antes de que Spring cree el `DataSource`.
 
-#### Paso 2 · Contexto y caso real
+**Hazlo tú.** En el proyecto acumulativo de M2, agrega al `pom.xml` estas dependencias de prueba. El driver PostgreSQL no viene dentro de Testcontainers. Si el proyecto ejecuta migraciones con Flyway, agrega también su módulo PostgreSQL con alcance `runtime`:
 
-**¿Por qué es importante?** H2 puede comportarse de forma sutilmente distinta a PostgreSQL en aspectos específicos del dialecto SQL o tipos de datos particulares, produciendo pruebas que pasan contra H2 pero fallarían contra la base de datos real usada en producción.
+```xml
+<dependency>
+    <groupId>org.postgresql</groupId>
+    <artifactId>postgresql</artifactId>
+    <scope>test</scope>
+</dependency>
+<dependency>
+    <groupId>org.testcontainers</groupId>
+    <artifactId>testcontainers-postgresql</artifactId>
+    <version>2.0.5</version>
+    <scope>test</scope>
+</dependency>
+<dependency>
+    <groupId>org.testcontainers</groupId>
+    <artifactId>testcontainers-junit-jupiter</artifactId>
+    <version>2.0.5</version>
+    <scope>test</scope>
+</dependency>
+<dependency>
+    <groupId>org.flywaydb</groupId>
+    <artifactId>flyway-database-postgresql</artifactId>
+    <scope>runtime</scope>
+</dependency>
+```
 
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** base de datos real desechable, comportamiento fiel frente a H2 en memoria.
+Crea `src/test/java/com/example/demo/TareaRepositoryPostgresTest.java`:
 
 ```java
-@DataJpaTest
-@Testcontainers
-class TareaRepositoryTest {
-    @Container
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16");
+package com.example.demo;
 
-    @DynamicPropertySource
-    static void propiedades(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-    }
-}
-```
-
-Esta prueba levanta un contenedor Docker real de PostgreSQL específicamente para la suite, configurando dinámicamente la URL de conexión hacia ese contenedor efímero, descartado al finalizar. Esto elimina la discrepancia de comportamiento que H2 podría introducir, a costa de un tiempo de arranque algo mayor.
-
-**Analogía:** usar H2 para probar código diseñado para PostgreSQL es ensayar una obra de teatro en un escenario con dimensiones y acústica distintas a las del teatro real; Testcontainers es ensayar directamente en una réplica exacta y desechable del teatro real.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-  A["@Testcontainers: PostgreSQLContainer real"] --> B["@DynamicPropertySource: spring.datasource.url apunta al contenedor"]
-  B --> C["@DataJpaTest ejecuta contra PostgreSQL real, no H2"]
-  C --> D[contenedor descartado al terminar la suite]
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Reutiliza `academia-spring` (o créalo desde una carpeta vacía con `mkdir -p academia-spring` si es tu primera vez), agrega las dependencias reales `org.testcontainers:postgresql` y `org.testcontainers:junit-jupiter`, y crea el test de repositorio en `src/test/java/com/academia/tarea/`:
-
-```bash
-mkdir -p academia-spring/src/test/java/com/academia/tarea
-cd academia-spring
-```
-
-```java
-// src/main/java/com/academia/tarea/Tarea.java
-package com.academia.tarea;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-
-@Entity
-public class Tarea {
-    @Id @GeneratedValue
-    private Long id;
-    private String titulo;
-
-    protected Tarea() {}
-    public Tarea(String titulo) { this.titulo = titulo; }
-    public Long getId() { return id; }
-    public String getTitulo() { return titulo; }
-}
-```
-
-```java
-// src/test/java/com/academia/tarea/TareaRepositoryTestcontainersTest.java
-package com.academia.tarea;
-
+import javax.sql.DataSource;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Testcontainers
-class TareaRepositoryTestcontainersTest {
-
+class TareaRepositoryPostgresTest {
     @Container
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16");
+    static final PostgreSQLContainer postgres =
+        new PostgreSQLContainer("postgres:16-alpine");
 
     @DynamicPropertySource
-    static void propiedades(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
+    static void conectarPostgres(DynamicPropertyRegistry properties) {
+        properties.add("spring.datasource.url", postgres::getJdbcUrl);
+        properties.add("spring.datasource.username", postgres::getUsername);
+        properties.add("spring.datasource.password", postgres::getPassword);
     }
 
-    @Autowired
-    private TareaRepository tareaRepository;
-
-    @Test
-    void guardaYLeeUnaTareaContraPostgreSQLReal() {
-        Tarea guardada = tareaRepository.save(new Tarea("Comprar leche"));
-
-        Tarea leida = tareaRepository.findById(guardada.getId()).orElseThrow();
-
-        assertThat(leida.getTitulo()).isEqualTo("Comprar leche");
-    }
+    @Autowired TareaRepository tareas;
+    @Autowired DataSource dataSource;
 }
 ```
 
-**Explicación línea por línea:** `@Container static PostgreSQLContainer<?> postgres` declara el contenedor real, gestionado automáticamente por Testcontainers (arranca antes de la suite, se descarta después); `@DynamicPropertySource` inyecta la URL, usuario y contraseña REALES del contenedor recién levantado (asignados dinámicamente por Docker) en las propiedades de Spring antes de que el contexto de la aplicación arranque; el test en sí (`guardaYLeeUnaTareaContraPostgreSQLReal`) es idéntico a como se vería contra cualquier otra base de datos, pero ahora ejecuta contra PostgreSQL genuino.
+Ejecuta el test desde la raíz del proyecto:
 
 ```bash
-# requiere Docker corriendo localmente; Testcontainers lo usa para levantar el contenedor real
-mvn test -Dtest=TareaRepositoryTestcontainersTest # Maven
-./gradlew test --tests TareaRepositoryTestcontainersTest # Gradle (equivalente)
+./mvnw -q -DskipTests test-compile
 ```
 
-**Resultado esperado:** `BUILD SUCCESS` con el test en verde, confirmando que Testcontainers levantó un contenedor PostgreSQL real, Spring se conectó a él dinámicamente, y la fila guardada se lee correctamente — el mismo motor de base de datos que correría en producción, no una aproximación.
+**Resultado esperado.** Maven termina con `BUILD SUCCESS`; `test-compile` verifica nombres de artefacto, package Boot 4, paquete actual de PostgreSQLContainer y tipos antes de necesitar un runtime de contenedores.
 
-**Fallo deliberado:** cambia la imagen del contenedor a una versión de PostgreSQL con un tipo de columna incompatible: agrega a `Tarea` un campo `private java.util.UUID identificadorExterno;` sin ninguna conversión, y fuerza una query nativa que use una función específica de PostgreSQL no soportada por H2 (por ejemplo, `@Query(value = "SELECT gen_random_uuid()", nativeQuery = true)`). Ejecuta el mismo test contra H2 en memoria (cambiando temporalmente la dependencia a H2 sin Testcontainers) y compara: la función `gen_random_uuid()` falla contra H2 con un error de función desconocida, mientras que contra el contenedor PostgreSQL real de este Tema funciona correctamente — diagnostica confirmando exactamente el riesgo que Testcontainers elimina: una función específica del dialecto SQL real que H2 no reproduce fielmente. Revierte los cambios de prueba antes de continuar.
+#### Subtema 6.5 · Comprobar motor y operación del repositorio (10 min)
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**Contexto.** Que el test se llame “PostgreSQL” no prueba qué base abrió Spring. Comprueba el producto por JDBC y luego guarda y consulta una tarea con el repositorio real.
 
-1. Agrega un segundo test en la misma clase que confirme un método derivado (`findByTituloContaining`) contra el mismo contenedor PostgreSQL, reutilizando el contenedor ya levantado (el campo `static` lo comparte entre tests de la misma clase).
-2. Cambia la versión de la imagen (`postgres:16` a `postgres:15`) y confirma que el mismo test sigue pasando, ilustrando que Testcontainers facilita probar contra distintas versiones reales.
-3. Agrega `@Sql("/datos-iniciales.sql")` para poblar datos antes del test y confirma que el repositorio los lee correctamente desde el contenedor real.
-4. Escribe de memoria (sin mirar) un `@DataJpaTest @Testcontainers` con `@Container` y `@DynamicPropertySource`, y un test que confirme guardar y leer una entidad. Compara después contra el patrón del Paso 4.
-
-**Pista:** el campo `@Container` debe ser `static` para que Testcontainers lo comparta entre todos los tests de la misma clase, evitando levantar un contenedor nuevo por cada método de test individual.
-
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio para inyectar la URL real del contenedor en la configuración de Spring:
+**Hazlo tú.** Agrega ambos métodos a `TareaRepositoryPostgresTest`:
 
 ```java
-@____
-static void propiedades(DynamicPropertyRegistry registry) {
-    registry.add("spring.datasource.url", postgres::getJdbcUrl);
+@Test
+void postgresEsLaBaseDeDatosConectada() throws Exception {
+    try (var connection = dataSource.getConnection()) {
+        assertThat(connection.getMetaData().getDatabaseProductName())
+            .isEqualTo("PostgreSQL");
+    }
+}
+
+@Test
+void guardaYConsultaContraPostgres() {
+    Tarea guardada = tareas.saveAndFlush(
+        new Tarea("Caja térmica", 2, "BODEGA-A"));
+
+    assertThat(tareas.findByPrioridadGreaterThanEqual(2))
+        .extracting(Tarea::getId)
+        .contains(guardada.getId());
 }
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un test `@DataJpaTest @Testcontainers` con un `PostgreSQLContainer` real y una aserción sobre una entidad guardada y leída. Compara después contra el patrón del Paso 4.
+En un entorno con Docker Engine o una API compatible activa, ejecuta:
 
-#### Paso 7 · Cierre y evidencia
+```bash
+./mvnw -q -Dtest=TareaRepositoryPostgresTest test
+```
 
-Ya pruebas la capa de persistencia contra una base de datos real y desechable, en vez de una aproximación que podría comportarse distinto en producción. El siguiente y último tema de este módulo aborda cuándo vale la pena pagar el costo del contexto completo. **Evidencia:** entrega el resultado de `TareaRepositoryTestcontainersTest` en verde, y la comparación mostrando que una función específica de PostgreSQL falla contra H2 pero funciona contra el contenedor real. Fuente oficial: [Testcontainers — Spring Boot integration](https://java.testcontainers.org/modules/databases/postgres/).
+**Resultado esperado.** Pasan dos pruebas: el driver informa `PostgreSQL` y el repositorio devuelve la tarea guardada. `@DataJpaTest` abre una transacción por método y la revierte al terminar. El campo `static` comparte un contenedor entre los métodos de esta clase; la prueba no certifica todas las consultas ni todas las versiones de PostgreSQL.
 
-**Errores comunes:** confiar en H2 en memoria para verificar comportamiento específico de PostgreSQL; no declarar el contenedor como `static`, levantando uno nuevo innecesariamente por cada método de test, incrementando el tiempo total de la suite.
+#### Subtema 6.6 · Detectar que el test cayó en H2 (10 min)
 
-**Cuándo no usarlo:** para lógica de repositorio genuinamente independiente del motor de base de datos específico (queries triviales sin funciones propietarias), H2 en memoria puede seguir siendo aceptable por su velocidad; reserva Testcontainers para cuando la fidelidad al motor real importa.
+**Contexto.** Si no publicas las propiedades del contenedor, `@DataJpaTest` puede usar H2 y darte una falsa sensación de compatibilidad.
 
-`@DataJpaTest` con Testcontainers es como probarás la capa de persistencia del proyecto integrador de este track (microservicio productivo, Módulo 12) contra una base real.
+**Hazlo tú.** Retira temporalmente el método `conectarPostgres` completo y ejecuta solo esta prueba:
+
+```bash
+./mvnw -q -Dtest=TareaRepositoryPostgresTest#postgresEsLaBaseDeDatosConectada test
+```
+
+**Fallo deliberado observado.** Flyway registra `jdbc:h2:mem:...`; la aserción falla porque esperaba `PostgreSQL` y recibió `H2`. Restaura `conectarPostgres` y ejecuta de nuevo los dos tests.
+
+#### Entiende y cierra
+
+`@DataJpaTest` configura el slice de datos, no el controller ni la aplicación completa. `@DynamicPropertySource` entrega al `DataSource` la dirección y credenciales que Testcontainers asigna al contenedor. `Replace.NONE` conserva esa conexión real. El módulo `flyway-database-postgresql` es necesario en este proyecto porque Flyway separa el soporte específico del motor; agregar solo el starter Flyway no bastó para iniciar migraciones contra PostgreSQL.
+
+**Evidencia para avanzar:** el test compila, las dos pruebas pasan contra PostgreSQL y, al retirar propiedades dinámicas, se observa H2 y la aserción falla. El equipo requiere Docker o un runtime compatible configurado; si no está disponible, reporta por separado compilación y ejecución. Documentación primaria: [Spring Boot 4.1.2 — `@DataJpaTest`](https://docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html#testing.spring-boot-applications.spring-data-jpa-tests), [Spring Boot 4.1.2 — `@AutoConfigureTestDatabase`](https://docs.spring.io/spring-boot/api/java/org/springframework/boot/jdbc/test/autoconfigure/AutoConfigureTestDatabase.html), [Testcontainers — PostgreSQL](https://java.testcontainers.org/modules/databases/postgres/) y [Testcontainers — JUnit 5](https://java.testcontainers.org/test_framework_integration/junit_5/).
 
 ### Tema 3: @SpringBootTest completo y estrategia de pirámide de tests
 

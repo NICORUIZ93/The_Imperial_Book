@@ -141,7 +141,10 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - pendiente Subtema 6.1 · Recortar la prueba a la web (10 min)
   - pendiente Subtema 6.2 · Ver la validación y el error JSON (10 min)
   - pendiente Subtema 6.3 · Diagnosticar una dependencia que falta (10 min)
-- [pendiente de migrar] Tema 2: @DataJpaTest con Testcontainers
+- [pendiente de migrar] Tema 2: Probar el repositorio contra PostgreSQL con `@DataJpaTest`
+  - pendiente Subtema 6.4 · Conectar el slice a un PostgreSQL desechable (10 min)
+  - pendiente Subtema 6.5 · Comprobar motor y operación del repositorio (10 min)
+  - pendiente Subtema 6.6 · Detectar que el test cayó en H2 (10 min)
 - [pendiente de migrar] Tema 3: @SpringBootTest completo y estrategia de pirámide de tests
 
 ### Módulo 7: Observabilidad con Actuator

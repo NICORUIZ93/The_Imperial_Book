@@ -504,8 +504,38 @@ pedagógica humana. No se modificó la aplicación del repo para el laboratorio;
 el backend temporal vive en `/tmp/imperial-spring-m4-jwt/app`. Permanecen
 excluidos del commit los dos cambios locales de Flutter ya existentes.
 
-**Siguiente tema:** Spring Boot M6 T2, “`@DataJpaTest` con Testcontainers”.
-Antes de reescribirlo, verifica versiones e imports actuales de Boot 4,
-PostgreSQL y Testcontainers, y confirma Docker disponible para ejecutar el caso.
-Mantén separado el resultado del repositorio temporal del contenido probado en
-la aplicación principal.
+Spring Boot M6 T2, “Probar el repositorio contra PostgreSQL con
+`@DataJpaTest`”, se rehízo en los subtemas 6.4–6.6: conectar el slice al
+contenedor; confirmar motor y persistencia; detectar el retorno accidental a
+H2. Se corrigieron las APIs para Boot 4 y Testcontainers 2.0.5: `DataJpaTest`
+en `org.springframework.boot.data.jpa.test.autoconfigure`,
+`AutoConfigureTestDatabase` en `org.springframework.boot.jdbc.test.autoconfigure`
+y `PostgreSQLContainer` en `org.testcontainers.postgresql` sin tipo genérico.
+El POM didáctico declara driver PostgreSQL y módulos separados de Testcontainers;
+si la aplicación usa Flyway, se necesita `flyway-database-postgresql` para sus
+migraciones. `@DynamicPropertySource` publica conexión/credenciales y
+`Replace.NONE` impide sustituir el `DataSource` real.
+
+En el backend acumulado Boot 4.1.2/JDK 25/Testcontainers 2.0.5, `test-compile`
+pasó y las dos pruebas PostgreSQL pasaron contra PostgreSQL 16.15. Se usó el
+Podman ya activo por su socket Docker compatible; Testcontainers pudo usarlo con
+`DOCKER_HOST=unix:///tmp/imperial-podman.sock` y hubo que desactivar Ryuk solo en
+este laboratorio (`TESTCONTAINERS_RYUK_DISABLED=true`). Se quitó deliberadamente
+`@DynamicPropertySource`: el slice eligió H2 y falló con `expected PostgreSQL but
+was H2`; restaurado el método, volvió a pasar. La suite acumulada pasó con
+**40 pruebas**, sin fallos ni omisiones. La primera ejecución reveló que el POM
+del laboratorio no tenía `flyway-database-postgresql`; se añadió al laboratorio
+y se reflejó como dependencia condicional en la lección. No se cambió la app del
+repositorio. La descarga de la imagen tardó; quedó cacheada en Podman.
+
+`./scripts/validate.sh` pasó con 23 pruebas de script y 4 omitidas; las demás
+validaciones de contenido, trazabilidad, índices y gráficos también pasaron.
+`git diff --check` pasó. La auditoría global tras M6 T2 registra **139/1185 temas
+estructuralmente completos**, **1091/1185 practicables** y 409 con señales de
+defecto de sustancia. Los indicadores no prueban ejecución de los demás
+laboratorios ni sustituyen revisión humana.
+
+**Siguiente tema:** Spring Boot M6 T3, “`@SpringBootTest` completo y estrategia
+de pirámide”. Reutiliza el mismo proyecto acumulativo, distingue prueba completa
+de slice y unit test, comprueba qué base de datos necesita el contexto total y
+corrige los ejemplos en paquete/imports Boot 4 antes de ejecutar el caso.

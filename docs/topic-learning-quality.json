@@ -224,15 +224,15 @@
       "topics": 111,
       "explanation": 111,
       "code": 111,
-      "visual": 70,
+      "visual": 69,
       "filePath": 111,
       "runCommand": 106,
       "expectedResult": 111,
-      "practice": 105,
-      "project": 100,
+      "practice": 104,
+      "project": 99,
       "modelMental": 111,
-      "limitsDecision": 102,
-      "practicable": 92,
+      "limitsDecision": 101,
+      "practicable": 91,
       "genericScaffold": 0,
       "repeatedDemo": 0
     }
@@ -25963,22 +25963,22 @@
       },
       {
         "module": 6,
-        "topic": "Tema 2: @DataJpaTest con Testcontainers",
+        "topic": "Tema 2: Probar el repositorio contra PostgreSQL con `@DataJpaTest`",
         "criteria": {
           "explanation": true,
           "code": true,
-          "visual": true,
+          "visual": false,
           "filePath": true,
           "runCommand": true,
           "expectedResult": true,
-          "practice": true,
-          "project": true,
+          "practice": false,
+          "project": false,
           "modelMental": true,
-          "limitsDecision": true
+          "limitsDecision": false
         },
         "classification": {
-          "rubricScore": 16,
-          "practicable": true,
+          "rubricScore": 9,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }

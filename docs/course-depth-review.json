@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 230,
+    "topicsWithSignals": 231,
     "newLaboratories": 25
   },
   "priorities": {
@@ -13377,10 +13377,12 @@
     {
       "track": "spring-boot",
       "module": 6,
-      "title": "Tema 2: @DataJpaTest con Testcontainers",
+      "title": "Tema 2: Probar el repositorio contra PostgreSQL con `@DataJpaTest`",
       "file": "web/public/content/spring-boot/modulo-6.md",
       "line": 110,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -13390,7 +13392,7 @@
       "module": 6,
       "title": "Tema 3: @SpringBootTest completo y estrategia de pirámide de tests",
       "file": "web/public/content/spring-boot/modulo-6.md",
-      "line": 270,
+      "line": 243,
       "signals": [
         "comprobar-fragmento-incompleto"
       ],

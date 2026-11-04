@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 73,
-      "prerequisites": 86,
-      "context": 73,
-      "theoryAnalogy": 73,
-      "guidedDemo": 73,
+      "objective": 72,
+      "prerequisites": 85,
+      "context": 72,
+      "theoryAnalogy": 72,
+      "guidedDemo": 72,
       "codeExplanation": 111,
       "execution": 105,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 73,
-      "independentPractice": 73,
-      "closure": 73,
-      "commonErrors": 73,
-      "resources": 80,
-      "standaloneExample": 70,
-      "learningEvidence": 83,
-      "complete": 69
+      "guidedPractice": 72,
+      "independentPractice": 72,
+      "closure": 72,
+      "commonErrors": 72,
+      "resources": 79,
+      "standaloneExample": 69,
+      "learningEvidence": 82,
+      "complete": 68
     }
   },
   "topics": {
@@ -30679,28 +30679,28 @@
       },
       {
         "module": 6,
-        "topic": "Tema 2: @DataJpaTest con Testcontainers",
+        "topic": "Tema 2: Probar el repositorio contra PostgreSQL con `@DataJpaTest`",
         "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "objective": false,
+          "prerequisites": false,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 4,
+          "complete": false
         }
       },
       {

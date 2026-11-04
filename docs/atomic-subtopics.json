@@ -94,8 +94,8 @@
     "spring-boot": {
       "topics": 111,
       "completeTopics": 35,
-      "topicsWith3to6Subtopics": 38,
-      "subtopics": 114,
+      "topicsWith3to6Subtopics": 39,
+      "subtopics": 117,
       "completeSubtopics": 109
     }
   },
@@ -14338,9 +14338,52 @@
       },
       {
         "module": 6,
-        "topic": "### Tema 2: @DataJpaTest con Testcontainers",
-        "subtopicCount": 0,
-        "subtopics": [],
+        "topic": "### Tema 2: Probar el repositorio contra PostgreSQL con `@DataJpaTest`",
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "6.4",
+            "title": "#### Subtema 6.4 · Conectar el slice a un PostgreSQL desechable (10 min)",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": false
+            },
+            "complete": false
+          },
+          {
+            "id": "6.5",
+            "title": "#### Subtema 6.5 · Comprobar motor y operación del repositorio (10 min)",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": false
+            },
+            "complete": false
+          },
+          {
+            "id": "6.6",
+            "title": "#### Subtema 6.6 · Detectar que el test cayó en H2 (10 min)",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": false,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": false
+            },
+            "complete": false
+          }
+        ],
         "complete": false
       },
       {

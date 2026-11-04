@@ -1696,7 +1696,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "4cd9d3b1e5acd87991ec1618fcaa1e6aea98a1fe9412c42c1a726e29c03ad98e",
+    "fingerprint": "013228e933af36676e7194bb7b13bb40e5ba9bcc090b5b389c078db10169ccb9",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10955,9 +10955,9 @@
       {
         "issues": [],
         "module": 6,
-        "tailWords": 184,
-        "topic": "Tema 2: @DataJpaTest con Testcontainers",
-        "words": 1213
+        "tailWords": 0,
+        "topic": "Tema 2: Probar el repositorio contra PostgreSQL con `@DataJpaTest`",
+        "words": 786
       },
       {
         "issues": [],

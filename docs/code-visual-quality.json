@@ -99,14 +99,14 @@
     "spring-boot": {
       "topics": 111,
       "code": 111,
-      "commentedCode": 64,
-      "mermaid": 53,
+      "commentedCode": 63,
+      "mermaid": 52,
       "archifyVisual": 3,
       "asciiVisual": 13,
       "misleadingDiagramLabel": 0,
       "filePath": 111,
       "runCommand": 111,
-      "officialSource": 91
+      "officialSource": 92
     },
     "kotlin-multiplatform": {
       "topics": 56,
@@ -2813,6 +2813,13 @@
       "track": "spring-boot",
       "module": 6,
       "topic": "Tema 1: Probar un controller con `@WebMvcTest`",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 6,
+      "topic": "Tema 2: Probar el repositorio contra PostgreSQL con `@DataJpaTest`",
       "missingCode": false,
       "missingComments": true
     },
