@@ -5,7 +5,7 @@
 **Proyecto continuo:** RutaFlow: plataforma de entregas basada en servicios.
 **Prerrequisito de entrada:** Java, HTTP, SQL y pruebas; los módulos iniciales vuelven a presentar cada herramienta..
 **Duración objetivo:** temas de 20–45 minutos; cada tema se divide en 3–6 acciones de 5–15 minutos.
-**Estado estructural:** 23/111 temas migrados; auditoría estructural actualizada el 2026-11-03.
+**Estado estructural:** 24/111 temas migrados; auditoría estructural actualizada el 2026-11-03.
 
 ## Índice de módulos y temas
 
@@ -65,7 +65,10 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 4.1: Genera getters durante la compilación · 10 min
   - ✓ Subtema 4.2: Genera el mapeo con MapStruct · 15 min
   - ✓ Subtema 4.3: Haz que cada campo interno nuevo exija una decisión · 10 min
-- [pendiente de migrar] Tema 5: OpenAPI con springdoc: el contrato como prueba
+- [4 pasos] Tema 5: OpenAPI con springdoc: el contrato como prueba
+  - ✓ Subtema 5.1: Publica el contrato de tu API · 10 min
+  - ✓ Subtema 5.2: Describe éxito y errores en cada endpoint · 15 min
+  - ✓ Subtema 5.3: Evita cambios silenciosos con una prueba · 15 min
 - [pendiente de migrar] Tema 6: Paginación HTTP con validación y un límite de recursos explícito
 
 ### Módulo 3: Persistencia con Spring Data JPA
@@ -347,7 +350,7 @@ La tabla registra presencia de áreas en el inventario del track, no profundidad
 
 ### Huecos y límites reportados
 
-- El repositorio contiene 111 temas en 26 módulos; 23 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
+- El repositorio contiene 111 temas en 26 módulos; 24 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
 - No hay base para afirmar que el track esté completo: la comparación con la fuente de referencia está pendiente de revisión humana módulo por módulo.
 - Los elementos de la fuente que todavía deben verificarse de forma explícita están enumerados en la tabla anterior; cualquier técnica crítica que no tenga tema propio debe añadirse conservando el currículo base.
 - La ejecución de ejemplos, el comportamiento con brokers/plataformas reales y la calidad pedagógica humana se registran por separado.

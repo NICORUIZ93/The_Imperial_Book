@@ -223,13 +223,21 @@ la compilación con `Unmapped source property`; al declararlo ignorado de forma
 explícita, las pruebas pasaron de nuevo. No se ejecutó el fallo deliberado de
 renombrar el destino del mapper.
 
-La auditoría global actual registra **127/1185 temas atómicos**, **1095/1185
+Spring Boot M2 T5, “OpenAPI con springdoc: el contrato como prueba”, continúa el
+backend del módulo. Se cambió la versión anterior 3.0.0: la matriz oficial
+indica Spring Boot 4.1.x con springdoc 3.1.x–3.2.x; el ejemplo usa 3.2.0. Se
+documentan rutas, resúmenes, respuestas 200/201/400/404 y el esquema `ApiError`.
+`ContratoOpenApiTest` consulta `/v3/api-docs` desde un puerto aleatorio y verifica
+las rutas, descripciones, códigos y esquema. El proyecto temporal con Spring
+Boot 4.1.2/JDK 25 pasó `./mvnw -q clean test`; `/v3/api-docs` devolvió las dos
+rutas y Swagger UI respondió 200. No se ejecutaron las fallas deliberadas.
+
+La auditoría global actual registra **128/1185 temas atómicos**, **1095/1185
 practicables** y 409 temas con defectos de sustancia. `./scripts/validate.sh`
-pasó tras los Temas 1–4 (23 pruebas, 4 omitidas); no confundir esos indicadores
+pasó tras los Temas 1–5 (23 pruebas, 4 omitidas). No confundir esos indicadores
 con ejecución de todos los ejemplos ni revisión humana completa.
 
-**Siguiente tema:** Spring Boot M2 T5, “OpenAPI con springdoc: el contrato como
-prueba”. Revísalo con el proyecto acumulativo (sin recrear otra API), verifica
-compatibilidad de springdoc con Spring Boot 4 en documentación primaria, y
-comprueba que el contrato describa los estados y el formato de errores que ya
-implementan los temas anteriores.
+**Siguiente tema:** Spring Boot M2 T6, “Paginación HTTP con validación y un
+límite de recursos explícito”. Revisa si debe continuar el proyecto JPA actual,
+verifica la validación de parámetros en Spring Framework 7/Spring Boot 4 y
+comprueba que el límite se aplique antes de cargar una colección completa.

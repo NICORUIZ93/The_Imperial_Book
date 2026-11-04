@@ -1698,7 +1698,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "172a17300120143ebd8a3741233ad5a3cbafcfc0a6a29bad73d44610cbc31811",
+    "fingerprint": "9b5938264b7ca383a5506de68eb54c7fad6f39938bfa38999de1d32cd1e74591",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10669,9 +10669,9 @@
       {
         "issues": [],
         "module": 2,
-        "tailWords": 197,
+        "tailWords": 0,
         "topic": "Tema 5: OpenAPI con springdoc: el contrato como prueba",
-        "words": 1090
+        "words": 1207
       },
       {
         "issues": [],

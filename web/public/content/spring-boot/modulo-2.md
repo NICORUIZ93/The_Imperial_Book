@@ -822,86 +822,146 @@ Después ejecuta `./mvnw clean test` y el `curl` del Tema 1; comprueba que el JS
 
 ### Tema 5: OpenAPI con springdoc: el contrato como prueba
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás generar la especificación OpenAPI de tu API con springdoc, documentar operaciones, parámetros, respuestas y esquemas con anotaciones, y escribir una prueba que falle si el contrato publicado cambia. Prerrequisitos: Temas 1 a 3 de este módulo.
+La API de tareas ya responde con códigos y errores propios. Ahora publicarás ese contrato en OpenAPI y escribirás una prueba que detecte si deja de documentar una respuesta.
 
-#### Paso 2 · Contexto y caso real
-El equipo móvil de RutaFlow descubría los cambios de la API cuando la app fallaba. Un contrato OpenAPI publicado y probado es el caso real que permite a otros equipos generar clientes, probar contra mocks y detectar cambios antes de desplegar.
+**¿Por qué es importante?** Quien integra una API necesita saber qué ruta llamar, qué enviar y cómo se verá cada resultado antes de conectar otra aplicación.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-**OpenAPI** es un formato estándar (JSON o YAML) que describe rutas, parámetros, respuestas y esquemas de una API HTTP. **springdoc** inspecciona tus controladores en tiempo de ejecución y publica el documento en `/v3/api-docs` y una interfaz en `/swagger-ui.html`. Las anotaciones `@Operation`, `@ApiResponse`, `@Parameter` y `@Schema` agregan la información que el código no expresa (resúmenes, ejemplos, códigos de error). Probar el documento convierte la documentación en un contrato verificable.
-
-**Analogía:** el contrato OpenAPI es el plano eléctrico de la casa: quien llega a instalar algo no necesita romper paredes para saber dónde están los cables.
-
-**Diagrama:**
+**Modelo mental:** Springdoc lee controllers y anotaciones para dibujar el contrato HTTP; una prueba compara ese documento con lo que el equipo espera ofrecer.
 
 ```mermaid
 flowchart LR
-    C[EnvioController con anotaciones] --> S[springdoc]
-    S --> A[/v3/api-docs JSON/]
-    S --> U[swagger-ui.html]
-    A --> T[prueba del contrato]
-    A --> G[clientes generados]
+  A["TareaController"] --> B["Springdoc"]
+  B --> C["/v3/api-docs"]
+  C --> D["prueba de contrato"]
+  D -->|rutas y respuestas| E["clientes de la API"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+#### Subtema 5.1: Publica el contrato de tu API · 10 min
 
-```bash
-mkdir springdoc && cd springdoc
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip
-unzip -q app.zip
-```
+**1. Contexto**
 
-Crea `pom.xml (agrega este fragmento)`:
+No crearás otro backend. Añadirás documentación automática al mismo proyecto de tareas con sus DTOs y respuestas reales.
+
+**2. Hazlo tú**
+
+En `pom.xml`, dentro de `<dependencies>` añade el starter de Spring MVC:
 
 ```xml
-<!-- Dentro de <dependencies>. Usa la línea 3.x de springdoc, compatible con Spring Boot 4 -->
 <dependency>
-  <groupId>org.springdoc</groupId>
-  <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-  <version>3.0.0</version>
+    <groupId>org.springdoc</groupId>
+    <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+    <version>3.2.0</version>
 </dependency>
 ```
 
-Crea `src/main/java/com/example/demo/EnvioController.java`:
+Desde la raíz del proyecto ejecuta:
+
+    ./mvnw test
+
+Inicia la app con `./mvnw spring-boot:run`. En otra terminal consulta el documento y la interfaz:
+
+```bash
+curl -sS http://localhost:8080/v3/api-docs
+```
+
+Abre `http://localhost:8080/swagger-ui/index.html` en el navegador.
+
+**Resultado esperado:** la ruta `/v3/api-docs` devuelve JSON OpenAPI con las rutas `/api/tareas` y `/api/tareas/{id}`. Swagger UI muestra esas operaciones; los estados y detalles todavía pueden ser escasos.
+
+**Fallo deliberado:** quita temporalmente la dependencia de springdoc, reinicia y consulta `/v3/api-docs`. **Diagnóstico:** el endpoint devuelve `404` porque la dependencia ya no registra su documentación; restaura el starter `springdoc-openapi-starter-webmvc-ui`.
+
+**3. Entiende**
+
+Springdoc inspecciona mappings y tipos de respuesta al iniciar la aplicación. El documento inicial se infiere del código; las anotaciones que añadas después hacen explícitas las descripciones y los estados relevantes.
+
+**4. Cierra**
+
+Guarda la salida de `/v3/api-docs` y localiza allí ambas rutas. En el paso siguiente documentarás sus respuestas previstas.
+
+#### Subtema 5.2: Describe éxito y errores en cada endpoint · 15 min
+
+**1. Contexto**
+
+Los métodos ya devuelven `201`, `200`, `400` y `404`. Añade descripciones para que quien consulte el contrato sepa qué significan.
+
+**2. Hazlo tú**
+
+Reemplaza `src/main/java/com/example/demo/TareaController.java` por:
 
 ```java
 package com.example.demo;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/envios")
-@Tag(name = "Envíos", description = "Consulta pública del estado de un envío")
-public class EnvioController {
+@RequestMapping("/api/tareas")
+@Tag(name = "Tareas", description = "Crear y consultar tareas")
+public class TareaController {
+    private final ServicioTareas servicio;
 
-    @Schema(description = "Estado público de un envío")
-    public record EstadoEnvio(
-            @Schema(example = "BO-004512") String guia,
-            @Schema(example = "en ruta", allowableValues = {"registrado", "en ruta", "entregado"}) String estado) {}
+    public TareaController(ServicioTareas servicio) {
+        this.servicio = servicio;
+    }
 
-    private final Map<String, String> estados = Map.of("BO-004512", "en ruta");
+    @PostMapping
+    @Operation(summary = "Crear una tarea")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Tarea creada"),
+            @ApiResponse(responseCode = "400", description = "Datos inválidos",
+                    content = @Content(schema = @Schema(implementation = ApiError.class)))})
+    public ResponseEntity<TareaDTO> crear(
+            @Valid @RequestBody CrearTareaRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(servicio.crear(request));
+    }
 
-    @Operation(summary = "Consultar el estado de un envío por guía")
-    @ApiResponse(responseCode = "200", description = "Envío encontrado")
-    @ApiResponse(responseCode = "404", description = "La guía no existe")
-    @GetMapping("/{guia}")
-    public ResponseEntity<EstadoEnvio> estado(
-            @Parameter(description = "Guía con formato XX-000000", example = "BO-004512") @PathVariable String guia) {
-        String estado = estados.get(guia);
-        return estado == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(new EstadoEnvio(guia, estado));
+    @GetMapping("/{id}")
+    @Operation(summary = "Consultar una tarea por ID")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Tarea encontrada"),
+            @ApiResponse(responseCode = "404", description = "Tarea inexistente",
+                    content = @Content(schema = @Schema(implementation = ApiError.class)))})
+    public ResponseEntity<TareaDTO> buscar(@PathVariable Long id) {
+        return ResponseEntity.ok(servicio.buscar(id));
     }
 }
 ```
+
+Arranca la aplicación y vuelve a pedir `/v3/api-docs`. Busca `/api/tareas`, `Crear una tarea` y las respuestas `201` y `400`. Después busca `/api/tareas/{id}`, `Consultar una tarea por ID` y las respuestas `200` y `404`.
+
+**Resultado esperado:** el documento presenta ambas operaciones con sus códigos y descripciones. Las anotaciones describen el comportamiento existente; no cambian la lógica del servicio.
+
+**Fallo deliberado:** cambia la descripción de respuesta de `404` por `200` y vuelve a consultar el documento. **Diagnóstico:** OpenAPI ya no coincide con el handler que devuelve `TAREA_NO_ENCONTRADA`; restaura la descripción `404`.
+
+**3. Entiende**
+
+`@Operation` describe una operación; `@ApiResponse` describe un resultado HTTP; `@Tag` agrupa rutas. El tipo Java ya informa los esquemas de entrada y salida; no copies manualmente el JSON si springdoc puede inferirlo.
+
+**4. Cierra**
+
+Compara cada descripción con el controller y `GlobalExceptionHandler`. Si no corresponde al comportamiento, corrige la anotación o la implementación antes de publicar.
+
+#### Subtema 5.3: Evita cambios silenciosos con una prueba · 15 min
+
+**1. Contexto**
+
+Abrir la interfaz permite explorar la API, pero una persona puede olvidarse de revisar el contrato después de editar una ruta. Una prueba automatizada marca esa diferencia en cada cambio.
+
+**2. Hazlo tú**
 
 Crea `src/test/java/com/example/demo/ContratoOpenApiTest.java`:
 
@@ -921,90 +981,66 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ContratoOpenApiTest {
-
     @Value("${local.server.port}")
     int puerto;
 
     @Test
-    void elContratoPublicadoDescribeLaOperacionYSusRespuestas() throws Exception {
-        HttpResponse<String> respuesta = HttpClient.newHttpClient().send(
-                HttpRequest.newBuilder(URI.create("http://localhost:" + puerto + "/v3/api-docs")).build(),
-                HttpResponse.BodyHandlers.ofString());
+    void publicaLasRutasYRespuestasQueUsaElBackend() throws Exception {
+        HttpRequest request = HttpRequest.newBuilder(
+                URI.create("http://localhost:" + puerto + "/v3/api-docs"))
+                .GET()
+                .build();
 
-        String contrato = respuesta.body();
-        System.out.println("OpenAPI: " + contrato.length() + " caracteres");
-        assertThat(respuesta.statusCode()).isEqualTo(200);
+        HttpResponse<String> response = HttpClient.newHttpClient().send(
+                request, HttpResponse.BodyHandlers.ofString());
+        String contrato = response.body();
+
+        assertThat(response.statusCode()).isEqualTo(200);
         assertThat(contrato)
-                .contains("\"/api/envios/{guia}\"")
-                .contains("Consultar el estado de un envío por guía")
-                .contains("La guía no existe")
-                .contains("\"EstadoEnvio\"");
+                .contains("/api/tareas")
+                .contains("/api/tareas/{id}")
+                .contains("Crear una tarea")
+                .contains("Consultar una tarea por ID")
+                .contains("Tarea inexistente")
+                .contains("Datos inválidos")
+                .contains("ApiError")
+                .contains("\"200\"")
+                .contains("\"201\"")
+                .contains("\"400\"")
+                .contains("\"404\"");
     }
 }
 ```
 
-**Ejecuta el ejemplo:**
+Desde la raíz ejecuta `./mvnw test`.
 
-```bash
-./mvnw test
-./mvnw spring-boot:run   # luego abre http://localhost:8080/swagger-ui.html
+**Resultado esperado:** Maven termina en `BUILD SUCCESS` y `ContratoOpenApiTest` pasa tras levantar la app en un puerto aleatorio. El tiempo de prueba puede variar.
+
+**Fallo deliberado:** elimina la anotación `@ApiResponse(responseCode = "404", description = "Tarea inexistente")` de `buscar` y ejecuta otra vez `./mvnw test`. **Diagnóstico:** la prueba falla porque falta `Tarea inexistente`; el controller aún devuelve `404`, pero el contrato ya no lo dice. Restaura la anotación.
+
+**3. Entiende**
+
+La prueba lee el documento publicado por la aplicación real, no un archivo de ejemplo. Comprueba rutas y mensajes elegidos por el equipo; no asegura que cada descripción sea completa ni que clientes externos ya estén de acuerdo.
+
+**4. Cierra**
+
+**Práctica independiente:** agrega esta comprobación a `ContratoOpenApiTest.java` para verificar el comportamiento HTTP:
+
+```java
+HttpResponse<String> respuestaAusente = HttpClient.newHttpClient().send(
+        HttpRequest.newBuilder(URI.create(
+                "http://localhost:" + puerto + "/api/tareas/999")).GET().build(),
+        HttpResponse.BodyHandlers.ofString());
+assertThat(respuestaAusente.statusCode()).isEqualTo(404);
 ```
 
-**Resultado esperado:**
+Compara la prueba de HTTP con `ContratoOpenApiTest`: una revisa lo que hace el servidor y otra lo que publica el contrato.
 
-```text
-OpenAPI: 1234 caracteres
-...
-[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
-[INFO] BUILD SUCCESS
-```
+**Límite:** una prueba de texto simple ayuda a comenzar; en una API con muchas operaciones, analiza el JSON como estructura o compara una especificación revisada para evitar coincidencias accidentales.
 
-La prueba levanta la aplicación en un puerto aleatorio y lee el contrato real. El número de caracteres varía. En `swagger-ui.html` puedes ejecutar `GET /api/envios/BO-004512` desde el navegador. La versión de springdoc indicada es la de la línea 3.x vigente al escribir el tema; revisa la tabla de compatibilidad si usas otra versión de Spring Boot.
+**Transferencia al proyecto integrador:** publica el OpenAPI del backend de envíos y ejecuta la prueba en CI antes de liberar cambios de ruta.
 
-**Fallo deliberado:** Borra la línea `@ApiResponse(responseCode = "404", description = "La guía no existe")`. La prueba falla porque el contrato ya no contiene `La guía no existe`: el endpoint sigue devolviendo 404, pero el contrato ya no lo documenta. Ese desfase entre comportamiento y documentación es exactamente lo que la prueba debe atrapar.
-
-#### Paso 5 · Práctica guiada
-Documenta un `POST /api/envios` que reciba un `record` validado con `@NotBlank` y verifica en la prueba que el esquema marca el campo como requerido. **Pista:** springdoc traduce `@NotBlank` a la lista `required` del esquema; busca en el contrato el nombre del campo dentro de esa lista.
-
-#### Paso 6 · Práctica independiente
-Guarda el contrato en `openapi.json` dentro del repositorio y escribe una prueba que compare el contrato actual con el guardado, para que todo cambio de API sea explícito en la revisión de código.
-
-#### Paso 7 · Cierre y evidencia
-Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque las APIs se consumen por otros equipos y otras empresas, y un contrato verificable evita roturas silenciosas.
-**Fuente oficial:** [springdoc-openapi](https://springdoc.org/), [OpenAPI Specification](https://spec.openapis.org/oas/latest.html).
-**Conceptos clave:** OpenAPI, springdoc, `/v3/api-docs`, Swagger UI, `@Operation`, `@ApiResponse`, `@Schema`, prueba de contrato.
-**Cuándo no usarlo:** para APIs internas de un solo consumidor que cambian a diario, un contrato formal puede ser burocracia; aun así, documenta los errores que devuelves.
-
-**Transferencia al proyecto integrador «Backend profesional de entregas»:** publica el contrato del backend de entregas y agrega la prueba de contrato al pipeline.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** borrar o cambiar una anotación `@ApiResponse`/`@Operation` sin volver a correr `ContratoOpenApiTest`, dejando que el contrato publicado describa una respuesta que el endpoint ya no documenta, y versionar `openapi.json` sin una prueba que lo compare contra el contrato real, lo que permite que la API cambie sin que nadie lo note en la revisión de código.
-
-## Laboratorio práctico
-
-**Objetivo del laboratorio:** construir una API REST con validación de entrada y manejo centralizado de errores.
-
-**Requisitos previos:** Módulos 0-1 completados.
-
-| Paso | Acción | Código | Explicación |
-|---|---|---|---|
-| 1 | Crear GET/POST `/tareas` con DTOs | Ver Tema 1 | No expone la entidad directamente |
-| 2 | Agregar validación con `@Valid` | Ver Tema 2 | `@NotBlank`, `@Min` en el DTO |
-| 3 | Devolver `ResponseEntity` con códigos correctos | Ver Tema 2 | 201 al crear, 404 si no existe |
-| 4 | Crear un `@ControllerAdvice` con `@ExceptionHandler` | Ver Tema 3 | Captura una excepción de negocio, devuelve 400 |
-| 5 | Probar con curl un body inválido | — | Verifica el mensaje de error estructurado |
-
-**Verificación:** el laboratorio se considera exitoso si ningún endpoint expone la entidad JPA directamente, y si una entrada inválida produce un error 400 con un mensaje estructurado consistente, sin ningún try/catch repetido en el controller.
-
-**Errores comunes y soluciones**
-
-- **Exponer la entidad JPA directamente en la respuesta HTTP.** Usa siempre un DTO específico para el contrato de la API.
-- **Olvidar `@Valid` en el parámetro del controller.** Sin él, las anotaciones de Bean Validation en el DTO no se verifican.
-- **Repetir try/catch en cada controller para el mismo tipo de error.** Centraliza ese manejo en un `@ControllerAdvice`.
-
----
-
-
-## Laboratorio de transferencia
+**Fuentes primarias:** [Springdoc: compatibilidad con Spring Boot y guía de uso](https://springdoc.org/), [OpenAPI Specification](https://spec.openapis.org/oas/latest.html).
 
 ### Tema 6: Paginación HTTP con validación y un límite de recursos explícito
 

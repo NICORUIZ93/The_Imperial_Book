@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 216,
+    "topicsWithSignals": 217,
     "newLaboratories": 25
   },
   "priorities": {
@@ -12898,7 +12898,9 @@
       "title": "Tema 5: OpenAPI con springdoc: el contrato como prueba",
       "file": "web/public/content/spring-boot/modulo-2.md",
       "line": 823,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -12908,7 +12910,7 @@
       "module": 2,
       "title": "Tema 6: Paginación HTTP con validación y un límite de recursos explícito",
       "file": "web/public/content/spring-boot/modulo-2.md",
-      "line": 1009,
+      "line": 1045,
       "signals": [],
       "newLaboratory": true,
       "humanPedagogicalReview": "pending",

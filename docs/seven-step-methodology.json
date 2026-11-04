@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 87,
-      "prerequisites": 98,
-      "context": 87,
-      "theoryAnalogy": 87,
-      "guidedDemo": 87,
+      "objective": 86,
+      "prerequisites": 97,
+      "context": 86,
+      "theoryAnalogy": 86,
+      "guidedDemo": 86,
       "codeExplanation": 111,
       "execution": 105,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 87,
-      "independentPractice": 87,
-      "closure": 87,
-      "commonErrors": 87,
-      "resources": 94,
-      "standaloneExample": 84,
-      "learningEvidence": 93,
-      "complete": 83
+      "guidedPractice": 86,
+      "independentPractice": 86,
+      "closure": 86,
+      "commonErrors": 86,
+      "resources": 93,
+      "standaloneExample": 83,
+      "learningEvidence": 92,
+      "complete": 82
     }
   },
   "topics": {
@@ -29641,26 +29641,26 @@
         "module": 2,
         "topic": "Tema 5: OpenAPI con springdoc: el contrato como prueba",
         "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "objective": false,
+          "prerequisites": false,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 4,
+          "complete": false
         }
       },
       {

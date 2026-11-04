@@ -93,10 +93,10 @@
     },
     "spring-boot": {
       "topics": 111,
-      "completeTopics": 23,
-      "topicsWith3to6Subtopics": 24,
-      "subtopics": 72,
-      "completeSubtopics": 71
+      "completeTopics": 24,
+      "topicsWith3to6Subtopics": 25,
+      "subtopics": 75,
+      "completeSubtopics": 74
     }
   },
   "topics": {
@@ -13156,9 +13156,52 @@
       {
         "module": 2,
         "topic": "### Tema 5: OpenAPI con springdoc: el contrato como prueba",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "5.1",
+            "title": "#### Subtema 5.1: Publica el contrato de tu API · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "5.2",
+            "title": "#### Subtema 5.2: Describe éxito y errores en cada endpoint · 15 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "5.3",
+            "title": "#### Subtema 5.3: Evita cambios silenciosos con una prueba · 15 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 2,
