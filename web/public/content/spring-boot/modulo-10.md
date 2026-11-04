@@ -9,7 +9,7 @@ Cada tema demuestra un patrón de Spring Cloud con verificación real: config se
 
 **Duración estimada:** 35 min.
 **¿Por qué es importante?** Un Config Server entrega valores por aplicación y perfil; un DiscoveryClient resuelve nombres de servicio a direcciones sin fijar la URL en cada consumidor.
-**Prerrequisitos:** Spring Boot M0 T1 y Spring Cloud compatible con Spring Boot 4.1.2. Usa JDK 25.
+**Prerrequisitos:** Spring Boot M0 T1 y saber iniciar una app web. El laboratorio usa Boot 4.1.2, Java 25 y Spring Cloud 2025.1.4; Spring Cloud requiere la versión 2025.1.2 o posterior para Boot 4.1.x. Si generas otra versión, revisa la matriz antes de mezclar dependencias.
 **Proyecto continuo:** crear un servicio de pedidos que obtiene su configuración y resuelve una instancia de catálogo.
 
 #### Subtema 1.1: Sirve configuración desde archivos · 15 min
@@ -18,17 +18,14 @@ Cada tema demuestra un patrón de Spring Cloud con verificación real: config se
 Un servicio de pedidos debe obtener un valor compartido por HTTP para que puedas cambiarlo sin editar su código fuente.
 
 **2. Hazlo tú**
-Crea el proyecto demo-config-server con Spring Initializr y las dependencias web y cloud-config-server. Desde una terminal:
+Crea el proyecto `demo-config-server` con Spring Initializr, Java 25 y las dependencias web y `cloud-config-server`. Spring Initializr selecciona el BOM compatible. Para ejecutar la versión comprobada que acompaña este curso, usa `examples/spring-cloud-config-discovery-rutaflow/` desde la raíz del repositorio:
 
 ```bash
-mkdir -p demo-config-server
-cd demo-config-server
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web,cloud-config-server -d javaVersion=25 -d artifactId=demo-config-server -o app.zip
-unzip -o app.zip
-mkdir -p src/main/resources/config
+cd examples/spring-cloud-config-discovery-rutaflow
+./mvnw -q clean test
 ```
 
-En src/main/resources/application.yml, crea esta configuración completa del servidor:
+Inspecciona `src/main/resources/application.yml`. Esta es la configuración completa del laboratorio; `accept-empty: false` permite distinguir una app sin archivos con un 404:
 
 ```yaml
 server:
@@ -70,7 +67,7 @@ public class DemoConfigServerApplication {
 }
 ```
 
-Desde la raíz del proyecto, arranca la aplicación:
+Desde la carpeta del laboratorio, arranca la aplicación:
 
 ```bash
 ./mvnw spring-boot:run
@@ -82,9 +79,9 @@ En otra terminal, consulta el perfil default:
 curl -i http://localhost:8888/servicio-pedidos/default
 ```
 
-**Resultado esperado:** HTTP 200 y un Environment que incluye descuento-maximo con valor 15.
+**Resultado esperado:** las pruebas pasan y HTTP devuelve 200 con un Environment que incluye `descuento-maximo` con valor 15. Para ver el JSON, ejecuta `./mvnw spring-boot:run` y en otra terminal repite el `curl`.
 
-**Fallo deliberado:** cambia search-locations a classpath:/configs y repite la consulta. **Error esperado:** la respuesta no incluye la propiedad descuento-maximo. **Diagnóstico:** el archivo está en config, pero el servidor busca configs; corrige la ruta o mueve el archivo.
+**Fallo deliberado:** cambia `search-locations` a `classpath:/configs` y ejecuta otra vez `./mvnw -q test`. **Error esperado:** falla la prueba HTTP porque el servidor no encuentra el YAML. **Diagnóstico:** el archivo está en `src/main/resources/config`, pero el servidor busca `configs`; restaura `classpath:/config`.
 
 **3. Entiende**
 El perfil native permite leer archivos del classpath o del sistema de archivos sin un remoto Git. La ruta HTTP combina el nombre de aplicación y el perfil para construir el Environment que recibe el cliente.
@@ -98,7 +95,7 @@ Guarda la respuesta de curl y señala la propiedad que leyó el servidor.
 El descuento permitido puede cambiar entre desarrollo y producción; un nombre de aplicación mal escrito debe diagnosticarse mirando el Environment que devolvió el servidor.
 
 **2. Hazlo tú**
-Crea src/main/resources/config/servicio-pedidos-produccion.yml:
+Abre `src/main/resources/config/servicio-pedidos-produccion.yml`, que ya contiene esta configuración, y compárala con `servicio-pedidos.yml`:
 
 ```yaml
 pedidos:
@@ -115,10 +112,12 @@ curl -i http://localhost:8888/servicio-inexistente/default
 
 **Resultado esperado:** default informa 15 y produccion informa 5. Con la configuración predeterminada, el nombre inexistente puede responder 200 con un Environment sin propertySources útiles.
 
-**Fallo deliberado:** cambia la ruta del perfil produccion a producion. **Resultado erróneo esperado:** la propiedad no toma el valor 5. **Diagnóstico:** compara el nombre escrito en la ruta con el sufijo del archivo; restaura produccion. Si necesitas 404 para aplicaciones desconocidas, configura spring.cloud.config.server.accept-empty=false.
+En este laboratorio, `accept-empty: false` hace que la ruta de aplicación desconocida devuelva 404; `sirveConfiguracionDefaultYProduccionPorHttp` prueba los dos perfiles y `rechazaUnNombreDeAplicacionQueNoTieneArchivo` comprueba ese caso.
+
+**Fallo deliberado:** cambia la ruta del perfil `produccion` a `producion`. **Resultado erróneo esperado:** la propiedad no toma el valor 5. **Diagnóstico:** compara el nombre escrito en la URL con el sufijo del archivo; restaura `produccion`. En el laboratorio el nombre desconocido devuelve 404 por `spring.cloud.config.server.accept-empty: false`.
 
 **3. Entiende**
-El perfil corresponde al sufijo del archivo, por ejemplo servicio-pedidos-produccion.yml. El Config Server acepta por defecto configuraciones vacías; el estado HTTP por sí solo no confirma que encontraste la aplicación solicitada.
+El perfil corresponde al sufijo del archivo, por ejemplo `servicio-pedidos-produccion.yml`. El Config Server puede aceptar una configuración vacía; para que el cliente detecte un ID no encontrado, este laboratorio establece `accept-empty: false`.
 
 **4. Cierra**
 Entrega las dos respuestas válidas y explica por qué la respuesta de una app desconocida debe inspeccionarse.
@@ -129,7 +128,7 @@ Entrega las dos respuestas válidas y explica por qué la respuesta de una app d
 El servicio de pedidos debe encontrar catálogo mediante su nombre de servicio y una dirección configurada, sin guardar esa URL dentro de su código.
 
 **2. Hazlo tú**
-Crea src/test/java/com/example/democonfigserver/DiscoveryClientTest.java con este test completo:
+Abre `src/test/java/academia/rutaflow/cloud/ConfigServerAndDiscoveryTest.java` y localiza `resuelveInstanciaCatalogoConSimpleDiscoveryClient`. Ejecuta el test desde la carpeta del laboratorio:
 
 ```java
 package com.example.democonfigserver;
@@ -163,12 +162,12 @@ class DiscoveryClientTest {
 Desde la raíz del proyecto, ejecuta:
 
 ```bash
-./mvnw test -Dtest=DiscoveryClientTest
+./mvnw -q -Dtest=ConfigServerAndDiscoveryTest#resuelveInstanciaCatalogoConSimpleDiscoveryClient test
 ```
 
 **Resultado esperado:** BUILD SUCCESS y una instancia cuyo URI es http://localhost:8081.
 
-**Fallo deliberado:** cambia catalogo en getInstances a pedidos. **Error esperado:** la aserción de tamaño falla porque no existe una instancia configurada con ese nombre lógico. **Diagnóstico:** las dos partes deben usar el mismo service ID; comprueba el prefijo de la propiedad simple.instances.
+**Fallo deliberado:** cambia `getInstances("catalogo")` por `getInstances("pedidos")` y ejecuta el test de nuevo. **Error esperado:** la aserción falla porque no existe una instancia con ese nombre lógico. **Diagnóstico:** el ID consultado debe coincidir con la clave `catalogo` en `spring.cloud.discovery.client.simple.instances` de `application.yml`.
 
 **3. Entiende**
 SimpleDiscoveryClient obtiene instancias desde propiedades y permite probar el contrato DiscoveryClient sin operar un registro como Eureka o Consul. En producción el mecanismo de registro se selecciona según las necesidades de despliegue; este laboratorio solo demuestra la resolución por nombre.
@@ -193,7 +192,7 @@ flowchart LR
   DC -->|resuelve| U[URI configurada]
 ```
 
-**Fuentes oficiales:** [backend nativo de Config Server](https://docs.spring.io/spring-cloud-config/reference/server/environment-repository/file-system-backend.html), [Environment y perfiles](https://docs.spring.io/spring-cloud-config/reference/server/environment-repository.html) y [SimpleDiscoveryClient](https://docs.spring.io/spring-cloud-commons/reference/spring-cloud-commons/common-abstractions.html).
+**Fuentes oficiales:** [matriz de compatibilidad de Spring Cloud](https://spring.io/projects/spring-cloud), [backend nativo de Config Server](https://docs.spring.io/spring-cloud-config/reference/server/environment-repository/file-system-backend.html), [Environment y perfiles](https://docs.spring.io/spring-cloud-config/reference/server/environment-repository.html) y [SimpleDiscoveryClient](https://docs.spring.io/spring-cloud-commons/reference/spring-cloud-commons/common-abstractions.html).
 
 **Transferencia al proyecto integrador:** carga el descuento desde configuración externa y resuelve por nombre la instancia del servicio que administra catálogo.
 

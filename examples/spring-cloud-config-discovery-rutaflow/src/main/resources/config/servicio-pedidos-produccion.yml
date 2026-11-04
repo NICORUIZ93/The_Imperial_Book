@@ -1,0 +1,4 @@
+pedidos:
+  descuento-maximo: 5
+catalogo:
+  endpoint: http://catalogo:8081

@@ -931,3 +931,37 @@ Cobertura automática después de M9 T3: **144/1185 temas atómicos**, **1082/11
 practicables**, **1030/1185 completos en la auditoría de siete pasos** y 409 temas
 con señales automatizadas de defecto de sustancia. Las cifras describen estructura,
 no comprensión ni validación humana.
+
+
+Spring Boot M10 T1, “Config Server y service discovery”, se revisó contra la
+matriz oficial de Spring Cloud y sus referencias de Config Server y Commons. La
+matriz establece Spring Cloud 2025.1.2 o posterior para Spring Boot 4.1.x; el
+tema ahora identifica la pareja comprobada Boot 4.1.2 + Cloud 2025.1.4 y enlaza
+la matriz. Se añadió `examples/spring-cloud-config-discovery-rutaflow/`, una app
+real con backend `native`, perfiles `default`/`produccion`, `accept-empty: false`
+y una instancia estática `catalogo` servida por `SimpleDiscoveryClient`. El texto
+del tema guía a inspeccionar archivos existentes del laboratorio, ejecutar las
+pruebas y luego reproducir los errores deliberados.
+
+`./mvnw -q clean test` pasó con **3 pruebas**: peticiones HTTP a ambos perfiles,
+404 para una aplicación sin archivo y resolución del URI por `DiscoveryClient`.
+Dos mutaciones deliberadas, probadas y revertidas, hicieron fallar las pruebas:
+buscar YAML bajo `classpath:/configs` y consultar `pedidos` en vez de `catalogo`.
+No se levantó un registro Eureka/Consul ni se probó configuración Git remota;
+este tema enseña explícitamente el backend local de inicio y `SimpleDiscoveryClient`,
+no el despliegue de producción. Fuentes primarias contrastadas: [matriz Spring
+Cloud](https://spring.io/projects/spring-cloud), [Config Server native
+backend](https://docs.spring.io/spring-cloud-config/reference/server/environment-repository/file-system-backend.html)
+y [SimpleDiscoveryClient](https://docs.spring.io/spring-cloud-commons/reference/spring-cloud-commons/common-abstractions.html).
+
+El conteo automático permanece en **144/1185 temas atómicos**, **1082/1185
+practicables**, **1030/1185 completos en siete pasos** y 409 con señales de
+defecto de sustancia: M10 T1 ya cumplía los detectores de cuatro pasos antes de
+añadirle el laboratorio, así que no se suma un nuevo tema a la métrica. Son
+indicadores estructurales y no certifican calidad humana ni dominio.
+
+**Siguiente tema:** Spring Boot M10 T2, “Spring Cloud Gateway”. Antes de editarlo,
+lee la lección completa, el proyecto de gateway que ya existe en el repositorio y
+la documentación oficial de compatibilidad y rutas. Mantén el mismo contrato de
+4 pasos por subtema, ejecuta fallos deliberados en aislamiento y publica ese tema
+con su laboratorio separado.
