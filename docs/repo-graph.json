@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 160,
+      "lines": 163,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 13601,
+      "lines": 13644,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -314,7 +314,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1130,
+      "lines": 1129,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -600,7 +600,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3717,
+      "lines": 3724,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13540,
+      "lines": 13542,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 331,
+      "lines": 334,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -11635,7 +11635,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-0.md",
-      "lines": 464,
+      "lines": 488,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -11650,8 +11650,8 @@
         "#### Subtema 1.2: Deja que Spring conecte el servicio \u00b7 10 min",
         "#### Subtema 1.3: Observa el cableado con una petici\u00f3n HTTP \u00b7 10 min",
         "### Tema 2: Inyecci\u00f3n por constructor vs por campo",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real"
+        "#### Subtema 2.1: Prueba la regla sin iniciar Spring \u00b7 10 min",
+        "#### Subtema 2.2: Observa la inyecci\u00f3n de campo con el contexto \u00b7 10 min"
       ]
     },
     {

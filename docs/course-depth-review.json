@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 209,
+    "topicsWithSignals": 210,
     "newLaboratories": 25
   },
   "priorities": {
@@ -12273,7 +12273,9 @@
       "title": "Tema 2: Inyección por constructor vs por campo",
       "file": "web/public/content/spring-boot/modulo-0.md",
       "line": 198,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -12283,7 +12285,7 @@
       "module": 0,
       "title": "Tema 3: Estereotipos, autoconfiguración y scopes",
       "file": "web/public/content/spring-boot/modulo-0.md",
-      "line": 332,
+      "line": 356,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

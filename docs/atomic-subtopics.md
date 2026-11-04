@@ -2,7 +2,7 @@
 
 > Auditoría estructural. Un encabezado o criterio detectado no demuestra que el ejemplo se haya ejecutado ni que la explicación sea pedagógicamente suficiente.
 
-Temas conformes a cuatro pasos: **119/1185**. Tracks inventariados: **14**.
+Temas conformes a cuatro pasos: **120/1185**. Tracks inventariados: **14**.
 
 | Track | Temas conformes | Temas inventariados | Subtemas detectados | Subtemas con estructura completa |
 |---|---:|---:|---:|---:|
@@ -19,7 +19,7 @@ Temas conformes a cuatro pasos: **119/1185**. Tracks inventariados: **14**.
 | node | 2 | 83 | 6 | 6 |
 | react | 0 | 58 | 0 | 0 |
 | rutaflow | 0 | 29 | 0 | 0 |
-| spring-boot | 15 | 111 | 45 | 45 |
+| spring-boot | 16 | 111 | 48 | 48 |
 
 ## Temas pendientes
 
@@ -1031,7 +1031,6 @@ Temas conformes a cuatro pasos: **119/1185**. Tracks inventariados: **14**.
 
 ### spring-boot
 
-- M0 ### Tema 2: Inyección por constructor vs por campo: tiene 0 subtemas
 - M0 ### Tema 3: Estereotipos, autoconfiguración y scopes: tiene 0 subtemas
 - M1 ### Tema 1: Spring Initializr y starters: tiene 0 subtemas
 - M1 ### Tema 2: application.yml vs application.properties: tiene 0 subtemas

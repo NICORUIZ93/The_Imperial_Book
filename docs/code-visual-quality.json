@@ -99,10 +99,10 @@
     "spring-boot": {
       "topics": 111,
       "code": 111,
-      "commentedCode": 72,
+      "commentedCode": 71,
       "mermaid": 49,
       "archifyVisual": 4,
-      "asciiVisual": 19,
+      "asciiVisual": 18,
       "misleadingDiagramLabel": 0,
       "filePath": 111,
       "runCommand": 111,
@@ -2533,6 +2533,13 @@
       "track": "spring-boot",
       "module": 0,
       "topic": "Tema 1: Inversión de control y el contenedor de Spring",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 0,
+      "topic": "Tema 2: Inyección por constructor vs por campo",
       "missingCode": false,
       "missingComments": true
     },

@@ -1698,7 +1698,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "47ca0558f0765a26bc66d39b1f9cc354e182b5c9ed30cf427b31133aeb297833",
+    "fingerprint": "6e0a6f764705d51aca8ce82380f8ee13e0f4dc04842d091699748ae6676d60fb",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10284,9 +10284,9 @@
       {
         "issues": [],
         "module": 0,
-        "tailWords": 198,
+        "tailWords": 0,
         "topic": "Tema 2: Inyección por constructor vs por campo",
-        "words": 1081
+        "words": 933
       },
       {
         "issues": [],

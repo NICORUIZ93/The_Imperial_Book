@@ -89,8 +89,8 @@ reapliques cambios que ya estén publicados.
 
 ## Estado global honesto
 
-En la auditoría actual: **119/1185 temas** cumplen la estructura atómica en los
-14 tracks; Java aporta 101 y Spring Boot 1. La auditoría pedagógica detecta
+En la auditoría actual: **120/1185 temas** cumplen la estructura atómica en los
+14 tracks; Java aporta 101 y Spring Boot 2. La auditoría pedagógica detecta
 **1095/1185 temas practicables** y deuda en 90. La auditoría de sustancia registra
 409 temas con defectos, deuda histórica repartida entre varios tracks. Ninguna de
 estas cifras certifica que un curso esté completo o que todos los ejemplos se
@@ -146,14 +146,17 @@ las limitaciones observadas.
 
 Spring Boot M0 T1 se reescribió desde la introducción larga de siete pasos a tres
 subtemas: contrato e implementación del repositorio, inyección por constructor y
-consulta HTTP. Usa clases Java completas, comandos y fallos con diagnóstico. Los
-fundamentos y requisitos se contrastaron con documentación oficial de Spring Boot.
-El ejemplo didáctico no se ejecutó como proyecto aparte; las validaciones
-estructurales del repositorio sí deben pasar antes de publicar.
+consulta HTTP. M0 T2 también se reorganizó en tres subtemas: prueba unitaria sin
+contenedor, prueba de campo con `@SpringBootTest` y elección de la prueba según su
+objetivo. Se corrigió la afirmación de que los campos impiden pruebas unitarias:
+Mockito, setters o reflexión también pueden usarse; constructor sigue recomendado
+para dependencias obligatorias. Las fuentes oficiales de Spring se contrastaron.
+Los ejemplos didácticos no se ejecutaron como proyecto aparte; las validaciones
+estructurales del repositorio sí pasaron antes de publicar.
 
-**Siguiente tema:** Spring Boot M0 T2, “Inyección por constructor vs por campo”.
-Audítalo completo: conserva la comparación útil, elimina afirmaciones imprecisas
-(por ejemplo, que un test sin contenedor requiere necesariamente reflexión) y
-organízalo en 3–6 subtemas. Muestra un test pequeño reproducible y explica cuándo
-se usa un test unitario frente a uno de contexto sin hacer afirmaciones absolutas.
-Después sigue en orden por M0 antes de saltar a módulos avanzados.
+**Siguiente tema:** Spring Boot M0 T3, “Estereotipos, autoconfiguración y scopes”.
+Revisa con cuidado las afirmaciones sobre `@Repository`, starters, versiones y
+`prototype` frente a una petición HTTP. Organízalo en 3–6 subtemas con ejemplo,
+comando, salida y fallo diagnóstico; comprueba las afirmaciones variables en
+documentación primaria. Después sigue en orden por M0 antes de saltar a módulos
+avanzados.

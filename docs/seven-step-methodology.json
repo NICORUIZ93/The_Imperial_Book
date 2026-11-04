@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 96,
-      "prerequisites": 105,
-      "context": 96,
-      "theoryAnalogy": 96,
-      "guidedDemo": 96,
+      "objective": 95,
+      "prerequisites": 104,
+      "context": 95,
+      "theoryAnalogy": 95,
+      "guidedDemo": 95,
       "codeExplanation": 111,
-      "execution": 105,
+      "execution": 106,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 96,
-      "independentPractice": 96,
-      "closure": 96,
-      "commonErrors": 96,
-      "resources": 103,
-      "standaloneExample": 92,
+      "guidedPractice": 95,
+      "independentPractice": 95,
+      "closure": 95,
+      "commonErrors": 95,
+      "resources": 102,
+      "standaloneExample": 91,
       "learningEvidence": 100,
-      "complete": 92
+      "complete": 91
     }
   },
   "topics": {
@@ -28243,7 +28243,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -28255,7 +28255,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 3,
+          "stepsPassed": 4,
           "complete": false
         }
       },
@@ -28263,26 +28263,26 @@
         "module": 0,
         "topic": "Tema 2: Inyección por constructor vs por campo",
         "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "objective": false,
+          "prerequisites": false,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 5,
+          "complete": false
         }
       },
       {

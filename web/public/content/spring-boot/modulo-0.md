@@ -197,40 +197,19 @@ Este mismo mecanismo se usará en el proyecto integrador: el servicio de envíos
 
 ### Tema 2: Inyección por constructor vs por campo
 
-#### Paso 1 · Objetivo y preparación
+En el tema anterior, `ServicioEnvios` recibió el repositorio por su constructor. Aquí compararás esa forma con un campo `@Autowired` y comprobarás qué aprende cada tipo de prueba. Necesitas el proyecto y los archivos del Tema 1.
 
-Al finalizar podrás explicar por qué la inyección por constructor permite declarar dependencias `final` y testear sin contenedor, mientras la inyección por campo no.
+**¿Por qué es importante?** Una dependencia obligatoria debe estar lista al crear el servicio. La forma de recibirla afecta qué puede garantizar Java y qué tiene que preparar cada prueba.
 
-**Conocimiento previo:** Tema 1 de este módulo.
+#### Subtema 2.1: Prueba la regla sin iniciar Spring · 10 min
 
-#### Paso 2 · Contexto y caso real
+**1. Contexto**
 
-**¿Por qué es importante?** Escribir un test unitario de `ServicioTareas` sin levantar el contenedor completo de Spring (mucho más rápido que un test de integración) solo es directo si la dependencia se recibe por constructor; con inyección por campo, no hay una forma simple de "pasarle" un mock sin reflexión o utilidades especiales de testing.
+Si solo quieres comprobar qué devuelve el servicio, puedes pasarle una implementación falsa del repositorio. No necesitas arrancar el contenedor.
 
-#### Paso 3 · Teoría con analogía
+**2. Hazlo tú**
 
-**Conceptos clave:** inmutabilidad (`final`), testabilidad sin el contenedor.
-
-`@Autowired private RepositorioTareas repositorio;` (inyección por campo) es sintácticamente más corta, pero el campo no puede declararse `final` (el lenguaje no impone ninguna garantía de inmutabilidad, aunque en la práctica Spring solo lo asigne una vez), y escribir un test unitario sin levantar el contenedor completo se vuelve difícil: no existe una forma directa de asignar el mock a un campo privado sin reflexión. Con inyección por constructor, el campo puede declararse `final` (inmutabilidad verificada por el compilador), y un test unitario basta con escribir `new ServicioTareas(repositorioMockeado)` directamente, sin ningún contenedor.
-
-**Analogía:** la inyección por campo es como recibir una herramienta por una ranura oculta después de que ya empezaste a trabajar, sin que quede claro en qué momento exacto llegó; la inyección por constructor es como recibir todas las herramientas necesarias en tus manos directamente al comenzar tu turno, con la garantía explícita de que las tienes desde el primer momento.
-
-**Diagrama:**
-
-```
-┌── inyección por constructor ──────────────┐
-│  final RepositorioTareas repositorio;        │
-│  test: new ServicioTareas(mock) — sin contenedor │
-└──────────────────────────────────────┘
-┌── inyección por campo ─────────────────────┐
-│  @Autowired RepositorioTareas repositorio;   │
-│  test: requiere reflexión o contenedor completo │
-└──────────────────────────────────────┘
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Desde una carpeta vacía (o continuando en `ejemplo-spring-m0`), crea `src/test/java/com/example/demo/ServicioTareasTest.java` con la versión que usa inyección por constructor:
+Crea `src/test/java/com/example/demo/ServicioEnviosTest.java`:
 
 ```java
 package com.example.demo;
@@ -238,27 +217,46 @@ package com.example.demo;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class ServicioTareasTest {
+class ServicioEnviosTest {
     @Test
-    void procesaUsandoElRepositorioInyectado() {
-        RepositorioTareas mock = () -> "datos de prueba";
-        ServicioTareas servicio = new ServicioTareas(mock); // sin contenedor, sin reflexión
-        assertEquals("procesado: datos de prueba", servicio.procesar());
+    void consultaElEstadoDelRepositorio() {
+        RepositorioEnvios falso = codigo -> "Preparando: " + codigo;
+        ServicioEnvios servicio = new ServicioEnvios(falso);
+
+        assertEquals("Preparando: RF-42", servicio.consultar("RF-42"));
     }
 }
 ```
 
-Guarda el archivo y ejecuta el test con Maven, sin levantar el contenedor de Spring:
+Desde la raíz del proyecto, ejecuta:
 
 ```bash
-# ejecuta con Maven el test unitario Java
-cd ejemplo-spring-m0
-./mvnw test
+./mvnw -Dtest=ServicioEnviosTest test
 ```
 
-**Explicación línea por línea:** `RepositorioTareas mock = () -> "datos de prueba"` crea una implementación falsa inline (una lambda que satisface la interfaz); `new ServicioTareas(mock)` construye el servicio directamente, pasando el mock como argumento del constructor — no se necesita ningún contenedor de Spring ni anotación para que este test funcione.
+En PowerShell, usa `./mvnw.cmd -Dtest=ServicioEnviosTest test`.
 
-Ahora reescribe `ServicioTareas` para usar inyección por campo en vez de por constructor, e intenta escribir el mismo test sin contenedor:
+**Resultado esperado:** Maven termina en `BUILD SUCCESS` y el test queda en verde.
+
+**Fallo deliberado:** cambia el esperado a `Entregado: RF-42`. **Diagnóstico:** el test informa que recibió `Preparando: RF-42`; el servicio está usando el resultado del repositorio falso. Restaura el valor esperado.
+
+**3. Entiende**
+
+El constructor obliga a entregar `RepositorioEnvios` cuando se crea `ServicioEnvios`. El test usa `new` porque está probando esa clase directamente; no necesita que Spring cree el servicio.
+
+**4. Cierra**
+
+Guarda el test y explica qué resultado controla el repositorio falso. El siguiente subtema usará Spring para crear una variante con inyección por campo.
+
+#### Subtema 2.2: Observa la inyección de campo con el contexto · 10 min
+
+**1. Contexto**
+
+Un campo `@Autowired` se completa cuando Spring crea el bean. Para comprobar esa conexión, la prueba sí debe iniciar el contexto de la aplicación.
+
+**2. Hazlo tú**
+
+Crea `src/main/java/com/example/demo/ServicioEnviosCampo.java`:
 
 ```java
 package com.example.demo;
@@ -267,67 +265,93 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ServicioTareasConCampo {
+public class ServicioEnviosCampo {
     @Autowired
-    private RepositorioTareas repositorio; // no puede ser final; se asigna DESPUÉS de construir, vía reflexión
+    private RepositorioEnvios repositorio;
 
-    public String procesar() {
-        return "procesado: " + repositorio.buscar();
+    public String consultar(String codigo) {
+        return repositorio.buscarEstado(codigo);
     }
 }
 ```
 
-Intenta escribir el test equivalente al del constructor, sin contenedor:
+Crea `src/test/java/com/example/demo/ServicioEnviosCampoTest.java`:
 
 ```java
-@Test
-void procesaUsandoElRepositorioInyectado() {
-    ServicioTareasConCampo servicio = new ServicioTareasConCampo();
-    // repositorio es privado: no hay setter ni constructor que lo reciba
-    servicio.procesar(); // NullPointerException: repositorio nunca se asignó
+package com.example.demo;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+@SpringBootTest
+class ServicioEnviosCampoTest {
+    @Autowired
+    private ServicioEnviosCampo servicio;
+
+    @Test
+    void springConectaElRepositorioAlServicio() {
+        assertEquals("En ruta: RF-42", servicio.consultar("RF-42"));
+    }
 }
 ```
 
-Ejecuta ambos tests con Maven:
+Ejecuta:
 
 ```bash
-# ejecuta ambos tests Java con Maven y compara el resultado
-cd ejemplo-spring-m0
-./mvnw test
+./mvnw -Dtest=ServicioEnviosCampoTest test
 ```
 
-**Resultado esperado:** `ServicioTareasTest` (constructor) pasa en verde; el test equivalente contra `ServicioTareasConCampo` falla con `NullPointerException` en `repositorio.buscar()`, porque el campo `private` anotado con `@Autowired` solo se asigna cuando el contenedor real de Spring construye el bean y luego inyecta el valor por reflexión — construir la clase con `new` directamente, como hace un test unitario sin contenedor, deja el campo sin asignar.
+**Resultado esperado:** el test pasa. A diferencia del test anterior, `@SpringBootTest` inicia Spring para crear el servicio y asignar el repositorio.
 
-**Fallo deliberado:** intenta asignar el mock directamente al campo (`servicio.repositorio = mock;`) sin cambiar la visibilidad del campo. La compilación falla: `repositorio has private access in ServicioTareasConCampo` — diagnostica confirmando que un campo `private` sin setter no es asignable desde fuera de la clase sin recurrir a reflexión (`Field.setAccessible(true)`), la herramienta adicional que la inyección por campo obliga a usar en un test que quiere evitar levantar el contenedor completo.
+**Fallo deliberado:** quita `@Autowired` del campo y ejecuta el test. **Diagnóstico:** al llamar `consultar`, el campo sigue `null` y aparece `NullPointerException`; restáuralo para que Spring lo asigne.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**3. Entiende**
 
-1. Agrega un segundo método a `ServicioTareas` y extiende el test con constructor para cubrirlo, sin ningún contenedor.
-2. Intenta escribir un test equivalente para una clase con inyección por campo usando reflexión (`Field.setAccessible(true)`) y compara la complejidad frente al constructor.
-3. Convierte una dependencia `final` en no-`final` y explica qué garantía del compilador se pierde.
-4. Escribe de memoria (sin mirar) un test unitario que instancie una clase con una dependencia mockeada pasada por constructor.
+La inyección por campo funciona, pero Java no obliga a asignar el campo y no puede ser `final`. También oculta una dependencia obligatoria. Puedes probarla sin contexto usando otras técnicas, pero este ejemplo usa el contexto porque quiere verificar que Spring conecte los beans.
 
-**Pista:** si escribir un test requiere reflexión o levantar un contenedor completo, es una señal de que la clase depende de inyección por campo en vez de por constructor.
+**4. Cierra**
 
-#### Paso 6 · Práctica independiente
+Anota cuál de los dos tests arranca el contexto y qué comportamiento verifica. El último paso te ayudará a elegir la prueba según la pregunta.
 
-**Completa el código:** rellena el espacio para declarar la dependencia como inmutable:
+#### Subtema 2.3: Elige la prueba que responde tu pregunta · 10 min
 
-```java
-private ____ RepositorioTareas repositorio;
+**1. Contexto**
+
+Un test puede comprobar una regla de una clase o comprobar además que Spring detecta y conecta los beans. Son preguntas diferentes.
+
+**2. Hazlo tú**
+
+Ejecuta por separado `src/test/java/com/example/demo/ServicioEnviosTest.java` y `src/test/java/com/example/demo/ServicioEnviosCampoTest.java` desde la raíz del proyecto:
+
+```bash
+./mvnw -Dtest=ServicioEnviosTest test
+./mvnw -Dtest=ServicioEnviosCampoTest test
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una clase con inyección por constructor y su test unitario correspondiente instanciándola directamente con un mock. Compara después contra el patrón del Paso 4.
+**Resultado esperado:** ambos terminan en `BUILD SUCCESS`; el primero crea su servicio directamente y el segundo carga el contexto Spring.
 
-#### Paso 7 · Cierre y evidencia
+**Fallo deliberado:** quita `@Service` de `ServicioEnviosCampo` y ejecuta el segundo test. **Diagnóstico:** Spring no puede inyectar ese bean en la prueba; restaura `@Service`. El test unitario de constructor debe seguir pasando, porque no depende del registro del bean.
 
-Ya distingues por qué la inyección por constructor permite inmutabilidad real y tests simples sin contenedor, confirmando con ejecución real que la alternativa por campo depende de un mecanismo externo. El siguiente tema cubre los estereotipos de Spring y cómo `spring-boot-starter-web` autoconfigura el proyecto. **Evidencia:** entrega el resultado del test con constructor y el error real al intentar el equivalente sin inyección por constructor. Fuente oficial: [Spring Framework — Dependency Injection](https://docs.spring.io/spring-framework/reference/core/beans/dependencies/factory-collaborators.html).
+**3. Entiende**
 
-**Errores comunes:** usar `@Autowired` sobre un campo por costumbre en vez de preferir el constructor; declarar dependencias no-`final` sin necesidad, perdiendo la garantía de inmutabilidad verificada por el compilador.
+Para una regla de negocio simple, el constructor facilita un test rápido con una dependencia falsa. Usa `@SpringBootTest` cuando la pregunta incluya configuración, escaneo o conexión entre beans. Los campos se pueden probar sin contexto mediante Mockito, setters o reflexión; por eso no es correcto decir que la inyección por campo vuelve imposible el test unitario. El equipo de Spring recomienda constructor para dependencias requeridas: permite campos `final` y evita que el objeto se cree incompleto.
 
-**Cuándo no usarlo:** para una clase con muchísimas dependencias opcionales donde un constructor gigante sería poco legible, considera un objeto de configuración o builder en vez de forzar todo por un único constructor; eso no es lo mismo que volver a inyección por campo, pero reconoce el límite práctico de un constructor con demasiados parámetros.
+```text
+┌── Test unitario ──────────┐   ┌── Test de contexto ──────┐
+│ test → servicio → falso   │   │ test → Spring → servicio │
+│ sin crear el contenedor   │   │        → repositorio     │
+└───────────────────────────┘   └─────────────────────────┘
+```
 
-Elegir inyección por constructor en vez de por campo es la práctica que aplicarás en cada bean del proyecto integrador de este track (microservicio productivo, Módulo 12).
+**4. Cierra**
+
+**Práctica independiente:** modifica la respuesta del repositorio falso y actualiza el test unitario. Después registra cuál de las dos pruebas ejecutaste y qué demuestra cada una. En el proyecto integrador, usa pruebas unitarias para reglas del servicio y una prueba con contexto cuando necesites verificar el cableado. El siguiente tema separa los estereotipos de Spring y las funciones que trae cada starter.
+
+**Fuentes primarias:** [inyección de dependencias en Spring Boot](https://docs.spring.io/spring-boot/reference/using/spring-beans-and-dependency-injection.html), [pruebas de aplicaciones Spring Boot](https://docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html), [inyección de dependencias en Spring Framework](https://docs.spring.io/spring-framework/reference/core/beans/dependencies/factory-collaborators.html).
+
+**Decisión práctica:** prefiere constructor para dependencias obligatorias. La inyección por campo no es imposible ni está prohibida; el constructor hace visibles los requisitos y deja que el compilador proteja la referencia con `final`.
 
 ### Tema 3: Estereotipos, autoconfiguración y scopes
 
