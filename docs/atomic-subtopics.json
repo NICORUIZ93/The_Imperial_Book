@@ -51,10 +51,10 @@
     },
     "java": {
       "topics": 101,
-      "completeTopics": 98,
-      "topicsWith3to6Subtopics": 98,
-      "subtopics": 298,
-      "completeSubtopics": 298
+      "completeTopics": 99,
+      "topicsWith3to6Subtopics": 99,
+      "subtopics": 301,
+      "completeSubtopics": 301
     },
     "javascript": {
       "topics": 88,
@@ -8330,9 +8330,52 @@
       {
         "module": 20,
         "topic": "### Tema 11: Streams paralelos: comparar antes de acelerarlos",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "11.1",
+            "title": "#### Subtema 11.1: Comparar resultados · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "11.2",
+            "title": "#### Subtema 11.2: Mantener el orden de salida · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "11.3",
+            "title": "#### Subtema 11.3: Medir sin prometer un ganador · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 20,

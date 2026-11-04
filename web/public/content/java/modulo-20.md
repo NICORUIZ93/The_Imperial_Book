@@ -1365,11 +1365,10 @@ Al finalizar compararás el mismo cálculo secuencial y paralelo, y elegirás un
 
 #### Paso 4 · Ejercicio 1
 
-##### Subtema 11.1: Comparar resultados · 5-10 min
+#### Subtema 11.1: Comparar resultados · 10 min
+**1. Contexto** suma los kilos de 100 000 envíos.
 
-**Contexto:** suma los kilos de 100 000 envíos.
-
-**Hazlo tú:** crea `java-funcional-t11/src/Comparar.java`:
+**2. Hazlo tú** crea `java-funcional-t11/src/Comparar.java`:
 
 ```java
 import java.util.stream.LongStream;
@@ -1390,15 +1389,18 @@ Ejecuta `cd java-funcional-t11 && java src/Comparar.java`.
 
 **Fallo deliberado:** cambia la suma por restas en una combinación paralela. **Resultado del fallo:** el resultado deja de ser una suma estable. **Diagnóstico:** la operación de combinación debe tener el mismo sentido cuando Java junta grupos distintos.
 
-**Entiende:** primero comprueba que ambas versiones dan la misma respuesta; medir velocidad viene después.
+**3. Entiende** primero comprueba que ambas versiones dan la misma respuesta; medir velocidad viene después.
+
+**4. Cierra**
+
+Guarda ambas salidas, el tamaño de la prueba y las mediciones que observaste.
 
 #### Paso 5 · Ejercicio 2
 
-##### Subtema 11.2: Mantener el orden de salida · 5-10 min
+#### Subtema 11.2: Mantener el orden de salida · 10 min
+**1. Contexto** una etiqueta se imprime siguiendo el número de guía.
 
-**Contexto:** una etiqueta se imprime siguiendo el número de guía.
-
-**Hazlo tú:** crea `java-funcional-t11/src/OrdenParalelo.java`:
+**2. Hazlo tú** crea `java-funcional-t11/src/OrdenParalelo.java`:
 
 ```java
 import java.util.List;
@@ -1416,15 +1418,18 @@ Ejecuta `cd java-funcional-t11 && java src/OrdenParalelo.java`.
 
 **Fallo deliberado:** cambia a `forEach`. **Resultado del fallo:** el orden deja de estar garantizado. **Diagnóstico:** un stream paralelo no promete el orden de `forEach`.
 
-**Entiende:** conservar el orden puede reducir la ventaja de paralelizar; si el orden importa, decláralo.
+**3. Entiende** conservar el orden puede reducir la ventaja de paralelizar; si el orden importa, decláralo.
+
+**4. Cierra**
+
+Guarda ambas salidas, el tamaño de la prueba y las mediciones que observaste.
 
 #### Paso 6 · Ejercicio 3
 
-##### Subtema 11.3: Medir sin prometer un ganador · 5-10 min
+#### Subtema 11.3: Medir sin prometer un ganador · 10 min
+**1. Contexto** registra cuánto tarda cada forma en tu equipo.
 
-**Contexto:** registra cuánto tarda cada forma en tu equipo.
-
-**Hazlo tú:** crea `java-funcional-t11/src/Medir.java`:
+**2. Hazlo tú** crea `java-funcional-t11/src/Medir.java`:
 
 ```java
 import java.util.stream.LongStream;
@@ -1449,7 +1454,11 @@ Ejecuta `cd java-funcional-t11 && java src/Medir.java` varias veces.
 
 **Fallo deliberado:** mide una lista de tres elementos y concluye que esa prueba representa producción. **Diagnóstico:** una muestra pequeña y una sola corrida no describen el costo real de la aplicación.
 
-**Entiende:** compara valores de salida primero; usa datos y repeticiones representativos antes de cambiar el sistema.
+**3. Entiende** compara valores de salida primero; usa datos y repeticiones representativos antes de cambiar el sistema.
+
+**4. Cierra**
+
+Guarda ambas salidas, el tamaño de la prueba y las mediciones que observaste.
 
 #### Paso 7 · Cierre y evidencia
 
