@@ -7,82 +7,67 @@ Cada tema se practica por separado con su propia repetición progresiva y su pro
 
 ### Tema 1: SecurityFilterChain moderno
 
-#### Paso 1 · Objetivo y preparación
+Al terminar, podrás añadir Spring Security al backend `academia-spring`, separar una ruta pública de las protegidas y probar la regla con MockMvc. Este tema usa HTTP Basic para mostrar la cadena de filtros; el siguiente añade JWT.
 
-Al finalizar podrás declarar un `SecurityFilterChain` como `@Bean` que permite rutas públicas y exige autenticación en el resto, y confirmar con `MockMvc` real los códigos 200 y 401 correspondientes.
+Prerrequisitos: API y pruebas de Spring Boot Módulos 1–3.
 
-**Conocimiento previo:** Spring Initializr y starters (Módulo 1); `@RestController` básico (Módulo 1).
-
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** Clientes, conductores y operadores consultan rutas distintas de una API de entregas; un endpoint de salud (`/public/health`) debe responder sin credencial para que un balanceador de carga lo consulte, mientras las rutas de negocio (`/api/**`) deben exigir identidad — confundir esta frontera expone datos y operaciones críticas.
-
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** configuración declarativa vía `@Bean`, reglas de autorización por ruta.
-
-La configuración moderna de Spring Security (reemplazando el patrón anterior basado en extender `WebSecurityConfigurerAdapter`, ahora deprecado) declara la cadena de filtros directamente como un `@Bean`: `http.authorizeHttpRequests(auth -> auth.requestMatchers("/public/**").permitAll().anyRequest().authenticated())` configura de forma fluida qué rutas requieren autenticación y cuáles están explícitamente permitidas sin ella. Este enfoque basado en `@Bean` refleja la migración general de Spring hacia composición explícita mediante beans en vez de herencia de clases base configurables.
-
-**Analogía:** el `SecurityFilterChain` es como una lista de control de acceso a la entrada de un edificio: especifica explícitamente qué áreas son de acceso público sin credencial, y cuáles requieren verificación de identidad antes de permitir el paso.
-
-**Diagrama:**
+**¿Por qué es importante?** La ruta de salud debe responder a un balanceador sin credencial; las operaciones con datos de clientes deben exigir una identidad. Una regla equivocada puede dejar pública toda la API.
 
 ```mermaid
 flowchart LR
-  A[petición entrante] --> B{"¿coincide con /public/**?"}
-  B -->|sí| C[permitAll: 200 sin autenticación]
-  B -->|no| D{"¿autenticada?"}
-  D -->|sí| E[200: acceso concedido]
-  D -->|no| F[401: no autenticado]
+  A["GET /public/health"] --> B["permitAll: 200"]
+  C["GET /api/entregas sin usuario"] --> D["401"]
+  E["GET /api/entregas con identidad"] --> F["200"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Subtema 4.1 · Proteger rutas del backend · 10 min
 
-Desde una carpeta vacía (o continuando en `academia-spring`, o créala con `mkdir -p academia-spring` si es tu primera vez), genera el proyecto con Spring Initializr real (`web`, `security`) y crea `src/main/java/com/academia/seguridad/SecurityConfig.java` junto con un controlador mínimo:
+**Contexto:** Spring Boot ya sirve tareas y documentación OpenAPI. Agrega la seguridad al mismo proyecto para que la regla viva junto al backend real.
 
-```bash
-mkdir -p academia-spring
-cd academia-spring
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web,security -d javaVersion=25 -d artifactId=academia-security -o app.zip
-unzip -o app.zip
-mkdir -p src/main/java/com/academia/seguridad
+**Hazlo tú:** En `pom.xml`, añade el starter de aplicación dentro de `<dependencies>`:
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security</artifactId>
+</dependency>
 ```
+
+Crea `src/main/java/com/example/demo/SecurityConfig.java`:
 
 ```java
-// src/main/java/com/academia/seguridad/SecurityConfig.java
-package com.academia.seguridad;
+package com.example.demo;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 public class SecurityConfig {
-
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
-            .csrf(csrf -> csrf.disable()) // API stateless: sin sesiones basadas en cookies
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/public/**").permitAll()
                 .anyRequest().authenticated())
-            .httpBasic(httpBasic -> {}) // autenticación básica real para este tema; JWT llega en el Tema 2
+            .httpBasic(Customizer.withDefaults())
             .build();
     }
 }
 ```
 
+Crea `src/main/java/com/example/demo/RutasController.java`:
+
 ```java
-// src/main/java/com/academia/seguridad/RutasController.java
-package com.academia.seguridad;
+package com.example.demo;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class RutasController {
-
     @GetMapping("/public/health")
     public String salud() { return "OK"; }
 
@@ -91,88 +76,142 @@ public class RutasController {
 }
 ```
 
-**Explicación línea por línea:** `requestMatchers("/public/**").permitAll()` declara explícitamente qué rutas no requieren autenticación; `anyRequest().authenticated()` exige identidad para cualquier otra ruta no listada; `httpBasic(...)` habilita autenticación básica real (usuario/contraseña) como mecanismo concreto de este tema, reemplazado por el filtro JWT en el Tema 2.
+**Resultado esperado:** desde la raíz, `./mvnw -q -Dtest=SecurityFilterChainTest test` aún no aplica porque el test se crea en el siguiente subtema. Comprueba al menos que `./mvnw -q compile` termina correctamente.
 
-Confirma con `MockMvc` real (levanta el contexto de seguridad completo, sin mockear la cadena de filtros) que `/public/health` responde sin credencial y `/api/entregas` exige autenticación:
+**Fallo deliberado y diagnóstico:** cambia `.authenticated()` por `.permitAll()` y arranca el backend. La aplicación inicia, pero esa regla hace pública cualquier ruta restante; el test del siguiente subtema debe detectar el problema. Restáurala a `.authenticated()` antes de continuar.
+
+**Entiende:** el filtro revisa cada petición antes de que llegue al controller. `permitAll()` deja pasar sin identidad; `authenticated()` exige una identidad ya comprobada; HTTP Basic pide usuario y contraseña mediante el encabezado de autenticación. CSRF queda habilitado con su valor seguro por defecto.
+
+**Cierra:** deja la regla privada en `.authenticated()` y guarda los nombres de las dos rutas que acabas de crear.
+
+#### Subtema 4.2 · Verificar 200, 401 y usuario autenticado · 10 min
+
+**Contexto:** Compilar no demuestra que la cadena se aplique. Usa MockMvc con los filtros del contexto para pedir la ruta pública y la protegida.
+
+**Hazlo tú:** En `pom.xml`, añade el starter de pruebas a `<dependencies>`:
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security-test</artifactId>
+    <scope>test</scope>
+</dependency>
+```
+
+Crea `src/test/java/com/example/demo/SecurityFilterChainTest.java`:
 
 ```java
-// src/test/java/com/academia/seguridad/SecurityFilterChainTest.java
-package com.academia.seguridad;
+package com.example.demo;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 class SecurityFilterChainTest {
-
-    @Autowired
-    private MockMvc mockMvc;
+    @Autowired MockMvc mockMvc;
 
     @Test
-    void rutaPublicaRespondeSinCredencial() throws Exception {
+    void publicaDejaPasarSinCredencial() throws Exception {
         mockMvc.perform(get("/public/health")).andExpect(status().isOk());
     }
 
     @Test
-    void rutaProtegidaExigeAutenticacion() throws Exception {
+    void protegidaRechazaSolicitudAnonima() throws Exception {
         mockMvc.perform(get("/api/entregas")).andExpect(status().isUnauthorized());
     }
 
     @Test
     @WithMockUser
-    void rutaProtegidaRespondeConUsuarioAutenticado() throws Exception {
+    void protegidaAceptaLaIdentidadDePrueba() throws Exception {
         mockMvc.perform(get("/api/entregas")).andExpect(status().isOk());
     }
 }
 ```
 
+Ejecuta desde la raíz:
+
 ```bash
-mvn test -Dtest=SecurityFilterChainTest           # Maven
-./gradlew test --tests SecurityFilterChainTest    # Gradle (equivalente)
+./mvnw -q -Dtest=SecurityFilterChainTest test
 ```
 
-**Resultado esperado:** `BUILD SUCCESS` con los 3 tests en verde: `/public/health` responde `200` sin credencial, `/api/entregas` responde `401` sin autenticar, y responde `200` cuando `@WithMockUser` simula un usuario autenticado real dentro del contexto de seguridad.
+**Resultado esperado:** los tres tests pasan: público `200`, anónimo protegido `401`, identidad de prueba `200`.
 
-**Fallo deliberado:** cambia `.anyRequest().authenticated()` por `.anyRequest().permitAll()` (permitiendo todo por error) y ejecuta de nuevo `mvn test -Dtest=SecurityFilterChainTest`. El test `rutaProtegidaExigeAutenticacion` FALLA con `expected: 401 but was: 200` — diagnostica confirmando con evidencia real, no una revisión visual del código, que esa única línea es la frontera completa entre una API protegida y una completamente abierta. Revierte el cambio antes de continuar.
+**Fallo deliberado y diagnóstico:** cambia `.anyRequest().authenticated()` a `.anyRequest().permitAll()` y repite el comando. El test anónimo falla con `expected 401 but was 200`: el controller responde, pero la cadena ya no frena a quien llega sin identidad. Restaura `.authenticated()`.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**Entiende:** `@WithMockUser` crea un principal solo para la prueba; no verifica una contraseña ni comprueba un proveedor de usuarios. MockMvc sí ejecuta la cadena de filtros real. La [guía de Spring Security sobre usuarios de prueba](https://docs.spring.io/spring-security/reference/servlet/test/mockmvc/authentication.html) aclara el alcance de esta anotación.
 
-1. Agrega una segunda ruta pública (`/public/version`) y confirma con un test real que responde `200` sin credencial.
-2. Cambia `/api/entregas` a `/api/entregas/**` y agrega un sub-recurso (`/api/entregas/1/detalle`) confirmando que también exige autenticación por estar bajo el mismo patrón.
-3. Elimina temporalmente `requestMatchers("/public/**").permitAll()` por completo y confirma que ahora incluso `/public/health` responde `401` — deduce por qué el orden y la presencia explícita de cada regla importan.
-4. Escribe de memoria (sin mirar) un `SecurityFilterChain` con una ruta pública y el resto autenticado, y un test que confirme ambos códigos.
+**Cierra:** conserva la salida verde y la prueba fallida/restaurada. La anotación `@AutoConfigureMockMvc` en Boot 4 se importa desde `org.springframework.boot.webmvc.test.autoconfigure`; el starter de seguridad de prueba entrega `@WithMockUser`.
 
-**Pista:** las reglas de `authorizeHttpRequests` se evalúan en orden; una regla más específica debe declararse antes que una más general que la cubriría primero.
+#### Subtema 4.3 · Decidir qué rutas son públicas · 10 min
 
-#### Paso 6 · Práctica independiente
+**Contexto:** Al proteger todo lo que no esté en `/public/**`, la prueba OpenAPI existente también recibe `401`. Decide explícitamente si el documento debe estar abierto en este entorno de aprendizaje.
 
-**Completa el código:** rellena el espacio para que el resto de rutas exija autenticación:
+**Hazlo tú:** En `src/main/java/com/example/demo/SecurityConfig.java`, conserva los imports y la clase. Reemplaza únicamente el método `filterChain`:
 
 ```java
-.authorizeHttpRequests(auth -> auth
-    .requestMatchers("/public/**").permitAll()
-    .anyRequest().____())
+@Bean
+SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    return http
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers(
+                "/public/**",
+                "/v3/api-docs/**",
+                "/swagger-ui/**",
+                "/swagger-ui.html"
+            ).permitAll()
+            .anyRequest().authenticated())
+        .httpBasic(Customizer.withDefaults())
+        .build();
+}
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `SecurityFilterChain` con una ruta pública y el resto protegido, y un test `MockMvc` que confirme `200` y `401` respectivamente. Compara después contra el patrón del Paso 4.
+Desde la raíz, prueba primero el contrato que ya existe y luego la suite:
 
-#### Paso 7 · Cierre y evidencia
+Antes de ejecutar, añade a `src/main/java/com/example/demo/RutasController.java` el import `org.springframework.web.bind.annotation.PathVariable` y este método dentro de la clase:
 
-Ya declaras una frontera de seguridad explícita entre rutas públicas y protegidas, confirmada con `MockMvc` real contra el contexto de seguridad completo. El siguiente tema reemplaza la autenticación básica por un filtro JWT real. **Evidencia:** entrega el resultado de los 3 tests en verde, y el resultado del fallo deliberado mostrando `401` esperado vs `200` obtenido. Fuente oficial: [Spring Security — Authorize HTTP requests](https://docs.spring.io/spring-security/reference/servlet/authorization/authorize-http-requests.html).
+```java
+@GetMapping("/api/entregas/{id}")
+public String entrega(@PathVariable long id) {
+    return "entrega " + id;
+}
+```
 
-**Errores comunes:** usar `anyRequest().permitAll()` por error durante desarrollo y olvidar revertirlo; no probar explícitamente el caso sin autenticación, asumiendo que la configuración es correcta sin confirmarlo.
+Añade también estos dos métodos a `SecurityFilterChainTest.java`:
 
-**Cuándo no usarlo:** para un prototipo interno de un solo desarrollador sin ningún dato sensible expuesto, una configuración de seguridad completa puede posponerse; sigue siendo buena práctica no exponerlo públicamente sin protección antes de manejar datos reales.
+```java
+@Test
+void subrutaTambienRechazaSolicitudAnonima() throws Exception {
+    mockMvc.perform(get("/api/entregas/42")).andExpect(status().isUnauthorized());
+}
 
-El `SecurityFilterChain` que configures aquí protege cada endpoint del proyecto integrador de este track (microservicio productivo, Módulo 12).
+@Test
+@WithMockUser
+void subrutaAceptaIdentidadDePrueba() throws Exception {
+    mockMvc.perform(get("/api/entregas/42")).andExpect(status().isOk());
+}
+```
+
+```bash
+./mvnw -q -Dtest=ContratoOpenApiTest test
+./mvnw -q clean test
+```
+
+**Resultado esperado:** OpenAPI devuelve `200` sin credencial; las pruebas confirman que `/api/entregas` y `/api/entregas/42` devuelven `401` sin identidad y `200` con un usuario de prueba. La suite completa pasa.
+
+**Fallo deliberado y diagnóstico:** quita `"/v3/api-docs/**"` de la lista y ejecuta `./mvnw -q -Dtest=ContratoOpenApiTest test`. El test obtiene `401` en vez de `200`, porque el contrato documental ahora cae en `.anyRequest().authenticated()`. Restaura el matcher.
+
+**Entiende:** una regla pública es una decisión sobre información, no solo una forma de arreglar tests. La documentación se deja abierta para el curso; en una API real, revisa si su esquema revela rutas o datos que convenga restringir. **Límite:** HTTP Basic envía credenciales en cada petición; úsalo solo por HTTPS fuera de pruebas locales. No desactives CSRF a ciegas; aquí se conserva porque la cadena aún admite autenticación Basic.
+
+**Cierra:** guarda la suite verde. **Práctica:** en los dos tests de subruta, cambia `/api/entregas/42` por `/api/entregas/43` y ejecuta `./mvnw -q -Dtest=SecurityFilterChainTest test`; anónima debe seguir en `401` y con `@WithMockUser` en `200`. Enumera las rutas que decidiste dejar públicas. El siguiente tema sustituye HTTP Basic por validación de JWT y agrega autorización por rol.
+
+El filtro que definiste protege el backend acumulativo del proyecto integrador; una marca de test confirma esta regla de rutas, no una revisión de todos los controles de acceso del producto.
 
 ### Tema 2: Filtro JWT y autorización por rol
 

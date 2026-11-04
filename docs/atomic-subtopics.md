@@ -2,7 +2,7 @@
 
 > Auditoría estructural. Un encabezado o criterio detectado no demuestra que el ejemplo se haya ejecutado ni que la explicación sea pedagógicamente suficiente.
 
-Temas conformes a cuatro pasos: **132/1185**. Tracks inventariados: **14**.
+Temas conformes a cuatro pasos: **133/1185**. Tracks inventariados: **14**.
 
 | Track | Temas conformes | Temas inventariados | Subtemas detectados | Subtemas con estructura completa |
 |---|---:|---:|---:|---:|
@@ -19,7 +19,7 @@ Temas conformes a cuatro pasos: **132/1185**. Tracks inventariados: **14**.
 | node | 2 | 83 | 6 | 6 |
 | react | 0 | 58 | 0 | 0 |
 | rutaflow | 0 | 29 | 0 | 0 |
-| spring-boot | 28 | 111 | 87 | 86 |
+| spring-boot | 29 | 111 | 90 | 89 |
 
 ## Temas pendientes
 
@@ -1091,7 +1091,6 @@ Temas conformes a cuatro pasos: **132/1185**. Tracks inventariados: **14**.
 - M24 ### Tema 2: data fetchers, relaciones y problema N+1: tiene 0 subtemas
 - M24 ### Tema 3: mutations y subscriptions: tiene 0 subtemas
 - M24 ### Tema 4: pruebas GraphQL con GraphQlTester: tiene 0 subtemas
-- M4 ### Tema 1: SecurityFilterChain moderno: tiene 0 subtemas
 - M4 ### Tema 2: Filtro JWT y autorización por rol: tiene 0 subtemas
 - M4 ### Tema 3: CORS y CSRF: tiene 0 subtemas
 - M4 ### Tema 4: Protección SSRF con InetAddressFilter (Spring Boot 4.1): tiene 0 subtemas

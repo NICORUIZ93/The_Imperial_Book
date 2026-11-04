@@ -93,10 +93,10 @@
     },
     "spring-boot": {
       "topics": 111,
-      "completeTopics": 28,
-      "topicsWith3to6Subtopics": 29,
-      "subtopics": 87,
-      "completeSubtopics": 86
+      "completeTopics": 29,
+      "topicsWith3to6Subtopics": 30,
+      "subtopics": 90,
+      "completeSubtopics": 89
     }
   },
   "topics": {
@@ -13889,9 +13889,52 @@
       {
         "module": 4,
         "topic": "### Tema 1: SecurityFilterChain moderno",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "4.1",
+            "title": "#### Subtema 4.1 · Proteger rutas del backend · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "4.2",
+            "title": "#### Subtema 4.2 · Verificar 200, 401 y usuario autenticado · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "4.3",
+            "title": "#### Subtema 4.3 · Decidir qué rutas son públicas · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 4,

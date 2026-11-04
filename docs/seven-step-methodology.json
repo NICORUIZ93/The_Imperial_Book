@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 82,
+      "objective": 81,
       "prerequisites": 94,
-      "context": 82,
-      "theoryAnalogy": 82,
-      "guidedDemo": 82,
+      "context": 81,
+      "theoryAnalogy": 81,
+      "guidedDemo": 81,
       "codeExplanation": 111,
       "execution": 105,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 82,
-      "independentPractice": 82,
-      "closure": 82,
-      "commonErrors": 82,
-      "resources": 89,
-      "standaloneExample": 79,
-      "learningEvidence": 90,
-      "complete": 78
+      "guidedPractice": 81,
+      "independentPractice": 81,
+      "closure": 81,
+      "commonErrors": 81,
+      "resources": 88,
+      "standaloneExample": 78,
+      "learningEvidence": 89,
+      "complete": 77
     }
   },
   "topics": {
@@ -30447,26 +30447,26 @@
         "module": 4,
         "topic": "Tema 1: SecurityFilterChain moderno",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 5,
+          "complete": false
         }
       },
       {

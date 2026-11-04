@@ -1696,7 +1696,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "41ebf99fb4081f58936e8df25a998c2ea4960a83bd6cf21f39fb5d8902899995",
+    "fingerprint": "f0d9c45aa9ec4a0b100990a81d0388235f81e206bc5614be1fd63da8702f7434",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10892,9 +10892,9 @@
       {
         "issues": [],
         "module": 4,
-        "tailWords": 158,
+        "tailWords": 0,
         "topic": "Tema 1: SecurityFilterChain moderno",
-        "words": 1166
+        "words": 1191
       },
       {
         "issues": [],

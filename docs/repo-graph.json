@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 304,
+      "lines": 325,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 14203,
+      "lines": 14246,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -314,7 +314,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1117,
+      "lines": 1116,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13564,
+      "lines": 13566,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 373,
+      "lines": 376,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -12055,7 +12055,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-4.md",
-      "lines": 870,
+      "lines": 909,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12063,15 +12063,15 @@
         "# M\u00f3dulo 4: Spring Security",
         "## Aprende construyendo",
         "### Tema 1: SecurityFilterChain moderno",
+        "#### Subtema 4.1 \u00b7 Proteger rutas del backend \u00b7 10 min",
+        "#### Subtema 4.2 \u00b7 Verificar 200, 401 y usuario autenticado \u00b7 10 min",
+        "#### Subtema 4.3 \u00b7 Decidir qu\u00e9 rutas son p\u00fablicas \u00b7 10 min",
+        "### Tema 2: Filtro JWT y autorizaci\u00f3n por rol",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda con analog\u00eda",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
-        "### Tema 2: Filtro JWT y autorizaci\u00f3n por rol",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva"
       ]
     },
     {

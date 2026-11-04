@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 221,
+    "topicsWithSignals": 222,
     "newLaboratories": 25
   },
   "priorities": {
@@ -13263,7 +13263,9 @@
       "title": "Tema 1: SecurityFilterChain moderno",
       "file": "web/public/content/spring-boot/modulo-4.md",
       "line": 8,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -13273,7 +13275,7 @@
       "module": 4,
       "title": "Tema 2: Filtro JWT y autorización por rol",
       "file": "web/public/content/spring-boot/modulo-4.md",
-      "line": 177,
+      "line": 216,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -13284,7 +13286,7 @@
       "module": 4,
       "title": "Tema 3: CORS y CSRF",
       "file": "web/public/content/spring-boot/modulo-4.md",
-      "line": 394,
+      "line": 433,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -13295,7 +13297,7 @@
       "module": 4,
       "title": "Tema 4: Protección SSRF con InetAddressFilter (Spring Boot 4.1)",
       "file": "web/public/content/spring-boot/modulo-4.md",
-      "line": 544,
+      "line": 583,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -13306,7 +13308,7 @@
       "module": 4,
       "title": "Tema 5: Flujo de login completo — de `/api/auth/login` a una ruta protegida",
       "file": "web/public/content/spring-boot/modulo-4.md",
-      "line": 644,
+      "line": 683,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

@@ -89,8 +89,8 @@ reapliques cambios que ya estén publicados.
 
 ## Estado global honesto
 
-En la auditoría actual: **132/1185 temas** cumplen la estructura atómica en los
-14 tracks: Java 101, Spring Boot 28, Node 2 y Flutter 1. La auditoría pedagógica detecta
+En la auditoría actual: **133/1185 temas** cumplen la estructura atómica en los
+14 tracks: Java 101, Spring Boot 29, Node 2 y Flutter 1. La auditoría pedagógica detecta
 **1095/1185 temas practicables** y deuda en 90. La auditoría de sustancia registra
 409 temas con defectos, deuda histórica repartida entre varios tracks. Ninguna de
 estas cifras certifica que un curso esté completo o que todos los ejemplos se
@@ -298,6 +298,27 @@ Spring Boot 28, Node 2 y Flutter 1; **1095/1185 practicables** y 409 temas con
 defectos de sustancia. Reportes regenerados y `./scripts/validate.sh` pasó con
 23 pruebas y 4 omitidas. Estas métricas son indicadores estructurales.
 
-**Siguiente tema:** Spring Boot M4 T1, “SecurityFilterChain moderno”. Revisa el
-starter de seguridad, las rutas públicas y protegidas, y prueba estados HTTP
-reales desde el proyecto acumulado antes de continuar a roles y autorización.
+Spring Boot M4 T1, “SecurityFilterChain moderno”, ahora contiene tres subtemas
+acumulativos: agregar Security al backend; comprobar 200/401 con MockMvc y
+`@WithMockUser`; y elegir rutas públicas sin romper OpenAPI. Se corrigieron los
+paquetes de prueba para Spring Boot 4 y se aclara que `@WithMockUser` simula el
+principal: no comprueba credenciales reales. En un proyecto temporal Boot
+4.1.2/JDK 25, la suite completa pasó; cinco pruebas de la cadena cubrieron las
+rutas raíz y subruta, identidad simulada y documentación. Se ejecutaron y
+restauraron dos fallos deliberados: abrir `.anyRequest()` hizo fallar la
+petición anónima con 200 en vez de 401, y cerrar `/v3/api-docs/**` rompió el
+contrato OpenAPI con 401 en vez de 200. El código muestra HTTP Basic solo como
+paso didáctico, conserva CSRF y explica que Basic requiere HTTPS fuera de pruebas
+locales. No se cambió la app del repositorio; la verificación fue temporal.
+
+Tras M4 T1, la auditoría registra **133/1185 temas atómicos**: Java 101,
+Spring Boot 29, Node 2 y Flutter 1; **1095/1185 practicables** y 409 temas con
+defectos de sustancia. Reportes regenerados y `./scripts/validate.sh` pasó con
+23 pruebas y 4 omitidas. La auditoría de sustancia ya no detecta defectos en
+M4 T1. Estas métricas no demuestran que todos los ejemplos de la academia hayan
+sido ejecutados ni sustituyen revisión pedagógica humana.
+
+**Siguiente tema:** Spring Boot M4 T2, “Filtro JWT y autorización por rol”.
+Revisa la implementación completa de token, validación criptográfica, filtro,
+roles y respuestas 401/403; confirma primero versiones y APIs vigentes en
+documentación primaria y ejecuta los ejemplos antes de publicar el tema.
