@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 245,
+    "topicsWithSignals": 246,
     "newLaboratories": 25
   },
   "priorities": {
@@ -12494,7 +12494,9 @@
       "title": "Tema 1: Fat JAR vs capas de Docker",
       "file": "web/public/content/spring-boot/modulo-11.md",
       "line": 8,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -12504,7 +12506,7 @@
       "module": 11,
       "title": "Tema 2: GraalVM native image",
       "file": "web/public/content/spring-boot/modulo-11.md",
-      "line": 110,
+      "line": 155,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -12515,7 +12517,7 @@
       "module": 11,
       "title": "Tema 3: Health checks para Kubernetes",
       "file": "web/public/content/spring-boot/modulo-11.md",
-      "line": 220,
+      "line": 265,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

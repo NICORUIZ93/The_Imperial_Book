@@ -7,105 +7,150 @@ Cada tema se verifica con mecanismos reales y ejecutables sin depender de un dae
 
 ### Tema 1: Fat JAR vs capas de Docker
 
-#### Paso 1 · Objetivo y preparación
+Duración: 35–45 min. **Meta:** empaquetar RutaFlow en un JAR ejecutable, separar sus partes y construir una imagen con capas que puedan reutilizarse entre versiones. Sigue `examples/spring-boot-layered-jar-rutaflow/`; necesita Java 25 y Maven Wrapper. Para construir la imagen, usa Docker o Podman.
 
-Al finalizar podrás inspeccionar, con el propio JAR generado por Spring Boot, las capas reales que separan dependencias de código de aplicación, y explicar por qué esa separación reduce el tamaño de las actualizaciones de imagen.
+**¿Por qué es importante?** Cuando publicas una versión, las capas que no cambiaron se pueden reutilizar; esto puede reducir lo que reconstruyes y transfieres entre despliegues.
 
-**Conocimiento previo:** Módulo 0 de este track (empaquetado básico con `mvnw package`).
-
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** Un fat JAR empaqueta la aplicación completa junto con todas sus dependencias en un único archivo; si ese JAR se coloca como una única capa de Docker, cada cambio de código (sin importar cuán pequeño) obliga a Docker a re-subir la imagen completa, incluyendo dependencias que no cambiaron en absoluto.
-
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** empaquetado por capas, `layertools`, reducir el tamaño de actualizaciones de imagen.
-
-Spring Boot repackagea el JAR con un índice de capas (`layers.idx`) accesible mediante el modo especial `java -Djarmode=layertools -jar app.jar`, que separa dependencies (dependencias de terceros, cambian poco), spring-boot-loader (el propio mecanismo de arranque, casi nunca cambia), snapshot-dependencies (dependencias `-SNAPSHOT`, cambian algo más) y application (el código propio, cambia en cada commit) en directorios distintos. Un Dockerfile que copia cada capa por separado permite que Docker reutilice las capas de dependencias sin cambios entre deploys, subiendo solo la capa `application` (mucho más pequeña) en cada nuevo deploy.
-
-**Analogía:** empaquetar todo en una sola capa de Docker es reempacar y reenviar una caja completa cada vez que cambia un solo objeto pequeño dentro de ella; empaquetar por capas separa el contenido estable del contenido que cambia frecuentemente en cajas distintas, reenviando solo la caja pequeña que efectivamente cambió.
-
-**Diagrama:**
-
-```
-┌── dependencies/ ──────────┐  cambia RARA VEZ
-├── spring-boot-loader/ ────┤  casi NUNCA cambia
-├── snapshot-dependencies/ ─┤  cambia OCASIONALMENTE
-└── application/ ───────────┘  cambia en CADA commit
+```mermaid
+flowchart LR
+  D[Dependencias] --> L[Loader Spring Boot]
+  L --> S[Dependencias SNAPSHOT]
+  S --> A[Código de la app]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+**Proyecto integrador RutaFlow:** deja este empaquetado preparado para publicar el microservicio de seguimiento sin reconstruir todas sus dependencias cada vez que cambie `/ruta`.
 
-Continuando en `demo-cloud` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `mkdir demo-empaquetado && cd demo-empaquetado && curl -fsSL https://start.spring.io/starter.zip -d dependencies=web,actuator -d javaVersion=25 -o app.zip && unzip app.zip`), crea `src/main/resources/application.yml` mínimo y genera el JAR real:
+#### Subtema 1.1: Mira qué contiene el JAR · 8 min
+
+**1. Contexto**
+
+El JAR se parece a un ZIP que reúne tu código y las bibliotecas que necesita. Primero vamos a ver esos archivos.
+
+**2. Hazlo tú**
+
+En la terminal, entra a `examples/spring-boot-layered-jar-rutaflow/` y ejecuta:
 
 ```bash
-mkdir -p demo-empaquetado
-cd demo-empaquetado
-./mvnw -q package
-java -Djarmode=layertools -jar target/*.jar list
+./mvnw clean package
+jar tf target/spring-boot-layered-jar-rutaflow-0.1.0-SNAPSHOT.jar | head -20
 ```
 
-**Resultado esperado (salida real de `layertools list`, comando oficial de Spring Boot):**
+Busca `BOOT-INF/classes/` y `BOOT-INF/lib/`. La primera carpeta guarda la aplicación; la segunda, las bibliotecas.
 
-```
-dependencies
-spring-boot-loader
-snapshot-dependencies
-application
-```
+**Resultado esperado:** el comando lista clases de `academia.rutaflow` y archivos `.jar` dentro de `BOOT-INF/lib/`.
 
-Extrae las capas a directorios reales y confírmalas por filesystem, sin necesitar Docker corriendo:
+**Fallo deliberado:** ejecuta `jar tf target/spring-boot-layered-jar-rutaflow-0.1.0-SNAPSHOT.jar.original`. **Diagnóstico:** verás clases, pero no el contenido ejecutable bajo `BOOT-INF/lib/`; compara el JAR original con el repaquetado para identificar qué agregó Spring Boot.
+
+**3. Entiende**
+
+Un Fat JAR es cómodo para ejecutar con `java -jar`. Si Docker copia ese único archivo como una capa, un cambio pequeño del código invalida la capa completa.
+
+**4. Cierra**
+
+Escribe el nombre de una clase propia y de una biblioteca que encontraste.
+
+#### Subtema 1.2: Pide a Spring Boot el mapa de capas · 10 min
+
+**1. Contexto**
+
+Spring Boot puede ordenar el JAR en grupos. Las bibliotecas normalmente cambian menos que el código de la aplicación.
+
+**2. Hazlo tú**
+
+Abre `pom.xml`: el plugin `spring-boot-maven-plugin` vuelve ejecutable el JAR y activa el índice de capas por defecto. Ejecuta:
 
 ```bash
-java -Djarmode=layertools -jar target/*.jar extract --destination target/extracted
-test -d target/extracted/dependencies && echo "OK: capa dependencies existe"
-test -d target/extracted/application && echo "OK: capa application existe"
+java -Djarmode=tools -jar target/spring-boot-layered-jar-rutaflow-0.1.0-SNAPSHOT.jar list-layers
 ```
 
-`--destination` es la bandera que fija en qué carpeta extraer las capas del JAR.
+**Resultado esperado:** aparecen `dependencies`, `spring-boot-loader`, `snapshot-dependencies` y `application`.
 
-Con esas capas ya extraídas y verificadas, el Dockerfile de producción simplemente las copia en el orden correcto:
+**Fallo deliberado:** ejecuta el mismo comando sobre `target/spring-boot-layered-jar-rutaflow-0.1.0-SNAPSHOT.jar.original`. **Resultado real:** `no hay ningún atributo de manifiesto principal`. **Diagnóstico:** Maven guardó ahí el JAR común, que no tiene el lanzador de Spring Boot; usa el archivo ejecutable que no termina en `.original`.
+
+**3. Entiende**
+
+En Spring Boot 4, el comando vigente es `jarmode=tools list-layers`. Los tutoriales antiguos pueden mostrar `jarmode=layertools list`; esa instrucción no coincide con esta versión.
+
+**4. Cierra**
+
+Explica por qué el código propio queda en la capa que suele cambiar con más frecuencia.
+
+#### Subtema 1.3: Extrae y copia las capas en el orden correcto · 12 min
+
+**1. Contexto**
+
+Docker puede guardar cada instrucción `COPY` como una capa. Si las dependencias siguen iguales, el motor puede reutilizar esa parte al reconstruir la imagen.
+
+**2. Hazlo tú**
+
+Extrae el JAR a `target/extracted/`:
+
+```bash
+java -Djarmode=tools -jar target/spring-boot-layered-jar-rutaflow-0.1.0-SNAPSHOT.jar extract --layers --destination target/extracted
+```
+
+Revisa `Dockerfile`. Tiene una etapa de construcción que extrae el JAR y una etapa final que copia primero lo que cambia poco:
 
 ```dockerfile
-FROM eclipse-temurin:21-jre-alpine
-WORKDIR /app
-COPY target/extracted/dependencies/ ./
-COPY target/extracted/spring-boot-loader/ ./
-COPY target/extracted/snapshot-dependencies/ ./
-COPY target/extracted/application/ ./
-ENTRYPOINT ["java", "org.springframework.boot.loader.launch.JarLauncher"]
+COPY --from=builder /builder/extracted/dependencies/ ./
+COPY --from=builder /builder/extracted/spring-boot-loader/ ./
+COPY --from=builder /builder/extracted/snapshot-dependencies/ ./
+COPY --from=builder /builder/extracted/application/ ./
 ```
 
-**Fallo deliberado:** ejecuta `java -Djarmode=layertools -jar target/classes.jar list` contra un JAR que NO fue repackageado por el plugin de Spring Boot (por ejemplo, uno generado por el `jar` estándar de Maven sin `spring-boot-maven-plugin`). El comando falla con un error real: `Unable to find layers.idx in jar` — diagnostica confirmando que el modo `layertools` depende específicamente del índice de capas que solo el repackaging de Spring Boot añade; un JAR "normal" simplemente no lo tiene. Verifica con el JAR correcto (`target/*.jar` generado por `mvnw package`, que sí incluye el plugin) antes de continuar.
-
-#### Paso 5 · Práctica guiada — repetición progresiva
-
-1. Ejecuta `java -Djarmode=layertools -jar target/*.jar help` y documenta qué otros subcomandos ofrece además de `list` y `extract`.
-2. Modifica una línea de `src/main/java` (sin tocar `pom.xml`), reconstruye el JAR con `./mvnw -q package`, y confirma con `diff` recursivo entre extracciones sucesivas que solo la carpeta `application/` cambió de contenido.
-3. Agrega una dependencia nueva al `pom.xml`, reconstruye, y confirma que esta vez la carpeta `dependencies/` también cambió.
-4. Escribe de memoria (sin mirar) el comando `layertools list` y las cuatro capas que produce. Compara después contra el patrón del Paso 4.
-
-**Pista:** `layertools extract` escribe archivos reales en disco — comparar dos extracciones sucesivas con `diff -rq carpeta1 carpeta2` es una forma directa y verificable de confirmar exactamente qué capas cambiaron entre dos builds, sin necesitar Docker.
-
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio con el modo especial que Spring Boot expone dentro de su propio JAR para listar capas:
+Comprueba los cuatro directorios bajo `target/extracted/`. Después construye y ejecuta la imagen:
 
 ```bash
-java -D____=layertools -jar target/*.jar list
+podman build -t rutaflow-capas:local .
+podman run --rm -p 8080:8080 rutaflow-capas:local
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, el comando `layertools list`, sus cuatro capas esperadas, y un Dockerfile que las copie en el orden correcto. Compara después contra el patrón del Paso 4.
+En otra terminal, pide el estado: `curl -s http://localhost:8080/ruta`.
 
-#### Paso 7 · Cierre y evidencia
+**Resultado esperado:** `{"codigo":"RF-314","estado":"en camino"}`.
 
-Ya inspeccionas las capas reales de un JAR de Spring Boot con `layertools`, sin necesitar Docker corriendo para verificar la separación. El siguiente tema reduce el tiempo de arranque compilando a un binario nativo con GraalVM. **Evidencia:** entrega la salida real de `layertools list`, la confirmación por filesystem de `target/extracted/`, y el error real `Unable to find layers.idx` del fallo deliberado. Fuente oficial: [Spring Boot — Container Images](https://docs.spring.io/spring-boot/reference/packaging/container-images/).
+**Fallo deliberado:** ejecuta `podman build --build-arg JAR_FILE=target/no-existe.jar -t rutaflow-capas:error .`. **Diagnóstico:** la etapa `COPY` no encuentra el JAR; recompila y revisa la ruta `JAR_FILE`.
 
-**Errores comunes:** empaquetar todo en una única capa de Docker sin usar `layertools`; usar la etiqueta `latest` en vez de una versión inmutable, dificultando el rollback.
+**3. Entiende**
 
-**Cuándo no usarlo:** para un prototipo desechable sin pipeline de deploy repetido, la separación por capas no aporta ningún beneficio medible sobre un `docker build` simple de un solo paso.
+El contenedor final no ejecuta el Fat JAR original; ejecuta el JAR reorganizado que quedó junto con las capas extraídas. El orden de `COPY` ayuda a aprovechar caché cuando solo cambia el código.
 
-La estrategia de capas de Docker que elijas aquí es la que empaquetará el proyecto integrador de este track (microservicio productivo, Módulo 12).
+**4. Cierra**
+
+Marca en el Dockerfile cuál de las cuatro instrucciones copiaría el controlador `/ruta`.
+
+#### Subtema 1.4: Comprueba qué se reutiliza y diagnostica una capa faltante · 10 min
+
+**1. Contexto**
+
+Una imagen por capas solo ayuda si la reconstrucción deja intactas las partes que no cambiaron.
+
+**2. Hazlo tú**
+
+Detén el contenedor. Cambia el texto `"en camino"` en `EstadoRutaController.java` por `"entregado"`, reconstruye el JAR y luego la imagen:
+
+```bash
+./mvnw -q package
+podman build -t rutaflow-capas:local .
+```
+
+Observa la salida: Podman debe marcar como reutilizadas las instrucciones `COPY` de capas sin cambios; la instrucción de `application/` se vuelve a ejecutar. Ejecuta la imagen y vuelve a consultar `/ruta`.
+
+**Resultado esperado:** la respuesta cambia a `{"codigo":"RF-314","estado":"entregado"}`; las capas de dependencias aparecen como `Using cache`.
+
+**Fallo deliberado:** comenta `COPY --from=builder /builder/extracted/application/ ./` y reconstruye. **Diagnóstico:** si la imagen se construye, el error aparece al arrancar porque falta la clase principal; restaura la copia de `application/`.
+
+**3. Entiende**
+
+La caché ahorra reconstrucción y transferencia de capas sin cambios; no hace que el JAR sea más pequeño ni garantiza un despliegue más rápido en todos los casos. Para un prototipo que se publica una sola vez, el Dockerfile más simple puede ser suficiente.
+
+**Cuándo no usarlo:** si el prototipo se publica una vez y no vas a reconstruirlo, mantener un Dockerfile multicapa puede costar más que el tiempo que ahorra.
+
+**4. Cierra**
+
+Entrega la respuesta antes y después del cambio, la lista de capas y la línea de build donde se ve la capa reutilizada. Antes de producción, fija también la imagen base a una versión o digest revisado.
+
+Fuentes oficiales: [capas y empaquetado Maven de Spring Boot](https://docs.spring.io/spring-boot/maven-plugin/packaging.html) y [Dockerfiles para imágenes de contenedor](https://docs.spring.io/spring-boot/reference/packaging/container-images/dockerfiles.html). Siguiente: Tema 2, imagen nativa con GraalVM.
 
 ### Tema 2: GraalVM native image
 

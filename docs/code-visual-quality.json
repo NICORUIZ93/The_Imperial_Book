@@ -99,10 +99,10 @@
     "spring-boot": {
       "topics": 111,
       "code": 106,
-      "commentedCode": 51,
-      "mermaid": 40,
+      "commentedCode": 52,
+      "mermaid": 41,
       "archifyVisual": 2,
-      "asciiVisual": 9,
+      "asciiVisual": 8,
       "misleadingDiagramLabel": 0,
       "filePath": 111,
       "runCommand": 111,
@@ -2617,13 +2617,6 @@
       "track": "spring-boot",
       "module": 10,
       "topic": "Tema 12: Contract testing entre productor y consumidor",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "spring-boot",
-      "module": 11,
-      "topic": "Tema 1: Fat JAR vs capas de Docker",
       "missingCode": false,
       "missingComments": true
     },

@@ -1692,7 +1692,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "f784e56bee0d9ce2d6e954ea536a85f1485eba2d6e534345d235abc90c47eb82",
+    "fingerprint": "911a985a9206698d461bdc812dbc62ff2965e24f77de5879825887057b7fb4a4",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10397,9 +10397,9 @@
       {
         "issues": [],
         "module": 11,
-        "tailWords": 158,
+        "tailWords": 0,
         "topic": "Tema 1: Fat JAR vs capas de Docker",
-        "words": 988
+        "words": 1052
       },
       {
         "issues": [],

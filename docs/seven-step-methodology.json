@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 51,
-      "prerequisites": 72,
-      "context": 51,
-      "theoryAnalogy": 51,
-      "guidedDemo": 51,
+      "objective": 50,
+      "prerequisites": 71,
+      "context": 50,
+      "theoryAnalogy": 50,
+      "guidedDemo": 50,
       "codeExplanation": 111,
       "execution": 104,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 51,
-      "independentPractice": 51,
-      "closure": 51,
-      "commonErrors": 51,
+      "guidedPractice": 50,
+      "independentPractice": 50,
+      "closure": 50,
+      "commonErrors": 50,
       "resources": 72,
-      "standaloneExample": 53,
-      "learningEvidence": 76,
-      "complete": 51
+      "standaloneExample": 52,
+      "learningEvidence": 75,
+      "complete": 50
     }
   },
   "topics": {
@@ -28705,26 +28705,26 @@
         "module": 11,
         "topic": "Tema 1: Fat JAR vs capas de Docker",
         "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "objective": false,
+          "prerequisites": false,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
           "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 5,
+          "complete": false
         }
       },
       {

@@ -93,10 +93,10 @@
     },
     "spring-boot": {
       "topics": 111,
-      "completeTopics": 45,
-      "topicsWith3to6Subtopics": 60,
-      "subtopics": 199,
-      "completeSubtopics": 154
+      "completeTopics": 46,
+      "topicsWith3to6Subtopics": 61,
+      "subtopics": 203,
+      "completeSubtopics": 158
     }
   },
   "topics": {
@@ -13202,9 +13202,66 @@
       {
         "module": 11,
         "topic": "### Tema 1: Fat JAR vs capas de Docker",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 4,
+        "subtopics": [
+          {
+            "id": "1.1",
+            "title": "#### Subtema 1.1: Mira qué contiene el JAR · 8 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "1.2",
+            "title": "#### Subtema 1.2: Pide a Spring Boot el mapa de capas · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "1.3",
+            "title": "#### Subtema 1.3: Extrae y copia las capas en el orden correcto · 12 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "1.4",
+            "title": "#### Subtema 1.4: Comprueba qué se reutiliza y diagnostica una capa faltante · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 11,

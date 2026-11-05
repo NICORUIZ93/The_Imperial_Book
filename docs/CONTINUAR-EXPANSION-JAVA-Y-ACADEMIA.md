@@ -1278,11 +1278,37 @@ el [DSL de contratos](https://docs.spring.io/spring-cloud-contract/reference/pro
 el [Stub Runner](https://docs.spring.io/spring-cloud-contract/reference/project-features-stubrunner/stub-runner-core.html)
 y la [API MVC de pruebas de Spring Boot 4](https://docs.spring.io/spring-boot/api/java/org/springframework/boot/webmvc/test/autoconfigure/AutoConfigureMockMvc.html).
 
-Para continuar, revisa primero `git log -1` para confirmar la publicación de T12.
-El siguiente es Spring Boot M11 T1, “Fat JAR vs capas de Docker”, en
-`web/public/content/spring-boot/modulo-11.md`. Revisa el tema y sus subtemas uno
-por uno con el contrato editorial de este documento; mejora explicaciones con
-lenguaje directo, archivos que crear, comandos, salidas esperadas y diagnósticos
-concretos. Contrasta referencias/versiones con documentación primaria, actualiza
-los reportes afectados y ejecuta `./scripts/validate.sh`. Publica un commit propio
-por tema terminado. No incluyas los dos cambios locales de Flutter.
+Spring Boot M11 T1, “Fat JAR vs capas de Docker”, se reescribió en cuatro
+subtemas. Se corrigió una instrucción antigua: Spring Boot 4 usa
+`-Djarmode=tools` y `list-layers`, no el `layertools` de tutoriales anteriores.
+`examples/spring-boot-layered-jar-rutaflow/` contiene una app con `GET /ruta`, un
+Dockerfile multicapa, Maven Wrapper y `scripts/verify-layers.sh`. El script compiló
+el JAR y extrajo `dependencies`, `spring-boot-loader`, `snapshot-dependencies` y
+`application`. Podman construyó la imagen y el endpoint respondió
+`{"codigo":"RF-314","estado":"en camino"}`. Al cambiar el código a
+`entregado`, el endpoint de la nueva imagen respondió ese cambio; Podman reutilizó
+las capas de dependencias y rehízo la capa de aplicación. Luego se restauró el
+código original y se reconstruyó la imagen local. También se ejecutó el fallo del
+JAR común `.original`, que respondió `no hay ningún atributo de manifiesto
+principal`. El Dockerfile toma como entrada el JAR ya compilado, usa
+`bellsoft/liberica-openjre-debian:25-cds` y no incorpora una etapa Maven. En
+producción hace falta fijar la imagen base a un digest revisado.
+
+Las auditorías e índices se regeneraron; quedan 150/1185 temas atómicos completos
+(Spring Boot 46/111), 1083/1185 practicables, 409 temas con defectos de sustancia
+y señales de profundidad en 246. `./scripts/validate.sh` pasó: 23 pruebas Python
+(4 omitidas) y las validaciones de contenido, fuentes, currículo, laboratorios y
+ejemplos. Las métricas son señales estructurales, no certifican revisión humana
+del curso completo.
+
+Fuentes primarias: [Dockerfiles de Spring Boot 4.1.2](https://docs.spring.io/spring-boot/reference/packaging/container-images/dockerfiles.html)
+y [empaquetado Maven por capas](https://docs.spring.io/spring-boot/maven-plugin/packaging.html).
+
+El siguiente tema es Spring Boot M11 T2, “GraalVM native image”, en
+`web/public/content/spring-boot/modulo-11.md`. Revisa si el recorrido explica qué
+se genera, cómo compilarlo y ejecutarlo y qué límites tiene, con código y comandos
+concretos. Conserva el nivel de lenguaje claro y los cuatro subtemas; contrasta
+versiones con documentación primaria, actualiza reportes afectados, ejecuta
+`./scripts/validate.sh` y publica su propio commit. Antes de continuar, comprueba
+el commit publicado de T1 con `git log -1`. Mantén fuera los dos cambios locales
+de Flutter.
