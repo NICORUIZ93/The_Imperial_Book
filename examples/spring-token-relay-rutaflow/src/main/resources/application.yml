@@ -1,0 +1,32 @@
+server:
+  port: 8082
+spring:
+  application:
+    name: rutaflow-gateway-token-relay
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            provider: keycloak
+            client-id: rutaflow-gateway
+            client-secret: gateway-dev-secret
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope:
+              - openid
+              - profile
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:8081/realms/rutaflow
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: api-pedidos
+              uri: http://localhost:8080
+              predicates:
+                - Path=/api/**
+              filters:
+                - TokenRelay=

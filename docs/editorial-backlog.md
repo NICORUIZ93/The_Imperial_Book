@@ -11,12 +11,12 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | Explicación | 1185 | 0 |
 | Código | 1141 | 44 |
 | Ruta | 1185 | 0 |
-| Ejecución | 1116 | 69 |
+| Ejecución | 1117 | 68 |
 | Resultado | 1183 | 2 |
-| Modificación | 1130 | 55 |
+| Modificación | 1131 | 54 |
 | Conexión con un proyecto | 1102 | 83 |
 | Modelo mental | 1185 | 0 |
-| Límites | 1130 | 55 |
+| Límites | 1129 | 56 |
 | **Perfil de criterios detectado** | **1082** | **103** |
 
 ## Prioridad por track
@@ -36,7 +36,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | node | 83 | 0 | 0 | 0 | 0 | 1 | 2 | 1 |
 | react | 58 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | rutaflow | 29 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| spring-boot | 111 | 5 | 0 | 11 | 0 | 7 | 20 | 13 |
+| spring-boot | 111 | 5 | 0 | 10 | 0 | 6 | 20 | 14 |
 
 ## Pendientes por tema
 
@@ -116,7 +116,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 - [node · módulo 14](../web/public/content/node/modulo-14.md) · Tema 8: RabbitMQ desde Node: exchange, cola y confirmaciones: modificación, conexión con un proyecto.
 - [spring-boot · módulo 10](../web/public/content/spring-boot/modulo-10.md) · Tema 1: Config Server y service discovery: límites.
 - [spring-boot · módulo 10](../web/public/content/spring-boot/modulo-10.md) · Tema 2: Spring Cloud Gateway: conexión con un proyecto.
-- [spring-boot · módulo 10](../web/public/content/spring-boot/modulo-10.md) · Tema 4: OAuth2/OIDC, Keycloak y Token Relay sin perder la frontera de autorización: ejecución, modificación, conexión con un proyecto.
+- [spring-boot · módulo 10](../web/public/content/spring-boot/modulo-10.md) · Tema 4: OAuth2/OIDC, Keycloak y Token Relay sin perder la frontera de autorización: conexión con un proyecto, límites.
 - [spring-boot · módulo 10](../web/public/content/spring-boot/modulo-10.md) · Tema 9: Spring Modulith para comprobar fronteras antes de separar servicios: ejecución.
 - [spring-boot · módulo 10](../web/public/content/spring-boot/modulo-10.md) · Tema 10: Spring Cloud Bus para propagar cambios de configuración: ejecución.
 - [spring-boot · módulo 10](../web/public/content/spring-boot/modulo-10.md) · Tema 11: Micrometer Tracing entre servicios: ejecución.

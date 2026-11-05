@@ -95,8 +95,8 @@
       "topics": 111,
       "completeTopics": 40,
       "topicsWith3to6Subtopics": 52,
-      "subtopics": 166,
-      "completeSubtopics": 133
+      "subtopics": 167,
+      "completeSubtopics": 134
     }
   },
   "topics": {
@@ -12626,11 +12626,11 @@
       {
         "module": 10,
         "topic": "### Tema 4: OAuth2/OIDC, Keycloak y Token Relay sin perder la frontera de autorización",
-        "subtopicCount": 3,
+        "subtopicCount": 4,
         "subtopics": [
           {
             "id": "4.1",
-            "title": "#### Subtema 4.1: Protege la API con el emisor de Keycloak · 15 min",
+            "title": "#### Subtema 4.1: Valida el emisor del token · 15 min",
             "criteria": {
               "context": true,
               "action": true,
@@ -12644,7 +12644,7 @@
           },
           {
             "id": "4.2",
-            "title": "#### Subtema 4.2: Distingue autenticación de permiso · 10 min",
+            "title": "#### Subtema 4.2: Separa token válido de permiso de escritura · 10 min",
             "criteria": {
               "context": true,
               "action": true,
@@ -12658,7 +12658,21 @@
           },
           {
             "id": "4.3",
-            "title": "#### Subtema 4.3: Comprueba que el recurso pertenece a la persona · 10 min",
+            "title": "#### Subtema 4.3: Comprueba que el pedido pertenece al sujeto del token · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "4.4",
+            "title": "#### Subtema 4.4: Reenvía el access token desde el Gateway · 10 min",
             "criteria": {
               "context": true,
               "action": true,

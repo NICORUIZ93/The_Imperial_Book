@@ -1033,3 +1033,41 @@ indicadores no certifican enseñanza ni aprendizaje.
 configuración frente a documentación oficial de Spring Security y Keycloak;
 asegura que las pruebas distingan 401, 403 y autorización a nivel de recurso, y
 que no requieran un realm externo sin instrucciones reproducibles.
+
+
+Spring Boot M10 T4, “OAuth2/OIDC, Keycloak y Token Relay”, se implementó como
+cuatro subtemas prácticos: validar issuer JWT; distinguir autenticación de rol;
+autorizar el pedido por `sub`; y reenviar el access token desde Spring Cloud
+Gateway manteniendo la decisión de acceso dentro de la API. La lección define
+para cada subtema Contexto, Hazlo tú, Entiende y Cierra, con rutas, comandos,
+resultados esperados y fallos diagnosticables.
+
+Se añadieron `examples/spring-security-keycloak-rutaflow/` (API Boot 4.1.2 con
+cuatro pruebas HTTP, configuración JWT y realm Keycloak importable) y
+`examples/spring-token-relay-rutaflow/` (Gateway Boot 4.1.2 + Cloud 2025.1.4 con
+login OAuth2 y filtro `TokenRelay=`). Las cuatro pruebas locales pasaron:
+401 sin token, 403 sin rol, 200 con rol y combinación 200/403 por propiedad del
+pedido. El empaquetado Maven del Gateway pasó. El JSON del realm se validó.
+Las pruebas de API usan un decoder JWT simulado y no prueban firma ni issuer.
+Docker no está instalado en el entorno, por tanto el inicio real de Keycloak,
+el login de navegador y el recorrido completo de Token Relay siguen pendientes
+de verificación manual; los README describen los comandos reproducibles y lo
+marcan con claridad.
+
+Se regeneraron auditorías pedagógica, atómica, sustancia, profundidad y backlog,
+el índice, prioridades, grafo de prerrequisitos y grafo de repositorio. Tras la
+regeneración, la cobertura mecánica queda en **144/1185 temas atómicos**,
+**1082/1185 practicables**, **1030/1185 completos en siete pasos** y 409 temas
+con señales de defecto de sustancia. Estos indicadores son estructurales y no
+certifican calidad pedagógica humana, ejecución real de Keycloak ni aprendizaje.
+
+Fuentes primarias consultadas: [Spring Security Resource Server JWT](https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html),
+[Keycloak contenedores e importación](https://www.keycloak.org/server/containers),
+[Keycloak roles](https://www.keycloak.org/docs/26.8.1/server_admin/) y
+[Spring Cloud Gateway TokenRelay](https://docs.spring.io/spring-cloud-gateway/reference/spring-cloud-gateway-server-webflux/gatewayfilter-factories/tokenrelay-factory.html).
+
+**Siguiente tema:** Spring Boot M10 T5, “HTTP Interfaces, deadlines y
+descubrimiento según el entorno”. Inspecciona la lección completa y el
+laboratorio `RouteClientDeadlineTest`, verifica las versiones contra documentación
+primaria, revisa si el ejemplo mide un timeout real y conserva el contrato de
+cuatro pasos por subtema. Publica el tema y el handoff en un commit separado.

@@ -19,7 +19,7 @@ Temas conformes a cuatro pasos: **144/1185**. Tracks inventariados: **14**.
 | node | 2 | 83 | 6 | 6 |
 | react | 0 | 58 | 0 | 0 |
 | rutaflow | 0 | 29 | 0 | 0 |
-| spring-boot | 40 | 111 | 166 | 133 |
+| spring-boot | 40 | 111 | 167 | 134 |
 
 ## Temas pendientes
 

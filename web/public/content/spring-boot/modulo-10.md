@@ -417,229 +417,134 @@ Dibuja los estados y registra cuántas llamadas se permiten en la prueba de recu
 
 ### Tema 4: OAuth2/OIDC, Keycloak y Token Relay sin perder la frontera de autorización
 
-**Prerrequisito:** Módulo 4 de Spring Boot (Spring Security).
+**Duración:** 45 min. **Prerrequisitos:** Spring Boot M4 de este track (Spring Security), métodos HTTP y lectura básica de JSON; M10 T2 se necesita para el cuarto subtema.
 
-OAuth2 separa la autenticación de la API: Keycloak emite una credencial; cada servicio comprueba esa credencial y decide qué operaciones permite. El gateway ayuda con la entrada y el token relay, pero no sustituye la autorización del servicio que tiene los datos.
+**¿Por qué es importante?** El Resource Server valida el token, pero el servicio debe decidir además qué acción y qué registro puede usar esa persona. Pasar por un gateway no sustituye esta decisión.
 
-**¿Por qué es importante?** Si el servicio confía solo en que la petición pasó por el gateway, una ruta interna puede saltarse el control. La API valida su token, permiso y acceso al registro antes de revelar datos.
+**Laboratorio:** `examples/spring-security-keycloak-rutaflow/`. El proyecto trae una app Boot, pruebas con tokens simulados, un realm importable y comandos para verificar tokens reales de Keycloak.
 
-#### Subtema 4.1: Protege la API con el emisor de Keycloak · 15 min
-
-**1. Contexto**
-
-La API necesita comprobar quién emitió el token y que no esté vencido o alterado. Configurar el emisor permite a Spring Security descubrir las claves públicas del realm.
-
-**2. Hazlo tú**
-
-En un proyecto con `spring-boot-starter-web` y `spring-boot-starter-oauth2-resource-server`, crea `src/main/resources/application.yml`:
-
-```yaml
-spring:
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: http://localhost:8081/realms/rutaflow
-```
-
-Crea `src/main/java/academia/rutaflow/SaludController.java`:
-
-```java
-package academia.rutaflow;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-@RestController
-class SaludController {
-    @GetMapping("/api/perfil")
-    String perfil() {
-        return "perfil protegido";
-    }
-
-    @PostMapping("/api/ubicaciones/{id}")
-    String guardarUbicacion() {
-        return "ubicación guardada";
-    }
-}
-```
-
-Configura un realm local llamado `rutaflow`, arranca la API y solicita `curl -i http://localhost:8080/api/perfil` sin token.
-
-**Resultado esperado:** sin token la API contesta `401 Unauthorized`. Con una URL de realm incorrecta, Spring informa que no puede descubrir la configuración del emisor al iniciar.
-
-**Fallo deliberado:** en `src/main/resources/application.yml`, cambia `/realms/rutaflow` por `/realms/inventado` y reinicia. **Diagnóstico:** revisa el issuer configurado y la URL de descubrimiento del realm en Keycloak; restáuralos antes de continuar.
-
-**3. Entiende**
-
-`issuer-uri` le dice a la API qué proveedor confiar. En producción usa HTTPS y secretos/configuración del entorno; `start-dev` de un proveedor de identidad es solo para desarrollo local.
-
-**4. Cierra**
-
-Guarda la respuesta `401` y la URL exacta del issuer de tu realm.
-
-#### Subtema 4.2: Distingue autenticación de permiso · 10 min
+#### Subtema 4.1: Valida el emisor del token · 15 min
 
 **1. Contexto**
 
-Una persona puede tener token válido y aun así no tener permiso para escribir ubicaciones. Eso es `403`; si no presenta credencial, es `401`.
+Una firma válida no basta si el token lo emitió otro proveedor. El `issuer-uri` conecta el Resource Server con el documento OIDC y las claves públicas del realm que acepta.
 
 **2. Hazlo tú**
 
-En `src/main/java/academia/rutaflow/ApiSecurity.java`, exige el scope de escritura:
+Desde `examples/spring-security-keycloak-rutaflow/`, ejecuta las pruebas y revisa `src/main/resources/application.yml`:
 
-```java
-package academia.rutaflow;
-
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.web.SecurityFilterChain;
-
-@Configuration
-class ApiSecurity {
-    @Bean
-    SecurityFilterChain api(HttpSecurity http) throws Exception {
-        return http
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers(HttpMethod.POST, "/api/ubicaciones/**")
-                .hasAuthority("SCOPE_location:write")
-                .anyRequest().authenticated())
-            .oauth2ResourceServer(oauth -> oauth.jwt(Customizer.withDefaults()))
-            .build();
-    }
-}
+```bash
+./mvnw -q clean test
 ```
 
-En `src/test/java/academia/rutaflow/ApiSecurityTest.java`, prueba la regla con `spring-security-test`:
+Para comprobar un issuer real, sigue en `README.md` las instrucciones para iniciar el realm local de Keycloak, solicitar el token de Ana y ejecutar la API. Sin bearer token, consulta `GET /api/pedidos/p-ana`; luego repite con el token.
 
-```java
-package academia.rutaflow;
+**Resultado esperado:** las pruebas locales distinguen petición sin token (`401`) y token firmado por el realm (acceso permitido según las reglas). Con Keycloak levantado, Spring descubre el issuer y la API acepta la firma, vigencia y emisor del access token.
 
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.test.web.servlet.MockMvc;
-
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-@WebMvcTest(SaludController.class)
-@Import({ApiSecurity.class, ApiSecurityTest.DecoderConfig.class})
-class ApiSecurityTest {
-    @Autowired MockMvc mockMvc;
-
-    @Test
-    void sinScopeRecibe403() throws Exception {
-        mockMvc.perform(post("/api/ubicaciones/1").with(jwt()))
-            .andExpect(status().isForbidden());
-    }
-
-    @Test
-    void conScopeRecibeRespuestaExitosa() throws Exception {
-        mockMvc.perform(post("/api/ubicaciones/1").with(jwt().authorities(
-                new SimpleGrantedAuthority("SCOPE_location:write"))))
-            .andExpect(status().is2xxSuccessful());
-    }
-
-    @TestConfiguration
-    static class DecoderConfig {
-        @Bean JwtDecoder jwtDecoder() {
-            return token -> Jwt.withTokenValue(token).header("alg", "none")
-                .claim("sub", "demo").build();
-        }
-    }
-}
-```
-
-Ejecuta `./mvnw test -Dtest=ApiSecurityTest`.
-
-**Resultado esperado:** el primer token simulado no tiene el scope y recibe `403`; el segundo tiene el scope y la regla lo autoriza. El post-processor prueba la autorización; no valida firma ni conexión con Keycloak.
-
-**Fallo deliberado:** cambia `hasAuthority("SCOPE_location:write")` por `permitAll()` y vuelve a ejecutar el test. **Diagnóstico:** el test del scope insuficiente ya no obtiene `403`; restaura la regla. El nombre de la autoridad debe corresponder al scope del access token.
+**Fallo deliberado:** cambia `http://localhost:8081/realms/rutaflow` por `/realms/realm-inexistente` en `application.yml`, inicia una petición con el token de Ana y observa el resultado. **Resultado esperado:** `401`; el decoder no puede validar el token contra el issuer indicado. Spring Security puede diferir la búsqueda OIDC hasta que recibe un bearer token, así que la app no necesariamente falla al iniciar. **Diagnóstico:** compara `iss` del token con `issuer-uri` y restaura el realm `rutaflow`.
 
 **3. Entiende**
 
-`401` significa “falta una identidad aceptada”; `403` significa “identidad válida, permiso insuficiente”. Un test con `jwt()` ayuda a revisar reglas, pero no reemplaza una prueba de integración con el emisor real.
+Spring Security obtiene metadatos y claves del issuer y valida la firma, expiración y claim `iss`. El test local usa un decoder simulado para probar autorización, así que no sustituye la llamada real a Keycloak.
 
 **4. Cierra**
 
-Registra las dos respuestas y anota qué prueba necesita Keycloak real: validar el token firmado y el issuer.
+Guarda la respuesta sin token, la respuesta autenticada y el issuer exacto. Si Docker no está disponible, anota la verificación de Keycloak como pendiente; no marques la firma real como probada.
 
-#### Subtema 4.3: Comprueba que el recurso pertenece a la persona · 10 min
+#### Subtema 4.2: Separa token válido de permiso de escritura · 10 min
 
 **1. Contexto**
 
-El scope permite intentar una operación, pero no demuestra que el pedido pertenezca a quien lo solicita. La propiedad se comprueba con el usuario del token y el dueño del dato.
+Luis puede presentar un token válido y aun así no tener permiso para guardar ubicaciones. El endpoint responde `403` porque identifica a Luis, pero su token no contiene el rol requerido.
 
 **2. Hazlo tú**
 
-En `src/main/java/academia/rutaflow/PropiedadPedido.java`, compara los identificadores antes de devolver los datos:
+Inspecciona `src/main/java/academia/rutaflow/security/ApiSecurity.java` y el realm `keycloak/rutaflow-realm.json`. Ejecuta cada prueba desde la carpeta del laboratorio:
 
-```java
-package academia.rutaflow;
-
-import org.springframework.security.access.AccessDeniedException;
-
-final class PropiedadPedido {
-    static void exigirPropietario(String usuarioToken, String propietarioPedido) {
-        if (!usuarioToken.equals(propietarioPedido)) {
-            throw new AccessDeniedException("El pedido pertenece a otra persona");
-        }
-    }
-}
+```bash
+./mvnw -q -Dtest=ApiSecurityTest#tokenSinRolDeEscrituraRecibe403 test
+./mvnw -q -Dtest=ApiSecurityTest#rolDeEscrituraPermiteGuardarUbicacion test
 ```
 
-Llama a `exigirPropietario(authentication.getName(), pedido.getPropietarioId())` después de buscar el pedido y antes de responder. Prueba un pedido propio y otro de distinto usuario en `src/test/java/academia/rutaflow/PropiedadPedidoTest.java`.
+La primera usa el bearer de prueba `luis`; la segunda usa `ana`, quien tiene el rol realm `location:write`.
 
-```java
-package academia.rutaflow;
+**Resultado esperado:** Luis recibe `403`; Ana recibe `200`. La configuración convierte `realm_access.roles` de Keycloak en una autoridad Spring `ROLE_location:write` y la compara con la regla del POST.
 
-import org.junit.jupiter.api.Test;
-import org.springframework.security.access.AccessDeniedException;
-
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
-class PropiedadPedidoTest {
-    @Test
-    void dejaPasarAlPropietario() {
-        assertDoesNotThrow(() -> PropiedadPedido.exigirPropietario("ana", "ana"));
-    }
-
-    @Test
-    void rechazaAotraPersona() {
-        assertThrows(AccessDeniedException.class,
-            () -> PropiedadPedido.exigirPropietario("ana", "luis"));
-    }
-}
-```
-
-Ejecuta `./mvnw test -Dtest=PropiedadPedidoTest`.
-
-**Resultado esperado:** el dueño continúa; una persona distinta recibe `403` y no obtiene el contenido del pedido.
-
-**Fallo deliberado:** elimina temporalmente la comparación y ejecuta la prueba con el pedido ajeno. **Diagnóstico:** el test debe detectar acceso indebido aunque la persona tenga el scope correcto; restablece la comprobación de propiedad.
+**Fallo deliberado:** cambia `.hasAuthority("ROLE_location:write")` por `.permitAll()` y ejecuta la prueba de Luis. **Resultado esperado:** falla, porque ahora puede escribir. **Diagnóstico:** autenticar a una persona no le concede el rol; restaura la regla de autoridad.
 
 **3. Entiende**
 
-El scope responde “¿puede intentar esta clase de acción?”; la propiedad responde “¿puede actuar sobre este registro?”. El servicio debe comprobar ambas cosas porque es responsable de sus datos.
+`401` indica que falta un token aceptado; `403` indica que el token fue aceptado, pero no cumple la regla de permiso. Este ejemplo usa un rol realm de Keycloak; scopes OAuth y roles son claims distintos.
 
 **4. Cierra**
 
-Conserva el test de acceso propio y el de acceso ajeno. En el tema siguiente crearás un cliente HTTP con un límite de espera explícito.
+Registra el usuario, el claim/rol y la respuesta HTTP de ambos casos.
 
-**Fuentes oficiales:** [Resource Server JWT de Spring Security](https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html), [pruebas MockMvc con OAuth2](https://docs.spring.io/spring-security/reference/servlet/test/mockmvc/oauth2.html).
+#### Subtema 4.3: Comprueba que el pedido pertenece al sujeto del token · 10 min
+
+**1. Contexto**
+
+El rol permite consultar pedidos, pero no todos los pedidos. El servicio debe comparar el sujeto autenticado con el propietario del registro antes de devolverlo.
+
+**2. Hazlo tú**
+
+Lee `PedidoOwnership.java` y `RutaflowApiController.java`. Ejecuta desde la carpeta del laboratorio:
+
+```bash
+./mvnw -q -Dtest=ApiSecurityTest#tokenSoloLeePedidosDeSuSubject test
+```
+
+La prueba usa `sub=ana`: `p-ana` pertenece a Ana y `p-luis` a otra persona. En una llamada real, sigue el README para configurar el `sub` de Ana que Keycloak emitió.
+
+**Resultado esperado:** Ana obtiene `200` para `p-ana` y `403` para `p-luis`.
+
+**Fallo deliberado:** comenta `pedidoOwnership.requireOwner(jwt.getSubject(), id)` y ejecuta el test. **Resultado esperado:** Ana también recibe `200` para `p-luis`; la prueba falla. **Diagnóstico:** autenticación y rol no prueban propiedad del registro; restaura la comprobación antes de responder.
+
+**3. Entiende**
+
+`sub` identifica al sujeto del token; no uses un nombre visible como clave permanente de propiedad. En el laboratorio los pedidos son datos en memoria para hacer visible la regla; una API real consulta el dueño persistido en su almacén.
+
+**4. Cierra**
+
+Entrega las dos respuestas y explica qué comprobación produce el 403 por propietario. Las pruebas automáticas usan un decoder de mentira controlada; solo el recorrido de README con Keycloak verifica firma e issuer reales.
+
+#### Subtema 4.4: Reenvía el access token desde el Gateway · 10 min
+
+**1. Contexto**
+
+Tras iniciar sesión en el gateway, este puede pasar el access token a la API que protege sus propios recursos. El gateway no convierte ese token en autorización para todos los pedidos.
+
+**2. Hazlo tú**
+
+Abre `examples/spring-token-relay-rutaflow/src/main/resources/application.yml` y busca el filtro `TokenRelay=`. Revisa también el starter OAuth2 Client en su `pom.xml`. Levanta Keycloak y la API según `examples/spring-security-keycloak-rutaflow/README.md`; luego inicia Gateway desde `examples/spring-token-relay-rutaflow/`:
+
+```bash
+./mvnw spring-boot:run
+```
+
+Abre `http://localhost:8082/api/pedidos/p-ana`, inicia sesión como Ana y después solicita `/api/pedidos/p-luis`.
+
+**Resultado esperado:** Ana entra y la API responde por `p-ana`; la API devuelve `403` para `p-luis`, aunque el token haya pasado por el gateway.
+
+**Fallo deliberado:** elimina temporalmente `- TokenRelay=` y repite la primera petición. **Resultado esperado:** Gateway completa el login, pero la API recibe la solicitud sin bearer token y devuelve `401`. **Diagnóstico:** la sesión del gateway no agrega por sí sola el token a la petición saliente; restaura el filtro.
+
+**3. Entiende**
+
+`TokenRelay` obtiene el access token de la sesión OAuth2 autorizada y lo coloca en la llamada al backend. La API vuelve a validar el issuer y firma, y decide el acceso al pedido.
+
+**4. Cierra**
+
+Guarda el resultado del pedido propio y ajeno. Este recorrido manual requiere Keycloak, navegador y API local; el repositorio documenta los pasos, pero esta sesión no pudo ejecutarlo sin Docker.
+
+**Hito del tema:**
+
+- [ ] Diferencié 401, 403 y permiso sobre un recurso propio.
+- [ ] Vi que el rol realm llega bajo `realm_access.roles`.
+- [ ] Validé la petición real con el issuer local, o dejé explícita esa comprobación pendiente.
+- [ ] Expliqué por qué un gateway no reemplaza los permisos del servicio.
+- [ ] Vi que Token Relay entrega un token, pero la API conserva la autorización del recurso.
+
+**Fuentes oficiales:** [Resource Server JWT de Spring Security](https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html), [administración de roles y tokens de Keycloak](https://www.keycloak.org/docs/26.8.1/server_admin/), [contenedor e importación de realms](https://www.keycloak.org/server/containers) y [TokenRelay de Spring Cloud Gateway](https://docs.spring.io/spring-cloud-gateway/reference/spring-cloud-gateway-server-webflux/gatewayfilter-factories/tokenrelay-factory.html).
 
 ### Tema 5: HTTP Interfaces, deadlines y descubrimiento según el entorno
 

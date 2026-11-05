@@ -252,9 +252,10 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 3.2: Comprueba que OPEN detiene llamadas reales · 10 min
   - ✓ Subtema 3.3: Prueba recuperación en HALF_OPEN · 10 min
 - [4 pasos] Tema 4: OAuth2/OIDC, Keycloak y Token Relay sin perder la frontera de autorización
-  - ✓ Subtema 4.1: Protege la API con el emisor de Keycloak · 15 min
-  - ✓ Subtema 4.2: Distingue autenticación de permiso · 10 min
-  - ✓ Subtema 4.3: Comprueba que el recurso pertenece a la persona · 10 min
+  - ✓ Subtema 4.1: Valida el emisor del token · 15 min
+  - ✓ Subtema 4.2: Separa token válido de permiso de escritura · 10 min
+  - ✓ Subtema 4.3: Comprueba que el pedido pertenece al sujeto del token · 10 min
+  - ✓ Subtema 4.4: Reenvía el access token desde el Gateway · 10 min
 - [pendiente de migrar] Tema 5: HTTP Interfaces, deadlines y descubrimiento según el entorno
 - [pendiente de migrar] Tema 6: Spring gRPC para comunicación interna de alta frecuencia (Spring Boot 4.1)
 - [pendiente de migrar] Tema 7: DDD para decidir límites y propiedad de datos
