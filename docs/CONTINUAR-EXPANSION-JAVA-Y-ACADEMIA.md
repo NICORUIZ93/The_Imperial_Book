@@ -1103,9 +1103,30 @@ defecto de sustancia. Los conteos no son una evaluación humana de cada curso ni
 del aprendizaje. T5 ya tenía el detector de cuatro pasos antes del cambio; no
 se contabiliza como tema atómico nuevo.
 
-**Siguiente tema:** Spring Boot M10 T6, “Spring gRPC para comunicación interna
-de alta frecuencia”. Inspecciona el proyecto gRPC ya referido en este mismo
-módulo y contrasta el starter, generación `.proto`, transporte, cliente y pruebas
-con documentación primaria de Spring gRPC compatible con Boot 4.1. Sustituye
-las afirmaciones de rendimiento no medidas por una comparación reproducible y
-mantén la revisión tema por tema antes de publicar un commit separado.
+Spring Boot M10 T6, “Spring gRPC, contrato HTTP/2 y evolución segura”, quedó
+reescrito en cuatro subtemas con el formato Contexto → Hazlo tú → Entiende →
+Cierra. Se corrigió el cliente obsoleto `@GrpcClient` por `@ImportGrpcClients`,
+y se precisó que Spring Boot 4.1 aporta los starters y autoconfiguración gRPC.
+No se afirma que gRPC sea más rápido que REST; el texto pide benchmark antes de
+tomar esa decisión.
+
+Se creó `examples/spring-grpc-rutaflow/` con contrato `.proto`, generación Java
+por `protobuf-maven-plugin`, servicio `@GrpcService` y stub cliente. `./mvnw -q
+clean test` pasó con una llamada por socket TCP local a un servidor Netty de
+puerto libre: 10 km devuelve `monto=15000`. La mutación del target a un puerto
+incorrecto produjo `UNAVAILABLE: Connection refused`; se restauró y la suite
+volvió a pasar. Esto prueba cliente/servidor local y contrato generado, no dos
+procesos, compatibilidad entre versiones o benchmark de latencia.
+
+Fuentes oficiales revisadas: [Spring Boot gRPC 4.1](https://docs.spring.io/spring-boot/reference/io/grpc.html),
+[Spring gRPC](https://docs.spring.io/spring-grpc/reference/) y [guía Protobuf](https://protobuf.dev/programming-guides/proto3/#updating).
+La validación completa del repositorio pasó después de la edición y de regenerar
+reportes e índices; sus contadores siguen siendo señales estructurales, no una
+revisión pedagógica humana.
+
+**Siguiente tema:** Spring Boot M10 T7, “DDD para decidir límites y propiedad
+de datos”. Revisa el módulo completo y cualquier laboratorio que ya exista; la
+lección actual tiene pasos heredados de siete partes. Implementa el formato
+atómico con invariante ejecutable, decisión de límites, fallo diagnosticable y
+casos donde no conviene extraer un servicio. Mantén DDD separado de la mera
+división por tablas y publica T7 en commit propio.

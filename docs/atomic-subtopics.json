@@ -94,8 +94,8 @@
     "spring-boot": {
       "topics": 111,
       "completeTopics": 40,
-      "topicsWith3to6Subtopics": 53,
-      "subtopics": 171,
+      "topicsWith3to6Subtopics": 54,
+      "subtopics": 175,
       "completeSubtopics": 134
     }
   },
@@ -12753,9 +12753,66 @@
       },
       {
         "module": 10,
-        "topic": "### Tema 6: Spring gRPC para comunicación interna de alta frecuencia (Spring Boot 4.1)",
-        "subtopicCount": 0,
-        "subtopics": [],
+        "topic": "### Tema 6: Spring gRPC, contrato HTTP/2 y evolución segura",
+        "subtopicCount": 4,
+        "subtopics": [
+          {
+            "id": "6.1",
+            "title": "#### Subtema 6.1: Define el mensaje y el método remoto · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "6.2",
+            "title": "#### Subtema 6.2: Expón la implementación en Spring · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "6.3",
+            "title": "#### Subtema 6.3: Llama el stub por el canal · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "6.4",
+            "title": "#### Subtema 6.4: Cambia el contrato sin romper datos · 10 min",
+            "criteria": {
+              "context": true,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": false
+          }
+        ],
         "complete": false
       },
       {

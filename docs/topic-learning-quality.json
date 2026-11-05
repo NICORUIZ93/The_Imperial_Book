@@ -24137,7 +24137,7 @@
       },
       {
         "module": 10,
-        "topic": "Tema 6: Spring gRPC para comunicación interna de alta frecuencia (Spring Boot 4.1)",
+        "topic": "Tema 6: Spring gRPC, contrato HTTP/2 y evolución segura",
         "criteria": {
           "explanation": true,
           "code": true,

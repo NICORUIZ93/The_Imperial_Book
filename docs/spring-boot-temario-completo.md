@@ -261,7 +261,11 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - pendiente Subtema 5.2: Corta la espera de una respuesta lenta · 15 min
   - pendiente Subtema 5.3: Resuelve el nombre del servicio por entorno · 10 min
   - pendiente Subtema 5.4: Ajusta el cliente al presupuesto de la operación · 5 min
-- [pendiente de migrar] Tema 6: Spring gRPC para comunicación interna de alta frecuencia (Spring Boot 4.1)
+- [pendiente de migrar] Tema 6: Spring gRPC, contrato HTTP/2 y evolución segura
+  - pendiente Subtema 6.1: Define el mensaje y el método remoto · 10 min
+  - pendiente Subtema 6.2: Expón la implementación en Spring · 10 min
+  - pendiente Subtema 6.3: Llama el stub por el canal · 10 min
+  - pendiente Subtema 6.4: Cambia el contrato sin romper datos · 10 min
 - [pendiente de migrar] Tema 7: DDD para decidir límites y propiedad de datos
 - [pendiente de migrar] Tema 8: Orquestación de microservicios con Temporal y Spring Boot
 - [pendiente de migrar] Tema 9: Spring Modulith para comprobar fronteras antes de separar servicios

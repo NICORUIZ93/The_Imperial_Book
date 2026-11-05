@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package rutaflow.tarifa.v1;
+
+option java_package = "academia.rutaflow.grpc";
+option java_multiple_files = true;
+
+service TarifaService {
+  rpc Calcular (TarifaRequest) returns (TarifaResponse);
+}
+
+message TarifaRequest {
+  double distancia_km = 1;
+}
+
+message TarifaResponse {
+  double monto = 1;
+}

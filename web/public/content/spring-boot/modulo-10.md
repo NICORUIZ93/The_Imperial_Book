@@ -685,127 +685,142 @@ Entrega las dos pruebas en verde, el nombre lógico resuelto y el resultado del 
 
 Los límites de espera son una pieza del presupuesto de latencia del proyecto integrador; se deben ajustar con observaciones del servicio, no por intuición.
 
-### Tema 6: Spring gRPC para comunicación interna de alta frecuencia (Spring Boot 4.1)
+### Tema 6: Spring gRPC, contrato HTTP/2 y evolución segura
 
-#### Paso 1 · Objetivo y preparación
+**Duración:** 40 min. **Prerrequisito:** Tema 5 de este módulo. **Meta observable:** genera Java desde un `.proto`, publica un servicio Spring gRPC y llama al stub por un canal TCP local.
 
-Al finalizar podrás definir un contrato gRPC con `.proto`, generar el stub, y exponer/consumir un servicio interno con Spring gRPC (Spring Boot 4.1), confirmando con un cliente real que la comunicación binaria funciona entre dos servicios.
+**¿Por qué es importante?** Dos servicios necesitan acordar sus mensajes y cómo cambian con el tiempo. El contrato generado reduce conversiones manuales; un cambio inseguro puede romper clientes que se despliegan después.
 
-**Conocimiento previo:** Tema 5 de este módulo.
-
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** La comunicación entre el servicio de Jornadas y el servicio de Tarifas ocurre decenas de veces por segundo en el camino crítico de cada entrega; serializar y parsear JSON sobre HTTP en cada llamada interna agrega una sobrecarga medible que gRPC (contrato binario tipado, HTTP/2 multiplexado) reduce sin cambiar la lógica de negocio.
-
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** contrato `.proto`, generación de stub, HTTP/2 multiplexado, Spring gRPC (Boot 4.1) frente a configuración manual de Netty.
-
-```protobuf
-// src/main/proto/tarifa.proto
-syntax = "proto3";
-service TarifaService {
-  rpc Calcular (TarifaRequest) returns (TarifaResponse);
-}
-message TarifaRequest { double distanciaKm = 1; }
-message TarifaResponse { double monto = 1; }
-```
-
-```java
-@GrpcService
-public class TarifaServiceImpl extends TarifaServiceGrpc.TarifaServiceImplBase {
-    @Override
-    public void calcular(TarifaRequest request, StreamObserver<TarifaResponse> responseObserver) {
-        double monto = request.getDistanciaKm() * 1500;
-        responseObserver.onNext(TarifaResponse.newBuilder().setMonto(monto).build());
-        responseObserver.onCompleted();
-    }
-}
-```
-
-Spring gRPC (incorporado en Spring Boot 4.1) registra automáticamente el servidor gRPC y los clientes a partir de la configuración de `application.yml`, de la misma forma que Spring Boot ya autoconfigura un servidor HTTP embebido — sin la configuración manual de un `ServerBuilder` de Netty que gRPC puro requeriría; `@GrpcService` marca la implementación generada a partir del contrato `.proto` como un bean gestionado por Spring, con inyección de dependencias normal.
-
-**Analogía:** gRPC con un contrato `.proto` es como un formulario preimpreso con casillas numeradas que ambos lados ya acordaron de antemano; JSON sobre HTTP es como una carta de texto libre que cada lado debe parsear e interpretar manualmente, más flexible pero con más trabajo de parseo repetido en cada intercambio.
-
-**Diagrama:**
+**Laboratorio:** `examples/spring-grpc-rutaflow/`. No mide rendimiento relativo contra REST/JSON.
 
 ```mermaid
 sequenceDiagram
-  participant J as Servicio Jornadas
-  participant T as Servicio Tarifas (gRPC)
-  J->>T: TarifaRequest (binario, HTTP/2)
-  T->>J: TarifaResponse (binario, HTTP/2)
-  Note over J,T: mismo contrato .proto compilado en ambos lados
+  participant C as Stub cliente
+  participant S as Spring gRPC
+  C->>S: TarifaRequest (HTTP/2)
+  S->>C: TarifaResponse
+  Note over C,S: ambos usan clases generadas desde tarifa.proto
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Subtema 6.1: Define el mensaje y el método remoto · 10 min
 
-Crea `src/main/proto/tarifa.proto` con el contrato anterior, genera el stub con el plugin `protobuf-maven-plugin`, implementa `TarifaServiceImpl` con `@GrpcService`, y un cliente de prueba:
+**1. Contexto**
+
+`.proto` describe los mensajes y el nombre del método; el compilador crea las clases Java para leer y escribir esos mensajes.
+
+**2. Hazlo tú**
+
+Abre `src/main/proto/tarifa.proto` y ejecuta desde la carpeta del laboratorio:
 
 ```bash
-mkdir -p academia-spring/src/main/proto
-cd academia-spring
+./mvnw -q generate-sources
 ```
 
-**Ejecuta el ejemplo** (genera el proyecto con Spring Initializr, pega el código y corre las pruebas):
+La operación y sus mensajes se declaran así:
 
-```bash
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
-./mvnw test
+```protobuf
+service TarifaService {
+  rpc Calcular (TarifaRequest) returns (TarifaResponse);
+}
+message TarifaRequest { double distancia_km = 1; }
+message TarifaResponse { double monto = 1; }
 ```
-Equivalencias Maven/Gradle en el Módulo 1.
 
+**Resultado esperado:** aparecen `TarifaRequest`, `TarifaResponse` y `TarifaServiceGrpc` bajo `target/generated-sources/`.
+
+**Fallo deliberado:** cambia el nombre del método a `Cotizar` en el `.proto` sin cambiar la implementación. Regenera; la compilación del servicio falla porque el stub nuevo ya no ofrece `calcular`.
+
+**3. Entiende**
+
+El `.proto` es el acuerdo compartido. Los números de campo se envían por la red; los nombres ayudan a leer el código.
+
+**4. Cierra**
+
+Señala cuál archivo es fuente y cuál genera Java. Restaura `Calcular`.
+
+#### Subtema 6.2: Expón la implementación en Spring · 10 min
+
+**1. Contexto**
+
+El servicio recibe distancia en kilómetros y devuelve el cálculo de demostración.
+
+**2. Hazlo tú**
+
+Lee `src/main/java/academia/rutaflow/grpc/TarifaServiceImpl.java` y sigue el `StreamObserver`: `onNext` envía el resultado y `onCompleted` cierra la respuesta.
 
 ```java
-// src/test/java/com/academia/microservicios/TarifaGrpcTest.java
-@SpringBootTest
-class TarifaGrpcTest {
-    @GrpcClient("tarifa-service")
-    private TarifaServiceGrpc.TarifaServiceBlockingStub cliente;
-
-    @Test
-    void calculaTarifaPorDistancia() {
-        TarifaResponse respuesta = cliente.calcular(
-            TarifaRequest.newBuilder().setDistanciaKm(10).build());
-        assertThat(respuesta.getMonto()).isEqualTo(15000);
+@GrpcService
+class TarifaServiceImpl extends TarifaServiceGrpc.TarifaServiceImplBase {
+    public void calcular(TarifaRequest req, StreamObserver<TarifaResponse> out) {
+        out.onNext(TarifaResponse.newBuilder().setMonto(req.getDistanciaKm() * 1500).build());
+        out.onCompleted();
     }
 }
 ```
 
-**Resultado esperado:** el cliente gRPC invoca `TarifaServiceImpl` a través de HTTP/2 usando el stub generado del contrato `.proto`, recibiendo `TarifaResponse` con `monto=15000` para 10 km, sin ningún parseo manual de JSON en ninguno de los dos lados.
+**Resultado esperado:** el bean `@GrpcService` implementa la clase base generada y calcula `10 × 1500 = 15000`.
 
-**Fallo deliberado:** en una nueva versión del `.proto`, quita el campo `distanciaKm = 1` y agrega un campo nuevo reusando el mismo número de campo (`double distanciaMillas = 1`) en vez de asignarle el siguiente número disponible. Diagnostica confirmando que un cliente viejo, compilado contra el contrato anterior, ahora interpreta el valor binario de `distanciaMillas` como si fuera `distanciaKm` (protobuf identifica campos por NÚMERO, no por nombre), produciendo un cálculo de tarifa silenciosamente incorrecto sin ningún error de compilación ni de red que lo señale.
+**3. Entiende**
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+Spring Boot 4.1 aporta starters y autoconfiguración gRPC; usa Netty por defecto. La anotación registra el servicio generado como bean disponible para gRPC.
 
-1. Corrige el Paso 4 asignando `distanciaMillas = 2` (el siguiente número disponible) en vez de reusar `= 1`, y confirma que un cliente viejo que solo conoce `distanciaKm = 1` simplemente no ve el campo nuevo, sin corromper ningún valor existente.
-2. Agrega un segundo método RPC (`rpc CalcularConRecargo`) al mismo servicio y regenera el stub, confirmando que el cliente existente sigue compilando sin cambios.
-3. Documenta, basándote en el Paso 3, por qué marcar un número de campo como `reserved` en el `.proto` evita que alguien lo reuse accidentalmente en el futuro.
-4. Escribe de memoria (sin mirar) un contrato `.proto` mínimo con un servicio de un método. Compara después contra el Paso 4.
+**4. Cierra**
 
-**Pista:** en protobuf, el NOMBRE de un campo es solo para legibilidad humana del código generado; el NÚMERO de campo es lo único que el protocolo binario transmite — renombrar un campo es seguro, reusar o reordenar su número no lo es.
+Explica en una frase qué hace `onCompleted`. El precio del ejemplo es fijo y no representa una regla real de tarifas.
 
-#### Paso 6 · Práctica independiente
+#### Subtema 6.3: Llama el stub por el canal · 10 min
 
-**Completa el código:** rellena la anotación que registra una implementación de servicio gRPC como bean de Spring:
+**1. Contexto**
 
-```java
-@____
-public class TarifaServiceImpl extends TarifaServiceGrpc.TarifaServiceImplBase { }
+Compilar el contrato no demuestra que el servidor reciba la llamada. El test configura un cliente separado y un servidor en puerto TCP local.
+
+**2. Hazlo tú**
+
+Ejecuta:
+
+```bash
+./mvnw -q -Dtest=TarifaGrpcTest test
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un contrato `.proto` con un mensaje y un servicio de un método, y la implementación `@GrpcService` correspondiente. Compara después contra el Paso 4.
+Abre `src/test/java/academia/rutaflow/grpc/TarifaGrpcTest.java`; el stub se importa con `@ImportGrpcClients` y el servidor escucha en un puerto libre.
 
-#### Paso 7 · Cierre y evidencia
+**Resultado esperado:** el cliente gRPC recibe `monto=15000` para `distancia_km=10`.
 
-Ya exponés y consumís un servicio interno con Spring gRPC (Boot 4.1), confirmando con un cliente real que el contrato binario funciona, y reproducís el riesgo específico de reusar un número de campo en una evolución de contrato. El siguiente y último tema de este módulo aborda cuándo estos límites de servicio deben trazarse con DDD, en vez de por conveniencia técnica. **Evidencia:** entrega el test `TarifaGrpcTest` en verde, y la reproducción del cálculo corrupto al reusar un número de campo en el `.proto`. Fuente oficial: [Spring gRPC Reference](https://docs.spring.io/spring-grpc/reference/) y [Protocol Buffers — Updating a Message Type](https://protobuf.dev/programming-guides/proto3/#updating).
+**Fallo deliberado:** cambia el target del canal a otro puerto y ejecuta el test. Debe fallar al no poder conectar; restaura el target dinámico para evitar depender de un puerto ocupado.
 
-**Errores comunes:** reusar el número de un campo eliminado en vez de marcarlo `reserved`; exponer gRPC hacia clientes externos no confiables sin la misma capa de autenticación que ya protege las APIs REST del Módulo 4.
+**3. Entiende**
 
-**Cuándo no usarlo:** para comunicación con un cliente de navegador (gRPC-Web requiere un proxy adicional) o con un tercero externo que espera JSON/REST estándar, gRPC agrega fricción de integración sin beneficio frente a HTTP Interfaces (Tema 5).
+Esta prueba demuestra una llamada cliente-servidor por TCP local. No es un benchmark, no despliega dos procesos ni prueba un clúster.
 
-El contrato gRPC de este tema es el que usará la comunicación interna de alta frecuencia del proyecto integrador de este track (microservicio productivo, Módulo 12).
-**Evidencia de aprendizaje:** entrega la salida de `./mvnw test` con `TarifaGrpcTest` en verde confirmando `monto=15000` para 10 km, y la explicación de por qué reusar el número de campo `= 1` para `distanciaMillas` corrompe silenciosamente el cálculo en un cliente viejo, frente a asignarle `= 2` como corrección en el Paso 5.
+**4. Cierra**
+
+Entrega el resultado y explica qué parte demuestra generación y cuál demuestra transporte.
+
+#### Subtema 6.4: Cambia el contrato sin romper datos · 10 min
+
+**1. Contexto**
+
+Un servicio móvil o retrasado puede conservar una versión anterior del cliente.
+
+**2. Hazlo tú**
+
+En una copia de `tarifa.proto`, cambia el significado de `distancia_km = 1` por millas manteniendo el tag 1. Predice qué leerá un cliente viejo y no publiques ese cambio. Luego añade un campo nuevo con tag 2.
+
+**Resultado esperado:** el tag 1 conserva su significado; el cliente viejo puede ignorar el campo nuevo. Cuando elimines un campo, el `.proto` debe reservar su tag y su nombre.
+
+**3. Entiende**
+
+El wire format identifica campos por número. Reutilizar un tag puede hacer que un sistema viejo interprete el dato con el significado anterior y no detectar el error de negocio.
+
+**4. Cierra**
+
+Entrega `./mvnw -q clean test` en verde y una propuesta de evolución con `reserved`. La compatibilidad entre dos versiones de clientes debe validarse con contratos/versiones concretos.
+
+**Cuándo conviene:** usa gRPC si el equipo necesita contratos tipados y llamadas internas en streaming o HTTP/2; mide carga y latencia antes de afirmar que es más rápido que HTTP/JSON. Para navegador o terceros que esperan REST, conserva una API HTTP adecuada.
+
+**Proyecto integrador RutaFlow:** evalúa gRPC para la consulta interna de tarifas y compara latencia y costo operativo con el cliente HTTP del Tema 5 antes de adoptarlo.
+
+**Fuentes oficiales:** [Spring Boot gRPC 4.1](https://docs.spring.io/spring-boot/reference/io/grpc.html), [Spring gRPC](https://docs.spring.io/spring-grpc/reference/) y [Protocol Buffers: evolución de mensajes](https://protobuf.dev/programming-guides/proto3/#updating).
 ### Tema 7: DDD para decidir límites y propiedad de datos
 
 #### Paso 1 · Objetivo y preparación

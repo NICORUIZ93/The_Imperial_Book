@@ -4832,8 +4832,8 @@
         "fragment": "tema-5-http-interfaces-deadlines-y-descubrimiento-segun-el-entorno"
       },
       {
-        "title": "Spring gRPC para comunicación interna de alta frecuencia (Spring Boot 4.1)",
-        "fragment": "tema-6-spring-grpc-para-comunicacion-interna-de-alta-frecuencia-spring-boot-4-1"
+        "title": "Spring gRPC, contrato HTTP/2 y evolución segura",
+        "fragment": "tema-6-spring-grpc-contrato-http-2-y-evolucion-segura"
       },
       {
         "title": "DDD para decidir límites y propiedad de datos",

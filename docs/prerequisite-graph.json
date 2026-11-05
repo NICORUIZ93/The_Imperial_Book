@@ -4599,7 +4599,7 @@
       "track": "spring-boot",
       "module": 10,
       "position": 6,
-      "title": "Spring gRPC para comunicación interna de alta frecuencia (Spring Boot 4.1)",
+      "title": "Spring gRPC, contrato HTTP/2 y evolución segura",
       "file": "web/public/content/spring-boot/modulo-10.md",
       "requires": [
         "spring-boot:10:5"

@@ -1692,7 +1692,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "3a432ecc0c426cfe98b71d44a51f43b4c8e4db0bd0e40e8a341a032399b5f9fc",
+    "fingerprint": "d8b6715a3435d2c35f8d00da667aa83ef5c3c58e9925f7c5669ed703e0a2c604",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10348,9 +10348,9 @@
       {
         "issues": [],
         "module": 10,
-        "tailWords": 263,
-        "topic": "Tema 6: Spring gRPC para comunicación interna de alta frecuencia (Spring Boot 4.1)",
-        "words": 1112
+        "tailWords": 0,
+        "topic": "Tema 6: Spring gRPC, contrato HTTP/2 y evolución segura",
+        "words": 830
       },
       {
         "issues": [],

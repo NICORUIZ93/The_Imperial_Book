@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 1112,
+      "lines": 1133,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 15403,
+      "lines": 15460,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13602,
+      "lines": 13604,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 457,
+      "lines": 461,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -5621,6 +5621,59 @@
     {
       "path": "examples/spring-gateway-rutaflow/src/test/java/academia/rutaflow/gateway/GatewayRoutingTest.java",
       "lines": 103,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-http-deadline-rutaflow/README.md",
+      "lines": 42,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# HTTP Interface, deadline y descubrimiento \u00b7 RutaFlow",
+        "## Ejecutar",
+        "## Sigue la llamada",
+        "## Fallo deliberado"
+      ]
+    },
+    {
+      "path": "examples/spring-http-deadline-rutaflow/src/main/java/academia/rutaflow/http/HttpDeadlineApplication.java",
+      "lines": 12,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-http-deadline-rutaflow/src/main/java/academia/rutaflow/http/RouteClient.java",
+      "lines": 12,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-http-deadline-rutaflow/src/main/java/academia/rutaflow/http/RouteClientConfiguration.java",
+      "lines": 38,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-http-deadline-rutaflow/src/main/resources/application.yml",
+      "lines": 23,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-http-deadline-rutaflow/src/test/java/academia/rutaflow/http/RouteClientDeadlineTest.java",
+      "lines": 77,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -12223,7 +12276,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-10.md",
-      "lines": 1475,
+      "lines": 1490,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
