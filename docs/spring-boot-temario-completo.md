@@ -5,7 +5,7 @@
 **Proyecto continuo:** RutaFlow: plataforma de entregas basada en servicios.
 **Prerrequisito de entrada:** Java, HTTP, SQL y pruebas; los módulos iniciales vuelven a presentar cada herramienta..
 **Duración objetivo:** temas de 20–45 minutos; cada tema se divide en 3–6 acciones de 5–15 minutos.
-**Estado estructural:** 43/111 temas migrados; auditoría estructural actualizada el 2026-11-03.
+**Estado estructural:** 44/111 temas migrados; auditoría estructural actualizada el 2026-11-03.
 
 ## Índice de módulos y temas
 
@@ -286,7 +286,11 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 10.2: Levanta dos instancias con identidades distintas · 8 min
   - ✓ Subtema 10.3: Propaga un valor y refresca el bean · 12 min
   - ✓ Subtema 10.4: Diagnostica propagación y limita el endpoint · 10 min
-- [pendiente de migrar] Tema 11: Micrometer Tracing entre servicios
+- [4 pasos] Tema 11: Micrometer Tracing entre servicios
+  - ✓ Subtema 11.1: Arranca Jaeger y conoce el rastro · 8 min
+  - ✓ Subtema 11.2: Sigue una petición HTTP entre procesos · 12 min
+  - ✓ Subtema 11.3: Encuentra la traza común y un span de negocio · 12 min
+  - ✓ Subtema 11.4: Ajusta sampling y cuida lo que exportas · 10 min
 - [pendiente de migrar] Tema 12: Contract testing entre productor y consumidor
 
 ### Módulo 11: Empaquetado y despliegue
@@ -466,7 +470,7 @@ La tabla registra presencia de áreas en el inventario del track, no profundidad
 
 ### Huecos y límites reportados
 
-- El repositorio contiene 111 temas en 26 módulos; 43 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
+- El repositorio contiene 111 temas en 26 módulos; 44 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
 - No hay base para afirmar que el track esté completo: la comparación con la fuente de referencia está pendiente de revisión humana módulo por módulo.
 - Los elementos de la fuente que todavía deben verificarse de forma explícita están enumerados en la tabla anterior; cualquier técnica crítica que no tenga tema propio debe añadirse conservando el currículo base.
 - La ejecución de ejemplos, el comportamiento con brokers/plataformas reales y la calidad pedagógica humana se registran por separado.

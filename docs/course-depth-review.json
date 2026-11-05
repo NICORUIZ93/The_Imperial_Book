@@ -12469,8 +12469,7 @@
       "file": "web/public/content/spring-boot/modulo-10.md",
       "line": 1374,
       "signals": [
-        "ejemplo-breve-revisar-contexto",
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -12481,7 +12480,7 @@
       "module": 10,
       "title": "Tema 12: Contract testing entre productor y consumidor",
       "file": "web/public/content/spring-boot/modulo-10.md",
-      "line": 1417,
+      "line": 1520,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

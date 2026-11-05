@@ -1692,7 +1692,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "ac50f3b3ca659104c89ae84b8df423951d3445c0dc1d5d345a78fb565ff41268",
+    "fingerprint": "da3de58b359160cbbdc5a0f817d8ef51b08d614355dee6e254ef1507cd337869",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10383,9 +10383,9 @@
       {
         "issues": [],
         "module": 10,
-        "tailWords": 167,
+        "tailWords": 0,
         "topic": "Tema 11: Micrometer Tracing entre servicios",
-        "words": 536
+        "words": 1021
       },
       {
         "issues": [],

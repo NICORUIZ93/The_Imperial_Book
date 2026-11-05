@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 1243,
+      "lines": 1258,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 15688,
+      "lines": 15745,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -314,7 +314,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1102,
+      "lines": 1101,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13609,
+      "lines": 13608,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 477,
+      "lines": 481,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -5530,6 +5530,67 @@
     {
       "path": "examples/spring-avro-rutaflow/src/test/java/academia/rutaflow/avro/SchemaRegistrySerdeTest.java",
       "lines": 47,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-cloud-bus-rutaflow/README.md",
+      "lines": 55,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Spring Cloud Bus: propagar un valor a dos instancias",
+        "## 1. Inicia RabbitMQ",
+        "## 2. Inicia dos instancias",
+        "## 3. Propaga el cambio y comprueba las dos respuestas"
+      ]
+    },
+    {
+      "path": "examples/spring-cloud-bus-rutaflow/compose.yaml",
+      "lines": 12,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-cloud-bus-rutaflow/scripts/verify-bus.sh",
+      "lines": 34,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-cloud-bus-rutaflow/src/main/java/academia/rutaflow/bus/BusApplication.java",
+      "lines": 12,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-cloud-bus-rutaflow/src/main/java/academia/rutaflow/bus/RoutePolicy.java",
+      "lines": 17,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-cloud-bus-rutaflow/src/main/java/academia/rutaflow/bus/RoutePolicyController.java",
+      "lines": 21,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-cloud-bus-rutaflow/src/main/resources/application.yml",
+      "lines": 22,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -12547,7 +12608,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-10.md",
-      "lines": 1472,
+      "lines": 1575,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

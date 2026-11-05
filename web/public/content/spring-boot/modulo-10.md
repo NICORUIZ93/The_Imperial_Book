@@ -1373,46 +1373,149 @@ Entrega la salida del script, el valor tras reinicio y un plan de acceso para pr
 
 ### Tema 11: Micrometer Tracing entre servicios
 
-#### Paso 1 · Objetivo y preparación
+Duración: 35–45 min. **Meta:** seguir una petición desde Entregas hasta Inventario y comprobar que ambos procesos comparten trace ID. El laboratorio en `examples/spring-tracing-rutaflow/` usa Spring Boot 4.1.2, Micrometer Tracing, OpenTelemetry y Jaeger con OTLP. Spring Boot documenta `spring-boot-starter-opentelemetry` y sus propiedades de exportación; el cliente HTTP debe salir del `RestClient.Builder` autoconfigurado para propagar el contexto.
 
-Al finalizar propagarás una traza desde una petición HTTP hasta otro servicio y localizarás el tramo que aumenta la latencia. **Prerrequisitos:** Actuator, cliente HTTP y al menos dos servicios locales. Levanta un receptor OTLP o Zipkin de desarrollo.
+#### Subtema 11.1: Arranca Jaeger y conoce el rastro · 8 min
 
-#### Paso 2 · Contexto y caso real
+**1. Contexto**
 
-El endpoint de despacho tarda cuatro segundos, pero sus logs locales no muestran si esperó Gateway, inventario o geolocalización. Un `traceId` común permite inspeccionar los spans de esa solicitud.
+Un usuario informa que consultar `RF-314` tarda. El log de Entregas dice que terminó, pero necesitamos ver si esperó a Inventario.
 
-#### Paso 3 · Teoría y analogía
+**2. Hazlo tú**
 
-Micrometer Tracing conecta las observaciones de Spring con un tracer como OpenTelemetry y exporta spans a un backend. Cada span mide una operación dentro de una traza. Para propagar contexto HTTP usa builders autoconfigurados de Spring, no clientes creados manualmente fuera de ellos. El `traceId` es el número de expediente que cruza departamentos; cada span es un sello de tiempo de una operación. Sampling controla cuánto se registra y debe ajustarse al tráfico y costo.
+Desde `examples/spring-tracing-rutaflow/`, inicia Jaeger con Docker Compose o Podman Compose y revisa su estado:
 
-#### Paso 4 · Demostración guiada
-
-Añade Actuator y el bridge/exporter compatible con el backend de desarrollo. En `application.yml` configura endpoint OTLP y sampling del perfil local. Crea `src/main/java/academia/entregas/ClienteInventario.java` usando el builder inyectado:
-
-```java
-@Bean
-RestClient inventarioClient(RestClient.Builder builder) {
-    return builder.baseUrl("http://localhost:8082").build();
-}
+```bash
+docker compose up -d
+curl -I http://localhost:16686/
 ```
 
-Envía una petición a entregas, que llama inventario, y revisa ambos spans en el backend. Ejecuta `./mvnw test -Dtest=TrazaDistribuidaTest` y luego la app con el exporter activo. **Resultado esperado:** spans de entrada y salida comparten `traceId`, y los logs muestran correlación en el MDC.
+Con Podman, usa `podman compose up -d`.
 
-#### Paso 5 · Práctica guiada
+**Resultado esperado:** Jaeger responde `200` y la interfaz queda en `http://localhost:16686`. El contenedor conserva trazas en memoria mientras siga iniciado.
 
-**Fallo deliberado:** construye `new RestClient()` directamente en vez de usar el builder de Boot. **Pista:** el cliente creado al margen puede no propagar el contexto de trace. Compara spans; vuelve al builder y diagnostica el encabezado de propagación ausente.
+**Fallo deliberado:** cambia el puerto `4318` publicado en `compose.yaml`. **Diagnóstico:** la app intenta exportar OTLP HTTP a `localhost:4318/v1/traces`; restaura el puerto o cambia `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT`.
 
-#### Paso 6 · Práctica independiente
+**3. Entiende**
 
-Añade una observación de negocio para `reserva-conductor`, con tags de baja cardinalidad como `resultado=aprobado/rechazado`; evita agregar `pedidoId` como etiqueta métrica. Fuerza timeout en inventario, encuentra el span que espera y compara error con latencia total. Ajusta sampling solo en desarrollo para pruebas exhaustivas; documenta el valor de producción y el costo esperado.
+Jaeger recibe OTLP por el puerto 4318 y muestra los spans en la interfaz. Es el receptor local de este laboratorio, no una base persistente.
 
-#### Paso 7 · Cierre y evidencia
+**4. Cierra**
 
-Entrega captura/exportación de una traza completa, el fallo sin contexto y el tiempo del span lento. **Proyecto integrador RutaFlow:** conserva propagación por HTTP y mensajería y vincula traces con logs sin poner datos privados en atributos. Errores comunes: crear clientes fuera de auto-configuración, poner IDs únicos como tags y muestrear 100% de tráfico de alto volumen indefinidamente. Siguiente paso: fijar contratos que permitan desplegar proveedor y consumidor por separado. Fuentes oficiales: [Spring Boot: tracing](https://docs.spring.io/spring-boot/reference/actuator/tracing.html), [observabilidad](https://docs.spring.io/spring-boot/reference/actuator/observability.html) y [métricas](https://docs.spring.io/spring-boot/reference/actuator/metrics.html).
+Deja Jaeger ejecutándose y anota dirección de interfaz y endpoint OTLP.
 
-**¿Por qué es importante?** La traza cruza procesos y hace visible dónde se gasta el tiempo de extremo a extremo.
-**Evidencia de aprendizaje:** entrega la traza que cruza dos servicios y el span que explica la demora.
-**Cuándo no usarlo:** no exportes todos los eventos o atributos a una etiqueta métrica; las trazas y métricas tienen límites distintos.
+#### Subtema 11.2: Sigue una petición HTTP entre procesos · 12 min
+
+**1. Contexto**
+
+Entregas responde la ruta del pedido y solicita el inventario a otro servicio. La traza debe cruzar HTTP sin agregar un ID manual a cada método.
+
+**2. Hazlo tú**
+
+Desde la carpeta del laboratorio, construye el jar:
+
+```bash
+./mvnw -q clean package
+```
+
+En terminales separadas, levanta el rol Inventario y el rol Entregas:
+
+```bash
+java -jar target/spring-tracing-rutaflow-0.1.0.jar --spring.application.name=inventario --rutaflow.role=inventory --server.port=8082 --rutaflow.inventory-url=http://localhost:8082
+```
+
+```bash
+java -jar target/spring-tracing-rutaflow-0.1.0.jar --spring.application.name=entregas --rutaflow.role=delivery --server.port=8081 --rutaflow.inventory-url=http://localhost:8082
+```
+
+En una tercera terminal envía la solicitud:
+
+```bash
+curl -s http://localhost:8081/deliveries/RF-314
+```
+
+**Resultado esperado:** llega una respuesta con `estado=en ruta` e Inventario reservado para `RF-314`. En `DeliveryController`, el cliente se crea con el builder inyectado.
+
+La llamada que cruza a Inventario está en `src/main/java/academia/rutaflow/tracing/DeliveryController.java`:
+
+```java
+this.inventory = builder.baseUrl(inventoryUrl).build();
+inventory.get().uri("/inventory/RF-314").retrieve().body(InventoryResponse.class);
+```
+
+**Fallo deliberado:** cambia la URL de Inventario a puerto `8083`. **Diagnóstico:** Entregas responde con error de conexión; arranca el receptor en `8082` o corrige la URL antes de investigar el trace.
+
+**3. Entiende**
+
+El trace ID identifica esta solicitud completa. Cada span es una operación con inicio y fin; el span de Inventario queda dentro de la llamada de Entregas.
+
+**4. Cierra**
+
+Guarda la respuesta HTTP y confirma que el pedido pasó por dos procesos distintos.
+
+#### Subtema 11.3: Encuentra la traza común y un span de negocio · 12 min
+
+**1. Contexto**
+
+La respuesta correcta no prueba por sí sola que el exporter recibió la traza. Comprueba los dos nombres de servicio dentro del mismo trace ID.
+
+**2. Hazlo tú**
+
+Revisa `src/main/java/academia/rutaflow/tracing/DeliveryController.java`; ahí Entregas agrupa el trabajo de negocio. Detén cualquier instancia anterior, comprueba el contenedor y ejecuta desde el laboratorio:
+
+```bash
+podman compose ps
+./scripts/verify-trace.sh
+```
+
+**Resultado esperado:** el verificador imprime una respuesta, un `Trace ID` y `entregas, inventario` como servicios de la misma traza. Abre la traza en Jaeger si quieres recorrer los spans visualmente; el script detiene sus procesos al terminar.
+
+**Fallo deliberado:** reemplaza en `DeliveryController` `builder.baseUrl(inventoryUrl).build()` por `RestClient.create(inventoryUrl)`. **Diagnóstico:** la llamada HTTP sigue respondiendo, pero el servicio Inventario no aparece como hijo de la traza; vuelve al builder de Spring Boot y repite.
+
+**3. Entiende**
+
+`Observation.createNotStarted` añade el span de negocio `rutaflow.delivery.prepare`. Su etiqueta `operation=reserve-inventory` tiene pocos valores posibles. No agregues el pedido como etiqueta métrica: cada ID crearía una serie distinta.
+
+```java
+Observation.createNotStarted("rutaflow.delivery.prepare", observations)
+    .lowCardinalityKeyValue("operation", "reserve-inventory")
+    .observe(() -> reservarInventario());
+```
+
+**4. Cierra**
+
+Entrega el ID que encontró el script y los nombres de servicios que confirma. Si falla, distingue conexión HTTP, cabecera de propagación y exportación a Jaeger.
+
+#### Subtema 11.4: Ajusta sampling y cuida lo que exportas · 10 min
+
+**1. Contexto**
+
+Enviar cada traza ayuda en esta práctica corta, pero aumenta el volumen al crecer el tráfico.
+
+**2. Hazlo tú**
+
+Revisa `src/main/resources/application.yml` y cambia temporalmente `probability: 1.0` a `0.0`. Reempaqueta y reinicia los procesos, llama a la ruta y ejecuta el verificador:
+
+```bash
+./mvnw -q package
+./scripts/verify-trace.sh
+```
+
+**Resultado esperado:** la petición sigue contestando; el verificador informa que no encontró la traza. Restaura `1.0` para repetir la comprobación.
+
+**Fallo deliberado:** busca `pedidoId` como etiqueta en `DeliveryController`. **Diagnóstico:** el ID no está en la etiqueta de baja cardinalidad; el pedido forma parte de la ruta, pero no debe convertirse en dimensión métrica. Conserva etiquetas estables como `operation`.
+
+**3. Entiende**
+
+Sampling decide qué solicitudes exporta el tracer. El 100% es cómodo para pocas peticiones de desarrollo, pero no debe copiarse automáticamente a producción. Jaeger de este laboratorio guarda datos en memoria y los borra al reiniciar.
+
+**4. Cierra**
+
+Entrega la misma traza con sampling activo, el resultado de sampling en cero y la tasa propuesta para el entorno de prueba real. Proyecto RutaFlow: vincula trazas con logs sin exportar datos personales. Siguiente tema: probar contratos entre productor y consumidor.
+
+**Fuentes oficiales:** [tracing en Spring Boot](https://docs.spring.io/spring-boot/reference/actuator/tracing.html), [exportación y propagación OTLP](https://docs.spring.io/spring-boot/4.1-SNAPSHOT/reference/actuator/observability.html), [Micrometer Tracing](https://docs.micrometer.io/tracing/reference/) y [Jaeger local con OTLP](https://www.jaegertracing.io/docs/2.22/getting-started/).
+
+**¿Por qué es importante?** Un trace ID compartido permite ver el tiempo y el resultado de cada salto entre servicios en una sola solicitud.
 
 ### Tema 12: Contract testing entre productor y consumidor
 

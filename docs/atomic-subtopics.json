@@ -93,10 +93,10 @@
     },
     "spring-boot": {
       "topics": 111,
-      "completeTopics": 43,
-      "topicsWith3to6Subtopics": 58,
-      "subtopics": 191,
-      "completeSubtopics": 146
+      "completeTopics": 44,
+      "topicsWith3to6Subtopics": 59,
+      "subtopics": 195,
+      "completeSubtopics": 150
     }
   },
   "topics": {
@@ -13074,9 +13074,66 @@
       {
         "module": 10,
         "topic": "### Tema 11: Micrometer Tracing entre servicios",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 4,
+        "subtopics": [
+          {
+            "id": "11.1",
+            "title": "#### Subtema 11.1: Arranca Jaeger y conoce el rastro · 8 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "11.2",
+            "title": "#### Subtema 11.2: Sigue una petición HTTP entre procesos · 12 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "11.3",
+            "title": "#### Subtema 11.3: Encuentra la traza común y un span de negocio · 12 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "11.4",
+            "title": "#### Subtema 11.4: Ajusta sampling y cuida lo que exportas · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 10,

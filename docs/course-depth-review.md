@@ -1117,7 +1117,7 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | spring-boot / 10 | [Tema 8: Orquestar pedidos con Temporal y Spring Boot](../web/public/content/spring-boot/modulo-10.md) | demostracion-no-delimitada |
 | spring-boot / 10 | [Tema 9: Comprueba módulos antes de separar servicios](../web/public/content/spring-boot/modulo-10.md) | demostracion-no-delimitada |
 | spring-boot / 10 | [Tema 10: Spring Cloud Bus para propagar cambios de configuración](../web/public/content/spring-boot/modulo-10.md) | demostracion-no-delimitada |
-| spring-boot / 10 | [Tema 11: Micrometer Tracing entre servicios](../web/public/content/spring-boot/modulo-10.md) | ejemplo-breve-revisar-contexto, clase-java-no-visible |
+| spring-boot / 10 | [Tema 11: Micrometer Tracing entre servicios](../web/public/content/spring-boot/modulo-10.md) | demostracion-no-delimitada |
 | spring-boot / 10 | [Tema 12: Contract testing entre productor y consumidor](../web/public/content/spring-boot/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 11 | [Tema 1: Fat JAR vs capas de Docker](../web/public/content/spring-boot/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 11 | [Tema 2: GraalVM native image](../web/public/content/spring-boot/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |

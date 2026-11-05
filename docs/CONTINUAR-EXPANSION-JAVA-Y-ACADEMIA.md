@@ -89,8 +89,8 @@ reapliques cambios que ya estén publicados.
 
 ## Estado global honesto
 
-En la auditoría actual: **147/1185 temas** cumplen la estructura atómica en los
-14 tracks: Java 101, Spring Boot 43, Node 2 y Flutter 1. La auditoría pedagógica
+En la auditoría actual: **148/1185 temas** cumplen la estructura atómica en los
+14 tracks: Java 101, Spring Boot 44, Node 2 y Flutter 1. La auditoría pedagógica
 detecta **1083/1185 temas practicables** y deuda en 102. La auditoría de siete
 pasos heredados marca 1026/1185; mide criterios distintos de la metodología nueva.
 La auditoría de sustancia registra 409 temas con defectos y la revisión de
@@ -1230,13 +1230,28 @@ detecta señales en 244. Estos indicadores no prueban todos los ejemplos ni una
 revisión humana completa. Las fallas deliberadas del tema se describen pero no se
 ejecutaron.
 
-Al continuar, no repitas T10: comprueba primero si está publicado con
-`git log -1`. El siguiente tema del módulo 10 es **T11 Micrometer Tracing entre
-servicios**. Revisa compatibilidad/versiones actuales con fuentes oficiales,
-contrasta el texto completo con el laboratorio que vayas a crear, y entrega tres o
-cuatro subtemas cortos con código, comandos y resultado observable. Para demostrar
-trazas, el laboratorio debe enviar una petición real entre dos servicios y
-comprobar el `traceId` y los spans en un receptor de telemetría local; no afirmes
-que hay un backend de trazas si solo compila el código. Publica T11 en un commit
-propio tras regenerar reportes, validar, y excluir los dos cambios locales de
+Spring Boot M10 T11, “Micrometer Tracing entre servicios”, se reescribió en cuatro
+subtemas cortos. `examples/spring-tracing-rutaflow/` contiene dos roles HTTP en
+Spring Boot 4.1.2, `spring-boot-starter-opentelemetry`, un `RestClient.Builder`
+autoconfigurado, una observación de negocio y Jaeger 2.22 con OTLP. Se ejecutó
+`./scripts/verify-trace.sh` con Podman Compose: respondió `RF-314`, buscó en la API
+v3 de Jaeger y encontró un trace ID con cuatro spans, con `entregas` e `inventario`
+en la misma traza. El verificador limpia procesos y contenedor al salir.
+`./mvnw -q clean test` y el empaquetado ejecutable pasaron; se comprobó aparte la
+respuesta HTTP de cada rol. La prueba de sampling al 0% y el fallo deliberado con un cliente
+manual no se ejecutaron. Jaeger usa memoria efímera. `./mvnw -q clean test` pasó;
+las auditorías e índices se regeneraron y `./scripts/validate.sh` pasó (23 pruebas,
+4 omitidas). La cobertura atómica global queda en 148/1185 (Spring Boot 44/111);
+la auditoría pedagógica marca 1083/1185 practicables, la de sustancia detecta 409
+temas y la de profundidad 244 temas con señales. Estas cifras estructurales no
+certifican revisión humana ni ejecución de todo el contenido. No incluir los
+cambios locales de Flutter en el commit.
+
+Al continuar, no repitas T11: confirma su publicación con `git log -1`. El
+siguiente tema del módulo 10 es **T12 Contract testing entre productor y
+consumidor**. Contrasta las versiones con documentación primaria, añade un
+laboratorio con productor y consumidor reales de contratos HTTP y verifica qué
+cambio compatible o incompatible rompe cada lado. Conserva cuatro subtemas con
+archivos, comandos, salidas y un fallo diagnosticable. Haz commit propio por tema
+tras regenerar reportes y validar. Sigue excluyendo los dos cambios locales de
 Flutter.
