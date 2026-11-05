@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 49,
-      "prerequisites": 71,
-      "context": 49,
-      "theoryAnalogy": 49,
-      "guidedDemo": 49,
+      "objective": 48,
+      "prerequisites": 70,
+      "context": 48,
+      "theoryAnalogy": 48,
+      "guidedDemo": 48,
       "codeExplanation": 111,
       "execution": 104,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 49,
-      "independentPractice": 49,
-      "closure": 49,
-      "commonErrors": 49,
+      "guidedPractice": 48,
+      "independentPractice": 48,
+      "closure": 48,
+      "commonErrors": 48,
       "resources": 72,
-      "standaloneExample": 51,
+      "standaloneExample": 50,
       "learningEvidence": 74,
-      "complete": 49
+      "complete": 48
     }
   },
   "topics": {
@@ -28757,26 +28757,26 @@
         "module": 11,
         "topic": "Tema 3: Health checks para Kubernetes",
         "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "objective": false,
+          "prerequisites": false,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
           "resources": true,
-          "standaloneExample": true,
+          "standaloneExample": false,
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 6,
+          "complete": false
         }
       },
       {

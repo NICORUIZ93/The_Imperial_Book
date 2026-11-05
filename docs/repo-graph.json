@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 1334,
+      "lines": 1355,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 15916,
+      "lines": 15973,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -314,7 +314,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1098,
+      "lines": 1097,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13614,
+      "lines": 13616,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -813,7 +813,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 11073,
+      "lines": 11071,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 493,
+      "lines": 497,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -5574,6 +5574,59 @@
     {
       "path": "examples/spring-boot-layered-jar-rutaflow/src/main/java/academia/rutaflow/EstadoRutaController.java",
       "lines": 15,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-boot-native-rutaflow/README.md",
+      "lines": 53,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# GraalVM Native Image para RutaFlow",
+        "## Ejecutar AOT sobre la JVM",
+        "## Compilar un ejecutable nativo",
+        "## Diagnosticar un hint que falta"
+      ]
+    },
+    {
+      "path": "examples/spring-boot-native-rutaflow/scripts/verify-aot.sh",
+      "lines": 30,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-boot-native-rutaflow/src/main/java/academia/rutaflow/nativeimage/EstadoRutaController.java",
+      "lines": 31,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-boot-native-rutaflow/src/main/java/academia/rutaflow/nativeimage/MensajeHints.java",
+      "lines": 12,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-boot-native-rutaflow/src/main/java/academia/rutaflow/nativeimage/NativeRutaApplication.java",
+      "lines": 14,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-boot-native-rutaflow/src/main/resources/mensajes/ruta.txt",
+      "lines": 2,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -12803,7 +12856,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-11.md",
-      "lines": 463,
+      "lines": 476,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

@@ -297,166 +297,179 @@ Fuentes oficiales: [AOT y perfil Maven `native`](https://docs.spring.io/spring-b
 
 ### Tema 3: Health checks para Kubernetes
 
-#### Paso 1 · Objetivo y preparación
+Duración: 40–50 min. **Meta:** configurar Spring Actuator para que Kubernetes pueda distinguir un contenedor que debe reiniciar de uno que solo debe dejar de recibir tráfico. Usa `examples/spring-boot-probes-rutaflow/`, Java 25 y Maven Wrapper. El laboratorio local prueba la app; para observar acciones del kubelet necesitas un clúster.
 
-Al finalizar podrás confirmar, con una petición HTTP real, que los endpoints de Actuator agrupados por probes (`/actuator/health/liveness` y `/actuator/health/readiness`) responden con el código de estado correcto según el estado real de disponibilidad de la aplicación.
+**¿Por qué es importante?** Una ruta de salud mal escrita puede hacer que Kubernetes marque el pod como fallido, aunque la aplicación esté funcionando.
 
-**Conocimiento previo:** Módulo 7 de este track (Actuator y `AvailabilityChangeEvent`).
-
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** Kubernetes decide automáticamente cuándo reiniciar un pod (liveness) y cuándo un pod puede recibir tráfico real (readiness) consultando estos endpoints periódicamente; sin una conexión correcta y probada entre el estado real de la aplicación y estas señales, Kubernetes toma decisiones operativas basadas en información incorrecta.
-
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** liveness/readiness probes agrupados, conectados a Actuator.
-
-Con `management.endpoint.health.probes.enabled=true`, Spring Boot expone automáticamente `/actuator/health/liveness` y `/actuator/health/readiness` como grupos de health separados. Liveness responde "¿el proceso sigue vivo y debería seguir corriendo, o Kubernetes debería reiniciarlo?"; readiness responde "¿el proceso está listo para recibir tráfico real ahora mismo?" — la misma distinción de `AvailabilityChangeEvent` construida en el Módulo 7, ahora expuesta en el formato exacto que Kubernetes consulta.
-
-**Analogía:** conectar Actuator a los probes de Kubernetes es instalar sensores automáticos que informan al sistema de gestión de una flota cuándo un vehículo necesita mantenimiento (reiniciarse) o simplemente no está listo para un nuevo viaje todavía (no recibir tráfico).
-
-**Diagrama:**
-
-```
-┌── liveness ──────────────┐   ┌── readiness ──────────────┐
-│ ¿sigue vivo el proceso?   │   │ ¿puede recibir tráfico ya? │
-│ DOWN → Kubernetes reinicia│   │ DOWN → Kubernetes NO enruta│
-└──────────────────┘   └──────────────────────┘
+```mermaid
+flowchart LR
+  S[Arranque] -->|startup OK| L[Liveness]
+  S -->|startup OK| R[Readiness]
+  L -->|falla repetida| X[Kubernetes reinicia]
+  R -->|falla| N[Kubernetes deja de enrutar]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+**Proyecto integrador RutaFlow:** conecta los endpoints de Actuator con el `Deployment` del servicio de entregas y comprueba cuál señal reinicia el contenedor y cuál solo retira tráfico.
 
-Continuando en `demo-empaquetado` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía y genera un proyecto nuevo con `mkdir demo-probes && cd demo-probes && curl -fsSL https://start.spring.io/starter.zip -d dependencies=web,actuator -d javaVersion=25 -o app.zip && unzip app.zip`), crea `src/main/resources/application.yml` con los probes habilitados explícitamente (necesario fuera de un clúster real de Kubernetes, donde se autodetectan):
+#### Subtema 3.1: Enciende los probes de Spring · 8 min
+
+**1. Contexto**
+
+En Spring Boot 4.1.2 estos grupos están habilitados por defecto. El proyecto los declara igual en su archivo para que sea fácil ver y cambiar la configuración.
+
+**2. Hazlo tú**
+
+Abre `src/main/resources/application.properties` y revisa:
+
+```properties
+management.endpoint.health.probes.enabled=true
+management.endpoints.web.exposure.include=health
+```
+
+Desde `examples/spring-boot-probes-rutaflow/` ejecuta:
 
 ```bash
-mkdir -p src/main/resources src/test/java/io/academia/empaquetado
+./mvnw -q test
 ```
 
-```yaml
-# src/main/resources/application.yml
-management:
-  endpoint:
-    health:
-      probes:
-        enabled: true
-      show-details: always
-  endpoints:
-    web:
-      exposure:
-        include: health
-```
+**Resultado esperado:** las dos pruebas de `ProbeEndpointsTest.java` pasan; localmente existen `/actuator/health/liveness` y `/actuator/health/readiness`.
 
-Confirma con `MockMvc` real, disparando el mismo `AvailabilityChangeEvent` del Módulo 7, que ambos endpoints reflejan el estado real de la aplicación:
+**Fallo deliberado:** cambia el valor a `false` y repite `./mvnw -q test`. **Resultado comprobado:** liveness esperaba `200` y recibió `404`; readiness esperaba `503` y recibió `404`. **Diagnóstico:** la propiedad deshabilita los grupos; restáurala a `true` y ejecuta otra vez.
+
+**3. Entiende**
+
+La exposición de `health` permite consultar estos endpoints. `probes.enabled` vale `true` por defecto en esta versión; declararlo aquí hace visible la intención. Actuator oculta detalles internos por defecto; evita publicarlos sin control en producción.
+
+**4. Cierra**
+
+Escribe las dos rutas completas y señala la propiedad que las habilita en local.
+
+#### Subtema 3.2: Distingue vivo de listo para tráfico · 10 min
+
+**1. Contexto**
+
+Un proceso puede seguir vivo mientras todavía rechaza pedidos. Kubernetes necesita saberlo para poder sacarlo temporalmente del balanceo.
+
+**2. Hazlo tú**
+
+En `src/test/java/academia/rutaflow/probes/ProbeEndpointsTest.java`, ubica la prueba de readiness. Esta publica el mismo evento que usa Spring para cambiar disponibilidad:
 
 ```java
-// src/test/java/io/academia/empaquetado/ProbesTest.java
-package io.academia.empaquetado;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.availability.AvailabilityChangeEvent;
-import org.springframework.boot.availability.ReadinessState;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.test.web.servlet.MockMvc;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-@SpringBootTest
-@AutoConfigureMockMvc
-class ProbesTest {
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private ApplicationEventPublisher publisher;
-
-    @Test
-    void livenessRespondeUpMientrasElProcesoSigaVivo() throws Exception {
-        mockMvc.perform(get("/actuator/health/liveness"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.status").value("UP"));
-    }
-
-    @Test
-    void readinessResponde503CuandoLaAplicacionDejaDeAceptarTrafico() throws Exception {
-        AvailabilityChangeEvent.publish(publisher, this, ReadinessState.REFUSING_TRAFFIC);
-
-        mockMvc.perform(get("/actuator/health/readiness"))
-            .andExpect(status().isServiceUnavailable())
-            .andExpect(jsonPath("$.status").value("OUT_OF_SERVICE"));
-
-        AvailabilityChangeEvent.publish(publisher, this, ReadinessState.ACCEPTING_TRAFFIC); // restaura para no afectar otros tests
-    }
-}
+AvailabilityChangeEvent.publish(events, this, ReadinessState.REFUSING_TRAFFIC);
+http.perform(get("/actuator/health/readiness"))
+    .andExpect(status().isServiceUnavailable())
+    .andExpect(jsonPath("$.status").value("OUT_OF_SERVICE"));
 ```
+
+Ejecuta solo esas pruebas:
 
 ```bash
-./mvnw test -Dtest=ProbesTest
+./mvnw -q -Dtest=ProbeEndpointsTest test
 ```
 
-**Resultado esperado:** `BUILD SUCCESS` con ambos tests en verde: el primero confirma con una petición HTTP real que `/actuator/health/liveness` responde `200 UP` mientras el proceso está sano; el segundo confirma, publicando el mismo `AvailabilityChangeEvent` real usado en el Módulo 7, que `/actuator/health/readiness` refleja genuinamente `503 OUT_OF_SERVICE` cuando la aplicación deja de aceptar tráfico — la misma señal que Kubernetes consultaría para dejar de enrutar peticiones hacia ese pod.
+**Resultado esperado:** liveness da `200 UP`; readiness da `503 OUT_OF_SERVICE` después del evento. `@AfterEach` devuelve la aplicación a `ACCEPTING_TRAFFIC`.
 
-**Fallo deliberado:** comenta la línea `probes: enabled: true` en `application.yml` y ejecuta de nuevo ambos tests. `/actuator/health/liveness` y `/actuator/health/readiness` responden `404 NOT_FOUND` en vez de `200`/`503` — diagnostica confirmando que estos grupos de health NO existen automáticamente fuera de un entorno Kubernetes detectado; sin la propiedad explícita (necesaria para pruebas locales o entornos no-K8s), Kubernetes recibiría un `404` al consultar los probes, un fallo de configuración silencioso y fácil de pasar por alto hasta el primer despliegue real. Restaura la línea antes de continuar.
+**Fallo deliberado:** quita temporalmente la publicación `REFUSING_TRAFFIC`. **Diagnóstico:** readiness permanece `200 UP`; la prueba falla porque nadie cambió el estado de disponibilidad.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**3. Entiende**
 
-1. Agrega un `HealthIndicator` personalizado (como en el Módulo 7) que reporte `DOWN` cuando una dependencia crítica falla, y confirma con un test que ese indicador afecta a `/actuator/health` general pero NO necesariamente al grupo `liveness` (que por defecto solo incluye señales de vida del proceso, no de dependencias externas).
-2. Escribe el manifiesto YAML completo (`livenessProbe`, `readinessProbe`, con `initialDelaySeconds` y `periodSeconds`) para el servicio de este Tema.
-3. Documenta, en un comentario, por qué un `readinessProbe` que depende de una base de datos externa es apropiado, pero un `livenessProbe` que depende de esa misma base de datos externa es peligroso (podría causar reinicios en cascada de todos los pods si la base de datos se cae, sin resolver el problema real).
-4. Escribe de memoria (sin mirar) un test `MockMvc` que confirme `200 UP` en liveness y, tras publicar un `AvailabilityChangeEvent`, `503` en readiness. Compara después contra el patrón del Paso 4.
+Si liveness falla repetidamente, Kubernetes reinicia el contenedor. Si readiness falla, lo conserva, pero deja de enviarle tráfico del Service.
 
-**Pista:** `AvailabilityChangeEvent.publish(publisher, this, ReadinessState.REFUSING_TRAFFIC)` es el mismo mecanismo real usado en el Módulo 7 para desacoplar readiness de liveness — Spring lo consume automáticamente y lo refleja en el grupo `readiness` cuando `probes.enabled=true`.
+**4. Cierra**
 
-#### Paso 6 · Práctica independiente
+Explica por qué `503` en readiness puede ser correcto sin que el proceso tenga que reiniciarse.
 
-**Completa el código:** rellena el espacio con la propiedad que habilita explícitamente los grupos de health por probes:
+#### Subtema 3.3: Conecta Actuator con el Deployment · 12 min
+
+**1. Contexto**
+
+Un endpoint de salud solo influye en Kubernetes cuando el `Deployment` lo consulta.
+
+**2. Hazlo tú**
+
+Abre `k8s/deployment.yaml`. El manifiesto define tres comprobaciones:
 
 ```yaml
-management:
-  endpoint:
-    health:
-      ____:
-        enabled: true
+startupProbe:
+  httpGet: { path: /actuator/health/liveness, port: http }
+  periodSeconds: 10
+  failureThreshold: 30
+livenessProbe:
+  httpGet: { path: /actuator/health/liveness, port: http }
+  periodSeconds: 10
+  failureThreshold: 3
+readinessProbe:
+  httpGet: { path: /actuator/health/readiness, port: http }
+  periodSeconds: 5
+  failureThreshold: 2
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, la configuración YAML que habilita los probes, y un test `MockMvc` que confirme el `503` real en readiness tras publicar `ReadinessState.REFUSING_TRAFFIC`. Compara después contra el patrón del Paso 4.
+Construye la imagen `rutaflow-probes:local` con `Dockerfile`. Si tienes un clúster configurado y la imagen disponible para él, aplica y revisa:
 
-#### Paso 7 · Cierre y evidencia
+```bash
+kubectl apply -f k8s/deployment.yaml
+kubectl rollout status deployment/rutaflow-probes
+kubectl get pods -l app=rutaflow-probes
+```
 
-Ya confirmas con peticiones HTTP reales que los endpoints de probes de Kubernetes reflejan el estado genuino de disponibilidad de la aplicación. Esto cierra el módulo de empaquetado y despliegue; el siguiente módulo aborda observabilidad distribuida con trazas y logs correlacionados. **Evidencia:** entrega el resultado de `ProbesTest` en verde, y el `404` real que produce el fallo deliberado al deshabilitar los probes. Fuente oficial: [Spring Boot — Kubernetes Probes](https://docs.spring.io/spring-boot/reference/actuator/kubernetes-probes.html).
+**Resultado esperado:** la réplica termina `Ready`; `kubectl describe pod` muestra las tres rutas de probe y no registra eventos `Unhealthy`.
 
-**Errores comunes:** no habilitar `probes.enabled=true` fuera de un clúster Kubernetes real, recibiendo `404` en pruebas locales; acoplar `livenessProbe` a dependencias externas, causando reinicios en cascada ante un fallo de infraestructura ajeno al proceso mismo.
+**Fallo deliberado:** cambia readiness a `/actuator/health/ready`. **Diagnóstico:** `kubectl describe pod` muestra fallos HTTP 404 y el pod queda `NotReady`; restaura `/readiness` y espera el rollout.
 
-**Cuándo no usarlo:** para una aplicación que no se despliega en Kubernetes (o un orquestador equivalente que consulte probes HTTP), habilitar estos grupos específicos de health no aporta ningún beneficio operativo adicional sobre el endpoint `/actuator/health` general.
+**3. Entiende**
 
----
+`startupProbe` da tiempo de arranque; mientras no tenga éxito, Kubernetes espera para empezar liveness y readiness. Después, cada probe cumple un propósito distinto.
 
-Los health checks de Kubernetes de este tema son los que decidirán si Kubernetes reinicia o enruta tráfico al proyecto integrador de este track (microservicio productivo, Módulo 12).
+**4. Cierra**
+
+Asocia cada probe con su acción: dar tiempo, reiniciar o retirar tráfico.
+
+#### Subtema 3.4: Evita reinicios en cascada · 10 min
+
+**1. Contexto**
+
+Si una base de datos cae, reiniciar todos los pods de la aplicación no la arregla y puede aumentar la carga cuando vuelve.
+
+**2. Hazlo tú**
+
+Compara el `Deployment` con `application.properties`. Aquí liveness solo revisa el estado del proceso y readiness señala si la app acepta tráfico. Si tu servicio requiere una base de datos, agrega la comprobación externa a readiness solo cuando no pueda responder pedidos sin ella; conserva liveness independiente.
+
+En un clúster observa fallos y eventos con:
+
+```bash
+kubectl describe pod -l app=rutaflow-probes
+kubectl get events --sort-by=.lastTimestamp
+```
+
+**Resultado esperado:** una dependencia temporalmente no disponible puede retirar el pod del tráfico sin provocar por sí misma un reinicio liveness.
+
+**Fallo deliberado:** agrega la base externa a liveness y simula que la base no responde. **Diagnóstico:** todos los pods pueden reiniciarse sin que cambie el estado de la base; mueve esa condición a readiness y despliega gradualmente.
+
+**3. Entiende**
+
+Los grupos de probes de Spring no incluyen automáticamente todas las dependencias. La decisión depende del servicio: readiness evalúa si debe recibir solicitudes; liveness pregunta si el proceso puede recuperarse sin reinicio.
+
+**Cuándo no usarlo:** si no despliegas con Kubernetes ni un orquestador que consulte probes, estas rutas no cambian cómo se opera tu app.
+
+**4. Cierra**
+
+Entrega la salida de `./scripts/verify-probes.sh`, el manifiesto y la decisión de qué dependencias deben afectar readiness.
+
+Fuentes oficiales: [probes de Spring Boot](https://docs.spring.io/spring-boot/reference/actuator/kubernetes-probes.html), [propiedad probes en Spring Boot 4.1.2](https://docs.spring.io/spring-boot/appendix/application-properties/), [pruebas MockMvc de Spring Boot 4.1.2](https://docs.spring.io/spring-boot/api/java/org/springframework/boot/webmvc/test/autoconfigure/AutoConfigureMockMvc.html), [diferencias entre probes en Kubernetes](https://kubernetes.io/docs/concepts/workloads/pods/probes/). El manifiesto de ejemplo no se aplicó a un clúster en esta revisión.
 
 ## Laboratorio práctico
 
-**Objetivo del laboratorio:** construir una imagen Docker de un servicio Spring Boot optimizada por capas.
+**Objetivo:** empaquetar RutaFlow, ejecutar el modo AOT disponible y dejar probes configurados para un despliegue. Los tres ejemplos están en `examples/spring-boot-layered-jar-rutaflow/`, `examples/spring-boot-native-rutaflow/` y `examples/spring-boot-probes-rutaflow/`.
 
-**Requisitos previos:** Módulos 0-10 completados.
+| Evidencia | Comando | Debe observarse |
+|---|---|---|
+| JAR organizado | `./scripts/verify-layers.sh` en el laboratorio de capas | Cuatro directorios bajo `target/extracted/` |
+| Caché de capas | Cambia solo `/ruta` y repite `podman build` | Dependencias reutilizadas; capa de aplicación reconstruida |
+| Spring AOT | `./scripts/verify-aot.sh` en el laboratorio native | JAR JVM responde `/estado` y `/mensaje`; metadata contiene el recurso |
+| Probes | `./scripts/verify-probes.sh` en el laboratorio de Actuator | MockMvc confirma `200 UP` y `503 OUT_OF_SERVICE`; HTTP local responde ambos grupos |
 
-| Paso | Acción | Código | Explicación |
-|---|---|---|---|
-| 1 | Generar el fat JAR y ejecutarlo | `./mvnw package` + `java -jar` | Verifica el funcionamiento básico |
-| 2 | Construir la imagen por capas | Ver Tema 1 | Compara el tamaño con un JAR simple |
-| 3 | Compilar a GraalVM native image | Ver Tema 2 | Mide el tiempo de arranque |
-| 4 | Configurar los health checks de Kubernetes | Ver Tema 3 | Conectados a Actuator |
+Para producir un binario nativo, sigue la parte GraalVM del Tema 2 con una toolchain compatible. No trates el JAR en modo AOT como binario nativo. El manifiesto de Kubernetes se aplica solo si tienes clúster y la imagen está disponible para sus nodos.
 
-**Verificación:** el laboratorio se considera exitoso si la imagen por capas reduce mensurablemente el tamaño de actualización en un segundo deploy simulado (comparado con reconstruir el JAR completo), y si el binario nativo arranca en milisegundos comparado con la JVM tradicional.
-
-**Errores comunes y soluciones**
-
-- **Empaquetar todo en una única capa de Docker.** Separa dependencias (estables) del código de la aplicación (cambiante).
-- **Asumir que GraalVM native image no requiere ninguna configuración adicional.** Verifica que el uso de reflexión esté correctamente configurado para el compilador nativo.
-- **No conectar los health checks de Actuator a los probes de Kubernetes.** Sin esa conexión, Kubernetes no puede tomar decisiones informadas sobre el estado real de la aplicación.
+**Criterio de cierre:** entrega las cuatro salidas, registra plataforma y mediciones nativas solo si completaste ese build y, si usaste Kubernetes, adjunta estado del Deployment. No se exige una mejora fija de tamaño o arranque: mídela en el mismo entorno y conserva el resultado.
 
 ---

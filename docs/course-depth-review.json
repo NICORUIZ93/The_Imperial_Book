@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 247,
+    "topicsWithSignals": 248,
     "newLaboratories": 25
   },
   "priorities": {
@@ -12520,7 +12520,9 @@
       "title": "Tema 3: Health checks para Kubernetes",
       "file": "web/public/content/spring-boot/modulo-11.md",
       "line": 298,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"

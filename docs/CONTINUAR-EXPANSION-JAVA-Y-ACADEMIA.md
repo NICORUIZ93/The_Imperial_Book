@@ -1327,7 +1327,28 @@ y [contenedores GraalVM Community](https://www.graalvm.org/jdk25/docs/getting-st
 
 Después de regenerar reportes, la cobertura atómica queda en 151/1185 (Spring Boot
 47/111); la auditoría marca 1083/1185 temas practicables, 409 temas con defectos
-de sustancia y señales de profundidad en 247. Ejecuta `./scripts/validate.sh`
-antes de publicar T2 en commit separado. El siguiente tema es M11 T3, “Health
-checks para Kubernetes”, en el mismo módulo. Mantén fuera los dos cambios locales
-de Flutter.
+de sustancia y señales de profundidad en 247. T2 se publicó en `ec84a12b`.
+
+Spring Boot M11 T3, “Health checks para Kubernetes”, se rehízo en cuatro
+subtemas. `examples/spring-boot-probes-rutaflow/` contiene una app Actuator,
+pruebas MockMvc con cambios reales de `ReadinessState`, un Dockerfile y un
+Deployment con `startupProbe`, `livenessProbe` y `readinessProbe`. El script
+`./scripts/verify-probes.sh` pasó: pruebas y respuestas HTTP reales para los dos
+probes y `/entrega`; Podman construyó la imagen y respondió `UP` en ambos grupos.
+Se puso `management.endpoint.health.probes.enabled=false` y los dos tests fallaron
+con 404; se restauró `true` y el script volvió a pasar. Se corrigió una premisa
+obsoleta: en Spring Boot 4.1.2 esa propiedad tiene valor predeterminado `true`,
+así que quitarla no desactiva los grupos. No se aplicó el manifiesto a un clúster
+ni se observó el kubelet.
+
+Fuentes primarias: [probes de Spring Boot](https://docs.spring.io/spring-boot/reference/actuator/kubernetes-probes.html),
+[propiedades de Spring Boot 4.1.2](https://docs.spring.io/spring-boot/appendix/application-properties/),
+[pruebas MVC de Spring Boot 4.1.2](https://docs.spring.io/spring-boot/api/java/org/springframework/boot/webmvc/test/autoconfigure/AutoConfigureMockMvc.html)
+y [probes de Kubernetes](https://kubernetes.io/docs/concepts/workloads/pods/probes/).
+
+Tras regenerar y validar, la cobertura atómica es 152/1185 (Spring Boot 48/111),
+1083/1185 temas practicables, 409 temas con defectos de sustancia y señales de
+profundidad en 248. Continúa con Spring Boot M12 T1, “Arquitectura del
+microservicio integrador”, en `web/public/content/spring-boot/modulo-12.md`.
+Comprueba primero el commit de T3 y conserva commits y publicación separados por
+tema. Mantén fuera los dos cambios locales de Flutter.

@@ -1564,9 +1564,7 @@
       "track": "spring-boot"
     },
     {
-      "legacySections": [
-        "**Errores comunes y soluciones**"
-      ],
+      "legacySections": [],
       "module": 11,
       "track": "spring-boot"
     },
@@ -1692,7 +1690,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "b2782cca92699323f24c59eea87441473ffe61278c3b3bc236d09ec6aa308420",
+    "fingerprint": "fa6141fe9d698576b85c85e110005572ccc0e673a2bddfb585967c83629ca928",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -1703,10 +1701,10 @@
     "legacySections": {
       "## Construcción guiada del capítulo": 42,
       "## Ruta de proyecto progresivo desde carpeta vacía": 12,
-      "**Errores comunes y soluciones**": 177
+      "**Errores comunes y soluciones**": 176
     },
     "modules": 256,
-    "modulesWithLegacySections": 179,
+    "modulesWithLegacySections": 178,
     "topics": 1185,
     "topicsWithIssues": 409
   },
@@ -10411,9 +10409,9 @@
       {
         "issues": [],
         "module": 11,
-        "tailWords": 181,
+        "tailWords": 0,
         "topic": "Tema 3: Health checks para Kubernetes",
-        "words": 1170
+        "words": 1021
       },
       {
         "issues": [],
