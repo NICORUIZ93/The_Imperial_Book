@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 1196,
+      "lines": 1229,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 15574,
+      "lines": 15631,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -314,7 +314,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1104,
+      "lines": 1103,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -600,7 +600,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3843,
+      "lines": 3850,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13608,
+      "lines": 13607,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -677,7 +677,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 150,
+      "lines": 149,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 469,
+      "lines": 473,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -6204,6 +6204,89 @@
     {
       "path": "examples/spring-stream-rutaflow/src/test/java/academia/rutaflow/stream/RouteFunctionsTest.java",
       "lines": 45,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-temporal-rutaflow/README.md",
+      "lines": 24,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Temporal con Spring Boot: pedidos con reintento y compensaci\u00f3n",
+        "## Ejecutar"
+      ]
+    },
+    {
+      "path": "examples/spring-temporal-rutaflow/src/main/java/academia/rutaflow/temporal/ActivityRecorder.java",
+      "lines": 49,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-temporal-rutaflow/src/main/java/academia/rutaflow/temporal/PedidoActivities.java",
+      "lines": 15,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-temporal-rutaflow/src/main/java/academia/rutaflow/temporal/PedidoActivitiesImpl.java",
+      "lines": 29,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-temporal-rutaflow/src/main/java/academia/rutaflow/temporal/PedidoWorkflow.java",
+      "lines": 11,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-temporal-rutaflow/src/main/java/academia/rutaflow/temporal/PedidoWorkflowImpl.java",
+      "lines": 43,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-temporal-rutaflow/src/main/java/academia/rutaflow/temporal/TemporalApplication.java",
+      "lines": 12,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-temporal-rutaflow/src/main/resources/application.yml",
+      "lines": 11,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-temporal-rutaflow/src/test/java/academia/rutaflow/temporal/PedidoWorkflowTest.java",
+      "lines": 83,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-temporal-rutaflow/src/test/resources/application.yml",
+      "lines": 11,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -12373,7 +12456,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-10.md",
-      "lines": 1306,
+      "lines": 1396,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

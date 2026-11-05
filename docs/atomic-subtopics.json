@@ -93,10 +93,10 @@
     },
     "spring-boot": {
       "topics": 111,
-      "completeTopics": 41,
-      "topicsWith3to6Subtopics": 56,
-      "subtopics": 183,
-      "completeSubtopics": 138
+      "completeTopics": 42,
+      "topicsWith3to6Subtopics": 57,
+      "subtopics": 187,
+      "completeSubtopics": 142
     }
   },
   "topics": {
@@ -12945,10 +12945,67 @@
       },
       {
         "module": 10,
-        "topic": "### Tema 9: Spring Modulith para comprobar fronteras antes de separar servicios",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "topic": "### Tema 9: Comprueba módulos antes de separar servicios",
+        "subtopicCount": 4,
+        "subtopics": [
+          {
+            "id": "9.1",
+            "title": "#### Subtema 9.1: Traza las dependencias de paquetes · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "9.2",
+            "title": "#### Subtema 9.2: Haz que la arquitectura falle cuando se cruza un límite · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "9.3",
+            "title": "#### Subtema 9.3: Define el evento público del módulo · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "9.4",
+            "title": "#### Subtema 9.4: Comprueba la interacción entre módulos · 15 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 10,

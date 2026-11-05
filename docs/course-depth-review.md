@@ -1115,7 +1115,7 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | spring-boot / 10 | [Tema 6: Spring gRPC, contrato HTTP/2 y evolución segura](../web/public/content/spring-boot/modulo-10.md) | demostracion-no-delimitada |
 | spring-boot / 10 | [Tema 7: DDD para decidir límites y propiedad de datos](../web/public/content/spring-boot/modulo-10.md) | demostracion-no-delimitada |
 | spring-boot / 10 | [Tema 8: Orquestar pedidos con Temporal y Spring Boot](../web/public/content/spring-boot/modulo-10.md) | demostracion-no-delimitada |
-| spring-boot / 10 | [Tema 9: Spring Modulith para comprobar fronteras antes de separar servicios](../web/public/content/spring-boot/modulo-10.md) | ejemplo-breve-revisar-contexto, clase-java-no-visible |
+| spring-boot / 10 | [Tema 9: Comprueba módulos antes de separar servicios](../web/public/content/spring-boot/modulo-10.md) | demostracion-no-delimitada |
 | spring-boot / 10 | [Tema 10: Spring Cloud Bus para propagar cambios de configuración](../web/public/content/spring-boot/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 10 | [Tema 11: Micrometer Tracing entre servicios](../web/public/content/spring-boot/modulo-10.md) | ejemplo-breve-revisar-contexto, clase-java-no-visible |
 | spring-boot / 10 | [Tema 12: Contract testing entre productor y consumidor](../web/public/content/spring-boot/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |

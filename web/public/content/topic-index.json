@@ -4844,8 +4844,8 @@
         "fragment": "tema-8-orquestar-pedidos-con-temporal-y-spring-boot"
       },
       {
-        "title": "Spring Modulith para comprobar fronteras antes de separar servicios",
-        "fragment": "tema-9-spring-modulith-para-comprobar-fronteras-antes-de-separar-servicios"
+        "title": "Comprueba módulos antes de separar servicios",
+        "fragment": "tema-9-comprueba-modulos-antes-de-separar-servicios"
       },
       {
         "title": "Spring Cloud Bus para propagar cambios de configuración",

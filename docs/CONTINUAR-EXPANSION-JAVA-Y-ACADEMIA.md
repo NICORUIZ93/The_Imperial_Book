@@ -89,9 +89,9 @@ reapliques cambios que ya estén publicados.
 
 ## Estado global honesto
 
-En la auditoría actual: **145/1185 temas** cumplen la estructura atómica en los
-14 tracks: Java 101, Spring Boot 41, Node 2 y Flutter 1. La auditoría pedagógica
-detecta **1082/1185 temas practicables** y deuda en 103. La auditoría de siete
+En la auditoría actual: **146/1185 temas** cumplen la estructura atómica en los
+14 tracks: Java 101, Spring Boot 42, Node 2 y Flutter 1. La auditoría pedagógica
+detecta **1083/1185 temas practicables** y deuda en 102. La auditoría de siete
 pasos heredados marca 1026/1185; mide criterios distintos de la metodología nueva.
 La auditoría de sustancia registra 409 temas con defectos, deuda histórica repartida
 entre varios tracks. Ninguna cifra certifica que un curso esté completo o que
@@ -1188,8 +1188,41 @@ se regeneró con `python3 scripts/build_priority_temarios.py` y `./scripts/valid
 terminó después con código 0. Los detectores no certifican aprendizaje ni revisión
 pedagógica humana.
 
-**Siguiente tema:** Spring Boot M10 T9, “Spring Modulith para comprobar fronteras
-antes de separar servicios”. Revisa el ejemplo y la versión vigente de Modulith,
-crea una app/lab pequeño con verificación de límites y prueba de evento, y aclara
-qué comprueban los tests en proceso frente a integración desplegada. Mantén
-cuatro subtemas accionables y entrega este tema en un commit separado.
+Spring Boot M10 T9, “Comprueba módulos antes de separar servicios”, quedó
+reescrito en cuatro subtemas y enlazado con `examples/spring-modulith-rutaflow/`.
+El laboratorio fija Boot 4.1.2, Java 25 y Modulith 2.1.1; usa `spring-modulith-starter-core`,
+`spring-modulith-starter-jdbc` y el starter de pruebas bajo el BOM. Añade Pedidos,
+Notificaciones y el contrato público `PedidoCreado`; el tipo `PedidoInterno`
+permanece bajo `pedidos.internal`.
+
+`./mvnw -q clean test` pasó con **3 pruebas**: `ApplicationModules.verify()` no
+encuentra ciclos ni accesos internos; `PedidosModuleTest` detecta el evento con su
+ID; y `NotificacionesModuleTest` espera el efecto del listener transaccional.
+El perfil de prueba registra eventos con H2 en memoria. Al cambiar el parámetro del
+listener para que recibiera `PedidoInterno`, la prueba de arquitectura falló con
+“depends on non-exposed type”; se restauró `PedidoCreado` y la suite volvió a pasar.
+El test de evento usa una JVM y una DB efímera: no valida reinicio, persistencia
+productiva ni despliegue de servicios. La guía aclara la diferencia entre
+`@ApplicationModuleTest` acotado y el `@SpringBootTest` que verifica interacción
+entre módulos, y que la republicación depende del registro/configuración de
+publicaciones; el starter no convierte cualquier evento local en entrega externa.
+
+Fuentes primarias consultadas: [verificación](https://docs.spring.io/spring-modulith/reference/verification.html),
+[eventos y registro](https://docs.spring.io/spring-modulith/reference/events.html),
+[pruebas](https://docs.spring.io/spring-modulith/reference/testing.html),
+[versiones estables de Modulith](https://docs.spring.io/spring-modulith/reference/) y
+[starter de pruebas 2.1.1](https://central.sonatype.com/artifact/org.springframework.modulith/spring-modulith-starter-test).
+
+Tras regenerar reportes, **146/1185 temas** cumplen cuatro pasos, **1083/1185
+son practicables**, 1026/1185 tienen las señales de los siete pasos heredados y
+409 muestran defectos de sustancia. La auditoría de profundidad conserva 243 temas
+con señales. Se repetirá `./scripts/validate.sh` después de refrescar el grafo de
+repositorio con el handoff definitivo. Los detectores no sustituyen revisión
+pedagógica humana ni prueban todos los laboratorios.
+
+**Siguiente tema:** Spring Boot M10 T10, “Spring Cloud Bus para propagar cambios
+de configuración”. Contrasta versiones del release train con Spring Boot 4.1.2,
+revisa el laboratorio `examples/spring-cloud-bus-rutaflow/` si ya existe y verifica
+la actualización de varias instancias con broker real o documenta con precisión
+lo que se haya simulado. Conserva cuatro subtemas con comando, salida y fallo
+observable; commit separado.

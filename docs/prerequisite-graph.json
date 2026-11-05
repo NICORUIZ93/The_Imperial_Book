@@ -4632,7 +4632,7 @@
       "track": "spring-boot",
       "module": 10,
       "position": 9,
-      "title": "Spring Modulith para comprobar fronteras antes de separar servicios",
+      "title": "Comprueba módulos antes de separar servicios",
       "file": "web/public/content/spring-boot/modulo-10.md",
       "requires": [
         "spring-boot:10:8"

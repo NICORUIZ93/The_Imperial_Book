@@ -1692,7 +1692,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "cbc1e4fb31e56478182248125bf9089cd7839dd647356b203e27e02710491e87",
+    "fingerprint": "ccb56ce14b6ac25dd723ffd1929cb408b33c7b85344913b1b271cd2f3efc6e6b",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10369,9 +10369,9 @@
       {
         "issues": [],
         "module": 10,
-        "tailWords": 179,
-        "topic": "Tema 9: Spring Modulith para comprobar fronteras antes de separar servicios",
-        "words": 566
+        "tailWords": 0,
+        "topic": "Tema 9: Comprueba módulos antes de separar servicios",
+        "words": 990
       },
       {
         "issues": [],

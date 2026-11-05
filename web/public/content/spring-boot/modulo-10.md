@@ -1101,55 +1101,145 @@ Ejecuta toda la suite con `./mvnw -q clean test`. Entrega el código de salida y
 
 ---
 
-### Tema 9: Spring Modulith para comprobar fronteras antes de separar servicios
+### Tema 9: Comprueba módulos antes de separar servicios
 
-#### Paso 1 · Objetivo y preparación
+**Objetivo observable:** verificar que Pedidos y Notificaciones no tengan ciclos ni accedan a paquetes internos, publicar `PedidoCreado` y observar que el módulo dependiente lo recibe.
 
-Al finalizar dividirás un monolito por módulos funcionales, verificarás dependencias permitidas y probarás una interacción por evento. **Prerrequisitos:** paquetes Java, eventos Spring y el modelo de dominios del Tema 7. Añade Spring Modulith desde el BOM compatible con tu Spring Boot.
+**¿Por qué es importante?** Un paquete separado no garantiza una frontera real. Si Notificaciones importa la implementación privada de Pedidos, extraerlos luego obliga a coordinar cambios o expone datos que pertenecen al otro módulo.
 
-#### Paso 2 · Contexto y caso real
+**Prerrequisitos:** paquetes Java, beans Spring, publicación de eventos y las decisiones de límites del Tema 7. El [laboratorio Spring Modulith](../../../../examples/spring-modulith-rutaflow/) usa Spring Boot 4.1.2 y Modulith 2.1.1.
 
-Un equipo quiere desplegar Pedidos, Conductores y Notificaciones como microservicios porque sus clases ya tienen paquetes distintos. Sin embargo, Notificaciones importa repositorios internos de Pedidos y los tres módulos escriben las mismas tablas. Separarlos ahora convertiría dependencias invisibles en llamadas de red.
+#### Subtema 9.1: Traza las dependencias de paquetes · 10 min
 
-#### Paso 3 · Teoría y analogía
+**1. Contexto**
 
-Spring Modulith modela módulos de aplicación dentro de un proceso Spring Boot, verifica ciclos y acceso a APIs, y prueba cada módulo con un contexto acotado. Los eventos de módulo reducen acoplamiento directo y su registro de publicaciones permite observar trabajo transaccional. Es como dividir una oficina con puertas y reglas de acceso antes de construir edificios separados. Modulith ayuda a reforzar estructura; no crea aislamiento de datos ni infraestructura distribuida por sí mismo.
+Spring Modulith interpreta los paquetes directos bajo el paquete raíz como módulos de aplicación. Los tipos en el paquete del módulo sirven como API por defecto; los subpaquetes, como `pedidos.internal`, son implementación interna.
 
-```mermaid
-flowchart LR
-  P[Pedidos: API pública] -->|PedidoCreado| N[Notificaciones]
-  P -->|sin acceso a repositorio interno| D[Dependencias verificables]
-  D --> T[Prueba ApplicationModules.verify]
+**2. Hazlo tú**
+
+Desde `examples/spring-modulith-rutaflow/`, revisa `RutaFlowModulithApplication.java`, `pedidos/PedidosService.java` y `pedidos/internal/PedidoInterno.java`. Ejecuta:
+
+```bash
+./mvnw -q -DskipTests package
 ```
 
-#### Paso 4 · Demostración guiada
+**Resultado esperado:** compila la app con los paquetes `pedidos` y `notificaciones`.
 
-Crea `src/test/java/academia/entregas/ArquitecturaModularTest.java`:
+**Fallo deliberado:** cambia el `package` de `PedidosService.java` a `academia.rutaflow.modulith.pedidos.internal` sin actualizar sus consumidores. **Diagnóstico:** la compilación señala que el tipo dejó de estar en la API del módulo; restáuralo al paquete `pedidos`.
+
+**3. Entiende**
+
+Un módulo puede tener paquetes internos sin volverse otro módulo. Mantén sus reglas y persistencia dentro del dueño; publica solo el contrato mínimo que los demás necesitan.
+
+**4. Cierra**
+
+Dibuja qué módulo posee la clase `PedidoInterno` y qué dato mínimo expone `PedidoCreado`.
+
+#### Subtema 9.2: Haz que la arquitectura falle cuando se cruza un límite · 10 min
+
+**1. Contexto**
+
+Una revisión manual no detecta de forma confiable un ciclo de dependencias o una importación interna que alguien añadió meses después.
+
+**2. Hazlo tú**
+
+Abre `src/test/java/academia/rutaflow/modulith/ArquitecturaModularTest.java` y ejecuta:
+
+```bash
+./mvnw -q -Dtest=ArquitecturaModularTest test
+```
+
+El test llama a `ApplicationModules.of(RutaFlowModulithApplication.class).verify()`.
+
+**Resultado esperado:** el proceso termina con código 0 cuando los módulos respetan los límites.
+
+**Fallo deliberado:** en `NotificacionListener.java`, cambia el tipo de evento `PedidoCreado` por `PedidoInterno`. Ejecuta el test otra vez. **Diagnóstico:** el reporte debe señalar el acceso de Notificaciones al paquete interno de Pedidos; restaura el contrato `PedidoCreado`.
+
+**3. Entiende**
+
+`verify()` comprueba ciclos y acceso a paquetes internos. Puede verificar también dependencias permitidas si se declaran. No comprueba límites de bases de datos, permisos en producción ni contratos de red.
+
+**4. Cierra**
+
+Guarda el resultado verde después de restaurar el contrato. Explica qué infracción bloquea este test antes de crear otro proceso.
+
+#### Subtema 9.3: Define el evento público del módulo · 10 min
+
+**1. Contexto**
+
+Pedidos necesita avisar que creó un pedido; no necesita conocer el formato de una notificación ni llamar directamente a Notificaciones.
+
+**2. Hazlo tú**
+
+Abre `pedidos/PedidoCreado.java`, `pedidos/PedidosService.java` y `notificaciones/NotificacionListener.java`. El productor publica un evento pequeño:
 
 ```java
-@Test
-void modulosNoTienenCiclosNiAccesoInterno() {
-    ApplicationModules.of(EntregasApplication.class).verify();
+public record PedidoCreado(String pedidoId) {}
+
+public void crear(String pedidoId) {
+    events.publishEvent(new PedidoCreado(pedidoId));
 }
 ```
 
-En `pedidos` publica `PedidoCreado`; en `notificaciones` escucha ese evento con `@ApplicationModuleListener`. Ejecuta `./mvnw test -Dtest=ArquitecturaModularTest`. **Resultado esperado:** la verificación pasa si no hay ciclos y si el módulo consumidor usa una API expuesta; al llamar a una clase del paquete interno, la prueba informa la dependencia inválida.
+El consumidor escucha el mismo tipo:
 
-#### Paso 5 · Práctica guiada
+```java
+@ApplicationModuleListener
+void on(PedidoCreado event) {
+    bandeja.agregar(event.pedidoId());
+}
+```
 
-**Fallo deliberado:** importa un repositorio interno de Pedidos desde Notificaciones. **Pista:** que ambos estén en el mismo JVM no convierte esa dependencia en contrato público. Diagnostica la infracción en el resultado de `verify()` y cambia la integración a un evento o una API publicada.
+Ejecuta `./mvnw -q -Dtest=PedidosModuleTest test`.
 
-#### Paso 6 · Práctica independiente
+**Resultado esperado:** `PublishedEvents` contiene un único `PedidoCreado` con ID `RF-205`.
 
-Escribe una prueba de escenario que publique `PedidoCreado`, espere `AvisoPreparado` o un cambio observable y verifique el resultado. Agrega regla para permitir solo dependencias del módulo `catalogo`. Distingue ese test de una prueba de contrato HTTP entre procesos: el primero prueba módulos dentro de una app, el segundo acuerdos de despliegue entre servicios.
+**Fallo deliberado:** renombra `pedidoId` a `id` en el record sin actualizar el listener ni la prueba. **Diagnóstico:** el compilador marca los accesos al método anterior; restaura ambos lados del contrato.
 
-#### Paso 7 · Cierre y evidencia
+**3. Entiende**
 
-Entrega el resultado de `verify`, el ciclo reproducido y el test del evento. **Proyecto integrador RutaFlow:** separa primero APIs y propiedad de datos; extrae un microservicio cuando un límite de equipo, despliegue o escala justifique el costo de red. Errores comunes: llamar microservicios a paquetes del mismo proceso, publicar todas las clases como API y creer que eventos en memoria sobreviven a caída sin registro durable. Siguiente paso: actualizar configuración de varias instancias cuando cambie una propiedad. Fuentes oficiales: [Spring Modulith: verificación](https://docs.spring.io/spring-modulith/reference/verification.html), [eventos](https://docs.spring.io/spring-modulith/reference/events.html) y [testing](https://docs.spring.io/spring-modulith/reference/testing.html).
+Los módulos comparten un objeto de evento tipado, no una llamada directa a la implementación receptora. El starter JDBC registra publicaciones transaccionales; la configuración del test las escribe en H2 en memoria. Un registro en memoria se pierde al cerrar el proceso.
 
-**¿Por qué es importante?** Una frontera clara en un proceso es más fácil de revisar antes de pagar latencia, fallos parciales y operación de red.
-**Evidencia de aprendizaje:** entrega la infracción reproducida, la corrección y la prueba de integración del módulo.
-**Cuándo no usarlo:** si la aplicación es pequeña y no tiene límites de módulo que necesites comprobar, agrega esta herramienta solo cuando resuelva una necesidad real.
+**4. Cierra**
+
+Anota los campos del evento y elimina cualquier dato que Notificaciones no necesite.
+
+#### Subtema 9.4: Comprueba la interacción entre módulos · 15 min
+
+**1. Contexto**
+
+Verificar paquetes no comprueba que un evento real llegue al código receptor. Para esa evidencia hay que ejecutar los dos módulos en el mismo contexto de Spring.
+
+**2. Hazlo tú**
+
+Desde la carpeta del laboratorio ejecuta:
+
+```bash
+./mvnw -q -Dtest=NotificacionesModuleTest test
+./mvnw -q clean test
+```
+
+La prueba inicia Spring, crea `RF-204` dentro de una transacción y espera a que el listener añada un aviso a la bandeja.
+
+**Resultado esperado:** aparece `Pedido recibido: RF-204`; las tres pruebas de arquitectura, publicación y consumo quedan verdes.
+
+**Fallo deliberado:** comenta `@ApplicationModuleListener` y repite `NotificacionesModuleTest`. **Diagnóstico:** el evento queda registrado pero la bandeja no cambia antes del límite de espera; restaura la anotación.
+
+**3. Entiende**
+
+`ApplicationModuleTest` inicia el módulo bajo prueba con alcance acotado; `NotificacionesModuleTest` usa `@SpringBootTest` para verificar la interacción entre ambos módulos. Las pruebas son locales a una JVM. No prueban dos despliegues, un broker ni la recuperación de H2 al reiniciar.
+
+**4. Cierra**
+
+Entrega el resultado de `verify()` y de las pruebas de evento. Si necesitas garantía ante reinicios, configura una base de datos persistente y prueba la republicación de eventos pendientes; el registro transaccional no convierte cualquier evento en una entrega externa garantizada.
+
+**Proyecto integrador RutaFlow:** añade un tercer módulo de Facturación que consuma solo `PedidoCreado`. Define el dato de contrato, comprueba `ApplicationModules.verify()` y prueba la publicación y recepción sin importar repositorios de Pedidos.
+
+**Fuentes:** [verificación de módulos](https://docs.spring.io/spring-modulith/reference/verification.html), [eventos de aplicación y registro de publicaciones](https://docs.spring.io/spring-modulith/reference/events.html), [pruebas de módulos](https://docs.spring.io/spring-modulith/reference/testing.html), [API de `ApplicationModuleTest`](https://docs.spring.io/spring-modulith/docs/current/api/org/springframework/modulith/test/ApplicationModuleTest.html) y [starter 2.1.1](https://central.sonatype.com/artifact/org.springframework.modulith/spring-modulith-starter-test).
+
+**Cuándo conviene:** cuando un monolito necesita fronteras que el compilador y la integración continua puedan revisar. No convierte paquetes en servicios, no impone una base por módulo y no prueba compatibilidad HTTP entre despliegues. Extrae servicios cuando autonomía de datos, equipo, despliegue o escala justifique operar la red.
+
+---
 
 ### Tema 10: Spring Cloud Bus para propagar cambios de configuración
 

@@ -99,8 +99,8 @@
     "spring-boot": {
       "topics": 111,
       "code": 106,
-      "commentedCode": 54,
-      "mermaid": 43,
+      "commentedCode": 53,
+      "mermaid": 42,
       "archifyVisual": 2,
       "asciiVisual": 9,
       "misleadingDiagramLabel": 0,
@@ -2589,6 +2589,13 @@
       "track": "spring-boot",
       "module": 10,
       "topic": "Tema 4: OAuth2/OIDC, Keycloak y Token Relay sin perder la frontera de autorización",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 10,
+      "topic": "Tema 9: Comprueba módulos antes de separar servicios",
       "missingCode": false,
       "missingComments": true
     },
