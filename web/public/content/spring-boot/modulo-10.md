@@ -1519,56 +1519,131 @@ Entrega la misma traza con sampling activo, el resultado de sampling en cero y l
 
 ### Tema 12: Contract testing entre productor y consumidor
 
-#### Paso 1 · Objetivo y preparación
+Duración: 35–45 min. **Meta:** comprobar el mismo JSON desde dos lados: pruebas generadas contra Conductores y prueba de Pedidos contra el stub publicado. El laboratorio `examples/spring-cloud-contract-rutaflow/` usa Spring Boot 4.1.2, Spring Cloud 2025.1.4 y Spring Cloud Contract 5.0.3. Los equipos acuerdan el contrato; en este ejemplo vive en el repositorio del productor.
 
-Al finalizar escribirás un contrato HTTP de consumidor y comprobarás que el productor genera un stub compatible. **Prerrequisitos:** API REST, pruebas Spring y dos servicios con despliegues independientes. Alinea Spring Cloud Contract con el release train elegido.
+#### Subtema 12.1: Define la respuesta pública que necesita Pedidos · 8 min
 
-#### Paso 2 · Contexto y caso real
+**1. Contexto**
 
-Pedidos necesita consultar disponibilidad de Conductores. Una prueba unitaria con mock local no detecta que el productor cambió `conductorId` a `driverId` y desplegó primero, rompiendo al consumidor.
+Pedidos necesita saber si `DR-7` está disponible. El JSON que devuelve Conductores es la frontera que ambos equipos deben mantener.
 
-#### Paso 3 · Teoría y analogía
+**2. Hazlo tú**
 
-El contract test declara una interacción requerida: solicitud y respuesta que productor y consumidor acuerdan. Spring Cloud Contract puede generar pruebas para validar el productor y stubs para el consumidor. El contrato no implementa toda la lógica de negocio ni prueba producción; verifica el borde compartido. Es como un enchufe: ambos aparatos pueden cambiar internamente siempre que respeten forma y voltaje del conector.
+Abre `conductor-producer/src/test/resources/contracts/availability/returnsAvailableDriver.groovy`. Compara el contrato con `DriverController.java`; el contrato describe `GET /drivers/DR-7` y la respuesta pública:
 
-```mermaid
-flowchart LR
-  C[Contrato pedido-disponibilidad] --> P[Test generado en productor]
-  C --> S[Stub consumido por Pedidos]
-  P --> V[Validar proveedor]
-  S --> T[Test de consumidor sin red real]
+```groovy
+request { method GET(); urlPath("/drivers/DR-7") }
+response {
+    status OK()
+    headers { contentType(applicationJson()) }
+    body([driverId: "DR-7", available: true])
+}
 ```
 
-#### Paso 4 · Demostración guiada
+Desde la raíz del laboratorio ejecuta:
 
-Crea `src/test/resources/contracts/conductores/disponibilidad.yml`:
-
-```yaml
-request:
-  method: GET
-  url: /conductores/c-12/disponibilidad
-response:
-  status: 200
-  headers:
-    Content-Type: application/json
-  body:
-    disponible: true
+```bash
+./mvnw -pl conductor-producer -am test
 ```
 
-Configura plugin/dependencia de Spring Cloud Contract y la base de test del productor; genera el test del proveedor. En el consumidor agrega Stub Runner apuntando al artefacto del productor y llama el cliente HTTP contra el stub. Ejecuta `./mvnw clean verify`. **Resultado esperado:** el proveedor satisface el contrato y el consumidor recibe la respuesta esperada desde el stub sin levantar Conductores real.
+**Resultado esperado:** el build detecta un contrato y genera su prueba en `conductor-producer/target/generated-test-sources/contracts/`.
 
-#### Paso 5 · Práctica guiada
+**Fallo deliberado:** cambia la ruta contractual a `/drivers/DR-8`. **Diagnóstico:** la solicitud ya no describe el caso de `DR-7`; conserva el mismo ID en petición y respuesta.
 
-**Fallo deliberado:** cambia el productor a `disponibleAhora` y ejecuta el test generado. **Pista:** el contrato describe el JSON observado por el consumidor; el cambio rompe compatibilidad aun si el endpoint devuelve 200. Restaura el nombre o versiona explícitamente el contrato y despliega una transición compatible.
+**3. Entiende**
 
-#### Paso 6 · Práctica independiente
+El contrato es una interacción concreta, no la implementación ni todas las reglas de asignación. Aquí un archivo Groovy define método, ruta, estado, tipo de contenido y campos JSON.
 
-Agrega caso 404 para conductor inexistente y una regla que acepte campos adicionales si el consumidor no depende de ellos. Corre contrato en CI del productor y stub test en CI del consumidor. Registra quién aprueba cambios, cómo se publica el artefacto de stubs y cómo se limpia una versión vieja. Combina contract tests con pruebas de integración, no intentes que un solo contrato sustituya casos de negocio completos.
+**4. Cierra**
 
-#### Paso 7 · Cierre y evidencia
+Señala qué campos usa Pedidos y quién debe aprobar un cambio de esos campos.
 
-Entrega el contrato, test de proveedor generado, prueba de consumidor con stub y fallo por campo renombrado. **Proyecto integrador RutaFlow:** valida contratos antes de promover cada servicio y define política de compatibilidad durante despliegues graduales. Errores comunes: escribir contratos desde el proveedor sin confirmar necesidades reales del consumidor, poner lógica de negocio completa dentro del contrato y asumir que la prueba garantiza disponibilidad de red o base de datos. Siguiente paso: lleva la versión y el resultado del contrato al pipeline de despliegue. Fuentes oficiales: [Spring Cloud Contract](https://docs.spring.io/spring-cloud-contract/reference/), [contratos DSL](https://docs.spring.io/spring-cloud-contract/reference/project-features-contract.html) y [stubs](https://docs.spring.io/spring-cloud-contract/reference/project-features-stubrunner/).
+#### Subtema 12.2: Ejecuta la prueba que genera el contrato · 10 min
 
-**¿Por qué es importante?** Los equipos necesitan detectar incompatibilidades antes de que un cambio llegue al servicio consumidor.
-**Evidencia de aprendizaje:** entrega test de proveedor, stub, prueba de consumidor y cambio incompatible reproducido.
-**Cuándo no usarlo:** para dos componentes que siempre se despliegan juntos y no comparten contrato de red, una prueba de integración en el mismo módulo puede ser suficiente.
+**1. Contexto**
+
+Conductores puede compilar y responder HTTP, pero eso no asegura que su respuesta respete el acuerdo.
+
+**2. Hazlo tú**
+
+Revisa `conductor-producer/src/main/java/academia/rutaflow/conductor/DriverController.java` y `conductor-producer/src/test/java/academia/rutaflow/conductor/ContractBase.java`. Ejecuta:
+
+```bash
+./mvnw -pl conductor-producer -am test
+```
+
+**Resultado esperado:** la prueba generada invoca el controlador con MockMvc y comprueba `200` y el JSON del contrato.
+
+**Fallo deliberado:** cambia `driverId` a `driverCode` en `DriverController`. **Diagnóstico:** la ruta puede responder `200`, pero el campo contratado falta; restaura `driverId` y repite el test del productor.
+
+**3. Entiende**
+
+El plugin deriva una prueba a partir del contrato; `ContractBase` conecta esa prueba con la aplicación web. Si pasa, la implementación actual cumple ese ejemplo del contrato.
+
+**4. Cierra**
+
+Guarda el resultado de Maven y el fragmento de JSON que la prueba verifica.
+
+#### Subtema 12.3: Usa el stub desde el cliente de Pedidos · 12 min
+
+**1. Contexto**
+
+El equipo Pedidos necesita probar su cliente antes de desplegar Conductores. Un stub reproduce solo la respuesta pactada.
+
+**2. Hazlo tú**
+
+Desde `examples/spring-cloud-contract-rutaflow/` ejecuta el flujo completo:
+
+```bash
+./scripts/verify-contracts.sh
+```
+
+Revisa `pedidos-consumer/src/main/java/academia/rutaflow/pedidos/ConductorClient.java` y `ConductorContractTest.java`. El cliente usa Spring `RestClient` y el test lee el stub clasificado desde el repositorio Maven local.
+
+```java
+return builder.clone().baseUrl("http://localhost:" + port).build()
+    .get().uri("/drivers/{driverId}", driverId)
+    .retrieve().body(DriverAvailability.class);
+```
+
+**Resultado esperado:** Maven pasa las pruebas del productor y `pedidosCanReadAvailabilityFromThePublishedContract`; Pedidos recibe `DR-7` y `available=true` desde WireMock.
+
+**Fallo deliberado:** cambia `available` a `availableNow` en `DriverAvailability`. **Diagnóstico:** el stub devuelve `available`, pero el tipo del consumidor espera otro campo; restaura el nombre de contrato.
+
+**3. Entiende**
+
+El productor instala un artefacto `stubs`; Stub Runner lo carga desde `~/.m2` y abre un servidor HTTP local. El test de Pedidos no arranca el servicio real.
+
+**4. Cierra**
+
+Entrega el resultado de ambos módulos y especifica qué prueba protege al proveedor y cuál protege el uso del consumidor.
+
+#### Subtema 12.4: Detecta una rotura y define publicación · 10 min
+
+**1. Contexto**
+
+Si Conductores quita `driverId` mientras Pedidos sigue dependiendo de ese campo, el despliegue gradual puede romper pedidos.
+
+**2. Hazlo tú**
+
+Renombra el campo en `conductor-producer/src/main/java/academia/rutaflow/conductor/DriverController.java` y ejecuta solo la verificación del productor:
+
+```bash
+./mvnw -pl conductor-producer -am test
+```
+
+**Resultado esperado:** la prueba generada falla porque el proveedor dejó de cumplir el contrato. Restaura el campo y vuelve a ejecutar `./scripts/verify-contracts.sh` para reinstalar el stub compatible.
+
+**Fallo deliberado:** edita solo la prueba del consumidor para buscar un artefacto de versión que no se instaló. **Diagnóstico:** Stub Runner reporta que no encuentra el stub; verifica `groupId`, `artifactId`, versión `0.1.0-SNAPSHOT` y classifier `stubs`.
+
+**3. Entiende**
+
+Un contrato aprobado no asegura disponibilidad, autorización ni lógica completa en producción. Versiona y publica stubs con el build del productor; combina estas pruebas con pruebas de integración y casos de negocio.
+
+**4. Cierra**
+
+Entrega la falla del proveedor, el test del consumidor y una regla de aprobación para cambios incompatibles. Proyecto RutaFlow: acuerda contrato con los equipos antes de publicar, usa una transición con campos compatibles y elimina campos viejos solo cuando consumidores hayan migrado.
+
+**Fuentes oficiales:** [compatibilidad Spring Cloud](https://spring.io/projects/spring-cloud/), [Maven y generación de pruebas](https://docs.spring.io/spring-cloud-contract/reference/maven-project.html), [contratos](https://docs.spring.io/spring-cloud-contract/reference/project-features-contract.html) y [Stub Runner](https://docs.spring.io/spring-cloud-contract/reference/project-features-stubrunner/stub-runner-core.html).
+
+**¿Por qué es importante?** Los contratos permiten encontrar un cambio incompatible antes de desplegarlo y afectar a otro servicio.

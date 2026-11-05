@@ -1247,11 +1247,42 @@ temas y la de profundidad 244 temas con señales. Estas cifras estructurales no
 certifican revisión humana ni ejecución de todo el contenido. No incluir los
 cambios locales de Flutter en el commit.
 
-Al continuar, no repitas T11: confirma su publicación con `git log -1`. El
-siguiente tema del módulo 10 es **T12 Contract testing entre productor y
-consumidor**. Contrasta las versiones con documentación primaria, añade un
-laboratorio con productor y consumidor reales de contratos HTTP y verifica qué
-cambio compatible o incompatible rompe cada lado. Conserva cuatro subtemas con
-archivos, comandos, salidas y un fallo diagnosticable. Haz commit propio por tema
-tras regenerar reportes y validar. Sigue excluyendo los dos cambios locales de
-Flutter.
+Spring Boot M10 T12, “Contract testing entre productor y consumidor”, se reescribió
+en cuatro subtemas cortos. `examples/spring-cloud-contract-rutaflow/` implementa
+dos aplicaciones Maven: `conductor-producer` publica un contrato Groovy para
+`GET /drivers/{id}` y genera una prueba MVC; `pedidos-consumer` ejecuta una prueba
+contra el artefacto `stubs` local con Stub Runner. `./scripts/verify-contracts.sh`
+ejecutó `./mvnw clean install` y terminó en `BUILD SUCCESS`. También se hizo el
+fallo deliberado solicitado: cambiar `driverId` por `driverCode` en la respuesta
+del productor hace fallar la prueba generada, que reporta el JSONPath
+`$.driverId` esperado y la respuesta recibida. Se restauró el contrato y se repitió
+la compilación completa con éxito. El laboratorio fija Spring Boot 4.1.2, Spring
+Cloud 2025.1.4 y Spring Cloud Contract 5.0.3; importa por separado el BOM de
+Contract porque el BOM del release train no gestiona por sí solo esos starters.
+También usa `spring-boot-starter-webmvc-test` y el paquete de pruebas MVC de Boot
+4. La ejecución local sólo prueba el stub y el productor en esta máquina; no
+verifica publicación o consumo desde un repositorio remoto.
+
+Se regeneraron auditorías, temarios, índices y grafo del repositorio; la cobertura
+atómica queda en 149/1185 (Spring Boot 45/111). La revisión de calidad marca
+1083/1185 temas practicables, 409 temas con defectos de sustancia y señales de
+profundidad en 245 temas. `./scripts/validate.sh` pasó: 23 pruebas Python (4
+omitidas) y validaciones de contenido, trazabilidad, currículum, ejemplos y
+fuentes. Esas métricas son estructurales; no equivalen a ejecución ni revisión
+humana de los otros temas.
+
+Se contrastaron las versiones con la [tabla de compatibilidad de Spring Cloud](https://spring.io/projects/spring-cloud/),
+las [notas de Spring Cloud 2025.1](https://github.com/spring-cloud/spring-cloud-release/wiki/Spring-Cloud-2025.1-Release-Notes),
+la [configuración Maven de Contract](https://docs.spring.io/spring-cloud-contract/reference/maven-project.html),
+el [DSL de contratos](https://docs.spring.io/spring-cloud-contract/reference/project-features-contract.html),
+el [Stub Runner](https://docs.spring.io/spring-cloud-contract/reference/project-features-stubrunner/stub-runner-core.html)
+y la [API MVC de pruebas de Spring Boot 4](https://docs.spring.io/spring-boot/api/java/org/springframework/boot/webmvc/test/autoconfigure/AutoConfigureMockMvc.html).
+
+Para continuar, revisa primero `git log -1` para confirmar la publicación de T12.
+El siguiente es Spring Boot M11 T1, “Fat JAR vs capas de Docker”, en
+`web/public/content/spring-boot/modulo-11.md`. Revisa el tema y sus subtemas uno
+por uno con el contrato editorial de este documento; mejora explicaciones con
+lenguaje directo, archivos que crear, comandos, salidas esperadas y diagnósticos
+concretos. Contrasta referencias/versiones con documentación primaria, actualiza
+los reportes afectados y ejecuta `./scripts/validate.sh`. Publica un commit propio
+por tema terminado. No incluyas los dos cambios locales de Flutter.

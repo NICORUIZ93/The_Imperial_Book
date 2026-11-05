@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 1258,
+      "lines": 1289,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 15745,
+      "lines": 15802,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -314,7 +314,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1101,
+      "lines": 1100,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -600,7 +600,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3857,
+      "lines": 3864,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13608,
+      "lines": 13610,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 481,
+      "lines": 485,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -6474,6 +6474,67 @@
     {
       "path": "examples/spring-token-relay-rutaflow/src/main/resources/application.yml",
       "lines": 33,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tracing-rutaflow/README.md",
+      "lines": 60,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Micrometer Tracing: una solicitud, dos servicios",
+        "## Requisitos",
+        "## Prueba completa",
+        "## C\u00f3digo y l\u00edmites"
+      ]
+    },
+    {
+      "path": "examples/spring-tracing-rutaflow/compose.yaml",
+      "lines": 8,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tracing-rutaflow/scripts/verify-trace.sh",
+      "lines": 100,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tracing-rutaflow/src/main/java/academia/rutaflow/tracing/DeliveryController.java",
+      "lines": 38,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tracing-rutaflow/src/main/java/academia/rutaflow/tracing/InventoryController.java",
+      "lines": 18,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tracing-rutaflow/src/main/java/academia/rutaflow/tracing/TracingApplication.java",
+      "lines": 12,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tracing-rutaflow/src/main/resources/application.yml",
+      "lines": 17,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -12608,7 +12669,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-10.md",
-      "lines": 1575,
+      "lines": 1650,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

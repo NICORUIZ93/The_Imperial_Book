@@ -1,8 +1,8 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-11-05 21:00 UTC
+Generated: 2026-11-05 21:18 UTC
 Root: `The_Imperial_Book`
-Indexed files: 1099
+Indexed files: 1106
 Import edges: 60
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -19,28 +19,28 @@ For automated lookups, use `docs/repo-graph.json`.
 - `automation-script`: 36 files
 - `course-content`: 262 files
 - `documentation`: 62 files
-- `example`: 624 files
+- `example`: 631 files
 - `local-infra`: 1 files
 - `project-file`: 55 files
 
 ## File Types
 
-- `.md`: 352
+- `.md`: 353
 - `.py`: 162
-- `.java`: 149
+- `.java`: 152
 - `.json`: 70
 - `.ts`: 66
 - `.js`: 54
 - `.html`: 38
-- `.yml`: 26
+- `.yml`: 27
 - `.mjs`: 26
 - `.rs`: 25
 - `.dart`: 24
 - `.go`: 24
 - `.swift`: 20
-- `.yaml`: 15
+- `.yaml`: 16
 - `.kt`: 13
-- `.sh`: 8
+- `.sh`: 9
 - `.scss`: 8
 - `.jsx`: 6
 - `.tf`: 4
@@ -231,7 +231,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `CONTRIBUTING.md` (31 lines) - headings: # Contribuir a The Imperial Book, ## Antes de abrir un cambio, ## Licencias
 - `README.md` (308 lines) - headings: # The_Imperial_Book, ## Como empezar, ## Levantar Floci, # 1. Levantar todos los servicios
 - `docs/CONTINUAR-7-PASOS.md` (26 lines) - headings: # Migración a cuatro pasos y subtemas atómicos, ## Formato que se aplica, ## Estado de migración
-- `docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md` (1258 lines) - headings: # Continuidad: expansión Java y academia, ## Encargo y razón, ## Fuentes de verdad y rutas, ## Contrato de cada tema
+- `docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md` (1289 lines) - headings: # Continuidad: expansión Java y academia, ## Encargo y razón, ## Fuentes de verdad y rutas, ## Contrato de cada tema
 - `docs/ESTANDAR-DE-CODIGO.md` (56 lines) - headings: # Estándar transversal de código y diseño, ## Prioridades, ## Clean Code con criterio, ## SOLID cuando aporta valor
 - `docs/MATRIZ-CURRICULAR.md` (73 lines) - headings: # Matriz curricular auditable, ## Progresión de competencia, ## Cobertura por módulo, ## Método de evaluación
 - `docs/METODOLOGIA-DE-APRENDIZAJE.md` (67 lines) - headings: # Metodología Aprende construyendo, ## Estructura de tema y subtema, ### Hito al final de cada tema, ### Ruta del proyecto
@@ -241,7 +241,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/RUNBOOKS-CLOUD.md` (1633 lines) - headings: # Cloud Runbooks — Troubleshooting Operacional, ## Runbook 1: DynamoDB Throttling, ### Síntomas, ### Diagnosis
 - `docs/RUNBOOKS-DEVOPS.md` (1409 lines) - headings: # DevOps Runbooks — Troubleshooting Operacional, ## Runbook 1: Docker Image Build Failures, ### Síntomas, ### Diagnosis
 - `docs/SKILLS-VISUALES-Y-ESTUDIO.md` (94 lines) - headings: # Skills para visuales y estudio desde cero, ## Selección y uso, ## Recorrido que debe comprobarse, ## Cómo usar las skills en una revisión
-- `docs/atomic-subtopics.md` (1101 lines) - headings: # Auditoría de subtemas atómicos, ## Temas pendientes, ### android, ### angular
+- `docs/atomic-subtopics.md` (1100 lines) - headings: # Auditoría de subtemas atómicos, ## Temas pendientes, ### android, ### angular
 - ... 44 more files
 
 ### example
@@ -264,7 +264,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `examples/archify/temas/cloud/modulo-22-tema-5-edge-routes.review-2/modulo-22-tema-5-edge-routes.finalize.json` (1012 lines)
 - `examples/archify/temas/foundations/modulo-12-tema-10-lazo-p.workflow.json` (183 lines)
 - `examples/archify/temas/foundations/modulo-12-tema-17-plc-scan.workflow.json` (189 lines)
-- ... 606 more files
+- ... 613 more files
 
 ### local-infra
 
@@ -275,12 +275,12 @@ For automated lookups, use `docs/repo-graph.json`.
 - `.env.example` (8 lines)
 - `.github/workflows/ci.yml` (62 lines)
 - `docs/app-flow-inspection.json` (13830 lines)
-- `docs/atomic-subtopics.json` (15745 lines)
+- `docs/atomic-subtopics.json` (15802 lines)
 - `docs/biblioteca/catalogo.json` (564 lines)
 - `docs/biblioteca/imagenes.json` (577 lines)
 - `docs/browser-course-review.json` (2660 lines)
-- `docs/code-visual-quality.json` (3857 lines)
-- `docs/course-depth-review.json` (13608 lines)
+- `docs/code-visual-quality.json` (3864 lines)
+- `docs/course-depth-review.json` (13610 lines)
 - `docs/curriculum-matrix.json` (394 lines)
 - `docs/floci-official-curriculum.json` (14 lines)
 - `docs/lesson-substance-baseline.json` (1693 lines)

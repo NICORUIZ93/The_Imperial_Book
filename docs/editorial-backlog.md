@@ -11,12 +11,12 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | Explicación | 1185 | 0 |
 | Código | 1141 | 44 |
 | Ruta | 1185 | 0 |
-| Ejecución | 1120 | 65 |
+| Ejecución | 1121 | 64 |
 | Resultado | 1183 | 2 |
 | Modificación | 1131 | 54 |
-| Conexión con un proyecto | 1100 | 85 |
+| Conexión con un proyecto | 1099 | 86 |
 | Modelo mental | 1185 | 0 |
-| Límites | 1128 | 57 |
+| Límites | 1127 | 58 |
 | **Perfil de criterios detectado** | **1083** | **102** |
 
 ## Prioridad por track
@@ -36,7 +36,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | node | 83 | 0 | 0 | 0 | 0 | 1 | 2 | 1 |
 | react | 58 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | rutaflow | 29 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| spring-boot | 111 | 5 | 0 | 7 | 0 | 6 | 22 | 15 |
+| spring-boot | 111 | 5 | 0 | 6 | 0 | 6 | 23 | 16 |
 
 ## Pendientes por tema
 
@@ -119,7 +119,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 - [spring-boot · módulo 10](../web/public/content/spring-boot/modulo-10.md) · Tema 4: OAuth2/OIDC, Keycloak y Token Relay sin perder la frontera de autorización: conexión con un proyecto, límites.
 - [spring-boot · módulo 10](../web/public/content/spring-boot/modulo-10.md) · Tema 10: Spring Cloud Bus para propagar cambios de configuración: conexión con un proyecto.
 - [spring-boot · módulo 10](../web/public/content/spring-boot/modulo-10.md) · Tema 11: Micrometer Tracing entre servicios: conexión con un proyecto, límites.
-- [spring-boot · módulo 10](../web/public/content/spring-boot/modulo-10.md) · Tema 12: Contract testing entre productor y consumidor: ejecución.
+- [spring-boot · módulo 10](../web/public/content/spring-boot/modulo-10.md) · Tema 12: Contract testing entre productor y consumidor: conexión con un proyecto, límites.
 - [spring-boot · módulo 21](../web/public/content/spring-boot/modulo-21.md) · Tema 1: Productor, tópico, key y consumidor: conexión con un proyecto, límites.
 - [spring-boot · módulo 21](../web/public/content/spring-boot/modulo-21.md) · Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia: conexión con un proyecto.
 - [spring-boot · módulo 21](../web/public/content/spring-boot/modulo-21.md) · Tema 3: Outbox transaccional y flujo de negocio: conexión con un proyecto.

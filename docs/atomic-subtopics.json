@@ -93,10 +93,10 @@
     },
     "spring-boot": {
       "topics": 111,
-      "completeTopics": 44,
-      "topicsWith3to6Subtopics": 59,
-      "subtopics": 195,
-      "completeSubtopics": 150
+      "completeTopics": 45,
+      "topicsWith3to6Subtopics": 60,
+      "subtopics": 199,
+      "completeSubtopics": 154
     }
   },
   "topics": {
@@ -13138,9 +13138,66 @@
       {
         "module": 10,
         "topic": "### Tema 12: Contract testing entre productor y consumidor",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 4,
+        "subtopics": [
+          {
+            "id": "12.1",
+            "title": "#### Subtema 12.1: Define la respuesta pública que necesita Pedidos · 8 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "12.2",
+            "title": "#### Subtema 12.2: Ejecuta la prueba que genera el contrato · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "12.3",
+            "title": "#### Subtema 12.3: Usa el stub desde el cliente de Pedidos · 12 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "12.4",
+            "title": "#### Subtema 12.4: Detecta una rotura y define publicación · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 11,
