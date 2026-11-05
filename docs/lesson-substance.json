@@ -1692,7 +1692,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "911a985a9206698d461bdc812dbc62ff2965e24f77de5879825887057b7fb4a4",
+    "fingerprint": "b2782cca92699323f24c59eea87441473ffe61278c3b3bc236d09ec6aa308420",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10404,9 +10404,9 @@
       {
         "issues": [],
         "module": 11,
-        "tailWords": 188,
+        "tailWords": 0,
         "topic": "Tema 2: GraalVM native image",
-        "words": 1139
+        "words": 1103
       },
       {
         "issues": [],

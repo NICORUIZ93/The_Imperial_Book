@@ -5,7 +5,7 @@
 **Proyecto continuo:** RutaFlow: plataforma de entregas basada en servicios.
 **Prerrequisito de entrada:** Java, HTTP, SQL y pruebas; los módulos iniciales vuelven a presentar cada herramienta..
 **Duración objetivo:** temas de 20–45 minutos; cada tema se divide en 3–6 acciones de 5–15 minutos.
-**Estado estructural:** 46/111 temas migrados; auditoría estructural actualizada el 2026-11-03.
+**Estado estructural:** 47/111 temas migrados; auditoría estructural actualizada el 2026-11-03.
 
 ## Índice de módulos y temas
 
@@ -306,7 +306,11 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 1.2: Pide a Spring Boot el mapa de capas · 10 min
   - ✓ Subtema 1.3: Extrae y copia las capas en el orden correcto · 12 min
   - ✓ Subtema 1.4: Comprueba qué se reutiliza y diagnostica una capa faltante · 10 min
-- [pendiente de migrar] Tema 2: GraalVM native image
+- [4 pasos] Tema 2: GraalVM native image
+  - ✓ Subtema 2.1: Distingue AOT de un binario nativo · 10 min
+  - ✓ Subtema 2.2: Registra un recurso dinámico para Native Image · 12 min
+  - ✓ Subtema 2.3: Construye el ejecutable nativo · 12 min
+  - ✓ Subtema 2.4: Ejecuta y compara con JVM · 15 min
 - [pendiente de migrar] Tema 3: Health checks para Kubernetes
 
 ### Módulo 12: Proyecto integrador — microservicio productivo
@@ -478,7 +482,7 @@ La tabla registra presencia de áreas en el inventario del track, no profundidad
 
 ### Huecos y límites reportados
 
-- El repositorio contiene 111 temas en 26 módulos; 46 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
+- El repositorio contiene 111 temas en 26 módulos; 47 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
 - No hay base para afirmar que el track esté completo: la comparación con la fuente de referencia está pendiente de revisión humana módulo por módulo.
 - Los elementos de la fuente que todavía deben verificarse de forma explícita están enumerados en la tabla anterior; cualquier técnica crítica que no tenga tema propio debe añadirse conservando el currículo base.
 - La ejecución de ejemplos, el comportamiento con brokers/plataformas reales y la calidad pedagógica humana se registran por separado.

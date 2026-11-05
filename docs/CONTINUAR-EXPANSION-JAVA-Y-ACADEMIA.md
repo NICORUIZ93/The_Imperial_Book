@@ -1304,11 +1304,30 @@ del curso completo.
 Fuentes primarias: [Dockerfiles de Spring Boot 4.1.2](https://docs.spring.io/spring-boot/reference/packaging/container-images/dockerfiles.html)
 y [empaquetado Maven por capas](https://docs.spring.io/spring-boot/maven-plugin/packaging.html).
 
-El siguiente tema es Spring Boot M11 T2, “GraalVM native image”, en
-`web/public/content/spring-boot/modulo-11.md`. Revisa si el recorrido explica qué
-se genera, cómo compilarlo y ejecutarlo y qué límites tiene, con código y comandos
-concretos. Conserva el nivel de lenguaje claro y los cuatro subtemas; contrasta
-versiones con documentación primaria, actualiza reportes afectados, ejecuta
-`./scripts/validate.sh` y publica su propio commit. Antes de continuar, comprueba
-el commit publicado de T1 con `git log -1`. Mantén fuera los dos cambios locales
+Spring Boot M11 T2, “GraalVM Native Image”, se reescribió en cuatro subtemas con
+la diferencia explícita entre AOT de Spring y un ejecutable nativo. El laboratorio
+`examples/spring-boot-native-rutaflow/` tiene dos endpoints, recurso dinámico,
+`RuntimeHintsRegistrar`, perfil Maven native y un script reproducible. `./scripts/verify-aot.sh`
+pasó: generó `ApplicationContextInitializer` y reachability metadata, inició el
+JAR con `spring.aot.enabled=true` y confirmó `/estado` y `/mensaje`. Se quitó
+temporalmente `@ImportRuntimeHints`; el AOT siguió compilando, pero desapareció el
+patrón `mensajes/*.txt` de la metadata; se restauró la anotación y el build volvió
+a pasar. También se ejecutó `./mvnw -Pnative native:compile`: falló como se
+esperaba porque en este equipo Temurin no incluye `native-image` (`The 'native-image'
+tool was not found on your system`). La imagen oficial de GraalVM en GHCR no
+terminó de descargarse durante esta sesión y se canceló; por eso no se afirma que
+el binario nativo ni sus endpoints hayan sido ejecutados aquí. El README deja los
+comandos para construirlo en GraalVM o dentro de la imagen oficial y explica que
+el resultado de Linux/ARM64 no corre directamente en macOS.
+
+Fuentes primarias: [perfil AOT y native de Spring Boot 4.1.2](https://docs.spring.io/spring-boot/maven-plugin/aot.html),
+[hints y límites](https://docs.spring.io/spring-boot/reference/packaging/native-image/advanced-topics.html),
+[prerrequisitos de Native Image](https://www.graalvm.org/reference-manual/native-image/)
+y [contenedores GraalVM Community](https://www.graalvm.org/jdk25/docs/getting-started/container-images/).
+
+Después de regenerar reportes, la cobertura atómica queda en 151/1185 (Spring Boot
+47/111); la auditoría marca 1083/1185 temas practicables, 409 temas con defectos
+de sustancia y señales de profundidad en 247. Ejecuta `./scripts/validate.sh`
+antes de publicar T2 en commit separado. El siguiente tema es M11 T3, “Health
+checks para Kubernetes”, en el mismo módulo. Mantén fuera los dos cambios locales
 de Flutter.

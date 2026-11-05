@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 246,
+    "topicsWithSignals": 247,
     "newLaboratories": 25
   },
   "priorities": {
@@ -12507,7 +12507,9 @@
       "title": "Tema 2: GraalVM native image",
       "file": "web/public/content/spring-boot/modulo-11.md",
       "line": 155,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -12517,7 +12519,7 @@
       "module": 11,
       "title": "Tema 3: Health checks para Kubernetes",
       "file": "web/public/content/spring-boot/modulo-11.md",
-      "line": 265,
+      "line": 298,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

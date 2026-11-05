@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 50,
+      "objective": 49,
       "prerequisites": 71,
-      "context": 50,
-      "theoryAnalogy": 50,
-      "guidedDemo": 50,
+      "context": 49,
+      "theoryAnalogy": 49,
+      "guidedDemo": 49,
       "codeExplanation": 111,
       "execution": 104,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 50,
-      "independentPractice": 50,
-      "closure": 50,
-      "commonErrors": 50,
+      "guidedPractice": 49,
+      "independentPractice": 49,
+      "closure": 49,
+      "commonErrors": 49,
       "resources": 72,
-      "standaloneExample": 52,
-      "learningEvidence": 75,
-      "complete": 50
+      "standaloneExample": 51,
+      "learningEvidence": 74,
+      "complete": 49
     }
   },
   "topics": {
@@ -28731,26 +28731,26 @@
         "module": 11,
         "topic": "Tema 2: GraalVM native image",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
           "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 6,
+          "complete": false
         }
       },
       {

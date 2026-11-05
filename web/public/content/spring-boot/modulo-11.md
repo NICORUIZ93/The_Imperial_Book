@@ -154,113 +154,146 @@ Fuentes oficiales: [capas y empaquetado Maven de Spring Boot](https://docs.sprin
 
 ### Tema 2: GraalVM native image
 
-#### Paso 1 · Objetivo y preparación
+Duración: 45–60 min. **Meta:** ejecutar una app con el AOT de Spring y aprender qué hace falta para convertirla en un binario nativo. Usa `examples/spring-boot-native-rutaflow/`, Java 25 y Maven Wrapper.
 
-Al finalizar podrás ejecutar el procesamiento AOT (ahead-of-time) real de Spring Boot con un comando de Maven rápido y sin GraalVM instalado, inspeccionando el código fuente generado como evidencia concreta de qué hace la compilación nativa antes de invertir en un build completo de `native-image`.
-
-**Conocimiento previo:** Tema 1 de este módulo.
-
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** En un sistema con autoscaling agresivo, un tiempo de arranque de milisegundos (GraalVM native image) permite que nuevas instancias reciban tráfico casi instantáneamente ante un pico, mientras que el arranque de varios segundos de la JVM tradicional degrada la experiencia justo cuando más se necesita capacidad adicional.
-
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** compilación ahead-of-time a binario nativo, procesamiento AOT de Spring.
-
-`./mvnw -Pnative native:compile` compila la aplicación a un binario nativo ejecutable directamente por el sistema operativo, con arranque en milisegundos y footprint de memoria menor, a cambio de un build significativamente más lento y restricciones de reflexión. Antes de ese build completo (que puede tardar varios minutos), Spring Boot expone `./mvnw spring-boot:process-aot`, una meta de Maven que ejecuta el mismo motor de análisis AOT de Spring pero se detiene en generar código fuente Java optimizado (sin compilarlo a binario nativo), permitiendo inspeccionar en segundos qué construiría el compilador nativo.
-
-**Analogía:** GraalVM native image es un vehículo que enciende instantáneamente en vez de requerir calentamiento del motor; `process-aot` es revisar el plano detallado de ese vehículo antes de fabricarlo, para detectar problemas de diseño sin esperar la fabricación completa.
-
-**Diagrama:**
+**¿Por qué es importante?** Un binario nativo puede iniciar rápido y usar menos memoria en algunos servicios; hay que medirlo porque su compilación tarda más y limita funciones dinámicas.
 
 ```mermaid
 flowchart LR
-  A["./mvnw spring-boot:process-aot"] --> B["target/spring-aot/main/sources/"]
-  B --> C{¿hints de reflexión completos?}
-  C -->|sí| D["./mvnw -Pnative native:compile funciona"]
-  C -->|no| E["native-image fallaría en runtime"]
+  C[Código Java] --> A[AOT de Spring: clases y metadata]
+  A --> J[JAR en JVM con AOT]
+  A --> N[GraalVM Native Image]
+  N --> B[Ejecutable para un SO y arquitectura]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+**Proyecto integrador RutaFlow:** compila el endpoint `/estado` para JVM y Native Image y compara inicio, memoria y tamaño en el mismo entorno.
 
-Continuando en `demo-empaquetado` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía y genera un proyecto nuevo con `mkdir demo-native && cd demo-native && curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip app.zip`), crea `src/main/java/io/academia/empaquetado/InfoServicio.java`, una clase accedida por reflexión (simulando el patrón que requiere hints explícitos):
+#### Subtema 2.1: Distingue AOT de un binario nativo · 10 min
+
+**1. Contexto**
+
+Spring puede preparar parte de la aplicación durante el build. Eso no convierte por sí solo el JAR en un ejecutable nativo.
+
+**2. Hazlo tú**
+
+En `examples/spring-boot-native-rutaflow/`, ejecuta:
 
 ```bash
-mkdir -p src/main/java/io/academia/empaquetado
+./scripts/verify-aot.sh
 ```
 
+Abre `scripts/verify-aot.sh`: usa `-Pnative package`, arranca el JAR con `spring.aot.enabled=true` y llama dos rutas.
+
+**Resultado esperado:** `GET /estado` devuelve `{"codigo":"RF-314","estado":"en camino"}` y `GET /mensaje` devuelve `Tu entrega RF-314 va en camino.`
+
+**Fallo deliberado:** arranca el JAR sin `-Dspring.aot.enabled=true`. **Diagnóstico:** la respuesta puede ser igual porque ejecutas la app normal en la JVM; el modo AOT se confirma en el comando y en las clases de `target/spring-aot/`, no por cambiar el JSON.
+
+**3. Entiende**
+
+El JAR continúa corriendo sobre una JVM. Native Image es otro paso: toma clases y metadata AOT y produce un ejecutable para un sistema operativo y una arquitectura concretos.
+
+**4. Cierra**
+
+Escribe dos cosas que generó Spring y una que todavía no produjo el script.
+
+#### Subtema 2.2: Registra un recurso dinámico para Native Image · 12 min
+
+**1. Contexto**
+
+En una JVM, la app puede leer recursos que encuentre al arrancar. Un binario nativo se construye antes y necesita saber qué archivos debe incluir.
+
+**2. Hazlo tú**
+
+Compara `src/main/java/academia/rutaflow/nativeimage/MensajeHints.java` con `NativeRutaApplication.java` y `src/main/resources/mensajes/ruta.txt`:
+
 ```java
-// src/main/java/io/academia/empaquetado/InfoServicio.java
-package io.academia.empaquetado;
-
-public class InfoServicio {
-    private String version = "1.0.0";
-
-    public String version() {
-        return version;
-    }
-}
-```
-
-```java
-// src/main/java/io/academia/empaquetado/InfoHints.java
-package io.academia.empaquetado;
-
-import org.springframework.aot.hint.MemberCategory;
-import org.springframework.aot.hint.RuntimeHints;
-import org.springframework.aot.hint.RuntimeHintsRegistrar;
-import org.springframework.context.annotation.ImportRuntimeHints;
-
-public class InfoHints implements RuntimeHintsRegistrar {
+public class MensajeHints implements RuntimeHintsRegistrar {
     @Override
-    public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-        hints.reflection().registerType(InfoServicio.class,
-            MemberCategory.INVOKE_DECLARED_METHODS, MemberCategory.DECLARED_FIELDS);
+    public void registerHints(RuntimeHints hints, ClassLoader loader) {
+        hints.resources().registerPattern("mensajes/*.txt");
     }
 }
 ```
 
-Ejecuta el procesamiento AOT real (rápido, sin GraalVM instalado) y confirma que genera código fuente concreto:
+La clase de aplicación importa el registrador con `@ImportRuntimeHints(MensajeHints.class)`. Ejecuta `./scripts/verify-aot.sh` y busca `mensajes` en `target/spring-aot/main/resources/META-INF/native-image/academia.rutaflow/spring-boot-native-rutaflow/reachability-metadata.json`.
+
+**Resultado esperado:** la metadata generada incluye el patrón `mensajes/*.txt` y `/mensaje` puede leer `mensajes/ruta.txt`.
+
+**Fallo deliberado:** quita `@ImportRuntimeHints(MensajeHints.class)` y vuelve a ejecutar `./mvnw -q clean package -Pnative`. **Diagnóstico:** el build puede terminar, pero el patrón `mensajes/*.txt` desaparece de la metadata; sin esa pista, un binario nativo no tiene garantizado el recurso. Restaura la anotación.
+
+**3. Entiende**
+
+El AOT prepara archivos y código. Las pistas dicen al compilador qué cosas dinámicas debe conservar. No todas las bibliotecas ni formas de reflexión funcionan automáticamente.
+
+**4. Cierra**
+
+Entrega el nombre del recurso, el patrón que lo incluye y la clase que registra ese patrón.
+
+#### Subtema 2.3: Construye el ejecutable nativo · 12 min
+
+**1. Contexto**
+
+El JAR corre en distintos sistemas con una JVM; el binario nativo se ajusta al sistema y arquitectura de compilación.
+
+**2. Hazlo tú**
+
+Abre `pom.xml` y localiza `org.graalvm.buildtools:native-maven-plugin`. Comprueba que `native-image --version` funcione con un JDK GraalVM y que tu sistema tenga el compilador C/C++ requerido. Desde la raíz del proyecto ejecuta:
 
 ```bash
-./mvnw -q spring-boot:process-aot
-test -d target/spring-aot/main/sources && echo "OK: Spring generó código AOT real"
-find target/spring-aot/main/sources -name "*ApplicationContextInitializer.java"
+./mvnw -Pnative native:compile
 ```
 
-**Resultado esperado:** el directorio `target/spring-aot/main/sources/` existe y contiene un archivo real `...ApplicationContextInitializer.java` generado por el motor AOT de Spring — evidencia concreta y verificable en disco de que el procesamiento AOT realmente se ejecutó, sin necesitar el compilador nativo de GraalVM instalado.
-
-**Fallo deliberado:** quita la anotación `@ImportRuntimeHints(InfoHints.class)` de la clase de configuración que la referenciaba (o no la agregues sobre ningún `@Configuration`) y documenta el resultado: `process-aot` sigue completando exitosamente (porque no valida en tiempo de build que la reflexión funcione en runtime), pero un build completo posterior con `native:compile` produciría un binario que, al invocar reflexión sobre `InfoServicio` en tiempo de ejecución, lanzaría un error real de GraalVM (`com.oracle.svm.core.jdk.UnsupportedFeatureException` o una `ClassNotFoundException` en el binario nativo, según el tipo de acceso) — diagnostica confirmando que los hints de reflexión son responsabilidad explícita del desarrollador: el compilador ahead-of-time no puede inferir dinámicamente qué reflexión necesitará el binario, a diferencia de la JVM tradicional. Restaura `@ImportRuntimeHints(InfoHints.class)` antes de continuar.
-
-#### Paso 5 · Práctica guiada — repetición progresiva
-
-1. Inspecciona con `cat` el contenido real de un archivo generado bajo `target/spring-aot/main/sources/` y documenta, en un comentario, qué patrón de código genera Spring en vez de usar reflexión en runtime.
-2. Agrega una segunda clase con un campo privado accedido por Jackson (deserialización JSON) y confirma con `process-aot` que Spring detecta y registra automáticamente hints para tipos usados en `@RestController`.
-3. Ejecuta `./mvnw -q spring-boot:process-aot` dos veces seguidas sin cambiar código y confirma con `diff` que el código generado es idéntico (determinismo del procesamiento AOT).
-4. Escribe de memoria (sin mirar) una clase `RuntimeHintsRegistrar` con `@ImportRuntimeHints`, y el comando `process-aot` que la ejercita. Compara después contra el patrón del Paso 4.
-
-**Pista:** `target/spring-aot/main/sources/` contiene código Java real y legible, no un artefacto binario opaco — leerlo directamente es la forma más rápida de entender exactamente qué haría el compilador nativo con tu configuración, sin esperar un build completo de `native-image` que puede tardar varios minutos.
-
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio con la meta de Maven que ejecuta el procesamiento AOT sin compilar a binario nativo:
+El perfil `native` del padre Spring Boot ejecuta AOT y configura el plugin de Native Build Tools. En un contenedor GraalVM ARM64/Linux se puede compilar así:
 
 ```bash
-./mvnw spring-boot:____
+podman run --rm -v "$PWD:/workspace:Z" -w /workspace ghcr.io/graalvm/native-image-community:25 ./mvnw -Pnative native:compile
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una clase `RuntimeHintsRegistrar`, la anotación que la registra, y el comando `process-aot` que confirma su efecto en disco. Compara después contra el patrón del Paso 4.
+**Resultado esperado:** el build crea `target/spring-boot-native-rutaflow`; `file` debe identificar un ejecutable nativo para la plataforma de compilación.
 
-#### Paso 7 · Cierre y evidencia
+**Práctica:** anota la versión de GraalVM y plataforma junto al tamaño de `target/spring-boot-native-rutaflow`.
 
-Ya ejecutas el procesamiento AOT real de Spring Boot e inspeccionas en disco el código que generaría la base de una compilación nativa, sin necesitar GraalVM instalado. El siguiente tema conecta los health checks de Actuator con las decisiones reales que Kubernetes toma sobre el pod. **Evidencia:** entrega la salida de `find target/spring-aot/main/sources -name "*ApplicationContextInitializer.java"`, y la explicación del error real de GraalVM que documenta el fallo deliberado. Fuente oficial: [Spring Boot — GraalVM Native Images](https://docs.spring.io/spring-boot/reference/packaging/native-image/introducing-graalvm-native-images.html).
+**Fallo deliberado:** ejecuta `./mvnw -Pnative native:compile` con un JDK que no tenga `native-image`. **Diagnóstico:** el plugin indica que no encuentra el compilador; selecciona GraalVM y verifica `JAVA_HOME` y `PATH`.
 
-**Errores comunes:** asumir que `native-image` no requiere ninguna configuración adicional de reflexión; ejecutar directamente un build nativo completo (varios minutos) en vez de `process-aot` (segundos) durante la iteración de desarrollo.
+**3. Entiende**
 
-**Cuándo no usarlo:** para servicios internos sin autoscaling agresivo ni restricciones estrictas de arranque, el costo de build y las restricciones de reflexión de GraalVM pueden superar el beneficio de un arranque más rápido.
+El build nativo suele tardar más y consume más recursos que `package`. El archivo resultante no es un JAR universal: compílalo para cada sistema operativo y arquitectura de destino.
 
-GraalVM native image es la opción que reducirá el tiempo de arranque del proyecto integrador de este track (microservicio productivo, Módulo 12) si el entorno lo justifica.
+**4. Cierra**
+
+Registra sistema, arquitectura, versión de GraalVM, duración y tamaño del ejecutable.
+
+#### Subtema 2.4: Ejecuta y compara con JVM · 15 min
+
+**1. Contexto**
+
+El inicio rápido importa si una instancia debe atender tráfico pronto; el tiempo de compilación también forma parte del costo.
+
+**2. Hazlo tú**
+
+Ejecuta `target/spring-boot-native-rutaflow` en el mismo sistema donde lo compilaste y comprueba `/estado` y `/mensaje`. Si lo compilaste dentro del contenedor ARM64/Linux, sigue el comando de ejecución de `examples/spring-boot-native-rutaflow/README.md`; consulta `http://localhost:18081`. Después ejecuta el JAR normal y compara las dos salidas y los tamaños:
+
+```bash
+du -h target/spring-boot-native-rutaflow target/spring-boot-native-rutaflow-0.1.0-SNAPSHOT.jar
+```
+
+Mide el inicio con el mismo equipo y condiciones; detén cada servidor después de hacer las peticiones.
+
+**Resultado esperado:** ambas versiones devuelven el mismo JSON y mensaje. La diferencia de inicio, memoria y tamaño se anota con valores medidos, no se adivina.
+
+**Fallo deliberado:** elimina temporalmente la anotación de hints, reconstruye el binario y llama `/mensaje`. **Diagnóstico:** si falla la lectura del recurso, compara la metadata entre builds, restaura el registrador y recompila.
+
+**3. Entiende**
+
+Un inicio más rápido no garantiza menor costo total. Revisa el tiempo de build, memoria, tamaño, compatibilidad de dependencias y facilidad de depuración antes de escoger.
+
+**Cuándo no usarlo:** conserva JVM si no tienes presión por arranque o memoria y la mayoría de tus dependencias dependen de carga dinámica.
+
+**4. Cierra**
+
+Entrega las dos respuestas, sus mediciones y una razón concreta para elegir JVM o binario nativo en el microservicio de seguimiento.
+
+Fuentes oficiales: [AOT y perfil Maven `native`](https://docs.spring.io/spring-boot/maven-plugin/aot.html), [imágenes nativas de Spring Boot](https://docs.spring.io/spring-boot/reference/packaging/native-image/introducing-graalvm-native-images.html), [metadata y hints personalizados](https://docs.spring.io/spring-boot/reference/packaging/native-image/advanced-topics.html) y [prerrequisitos y build Native Image](https://www.graalvm.org/reference-manual/native-image/). Siguiente: Tema 3, health checks de Actuator para Kubernetes.
 
 ### Tema 3: Health checks para Kubernetes
 
