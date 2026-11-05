@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 998,
+      "lines": 1036,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -5814,17 +5814,59 @@
     },
     {
       "path": "examples/spring-resilience-rutaflow/README.md",
-      "lines": 12,
+      "lines": 37,
       "kind": "example",
       "symbols": [],
       "imports": [],
       "headings": [
-        "# Laboratorio Spring Resilience4j de RutaFlow"
+        "# Laboratorio Spring Boot y Resilience4j \u00b7 RutaFlow",
+        "## Ejecutar las pruebas",
+        "## Archivos para inspeccionar"
       ]
     },
     {
+      "path": "examples/spring-resilience-rutaflow/src/main/java/academia/rutaflow/resilience/CircuitBreakerConfiguration.java",
+      "lines": 24,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-resilience-rutaflow/src/main/java/academia/rutaflow/resilience/PedidosClient.java",
+      "lines": 45,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-resilience-rutaflow/src/main/java/academia/rutaflow/resilience/PedidosController.java",
+      "lines": 30,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-resilience-rutaflow/src/main/java/academia/rutaflow/resilience/ResilienceApplication.java",
+      "lines": 12,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-resilience-rutaflow/src/main/resources/application.yml",
+      "lines": 9,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
       "path": "examples/spring-resilience-rutaflow/src/test/java/academia/rutaflow/resilience/CircuitBreakerBehaviorTest.java",
-      "lines": 65,
+      "lines": 129,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -12060,7 +12102,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-10.md",
-      "lines": 1588,
+      "lines": 1591,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

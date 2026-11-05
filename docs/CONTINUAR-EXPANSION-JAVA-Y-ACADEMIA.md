@@ -995,3 +995,41 @@ evaluación de aprendizaje.
 la implementación y las pruebas existentes del laboratorio antes de reescribir
 la lección; valida estados y contadores por comportamiento observable, no solo
 por inspección de la configuración.
+
+
+Spring Boot M10 T3, “Circuit breaker con Resilience4j”, se alineó con una
+aplicación real del curso en `examples/spring-resilience-rutaflow/`. El proyecto
+ahora usa Spring Boot 4.1.2 y Java 21; `CircuitBreakerConfiguration` registra
+un bean, `PedidosClient` protege una petición HTTP con `executeSupplier` y
+`PedidosController` devuelve el pedido o un 503 controlado. El servidor HTTP
+backend de las pruebas responde 503/200 y cuenta peticiones.
+
+`./mvnw -q clean test` pasó con **3 pruebas** de integración local: cuatro 503
+abren el circuito, la quinta petición HTTP se rechaza sin llegar al backend y
+dos 200 durante HALF_OPEN devuelven el estado a CLOSED. Tres mutaciones
+aisladas y revertidas hicieron fallar las expectativas: ampliar la ventana y
+el mínimo a 10, retirar `executeSupplier` y devolver 503 durante la segunda
+llamada HALF_OPEN. La suite volvió a pasar después de restaurarlas.
+
+La revisión encontró un detalle importante en la antigua instrucción: en
+Resilience4j 2.4.0, con ventana `COUNT_BASED`, `minimumNumberOfCalls` se limita
+al tamaño de `slidingWindowSize`; aumentar solo el mínimo a 10 con ventana 4 no
+cambia el umbral efectivo. La lección ahora contrasta ambos valores y enlaza el
+código oficial de la versión fijada. HALF_OPEN se fuerza directamente en el
+test, así que la prueba no valida el temporizador de un minuto. Tampoco hay
+clúster distribuido, prueba de carga, Actuator ni integración del starter de
+Spring Cloud CircuitBreaker; el laboratorio integra el núcleo como bean Spring.
+Fuentes: [guía Resilience4j](https://resilience4j.readme.io/docs/circuitbreaker),
+[código fuente 2.4.0](https://github.com/resilience4j/resilience4j/blob/v2.4.0/resilience4j-circuitbreaker/src/main/java/io/github/resilience4j/circuitbreaker/CircuitBreakerConfig.java)
+y [integración de Spring Cloud CircuitBreaker](https://docs.spring.io/spring-cloud-circuitbreaker/reference/spring-cloud-circuitbreaker-resilience4j.html).
+
+Cobertura automática después de M10 T3 permanece en **144/1185 temas
+atómicos**, **1082/1185 practicables**, **1030/1185 completos en siete pasos**
+y 409 con señales de defecto de sustancia. Los tres temas M10 iniciales ya
+pasaban detectores estructurales antes de añadir los laboratorios; los
+indicadores no certifican enseñanza ni aprendizaje.
+
+**Siguiente tema:** Spring Boot M10 T4, OAuth2/OIDC y Keycloak. Revisa la
+configuración frente a documentación oficial de Spring Security y Keycloak;
+asegura que las pruebas distingan 401, 403 y autorización a nivel de recurso, y
+que no requieran un realm externo sin instrucciones reproducibles.

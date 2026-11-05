@@ -1692,7 +1692,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "545e556ac778ac9715e432fcf0edffe61f08d27457b32b2b97ec1689af1438d5",
+    "fingerprint": "2fa1919c16f894eed2737886cf8fd535c490ccee9dc2186f19dde0576b6a6fa5",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10329,7 +10329,7 @@
         "module": 10,
         "tailWords": 0,
         "topic": "Tema 3: Circuit breaker con Resilience4j",
-        "words": 602
+        "words": 815
       },
       {
         "issues": [],

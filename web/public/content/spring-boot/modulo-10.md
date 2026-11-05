@@ -331,9 +331,10 @@ Conserva dos evidencias: respuesta y log del caso correcto; respuesta y ausencia
 
 ### Tema 3: Circuit breaker con Resilience4j
 
-**Duración:** 30 min. **Prerrequisitos:** Spring Boot M10 T1 y T2 (configuración y gateway). **Proyecto continuo:** RutaFlow protege la consulta de pedidos cuando el servicio remoto falla.
+**Duración:** 30 min. **Prerrequisitos:** Java `Supplier`, excepciones y códigos HTTP; M10 T1 da el contexto del servicio, pero Gateway no es requisito para comprender el circuito. El laboratorio usa Resilience4j 2.4.0 con Java 21+.
+**Proyecto continuo:** RutaFlow protege la consulta HTTP de pedidos cuando el servicio responde con error.
 
-**¿Por qué es importante?** Si cada petición espera hasta el timeout de un servicio caído, las llamadas pendientes consumen recursos y el fallo se propaga.
+**¿Por qué es importante?** Si cada petición espera hasta el timeout de un servicio caído, las llamadas pendientes consumen recursos y el fallo se propaga. El laboratorio usa un servicio HTTP local que responde 503 o 200; el circuito cuenta solicitudes HTTP, no solo excepciones inventadas en memoria.
 
 #### Subtema 3.1: Abre el circuito después de cuatro fallos · 10 min
 
@@ -341,15 +342,15 @@ Conserva dos evidencias: respuesta y log del caso correcto; respuesta y ausencia
 El circuito mide resultados. No se abre por un solo fallo si todavía no alcanza el mínimo de llamadas configurado.
 
 **2. Hazlo tú**
-Abre `examples/spring-resilience-rutaflow/src/test/java/academia/rutaflow/resilience/CircuitBreakerBehaviorTest.java` y ejecuta desde `examples/spring-resilience-rutaflow/`:
+Abre `examples/spring-resilience-rutaflow/src/main/java/academia/rutaflow/resilience/CircuitBreakerConfiguration.java` y lee los dos límites `slidingWindowSize` y `minimumNumberOfCalls`. Ejecuta desde `examples/spring-resilience-rutaflow/`:
 
 ```bash
 ./mvnw -Dtest=CircuitBreakerBehaviorTest#abreDespuesDeCuatroFallosYBloqueaLaQuintaLlamada test
 ```
 
-**Resultado esperado:** cuatro fallos medidos ponen el estado en `OPEN`; la prueba muestra que se ejecutó la llamada remota cuatro veces.
+**Resultado esperado:** cuatro respuestas HTTP 503 medidas ponen el estado en `OPEN`; la prueba muestra cuatro solicitudes recibidas por el servicio local.
 
-**Fallo deliberado:** modifica `minimumNumberOfCalls(4)` a `minimumNumberOfCalls(10)`. **Resultado esperado:** el test falla porque cuatro llamadas todavía no alcanzan el mínimo de diez. **Diagnóstico:** `minimumNumberOfCalls` y `slidingWindowSize` son límites distintos; la tasa no se calcula antes del mínimo.
+**Fallo deliberado:** en `newCircuitBreaker()`, cambia ambos valores `slidingWindowSize(4)` y `minimumNumberOfCalls(4)` a `10`, y vuelve a ejecutar la prueba. **Resultado esperado:** falla la expectativa `OPEN`, porque cuatro respuestas no llenan la ventana de diez. **Diagnóstico:** para una ventana por cantidad, Resilience4j limita el mínimo al tamaño de la ventana; si solo cambias el mínimo a 10 y la ventana sigue en 4, el mínimo efectivo sigue siendo 4. Restaura los dos valores a 4.
 
 **3. Entiende**
 La ventana guarda resultados recientes. El mínimo indica cuántos resultados hacen falta antes de decidir si el circuito abre.
@@ -363,18 +364,18 @@ Anota el umbral, tamaño de ventana y cantidad mínima de llamadas.
 El circuito debe rechazar rápido cuando está abierto, sin volver a invocar el servicio que ya está fallando.
 
 **2. Hazlo tú**
-Abre `examples/spring-resilience-rutaflow/src/test/java/academia/rutaflow/resilience/CircuitBreakerBehaviorTest.java`. Ejecuta el mismo test desde `examples/spring-resilience-rutaflow/`:
+Abre `examples/spring-resilience-rutaflow/src/main/java/academia/rutaflow/resilience/PedidosClient.java` y localiza `executeSupplier`. Ejecuta desde `examples/spring-resilience-rutaflow/`:
 
 ```bash
-./mvnw -Dtest=CircuitBreakerBehaviorTest#abreDespuesDeCuatroFallosYBloqueaLaQuintaLlamada test
+./mvnw -Dtest=CircuitBreakerBehaviorTest#openImpideLaQuintaPeticionHttpAlBackend test
 ```
 
 **Resultado esperado:** la quinta llamada lanza `CallNotPermittedException` y el contador permanece en `4`.
 
-**Fallo deliberado:** quita `CircuitBreaker.decorateSupplier(breaker, ...)` y llama al supplier directamente. **Resultado esperado:** el contador llega a `5` y la prueba falla. **Diagnóstico:** la llamada dejó de pasar por el circuito; restaura la decoración.
+**Fallo deliberado:** en `PedidosClient.consultarPedido()`, cambia `return circuitBreaker.executeSupplier(this::solicitarPedido);` por `return solicitarPedido();`. **Resultado esperado:** la quinta solicitud también alcanza el backend y el contador llega a `5`; la prueba falla porque esperaba el mensaje de circuito abierto y solo cuatro visitas al backend. **Diagnóstico:** retiraste el circuito de la llamada; restaura `executeSupplier`.
 
 **3. Entiende**
-`OPEN` no repara el servicio remoto. Deja de enviarle llamadas por un intervalo y protege recursos locales; se puede combinar con timeout y fallback.
+`OPEN` no repara el servicio remoto. Deja de enviarle llamadas y protege recursos locales; se puede combinar con timeout y fallback. La prueba cuenta solicitudes HTTP a un servidor local; no es una prueba distribuida ni de carga.
 
 **4. Cierra**
 Conserva el error de llamada bloqueada y explica qué valor comprobó el contador.
@@ -391,9 +392,11 @@ Abre `examples/spring-resilience-rutaflow/src/test/java/academia/rutaflow/resili
 ./mvnw -Dtest=CircuitBreakerBehaviorTest#vuelveACerradoCuandoLasDosLlamadasDePruebaTienenExito test
 ```
 
+En esta prueba, `transitionToHalfOpenState()` fuerza la transición para no esperar el minuto configurado. La prueba verifica las solicitudes de recuperación, no el temporizador automático.
+
 **Resultado esperado:** la prueba fuerza `HALF_OPEN`; dos respuestas correctas devuelven el estado a `CLOSED`.
 
-**Fallo deliberado:** modifica el supplier recuperado para que falle en una de las dos llamadas. **Resultado esperado:** la recuperación no cumple las dos respuestas exitosas y el test falla al esperar `CLOSED`. **Diagnóstico:** el circuito solo cierra si sus llamadas de prueba superan la regla configurada.
+**Fallo deliberado:** en `CircuitBreakerBehaviorTest.java`, después de la primera solicitud HTTP correcta, agrega `respuestaBackend = 503;` antes de la segunda. **Resultado esperado:** la segunda llamada falla y el circuito vuelve a abrir; falla la expectativa de respuesta 200 y de estado `CLOSED`. **Diagnóstico:** las dos llamadas permitidas durante HALF_OPEN deben tener éxito; elimina la línea añadida.
 
 **3. Entiende**
 La secuencia es `CLOSED → OPEN → HALF_OPEN → CLOSED` cuando la recuperación tiene éxito. En producción el temporizador y las métricas observan esos cambios.
@@ -410,7 +413,7 @@ Dibuja los estados y registra cuántas llamadas se permiten en la prueba de recu
 
 **Proyecto integrador:** protege la consulta de pedidos de RutaFlow y registra el fallback que verá la persona usuaria cuando el circuito esté abierto.
 
-**Fuentes oficiales:** [Resilience4j CircuitBreaker](https://resilience4j.readme.io/docs/circuitbreaker) y [roadmap.sh Spring Boot](https://roadmap.sh/spring-boot).
+**Fuentes oficiales:** [Resilience4j CircuitBreaker](https://resilience4j.readme.io/docs/circuitbreaker), [configuración de Resilience4j 2.4.0](https://github.com/resilience4j/resilience4j/blob/v2.4.0/resilience4j-circuitbreaker/src/main/java/io/github/resilience4j/circuitbreaker/CircuitBreakerConfig.java) y [Spring Cloud CircuitBreaker con Resilience4j](https://docs.spring.io/spring-cloud-circuitbreaker/reference/spring-cloud-circuitbreaker-resilience4j.html). El laboratorio integra el núcleo de Resilience4j como bean Spring; no usa el starter de Spring Cloud CircuitBreaker.
 
 ### Tema 4: OAuth2/OIDC, Keycloak y Token Relay sin perder la frontera de autorización
 
