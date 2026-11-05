@@ -1363,11 +1363,35 @@ Fuentes primarias de M12 T1: [inicialización SQL en Spring Boot](https://docs.s
 [JUnit 5 con Testcontainers](https://java.testcontainers.org/test_framework_integration/junit_5/)
 y [configuración del runtime Podman](https://java.testcontainers.org/supported_docker_environment/).
 
-Tras regenerar reportes, la cobertura atómica es 153/1185 (Spring Boot 49/111),
-1082/1185 temas practicables, 409 temas con defectos de sustancia y señales de
-profundidad en 249. `./scripts/validate.sh` pasó: 23 pruebas Python (4 omitidas)
-y validaciones de contenido, currículo, fuentes, laboratorios y trazabilidad.
-Estas cifras son estructurales; no demuestran ejecución o revisión humana de los
-otros temas. El siguiente tema es Spring Boot M12 T2, “Integrando seguridad,
-persistencia y observabilidad”. Conserva commits y publicación separados por
+Spring Boot M12 T2, ahora titulado “Integra seguridad JWT y observabilidad”,
+amplía el mismo laboratorio de T1. La API valida JWT HS256 firmado, convierte
+el claim `roles` a autoridades, requiere `ROLE_USER` para crear y `ROLE_ADMIN`
+para consultar Actuator. La clave por defecto solo sirve en local y puede
+reemplazarse con `RUTAFLOW_JWT_SECRET_BASE64`; no se implementó un emisor de
+tokens ni se integró un IdP real. `EntregaService` registra el contador
+`entregas.creadas` y Actuator lo expone bajo control de rol.
+
+`./scripts/verify-integration.sh` pasó: 4 pruebas, 0 fallos, con PostgreSQL real.
+Los casos cubren HTTP 201 y fila persistida, 400 sin guardar, 401 para token
+ausente o con firma alterada, 403 para rol incorrecto, incremento exacto del
+contador y consulta de Actuator solo por admin. Se quitó el incremento: la
+prueba falló (esperaba 1.0 y obtuvo 0.0); se restauró. Se quitó
+`@PreAuthorize`: el test de admin falló al recibir 201 en vez de 403; se restauró.
+Se corrigió el starter de pruebas de Boot 4 con `spring-boot-starter-webmvc-test`
+para auto-configurar MockMvc.
+
+Fuentes primarias: [JWT Resource Server](https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html),
+[method security](https://docs.spring.io/spring-security/reference/servlet/authorization/method-security.html),
+[métricas de Spring Boot 4.1.2](https://docs.spring.io/spring-boot/reference/actuator/metrics.html),
+[seguridad de Actuator](https://docs.spring.io/spring-boot/reference/actuator/endpoints.html#actuator.endpoints.exposing)
+y [Micrometer Counters](https://docs.micrometer.io/micrometer/reference/concepts/counters.html).
+
+Tras regenerar reportes, la cobertura atómica queda en 154/1185 (Spring Boot
+50/111); la auditoría marca 1081/1185 temas practicables, 409 temas con defectos
+de sustancia y señales de profundidad en 250. `./scripts/validate.sh` pasó: 23
+pruebas Python (4 omitidas) y validaciones de contenido, currículo, fuentes,
+laboratorios y trazabilidad. Las cifras son estructurales; no prueban ejecución
+ni revisión humana del resto del currículo. T1 se publicó en `bc0ba4d0`; T2 se
+prepara para publicar como cambio separado. El próximo trabajo es Spring Boot
+M12 T3, “Cierre del track y próximos pasos”. Conserva commits y publicación por
 tema. Mantén fuera los dos cambios locales de Flutter.

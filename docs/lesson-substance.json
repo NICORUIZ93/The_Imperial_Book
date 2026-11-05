@@ -1690,7 +1690,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "42748cefdbe0528da5dc061a0ee0c9f579cbefd039e8eaaee8abaa18540740ba",
+    "fingerprint": "4db267955bfc73fb5b91289acdcc068e48835115ed144a7e8dcf019cc362bde9",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10418,14 +10418,14 @@
         "module": 12,
         "tailWords": 0,
         "topic": "Tema 1: Arquitectura del microservicio integrador",
-        "words": 988
+        "words": 1000
       },
       {
         "issues": [],
         "module": 12,
-        "tailWords": 177,
-        "topic": "Tema 2: Integrando seguridad, persistencia y observabilidad",
-        "words": 1419
+        "tailWords": 0,
+        "topic": "Tema 2: Integra seguridad JWT y observabilidad",
+        "words": 1061
       },
       {
         "issues": [],

@@ -2,6 +2,7 @@ package academia.rutaflow.integrador.entrega;
 
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +19,7 @@ public class EntregaController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<EntregaResponse> crear(@Valid @RequestBody CrearEntregaRequest solicitud) {
         Entrega creada = entregas.crear(solicitud.destinatario().trim());
         var ubicacion = ServletUriComponentsBuilder.fromCurrentRequest()

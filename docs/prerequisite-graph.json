@@ -4720,7 +4720,7 @@
       "track": "spring-boot",
       "module": 12,
       "position": 2,
-      "title": "Integrando seguridad, persistencia y observabilidad",
+      "title": "Integra seguridad JWT y observabilidad",
       "file": "web/public/content/spring-boot/modulo-12.md",
       "requires": [
         "spring-boot:12:1"

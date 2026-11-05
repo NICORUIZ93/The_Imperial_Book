@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 1374,
+      "lines": 1398,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 16030,
+      "lines": 16087,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -314,7 +314,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1096,
+      "lines": 1095,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -600,7 +600,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3864,
+      "lines": 3871,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13618,
+      "lines": 13620,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -677,7 +677,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 150,
+      "lines": 151,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 501,
+      "lines": 505,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -5530,6 +5530,91 @@
     {
       "path": "examples/spring-avro-rutaflow/src/test/java/academia/rutaflow/avro/SchemaRegistrySerdeTest.java",
       "lines": 47,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-boot-integrador-rutaflow/README.md",
+      "lines": 44,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Microservicio integrador RutaFlow",
+        "## Ejecutar",
+        "## Recorre las capas",
+        "## Provoca un error de ruta"
+      ]
+    },
+    {
+      "path": "examples/spring-boot-integrador-rutaflow/scripts/verify-integration.sh",
+      "lines": 23,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-boot-integrador-rutaflow/src/main/java/academia/rutaflow/integrador/IntegradorApplication.java",
+      "lines": 12,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-boot-integrador-rutaflow/src/main/java/academia/rutaflow/integrador/entrega/CrearEntregaRequest.java",
+      "lines": 7,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-boot-integrador-rutaflow/src/main/java/academia/rutaflow/integrador/entrega/Entrega.java",
+      "lines": 38,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-boot-integrador-rutaflow/src/main/java/academia/rutaflow/integrador/entrega/EntregaController.java",
+      "lines": 30,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-boot-integrador-rutaflow/src/main/java/academia/rutaflow/integrador/entrega/EntregaRepository.java",
+      "lines": 8,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-boot-integrador-rutaflow/src/main/java/academia/rutaflow/integrador/entrega/EntregaResponse.java",
+      "lines": 8,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-boot-integrador-rutaflow/src/main/java/academia/rutaflow/integrador/entrega/EntregaService.java",
+      "lines": 27,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-boot-integrador-rutaflow/src/test/java/academia/rutaflow/integrador/entrega/ArquitecturaIntegradaTest.java",
+      "lines": 148,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -12937,7 +13022,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-12.md",
-      "lines": 487,
+      "lines": 395,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12949,11 +13034,11 @@
         "#### Subtema 12.1.2: Deja que Flyway cree la tabla \u00b7 10 min",
         "#### Subtema 12.1.3: Valida la solicitud antes de guardar \u00b7 10 min",
         "#### Subtema 12.1.4: Comprueba HTTP y PostgreSQL juntos \u00b7 12 min",
-        "### Tema 2: Integrando seguridad, persistencia y observabilidad",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda con analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero"
+        "### Tema 2: Integra seguridad JWT y observabilidad",
+        "#### Subtema 12.2.1: Verifica un JWT firmado \u00b7 10 min",
+        "#### Subtema 12.2.2: Distingue identidad de permiso \u00b7 10 min",
+        "#### Subtema 12.2.3: Cuenta solo las entregas guardadas \u00b7 10 min",
+        "#### Subtema 12.2.4: Consulta la m\u00e9trica sin abrirla a todos \u00b7 10 min"
       ]
     },
     {

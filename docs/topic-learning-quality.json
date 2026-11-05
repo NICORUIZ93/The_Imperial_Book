@@ -224,15 +224,15 @@
       "topics": 111,
       "explanation": 111,
       "code": 106,
-      "visual": 52,
+      "visual": 51,
       "filePath": 111,
-      "runCommand": 104,
+      "runCommand": 103,
       "expectedResult": 111,
       "practice": 105,
-      "project": 87,
+      "project": 86,
       "modelMental": 111,
       "limitsDecision": 94,
-      "practicable": 82,
+      "practicable": 81,
       "genericScaffold": 0,
       "repeatedDemo": 0
     }
@@ -24379,22 +24379,22 @@
       },
       {
         "module": 12,
-        "topic": "Tema 2: Integrando seguridad, persistencia y observabilidad",
+        "topic": "Tema 2: Integra seguridad JWT y observabilidad",
         "criteria": {
           "explanation": true,
           "code": true,
-          "visual": true,
+          "visual": false,
           "filePath": true,
-          "runCommand": true,
+          "runCommand": false,
           "expectedResult": true,
           "practice": true,
-          "project": true,
+          "project": false,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 16,
-          "practicable": true,
+          "rubricScore": 10,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }

@@ -99,8 +99,8 @@
     "spring-boot": {
       "topics": 111,
       "code": 106,
-      "commentedCode": 51,
-      "mermaid": 42,
+      "commentedCode": 50,
+      "mermaid": 41,
       "archifyVisual": 2,
       "asciiVisual": 6,
       "misleadingDiagramLabel": 0,
@@ -2624,6 +2624,13 @@
       "track": "spring-boot",
       "module": 12,
       "topic": "Tema 1: Arquitectura del microservicio integrador",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 12,
+      "topic": "Tema 2: Integra seguridad JWT y observabilidad",
       "missingCode": false,
       "missingComments": true
     },

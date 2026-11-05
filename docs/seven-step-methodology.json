@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 47,
-      "prerequisites": 69,
-      "context": 47,
-      "theoryAnalogy": 47,
-      "guidedDemo": 47,
+      "objective": 46,
+      "prerequisites": 68,
+      "context": 46,
+      "theoryAnalogy": 46,
+      "guidedDemo": 46,
       "codeExplanation": 111,
-      "execution": 103,
+      "execution": 102,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 47,
-      "independentPractice": 47,
-      "closure": 47,
-      "commonErrors": 47,
-      "resources": 71,
-      "standaloneExample": 49,
-      "learningEvidence": 74,
-      "complete": 47
+      "guidedPractice": 46,
+      "independentPractice": 46,
+      "closure": 46,
+      "commonErrors": 46,
+      "resources": 70,
+      "standaloneExample": 48,
+      "learningEvidence": 73,
+      "complete": 46
     }
   },
   "topics": {
@@ -28807,28 +28807,28 @@
       },
       {
         "module": 12,
-        "topic": "Tema 2: Integrando seguridad, persistencia y observabilidad",
+        "topic": "Tema 2: Integra seguridad JWT y observabilidad",
         "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "objective": false,
+          "prerequisites": false,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
-          "execution": true,
+          "execution": false,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 3,
+          "complete": false
         }
       },
       {

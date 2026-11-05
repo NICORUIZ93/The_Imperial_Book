@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 249,
+    "topicsWithSignals": 250,
     "newLaboratories": 25
   },
   "priorities": {
@@ -12543,10 +12543,12 @@
     {
       "track": "spring-boot",
       "module": 12,
-      "title": "Tema 2: Integrando seguridad, persistencia y observabilidad",
+      "title": "Tema 2: Integra seguridad JWT y observabilidad",
       "file": "web/public/content/spring-boot/modulo-12.md",
       "line": 142,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -12556,7 +12558,7 @@
       "module": 12,
       "title": "Tema 3: Cierre del track y próximos pasos",
       "file": "web/public/content/spring-boot/modulo-12.md",
-      "line": 359,
+      "line": 267,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

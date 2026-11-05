@@ -93,10 +93,10 @@
     },
     "spring-boot": {
       "topics": 111,
-      "completeTopics": 49,
-      "topicsWith3to6Subtopics": 64,
-      "subtopics": 215,
-      "completeSubtopics": 170
+      "completeTopics": 50,
+      "topicsWith3to6Subtopics": 65,
+      "subtopics": 219,
+      "completeSubtopics": 174
     }
   },
   "topics": {
@@ -13457,10 +13457,67 @@
       },
       {
         "module": 12,
-        "topic": "### Tema 2: Integrando seguridad, persistencia y observabilidad",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "topic": "### Tema 2: Integra seguridad JWT y observabilidad",
+        "subtopicCount": 4,
+        "subtopics": [
+          {
+            "id": "12.2",
+            "title": "#### Subtema 12.2.1: Verifica un JWT firmado · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "12.2",
+            "title": "#### Subtema 12.2.2: Distingue identidad de permiso · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "12.2",
+            "title": "#### Subtema 12.2.3: Cuenta solo las entregas guardadas · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "12.2",
+            "title": "#### Subtema 12.2.4: Consulta la métrica sin abrirla a todos · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 12,

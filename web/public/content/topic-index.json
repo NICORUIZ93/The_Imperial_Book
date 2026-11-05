@@ -4880,8 +4880,8 @@
         "fragment": "tema-1-arquitectura-del-microservicio-integrador"
       },
       {
-        "title": "Integrando seguridad, persistencia y observabilidad",
-        "fragment": "tema-2-integrando-seguridad-persistencia-y-observabilidad"
+        "title": "Integra seguridad JWT y observabilidad",
+        "fragment": "tema-2-integra-seguridad-jwt-y-observabilidad"
       },
       {
         "title": "Cierre del track y próximos pasos",
