@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 59,
+      "objective": 55,
       "prerequisites": 75,
-      "context": 59,
-      "theoryAnalogy": 59,
-      "guidedDemo": 59,
+      "context": 55,
+      "theoryAnalogy": 55,
+      "guidedDemo": 55,
       "codeExplanation": 111,
-      "execution": 99,
+      "execution": 100,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 59,
-      "independentPractice": 59,
-      "closure": 59,
-      "commonErrors": 59,
-      "resources": 75,
-      "standaloneExample": 57,
-      "learningEvidence": 75,
-      "complete": 55
+      "guidedPractice": 55,
+      "independentPractice": 55,
+      "closure": 55,
+      "commonErrors": 55,
+      "resources": 73,
+      "standaloneExample": 53,
+      "learningEvidence": 76,
+      "complete": 51
     }
   },
   "topics": {
@@ -28477,7 +28477,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -28486,10 +28486,10 @@
           "commonErrors": false,
           "resources": true,
           "standaloneExample": false,
-          "learningEvidence": false
+          "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 5,
+          "stepsPassed": 7,
           "complete": false
         }
       },
@@ -28497,104 +28497,104 @@
         "module": 10,
         "topic": "Tema 5: HTTP Interfaces, deadlines y descubrimiento según el entorno",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
           "resources": true,
-          "standaloneExample": true,
+          "standaloneExample": false,
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 7,
+          "complete": false
         }
       },
       {
         "module": 10,
-        "topic": "Tema 6: Spring gRPC para comunicación interna de alta frecuencia (Spring Boot 4.1)",
+        "topic": "Tema 6: Spring gRPC, contrato HTTP/2 y evolución segura",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
           "resources": true,
-          "standaloneExample": true,
+          "standaloneExample": false,
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 7,
+          "complete": false
         }
       },
       {
         "module": 10,
         "topic": "Tema 7: DDD para decidir límites y propiedad de datos",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 6,
+          "complete": false
         }
       },
       {
         "module": 10,
-        "topic": "Tema 8: Orquestación de microservicios con Temporal y Spring Boot",
+        "topic": "Tema 8: Orquestar pedidos con Temporal y Spring Boot",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 6,
+          "complete": false
         }
       },
       {

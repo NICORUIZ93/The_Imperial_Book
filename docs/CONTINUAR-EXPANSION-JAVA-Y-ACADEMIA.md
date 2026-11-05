@@ -89,12 +89,13 @@ reapliques cambios que ya estén publicados.
 
 ## Estado global honesto
 
-En la auditoría actual: **135/1185 temas** cumplen la estructura atómica en los
-14 tracks: Java 101, Spring Boot 31, Node 2 y Flutter 1. La auditoría pedagógica detecta
-**1095/1185 temas practicables** y deuda en 90. La auditoría de sustancia registra
-409 temas con defectos, deuda histórica repartida entre varios tracks. Ninguna de
-estas cifras certifica que un curso esté completo o que todos los ejemplos se
-hayan ejecutado.
+En la auditoría actual: **145/1185 temas** cumplen la estructura atómica en los
+14 tracks: Java 101, Spring Boot 41, Node 2 y Flutter 1. La auditoría pedagógica
+detecta **1082/1185 temas practicables** y deuda en 103. La auditoría de siete
+pasos heredados marca 1026/1185; mide criterios distintos de la metodología nueva.
+La auditoría de sustancia registra 409 temas con defectos, deuda histórica repartida
+entre varios tracks. Ninguna cifra certifica que un curso esté completo o que
+se hayan ejecutado todos sus ejemplos.
 
 Prioridades indicadas por el usuario para continuar después de Java: Spring Boot,
 microservicios, Kafka, RabbitMQ, Flutter y Node.js. Mantén visibles los seis y
@@ -1151,9 +1152,44 @@ de sustancia. T7 añade señales de profundidad (242 temas totales según el
 detector), pero la cobertura atómica global no cambia. Los detectores no
 sustituyen revisión pedagógica humana.
 
-**Siguiente tema:** Spring Boot M10 T8, “Orquestación de microservicios con
-Temporal y Spring Boot”. Revisa desde cero compatibilidad real de Boot/starter,
-reintentos, recuperación y compensación contra documentación primaria. La
-lección actual contiene una cifra/versionado temporal y varios ejemplos largos;
-no asumas que siguen vigentes, y convierte la secuencia en práctica ejecutable
-por subtemas, con fallos observables y un commit por tema.
+Spring Boot M10 T8, “Orquestar pedidos con Temporal y Spring Boot”, se reescribió
+en cuatro subtemas prácticos. Se corrigió la versión de starter: Maven Central
+publica `temporal-spring-boot-starter:1.40.0`; la guía oficial cubre Boot 2, 3 y
+4. El código usa las anotaciones `@WorkflowImpl(workers = "pedidos")` y
+`@ActivityImpl(workers = "pedidos")` y configura el Worker con nombre y Task
+Queue en YAML. Auto-discovery por sí solo no crea la definición del Worker.
+
+Se añadió `examples/spring-temporal-rutaflow/` con Boot 4.1.2, Java 25, starter
+Temporal 1.40.0, pruebas Spring y `TestWorkflowEnvironment` en memoria. La suite
+completa pasó con **3 pruebas**: un fallo transitorio de cobro se recupera en el
+segundo intento; un cobro rechazado agota los tres intentos y libera repartidor
+e inventario en orden inverso; una notificación fallida después del cobro devuelve
+el pago y luego libera repartidor e inventario. Las dos pruebas de compensación
+también pasaron con el comando selectivo de la lección. Se cambió temporalmente
+`maximumAttempts` a 1; la prueba de retry falló como se esperaba, y se restauró a
+3. No se ejecutaron pagos reales, un Temporal Server con persistencia, reinicio
+de Workers ni pruebas de recuperación entre procesos. El README marca que
+`spring-boot:run` necesita un Temporal Server en `localhost:7233`.
+
+La lección ya explica que las compensaciones se registran después de confirmar
+cada efecto, antes del paso siguiente; y que actividades/compensaciones reales
+requieren claves idempotentes porque una respuesta perdida puede causar reintento.
+No se presenta Saga como rollback automático ni el servidor de pruebas en memoria
+como prueba de alta disponibilidad. Fuentes primarias: [Integración Spring Boot](https://docs.temporal.io/develop/java/integrations/spring-boot-integration),
+[pruebas Java](https://docs.temporal.io/develop/java/best-practices/testing-suite),
+[Workflows deterministas](https://docs.temporal.io/workflow-definition),
+[Saga](https://docs.temporal.io/design-patterns) y [versión 1.40.0](https://central.sonatype.com/artifact/io.temporal/temporal-spring-boot-starter).
+
+Tras regenerar índices e informes: **145/1185 temas atómicos**, **1082/1185
+practicables**, **1026/1185 completos en el detector de siete pasos** y 409 señales
+de defectos de sustancia. T8 añade señales de profundidad; el total sube a 243/1185.
+El validador integral detectó primero el temario prioritario de Spring Boot obsoleto;
+se regeneró con `python3 scripts/build_priority_temarios.py` y `./scripts/validate.sh`
+terminó después con código 0. Los detectores no certifican aprendizaje ni revisión
+pedagógica humana.
+
+**Siguiente tema:** Spring Boot M10 T9, “Spring Modulith para comprobar fronteras
+antes de separar servicios”. Revisa el ejemplo y la versión vigente de Modulith,
+crea una app/lab pequeño con verificación de límites y prueba de evento, y aclara
+qué comprueban los tests en proceso frente a integración desplegada. Mantén
+cuatro subtemas accionables y entrega este tema en un commit separado.

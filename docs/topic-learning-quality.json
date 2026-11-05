@@ -24181,7 +24181,7 @@
       },
       {
         "module": 10,
-        "topic": "Tema 8: Orquestación de microservicios con Temporal y Spring Boot",
+        "topic": "Tema 8: Orquestar pedidos con Temporal y Spring Boot",
         "criteria": {
           "explanation": true,
           "code": true,

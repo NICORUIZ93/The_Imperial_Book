@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 242,
+    "topicsWithSignals": 243,
     "newLaboratories": 25
   },
   "priorities": {
@@ -12426,10 +12426,12 @@
     {
       "track": "spring-boot",
       "module": 10,
-      "title": "Tema 8: Orquestación de microservicios con Temporal y Spring Boot",
+      "title": "Tema 8: Orquestar pedidos con Temporal y Spring Boot",
       "file": "web/public/content/spring-boot/modulo-10.md",
       "line": 946,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -12439,7 +12441,7 @@
       "module": 10,
       "title": "Tema 9: Spring Modulith para comprobar fronteras antes de separar servicios",
       "file": "web/public/content/spring-boot/modulo-10.md",
-      "line": 1253,
+      "line": 1104,
       "signals": [
         "ejemplo-breve-revisar-contexto",
         "clase-java-no-visible"
@@ -12453,7 +12455,7 @@
       "module": 10,
       "title": "Tema 10: Spring Cloud Bus para propagar cambios de configuración",
       "file": "web/public/content/spring-boot/modulo-10.md",
-      "line": 1303,
+      "line": 1154,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -12464,7 +12466,7 @@
       "module": 10,
       "title": "Tema 11: Micrometer Tracing entre servicios",
       "file": "web/public/content/spring-boot/modulo-10.md",
-      "line": 1357,
+      "line": 1208,
       "signals": [
         "ejemplo-breve-revisar-contexto",
         "clase-java-no-visible"
@@ -12478,7 +12480,7 @@
       "module": 10,
       "title": "Tema 12: Contract testing entre productor y consumidor",
       "file": "web/public/content/spring-boot/modulo-10.md",
-      "line": 1400,
+      "line": 1251,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

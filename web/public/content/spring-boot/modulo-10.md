@@ -943,310 +943,161 @@ Entrega los tests y una decisión explicada sobre qué módulo sería dueño de 
 
 **Fuentes:** [Fowler — Aggregate](https://martinfowler.com/bliki/DDD_Aggregate.html) y el laboratorio ejecutable enlazado arriba.
 
-### Tema 8: Orquestación de microservicios con Temporal y Spring Boot
+### Tema 8: Orquestar pedidos con Temporal y Spring Boot
 
-#### Paso 1 · Objetivo y preparación
+**Objetivo observable:** ejecutar un Workflow que reserva inventario, asigna repartidor, cobra y notifica; comprobar reintentos limitados y compensaciones en orden inverso ante un fallo final.
 
-Al finalizar podrás orquestar una transacción distribuida que cruza varios microservicios (aceptar un pedido, asignar un repartidor, cobrar y notificar) con un **Workflow de Temporal**, de forma que el proceso sobreviva a caídas y reinicios, reintente automáticamente los pasos que fallan de forma transitoria, y **compense** (deshaga) los pasos ya completados si uno posterior falla de forma definitiva, todo confirmado con el servidor de pruebas embebido de Temporal.
+**¿Por qué es importante?** Si un pedido cruza inventario, asignación y pagos, una caída a mitad puede dejar recursos o dinero en un estado incorrecto. Temporal conserva el proceso y permite definir reintentos y acciones de compensación observables.
 
-**Conocimiento previo:** Tema 3 de este módulo (circuit breaker con Resilience4j); el patrón Saga del track se introduce aquí de forma ejecutable. Nociones de microservicios que se comunican por red (Temas 1-7).
+**Prerrequisitos:** clases e interfaces Java, excepciones, pruebas JUnit y beans de Spring. La Saga distribuida retoma el concepto del track; aquí se ejecuta en código.
 
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** En RutaFlow, aceptar un pedido dispara una secuencia que toca varios servicios: reservar inventario, asignar un repartidor, cobrar al cliente y notificar. Si el cobro falla **después** de haber reservado inventario y asignado repartidor, no puedes dejar el sistema a medias: hay que deshacer lo hecho. Coordinar esto con llamadas HTTP y bases de datos sueltas lleva a estados inconsistentes cuando un servicio se cae a mitad del proceso. Temporal resuelve esto ejecutando la orquestación como un **workflow duradero**: si el proceso (o la máquina) se cae en el paso 3, al reiniciar Temporal lo retoma exactamente donde estaba, sin repetir los pasos ya completados.
-
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** Workflow (orquestador duradero), Activity (paso con efecto externo que puede fallar), reintentos automáticos, Saga y compensación.
-
-Temporal separa dos cosas: el **Workflow** es código de orquestación determinista que decide el orden de los pasos y sobrevive a fallos porque Temporal registra cada decisión en un historial reproducible; las **Activities** son los pasos que tocan el mundo exterior (una API, una base de datos, un cobro) y que, por eso, pueden fallar. El Workflow invoca Activities a través de un *stub* con `RetryOptions`: Temporal reintenta automáticamente una Activity que falla de forma transitoria, sin que tú escribas el bucle de retry. Para deshacer efectos ya aplicados cuando un paso posterior falla, el Workflow usa la clase `Saga`: antes de ejecutar cada Activity, registra su **compensación**; si algo falla, llama a `saga.compensate()` y Temporal ejecuta las compensaciones en orden inverso.
-
-**Analogía:** el Workflow es el director de orquesta que lleva la partitura y recuerda en qué compás va, aunque se apaguen las luces a mitad del concierto; las Activities son los músicos, que pueden equivocarse en una nota (y el director les hace repetir). La Saga es el plan de "si el final sale mal, deshacemos de atrás hacia adelante": primero devolvemos el cobro, luego liberamos el repartidor, luego liberamos el inventario — el orden inverso al que se reservaron.
-
-**Diagrama:**
+**Evidencia del tema:** tres pruebas del [laboratorio de Temporal](../../../../examples/spring-temporal-rutaflow/): un fallo temporal que se recupera, un cobro rechazado tras agotar intentos y una notificación fallida después del cobro.
 
 ```mermaid
-flowchart TD
-  S[Workflow: procesarPedido] --> A1[Activity: reservar inventario]
-  A1 --> A2[Activity: asignar repartidor]
-  A2 --> A3[Activity: cobrar al cliente]
-  A3 --> A4[Activity: notificar]
-  A3 -.falla definitiva.-> C[saga.compensate]
-  C -.orden inverso.-> R3[liberar repartidor] --> R1[liberar inventario]
+sequenceDiagram
+  participant W as Workflow pedido
+  participant T as Temporal Service
+  participant A as Activities
+  W->>T: inicia procesar(pedidoId)
+  W->>A: reservar y asignar
+  A-->>T: resultados registrados
+  W->>A: cobrar (hasta 3 intentos)
+  alt cobro rechazado
+    W->>A: liberar repartidor y luego inventario
+  else cobro confirmado
+    W->>A: notificar
+    alt notificación falla
+      W->>A: devolver cobro, liberar repartidor e inventario
+    end
+  end
 ```
 
-**Diagrama interactivo:** [Orquestación de pedido con Temporal y compensación Saga](/visuals/temas/spring-boot/modulo-10-tema-8-temporal-saga.html) — versión explorable con temas claro/oscuro y el camino de compensación resaltado.
+#### Subtema 8.1: Separa el plan de los efectos · 10 min
 
-#### Paso 4 · Demostración guiada desde cero
+**1. Contexto**
 
-Genera un proyecto Spring Boot y añade el starter oficial de Temporal. La versión estable en Maven Central al momento de escribir es `1.39.x` (la documentación muestra ejemplos con `1.31.0`); fija la que confirmes vigente en [Maven Central](https://central.sonatype.com/artifact/io.temporal/temporal-spring-boot-starter).
+Un Workflow conserva el orden del proceso. Una Activity realiza una tarea que puede tocar otro servicio, base de datos o proveedor de pagos. El Workflow debe ser determinista: no pongas dentro del plan llamadas HTTP, `Thread.sleep`, reloj del sistema ni estado mutable global.
+
+**2. Hazlo tú**
+
+Desde `examples/spring-temporal-rutaflow/`, abre `src/main/java/academia/rutaflow/temporal/PedidoWorkflow.java` y `PedidoActivities.java`. Ejecuta:
 
 ```bash
-mkdir demo-temporal && cd demo-temporal
-# Maven (type=maven-project) o Gradle (type=gradle-project-kotlin)
-curl -fsSL "https://start.spring.io/starter.zip?type=maven-project&dependencies=web&javaVersion=25&groupId=io.academia&artifactId=orquestador&packageName=io.academia.orquestador" -o app.zip
-unzip -o app.zip
+./mvnw -q -DskipTests package
 ```
 
-Añade la dependencia del starter de Temporal:
+Revisa el contrato: `PedidoWorkflow.procesar` devuelve el resultado de negocio; cada operación externa está declarada en `PedidoActivities`.
 
-```xml
-<!-- pom.xml (Maven) -->
-<dependency>
-  <groupId>io.temporal</groupId>
-  <artifactId>temporal-spring-boot-starter</artifactId>
-  <version>1.39.0</version>
-</dependency>
-```
-```kotlin
-// build.gradle.kts (Gradle, equivalente)
-implementation("io.temporal:temporal-spring-boot-starter:1.39.0")
-```
+**Resultado esperado:** Maven termina con código 0 y compila ambos contratos.
 
-Define el **contrato de las Activities** (los pasos con efecto externo) y el **Workflow** (la orquestación):
+**Fallo deliberado:** en `PedidoActivities.java`, cambia la declaración por `void reservarInventario(String pedidoId);` sin actualizar su implementación. El compilador debe señalar que la implementación ya no cumple la interfaz. Diagnóstico: la interfaz es el contrato entre el plan y el código que ejecuta el efecto.
 
-```java
-// src/main/java/io/academia/orquestador/PedidoActivities.java
-package io.academia.orquestador;
+**3. Entiende**
 
-import io.temporal.activity.ActivityInterface;
+Temporal registra el historial de decisiones y resultados de Activities. Si un Worker reinicia, el servicio de Temporal puede reproducir el Workflow a partir del historial. Eso no guarda por arte de magia la base de datos de cada servicio: la durabilidad requiere un Temporal Service operativo y los efectos externos requieren sus propias garantías.
 
-@ActivityInterface
-public interface PedidoActivities {
-    String reservarInventario(String pedidoId);
-    void liberarInventario(String pedidoId);      // compensación
-    String asignarRepartidor(String pedidoId);
-    void liberarRepartidor(String repartidorId);  // compensación
-    void cobrar(String pedidoId, long centavos);
-    void notificar(String pedidoId, String mensaje);
-}
-```
+**4. Cierra**
 
-```java
-// src/main/java/io/academia/orquestador/PedidoWorkflow.java
-package io.academia.orquestador;
+Señala qué llamadas del proceso RutaFlow deben ser Activities y cuál es la decisión de orden que pertenece al Workflow.
 
-import io.temporal.workflow.WorkflowInterface;
-import io.temporal.workflow.WorkflowMethod;
+#### Subtema 8.2: Registra Workers y código Spring · 10 min
 
-@WorkflowInterface
-public interface PedidoWorkflow {
-    @WorkflowMethod
-    String procesar(String pedidoId, long centavos);
-}
-```
+**1. Contexto**
 
-```java
-// src/main/java/io/academia/orquestador/PedidoWorkflowImpl.java
-package io.academia.orquestador;
+Una Task Queue es la cola lógica donde Temporal entrega trabajo. En esta integración, `workers` en las anotaciones identifica el nombre del Worker configurado; el `task-queue` del YAML determina qué cola atiende.
 
-import io.temporal.activity.ActivityOptions;
-import io.temporal.common.RetryOptions;
-import io.temporal.spring.boot.WorkflowImpl;
-import io.temporal.workflow.Saga;
-import io.temporal.workflow.Workflow;
+**2. Hazlo tú**
 
-import java.time.Duration;
-
-@WorkflowImpl(taskQueues = "pedidos")
-public class PedidoWorkflowImpl implements PedidoWorkflow {
-
-    // Stub de Activities con reintentos automáticos ante fallos transitorios.
-    private final PedidoActivities actividades = Workflow.newActivityStub(
-        PedidoActivities.class,
-        ActivityOptions.newBuilder()
-            .setStartToCloseTimeout(Duration.ofSeconds(10))
-            .setRetryOptions(RetryOptions.newBuilder()
-                .setInitialInterval(Duration.ofMillis(200))
-                .setMaximumAttempts(3)      // reintenta hasta 3 veces
-                .build())
-            .build());
-
-    @Override
-    public String procesar(String pedidoId, long centavos) {
-        // Compensación en orden inverso si algo falla después.
-        Saga saga = new Saga(new Saga.Options.Builder().build());
-        try {
-            // 1. Reservar inventario; registra su compensación ANTES de ejecutar el siguiente paso.
-            String reserva = actividades.reservarInventario(pedidoId);
-            saga.addCompensation(() -> actividades.liberarInventario(pedidoId));
-
-            // 2. Asignar repartidor.
-            String repartidor = actividades.asignarRepartidor(pedidoId);
-            saga.addCompensation(() -> actividades.liberarRepartidor(repartidor));
-
-            // 3. Cobrar (si falla definitivamente tras sus reintentos, dispara la compensación).
-            actividades.cobrar(pedidoId, centavos);
-
-            // 4. Notificar.
-            actividades.notificar(pedidoId, "Pedido confirmado");
-            return "CONFIRMADO reserva=" + reserva + " repartidor=" + repartidor;
-        } catch (Exception falla) {
-            // Deshace inventario y repartidor en orden inverso al que se aplicaron.
-            saga.compensate();
-            throw Workflow.wrap(falla);
-        }
-    }
-}
-```
-
-Implementa las Activities como un bean de Spring (anotado para auto-discovery del Worker):
-
-```java
-// src/main/java/io/academia/orquestador/PedidoActivitiesImpl.java
-package io.academia.orquestador;
-
-import io.temporal.spring.boot.ActivityImpl;
-import org.springframework.stereotype.Component;
-
-@Component
-@ActivityImpl(taskQueues = "pedidos")
-public class PedidoActivitiesImpl implements PedidoActivities {
-    public String reservarInventario(String p) { return "INV-" + p; }
-    public void liberarInventario(String p) { /* revierte la reserva */ }
-    public String asignarRepartidor(String p) { return "REP-" + p; }
-    public void liberarRepartidor(String r) { /* libera al repartidor */ }
-    public void cobrar(String p, long c) { /* cobra; lanza excepción si falla */ }
-    public void notificar(String p, String m) { /* envía notificación */ }
-}
-```
-
-Configura la conexión y el Worker en `application.yml` (auto-discovery del paquete):
+Revisa `PedidoWorkflowImpl.java`, `PedidoActivitiesImpl.java` y `src/main/resources/application.yml`. La configuración ejecutable del Worker es:
 
 ```yaml
-# src/main/resources/application.yml
 spring:
   temporal:
     connection:
-      target: local          # servidor Temporal local (temporal server start-dev)
+      target: local
     workers-auto-discovery:
       packages:
-        - io.academia.orquestador
+        - academia.rutaflow.temporal
+    workers:
+      - name: pedidos
+        task-queue: pedidos
 ```
 
-Para probarlo **sin instalar un servidor Temporal**, usa el servidor de pruebas embebido que trae el starter:
+Las implementaciones marcan el mismo Worker, `@WorkflowImpl(workers = "pedidos")` y `@ActivityImpl(workers = "pedidos")`; la Activity es además un bean `@Component`. Para correr la aplicación completa necesitas un Temporal Server en `localhost:7233`.
 
-```yaml
-# src/test/resources/application.yml
-spring:
-  temporal:
-    test-server:
-      enabled: true          # TestWorkflowEnvironment en memoria; ignora 'connection'
-    workers-auto-discovery:
-      packages:
-        - io.academia.orquestador
-```
+**Resultado esperado:** al iniciar el Worker aparecen registros del Workflow y las Activities en la cola `pedidos`.
 
-```java
-// src/test/java/io/academia/orquestador/PedidoWorkflowTest.java
-package io.academia.orquestador;
+**Fallo deliberado:** quita `workers` del YAML y ejecuta `./mvnw test`. Spring indica que no encuentra el Worker llamado `pedidos`. **Diagnóstico:** la anotación referencia un nombre que debe estar definido como Worker; restaura la configuración y vuelve a ejecutar.
 
-import io.temporal.client.WorkflowClient;
-import io.temporal.client.WorkflowOptions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
+**3. Entiende**
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+Auto-discovery encuentra implementaciones dentro de los paquetes indicados; las anotaciones las relacionan con un Worker. Auto-discovery no crea el servidor de Temporal ni sustituye la definición de su cola.
 
-@SpringBootTest(classes = PedidoWorkflowTest.Configuracion.class)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class PedidoWorkflowTest {
+**4. Cierra**
 
-    @Autowired ConfigurableApplicationContext contexto;
-    @Autowired WorkflowClient cliente;
+Escribe en una línea qué valor debe coincidir entre anotaciones y `name`, y qué valor configura la cola que escucha.
 
-    @BeforeEach
-    void iniciar() { contexto.start(); }
+#### Subtema 8.3: Reintenta un error transitorio · 10 min
 
-    @Test
-    void elPedidoSeProcesaDePuntaAPunta() {
-        PedidoWorkflow wf = cliente.newWorkflowStub(
-            PedidoWorkflow.class,
-            WorkflowOptions.newBuilder().setTaskQueue("pedidos").build());
-        String resultado = wf.procesar("RF-1001", 25_000);
-        assertTrue(resultado.startsWith("CONFIRMADO"));
-    }
+**1. Contexto**
 
-    @ComponentScan // descubre los beans de Activities anotados con @Component
-    static class Configuracion {}
-}
-```
+Una API puede fallar temporalmente por red o límite de uso. Temporal puede reintentar una Activity con una política acotada; `maximumAttempts(3)` significa tres intentos totales, incluido el primero.
 
-Ejecuta las pruebas:
+**2. Hazlo tú**
+
+En `PedidoWorkflowImpl.java` observa `RetryOptions` y en `PedidoWorkflowTest.java` ejecuta solo la prueba de retry:
 
 ```bash
-mvn test -Dtest=PedidoWorkflowTest           # Maven
-./gradlew test --tests PedidoWorkflowTest    # Gradle (equivalente)
+./mvnw -q -Dtest='PedidoWorkflowTest#retriesTransientFailureAndCompletes' test
 ```
 
-**Resultado esperado:** el test pasa en verde contra el servidor de pruebas embebido de Temporal (en memoria, sin instalar nada): el Workflow ejecuta los cuatro pasos en orden y devuelve `CONFIRMADO ...`. **Fallo deliberado y diagnóstico:** en `PedidoActivitiesImpl.cobrar(...)` lanza siempre una excepción (`throw new RuntimeException("tarjeta rechazada");`). Vuelve a ejecutar el test: tras agotar los 3 reintentos de la Activity `cobrar`, el Workflow entra al `catch`, llama a `saga.compensate()` y ejecuta `liberarRepartidor` y `liberarInventario` **en orden inverso**. Diagnostica confirmando que el estado no queda a medias: lo que se reservó se libera. Es exactamente la garantía que una secuencia de llamadas HTTP sueltas no te da cuando el proceso se cae a mitad de camino.
+`ActivityRecorder` hace fallar el primer cobro y deja pasar el segundo.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**Resultado esperado:** la respuesta comienza con `CONFIRMADO`, el cobro ocurre dos veces y la notificación se ejecuta; no hay compensaciones.
 
-1. Cambia `setMaximumAttempts(3)` a `1` en el stub de Activities y confirma que `cobrar`, al fallar, ya no reintenta: la compensación se dispara al primer fallo.
-2. Añade una quinta Activity (`emitirFactura`) después del cobro, con su compensación (`anularFactura`), y confirma que si `notificar` falla, se anulan factura, cobro, repartidor e inventario en orden inverso.
-3. Haz que `reservarInventario` falle las dos primeras veces y tenga éxito a la tercera (un contador), y confirma con el test que el reintento automático de Temporal lleva el Workflow a éxito sin compensar.
-4. Escribe de memoria (sin mirar) el esqueleto de un `@WorkflowMethod` que registre una compensación con `saga.addCompensation(...)` antes de cada Activity.
+**Fallo deliberado:** cambia `setMaximumAttempts(3)` por `setMaximumAttempts(1)` y repite la prueba. Fallará porque se esperaba que el segundo intento completara el pago. **Diagnóstico:** inspecciona el resultado de `retriesTransientFailureAndCompletes`; el cobro terminó en el primer fallo al no quedar intentos disponibles. Restaura el límite de tres intentos.
 
-**Pista:** registra siempre la compensación **antes** de llamar a la Activity que compensa. Si la registras después y la Activity falla, esa línea nunca se ejecuta y la compensación nunca queda registrada.
+**3. Entiende**
 
-#### Paso 6 · Práctica independiente
+El límite evita reintentos infinitos, pero no garantiza que repetir un cobro sea seguro. Una Activity puede haber cobrado y perder la respuesta; el siguiente intento no sabe por sí solo si ocurrió el efecto. Envía una clave idempotente, por ejemplo `pedidoId`, al proveedor y consulta su resultado antes de repetir.
 
-**Completa el código:** rellena el espacio para que la compensación del repartidor quede registrada antes del cobro:
+**4. Cierra**
 
-```java
-String repartidor = actividades.asignarRepartidor(pedidoId);
-saga.____(() -> actividades.liberarRepartidor(repartidor));
-actividades.cobrar(pedidoId, centavos);
+Anota el número de intentos observado y una clave que haría idempotente una llamada real a pagos.
+
+#### Subtema 8.4: Compensa solo lo que ya ocurrió · 15 min
+
+**1. Contexto**
+
+Una Saga no revierte automáticamente servicios externos. Cada compensación es una operación de negocio explícita, que también puede fallar y debe admitir repetición segura.
+
+**2. Hazlo tú**
+
+En `PedidoWorkflowImpl.java`, observa el orden: tras cada Activity exitosa se registra su compensación. Ejecuta las dos pruebas de fallo:
+
+```bash
+./mvnw -q -Dtest='PedidoWorkflowTest#permanentChargeFailureCompensatesInReverseOrder+notificationFailureAlsoRefundsTheSuccessfulCharge' test
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `PedidoWorkflowImpl` con tres Activities, cada una con su compensación registrada antes de ejecutarse, y un `catch` que llame a `saga.compensate()`. Compara después contra el patrón del Paso 4.
+La primera rechaza todos los intentos de cobro. La segunda permite cobrar pero hace fallar la notificación.
 
-#### Paso 7 · Cierre y evidencia
+**Resultado esperado:** si el cobro no termina, se libera repartidor y luego inventario. Si falla la notificación tras cobrar, se devuelve el cobro, se libera repartidor y se libera inventario. Las verificaciones comparan el orden real registrado.
 
-Ya orquestas una transacción distribuida con un Workflow duradero de Temporal: reintentos automáticos ante fallos transitorios y compensación (Saga) en orden inverso ante un fallo definitivo, confirmado con el servidor de pruebas embebido. Esto es la evolución del circuit breaker (Tema 3): el breaker protege una llamada; Temporal coordina toda la transacción de principio a fin y garantiza que no quede a medias. **Evidencia:** entrega el test en verde del flujo completo, y el resultado del fallo deliberado mostrando las compensaciones ejecutadas en orden inverso tras agotar los reintentos. Fuentes oficiales: [Temporal — Spring Boot integration](https://docs.temporal.io/develop/java/spring-boot-integration), [Temporal — Workflow basics (Java)](https://docs.temporal.io/develop/java/workflows/basics) y [Temporal — Saga pattern](https://docs.temporal.io/design-patterns/saga-pattern).
+**Fallo deliberado:** mueve `saga.addCompensation(activities::devolverCobro, pedidoId, centavos)` antes de `cobrar`. Repite la prueba de cobro rechazado: verás que intentaría devolver un pago que nunca ocurrió. **Diagnóstico:** compara los eventos `cobrar` y `devolver-cobro` de la aserción; restaura el registro después del cobro exitoso.
 
-**Errores comunes:** registrar la compensación después de la Activity (nunca se registra si la Activity falla); meter efectos externos (llamadas HTTP, escrituras a BD) directamente en el Workflow en vez de dentro de una Activity (el código del Workflow debe ser determinista y reproducible); usar `Thread.sleep` o `System.currentTimeMillis()` dentro del Workflow en vez de `Workflow.sleep` y `Workflow.currentTimeMillis()`.
+**3. Entiende**
 
-**Cuándo no usarlo:** para una operación local de un solo servicio que cabe en una transacción `@Transactional` de base de datos (Módulo 17), Temporal es sobreingeniería; su valor aparece cuando la transacción cruza varios servicios o sistemas externos, dura minutos u horas, o debe sobrevivir a caídas del proceso. La diferencia frente a Kafka/outbox (Módulo 8): la mensajería coordina eventos desacoplados; Temporal orquesta un proceso con estado, pasos ordenados y compensación explícita.
+Se registra la compensación después de confirmar el efecto, antes del paso siguiente. Si una Activity produce un efecto externo y su respuesta se pierde, el Workflow puede reintentarla; por eso la operación original y su compensación deben usar identificadores idempotentes. La prueba usa el servidor de Temporal en memoria: valida el Workflow y el Worker, no tolerancia a caída del servidor ni llamadas reales de pago.
 
-La orquestación con Temporal es el patrón que coordina la transacción distribuida del proyecto integrador de este track cuando una operación de negocio cruza varios servicios (microservicio productivo, Módulo 12).
+**4. Cierra**
 
----
+Ejecuta toda la suite con `./mvnw -q clean test`. Entrega el código de salida y explica qué quedó compensado en cada escenario. Para producción, documenta cómo confirmar el estado del cobro y hacer idempotentes tanto el cargo como el reembolso.
 
-## Laboratorio práctico
+**Proyecto integrador RutaFlow:** adapta el Workflow para cancelar un pedido antes del cobro. Cambia `PedidoWorkflowImpl.java`, añade el estado observable en `ActivityRecorder.java` y una prueba en `PedidoWorkflowTest.java`; verifica que al cancelar no se ejecute el cobro y se liberen solo los recursos ya reservados.
 
-**Objetivo del laboratorio:** construir dos microservicios Spring Boot comunicándose vía gateway con circuit breaker.
+**Fuentes:** [Integración oficial de Temporal con Spring Boot](https://docs.temporal.io/develop/java/integrations/spring-boot-integration), [pruebas del SDK Java](https://docs.temporal.io/develop/java/best-practices/testing-suite), [definición determinista de Workflows](https://docs.temporal.io/workflow-definition) y [patrones de diseño, incluida Saga](https://docs.temporal.io/design-patterns). Versión fijada del starter: `1.40.0`, contrastada con [Maven Central](https://central.sonatype.com/artifact/io.temporal/temporal-spring-boot-starter).
 
-**Requisitos previos:** Módulos 0-9 completados.
-
-| Paso | Acción | Código | Explicación |
-|---|---|---|---|
-| 1 | Levantar dos microservicios que se comuniquen por HTTP | — | Verifica la comunicación básica |
-| 2 | Registrar ambos en Eureka | Ver Tema 1 | Descubrimiento por nombre, no URL fija |
-| 3 | Configurar Spring Cloud Gateway | Ver Tema 2 | Punto de entrada único |
-| 4 | Agregar un circuit breaker con Resilience4j | Ver Tema 3 | Simula un fallo y observa el fallback |
-| 5 | Proteger gateway y API con Keycloak | Ver Tema 4 | Distingue 401, 403, scope y propiedad |
-| 6 | Implementar un cliente HTTP declarativo | Ver Tema 5 | Inyecta latencia y respeta el deadline total |
-| 7 | Ejecutar en Kubernetes local | Ver Tema 5 | Compara DNS nativo con la necesidad real de Eureka |
-| 8 | Exponer y consumir un servicio con Spring gRPC | Ver Tema 6 | Contrato `.proto`, stub generado y evolución segura de campos |
-| 9 | Definir contextos y datos propietarios | Ver Tema 7 | Implementa una invariante sin infraestructura y publica un contrato mínimo |
-
-**Verificación:** el laboratorio se considera exitoso si el gateway enruta correctamente hacia ambos microservicios según la ruta solicitada, si el circuit breaker efectivamente invoca el fallback tras simular fallos repetidos del servicio dependiente, y si el cliente gRPC recibe la respuesta esperada del contrato `.proto` compilado.
-
-**Errores comunes y soluciones**
-
-- **Codificar URLs fijas entre microservicios.** Usa service discovery para resolver por nombre lógico.
-- **No configurar un circuit breaker para llamadas entre servicios.** Sin él, un servicio caído puede arrastrar en cascada a sus dependientes.
-- **Confiar toda la seguridad al gateway.** Autentica en el borde, pero cada servicio protegido valida la credencial y autoriza el recurso que posee.
-- **Acumular retries en todas las capas.** Define un único presupuesto y reintenta solamente operaciones seguras; mide la amplificación resultante.
-- **Reusar el número de un campo `.proto` eliminado.** Márcalo `reserved` para evitar que un cliente viejo interprete mal un campo nuevo.
-- **Dividir servicios por entidades o compartir su base de datos.** Separa por capacidades y reglas; un único servicio es dueño de cada dato y publica contratos.
+**Cuándo usarlo:** un proceso largo con estado, pasos coordinados o compensaciones explícitas. Para una operación local de una base de datos, una transacción puede bastar. Kafka entrega eventos y desacopla consumidores; Temporal conduce el estado y el orden de un proceso. Pueden convivir. El laboratorio no implementa una pasarela de pagos ni prueba despliegue de varios servicios.
 
 ---
 

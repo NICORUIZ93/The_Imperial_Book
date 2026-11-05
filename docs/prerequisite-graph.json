@@ -4621,7 +4621,7 @@
       "track": "spring-boot",
       "module": 10,
       "position": 8,
-      "title": "Orquestación de microservicios con Temporal y Spring Boot",
+      "title": "Orquestar pedidos con Temporal y Spring Boot",
       "file": "web/public/content/spring-boot/modulo-10.md",
       "requires": [
         "spring-boot:10:7"

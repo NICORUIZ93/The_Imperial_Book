@@ -4840,8 +4840,8 @@
         "fragment": "tema-7-ddd-para-decidir-limites-y-propiedad-de-datos"
       },
       {
-        "title": "Orquestación de microservicios con Temporal y Spring Boot",
-        "fragment": "tema-8-orquestacion-de-microservicios-con-temporal-y-spring-boot"
+        "title": "Orquestar pedidos con Temporal y Spring Boot",
+        "fragment": "tema-8-orquestar-pedidos-con-temporal-y-spring-boot"
       },
       {
         "title": "Spring Modulith para comprobar fronteras antes de separar servicios",

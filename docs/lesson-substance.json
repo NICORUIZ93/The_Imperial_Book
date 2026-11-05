@@ -1692,7 +1692,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "6fee9fc87ee9d073a61eaac4ceabd13f1d90360930161bdc99e1b494b14cb84d",
+    "fingerprint": "cbc1e4fb31e56478182248125bf9089cd7839dd647356b203e27e02710491e87",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10362,9 +10362,9 @@
       {
         "issues": [],
         "module": 10,
-        "tailWords": 292,
-        "topic": "Tema 8: Orquestación de microservicios con Temporal y Spring Boot",
-        "words": 1951
+        "tailWords": 0,
+        "topic": "Tema 8: Orquestar pedidos con Temporal y Spring Boot",
+        "words": 1328
       },
       {
         "issues": [],
