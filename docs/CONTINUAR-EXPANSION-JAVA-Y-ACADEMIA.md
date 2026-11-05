@@ -1130,3 +1130,30 @@ lección actual tiene pasos heredados de siete partes. Implementa el formato
 atómico con invariante ejecutable, decisión de límites, fallo diagnosticable y
 casos donde no conviene extraer un servicio. Mantén DDD separado de la mera
 división por tablas y publica T7 en commit propio.
+
+
+Spring Boot M10 T7, “DDD para decidir límites y propiedad de datos”, se
+reescribió en cuatro subtemas con Contexto, Hazlo tú, Entiende y Cierra. Se
+añadió `examples/spring-ddd-rutaflow/`, un agregado Java sin framework que
+protege la regla “jornada cerrada no acepta posiciones”. La lista de posiciones
+se devuelve como copia inmutable; el texto aclara que el diagrama de contextos
+es conceptual y que el laboratorio no implementa mensajería ni persistencia.
+
+`./mvnw -q clean test` pasó con **3 pruebas**: jornada cerrada, jornada abierta
+y lista inmutable. Al quitar temporalmente la comprobación de estado,
+`unaJornadaCerradaRechazaNuevasPosiciones` falló al no observar la excepción;
+restaurada la regla, la suite completa volvió a pasar. `./scripts/validate.sh`
+se ejecutó después de regenerar índices y reportes.
+
+Cobertura estructural actual: **144/1185 temas atómicos**, **1082/1185
+practicables**, **1030/1185 completos en siete pasos** y 409 señales de defecto
+de sustancia. T7 añade señales de profundidad (242 temas totales según el
+detector), pero la cobertura atómica global no cambia. Los detectores no
+sustituyen revisión pedagógica humana.
+
+**Siguiente tema:** Spring Boot M10 T8, “Orquestación de microservicios con
+Temporal y Spring Boot”. Revisa desde cero compatibilidad real de Boot/starter,
+reintentos, recuperación y compensación contra documentación primaria. La
+lección actual contiene una cifra/versionado temporal y varios ejemplos largos;
+no asumas que siguen vigentes, y convierte la secuencia en práctica ejecutable
+por subtemas, con fallos observables y un commit por tema.

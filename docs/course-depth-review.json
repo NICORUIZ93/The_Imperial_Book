@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 241,
+    "topicsWithSignals": 242,
     "newLaboratories": 25
   },
   "priorities": {
@@ -12416,7 +12416,9 @@
       "title": "Tema 7: DDD para decidir límites y propiedad de datos",
       "file": "web/public/content/spring-boot/modulo-10.md",
       "line": 824,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -12426,7 +12428,7 @@
       "module": 10,
       "title": "Tema 8: Orquestación de microservicios con Temporal y Spring Boot",
       "file": "web/public/content/spring-boot/modulo-10.md",
-      "line": 981,
+      "line": 946,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -12437,7 +12439,7 @@
       "module": 10,
       "title": "Tema 9: Spring Modulith para comprobar fronteras antes de separar servicios",
       "file": "web/public/content/spring-boot/modulo-10.md",
-      "line": 1288,
+      "line": 1253,
       "signals": [
         "ejemplo-breve-revisar-contexto",
         "clase-java-no-visible"
@@ -12451,7 +12453,7 @@
       "module": 10,
       "title": "Tema 10: Spring Cloud Bus para propagar cambios de configuración",
       "file": "web/public/content/spring-boot/modulo-10.md",
-      "line": 1338,
+      "line": 1303,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -12462,7 +12464,7 @@
       "module": 10,
       "title": "Tema 11: Micrometer Tracing entre servicios",
       "file": "web/public/content/spring-boot/modulo-10.md",
-      "line": 1392,
+      "line": 1357,
       "signals": [
         "ejemplo-breve-revisar-contexto",
         "clase-java-no-visible"
@@ -12476,7 +12478,7 @@
       "module": 10,
       "title": "Tema 12: Contract testing entre productor y consumidor",
       "file": "web/public/content/spring-boot/modulo-10.md",
-      "line": 1435,
+      "line": 1400,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

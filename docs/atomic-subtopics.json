@@ -94,8 +94,8 @@
     "spring-boot": {
       "topics": 111,
       "completeTopics": 40,
-      "topicsWith3to6Subtopics": 54,
-      "subtopics": 175,
+      "topicsWith3to6Subtopics": 55,
+      "subtopics": 179,
       "completeSubtopics": 134
     }
   },
@@ -12818,8 +12818,65 @@
       {
         "module": 10,
         "topic": "### Tema 7: DDD para decidir límites y propiedad de datos",
-        "subtopicCount": 0,
-        "subtopics": [],
+        "subtopicCount": 4,
+        "subtopics": [
+          {
+            "id": "7.1",
+            "title": "#### Subtema 7.1: Encuentra quién es dueño de la regla · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "7.2",
+            "title": "#### Subtema 7.2: Prueba la invariante sin infraestructura · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "7.3",
+            "title": "#### Subtema 7.3: Evita compartir almacenamiento entre contextos · 5 min",
+            "criteria": {
+              "context": true,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "7.4",
+            "title": "#### Subtema 7.4: Decide si separar el despliegue · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": false
+          }
+        ],
         "complete": false
       },
       {

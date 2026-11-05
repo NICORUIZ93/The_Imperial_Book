@@ -823,160 +823,125 @@ Entrega `./mvnw -q clean test` en verde y una propuesta de evolución con `reser
 **Fuentes oficiales:** [Spring Boot gRPC 4.1](https://docs.spring.io/spring-boot/reference/io/grpc.html), [Spring gRPC](https://docs.spring.io/spring-grpc/reference/) y [Protocol Buffers: evolución de mensajes](https://protobuf.dev/programming-guides/proto3/#updating).
 ### Tema 7: DDD para decidir límites y propiedad de datos
 
-#### Paso 1 · Objetivo y preparación
+**Duración:** 35 min. **Prerrequisito:** Módulo 3 de este track (entidades y JPA). **Meta observable:** protege una regla de negocio dentro de un agregado y explica qué contexto es dueño de esos datos.
 
-Al finalizar podrás formalizar en un test JUnit real una invariante de dominio (una jornada cerrada rechaza nuevas posiciones), demostrando que la propiedad de una regla de negocio vive en un agregado del contexto correcto, no dispersa entre servicios.
+**¿Por qué es importante?** Separar tablas en servicios antes de entender el negocio produce llamadas circulares y cambios coordinados. Primero aclara las reglas y la propiedad; luego decide si realmente necesitas desplegar los módulos por separado.
 
-**Conocimiento previo:** Módulo 3 de este track (JPA y entidades).
-
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** Spring Cloud resuelve problemas de coordinación entre servicios; no corrige una separación de dominio equivocada. Distribuir primero y descubrir después los límites produce transacciones imposibles, llamadas circulares y cambios coordinados entre equipos.
-
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** contexto delimitado, agregado, invariante, propiedad de datos.
-
-Un microservicio no es una capa técnica ni una tabla aislada. En un sistema de logística, `Journey` pertenece al contexto **Operación de entregas** porque allí viven reglas como «una jornada cerrada no acepta nuevas posiciones». Un **contexto delimitado** define dónde un término mantiene un significado coherente; dentro de él, un **agregado** protege sus invariantes en una única frontera transaccional. Una foreign key entre bases de servicios o una entidad JPA compartida rompen esa autonomía.
-
-**Analogía:** cada contexto es un departamento con vocabulario, expedientes y autoridad propios. Puede enviar un documento firmado a otro departamento, pero no entrar a modificar directamente sus archivadores.
-
-**Diagrama:**
+**Laboratorio:** `examples/spring-ddd-rutaflow/`. Las pruebas no necesitan Spring, Kafka, HTTP ni base de datos.
 
 ```mermaid
 flowchart LR
-  M[App móvil] --> O[Operación de entregas]
-  O --> OD[(BD de operaciones)]
-  O -->|JourneyCompleted v1| K[(Kafka)]
-  K --> B[Facturación]
-  B --> BD[(BD de facturación)]
-  B -. no consulta tablas ajenas .-> OD
+  M[App móvil] --> O[Operaciones: dueño de Journey]
+  O --> OD[(Datos de jornada)]
+  O -. evento futuro .-> B[Facturación]
+  B --> BD[(Datos de facturación)]
+  B -. sin acceso directo .-> OD
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+El diagrama representa límites conceptuales; el laboratorio no publica eventos ni implementa esas bases de datos.
 
-Continuando en `demo-cloud` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía y genera un proyecto nuevo con Maven: `mkdir demo-domain && cd demo-domain && mvn archetype:generate -DgroupId=io.academia -DartifactId=demo-domain -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false`; o con Gradle: `mkdir demo-domain && cd demo-domain && gradle init --type java-library --dsl kotlin --project-name demo-domain --package io.academia`), crea `src/main/java/io/academia/operations/journey/Journey.java`:
+#### Subtema 7.1: Encuentra quién es dueño de la regla · 10 min
+
+**1. Contexto**
+
+Solo Operaciones decide si una jornada acepta nuevas posiciones. Facturación no debe editar la jornada para aplicar sus propias reglas.
+
+**2. Hazlo tú**
+
+Abre `src/main/java/academia/rutaflow/operations/Journey.java` y sigue `status`, `positions` y `record`.
+
+```java
+public void record(Position position) {
+    if (status == JourneyStatus.CLOSED) throw new JourneyAlreadyClosed();
+    positions.add(Objects.requireNonNull(position));
+}
+```
+
+**Resultado esperado:** la regla está en `Journey`, junto a los datos que protege.
+
+**3. Entiende**
+
+Un agregado conserva consistencia en una frontera pequeña. El contexto delimitado define vocabulario y propiedad; no equivale a una tabla o paquete cualquiera.
+
+**Analogía:** cada contexto cuida su propio archivador. Otro equipo puede recibir una copia acordada, pero no entrar a cambiar sus expedientes.
+
+**4. Cierra**
+
+Nombra el contexto dueño y la operación que protege la invariante.
+
+#### Subtema 7.2: Prueba la invariante sin infraestructura · 10 min
+
+**1. Contexto**
+
+Una regla útil sigue siendo verificable sin arrancar servicios ni una base de datos.
+
+**2. Hazlo tú**
+
+Desde `examples/spring-ddd-rutaflow/`, ejecuta:
 
 ```bash
-mkdir -p demo-cloud/domain/src/main/java/io/academia/operations/journey
-cd demo-cloud/domain
+./mvnw -q -Dtest=JourneyTest#unaJornadaCerradaRechazaNuevasPosiciones test
 ```
 
-```java
-// src/main/java/io/academia/operations/journey/Journey.java
-package io.academia.operations.journey;
+Lee `src/test/java/academia/rutaflow/operations/JourneyTest.java`.
 
-import java.util.ArrayList;
-import java.util.List;
+**Resultado esperado:** la jornada conserva una posición y el segundo registro lanza `JourneyAlreadyClosed`.
 
-public final class Journey {
-    private JourneyStatus status = JourneyStatus.OPEN;
-    private final List<Position> positions = new ArrayList<>();
+**Fallo deliberado:** quita la comprobación de `status` en `Journey.record` y repite el test. Falla porque el agregado deja registrar una posición luego del cierre. Restáurala.
 
-    public void record(Position position) {
-        if (status == JourneyStatus.CLOSED) {
-            throw new JourneyAlreadyClosed();
-        }
-        positions.add(position);
-    }
+**3. Entiende**
 
-    public void close() {
-        status = JourneyStatus.CLOSED;
-    }
+El test verifica el resultado observable de la regla, no el nombre de un método ni una descripción en un documento.
 
-    public List<Position> positions() {
-        return List.copyOf(positions);
-    }
-}
-```
+**4. Cierra**
 
-```java
-// src/main/java/io/academia/operations/journey/JourneyAlreadyClosed.java
-package io.academia.operations.journey;
+Entrega el test en verde y la excepción que se esperaba antes de la mutación.
 
-public class JourneyAlreadyClosed extends RuntimeException {
-    public JourneyAlreadyClosed() {
-        super("La jornada ya está cerrada y no acepta nuevas posiciones");
-    }
-}
-```
+#### Subtema 7.3: Evita compartir almacenamiento entre contextos · 5 min
 
-Formaliza la invariante en un test real, sin necesitar Kafka ni PostgreSQL para probar la regla de dominio:
+**1. Contexto**
 
-```java
-// src/test/java/io/academia/operations/journey/JourneyTest.java
-package io.academia.operations.journey;
+Una foreign key de Facturación hacia la tabla de Operaciones acopla despliegues y datos aunque las aplicaciones estén separadas.
 
-import org.junit.jupiter.api.Test;
+**2. Hazlo tú**
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+Ejecuta `./mvnw -q -Dtest=JourneyTest#laListaExpuestaNoPermiteModificarElAgregado test` y revisa que `positions()` devuelve `List.copyOf`.
 
-class JourneyTest {
+**Resultado esperado:** modificar la lista recibida lanza `UnsupportedOperationException`; el agregado conserva su estado.
 
-    @Test
-    void unaJornadaCerradaRechazaNuevasPosiciones() {
-        Journey journey = new Journey();
-        journey.record(new Position(10.0, 20.0));
-        journey.close();
+**3. Entiende**
 
-        assertThatThrownBy(() -> journey.record(new Position(11.0, 21.0)))
-            .isInstanceOf(JourneyAlreadyClosed.class);
+Para colaborar, define un contrato o evento versionado con los datos que el otro contexto necesita. El laboratorio solo demuestra la propiedad dentro del agregado; no implementa publicación confiable ni persistencia.
 
-        assertThat(journey.positions()).hasSize(1); // la posición posterior al cierre NUNCA se agregó
-    }
+**4. Cierra**
 
-    @Test
-    void unaJornadaAbiertaAceptaPosicionesLibremente() {
-        Journey journey = new Journey();
-        journey.record(new Position(10.0, 20.0));
-        journey.record(new Position(11.0, 21.0));
+Escribe qué datos posee Operaciones y cuál copia mínima podría necesitar Facturación.
 
-        assertThat(journey.positions()).hasSize(2);
-    }
-}
-```
+#### Subtema 7.4: Decide si separar el despliegue · 10 min
+
+**1. Contexto**
+
+Un límite de dominio no obliga por sí solo a crear otro proceso o servicio.
+
+**2. Hazlo tú**
+
+Como práctica independiente, añade una regla para una jornada vacía o valida rangos de latitud y longitud en `Position.java`; agrega un test y ejecuta la suite completa:
 
 ```bash
-./mvnw test -Dtest=JourneyTest
+./mvnw -q clean test
 ```
 
-**Resultado esperado:** `BUILD SUCCESS` con ambos tests en verde: el primero confirma que la invariante «jornada cerrada rechaza posiciones» se cumple SIN ninguna infraestructura (sin Kafka, sin PostgreSQL, sin HTTP) — la regla vive completamente en el agregado `Journey`, verificable de forma aislada y rápida; el segundo confirma que una jornada abierta acepta posiciones libremente, contrastando el comportamiento correcto en ambos estados.
+**Resultado esperado:** las tres pruebas existentes y tu nueva prueba pasan.
 
-**Fallo deliberado:** en `Journey.record(...)`, quita la comprobación `if (status == JourneyStatus.CLOSED)` por completo y ejecuta de nuevo `unaJornadaCerradaRechazaNuevasPosiciones`. El test FALLA porque `journey.record(...)` ya no lanza `JourneyAlreadyClosed` — diagnostica confirmando en código, no solo en documentación de diseño, que la invariante depende enteramente de esa comprobación explícita dentro del agregado: sin ella, cualquier código que use `Journey` (desde cualquier servicio) podría registrar posiciones en una jornada ya cerrada sin ningún error. Revierte el cambio antes de continuar.
+**3. Entiende**
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+Mantén un monolito modular mientras los límites o los equipos sean inciertos. Extrae un servicio cuando propiedad de datos, despliegue, escala o autonomía de equipos compensen el costo de red y operación.
 
-1. Agrega una segunda invariante (por ejemplo, «una jornada no puede cerrarse sin al menos una posición registrada») y un test que la confirme.
-2. Escribe un test que confirme que `journey.positions()` devuelve una copia inmutable (`List.copyOf(...)`), no la lista interna mutable — intenta modificar la lista devuelta y confirma que lanza `UnsupportedOperationException`.
-3. Documenta, en un comentario, por qué una foreign key directa desde la base de datos de Facturación hacia la tabla `journeys` de Operaciones rompería la propiedad de datos que este Tema defiende, incluso si técnicamente "funciona".
-4. Escribe de memoria (sin mirar) el agregado `Journey` con su invariante de cierre, y un test `assertThatThrownBy` que la confirme. Compara después contra el patrón del Paso 4.
+**4. Cierra**
 
-**Pista:** una invariante de dominio verificada por un test unitario puro (sin Spring, sin base de datos) se ejecuta en milisegundos y no depende de ninguna infraestructura — si una regla de negocio solo puede probarse levantando Kafka o PostgreSQL, es una señal de que la regla no está realmente encapsulada en el agregado.
+Entrega los tests y una decisión explicada sobre qué módulo sería dueño de `Journey` en el proyecto integrador RutaFlow.
 
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio con la excepción que la invariante debe lanzar al intentar registrar una posición en una jornada cerrada:
-
-```java
-if (status == JourneyStatus.CLOSED) {
-    throw new ____();
-}
-```
-
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, el agregado `Journey` con la invariante de cierre y un test JUnit que la confirme sin ninguna infraestructura externa. Compara después contra el patrón del Paso 4.
-
-#### Paso 7 · Cierre y evidencia
-
-Ya formalizas invariantes de dominio en tests unitarios puros, confirmando que la propiedad de una regla de negocio vive en el agregado del contexto correcto. Esto cierra el módulo de microservicios; el siguiente módulo aborda observabilidad distribuida con trazas y logs correlacionados. **Evidencia:** entrega el resultado de `JourneyTest` en verde, y la ausencia real de excepción que produce el fallo deliberado al quitar la comprobación de estado. Fuente oficial: [Domain-Driven Design — Eric Evans (resumen oficial de patrones)](https://martinfowler.com/bliki/DDD_Aggregate.html).
-
-**Errores comunes:** dividir servicios por entidades técnicas en vez de por capacidades de negocio; compartir una entidad JPA o una foreign key entre bases de datos de servicios distintos, rompiendo la propiedad de datos.
-
-**Cuándo no usarlo:** con límites de dominio todavía inciertos (un producto nuevo, sin historial de cambios), empezar con un monolito modular y paquetes explícitos es preferible a extraer microservicios sobre hipótesis de contexto delimitado aún no validadas.
-
----
-
-Los límites de propiedad de datos que definas con DDD son los que delimitarán el alcance del proyecto integrador de este track (microservicio productivo, Módulo 12).
+**Fuentes:** [Fowler — Aggregate](https://martinfowler.com/bliki/DDD_Aggregate.html) y el laboratorio ejecutable enlazado arriba.
 
 ### Tema 8: Orquestación de microservicios con Temporal y Spring Boot
 

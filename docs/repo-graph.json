@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 1133,
+      "lines": 1160,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 15460,
+      "lines": 15517,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13604,
+      "lines": 13606,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 461,
+      "lines": 465,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -5621,6 +5621,51 @@
     {
       "path": "examples/spring-gateway-rutaflow/src/test/java/academia/rutaflow/gateway/GatewayRoutingTest.java",
       "lines": 103,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-grpc-rutaflow/README.md",
+      "lines": 31,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Spring gRPC \u00b7 RutaFlow",
+        "## Ejecutar",
+        "## Revisar el contrato",
+        "## Qu\u00e9 demuestra y qu\u00e9 no"
+      ]
+    },
+    {
+      "path": "examples/spring-grpc-rutaflow/src/main/java/academia/rutaflow/grpc/GrpcApplication.java",
+      "lines": 12,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-grpc-rutaflow/src/main/java/academia/rutaflow/grpc/TarifaServiceImpl.java",
+      "lines": 17,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-grpc-rutaflow/src/main/resources/application.yml",
+      "lines": 7,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-grpc-rutaflow/src/test/java/academia/rutaflow/grpc/TarifaGrpcTest.java",
+      "lines": 49,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -12276,7 +12321,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-10.md",
-      "lines": 1490,
+      "lines": 1455,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

@@ -267,6 +267,10 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - pendiente Subtema 6.3: Llama el stub por el canal · 10 min
   - pendiente Subtema 6.4: Cambia el contrato sin romper datos · 10 min
 - [pendiente de migrar] Tema 7: DDD para decidir límites y propiedad de datos
+  - pendiente Subtema 7.1: Encuentra quién es dueño de la regla · 10 min
+  - pendiente Subtema 7.2: Prueba la invariante sin infraestructura · 10 min
+  - pendiente Subtema 7.3: Evita compartir almacenamiento entre contextos · 5 min
+  - pendiente Subtema 7.4: Decide si separar el despliegue · 10 min
 - [pendiente de migrar] Tema 8: Orquestación de microservicios con Temporal y Spring Boot
 - [pendiente de migrar] Tema 9: Spring Modulith para comprobar fronteras antes de separar servicios
 - [pendiente de migrar] Tema 10: Spring Cloud Bus para propagar cambios de configuración
