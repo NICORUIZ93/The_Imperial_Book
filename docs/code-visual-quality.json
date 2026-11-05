@@ -99,8 +99,8 @@
     "spring-boot": {
       "topics": 111,
       "code": 106,
-      "commentedCode": 53,
-      "mermaid": 42,
+      "commentedCode": 52,
+      "mermaid": 41,
       "archifyVisual": 2,
       "asciiVisual": 9,
       "misleadingDiagramLabel": 0,
@@ -2596,6 +2596,13 @@
       "track": "spring-boot",
       "module": 10,
       "topic": "Tema 9: Comprueba módulos antes de separar servicios",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 10,
+      "topic": "Tema 10: Spring Cloud Bus para propagar cambios de configuración",
       "missingCode": false,
       "missingComments": true
     },

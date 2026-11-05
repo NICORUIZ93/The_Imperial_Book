@@ -1243,57 +1243,133 @@ Entrega el resultado de `verify()` y de las pruebas de evento. Si necesitas gara
 
 ### Tema 10: Spring Cloud Bus para propagar cambios de configuración
 
-#### Paso 1 · Objetivo y preparación
+Duración: 35–45 min. **Meta:** propagar un límite operacional entre dos instancias y comprobarlo con HTTP. El laboratorio runnable está en `examples/spring-cloud-bus-rutaflow/`. Usa Spring Boot 4.1.2 y Spring Cloud 2025.1.4; la matriz oficial indica compatibilidad del tren 2025.1 con Boot 4.1. No necesitas Config Server para este ejercicio: `busenv` añade un override temporal para demostrar el transporte. En un sistema real, conserva la configuración duradera en su fuente central.
 
-Al finalizar enviarás una actualización de configuración a varias instancias mediante un broker y medirás cuál cambió. **Prerrequisitos:** Spring Cloud Config, Actuator y RabbitMQ o Kafka operativo. Utiliza dependencias del mismo release train que el proyecto.
+#### Subtema 10.1: Arranca el broker y revisa las dependencias · 8 min
 
-#### Paso 2 · Contexto y caso real
+**1. Contexto**
 
-Se modifica el límite de concurrencia del servicio de entregas. Reiniciar una por una las réplicas deja un periodo con configuraciones distintas; llamar solo al endpoint local actualiza una instancia y no al grupo.
+El límite de pedidos debe llegar a dos réplicas. Ambas necesitan conectarse al mismo broker y compartir el canal Bus.
 
-#### Paso 3 · Teoría y analogía
+**2. Hazlo tú**
 
-Spring Cloud Bus distribuye eventos de cambio entre instancias conectadas a un broker. `busrefresh` limpia el caché de RefreshScope y vuelve a enlazar `@ConfigurationProperties`; `busenv` puede modificar propiedades distribuidas. La aplicación sigue necesitando una fuente de configuración y clases refrescables. Es un anuncio por altavoz con destinatarios: hace llegar el cambio, pero no valida por sí solo que el nuevo valor sea correcto ni que todas las instancias estén listas.
+En `examples/spring-cloud-bus-rutaflow/`, abre `pom.xml` y encuentra `spring-cloud-starter-bus-amqp`. Revisa también `compose.yaml`; inicia RabbitMQ:
 
-```mermaid
-flowchart LR
-  O[Operador autenticado] -->|POST busrefresh| A[Instancia A]
-  A --> B[Broker Bus]
-  B --> C[Instancia B]
-  B --> D[Instancia C]
-  C --> R[Rebind propiedades]
-  D --> R
+```bash
+cd examples/spring-cloud-bus-rutaflow
+docker compose up -d
+docker compose ps
 ```
 
-#### Paso 4 · Demostración guiada
+**Resultado esperado:** el contenedor `rabbitmq` aparece como `healthy`. Si usas Podman, los mismos comandos funcionan con `podman compose` si tienes el proveedor Compose instalado.
 
-Añade `spring-cloud-starter-bus-amqp` (o el starter Kafka), Actuator y una propiedad en `src/main/resources/application.yml`:
+**Fallo deliberado:** cambia el puerto publicado `5672:5672` a `5673:5672` sin cambiar la aplicación. **Diagnóstico:** la app intenta conectar a `localhost:5672`; el broker solo está publicado en `5673`. Restaura `5672:5672` o configura `RABBIT_PORT=5673`.
 
-```yaml
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,busrefresh
+**3. Entiende**
+
+El starter AMQP conecta Bus a RabbitMQ. Sin broker no hay canal compartido y cada instancia solo conoce sus propios eventos. La versión del starter llega del BOM Spring Cloud configurado en el laboratorio.
+
+**4. Cierra**
+
+Guarda el estado saludable y anota el host y puerto que usarán las dos instancias.
+
+#### Subtema 10.2: Levanta dos instancias con identidades distintas · 8 min
+
+**1. Contexto**
+
+Bus debe reconocer las dos copias del servicio `rutaflow-policy` como participantes diferentes.
+
+**2. Hazlo tú**
+
+En dos terminales, desde la carpeta del laboratorio, ejecuta:
+
+```bash
+./mvnw spring-boot:run -Dspring-boot.run.arguments='--server.port=8081'
 ```
 
-Inyecta `@RefreshScope` en el bean de demostración, levanta dos instancias con IDs distintos y actualiza la fuente Config Server. Ejecuta `curl -X POST http://localhost:8080/actuator/busrefresh`. **Resultado esperado:** ambas instancias observan la nueva configuración sin reinicio completo. En producción no expongas este endpoint públicamente: protégelo con autorización de operador y red administrativa.
+```bash
+./mvnw spring-boot:run -Dspring-boot.run.arguments='--server.port=8082'
+```
 
-#### Paso 5 · Práctica guiada
+En una tercera terminal lee el límite inicial:
 
-**Fallo deliberado:** inicia una réplica con el mismo `spring.cloud.bus.id` que otra. **Pista:** los IDs deben identificar instancias; los duplicados pueden causar filtrado o procesamiento incorrecto. Revisa logs, ID y disponibilidad del broker. Corrige la identidad antes de repetir el refresh.
+```bash
+curl -s http://localhost:8081/config
+curl -s http://localhost:8082/config
+```
 
-#### Paso 6 · Práctica independiente
+**Resultado esperado:** ambos responden `{"maxPedidos":3}`. `application.yml` genera un Bus ID con nombre de app y puerto.
 
-Actualiza una propiedad a un valor inválido y mide cómo reacciona el bean, cómo lo detecta readiness y cómo se revierte el cambio. Compara un refresh global con destino dirigido a una instancia. Documenta una alternativa de reinicio gradual si la propiedad no es refrescable o si requiere recrear conexiones.
+**Fallo deliberado:** apaga RabbitMQ y reinicia una instancia. **Diagnóstico:** busca `localhost:5672` en el log y confirma que el servicio broker no está saludable. Vuelve a iniciar el broker y observa la reconexión.
 
-#### Paso 7 · Cierre y evidencia
+**3. Entiende**
 
-Entrega trazas del evento, versión de propiedad observada en ambas instancias y el fallo de ID duplicado diagnosticado. **Proyecto integrador RutaFlow:** usa Bus para cambios operacionales limitados; conserva versionado, auditoría y rollback en Config Server. Errores comunes: asumir que todos los beans se actualizan, usar `busenv` como almacén de configuración permanente y dejar endpoint sin autorización. Siguiente paso: trazar una solicitud entre servicios con un identificador común. Fuentes oficiales: [Spring Cloud Bus](https://docs.spring.io/spring-cloud-bus/reference/), [bus refresh](https://docs.spring.io/spring-cloud-bus/reference/spring-cloud-bus/bus-endpoints.html) y [Actuator](https://docs.spring.io/spring-boot/reference/actuator/).
+El nombre identifica la aplicación; el puerto diferencia cada proceso local. Un ID repetido puede hacer que un proceso ignore eventos destinados a su propia identidad.
 
-**¿Por qué es importante?** Una flota de réplicas debe cambiar de forma coordinada y comprobable.
-**Evidencia de aprendizaje:** demuestra el cambio en dos instancias y el rollback del valor inválido.
-**Cuándo no usarlo:** no agregues Bus si un despliegue gradual reiniciable es más simple y cumple el tiempo de actualización requerido.
+**4. Cierra**
+
+Registra las dos respuestas iniciales y verifica que los logs indiquen conexión de ambas instancias al broker.
+
+#### Subtema 10.3: Propaga un valor y refresca el bean · 12 min
+
+**1. Contexto**
+
+El límite sube de 3 a 9 sin reiniciar las dos aplicaciones. El bean `RoutePolicy` usa `@RefreshScope` para reconstruirse al refrescarse.
+
+**2. Hazlo tú**
+
+Revisa `src/main/java/academia/rutaflow/bus/RoutePolicy.java`, `RoutePolicyController.java` y `src/main/resources/application.yml`. Luego envía un override temporal y solicita el refresh del grupo:
+
+```bash
+curl -i -X POST http://localhost:8081/actuator/busenv \
+  -H 'Content-Type: application/json' \
+  -d '{"name":"ruta.max-pedidos","value":"9"}'
+curl -i -X POST http://localhost:8081/actuator/busrefresh
+curl -s http://localhost:8081/config
+curl -s http://localhost:8082/config
+```
+
+**Resultado esperado:** ambos POST responden `204`; las dos lecturas devuelven `{"maxPedidos":9}`.
+
+**Fallo deliberado:** quita `@RefreshScope` y repite en una ejecución limpia. **Diagnóstico:** el valor nuevo llega al Environment, pero el bean existente conserva el valor anterior. Restaura la anotación y reinicia ambas instancias.
+
+**3. Entiende**
+
+`busenv` difunde el cambio temporal del Environment. `busrefresh` difunde la limpieza de caché de `@RefreshScope`; no guarda el cambio al reiniciar ni reemplaza Config Server. Mantener ambas operaciones separadas ayuda a ubicar si falló la entrega o la reconstrucción del bean.
+
+**4. Cierra**
+
+Guarda las dos respuestas `9` y el código que las produjo. Después reinicia una instancia: debe volver a `3`, evidencia de que el override no es almacenamiento permanente.
+
+#### Subtema 10.4: Diagnostica propagación y limita el endpoint · 10 min
+
+**1. Contexto**
+
+Una instancia quedó en 3 y otra en 9. Hay que distinguir una caída del broker, un proceso desconectado y un bean que no se refrescó.
+
+**2. Hazlo tú**
+
+Con ambas instancias conectadas, ejecuta el verificador completo:
+
+```bash
+./scripts/verify-bus.sh
+```
+
+**Resultado esperado:** el script imprime el valor inicial y las respuestas finales `9` de A y B. Revisa qué Actuator endpoints se exponen en `application.yml` y quién podría invocarlos.
+
+**Fallo deliberado:** detén la instancia B antes de ejecutar el script. **Diagnóstico:** A cambia, B sigue con su valor previo o deja de responder; comprueba `curl`, logs y conexión de B a RabbitMQ antes de volver a publicar el evento.
+
+**3. Entiende**
+
+El endpoint Bus es una operación administrativa. En despliegue real, permite acceso solo desde la red de operación, exige autorización, registra quién cambió qué y valida rangos antes de aplicar el valor. Un `204` confirma que se aceptó la petición local; la lectura en cada réplica confirma el resultado observado.
+
+**4. Cierra**
+
+Entrega la salida del script, el valor tras reinicio y un plan de acceso para producción. Proyecto RutaFlow: usa configuración versionada para el límite persistente y Bus para coordinar la actualización de instancias. Siguiente tema: propagar una traza entre servicios para encontrar latencia.
+
+**Fuentes oficiales:** [compatibilidad Spring Cloud](https://spring.io/projects/spring-cloud/), [endpoints Bus](https://docs.spring.io/spring-cloud-bus/reference/spring-cloud-bus/bus-endpoints.html) y [Spring Cloud Bus](https://docs.spring.io/spring-cloud-bus/reference/).
+
+**¿Por qué es importante?** Si el límite operativo cambia en una sola réplica, los pedidos reciben decisiones distintas; Bus comunica el cambio al grupo y las lecturas HTTP comprueban qué instancias lo aplicaron.
 
 ### Tema 11: Micrometer Tracing entre servicios
 

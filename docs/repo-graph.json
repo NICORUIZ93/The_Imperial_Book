@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 1229,
+      "lines": 1243,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 15631,
+      "lines": 15688,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -314,7 +314,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1103,
+      "lines": 1102,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -600,7 +600,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3850,
+      "lines": 3857,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13607,
+      "lines": 13609,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 473,
+      "lines": 477,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -5931,6 +5931,97 @@
     {
       "path": "examples/spring-kafka-streams-rutaflow/src/test/java/academia/rutaflow/streams/PedidosTopologyTest.java",
       "lines": 66,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-modulith-rutaflow/README.md",
+      "lines": 20,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Verificar fronteras con Spring Modulith",
+        "## Ejecutar"
+      ]
+    },
+    {
+      "path": "examples/spring-modulith-rutaflow/src/main/java/academia/rutaflow/modulith/RutaFlowModulithApplication.java",
+      "lines": 12,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-modulith-rutaflow/src/main/java/academia/rutaflow/modulith/notificaciones/BandejaNotificaciones.java",
+      "lines": 20,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-modulith-rutaflow/src/main/java/academia/rutaflow/modulith/notificaciones/NotificacionListener.java",
+      "lines": 20,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-modulith-rutaflow/src/main/java/academia/rutaflow/modulith/pedidos/PedidoCreado.java",
+      "lines": 4,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-modulith-rutaflow/src/main/java/academia/rutaflow/modulith/pedidos/PedidosService.java",
+      "lines": 20,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-modulith-rutaflow/src/main/java/academia/rutaflow/modulith/pedidos/internal/PedidoInterno.java",
+      "lines": 4,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-modulith-rutaflow/src/test/java/academia/rutaflow/modulith/ArquitecturaModularTest.java",
+      "lines": 12,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-modulith-rutaflow/src/test/java/academia/rutaflow/modulith/notificaciones/NotificacionesModuleTest.java",
+      "lines": 31,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-modulith-rutaflow/src/test/java/academia/rutaflow/modulith/pedidos/PedidosModuleTest.java",
+      "lines": 25,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-modulith-rutaflow/src/test/resources/application.yml",
+      "lines": 11,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -12456,7 +12547,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-10.md",
-      "lines": 1396,
+      "lines": 1472,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

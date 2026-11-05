@@ -89,13 +89,14 @@ reapliques cambios que ya estén publicados.
 
 ## Estado global honesto
 
-En la auditoría actual: **146/1185 temas** cumplen la estructura atómica en los
-14 tracks: Java 101, Spring Boot 42, Node 2 y Flutter 1. La auditoría pedagógica
+En la auditoría actual: **147/1185 temas** cumplen la estructura atómica en los
+14 tracks: Java 101, Spring Boot 43, Node 2 y Flutter 1. La auditoría pedagógica
 detecta **1083/1185 temas practicables** y deuda en 102. La auditoría de siete
 pasos heredados marca 1026/1185; mide criterios distintos de la metodología nueva.
-La auditoría de sustancia registra 409 temas con defectos, deuda histórica repartida
-entre varios tracks. Ninguna cifra certifica que un curso esté completo o que
-se hayan ejecutado todos sus ejemplos.
+La auditoría de sustancia registra 409 temas con defectos y la revisión de
+profundidad detecta señales en 244 temas; es deuda histórica repartida entre
+varios tracks. Ninguna cifra certifica que un curso esté completo o que se hayan
+ejecutado todos sus ejemplos.
 
 Prioridades indicadas por el usuario para continuar después de Java: Spring Boot,
 microservicios, Kafka, RabbitMQ, Flutter y Node.js. Mantén visibles los seis y
@@ -1213,16 +1214,29 @@ Fuentes primarias consultadas: [verificación](https://docs.spring.io/spring-mod
 [versiones estables de Modulith](https://docs.spring.io/spring-modulith/reference/) y
 [starter de pruebas 2.1.1](https://central.sonatype.com/artifact/org.springframework.modulith/spring-modulith-starter-test).
 
-Tras regenerar reportes, **146/1185 temas** cumplen cuatro pasos, **1083/1185
-son practicables**, 1026/1185 tienen las señales de los siete pasos heredados y
-409 muestran defectos de sustancia. La auditoría de profundidad conserva 243 temas
-con señales. Se repetirá `./scripts/validate.sh` después de refrescar el grafo de
-repositorio con el handoff definitivo. Los detectores no sustituyen revisión
-pedagógica humana ni prueban todos los laboratorios.
+Spring Boot M10 T10, “Spring Cloud Bus para propagar cambios de configuración”,
+se rehízo en cuatro subtemas de 8–12 minutos. Se creó
+`examples/spring-cloud-bus-rutaflow/` con dos instancias Spring Boot 4.1.2,
+Spring Cloud 2025.1.4, RabbitMQ, Actuator, `@RefreshScope` y el script
+`scripts/verify-bus.sh`. La guía separa los dos efectos: `busenv` difunde un
+override temporal del Environment y `busrefresh` limpia la caché scoped para
+reconstruir el bean. La prueba real pasó: después de ambos POST, las rutas `/config`
+de los puertos 8081 y 8082 devolvieron `maxPedidos=9`; al reiniciar las
+instancias, el valor por defecto vuelve a 3. `./mvnw -q clean test` pasó.
+`./scripts/validate.sh` pasó (23 pruebas, 4 omitidas), junto con auditorías e
+índices regenerados. La auditoría atómica queda en 147/1185; practicabilidad
+1083/1185; deuda de sustancia detectada 409 temas; la auditoría de profundidad
+detecta señales en 244. Estos indicadores no prueban todos los ejemplos ni una
+revisión humana completa. Las fallas deliberadas del tema se describen pero no se
+ejecutaron.
 
-**Siguiente tema:** Spring Boot M10 T10, “Spring Cloud Bus para propagar cambios
-de configuración”. Contrasta versiones del release train con Spring Boot 4.1.2,
-revisa el laboratorio `examples/spring-cloud-bus-rutaflow/` si ya existe y verifica
-la actualización de varias instancias con broker real o documenta con precisión
-lo que se haya simulado. Conserva cuatro subtemas con comando, salida y fallo
-observable; commit separado.
+Al continuar, no repitas T10: comprueba primero si está publicado con
+`git log -1`. El siguiente tema del módulo 10 es **T11 Micrometer Tracing entre
+servicios**. Revisa compatibilidad/versiones actuales con fuentes oficiales,
+contrasta el texto completo con el laboratorio que vayas a crear, y entrega tres o
+cuatro subtemas cortos con código, comandos y resultado observable. Para demostrar
+trazas, el laboratorio debe enviar una petición real entre dos servicios y
+comprobar el `traceId` y los spans en un receptor de telemetría local; no afirmes
+que hay un backend de trazas si solo compila el código. Publica T11 en un commit
+propio tras regenerar reportes, validar, y excluir los dos cambios locales de
+Flutter.

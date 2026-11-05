@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 243,
+    "topicsWithSignals": 244,
     "newLaboratories": 25
   },
   "priorities": {
@@ -12455,7 +12455,9 @@
       "title": "Tema 10: Spring Cloud Bus para propagar cambios de configuración",
       "file": "web/public/content/spring-boot/modulo-10.md",
       "line": 1244,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -12465,7 +12467,7 @@
       "module": 10,
       "title": "Tema 11: Micrometer Tracing entre servicios",
       "file": "web/public/content/spring-boot/modulo-10.md",
-      "line": 1298,
+      "line": 1374,
       "signals": [
         "ejemplo-breve-revisar-contexto",
         "clase-java-no-visible"
@@ -12479,7 +12481,7 @@
       "module": 10,
       "title": "Tema 12: Contract testing entre productor y consumidor",
       "file": "web/public/content/spring-boot/modulo-10.md",
-      "line": 1341,
+      "line": 1417,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

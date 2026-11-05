@@ -12,7 +12,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 | angular | 71 | 3 | HTML/CSS/TypeScript explícitos; RxJS y estado con ejemplos completos | Rutas, formularios, datos remotos y cambios sin guardar comprobados con navegador |
 | react | 58 | 46 | JSX y estado antes de efectos; proveedor, dependencias y API visibles | Carga, error, vacío y carrera de respuestas; caché observada, no supuesta |
 | java | 101 | 79 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
-| spring-boot | 111 | 62 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
+| spring-boot | 111 | 63 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
 | android | 58 | 0 | Kotlin antes de Compose; distinguir recomposición, recreación y muerte de proceso | App instalable con permisos, restauración, persistencia y pruebas en dispositivo |
 | ios | 56 | 4 | Swift antes de SwiftUI; explicitar macOS/Xcode y destino | Cancelación, estados de red, persistencia y accesibilidad comprobados en simulador |
 | flutter | 106 | 10 | Dart antes de widgets; ejemplo con main y destino de ejecución | Restauración, red, pruebas de widget, integración y publicación por plataforma |
@@ -1116,7 +1116,7 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | spring-boot / 10 | [Tema 7: DDD para decidir límites y propiedad de datos](../web/public/content/spring-boot/modulo-10.md) | demostracion-no-delimitada |
 | spring-boot / 10 | [Tema 8: Orquestar pedidos con Temporal y Spring Boot](../web/public/content/spring-boot/modulo-10.md) | demostracion-no-delimitada |
 | spring-boot / 10 | [Tema 9: Comprueba módulos antes de separar servicios](../web/public/content/spring-boot/modulo-10.md) | demostracion-no-delimitada |
-| spring-boot / 10 | [Tema 10: Spring Cloud Bus para propagar cambios de configuración](../web/public/content/spring-boot/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 10 | [Tema 10: Spring Cloud Bus para propagar cambios de configuración](../web/public/content/spring-boot/modulo-10.md) | demostracion-no-delimitada |
 | spring-boot / 10 | [Tema 11: Micrometer Tracing entre servicios](../web/public/content/spring-boot/modulo-10.md) | ejemplo-breve-revisar-contexto, clase-java-no-visible |
 | spring-boot / 10 | [Tema 12: Contract testing entre productor y consumidor](../web/public/content/spring-boot/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 11 | [Tema 1: Fat JAR vs capas de Docker](../web/public/content/spring-boot/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |

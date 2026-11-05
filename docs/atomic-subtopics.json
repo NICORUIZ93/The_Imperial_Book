@@ -93,10 +93,10 @@
     },
     "spring-boot": {
       "topics": 111,
-      "completeTopics": 42,
-      "topicsWith3to6Subtopics": 57,
-      "subtopics": 187,
-      "completeSubtopics": 142
+      "completeTopics": 43,
+      "topicsWith3to6Subtopics": 58,
+      "subtopics": 191,
+      "completeSubtopics": 146
     }
   },
   "topics": {
@@ -13010,9 +13010,66 @@
       {
         "module": 10,
         "topic": "### Tema 10: Spring Cloud Bus para propagar cambios de configuración",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 4,
+        "subtopics": [
+          {
+            "id": "10.1",
+            "title": "#### Subtema 10.1: Arranca el broker y revisa las dependencias · 8 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "10.2",
+            "title": "#### Subtema 10.2: Levanta dos instancias con identidades distintas · 8 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "10.3",
+            "title": "#### Subtema 10.3: Propaga un valor y refresca el bean · 12 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "10.4",
+            "title": "#### Subtema 10.4: Diagnostica propagación y limita el endpoint · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 10,

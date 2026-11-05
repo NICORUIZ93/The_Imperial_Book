@@ -1692,7 +1692,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "ccb56ce14b6ac25dd723ffd1929cb408b33c7b85344913b1b271cd2f3efc6e6b",
+    "fingerprint": "ac50f3b3ca659104c89ae84b8df423951d3445c0dc1d5d345a78fb565ff41268",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10376,9 +10376,9 @@
       {
         "issues": [],
         "module": 10,
-        "tailWords": 157,
+        "tailWords": 0,
         "topic": "Tema 10: Spring Cloud Bus para propagar cambios de configuración",
-        "words": 544
+        "words": 977
       },
       {
         "issues": [],
