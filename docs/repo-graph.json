@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 1074,
+      "lines": 1112,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 15346,
+      "lines": 15403,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13600,
+      "lines": 13602,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 453,
+      "lines": 457,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -5873,6 +5873,92 @@
       "headings": []
     },
     {
+      "path": "examples/spring-security-keycloak-rutaflow/README.md",
+      "lines": 98,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Spring Security y Keycloak \u00b7 RutaFlow",
+        "## Pruebas autom\u00e1ticas",
+        "## Levantar el realm local de Keycloak",
+        "## Obtener tokens y llamar a la API",
+        "## Qu\u00e9 revisar en el c\u00f3digo"
+      ]
+    },
+    {
+      "path": "examples/spring-security-keycloak-rutaflow/compose.yaml",
+      "lines": 12,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-security-keycloak-rutaflow/keycloak/rutaflow-realm.json",
+      "lines": 55,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-security-keycloak-rutaflow/src/main/java/academia/rutaflow/security/ApiSecurity.java",
+      "lines": 55,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-security-keycloak-rutaflow/src/main/java/academia/rutaflow/security/PedidoOwnership.java",
+      "lines": 29,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-security-keycloak-rutaflow/src/main/java/academia/rutaflow/security/RutaflowApiController.java",
+      "lines": 30,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-security-keycloak-rutaflow/src/main/java/academia/rutaflow/security/SecurityApplication.java",
+      "lines": 12,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-security-keycloak-rutaflow/src/main/resources/application.yml",
+      "lines": 16,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-security-keycloak-rutaflow/src/test/java/academia/rutaflow/security/ApiSecurityTest.java",
+      "lines": 60,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-security-keycloak-rutaflow/src/test/java/academia/rutaflow/security/MockJwtConfiguration.java",
+      "lines": 35,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
       "path": "examples/spring-ssrf/src/main/java/com/academia/SafeClient.java",
       "lines": 26,
       "kind": "example",
@@ -5968,6 +6054,41 @@
     {
       "path": "examples/spring-stream-rutaflow/src/test/java/academia/rutaflow/stream/RouteFunctionsTest.java",
       "lines": 45,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-token-relay-rutaflow/README.md",
+      "lines": 35,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Token Relay \u00b7 Gateway RutaFlow",
+        "## Recorrido local"
+      ]
+    },
+    {
+      "path": "examples/spring-token-relay-rutaflow/src/main/java/academia/rutaflow/relay/GatewaySecurity.java",
+      "lines": 19,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-token-relay-rutaflow/src/main/java/academia/rutaflow/relay/TokenRelayApplication.java",
+      "lines": 12,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-token-relay-rutaflow/src/main/resources/application.yml",
+      "lines": 33,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -12102,7 +12223,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-10.md",
-      "lines": 1496,
+      "lines": 1475,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

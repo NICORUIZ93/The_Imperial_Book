@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 239,
+    "topicsWithSignals": 240,
     "newLaboratories": 25
   },
   "priorities": {
@@ -12390,7 +12390,9 @@
       "title": "Tema 5: HTTP Interfaces, deadlines y descubrimiento según el entorno",
       "file": "web/public/content/spring-boot/modulo-10.md",
       "line": 549,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -12400,7 +12402,7 @@
       "module": 10,
       "title": "Tema 6: Spring gRPC para comunicación interna de alta frecuencia (Spring Boot 4.1)",
       "file": "web/public/content/spring-boot/modulo-10.md",
-      "line": 709,
+      "line": 688,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -12411,7 +12413,7 @@
       "module": 10,
       "title": "Tema 7: DDD para decidir límites y propiedad de datos",
       "file": "web/public/content/spring-boot/modulo-10.md",
-      "line": 830,
+      "line": 809,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -12422,7 +12424,7 @@
       "module": 10,
       "title": "Tema 8: Orquestación de microservicios con Temporal y Spring Boot",
       "file": "web/public/content/spring-boot/modulo-10.md",
-      "line": 987,
+      "line": 966,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -12433,7 +12435,7 @@
       "module": 10,
       "title": "Tema 9: Spring Modulith para comprobar fronteras antes de separar servicios",
       "file": "web/public/content/spring-boot/modulo-10.md",
-      "line": 1294,
+      "line": 1273,
       "signals": [
         "ejemplo-breve-revisar-contexto",
         "clase-java-no-visible"
@@ -12447,7 +12449,7 @@
       "module": 10,
       "title": "Tema 10: Spring Cloud Bus para propagar cambios de configuración",
       "file": "web/public/content/spring-boot/modulo-10.md",
-      "line": 1344,
+      "line": 1323,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -12458,7 +12460,7 @@
       "module": 10,
       "title": "Tema 11: Micrometer Tracing entre servicios",
       "file": "web/public/content/spring-boot/modulo-10.md",
-      "line": 1398,
+      "line": 1377,
       "signals": [
         "ejemplo-breve-revisar-contexto",
         "clase-java-no-visible"
@@ -12472,7 +12474,7 @@
       "module": 10,
       "title": "Tema 12: Contract testing entre productor y consumidor",
       "file": "web/public/content/spring-boot/modulo-10.md",
-      "line": 1441,
+      "line": 1420,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

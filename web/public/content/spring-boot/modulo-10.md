@@ -548,163 +548,142 @@ Guarda el resultado del pedido propio y ajeno. Este recorrido manual requiere Ke
 
 ### Tema 5: HTTP Interfaces, deadlines y descubrimiento según el entorno
 
-#### Paso 1 · Objetivo y preparación
+**Duración:** 40 min. **Prerrequisitos:** Módulo 9 (WebClient), Tema 1 de este módulo (service discovery).
 
-Al finalizar podrás declarar un cliente HTTP con `@HttpExchange` y confirmar, midiendo tiempo real de ejecución contra un backend deliberadamente lento, que un deadline configurado corta la espera en vez de bloquear indefinidamente.
+**Meta observable:** declara un cliente con `@HttpExchange`, llama a un servicio por su nombre lógico y demuestra con una medición que el timeout corta una respuesta lenta.
 
-**Conocimiento previo:** Módulo 9 de este track (WebClient).
+**¿Por qué es importante?** Una dependencia lenta puede retener recursos y retrasar una entrega; saber a qué instancia llamar y cuánto esperar permite reaccionar con límites explícitos.
 
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** Un cliente HTTP declarativo describe el contrato de la dependencia sin mezclarlo con la regla de negocio, pero no elimina fallos de red: sin un deadline explícito, una llamada hacia un servicio lento puede bloquear la petición completa mucho más allá de lo tolerable para el usuario final.
-
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** contrato cliente declarativo, timeout de lectura, deadline medible.
-
-Una interfaz `@HttpExchange` describe el contrato de la dependencia; Spring genera un proxy cliente real sobre `RestClient`, reduciendo código repetitivo. Definir un timeout de lectura explícito (vía `ClientHttpRequestFactorySettings`) establece cuánto tiempo el cliente está dispuesto a esperar antes de abortar la llamada, en vez de depender del timeout por defecto del sistema operativo (a menudo minutos).
-
-**Analogía:** un deadline HTTP es como decirle a un mensajero "si no vuelves en 5 minutos, considero que la entrega falló y actúo en consecuencia", en vez de esperar indefinidamente sin ningún límite.
-
-**Diagrama:**
+**Laboratorio:** `examples/spring-http-deadline-rutaflow/`. No necesita Docker ni un servicio externo.
 
 ```mermaid
 sequenceDiagram
-  participant C as Cliente
-  participant B as Backend lento (800ms)
-  C->>B: petición con timeout de lectura 500ms
-  Note over C: espera hasta 500ms
-  C--xB: aborta con ResourceAccessException
+  participant L as RouteClient
+  participant D as SimpleDiscoveryClient
+  participant B as Backend RutaFlow
+  L->>D: busca route-catalog
+  D-->>L: URI local o de producción
+  L->>B: GET /routes/RF-001
+  Note over L,B: conexión 300 ms · lectura 350 ms
+  B-->>L: ruta o timeout
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Subtema 5.1: Declara el contrato HTTP · 10 min
 
-Continuando en `demo-cloud` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `mkdir demo-http-client && cd demo-http-client && curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip app.zip`), crea `src/main/java/io/academia/routes/RouteClient.java`:
+**1. Contexto**
+
+La interfaz deja visible qué operación llama RutaFlow; Spring construye el cliente que ejecuta la petición.
+
+**2. Hazlo tú**
+
+Desde la carpeta del laboratorio, ejecuta:
 
 ```bash
-mkdir -p demo-cloud/http-client/src/main/java/io/academia/routes
-cd demo-cloud/http-client
+./mvnw -q -Dtest=RouteClientDeadlineTest#interfaceHttpLlegaAlServicioEncontradoPorElNombre test
 ```
 
+Después abre `src/main/java/academia/rutaflow/http/RouteClient.java`:
+
 ```java
-// src/main/java/io/academia/routes/RouteClient.java
-package io.academia.routes;
-
-import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
-import org.springframework.boot.http.client.HttpClientSettings;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.client.RestClient;
-import org.springframework.web.service.annotation.GetExchange;
-import org.springframework.web.service.annotation.HttpExchange;
-import org.springframework.web.client.support.RestClientAdapter;
-import org.springframework.web.service.invoker.HttpServiceProxyFactory;
-
-import java.time.Duration;
-
+@HttpExchange("/routes")
 public interface RouteClient {
-    @GetExchange("/{journeyId}")
-    String find(@PathVariable String journeyId);
-
-    static RouteClient with(String baseUrl, Duration deadline) {
-        var factory = ClientHttpRequestFactoryBuilder.detect().build(
-            HttpClientSettings.defaults().withReadTimeout(deadline));
-        RestClient restClient = RestClient.builder().baseUrl(baseUrl).requestFactory(factory).build();
-        HttpServiceProxyFactory proxyFactory = HttpServiceProxyFactory
-            .builderFor(RestClientAdapter.create(restClient)).build();
-        return proxyFactory.createClient(RouteClient.class);
-    }
+    @GetExchange("/{id}")
+    String find(@PathVariable("id") String id);
 }
 ```
 
-Confirma con `MockWebServer` (backend real con retraso configurado) que el deadline efectivamente corta la espera, midiendo el tiempo real transcurrido:
+**Resultado esperado:** prueba en verde y texto `ruta RF-001` recibido desde el servidor HTTP local.
 
-```java
-// src/test/java/io/academia/routes/RouteClientDeadlineTest.java
-package io.academia.routes;
+**3. Entiende**
 
-import mockwebserver3.MockResponse;
-import mockwebserver3.MockWebServer;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.web.client.ResourceAccessException;
+La interfaz es el contrato. La prueba verifica el proxy real y el cuerpo HTTP; no simula el método cliente.
 
-import java.io.IOException;
-import java.time.Duration;
-import java.util.concurrent.TimeUnit;
+**4. Cierra**
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+Di qué URL completa corresponde a `find("RF-001")`.
 
-class RouteClientDeadlineTest {
+#### Subtema 5.2: Corta la espera de una respuesta lenta · 15 min
 
-    private MockWebServer backend;
+**1. Contexto**
 
-    @BeforeEach
-    void iniciar() throws IOException {
-        backend = new MockWebServer();
-        backend.start();
-    }
+El tiempo de conexión y el de lectura cubren momentos diferentes: abrir comunicación con el servidor y esperar los datos.
 
-    @AfterEach
-    void detener() throws IOException {
-        backend.shutdown();
-    }
+**2. Hazlo tú**
 
-    @Test
-    void unDeadlineDe500msAbortaUnaRespuestaQueTarda800ms() {
-        backend.enqueue(new MockResponse.Builder()
-            .body("{\"ruta\":\"ok\"}")
-            .bodyDelay(800, TimeUnit.MILLISECONDS)
-            .build());
-
-        RouteClient cliente = RouteClient.with(backend.url("/").toString(), Duration.ofMillis(500));
-
-        long inicio = System.nanoTime();
-        assertThatThrownBy(() -> cliente.find("RF-001")).isInstanceOf(ResourceAccessException.class);
-        long transcurridoMs = (System.nanoTime() - inicio) / 1_000_000;
-
-        assertThat(transcurridoMs).isLessThan(700); // abortó cerca de los 500ms, no esperó los 800ms completos
-    }
-}
-```
+Inspecciona `RouteClientConfiguration.java`. Ejecuta:
 
 ```bash
-./mvnw test -Dtest=RouteClientDeadlineTest
+./mvnw -q -Dtest=RouteClientDeadlineTest#timeoutDeLecturaCortaLaRespuestaLenta test
 ```
-
-**Resultado esperado:** `BUILD SUCCESS` con el test en verde: `System.nanoTime()` mide el tiempo REAL transcurrido, confirmando con evidencia cronométrica (no una suposición) que la llamada abortó cerca de los 500ms configurados y no esperó los 800ms completos que el backend real tardaba en responder.
-
-**Fallo deliberado:** quita `.withReadTimeout(deadline)` de `RouteClient.with(...)` (usando el `ClientHttpRequestFactorySettings.defaults()` sin modificar) y ejecuta de nuevo el test. La llamada ahora SÍ espera los 800ms completos del backend (el timeout por defecto del sistema es mucho mayor), y la aserción `assertThatThrownBy` falla porque no se lanza ninguna excepción — diagnostica confirmando que sin un timeout de lectura explícito, el cliente espera indefinidamente (limitado solo por el timeout por defecto del sistema operativo, típicamente varios minutos), exactamente el riesgo que este Tema busca prevenir. Revierte el cambio antes de continuar.
-
-#### Paso 5 · Práctica guiada — repetición progresiva
-
-1. Agrega un timeout de conexión (`withConnectTimeout(...)`) distinto al timeout de lectura, y documenta con un comentario en el test la diferencia entre ambos (tiempo para establecer la conexión TCP frente a tiempo esperando la respuesta tras la conexión ya establecida).
-2. Confirma con un test que una respuesta que llega ANTES del deadline (por ejemplo, `bodyDelay(200, TimeUnit.MILLISECONDS)` con un deadline de 500ms) SÍ se recibe exitosamente, contrastando con el caso del Paso 4.
-3. Documenta en un comentario por qué agregar retries automáticos sobre una llamada con deadline, sin coordinarlos con el resto del sistema, puede multiplicar la latencia total percibida por el usuario final.
-4. Escribe de memoria (sin mirar) un `RouteClient` con timeout de lectura configurado, y un test `MockWebServer` que mida el tiempo real transcurrido para confirmar que el deadline corta la espera. Compara después contra el patrón del Paso 4.
-
-**Pista:** `System.nanoTime()` (no `System.currentTimeMillis()`) es la forma correcta de medir duraciones en Java, porque no se ve afectado por ajustes del reloj del sistema durante la medición.
-
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio con el método que configura el timeout de lectura sobre los settings del cliente HTTP:
 
 ```java
-ClientHttpRequestFactorySettings.defaults().____(deadline);
+HttpClientSettings.defaults()
+    .withTimeouts(Duration.ofMillis(300), Duration.ofMillis(350));
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un cliente HTTP con deadline configurado y un test que mida con `System.nanoTime()` que ese deadline efectivamente corta una respuesta lenta. Compara después contra el patrón del Paso 4.
+**Resultado esperado:** el backend tarda 900 ms; el cliente recibe `ResourceAccessException` y la medición con `System.nanoTime()` queda bajo 750 ms.
 
-#### Paso 7 · Cierre y evidencia
+**Fallo deliberado:** elimina `.withTimeouts(...)` y repite el test. Debe fallar: el backend responde antes de que el test alcance el límite esperado. Restaura el timeout.
 
-Ya declaras contratos HTTP explícitos con `@HttpExchange` y confirmas, con medición cronométrica real, que un deadline configurado corta esperas indefinidas. El siguiente tema explora gRPC con Spring gRPC (Boot 4.1) como alternativa binaria para comunicación interna de alta frecuencia entre servicios. **Evidencia:** entrega el resultado de `RouteClientDeadlineTest` en verde, y la falta de excepción real que produce el fallo deliberado al quitar el timeout. Fuentes oficiales: [Spring Framework — HTTP Interface](https://docs.spring.io/spring-framework/reference/integration/rest-clients.html#rest-http-interface) y [Spring Boot — ClientHttpRequestFactoryBuilder](https://docs.spring.io/spring-boot/api/java/org/springframework/boot/http/client/ClientHttpRequestFactoryBuilder.html).
+**3. Entiende**
 
-**Errores comunes:** no configurar ningún timeout explícito, dependiendo del timeout por defecto del sistema (a menudo demasiado largo para ser útil); agregar retries en múltiples capas (móvil, gateway, cada servicio) sin coordinación, multiplicando la latencia real ante un fallo.
+`HttpClientSettings` forma parte de `spring-boot-http-client` en el laboratorio. Un timeout de lectura limita la espera de respuesta; no equivale por sí solo a un presupuesto extremo a extremo para varias llamadas y reintentos.
 
-**Cuándo no usarlo:** para una llamada local sin ningún componente de red real, ni `@HttpExchange` ni un deadline aportan ningún valor.
+**4. Cierra**
 
-Los deadlines HTTP de este tema son los que evitarán que una llamada lenta bloquee el proyecto integrador de este track (microservicio productivo, Módulo 12).
+Anota el timeout configurado y el tiempo observado. No copies esos valores de demostración a producción sin medir el servicio.
+
+#### Subtema 5.3: Resuelve el nombre del servicio por entorno · 10 min
+
+**1. Contexto**
+
+El cliente usa `route-catalog`; la ubicación física puede cambiar entre desarrollo y producción.
+
+**2. Hazlo tú**
+
+Lee `src/main/resources/application.yml` y ejecuta la prueba de `RouteClientDeadlineTest` que llama al nombre lógico. La prueba asigna al `SimpleDiscoveryClient` la URI del servidor local; el `RestClient` lleva `@LoadBalanced`.
+
+**Resultado esperado:** `http://route-catalog/routes/RF-001` termina en el servidor local y devuelve `ruta RF-001`.
+
+**Fallo deliberado:** cambia `route-catalog` en `RouteClientConfiguration.java` por `catalogo-inexistente`. La prueba debe fallar al no encontrar una instancia. Restaura el ID.
+
+**3. Entiende**
+
+`SimpleDiscoveryClient` lee instancias declaradas en configuración; no es un registro que detecta servicios automáticamente. El perfil `produccion` requiere `RUTAFLOW_CATALOG_URL`.
+
+**4. Cierra**
+
+**Analogía:** `route-catalog` es como un nombre en la agenda; discovery busca su dirección actual y el cliente llama ahí.
+
+Escribe el nombre lógico y la URI física que resolvió el test. Explica qué componente elegiría otra instancia si configuraras varias.
+
+#### Subtema 5.4: Ajusta el cliente al presupuesto de la operación · 5 min
+
+**1. Contexto**
+
+Un timeout excesivo mantiene recursos ocupados; uno demasiado corto corta respuestas válidas.
+
+**2. Hazlo tú**
+
+Como práctica independiente, añade un endpoint lento a la prueba y propone tiempos según el presupuesto de respuesta de una consulta de RutaFlow. Ejecuta:
+
+```bash
+./mvnw -q clean test
+```
+
+**Resultado esperado:** ambas pruebas pasan; registra el tiempo del caso lento y explica qué evidencia usarías para ajustar el límite en un servicio real.
+
+**3. Entiende**
+
+No agregues reintentos en varias capas sin calcular la latencia acumulada. Si la llamada no es idempotente, un reintento también puede repetir una operación.
+
+**4. Cierra**
+
+Entrega las dos pruebas en verde, el nombre lógico resuelto y el resultado del fallo deliberado restaurado.
+
+**Fuentes oficiales:** [Spring HTTP Service Clients](https://docs.spring.io/spring-framework/reference/integration/rest-clients.html#rest-http-interface), [Spring Boot 4.1: clientes y timeouts](https://docs.spring.io/spring-boot/reference/io/rest-client.html), [HttpClientSettings 4.1.2](https://docs.spring.io/spring-boot/api/java/org/springframework/boot/http/client/HttpClientSettings.html) y [Spring Cloud Discovery y LoadBalancer](https://docs.spring.io/spring-cloud-commons/reference/spring-cloud-commons/common-abstractions.html).
+
+Los límites de espera son una pieza del presupuesto de latencia del proyecto integrador; se deben ajustar con observaciones del servicio, no por intuición.
 
 ### Tema 6: Spring gRPC para comunicación interna de alta frecuencia (Spring Boot 4.1)
 

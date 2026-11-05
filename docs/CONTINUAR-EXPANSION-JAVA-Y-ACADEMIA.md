@@ -1071,3 +1071,41 @@ descubrimiento según el entorno”. Inspecciona la lección completa y el
 laboratorio `RouteClientDeadlineTest`, verifica las versiones contra documentación
 primaria, revisa si el ejemplo mide un timeout real y conserva el contrato de
 cuatro pasos por subtema. Publica el tema y el handoff en un commit separado.
+
+
+Spring Boot M10 T5, “HTTP Interfaces, deadlines y descubrimiento según el
+entorno”, quedó reescrito en cuatro subtemas breves con Contexto, Hazlo tú,
+Entiende y Cierra. La versión previa enseñaba un método inexistente,
+`ClientHttpRequestFactorySettings`; la API real de Boot 4.1.2 usa
+`HttpClientSettings`, `ClientHttpRequestFactoryBuilder` y el módulo
+`spring-boot-http-client`. La lección ahora aclara esa dependencia y separa
+timeout de conexión, timeout de lectura y presupuesto de latencia extremo a
+extremo.
+
+Se añadió `examples/spring-http-deadline-rutaflow/`: cliente `@HttpExchange`,
+`RestClient` con `@LoadBalanced`, descubrimiento por `SimpleDiscoveryClient`,
+URI local por defecto y `RUTAFLOW_CATALOG_URL` bajo el perfil `produccion`. Dos
+pruebas integran contra un servidor HTTP local en puerto libre. La solicitud por
+`route-catalog` devolvió `ruta RF-001`; la respuesta lenta de 900 ms se cortó
+antes de 750 ms con los límites del cliente de 300/350 ms. Se quitó el timeout
+temporalmente y el test falló como se esperaba al no recibir excepción; se
+restauró y `./mvnw -q clean test` volvió a pasar con 2 pruebas. No se requieren
+Docker ni servicios externos.
+
+Fuentes primarias contrastadas: [Spring Framework HTTP Service Clients](https://docs.spring.io/spring-framework/reference/integration/rest-clients.html#rest-http-interface),
+[Spring Boot REST clients](https://docs.spring.io/spring-boot/reference/io/rest-client.html),
+[HttpClientSettings 4.1.2](https://docs.spring.io/spring-boot/api/java/org/springframework/boot/http/client/HttpClientSettings.html)
+y [Spring Cloud discovery/load balancing](https://docs.spring.io/spring-cloud-commons/reference/spring-cloud-commons/common-abstractions.html).
+
+Cobertura estructural regenerada: **144/1185 temas atómicos**, **1082/1185
+practicables**, **1030/1185 completos en siete pasos** y 409 con señales de
+defecto de sustancia. Los conteos no son una evaluación humana de cada curso ni
+del aprendizaje. T5 ya tenía el detector de cuatro pasos antes del cambio; no
+se contabiliza como tema atómico nuevo.
+
+**Siguiente tema:** Spring Boot M10 T6, “Spring gRPC para comunicación interna
+de alta frecuencia”. Inspecciona el proyecto gRPC ya referido en este mismo
+módulo y contrasta el starter, generación `.proto`, transporte, cliente y pruebas
+con documentación primaria de Spring gRPC compatible con Boot 4.1. Sustituye
+las afirmaciones de rendimiento no medidas por una comparación reproducible y
+mantén la revisión tema por tema antes de publicar un commit separado.

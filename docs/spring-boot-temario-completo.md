@@ -257,6 +257,10 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 4.3: Comprueba que el pedido pertenece al sujeto del token · 10 min
   - ✓ Subtema 4.4: Reenvía el access token desde el Gateway · 10 min
 - [pendiente de migrar] Tema 5: HTTP Interfaces, deadlines y descubrimiento según el entorno
+  - pendiente Subtema 5.1: Declara el contrato HTTP · 10 min
+  - pendiente Subtema 5.2: Corta la espera de una respuesta lenta · 15 min
+  - pendiente Subtema 5.3: Resuelve el nombre del servicio por entorno · 10 min
+  - pendiente Subtema 5.4: Ajusta el cliente al presupuesto de la operación · 5 min
 - [pendiente de migrar] Tema 6: Spring gRPC para comunicación interna de alta frecuencia (Spring Boot 4.1)
 - [pendiente de migrar] Tema 7: DDD para decidir límites y propiedad de datos
 - [pendiente de migrar] Tema 8: Orquestación de microservicios con Temporal y Spring Boot

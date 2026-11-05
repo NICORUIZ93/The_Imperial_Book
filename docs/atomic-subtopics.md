@@ -19,7 +19,7 @@ Temas conformes a cuatro pasos: **144/1185**. Tracks inventariados: **14**.
 | node | 2 | 83 | 6 | 6 |
 | react | 0 | 58 | 0 | 0 |
 | rutaflow | 0 | 29 | 0 | 0 |
-| spring-boot | 40 | 111 | 167 | 134 |
+| spring-boot | 40 | 111 | 171 | 134 |
 
 ## Temas pendientes
 
@@ -1031,7 +1031,7 @@ Temas conformes a cuatro pasos: **144/1185**. Tracks inventariados: **14**.
 
 ### spring-boot
 
-- M10 ### Tema 5: HTTP Interfaces, deadlines y descubrimiento según el entorno: tiene 0 subtemas
+- M10 ### Tema 5: HTTP Interfaces, deadlines y descubrimiento según el entorno: 5.1: faltan deliberateFailure; 5.2: faltan deliberateFailure; 5.3: faltan action, deliberateFailure; 5.4: faltan action, deliberateFailure
 - M10 ### Tema 6: Spring gRPC para comunicación interna de alta frecuencia (Spring Boot 4.1): tiene 0 subtemas
 - M10 ### Tema 7: DDD para decidir límites y propiedad de datos: tiene 0 subtemas
 - M10 ### Tema 8: Orquestación de microservicios con Temporal y Spring Boot: tiene 0 subtemas
