@@ -1690,7 +1690,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "fa6141fe9d698576b85c85e110005572ccc0e673a2bddfb585967c83629ca928",
+    "fingerprint": "42748cefdbe0528da5dc061a0ee0c9f579cbefd039e8eaaee8abaa18540740ba",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10416,9 +10416,9 @@
       {
         "issues": [],
         "module": 12,
-        "tailWords": 114,
+        "tailWords": 0,
         "topic": "Tema 1: Arquitectura del microservicio integrador",
-        "words": 1424
+        "words": 988
       },
       {
         "issues": [],

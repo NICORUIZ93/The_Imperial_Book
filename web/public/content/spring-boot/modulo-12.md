@@ -7,242 +7,137 @@ Los tres temas construyen incrementalmente un único proyecto real, `demo-integr
 
 ### Tema 1: Arquitectura del microservicio integrador
 
-#### Paso 1 · Objetivo y preparación
+**Resultado del tema:** construirás y comprobarás un endpoint que valida una solicitud, pasa por controller → service → repository y guarda una entrega en PostgreSQL. Al final podrás explicar qué hace cada capa con evidencia de una petición HTTP y una fila guardada.
 
-Al finalizar podrás ensamblar la estructura de capas completa (`controller`/`service`/`repository`) de un microservicio real, con una migración Flyway versionada gestionando el esquema, y confirmarlo con un test de integración real contra PostgreSQL vía Testcontainers.
+**¿Por qué es importante?** Separar HTTP, reglas del servicio y persistencia hace que cada cambio tenga un lugar claro. La prueba de extremo a extremo comprueba que esas piezas sí trabajan juntas.
 
-**Conocimiento previo:** Módulos 3 (JPA/Flyway) y 6 (Testcontainers) de este track.
+**Necesitas:** Java 25, Maven Wrapper y Podman o Docker compatible con Testcontainers. Abre [`examples/spring-boot-integrador-rutaflow/`](../../../../examples/spring-boot-integrador-rutaflow/). La práctica ya contiene el proyecto ejecutable; los subtemas indican qué archivo seguir, qué cambiar y cómo comprobarlo.
 
-#### Paso 2 · Contexto y caso real
+#### Subtema 12.1.1: Sigue una petición por las capas · 8 min
 
-**¿Por qué es importante?** Un servicio de entregas real necesita integrar HTTP, base de datos, identidad, eventos y métricas sin esconder responsabilidades: la arquitectura por capas (controller → service → repository) hace explícito qué componente es dueño de cada responsabilidad, en vez de mezclar validación HTTP con lógica de negocio con acceso a datos en una única clase.
+**1. Contexto**
 
-#### Paso 3 · Teoría con analogía
+Una petición no debería decidir cómo se guarda en la base de datos. El controller entiende HTTP; el service aplica la acción del producto; el repository habla con PostgreSQL.
 
-**Conceptos clave:** capas completas del track combinadas, separación clara de responsabilidades.
+**2. Hazlo tú**
 
-El proyecto integrador combina en una única aplicación todas las capas estudiadas: `controller/` (`TareaController`, traduce HTTP hacia/desde DTOs), `service/` (`TareaService`, lógica de negocio sin conocimiento de HTTP), `repository/` (`TareaRepository`, Spring Data JPA), con `db/migration/` conteniendo los scripts versionados de Flyway que gestionan el esquema real de la base de datos, sin `ddl-auto`.
-
-**Analogía:** el proyecto integrador es el ensamblaje final de piezas especializadas construidas por separado a lo largo de un curso de ingeniería, donde cada componente encaja en su lugar dentro de un sistema completo y coherente.
-
-**Diagrama:**
-
-```
-┌── controller/ ──────────┐  TareaController (DTOs, validación HTTP)
-├── service/ ──────────────┤  TareaService (lógica de negocio pura)
-├── repository/ ───────────┤  TareaRepository (Spring Data JPA)
-└── db/migration/ ─────────┘  V1__crear_tarea.sql (Flyway, sin ddl-auto)
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Parte de una carpeta vacía y crea `src/main/java/io/academia/integrador/`:
+Abre `src/main/java/academia/rutaflow/integrador/entrega/` y sigue `EntregaController.java` → `EntregaService.java` → `EntregaRepository.java`. Desde `examples/spring-boot-integrador-rutaflow/` ejecuta:
 
 ```bash
-mkdir demo-integrador
-cd demo-integrador
-# Maven (type=maven-project, por defecto): genera pom.xml y ./mvnw
-curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web,data-jpa,flyway,postgresql,security,actuator -d javaVersion=25 -o app.zip
-# Gradle (alternativa equivalente): genera build.gradle.kts y ./gradlew
-#   curl -fsSL https://start.spring.io/starter.zip -d type=gradle-project-kotlin -d dependencies=web,data-jpa,flyway,postgresql,security,actuator -d javaVersion=25 -o app.zip
-unzip app.zip
-mkdir -p src/main/java/io/academia/integrador/{controller,service,repository}
-mkdir -p src/main/resources/db/migration
-mkdir -p src/test/java/io/academia/integrador
+./scripts/verify-integration.sh
 ```
 
-> **Build con Maven o Gradle:** el proyecto integrador puede generarse con cualquiera de los dos sistemas (cambia el parámetro `type` del Initializr arriba). Para compilar y probar usa `./mvnw test` (Maven) o `./gradlew test` (Gradle); para ejecutar el microservicio, `./mvnw spring-boot:run` o `./gradlew bootRun`. La tabla completa de equivalencias está en el track de Java, Módulo 8, Tema 4.
+```text
+POST /api/entregas
+  JSON → EntregaController → EntregaService → EntregaRepository → PostgreSQL
+  HTTP 201 ← EntregaResponse ← entidad guardada
+```
+
+**Resultado esperado:** la prueba de integración informa 2 pruebas y 0 fallos; la primera petición devuelve HTTP 201 y una URL `Location`.
+
+**Fallo deliberado:** cambia temporalmente `@PostMapping` por `@PutMapping` y ejecuta `./scripts/verify-integration.sh`. **Diagnóstico:** la prueba recibe un estado distinto a 201 porque envía POST. Restaura `@PostMapping`.
+
+**3. Entiende**
+
+El flujo se puede seguir leyendo los archivos: el controller convierte la entrada y la respuesta HTTP, el service coordina la operación y el repository persiste. El diagrama representa este laboratorio; aún no incluye seguridad ni eventos.
+
+**4. Cierra**
+
+Sin mirar los archivos, explica qué clase recibe HTTP y cuál guarda los datos. Luego señala la línea de código que conecta cada paso.
+
+#### Subtema 12.1.2: Deja que Flyway cree la tabla · 10 min
+
+**1. Contexto**
+
+La entidad Java describe los datos que usa la app. La migración SQL define el cambio que se aplica a la base. Así, el esquema no depende de que Hibernate invente tablas al arrancar.
+
+**2. Hazlo tú**
+
+Compara `src/main/resources/db/migration/V1__crear_entrega.sql` con `entrega/Entrega.java`. Ejecuta `./mvnw -q test`.
 
 ```sql
--- src/main/resources/db/migration/V1__crear_tarea.sql
-CREATE TABLE tarea (
-    id BIGSERIAL PRIMARY KEY,
-    descripcion VARCHAR(200) NOT NULL,
-    propietario VARCHAR(100) NOT NULL,
-    completada BOOLEAN NOT NULL DEFAULT FALSE
+CREATE TABLE entrega (
+    id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+    destinatario VARCHAR(200) NOT NULL,
+    estado VARCHAR(30) NOT NULL
 );
 ```
 
-```java
-// src/main/java/io/academia/integrador/Tarea.java
-package io.academia.integrador;
+En `application.properties`, `spring.jpa.hibernate.ddl-auto=validate` pide comprobar que la tabla coincide; Flyway aplica la migración.
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+**Resultado esperado:** la app inicia con PostgreSQL y Hibernate valida la tabla creada por `V1__crear_entrega.sql`.
 
-@Entity
-public class Tarea {
-    @Id
-    @GeneratedValue
-    private Long id;
-    private String descripcion;
-    private String propietario;
-    private boolean completada;
+**Fallo deliberado:** renombra la migración para que ya no empiece con `V1__` y vuelve a ejecutar `./scripts/verify-integration.sh`. **Diagnóstico:** Flyway no la reconoce y la validación de Hibernate falla porque falta `entrega`. Restaura el nombre `V1__crear_entrega.sql`.
 
-    protected Tarea() {}
+**3. Entiende**
 
-    public Tarea(String descripcion, String propietario) {
-        this.descripcion = descripcion;
-        this.propietario = propietario;
-    }
+La migración deja un historial de cambios del esquema. La entidad y el SQL deben coincidir: por ejemplo, ambos limitan `destinatario` a 200 caracteres.
 
-    public Long getId() { return id; }
-    public String getDescripcion() { return descripcion; }
-    public String getPropietario() { return propietario; }
-}
+**4. Cierra**
+
+Di qué archivo define la tabla y qué propiedad evita que Hibernate la cree por su cuenta.
+
+#### Subtema 12.1.3: Valida la solicitud antes de guardar · 10 min
+
+**1. Contexto**
+
+Una entrega sin destinatario no sirve. Validar la entrada en el borde HTTP permite responder con un error claro antes de tocar la base.
+
+**2. Hazlo tú**
+
+Abre `entrega/CrearEntregaRequest.java` y `entrega/EntregaController.java`. Envía un cuerpo válido y uno vacío:
+
+```json
+{"destinatario":"Tienda Norte"}
 ```
 
-```java
-// src/main/java/io/academia/integrador/repository/TareaRepository.java
-package io.academia.integrador.repository;
-
-import io.academia.integrador.Tarea;
-import org.springframework.data.jpa.repository.JpaRepository;
-
-public interface TareaRepository extends JpaRepository<Tarea, Long> {}
+```json
+{"destinatario":" "}
 ```
 
-```java
-// src/main/java/io/academia/integrador/service/TareaService.java
-package io.academia.integrador.service;
+El test `destinatarioVacioSeRechazaAntesDeGuardar` envía el segundo cuerpo por HTTP real y comprueba que recibe 400. Ejecuta `./scripts/verify-integration.sh`.
 
-import io.academia.integrador.Tarea;
-import io.academia.integrador.repository.TareaRepository;
-import org.springframework.stereotype.Service;
+**Resultado esperado:** destinatario válido produce 201; destinatario vacío produce 400 y no se guarda.
 
-@Service
-public class TareaService {
-    private final TareaRepository repository;
+**Fallo deliberado:** quita `@Valid` de `crear(...)` y ejecuta `./scripts/verify-integration.sh`. **Diagnóstico:** la validación de `@NotBlank` deja de activarse y la prueba que espera 400 falla. Restaura `@Valid`.
 
-    public TareaService(TareaRepository repository) {
-        this.repository = repository;
-    }
+**3. Entiende**
 
-    public Tarea crear(String descripcion, String propietario) {
-        return repository.save(new Tarea(descripcion, propietario));
-    }
-}
-```
+`CrearEntregaRequest` es el formato de entrada; `EntregaResponse` es la salida. Separarlos evita exponer directamente la entidad como contrato HTTP. `@NotBlank` rechaza texto vacío o compuesto por espacios.
 
-```java
-// src/main/java/io/academia/integrador/controller/TareaController.java
-package io.academia.integrador.controller;
+**4. Cierra**
 
-import io.academia.integrador.Tarea;
-import io.academia.integrador.service.TareaService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+Explica por qué el cuerpo HTTP no se pasa directamente al repository. Identifica la anotación que activa la validación.
 
-@RestController
-@RequestMapping("/api/tareas")
-public class TareaController {
-    private final TareaService servicio;
+#### Subtema 12.1.4: Comprueba HTTP y PostgreSQL juntos · 12 min
 
-    public TareaController(TareaService servicio) {
-        this.servicio = servicio;
-    }
+**1. Contexto**
 
-    @PostMapping
-    public ResponseEntity<Long> crear(@RequestParam String descripcion) {
-        Tarea tarea = servicio.crear(descripcion, "sistema");
-        return ResponseEntity.status(201).body(tarea.getId());
-    }
-}
-```
+Una prueba del controller aislado no confirma que SQL, migración y base de datos funcionen en conjunto. Aquí la prueba arranca la aplicación y PostgreSQL real en un contenedor temporal.
 
-Confirma con `@SpringBootTest` + Testcontainers (el mismo patrón real de PostgreSQL efímero del Módulo 6) que el endpoint persiste de verdad, con el esquema gestionado por Flyway:
+**2. Hazlo tú**
 
-```java
-// src/test/java/io/academia/integrador/ArquitecturaIntegradaTest.java
-package io.academia.integrador;
-
-import io.academia.integrador.repository.TareaRepository;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-@Testcontainers
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class ArquitecturaIntegradaTest {
-
-    @Container
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine");
-
-    @DynamicPropertySource
-    static void propiedades(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
-    }
-
-    @LocalServerPort
-    private int puerto;
-
-    @Autowired
-    private TestRestTemplate restTemplate;
-
-    @Autowired
-    private TareaRepository tareaRepository;
-
-    @Test
-    void elEndpointPersisteRealmenteContraPostgresConEsquemaDeFlyway() {
-        var respuesta = restTemplate.postForEntity(
-            "http://localhost:" + puerto + "/api/tareas?descripcion=Entregar+paquete", null, Long.class);
-
-        assertThat(respuesta.getStatusCode().value()).isEqualTo(201);
-        assertThat(tareaRepository.findById(respuesta.getBody())).isPresent();
-        assertThat(tareaRepository.findById(respuesta.getBody()).get().getDescripcion())
-            .isEqualTo("Entregar paquete");
-    }
-}
-```
+Abre `src/test/java/academia/rutaflow/integrador/entrega/ArquitecturaIntegradaTest.java`. Localiza `@Testcontainers`, `@SpringBootTest`, la petición de `HttpClient` y la comprobación `entregas.existsByDestinatario(...)`. Corre:
 
 ```bash
-./mvnw test -Dtest=ArquitecturaIntegradaTest
+./scripts/verify-integration.sh
 ```
 
-**Resultado esperado:** `BUILD SUCCESS` con el test en verde: contra un PostgreSQL real y efímero (Testcontainers, no una base simulada), la petición HTTP real crea una `Tarea`, Flyway gestiona el esquema `tarea` desde `V1__crear_tarea.sql`, y `TareaRepository.findById(...)` confirma que el registro fue persistido de verdad con la descripción correcta.
+**Resultado esperado:** ambas pruebas pasan; una verifica HTTP 201 y persistencia, la otra verifica HTTP 400 sin guardar el destinatario vacío.
 
-**Fallo deliberado:** borra `src/main/resources/db/migration/V1__crear_tarea.sql` (sin agregar `spring.jpa.hibernate.ddl-auto` como alternativa) y ejecuta de nuevo el test. La aplicación falla al arrancar con un error real de Hibernate (`org.hibernate.tool.schema.spi.SchemaManagementException: Schema-validation: missing table [tarea]`, el mismo error visto en el Módulo 3) — diagnostica confirmando que sin una migración versionada, no existe ningún mecanismo que cree la tabla `tarea`, y la aplicación se niega a arrancar en vez de fallar silenciosamente más tarde. Restaura el archivo antes de continuar.
+**Fallo deliberado:** cambia en la prueba el puerto destino por `port + 1` y ejecútala. **Diagnóstico:** la conexión HTTP falla porque el servidor de prueba escucha en `port`. Restaura `port`.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**3. Entiende**
 
-1. Agrega un segundo endpoint `GET /api/tareas/{id}` y un test de integración que confirme, contra el mismo contenedor Postgres, que devuelve la tarea recién creada.
-2. Agrega una segunda migración `V2__agregar_indice_propietario.sql` con un índice sobre `propietario`, y confirma con un test que Flyway aplica ambas migraciones en orden al arrancar.
-3. Provoca deliberadamente un conflicto de versión de Flyway (dos migraciones `V2__...`) y documenta el error real que Flyway produce al detectarlo.
-4. Escribe de memoria (sin mirar) la estructura de paquetes `controller/service/repository` y un test `@SpringBootTest` + Testcontainers que confirme persistencia real. Compara después contra el patrón del Paso 4.
+La app recibe una petición de red local, Flyway prepara PostgreSQL y el repository lee la fila después de crearla. Testcontainers ofrece la base real para esta prueba; no es una base simulada. En macOS, el script configura la conexión del runtime Podman antes de invocar Maven.
 
-**Pista:** `Testcontainers` descarga y arranca un PostgreSQL real la primera vez que ejecutas el test — las ejecuciones posteriores reutilizan la imagen ya descargada, pero cada test sigue arrancando un contenedor nuevo y efímero, garantizando aislamiento entre ejecuciones.
+**4. Cierra**
 
-#### Paso 6 · Práctica independiente
+Guarda como evidencia el resultado de las dos pruebas y dibuja el recorrido desde JSON hasta la fila. Si algo falla, anota primero el primer error y el archivo responsable; no tapes un problema de conexión cambiando el código de negocio.
 
-**Completa el código:** rellena el espacio con el método de `JpaRepository` que persiste una nueva entidad:
+**Siguiente:** el Tema 2 añadirá seguridad, persistencia y observabilidad al servicio. Este primer corte no configura autenticación ni métricas.
 
-```java
-public Tarea crear(String descripcion, String propietario) {
-    return repository.____(new Tarea(descripcion, propietario));
-}
-```
-
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, las tres capas (`controller`/`service`/`repository`) de un endpoint que crea una entidad, y un test `@SpringBootTest` con Testcontainers que confirme la persistencia real. Compara después contra el patrón del Paso 4.
-
-#### Paso 7 · Cierre y evidencia
-
-Ya ensamblas una arquitectura por capas real, con esquema gestionado por Flyway y verificada contra PostgreSQL real vía Testcontainers. El siguiente tema añade seguridad JWT y una métrica de negocio a este mismo endpoint. **Evidencia:** entrega el resultado de `ArquitecturaIntegradaTest` en verde, y el `SchemaManagementException` real que produce el fallo deliberado. Fuente oficial: [Spring Boot Reference](https://docs.spring.io/spring-boot/reference/).
-
-**Errores comunes:** mezclar lógica de negocio dentro del controller; confiar en `ddl-auto` en vez de migraciones versionadas para el proyecto final.
-
-**Cuándo no usarlo:** para un script de un único uso sin necesidad de evolución futura del esquema, la separación completa en capas y migraciones versionadas es una inversión desproporcionada.
+**Fuentes:** [migraciones SQL de Flyway en Spring Boot](https://docs.spring.io/spring-boot/how-to/data-initialization.html), [Testcontainers con PostgreSQL](https://java.testcontainers.org/modules/databases/postgres/), [JUnit 5 con Testcontainers](https://java.testcontainers.org/test_framework_integration/junit_5/) y [runtime Podman](https://java.testcontainers.org/supported_docker_environment/).
 
 ### Tema 2: Integrando seguridad, persistencia y observabilidad
 

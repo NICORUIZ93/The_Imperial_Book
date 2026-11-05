@@ -1346,9 +1346,28 @@ Fuentes primarias: [probes de Spring Boot](https://docs.spring.io/spring-boot/re
 [pruebas MVC de Spring Boot 4.1.2](https://docs.spring.io/spring-boot/api/java/org/springframework/boot/webmvc/test/autoconfigure/AutoConfigureMockMvc.html)
 y [probes de Kubernetes](https://kubernetes.io/docs/concepts/workloads/pods/probes/).
 
-Tras regenerar y validar, la cobertura atómica es 152/1185 (Spring Boot 48/111),
-1083/1185 temas practicables, 409 temas con defectos de sustancia y señales de
-profundidad en 248. Continúa con Spring Boot M12 T1, “Arquitectura del
-microservicio integrador”, en `web/public/content/spring-boot/modulo-12.md`.
-Comprueba primero el commit de T3 y conserva commits y publicación separados por
+Spring Boot M12 T1, “Arquitectura del microservicio integrador”, quedó reescrito
+en cuatro subtemas atómicos con Contexto → Hazlo tú → Entiende → Cierra. Se creó
+`examples/spring-boot-integrador-rutaflow/`: app Boot 4.1.2 / Java 25 con capas
+controller/service/repository, DTO y validación, migración Flyway y PostgreSQL
+real por Testcontainers. `./scripts/verify-integration.sh` pasó: 2 pruebas, 0
+fallos; una confirma POST 201 y persistencia, la otra rechazo 400 sin guardar.
+Como fallo deliberado se cambió POST a PUT: ambas pruebas fallaron con 405; se
+restauró POST y la suite volvió a pasar. Una ejecución directa de Maven sin el
+script no encontró Podman, por lo que la guía dirige a usar el script que prepara
+el socket local. El laboratorio todavía no configura autenticación, eventos ni
+métricas; son parte de T2.
+
+Fuentes primarias de M12 T1: [inicialización SQL en Spring Boot](https://docs.spring.io/spring-boot/how-to/data-initialization.html),
+[Testcontainers PostgreSQL](https://java.testcontainers.org/modules/databases/postgres/),
+[JUnit 5 con Testcontainers](https://java.testcontainers.org/test_framework_integration/junit_5/)
+y [configuración del runtime Podman](https://java.testcontainers.org/supported_docker_environment/).
+
+Tras regenerar reportes, la cobertura atómica es 153/1185 (Spring Boot 49/111),
+1082/1185 temas practicables, 409 temas con defectos de sustancia y señales de
+profundidad en 249. `./scripts/validate.sh` pasó: 23 pruebas Python (4 omitidas)
+y validaciones de contenido, currículo, fuentes, laboratorios y trazabilidad.
+Estas cifras son estructurales; no demuestran ejecución o revisión humana de los
+otros temas. El siguiente tema es Spring Boot M12 T2, “Integrando seguridad,
+persistencia y observabilidad”. Conserva commits y publicación separados por
 tema. Mantén fuera los dos cambios locales de Flutter.

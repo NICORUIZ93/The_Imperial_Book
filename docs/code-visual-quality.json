@@ -99,10 +99,10 @@
     "spring-boot": {
       "topics": 111,
       "code": 106,
-      "commentedCode": 52,
+      "commentedCode": 51,
       "mermaid": 42,
       "archifyVisual": 2,
-      "asciiVisual": 7,
+      "asciiVisual": 6,
       "misleadingDiagramLabel": 0,
       "filePath": 111,
       "runCommand": 111,
@@ -2617,6 +2617,13 @@
       "track": "spring-boot",
       "module": 10,
       "topic": "Tema 12: Contract testing entre productor y consumidor",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 12,
+      "topic": "Tema 1: Arquitectura del microservicio integrador",
       "missingCode": false,
       "missingComments": true
     },

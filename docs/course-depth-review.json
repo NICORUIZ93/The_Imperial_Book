@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 248,
+    "topicsWithSignals": 249,
     "newLaboratories": 25
   },
   "priorities": {
@@ -12533,7 +12533,9 @@
       "title": "Tema 1: Arquitectura del microservicio integrador",
       "file": "web/public/content/spring-boot/modulo-12.md",
       "line": 8,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -12543,7 +12545,7 @@
       "module": 12,
       "title": "Tema 2: Integrando seguridad, persistencia y observabilidad",
       "file": "web/public/content/spring-boot/modulo-12.md",
-      "line": 247,
+      "line": 142,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -12554,7 +12556,7 @@
       "module": 12,
       "title": "Tema 3: Cierre del track y próximos pasos",
       "file": "web/public/content/spring-boot/modulo-12.md",
-      "line": 464,
+      "line": 359,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

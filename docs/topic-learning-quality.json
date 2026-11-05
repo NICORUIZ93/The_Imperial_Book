@@ -224,15 +224,15 @@
       "topics": 111,
       "explanation": 111,
       "code": 106,
-      "visual": 53,
+      "visual": 52,
       "filePath": 111,
-      "runCommand": 105,
+      "runCommand": 104,
       "expectedResult": 111,
       "practice": 105,
-      "project": 88,
+      "project": 87,
       "modelMental": 111,
-      "limitsDecision": 95,
-      "practicable": 83,
+      "limitsDecision": 94,
+      "practicable": 82,
       "genericScaffold": 0,
       "repeatedDemo": 0
     }
@@ -24361,18 +24361,18 @@
         "criteria": {
           "explanation": true,
           "code": true,
-          "visual": true,
+          "visual": false,
           "filePath": true,
-          "runCommand": true,
+          "runCommand": false,
           "expectedResult": true,
           "practice": true,
-          "project": true,
+          "project": false,
           "modelMental": true,
-          "limitsDecision": true
+          "limitsDecision": false
         },
         "classification": {
-          "rubricScore": 16,
-          "practicable": true,
+          "rubricScore": 9,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }

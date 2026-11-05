@@ -93,10 +93,10 @@
     },
     "spring-boot": {
       "topics": 111,
-      "completeTopics": 48,
-      "topicsWith3to6Subtopics": 63,
-      "subtopics": 211,
-      "completeSubtopics": 166
+      "completeTopics": 49,
+      "topicsWith3to6Subtopics": 64,
+      "subtopics": 215,
+      "completeSubtopics": 170
     }
   },
   "topics": {
@@ -13394,9 +13394,66 @@
       {
         "module": 12,
         "topic": "### Tema 1: Arquitectura del microservicio integrador",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 4,
+        "subtopics": [
+          {
+            "id": "12.1",
+            "title": "#### Subtema 12.1.1: Sigue una petición por las capas · 8 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "12.1",
+            "title": "#### Subtema 12.1.2: Deja que Flyway cree la tabla · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "12.1",
+            "title": "#### Subtema 12.1.3: Valida la solicitud antes de guardar · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "12.1",
+            "title": "#### Subtema 12.1.4: Comprueba HTTP y PostgreSQL juntos · 12 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 12,
