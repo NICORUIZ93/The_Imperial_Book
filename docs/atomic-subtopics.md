@@ -2,7 +2,7 @@
 
 > Auditoría estructural. Un encabezado o criterio detectado no demuestra que el ejemplo se haya ejecutado ni que la explicación sea pedagógicamente suficiente.
 
-Temas conformes a cuatro pasos: **156/1185**. Tracks inventariados: **14**.
+Temas conformes a cuatro pasos: **157/1185**. Tracks inventariados: **14**.
 
 | Track | Temas conformes | Temas inventariados | Subtemas detectados | Subtemas con estructura completa |
 |---|---:|---:|---:|---:|
@@ -19,7 +19,7 @@ Temas conformes a cuatro pasos: **156/1185**. Tracks inventariados: **14**.
 | node | 2 | 83 | 6 | 6 |
 | react | 0 | 58 | 0 | 0 |
 | rutaflow | 0 | 29 | 0 | 0 |
-| spring-boot | 52 | 111 | 227 | 182 |
+| spring-boot | 53 | 111 | 231 | 186 |
 
 ## Temas pendientes
 
@@ -1034,7 +1034,6 @@ Temas conformes a cuatro pasos: **156/1185**. Tracks inventariados: **14**.
 - M10 ### Tema 5: HTTP Interfaces, deadlines y descubrimiento según el entorno: 5.1: faltan deliberateFailure; 5.2: faltan deliberateFailure; 5.3: faltan action, deliberateFailure; 5.4: faltan action, deliberateFailure
 - M10 ### Tema 6: Spring gRPC, contrato HTTP/2 y evolución segura: 6.1: faltan deliberateFailure; 6.2: faltan deliberateFailure; 6.3: faltan deliberateFailure; 6.4: faltan action, deliberateFailure
 - M10 ### Tema 7: DDD para decidir límites y propiedad de datos: 7.1: faltan deliberateFailure; 7.2: faltan deliberateFailure; 7.3: faltan action, deliberateFailure; 7.4: faltan deliberateFailure
-- M13 ### Tema 2: Recuperación implica duplicación segura: tiene 0 subtemas
 - M13 ### Tema 3: Contratos ejecutables protegen despliegues independientes: tiene 0 subtemas
 - M13 ### Tema 4: Observabilidad sirve a un objetivo y a una decisión: tiene 0 subtemas
 - M14 ### Tema 1: CRUD API y contratos: tiene 0 subtemas

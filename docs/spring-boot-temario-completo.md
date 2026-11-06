@@ -5,7 +5,7 @@
 **Proyecto continuo:** RutaFlow: plataforma de entregas basada en servicios.
 **Prerrequisito de entrada:** Java, HTTP, SQL y pruebas; los módulos iniciales vuelven a presentar cada herramienta..
 **Duración objetivo:** temas de 20–45 minutos; cada tema se divide en 3–6 acciones de 5–15 minutos.
-**Estado estructural:** 52/111 temas migrados; auditoría estructural actualizada el 2026-11-03.
+**Estado estructural:** 53/111 temas migrados; auditoría estructural actualizada el 2026-11-03.
 
 ## Índice de módulos y temas
 
@@ -346,7 +346,11 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 13.1.2: Observa una llamada interna con `this` · 8 min
   - ✓ Subtema 13.1.3: Corrige el límite extrayendo otro bean · 10 min
   - ✓ Subtema 13.1.4: Comprueba la frontera antes de añadir escrituras · 8 min
-- [pendiente de migrar] Tema 2: Recuperación implica duplicación segura
+- [4 pasos] Tema 2: Recuperación implica duplicación segura
+  - ✓ Subtema 13.2.1: Deja que la base imponga la clave única · 8 min
+  - ✓ Subtema 13.2.2: Registra un intento sin lanzar una excepción · 8 min
+  - ✓ Subtema 13.2.3: Fuerza una carrera entre dos solicitudes · 10 min
+  - ✓ Subtema 13.2.4: Separa reintentos HTTP de reenvíos Kafka · 10 min
 - [pendiente de migrar] Tema 3: Contratos ejecutables protegen despliegues independientes
 - [pendiente de migrar] Tema 4: Observabilidad sirve a un objetivo y a una decisión
 
@@ -502,7 +506,7 @@ La tabla registra presencia de áreas en el inventario del track, no profundidad
 
 ### Huecos y límites reportados
 
-- El repositorio contiene 111 temas en 26 módulos; 52 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
+- El repositorio contiene 111 temas en 26 módulos; 53 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
 - No hay base para afirmar que el track esté completo: la comparación con la fuente de referencia está pendiente de revisión humana módulo por módulo.
 - Los elementos de la fuente que todavía deben verificarse de forma explícita están enumerados en la tabla anterior; cualquier técnica crítica que no tenga tema propio debe añadirse conservando el currículo base.
 - La ejecución de ejemplos, el comportamiento con brokers/plataformas reales y la calidad pedagógica humana se registran por separado.

@@ -93,10 +93,10 @@
     },
     "spring-boot": {
       "topics": 111,
-      "completeTopics": 52,
-      "topicsWith3to6Subtopics": 67,
-      "subtopics": 227,
-      "completeSubtopics": 182
+      "completeTopics": 53,
+      "topicsWith3to6Subtopics": 68,
+      "subtopics": 231,
+      "completeSubtopics": 186
     }
   },
   "topics": {
@@ -13650,9 +13650,66 @@
       {
         "module": 13,
         "topic": "### Tema 2: Recuperación implica duplicación segura",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 4,
+        "subtopics": [
+          {
+            "id": "13.2",
+            "title": "#### Subtema 13.2.1: Deja que la base imponga la clave única · 8 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "13.2",
+            "title": "#### Subtema 13.2.2: Registra un intento sin lanzar una excepción · 8 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "13.2",
+            "title": "#### Subtema 13.2.3: Fuerza una carrera entre dos solicitudes · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "13.2",
+            "title": "#### Subtema 13.2.4: Separa reintentos HTTP de reenvíos Kafka · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 13,

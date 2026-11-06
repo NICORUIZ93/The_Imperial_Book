@@ -99,8 +99,8 @@
     "spring-boot": {
       "topics": 111,
       "code": 106,
-      "commentedCode": 48,
-      "mermaid": 40,
+      "commentedCode": 47,
+      "mermaid": 39,
       "archifyVisual": 2,
       "asciiVisual": 5,
       "misleadingDiagramLabel": 0,
@@ -2645,6 +2645,13 @@
       "track": "spring-boot",
       "module": 13,
       "topic": "Tema 1: `@Transactional` funciona en una frontera, no como encantamiento",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 13,
+      "topic": "Tema 2: Recuperación implica duplicación segura",
       "missingCode": false,
       "missingComments": true
     },

@@ -1403,12 +1403,21 @@ Java 25, H2 y pruebas reales de `TransactionSynchronizationManager`. El script
 self-invocation y llamada entre beans. Al quitar `@Transactional` del bean de
 trabajo, falló una prueba; se restauró y las tres volvieron a pasar.
 
-Tras regenerar reportes, la cobertura atómica queda en 156/1185 (Spring Boot
-52/111); la auditoría marca 1079/1185 temas practicables, 409 temas con defectos
-de sustancia y señales de profundidad en 252. `./scripts/validate.sh` pasó: 23
+Spring Boot M13 T2, “Recuperación implica duplicación segura”, ahora usa
+`examples/spring-boot-idempotency-rutaflow/`: PostgreSQL 16, migración con
+restricción única, `JdbcTemplate` y `INSERT ... ON CONFLICT DO NOTHING`. Dos
+pruebas pasan, incluida una carrera de dos threads sincronizados y un reintento
+secuencial. Al mutar la sentencia a `DO UPDATE`, fallaron las dos aserciones; se
+restauró `DO NOTHING`. El tema conecta este caso con el outbox/inbox del lab
+`examples/spring-kafka-rutaflow/`; se ejecutó su suite: 10 pruebas, 0 fallos
+(Kafka embebido y H2; no prueba PostgreSQL ni varias instancias).
+
+Tras regenerar reportes, la cobertura atómica queda en 157/1185 (Spring Boot
+53/111); la auditoría marca 1078/1185 temas practicables, 409 temas con defectos
+de sustancia y señales de profundidad en 253. `./scripts/validate.sh` pasó: 23
 pruebas Python (4 omitidas) y validaciones de contenido, currículo, fuentes,
 laboratorios y trazabilidad. Las cifras son estructurales; no prueban ejecución
-ni revisión humana del resto del currículo. M12 T1/T2/T3 se publicaron como
-`bc0ba4d0`, `2753107f` y `d4745f18`. Publica M13 T1 como un commit separado;
-el siguiente tema es M13 T2, “Recuperación implica duplicación segura”. Mantén
-fuera los dos cambios locales de Flutter.
+ni revisión humana del resto del currículo. M13 T1 se publicó en `1bbb14cc`; T2
+se publica como cambio separado. El siguiente tema es M13 T3, “Contratos
+ejecutables protegen despliegues independientes”. Mantén fuera los dos cambios
+locales de Flutter.

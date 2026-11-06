@@ -1690,7 +1690,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "b9ed8d2a63a2c7d80c4a38e242b7b5b9275c181e5335e662ea3904d82f5f183c",
+    "fingerprint": "b1c23ee31ad3a0fd594b34a473a777b26c5f765277a5707142e82566f1b5aa82",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10444,9 +10444,9 @@
       {
         "issues": [],
         "module": 13,
-        "tailWords": 188,
+        "tailWords": 0,
         "topic": "Tema 2: Recuperación implica duplicación segura",
-        "words": 1390
+        "words": 911
       },
       {
         "issues": [],

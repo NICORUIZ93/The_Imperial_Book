@@ -14,10 +14,10 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | Ejecución | 1117 | 68 |
 | Resultado | 1183 | 2 |
 | Modificación | 1130 | 55 |
-| Conexión con un proyecto | 1095 | 90 |
+| Conexión con un proyecto | 1094 | 91 |
 | Modelo mental | 1185 | 0 |
 | Límites | 1126 | 59 |
-| **Perfil de criterios detectado** | **1079** | **106** |
+| **Perfil de criterios detectado** | **1078** | **107** |
 
 ## Prioridad por track
 
@@ -36,7 +36,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | node | 83 | 0 | 0 | 0 | 0 | 1 | 2 | 1 |
 | react | 58 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | rutaflow | 29 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| spring-boot | 111 | 5 | 0 | 10 | 0 | 7 | 27 | 17 |
+| spring-boot | 111 | 5 | 0 | 10 | 0 | 7 | 28 | 17 |
 
 ## Pendientes por tema
 
@@ -124,6 +124,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 - [spring-boot · módulo 12](../web/public/content/spring-boot/modulo-12.md) · Tema 2: Integra seguridad JWT y observabilidad: ejecución, conexión con un proyecto.
 - [spring-boot · módulo 12](../web/public/content/spring-boot/modulo-12.md) · Tema 3: Cierra el servicio con evidencia y próximos pasos: ejecución, conexión con un proyecto.
 - [spring-boot · módulo 13](../web/public/content/spring-boot/modulo-13.md) · Tema 1: `@Transactional` funciona en una frontera, no como encantamiento: ejecución, modificación, conexión con un proyecto.
+- [spring-boot · módulo 13](../web/public/content/spring-boot/modulo-13.md) · Tema 2: Recuperación implica duplicación segura: conexión con un proyecto.
 - [spring-boot · módulo 21](../web/public/content/spring-boot/modulo-21.md) · Tema 1: Productor, tópico, key y consumidor: conexión con un proyecto, límites.
 - [spring-boot · módulo 21](../web/public/content/spring-boot/modulo-21.md) · Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia: conexión con un proyecto.
 - [spring-boot · módulo 21](../web/public/content/spring-boot/modulo-21.md) · Tema 3: Outbox transaccional y flujo de negocio: conexión con un proyecto.

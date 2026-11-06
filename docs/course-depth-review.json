@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 252,
+    "topicsWithSignals": 253,
     "newLaboratories": 25
   },
   "priorities": {
@@ -12585,7 +12585,9 @@
       "title": "Tema 2: Recuperación implica duplicación segura",
       "file": "web/public/content/spring-boot/modulo-13.md",
       "line": 136,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -12595,7 +12597,7 @@
       "module": 13,
       "title": "Tema 3: Contratos ejecutables protegen despliegues independientes",
       "file": "web/public/content/spring-boot/modulo-13.md",
-      "line": 326,
+      "line": 258,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -12606,7 +12608,7 @@
       "module": 13,
       "title": "Tema 4: Observabilidad sirve a un objetivo y a una decisión",
       "file": "web/public/content/spring-boot/modulo-13.md",
-      "line": 454,
+      "line": 386,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

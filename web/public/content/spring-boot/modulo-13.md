@@ -135,193 +135,125 @@ Entrega el resultado de las tres pruebas y explica por qué `@Transactional` no 
 
 ### Tema 2: Recuperación implica duplicación segura
 
-#### Paso 1 · Objetivo y preparación
+**Resultado del tema:** probarás que dos solicitudes simultáneas con la misma clave generan una sola fila en PostgreSQL; luego distinguirás idempotencia HTTP de la deduplicación de eventos Kafka.
 
-Al finalizar podrás demostrar, con dos threads reales compitiendo por la misma clave de idempotencia contra una restricción única de base de datos, que solo uno de los dos gana la carrera — la garantía real que evita procesar dos veces la misma operación tras un reintento.
+**¿Por qué es importante?** Un timeout puede ocurrir después de guardar. El cliente reintenta sin saber si su pedido se creó; una clave persistida evita ejecutar el mismo efecto otra vez.
 
-**Conocimiento previo:** Tema 1 de este módulo; Módulo 3 de este track (JPA).
+**Necesitas:** Módulo 3 (SQL) y Módulo 8 de Spring Boot (Kafka). Abre [`examples/spring-boot-idempotency-rutaflow/`](../../../../examples/spring-boot-idempotency-rutaflow/). La prueba de la carrera usa PostgreSQL real en Testcontainers.
 
-#### Paso 2 · Contexto y caso real
+#### Subtema 13.2.1: Deja que la base imponga la clave única · 8 min
 
-**¿Por qué es importante?** Un timeout después del commit deja el resultado ambiguo desde la perspectiva del cliente: el cliente repite la petición, y el servidor debe reconocer que es la misma intención, no una segunda operación distinta. Reintentar mejora la disponibilidad, pero sin una identidad de operación explícita, multiplica los efectos.
+**1. Contexto**
 
-#### Paso 3 · Teoría con analogía
+Un `find` seguido de `save` tiene una ventana de carrera: dos solicitudes pueden leer “no existe” antes de insertar. La restricción única se evalúa dentro de PostgreSQL.
 
-**Conceptos clave:** idempotency key, restricción única, transactional outbox, at-least-once.
+**2. Hazlo tú**
 
-Guarda la clave de idempotencia asociada a principal, operación y hash del request en la MISMA transacción del efecto de negocio. Una restricción única de base de datos decide la carrera entre dos intentos concurrentes; un `find` previo (verificar si la clave ya existe antes de insertar) no basta, porque dos threads pueden pasar ese `find` simultáneamente antes de que cualquiera de los dos inserte. Guardar la entidad y llamar `kafkaTemplate.send(...)` en pasos separados NO es una transacción atómica entre PostgreSQL y Kafka; el patrón transactional outbox guarda el evento junto al agregado en la misma transacción, y un relay separado lo publica después, garantizando at-least-once (el consumidor debe deduplicar por `eventId`).
-
-**Analogía:** el outbox es el libro de correspondencia escrito en la misma operación que el pedido. El mensajero puede copiar una entrega, pero el destinatario reconoce el número de expediente y descarta la copia.
-
-**Diagrama:**
-
-```mermaid
-sequenceDiagram
-  participant T1 as Thread A (reintento)
-  participant T2 as Thread B (reintento)
-  participant DB as Restricción única (idempotency_key)
-  T1->>DB: INSERT clave K
-  T2->>DB: INSERT clave K
-  DB-->>T1: OK (primero en llegar)
-  DB-->>T2: DataIntegrityViolationException
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Continuando en `demo-consistencia` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `mkdir demo-idempotencia && cd demo-idempotencia && curl -fsSL https://start.spring.io/starter.zip -d dependencies=web,data-jpa,h2 -d javaVersion=25 -o app.zip && unzip app.zip`), crea `src/main/java/io/academia/consistencia/idempotencia/`:
+Abre `src/main/resources/db/migration/V1__create_idempotency_record.sql` y revisa `operation_key ... UNIQUE`. Corre:
 
 ```bash
-mkdir -p src/main/java/io/academia/consistencia/idempotencia
+./scripts/verify-idempotency.sh
 ```
 
-```java
-// src/main/java/io/academia/consistencia/idempotencia/RegistroIdempotencia.java
-package io.academia.consistencia.idempotencia;
+**Resultado esperado:** Flyway crea la tabla con clave única y las dos pruebas pasan.
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
-import jakarta.persistence.Column;
+**Fallo deliberado:** quita `UNIQUE` de la migración y ejecuta el script. **Diagnóstico:** PostgreSQL rechaza `ON CONFLICT (operation_key)` porque no encuentra una restricción única que respalde esa decisión. Restaura `UNIQUE`.
 
-@Entity
-@Table(name = "registro_idempotencia", uniqueConstraints = @UniqueConstraint(columnNames = "clave"))
-public class RegistroIdempotencia {
-    @Id
-    @GeneratedValue
-    private Long id;
+**3. Entiende**
 
-    @Column(unique = true, nullable = false)
-    private String clave;
+La aplicación no hace una consulta previa para adivinar qué request ganará. PostgreSQL conserva la regla incluso cuando dos threads llegan casi juntos.
 
-    protected RegistroIdempotencia() {}
+**4. Cierra**
 
-    public RegistroIdempotencia(String clave) {
-        this.clave = clave;
-    }
-}
+Identifica el campo único y el archivo de migración que lo crea.
+
+#### Subtema 13.2.2: Registra un intento sin lanzar una excepción · 8 min
+
+**1. Contexto**
+
+Capturar una violación de unicidad dentro de una transacción puede dejarla marcada para rollback. PostgreSQL ofrece `ON CONFLICT` para que el duplicado sea un resultado normal de la sentencia.
+
+**2. Hazlo tú**
+
+Abre `src/main/java/academia/rutaflow/idempotency/IdempotencyService.java` y sigue el SQL:
+
+```sql
+INSERT INTO idempotency_record (operation_key)
+VALUES (?)
+ON CONFLICT (operation_key) DO NOTHING
 ```
 
-```java
-// src/main/java/io/academia/consistencia/idempotencia/RegistroIdempotenciaRepository.java
-package io.academia.consistencia.idempotencia;
+El método devuelve `true` si insertó una fila y `false` si la clave ya estaba. Ejecuta `./scripts/verify-idempotency.sh`.
 
-import org.springframework.data.jpa.repository.JpaRepository;
+**Resultado esperado:** la tabla contiene una fila por clave procesada; una clave repetida no añade otra.
 
-public interface RegistroIdempotenciaRepository extends JpaRepository<RegistroIdempotencia, Long> {}
-```
+**Fallo deliberado:** cambia `DO NOTHING` por `DO UPDATE SET operation_key = EXCLUDED.operation_key`. **Diagnóstico:** PostgreSQL reporta una fila afectada también al actualizar; las dos llamadas pueden devolver `true` y la prueba de concurrencia falla. Restaura `DO NOTHING`.
 
-```java
-// src/main/java/io/academia/consistencia/idempotencia/PedidoService.java
-package io.academia.consistencia.idempotencia;
+**3. Entiende**
 
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+El resultado numérico de `JdbcTemplate.update` viene de PostgreSQL. El método es transaccional y no convierte una excepción de SQL en un supuesto “duplicado normal”.
 
-@Service
-public class PedidoService {
-    private final RegistroIdempotenciaRepository registros;
+**4. Cierra**
 
-    public PedidoService(RegistroIdempotenciaRepository registros) {
-        this.registros = registros;
-    }
+Explica qué significa `inserted == 1` y por qué es más seguro que consultar primero y luego insertar.
 
-    @Transactional
-    public boolean crearConClave(String claveIdempotencia) {
-        try {
-            registros.saveAndFlush(new RegistroIdempotencia(claveIdempotencia));
-            return true; // esta llamada ganó la carrera y procesó el pedido real
-        } catch (DataIntegrityViolationException e) {
-            return false; // la clave ya existía: esta llamada es un reintento duplicado, no un pedido nuevo
-        }
-    }
-}
-```
+#### Subtema 13.2.3: Fuerza una carrera entre dos solicitudes · 10 min
 
-Confirma con dos threads reales, compitiendo genuinamente por la misma clave, que solo uno gana:
+**1. Contexto**
 
-```java
-// src/test/java/io/academia/consistencia/idempotencia/RaceIdempotenciaTest.java
-package io.academia.consistencia.idempotencia;
+Dos llamadas en serie no demuestran qué ocurre cuando llegan al mismo tiempo. El test las suelta desde una barrera compartida para competir por la misma clave.
 
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+**2. Hazlo tú**
 
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-@SpringBootTest
-class RaceIdempotenciaTest {
-
-    @Autowired
-    private PedidoService pedidoService;
-
-    @Test
-    void deDosThreadsConLaMismaClaveSoloUnoGanaLaCarreraReal() throws Exception {
-        String claveCompartida = "idem-key-001";
-        ExecutorService pool = Executors.newFixedThreadPool(2);
-
-        Callable<Boolean> intento = () -> pedidoService.crearConClave(claveCompartida);
-        List<Future<Boolean>> resultados = pool.invokeAll(List.of(intento, intento));
-
-        boolean threadA = resultados.get(0).get();
-        boolean threadB = resultados.get(1).get();
-
-        assertThat(threadA ^ threadB).isTrue(); // exactamente UNO de los dos ganó, nunca ambos ni ninguno
-        pool.shutdown();
-    }
-}
-```
+Abre `src/test/java/academia/rutaflow/idempotency/IdempotencyRaceTest.java`. Busca `CountDownLatch`, el pool de dos threads y la aserción XOR. Ejecuta:
 
 ```bash
-./mvnw test -Dtest=RaceIdempotenciaTest
+./scripts/verify-idempotency.sh
 ```
 
-**Resultado esperado:** `BUILD SUCCESS` con el test en verde: con dos threads reales ejecutándose genuinamente en paralelo (`ExecutorService` con un pool real, no una simulación secuencial), la restricción única de la base de datos decide la carrera real; el operador XOR (`^`) confirma que exactamente uno de los dos threads recibió `true` (procesó el pedido) y el otro `false` (`DataIntegrityViolationException` real capturada, reconocido como duplicado), nunca ambos ni ninguno.
+**Resultado esperado:** la carrera deja exactamente una respuesta `true`, una `false` y una fila en PostgreSQL.
 
-**Fallo deliberado:** reemplaza `registros.saveAndFlush(...)` dentro de un `try/catch` por un `find` previo (`if (registros.findByClaveIsPresent(claveCompartida)) return false; else registros.save(...)`) sin restricción única real respaldándolo, y ejecuta de nuevo el test con más iteraciones (por ejemplo 20 threads en vez de 2). El test FALLA intermitentemente: ambos threads pueden pasar el `find` antes de que cualquiera de los dos inserte, procesando el "pedido" dos veces — diagnostica confirmando por qué la teoría insiste en que un `find` previo no basta: sin la restricción única forzando la decisión atómicamente en la base de datos, la ventana de carrera entre el `find` y el `save` permite que ambos threads "ganen". Restaura la versión con restricción única antes de continuar.
+**Fallo deliberado:** aplica el cambio del subtema anterior y corre el test otra vez. **Diagnóstico:** las dos sentencias cuentan una fila afectada y falla `first ^ second`; la prueba detecta que ambas llamadas se adjudicaron el mismo pedido.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**3. Entiende**
 
-1. Aumenta la competencia a 20 threads con la misma clave y confirma que la suma de resultados `true` es exactamente 1, sin importar cuántos threads compitan.
-2. Ejecuta 20 threads con 20 claves DISTINTAS y confirma que los 20 resultan en `true` (ninguna carrera real cuando las claves no coinciden).
-3. Agrega un campo `resultado` a `RegistroIdempotencia` para almacenar el resultado de la primera ejecución exitosa, y confirma con un test que un reintento posterior (tras que la clave ya exista) devuelve ese resultado guardado en vez de simplemente `false`.
-4. Escribe de memoria (sin mirar) un `PedidoService` con una restricción única de idempotencia, y un test con `ExecutorService` de dos threads que confirme la carrera real. Compara después contra el patrón del Paso 4.
+La barrera coordina el comienzo, pero no decide el ganador. El resultado pertenece a la restricción única del servidor de base de datos.
 
-**Pista:** `pool.invokeAll(...)` bloquea hasta que AMBAS tareas terminan, y cada `Future.get()` propaga cualquier excepción real que ocurrió dentro del thread — una forma directa de coordinar y verificar el resultado de una carrera real entre threads sin necesitar sincronización manual adicional en el test.
+**4. Cierra**
 
-#### Paso 6 · Práctica independiente
+Entrega el informe de las dos pruebas y di qué componente decidió quién registró la clave.
 
-**Completa el código:** rellena el espacio con la excepción real que Spring Data lanza cuando una restricción única de base de datos rechaza un insert duplicado:
+#### Subtema 13.2.4: Separa reintentos HTTP de reenvíos Kafka · 10 min
 
-```java
-try {
-    registros.saveAndFlush(new RegistroIdempotencia(clave));
-    return true;
-} catch (____ e) {
-    return false;
-}
+**1. Contexto**
+
+La clave de una solicitud entrante y el identificador de un evento cumplen funciones relacionadas, pero pertenecen a fronteras distintas. El outbox conserva el evento con el cambio SQL; el inbox evita repetir su efecto al recibir un evento duplicado.
+
+**2. Hazlo tú**
+
+Abre `examples/spring-kafka-rutaflow/src/main/java/academia/rutaflow/inbox/InboxProcessor.java` y las pruebas `inboxHaceIdempotenteElEfectoDeNegocio` y `replayTrasFallarLaMarcaDespuesDelAckConservaUnaSolaProyeccion` en `EnvioEventPublisherTest.java`. Desde el laboratorio Kafka ejecuta:
+
+```bash
+./mvnw test
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un servicio con idempotencia respaldada por restricción única, y un test con dos threads reales que confirme que exactamente uno gana la carrera. Compara después contra el patrón del Paso 4.
+**Resultado esperado:** la suite del lab Kafka pasa sus diez pruebas; una repetición del mismo `eventId` deja una sola proyección. Ese lab usa Kafka embebido y H2, no PostgreSQL.
 
-#### Paso 7 · Cierre y evidencia
+**Fallo deliberado:** quita del inbox la escritura de `evento_procesado` y ejecuta la suite. **Diagnóstico:** el mismo `eventId` puede aplicar de nuevo el efecto; las pruebas de deduplicación o replay fallan. Restaura el registro idempotente.
 
-Ya demuestras con una carrera real entre threads que una restricción única de base de datos, no un `find` previo, es lo que garantiza idempotencia bajo concurrencia genuina. El siguiente tema protege el contrato HTTP que consumidores externos dependen de que no cambie sin previo aviso. **Evidencia:** entrega el resultado de `RaceIdempotenciaTest` en verde, y la falla intermitente real que produce el fallo deliberado con `find` en vez de restricción única. Fuentes oficiales: [Spring Data — Optimistic and Pessimistic Locking](https://docs.spring.io/spring-data/jpa/reference/jpa/locking.html).
+**3. Entiende**
 
-**Errores comunes:** usar un `find` antes de insertar como única defensa contra duplicados, sin una restricción única real respaldándolo; confiar en que las transacciones de Kafka vuelven atómica una escritura arbitraria en PostgreSQL.
+Outbox permite reintentar publicación (at-least-once); inbox deduplica el efecto en el consumidor. No significa una transacción única entre PostgreSQL y Kafka ni entrega universal “exactamente una vez”. El lab Kafka explica que H2 y el dispatcher didáctico no prueban despliegue multi-instancia.
 
-**Cuándo no usarlo:** para una operación de lectura pura sin ningún efecto de escritura, o para una operación donde procesarla dos veces es genuinamente inocuo (por ejemplo, releer el mismo valor), la infraestructura de idempotencia no aporta ninguna garantía adicional necesaria.
+**4. Cierra**
 
-La duplicación segura (idempotencia) de este tema es la que protegerá al proyecto integrador de este track (microservicio productivo, Módulo 12) de reintentos duplicados.
+Dibuja ambas claves: HTTP `operation_key` para repetir una solicitud; Kafka `eventId` para reconocer un evento recibido otra vez. Indica qué prueba respalda cada límite.
+
+**Límite del laboratorio:** la tabla demuestra unicidad, no implementa una API idempotente completa. En producción, asocia la clave al principal y a la operación, compara un hash del request y conserva la respuesta original con una política de retención.
+
+**Fuentes:** [Spring JDBC con PostgreSQL](https://docs.spring.io/spring-framework/reference/data-access/jdbc.html), [PostgreSQL: INSERT y ON CONFLICT](https://www.postgresql.org/docs/current/sql-insert.html), [Testcontainers PostgreSQL](https://java.testcontainers.org/modules/databases/postgres/) y [`./examples/spring-kafka-rutaflow/README.md`](../../../../examples/spring-kafka-rutaflow/README.md).
+
+---
 
 ### Tema 3: Contratos ejecutables protegen despliegues independientes
 
