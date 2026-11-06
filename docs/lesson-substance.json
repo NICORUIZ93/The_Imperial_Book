@@ -1690,7 +1690,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "928a143e224638a0b84616105bc1392d72e220c46354b65807a70bb00cafc0d8",
+    "fingerprint": "b9ed8d2a63a2c7d80c4a38e242b7b5b9275c181e5335e662ea3904d82f5f183c",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10437,9 +10437,9 @@
       {
         "issues": [],
         "module": 13,
-        "tailWords": 170,
+        "tailWords": 0,
         "topic": "Tema 1: `@Transactional` funciona en una frontera, no como encantamiento",
-        "words": 1148
+        "words": 722
       },
       {
         "issues": [],

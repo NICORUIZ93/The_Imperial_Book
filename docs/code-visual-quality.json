@@ -99,8 +99,8 @@
     "spring-boot": {
       "topics": 111,
       "code": 106,
-      "commentedCode": 49,
-      "mermaid": 41,
+      "commentedCode": 48,
+      "mermaid": 40,
       "archifyVisual": 2,
       "asciiVisual": 5,
       "misleadingDiagramLabel": 0,
@@ -2638,6 +2638,13 @@
       "track": "spring-boot",
       "module": 12,
       "topic": "Tema 3: Cierra el servicio con evidencia y próximos pasos",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 13,
+      "topic": "Tema 1: `@Transactional` funciona en una frontera, no como encantamiento",
       "missingCode": false,
       "missingComments": true
     },

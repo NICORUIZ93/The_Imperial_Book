@@ -93,10 +93,10 @@
     },
     "spring-boot": {
       "topics": 111,
-      "completeTopics": 51,
-      "topicsWith3to6Subtopics": 66,
-      "subtopics": 223,
-      "completeSubtopics": 178
+      "completeTopics": 52,
+      "topicsWith3to6Subtopics": 67,
+      "subtopics": 227,
+      "completeSubtopics": 182
     }
   },
   "topics": {
@@ -13586,9 +13586,66 @@
       {
         "module": 13,
         "topic": "### Tema 1: `@Transactional` funciona en una frontera, no como encantamiento",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 4,
+        "subtopics": [
+          {
+            "id": "13.1",
+            "title": "#### Subtema 13.1.1: Detecta la transacción al entrar por el proxy · 8 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "13.1",
+            "title": "#### Subtema 13.1.2: Observa una llamada interna con `this` · 8 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "13.1",
+            "title": "#### Subtema 13.1.3: Corrige el límite extrayendo otro bean · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "13.1",
+            "title": "#### Subtema 13.1.4: Comprueba la frontera antes de añadir escrituras · 8 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 13,

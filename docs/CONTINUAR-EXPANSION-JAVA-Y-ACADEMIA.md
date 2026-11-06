@@ -1395,13 +1395,20 @@ y PostgreSQL 16.15. Al cambiar `ddl-auto` a `update`, falló con `expected:
 la prueba de métrica recibió 404. Se restauraron ambas configuraciones. La guía
 aclara que el test local no comprueba despliegue Kubernetes, IdP, TLS ni exporter.
 
-Tras regenerar reportes, la cobertura atómica queda en 155/1185 (Spring Boot
-51/111); la auditoría marca 1080/1185 temas practicables, 409 temas con defectos
-de sustancia y señales de profundidad en 251. `./scripts/validate.sh` pasó: 23
+Spring Boot M13 T1, “`@Transactional` funciona en una frontera, no como
+encantamiento”, se rehízo en cuatro subtemas breves. Se creó
+`examples/spring-boot-transaction-boundary-rutaflow/` con Spring Boot 4.1.2,
+Java 25, H2 y pruebas reales de `TransactionSynchronizationManager`. El script
+`./scripts/verify-transactions.sh` pasó: 3 pruebas verifican llamada por proxy,
+self-invocation y llamada entre beans. Al quitar `@Transactional` del bean de
+trabajo, falló una prueba; se restauró y las tres volvieron a pasar.
+
+Tras regenerar reportes, la cobertura atómica queda en 156/1185 (Spring Boot
+52/111); la auditoría marca 1079/1185 temas practicables, 409 temas con defectos
+de sustancia y señales de profundidad en 252. `./scripts/validate.sh` pasó: 23
 pruebas Python (4 omitidas) y validaciones de contenido, currículo, fuentes,
 laboratorios y trazabilidad. Las cifras son estructurales; no prueban ejecución
-ni revisión humana del resto del currículo. T1 se publicó en `bc0ba4d0` y T2 en
-`2753107f`; publica T3 como cambio separado al cerrar sus reportes. El siguiente
-tema por prioridad es Spring Boot M13 T1 en
-`web/public/content/spring-boot/modulo-13.md`. Conserva fuera los dos cambios
-locales de Flutter.
+ni revisión humana del resto del currículo. M12 T1/T2/T3 se publicaron como
+`bc0ba4d0`, `2753107f` y `d4745f18`. Publica M13 T1 como un commit separado;
+el siguiente tema es M13 T2, “Recuperación implica duplicación segura”. Mantén
+fuera los dos cambios locales de Flutter.

@@ -9,143 +9,129 @@ Cada tema demuestra su garantía (o su ausencia) con un test real que la ejercit
 
 ### Tema 1: `@Transactional` funciona en una frontera, no como encantamiento
 
-#### Paso 1 · Objetivo y preparación
+**Resultado del tema:** observarás en runtime cuándo la llamada cruza el proxy de Spring y cuándo no; luego moverás la operación a otro bean para que el límite transaccional sí se active.
 
-Al finalizar podrás demostrar, con un test real (no una afirmación teórica), que una llamada `this.metodoInterno()` no atraviesa el proxy de Spring y por lo tanto `@Transactional` no aplica en ese caso, y sabrás corregirlo separando el caso de uso en un bean con límite coherente.
+**¿Por qué es importante?** Una anotación no protege el trabajo si la llamada evita el proxy. En una operación de pedidos, esa diferencia puede decidir si un error revierte o deja datos a medias.
 
-**Conocimiento previo:** Módulo 3 de este track (JPA y transacciones básicas).
+**Necesitas:** Java 25 y Maven. Abre [`examples/spring-boot-transaction-boundary-rutaflow/`](../../../../examples/spring-boot-transaction-boundary-rutaflow/). La prueba usa `TransactionSynchronizationManager`, no mocks.
 
-#### Paso 2 · Contexto y caso real
+#### Subtema 13.1.1: Detecta la transacción al entrar por el proxy · 8 min
 
-**¿Por qué es importante?** En una plataforma de entregas, un fallo de base, red o consumidor puede ocurrir después de una escritura; una anotación `@Transactional` presente en el código puede no existir en runtime por self-invocation, una excepción capturada, o un método fuera del proxy — el fallo aparece como datos parcialmente comprometidos, no como un error obvio en el momento de escribir el código.
+**1. Contexto**
 
-#### Paso 3 · Teoría con analogía
+Spring aplica `@Transactional` con un interceptor que envuelve el bean. La llamada desde otro bean atraviesa ese límite.
 
-**Conceptos clave:** proxy AOP, `TransactionInterceptor`, self-invocation, `REQUIRED`, `REQUIRES_NEW`, rollback rule.
+**2. Hazlo tú**
 
-En el modo habitual, Spring envuelve el bean en un proxy. Una llamada que entra por el proxy activa `TransactionInterceptor`, obtiene una transacción y ejecuta el método. Una llamada `this.metodoInterno()` no cruza el proxy; su anotación puede no aplicar. `REQUIRED` participa en la transacción existente o crea una; `REQUIRES_NEW` suspende la exterior y usa recursos distintos, y un commit interno permanece aunque la operación exterior falle. Spring revierte por defecto ante excepciones unchecked, no necesariamente checked; capturar una excepción dentro del boundary y devolver éxito impide el rollback salvo que marques el estado explícitamente. No mantengas una transacción abierta durante una llamada HTTP remota: sostiene locks/conexión mientras una dependencia incierta responde, y no puede revertir el sistema externo.
-
-**Analogía:** el proxy es el torniquete que registra entrada y salida de una zona protegida. Caminar entre habitaciones dentro de la zona no vuelve a pasar por el torniquete, aunque la puerta interna tenga un cartel `@Transactional`.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-  C[Cliente] --> P[Proxy Spring]
-  P -->|begin| M[método bean]
-  M --> R[repositorios]
-  R --> X[commit/rollback]
-  M -.->|this.metodoInterno| I[NO cruza el proxy]
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Parte de una carpeta vacía y crea `src/main/java/io/academia/consistencia/`:
+Abre `src/main/java/academia/rutaflow/transacciones/FronteraTransaccionalService.java` y encuentra `transaccionIniciadaPorElProxy()`. Corre:
 
 ```bash
-mkdir demo-consistencia
-cd demo-consistencia
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web,data-jpa,h2,actuator -d javaVersion=25 -o app.zip
-unzip app.zip
-mkdir -p src/main/java/io/academia/consistencia
-mkdir -p src/test/java/io/academia/consistencia
+./scripts/verify-transactions.sh
 ```
 
+**Resultado esperado:** el test `llamadaQueEntraPorElProxyAbreUnaTransaccionReal` devuelve `true`.
+
+**Fallo deliberado:** quita `@Transactional` del método y vuelve a correr el script. **Diagnóstico:** el test recibe `false`; no hay transacción activa. Restaura la anotación.
+
+**3. Entiende**
+
+`TransactionSynchronizationManager.isActualTransactionActive()` inspecciona el thread que ejecuta el método. Este test levanta Spring con JPA y H2; no infiere la transacción por la presencia de la anotación.
+
+**4. Cierra**
+
+Explica por dónde entra la llamada y qué valor demuestra que el interceptor abrió una transacción.
+
+#### Subtema 13.1.2: Observa una llamada interna con `this` · 8 min
+
+**1. Contexto**
+
+Una llamada del método a otro método del mismo objeto no vuelve a pasar por el proxy.
+
+**2. Hazlo tú**
+
+En `FronteraTransaccionalService.java`, sigue `llamadaInternaConThis()` hasta `metodoInternoAnotado()`. Ejecuta `./scripts/verify-transactions.sh`.
+
 ```java
-// src/main/java/io/academia/consistencia/FronteraTransaccionalService.java
-package io.academia.consistencia;
+public boolean llamadaInternaConThis() {
+    return metodoInternoAnotado();
+}
+```
 
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
+**Resultado esperado:** `thisNoVuelveAEntrarPorElProxy` recibe `false`, aunque el método interno tenga `@Transactional`.
 
+**Fallo deliberado:** cambia la llamada para que use `trabajo.ejecutar()` en vez del método interno. **Diagnóstico:** ahora cruza otro bean y devuelve `true`, por eso falla la prueba que espera `false`. Restaura la llamada interna.
+
+**3. Entiende**
+
+El método no entra otra vez al proxy; por eso la anotación del método interno no comienza la transacción. Es el modo proxy de Spring, no una regla especial del lenguaje Java.
+
+**4. Cierra**
+
+Dibuja las dos llamadas: controller/otro bean → proxy y `this.metodo()` dentro del objeto.
+
+#### Subtema 13.1.3: Corrige el límite extrayendo otro bean · 10 min
+
+**1. Contexto**
+
+Si necesitas una nueva frontera, separa el trabajo transaccional en un bean que Spring pueda envolver.
+
+**2. Hazlo tú**
+
+Abre `src/main/java/academia/rutaflow/transacciones/TrabajoTransaccional.java` y compáralo con `FronteraTransaccionalService.llamadaEntreBeans()`:
+
+```java
 @Service
-public class FronteraTransaccionalService {
-
-    // llamado DIRECTAMENTE a través del proxy: la transacción SÍ está activa
+public class TrabajoTransaccional {
     @Transactional
-    public boolean transaccionActivaLlamandoAlProxy() {
-        return TransactionSynchronizationManager.isActualTransactionActive();
-    }
-
-    // método público SIN @Transactional que invoca internamente un método anotado vía this.
-    public boolean transaccionActivaViaSelfInvocation() {
-        return metodoInternoAnotado(); // this.metodoInternoAnotado() -> NO atraviesa el proxy
-    }
-
-    @Transactional
-    boolean metodoInternoAnotado() {
+    public boolean ejecutar() {
         return TransactionSynchronizationManager.isActualTransactionActive();
     }
 }
 ```
 
-Confirma con un test real, sin ningún mock de la infraestructura de transacciones, que la self-invocation efectivamente NO activa la transacción:
+Ejecuta `./scripts/verify-transactions.sh`.
 
-```java
-// src/test/java/io/academia/consistencia/SelfInvocationTest.java
-package io.academia.consistencia;
+**Resultado esperado:** `llamarOtroBeanSiCruzaElProxy` devuelve `true`; las tres pruebas pasan.
 
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+**Fallo deliberado:** quita `@Transactional` de `TrabajoTransaccional.ejecutar()` y corre el script. **Diagnóstico:** la prueba recibe `false` porque ya no hay anotación que el proxy pueda aplicar en ese bean. Restaura la anotación.
 
-import static org.assertj.core.api.Assertions.assertThat;
+**3. Entiende**
 
-@SpringBootTest
-class SelfInvocationTest {
+El proxy intercepta una llamada entre beans administrados por Spring. No hace falta buscar el proxy manualmente ni llamar `AopContext.currentProxy()` para este diseño.
 
-    @Autowired
-    private FronteraTransaccionalService servicio;
+**4. Cierra**
 
-    @Test
-    void llamarDirectamenteAlProxyActivaLaTransaccionReal() {
-        assertThat(servicio.transaccionActivaLlamandoAlProxy()).isTrue();
-    }
+Nombra el bean donde vive la operación y la llamada que atraviesa el proxy.
 
-    @Test
-    void laSelfInvocationNoAtraviesaElProxyYLaTransaccionNoSeActiva() {
-        assertThat(servicio.transaccionActivaViaSelfInvocation()).isFalse();
-    }
-}
-```
+#### Subtema 13.1.4: Comprueba la frontera antes de añadir escrituras · 8 min
+
+**1. Contexto**
+
+Antes de depender de un rollback, comprueba que la transacción realmente está activa en la ruta que ejecuta el trabajo.
+
+**2. Hazlo tú**
+
+Abre `src/test/java/academia/rutaflow/transacciones/FronteraTransaccionalTest.java`. Compara las aserciones de `true` y `false`; vuelve a ejecutar:
 
 ```bash
-./mvnw test -Dtest=SelfInvocationTest
+./scripts/verify-transactions.sh
 ```
 
-**Resultado esperado:** `BUILD SUCCESS` con ambos tests en verde: `TransactionSynchronizationManager.isActualTransactionActive()` (la API real de Spring para consultar si hay una transacción activa en el thread actual, no una suposición) confirma `true` cuando el método anotado se invoca a través del proxy, y `false` cuando se invoca internamente vía `this.` — el mismo mecanismo exacto documentado en la teoría, ahora demostrado con un valor booleano real, no solo descrito.
+**Resultado esperado:** 3 pruebas pasan y diferencian llamada proxy, self-invocation y llamada a otro bean.
 
-**Fallo deliberado:** cambia `transaccionActivaViaSelfInvocation()` para llamar `metodoInternoAnotado()` como si fuera seguro para una operación de negocio real (por ejemplo, envolviendo un `repository.save(...)` dentro del método interno, asumiendo que `@Transactional` protege ese guardado). Con dos guardados dentro de `metodoInternoAnotado()` y una excepción entre ambos, ningún rollback ocurre — el primer `save` permanece comprometido en la base — porque, como el test ya demostró, no hay ninguna transacción real activa que revertir. Restaura la versión original antes de continuar.
+**Fallo deliberado:** cambia la aserción de `thisNoVuelveAEntrarPorElProxy` para esperar `true`. **Diagnóstico:** el test falla porque la llamada interna sigue fuera de la transacción. Restaura `isFalse()`.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**3. Entiende**
 
-1. Agrega un tercer método `@Transactional(propagation = Propagation.REQUIRES_NEW)` y un test que confirme, con dos transacciones anidadas instrumentadas, que la interior usa una conexión distinta a la exterior.
-2. Simula una excepción checked dentro de un método `@Transactional` sin `rollbackFor` explícito, y confirma con un test que el commit ocurre igualmente (el comportamiento por defecto de Spring, contraintuitivo para quien viene de otros lenguajes).
-3. Agrega `@Transactional(rollbackFor = Exception.class)` a ese mismo método y confirma con un test que ahora sí revierte ante la misma excepción checked.
-4. Escribe de memoria (sin mirar) un servicio con self-invocation y un test `TransactionSynchronizationManager` que confirme la ausencia de transacción real. Compara después contra el patrón del Paso 4.
+Estas pruebas demuestran el estado transaccional, no la persistencia de una fila ni las reglas de rollback para excepciones. Añade esos casos solo después de confirmar la frontera.
 
-**Pista:** `TransactionSynchronizationManager.isActualTransactionActive()` es la forma más directa y real de responder "¿hay una transacción de verdad en este punto del código?" sin inspeccionar logs ni adivinar por el comportamiento observado — úsala como herramienta de diagnóstico, no solo en tests.
+**4. Cierra**
 
-#### Paso 6 · Práctica independiente
+Entrega el resultado de las tres pruebas y explica por qué `@Transactional` no es un encantamiento que funciona en cualquier llamada.
 
-**Completa el código:** rellena el espacio con la clase real de Spring que confirma si hay una transacción activa en el thread actual:
+**Fuentes:** [Spring Framework: gestión de transacciones declarativa](https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative.html) y [modo proxy y self-invocation](https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/annotations.html).
 
-```java
-boolean activa = ____.isActualTransactionActive();
-```
-
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un servicio con un método público que llama internamente a un método `@Transactional` vía `this.`, y un test que confirme que la transacción NO está activa en ese caso. Compara después contra el patrón del Paso 4.
-
-#### Paso 7 · Cierre y evidencia
-
-Ya demuestras con un valor booleano real, no una afirmación teórica, que `@Transactional` depende de atravesar el proxy de Spring. El siguiente tema aborda qué hacer cuando un cliente repite una operación tras un timeout ambiguo. **Evidencia:** entrega el resultado de `SelfInvocationTest` en verde, y la explicación de por qué el fallo deliberado deja un `save` sin revertir. Fuentes oficiales: [Spring — Transaction Management](https://docs.spring.io/spring-framework/reference/data-access/transaction.html).
-
-**Errores comunes:** anotar un método private o auto-invocado esperando que el proxy lo intercepte; capturar una excepción dentro del boundary transaccional y devolver éxito, impidiendo el rollback sin marcarlo explícitamente; mantener una transacción abierta durante una llamada HTTP remota.
-
-**Cuándo no usarlo:** para una operación de lectura pura sin ningún efecto de escritura, envolverla en `@Transactional` de escritura no aporta ninguna garantía adicional y solo reserva una conexión innecesariamente.
-
-Entender los límites de `@Transactional` es esencial antes de escalar el proyecto integrador de este track (microservicio productivo, Módulo 12) a múltiples servicios con transacciones distribuidas.
+---
 
 ### Tema 2: Recuperación implica duplicación segura
 
