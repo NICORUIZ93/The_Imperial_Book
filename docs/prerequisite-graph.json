@@ -4731,7 +4731,7 @@
       "track": "spring-boot",
       "module": 12,
       "position": 3,
-      "title": "Cierre del track y próximos pasos",
+      "title": "Cierra el servicio con evidencia y próximos pasos",
       "file": "web/public/content/spring-boot/modulo-12.md",
       "requires": [
         "spring-boot:12:2"

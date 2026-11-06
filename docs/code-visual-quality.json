@@ -99,10 +99,10 @@
     "spring-boot": {
       "topics": 111,
       "code": 106,
-      "commentedCode": 50,
+      "commentedCode": 49,
       "mermaid": 41,
       "archifyVisual": 2,
-      "asciiVisual": 6,
+      "asciiVisual": 5,
       "misleadingDiagramLabel": 0,
       "filePath": 111,
       "runCommand": 111,
@@ -2631,6 +2631,13 @@
       "track": "spring-boot",
       "module": 12,
       "topic": "Tema 2: Integra seguridad JWT y observabilidad",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 12,
+      "topic": "Tema 3: Cierra el servicio con evidencia y próximos pasos",
       "missingCode": false,
       "missingComments": true
     },

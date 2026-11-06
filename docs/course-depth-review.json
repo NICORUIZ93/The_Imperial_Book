@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 250,
+    "topicsWithSignals": 251,
     "newLaboratories": 25
   },
   "priorities": {
@@ -12556,10 +12556,12 @@
     {
       "track": "spring-boot",
       "module": 12,
-      "title": "Tema 3: Cierre del track y próximos pasos",
+      "title": "Tema 3: Cierra el servicio con evidencia y próximos pasos",
       "file": "web/public/content/spring-boot/modulo-12.md",
       "line": 267,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"

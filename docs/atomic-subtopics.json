@@ -93,10 +93,10 @@
     },
     "spring-boot": {
       "topics": 111,
-      "completeTopics": 50,
-      "topicsWith3to6Subtopics": 65,
-      "subtopics": 219,
-      "completeSubtopics": 174
+      "completeTopics": 51,
+      "topicsWith3to6Subtopics": 66,
+      "subtopics": 223,
+      "completeSubtopics": 178
     }
   },
   "topics": {
@@ -13521,10 +13521,67 @@
       },
       {
         "module": 12,
-        "topic": "### Tema 3: Cierre del track y próximos pasos",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "topic": "### Tema 3: Cierra el servicio con evidencia y próximos pasos",
+        "subtopicCount": 4,
+        "subtopics": [
+          {
+            "id": "12.3",
+            "title": "#### Subtema 12.3.1: Protege la migración con una prueba de configuración · 8 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "12.3",
+            "title": "#### Subtema 12.3.2: Comprueba el flujo integrado completo · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "12.3",
+            "title": "#### Subtema 12.3.3: Declara lo que todavía falta para desplegar · 8 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "12.3",
+            "title": "#### Subtema 12.3.4: Deja una ruta técnica para el siguiente nivel · 8 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 13,

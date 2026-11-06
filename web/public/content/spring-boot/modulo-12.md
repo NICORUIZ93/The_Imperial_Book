@@ -33,7 +33,7 @@ POST /api/entregas
   HTTP 201 ← EntregaResponse ← entidad guardada
 ```
 
-**Resultado esperado:** la suite ampliada informa 4 pruebas y 0 fallos; la petición de creación devuelve HTTP 201 y una URL `Location`.
+**Resultado esperado:** la suite final informa 5 pruebas y 0 fallos; la petición de creación devuelve HTTP 201 y una URL `Location`.
 
 **Fallo deliberado:** cambia temporalmente `@PostMapping` por `@PutMapping` y ejecuta `./scripts/verify-integration.sh`. **Diagnóstico:** la prueba recibe un estado distinto a 201 porque envía POST. Restaura `@PostMapping`.
 
@@ -65,7 +65,7 @@ CREATE TABLE entrega (
 
 En `application.properties`, `spring.jpa.hibernate.ddl-auto=validate` pide comprobar que la tabla coincide; Flyway aplica la migración.
 
-**Resultado esperado:** Flyway aplica la migración y Hibernate valida la tabla antes de ejecutar las cuatro pruebas.
+**Resultado esperado:** Flyway aplica la migración y Hibernate valida la tabla antes de ejecutar las cinco pruebas.
 
 **Fallo deliberado:** renombra la migración para que ya no empiece con `V1__` y vuelve a ejecutar `./scripts/verify-integration.sh`. **Diagnóstico:** Flyway no la reconoce y la validación de Hibernate falla porque falta `entrega`. Restaura el nombre `V1__crear_entrega.sql`.
 
@@ -97,7 +97,7 @@ Abre `entrega/CrearEntregaRequest.java` y `entrega/EntregaController.java`. Env�
 
 El test `destinatarioVacioSeRechazaAntesDeGuardar` envía el segundo cuerpo por HTTP real y comprueba que recibe 400. Ejecuta `./scripts/verify-integration.sh`.
 
-**Resultado esperado:** destinatario válido produce 201; destinatario vacío produce 400 y no se guarda. La suite completa mantiene sus cuatro pruebas en verde.
+**Resultado esperado:** destinatario válido produce 201; destinatario vacío produce 400 y no se guarda. La suite completa mantiene sus cinco pruebas en verde.
 
 **Fallo deliberado:** quita `@Valid` de `crear(...)` y ejecuta `./scripts/verify-integration.sh`. **Diagnóstico:** la validación de `@NotBlank` deja de activarse y la prueba que espera 400 falla. Restaura `@Valid`.
 
@@ -123,7 +123,7 @@ Abre `src/test/java/academia/rutaflow/integrador/entrega/ArquitecturaIntegradaTe
 ./scripts/verify-integration.sh
 ```
 
-**Resultado esperado:** las cuatro pruebas pasan; cubren HTTP 201 con persistencia, HTTP 400 sin guardar, reglas JWT 401/403 y la métrica.
+**Resultado esperado:** las cinco pruebas pasan; cubren HTTP 201 con persistencia, HTTP 400 sin guardar, reglas JWT 401/403, métrica y guardia de configuración.
 
 **Fallo deliberado:** cambia en la prueba el puerto destino por `port + 1` y ejecútala. **Diagnóstico:** la conexión HTTP falla porque el servidor de prueba escucha en `port`. Restaura `port`.
 
@@ -133,7 +133,7 @@ La app recibe una petición de red local, Flyway prepara PostgreSQL y el reposit
 
 **4. Cierra**
 
-Guarda como evidencia el resultado de las dos pruebas y dibuja el recorrido desde JSON hasta la fila. Si algo falla, anota primero el primer error y el archivo responsable; no tapes un problema de conexión cambiando el código de negocio.
+Guarda como evidencia el resultado de las cinco pruebas y dibuja el recorrido desde JSON hasta la fila. Si algo falla, anota primero el primer error y el archivo responsable; no tapes un problema de conexión cambiando el código de negocio.
 
 **Siguiente:** el Tema 2 añadirá seguridad, persistencia y observabilidad al servicio. Este primer corte no configura autenticación ni métricas.
 
@@ -161,7 +161,7 @@ Abre `src/main/java/academia/rutaflow/integrador/security/JwtSecurityConfig.java
 ./scripts/verify-integration.sh
 ```
 
-**Resultado esperado:** la app inicia y las cuatro pruebas pasan; los requests de creación llevan `Authorization: Bearer ...`.
+**Resultado esperado:** la app inicia y las cinco pruebas pasan; los requests de creación llevan `Authorization: Bearer ...`.
 
 **Fallo deliberado:** cambia en el convertidor el claim `roles` por `perfiles` y ejecuta el script. **Diagnóstico:** el token todavía tiene una firma válida, pero el convertidor ya no encuentra la autoridad y el request con `ROLE_USER` recibe 403. Restaura `roles`.
 
@@ -264,126 +264,137 @@ Resume el recorrido: JWT validado → rol autorizado → fila persistida → con
 
 **Fuentes:** [Spring Security: JWT Resource Server](https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html), [autorización por método](https://docs.spring.io/spring-security/reference/servlet/authorization/method-security.html), [métricas de Spring Boot 4.1.2](https://docs.spring.io/spring-boot/reference/actuator/metrics.html), [exposición y seguridad de Actuator](https://docs.spring.io/spring-boot/reference/actuator/endpoints.html#actuator.endpoints.exposing) y [Micrometer Counters](https://docs.micrometer.io/micrometer/reference/concepts/counters.html).
 
-### Tema 3: Cierre del track y próximos pasos
+### Tema 3: Cierra el servicio con evidencia y próximos pasos
 
-#### Paso 1 · Objetivo y preparación
+**Resultado del tema:** ejecutarás una guardia automática de configuración, revisarás la suite completa y separarás lo comprobado en local de lo que todavía requiere evidencia del entorno de despliegue.
 
-Al finalizar podrás escribir un test de configuración real que actúa como guardia automatizada del estándar "productivo" del proyecto (sin `ddl-auto` inseguro, con Flyway habilitado), evitando que una regresión de configuración pase desapercibida en una revisión de código futura.
+**¿Por qué es importante?** Un test verde no demuestra que la API esté lista para producción. La decisión mejora cuando sabes qué comprobó el test, qué no comprobó y cuál es el siguiente paso.
 
-**Conocimiento previo:** Temas 1 y 2 de este módulo.
+**Necesitas:** los Temas 1 y 2. Abre [`examples/spring-boot-integrador-rutaflow/`](../../../../examples/spring-boot-integrador-rutaflow/).
 
-#### Paso 2 · Contexto y caso real
+#### Subtema 12.3.1: Protege la migración con una prueba de configuración · 8 min
 
-**¿Por qué es importante?** Un microservicio Spring Boot "productivo" no se define únicamente por tener un CRUD funcional: es la combinación de seguridad declarativa, persistencia versionada, observabilidad desde el primer día y una suite de tests que da confianza real para desplegar sin temor. Un test que verifica automáticamente estas propiedades de configuración evita que alguien reintroduzca `ddl-auto=update` sin darse cuenta del riesgo.
+**1. Contexto**
 
-#### Paso 3 · Teoría con analogía
+Flyway es responsable del esquema y Hibernate solo lo valida. Si alguien cambia la propiedad a `update`, una prueba de salida debe detener el cambio antes de un despliegue.
 
-**Conceptos clave:** microservicio productivo frente a CRUD funcional, verificación de configuración como código.
+**2. Hazlo tú**
 
-Verificar manualmente, en cada revisión de código, que nadie reintrodujo `spring.jpa.hibernate.ddl-auto=update` en `application.yml` es propenso a error humano; un test de `ApplicationContextRunner` (Módulo 5) que falla automáticamente si esa propiedad tiene un valor inseguro convierte una convención de equipo en una regla verificada por CI en cada build.
-
-**Analogía:** un microservicio productivo completo es un edificio con todos sus sistemas esenciales funcionando de forma coordinada desde el primer día (seguridad, mantenimiento documentado, sensores de monitoreo); un test de configuración como guardia es la inspección automática que impide que alguien desconecte un sistema de seguridad sin que nadie lo note hasta el incidente.
-
-**Diagrama:**
-
-```
-┌── Microservicio productivo ────────────────────────────┐
-│ seguridad declarativa + persistencia versionada         │
-│ + observabilidad desde el día 1 + tests reales           │
-└──────────────────────────────────────────────────┘
-┌── Próximos pasos ──────────────────────────────────────┐
-│ Arquitectura Hexagonal/DDD | CQRS+Event Sourcing | OIDC   │
-└──────────────────────────────────────────────────┘
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Continuando en `demo-integrador` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía y genera un proyecto nuevo con `mkdir demo-checklist && cd demo-checklist && curl -fsSL https://start.spring.io/starter.zip -d dependencies=web,data-jpa,flyway,actuator -d javaVersion=25 -o app.zip && unzip app.zip`), crea `src/test/java/io/academia/integrador/ProduccionReadyTest.java`:
+En `src/test/java/academia/rutaflow/integrador/entrega/ArquitecturaIntegradaTest.java`, busca `configuracionFinalMantieneMigracionSeguridadYValidacion`. Comprueba que verifica `ddl-auto=validate`, la versión aplicada por Flyway y los beans de JWT y seguridad. Ejecuta:
 
 ```bash
-mkdir -p src/test/java/io/academia/integrador
+./scripts/verify-integration.sh
 ```
 
-```java
-// src/test/java/io/academia/integrador/ProduccionReadyTest.java
-package io.academia.integrador;
+**Resultado esperado:** la suite informa 5 pruebas y 0 fallos; la prueba identifica la migración `V1__crear_entrega.sql`.
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.beans.factory.annotation.Value;
+**Fallo deliberado:** cambia `spring.jpa.hibernate.ddl-auto=validate` a `update` en `application.properties` y ejecuta el script. **Diagnóstico:** la prueba falla con `expected: "validate" but was: "update"`. Restaura `validate`.
 
-import static org.assertj.core.api.Assertions.assertThat;
+**3. Entiende**
 
-@SpringBootTest
-class ProduccionReadyTest {
+La prueba inspecciona los valores y beans cargados por la aplicación con PostgreSQL conectado. No reemplaza una revisión de cambios SQL ni una práctica de respaldo y restauración.
 
-    @Value("${spring.jpa.hibernate.ddl-auto:validate}")
-    private String ddlAuto;
+**4. Cierra**
 
-    @Value("${spring.flyway.enabled:true}")
-    private boolean flywayHabilitado;
+Señala qué evita la propiedad `validate` y qué evidencia confirma que Flyway aplicó la migración.
 
-    @Test
-    void elProyectoNoUsaDdlAutoInseguroYFlywayEstaHabilitado() {
-        assertThat(ddlAuto).isIn("validate", "none")
-            .withFailMessage("ddl-auto='%s' es inseguro para producción; usa 'validate' o 'none' con Flyway", ddlAuto);
-        assertThat(flywayHabilitado).isTrue();
-    }
-}
-```
+#### Subtema 12.3.2: Comprueba el flujo integrado completo · 10 min
+
+**1. Contexto**
+
+Cada pieza aislada puede pasar y el servicio completo fallar. Esta suite recorre HTTP, firma JWT, permisos, validación, PostgreSQL, Flyway, Micrometer y Actuator.
+
+**2. Hazlo tú**
+
+Abre `ArquitecturaIntegradaTest.java` y localiza las cinco pruebas. Ejecuta `./scripts/verify-integration.sh`; observa el informe Surefire final.
 
 ```bash
-./mvnw test -Dtest=ProduccionReadyTest
+./scripts/verify-integration.sh
 ```
 
-**Resultado esperado:** `BUILD SUCCESS` con el test en verde: confirma, leyendo la configuración REAL cargada por el contexto de Spring (no un valor asumido), que `ddl-auto` está en `validate` o `none` (nunca `update` o `create`) y que Flyway está habilitado — las dos propiedades que, si se reintrodujeran incorrectamente, comprometerían el manejo seguro del esquema de base de datos que el Tema 1 estableció.
+**Resultado esperado:** 5 pruebas pasan: creación y persistencia, rechazo del destinatario vacío, autenticación/autorización, contador visible y guardia de configuración.
 
-**Fallo deliberado:** agrega `spring.jpa.hibernate.ddl-auto=update` a `application.yml` (una regresión común cuando alguien "solo quiere probar algo rápido" localmente y olvida revertirlo) y ejecuta de nuevo el test. FALLA con el mensaje real `ddl-auto='update' es inseguro para producción; usa 'validate' o 'none' con Flyway` — diagnostica confirmando que este test actúa exactamente como una guardia automatizada: atrapa en CI, antes de cualquier despliegue, una regresión de configuración que de otro modo solo se descubriría en producción cuando Hibernate silenciosamente alterara el esquema real sin revisión. Revierte el cambio antes de continuar.
+**Fallo deliberado:** quita `metrics` de `management.endpoints.web.exposure.include` y repite el script. **Diagnóstico:** la prueba de Actuator no recibe 200 porque la ruta de métricas ya no se publica. Restaura `health,metrics`.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**3. Entiende**
 
-1. Agrega una aserción que confirme que `spring.security` no está deshabilitado accidentalmente (por ejemplo, verificando que el bean `SecurityFilterChain` existe en el contexto).
-2. Documenta, en el README del proyecto, un resumen de las decisiones de arquitectura tomadas en los tres temas de este módulo (estructura de capas, seguridad por rol, métrica de negocio, guardia de configuración).
-3. Investiga (sin necesitar implementarlo) cómo `CQRS`/`Event Sourcing` cambiarían la forma en que `TareaService.crear(...)` registra el cambio de estado, comparado con el `save(...)` directo actual, y documenta la comparación en una frase.
-4. Escribe de memoria (sin mirar) un test `@Value` + `ApplicationContextRunner`-style que confirme que `ddl-auto` nunca es `update` en el proyecto. Compara después contra el patrón del Paso 4.
+`@SpringBootTest` levanta la app y Testcontainers aporta PostgreSQL. Algunas llamadas recorren HTTP real; MockMvc prueba filtros y reglas dentro del contexto completo, no un navegador ni un clúster.
 
-**Pista:** `@Value("${propiedad:valorPorDefecto}")` inyecta el valor REAL cargado por el contexto de Spring en tiempo de test, incluyendo el valor por defecto si la propiedad no está presente — una forma directa de convertir una convención de configuración en una aserción verificable.
+**4. Cierra**
 
-#### Paso 6 · Práctica independiente
+Relaciona cada una de las cinco pruebas con la capa que verifica. No cuentes un 401 o un 403 esperado como fallo de la suite: son los resultados correctos para esos casos.
 
-**Completa el código:** rellena el espacio con los dos valores seguros que `ddl-auto` puede tener en un proyecto que usa Flyway:
+#### Subtema 12.3.3: Declara lo que todavía falta para desplegar · 8 min
 
-```java
-assertThat(ddlAuto).isIn("____", "____");
+**1. Contexto**
+
+El laboratorio usa una clave de prueba y una base temporal. No contiene un proveedor de identidad, secretos del entorno destino, TLS ni una plataforma que recoja métricas.
+
+**2. Hazlo tú**
+
+Abre `docs/salida-a-produccion.md`. Separa la lista entre comprobado localmente y pendiente de evidencia externa. Ejecuta `./scripts/verify-integration.sh` y marca solo los puntos cuya prueba puedas reproducir aquí.
+
+```bash
+./scripts/verify-integration.sh
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un test que lea `ddl-auto` con `@Value` y falle si su valor es inseguro. Compara después contra el patrón del Paso 4.
+**Resultado esperado:** los seis puntos locales quedan respaldados por la suite; los pendientes del entorno siguen sin marcar.
 
-#### Paso 7 · Cierre y evidencia
+**Fallo deliberado:** marca `Aplicar el manifiesto al clúster` como terminado sin desplegar. **Diagnóstico:** el script local no inicia un clúster ni observa al kubelet; deja el punto pendiente hasta registrar esa evidencia.
 
-Ya conviertes el estándar de "microservicio productivo" (seguridad, persistencia versionada, observabilidad, tests reales) en un test ejecutable que actúa como guardia automatizada contra regresiones de configuración. Esto cierra el track completo de Spring Boot; el laboratorio práctico (a continuación) aplica estos mismos principios a un proyecto propio de confirmación transaccional. **Evidencia:** entrega el resultado de `ProduccionReadyTest` en verde, y el mensaje de fallo real que produce reintroducir `ddl-auto=update`. Fuente oficial: [The Twelve-Factor App](https://12factor.net/) y [Spring Boot Reference](https://docs.spring.io/spring-boot/reference/).
+**3. Entiende**
 
-**Errores comunes:** mezclar capas sin ownership claro; ignorar seguridad en endpoints de escritura; no medir el comportamiento real de negocio con métricas propias, dependiendo solo de métricas técnicas genéricas.
+Usar Testcontainers prueba integración con PostgreSQL, no copias de seguridad reales. Exponer un contador por Actuator no lo envía a Prometheus. La lista evita confundir código de demostración con operación desplegada.
 
-**Cuándo no usarlo:** para un experimento de aprendizaje personal sin intención de desplegarlo nunca a producción, un test de guardia de configuración es una formalidad que puede posponerse hasta que el proyecto efectivamente lo requiera.
+**4. Cierra**
+
+Escribe qué prueba faltaría para un punto pendiente: entorno, acción ejecutada y resultado que guardarías.
+
+#### Subtema 12.3.4: Deja una ruta técnica para el siguiente nivel · 8 min
+
+**1. Contexto**
+
+El microservicio ya tiene un flujo vertical local. El siguiente salto profesional es operar la misma API con identidad, secretos, métricas y salud administrados por infraestructura real.
+
+**2. Hazlo tú**
+
+En `docs/salida-a-produccion.md`, toma los pendientes de identidad, métricas y Kubernetes. Para cada uno agrega el nombre de una prueba o evidencia que pedirías en el entorno destino. Usa como referencia los módulos 4 (JWT), 7 (Actuator), 11 (probes) y 12 (integración).
+
+```bash
+./scripts/verify-integration.sh
+```
+
+**Resultado esperado:** cada pendiente tiene una comprobación concreta, por ejemplo token emitido por el IdP, métrica recibida por el exporter o readiness observada por el clúster.
+
+**Fallo deliberado:** borra de la lista los pendientes de identidad y Kubernetes sin añadir evidencia. **Diagnóstico:** la ruta deja de reflejar capacidades que este laboratorio no implementa; restáuralos antes de cerrar.
+
+**3. Entiende**
+
+La API no implementa emisor JWT, despliegue Kubernetes, exporter, TLS, límites de abuso ni procedimientos de recuperación de base. Los temas anteriores aportan piezas para avanzar, pero aún se deben integrar y comprobar en el destino.
+
+**4. Cierra**
+
+Entrega el informe de 5 pruebas verdes y la lista de pendientes con evidencias requeridas. Con eso cierras el track describiendo tanto lo demostrado como sus límites.
+
+**Fuentes:** [inicialización de bases en Spring Boot](https://docs.spring.io/spring-boot/how-to/data-initialization.html), [JWT Resource Server](https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html), [métricas y Actuator](https://docs.spring.io/spring-boot/reference/actuator/metrics.html) y [probes de Spring Boot](https://docs.spring.io/spring-boot/reference/actuator/kubernetes-probes.html).
 
 ---
 
 ## Laboratorio práctico
 
-**Objetivo del laboratorio:** construir el microservicio integrador completo con auth, persistencia real, Actuator y tests de integración.
+**Objetivo del laboratorio:** comprobar el flujo completo del microservicio con JWT, autorización por rol, persistencia real, Actuator y una guardia de configuración.
 
 **Requisitos previos:** Módulos 0-11 completados.
 
 | Paso | Acción | Código | Explicación |
 |---|---|---|---|
 | 1 | Diseñar la arquitectura por capas completa | Ver Tema 1 | controller/service/repository/dto |
-| 2 | Implementar persistencia con migraciones Flyway | Módulo 3 | Sin `ddl-auto` |
+| 2 | Implementar persistencia con migraciones Flyway | Módulo 3 | Flyway aplica el esquema y Hibernate usa `ddl-auto=validate` |
 | 3 | Proteger endpoints con Spring Security + JWT | Módulo 4 | Autorización por rol |
 | 4 | Exponer Actuator con una métrica de negocio | Módulo 7 | Verifica en `/actuator/metrics` |
 | 5 | Escribir tests de integración con Testcontainers | Módulo 6 | Cubriendo el flujo crítico completo |
 
-**Verificación:** el laboratorio (y el track completo) se considera exitoso si el microservicio protege correctamente sus endpoints sensibles, persiste datos reales con un esquema versionado, expone al menos una métrica de negocio custom, y tiene una suite de tests de integración que verifica el flujo crítico contra infraestructura real.
+**Verificación local:** desde `examples/spring-boot-integrador-rutaflow/`, ejecuta `./scripts/verify-integration.sh`. Las cinco pruebas recorren PostgreSQL real, migración, HTTP, JWT, roles, métrica y guardia de configuración. Este resultado no certifica despliegue productivo; consulta `docs/salida-a-produccion.md` para los pendientes.
 
 **Errores comunes y soluciones**
 

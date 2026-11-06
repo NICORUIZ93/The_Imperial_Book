@@ -1386,12 +1386,22 @@ Fuentes primarias: [JWT Resource Server](https://docs.spring.io/spring-security/
 [seguridad de Actuator](https://docs.spring.io/spring-boot/reference/actuator/endpoints.html#actuator.endpoints.exposing)
 y [Micrometer Counters](https://docs.micrometer.io/micrometer/reference/concepts/counters.html).
 
-Tras regenerar reportes, la cobertura atómica queda en 154/1185 (Spring Boot
-50/111); la auditoría marca 1081/1185 temas practicables, 409 temas con defectos
-de sustancia y señales de profundidad en 250. `./scripts/validate.sh` pasó: 23
+Spring Boot M12 T3, “Cierra el servicio con evidencia y próximos pasos”, añade
+una prueba de configuración que protege `ddl-auto=validate`, Flyway y los beans
+de JWT/seguridad. `docs/salida-a-produccion.md` separa seis verificaciones locales
+de pendientes que requieren un entorno real. La suite completa pasó con 5 pruebas
+y PostgreSQL 16.15. Al cambiar `ddl-auto` a `update`, falló con `expected:
+"validate" but was: "update"`; al retirar `metrics` de la exposición Actuator,
+la prueba de métrica recibió 404. Se restauraron ambas configuraciones. La guía
+aclara que el test local no comprueba despliegue Kubernetes, IdP, TLS ni exporter.
+
+Tras regenerar reportes, la cobertura atómica queda en 155/1185 (Spring Boot
+51/111); la auditoría marca 1080/1185 temas practicables, 409 temas con defectos
+de sustancia y señales de profundidad en 251. `./scripts/validate.sh` pasó: 23
 pruebas Python (4 omitidas) y validaciones de contenido, currículo, fuentes,
 laboratorios y trazabilidad. Las cifras son estructurales; no prueban ejecución
-ni revisión humana del resto del currículo. T1 se publicó en `bc0ba4d0`; T2 se
-prepara para publicar como cambio separado. El próximo trabajo es Spring Boot
-M12 T3, “Cierre del track y próximos pasos”. Conserva commits y publicación por
-tema. Mantén fuera los dos cambios locales de Flutter.
+ni revisión humana del resto del currículo. T1 se publicó en `bc0ba4d0` y T2 en
+`2753107f`; publica T3 como cambio separado al cerrar sus reportes. El siguiente
+tema por prioridad es Spring Boot M13 T1 en
+`web/public/content/spring-boot/modulo-13.md`. Conserva fuera los dos cambios
+locales de Flutter.

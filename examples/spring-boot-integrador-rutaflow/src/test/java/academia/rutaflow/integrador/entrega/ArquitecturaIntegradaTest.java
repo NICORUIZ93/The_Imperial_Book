@@ -9,8 +9,10 @@ import java.time.Instant;
 import java.util.List;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
@@ -19,6 +21,8 @@ import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.security.oauth2.jwt.JwsHeader;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -60,6 +64,18 @@ class ArquitecturaIntegradaTest {
 
     @Autowired
     MeterRegistry meterRegistry;
+
+    @Autowired
+    Flyway flyway;
+
+    @Autowired
+    JwtDecoder jwtDecoder;
+
+    @Autowired
+    SecurityFilterChain securityFilterChain;
+
+    @Value("${spring.jpa.hibernate.ddl-auto}")
+    String ddlAuto;
 
     @Test
     void postRecorreHttpCapasFlywayYPostgres() throws Exception {
@@ -131,6 +147,14 @@ class ArquitecturaIntegradaTest {
                 .header("Authorization", "Bearer " + token("ROLE_ADMIN")))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.measurements[0].value").value(despues));
+    }
+
+    @Test
+    void configuracionFinalMantieneMigracionSeguridadYValidacion() {
+        assertThat(ddlAuto).isEqualTo("validate");
+        assertThat(flyway.info().current().getScript()).isEqualTo("V1__crear_entrega.sql");
+        assertThat(jwtDecoder).isNotNull();
+        assertThat(securityFilterChain).isNotNull();
     }
 
     private String token(String... roles) {

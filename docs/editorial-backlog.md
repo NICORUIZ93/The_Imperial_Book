@@ -11,13 +11,13 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | Explicación | 1185 | 0 |
 | Código | 1141 | 44 |
 | Ruta | 1185 | 0 |
-| Ejecución | 1119 | 66 |
+| Ejecución | 1118 | 67 |
 | Resultado | 1183 | 2 |
 | Modificación | 1131 | 54 |
-| Conexión con un proyecto | 1097 | 88 |
+| Conexión con un proyecto | 1096 | 89 |
 | Modelo mental | 1185 | 0 |
 | Límites | 1126 | 59 |
-| **Perfil de criterios detectado** | **1081** | **104** |
+| **Perfil de criterios detectado** | **1080** | **105** |
 
 ## Prioridad por track
 
@@ -36,7 +36,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | node | 83 | 0 | 0 | 0 | 0 | 1 | 2 | 1 |
 | react | 58 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | rutaflow | 29 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| spring-boot | 111 | 5 | 0 | 8 | 0 | 6 | 25 | 17 |
+| spring-boot | 111 | 5 | 0 | 9 | 0 | 6 | 26 | 17 |
 
 ## Pendientes por tema
 
@@ -122,6 +122,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 - [spring-boot · módulo 10](../web/public/content/spring-boot/modulo-10.md) · Tema 12: Contract testing entre productor y consumidor: conexión con un proyecto, límites.
 - [spring-boot · módulo 12](../web/public/content/spring-boot/modulo-12.md) · Tema 1: Arquitectura del microservicio integrador: ejecución, conexión con un proyecto, límites.
 - [spring-boot · módulo 12](../web/public/content/spring-boot/modulo-12.md) · Tema 2: Integra seguridad JWT y observabilidad: ejecución, conexión con un proyecto.
+- [spring-boot · módulo 12](../web/public/content/spring-boot/modulo-12.md) · Tema 3: Cierra el servicio con evidencia y próximos pasos: ejecución, conexión con un proyecto.
 - [spring-boot · módulo 21](../web/public/content/spring-boot/modulo-21.md) · Tema 1: Productor, tópico, key y consumidor: conexión con un proyecto, límites.
 - [spring-boot · módulo 21](../web/public/content/spring-boot/modulo-21.md) · Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia: conexión con un proyecto.
 - [spring-boot · módulo 21](../web/public/content/spring-boot/modulo-21.md) · Tema 3: Outbox transaccional y flujo de negocio: conexión con un proyecto.

@@ -1690,7 +1690,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "4db267955bfc73fb5b91289acdcc068e48835115ed144a7e8dcf019cc362bde9",
+    "fingerprint": "928a143e224638a0b84616105bc1392d72e220c46354b65807a70bb00cafc0d8",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10418,7 +10418,7 @@
         "module": 12,
         "tailWords": 0,
         "topic": "Tema 1: Arquitectura del microservicio integrador",
-        "words": 1000
+        "words": 1002
       },
       {
         "issues": [],
@@ -10430,9 +10430,9 @@
       {
         "issues": [],
         "module": 12,
-        "tailWords": 154,
-        "topic": "Tema 3: Cierre del track y próximos pasos",
-        "words": 1007
+        "tailWords": 0,
+        "topic": "Tema 3: Cierra el servicio con evidencia y próximos pasos",
+        "words": 914
       },
       {
         "issues": [],

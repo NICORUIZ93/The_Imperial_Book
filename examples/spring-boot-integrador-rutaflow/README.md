@@ -15,20 +15,21 @@ carpeta ejecuta:
 ./scripts/verify-integration.sh
 ```
 
-El script corre cuatro pruebas contra la aplicación y un PostgreSQL efímero:
+El script corre cinco pruebas contra la aplicación y un PostgreSQL efímero:
 creación HTTP 201 con persistencia, rechazo HTTP 400 sin guardar, respuestas 401
-y 403 según credencial y rol, y aumento del contador visible por Actuator. En
-macOS detecta el socket de Podman y prepara las variables de Testcontainers; con
-Docker usa la configuración del entorno.
+y 403 según credencial y rol, aumento del contador visible por Actuator y una
+guardia de configuración. En macOS detecta el socket de Podman y prepara las
+variables de Testcontainers; con Docker usa la configuración del entorno.
 
 ## Recorre las capas
 
-- `entrega/EntregaController.java`: entrada HTTP, validación y respuesta.
-- `entrega/EntregaService.java`: crea la entrega dentro de una transacción.
-- `entrega/EntregaRepository.java`: acceso a datos con Spring Data JPA.
-- `security/JwtSecurityConfig.java`: firma/verificación HS256 y reglas JWT.
+- `src/main/java/academia/rutaflow/integrador/entrega/EntregaController.java`: entrada HTTP, validación y respuesta.
+- `src/main/java/academia/rutaflow/integrador/entrega/EntregaService.java`: guardado y contador de negocio.
+- `src/main/java/academia/rutaflow/integrador/entrega/EntregaRepository.java`: acceso a datos con Spring Data JPA.
+- `src/main/java/academia/rutaflow/integrador/security/JwtSecurityConfig.java`: firma/verificación HS256 y reglas JWT.
 - `src/main/resources/db/migration/V1__crear_entrega.sql`: tabla gestionada por Flyway.
 - `src/test/java/academia/rutaflow/integrador/entrega/ArquitecturaIntegradaTest.java`: prueba HTTP y PostgreSQL con Testcontainers.
+- `docs/salida-a-produccion.md`: evidencia local y pendientes para el entorno destino.
 
 ## Provoca un error de ruta
 
