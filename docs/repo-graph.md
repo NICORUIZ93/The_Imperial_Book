@@ -1,8 +1,8 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-11-09 18:38 UTC
+Generated: 2026-11-09 19:14 UTC
 Root: `The_Imperial_Book`
-Indexed files: 1225
+Indexed files: 1230
 Import edges: 60
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -19,20 +19,20 @@ For automated lookups, use `docs/repo-graph.json`.
 - `automation-script`: 36 files
 - `course-content`: 262 files
 - `documentation`: 62 files
-- `example`: 750 files
+- `example`: 755 files
 - `local-infra`: 1 files
 - `project-file`: 55 files
 
 ## File Types
 
-- `.md`: 371
-- `.java`: 242
+- `.md`: 372
+- `.java`: 245
 - `.py`: 162
 - `.json`: 70
 - `.ts`: 66
 - `.js`: 54
 - `.html`: 38
-- `.yml`: 27
+- `.yml`: 28
 - `.mjs`: 26
 - `.rs`: 25
 - `.dart`: 24
@@ -264,7 +264,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `examples/archify/temas/cloud/modulo-22-tema-5-edge-routes.review-2/modulo-22-tema-5-edge-routes.finalize.json` (1012 lines)
 - `examples/archify/temas/foundations/modulo-12-tema-10-lazo-p.workflow.json` (183 lines)
 - `examples/archify/temas/foundations/modulo-12-tema-17-plc-scan.workflow.json` (189 lines)
-- ... 732 more files
+- ... 737 more files
 
 ### local-infra
 
@@ -275,12 +275,12 @@ For automated lookups, use `docs/repo-graph.json`.
 - `.env.example` (8 lines)
 - `.github/workflows/ci.yml` (62 lines)
 - `docs/app-flow-inspection.json` (13830 lines)
-- `docs/atomic-subtopics.json` (17113 lines)
+- `docs/atomic-subtopics.json` (17170 lines)
 - `docs/biblioteca/catalogo.json` (564 lines)
 - `docs/biblioteca/imagenes.json` (577 lines)
 - `docs/browser-course-review.json` (2660 lines)
 - `docs/code-visual-quality.json` (3969 lines)
-- `docs/course-depth-review.json` (13656 lines)
+- `docs/course-depth-review.json` (13658 lines)
 - `docs/curriculum-matrix.json` (394 lines)
 - `docs/floci-official-curriculum.json` (14 lines)
 - `docs/lesson-substance-baseline.json` (1693 lines)

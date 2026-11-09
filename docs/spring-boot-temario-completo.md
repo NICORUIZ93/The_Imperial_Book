@@ -437,6 +437,10 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - pendiente Subtema 15.7.3: Reabre y reintenta sin duplicar · 8 min
   - pendiente Subtema 15.7.4: Define los límites de recuperación · 8 min
 - [pendiente de migrar] Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework
+  - pendiente Subtema 15.8.1: Haz que el agregado proteja la regla · 8 min
+  - pendiente Subtema 15.8.2: Conecta el caso de uso a un puerto · 8 min
+  - pendiente Subtema 15.8.3: Usa Spring como adaptador HTTP · 8 min
+  - pendiente Subtema 15.8.4: Comprueba el corte vertical y sus límites · 8 min
 
 ### Módulo 16: JPA de Spring Boot — Hibernate, Lazy vs Eager y N+1
 

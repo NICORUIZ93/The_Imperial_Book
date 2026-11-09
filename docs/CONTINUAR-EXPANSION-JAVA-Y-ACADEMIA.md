@@ -1575,3 +1575,19 @@ Spring Framework transaction management, H2 file/in-memory URL docs y
 Microservices.io Saga Pattern. `./scripts/validate.sh` pasó; la auditoría
 pedagógica quedó en 1073/1185 temas practicables y la metodología universal en
 1003/1185. Siguiente: M15 T8, Clean Architecture y DDD táctico.
+
+Spring Boot M15 T8, “Clean Architecture y DDD táctico”, se amplió en cuatro
+subtemas y creó `examples/spring-clean-architecture-rutaflow/` con Java 25 / Boot
+4.1.2. El recorrido integra value objects, agregado con invariante, caso de
+uso, puerto, repositorio en memoria y adaptador HTTP; incluye pruebas puras,
+MockMvc y reglas ArchUnit para dependencias. La suite completa pasó: 6 pruebas
+(2 de dominio/aplicación, 2 de fronteras y 2 HTTP), 0 fallos. Al quitar la
+invariante, falló el test de doble asignación; al añadir una referencia de
+application al repositorio concreto, ArchUnit detectó la fuga; al hacer que el
+controller reconstruyera el agregado en cada petición, la prueba esperaba 409
+y recibió 201. Restauradas las mutaciones, la suite pasó. Se conservó el
+ejercicio Java puro de RutaFlow como referencia y el validador de material
+confirmó los bloques coincidentes. `./scripts/validate.sh` pasó; auditoría
+pedagógica: 1073/1185 practicables, metodología universal: 1002/1185. El
+laboratorio no persiste ni implementa autenticación. Siguiente: M16 T1,
+relaciones JPA, lado propietario y ciclo de vida.

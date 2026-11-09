@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 268,
+    "topicsWithSignals": 269,
     "newLaboratories": 25
   },
   "priorities": {
@@ -12793,7 +12793,9 @@
       "title": "Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework",
       "file": "web/public/content/spring-boot/modulo-15.md",
       "line": 697,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": true,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"

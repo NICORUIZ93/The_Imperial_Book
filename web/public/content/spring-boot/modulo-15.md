@@ -696,59 +696,111 @@ if __name__=='__main__':unittest.main()
 
 ### Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework
 
-#### Paso 1 · Objetivo y preparación
+#### Subtema 15.8.1: Haz que el agregado proteja la regla · 8 min
 
-Al finalizar separarás una regla de negocio en entidad, caso de uso, puerto y
-adaptador, y podrás explicar dónde entra Spring Boot, JPA y H2 sin convertirlos
-en el centro del dominio. **Prerrequisitos:** Módulo 3 (persistencia), Módulo 10
-Tema 7 (contextos delimitados e invariantes) y Java 21 o superior. El ejemplo
-independiente se compila con `javac`; no necesita levantar Spring para demostrar
-la dirección de dependencias.
+**Contexto.** Un envío sin destino puede asignarse; uno ya asignado no debe cambiar de destino por una segunda petición.
 
-#### Paso 2 · Contexto y caso real
+**¿Por qué es importante?** Si la regla vive solo en el controller, una tarea programada o un nuevo endpoint podría saltársela. El agregado protege el cambio desde cualquier entrada.
 
-La captura de referencia anuncia cinco incrementos: entidades DDD táctico,
-casos de uso/interactors y boundaries, adaptadores de interfaz, frameworks y
-drivers, y un código completo que llega hasta la API. La secuencia es útil si se
-conserva el límite: una entidad protege una regla; el caso de uso coordina; un
-puerto expresa lo que necesita; un adaptador conecta la tecnología; Spring Boot
-es un driver de entrada o infraestructura, no el dueño de la regla.
+**Hazlo tú.** Abre `examples/spring-clean-architecture-rutaflow/src/main/java/academia/rutaflow/clean/domain/Delivery.java` y sigue `assignTo`. El agregado usa los value objects `DeliveryId` y `Destination`.
 
-**¿Por qué es importante?** Un controlador que crea directamente un repositorio
-JPA mezcla HTTP, transacción y negocio. Puede funcionar en una demo y volverse
-difícil de probar o migrar cuando cambia la base de datos. Clean Architecture
-no significa multiplicar carpetas: significa que el dominio no importa
-frameworks y que la dirección de dependencias apunta hacia la regla.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-Usa cuatro anillos prácticos:
-
-1. **Dominio:** entidad, value object y agregado con invariantes.
-2. **Aplicación:** caso de uso/interactor que recibe una orden y usa puertos.
-3. **Adaptadores:** controlador, presenter y repositorio que traducen formatos.
-4. **Frameworks y drivers:** Spring Boot, JPA, H2, HTTP, mensajería y sistema
-   operativo.
-
-**Analogía:** el dominio es la receta y sus restricciones; el caso de uso es
-la persona que coordina la preparación; los puertos son enchufes con una forma
-estable; los adaptadores son los cables concretos; Spring es la cocina. Cambiar
-la cocina no debe cambiar la receta. El límite es que una arquitectura limpia no
-garantiza buen modelado: una entidad anémica o un caso de uso que solo reenvía
-llamadas sigue siendo diseño débil aunque tenga muchos paquetes.
-
-**Dirección de dependencias:** `┌─ HTTP/Spring → adaptador → caso de uso → puerto ← adaptador memoria/JPA ─┐`<br>`└─ dominio dentro del caso de uso; no importa Spring ───────────────────────┘`. La flecha indica quién conoce la interfaz, no necesariamente quién invoca en tiempo de ejecución.
-
-#### Paso 4 · Demostración guiada desde cero
-
-Desde una carpeta vacía crea `Main.java` y `test.sh` con el contenido completo de abajo:
-
-```bash
-mkdir ejemplo-clean-architecture
-cd ejemplo-clean-architecture
+```java
+public Delivery assignTo(Destination nextDestination) {
+    if (status != DeliveryStatus.CREATED) {
+        throw new DeliveryAlreadyAssigned();
+    }
+    return new Delivery(id, nextDestination, DeliveryStatus.ASSIGNED);
+}
 ```
 
-`Main.java` contiene las capas mínimas sin importar Spring:
+Ejecuta desde `examples/spring-clean-architecture-rutaflow/`:
+
+```bash
+./mvnw -q -Dtest=AssignDeliveryTest#domainRuleRejectsAssigningADestinationTwice test
+```
+
+**Resultado esperado.** La primera asignación crea el destino; la siguiente se rechaza y deja intacta la regla del dominio.
+
+**Fallo deliberado.** Quita la comprobación de estado en `assignTo`. La prueba falla porque el mismo envío acepta una segunda asignación. Restáurala y corre el test de nuevo.
+
+**Entiende.** El agregado `Delivery` es dueño de su estado y de las reglas para cambiarlo. No necesita conocer HTTP, Spring ni una base de datos.
+
+**Cierra.** Escribe qué otra transición debería controlar este agregado y desde qué estado sería válida.
+
+#### Subtema 15.8.2: Conecta el caso de uso a un puerto · 8 min
+
+**Contexto.** El caso de uso coordina una acción y pide guardar el resultado mediante una interfaz; el adaptador decide dónde se guarda.
+
+**Hazlo tú.** Abre `application/AssignDelivery.java` y `application/DeliveryRepository.java` dentro de `examples/spring-clean-architecture-rutaflow/`:
+
+```text
+web ──> caso de uso ──> puerto de repositorio
+                           ▲
+                    adaptador de datos
+              dominio usado por el caso de uso
+```
+
+Ejecuta:
+
+```bash
+./mvnw -q -Dtest=AssignDeliveryTest,ArchitectureBoundariesTest test
+```
+
+**Resultado esperado.** La prueba de aplicación funciona con un repositorio falso sin iniciar Spring; ArchUnit confirma que el dominio no importa Spring/web y que application no depende de infrastructure/web.
+
+**Fallo deliberado.** En `AssignDelivery`, agrega temporalmente un campo `private InMemoryDeliveryRepository forbiddenDependency;` y su import. Corre `./mvnw -q -Dtest=ArchitectureBoundariesTest#applicationDoesNotDependOnInfrastructureOrWebAdapters test`: ArchUnit señala el campo que cruzó la frontera. Quita el campo/import y repite la prueba.
+
+**Entiende.** El caso de uso conoce el puerto; el adaptador implementa el puerto. Esto permite cambiar el repositorio sin reescribir la regla de negocio.
+
+**Cierra.** Explica qué clase reemplazarías para guardar los envíos en PostgreSQL.
+
+#### Subtema 15.8.3: Usa Spring como adaptador HTTP · 8 min
+
+**Contexto.** El controller traduce una petición web y llama al caso de uso; no contiene la regla para asignar dos veces.
+
+**Hazlo tú.** Abre `web/DeliveryController.java` y `src/test/java/academia/rutaflow/clean/web/DeliveryHttpTest.java` dentro de `examples/spring-clean-architecture-rutaflow/`. Ejecuta:
+
+```bash
+./mvnw -q -Dtest=DeliveryHttpTest test
+```
+
+**Resultado esperado.** El primer `POST /api/deliveries/D-HTTP-1/assignment` devuelve `201` y `ASSIGNED`; repetir el ID devuelve `409`. El controller traduce la excepción del dominio a una respuesta HTTP.
+
+**Fallo deliberado.** Cambia temporalmente `HttpStatus.CONFLICT` por `HttpStatus.OK`. La prueba de repetición falla porque un envío ya asignado debe producir un conflicto. Restaura `CONFLICT`.
+
+**Entiende.** El controller es un adaptador de entrada: sabe de HTTP y de la forma de la respuesta. La entidad de persistencia y el dominio no se envían directamente como contrato externo.
+
+**Cierra.** Dibuja la ruta de una petición hasta la regla del agregado y de vuelta a la respuesta.
+
+#### Subtema 15.8.4: Comprueba el corte vertical y sus límites · 8 min
+
+**Contexto.** El recorrido completo combina un agregado, un caso de uso, un puerto, un adaptador y un endpoint; una estructura de carpetas por sí sola no garantiza esa dirección.
+
+**Hazlo tú.** Lee `examples/spring-clean-architecture-rutaflow/README.md` y ejecuta:
+
+```bash
+./mvnw -q test
+```
+
+Para iniciar la app y probar el endpoint manualmente, sigue los comandos del README.
+
+**Resultado esperado.** Pasan seis pruebas: dos de dominio/aplicación, dos de límites ArchUnit y dos HTTP con el contexto Spring.
+
+**Fallo deliberado.** En `DeliveryController`, reemplaza temporalmente la llamada a `assignDelivery.execute(...)` por `Delivery.create(new DeliveryId(id)).assignTo(new Destination(request.destination()))`. Ejecuta `DeliveryHttpTest`: la segunda petición vuelve a crear el envío y devuelve `201` en lugar de `409`. Restaura la llamada al caso de uso.
+
+**Entiende.** Este laboratorio usa memoria y se vacía al reiniciar; no incluye JPA, seguridad ni persistencia. Para proyectos pequeños, conserva estos límites dentro de un monolito modular; añade servicios separados solo cuando propiedad de datos, escala o equipos lo justifiquen.
+
+**Cierra.** **Proyecto integrador:** en la API de envíos del Módulo 12, identifica agregado e invariantes, caso de uso, puerto, adaptadores HTTP/JPA y reglas de dependencia. Migra el repositorio sin cambiar la regla de asignación.
+
+**Fuente:** [Martin Fowler — DDD Aggregate](https://martinfowler.com/bliki/DDD_Aggregate.html), [Spring Boot Reference](https://docs.spring.io/spring-boot/reference/). La demo prueba un recorrido local; no certifica el diseño completo ni su rendimiento.
+
+#### Ejercicio original RutaFlow · referencia opcional
+
+Este ejercicio corto en Java puro conserva el diseño original sin iniciar
+Spring. La ruta principal anterior amplía el recorrido con Spring Boot, prueba
+HTTP y verifica las fronteras con ArchUnit.
+
+Archivo: `examples/rutaflow-material/clean-architecture/Main.java` (`Main.java`):
 
 ```java
 import java.util.ArrayList;
@@ -801,59 +853,13 @@ public class Main {
 }
 ```
 
-Crea `test.sh` con estas cuatro líneas y ejecútalo:
+Archivo: `examples/rutaflow-material/clean-architecture/test.sh` (`test.sh`):
 
 ```bash
-cat > test.sh <<'SCRIPT'
 #!/usr/bin/env bash
 set -euo pipefail
-rm -rf build && mkdir -p build && javac -d build Main.java && java -cp build Main
-SCRIPT
-bash test.sh
+build_dir="$(mktemp -d)"
+trap 'rm -rf "$build_dir"' EXIT
+javac -d "$build_dir" Main.java
+java -cp "$build_dir" Main
 ```
-
-**Resultado esperado:** `shipment=ENV-42 status=CREATED`. `ShipmentId` y
-`Shipment` representan el dominio; `CreateShipment` es el interactor;
-`ShipmentRepository` es el boundary; `InMemoryShipmentRepository` es un
-adaptador de prueba. En una aplicación Spring, un `@RestController` convertiría
-HTTP en la entrada del caso de uso y un adaptador JPA implementaría el puerto,
-pero ninguna de esas clases aparece en el dominio.
-
-#### Paso 5 · Práctica guiada
-
-**Fallo deliberado:** importa una anotación de Spring en `Shipment` o cambia el
-caso de uso para recibir `EntityManager`. Compila de nuevo y explica qué
-dependencia cruzó el límite. Después cambia el repositorio en memoria por un
-adaptador falso que registre llamadas sin modificar `CreateShipment`.
-
-**Pista:** el caso de uso debe depender de `ShipmentRepository`, no de la clase
-que lo implementa. Si para probar la regla necesitas levantar H2, la frontera
-está demasiado adentro.
-
-#### Paso 6 · Práctica independiente
-
-1. Añade una transición `CANCELLED` que solo pueda ocurrir desde `CREATED`.
-2. Escribe un test puro que falle al cancelar dos veces.
-3. Diseña un `CreateShipmentController` que traduzca una petición HTTP a la
-   orden del caso de uso, sin devolver la entidad de persistencia directamente.
-4. Enumera qué parte cambiaría al pasar de H2 a PostgreSQL y qué parte debería
-   permanecer intacta.
-
-#### Paso 7 · Cierre y evidencia
-
-**Evidencia de aprendizaje:** entrega la compilación con `bash test.sh`, el diagrama de la
-dirección de dependencias, test de la transición inválida y una tabla que
-separe dominio, aplicación, adaptadores y drivers. **Transferencia al proyecto integrador RutaFlow:** implementa la asignación de un envío como caso de uso
-Java, conserva el dominio independiente de Spring y agrega el adaptador REST
-solo después de que la prueba pura pase. El siguiente paso es revisar
-la regla con ArchUnit en el Tema 3 y conectar el caso de uso a una API REST sin
-exponer entidades JPA.
-
-**Errores comunes:** llamar Clean Architecture a una estructura de carpetas sin
-reglas verificables, poner lógica en controllers, compartir entidades JPA entre
-contextos, crear interfaces para cada clase sin una razón y usar `@Data` en
-entidades con relaciones. **Límites y decisión de uso:** este laboratorio
-demuestra dirección de dependencias y no reemplaza pruebas de integración,
-transacciones reales, migraciones Flyway ni seguridad de la API.
-
-**Fuente oficial:** [Spring Boot reference](https://docs.spring.io/spring-boot/reference/) y [DDD Aggregate de Martin Fowler](https://martinfowler.com/bliki/DDD_Aggregate.html).

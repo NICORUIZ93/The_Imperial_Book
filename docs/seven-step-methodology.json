@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 28,
-      "prerequisites": 50,
-      "context": 28,
-      "theoryAnalogy": 28,
-      "guidedDemo": 28,
+      "objective": 27,
+      "prerequisites": 49,
+      "context": 27,
+      "theoryAnalogy": 27,
+      "guidedDemo": 27,
       "codeExplanation": 111,
       "execution": 100,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 28,
-      "independentPractice": 28,
-      "closure": 28,
-      "commonErrors": 28,
-      "resources": 58,
-      "standaloneExample": 30,
-      "learningEvidence": 64,
-      "complete": 28
+      "guidedPractice": 27,
+      "independentPractice": 27,
+      "closure": 27,
+      "commonErrors": 27,
+      "resources": 57,
+      "standaloneExample": 29,
+      "learningEvidence": 63,
+      "complete": 27
     }
   },
   "topics": {
@@ -29303,26 +29303,26 @@
         "module": 15,
         "topic": "Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework",
         "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "objective": false,
+          "prerequisites": false,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 4,
+          "complete": false
         }
       },
       {

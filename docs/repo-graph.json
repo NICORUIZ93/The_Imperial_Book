@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 17113,
+      "lines": 17170,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13656,
+      "lines": 13658,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 577,
+      "lines": 581,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -7101,6 +7101,50 @@
     {
       "path": "examples/spring-resilience-rutaflow/src/test/java/academia/rutaflow/resilience/CircuitBreakerBehaviorTest.java",
       "lines": 129,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-saga-recovery-rutaflow/README.md",
+      "lines": 45,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Recuperar una compensaci\u00f3n con Spring Boot y H2",
+        "## Ejecutar",
+        "## Archivos"
+      ]
+    },
+    {
+      "path": "examples/spring-saga-recovery-rutaflow/src/main/java/academia/rutaflow/sagarecovery/CompensationService.java",
+      "lines": 59,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-saga-recovery-rutaflow/src/main/java/academia/rutaflow/sagarecovery/SagaRecoveryApplication.java",
+      "lines": 12,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-saga-recovery-rutaflow/src/main/resources/application.yml",
+      "lines": 9,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-saga-recovery-rutaflow/src/test/java/academia/rutaflow/sagarecovery/CompensationRecoveryTest.java",
+      "lines": 87,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -13794,7 +13838,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-15.md",
-      "lines": 860,
+      "lines": 866,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
