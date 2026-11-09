@@ -7,14 +7,14 @@ defectos detectados tampoco acredita haber sido comprendida.
 | Métrica | Valor |
 |---|---:|
 | Temas analizados | 1185 |
-| Temas con algún defecto | 402 |
+| Temas con algún defecto | 401 |
 | Módulos con apéndices heredados | 178/256 |
 
 ## Defectos por tipo
 
 | Código | Temas |
 |---|---:|
-| `andamiaje-generico` | 117 |
+| `andamiaje-generico` | 116 |
 | `bloque-repetido` | 163 |
 | `cola-tras-cierre` | 331 |
 | `parrafo-repetido` | 5 |
@@ -81,4 +81,4 @@ defectos detectados tampoco acredita haber sido comprendida.
 4. `--strict` compara contra `docs/lesson-substance-baseline.json`: ningún
    tema nuevo puede nacer con estos defectos.
 
-Huella del contenido: `a70aa09c90164ffe851747fcc9618e176d49dcb854ba791b4c838e146a8d2e8b`
+Huella del contenido: `7f98ee3e11014d2e71a7edac4e37d083abe4e315bee3e93446004848b04a41b0`

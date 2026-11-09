@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 1705,
+      "lines": 1721,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 17626,
+      "lines": 17683,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -314,7 +314,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1085,
+      "lines": 1083,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -600,7 +600,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3948,
+      "lines": 3941,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13664,
+      "lines": 13666,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -813,7 +813,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 11057,
+      "lines": 11055,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 613,
+      "lines": 617,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -5643,7 +5643,7 @@
     },
     {
       "path": "examples/spring-batch-rutaflow/README.md",
-      "lines": 33,
+      "lines": 35,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -5680,6 +5680,14 @@
     {
       "path": "examples/spring-batch-rutaflow/src/test/java/academia/rutaflow/batch/ImportJobTest.java",
       "lines": 29,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-batch-rutaflow/src/test/java/academia/rutaflow/batch/RestartJobTest.java",
+      "lines": 130,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -14190,7 +14198,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-20.md",
-      "lines": 676,
+      "lines": 702,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14199,14 +14207,14 @@
         "## Aprende construyendo",
         "### Dos ejemplos: primero visible, luego real",
         "### Tema 1: Scheduling y tareas peri\u00f3dicas",
+        "#### Subtema 20.1 \u00b7 Elige cu\u00e1ndo debe volver a correr \u00b7 8 min",
+        "#### Subtema 20.2 \u00b7 Conecta el disparo con el trabajo real \u00b7 8 min",
+        "#### Subtema 20.3 \u00b7 Comprueba la tarea sin dormir en el test \u00b7 8 min",
+        "#### Subtema 20.4 \u00b7 Evita duplicados al desplegar varias r\u00e9plicas \u00b7 10 min",
+        "### Tema 2: Eventos locales, eventos transaccionales y mensajer\u00eda",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda y modelo mental",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
-        "### Tema 2: Eventos locales, eventos transaccionales y mensajer\u00eda"
+        "#### Paso 3 \u00b7 Teor\u00eda y modelo mental"
       ]
     },
     {

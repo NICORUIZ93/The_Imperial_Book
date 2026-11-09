@@ -159,7 +159,7 @@ El test lanza el mismo Job con los mismos `JobParameters`; el writer provoca un 
 
 **Contexto:** el nombre del archivo identifica la entrada; un `run` nuevo puede representar intencionalmente una nueva ejecución lógica.
 
-**Hazlo tú:** en el mismo test, compara `parametroIdentificadorNuevoCreaOtraInstanciaDesdeElPrincipio`. Corre `./mvnw -q -Dtest=RestartJobTest test`.
+**Hazlo tú:** abre `examples/spring-batch-rutaflow/src/test/java/academia/rutaflow/batch/RestartJobTest.java` y compara `parametroIdentificadorNuevoCreaOtraInstanciaDesdeElPrincipio`. Corre `./mvnw -q -Dtest=RestartJobTest test`.
 
 ```java
 var params = new JobParametersBuilder()
@@ -202,7 +202,7 @@ Corre `./mvnw -q clean test`. El writer del ejemplo falla una vez de manera cont
 
 **Contexto:** “leí 500 mil y escribí 499 mil” no explica qué pasó con la diferencia.
 
-**Hazlo tú:** sigue el bean `rechazoAudit` y el test de importación. Ejecuta `./mvnw -q -Dtest=ImportJobTest test`; comprueba el total importado, el total rechazado y los intentos del writer.
+**Hazlo tú:** abre `examples/spring-batch-rutaflow/src/main/java/academia/rutaflow/batch/ImportJobConfig.java` y sigue el bean `rechazoAudit`; luego consulta `ImportJobTest.java`. Ejecuta `./mvnw -q -Dtest=ImportJobTest test`; comprueba el total importado, el total rechazado y los intentos del writer.
 
 **Resultado esperado:** dos pedidos escritos, una fila inválida auditada y un fallo temporal recuperado. El importe cero se cuenta como filtrado por regla de negocio, no como parse error.
 

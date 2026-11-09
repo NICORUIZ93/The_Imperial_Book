@@ -5,7 +5,7 @@
 **Proyecto continuo:** RutaFlow: plataforma de entregas basada en servicios.
 **Prerrequisito de entrada:** Java, HTTP, SQL y pruebas; los módulos iniciales vuelven a presentar cada herramienta..
 **Duración objetivo:** temas de 20–45 minutos; cada tema se divide en 3–6 acciones de 5–15 minutos.
-**Estado estructural:** 60/111 temas migrados; auditoría estructural actualizada el 2026-11-03.
+**Estado estructural:** 62/111 temas migrados; auditoría estructural actualizada el 2026-11-03.
 
 ## Índice de módulos y temas
 
@@ -496,17 +496,21 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 19.2 · Lee filas y transforma una a la vez · 8 min
   - ✓ Subtema 19.3 · Confirma filas en grupos pequeños · 10 min
   - ✓ Subtema 19.4 · Ejecuta el job y comprueba sus datos · 8 min
-- [pendiente de migrar] Tema 2: Reinicio, JobParameters, retry, skip y listeners
+- [4 pasos] Tema 2: Reinicio, JobParameters, retry, skip y listeners
   - ✓ Subtema 19.5 · Reanuda la misma instancia del Job · 10 min
-  - pendiente Subtema 19.6 · Usa parámetros estables para identificar el lote · 8 min
+  - ✓ Subtema 19.6 · Usa parámetros estables para identificar el lote · 8 min
   - ✓ Subtema 19.7 · Distingue retry de skip · 10 min
-  - pendiente Subtema 19.8 · Deja rastro sin guardar datos sensibles · 8 min
+  - ✓ Subtema 19.8 · Deja rastro sin guardar datos sensibles · 8 min
 
 ### Módulo 20: Integraciones Spring — scheduling, eventos, correo y caché
 
 [Abrir lección completa](../web/public/content/spring-boot/modulo-20.md)
 
-- [pendiente de migrar] Tema 1: Scheduling y tareas periódicas
+- [4 pasos] Tema 1: Scheduling y tareas periódicas
+  - ✓ Subtema 20.1 · Elige cuándo debe volver a correr · 8 min
+  - ✓ Subtema 20.2 · Conecta el disparo con el trabajo real · 8 min
+  - ✓ Subtema 20.3 · Comprueba la tarea sin dormir en el test · 8 min
+  - ✓ Subtema 20.4 · Evita duplicados al desplegar varias réplicas · 10 min
 - [pendiente de migrar] Tema 2: Eventos locales, eventos transaccionales y mensajería
 - [pendiente de migrar] Tema 3: Correo con Spring Mail y entrega recuperable
 - [pendiente de migrar] Tema 4: Caché con Spring Cache, Caffeine y Redis
@@ -602,7 +606,7 @@ La tabla registra presencia de áreas en el inventario del track, no profundidad
 
 ### Huecos y límites reportados
 
-- El repositorio contiene 111 temas en 26 módulos; 60 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
+- El repositorio contiene 111 temas en 26 módulos; 62 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
 - No hay base para afirmar que el track esté completo: la comparación con la fuente de referencia está pendiente de revisión humana módulo por módulo.
 - Los elementos de la fuente que todavía deben verificarse de forma explícita están enumerados en la tabla anterior; cualquier técnica crítica que no tenga tema propio debe añadirse conservando el currículo base.
 - La ejecución de ejemplos, el comportamiento con brokers/plataformas reales y la calidad pedagógica humana se registran por separado.

@@ -1718,3 +1718,20 @@ y `git diff --check` pasaron. Auditoría global: 164/1185 atómicos,
 skip/listeners y Spring Boot batch. El entorno local no usa volumen productivo ni
 PostgreSQL para este lab. Siguiente: revisar M20, servicios avanzados de Spring
 (scheduling/eventos/cache/correo), tema por tema antes de tocar contenido.
+
+Revisión posterior de formato: M19 T2 pasó de 2 subtemas atómicos incompletos a
+4/4 al añadir rutas de archivos concretas para los pasos 19.6 y 19.8; no cambió
+su código. Spring Boot M20 T1, “Scheduling y tareas periódicas”, se rediseñó
+con objetivo observable, evidencia previa y cuatro prácticas graduales. Se creó
+`examples/spring-scheduling-rutaflow/`: Boot 4.1.2, delay configurable, delegación
+a servicio y test que consulta `ScheduledTaskHolder` e invoca el método sin
+esperar al reloj. `./mvnw -q clean test` pasó (1 prueba); mutaciones quitar
+`@EnableScheduling` y la llamada al servicio fallaron como se esperaba. El
+laboratorio no mide puntualidad ni coordinación entre réplicas; el subtema lo
+declara. Se usaron las skills curriculares `backwards-design-unit-planner` y
+`competency-unpacker` para alinear acción observable, evidencia y secuencia. Se
+regeneraron índices y reportes; `./scripts/validate.sh`, el validador RutaFlow y
+`git diff --check` pasaron. Auditoría: 166/1185 temas atómicos; 1073/1185 con
+perfil practicable. Fuentes primarias contrastadas: Spring Framework Scheduling
+y Spring Boot Task Execution. Siguiente: M20 T2, eventos locales,
+`@TransactionalEventListener`, mensajería y outbox.

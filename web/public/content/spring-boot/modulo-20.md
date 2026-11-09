@@ -13,74 +13,100 @@ Este módulo demuestra el comportamiento dentro de una aplicación Spring. El m�
 
 ### Tema 1: Scheduling y tareas periódicas
 
-#### Paso 1 · Objetivo y preparación
+**Meta:** elegir entre fixed delay y cron, delegar una tarea a un servicio y probar su llamada sin esperar el reloj.
 
-Al finalizar podrás ejecutar una tarea periódica con Spring y probar su operación sin esperar al reloj real. Genera una app Spring Boot con `web` y `actuator`, JDK 25+ y Maven.
-**Conocimiento previo:** haber seguido el tema anterior de este módulo y tener instalado el entorno del stack.
-#### Paso 2 · Contexto y caso real
+**Evidencia final:** un test confirma que Spring registró la tarea y que el método llama el servicio; una nota explica qué pasa si hay varias réplicas.
 
-Una operación nocturna detecta pedidos que llevan demasiado tiempo pendientes y los marca para revisión. **¿Por qué es importante?** Un trabajo periódico evita depender de una persona que lo ejecute a mano y crea un punto verificable para automatización operativa.
+**¿Por qué es importante?** revisar pedidos pendientes en intervalos evita depender de que una persona recuerde ejecutar el proceso; probarlo sin esperar minutos hace que el feedback sea rápido.
 
-#### Paso 3 · Teoría y modelo mental
+**Modelo mental:** el scheduler es un despertador. Despierta al método; el método delega el trabajo real a un servicio.
 
-`@EnableScheduling` activa las tareas; `@Scheduled` admite `fixedRate`, `fixedDelay` o una expresión cron. `fixedRate` mide desde el inicio del disparo anterior; `fixedDelay`, desde que termina. Configura explícitamente zona horaria en cron. Por defecto, el scheduler es local al proceso: con tres réplicas, la tarea puede ejecutarse tres veces.
-
-Un scheduler no es una cola durable ni una exclusión distribuida. Si un trabajo puede durar más que el intervalo, define concurrencia limitada, idempotencia y un mecanismo de coordinación o utiliza Spring Batch y su repositorio cuando el trabajo deba reanudarse.
-**Analogía:** una tarea periódica es como el despertador o el riego automático del jardín: se dispara solo según un horario (la expresión `cron`), sin que nadie tenga que acordarse de pulsar el botón cada día.
-#### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/main/java/academia/pedidos/PedidosScheduler.java` dentro.
-```bash
-curl -fsSL https://start.spring.io/starter.zip -o ejemplo.zip && unzip -o ejemplo.zip -d ejemplo
+```mermaid
+flowchart LR
+  Reloj[Scheduler] --> Metodo[revisarPendientes]
+  Metodo --> Servicio[RevisionPedidos]
+  Servicio --> Resultado[marca vencidos]
 ```
 
-**Crea** el archivo `src/main/java/academia/pedidos/PedidosScheduler.java` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+#### Subtema 20.1 · Elige cuándo debe volver a correr · 8 min
 
+**Contexto:** una revisión que debe ocurrir cinco minutos después de terminar no tiene la misma regla que una tarea que inicia cada cinco minutos.
 
-En `src/main/java/academia/pedidos/PedidosScheduler.java`:
+**Hazlo tú:** abre `examples/spring-scheduling-rutaflow/src/main/java/academia/rutaflow/scheduling/PedidosScheduler.java`. Lee `fixedDelayString` y los valores en `application.yml`:
 
 ```java
-@Component
-public class PedidosScheduler {
-    private final RevisionPedidos revision;
+@Scheduled(fixedDelayString = "${app.revision.delay-ms}",
+           initialDelayString = "${app.revision.initial-delay-ms}")
+```
 
-    public PedidosScheduler(RevisionPedidos revision) {
-        this.revision = revision;
-    }
+**Resultado esperado:** el intervalo se lee de configuración y la primera ejecución espera el tiempo inicial.
 
-    @Scheduled(cron = "${app.revision.cron}", zone = "UTC")
-    public void revisarPendientes() {
-        revision.marcarVencidos();
-    }
+**Fallo deliberado:** cambia `fixedDelayString` a `fixedRateString`. **Diagnóstico:** ahora el reloj mide de inicio a inicio, aunque la ejecución anterior siga trabajando. Vuelve a `fixedDelayString` para el caso del laboratorio.
+
+**Entiende:** fixed delay espera que termine una ejecución; fixed rate mide entre inicios. Cron sirve para horarios de calendario y debe declarar zona cuando el horario local importe.
+
+**Cierra:** elige una de las tres opciones para revisar pendientes de RutaFlow y escribe en una frase por qué encaja.
+
+#### Subtema 20.2 · Conecta el disparo con el trabajo real · 8 min
+
+**Contexto:** mantener la consulta del negocio dentro del método programado dificulta probarla y cambiar el disparador.
+
+**Hazlo tú:** abre `PedidosScheduler.java` y `RevisionPedidos.java`:
+
+```java
+public void revisarPendientes() {
+    revision.marcarVencidos();
 }
 ```
 
-**Ejecuta el ejemplo** (genera el proyecto con Spring Initializr, pega el código y corre las pruebas):
+Sigue la llamada desde scheduler hasta servicio. Ejecuta desde `examples/spring-scheduling-rutaflow`:
 
 ```bash
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
-./mvnw test
+./mvnw -q test
 ```
-Equivalencias Maven/Gradle en el Módulo 1.
 
+**Resultado esperado:** la tarea registrada apunta al método del scheduler, que delega una vez al servicio.
 
-Activa scheduling con `@EnableScheduling` en una configuración. En `src/main/resources/application.yml` configura `app.revision.cron: "0 */5 * * * *"` para el laboratorio. Inyecta `Clock` o una interfaz de servicio para probar lógica de vencimiento determinísticamente. Ejecuta `./mvnw test`.
+**Fallo deliberado:** comenta `revision.marcarVencidos()`. **Diagnóstico:** el test del contador queda en cero. Restaura la llamada.
 
-**Resultado esperado:** la prueba invoca el servicio y comprueba el criterio de vencimiento; no depende de que el test duerma cinco minutos. **Fallo deliberado:** levanta dos instancias con el mismo cron y un contador compartido; observa dos ejecuciones. Diagnostica que un `@Scheduled` no es un lock distribuido.
+**Entiende:** el reloj decide cuándo empezar; el servicio define qué significa “pedido vencido”. Mantenerlos separados permite probar las reglas aparte.
 
-#### Paso 5 · Práctica guiada
+**Cierra:** anota cuál regla de vencimiento agregarías al servicio del proyecto integrador RutaFlow.
 
-Agrega una tarea que registre inicio, duración y resultado con Micrometer. Fuerza una excepción del servicio y verifica que el scheduler no la oculte silenciosamente ni deja de producir señales operacionales. Define qué hacer si una ejecución supera el siguiente intervalo.
-**Pista:** lanza una `RuntimeException` dentro de `revisarPendientes()` y vuelve a ejecutar la app; si no agregaste manejo de errores, el log solo muestra el stacktrace de esa ejecución y el scheduler sigue disparando la siguiente normalmente — confirma con Micrometer que esa ejecución fallida también queda registrada como fallo, no solo como "no se completó".
-#### Paso 6 · Práctica independiente
+#### Subtema 20.3 · Comprueba la tarea sin dormir en el test · 8 min
 
-Programa una revisión de envíos pendientes para el proyecto integrador de RutaFlow. Ejecuta dos instancias en tests o contenedores y prueba que una clave idempotente evita procesar dos veces el mismo envío. Si el negocio exige exactamente una ejecución coordinada, compara un lock distribuido o un job registrado con Spring Batch.
+**Contexto:** un test no debe esperar cinco minutos para revisar una tarea periódica.
 
-#### Paso 7 · Cierre y evidencia
+**Hazlo tú:** abre `PedidosSchedulerTest.java`. Los valores de prueba alargan la demora para que el reloj no dispare la tarea durante el test; `ScheduledTaskHolder` confirma que la tarea quedó registrada y el test invoca directamente el método.
 
-Entrega configuración cron, test sin esperas reales, medición y prueba con dos instancias. **Cuándo no usarlo:** no uses `@Scheduled` como cola de tareas con payload o como garantía de ejecución única en cluster. **Evidencia:** test de vencimiento, log/Métrica y comportamiento duplicado documentado.
-**Errores comunes:** asumir que `@Scheduled` es un lock distribuido y desplegar varias réplicas sin coordinación, dejando que la misma tarea se ejecute una vez por instancia, y tragar la excepción del servicio dentro del método programado sin relanzarla ni registrarla, con lo que el scheduler parece "funcionar" mientras la tarea real nunca se completa.
-**Fuente oficial:** [documentación de Spring Boot](https://docs.spring.io/spring-boot/index.html).
-**Evidencia de aprendizaje:** entrega el resultado del test que verifica el criterio de vencimiento sin esperar el reloj real, el log de las dos instancias ejecutando el mismo cron sobre el contador compartido, y la métrica de Micrometer que muestra la ejecución fallida al forzar la excepción.
+```bash
+./mvnw -q -Dtest=PedidosSchedulerTest test
+```
+
+**Resultado esperado:** pasa una prueba, cuenta una tarea registrada y el servicio registra una llamada.
+
+**Fallo deliberado:** quita `@EnableScheduling` de `SchedulingApplication`. **Diagnóstico:** Spring no registra la tarea y el test detecta cero. Restáuralo.
+
+**Entiende:** esta prueba comprueba registro y delegación; no espera al reloj ni demuestra la precisión de un cron de producción.
+
+**Cierra:** guarda el test como evidencia del proyecto integrador RutaFlow y especifica qué parte cubre.
+
+#### Subtema 20.4 · Evita duplicados al desplegar varias réplicas · 10 min
+
+**Contexto:** si hay tres copias de la aplicación, cada proceso puede registrar su propio scheduler.
+
+**Hazlo tú:** en `examples/spring-scheduling-rutaflow/README.md`, crea una nota para dos réplicas que intentan tomar `pedido-42`. Escribe qué reclamo atómico deja a una sola procesar la fila y qué ve la segunda. Ejecuta `./mvnw -q test` para confirmar que el lab local solo cubre registro y delegación.
+
+**Resultado esperado:** la tarea local puede ocurrir una vez por réplica; la regla de negocio impide aplicar dos veces el mismo cambio.
+
+**Fallo deliberado:** despliega dos instancias sin coordinación sobre el mismo pedido. **Diagnóstico:** ambas pueden procesar la fila. La anotación `@Scheduled` no comparte un lock entre procesos.
+
+**Entiende:** un scheduler local no es cola durable ni coordinador de cluster. Para trabajo largo y reanudable, evalúa Spring Batch; para ejecución coordinada, usa un lock distribuido o reclama filas con una operación atómica.
+
+**Cierra:** documenta una opción de coordinación y su evidencia en RutaFlow. El laboratorio usa un contador en memoria; no simula PostgreSQL, scheduler distribuido ni carga real.
+
+**Fuentes primarias:** [Spring Framework: scheduling y `@Scheduled`](https://docs.spring.io/spring-framework/reference/integration/scheduling.html); [Spring Boot: ejecución y scheduler](https://docs.spring.io/spring-boot/reference/features/task-execution-and-scheduling.html).
+
 ### Tema 2: Eventos locales, eventos transaccionales y mensajería
 
 #### Paso 1 · Objetivo y preparación

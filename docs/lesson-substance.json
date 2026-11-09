@@ -1690,9 +1690,9 @@
     }
   ],
   "summary": {
-    "fingerprint": "a70aa09c90164ffe851747fcc9618e176d49dcb854ba791b4c838e146a8d2e8b",
+    "fingerprint": "7f98ee3e11014d2e71a7edac4e37d083abe4e315bee3e93446004848b04a41b0",
     "issues": {
-      "andamiaje-generico": 117,
+      "andamiaje-generico": 116,
       "bloque-repetido": 163,
       "cola-tras-cierre": 331,
       "parrafo-repetido": 5,
@@ -1706,7 +1706,7 @@
     "modules": 256,
     "modulesWithLegacySections": 178,
     "topics": 1185,
-    "topicsWithIssues": 402
+    "topicsWithIssues": 401
   },
   "topics": {
     "android": [
@@ -10614,7 +10614,7 @@
         "module": 19,
         "tailWords": 0,
         "topic": "Tema 2: Reinicio, JobParameters, retry, skip y listeners",
-        "words": 907
+        "words": 930
       },
       {
         "issues": [],
@@ -10659,13 +10659,11 @@
         "words": 1213
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 20,
-        "tailWords": 158,
+        "tailWords": 0,
         "topic": "Tema 1: Scheduling y tareas periódicas",
-        "words": 802
+        "words": 760
       },
       {
         "issues": [

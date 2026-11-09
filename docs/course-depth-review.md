@@ -12,7 +12,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 | angular | 71 | 3 | HTML/CSS/TypeScript explícitos; RxJS y estado con ejemplos completos | Rutas, formularios, datos remotos y cambios sin guardar comprobados con navegador |
 | react | 58 | 46 | JSX y estado antes de efectos; proveedor, dependencias y API visibles | Carga, error, vacío y carrera de respuestas; caché observada, no supuesta |
 | java | 101 | 79 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
-| spring-boot | 111 | 92 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
+| spring-boot | 111 | 93 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
 | android | 58 | 0 | Kotlin antes de Compose; distinguir recomposición, recreación y muerte de proceso | App instalable con permisos, restauración, persistencia y pruebas en dispositivo |
 | ios | 56 | 4 | Swift antes de SwiftUI; explicitar macOS/Xcode y destino | Cancelación, estados de red, persistencia y accesibilidad comprobados en simulador |
 | flutter | 106 | 10 | Dart antes de widgets; ejemplo con main y destino de ejecución | Restauración, red, pruebas de widget, integración y publicación por plataforma |
@@ -1157,7 +1157,7 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | spring-boot / 2 | [Tema 4: Lombok y MapStruct sin exponer datos internos](../web/public/content/spring-boot/modulo-2.md) | demostracion-no-delimitada |
 | spring-boot / 2 | [Tema 5: OpenAPI con springdoc: el contrato como prueba](../web/public/content/spring-boot/modulo-2.md) | demostracion-no-delimitada |
 | spring-boot / 2 | [Tema 6: Paginación HTTP con validación y un límite de recursos explícito](../web/public/content/spring-boot/modulo-2.md) | demostracion-no-delimitada |
-| spring-boot / 20 | [Tema 1: Scheduling y tareas periódicas](../web/public/content/spring-boot/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 20 | [Tema 1: Scheduling y tareas periódicas](../web/public/content/spring-boot/modulo-20.md) | demostracion-no-delimitada |
 | spring-boot / 20 | [Tema 2: Eventos locales, eventos transaccionales y mensajería](../web/public/content/spring-boot/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 20 | [Tema 3: Correo con Spring Mail y entrega recuperable](../web/public/content/spring-boot/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 20 | [Tema 4: Caché con Spring Cache, Caffeine y Redis](../web/public/content/spring-boot/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
