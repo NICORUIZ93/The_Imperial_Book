@@ -1690,7 +1690,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "c4266e845ebfb7bdca89a053b3821f8d6d1184b311a52ce8b2fa878318ba4468",
+    "fingerprint": "29ea1230e8dc1a2439f6597db6d8ac58b8b66caadc6d0cc9ed08258c2c5f401e",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10472,9 +10472,9 @@
       {
         "issues": [],
         "module": 14,
-        "tailWords": 167,
+        "tailWords": 0,
         "topic": "Tema 2: MySQL y datos espaciales",
-        "words": 1201
+        "words": 801
       },
       {
         "issues": [],

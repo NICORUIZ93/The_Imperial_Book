@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 1433,
+      "lines": 1436,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 16429,
+      "lines": 16486,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -600,7 +600,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3913,
+      "lines": 3920,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13632,
+      "lines": 13634,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -677,7 +677,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 157,
+      "lines": 158,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 529,
+      "lines": 533,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -5530,6 +5530,81 @@
     {
       "path": "examples/spring-avro-rutaflow/src/test/java/academia/rutaflow/avro/SchemaRegistrySerdeTest.java",
       "lines": 47,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-boot-cancel-rutaflow/README.md",
+      "lines": 19,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Cancelar sin borrar: CRUD Spring Boot",
+        "## Requisitos y ejecuci\u00f3n"
+      ]
+    },
+    {
+      "path": "examples/spring-boot-cancel-rutaflow/src/main/java/academia/rutaflow/cancel/CancelApplication.java",
+      "lines": 12,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-boot-cancel-rutaflow/src/main/java/academia/rutaflow/cancel/entrega/Envio.java",
+      "lines": 41,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-boot-cancel-rutaflow/src/main/java/academia/rutaflow/cancel/entrega/EnvioController.java",
+      "lines": 39,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-boot-cancel-rutaflow/src/main/java/academia/rutaflow/cancel/entrega/EnvioRepository.java",
+      "lines": 6,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-boot-cancel-rutaflow/src/main/java/academia/rutaflow/cancel/entrega/EnvioResponse.java",
+      "lines": 8,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-boot-cancel-rutaflow/src/main/java/academia/rutaflow/cancel/entrega/EnvioService.java",
+      "lines": 38,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-boot-cancel-rutaflow/src/main/java/academia/rutaflow/cancel/entrega/EstadoEnvio.java",
+      "lines": 7,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-boot-cancel-rutaflow/src/test/java/academia/rutaflow/cancel/entrega/CancelacionContratoTest.java",
+      "lines": 75,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -13179,7 +13254,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-14.md",
-      "lines": 844,
+      "lines": 810,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -13192,10 +13267,10 @@
         "#### Subtema 14.1.3: Cancela sin destruir el historial \u00b7 10 min",
         "#### Subtema 14.1.4: Repite DELETE sin cambiar el resultado \u00b7 8 min",
         "### Tema 2: MySQL y datos espaciales",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda con analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero"
+        "#### Subtema 14.2.1: Guarda puntos con un SRID fijo \u00b7 8 min",
+        "#### Subtema 14.2.2: Especifica c\u00f3mo leer latitud y longitud \u00b7 10 min",
+        "#### Subtema 14.2.3: Comprueba el \u00edndice con EXPLAIN \u00b7 8 min",
+        "#### Subtema 14.2.4: Separa candidatos cercanos de una ruta \u00b7 8 min"
       ]
     },
     {

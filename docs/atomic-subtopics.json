@@ -94,8 +94,8 @@
     "spring-boot": {
       "topics": 111,
       "completeTopics": 53,
-      "topicsWith3to6Subtopics": 71,
-      "subtopics": 243,
+      "topicsWith3to6Subtopics": 72,
+      "subtopics": 247,
       "completeSubtopics": 186
     }
   },
@@ -13906,8 +13906,65 @@
       {
         "module": 14,
         "topic": "### Tema 2: MySQL y datos espaciales",
-        "subtopicCount": 0,
-        "subtopics": [],
+        "subtopicCount": 4,
+        "subtopics": [
+          {
+            "id": "14.2",
+            "title": "#### Subtema 14.2.1: Guarda puntos con un SRID fijo · 8 min",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "14.2",
+            "title": "#### Subtema 14.2.2: Especifica cómo leer latitud y longitud · 10 min",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "14.2",
+            "title": "#### Subtema 14.2.3: Comprueba el índice con EXPLAIN · 8 min",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "14.2",
+            "title": "#### Subtema 14.2.4: Separa candidatos cercanos de una ruta · 8 min",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": true
+            },
+            "complete": false
+          }
+        ],
         "complete": false
       },
       {

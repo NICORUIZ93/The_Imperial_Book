@@ -372,6 +372,10 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - pendiente Subtema 14.1.3: Cancela sin destruir el historial · 10 min
   - pendiente Subtema 14.1.4: Repite DELETE sin cambiar el resultado · 8 min
 - [pendiente de migrar] Tema 2: MySQL y datos espaciales
+  - pendiente Subtema 14.2.1: Guarda puntos con un SRID fijo · 8 min
+  - pendiente Subtema 14.2.2: Especifica cómo leer latitud y longitud · 10 min
+  - pendiente Subtema 14.2.3: Comprueba el índice con EXPLAIN · 8 min
+  - pendiente Subtema 14.2.4: Separa candidatos cercanos de una ruta · 8 min
 - [pendiente de migrar] Tema 3: JPA e Hibernate Spatial
 - [pendiente de migrar] Tema 4: JWT Bearer y autorización por roles
 - [pendiente de migrar] Tema 5: Tiempo real con STOMP

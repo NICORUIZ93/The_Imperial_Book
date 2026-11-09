@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 40,
-      "prerequisites": 62,
-      "context": 40,
-      "theoryAnalogy": 40,
-      "guidedDemo": 40,
+      "objective": 39,
+      "prerequisites": 61,
+      "context": 39,
+      "theoryAnalogy": 39,
+      "guidedDemo": 39,
       "codeExplanation": 111,
       "execution": 100,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 40,
-      "independentPractice": 40,
-      "closure": 40,
-      "commonErrors": 40,
-      "resources": 64,
-      "standaloneExample": 42,
-      "learningEvidence": 72,
-      "complete": 40
+      "guidedPractice": 39,
+      "independentPractice": 39,
+      "closure": 39,
+      "commonErrors": 39,
+      "resources": 63,
+      "standaloneExample": 41,
+      "learningEvidence": 71,
+      "complete": 39
     }
   },
   "topics": {
@@ -28991,26 +28991,26 @@
         "module": 14,
         "topic": "Tema 2: MySQL y datos espaciales",
         "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "objective": false,
+          "prerequisites": false,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 4,
+          "complete": false
         }
       },
       {

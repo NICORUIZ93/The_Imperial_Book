@@ -99,10 +99,10 @@
     "spring-boot": {
       "topics": 111,
       "code": 106,
-      "commentedCode": 44,
+      "commentedCode": 43,
       "mermaid": 37,
       "archifyVisual": 2,
-      "asciiVisual": 4,
+      "asciiVisual": 3,
       "misleadingDiagramLabel": 0,
       "filePath": 111,
       "runCommand": 111,
@@ -2673,6 +2673,13 @@
       "track": "spring-boot",
       "module": 14,
       "topic": "Tema 1: CRUD API y contratos",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 14,
+      "topic": "Tema 2: MySQL y datos espaciales",
       "missingCode": false,
       "missingComments": true
     },

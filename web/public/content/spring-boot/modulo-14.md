@@ -97,139 +97,105 @@ Ejecuta el test que crea y lee un envío desde `examples/spring-boot-cancel-ruta
 
 ### Tema 2: MySQL y datos espaciales
 
-#### Paso 1 · Objetivo y preparación
+¿Por qué es importante? Una búsqueda de repartidores cercanos necesita distinguir coordenadas bien interpretadas de un filtro espacial rápido. El laboratorio ejecuta las consultas contra MySQL 8.0.36 real con Testcontainers, no contra H2.
 
-Al finalizar podrás ejecutar `ST_Distance_Sphere` real contra un MySQL 8 real (Testcontainers) para calcular la distancia entre dos coordenadas geográficas, y confirmar con `EXPLAIN` que un índice `SPATIAL` se usa realmente.
+#### Subtema 14.2.1: Guarda puntos con un SRID fijo · 8 min
 
-**Conocimiento previo:** Tema 1 de este módulo; Módulo 6 de este track (Testcontainers).
+**Contexto.** El SRID indica a la base cómo interpretar las coordenadas. El índice espacial requiere que la columna sea `NOT NULL` y tenga SRID explícito.
 
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** Filtrar conductores cercanos a una entrega requiere calcular distancias geográficas de forma eficiente; sin un índice espacial, cada consulta de cercanía escanearía la tabla completa, algo inviable con miles de posiciones activas simultáneas.
-
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** `POINT` con SRID 4326, índice `SPATIAL`, `ST_Distance_Sphere`.
-
-MySQL 8 almacena `POINT` con SRID 4326 (el sistema de referencia estándar de coordenadas GPS) e índices `SPATIAL`. `ST_Distance_Sphere` permite filtros iniciales de cercanía en metros reales, mientras que calcular una ruta real requiere un motor vial aparte. En WKT (Well-Known Text), la longitud va ANTES que la latitud, el orden inverso al que la mayoría de APIs de mapas exponen por convención, una fuente común de errores silenciosos.
-
-**Analogía:** un índice espacial es como un directorio de una ciudad organizado por cuadrantes geográficos en vez de alfabéticamente por nombre de calle: buscar "todo lo cercano a este punto" es instantáneo con cuadrantes, y requeriría revisar la ciudad completa calle por calle sin ellos.
-
-**Diagrama:**
-
-```
-┌── Sin índice SPATIAL ────────────┐  escanea TODAS las filas
-└──────────────────────────┘
-┌── Con índice SPATIAL ────────────┐  filtra por cuadrante geográfico
-└──────────────────────────┘
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Continuando en `gestion-entregas` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `mkdir gestion-espacial && cd gestion-espacial && curl -fsSL https://start.spring.io/starter.zip -d dependencies=data-jpa,mysql -d javaVersion=25 -o app.zip && unzip app.zip`), crea `src/test/java/io/academia/entregas/espacial/DistanciaEspacialTest.java`:
-
-```bash
-mkdir -p src/test/java/io/academia/entregas/espacial
-```
-
-```java
-// src/test/java/io/academia/entregas/espacial/DistanciaEspacialTest.java
-package io.academia.entregas.espacial;
-
-import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.MySQLContainer;
-import org.testcontainers.junit.jupiter.Testcontainers;
-
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-@Testcontainers
-class DistanciaEspacialTest {
-
-    static MySQLContainer<?> mysql = new MySQLContainer<>("mysql:8.0");
-
-    @Test
-    void stDistanceSphereCalculaLaDistanciaRealEntreDosCoordenadas() throws Exception {
-        mysql.start();
-        try (Connection conn = java.sql.DriverManager.getConnection(mysql.getJdbcUrl(), mysql.getUsername(), mysql.getPassword());
-             Statement st = conn.createStatement()) {
-
-            st.execute("CREATE TABLE punto (id INT PRIMARY KEY AUTO_INCREMENT, ubicacion POINT SRID 4326 NOT NULL, SPATIAL INDEX(ubicacion))");
-            // longitud ANTES que latitud en WKT: Bogotá (-74.08, 4.61) y Medellín (-75.56, 6.25)
-            st.execute("INSERT INTO punto (ubicacion) VALUES (ST_SRID(POINT(-74.08, 4.61), 4326))");
-            st.execute("INSERT INTO punto (ubicacion) VALUES (ST_SRID(POINT(-75.56, 6.25), 4326))");
-
-            ResultSet rs = st.executeQuery(
-                "SELECT ST_Distance_Sphere((SELECT ubicacion FROM punto WHERE id=1), (SELECT ubicacion FROM punto WHERE id=2)) AS metros");
-            rs.next();
-            double metros = rs.getDouble("metros");
-
-            // distancia real Bogotá-Medellín en línea recta es aproximadamente 240km
-            assertThat(metros).isBetween(230_000.0, 250_000.0);
-        }
-        mysql.stop();
-    }
-
-    @Test
-    void explainConfirmaQueElIndiceSpatialSeUsaRealmente() throws Exception {
-        mysql.start();
-        try (Connection conn = java.sql.DriverManager.getConnection(mysql.getJdbcUrl(), mysql.getUsername(), mysql.getPassword());
-             Statement st = conn.createStatement()) {
-
-            st.execute("CREATE TABLE punto2 (id INT PRIMARY KEY AUTO_INCREMENT, ubicacion POINT SRID 4326 NOT NULL, SPATIAL INDEX(ubicacion))");
-            st.execute("INSERT INTO punto2 (ubicacion) VALUES (ST_SRID(POINT(-74.08, 4.61), 4326))");
-
-            ResultSet rs = st.executeQuery(
-                "EXPLAIN SELECT id FROM punto2 WHERE MBRContains(ST_SRID(ST_GeomFromText('POLYGON((-75 4,-75 5,-74 5,-74 4,-75 4))'), 4326), ubicacion)");
-            rs.next();
-            String tipoAcceso = rs.getString("key"); // columna real de EXPLAIN de MySQL
-
-            assertThat(tipoAcceso).isEqualTo("ubicacion"); // confirma que MySQL usó el índice SPATIAL, no un escaneo completo
-        }
-        mysql.stop();
-    }
-}
-```
-
-```bash
-./mvnw test -Dtest=DistanciaEspacialTest
-```
-
-**Resultado esperado:** `BUILD SUCCESS` con ambos tests en verde: contra un MySQL 8 real (Testcontainers, no simulado), `ST_Distance_Sphere` calcula ~240km reales entre Bogotá y Medellín (confirmando que el orden longitud-latitud en el WKT es correcto), y `EXPLAIN` confirma en la columna `key` que MySQL efectivamente usó el índice `SPATIAL` llamado `ubicacion`, no un escaneo completo de la tabla.
-
-**Fallo deliberado:** invierte el orden en `POINT(-74.08, 4.61)` a `POINT(4.61, -74.08)` (latitud primero, el error común de quien asume el orden "natural") y ejecuta de nuevo `stDistanceSphereCalculaLaDistanciaRealEntreDosCoordenadas`. El resultado de `ST_Distance_Sphere` ya no está entre 230km y 250km (con coordenadas inválidas o una distancia absurda) — diagnostica confirmando por qué la teoría insiste explícitamente en que WKT exige longitud antes que latitud: el error es silencioso (MySQL no rechaza el INSERT), y solo se manifiesta como un cálculo de distancia incorrecto. Restaura el orden correcto antes de continuar.
-
-#### Paso 5 · Práctica guiada — repetición progresiva
-
-1. Inserta una tercera coordenada (por ejemplo, Cali) y confirma con un test que la distancia Bogotá-Cali es distinta a Bogotá-Medellín, verificando ambos cálculos numéricamente.
-2. Ejecuta `EXPLAIN` sobre la misma consulta pero SIN el índice `SPATIAL` (crea una segunda tabla idéntica sin el índice) y confirma que la columna `key` es `NULL` en ese caso, contrastando con el Paso 4.
-3. Documenta, en un comentario, por qué `ST_Distance_Sphere` es apropiado para un filtro inicial de cercanía pero NO para calcular una ruta real (que debe considerar calles, sentido único, tráfico).
-4. Escribe de memoria (sin mirar) el orden correcto de `POINT(longitud, latitud)` en WKT, y un test `ST_Distance_Sphere` que confirme una distancia real conocida. Compara después contra el patrón del Paso 4.
-
-**Pista:** el resultado de `EXPLAIN` en MySQL incluye una columna `key` con el nombre del índice efectivamente usado, o `NULL` si no se usó ninguno — leer esa columna directamente (no adivinar por el tiempo de ejecución) es la forma correcta de confirmar el uso real de un índice.
-
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio con la función real de MySQL que calcula la distancia esférica entre dos puntos:
+**Hazlo tú.** Abre `examples/spring-boot-mysql-spatial-rutaflow/src/test/java/academia/rutaflow/spatial/ConsultaEspacialMySqlTest.java`. Lee `crearTabla()` y localiza `POINT NOT NULL SRID 4326` e `idx_ubicacion`.
 
 ```sql
-SELECT ____(punto_a, punto_b) AS metros;
+CREATE TABLE punto (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  ubicacion POINT NOT NULL SRID 4326,
+  SPATIAL INDEX idx_ubicacion (ubicacion)
+);
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una tabla con `POINT SRID 4326` e índice `SPATIAL`, y un test `ST_Distance_Sphere` contra Testcontainers MySQL. Compara después contra el patrón del Paso 4.
+Desde `examples/spring-boot-mysql-spatial-rutaflow/`, ejecuta:
 
-#### Paso 7 · Cierre y evidencia
+```bash
+DOCKER_HOST="$(podman machine inspect --format '{{.ConnectionInfo.PodmanSocket.Path}}')" \
+TESTCONTAINERS_RYUK_DISABLED=true ./mvnw -q test
+```
 
-Ya calculas distancias geográficas reales contra MySQL 8 con soporte espacial, confirmando con `EXPLAIN` que el índice `SPATIAL` efectivamente se usa. El siguiente tema mapea este mismo `POINT` a un tipo Java real vía Hibernate Spatial. **Evidencia:** entrega el resultado de `DistanciaEspacialTest` en verde, y el cálculo incorrecto que produce el fallo deliberado al invertir longitud/latitud. Fuentes oficiales: [MySQL — Spatial Data Types](https://dev.mysql.com/doc/refman/8.0/en/spatial-type-overview.html).
+Con Docker puedes ejecutar `./mvnw -q test` directamente. Testcontainers descarga MySQL 8.0.36 si aún no está en caché.
 
-**Errores comunes:** invertir el orden longitud/latitud en WKT, un error silencioso sin rechazo de MySQL; asumir que `ST_Distance_Sphere` calcula una ruta real en vez de una distancia en línea recta.
+**Resultado esperado.** Tres pruebas usan MySQL real. La tabla limita los puntos a SRID 4326 y declara el índice sobre `ubicacion`.
 
-**Cuándo no usarlo:** para un sistema con un volumen de datos geográficos pequeño y sin necesidad de consultas de cercanía frecuentes, un índice espacial dedicado agrega complejidad sin beneficio medible.
+**Fallo deliberado.** Quita `NOT NULL` y el índice deja de cumplir las condiciones de creación espacial; restaura la definición antes de ejecutar los tests.
 
-Los datos espaciales de este tema son un ejemplo de requisito de dominio específico, similar a los que podría enfrentar el proyecto integrador de este track (microservicio productivo, Módulo 12).
+**Entiende.** SRID evita mezclar coordenadas incompatibles. H2 no reemplaza MySQL cuando la lección depende de funciones e índices espaciales.
+
+**Cierra.** Anota el nombre de la columna, su SRID y el índice que guarda sus puntos.
+
+#### Subtema 14.2.2: Especifica cómo leer latitud y longitud · 10 min
+
+**Contexto.** MySQL interpreta por defecto los ejes de SRID 4326 como latitud-longitud. Si tus datos vienen como longitud-latitud, dilo al convertirlos.
+
+**Hazlo tú.** En `distanciaEntreBogotaYMedellinSeMideEnMetros`, sigue las dos conversiones `ST_GeomFromText(..., 'axis-order=long-lat')` y la consulta `ST_Distance_Sphere`.
+
+```sql
+ST_GeomFromText('POINT(-74.08 4.61)', 4326, 'axis-order=long-lat')
+```
+
+Ejecuta solo esa prueba:
+
+```bash
+DOCKER_HOST="$(podman machine inspect --format '{{.ConnectionInfo.PodmanSocket.Path}}')" \
+TESTCONTAINERS_RYUK_DISABLED=true ./mvnw -q test -Dtest=ConsultaEspacialMySqlTest#distanciaEntreBogotaYMedellinSeMideEnMetros
+```
+
+**Resultado esperado.** MySQL devuelve una distancia en metros entre 230 000 y 250 000 para Bogotá y Medellín en línea recta.
+
+**Fallo deliberado.** Quita el tercer argumento `'axis-order=long-lat'`. El test de distancia debe fallar porque MySQL interpreta el primer eje como latitud. Restaura la opción explícita.
+
+**Entiende.** `POINT(x y)` no basta para adivinar el orden del dato: el SRID y la opción de conversión deciden qué significa cada valor.
+
+**Cierra.** Escribe qué coordenadas usa el test y por qué especifica el orden de ejes.
+
+#### Subtema 14.2.3: Comprueba el índice con EXPLAIN · 8 min
+
+**Contexto.** Una consulta puede ser correcta y aun así revisar demasiadas filas. `EXPLAIN` muestra el plan elegido o solicitado por la consulta.
+
+**Hazlo tú.** Ejecuta `explainUsaIndiceEspacialParaReducirElAreaDeBusqueda` en `ConsultaEspacialMySqlTest`:
+
+```bash
+DOCKER_HOST="$(podman machine inspect --format '{{.ConnectionInfo.PodmanSocket.Path}}')" \
+TESTCONTAINERS_RYUK_DISABLED=true ./mvnw -q test -Dtest=ConsultaEspacialMySqlTest#explainUsaIndiceEspacialParaReducirElAreaDeBusqueda
+```
+
+**Resultado esperado.** El test lee `key=idx_ubicacion`. Usa `FORCE INDEX` para hacer determinista esta demostración; no afirma que el optimizador elegiría el índice con cualquier volumen o distribución.
+
+**Fallo deliberado.** Cambia `idx_ubicacion` por `idx_inexistente` en `FORCE INDEX`. MySQL rechaza la consulta y el test falla; restaura el nombre verdadero.
+
+**Entiende.** `MBRContains` usa un rectángulo para encontrar candidatos; el índice espacial no calcula la ruta ni decide por sí solo la distancia exacta.
+
+**Cierra.** Guarda qué valor de `key` observaste y qué límite tiene `FORCE INDEX` como evidencia de rendimiento.
+
+#### Subtema 14.2.4: Separa candidatos cercanos de una ruta · 8 min
+
+**Contexto.** Una distancia en línea recta no sabe si hay ríos, calles cerradas o tráfico entre dos puntos.
+
+**Hazlo tú.** Ejecuta `srid4326PorDefectoInterpretaElPrimerEjeComoLatitud`. Compara el resultado predeterminado de MySQL con la opción `axis-order=long-lat` que usa el test anterior.
+
+```bash
+DOCKER_HOST="$(podman machine inspect --format '{{.ConnectionInfo.PodmanSocket.Path}}')" \
+TESTCONTAINERS_RYUK_DISABLED=true ./mvnw -q test -Dtest=ConsultaEspacialMySqlTest#srid4326PorDefectoInterpretaElPrimerEjeComoLatitud
+```
+
+**Resultado esperado.** Sin opción, `ST_Latitude` devuelve `-74.08` y `ST_Longitude` devuelve `4.61`; con `long-lat`, la entrada representa longitud `-74.08` y latitud `4.61`.
+
+**Fallo deliberado.** Usa el cálculo esférico como si diera minutos de viaje por carretera. Explica qué datos faltan y reemplaza esa conclusión por “distancia aproximada en línea recta”.
+
+**Entiende.** Un cuadro espacial puede reducir candidatos; después se mide distancia. Para elegir una ruta vial hace falta un servicio o grafo de calles.
+
+**Cierra.** Conserva la salida de las pruebas y la explicación del orden de ejes. El siguiente tema convierte estos puntos a tipos Java con Hibernate Spatial.
+
+**Fuentes:** [MySQL 8.0: WKT y orden de ejes](https://dev.mysql.com/doc/refman/8.0/en/gis-wkt-functions.html), [MySQL: `ST_Distance_Sphere`](https://dev.mysql.com/doc/refman/8.0/en/spatial-convenience-functions.html), [MySQL: índices espaciales](https://dev.mysql.com/doc/refman/8.4/en/spatial-index-optimization.html) y [Testcontainers MySQL](https://java.testcontainers.org/modules/databases/mysql/).
+
+---
 
 ### Tema 3: JPA e Hibernate Spatial
 
