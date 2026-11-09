@@ -1690,7 +1690,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "ccfbab04293aec25482ac097fe4b93224ca83c2d16ce826a29e8021a709c6641",
+    "fingerprint": "c4266e845ebfb7bdca89a053b3821f8d6d1184b311a52ce8b2fa878318ba4468",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10465,9 +10465,9 @@
       {
         "issues": [],
         "module": 14,
-        "tailWords": 150,
+        "tailWords": 0,
         "topic": "Tema 1: CRUD API y contratos",
-        "words": 1091
+        "words": 684
       },
       {
         "issues": [],

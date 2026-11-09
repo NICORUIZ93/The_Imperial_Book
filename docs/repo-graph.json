@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 1430,
+      "lines": 1433,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 16372,
+      "lines": 16429,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -600,7 +600,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3906,
+      "lines": 3913,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13630,
+      "lines": 13632,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -677,7 +677,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 156,
+      "lines": 157,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 525,
+      "lines": 529,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -13179,7 +13179,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-14.md",
-      "lines": 929,
+      "lines": 844,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -13187,15 +13187,15 @@
         "# M\u00f3dulo 14: Backend de entregas: MySQL espacial, archivos y tiempo real",
         "## Aprende construyendo",
         "### Tema 1: CRUD API y contratos",
+        "#### Subtema 14.1.1: Modela estados que s\u00ed existen \u00b7 8 min",
+        "#### Subtema 14.1.2: Devuelve un contrato p\u00fablico peque\u00f1o \u00b7 8 min",
+        "#### Subtema 14.1.3: Cancela sin destruir el historial \u00b7 10 min",
+        "#### Subtema 14.1.4: Repite DELETE sin cambiar el resultado \u00b7 8 min",
+        "### Tema 2: MySQL y datos espaciales",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda con analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
-        "### Tema 2: MySQL y datos espaciales",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero"
       ]
     },
     {

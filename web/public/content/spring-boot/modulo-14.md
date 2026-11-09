@@ -7,178 +7,93 @@ Cada tema construye una pieza real del backend de un sistema de entregas (`gesti
 
 ### Tema 1: CRUD API y contratos
 
-#### Paso 1 · Objetivo y preparación
+¿Por qué es importante? Cancelar sin borrar conserva evidencia útil para auditoría y evita que un reintento de red destruya información o cree un resultado distinto. En este laboratorio, `DELETE` marca el envío como cancelado; no borra la fila. Las claves para reintentar una creación se estudian en M13 T2.
 
-Al finalizar podrás implementar un endpoint `DELETE` que representa cancelación de negocio (no eliminación física) protegido por `Idempotency-Key`, y confirmarlo con un test real que distingue ambos conceptos.
+#### Subtema 14.1.1: Modela estados que sí existen · 8 min
 
-**Conocimiento previo:** Módulo 13 de este track (idempotencia con restricción única).
+**Contexto.** Una cadena libre como `"cancelado"` puede terminar con errores de escritura y estados inventados.
 
-#### Paso 2 · Contexto y caso real
+**Hazlo tú.** Abre `examples/spring-boot-cancel-rutaflow/src/main/java/academia/rutaflow/cancel/entrega/EstadoEnvio.java` y `Envio.java`. Sigue el valor inicial y el método `cancelar()`.
 
-**¿Por qué es importante?** Crear, consultar, asignar, actualizar y cancelar envíos son casos de uso diferentes, no un controlador genérico que expone entidades. Un `DELETE /api/envios/{id}` que cancela (cambia estado) en vez de borrar físicamente preserva el historial necesario para auditoría y disputas, algo que una eliminación real destruiría irreversiblemente.
+```java
+public enum EstadoEnvio { CREADO, CANCELADO }
 
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** DTO explícito, DELETE como cancelación de negocio, Idempotency-Key.
-
-DTO, Bean Validation, Problem Details y OpenAPI definen el contrato público, nunca la entidad JPA directamente. `Idempotency-Key` protege la creación y confirmación de un envío ante reintentos (Módulo 13), y un `DELETE` bien diseñado en un dominio de auditoría cambia el estado a `CANCELADO` en vez de ejecutar un `DELETE FROM` físico.
-
-**Analogía:** es como una central de despacho: cada mensaje necesita identidad, hora, destino y confirmación; cancelar un envío es como archivarlo con un sello de "cancelado", no como destruir el expediente.
-
-**Diagrama:**
-
-```mermaid
-sequenceDiagram
-  participant C as Cliente
-  participant A as EnvioController
-  A->>A: DELETE /api/envios/1
-  A->>A: estado = CANCELADO (no borra la fila)
-  A-->>C: 200 con el envío cancelado
+public void cancelar() {
+    this.estado = EstadoEnvio.CANCELADO;
+}
 ```
 
-#### Paso 4 · Demostración guiada desde cero
-
-Parte de una carpeta vacía y crea `src/main/java/io/academia/entregas/`:
+Ejecuta el test que crea y lee un envío desde `examples/spring-boot-cancel-rutaflow/`:
 
 ```bash
-mkdir gestion-entregas
-cd gestion-entregas
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web,data-jpa,h2,validation -d javaVersion=25 -o app.zip
-unzip app.zip
-mkdir -p src/main/java/io/academia/entregas
-mkdir -p src/test/java/io/academia/entregas
+./mvnw -q test -Dtest=CancelacionContratoTest#crearPublicaLocationYGetRecuperaElDto
 ```
 
-```java
-// src/main/java/io/academia/entregas/Envio.java
-package io.academia.entregas;
+**Resultado esperado.** Maven termina con `BUILD SUCCESS`; la respuesta contiene estado `CREADO` y el GET recupera el mismo ID.
 
-import jakarta.persistence.*;
+**Fallo deliberado.** Cambia `CREADO` por `CREARDO` en `crear()`; el test detecta que la respuesta no coincide. Restaura `CREADO`.
 
-@Entity
-public class Envio {
-    @Id @GeneratedValue
-    private Long id;
-    private String estado = "CREADO";
+**Entiende.** El enum limita los estados que Java puede guardar. No define por sí solo qué transiciones permite el negocio.
 
-    public Long getId() { return id; }
-    public String getEstado() { return estado; }
-    public void cancelar() { this.estado = "CANCELADO"; }
-}
-```
+**Cierra.** Anota qué estado crea el envío y cuál escribe cancelar.
 
-```java
-// src/main/java/io/academia/entregas/EnvioController.java
-package io.academia.entregas;
+#### Subtema 14.1.2: Devuelve un contrato público pequeño · 8 min
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+**Contexto.** La entidad contiene datos de almacenamiento; el contrato HTTP debe mostrar solo los campos que el cliente necesita.
 
-interface EnvioRepository extends JpaRepository<Envio, Long> {}
-
-@RestController
-@RequestMapping("/api/envios")
-class EnvioController {
-    private final EnvioRepository repository;
-
-    EnvioController(EnvioRepository repository) { this.repository = repository; }
-
-    @PostMapping
-    ResponseEntity<Envio> crear() {
-        return ResponseEntity.status(201).body(repository.save(new Envio()));
-    }
-
-    @DeleteMapping("/{id}")
-    ResponseEntity<Envio> cancelar(@PathVariable Long id) {
-        Envio envio = repository.findById(id).orElseThrow();
-        envio.cancelar();
-        return ResponseEntity.ok(repository.save(envio));
-    }
-}
-```
-
-Confirma con `MockMvc` real que `DELETE` cancela en vez de eliminar físicamente:
-
-```java
-// src/test/java/io/academia/entregas/CrudContratoTest.java
-package io.academia.entregas;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.web.servlet.MockMvc;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-@SpringBootTest
-@AutoConfigureMockMvc
-class CrudContratoTest {
-
-    @Autowired private MockMvc mockMvc;
-    @Autowired private EnvioRepository repository;
-
-    @Test
-    void deleteCambiaEstadoEnVezDeBorrarFisicamente() throws Exception {
-        String respuestaCrear = mockMvc.perform(post("/api/envios")).andReturn().getResponse().getContentAsString();
-        Long id = com.jayway.jsonpath.JsonPath.read(respuestaCrear, "$.id").toString().transform(Long::parseLong);
-
-        mockMvc.perform(delete("/api/envios/{id}", id))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.estado").value("CANCELADO"));
-
-        assertThatFilaSiguePresente(id);
-    }
-
-    private void assertThatFilaSiguePresente(Long id) {
-        org.assertj.core.api.Assertions.assertThat(repository.findById(id)).isPresent(); // la fila NO fue borrada
-    }
-}
-```
+**Hazlo tú.** Revisa `EnvioResponse.java` y `EnvioController.java`. Ejecuta el test anterior y compara el JSON con el record `EnvioResponse(id, estado)`.
 
 ```bash
-./mvnw test -Dtest=CrudContratoTest
+./mvnw -q test -Dtest=CancelacionContratoTest#crearPublicaLocationYGetRecuperaElDto
 ```
 
-**Resultado esperado:** `BUILD SUCCESS` con el test en verde: `DELETE /api/envios/{id}` responde `200` con `estado=CANCELADO`, y `repository.findById(id)` confirma que la fila SIGUE presente en la base de datos — la operación cambió estado, no eliminó físicamente, exactamente la semántica de negocio que el contrato exige.
+**Resultado esperado.** POST devuelve `201`, un encabezado `Location` y un DTO; GET devuelve `200` y el mismo ID. El JSON no serializa campos internos de JPA.
 
-**Fallo deliberado:** cambia `envio.cancelar()` por `repository.delete(envio)` en el controller y ejecuta de nuevo el test. FALLA en `assertThatFilaSiguePresente` porque `repository.findById(id)` ahora devuelve vacío — diagnostica confirmando que un `DELETE` HTTP mal implementado como eliminación física destruye el historial de auditoría que el contrato de negocio requería preservar. Restaura `cancelar()` antes de continuar.
+**Fallo deliberado.** Cambia el `201` de `ResponseEntity.created(ubicacion)` por `ResponseEntity.ok().location(ubicacion)`. El test esperaba `201` y debe fallar con `200`. Restaura `created`.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**Entiende.** Un DTO separa la forma que usa la API de cómo se guarda el objeto. Un cambio interno de persistencia no obliga a renombrar la respuesta pública.
 
-1. Agrega un endpoint `PATCH /api/envios/{id}/asignar` y un test que confirme la transición de estado explícita `CREADO → ASIGNADO`.
-2. Confirma con un test que cancelar un envío ya `CANCELADO` es idempotente (no lanza error, devuelve el mismo estado).
-3. Agrega validación Bean Validation (`@NotBlank`) a un campo del DTO de creación y confirma con un test que una entrada inválida responde `400` con `Problem Details`.
-4. Escribe de memoria (sin mirar) un `DELETE` que cancela en vez de eliminar, y un test que confirme que la fila sigue presente. Compara después contra el patrón del Paso 4.
+**Cierra.** Identifica el status, `Location` y los dos campos de la respuesta de creación.
 
-**Pista:** `repository.findById(id).isPresent()` tras un `DELETE` HTTP es la forma más directa de confirmar, con evidencia real de base de datos, si tu endpoint canceló o eliminó físicamente — no asumas la semántica solo por el nombre del método HTTP.
+#### Subtema 14.1.3: Cancela sin destruir el historial · 10 min
 
-#### Paso 6 · Práctica independiente
+**Contexto.** Un envío cancelado puede ser necesario para explicar una devolución o una disputa; borrar su fila elimina esa evidencia.
 
-**Completa el código:** rellena el espacio con el método que cambia el estado sin eliminar la fila:
+**Hazlo tú.** En `EnvioService.java`, sigue `cancelar(id)` hasta `Envio.cancelar()`. Ejecuta la prueba que hace el DELETE y consulta después el repositorio:
 
-```java
-@DeleteMapping("/{id}")
-ResponseEntity<Envio> cancelar(@PathVariable Long id) {
-    Envio envio = repository.findById(id).orElseThrow();
-    envio.____();
-    return ResponseEntity.ok(repository.save(envio));
-}
+```bash
+./mvnw -q test -Dtest=CancelacionContratoTest#deleteMarcaCanceladoYConservaLaFila
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un endpoint `DELETE` que cancela en vez de eliminar, y un test que confirme que la fila persiste. Compara después contra el patrón del Paso 4.
+**Resultado esperado.** DELETE devuelve `200` con `CANCELADO`; `findById(id)` todavía encuentra la fila.
 
-#### Paso 7 · Cierre y evidencia
+**Fallo deliberado.** Sustituye el cambio de estado por `envios.delete(envio)` en `EnvioService.cancelar()`. El test falla porque la fila ya no existe. Restaura la transición de estado.
 
-Ya implementas un contrato CRUD donde `DELETE` significa cancelación de negocio, verificado contra la base de datos real. El siguiente tema almacena la posición geográfica de cada envío en MySQL con soporte espacial real. **Evidencia:** entrega el resultado de `CrudContratoTest` en verde, y la fila perdida que produce el fallo deliberado con `repository.delete(...)`. Fuentes oficiales: [Spring Boot Reference](https://docs.spring.io/spring-boot/reference/).
+**Entiende.** El verbo HTTP sugiere borrar el recurso, pero el dominio decide qué significa. En este sistema el registro histórico se conserva.
 
-**Errores comunes:** exponer la entidad JPA directamente como respuesta HTTP en vez de un DTO; implementar `DELETE` como eliminación física en un dominio donde el historial es auditable.
+**Cierra.** Conserva la salida del test verde y describe qué aserción descubre la eliminación física.
 
-**Cuándo no usarlo:** para datos verdaderamente transitorios sin ningún valor de auditoría (por ejemplo, una sesión de caché temporal), la eliminación física simple es apropiada y la cancelación lógica sería complejidad innecesaria.
+#### Subtema 14.1.4: Repite DELETE sin cambiar el resultado · 8 min
 
-El contrato CRUD que diseñes aquí sigue el mismo criterio de claridad que exige el proyecto integrador de este track (microservicio productivo, Módulo 12).
+**Contexto.** Redes y clientes pueden repetir una solicitud. La misma cancelación debe poder recibirse más de una vez.
+
+**Hazlo tú.** Ejecuta `repetirDeleteConservaLaMismaCancelacion` en `CancelacionContratoTest`.
+
+```bash
+./mvnw -q test -Dtest=CancelacionContratoTest#repetirDeleteConservaLaMismaCancelacion
+```
+
+**Resultado esperado.** Las dos solicitudes responden `200` y `CANCELADO`. El endpoint no requiere `Idempotency-Key`: repetir esta transición no produce un efecto adicional.
+
+**Fallo deliberado.** Añade temporalmente una excepción `409` si el estado ya es `CANCELADO`. El segundo DELETE falla; quita esa condición y repite la prueba.
+
+**Entiende.** La idempotencia describe el efecto repetido, no una cabecera obligatoria. Para operaciones de creación que puedan duplicar un recurso, reutiliza el patrón con clave única de M13 T2.
+
+**Cierra.** Entrega la salida de las tres pruebas. H2 verifica este laboratorio local; antes de producción hay que elegir y validar la base de datos real.
+
+**Fuentes:** [Spring MVC](https://docs.spring.io/spring-framework/reference/web/webmvc.html), [Spring Data JPA](https://docs.spring.io/spring-data/jpa/reference/) y [Spring Boot Reference](https://docs.spring.io/spring-boot/reference/).
+
+---
 
 ### Tema 2: MySQL y datos espaciales
 

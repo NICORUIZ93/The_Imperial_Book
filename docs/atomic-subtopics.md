@@ -19,7 +19,7 @@ Temas conformes a cuatro pasos: **157/1185**. Tracks inventariados: **14**.
 | node | 2 | 83 | 6 | 6 |
 | react | 0 | 58 | 0 | 0 |
 | rutaflow | 0 | 29 | 0 | 0 |
-| spring-boot | 53 | 111 | 239 | 186 |
+| spring-boot | 53 | 111 | 243 | 186 |
 
 ## Temas pendientes
 
@@ -1036,7 +1036,7 @@ Temas conformes a cuatro pasos: **157/1185**. Tracks inventariados: **14**.
 - M10 ### Tema 7: DDD para decidir límites y propiedad de datos: 7.1: faltan deliberateFailure; 7.2: faltan deliberateFailure; 7.3: faltan action, deliberateFailure; 7.4: faltan deliberateFailure
 - M13 ### Tema 3: Contratos ejecutables protegen despliegues independientes: 13.3: faltan context, action, deliberateFailure, understand, close; 13.3: faltan context, action, deliberateFailure, understand, close; 13.3: faltan context, action, deliberateFailure, understand, close; 13.3: faltan context, action, deliberateFailure, understand, close
 - M13 ### Tema 4: Observabilidad sirve a un objetivo y a una decisión: 13.4: faltan context, action, deliberateFailure, understand, close; 13.4: faltan context, action, deliberateFailure, understand, close; 13.4: faltan context, action, deliberateFailure, understand, close; 13.4: faltan context, action, deliberateFailure, understand, close
-- M14 ### Tema 1: CRUD API y contratos: tiene 0 subtemas
+- M14 ### Tema 1: CRUD API y contratos: 14.1: faltan context, action, deliberateFailure, understand, close; 14.1: faltan context, action, deliberateFailure, understand, close; 14.1: faltan context, action, deliberateFailure, understand, close; 14.1: faltan context, action, deliberateFailure, understand, close
 - M14 ### Tema 2: MySQL y datos espaciales: tiene 0 subtemas
 - M14 ### Tema 3: JPA e Hibernate Spatial: tiene 0 subtemas
 - M14 ### Tema 4: JWT Bearer y autorización por roles: tiene 0 subtemas

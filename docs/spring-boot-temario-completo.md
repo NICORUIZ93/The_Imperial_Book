@@ -367,6 +367,10 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
 [Abrir lección completa](../web/public/content/spring-boot/modulo-14.md)
 
 - [pendiente de migrar] Tema 1: CRUD API y contratos
+  - pendiente Subtema 14.1.1: Modela estados que sí existen · 8 min
+  - pendiente Subtema 14.1.2: Devuelve un contrato público pequeño · 8 min
+  - pendiente Subtema 14.1.3: Cancela sin destruir el historial · 10 min
+  - pendiente Subtema 14.1.4: Repite DELETE sin cambiar el resultado · 8 min
 - [pendiente de migrar] Tema 2: MySQL y datos espaciales
 - [pendiente de migrar] Tema 3: JPA e Hibernate Spatial
 - [pendiente de migrar] Tema 4: JWT Bearer y autorización por roles
