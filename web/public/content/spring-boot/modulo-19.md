@@ -13,116 +13,109 @@ Compara los límites de transacción y el consumo de memoria con más de un chun
 
 ### Tema 1: Job, Step, Tasklet y chunk processing
 
-#### Paso 1 · Objetivo y preparación
+**Meta:** importar un CSV pequeño, filtrar una fila, guardar las válidas y reconocer qué trabajo hace cada parte de Spring Batch.
 
-Al finalizar podrás distinguir un `Job`, un `Step`, un `Tasklet` y un step orientado a chunks, y ejecutar un job reproducible. Genera un proyecto Spring Boot desde Initializr con `batch`, `jdbc` y `h2`; JDK 25+ y Maven.
-**Conocimiento previo:** haber seguido el tema anterior de este módulo y tener instalado el entorno del stack.
-#### Paso 2 · Contexto y caso real
+**Caso visible:** tres pedidos entran; los dos con importe positivo se guardan. El job termina mostrando el total.
 
-Cada noche se importa un archivo de pedidos. Cargarlo completo en una lista puede agotar memoria; detenerse al primer error obliga a rehacer manualmente el lote entero.
+**¿Por qué es importante?** un archivo grande se procesa por partes; si algo falla, el sistema puede conservar el trabajo confirmado y reanudarlo con control.
 
-**¿Por qué es importante?** Un procesamiento por chunks acota memoria y hace que el punto de confirmación pueda observarse y recuperarse.
+**Modelo mental:** el Job es una receta con etapas; cada Step ejecuta una tarea concreta, y cada chunk funciona como una caja que se confirma antes de llenar la siguiente.
 
-#### Paso 3 · Teoría y modelo mental
+**Límite:** Batch encaja con archivos y lotes; para responder de inmediato a una petición pequeña, usa un flujo HTTP normal.
 
-Un `Job` coordina la ejecución; sus `Step`s separan fases. Un `Tasklet` sirve para una tarea acotada (por ejemplo, marcar inicio de importación). El modelo chunk lee elementos, los procesa y escribe un bloque dentro de límites transaccionales: cada chunk confirmado queda persistido.
-
-`ItemReader` obtiene registros; `ItemProcessor` transforma o filtra; `ItemWriter` escribe un chunk. `JobRepository` mantiene metadatos de instancias y ejecuciones. `JobParameters` identifican una ejecución lógica y deben incluir parámetros estables como fecha de archivo, no una hora aleatoria que impida reanudar.
-**Analogía:** un `Job` es la receta completa de un menú; cada `Step` es un plato de esa receta. Un `Tasklet` es un paso que se hace de una sola vez (encender el horno); el *chunk processing* es una cadena de montaje que toma ingredientes de a lotes, los cocina y los emplata en grupos, en vez de uno por uno.
-#### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/main/java/academia/batch/ImportJobConfig.java` dentro.
-```bash
-curl -fsSL https://start.spring.io/starter.zip -o ejemplo.zip && unzip -o ejemplo.zip -d ejemplo
+```mermaid
+flowchart LR
+  Job[Job: importPedidos] --> Step1[Step: importarPedidos]
+  Step1 --> Reader[Reader: CSV]
+  Reader --> Processor[Processor: filtra cero]
+  Processor --> Writer[Writer: JDBC]
+  Job --> Step2[Step: resumen Tasklet]
 ```
 
+#### Subtema 19.1 · Separa el Job del trabajo de cada Step · 8 min
 
-Incluye `src/main/resources/pedidos.csv` con:
+**Contexto:** `Job` representa el proceso completo; un `Step` es una etapa. Un `Tasklet` sirve para una acción breve, como imprimir el resumen al terminar.
 
-```text
-referencia,importe
-RF-1001,125.50
-RF-1002,0
-RF-1003,49.99
-```
-
-**Ejecuta el ejemplo** (genera el proyecto con Spring Initializr, pega el código y corre las pruebas):
+**Hazlo tú:** abre `examples/spring-batch-rutaflow/src/main/java/academia/rutaflow/batch/ImportJobConfig.java`. Compara `importPedidosStep`, que procesa registros, con `resumenStep`, que consulta cuántos quedaron. Mira cómo `importPedidosJob` los conecta con `.start(...).next(...)`.
 
 ```bash
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
-./mvnw test
+cd examples/spring-batch-rutaflow
+./mvnw -q test
 ```
-Equivalencias Maven/Gradle en el Módulo 1.
 
+**Resultado esperado:** el log contiene `Pedidos importados: 2` y la prueba termina en verde.
 
-Crea `PedidoImportado` como record y `src/main/java/academia/batch/ImportJobConfig.java`. Configura `schema.sql` con una tabla destino `pedido_importado(referencia varchar(40) primary key, importe decimal(12,2) not null)`. Declara estos beans de reader y processor; el archivo se inyecta por parámetro del job:
+**Fallo deliberado:** quita `.next(resumenStep)` y ejecuta otra vez. **Diagnóstico:** se guardan pedidos, pero el paso de resumen no corre y no aparece su línea. Restáuralo.
+
+**Entiende:** el job ordena las etapas; no procesa cada fila por sí solo. Reserva Tasklet para tareas pequeñas, no para cargar el CSV entero en memoria.
+
+**Cierra:** señala en el código qué bean es Job y cuáles son Steps; registra cuál usarías para preparar un archivo de tarifas del proyecto integrador RutaFlow.
+
+#### Subtema 19.2 · Lee filas y transforma una a la vez · 8 min
+
+**Contexto:** `pedidos.csv` trae una fila por pedido. El reader crea un objeto; el processor decide qué pasa a la escritura.
+
+**Hazlo tú:** abre `src/main/resources/pedidos.csv`, luego `ImportJobConfig.java`. Sigue `pedidosReader()` hasta `positiveAmountsOnly()`:
 
 ```java
-@Bean
-@StepScope
-FlatFileItemReader<PedidoImportado> reader(
-        @Value("#{jobParameters['inputFile']}") Resource input) {
-    return new FlatFileItemReaderBuilder<PedidoImportado>()
-        .name("pedidoReader")
-        .resource(input)
-        .linesToSkip(1)
-        .delimited()
-        .names("referencia", "importe")
-        .fieldSetMapper(fields -> new PedidoImportado(
-            fields.readString("referencia"),
-            fields.readBigDecimal("importe")))
-        .build();
-}
-
-@Bean
-ItemProcessor<PedidoImportado, PedidoImportado> processor() {
-    return pedido -> pedido.importe().signum() > 0 ? pedido : null;
-}
+return pedido.importe().signum() > 0 ? pedido : null;
 ```
 
-Un processor que retorna `null` filtra intencionalmente el elemento; registra el conteo filtrado en listener, no lo confundas con una escritura.
+`null` significa “filtrar esta fila”. Ejecuta `./mvnw -q test` desde `examples/spring-batch-rutaflow`.
 
-#### Construye el writer y el step
+**Resultado esperado:** `RF-1002` queda fuera por importe cero; el reader continúa con `RF-1003`.
 
-Para este primer laboratorio, `JdbcPedidoWriter` implementa `ItemWriter<PedidoImportado>` y recorre el `Chunk<? extends PedidoImportado>` llamando a `JdbcTemplate.update("insert into pedido_importado(referencia, importe) values (?, ?)", pedido.referencia(), pedido.importe())`. El step ejecuta el writer dentro de la transacción del chunk, así que el tamaño del chunk define el grupo de escrituras que se confirma junto.
+**Fallo deliberado:** cambia el processor para que siempre devuelva `pedido`. **Diagnóstico:** la prueba encuentra tres filas, incluida la de importe cero. Restaura la condición.
 
-El núcleo del step en Spring Batch moderno usa builder inyectado:
+**Entiende:** una fila filtrada no es lo mismo que un error. En importaciones reales guarda el motivo del rechazo para poder conciliarlo.
+
+**Cierra:** agrega al CSV una tarifa válida para el proyecto integrador RutaFlow y predice qué filas quedarán antes de ejecutar.
+
+#### Subtema 19.3 · Confirma filas en grupos pequeños · 10 min
+
+**Contexto:** el writer guarda en JDBC los registros que el processor dejó pasar. El tamaño del chunk marca cuántos elementos se procesan antes de confirmar el grupo.
+
+**Hazlo tú:** en `ImportJobConfig.java`, localiza el step y su configuración actual:
 
 ```java
-@Bean
-Step importarPedidos(
-        JobRepository jobRepository,
-        PlatformTransactionManager transactionManager,
-        ItemReader<PedidoImportado> reader,
-        ItemProcessor<PedidoImportado, PedidoImportado> processor,
-        ItemWriter<PedidoImportado> writer) {
-    return new StepBuilder("importarPedidos", jobRepository)
-        .<PedidoImportado, PedidoImportado>chunk(2, transactionManager)
-        .reader(reader)
-        .processor(processor)
-        .writer(writer)
-        .build();
-}
+.<PedidoImportado, PedidoImportado>chunk(2)
+.reader(pedidosReader)
+.processor(positiveAmountsOnly)
+.writer(pedidosWriter)
 ```
 
-Define `Job` con `new JobBuilder("importPedidos", jobRepository).start(importarPedidos).build()`. Para ejecutar el archivo del classpath, configura temporalmente `inputFile=classpath:pedidos.csv` como JobParameter en el test. Ejecuta `./mvnw test` con un test `@SpringBatchTest` o de integración que lance el job mediante `JobLauncherTestUtils`.
+El writer usa parámetros SQL para guardar referencia e importe. Corre `./mvnw -q clean test`.
 
-**Resultado esperado:** `RF-1001` y `RF-1003` se guardan en `pedido_importado`; el registro con importe cero se filtra. **Fallo deliberado:** usa `chunk(1, ...)` y compara commits/logs con `chunk(2, ...)`; provoca además un error de parseo y observa qué chunk se revierte. Un error en el writer debe revertir las escrituras de ese chunk.
+**Resultado esperado:** la consulta de la prueba devuelve dos registros; el test cubre escritura real sobre H2.
 
-#### Paso 5 · Práctica guiada
+**Fallo deliberado:** cambia el nombre `:referencia` del SQL a `:codigo`. **Diagnóstico:** el parámetro ya no coincide con el record y la ejecución falla al escribir. Restáuralo.
 
-Implementa dos steps: validar archivo y luego importar. Compara `Tasklet` para registrar el resumen final con un step chunk para procesar cada fila. Añade un reader JDBC paginado (`JdbcPagingItemReader`) para leer desde una tabla sin materializar todos los resultados.
-**Pista:** cambia temporalmente el `chunkSize` de 2 a un valor mayor que el total de filas válidas y vuelve a correr el test; si el número de confirmaciones en el log baja a una sola, confirmas que es el tamaño del chunk —y no el `Tasklet`— lo que define cuántas filas se confirman juntas en cada transacción.
-#### Paso 6 · Práctica independiente
+**Entiende:** un chunk de dos acota el grupo de trabajo y el commit. No asumas que el tamaño óptimo es dos: mídelo con filas, base de datos y costo de recuperación reales. Este lab usa H2 y no mide producción.
 
-Construye importación de tarifas de RutaFlow con `FlatFileItemReader`, processor que normalice códigos y writer persistente con `JdbcBatchItemWriter`. Agrega conteos leídos, filtrados, escritos y fallidos. Verifica que la memoria usada no crece linealmente con el total de filas.
+**Cierra:** apunta qué parte cambia al ajustar el tamaño de chunk y conserva el test como evidencia del proyecto integrador RutaFlow.
 
-#### Paso 7 · Cierre y evidencia
+#### Subtema 19.4 · Ejecuta el job y comprueba sus datos · 8 min
 
-Entrega job, archivo fixture, test del step y conteos del lote como incremento del proyecto integrador de RutaFlow. **Cuándo no usarlo:** no elijas Batch para una petición HTTP inmediata y pequeña; una cola/eventos o una operación síncrona pueden ser más apropiadas. **Evidencia:** tests con más de un chunk y SQL o logs que demuestren límites transaccionales.
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** usar `chunk(1, ...)` en producción pensando que así se evitan problemas, cuando en realidad multiplica el número de transacciones y el costo por fila, y confundir un `ItemProcessor` que retorna `null` (filtra el registro) con una fila que falló: sin un listener que cuente los filtrados, el reporte de "filas escritas" no explica por qué hay menos que las leídas.
-**Fuente oficial:** [documentación de Spring Boot](https://docs.spring.io/spring-boot/index.html).
-**Evidencia de aprendizaje:** entrega la salida de `./mvnw test` mostrando que `RF-1002` (importe cero) fue filtrado por el `ItemProcessor`, el log comparado de `chunk(1, ...)` contra `chunk(2, ...)` con sus confirmaciones, y la explicación de qué chunk se revirtió al forzar el error de parseo.
+**Contexto:** una línea “job completado” no demuestra que los resultados sean correctos. Comprueba filas concretas en la base.
+
+**Hazlo tú:** ejecuta desde `examples/spring-batch-rutaflow`:
+
+```bash
+./mvnw -q clean test
+```
+
+Lee `ImportJobTest.java`: consulta `pedido_importado` y compara referencias e importes esperados. Para ver el job arrancar desde consola, usa `./mvnw spring-boot:run`; Spring Boot ejecuta el único Job configurado al iniciar.
+
+**Resultado esperado:** `RF-1001` y `RF-1003` quedan guardados; `RF-1002` no aparece; el paso final imprime el conteo.
+
+**Fallo deliberado:** comenta la llamada `.processor(positiveAmountsOnly)`. **Diagnóstico:** la fila de importe cero también llega a la tabla y la prueba falla. Devuelve el processor.
+
+**Entiende:** el job exitoso, los datos escritos y la regla de filtrado son evidencias distintas. No ejecutes este ejemplo como una petición HTTP pequeña: está diseñado para archivos y procesamiento por lotes.
+
+**Cierra:** conserva el test, el CSV de muestra y una tabla con leídas, filtradas y escritas para extender el proyecto integrador RutaFlow.
+
+**Fuentes primarias:** [Spring Batch: procesamiento por chunks](https://docs.spring.io/spring-batch/reference/step/chunk-oriented-processing.html); [Spring Batch: configurar un Job](https://docs.spring.io/spring-batch/reference/job/configuring-job.html); [Spring Batch: Tasklet](https://docs.spring.io/spring-batch/reference/step/tasklet.html); [Spring Boot: Spring Batch y ejecución automática](https://docs.spring.io/spring-boot/reference/io/spring-batch.html).
+
 ### Tema 2: Reinicio, JobParameters, retry, skip y listeners
 
 #### Paso 1 · Objetivo y preparación

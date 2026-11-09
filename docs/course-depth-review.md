@@ -1149,7 +1149,7 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | spring-boot / 17 | [Tema 2: `@Transactional`, rollback y límites de transacción](../web/public/content/spring-boot/modulo-17.md) | demostracion-no-delimitada |
 | spring-boot / 18 | [Tema 1: SecurityFilterChain y autorización](../web/public/content/spring-boot/modulo-18.md) | demostracion-no-delimitada |
 | spring-boot / 18 | [Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP](../web/public/content/spring-boot/modulo-18.md) | demostracion-no-delimitada |
-| spring-boot / 19 | [Tema 1: Job, Step, Tasklet y chunk processing](../web/public/content/spring-boot/modulo-19.md) | clase-java-no-visible |
+| spring-boot / 19 | [Tema 1: Job, Step, Tasklet y chunk processing](../web/public/content/spring-boot/modulo-19.md) | demostracion-no-delimitada |
 | spring-boot / 19 | [Tema 2: Reinicio, JobParameters, retry, skip y listeners](../web/public/content/spring-boot/modulo-19.md) | clase-java-no-visible |
 | spring-boot / 2 | [Tema 1: Por qué DTOs en vez de entidades directamente](../web/public/content/spring-boot/modulo-2.md) | demostracion-no-delimitada |
 | spring-boot / 2 | [Tema 2: Validación con Bean Validation y ResponseEntity](../web/public/content/spring-boot/modulo-2.md) | demostracion-no-delimitada |

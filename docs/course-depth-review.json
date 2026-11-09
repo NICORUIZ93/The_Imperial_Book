@@ -12885,7 +12885,7 @@
       "file": "web/public/content/spring-boot/modulo-19.md",
       "line": 14,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -12896,7 +12896,7 @@
       "module": 19,
       "title": "Tema 2: Reinicio, JobParameters, retry, skip y listeners",
       "file": "web/public/content/spring-boot/modulo-19.md",
-      "line": 126,
+      "line": 119,
       "signals": [
         "clase-java-no-visible"
       ],

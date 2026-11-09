@@ -1690,9 +1690,9 @@
     }
   ],
   "summary": {
-    "fingerprint": "7a35a5915b502cc2b365033dda5ada63b5dbe255ed2ba46c1ef7b2dc2b63e046",
+    "fingerprint": "c6b079fd17342305965c7d0d989a65c9c4c3d0e5932b5b2ece96cc0810412945",
     "issues": {
-      "andamiaje-generico": 118,
+      "andamiaje-generico": 117,
       "bloque-repetido": 163,
       "cola-tras-cierre": 331,
       "parrafo-repetido": 5,
@@ -1706,7 +1706,7 @@
     "modules": 256,
     "modulesWithLegacySections": 178,
     "topics": 1185,
-    "topicsWithIssues": 403
+    "topicsWithIssues": 402
   },
   "topics": {
     "android": [
@@ -10603,13 +10603,11 @@
         "words": 1018
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 19,
-        "tailWords": 196,
+        "tailWords": 0,
         "topic": "Tema 1: Job, Step, Tasklet y chunk processing",
-        "words": 1058
+        "words": 891
       },
       {
         "issues": [],

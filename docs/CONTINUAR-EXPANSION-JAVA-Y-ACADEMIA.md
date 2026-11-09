@@ -1686,3 +1686,19 @@ SecurityFilterChain con JWT simulado y CORS (5), y SSRF (3). `./scripts/validate
 `validate_rutaflow_material.py` y `git diff --check` pasaron; cobertura pedagógica
 1073/1185, atomicidad 163/1185. Siguiente: Spring Boot M19 T1, Spring Batch Job,
 Step, Tasklet y chunks.
+
+Spring Boot M19 T1, “Job, Step, Tasklet y chunk processing”, quedó en cuatro
+subtemas breves y un laboratorio nuevo `examples/spring-batch-rutaflow/` con
+Boot 4.1.2 y Spring Batch 6.0.6. El job procesa un CSV de tres filas, filtra el
+importe cero, escribe las dos filas válidas en H2 y encadena un Tasklet que
+persiste/imprime el resumen. `./mvnw -q clean test` pasó y comprueba filas e
+informe. Cuatro mutaciones se detectaron y restauraron: quitar el paso resumen,
+aceptar la fila inválida, cambiar el nombre de un parámetro SQL y omitir el
+processor. `./scripts/validate.sh`, `validate_rutaflow_material.py` y
+`git diff --check` pasaron tras regenerar reportes; auditoría: 164/1185 temas
+atómicos y 1073/1185 practicables. El test usa H2 en memoria y no prueba reinicio
+ni volumen de producción; eso sigue para M19 T2. Se corrigió el ejemplo para
+Spring Batch 6: `chunk(int)` reemplaza el overload `chunk(int, transactionManager)`
+deprecado. Fuentes primarias contrastadas: Spring Batch chunk processing, Job,
+Tasklet y Spring Boot auto-run. Siguiente: M19 T2, reinicio, JobParameters,
+retry, skip y listeners.

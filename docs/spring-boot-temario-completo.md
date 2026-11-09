@@ -5,7 +5,7 @@
 **Proyecto continuo:** RutaFlow: plataforma de entregas basada en servicios.
 **Prerrequisito de entrada:** Java, HTTP, SQL y pruebas; los módulos iniciales vuelven a presentar cada herramienta..
 **Duración objetivo:** temas de 20–45 minutos; cada tema se divide en 3–6 acciones de 5–15 minutos.
-**Estado estructural:** 59/111 temas migrados; auditoría estructural actualizada el 2026-11-03.
+**Estado estructural:** 60/111 temas migrados; auditoría estructural actualizada el 2026-11-03.
 
 ## Índice de módulos y temas
 
@@ -491,7 +491,11 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
 
 [Abrir lección completa](../web/public/content/spring-boot/modulo-19.md)
 
-- [pendiente de migrar] Tema 1: Job, Step, Tasklet y chunk processing
+- [4 pasos] Tema 1: Job, Step, Tasklet y chunk processing
+  - ✓ Subtema 19.1 · Separa el Job del trabajo de cada Step · 8 min
+  - ✓ Subtema 19.2 · Lee filas y transforma una a la vez · 8 min
+  - ✓ Subtema 19.3 · Confirma filas en grupos pequeños · 10 min
+  - ✓ Subtema 19.4 · Ejecuta el job y comprueba sus datos · 8 min
 - [pendiente de migrar] Tema 2: Reinicio, JobParameters, retry, skip y listeners
 
 ### Módulo 20: Integraciones Spring — scheduling, eventos, correo y caché
@@ -594,7 +598,7 @@ La tabla registra presencia de áreas en el inventario del track, no profundidad
 
 ### Huecos y límites reportados
 
-- El repositorio contiene 111 temas en 26 módulos; 59 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
+- El repositorio contiene 111 temas en 26 módulos; 60 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
 - No hay base para afirmar que el track esté completo: la comparación con la fuente de referencia está pendiente de revisión humana módulo por módulo.
 - Los elementos de la fuente que todavía deben verificarse de forma explícita están enumerados en la tabla anterior; cualquier técnica crítica que no tenga tema propio debe añadirse conservando el currículo base.
 - La ejecución de ejemplos, el comportamiento con brokers/plataformas reales y la calidad pedagógica humana se registran por separado.

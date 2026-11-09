@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 1686,
+      "lines": 1689,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 17512,
+      "lines": 17569,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -314,7 +314,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1086,
+      "lines": 1085,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -600,7 +600,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3962,
+      "lines": 3955,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -813,7 +813,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 11059,
+      "lines": 11057,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 605,
+      "lines": 609,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -7459,6 +7459,16 @@
       "symbols": [],
       "imports": [],
       "headings": []
+    },
+    {
+      "path": "examples/spring-ssrf/README.md",
+      "lines": 18,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Cliente HTTP con control SSRF \u00b7 Spring Boot 4.1.2"
+      ]
     },
     {
       "path": "examples/spring-ssrf/src/main/java/com/academia/SafeClient.java",
@@ -14094,7 +14104,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-19.md",
-      "lines": 192,
+      "lines": 185,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14103,14 +14113,14 @@
         "## Aprende construyendo",
         "### Dos ejemplos: primero visible, luego real",
         "### Tema 1: Job, Step, Tasklet y chunk processing",
+        "#### Subtema 19.1 \u00b7 Separa el Job del trabajo de cada Step \u00b7 8 min",
+        "#### Subtema 19.2 \u00b7 Lee filas y transforma una a la vez \u00b7 8 min",
+        "#### Subtema 19.3 \u00b7 Confirma filas en grupos peque\u00f1os \u00b7 10 min",
+        "#### Subtema 19.4 \u00b7 Ejecuta el job y comprueba sus datos \u00b7 8 min",
+        "### Tema 2: Reinicio, JobParameters, retry, skip y listeners",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda y modelo mental",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
-        "#### Construye el writer y el step",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia"
+        "#### Paso 3 \u00b7 Teor\u00eda y modelo mental"
       ]
     },
     {
