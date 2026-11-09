@@ -1511,3 +1511,19 @@ se restauraron y la suite quedó verde. La lección explica el alcance limitado:
 estas reglas inspeccionan bytecode importado y no certifican toda la
 arquitectura, comportamiento ni integración Spring. Siguiente: M15 T4,
 Bulkhead y RateLimiter de Resilience4j.
+
+Spring Boot M15 T4, “Bulkhead y RateLimiter de Resilience4j”, se dividió en
+cuatro subtemas y amplió `examples/spring-resilience-rutaflow/`. El pom ahora
+incluye `resilience4j-bulkhead` y `resilience4j-ratelimiter` 2.4.0 junto al
+circuit breaker existente. `BulkheadRateLimiterBehaviorTest` coordina dos
+tareas reales con `CountDownLatch`, prueba que la tercera recibe
+`BulkheadFullException`, y confirma que las dos llamadas recuperan espacios al
+salir. El RateLimiter obtiene dos permisos y rechaza el tercero con timeout
+cero y un período largo, sin depender de esperas del reloj. La suite completa
+pasó: 5 pruebas (3 anteriores de CircuitBreaker y 2 nuevas), 0 fallos. Al subir
+el máximo concurrente de 2 a 3, falló el test del Bulkhead; al subir permisos
+de 2 a 3, falló el test del RateLimiter. Restauradas ambas mutaciones, la
+suite volvió a pasar. La lección y README delimitan que el Bulkhead de semáforo
+no crea pool aislado, las cuotas son por instancia local y no se probó un
+servicio externo. Documentación primaria consultada: Resilience4j Bulkhead y
+RateLimiter. Siguiente: M15 T5, saga con compensación real.

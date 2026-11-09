@@ -417,6 +417,10 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - pendiente Subtema 15.3.3: Protege también el caso de uso · 8 min
   - pendiente Subtema 15.3.4: Decide qué reglas merece mantener · 8 min
 - [pendiente de migrar] Tema 4: Bulkhead y RateLimiter de Resilience4j
+  - pendiente Subtema 15.4.1: Separa concurrencia de ritmo · 8 min
+  - pendiente Subtema 15.4.2: Mantén la llamada dentro del Bulkhead · 8 min
+  - pendiente Subtema 15.4.3: Cuenta permisos por período · 8 min
+  - pendiente Subtema 15.4.4: Decide el límite y observa sus fronteras · 8 min
 - [pendiente de migrar] Tema 5: Saga con compensación real
 - [pendiente de migrar] Tema 6: Event Sourcing con replay real
 - [pendiente de migrar] Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar

@@ -99,10 +99,10 @@
     "spring-boot": {
       "topics": 111,
       "code": 106,
-      "commentedCode": 39,
+      "commentedCode": 38,
       "mermaid": 35,
       "archifyVisual": 2,
-      "asciiVisual": 1,
+      "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
       "filePath": 111,
       "runCommand": 111,
@@ -2708,6 +2708,13 @@
       "track": "spring-boot",
       "module": 15,
       "topic": "Tema 2: Contenedores Testcontainers reutilizados entre clases",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 15,
+      "topic": "Tema 4: Bulkhead y RateLimiter de Resilience4j",
       "missingCode": false,
       "missingComments": true
     },

@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 264,
+    "topicsWithSignals": 265,
     "newLaboratories": 25
   },
   "priorities": {
@@ -12740,8 +12740,10 @@
       "module": 15,
       "title": "Tema 4: Bulkhead y RateLimiter de Resilience4j",
       "file": "web/public/content/spring-boot/modulo-15.md",
-      "line": 294,
-      "signals": [],
+      "line": 296,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -12751,7 +12753,7 @@
       "module": 15,
       "title": "Tema 5: Saga con compensación real",
       "file": "web/public/content/spring-boot/modulo-15.md",
-      "line": 447,
+      "line": 377,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -12762,7 +12764,7 @@
       "module": 15,
       "title": "Tema 6: Event Sourcing con replay real",
       "file": "web/public/content/spring-boot/modulo-15.md",
-      "line": 622,
+      "line": 552,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -12773,7 +12775,7 @@
       "module": 15,
       "title": "Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar",
       "file": "web/public/content/spring-boot/modulo-15.md",
-      "line": 793,
+      "line": 723,
       "signals": [],
       "newLaboratory": true,
       "humanPedagogicalReview": "pending",
@@ -12784,7 +12786,7 @@
       "module": 15,
       "title": "Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework",
       "file": "web/public/content/spring-boot/modulo-15.md",
-      "line": 888,
+      "line": 818,
       "signals": [],
       "newLaboratory": true,
       "humanPedagogicalReview": "pending",

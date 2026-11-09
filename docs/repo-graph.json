@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 1514,
+      "lines": 1530,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 16885,
+      "lines": 16942,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -600,7 +600,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3948,
+      "lines": 3955,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13648,
+      "lines": 13650,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -677,7 +677,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 160,
+      "lines": 159,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 561,
+      "lines": 565,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1403,6 +1403,56 @@
     {
       "path": "examples/archify/verification.json",
       "lines": 31,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/archunit-hexagonal-rutaflow/README.md",
+      "lines": 27,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Arquitectura hexagonal verificada con ArchUnit"
+      ]
+    },
+    {
+      "path": "examples/archunit-hexagonal-rutaflow/src/main/java/academia/rutaflow/hexagonal/application/RegisterDelivery.java",
+      "lines": 17,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/archunit-hexagonal-rutaflow/src/main/java/academia/rutaflow/hexagonal/domain/Delivery.java",
+      "lines": 4,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/archunit-hexagonal-rutaflow/src/main/java/academia/rutaflow/hexagonal/domain/DeliveryRepository.java",
+      "lines": 10,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/archunit-hexagonal-rutaflow/src/main/java/academia/rutaflow/hexagonal/infrastructure/InMemoryDeliveryRepository.java",
+      "lines": 16,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/archunit-hexagonal-rutaflow/src/test/java/academia/rutaflow/hexagonal/HexagonalArchitectureTest.java",
+      "lines": 39,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -6938,7 +6988,7 @@
     },
     {
       "path": "examples/spring-resilience-rutaflow/README.md",
-      "lines": 37,
+      "lines": 46,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -13632,7 +13682,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-15.md",
-      "lines": 1051,
+      "lines": 981,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

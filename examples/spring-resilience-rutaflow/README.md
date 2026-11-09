@@ -8,6 +8,14 @@ El proyecto usa Spring Boot 4.1.2, Java 21 o posterior y Resilience4j 2.4.0.
 Integra el núcleo de Resilience4j directamente; no usa el starter de Spring
 Cloud CircuitBreaker ni levanta un registro de servicios.
 
+También prueba `resilience4j-bulkhead` y `resilience4j-ratelimiter`. El test del
+Bulkhead ocupa sus dos espacios con tareas coordinadas por `CountDownLatch` y
+comprueba que una tercera recibe `BulkheadFullException`; el test del
+RateLimiter obtiene dos permisos y rechaza el tercero en el mismo período. Son
+pruebas locales de las primitivas: no modelan una cuota compartida entre
+réplicas ni una dependencia externa real. El Bulkhead de semáforo limita
+concurrencia, pero no crea un pool separado de hilos.
+
 ## Ejecutar las pruebas
 
 Desde esta carpeta:
@@ -19,7 +27,8 @@ Desde esta carpeta:
 Las pruebas inician la app Spring Boot en un puerto temporal y el backend en otro
 puerto libre. Comprueban cuatro 503 que abren el circuito, una quinta llamada
 que devuelve 503 sin llegar al backend y dos respuestas 200 que devuelven el
-estado a `CLOSED`. Para que la suite sea rápida, la prueba fuerza
+estado a `CLOSED`. Las pruebas de Bulkhead y RateLimiter no abren puertos. Para
+que la suite sea rápida, la prueba de CircuitBreaker fuerza
 `HALF_OPEN`; no espera el temporizador de un minuto ni valida su programación.
 
 ## Archivos para inspeccionar

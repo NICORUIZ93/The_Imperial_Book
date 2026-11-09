@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 32,
-      "prerequisites": 54,
-      "context": 32,
-      "theoryAnalogy": 32,
-      "guidedDemo": 32,
+      "objective": 31,
+      "prerequisites": 53,
+      "context": 31,
+      "theoryAnalogy": 31,
+      "guidedDemo": 31,
       "codeExplanation": 111,
       "execution": 100,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 32,
-      "independentPractice": 32,
-      "closure": 32,
-      "commonErrors": 32,
+      "guidedPractice": 31,
+      "independentPractice": 31,
+      "closure": 31,
+      "commonErrors": 31,
       "resources": 61,
-      "standaloneExample": 34,
+      "standaloneExample": 33,
       "learningEvidence": 67,
-      "complete": 32
+      "complete": 31
     }
   },
   "topics": {
@@ -29199,26 +29199,26 @@
         "module": 15,
         "topic": "Tema 4: Bulkhead y RateLimiter de Resilience4j",
         "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "objective": false,
+          "prerequisites": false,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
           "resources": true,
-          "standaloneExample": true,
+          "standaloneExample": false,
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 6,
+          "complete": false
         }
       },
       {

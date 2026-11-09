@@ -94,8 +94,8 @@
     "spring-boot": {
       "topics": 111,
       "completeTopics": 53,
-      "topicsWith3to6Subtopics": 79,
-      "subtopics": 275,
+      "topicsWith3to6Subtopics": 80,
+      "subtopics": 279,
       "completeSubtopics": 186
     }
   },
@@ -14418,8 +14418,65 @@
       {
         "module": 15,
         "topic": "### Tema 4: Bulkhead y RateLimiter de Resilience4j",
-        "subtopicCount": 0,
-        "subtopics": [],
+        "subtopicCount": 4,
+        "subtopics": [
+          {
+            "id": "15.4",
+            "title": "#### Subtema 15.4.1: Separa concurrencia de ritmo · 8 min",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "15.4",
+            "title": "#### Subtema 15.4.2: Mantén la llamada dentro del Bulkhead · 8 min",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "15.4",
+            "title": "#### Subtema 15.4.3: Cuenta permisos por período · 8 min",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "15.4",
+            "title": "#### Subtema 15.4.4: Decide el límite y observa sus fronteras · 8 min",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": true
+            },
+            "complete": false
+          }
+        ],
         "complete": false
       },
       {

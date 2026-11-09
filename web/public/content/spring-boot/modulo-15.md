@@ -265,11 +265,13 @@ rule.check(project);
 
 **Hazlo tú.** Abre `examples/archunit-hexagonal-rutaflow/src/test/java/academia/rutaflow/hexagonal/HexagonalArchitectureTest.java`, sigue `aplicacionNoDependeDeDetallesDeInfraestructura` y compara el nombre de paquetes con la primera regla.
 
+**Práctica guiada.** Cambia el puerto de `RegisterDelivery` por el adaptador concreto, ejecuta solo esta regla y vuelve a inyectar la interfaz cuando veas la infracción.
+
 **Resultado esperado.** Los dos tests pasan: ni `domain` ni `application` tienen dependencia hacia `infrastructure`.
 
 **Fallo deliberado.** Cambia `RegisterDelivery` para declarar una referencia a `InMemoryDeliveryRepository`; corre solo `aplicacionNoDependeDeDetallesDeInfraestructura`. ArchUnit marca esa referencia. Restaura la dependencia por interfaz.
 
-**Entiende.** Una regla es tan completa como los paquetes que incluye. Si aparece un nuevo paquete como `adapter`, decide y documenta qué lado de la frontera ocupa antes de ampliar el patrón.
+**Entiende.** Una regla es tan completa como los paquetes que incluye. Su límite es lo que ArchUnit importó y los tipos de dependencia que la regla detecta. Si aparece un nuevo paquete como `adapter`, decide y documenta qué lado de la frontera ocupa antes de ampliar el patrón.
 
 **Cierra.** Guarda el reporte verde de las dos reglas.
 
@@ -293,156 +295,84 @@ rule.check(project);
 
 ### Tema 4: Bulkhead y RateLimiter de Resilience4j
 
-#### Paso 1 · Objetivo y preparación
+#### Subtema 15.4.1: Separa concurrencia de ritmo · 8 min
 
-Al finalizar podrás confirmar, con llamadas concurrentes reales, que un `Bulkhead` limita el número de llamadas simultáneas hacia una dependencia, y que un `RateLimiter` limita la tasa de llamadas por período de tiempo, complementando el `CircuitBreaker` ya visto en el Módulo 10.
+**Contexto.** El `CircuitBreaker` del Módulo 10 reacciona a fallos. El Bulkhead limita cuántas llamadas están dentro al mismo tiempo; el RateLimiter cuenta permisos durante un período.
 
-**Conocimiento previo:** Módulo 10 Tema 3 de este track (CircuitBreaker de Resilience4j).
+**¿Por qué es importante?** Una dependencia lenta o una ráfaga pueden agotar recursos o saturar un servicio externo. Estos límites hacen explícita la protección, siempre que las llamadas pasen por ellos y que la configuración refleje la capacidad medida.
 
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** Un `CircuitBreaker` reacciona a fallos ya ocurridos; un `Bulkhead` PREVIENE que una única dependencia lenta consuma todos los threads/recursos disponibles, aislando su impacto; un `RateLimiter` protege a la dependencia misma de recibir más tráfico del que puede soportar, independientemente de si está fallando o no.
-
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** Bulkhead (aislamiento de recursos), RateLimiter (límite de tasa).
-
-Un `Bulkhead` limita cuántas llamadas concurrentes pueden ejecutarse simultáneamente hacia una dependencia específica; al superar ese límite, las llamadas adicionales fallan inmediatamente con `BulkheadFullException` en vez de encolarse indefinidamente. Un `RateLimiter` limita cuántas llamadas pueden ejecutarse dentro de una ventana de tiempo, independientemente de la concurrencia.
-
-**Analogía:** un Bulkhead es un compartimento estanco de un barco: si un compartimento se inunda, los demás permanecen aislados y el barco no se hunde completo; un RateLimiter es un peaje que solo permite pasar un número fijo de vehículos por minuto, sin importar cuántos lleguen a la vez.
-
-**Diagrama:**
-
-```
-┌── Bulkhead ──────────────────────┐  máx N llamadas CONCURRENTES
-└──────────────────────────┘
-┌── RateLimiter ───────────────────┐  máx N llamadas por VENTANA DE TIEMPO
-└──────────────────────────┘
+```text
+2 llamadas activas ──> [Bulkhead: 2 espacios] ──> la tercera se rechaza
+2 permisos / período ──> [RateLimiter: 2] ─────> la tercera se rechaza
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+**Hazlo tú.** Abre `examples/spring-resilience-rutaflow/README.md` y `src/test/java/academia/rutaflow/resilience/BulkheadRateLimiterBehaviorTest.java`. En una hoja, dibuja dos llamadas ocupando los dos espacios del Bulkhead y tres solicitudes que compiten por dos permisos del RateLimiter.
 
-Parte de una carpeta vacía, agrega `io.github.resilience4j:resilience4j-bulkhead` y `io.github.resilience4j:resilience4j-ratelimiter` al `pom.xml`, y crea `src/test/java/io/academia/master/resilience/BulkheadRateLimiterTest.java`:
+**Resultado esperado.** El primer límite depende de cuántas llamadas siguen activas; el segundo, de cuántos permisos quedan en el período. La tercera llamada de cada ejemplo se rechaza por una razón distinta.
+
+**Fallo deliberado.** Cambia `maxConcurrentCalls(2)` por `maxConcurrentCalls(3)` y ejecuta `./mvnw -q -Dtest=BulkheadRateLimiterBehaviorTest#semaphoreBulkheadRechazaUnaTerceraLlamadaMientrasDosSiguenDentro test` desde `examples/spring-resilience-rutaflow/`. El test debe fallar porque hay un espacio disponible para la tercera llamada. Restaura el límite a 2 y corre la prueba de nuevo.
+
+**Entiende.** El Bulkhead de semáforo regula el acceso; no crea un grupo aislado de hilos. Resilience4j también ofrece `ThreadPoolBulkhead`, que sí usa un pool y una cola limitada. No prometas que estas primitivas aíslan toda la aplicación.
+
+**Cierra.** Anota qué recurso proteges y qué tipo de rechazo puede observar quien llama.
+
+#### Subtema 15.4.2: Mantén la llamada dentro del Bulkhead · 8 min
+
+**Contexto.** Configurar el objeto no cambia una llamada por sí solo: hay que ejecutar la operación a través de la decoración.
+
+**Hazlo tú.** En `examples/spring-resilience-rutaflow/src/test/java/academia/rutaflow/resilience/BulkheadRateLimiterBehaviorTest.java`, sigue `Bulkhead.of`, `decorateRunnable`, los dos `CountDownLatch` y `getAvailableConcurrentCalls()`. Ejecuta desde la carpeta del laboratorio:
 
 ```bash
-mkdir demo-resilience-avanzado
-cd demo-resilience-avanzado
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip
-unzip app.zip
-mkdir -p src/test/java/io/academia/master/resilience
+./mvnw -q -Dtest=BulkheadRateLimiterBehaviorTest#semaphoreBulkheadRechazaUnaTerceraLlamadaMientrasDosSiguenDentro test
 ```
 
-```java
-// src/test/java/io/academia/master/resilience/BulkheadRateLimiterTest.java
-package io.academia.master.resilience;
+**Resultado esperado.** El test espera a que dos tareas reales entren, observa cero espacios disponibles y comprueba `BulkheadFullException` en la tercera; luego libera ambas tareas y termina sin dejar hilos ocupados.
 
-import io.github.resilience4j.bulkhead.Bulkhead;
-import io.github.resilience4j.bulkhead.BulkheadConfig;
-import io.github.resilience4j.bulkhead.BulkheadFullException;
-import io.github.resilience4j.ratelimiter.RateLimiter;
-import io.github.resilience4j.ratelimiter.RateLimiterConfig;
-import org.junit.jupiter.api.Test;
+**Fallo deliberado.** Quita `Bulkhead.decorateRunnable(bulkhead, ...)` de la tercera llamada y ejecútala directamente. El rechazo desaparece y la prueba falla. Restaura la decoración y repite el comando.
 
-import java.time.Duration;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
+**Entiende.** El límite solo cubre el código que atraviesa este Bulkhead. Si una ruta alternativa llama directo al servicio externo, esta protección no la alcanza.
 
-import static org.assertj.core.api.Assertions.assertThat;
+**Cierra.** Explica en una frase dónde debe colocarse la llamada protegida en el servicio de tu proyecto.
 
-class BulkheadRateLimiterTest {
+#### Subtema 15.4.3: Cuenta permisos por período · 8 min
 
-    @Test
-    void elBulkheadRechazaLlamadasQueSuperanElMaximoConcurrenteReal() throws Exception {
-        BulkheadConfig config = BulkheadConfig.custom().maxConcurrentCalls(2).build();
-        Bulkhead bulkhead = Bulkhead.of("servicioTarifas", config);
+**Contexto.** El RateLimiter renueva un número de permisos al empezar cada período. Con espera cero, una llamada sin permiso se rechaza en vez de quedarse esperando.
 
-        CountDownLatch enCurso = new CountDownLatch(2);
-        CountDownLatch liberar = new CountDownLatch(1);
-        AtomicInteger rechazadas = new AtomicInteger(0);
-        ExecutorService pool = Executors.newFixedThreadPool(3);
-
-        Runnable llamadaLenta = () -> Bulkhead.decorateRunnable(bulkhead, () -> {
-            enCurso.countDown();
-            try { liberar.await(); } catch (InterruptedException ignored) {}
-        }).run();
-
-        pool.submit(llamadaLenta);
-        pool.submit(llamadaLenta);
-        enCurso.await(); // confirma que las DOS primeras ya están dentro del bulkhead, ocupando el máximo
-
-        try {
-            Bulkhead.decorateRunnable(bulkhead, () -> {}).run(); // la TERCERA debe rechazarse de inmediato
-        } catch (BulkheadFullException e) {
-            rechazadas.incrementAndGet();
-        }
-
-        assertThat(rechazadas.get()).isEqualTo(1);
-        liberar.countDown();
-        pool.shutdown();
-    }
-
-    @Test
-    void elRateLimiterRechazaLlamadasQueSuperanElLimiteDeLaVentana() {
-        RateLimiterConfig config = RateLimiterConfig.custom()
-            .limitForPeriod(2)
-            .limitRefreshPeriod(Duration.ofSeconds(10))
-            .timeoutDuration(Duration.ZERO) // no espera: rechaza inmediatamente si no hay permiso
-            .build();
-        RateLimiter limiter = RateLimiter.of("servicioTarifas", config);
-
-        boolean primera = limiter.acquirePermission();
-        boolean segunda = limiter.acquirePermission();
-        boolean tercera = limiter.acquirePermission(); // supera el límite de 2 por ventana
-
-        assertThat(primera).isTrue();
-        assertThat(segunda).isTrue();
-        assertThat(tercera).isFalse(); // rechazada: ya se consumieron los 2 permisos de esta ventana
-    }
-}
-```
+**Hazlo tú.** Abre `examples/spring-resilience-rutaflow/src/test/java/academia/rutaflow/resilience/BulkheadRateLimiterBehaviorTest.java` y localiza `rateLimiterEntregaDosPermisosYRechazaElTerceroEnElMismoPeriodo`. Ejecuta:
 
 ```bash
-./mvnw test -Dtest=BulkheadRateLimiterTest
+./mvnw -q -Dtest=BulkheadRateLimiterBehaviorTest#rateLimiterEntregaDosPermisosYRechazaElTerceroEnElMismoPeriodo test
 ```
 
-**Resultado esperado:** `BUILD SUCCESS` con ambos tests en verde: el `Bulkhead` real, con dos threads reales ocupando su capacidad máxima (confirmado con `CountDownLatch`, no una suposición de timing), rechaza la tercera llamada concurrente con `BulkheadFullException` real; el `RateLimiter` real acepta exactamente 2 permisos dentro de la ventana configurada y rechaza el tercero.
+**Resultado esperado.** Las dos primeras llamadas reciben `true`, la tercera `false`; la ventana de una hora mantiene el ejemplo determinista sin depender de que el reloj avance durante la prueba.
 
-**Fallo deliberado:** cambia `maxConcurrentCalls(2)` a `maxConcurrentCalls(10)` y ejecuta de nuevo `elBulkheadRechazaLlamadasQueSuperanElMaximoConcurrenteReal`. El test FALLA porque la tercera llamada ya NO se rechaza (`rechazadas.get()` queda en `0`) — diagnostica confirmando que el límite de concurrencia del Bulkhead es exactamente el parámetro configurado, y que dimensionarlo incorrectamente (demasiado alto) elimina la protección real que debía ofrecer. Restaura `maxConcurrentCalls(2)` antes de continuar.
+**Fallo deliberado.** Cambia `limitForPeriod(2)` a `limitForPeriod(3)`. El test falla porque la tercera solicitud también consigue permiso. Restablece el límite y ejecútalo otra vez.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**Entiende.** El contador pertenece a esta instancia local del RateLimiter. Varias réplicas de un servicio tienen sus propios contadores; esto no implementa por sí solo una cuota global de cliente.
 
-1. Reduce `limitForPeriod` a 1 y confirma con un test que solo la primera llamada de cada ventana de tiempo se acepta.
-2. Configura un `timeoutDuration` distinto de cero en el `RateLimiter` y confirma con un test que una llamada esperando ese timeout SÍ puede obtener un permiso si se libera uno durante la espera.
-3. Combina `Bulkhead.decorateSupplier` con `CircuitBreaker.decorateSupplier` (Módulo 10) en una única cadena de decoradores, y documenta el orden de aplicación recomendado.
-4. Escribe de memoria (sin mirar) un `BulkheadConfig` con un límite de concurrencia, y un test con `CountDownLatch` que confirme el rechazo real de una llamada que excede ese límite. Compara después contra el patrón del Paso 4.
+**Cierra.** Describe qué debería ocurrir en tu API cuando el permiso se agota: responder con límite excedido o esperar un tiempo acotado.
 
-**Pista:** `CountDownLatch` es la herramienta correcta para coordinar temporalmente threads reales en un test de concurrencia — sin ella, un test de Bulkhead podría fallar intermitentemente por condiciones de carrera en el timing, en vez de confirmar de forma determinista que las llamadas concurrentes efectivamente ocupan el bulkhead antes de intentar la que debe rechazarse.
+#### Subtema 15.4.4: Decide el límite y observa sus fronteras · 8 min
 
-#### Paso 6 · Práctica independiente
+**Contexto.** Un límite elegido sin medir la dependencia puede rechazar tráfico útil o dejar pasar más carga de la que soporta.
 
-**Completa el código:** rellena el espacio con la excepción real que Resilience4j lanza cuando un Bulkhead está lleno:
+**Hazlo tú.** Revisa `examples/spring-resilience-rutaflow/pom.xml`, `README.md` y los dos tests nuevos. Ejecuta la suite completa:
 
-```java
-try {
-    Bulkhead.decorateRunnable(bulkhead, () -> {}).run();
-} catch (____ e) {
-    rechazadas.incrementAndGet();
-}
+```bash
+./mvnw -q clean test
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `Bulkhead` con límite de concurrencia y un `RateLimiter` con límite por ventana, cada uno con un test que confirme el rechazo real. Compara después contra el patrón del Paso 4.
+**Resultado esperado.** Pasan las pruebas de CircuitBreaker ya existentes y las dos nuevas de concurrencia y tasa. El proyecto usa Resilience4j 2.4.0; ambos límites son locales al proceso y el ejemplo no llama a un proveedor real.
 
-#### Paso 7 · Cierre y evidencia
+**Fallo deliberado.** Cambia `timeoutDuration(Duration.ZERO)` del RateLimiter por `Duration.ofSeconds(1)` y deja el período largo. La tercera llamada puede esperar hasta agotar el segundo; registra esa diferencia de comportamiento y restaura cero para conservar una suite rápida y determinista.
 
-Ya proteges llamadas concurrentes con Bulkhead (aislamiento de recursos) y RateLimiter (límite de tasa), complementando el CircuitBreaker del Módulo 10 con un conjunto completo de primitivas de resiliencia. El siguiente tema orquesta una saga real con pasos compensables. **Evidencia:** entrega el resultado de `BulkheadRateLimiterTest` en verde, y la protección perdida que produce el fallo deliberado al aumentar el límite de concurrencia. Fuentes oficiales: [Resilience4j — Bulkhead](https://resilience4j.readme.io/docs/bulkhead) y [Resilience4j — RateLimiter](https://resilience4j.readme.io/docs/ratelimiter).
+**Entiende.** El número correcto sale de medir capacidad, tiempos y política de rechazo. Un RateLimiter por instancia no equivale a una cuota compartida; el Bulkhead de semáforo no equivale a un pool separado. Aplicar ambos a la misma operación también requiere decidir cuál debe rechazar primero.
 
-**Errores comunes:** dimensionar un Bulkhead demasiado holgado, eliminando la protección real que debía ofrecer; combinar retries con RateLimiter sin considerar que los reintentos también consumen permisos de la ventana.
+**Cierra.** Evidencia: resultado verde de la suite, configuración final elegida y límite explícito del laboratorio. Para el microservicio del Módulo 12, primero registra latencia y tasa observada; luego dimensiona y prueba el límite con su tráfico real.
 
-**Cuándo no usarlo:** para una dependencia interna de altísima capacidad y sin riesgo real de saturación, agregar Bulkhead y RateLimiter puede ser una capa de protección innecesaria frente al riesgo real.
+**Proyecto integrador:** en el cliente HTTP del servicio de pedidos del Módulo 12, identifica una dependencia lenta y documenta un límite de concurrencia inicial y una tasa por instancia. Añade pruebas equivalentes antes de habilitar esos límites; los valores del laboratorio no se deben copiar como capacidad de producción.
 
-Bulkhead y RateLimiter son los mecanismos que protegerían al proyecto integrador de este track (microservicio productivo, Módulo 12) de saturación por un solo cliente o dependencia.
+**Fuentes oficiales:** [Resilience4j Bulkhead](https://resilience4j.readme.io/docs/bulkhead), [Resilience4j RateLimiter](https://resilience4j.readme.io/docs/ratelimiter).
 
 ### Tema 5: Saga con compensación real
 

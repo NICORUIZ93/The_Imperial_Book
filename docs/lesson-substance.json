@@ -1690,7 +1690,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "829c323a842ba717375f6ba15b9dc5adc012d3d261ccdfb8bde397b88ec9d30c",
+    "fingerprint": "bc42e4f5f98cab251a6895a5c128d45f385162707beb6c34a2463b0bcc746b7d",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10523,14 +10523,14 @@
         "module": 15,
         "tailWords": 0,
         "topic": "Tema 3: Arquitectura hexagonal verificada con ArchUnit",
-        "words": 803
+        "words": 844
       },
       {
         "issues": [],
         "module": 15,
-        "tailWords": 166,
+        "tailWords": 0,
         "topic": "Tema 4: Bulkhead y RateLimiter de Resilience4j",
-        "words": 1116
+        "words": 898
       },
       {
         "issues": [],
