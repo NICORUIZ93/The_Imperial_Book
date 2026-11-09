@@ -19,11 +19,11 @@ No arregles N+1 poniendo todas las asociaciones en `EAGER`: eso desplaza el cost
 
 **Evidencia final:** los tests muestran `pedido.cliente_id`, prueban guardar el agregado y exhiben el rechazo al borrar el cliente con historial. JPA controla la relación; Hibernate ejecuta ese contrato.
 
-#### Subtema 1 — Sigue la clave foránea (8 min)
+#### Subtema 16.1 · Sigue la clave foránea · 8 min
 
-**Contexto.** Un pedido debe apuntar a un cliente. En la tabla `pedido`, la columna `cliente_id` guarda ese enlace; la lista `Cliente.pedidos` por sí sola no escribe la columna.
+**Contexto:** Un pedido debe apuntar a un cliente. En la tabla `pedido`, la columna `cliente_id` guarda ese enlace; la lista `Cliente.pedidos` por sí sola no escribe la columna.
 
-**Hazlo tú.** Abre `examples/java-jpa-lab/src/main/java/academia/pedidos/Pedido.java`. La asociación propietaria está aquí:
+**Hazlo tú:** Abre `examples/java-jpa-lab/src/main/java/academia/pedidos/Pedido.java`. La asociación propietaria está aquí:
 
 ```java
 @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -40,24 +40,24 @@ cd examples/java-jpa-lab
 
 **Resultado esperado:** verde; el test consulta `cliente_id` directamente y confirma que coincide con el ID del cliente.
 
-**Fallo deliberado.** En `Cliente.agregar`, comenta `pedido.asignarCliente(this);` y repite el comando. El test debe fallar: la lista Java contiene el pedido, pero falta el vínculo que JPA escribe en la fila.
+**Fallo deliberado.** En `Cliente.agregar`, comenta `pedido.asignarCliente(this);` y repite el comando. El test debe fallar: la lista Java contiene el pedido, pero falta el vínculo que JPA escribe en la fila. **Diagnóstico:** revisa la columna `cliente_id` y el error de restricción que devuelve el test.
 
-**Entiende.** `@ManyToOne` es el lado propietario porque tiene la columna. `mappedBy` significa “esta lista refleja la relación definida por `Pedido.cliente`”. Vuelve a poner la llamada y ejecuta el test para dejarlo verde.
+**Entiende:** `@ManyToOne` es el lado propietario porque tiene la columna. `mappedBy` significa “esta lista refleja la relación definida por `Pedido.cliente`”. Vuelve a poner la llamada y ejecuta el test para dejarlo verde.
 
-**Cierra.** Señala el archivo y la línea que controla la FK `cliente_id`.
+**Cierra:** Señala el archivo y la línea que controla la FK `cliente_id`.
 
-#### Subtema 2 — Mantén los dos lados sincronizados (8 min)
+#### Subtema 16.2 · Mantén los dos lados sincronizados · 8 min
 
-**Contexto.** En memoria quieres recorrer cliente → pedidos y pedido → cliente. Si actualizas solo una dirección, el programa puede parecer correcto hasta guardar.
+**Contexto:** En memoria quieres recorrer cliente → pedidos y pedido → cliente. Si actualizas solo una dirección, el programa puede parecer correcto hasta guardar.
 
-**Hazlo tú.** En `Cliente.agregar`, observa las dos líneas del método:
+**Hazlo tú:** En `Cliente.agregar`, observa las dos líneas del método:
 
 ```java
 pedidos.add(pedido);           // permite recorrer desde Cliente
 pedido.asignarCliente(this);   // establece el lado propietario
 ```
 
-El test `guardaLosDosLadosYConsultaPorClienteConJpql` crea un cliente, agrega dos pedidos y ejecuta `persist(cliente)`. Corre:
+Abre `examples/java-jpa-lab/src/test/java/academia/pedidos/PedidoJpaLabTest.java`. El test `guardaLosDosLadosYConsultaPorClienteConJpql` crea un cliente, agrega dos pedidos y ejecuta `persist(cliente)`. Corre:
 
 ```bash
 ./mvnw -Dtest=PedidoJpaLabTest#guardaLosDosLadosYConsultaPorClienteConJpql test
@@ -65,17 +65,17 @@ El test `guardaLosDosLadosYConsultaPorClienteConJpql` crea un cliente, agrega do
 
 **Resultado esperado:** dos filas de pedido y ambas con la FK del cliente; después de `clear()`, JPQL las recupera en orden.
 
-**Fallo deliberado.** Comenta cualquiera de las dos líneas de `agregar` y mira qué expectativa falla. Restaura la línea antes de seguir.
+**Fallo deliberado.** Comenta cualquiera de las dos líneas de `agregar` y mira qué expectativa falla. **Diagnóstico:** si falta el `add`, la colección queda vacía; si falta `asignarCliente`, no se guarda la FK. Restaura la línea antes de seguir.
 
-**Entiende.** `clear()` vacía la memoria de trabajo de JPA. Por eso el test vuelve a leer desde H2 y no confunde los objetos que ya tenía en memoria con lo que realmente quedó guardado.
+**Entiende:** `clear()` vacía la memoria de trabajo de JPA. Por eso el test vuelve a leer desde H2 y no confunde los objetos que ya tenía en memoria con lo que realmente quedó guardado.
 
-**Cierra.** Explica por qué un método `agregar` reduce el riesgo frente a modificar la lista y el pedido por separado.
+**Cierra:** Explica por qué un método `agregar` reduce el riesgo frente a modificar la lista y el pedido por separado.
 
-#### Subtema 3 — Decide qué significa guardar y borrar (10 min)
+#### Subtema 16.3 · Decide qué significa guardar y borrar · 10 min
 
-**Contexto.** Crear un cliente y sus pedidos juntos es cómodo; borrar el cliente no debería borrar automáticamente un historial comercial.
+**Contexto:** Crear un cliente y sus pedidos juntos es cómodo; borrar el cliente no debería borrar automáticamente un historial comercial.
 
-**Hazlo tú.** En `Cliente.java`, encuentra:
+**Hazlo tú:** En `Cliente.java`, encuentra:
 
 ```java
 @OneToMany(mappedBy = "cliente", cascade = CascadeType.PERSIST)
@@ -89,17 +89,17 @@ El test `guardaLosDosLadosYConsultaPorClienteConJpql` crea un cliente, agrega do
 
 **Resultado esperado:** verde porque el test espera que Hibernate rechace el borrado mientras el pedido todavía apunta al cliente (`TransientPropertyValueException`). No interpreta `PERSIST` como permiso para borrar al hijo.
 
-**Fallo deliberado.** Cambia `cascade = CascadeType.PERSIST` por `cascade = CascadeType.ALL` y repite. El test debe fallar porque ahora también se propaga el borrado. Restaura `PERSIST`.
+**Fallo deliberado.** Cambia `cascade = CascadeType.PERSIST` por `cascade = CascadeType.ALL` y repite. El test debe fallar porque ahora también se propaga el borrado. Restaura `PERSIST`. **Diagnóstico:** el test ya no recibe la excepción esperada porque `ALL` también elimina al pedido.
 
-**Entiende.** Una cascada es una regla explícita sobre operaciones del ciclo de vida. No activa todas las operaciones mágicamente: `PERSIST` guarda; `REMOVE` borra; `orphanRemoval` borra un hijo al quitarlo de la relación. Para pedidos históricos, elige borrado lógico o conserva el cliente; no añadas `ALL` por comodidad.
+**Entiende:** Una cascada es una regla explícita sobre operaciones del ciclo de vida. No activa todas las operaciones mágicamente: `PERSIST` guarda; `REMOVE` borra; `orphanRemoval` borra un hijo al quitarlo de la relación. Para pedidos históricos, elige borrado lógico o conserva el cliente; no añadas `ALL` por comodidad.
 
-**Cierra.** Anota qué política usaría RutaFlow para un envío ya entregado y qué evidencia conservaría.
+**Cierra:** Anota qué política usaría RutaFlow para un envío ya entregado y qué evidencia conservaría.
 
-#### Subtema 4 — Verifica y transfiere la decisión (10 min)
+#### Subtema 16.4 · Verifica y transfiere la decisión · 10 min
 
-**Contexto.** Una asociación solo está entendida si puedes cambiarla con seguridad y explicar qué protege la base de datos.
+**Contexto:** Una asociación solo está entendida si puedes cambiarla con seguridad y explicar qué protege la base de datos.
 
-**Hazlo tú.** Ejecuta toda la suite del laboratorio:
+**Hazlo tú:** Ejecuta toda la suite del laboratorio:
 
 ```bash
 ./mvnw test
@@ -109,11 +109,11 @@ Después abre `examples/java-jpa-lab/src/test/java/academia/pedidos/PedidoJpaLab
 
 **Resultado esperado:** pasan las pruebas de relación, cascada, búsqueda y carga. La FK consultada coincide con el cliente guardado; Hibernate rechaza borrar al cliente mientras el pedido conserva esa referencia.
 
-**Fallo deliberado.** Cambia temporalmente `name = "cliente_id"` por `name = "cliente"` en `@JoinColumn` y corre el primer test. La consulta SQL directa debe fallar porque el laboratorio comprueba la columna `cliente_id`. Restaura el nombre y confirma que pasa.
+**Fallo deliberado.** Cambia temporalmente `name = "cliente_id"` por `name = "cliente"` en `@JoinColumn` y corre el primer test. La consulta SQL directa debe fallar porque el laboratorio comprueba la columna `cliente_id`. **Diagnóstico:** busca el error de columna inexistente. Restaura el nombre y confirma que pasa.
 
-**Entiende.** `nullable = false` expresa la regla en el mapeo; el esquema generado aplica la restricción en H2. En un proyecto persistente, una migración Flyway debe expresar y versionar esa misma regla. El laboratorio no demuestra el comportamiento de PostgreSQL ni de una política de borrado distinta.
+**Entiende:** `nullable = false` expresa la regla en el mapeo; el esquema generado aplica la restricción en H2. En un proyecto persistente, una migración Flyway debe expresar y versionar esa misma regla. El laboratorio no demuestra el comportamiento de PostgreSQL ni de una política de borrado distinta.
 
-**Cierra.** En el **proyecto integrador de RutaFlow**, registra en una nota breve: lado propietario, FK, operación que se propaga, regla de borrado y test que protege cada decisión. En el tema siguiente medirás cómo cargar asociaciones sin consultas inesperadas.
+**Cierra:** En el **proyecto integrador de RutaFlow**, registra en una nota breve: lado propietario, FK, operación que se propaga, regla de borrado y test que protege cada decisión. En el tema siguiente medirás cómo cargar asociaciones sin consultas inesperadas.
 
 **Fuente primaria:** [Jakarta Persistence 3.2 API: `@OneToMany`](https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/onetomany) documenta `mappedBy`, cascadas y `orphanRemoval`; [la especificación](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2) define las reglas de propiedad de la relación.
 ### Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso

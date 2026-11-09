@@ -93,10 +93,10 @@
     },
     "spring-boot": {
       "topics": 111,
-      "completeTopics": 53,
-      "topicsWith3to6Subtopics": 84,
-      "subtopics": 295,
-      "completeSubtopics": 186
+      "completeTopics": 54,
+      "topicsWith3to6Subtopics": 85,
+      "subtopics": 299,
+      "completeSubtopics": 190
     }
   },
   "topics": {
@@ -14738,9 +14738,66 @@
       {
         "module": 16,
         "topic": "### Tema 1: Relaciones, lado propietario y ciclo de vida",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 4,
+        "subtopics": [
+          {
+            "id": "16.1",
+            "title": "#### Subtema 16.1 · Sigue la clave foránea · 8 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "16.2",
+            "title": "#### Subtema 16.2 · Mantén los dos lados sincronizados · 8 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "16.3",
+            "title": "#### Subtema 16.3 · Decide qué significa guardar y borrar · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "16.4",
+            "title": "#### Subtema 16.4 · Verifica y transfiere la decisión · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 16,
