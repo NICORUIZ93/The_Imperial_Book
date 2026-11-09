@@ -99,8 +99,8 @@
     "spring-boot": {
       "topics": 111,
       "code": 106,
-      "commentedCode": 37,
-      "mermaid": 34,
+      "commentedCode": 36,
+      "mermaid": 33,
       "archifyVisual": 2,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
@@ -2722,6 +2722,13 @@
       "track": "spring-boot",
       "module": 15,
       "topic": "Tema 5: Saga con compensación real",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 15,
+      "topic": "Tema 6: Event Sourcing con replay real",
       "missingCode": false,
       "missingComments": true
     },

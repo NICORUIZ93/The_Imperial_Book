@@ -427,6 +427,10 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - pendiente Subtema 15.5.3: Compara fallo y éxito · 8 min
   - pendiente Subtema 15.5.4: Delimita la demo y planea la recuperación · 8 min
 - [pendiente de migrar] Tema 6: Event Sourcing con replay real
+  - pendiente Subtema 15.6.1: Guarda hechos, no solo el estado final · 8 min
+  - pendiente Subtema 15.6.2: Reconstruye el pedido paso a paso · 8 min
+  - pendiente Subtema 15.6.3: Rechaza eventos que rompen las reglas · 8 min
+  - pendiente Subtema 15.6.4: Delimita el almacenamiento y la reconstrucción · 8 min
 - [pendiente de migrar] Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar
 - [pendiente de migrar] Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework
 

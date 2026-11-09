@@ -1542,3 +1542,17 @@ fallo de compensación. La auditoría pedagógica quedó en 1073/1185 temas
 practicables; la metodología universal marca 1005/1185. Fuentes primarias
 consultadas: Microservices.io Saga Pattern. Siguiente: M15 T6, Event Sourcing
 con replay real.
+
+Spring Boot M15 T6, “Event Sourcing con replay real”, se reescribió en cuatro
+subtemas e incorporó `examples/spring-eventsourcing-rutaflow/`. El laboratorio
+Java 21 / Spring Boot 4.1.2 guarda un stream de eventos inmutable por pedido en
+memoria, valida transiciones antes de agregarlas y reconstruye `OrderState`
+desde el inicio; incluye motivo de cancelación. La suite pasó: 4 pruebas, 0
+fallos (stream de tres eventos, orden imposible, stream vacío y rechazo sin
+añadir evento inválido). Al desactivar la regla de cancelación, falló el test
+de secuencia inválida; restaurada, las pruebas quedaron verdes. Se recuperó el
+apéndice `Trazabilidad de la auditoría original`, que la edición anterior había
+quitado accidentalmente; `./scripts/validate.sh` volvió a pasar. Se aclara que
+el stream no es durable ni multi-réplica, y no se implementan snapshots ni
+proyecciones externas. Fuente consultada: Martin Fowler, Event Sourcing.
+Siguiente: M15 T7, conservar y reintentar una compensación fallida.

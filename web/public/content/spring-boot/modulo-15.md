@@ -454,163 +454,80 @@ rule.check(project);
 
 ### Tema 6: Event Sourcing con replay real
 
-#### Paso 1 · Objetivo y preparación
+#### Subtema 15.6.1: Guarda hechos, no solo el estado final · 8 min
 
-Al finalizar podrás reconstruir el estado completo de un agregado reproduciendo (replay) una lista real de eventos de dominio, confirmando que el estado reconstruido coincide exactamente con el esperado tras aplicar cada evento en orden.
+**Contexto.** Una tabla que solo dice `CANCELADO` no cuenta cuándo se creó o confirmó el pedido. Event Sourcing conserva los cambios como eventos ordenados y calcula el estado al reproducirlos.
 
-**Conocimiento previo:** Módulo 13 de este track (transactional outbox).
+**¿Por qué es importante?** El historial permite reconstruir cómo llegó el pedido a su estado actual y explicar decisiones pasadas. Ese beneficio solo compensa el trabajo adicional si el negocio necesita historial o reconstrucción.
 
-#### Paso 2 · Contexto y caso real
+**Hazlo tú.** Abre `examples/spring-eventsourcing-rutaflow/src/main/java/academia/rutaflow/eventsourcing/OrderEvent.java` y `OrderEventStore.java`. Sigue cómo se guarda cada evento en el stream del pedido.
 
-**¿Por qué es importante?** En vez de almacenar solo el estado actual de un pedido (que pierde el historial de cómo llegó a ese estado), Event Sourcing almacena la secuencia completa de eventos que ocurrieron; el estado actual se DERIVA reproduciendo esos eventos, nunca se almacena directamente como la fuente de verdad.
-
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** evento de dominio inmutable, replay, estado derivado.
-
-Cada evento (`PedidoCreado`, `PedidoConfirmado`, `PedidoCancelado`) es un hecho inmutable ya ocurrido; el estado actual del agregado se reconstruye aplicando cada evento, en orden, sobre un estado inicial vacío. Esto es distinto del outbox (Módulo 13), que usa eventos para NOTIFICAR a otros servicios sobre un cambio ya persistido de forma convencional — Event Sourcing usa los eventos MISMOS como la fuente de verdad del estado.
-
-**Analogía:** el estado actual de una cuenta bancaria NO se almacena directamente; se deriva reproduciendo cada depósito y retiro desde el inicio de la cuenta — el saldo es una consecuencia calculada del historial completo, no un número guardado independientemente.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-  E1[PedidoCreado] --> R[replay: aplicar en orden]
-  E2[PedidoConfirmado] --> R
-  E3[PedidoCancelado] --> R
-  R --> S[Estado actual DERIVADO]
+```text
+PedidoCreado → PedidoConfirmado → PedidoCancelado
+       └──────────── replay ──────────────> CANCELADO
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+**Resultado esperado.** Hay tres eventos para el pedido, en orden; el evento más reciente no reemplaza los anteriores.
 
-Parte de una carpeta vacía y crea `src/main/java/io/academia/master/eventsourcing/EventoPedido.java`:
+**Fallo deliberado.** Intenta guardar `OrderCancelled` antes de confirmar el pedido usando la prueba `anInvalidEventIsNotAddedToTheStream`. El store rechaza la transición y conserva solo `OrderCreated`.
+
+**Entiende.** Un evento describe un hecho ya ocurrido. Un comando pide hacer algo; un evento registra que algo pasó.
+
+**Cierra.** Explica qué se perdería si solo guardáramos el último estado `CANCELLED`.
+
+#### Subtema 15.6.2: Reconstruye el pedido paso a paso · 8 min
+
+**Contexto.** El replay empieza sin pedido y aplica cada evento en el orden guardado; cada paso produce un nuevo estado inmutable.
+
+**Hazlo tú.** Abre `examples/spring-eventsourcing-rutaflow/src/main/java/academia/rutaflow/eventsourcing/OrderState.java`. Lee `replay` y `apply`, luego ejecuta:
 
 ```bash
-mkdir demo-event-sourcing
-cd demo-event-sourcing
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip
-unzip app.zip
-mkdir -p src/main/java/io/academia/master/eventsourcing
-mkdir -p src/test/java/io/academia/master/eventsourcing
+./mvnw -q -Dtest=OrderReplayTest#eventStreamCanRebuildTheCurrentOrderWithoutSavingASnapshot test
 ```
 
-```java
-// src/main/java/io/academia/master/eventsourcing/EventoPedido.java
-package io.academia.master.eventsourcing;
+Ejecuta el comando desde `examples/spring-eventsourcing-rutaflow/`.
 
-public sealed interface EventoPedido {
-    record PedidoCreado(String id) implements EventoPedido {}
-    record PedidoConfirmado() implements EventoPedido {}
-    record PedidoCancelado(String motivo) implements EventoPedido {}
-}
-```
+**Resultado esperado.** Al volver a leer los tres eventos, el estado coincide con `CANCELLED` y conserva el motivo de cancelación, sin cargar una copia del estado final.
 
-```java
-// src/main/java/io/academia/master/eventsourcing/EstadoPedido.java
-package io.academia.master.eventsourcing;
+**Fallo deliberado.** En `replayRejectsEventsStoredInAnImpossibleOrder`, mueve `OrderConfirmed` después de `OrderCancelled`. La prueba falla porque la secuencia ya no genera la transición inválida que espera detectar. Restaura el historial inválido y vuelve a correrla.
 
-import java.util.List;
+**Entiende.** El orden es parte del significado: confirmar un pedido cancelado no equivale a cancelarlo después de confirmar.
 
-public record EstadoPedido(String id, String estado, String motivoCancelacion) {
+**Cierra.** Cuenta en voz alta qué estado produce cada evento de la lista.
 
-    public static EstadoPedido reconstruirDesde(List<EventoPedido> eventos) {
-        EstadoPedido estado = new EstadoPedido(null, "INEXISTENTE", null);
-        for (EventoPedido evento : eventos) {
-            estado = aplicar(estado, evento);
-        }
-        return estado;
-    }
+#### Subtema 15.6.3: Rechaza eventos que rompen las reglas · 8 min
 
-    private static EstadoPedido aplicar(EstadoPedido actual, EventoPedido evento) {
-        return switch (evento) {
-            case EventoPedido.PedidoCreado e -> new EstadoPedido(e.id(), "CREADO", null);
-            case EventoPedido.PedidoConfirmado e -> new EstadoPedido(actual.id(), "CONFIRMADO", null);
-            case EventoPedido.PedidoCancelado e -> new EstadoPedido(actual.id(), "CANCELADO", e.motivo());
-        };
-    }
-}
-```
+**Contexto.** Un replay que acepta cualquier secuencia puede construir estados que nunca debieron existir en el negocio.
 
-Confirma con un test real que el replay reconstruye exactamente el estado esperado:
+**Hazlo tú.** En `examples/spring-eventsourcing-rutaflow/src/main/java/academia/rutaflow/eventsourcing/OrderState.java`, inspecciona las reglas: un pedido debe crearse antes de confirmarse y confirmarse antes de cancelarse. Luego lee `anInvalidEventIsNotAddedToTheStream` en `src/test/java/academia/rutaflow/eventsourcing/OrderReplayTest.java`.
 
-```java
-// src/test/java/io/academia/master/eventsourcing/ReplayTest.java
-package io.academia.master.eventsourcing;
+**Resultado esperado.** El intento de cancelar el pedido recién creado lanza `IllegalStateException` y el evento no se añade al stream.
 
-import org.junit.jupiter.api.Test;
+**Fallo deliberado.** Quita la validación de estado previo a `OrderCancelled` y corre `./mvnw -q -Dtest=OrderReplayTest#replayRejectsEventsStoredInAnImpossibleOrder test`. El replay deja de proteger la regla y la prueba falla. Restaura la validación.
 
-import java.util.List;
+**Entiende.** Los eventos registrados son la fuente de verdad de esta demo; `currentState` es una lectura derivada. En un sistema grande, reconstruir cada vez cuesta más y pueden usarse snapshots como atajo, verificándolos contra el stream.
 
-import static org.assertj.core.api.Assertions.assertThat;
+**Cierra.** Añade una regla de negocio que deba cumplirse antes de guardar un nuevo evento.
 
-class ReplayTest {
+#### Subtema 15.6.4: Delimita el almacenamiento y la reconstrucción · 8 min
 
-    @Test
-    void reproducirTresEventosEnOrdenReconstruyeElEstadoFinalCorrecto() {
-        List<EventoPedido> eventos = List.of(
-            new EventoPedido.PedidoCreado("PED-001"),
-            new EventoPedido.PedidoConfirmado(),
-            new EventoPedido.PedidoCancelado("cliente se arrepintió")
-        );
+**Contexto.** El store del ejemplo vive en memoria; reiniciar el proceso borra el historial. Sirve para estudiar el modelo y no para guardar pedidos reales.
 
-        EstadoPedido estadoFinal = EstadoPedido.reconstruirDesde(eventos);
-
-        assertThat(estadoFinal.id()).isEqualTo("PED-001");
-        assertThat(estadoFinal.estado()).isEqualTo("CANCELADO");
-        assertThat(estadoFinal.motivoCancelacion()).isEqualTo("cliente se arrepintió");
-    }
-
-    @Test
-    void reproducirSoloDosEventosDejaElEstadoEnConfirmadoSinCancelar() {
-        List<EventoPedido> eventos = List.of(
-            new EventoPedido.PedidoCreado("PED-002"),
-            new EventoPedido.PedidoConfirmado()
-        );
-
-        EstadoPedido estadoFinal = EstadoPedido.reconstruirDesde(eventos);
-
-        assertThat(estadoFinal.estado()).isEqualTo("CONFIRMADO"); // el estado se detiene exactamente donde termina el historial
-    }
-}
-```
+**Hazlo tú.** Revisa `examples/spring-eventsourcing-rutaflow/README.md` y ejecuta toda la suite desde la carpeta del laboratorio:
 
 ```bash
-./mvnw test -Dtest=ReplayTest
+./mvnw -q test
 ```
 
-**Resultado esperado:** `BUILD SUCCESS` con ambos tests en verde: el primero confirma que reproducir TRES eventos reales en orden reconstruye un estado final `CANCELADO` con el motivo correcto; el segundo confirma que reproducir solo DOS eventos (un historial parcial real) deja el estado en `CONFIRMADO`, exactamente donde el historial termina — el estado es una consecuencia calculada del historial, no un valor almacenado independientemente.
+**Resultado esperado.** Pasan cuatro pruebas: replay con tres eventos, rechazo de orden imposible, stream vacío y rechazo de un evento que no debe añadirse.
 
-**Fallo deliberado:** en la lista de eventos del primer test, invierte el orden colocando `PedidoCancelado` ANTES que `PedidoConfirmado` y ejecuta de nuevo. El test FALLA (o produce un estado final distinto al esperado: `CONFIRMADO` en vez de `CANCELADO`, porque el evento aplicado en último lugar es el que determina el estado final) — diagnostica confirmando que el orden de los eventos en el replay es tan significativo como su contenido: el mismo conjunto de eventos en un orden distinto reconstruye un estado distinto, exactamente como en la realidad del negocio (confirmar antes de cancelar no es lo mismo que cancelar antes de confirmar). Restaura el orden correcto antes de continuar.
+**Fallo deliberado.** Cierra el proceso y vuelve a levantarlo. El stream ya no existe. Anota qué almacenamiento duradero necesitaría un servicio real antes de afirmar que conserva el historial.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**Entiende.** Event Sourcing no es lo mismo que publicar eventos en Kafka ni que guardar un outbox. En producción requiere almacenamiento durable, control de escrituras concurrentes, evolución de versiones y cuidado para no repetir efectos externos durante un replay.
 
-1. Agrega un cuarto tipo de evento (`PedidoReabierto`) y confirma con un test que el `switch` exhaustivo (gracias a `sealed interface`) obliga al compilador a manejar el caso nuevo, evitando un caso olvidado silenciosamente.
-2. Escribe un test que confirme que reconstruir con una lista de eventos VACÍA devuelve el estado inicial `INEXISTENTE`, sin lanzar ninguna excepción.
-3. Documenta, en un comentario, la diferencia entre Event Sourcing (los eventos SON el estado, reconstruido por replay) y el transactional outbox del Módulo 13 (los eventos NOTIFICAN un cambio que ya se persistió convencionalmente en otra forma).
-4. Escribe de memoria (sin mirar) un `sealed interface` de eventos y una función de replay que reconstruya el estado aplicando cada evento en orden. Compara después contra el patrón del Paso 4.
+**Cierra.** **Proyecto integrador:** para el envío del Módulo 12, propone eventos inmutables de creación, recogida y entrega; indica qué estado se reconstruye y cómo se guardaría el historial de forma durable. El laboratorio no integra Kafka, base de datos ni proyecciones externas.
 
-**Pista:** un `sealed interface` con un `switch` sin rama `default` obliga al compilador de Java a verificar que TODOS los casos posibles están manejados — agregar un nuevo tipo de evento sin actualizar la función `aplicar(...)` produce un error de COMPILACIÓN, no un bug silencioso descubierto en producción.
-
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio con el método estático que reconstruye el estado reproduciendo una lista de eventos:
-
-```java
-EstadoPedido estadoFinal = EstadoPedido.____(eventos);
-```
-
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `sealed interface` de eventos de dominio y una función de replay que los reduzca a un estado final. Compara después contra el patrón del Paso 4.
-
-#### Paso 7 · Cierre y evidencia
-
-Ya reconstruyes el estado de un agregado reproduciendo su historial completo de eventos, confirmando que el orden y el contenido de esos eventos determinan exactamente el resultado. Este era el último tema del módulo y del track; el siguiente paso natural es aplicar estas seis técnicas combinadas sobre un proyecto propio de tamaño real. **Evidencia:** entrega el resultado de `ReplayTest` en verde, y el estado final distinto que produce el fallo deliberado al invertir el orden de los eventos. Fuentes oficiales: [Martin Fowler — Event Sourcing](https://martinfowler.com/eaaDev/EventSourcing.html).
-
-**Errores comunes:** confundir Event Sourcing con simplemente "usar eventos" (como el outbox), cuando la diferencia real es si el estado se DERIVA del historial o se almacena convencionalmente; olvidar que el orden de aplicación de eventos es semánticamente significativo.
-
-**Cuándo no usarlo:** para un agregado con un historial de cambios irrelevante para el negocio (donde solo el estado actual importa, nunca cómo se llegó a él), Event Sourcing agrega una complejidad de reconstrucción que un simple `UPDATE` convencional no tendría.
-
-**Transferencia al proyecto integrador «microservicio productivo»:** Modela el ciclo de vida de un envío (`EnvioCreado`, `EnvioRecogido`, `EnvioEntregado`, `EnvioDevuelto`) como eventos de dominio, y reconstruye el estado de auditoría de un envío disputado reproduciendo su historial completo, en vez de confiar solo en el último estado guardado.
+**Fuente:** [Martin Fowler — Event Sourcing](https://martinfowler.com/eaaDev/EventSourcing.html). La fuente describe almacenar los cambios como secuencia y reconstruir el estado desde el log; este laboratorio usa un stream local en memoria, sin persistencia.
 
 ## Trazabilidad de la auditoría original
 

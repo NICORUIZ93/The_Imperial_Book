@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 1530,
+      "lines": 1545,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 16999,
+      "lines": 17056,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -600,7 +600,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3962,
+      "lines": 3969,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13652,
+      "lines": 13654,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 569,
+      "lines": 573,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -7049,6 +7049,58 @@
     {
       "path": "examples/spring-resilience-rutaflow/src/test/java/academia/rutaflow/resilience/CircuitBreakerBehaviorTest.java",
       "lines": 129,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-saga-rutaflow/README.md",
+      "lines": 32,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Saga de pedidos con Spring Boot",
+        "## Ejecutar",
+        "## Archivos"
+      ]
+    },
+    {
+      "path": "examples/spring-saga-rutaflow/src/main/java/academia/rutaflow/saga/OrderParticipants.java",
+      "lines": 59,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-saga-rutaflow/src/main/java/academia/rutaflow/saga/OrderSaga.java",
+      "lines": 47,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-saga-rutaflow/src/main/java/academia/rutaflow/saga/SagaApplication.java",
+      "lines": 7,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-saga-rutaflow/src/main/java/academia/rutaflow/saga/SagaResult.java",
+      "lines": 12,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-saga-rutaflow/src/test/java/academia/rutaflow/saga/OrderSagaTest.java",
+      "lines": 58,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -13690,7 +13742,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-15.md",
-      "lines": 884,
+      "lines": 801,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

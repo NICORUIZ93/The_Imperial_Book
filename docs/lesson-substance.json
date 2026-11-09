@@ -1690,7 +1690,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "ea6f9ea703eb05751ca81ef1fb36351009f7400e2624ef594417ba3e1b482ed0",
+    "fingerprint": "ea70d46be3136f7d514bb3ce44a13ae08bb50ed3d75df1a8f7a6043d424f85ca",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10542,9 +10542,9 @@
       {
         "issues": [],
         "module": 15,
-        "tailWords": 217,
+        "tailWords": 0,
         "topic": "Tema 6: Event Sourcing con replay real",
-        "words": 1228
+        "words": 754
       },
       {
         "issues": [],

@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 30,
-      "prerequisites": 52,
-      "context": 30,
-      "theoryAnalogy": 30,
-      "guidedDemo": 30,
+      "objective": 29,
+      "prerequisites": 51,
+      "context": 29,
+      "theoryAnalogy": 29,
+      "guidedDemo": 29,
       "codeExplanation": 111,
       "execution": 100,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 30,
-      "independentPractice": 30,
-      "closure": 30,
-      "commonErrors": 30,
-      "resources": 60,
-      "standaloneExample": 32,
-      "learningEvidence": 66,
-      "complete": 30
+      "guidedPractice": 29,
+      "independentPractice": 29,
+      "closure": 29,
+      "commonErrors": 29,
+      "resources": 59,
+      "standaloneExample": 31,
+      "learningEvidence": 65,
+      "complete": 29
     }
   },
   "topics": {
@@ -29251,26 +29251,26 @@
         "module": 15,
         "topic": "Tema 6: Event Sourcing con replay real",
         "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "objective": false,
+          "prerequisites": false,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 4,
+          "complete": false
         }
       },
       {

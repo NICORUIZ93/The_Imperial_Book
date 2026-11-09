@@ -94,8 +94,8 @@
     "spring-boot": {
       "topics": 111,
       "completeTopics": 53,
-      "topicsWith3to6Subtopics": 81,
-      "subtopics": 283,
+      "topicsWith3to6Subtopics": 82,
+      "subtopics": 287,
       "completeSubtopics": 186
     }
   },
@@ -14546,8 +14546,65 @@
       {
         "module": 15,
         "topic": "### Tema 6: Event Sourcing con replay real",
-        "subtopicCount": 0,
-        "subtopics": [],
+        "subtopicCount": 4,
+        "subtopics": [
+          {
+            "id": "15.6",
+            "title": "#### Subtema 15.6.1: Guarda hechos, no solo el estado final · 8 min",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "15.6",
+            "title": "#### Subtema 15.6.2: Reconstruye el pedido paso a paso · 8 min",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "15.6",
+            "title": "#### Subtema 15.6.3: Rechaza eventos que rompen las reglas · 8 min",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "15.6",
+            "title": "#### Subtema 15.6.4: Delimita el almacenamiento y la reconstrucción · 8 min",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": true
+            },
+            "complete": false
+          }
+        ],
         "complete": false
       },
       {
