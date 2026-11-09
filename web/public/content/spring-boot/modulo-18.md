@@ -105,63 +105,100 @@ Las pruebas anteriores usan un `JwtDecoder` simulado: comprueban reglas y owners
 **Fuentes primarias:** [Spring Security: autorización de peticiones HTTP](https://docs.spring.io/spring-security/reference/servlet/authorization/authorize-http-requests.html); [Spring Security: Resource Server JWT](https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html).
 ### Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP
 
-#### Paso 1 · Objetivo y preparación
+**Meta:** validar datos antes de guardar, limitar qué páginas web leen la API, confiar en un emisor OIDC identificado y filtrar destinos de llamadas HTTP salientes.
 
-Al finalizar podrás rechazar datos inválidos antes de ejecutar lógica de negocio y configurar de forma deliberada los límites de una API.
-**Conocimiento previo:** haber seguido el tema anterior de este módulo y tener instalado el entorno del stack.
-#### Paso 2 · Contexto y caso real
+**¿Por qué es importante?** Cada frontera recibe datos o identidad de otra parte. Revisar solo el JWT no valida el cuerpo, CORS no autentica, y una llamada saliente también puede alcanzar servicios internos si sigue una URL sin control.
 
-Una solicitud de envío contiene peso negativo y una dirección excesivamente larga. Si se persiste sin validar, el problema se propaga al cálculo y al proceso de entrega.
+**Evidencia final:** tests de petición inválida, preflight CORS permitido/rechazado, configuración del issuer documentada y bloqueo de direcciones locales del cliente.
 
-**¿Por qué es importante?** Validar y limitar la entrada en el borde de la API reduce errores de dominio y superficie de ataque antes de tocar persistencia o servicios externos.
-
-#### Paso 3 · Teoría y modelo mental
-
-Bean Validation declara restricciones de entrada (`@NotBlank`, `@Positive`, `@Size`) y `@Valid` activa su evaluación. DTOs protegen el contrato HTTP de cambios internos de las entidades. CORS controla qué orígenes web pueden leer respuestas desde un navegador; no bloquea clientes no-browser. CSRF importa cuando el navegador adjunta credenciales automáticamente, especialmente cookies.
-
-OAuth 2.0 y OIDC deben delegar emisión/rotación de credenciales a un proveedor confiable. `HttpClient` saliente necesita timeout, allowlist y protección SSRF; no sigas redirecciones arbitrarias a destinos internos.
-**Analogía:** validar el DTO es revisar el formulario de aduana antes de dejar pasar la mercancía; CORS es la lista de países desde los que se aceptan envíos; el JWT/OIDC es el pasaporte sellado que acredita al viajero; y el cliente HTTP es el mensajero que lleva y trae esos paquetes entre oficinas.
-#### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/main/java/academia/envios/CrearEnvioRequest.java` dentro.
-```bash
-curl -fsSL https://start.spring.io/starter.zip -o ejemplo.zip && unzip -o ejemplo.zip -d ejemplo
+```mermaid
+flowchart LR
+  Web[Web] -->|JSON + token| API[API Spring]
+  API -->|issuer + firma| IdP[Keycloak]
+  API -->|URL externa filtrada| Geo[Servicio externo]
 ```
 
+**Límite:** CORS decide qué páginas pueden leer respuestas desde el navegador; no valida identidad. El filtro IP limita destinos resueltos, pero no sustituye una lista de hosts permitidos.
 
-En `src/main/java/academia/envios/CrearEnvioRequest.java`:
+#### Subtema 18.5 · Valida la petición en la entrada · 8 min
+
+**Contexto:** una entrega con destinatario vacío no debe llegar al servicio ni quedar guardada en PostgreSQL.
+
+**Hazlo tú:** abre `examples/spring-boot-integrador-rutaflow/src/main/java/academia/rutaflow/integrador/entrega/CrearEntregaRequest.java`:
 
 ```java
-public record CrearEnvioRequest(
-    @NotBlank @Size(max = 80) String referencia,
-    @Positive BigDecimal pesoKg
-) {}
+public record CrearEntregaRequest(@NotBlank @Size(max = 200) String destinatario) {}
 ```
 
-**Ejecuta el ejemplo** (genera el proyecto con Spring Initializr, pega el código y corre las pruebas):
+Abre `EntregaController.java` y comprueba que el body lleva `@Valid`. Ejecuta desde `examples/spring-boot-integrador-rutaflow`:
 
 ```bash
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
+./scripts/verify-integration.sh
+```
+
+**Resultado esperado:** pasan 7 pruebas con PostgreSQL efímero; destinatario en blanco responde 400 y el conteo de entregas no aumenta.
+
+**Fallo deliberado:** quita `@Valid` del `@RequestBody` y repite. **Diagnóstico:** el test deja de recibir 400 y la solicitud vacía alcanza el resto del flujo. Restaura `@Valid`.
+
+**Entiende:** las anotaciones describen qué valores son válidos; `@Valid` pide a Spring MVC comprobarlas antes de invocar el método. Si la entrada no cumple, no guardes una entidad y luego intentes corregirla.
+
+**Cierra:** anota qué regla rechaza el destinatario y cuál test comprueba que no se persiste. Lleva el mismo contrato al proyecto integrador RutaFlow.
+
+#### Subtema 18.6 · Configura CORS para el origen necesario · 8 min
+
+**Contexto:** una aplicación web de desarrollo necesita leer respuestas desde `localhost:4200`; no por eso cualquier sitio debe poder leer la API.
+
+**Hazlo tú:** abre `examples/spring-security-keycloak-rutaflow/src/main/java/academia/rutaflow/security/ApiSecurity.java`. La `CorsConfigurationSource` permite un origen, métodos y headers concretos; `ApiSecurityTest` manda una solicitud preflight:
+
+```bash
+cd examples/spring-security-keycloak-rutaflow
+./mvnw -Dtest=ApiSecurityTest#corsPermiteOrigenLocalDeclaradoYRechazaOtroOrigen test
+```
+
+**Resultado esperado:** el preflight de `http://localhost:4200` recibe `Access-Control-Allow-Origin`; `https://sitio-ajeno.example` recibe 403. El header de credenciales no aparece.
+
+**Fallo deliberado:** cambia el origen permitido a `https://sitio-ajeno.example` y ejecuta el mismo test. **Diagnóstico:** el navegador de desarrollo ya no aparece en `Access-Control-Allow-Origin`, y el test encuentra el origen equivocado. Restaura `http://localhost:4200`.
+
+**Entiende:** CORS es una regla del navegador sobre qué origen puede leer una respuesta. No es una barrera para `curl`, no reemplaza autenticación y las solicitudes preflight deben procesarse antes de exigir credenciales.
+
+**Cierra:** explica por qué permites un origen y mantienes `allowCredentials=false` en este laboratorio.
+
+#### Subtema 18.7 · Confía en el issuer OIDC, no en un JWT decodificado · 10 min
+
+**Contexto:** base64 permite leer un payload, pero no verificar quién firmó el JWT ni si sigue vigente. El Resource Server debe consultar las claves del emisor que tu aplicación decidió confiar.
+
+**Hazlo tú:** abre `examples/spring-security-keycloak-rutaflow/src/main/resources/application.yml`. Localiza `issuer-uri`; debe coincidir exactamente con el `iss` de los tokens del realm. Para recorrer la configuración real, sigue `examples/spring-security-keycloak-rutaflow/README.md`:
+
+```bash
+cd examples/spring-security-keycloak-rutaflow
+docker compose up -d
+curl -fsS http://localhost:8081/realms/rutaflow/.well-known/openid-configuration
+```
+
+**Resultado esperado:** el documento OIDC publica issuer y `jwks_uri` del realm `rutaflow`. Con un token real de ese issuer, las rutas respetan rol y propietario; al terminar, apaga el servicio con `docker compose down`.
+
+**Fallo deliberado:** cambia temporalmente `issuer-uri` a `http://localhost:8081/realms/otro` y llama con un token de `rutaflow`. **Diagnóstico:** el token no coincide con el issuer configurado y la API responde 401. Restaura la URI.
+
+**Entiende:** `issuer-uri` señala quién emite tokens de confianza. Spring Resource Server descubre las claves públicas y valida firma, expiración e issuer. Los tests `ApiSecurityTest` usan un decoder simulado para probar permisos; por sí solos no verifican firma, expiración ni conexión con Keycloak.
+
+**Cierra:** apunta el issuer y `jwks_uri` de la salida local y distingue esa comprobación del test con token simulado.
+
+#### Subtema 18.8 · Bloquea destinos internos en el cliente saliente · 10 min
+
+**Contexto:** un endpoint que recibe una URL puede ser usado para pedir datos a servicios locales, a rangos privados o al endpoint de metadata. Controla el destino antes de abrir la conexión.
+
+**Hazlo tú:** abre `examples/spring-ssrf/src/main/java/com/academia/SafeClient.java`. Observa timeout, redirecciones deshabilitadas y `InetAddressFilter.externalAddresses()`. Ejecuta desde `examples/spring-ssrf`:
+
+```bash
 ./mvnw test
 ```
-Equivalencias Maven/Gradle en el Módulo 1.
 
+**Resultado esperado:** pasan tres pruebas: loopback se bloquea antes de llegar al servidor local, se filtran `169.254.169.254` y rangos internos, y un redirect no alcanza su destino. Un servidor efímero permitido sirve de control positivo.
 
-El controlador recibe `@Valid @RequestBody CrearEnvioRequest request`. Ejecuta `./mvnw test` con `MockMvc`: una referencia válida crea 201; peso negativo devuelve 400 con cuerpo de error estable. Configura CORS con origen exacto de desarrollo, no `*` combinado con credenciales.
+**Fallo deliberado:** quita `.withInetAddressFilter(allowedAddresses)` de `SafeClient.create` y ejecuta `blocksBeforeRequestAndControlReallyReachesServer`. **Diagnóstico:** la petición local llega al servidor y el test ve un hit en vez de `FilteredHostException`. Restaura el filtro.
 
-**Resultado esperado:** los datos inválidos se rechazan antes de invocar el servicio. **Fallo deliberado:** quita `@Valid`; verifica que una entrada inválida alcanza al controlador/servicio. Restaura la validación y comprueba 400.
+**Entiende:** el filtro restringe direcciones IP de llamadas que salen de este proceso. No reemplaza una allowlist de hosts ni controles de red; no reintentes escrituras sin clave de idempotencia.
 
-#### Paso 5 · Práctica guiada
+**Cierra:** para el cliente de geocodificación de RutaFlow, registra hosts permitidos, timeout, política de redirect y la prueba que impide llegar a una IP interna.
 
-Implementa cliente HTTP de servicio a servicio con timeout y host allowlisted. Trata 4xx como fallo funcional, 5xx como potencialmente transitorio y reintenta solo operación idempotente. Añade una prueba de intento de acceder a `169.254.169.254`; debe ser bloqueado por política de red y aplicación.
-**Pista:** apunta el cliente HTTP directamente a `http://169.254.169.254/` en el test y ejecútalo; si la petición sale sin que tu allowlist de hosts la rechace, el control de SSRF no está aplicado en el código del cliente — debe bloquear el destino antes de abrir la conexión, no solo estar documentado como riesgo.
-#### Paso 6 · Práctica independiente
-
-Entrega una API con Problem Details para errores, validación de campos, límites de payload configurados y CORS específico. Escribe tabla con riesgo, control y prueba para token expirado, payload inválido, usuario ajeno, SSRF y repetición de request.
-
-#### Paso 7 · Cierre y evidencia
-
-En el proyecto integrador de RutaFlow, estos controles protegen creación de envíos y llamadas a proveedores de geocodificación. **Cuándo no usarlo:** no agregues retry a escrituras sin idempotency key; no uses validación de URL basada solo en regex. **Evidencia:** tests de validación, autorización, timeout y rechazo de destino no permitido. Referencia: [Spring Security Reference](https://docs.spring.io/spring-security/reference/).
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** quitar `@Valid` del parámetro del controlador "para simplificar" y dejar que una entrada inválida llegue al servicio, y configurar CORS con origen `*` junto con credenciales habilitadas, algo que el navegador rechaza y que además expondría la API a cualquier origen.
-**Fuente oficial:** [documentación de Spring Boot](https://docs.spring.io/spring-boot/index.html).
-**Evidencia de aprendizaje:** entrega la salida de `./mvnw test` con el caso de peso negativo devolviendo 400, el fallo observado al quitar `@Valid` (la entrada inválida llega al servicio), y el resultado de la prueba que bloquea el acceso a `169.254.169.254` desde el cliente HTTP.
+**Fuentes primarias:** [Spring Framework MVC Validation](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-validation.html); [CORS en Spring Security](https://docs.spring.io/spring-security/reference/servlet/integrations/cors.html); [Spring Security Resource Server JWT](https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html); [Spring Boot HTTP clients y filtros de direcciones](https://docs.spring.io/spring-boot/reference/io/rest-client.html).

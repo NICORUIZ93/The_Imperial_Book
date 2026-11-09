@@ -1690,9 +1690,9 @@
     }
   ],
   "summary": {
-    "fingerprint": "e1668e94a651502311a2b4a303d9b01d9ecd667f71be8a5412f9314f826027a5",
+    "fingerprint": "7a35a5915b502cc2b365033dda5ada63b5dbe255ed2ba46c1ef7b2dc2b63e046",
     "issues": {
-      "andamiaje-generico": 119,
+      "andamiaje-generico": 118,
       "bloque-repetido": 163,
       "cola-tras-cierre": 331,
       "parrafo-repetido": 5,
@@ -1706,7 +1706,7 @@
     "modules": 256,
     "modulesWithLegacySections": 178,
     "topics": 1185,
-    "topicsWithIssues": 404
+    "topicsWithIssues": 403
   },
   "topics": {
     "android": [
@@ -10596,13 +10596,11 @@
         "words": 821
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 18,
-        "tailWords": 182,
+        "tailWords": 0,
         "topic": "Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP",
-        "words": 790
+        "words": 1018
       },
       {
         "issues": [

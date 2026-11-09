@@ -5,7 +5,7 @@
 **Proyecto continuo:** RutaFlow: plataforma de entregas basada en servicios.
 **Prerrequisito de entrada:** Java, HTTP, SQL y pruebas; los módulos iniciales vuelven a presentar cada herramienta..
 **Duración objetivo:** temas de 20–45 minutos; cada tema se divide en 3–6 acciones de 5–15 minutos.
-**Estado estructural:** 58/111 temas migrados; auditoría estructural actualizada el 2026-11-03.
+**Estado estructural:** 59/111 temas migrados; auditoría estructural actualizada el 2026-11-03.
 
 ## Índice de módulos y temas
 
@@ -481,7 +481,11 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 18.2 · Traduce un rol del JWT a una autoridad · 8 min
   - ✓ Subtema 18.3 · Distingue identidad de permiso · 8 min
   - ✓ Subtema 18.4 · Autoriza el pedido que pertenece a la persona · 10 min
-- [pendiente de migrar] Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP
+- [4 pasos] Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP
+  - ✓ Subtema 18.5 · Valida la petición en la entrada · 8 min
+  - ✓ Subtema 18.6 · Configura CORS para el origen necesario · 8 min
+  - ✓ Subtema 18.7 · Confía en el issuer OIDC, no en un JWT decodificado · 10 min
+  - ✓ Subtema 18.8 · Bloquea destinos internos en el cliente saliente · 10 min
 
 ### Módulo 19: Spring Batch — jobs, chunks y procesamiento masivo
 
@@ -590,7 +594,7 @@ La tabla registra presencia de áreas en el inventario del track, no profundidad
 
 ### Huecos y límites reportados
 
-- El repositorio contiene 111 temas en 26 módulos; 58 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
+- El repositorio contiene 111 temas en 26 módulos; 59 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
 - No hay base para afirmar que el track esté completo: la comparación con la fuente de referencia está pendiente de revisión humana módulo por módulo.
 - Los elementos de la fuente que todavía deben verificarse de forma explícita están enumerados en la tabla anterior; cualquier técnica crítica que no tenga tema propio debe añadirse conservando el currículo base.
 - La ejecución de ejemplos, el comportamiento con brokers/plataformas reales y la calidad pedagógica humana se registran por separado.

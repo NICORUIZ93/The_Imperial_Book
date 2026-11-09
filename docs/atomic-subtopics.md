@@ -2,7 +2,7 @@
 
 > Auditoría estructural. Un encabezado o criterio detectado no demuestra que el ejemplo se haya ejecutado ni que la explicación sea pedagógicamente suficiente.
 
-Temas conformes a cuatro pasos: **162/1185**. Tracks inventariados: **14**.
+Temas conformes a cuatro pasos: **163/1185**. Tracks inventariados: **14**.
 
 | Track | Temas conformes | Temas inventariados | Subtemas detectados | Subtemas con estructura completa |
 |---|---:|---:|---:|---:|
@@ -19,7 +19,7 @@ Temas conformes a cuatro pasos: **162/1185**. Tracks inventariados: **14**.
 | node | 2 | 83 | 6 | 6 |
 | react | 0 | 58 | 0 | 0 |
 | rutaflow | 0 | 29 | 0 | 0 |
-| spring-boot | 58 | 111 | 315 | 206 |
+| spring-boot | 59 | 111 | 319 | 210 |
 
 ## Temas pendientes
 
@@ -1050,7 +1050,6 @@ Temas conformes a cuatro pasos: **162/1185**. Tracks inventariados: **14**.
 - M15 ### Tema 6: Event Sourcing con replay real: 15.6: faltan context, action, deliberateFailure, understand, close; 15.6: faltan context, action, deliberateFailure, understand, close; 15.6: faltan context, action, deliberateFailure, understand, close; 15.6: faltan context, action, deliberateFailure, understand, close
 - M15 ### Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar: 15.7: faltan context, action, deliberateFailure, understand, close; 15.7: faltan context, action, deliberateFailure, understand, close; 15.7: faltan context, action, deliberateFailure, understand, close; 15.7: faltan context, action, deliberateFailure, understand, close
 - M15 ### Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework: 15.8: faltan context, action, deliberateFailure, understand, close; 15.8: faltan context, action, deliberateFailure, understand, close; 15.8: faltan context, action, deliberateFailure, understand, close; 15.8: faltan context, action, deliberateFailure, understand, close
-- M18 ### Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP: tiene 0 subtemas
 - M19 ### Tema 1: Job, Step, Tasklet y chunk processing: tiene 0 subtemas
 - M19 ### Tema 2: Reinicio, JobParameters, retry, skip y listeners: tiene 0 subtemas
 - M2 ### Tema 1: Por qué DTOs en vez de entidades directamente: 1.3: faltan action

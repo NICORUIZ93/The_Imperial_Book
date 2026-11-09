@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 1669,
+      "lines": 1686,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 17455,
+      "lines": 17512,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -314,7 +314,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1087,
+      "lines": 1086,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -600,7 +600,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3969,
+      "lines": 3962,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13665,
+      "lines": 13664,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -813,7 +813,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 11061,
+      "lines": 11059,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 601,
+      "lines": 605,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -7376,7 +7376,7 @@
     },
     {
       "path": "examples/spring-security-keycloak-rutaflow/README.md",
-      "lines": 98,
+      "lines": 101,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -7406,7 +7406,7 @@
     },
     {
       "path": "examples/spring-security-keycloak-rutaflow/src/main/java/academia/rutaflow/security/ApiSecurity.java",
-      "lines": 55,
+      "lines": 72,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -7446,7 +7446,7 @@
     },
     {
       "path": "examples/spring-security-keycloak-rutaflow/src/test/java/academia/rutaflow/security/ApiSecurityTest.java",
-      "lines": 60,
+      "lines": 83,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -14073,7 +14073,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-18.md",
-      "lines": 168,
+      "lines": 205,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14087,9 +14087,9 @@
         "#### Subtema 18.3 \u00b7 Distingue identidad de permiso \u00b7 8 min",
         "#### Subtema 18.4 \u00b7 Autoriza el pedido que pertenece a la persona \u00b7 10 min",
         "### Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda y modelo mental"
+        "#### Subtema 18.5 \u00b7 Valida la petici\u00f3n en la entrada \u00b7 8 min",
+        "#### Subtema 18.6 \u00b7 Configura CORS para el origen necesario \u00b7 8 min",
+        "#### Subtema 18.7 \u00b7 Conf\u00eda en el issuer OIDC, no en un JWT decodificado \u00b7 10 min"
       ]
     },
     {

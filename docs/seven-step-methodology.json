@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 22,
-      "prerequisites": 44,
-      "context": 22,
-      "theoryAnalogy": 22,
-      "guidedDemo": 22,
+      "objective": 21,
+      "prerequisites": 43,
+      "context": 21,
+      "theoryAnalogy": 21,
+      "guidedDemo": 21,
       "codeExplanation": 111,
       "execution": 100,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 22,
-      "independentPractice": 22,
-      "closure": 22,
-      "commonErrors": 22,
-      "resources": 52,
-      "standaloneExample": 24,
-      "learningEvidence": 58,
-      "complete": 22
+      "guidedPractice": 21,
+      "independentPractice": 21,
+      "closure": 21,
+      "commonErrors": 21,
+      "resources": 51,
+      "standaloneExample": 23,
+      "learningEvidence": 57,
+      "complete": 21
     }
   },
   "topics": {
@@ -29459,26 +29459,26 @@
         "module": 18,
         "topic": "Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP",
         "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "objective": false,
+          "prerequisites": false,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 4,
+          "complete": false
         }
       },
       {

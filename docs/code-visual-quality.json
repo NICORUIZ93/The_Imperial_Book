@@ -99,8 +99,8 @@
     "spring-boot": {
       "topics": 111,
       "code": 106,
-      "commentedCode": 36,
-      "mermaid": 33,
+      "commentedCode": 37,
+      "mermaid": 34,
       "archifyVisual": 1,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
@@ -2764,13 +2764,6 @@
       "track": "spring-boot",
       "module": 18,
       "topic": "Tema 1: SecurityFilterChain y autorización",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "spring-boot",
-      "module": 18,
-      "topic": "Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP",
       "missingCode": false,
       "missingComments": true
     },

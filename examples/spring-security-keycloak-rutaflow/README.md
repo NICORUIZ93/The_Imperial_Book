@@ -13,20 +13,23 @@ Desde esta carpeta:
 ./mvnw -q clean test
 ```
 
-Las cuatro pruebas levantan la API en HTTP local y comprueban: sin token → 401;
-token sin rol → 403; token con rol de escritura → 200; y acceso solo al pedido
-cuyo dueño coincide con el `sub` del JWT. En estas pruebas,
+Las cinco pruebas levantan la API en HTTP local y comprueban: sin token → 401;
+token sin rol → 403; token con rol de escritura → 200; acceso solo al pedido
+cuyo dueño coincide con el `sub` del JWT; y preflight CORS desde el origen
+local permitido frente a otro origen. En estas pruebas,
 `MockJwtConfiguration` sustituye el decodificador para representar a Ana y
 Luis. **Estas pruebas no validan firma, expiración ni conexión con Keycloak.**
 
 ## Levantar el realm local de Keycloak
 
-Se requiere Docker. Desde esta carpeta:
+Se requiere Docker Compose o Podman Compose. Desde esta carpeta, usa el motor instalado:
 
 ```bash
 docker compose up -d
 docker compose logs -f keycloak
 ```
+
+Con Podman, sustituye `docker compose` por `podman compose` en los comandos de este recorrido. Si el registro de imágenes no está disponible, el contenedor no podrá descargar Keycloak; las pruebas con `MockJwtConfiguration` no sustituyen esta verificación real.
 
 Espera a que el servicio esté listo y comprueba su documento OIDC:
 
@@ -79,7 +82,7 @@ LUIS_TOKEN=$(curl -fsS -X POST http://localhost:8081/realms/rutaflow/protocol/op
 curl -i -X POST http://localhost:8080/api/ubicaciones/1 -H "Authorization: Bearer $LUIS_TOKEN"
 ```
 
-Esperas `403`. Para apagar Keycloak, ejecuta `docker compose down`.
+Esperas `403`. Para apagar Keycloak, ejecuta `docker compose down` o `podman compose down`, según el motor que usaste.
 
 ## Qué revisar en el código
 

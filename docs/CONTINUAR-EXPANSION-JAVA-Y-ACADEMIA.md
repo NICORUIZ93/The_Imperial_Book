@@ -1666,3 +1666,23 @@ README contiene el recorrido opcional con Keycloak local y Docker. Fuentes
 primarias: Spring Security HTTP request authorization y Resource Server JWT.
 Pendiente: actualizar reportes, validar y publicar M18 T1. Siguiente: M18 T2,
 validación de DTO, CORS, JWT/OIDC y cliente HTTP.
+
+
+Spring Boot M18 T2, “validación DTO, CORS, JWT/OIDC y cliente saliente”, se
+reestructuró en cuatro subtemas con pasos ejecutables y fallos diagnosticables.
+La validación usa el integrador RutaFlow y comprueba 400 antes de persistir; CORS
+prueba un preflight real de origen permitido y ajeno; el recorrido OIDC documenta
+issuer/JWKS con Keycloak; el cliente SSRF comprueba timeout, redirects y filtro
+IP con servidores locales efímeros. Las suites previas pasaron: integrador, 7
+pruebas; Keycloak, 5 (decoder simulado); SSRF, 3. Las mutaciones quitar `@Valid`,
+cambiar origen CORS y eliminar `InetAddressFilter` fueron detectadas por sus
+pruebas dirigidas y se restauraron. El pull de `quay.io/keycloak/keycloak:26.8.1`
+no terminó porque la conexión al registro agotó el tiempo; no se verificó aquí
+issuer, JWKS ni token firmado real. README incluye Docker Compose/Podman Compose
+para repetirlo con conectividad. Referencias primarias consultadas: Spring MVC
+validation, Spring Security CORS y Resource Server JWT, Spring Boot HTTP clients.
+Las tres suites pasaron: integrador con PostgreSQL 16 Testcontainers (7),
+SecurityFilterChain con JWT simulado y CORS (5), y SSRF (3). `./scripts/validate.sh`,
+`validate_rutaflow_material.py` y `git diff --check` pasaron; cobertura pedagógica
+1073/1185, atomicidad 163/1185. Siguiente: Spring Boot M19 T1, Spring Batch Job,
+Step, Tasklet y chunks.

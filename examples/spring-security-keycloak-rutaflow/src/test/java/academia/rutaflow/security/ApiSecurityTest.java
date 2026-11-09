@@ -44,6 +44,19 @@ class ApiSecurityTest {
         assertThat(send("GET", "/api/pedidos/p-luis", "ana").statusCode()).isEqualTo(403);
     }
 
+    @Test
+    void corsPermiteOrigenLocalDeclaradoYRechazaOtroOrigen() throws Exception {
+        var permitido = preflight("http://localhost:4200");
+        assertThat(permitido.statusCode()).isEqualTo(200);
+        assertThat(permitido.headers().firstValue("Access-Control-Allow-Origin"))
+            .contains("http://localhost:4200");
+        assertThat(permitido.headers().firstValue("Access-Control-Allow-Credentials")).isEmpty();
+
+        var rechazado = preflight("https://sitio-ajeno.example");
+        assertThat(rechazado.statusCode()).isEqualTo(403);
+        assertThat(rechazado.headers().firstValue("Access-Control-Allow-Origin")).isEmpty();
+    }
+
     private HttpResponse<String> send(String method, String path, String bearerToken) throws Exception {
         HttpRequest.Builder request = HttpRequest.newBuilder(URI.create("http://localhost:" + port + path));
         if (bearerToken != null) {
@@ -55,5 +68,15 @@ class ApiSecurityTest {
             request.GET();
         }
         return http.send(request.build(), BodyHandlers.ofString());
+    }
+
+    private HttpResponse<String> preflight(String origin) throws Exception {
+        var request = HttpRequest.newBuilder(URI.create("http://localhost:" + port + "/api/ubicaciones/1"))
+            .header("Origin", origin)
+            .header("Access-Control-Request-Method", "POST")
+            .header("Access-Control-Request-Headers", "authorization,content-type")
+            .method("OPTIONS", BodyPublishers.noBody())
+            .build();
+        return http.send(request, BodyHandlers.ofString());
     }
 }
