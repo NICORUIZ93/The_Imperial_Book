@@ -1636,5 +1636,20 @@ quitar `@Import`, concatenar la referencia al SQL, permitir cualquier nombre
 en `ORDER BY`, y pedir una columna inexistente en el `RowMapper`. Se usó H2;
 esto no mide rendimiento de producción. Fuentes primarias contrastadas:
 documentación oficial de Spring Boot SQL y Spring Framework JdbcTemplate.
-Pendiente: actualizar reportes, validar y publicar M17 T1. Siguiente: M17 T2,
-`@Transactional`, rollback y límites de transacción.
+`./scripts/validate.sh` y `validate_rutaflow_material.py` pasaron tras
+regenerar reportes. Auditoría global: 161/1185 temas atómicos y 1073/1185
+practicables. M17 T1 y T2 están publicados. Siguiente: M18 T1.
+
+Spring Boot M17 T2, “`@Transactional`, rollback y límites de transacción”, se
+reorganizó en cuatro subtemas atómicos y añadió `LiquidacionService` con
+transacción declarativa. El laboratorio prueba que cobro+estado se confirman
+juntos, que un envío inexistente revierte el cobro y que `rollbackFor` también
+revierte una excepción checked. La suite pasa con 15 pruebas. Cuatro
+mutaciones fallaron como se esperaba y se restauraron: tabla `cobros` mal
+escrita, quitar `@Transactional`, quitar `rollbackFor`, y trasladar la
+anotación a un helper privado invocado desde el mismo bean. El último caso
+mostró el cobro parcial por no atravesar el proxy. La prueba usa H2; no simula
+Kafka ni una transacción distribuida. Fuentes primarias: Spring Framework
+transaction annotations y declarative rollback. `./scripts/validate.sh` y `validate_rutaflow_material.py` pasaron tras
+regenerar reportes. Auditoría global: 161/1185 temas atómicos y 1073/1185
+practicables. Siguiente: M18 T1.

@@ -107,81 +107,85 @@ Ejecuta la prueba de entrada:
 **Fuentes primarias:** [Spring Boot: acceso a datos SQL](https://docs.spring.io/spring-boot/reference/data/sql.html); [Spring Framework: JdbcTemplate](https://docs.spring.io/spring-framework/reference/data-access/jdbc/core.html).
 ### Tema 2: `@Transactional`, rollback y límites de transacción
 
-#### Paso 1 · Objetivo y preparación
+**Meta:** mantener juntos el cobro y el cambio de estado, comprobar qué errores provocan rollback y delimitar qué trabajo pertenece a la transacción.
 
-Al finalizar podrás delimitar una operación que inserta un cobro y actualiza un envío, verificando el rollback cuando una escritura falla.
-**Conocimiento previo:** haber seguido el tema anterior de este módulo y tener instalado el entorno del stack.
-#### Paso 2 · Contexto y caso real
+**¿Por qué es importante?** Si se guarda el cobro y falla el cambio de estado, el sistema queda con dos versiones distintas de la realidad. La transacción agrupa cambios de una misma base y los confirma o revierte como una unidad.
 
-El cobro se registra, pero falla la actualización del envío. Sin una transacción, queda dinero contabilizado para un pedido que sigue pendiente.
+**Práctica guiada:** modifica el servicio del laboratorio y observa las dos tablas después de cada resultado.
 
-**¿Por qué es importante?** El límite transaccional protege invariantes de negocio ante errores y concurrencia, no solo ante excepciones esperadas.
+#### Subtema 17.5 · Confirma dos cambios como una unidad · 8 min
 
-#### Paso 3 · Teoría y modelo mental
+**Contexto:** una liquidación correcta guarda el importe y cambia el envío a `LIQUIDADO`. El usuario no debe ver solo uno de esos cambios.
 
-`@Transactional` se aplica mediante infraestructura/proxy de Spring al invocar un método gestionado. Por defecto, las excepciones unchecked provocan rollback; las checked no necesariamente. La anotación no surte el mismo efecto en una llamada interna al mismo objeto (self-invocation), ni debe cubrir llamadas lentas a sistemas externos.
-
-La transacción es un límite local de base de datos, no una transacción distribuida entre PostgreSQL, Kafka y un servicio HTTP.
-**Analogía:** `@Transactional` es como el carrito de la compra: vas añadiendo acciones y solo al pasar por caja (commit) se confirman todas juntas; si algo falla, el `rollback` vacía el carrito entero y no se cobra nada a medias. El límite de la transacción es hasta dónde llega ese carrito: no abarca una llamada HTTP a otra tienda.
-#### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/main/java/academia/envios/LiquidacionService.java` dentro.
-```bash
-curl -fsSL https://start.spring.io/starter.zip -o ejemplo.zip && unzip -o ejemplo.zip -d ejemplo
-```
-
-**Crea** el archivo `src/main/java/academia/envios/LiquidacionService.java` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
-
-
-En `src/main/java/academia/envios/LiquidacionService.java`, inyecta repository JDBC y declara:
-
-```java
-@Service
-public class LiquidacionService {
-    private final JdbcTemplate jdbc;
-
-    public LiquidacionService(JdbcTemplate jdbc) { this.jdbc = jdbc; }
-
-    @Transactional
-    public void liquidar(String referencia) {
-        jdbc.update(
-            "insert into cobro(referencia, importe) values (?, ?)",
-            referencia, 25.00
-        );
-        jdbc.update(
-            "update envio set estado = ? where referencia = ?",
-            "LIQUIDADO", referencia
-        );
-    }
-}
-```
-
-**Ejecuta el ejemplo** (genera el proyecto con Spring Initializr, pega el código y corre las pruebas):
+**Hazlo tú:** abre `examples/java-jpa-lab/src/main/java/academia/pedidos/LiquidacionService.java`. El método público llama a dos sentencias JDBC y está anotado con `@Transactional`. Ejecuta:
 
 ```bash
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
-./mvnw test
+cd examples/java-jpa-lab
+./mvnw -Dtest=LiquidacionServiceTest#confirmaCobroYEstadoDentroDeLaMismaTransaccion test
 ```
-Equivalencias Maven/Gradle en el Módulo 1.
 
+**Resultado esperado:** `cobro` contiene `27.50` y `envio.estado` vale `LIQUIDADO`.
 
-En `@SpringBootTest`, fuerza el segundo paso a fallar (por ejemplo, con una restricción de test) y revisa ambas tablas. Ejecuta `./mvnw test -Dtest=LiquidacionServiceTest`.
+**Fallo deliberado:** cambia la tabla `cobro` por `cobros` en el `INSERT` y repite. **Diagnóstico:** el SQL informa que la tabla no existe; restaura `cobro`.
 
-**Resultado esperado:** ambas escrituras se confirman juntas, o ninguna permanece tras el fallo. **Fallo deliberado:** mueve `@Transactional` a una llamada interna privada y verifica que no se aplica el proxy como esperabas; devuelve el límite transaccional al método público del bean.
+**Entiende:** Spring intercepta la llamada al método del bean, abre la transacción antes de entrar y confirma al terminar sin excepción. `JdbcTemplate` participa en esa misma conexión transaccional.
 
-**Diagrama interactivo:** [Transacción JDBC: commit o rollback](/visuals/temas/spring-boot/modulo-17-tema-2-transacciones.html).
+**Cierra:** enumera las dos escrituras que deben confirmarse juntas.
 
-#### Paso 5 · Práctica guiada
+#### Subtema 17.6 · Revierte el primer cambio si el segundo falla · 8 min
 
-Prueba explícitamente una checked exception y decide si la política requiere `rollbackFor`. Añade un test de carrera con actualización optimista (`@Version`) o una actualización condicional atómica; documenta qué anomalía previenes.
-**Pista:** lanza una checked exception (no una `RuntimeException`) dentro del método anotado con `@Transactional` y ejecuta el test; si la fila queda confirmada en la base de datos a pesar de la excepción, es porque Spring solo revierte automáticamente ante excepciones unchecked — necesitas `@Transactional(rollbackFor = TuExcepcionChecked.class)` para forzar el rollback también en ese caso.
-#### Paso 6 · Práctica independiente
+**Contexto:** el `INSERT` de cobro puede funcionar aunque la referencia del envío no exista. La segunda sentencia debe comprobar cuántas filas cambió.
 
-Implementa una liquidación de RutaFlow con deduplicación por `operation_id`. Incluye restricción única, rollback, segundo intento idempotente y una prueba donde una excepción de negocio no deja escrituras parciales.
+**Hazlo tú:** abre `examples/java-jpa-lab/src/test/java/academia/pedidos/LiquidacionServiceTest.java`. Ejecuta el test que liquida `RT-404` y consulta el estado de la tabla `cobro`:
 
-#### Paso 7 · Cierre y evidencia
+```bash
+./mvnw -Dtest=LiquidacionServiceTest#revierteElCobroSiLaActualizacionDelEnvioNoEncuentraFila test
+```
 
-Entrega test de rollback, test de repetición y nota sobre el límite transaccional para el proyecto integrador de RutaFlow. **Cuándo no usarlo:** no mantengas una transacción abierta durante HTTP, archivos o espera humana; usa outbox/saga para coordinar efectos externos. **Evidencia:** ambos estados consistentes después del éxito y del error.
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** anotar con `@Transactional` un método privado o invocarlo desde otro método del mismo bean (self-invocation) esperando que el proxy de Spring lo intercepte igual, y mantener la transacción abierta mientras se espera una respuesta HTTP o se escribe en Kafka, extendiendo el límite transaccional fuera de la base de datos.
-**Fuente oficial:** [documentación de Spring Boot](https://docs.spring.io/spring-boot/index.html).
-**Evidencia de aprendizaje:** entrega la salida del test que fuerza el fallo de la segunda escritura mostrando que ninguna de las dos tablas quedó con datos parciales, el resultado de mover `@Transactional` a una llamada interna (sin rollback), y la explicación de qué anomalía evita tu prueba de carrera con `@Version`.
+**Resultado esperado:** el método lanza `IllegalStateException` y el conteo de cobros queda en cero.
+
+**Fallo deliberado:** comenta `@Transactional` en `LiquidacionService.liquidar`. **Diagnóstico:** el test encuentra un cobro guardado aunque no exista el envío; vuelve a poner la anotación en el método público.
+
+**Entiende:** por defecto, Spring revierte una transacción si el método deja escapar una excepción `RuntimeException` o `Error`. Capturar la excepción dentro del método y continuar puede permitir que la transacción se confirme.
+
+**Cierra:** explica qué test demuestra que no queda una escritura parcial.
+
+#### Subtema 17.7 · Decide qué excepciones revierten · 8 min
+
+**Contexto:** algunas reglas del negocio usan excepciones comprobadas. La configuración predeterminada no siempre revierte ante ellas.
+
+**Hazlo tú:** abre `examples/java-jpa-lab/src/main/java/academia/pedidos/LiquidacionService.java`. Mira `liquidarConRevisionPendiente` y su `@Transactional(rollbackFor = LiquidacionPendienteException.class)`. Ejecuta:
+
+```bash
+./mvnw -Dtest=LiquidacionServiceTest#rollbackForTambienRevierteUnaExcepcionChecked test
+```
+
+**Resultado esperado:** se propaga `LiquidacionPendienteException`; no queda el cobro y el envío sigue `PENDIENTE`.
+
+**Fallo deliberado:** quita `rollbackFor = LiquidacionPendienteException.class` y corre el test. **Diagnóstico:** la excepción checked se lanza, pero las escrituras permanecen; restaura la regla explícita.
+
+**Entiende:** con la política predeterminada, una checked exception no provoca rollback automáticamente. `rollbackFor` hace explícita la regla del negocio. Verifica qué política define la versión de Spring que usa tu proyecto.
+
+**Cierra:** señala qué excepción debe dejar intacta la base y cuál regla lo decide.
+
+#### Subtema 17.8 · Mantén el límite dentro del bean y la base · 10 min
+
+**Contexto:** `@Transactional` usa un proxy de Spring. Solo las llamadas que pasan por ese proxy reciben el comportamiento declarado; una llamada interna del mismo objeto puede saltárselo.
+
+**Hazlo tú:** abre `examples/java-jpa-lab/src/test/java/academia/pedidos/LiquidacionServiceTest.java` y ejecuta la prueba que verifica el rollback al faltar el envío:
+
+```bash
+./mvnw -Dtest=LiquidacionServiceTest#revierteElCobroSiLaActualizacionDelEnvioNoEncuentraFila test
+```
+
+Compara ese caso con el método público de `examples/java-jpa-lab/src/main/java/academia/pedidos/LiquidacionService.java`, que recibe la llamada y deja escapar el error.
+
+**Resultado esperado:** la prueba verifica cobro y estado desde otra llamada, cuando la transacción del servicio ya terminó.
+
+**Fallo deliberado:** mueve la anotación a un método privado `liquidarInterno` y haz que el público lo invoque dentro del mismo bean. **Diagnóstico:** el test vuelve a encontrar el cobro parcial porque la llamada interna no atraviesa el proxy. Restaura `@Transactional` en el método público llamado desde afuera.
+
+**Entiende:** esta transacción agrupa operaciones en la misma base de datos. No vuelve atómica una llamada HTTP, un mensaje Kafka o la escritura de un archivo. Para coordinar sistemas separados, usa una estrategia como outbox o saga; evita sostener una transacción mientras esperas un servicio remoto.
+
+**Cierra:** en el proyecto integrador de RutaFlow, documenta las tablas que participan, el método público que marca el límite, los errores que revierten y cómo publicarías un evento sin fingir que la transacción abarca Kafka.
+
+**Fuentes primarias:** [Spring Framework: `@Transactional`, proxy y rollback](https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/annotations.html); [Spring Framework: rollback declarativo](https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/rolling-back.html).

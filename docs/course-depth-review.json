@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 271,
+    "topicsWithSignals": 272,
     "newLaboratories": 25
   },
   "priorities": {
@@ -12845,7 +12845,9 @@
       "title": "Tema 2: `@Transactional`, rollback y límites de transacción",
       "file": "web/public/content/spring-boot/modulo-17.md",
       "line": 108,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"

@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 1641,
+      "lines": 1654,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 17341,
+      "lines": 17398,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -314,7 +314,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1089,
+      "lines": 1088,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13661,
+      "lines": 13663,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -813,7 +813,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 11065,
+      "lines": 11063,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 593,
+      "lines": 597,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -2416,12 +2416,12 @@
     },
     {
       "path": "examples/java-jpa-lab/README.md",
-      "lines": 23,
+      "lines": 24,
       "kind": "example",
       "symbols": [],
       "imports": [],
       "headings": [
-        "# Laboratorio JPA de Java M16"
+        "# Laboratorio JPA y JDBC de Java M16\u2013M17"
       ]
     },
     {
@@ -2443,6 +2443,22 @@
     {
       "path": "examples/java-jpa-lab/src/main/java/academia/pedidos/EnvioDao.java",
       "lines": 51,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/java-jpa-lab/src/main/java/academia/pedidos/EnvioJdbcRepository.java",
+      "lines": 43,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/java-jpa-lab/src/main/java/academia/pedidos/EnvioRegistro.java",
+      "lines": 4,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -2483,6 +2499,14 @@
     {
       "path": "examples/java-jpa-lab/src/test/java/academia/pedidos/EnvioDaoTest.java",
       "lines": 60,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/java-jpa-lab/src/test/java/academia/pedidos/EnvioJdbcRepositoryTest.java",
+      "lines": 51,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -14004,7 +14028,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-17.md",
-      "lines": 188,
+      "lines": 192,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14018,9 +14042,9 @@
         "#### Subtema 17.3 \u00b7 Convierte filas en objetos simples \u00b7 8 min",
         "#### Subtema 17.4 \u00b7 Valida el ordenamiento din\u00e1mico \u00b7 10 min",
         "### Tema 2: `@Transactional`, rollback y l\u00edmites de transacci\u00f3n",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda y modelo mental"
+        "#### Subtema 17.5 \u00b7 Confirma dos cambios como una unidad \u00b7 8 min",
+        "#### Subtema 17.6 \u00b7 Revierte el primer cambio si el segundo falla \u00b7 8 min",
+        "#### Subtema 17.7 \u00b7 Decide qu\u00e9 excepciones revierten \u00b7 8 min"
       ]
     },
     {

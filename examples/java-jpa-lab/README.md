@@ -9,7 +9,7 @@ cd examples/java-jpa-lab
 ./mvnw test
 ```
 
-Los doce tests del laboratorio muestran:
+Los quince tests del laboratorio muestran:
 
 - `guardaLosDosLadosYConsultaPorClienteConJpql`: guarda cliente y pedidos, consulta directamente `pedido.cliente_id`, vacía el contexto y comprueba la consulta JPQL.
 - `persistirClientePropagaPersistenciaPeroNoBorrado`: comprueba que `CascadeType.PERSIST` guarda el agregado y que Hibernate rechaza borrar el cliente mientras los pedidos conservan esa referencia. No se presenta el fallo del proveedor como una prueba directa de PostgreSQL.
@@ -18,5 +18,6 @@ Los doce tests del laboratorio muestran:
 - `accederRelacionLazyDespuesDeSepararLaEntidadFallaConDiagnosticoClaro`: cierra el EntityManager y comprueba el límite de una relación `LAZY` no cargada.
 - `paginaResumenConSoloLasColumnasQueNecesitaLaLista`: pagina un DTO con referencia y nombre, sin devolver entidades completas.
 - `EnvioJdbcRepositoryTest`: con `@JdbcTest`, verifica `JdbcTemplate`, parámetros, mapeo a record y la allowlist de columnas de orden.
+- `LiquidacionServiceTest`: ejecuta una liquidación Spring y comprueba commit, rollback ante error de negocio y `rollbackFor` para una excepción checked.
 
 En esta práctica H2 es desechable: al cerrar el proceso, los datos desaparecen. El ejemplo no certifica comportamiento de PostgreSQL, caché de segundo nivel, Querydsl, bloqueo entre transacciones ni Testcontainers. Esos temas requieren sus propias configuraciones y pruebas.

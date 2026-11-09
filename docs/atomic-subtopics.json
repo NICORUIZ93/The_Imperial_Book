@@ -93,10 +93,10 @@
     },
     "spring-boot": {
       "topics": 111,
-      "completeTopics": 56,
-      "topicsWith3to6Subtopics": 87,
-      "subtopics": 307,
-      "completeSubtopics": 198
+      "completeTopics": 57,
+      "topicsWith3to6Subtopics": 88,
+      "subtopics": 311,
+      "completeSubtopics": 202
     }
   },
   "topics": {
@@ -14930,9 +14930,66 @@
       {
         "module": 17,
         "topic": "### Tema 2: `@Transactional`, rollback y límites de transacción",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 4,
+        "subtopics": [
+          {
+            "id": "17.5",
+            "title": "#### Subtema 17.5 · Confirma dos cambios como una unidad · 8 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "17.6",
+            "title": "#### Subtema 17.6 · Revierte el primer cambio si el segundo falla · 8 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "17.7",
+            "title": "#### Subtema 17.7 · Decide qué excepciones revierten · 8 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "17.8",
+            "title": "#### Subtema 17.8 · Mantén el límite dentro del bean y la base · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 18,

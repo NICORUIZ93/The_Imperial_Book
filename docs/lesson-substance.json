@@ -1690,9 +1690,9 @@
     }
   ],
   "summary": {
-    "fingerprint": "856ff2998487db4e5467ffe2b72fadca60619effc7d37f74c750195c978a3142",
+    "fingerprint": "ecf9ebd9adbfeffb7cbe2cb49b74ce8e6829da8168e8675afdc0f4d4469697ad",
     "issues": {
-      "andamiaje-generico": 121,
+      "andamiaje-generico": 120,
       "bloque-repetido": 163,
       "cola-tras-cierre": 331,
       "parrafo-repetido": 5,
@@ -1706,7 +1706,7 @@
     "modules": 256,
     "modulesWithLegacySections": 178,
     "topics": 1185,
-    "topicsWithIssues": 406
+    "topicsWithIssues": 405
   },
   "topics": {
     "android": [
@@ -10582,11 +10582,9 @@
         "words": 797
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 17,
-        "tailWords": 185,
+        "tailWords": 0,
         "topic": "Tema 2: `@Transactional`, rollback y límites de transacción",
         "words": 811
       },
