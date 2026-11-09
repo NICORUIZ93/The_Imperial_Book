@@ -1690,7 +1690,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "44a0b68e92e0600d37dc57f18bf50e7a91cef6657119cf253050eabc38d365d4",
+    "fingerprint": "2e75a215ace5e2dd80fbcda8239c51801539cc270c16eefeb35c50557e0109f9",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10507,9 +10507,9 @@
       {
         "issues": [],
         "module": 15,
-        "tailWords": 159,
+        "tailWords": 0,
         "topic": "Tema 1: Backpressure real en WebFlux con reactor-test",
-        "words": 944
+        "words": 873
       },
       {
         "issues": [],

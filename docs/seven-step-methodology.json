@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 35,
-      "prerequisites": 57,
-      "context": 35,
-      "theoryAnalogy": 35,
-      "guidedDemo": 35,
+      "objective": 34,
+      "prerequisites": 56,
+      "context": 34,
+      "theoryAnalogy": 34,
+      "guidedDemo": 34,
       "codeExplanation": 111,
       "execution": 100,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 35,
-      "independentPractice": 35,
-      "closure": 35,
-      "commonErrors": 35,
+      "guidedPractice": 34,
+      "independentPractice": 34,
+      "closure": 34,
+      "commonErrors": 34,
       "resources": 61,
-      "standaloneExample": 37,
+      "standaloneExample": 36,
       "learningEvidence": 68,
-      "complete": 35
+      "complete": 34
     }
   },
   "topics": {
@@ -29121,26 +29121,26 @@
         "module": 15,
         "topic": "Tema 1: Backpressure real en WebFlux con reactor-test",
         "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "objective": false,
+          "prerequisites": false,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
           "resources": true,
-          "standaloneExample": true,
+          "standaloneExample": false,
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 6,
+          "complete": false
         }
       },
       {

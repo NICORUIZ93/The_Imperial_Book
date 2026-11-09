@@ -3,123 +3,110 @@
 
 ## Aprende construyendo
 
-Este módulo cierra el nivel "master" del track con seis técnicas avanzadas, cada una verificada con una herramienta real y oficial del ecosistema, sin sustituir infraestructura por descripción: `reactor-test` para backpressure real, el patrón oficial de Testcontainers para contenedores reutilizados, ArchUnit para congelar reglas arquitectónicas, Resilience4j Bulkhead/RateLimiter, un orquestador de saga con compensación real, y un event store con replay real.
+Este módulo cierra el nivel "master" del track con ocho temas avanzados: backpressure medido con `reactor-test`, reutilización de contenedores Testcontainers, reglas con ArchUnit, Bulkhead y RateLimiter con Resilience4j, una saga con compensación, event sourcing con replay, recuperación de compensaciones fallidas y Clean Architecture con DDD táctico. Cada tema debe enlazar sus herramientas y pruebas reales; el inventario de herramientas no sustituye evidencia de ejecución.
 
 ### Tema 1: Backpressure real en WebFlux con reactor-test
 
-#### Paso 1 · Objetivo y preparación
+**Objetivo observable:** usar `StepVerifier` para pedir elementos por tandas y comprobar los valores emitidos y las solicitudes que llegan al origen.
 
-Al finalizar podrás demostrar, con `StepVerifier` y una demanda inicial controlada, que un `Flux` respeta el backpressure real de Reactive Streams: solo emite exactamente lo que el suscriptor solicitó, ni un elemento más.
+**¿Por qué es importante?** Si el consumidor va más lento que el productor, Reactive Streams deja que solicite la cantidad que puede procesar. Los operadores pueden guardar elementos o cambiar las tandas de demanda; por eso la posición donde medimos importa.
 
-**Conocimiento previo:** Módulo 9 de este track (Mono, Flux, StepVerifier).
+**Antes de empezar:** conocer `Flux` y una prueba básica de `StepVerifier` (Módulo 9). Continúa en el ejemplo existente `examples/spring-reactor-rutaflow/`, que ya incluye `reactor-test`.
 
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** Netty (el servidor sobre el que corre WebFlux) usa un pequeño número de threads de event loop; sin backpressure real, un productor rápido podría saturar la memoria de un consumidor lento acumulando elementos sin control. Reactive Streams resuelve esto con demanda explícita: el consumidor pide cuántos elementos quiere, no al revés.
-
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** demanda explícita (`request(n)`), `doOnRequest`, demanda ilimitada por defecto.
-
-Un `Subscriber` de Reactive Streams debe llamar `request(n)` para indicar cuántos elementos está dispuesto a recibir; sin esa llamada explícita, no fluye ningún dato. La mayoría de consumidores (incluyendo el `subscribe()` simple) solicitan demanda ilimitada (`Long.MAX_VALUE`) por defecto, lo cual anula el propósito del backpressure si el consumidor real no puede procesar a esa velocidad.
-
-**Analogía:** backpressure es un trabajador de línea de ensamblaje que solo pide "dame 3 piezas más" cuando termina de procesar las anteriores, en vez de que la línea le arroje piezas sin parar independientemente de su capacidad de procesarlas.
-
-**Diagrama:**
+```bash
+cd examples/spring-reactor-rutaflow
+./mvnw -q -Dtest=BackpressureDemandTest test
+```
 
 ```mermaid
 sequenceDiagram
-  participant S as Suscriptor
-  participant F as Flux
-  S->>F: request(3)
-  F-->>S: elemento 1, 2, 3
-  S->>F: request(7)
-  F-->>S: elemento 4...10
+  participant T as Test StepVerifier
+  participant F as Flux.range
+  T->>F: demanda inicial 0
+  T->>F: request(3)
+  F-->>T: valores 1, 2, 3
+  T->>F: request(7)
+  F-->>T: valores 4 a 10
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Subtema 15.1.1: Empieza con cero solicitudes · 8 min
 
-Parte de una carpeta vacía y crea `src/test/java/io/academia/master/backpressure/BackpressureRealTest.java`:
+**Contexto.** `Flux.range(1, 10)` produce diez enteros. Para ver cuándo llegan, `StepVerifier` puede suscribirse con una demanda inicial de cero.
 
-```bash
-mkdir demo-backpressure
-cd demo-backpressure
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=webflux -d javaVersion=25 -o app.zip
-unzip app.zip
-mkdir -p src/test/java/io/academia/master/backpressure
-```
+**Hazlo tú.** Abre `src/test/java/academia/rutaflow/reactor/BackpressureDemandTest.java`. Encuentra `StepVerifier.create(source, 0)` y la lista `received`. Corre el comando del laboratorio.
+
+**Resultado esperado.** El test confirma que la lista sigue vacía justo después de la suscripción; los valores aparecen solo después de `thenRequest`.
+
+**Fallo deliberado.** Cambia `create(source, 0)` por `create(source)`. Ejecuta `emiteTresYDespuesSieteSoloCuandoElSuscriptorLosSolicita`: llegan los diez valores antes de la comprobación de lista vacía. Restaura `0`.
+
+**Entiende.** La demanda es un pedido de elementos, como pedir tres piezas de una línea de armado. El productor no debe enviar más valores que los pedidos por esa suscripción.
+
+**Cierra.** Describe qué cambio observable produjo quitar la demanda inicial controlada.
+
+#### Subtema 15.1.2: Solicita tres y luego siete · 8 min
+
+**Contexto.** La prueba observa tanto lo recibido como las llamadas de demanda al `Flux`.
+
+**Hazlo tú.** Lee el tramo del test y predice qué valores aparecen tras cada pedido:
 
 ```java
-// src/test/java/io/academia/master/backpressure/BackpressureRealTest.java
-package io.academia.master.backpressure;
+StepVerifier.create(source, 0)
+    .thenRequest(3).expectNext(1, 2, 3)
+    .thenRequest(7).expectNext(4, 5, 6, 7, 8, 9, 10)
+    .verifyComplete();
 
-import org.junit.jupiter.api.Test;
-import reactor.core.publisher.Flux;
-import reactor.test.StepVerifier;
-
-import java.util.concurrent.CopyOnWriteArrayList;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-class BackpressureRealTest {
-
-    @Test
-    void elFluxSoloEmiteExactamenteLoQueElSuscriptorSolicito() {
-        CopyOnWriteArrayList<Long> demandasSolicitadas = new CopyOnWriteArrayList<>();
-
-        Flux<Integer> flux = Flux.range(1, 10)
-            .doOnRequest(demandasSolicitadas::add); // registra CADA solicitud real de demanda
-
-        StepVerifier.create(flux, 0) // arranca con demanda 0: nada fluye hasta pedirlo explícitamente
-            .thenRequest(3)
-            .expectNext(1, 2, 3)
-            .thenRequest(7)
-            .expectNext(4, 5, 6, 7, 8, 9, 10)
-            .verifyComplete();
-
-        assertThat(demandasSolicitadas).containsExactly(3L, 7L); // exactamente dos solicitudes reales: 3 y luego 7
-    }
-}
+assertThat(upstreamRequests).containsExactly(3L, 7L);
 ```
 
-```bash
-./mvnw test -Dtest=BackpressureRealTest
-```
+Ejecuta la prueba y compara tu predicción con `upstreamRequests`.
 
-**Resultado esperado:** `BUILD SUCCESS` con el test en verde: `doOnRequest` registra REALMENTE las dos solicitudes de demanda (`3` y `7`, no una lista simulada), y `StepVerifier` con demanda inicial `0` confirma que ningún elemento fluye hasta que se solicita explícitamente — el backpressure real de Reactive Streams, no una descripción teórica.
+**Resultado esperado.** El consumidor ve los diez valores en orden en dos grupos, y `doOnRequest` registra exactamente `3` y `7` en ese punto del flujo.
 
-**Fallo deliberado:** cambia `StepVerifier.create(flux, 0)` por `StepVerifier.create(flux)` (sin demanda inicial explícita, el valor por defecto) y ejecuta de nuevo. La aserción `containsExactly(3L, 7L)` FALLA, porque ahora `demandasSolicitadas` contiene una única entrada `Long.MAX_VALUE` — diagnostica confirmando que el `StepVerifier` por defecto (como la mayoría de consumidores reales) solicita demanda ilimitada de inmediato, anulando cualquier control de backpressure. Restaura la demanda inicial `0` antes de continuar.
+**Fallo deliberado.** Cambia el segundo `.thenRequest(7)` a `.thenRequest(6)`. `verifyComplete` falla porque queda un elemento sin solicitar. Restaura la cantidad y corre la prueba verde.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**Entiende.** `thenRequest(n)` aumenta la demanda acumulada; no reinicia el pedido anterior. `doOnRequest` registra la solicitud que llega a esa ubicación del publisher.
 
-1. Cambia la demanda inicial a `1` y solicita de a un elemento por vez (`thenRequest(1)` repetido 10 veces), confirmando que `demandasSolicitadas` contiene diez entradas de `1L`.
-2. Agrega un `.limitRate(4)` al Flux y documenta, con un test, cómo cambia el patrón de solicitudes de demanda registradas por `doOnRequest`.
-3. Simula un consumidor lento con `.delayElements(Duration.ofMillis(50))` y confirma con `StepVerifier` (usando su reloj virtual) que el tiempo total respeta ese retraso por elemento.
-4. Escribe de memoria (sin mirar) un `Flux` con `doOnRequest`, y un `StepVerifier` con demanda inicial `0` que confirme el backpressure real. Compara después contra el patrón del Paso 4.
+**Cierra.** Guarda el resultado JUnit y los dos valores registrados por la lista.
 
-**Pista:** `StepVerifier.create(publisher, initialRequest)` es la sobrecarga oficial de `reactor-test` que permite arrancar con una demanda inicial distinta de la ilimitada por defecto — imprescindible para probar backpressure real en vez de el camino feliz sin restricciones.
+#### Subtema 15.1.3: Mira la demanda sin límite · 8 min
 
-#### Paso 6 · Práctica independiente
+**Contexto.** Si no configuras demanda inicial, `StepVerifier.create(source)` solicita demanda ilimitada para recorrer la secuencia y terminarla.
 
-**Completa el código:** rellena el espacio con el método de `StepVerifier` que solicita una cantidad específica de elementos:
+**Hazlo tú.** Ejecuta `stepVerifierSinParametroInicialSolicitaDemandaIlimitada` y lee la lista capturada por `doOnRequest`.
+
+**Resultado esperado.** El test registra `Long.MAX_VALUE`, que Reactor puede tratar como demanda efectivamente ilimitada, y consume los tres valores finitos.
+
+**Fallo deliberado.** Cambia `StepVerifier.create(source)` en ese test por `StepVerifier.create(source, 0).thenRequest(3)`. La aserción de demanda ilimitada falla porque el origen vio `3`, no `Long.MAX_VALUE`. Restaura el valor por defecto y corre la suite.
+
+**Entiende.** **Límite:** esta prueba mide `Flux.range`, no demuestra por sí sola cuánto almacena cada operador ni que un endpoint WebFlux vaya a soportar cualquier carga. `flatMap`, `buffer` y otros operadores pueden cambiar la demanda hacia arriba.
+
+**Cierra.** Explica por qué “usa WebFlux” no equivale a “memoria ilimitada protegida”.
+
+#### Subtema 15.1.4: Observa cómo `limitRate` cambia las tandas · 10 min
+
+**Contexto.** El consumidor sigue viendo lo que solicitó, pero `limitRate` agrupa las peticiones que llegan al origen.
+
+**Hazlo tú.** En `limitRateAgrupaLoQueSolicitaAlOrigen`, encuentra `.limitRate(4, 0)` y revisa dónde se puso `doOnRequest`:
 
 ```java
-StepVerifier.create(flux, 0)
-    .____(3)
-    .expectNext(1, 2, 3)
+Flux<Integer> source = Flux.range(1, 10)
+    .doOnRequest(upstreamRequests::add)
+    .limitRate(4, 0);
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `Flux` con `doOnRequest` y un test que confirme, con demanda inicial `0`, que el backpressure real limita lo emitido. Compara después contra el patrón del Paso 4.
+Ejecuta `./mvnw -q -Dtest=BackpressureDemandTest test`.
 
-#### Paso 7 · Cierre y evidencia
+**Resultado esperado.** StepVerifier conserva los valores y su orden; la lista del origen registra tandas `4`, `4`, `4`, incluida la solicitud final de dos elementos que Reactor completa al tamaño de tanda configurado.
 
-Ya demuestras con `reactor-test` que el backpressure de Reactive Streams es un mecanismo real de demanda explícita, no una descripción abstracta. El siguiente tema acelera la suite de tests reutilizando contenedores de Testcontainers entre clases. **Evidencia:** entrega el resultado de `BackpressureRealTest` en verde, y la demanda ilimitada real que produce el fallo deliberado sin `StepVerifier.create(flux, 0)`. Fuentes oficiales: [Project Reactor — Testing](https://projectreactor.io/docs/core/release/reference/testing.html).
+**Fallo deliberado.** Cambia temporalmente el tamaño a `2` y corre el test: la expectativa deja de coincidir; `doOnRequest` observó `[2, 2, 2, 2, 2, 2]` en vez de `[4, 4, 4]`. Restaura el `4` original y confirma los tests verdes.
 
-**Errores comunes:** asumir que backpressure "simplemente funciona" sin verificar la demanda real solicitada; dejar que un consumidor por defecto solicite demanda ilimitada cuando el caso de uso requiere control explícito.
+**Entiende.** Los operadores pueden transformar demanda entre suscriptor y origen. Para evaluar el proyecto integrador, coloca la medición en el límite que quieres comprender y prueba con el operador real de tu cadena.
 
-**Cuándo no usarlo:** para streams pequeños y acotados donde la memoria del consumidor nunca es un riesgo real, controlar la demanda explícitamente agrega complejidad sin ningún beneficio medible.
+**Cierra.** Evidencia: reporte verde de `BackpressureDemandTest`, captura de demandas `3/7` y `4/4/4`, y explicación del cambio con `limitRate`.
 
-Verificar backpressure con `reactor-test` es la prueba que confirmaría que el proyecto integrador de este track (microservicio productivo, Módulo 12), si usa WebFlux, no colapsa bajo carga.
+**Transferencia al proyecto integrador:** si una ruta WebFlux procesa un flujo grande, prueba la cadena real con demanda limitada y revisa operadores que almacenan o solicitan elementos por adelantado; no uses este ejemplo como prueba de carga del servicio.
+
+**Fuentes oficiales:** [Project Reactor: testing](https://projectreactor.io/docs/core/release/reference/testing.html), [Project Reactor: backpressure y operadores](https://projectreactor.io/docs/core/release/reference/subscribe-backpressure.html) y [Reactive Streams: reglas de demanda](https://github.com/reactive-streams/reactive-streams-jvm).
 
 ### Tema 2: Contenedores Testcontainers reutilizados entre clases
 

@@ -402,6 +402,10 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
 [Abrir lección completa](../web/public/content/spring-boot/modulo-15.md)
 
 - [pendiente de migrar] Tema 1: Backpressure real en WebFlux con reactor-test
+  - pendiente Subtema 15.1.1: Empieza con cero solicitudes · 8 min
+  - pendiente Subtema 15.1.2: Solicita tres y luego siete · 8 min
+  - pendiente Subtema 15.1.3: Mira la demanda sin límite · 8 min
+  - pendiente Subtema 15.1.4: Observa cómo `limitRate` cambia las tandas · 10 min
 - [pendiente de migrar] Tema 2: Contenedores Testcontainers reutilizados entre clases
 - [pendiente de migrar] Tema 3: Arquitectura hexagonal verificada con ArchUnit
 - [pendiente de migrar] Tema 4: Bulkhead y RateLimiter de Resilience4j

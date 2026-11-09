@@ -1469,7 +1469,16 @@ explican esos límites y remiten a M13 para entrega fiable. Las referencias
 primarias consultadas son Spring transaction-bound events, propiedades
 multipart de Spring Boot, Java ImageIO y OWASP File Upload.
 
-El siguiente paso de expansión es Spring Boot M15 T1, “Backpressure real en
-WebFlux con reactor-test”. Revisa si el ejemplo que cita el tema existe y corre
-tal como está escrito; conserva el contrato Contexto → Hazlo tú → Entiende →
-Cierra, amplía por subtemas observables y entrega cada tema en su propio commit.
+Spring Boot M15 T1, “Backpressure real en WebFlux con reactor-test”, se pasó a
+cuatro subtemas y corrigió el conteo introductorio del módulo de 6 a 8 temas.
+Se reutilizó `examples/spring-reactor-rutaflow/`, donde ya estaba la dependencia
+`reactor-test`, y se añadió `BackpressureDemandTest`. La prueba mide una solicitud
+inicial controlada y grupos `3, 7`; otra registra la demanda por defecto de
+`Long.MAX_VALUE`; una tercera confirma que `limitRate(4, 0)` solicita al origen
+`4, 4, 4`. La suite completa pasó: 7 pruebas, 0 fallos. Al cambiar el
+StepVerifier por demanda por defecto, falló la expectativa de lista vacía; al
+cambiar `limitRate(4, 0)` a `(2, 0)`, se observaron seis solicitudes de `2` en
+lugar de tres de `4`. Ambas mutaciones se restauraron y la suite volvió a pasar.
+El test usa `Flux.range` local: no demuestra memoria, rendimiento ni capacidad
+de carga de una app WebFlux real. Siguiente: M15 T2, contenedores Testcontainers
+reutilizados entre clases.
