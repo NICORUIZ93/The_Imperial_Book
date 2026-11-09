@@ -357,6 +357,10 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - pendiente Subtema 13.3.3: Comprueba el error que ve el consumidor · 8 min
   - pendiente Subtema 13.3.4: Protege cambios entre despliegues · 10 min
 - [pendiente de migrar] Tema 4: Observabilidad sirve a un objetivo y a una decisión
+  - pendiente Subtema 13.4.1: Instrumenta el trabajo de negocio · 8 min
+  - pendiente Subtema 13.4.2: Sigue una solicitud entre servicios · 10 min
+  - pendiente Subtema 13.4.3: Mantén las etiquetas de métricas acotadas · 8 min
+  - pendiente Subtema 13.4.4: Convierte la señal en una decisión · 10 min
 
 ### Módulo 14: Backend de entregas: MySQL espacial, archivos y tiempo real
 

@@ -28,17 +28,17 @@ Para ver el diagrama de spans, inicia el backend con `docker compose up -d`, eje
 `./mvnw -q package`, y levanta cada proceso en una terminal:
 
 ```bash
-java -jar target/spring-tracing-rutaflow-0.1.0.jar --spring.application.name=entregas --rutaflow.role=delivery --server.port=8081 --rutaflow.inventory-url=http://localhost:8082
+java -jar target/spring-tracing-rutaflow-0.1.0.jar --spring.application.name=entregas --rutaflow.role=delivery --server.port=18081 --rutaflow.inventory-url=http://localhost:18082
 ```
 
 ```bash
-java -jar target/spring-tracing-rutaflow-0.1.0.jar --spring.application.name=inventario --rutaflow.role=inventory --server.port=8082 --rutaflow.inventory-url=http://localhost:8082
+java -jar target/spring-tracing-rutaflow-0.1.0.jar --spring.application.name=inventario --rutaflow.role=inventory --server.port=18082 --rutaflow.inventory-url=http://localhost:18082
 ```
 
 Llama a Entregas y abre Jaeger en `http://localhost:16686`:
 
 ```bash
-curl -s http://localhost:8081/deliveries/RF-314
+curl -s http://localhost:18081/deliveries/RF-314
 ```
 
 La respuesta esperada es `{"pedido":"RF-314","estado":"en ruta","inventario":"Inventario reservado para RF-314"}`.

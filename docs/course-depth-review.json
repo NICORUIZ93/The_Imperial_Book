@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 254,
+    "topicsWithSignals": 255,
     "newLaboratories": 25
   },
   "priorities": {
@@ -12611,7 +12611,9 @@
       "title": "Tema 4: Observabilidad sirve a un objetivo y a una decisión",
       "file": "web/public/content/spring-boot/modulo-13.md",
       "line": 339,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"

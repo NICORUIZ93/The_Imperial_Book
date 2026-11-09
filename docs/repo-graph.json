@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 1427,
+      "lines": 1430,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 16315,
+      "lines": 16372,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -600,7 +600,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3899,
+      "lines": 3906,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13628,
+      "lines": 13630,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -677,7 +677,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 155,
+      "lines": 156,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 521,
+      "lines": 525,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -6928,7 +6928,7 @@
     },
     {
       "path": "examples/spring-tracing-rutaflow/scripts/verify-trace.sh",
-      "lines": 100,
+      "lines": 102,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -6936,7 +6936,7 @@
     },
     {
       "path": "examples/spring-tracing-rutaflow/src/main/java/academia/rutaflow/tracing/DeliveryController.java",
-      "lines": 38,
+      "lines": 39,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -13158,7 +13158,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-13.md",
-      "lines": 531,
+      "lines": 485,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

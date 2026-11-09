@@ -14,10 +14,10 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | Ejecución | 1117 | 68 |
 | Resultado | 1183 | 2 |
 | Modificación | 1130 | 55 |
-| Conexión con un proyecto | 1093 | 92 |
+| Conexión con un proyecto | 1092 | 93 |
 | Modelo mental | 1185 | 0 |
-| Límites | 1125 | 60 |
-| **Perfil de criterios detectado** | **1077** | **108** |
+| Límites | 1124 | 61 |
+| **Perfil de criterios detectado** | **1076** | **109** |
 
 ## Prioridad por track
 
@@ -36,7 +36,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | node | 83 | 0 | 0 | 0 | 0 | 1 | 2 | 1 |
 | react | 58 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | rutaflow | 29 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| spring-boot | 111 | 5 | 0 | 10 | 0 | 7 | 29 | 18 |
+| spring-boot | 111 | 5 | 0 | 10 | 0 | 7 | 30 | 19 |
 
 ## Pendientes por tema
 
@@ -126,6 +126,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 - [spring-boot · módulo 13](../web/public/content/spring-boot/modulo-13.md) · Tema 1: `@Transactional` funciona en una frontera, no como encantamiento: ejecución, modificación, conexión con un proyecto.
 - [spring-boot · módulo 13](../web/public/content/spring-boot/modulo-13.md) · Tema 2: Recuperación implica duplicación segura: conexión con un proyecto.
 - [spring-boot · módulo 13](../web/public/content/spring-boot/modulo-13.md) · Tema 3: Contratos ejecutables protegen despliegues independientes: conexión con un proyecto, límites.
+- [spring-boot · módulo 13](../web/public/content/spring-boot/modulo-13.md) · Tema 4: Observabilidad sirve a un objetivo y a una decisión: conexión con un proyecto, límites.
 - [spring-boot · módulo 21](../web/public/content/spring-boot/modulo-21.md) · Tema 1: Productor, tópico, key y consumidor: conexión con un proyecto, límites.
 - [spring-boot · módulo 21](../web/public/content/spring-boot/modulo-21.md) · Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia: conexión con un proyecto.
 - [spring-boot · módulo 21](../web/public/content/spring-boot/modulo-21.md) · Tema 3: Outbox transaccional y flujo de negocio: conexión con un proyecto.

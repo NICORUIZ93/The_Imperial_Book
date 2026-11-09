@@ -25,6 +25,7 @@ public class DeliveryController {
     DeliveryResponse deliver() {
         return Observation.createNotStarted("rutaflow.delivery.prepare", observations)
                 .lowCardinalityKeyValue("operation", "reserve-inventory")
+                .highCardinalityKeyValue("pedidoId", "RF-314")
                 .observe(() -> {
                     InventoryResponse stock = inventory.get().uri("/inventory/RF-314")
                             .retrieve().body(InventoryResponse.class);

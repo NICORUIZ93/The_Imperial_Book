@@ -99,8 +99,8 @@
     "spring-boot": {
       "topics": 111,
       "code": 106,
-      "commentedCode": 46,
-      "mermaid": 39,
+      "commentedCode": 45,
+      "mermaid": 38,
       "archifyVisual": 2,
       "asciiVisual": 4,
       "misleadingDiagramLabel": 0,
@@ -2659,6 +2659,13 @@
       "track": "spring-boot",
       "module": 13,
       "topic": "Tema 3: Contratos ejecutables protegen despliegues independientes",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 13,
+      "topic": "Tema 4: Observabilidad sirve a un objetivo y a una decisión",
       "missingCode": false,
       "missingComments": true
     },

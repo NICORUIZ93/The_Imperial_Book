@@ -94,8 +94,8 @@
     "spring-boot": {
       "topics": 111,
       "completeTopics": 53,
-      "topicsWith3to6Subtopics": 69,
-      "subtopics": 235,
+      "topicsWith3to6Subtopics": 70,
+      "subtopics": 239,
       "completeSubtopics": 186
     }
   },
@@ -13778,8 +13778,65 @@
       {
         "module": 13,
         "topic": "### Tema 4: Observabilidad sirve a un objetivo y a una decisión",
-        "subtopicCount": 0,
-        "subtopics": [],
+        "subtopicCount": 4,
+        "subtopics": [
+          {
+            "id": "13.4",
+            "title": "#### Subtema 13.4.1: Instrumenta el trabajo de negocio · 8 min",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "13.4",
+            "title": "#### Subtema 13.4.2: Sigue una solicitud entre servicios · 10 min",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "13.4",
+            "title": "#### Subtema 13.4.3: Mantén las etiquetas de métricas acotadas · 8 min",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "13.4",
+            "title": "#### Subtema 13.4.4: Convierte la señal en una decisión · 10 min",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": true
+            },
+            "complete": false
+          }
+        ],
         "complete": false
       },
       {

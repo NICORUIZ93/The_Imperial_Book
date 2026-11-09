@@ -338,137 +338,91 @@ cd examples/spring-boot-integrador-rutaflow
 
 ### Tema 4: Observabilidad sirve a un objetivo y a una decisión
 
-#### Paso 1 · Objetivo y preparación
+¿Por qué es importante? Si una solicitud pasa por varios servicios, un error aislado no dice dónde se perdió ni cuánto afecta al usuario. El laboratorio `examples/spring-tracing-rutaflow/` enlaza una petición HTTP con dos servicios y Jaeger.
 
-Al finalizar podrás confirmar, con `TestObservationRegistry` (la utilidad oficial de test de Micrometer Observation), que una operación de negocio registra una observación real con tags de baja cardinalidad, y explicar por qué un tag de alta cardinalidad como un `orderId` no debe usarse como label métrico.
+#### Subtema 13.4.1: Instrumenta el trabajo de negocio · 8 min
 
-**Conocimiento previo:** Módulo 7 de este track (Actuator y Micrometer).
+**Contexto.** Spring registra automáticamente parte del tráfico; una observación propia debe señalar una operación que ayude a contestar una pregunta.
 
-#### Paso 2 · Contexto y caso real
+**Hazlo tú.** En `src/main/java/academia/rutaflow/tracing/DeliveryController.java`, sigue el bloque que envuelve la llamada al inventario:
 
-**¿Por qué es importante?** Logs aislados no reconstruyen una operación que atraviesa HTTP, base de datos y Kafka; y retries sin un presupuesto de tiempo definido convierten una lentitud puntual en una saturación total del sistema. La observabilidad debe responder preguntas operativas concretas, no simplemente "llenar la cabina de luces".
-
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** Observation, baja cardinalidad, SLI/SLO, error budget.
-
-Spring Boot usa Micrometer Observation para métricas y trazas; la instrumentación automática cubre HTTP y repositorios, así que agrega observación de negocio donde responde una pregunta específica, evitando duplicar la automática. Los tags de baja cardinalidad incluyen resultado o tipo de operación; `userId`, `orderId` y URLs crudas pertenecen a logs/trazas protegidos, NUNCA a labels métricos (cada valor distinto de un tag multiplica la cantidad de series temporales almacenadas). Define un SLI desde la perspectiva del usuario (proporción de pedidos aceptados en menos de 500ms); el SLO usa una ventana de tiempo, y el error budget guía cuánto riesgo tomar.
-
-**Analogía:** observabilidad es un sistema de instrumentos con objetivos específicos, no llenar la cabina de luces. Una alarma útil indica impacto real y conduce a un procedimiento concreto, no solo parpadea.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-  A["Observation.createNotStarted('order.create')"] --> B["lowCardinalityKeyValue('channel', 'WEB')"]
-  B --> C[".observe(() -> ...)"]
-  C --> D[TestObservationRegistry confirma name + tags reales]
+```java
+Observation.createNotStarted("rutaflow.delivery.prepare", observations)
+    .lowCardinalityKeyValue("operation", "reserve-inventory")
+    .highCardinalityKeyValue("pedidoId", "RF-314")
+    .observe(() -> inventory.get().uri("/inventory/RF-314")
+        .retrieve().body(InventoryResponse.class));
 ```
 
-#### Paso 4 · Demostración guiada desde cero
-
-Continuando en `demo-consistencia` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía y genera un proyecto nuevo con `mkdir demo-observabilidad && cd demo-observabilidad && curl -fsSL https://start.spring.io/starter.zip -d dependencies=web,actuator -d javaVersion=25 -o app.zip && unzip app.zip`), agrega `io.micrometer:micrometer-observation-test` al `pom.xml` (la dependencia oficial de test de Micrometer) y crea `src/main/java/io/academia/consistencia/observabilidad/`:
+Empaqueta el proyecto para revisar que el ejemplo compila:
 
 ```bash
-mkdir -p src/main/java/io/academia/consistencia/observabilidad
+cd examples/spring-tracing-rutaflow
+./mvnw -q package -DskipTests
 ```
 
-```java
-// src/main/java/io/academia/consistencia/observabilidad/PedidoObservadoService.java
-package io.academia.consistencia.observabilidad;
+**Resultado esperado.** Maven crea el JAR del servicio sin ejecutar el flujo. La observación de negocio se llama `rutaflow.delivery.prepare` y etiqueta una operación fija.
 
-import io.micrometer.observation.Observation;
-import io.micrometer.observation.ObservationRegistry;
-import org.springframework.stereotype.Service;
+**Fallo deliberado.** Cambia el nombre de observación por `rutaflow.test.prepare`. Revisa el cambio en el código y restaura el nombre; el empaquetado por sí solo no prueba que Jaeger recibió una traza.
 
-@Service
-public class PedidoObservadoService {
-    private final ObservationRegistry registry;
+**Entiende.** Una observación marca trabajo y contexto. La evidencia de que se exportó se obtiene del backend de trazas, no de que el proyecto compile.
 
-    public PedidoObservadoService(ObservationRegistry registry) {
-        this.registry = registry;
-    }
+**Cierra.** Explica qué trabajo mide ese nombre y qué pregunta respondería durante un incidente.
 
-    public String crear(String canal) {
-        return Observation.createNotStarted("order.create", registry)
-            .lowCardinalityKeyValue("channel", canal) // baja cardinalidad: pocos valores posibles (WEB, MOBILE, API)
-            .observe(() -> "PED-" + System.nanoTime()); // NUNCA agregues aquí el orderId como tag
-    }
-}
-```
+#### Subtema 13.4.2: Sigue una solicitud entre servicios · 10 min
 
-Confirma con `TestObservationRegistry` (real, oficial, no una simulación) que la observación se registra con el nombre y el tag exactos:
+**Contexto.** La app de Entregas llama a Inventario por HTTP. El trace ID permite encontrar ambos spans como parte del mismo recorrido.
 
-```java
-// src/test/java/io/academia/consistencia/observabilidad/ObservabilidadTest.java
-package io.academia.consistencia.observabilidad;
-
-import io.micrometer.observation.tck.TestObservationRegistry;
-import io.micrometer.observation.tck.TestObservationRegistryAssert;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-class ObservabilidadTest {
-
-    private TestObservationRegistry registry;
-    private PedidoObservadoService servicio;
-
-    @BeforeEach
-    void iniciar() {
-        registry = TestObservationRegistry.create();
-        servicio = new PedidoObservadoService(registry);
-    }
-
-    @Test
-    void crearUnPedidoRegistraUnaObservacionRealConTagDeBajaCardinalidad() {
-        servicio.crear("WEB");
-
-        TestObservationRegistryAssert.assertThat(registry)
-            .hasObservationWithNameEqualTo("order.create")
-            .that()
-            .hasLowCardinalityKeyValue("channel", "WEB");
-    }
-}
-```
+**Hazlo tú.** Con Docker Compose o Podman Compose disponible, desde `examples/spring-tracing-rutaflow/` ejecuta:
 
 ```bash
-./mvnw test -Dtest=ObservabilidadTest
+./scripts/verify-trace.sh
 ```
 
-**Resultado esperado:** `BUILD SUCCESS` con el test en verde: `TestObservationRegistry` (la utilidad oficial de Micrometer para testear observaciones, registrada como dependencia real, no simulada) confirma que la operación `order.create` efectivamente se registró con el tag `channel=WEB`, exactamente el par nombre-valor real que un dashboard de producción consultaría.
+**Resultado esperado.** El script consulta `GET /deliveries/RF-314`, muestra la respuesta con inventario reservado y encuentra una traza con los servicios `entregas` e `inventario`. Guarda el trace ID que imprime.
 
-**Fallo deliberado:** cambia `lowCardinalityKeyValue("channel", canal)` por `lowCardinalityKeyValue("orderId", "PED-" + System.nanoTime())` (agregando un identificador único como tag) y documenta el resultado: el test de contrato de cardinalidad seguiría "pasando" técnicamente (el valor se registra), pero en un sistema de métricas real (Prometheus, por ejemplo) cada `orderId` distinto crearía una serie temporal nueva, y con miles de pedidos por día el sistema de métricas se degradaría o directamente rechazaría la cardinalidad — diagnostica confirmando por qué la disciplina de baja cardinalidad no es estilística: es un límite técnico real del sistema de métricas subyacente, aunque el propio test de `TestObservationRegistry` no lo capture directamente (esa protección adicional requiere un límite de cardinalidad configurado en el `MeterRegistry` de producción). Restaura `channel` antes de continuar.
+**Fallo deliberado.** En `DeliveryController.java`, cambia `/inventory/RF-314` por `/inventories/RF-314` y repite el script. Falla la respuesta esperada porque Inventario no tiene esa ruta. Restaura `/inventory/RF-314`.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**Entiende.** La llamada fallida ayuda a ubicar qué frontera revisar. La traza no corrige el error: aporta el recorrido para diagnosticarlo.
 
-1. Agrega un segundo tag de baja cardinalidad (`result`, con valores `success`/`failure`) a `PedidoObservadoService.crear(...)`, y confirma con un test que ambos casos (éxito y una excepción simulada) registran el tag correcto.
-2. Documenta, en un comentario, la diferencia entre un `correlationId` de negocio (que puede acompañar una traza) y un trace/span ID real generado por OpenTelemetry — el primero no reemplaza al segundo.
-3. Escribe una definición de SLI en una frase para tu propio dominio (por ejemplo, "proporción de confirmaciones de entrega procesadas en menos de 500ms") y documenta qué tag de baja cardinalidad (`result`) permitiría calcular ese SLI a partir de las observaciones instrumentadas.
-4. Escribe de memoria (sin mirar) un servicio instrumentado con `Observation` y un test `TestObservationRegistry` que confirme el nombre y un tag de baja cardinalidad. Compara después contra el patrón del Paso 4.
+**Cierra.** Indica qué servicio inició la petición y cuál debía reservar inventario.
 
-**Pista:** `TestObservationRegistryAssert.assertThat(registry).hasObservationWithNameEqualTo(...)` es la API oficial y fluida de aserciones de Micrometer para observaciones — encadenar `.that().hasLowCardinalityKeyValue(...)` es la forma idiomática de verificar tags específicos sin inspeccionar manualmente la estructura interna del registro.
+#### Subtema 13.4.3: Mantén las etiquetas de métricas acotadas · 8 min
 
-#### Paso 6 · Práctica independiente
+**Contexto.** Cada combinación distinta de etiquetas métricas puede crear una serie nueva. Los IDs de pedido cambian casi en cada solicitud.
 
-**Completa el código:** rellena el espacio con el método que agrega un tag de baja cardinalidad a una observación:
+**Hazlo tú.** En `DeliveryController.java`, compara la etiqueta fija `operation` con `pedidoId`, que cambia por entrega:
 
 ```java
-Observation.createNotStarted("order.create", registry)
-    .____("channel", canal)
-    .observe(() -> ...);
+.lowCardinalityKeyValue("operation", "reserve-inventory")
+.highCardinalityKeyValue("pedidoId", "RF-314")
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un servicio instrumentado con `Observation` y un tag de baja cardinalidad, y un test `TestObservationRegistry` que lo confirme. Compara después contra el patrón del Paso 4.
+**Resultado esperado.** `operation` puede etiquetar métricas y trazas; `pedidoId` se conserva para buscar la traza, pero Micrometer no lo convierte en tag métrico. Spring Boot envía etiquetas de alta cardinalidad solo a trazas.
 
-#### Paso 7 · Cierre y evidencia
+**Fallo deliberado.** Cambia temporalmente `highCardinalityKeyValue` por `lowCardinalityKeyValue` para `pedidoId`. Explica por qué muchos IDs pueden multiplicar las series de métricas. Restaura `highCardinalityKeyValue`.
 
-Ya confirmas con la utilidad oficial de test de Micrometer que una operación de negocio registra observaciones reales con tags de baja cardinalidad, y explicas por qué un identificador único como tag degradaría un sistema de métricas real. Este era el último tema del módulo; el siguiente paso es el laboratorio práctico que integra las cuatro garantías en un proyecto propio bajo fallos reales. **Evidencia:** entrega el resultado de `ObservabilidadTest` en verde, y la explicación del riesgo real de cardinalidad que produce el fallo deliberado. Fuentes oficiales: [Micrometer — Observation](https://docs.micrometer.io/micrometer/reference/observation.html) y [Spring Boot Actuator](https://docs.spring.io/spring-boot/reference/actuator/).
+**Entiende.** El trace ID agrupa spans del recorrido; `pedidoId` es contexto de negocio. Los dos ayudan a investigar, pero no son tags métricos.
 
-**Errores comunes:** usar un identificador único (`userId`, `orderId`, URL cruda) como tag de una métrica, degradando el sistema de métricas por alta cardinalidad; hacer que el liveness probe dependa de una base de datos externa, provocando reinicios masivos durante una caída ajena al proceso mismo.
+**Cierra.** Clasifica `operation`, `pedidoId` y `traceId`; justifica qué sistema debería recibir cada uno.
 
-**Cuándo no usarlo:** para una operación interna de altísima frecuencia y bajo valor diagnóstico individual (por ejemplo, cada iteración de un bucle interno), instrumentar cada una con una `Observation` dedicada puede generar más sobrecarga que valor operativo real.
+#### Subtema 13.4.4: Convierte la señal en una decisión · 10 min
 
-**Transferencia al proyecto integrador «microservicio productivo»:** Instrumenta la confirmación de entrega con una `Observation` etiquetada por `channel` y `result`, y define el SLI "proporción de confirmaciones procesadas en menos de 500ms" a partir de esas observaciones, nunca con el `shipmentId` como tag.
+**Contexto.** Una pantalla llena de gráficas no indica qué debe hacer el equipo. Elige una medida que describa una experiencia que importe.
+
+**Hazlo tú.** Completa este objetivo para el flujo de entregas: “Al menos ___ % de las confirmaciones terminan en menos de ___ ms durante ___ días”. Señala qué dato permitiría calcularlo y qué acción tomarías al incumplirlo.
+
+**Resultado esperado.** El SLI mide una proporción y una latencia; el SLO añade objetivo y ventana. Una traza aislada explica una solicitud, pero no calcula por sí sola el porcentaje de todas las solicitudes.
+
+**Fallo deliberado.** Usa como alerta “hay un span con error”. Explica por qué una solicitud fallida no revela si el servicio incumplió el objetivo para sus usuarios. Sustitúyelo por una medida de proporción/latencia y una acción concreta.
+
+**Entiende.** Métricas muestran tendencias agregadas; trazas ayudan a inspeccionar recorridos individuales. No uses liveness para reiniciar el proceso cada vez que una dependencia externa deja de responder.
+
+**Cierra.** Guarda el objetivo, su ventana y la primera acción operativa. La ejecución Jaeger sigue pendiente si no tienes Docker o Podman disponible.
+
+**Fuentes:** [Micrometer Observation](https://docs.micrometer.io/micrometer/reference/observation.html), [Spring Boot observability](https://docs.spring.io/spring-boot/reference/actuator/observability.html) y [OpenTelemetry: conceptos de señales](https://opentelemetry.io/docs/concepts/signals/).
+
+---
 
 ## Revisión oficial de plataforma — julio de 2026
 

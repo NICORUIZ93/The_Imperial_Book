@@ -3,6 +3,8 @@ set -euo pipefail
 
 root_dir="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$root_dir"
+deliveries_port="${DELIVERIES_PORT:-18081}"
+inventory_port="${INVENTORY_PORT:-18082}"
 
 ./mvnw -q clean package -DskipTests
 if command -v docker >/dev/null 2>&1; then
@@ -34,19 +36,19 @@ done
 [[ "$jaeger_ready" == true ]] || { echo 'Jaeger no inició en http://localhost:16686' >&2; exit 1; }
 java -jar target/spring-tracing-rutaflow-0.1.0.jar \
   --spring.application.name=entregas --rutaflow.role=delivery \
-  --server.port=8081 --rutaflow.inventory-url=http://localhost:8082 \
+  --server.port="$deliveries_port" --rutaflow.inventory-url="http://localhost:$inventory_port" \
   > /tmp/rutaflow-tracing-entregas.log 2>&1 &
 delivery_pid=$!
 java -jar target/spring-tracing-rutaflow-0.1.0.jar \
   --spring.application.name=inventario --rutaflow.role=inventory \
-  --server.port=8082 --rutaflow.inventory-url=http://localhost:8082 \
+  --server.port="$inventory_port" --rutaflow.inventory-url="http://localhost:$inventory_port" \
   > /tmp/rutaflow-tracing-inventario.log 2>&1 &
 inventory_pid=$!
 
 ready=false
 for attempt in $(seq 1 60); do
-  if curl -fsS http://localhost:8081/actuator/health >/dev/null 2>&1 && \
-     curl -fsS http://localhost:8082/actuator/health >/dev/null 2>&1; then
+  if curl -fsS "http://localhost:$deliveries_port/actuator/health" >/dev/null 2>&1 && \
+     curl -fsS "http://localhost:$inventory_port/actuator/health" >/dev/null 2>&1; then
     ready=true
     break
   fi
@@ -54,7 +56,7 @@ for attempt in $(seq 1 60); do
 done
 [[ "$ready" == true ]] || { echo 'Los dos servicios no iniciaron; revisa /tmp/rutaflow-tracing-*.log' >&2; exit 1; }
 
-response="$(curl -fsS http://localhost:8081/deliveries/RF-314)"
+response="$(curl -fsS "http://localhost:$deliveries_port/deliveries/RF-314")"
 printf 'Respuesta del flujo: %s\n' "$response"
 [[ "$response" == *'Inventario reservado para RF-314'* ]]
 

@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 42,
-      "prerequisites": 64,
-      "context": 42,
-      "theoryAnalogy": 42,
-      "guidedDemo": 42,
+      "objective": 41,
+      "prerequisites": 63,
+      "context": 41,
+      "theoryAnalogy": 41,
+      "guidedDemo": 41,
       "codeExplanation": 111,
       "execution": 100,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 42,
-      "independentPractice": 42,
-      "closure": 42,
-      "commonErrors": 42,
-      "resources": 66,
-      "standaloneExample": 44,
-      "learningEvidence": 73,
-      "complete": 42
+      "guidedPractice": 41,
+      "independentPractice": 41,
+      "closure": 41,
+      "commonErrors": 41,
+      "resources": 65,
+      "standaloneExample": 43,
+      "learningEvidence": 72,
+      "complete": 41
     }
   },
   "topics": {
@@ -28939,26 +28939,26 @@
         "module": 13,
         "topic": "Tema 4: Observabilidad sirve a un objetivo y a una decisión",
         "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "objective": false,
+          "prerequisites": false,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 4,
+          "complete": false
         }
       },
       {
