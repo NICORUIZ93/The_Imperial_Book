@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 31,
-      "prerequisites": 53,
-      "context": 31,
-      "theoryAnalogy": 31,
-      "guidedDemo": 31,
+      "objective": 30,
+      "prerequisites": 52,
+      "context": 30,
+      "theoryAnalogy": 30,
+      "guidedDemo": 30,
       "codeExplanation": 111,
       "execution": 100,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 31,
-      "independentPractice": 31,
-      "closure": 31,
-      "commonErrors": 31,
-      "resources": 61,
-      "standaloneExample": 33,
-      "learningEvidence": 67,
-      "complete": 31
+      "guidedPractice": 30,
+      "independentPractice": 30,
+      "closure": 30,
+      "commonErrors": 30,
+      "resources": 60,
+      "standaloneExample": 32,
+      "learningEvidence": 66,
+      "complete": 30
     }
   },
   "topics": {
@@ -29225,26 +29225,26 @@
         "module": 15,
         "topic": "Tema 5: Saga con compensación real",
         "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "objective": false,
+          "prerequisites": false,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 4,
+          "complete": false
         }
       },
       {

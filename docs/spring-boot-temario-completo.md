@@ -422,6 +422,10 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - pendiente Subtema 15.4.3: Cuenta permisos por período · 8 min
   - pendiente Subtema 15.4.4: Decide el límite y observa sus fronteras · 8 min
 - [pendiente de migrar] Tema 5: Saga con compensación real
+  - pendiente Subtema 15.5.1: Dibuja los pasos del pedido · 8 min
+  - pendiente Subtema 15.5.2: Ejecuta y compensa en orden inverso · 8 min
+  - pendiente Subtema 15.5.3: Compara fallo y éxito · 8 min
+  - pendiente Subtema 15.5.4: Delimita la demo y planea la recuperación · 8 min
 - [pendiente de migrar] Tema 6: Event Sourcing con replay real
 - [pendiente de migrar] Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar
 - [pendiente de migrar] Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework

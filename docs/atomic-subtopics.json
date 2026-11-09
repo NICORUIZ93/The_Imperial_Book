@@ -94,8 +94,8 @@
     "spring-boot": {
       "topics": 111,
       "completeTopics": 53,
-      "topicsWith3to6Subtopics": 80,
-      "subtopics": 279,
+      "topicsWith3to6Subtopics": 81,
+      "subtopics": 283,
       "completeSubtopics": 186
     }
   },
@@ -14482,8 +14482,65 @@
       {
         "module": 15,
         "topic": "### Tema 5: Saga con compensación real",
-        "subtopicCount": 0,
-        "subtopics": [],
+        "subtopicCount": 4,
+        "subtopics": [
+          {
+            "id": "15.5",
+            "title": "#### Subtema 15.5.1: Dibuja los pasos del pedido · 8 min",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "15.5",
+            "title": "#### Subtema 15.5.2: Ejecuta y compensa en orden inverso · 8 min",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "15.5",
+            "title": "#### Subtema 15.5.3: Compara fallo y éxito · 8 min",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "15.5",
+            "title": "#### Subtema 15.5.4: Delimita la demo y planea la recuperación · 8 min",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": true
+            },
+            "complete": false
+          }
+        ],
         "complete": false
       },
       {

@@ -19,7 +19,7 @@ Temas conformes a cuatro pasos: **157/1185**. Tracks inventariados: **14**.
 | node | 2 | 83 | 6 | 6 |
 | react | 0 | 58 | 0 | 0 |
 | rutaflow | 0 | 29 | 0 | 0 |
-| spring-boot | 53 | 111 | 279 | 186 |
+| spring-boot | 53 | 111 | 283 | 186 |
 
 ## Temas pendientes
 
@@ -1046,7 +1046,7 @@ Temas conformes a cuatro pasos: **157/1185**. Tracks inventariados: **14**.
 - M15 ### Tema 2: Contenedores Testcontainers reutilizados entre clases: 15.2: faltan context, action, deliberateFailure, understand, close; 15.2: faltan context, action, deliberateFailure, understand, close; 15.2: faltan context, action, deliberateFailure, understand, close; 15.2: faltan context, action, deliberateFailure, understand, close
 - M15 ### Tema 3: Arquitectura hexagonal verificada con ArchUnit: 15.3: faltan context, action, deliberateFailure, understand, close; 15.3: faltan context, action, deliberateFailure, understand, close; 15.3: faltan context, action, deliberateFailure, understand, close; 15.3: faltan context, action, deliberateFailure, understand, close
 - M15 ### Tema 4: Bulkhead y RateLimiter de Resilience4j: 15.4: faltan context, action, deliberateFailure, understand, close; 15.4: faltan context, action, deliberateFailure, understand, close; 15.4: faltan context, action, deliberateFailure, understand, close; 15.4: faltan context, action, deliberateFailure, understand, close
-- M15 ### Tema 5: Saga con compensación real: tiene 0 subtemas
+- M15 ### Tema 5: Saga con compensación real: 15.5: faltan context, action, deliberateFailure, understand, close; 15.5: faltan context, action, deliberateFailure, understand, close; 15.5: faltan context, action, deliberateFailure, understand, close; 15.5: faltan context, action, deliberateFailure, understand, close
 - M15 ### Tema 6: Event Sourcing con replay real: tiene 0 subtemas
 - M15 ### Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar: tiene 0 subtemas
 - M15 ### Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework: tiene 0 subtemas

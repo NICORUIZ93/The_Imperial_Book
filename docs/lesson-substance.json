@@ -1690,7 +1690,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "bc42e4f5f98cab251a6895a5c128d45f385162707beb6c34a2463b0bcc746b7d",
+    "fingerprint": "ea6f9ea703eb05751ca81ef1fb36351009f7400e2624ef594417ba3e1b482ed0",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10535,9 +10535,9 @@
       {
         "issues": [],
         "module": 15,
-        "tailWords": 157,
+        "tailWords": 0,
         "topic": "Tema 5: Saga con compensación real",
-        "words": 1136
+        "words": 804
       },
       {
         "issues": [],

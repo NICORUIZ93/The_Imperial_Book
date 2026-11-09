@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 16942,
+      "lines": 16999,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -600,7 +600,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3955,
+      "lines": 3962,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13650,
+      "lines": 13652,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 565,
+      "lines": 569,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -7033,6 +7033,14 @@
     {
       "path": "examples/spring-resilience-rutaflow/src/main/resources/application.yml",
       "lines": 9,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-resilience-rutaflow/src/test/java/academia/rutaflow/resilience/BulkheadRateLimiterBehaviorTest.java",
+      "lines": 71,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -13682,7 +13690,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-15.md",
-      "lines": 981,
+      "lines": 884,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

@@ -1527,3 +1527,18 @@ suite volvió a pasar. La lección y README delimitan que el Bulkhead de semáfo
 no crea pool aislado, las cuotas son por instancia local y no se probó un
 servicio externo. Documentación primaria consultada: Resilience4j Bulkhead y
 RateLimiter. Siguiente: M15 T5, saga con compensación real.
+
+Spring Boot M15 T5, “Saga con compensación real”, se reescribió en cuatro
+subtemas y agregó `examples/spring-saga-rutaflow/`. El laboratorio Spring Boot
+4.1.2 / Java 21 modela reserva, cobro y envío como participantes locales en
+memoria. En fallo de envío, `OrderSagaTest` confirma devolución del pago antes
+de liberar inventario y verifica que no quede efecto; otro test confirma que
+el camino exitoso conserva los tres cambios. La suite pasó: 2 pruebas, 0
+fallos. Al cambiar la iteración inversa por orden directo, el test detectó el
+registro incorrecto; restaurada la compensación LIFO, la suite volvió a pasar.
+README y tema aclaran que no existen servicios HTTP, persistencia, broker,
+durabilidad ni recuperación tras caída; M15 T7 cubre el siguiente paso sobre
+fallo de compensación. La auditoría pedagógica quedó en 1073/1185 temas
+practicables; la metodología universal marca 1005/1185. Fuentes primarias
+consultadas: Microservices.io Saga Pattern. Siguiente: M15 T6, Event Sourcing
+con replay real.

@@ -376,178 +376,81 @@ rule.check(project);
 
 ### Tema 5: Saga con compensación real
 
-#### Paso 1 · Objetivo y preparación
+#### Subtema 15.5.1: Dibuja los pasos del pedido · 8 min
 
-Al finalizar podrás ejecutar un orquestador de saga real que, ante el fallo de un paso intermedio, ejecuta las compensaciones de los pasos ya completados en orden inverso, confirmado con una lista real de acciones ejecutadas.
+**Contexto.** Una compra puede necesitar reservar inventario, cobrar y confirmar el envío. Cada paso cambia un estado distinto y no existe un botón universal de deshacer para todos.
 
-**Conocimiento previo:** Módulo 13 de este track (transacciones distribuidas e idempotencia).
+**¿Por qué es importante?** Si un paso posterior falla, dejar activos los cambios anteriores puede producir cobros sin envío o inventario bloqueado. La compensación da una acción explícita para esos efectos parciales.
 
-#### Paso 2 · Contexto y caso real
+**Hazlo tú.** Abre `examples/spring-saga-rutaflow/README.md` y revisa el recorrido antes de abrir el código:
 
-**¿Por qué es importante?** Crear un pedido puede requerir reservar inventario, cobrar el pago y confirmar el envío como tres pasos independientes en distintos servicios; si el cobro de pago falla después de reservar inventario, ese inventario reservado debe liberarse explícitamente — ninguna transacción distribuida automática hace esto por ti.
-
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** paso con compensación, orquestación secuencial, reversión en orden inverso.
-
-Una saga es una secuencia de pasos locales, cada uno con una acción de compensación explícita que deshace su efecto si un paso POSTERIOR falla. Un orquestador ejecuta los pasos en orden; ante un fallo, ejecuta las compensaciones de los pasos YA completados, en orden INVERSO al que se ejecutaron.
-
-**Analogía:** una saga es como desarmar una torre de bloques en el orden inverso exacto al que se construyó, para no dejar bloques sueltos ni desestabilizar la estructura restante.
-
-**Diagrama:**
-
-```mermaid
-sequenceDiagram
-  participant O as Orquestador
-  O->>O: reservarInventario() OK
-  O->>O: cobrarPago() FALLA
-  O->>O: compensar cobrarPago (no-op, nunca se completó)
-  O->>O: compensar reservarInventario -> liberarInventario()
+```text
+┌────────────────────┐  ┌──────────────┐  ┌────────────────┐
+│ Reservar inventario├─>│ Cobrar pago  ├─>│ Confirmar envío│
+└─────────┬──────────┘  └──────┬───────┘  └────────────────┘
+          ↑                    ↑
+   Liberar reserva       Devolver pago
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+**Resultado esperado.** Si falla el envío, el dinero y la reserva se revierten en orden inverso: primero se devuelve el cobro, luego se libera el inventario.
 
-Parte de una carpeta vacía y crea `src/main/java/io/academia/master/saga/PasoSaga.java`:
+**Fallo deliberado.** Cambia el dibujo para devolver primero el inventario. Luego compáralo con la prueba del siguiente subtema y explica por qué el orden inverso mantiene disponibles las dependencias necesarias para deshacer el paso anterior.
+
+**Entiende.** Una compensación es una acción nueva que intenta corregir un efecto previo; no borra el historial ni garantiza que el mundo vuelva exactamente al estado anterior.
+
+**Cierra.** Nombra un efecto que se pueda compensar y otro que quizá no (por ejemplo, una notificación ya leída).
+
+#### Subtema 15.5.2: Ejecuta y compensa en orden inverso · 8 min
+
+**Contexto.** El orquestador registra una compensación solo después de que termina cada paso. Cuando falla un paso, recorre esas acciones completadas desde la última hacia la primera.
+
+**Hazlo tú.** Abre `examples/spring-saga-rutaflow/src/main/java/academia/rutaflow/saga/OrderSaga.java` y `src/test/java/academia/rutaflow/saga/OrderSagaTest.java`. Ejecuta desde `examples/spring-saga-rutaflow/`:
 
 ```bash
-mkdir demo-saga
-cd demo-saga
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip
-unzip app.zip
-mkdir -p src/main/java/io/academia/master/saga
-mkdir -p src/test/java/io/academia/master/saga
+./mvnw -q -Dtest=OrderSagaTest#ifShippingFailsItRefundsAndReleasesInReverseOrder test
 ```
 
-```java
-// src/main/java/io/academia/master/saga/PasoSaga.java
-package io.academia.master.saga;
+**Resultado esperado.** La prueba fuerza un fallo del envío, comprueba que el pago vuelve y la reserva se libera; el registro contiene `devolver pago` antes de `liberar inventario`.
 
-public interface PasoSaga {
-    void ejecutar() throws Exception;
-    void compensar();
-    String nombre();
-}
-```
+**Fallo deliberado.** Cambia el recorrido inverso por uno que compense desde la primera acción hasta la última. Ejecuta la misma prueba: falla porque las acciones observadas ya no están en el orden esperado. Restaura el recorrido inverso y repite el comando.
 
-```java
-// src/main/java/io/academia/master/saga/OrquestadorSaga.java
-package io.academia.master.saga;
+**Entiende.** Un paso que falla no se añade a la lista de compensaciones completadas. Por eso no se intenta cancelar un envío que nunca se confirmó.
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+**Cierra.** Dibuja el estado final del inventario y el pago después de la compensación; ambos deben quedar sin efecto para ese pedido.
 
-public class OrquestadorSaga {
+#### Subtema 15.5.3: Compara fallo y éxito · 8 min
 
-    public List<String> ejecutar(List<PasoSaga> pasos) {
-        List<String> log = new ArrayList<>();
-        List<PasoSaga> completados = new ArrayList<>();
+**Contexto.** Una compensación solo se ejecuta si un paso posterior falla. Si todos terminan bien, los cambios permanecen.
 
-        for (PasoSaga paso : pasos) {
-            try {
-                paso.ejecutar();
-                completados.add(paso);
-                log.add("EJECUTADO: " + paso.nombre());
-            } catch (Exception e) {
-                log.add("FALLO: " + paso.nombre());
-                List<PasoSaga> aCompensar = new ArrayList<>(completados);
-                Collections.reverse(aCompensar); // orden INVERSO al de ejecución
-                for (PasoSaga p : aCompensar) {
-                    p.compensar();
-                    log.add("COMPENSADO: " + p.nombre());
-                }
-                return log;
-            }
-        }
-        return log;
-    }
-}
-```
-
-Confirma con un test real que el orden de compensación es exactamente el inverso:
-
-```java
-// src/test/java/io/academia/master/saga/SagaCompensacionTest.java
-package io.academia.master.saga;
-
-import org.junit.jupiter.api.Test;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-class SagaCompensacionTest {
-
-    @Test
-    void unFalloEnElSegundoPasoCompensaSoloElPrimeroEnOrdenInverso() {
-        PasoSaga reservarInventario = pasoQueSiempreTieneExito("reservarInventario");
-        PasoSaga cobrarPago = pasoQueSiempreFalla("cobrarPago");
-        PasoSaga confirmarEnvio = pasoQueSiempreTieneExito("confirmarEnvio"); // NUNCA debe ejecutarse
-
-        List<String> log = new OrquestadorSaga().ejecutar(List.of(reservarInventario, cobrarPago, confirmarEnvio));
-
-        assertThat(log).containsExactly(
-            "EJECUTADO: reservarInventario",
-            "FALLO: cobrarPago",
-            "COMPENSADO: reservarInventario" // solo el paso YA completado se compensa, en orden inverso (trivial aquí: 1 elemento)
-        );
-    }
-
-    private PasoSaga pasoQueSiempreTieneExito(String nombre) {
-        return new PasoSaga() {
-            public void ejecutar() {}
-            public void compensar() {}
-            public String nombre() { return nombre; }
-        };
-    }
-
-    private PasoSaga pasoQueSiempreFalla(String nombre) {
-        return new PasoSaga() {
-            public void ejecutar() throws Exception { throw new Exception("fallo simulado de " + nombre); }
-            public void compensar() {}
-            public String nombre() { return nombre; }
-        };
-    }
-}
-```
+**Hazlo tú.** En `examples/spring-saga-rutaflow/src/test/java/academia/rutaflow/saga/OrderSagaTest.java`, lee `ifAllParticipantsSucceedItKeepsTheOrderEffects` y ejecuta:
 
 ```bash
-./mvnw test -Dtest=SagaCompensacionTest
+./mvnw -q test
 ```
 
-**Resultado esperado:** `BUILD SUCCESS` con el test en verde: el log REAL de ejecución confirma que `reservarInventario` se ejecutó, `cobrarPago` falló, `confirmarEnvio` NUNCA se ejecutó (el orquestador se detuvo ante el fallo), y `reservarInventario` fue compensado — el flujo completo de una saga real con compensación, no una descripción del patrón.
+**Resultado esperado.** En éxito, la reserva, el cobro y el envío quedan registrados, y no aparecen acciones de compensación. En fallo, la prueba anterior verifica las acciones inversas y el estado restaurado.
 
-**Fallo deliberado:** agrega un CUARTO paso `pasoQueSiempreTieneExito("etiquetarPaquete")` ANTES de `cobrarPago` en la lista, y actualiza la aserción esperando (incorrectamente) que la compensación aparezca en el MISMO orden de ejecución (`etiquetarPaquete` antes que `reservarInventario`) en vez del orden inverso real. El test FALLA porque `Collections.reverse(aCompensar)` efectivamente invierte el orden — diagnostica confirmando por qué la compensación debe ser estrictamente inversa: si `etiquetarPaquete` reservó un recurso físico DESPUÉS de que `reservarInventario` reservara uno lógico, deshacer en el orden incorrecto podría intentar liberar un recurso que depende de otro que ya fue liberado. Corrige la aserción al orden inverso real antes de continuar.
+**Fallo deliberado.** Mueve la compensación de inventario al camino de éxito en `OrderSaga.place`. El test del caso exitoso falla porque la reserva desaparece. Restaura la compensación dentro del bloque de fallo.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**Entiende.** Las pruebas inspeccionan el estado de tres participantes en memoria y el orden del registro; eso permite comprobar la regla del ejemplo sin depender de una interpretación del log.
 
-1. Agrega un cuarto paso exitoso y confirma que, si el fallo ocurre en el TERCER paso, se compensan los dos primeros en orden inverso (segundo, luego primero).
-2. Confirma con un test que si TODOS los pasos tienen éxito, ninguna compensación se ejecuta y el log solo contiene entradas `EJECUTADO`.
-3. Agrega manejo de una excepción DURANTE una compensación (una compensación que también falla) y documenta, en un comentario, por qué las sagas reales necesitan reintentos o alertas manuales para este caso límite.
-4. Escribe de memoria (sin mirar) un `OrquestadorSaga` que compense en orden inverso ante un fallo, y un test que confirme el log completo. Compara después contra el patrón del Paso 4.
+**Cierra.** Explica qué resultado debería guardar tu servicio: pedido confirmado, pedido rechazado o recuperación pendiente.
 
-**Pista:** `Collections.reverse(lista)` invierte una lista EN EL LUGAR (modifica la lista original) — usa una copia (`new ArrayList<>(completados)`) antes de invertir si necesitas preservar el orden original de `completados` para otro propósito en el mismo método.
+#### Subtema 15.5.4: Delimita la demo y planea la recuperación · 8 min
 
-#### Paso 6 · Práctica independiente
+**Contexto.** La saga de este laboratorio corre en una sola JVM con participantes locales. Una caída del proceso borraría el estado y la lista de acciones.
 
-**Completa el código:** rellena el espacio con el método que invierte el orden de la lista de pasos completados antes de compensar:
+**Hazlo tú.** Revisa el límite al final de `examples/spring-saga-rutaflow/README.md` y compara este orquestador síncrono con el Módulo 13 y el próximo M15 T7.
 
-```java
-List<PasoSaga> aCompensar = new ArrayList<>(completados);
-Collections.____(aCompensar);
-```
+**Resultado esperado.** Puedes señalar qué falta para coordinar microservicios reales: persistir el estado, comunicar comandos/eventos de forma fiable, definir idempotencia y reintentar compensaciones fallidas.
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un orquestador de saga con compensación en orden inverso, y un test que confirme el log de ejecución completo ante un fallo intermedio. Compara después contra el patrón del Paso 4.
+**Fallo deliberado.** Imagina que el cobro fue aceptado por el proveedor, pero la respuesta se perdió antes de que el orquestador lo registrara. Anota por qué repetir el cobro puede duplicarlo y qué clave o consulta de idempotencia necesitaría la integración.
 
-#### Paso 7 · Cierre y evidencia
+**Entiende.** Esta implementación demuestra el orden de orquestación y compensación; no es una transacción distribuida ni un sistema durable. Una saga no ofrece aislamiento ACID y puede requerir mecanismos adicionales para evitar estados intermedios visibles.
 
-Ya orquestas una saga real con compensación en orden inverso, confirmada con un log de ejecución concreto, no solo descrita en prosa. El siguiente y último tema de este módulo reconstruye el estado de un agregado reproduciendo su historial completo de eventos. **Evidencia:** entrega el resultado de `SagaCompensacionTest` en verde, y la corrección de orden que exige el fallo deliberado. Fuentes oficiales: [microservices.io — Saga Pattern](https://microservices.io/patterns/data/saga.html).
+**Cierra.** **Proyecto integrador:** para el pedido del Módulo 12, enumera los servicios participantes, el estado que cambia cada uno y la acción compensatoria concreta. No copies este almacenamiento en memoria como solución de producción.
 
-**Errores comunes:** compensar en el mismo orden de ejecución en vez del orden inverso; no manejar el caso donde una compensación misma falla.
-
-**Cuándo no usarlo:** para una operación que puede modelarse dentro de una única transacción de base de datos local (Módulo 3), una saga distribuida agrega complejidad innecesaria frente a una simple transacción ACID.
-
-Una Saga con compensación real es el patrón que necesitaría el proyecto integrador de este track (microservicio productivo, Módulo 12) si coordina transacciones a través de varios servicios.
+**Fuentes:** [Microservices.io — Saga](https://microservices.io/patterns/data/saga.html). La referencia describe tanto coordinación por orquestación como coreografía y destaca que las compensaciones se diseñan explícitamente; este laboratorio solo ejercita la variante orquestada local.
 
 ### Tema 6: Event Sourcing con replay real
 
