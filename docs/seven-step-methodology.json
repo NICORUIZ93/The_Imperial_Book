@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 23,
-      "prerequisites": 45,
-      "context": 23,
-      "theoryAnalogy": 23,
-      "guidedDemo": 23,
+      "objective": 22,
+      "prerequisites": 44,
+      "context": 22,
+      "theoryAnalogy": 22,
+      "guidedDemo": 22,
       "codeExplanation": 111,
       "execution": 100,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 23,
-      "independentPractice": 23,
-      "closure": 23,
-      "commonErrors": 23,
-      "resources": 53,
-      "standaloneExample": 25,
-      "learningEvidence": 59,
-      "complete": 23
+      "guidedPractice": 22,
+      "independentPractice": 22,
+      "closure": 22,
+      "commonErrors": 22,
+      "resources": 52,
+      "standaloneExample": 24,
+      "learningEvidence": 58,
+      "complete": 22
     }
   },
   "topics": {
@@ -29433,26 +29433,26 @@
         "module": 18,
         "topic": "Tema 1: SecurityFilterChain y autorización",
         "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "objective": false,
+          "prerequisites": false,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 4,
+          "complete": false
         }
       },
       {

@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 1654,
+      "lines": 1669,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 17398,
+      "lines": 17455,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -314,7 +314,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1088,
+      "lines": 1087,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13663,
+      "lines": 13665,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -813,7 +813,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 11063,
+      "lines": 11061,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 597,
+      "lines": 601,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -2473,6 +2473,22 @@
       "headings": []
     },
     {
+      "path": "examples/java-jpa-lab/src/main/java/academia/pedidos/LiquidacionPendienteException.java",
+      "lines": 8,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/java-jpa-lab/src/main/java/academia/pedidos/LiquidacionService.java",
+      "lines": 34,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
       "path": "examples/java-jpa-lab/src/main/java/academia/pedidos/Pedido.java",
       "lines": 33,
       "kind": "example",
@@ -2507,6 +2523,14 @@
     {
       "path": "examples/java-jpa-lab/src/test/java/academia/pedidos/EnvioJdbcRepositoryTest.java",
       "lines": 51,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/java-jpa-lab/src/test/java/academia/pedidos/LiquidacionServiceTest.java",
+      "lines": 61,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -14049,7 +14073,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-18.md",
-      "lines": 164,
+      "lines": 168,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14058,14 +14082,14 @@
         "## Aprende construyendo",
         "### Dos ejemplos: primero visible, luego real",
         "### Tema 1: SecurityFilterChain y autorizaci\u00f3n",
+        "#### Subtema 18.1 \u00b7 Define qu\u00e9 rutas acepta el filtro \u00b7 8 min",
+        "#### Subtema 18.2 \u00b7 Traduce un rol del JWT a una autoridad \u00b7 8 min",
+        "#### Subtema 18.3 \u00b7 Distingue identidad de permiso \u00b7 8 min",
+        "#### Subtema 18.4 \u00b7 Autoriza el pedido que pertenece a la persona \u00b7 10 min",
+        "### Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda y modelo mental",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
-        "### Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP"
+        "#### Paso 3 \u00b7 Teor\u00eda y modelo mental"
       ]
     },
     {

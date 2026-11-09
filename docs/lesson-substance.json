@@ -1690,9 +1690,9 @@
     }
   ],
   "summary": {
-    "fingerprint": "ecf9ebd9adbfeffb7cbe2cb49b74ce8e6829da8168e8675afdc0f4d4469697ad",
+    "fingerprint": "e1668e94a651502311a2b4a303d9b01d9ecd667f71be8a5412f9314f826027a5",
     "issues": {
-      "andamiaje-generico": 120,
+      "andamiaje-generico": 119,
       "bloque-repetido": 163,
       "cola-tras-cierre": 331,
       "parrafo-repetido": 5,
@@ -1706,7 +1706,7 @@
     "modules": 256,
     "modulesWithLegacySections": 178,
     "topics": 1185,
-    "topicsWithIssues": 405
+    "topicsWithIssues": 404
   },
   "topics": {
     "android": [
@@ -10589,13 +10589,11 @@
         "words": 811
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 18,
-        "tailWords": 177,
+        "tailWords": 0,
         "topic": "Tema 1: SecurityFilterChain y autorización",
-        "words": 853
+        "words": 821
       },
       {
         "issues": [

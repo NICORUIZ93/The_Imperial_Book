@@ -1653,3 +1653,16 @@ Kafka ni una transacción distribuida. Fuentes primarias: Spring Framework
 transaction annotations y declarative rollback. `./scripts/validate.sh` y `validate_rutaflow_material.py` pasaron tras
 regenerar reportes. Auditoría global: 161/1185 temas atómicos y 1073/1185
 practicables. Siguiente: M18 T1.
+
+Spring Boot M18 T1, “SecurityFilterChain y autorización”, se reorganizó en
+cuatro subtemas con el laboratorio `examples/spring-security-keycloak-rutaflow/`:
+reglas para rutas, conversión de roles Keycloak, diferencia entre 401/403 y
+propiedad del pedido. Se verificó `./mvnw -q clean test`: cuatro pruebas pasan
+con JWT decoder simulado. Cuatro mutaciones se detectaron y restauraron:
+patrón GET que manda una ruta autorizada a `denyAll`, prefijo `ROLE_` cambiado
+a `SCOPE_`, autoridad cambiada a `ROLE_admin`, y omitir `requireOwner` en el
+controller. El laboratorio no valida firma/expiración real en esos tests; el
+README contiene el recorrido opcional con Keycloak local y Docker. Fuentes
+primarias: Spring Security HTTP request authorization y Resource Server JWT.
+Pendiente: actualizar reportes, validar y publicar M18 T1. Siguiente: M18 T2,
+validación de DTO, CORS, JWT/OIDC y cliente HTTP.

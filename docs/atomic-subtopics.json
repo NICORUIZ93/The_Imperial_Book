@@ -93,10 +93,10 @@
     },
     "spring-boot": {
       "topics": 111,
-      "completeTopics": 57,
-      "topicsWith3to6Subtopics": 88,
-      "subtopics": 311,
-      "completeSubtopics": 202
+      "completeTopics": 58,
+      "topicsWith3to6Subtopics": 89,
+      "subtopics": 315,
+      "completeSubtopics": 206
     }
   },
   "topics": {
@@ -14994,9 +14994,66 @@
       {
         "module": 18,
         "topic": "### Tema 1: SecurityFilterChain y autorización",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 4,
+        "subtopics": [
+          {
+            "id": "18.1",
+            "title": "#### Subtema 18.1 · Define qué rutas acepta el filtro · 8 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "18.2",
+            "title": "#### Subtema 18.2 · Traduce un rol del JWT a una autoridad · 8 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "18.3",
+            "title": "#### Subtema 18.3 · Distingue identidad de permiso · 8 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "18.4",
+            "title": "#### Subtema 18.4 · Autoriza el pedido que pertenece a la persona · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 18,

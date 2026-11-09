@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 272,
+    "topicsWithSignals": 273,
     "newLaboratories": 25
   },
   "priorities": {
@@ -12858,7 +12858,9 @@
       "title": "Tema 1: SecurityFilterChain y autorización",
       "file": "web/public/content/spring-boot/modulo-18.md",
       "line": 14,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -12868,7 +12870,7 @@
       "module": 18,
       "title": "Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP",
       "file": "web/public/content/spring-boot/modulo-18.md",
-      "line": 102,
+      "line": 106,
       "signals": [
         "ejemplo-breve-revisar-contexto",
         "clase-java-no-visible"
