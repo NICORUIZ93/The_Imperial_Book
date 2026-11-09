@@ -1,6 +1,7 @@
 package academia.pedidos;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import jakarta.persistence.EntityManager;
 import java.util.List;
@@ -25,6 +26,12 @@ class PedidoJpaLabTest {
         cliente.agregar(new Pedido("RT-101"));
         entityManager.persist(cliente);
         entityManager.flush();
+        Long clienteGuardado = cliente.getId();
+        Long claveForanea = ((Number) entityManager.createNativeQuery(
+            "select cliente_id from pedido where referencia = 'RT-101'").getSingleResult()).longValue();
+        assertThat(claveForanea).isEqualTo(clienteGuardado);
+        assertThat(entityManager.createQuery("select count(p) from Pedido p", Long.class)
+            .getSingleResult()).isEqualTo(2L);
         entityManager.clear();
 
         var recuperado = entityManager.find(Cliente.class, cliente.getId());
@@ -34,6 +41,23 @@ class PedidoJpaLabTest {
             .containsExactly("RT-101", "RT-102");
         assertThat(resultado).allSatisfy(p -> assertThat(p.getCliente().getId())
             .isEqualTo(recuperado.getId()));
+    }
+
+    @Test
+    void persistirClientePropagaPersistenciaPeroNoBorrado() {
+        var cliente = new Cliente("Historial");
+        cliente.agregar(new Pedido("RT-HIST-1"));
+        entityManager.persist(cliente);
+        entityManager.flush();
+        entityManager.clear();
+
+        var recuperado = entityManager.find(Cliente.class, cliente.getId());
+        assertThat(recuperado.getPedidos()).hasSize(1);
+        assertThatThrownBy(() -> {
+            entityManager.remove(recuperado);
+            entityManager.flush();
+        }).isInstanceOf(IllegalStateException.class)
+            .hasCauseInstanceOf(org.hibernate.TransientPropertyValueException.class);
     }
 
     @Test

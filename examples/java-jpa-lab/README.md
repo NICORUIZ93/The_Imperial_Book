@@ -9,9 +9,10 @@ cd examples/java-jpa-lab
 ./mvnw test
 ```
 
-Los tres tests muestran:
+Los siete tests del laboratorio muestran:
 
-- `guardaLosDosLadosYConsultaPorClienteConJpql`: guarda cliente y pedidos, vacía el contexto y comprueba la clave foránea y la consulta JPQL.
+- `guardaLosDosLadosYConsultaPorClienteConJpql`: guarda cliente y pedidos, consulta directamente `pedido.cliente_id`, vacía el contexto y comprueba la consulta JPQL.
+- `persistirClientePropagaPersistenciaPeroNoBorrado`: comprueba que `CascadeType.PERSIST` guarda el agregado y que Hibernate rechaza borrar el cliente mientras los pedidos conservan esa referencia. No se presenta el fallo del proveedor como una prueba directa de PostgreSQL.
 - `entityGraphCargaClienteYCriteriaBuscaPorPrefijo`: carga el cliente con `@EntityGraph` y busca pedidos con Criteria API.
 - `comparaNMasUnoConCargaPorEntityGraph`: mide consultas con Hibernate Statistics; compara N+1 con una carga de una sola consulta.
 

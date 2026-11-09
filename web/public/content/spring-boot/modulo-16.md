@@ -13,81 +13,109 @@ No arregles N+1 poniendo todas las asociaciones en `EAGER`: eso desplaza el cost
 
 ### Tema 1: Relaciones, lado propietario y ciclo de vida
 
-#### Paso 1 · Objetivo y preparación
+**Meta:** guardar un cliente con pedidos y demostrar con SQL qué objeto escribe la clave foránea, qué propaga `PERSIST` y por qué el borrado necesita una decisión aparte. No hace falta instalar PostgreSQL: el laboratorio usa H2 en memoria.
 
-Al finalizar podrás persistir `Cliente` y `Pedido` con Spring Data JPA y definir quién controla la clave foránea. Necesitas JDK 25+, Maven y PostgreSQL local o H2 para el test. Genera el proyecto con `web`, `data-jpa` y `h2`.
-**Conocimiento previo:** haber seguido el tema anterior de este módulo y tener instalado el entorno del stack.
-#### Paso 2 · Contexto y caso real
+**¿Por qué es importante?** Si la relación se ve bien en Java pero la FK no se escribe, las consultas y las reglas de borrado fallan justo cuando los datos salen de la memoria. Ver la columna concreta conecta el modelo de objetos con lo que protege la base.
 
-La API de entregas necesita consultar los pedidos de un cliente, pero el pedido debe conservar la referencia al cliente sin duplicar sus datos.
+**Evidencia final:** los tests muestran `pedido.cliente_id`, prueban guardar el agregado y exhiben el rechazo al borrar el cliente con historial. JPA controla la relación; Hibernate ejecuta ese contrato.
 
-**¿Por qué es importante?** Una asociación coherente evita claves foráneas huérfanas y deja claro qué entidad controla el vínculo en la base de datos.
+#### Subtema 1 — Sigue la clave foránea (8 min)
 
-#### Paso 3 · Teoría y modelo mental
+**Contexto.** Un pedido debe apuntar a un cliente. En la tabla `pedido`, la columna `cliente_id` guarda ese enlace; la lista `Cliente.pedidos` por sí sola no escribe la columna.
 
-`@ManyToOne` suele ser el lado propietario porque contiene la clave foránea; `mappedBy` declara el lado inverso. Mantén ambos lados sincronizados mediante métodos del dominio. `CascadeType` expresa propagación del ciclo de vida; no lo actives por inercia: eliminar el cliente no necesariamente debe eliminar pedidos históricos.
-
-JPA define el contrato y Hibernate lo implementa. `@Transactional` delimita el trabajo y permite que el contexto de persistencia gestione cambios; no hace que cada método de Java sea automáticamente atómico.
-**Analogía:** el lado propietario es como el titular de un contrato de alquiler: su firma es la que vale ante el registro (la clave foránea). El lado inverso es el inquilino que tiene una copia para consultar. Las cascadas son la cláusula que decide si, al cancelar el contrato del titular, se cancelan también los servicios asociados.
-#### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/main/java/academia/envios/Cliente.java` dentro.
-```bash
-curl -fsSL https://start.spring.io/starter.zip -o ejemplo.zip && unzip -o ejemplo.zip -d ejemplo
-```
-
-**Crea** el archivo `src/main/java/academia/envios/Cliente.java` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
-
-
-En `src/main/java/academia/envios/Cliente.java`:
+**Hazlo tú.** Abre `examples/java-jpa-lab/src/main/java/academia/pedidos/Pedido.java`. La asociación propietaria está aquí:
 
 ```java
-@Entity
-public class Cliente {
-    @Id @GeneratedValue
-    private Long id;
-    private String nombre;
-
-    @OneToMany(mappedBy = "cliente", cascade = CascadeType.PERSIST)
-    private List<Pedido> pedidos = new ArrayList<>();
-
-    protected Cliente() {}
-    public Cliente(String nombre) { this.nombre = nombre; }
-
-    public void agregar(Pedido pedido) {
-        pedidos.add(pedido);
-        pedido.asignarCliente(this);
-    }
-}
+@ManyToOne(fetch = FetchType.LAZY, optional = false)
+@JoinColumn(name = "cliente_id", nullable = false)
+private Cliente cliente;
 ```
 
-**Ejecuta el ejemplo** (genera el proyecto con Spring Initializr, pega el código y corre las pruebas):
+Abre `Cliente.java`: `mappedBy = "cliente"` apunta al campo de arriba. Ejecuta el test existente desde la raíz:
 
 ```bash
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
+cd examples/java-jpa-lab
+./mvnw -Dtest=PedidoJpaLabTest#guardaLosDosLadosYConsultaPorClienteConJpql test
+```
+
+**Resultado esperado:** verde; el test consulta `cliente_id` directamente y confirma que coincide con el ID del cliente.
+
+**Fallo deliberado.** En `Cliente.agregar`, comenta `pedido.asignarCliente(this);` y repite el comando. El test debe fallar: la lista Java contiene el pedido, pero falta el vínculo que JPA escribe en la fila.
+
+**Entiende.** `@ManyToOne` es el lado propietario porque tiene la columna. `mappedBy` significa “esta lista refleja la relación definida por `Pedido.cliente`”. Vuelve a poner la llamada y ejecuta el test para dejarlo verde.
+
+**Cierra.** Señala el archivo y la línea que controla la FK `cliente_id`.
+
+#### Subtema 2 — Mantén los dos lados sincronizados (8 min)
+
+**Contexto.** En memoria quieres recorrer cliente → pedidos y pedido → cliente. Si actualizas solo una dirección, el programa puede parecer correcto hasta guardar.
+
+**Hazlo tú.** En `Cliente.agregar`, observa las dos líneas del método:
+
+```java
+pedidos.add(pedido);           // permite recorrer desde Cliente
+pedido.asignarCliente(this);   // establece el lado propietario
+```
+
+El test `guardaLosDosLadosYConsultaPorClienteConJpql` crea un cliente, agrega dos pedidos y ejecuta `persist(cliente)`. Corre:
+
+```bash
+./mvnw -Dtest=PedidoJpaLabTest#guardaLosDosLadosYConsultaPorClienteConJpql test
+```
+
+**Resultado esperado:** dos filas de pedido y ambas con la FK del cliente; después de `clear()`, JPQL las recupera en orden.
+
+**Fallo deliberado.** Comenta cualquiera de las dos líneas de `agregar` y mira qué expectativa falla. Restaura la línea antes de seguir.
+
+**Entiende.** `clear()` vacía la memoria de trabajo de JPA. Por eso el test vuelve a leer desde H2 y no confunde los objetos que ya tenía en memoria con lo que realmente quedó guardado.
+
+**Cierra.** Explica por qué un método `agregar` reduce el riesgo frente a modificar la lista y el pedido por separado.
+
+#### Subtema 3 — Decide qué significa guardar y borrar (10 min)
+
+**Contexto.** Crear un cliente y sus pedidos juntos es cómodo; borrar el cliente no debería borrar automáticamente un historial comercial.
+
+**Hazlo tú.** En `Cliente.java`, encuentra:
+
+```java
+@OneToMany(mappedBy = "cliente", cascade = CascadeType.PERSIST)
+```
+
+`PERSIST` propaga el alta. No incluye `REMOVE`. Corre la prueba que guarda el agregado y comprueba que el test `persistirClientePropagaPersistenciaPeroNoBorrado` espera un error al borrar el cliente que aún tiene un pedido:
+
+```bash
+./mvnw -Dtest=PedidoJpaLabTest#persistirClientePropagaPersistenciaPeroNoBorrado test
+```
+
+**Resultado esperado:** verde porque el test espera que Hibernate rechace el borrado mientras el pedido todavía apunta al cliente (`TransientPropertyValueException`). No interpreta `PERSIST` como permiso para borrar al hijo.
+
+**Fallo deliberado.** Cambia `cascade = CascadeType.PERSIST` por `cascade = CascadeType.ALL` y repite. El test debe fallar porque ahora también se propaga el borrado. Restaura `PERSIST`.
+
+**Entiende.** Una cascada es una regla explícita sobre operaciones del ciclo de vida. No activa todas las operaciones mágicamente: `PERSIST` guarda; `REMOVE` borra; `orphanRemoval` borra un hijo al quitarlo de la relación. Para pedidos históricos, elige borrado lógico o conserva el cliente; no añadas `ALL` por comodidad.
+
+**Cierra.** Anota qué política usaría RutaFlow para un envío ya entregado y qué evidencia conservaría.
+
+#### Subtema 4 — Verifica y transfiere la decisión (10 min)
+
+**Contexto.** Una asociación solo está entendida si puedes cambiarla con seguridad y explicar qué protege la base de datos.
+
+**Hazlo tú.** Ejecuta toda la suite del laboratorio:
+
+```bash
 ./mvnw test
 ```
-Equivalencias Maven/Gradle en el Módulo 1.
 
+Después abre `examples/java-jpa-lab/src/test/java/academia/pedidos/PedidoJpaLabTest.java` y sigue `flush()`, la consulta SQL nativa de `cliente_id` y `clear()`.
 
-En `Pedido.java`, declara `@ManyToOne(fetch = FetchType.LAZY, optional = false)` y `@JoinColumn(name = "cliente_id", nullable = false)`. Crea un servicio con `@Transactional` que construya el cliente, agregue un pedido y guarde el agregado mediante `ClienteRepository`. Ejecuta `./mvnw test`.
+**Resultado esperado:** pasan las pruebas de relación, cascada, búsqueda y carga. La FK consultada coincide con el cliente guardado; Hibernate rechaza borrar al cliente mientras el pedido conserva esa referencia.
 
-**Resultado esperado:** el test persiste ambos registros y `pedido.cliente_id` referencia al cliente. **Fallo deliberado:** elimina la llamada `pedido.asignarCliente(this)`; revisa la clave foránea para descubrir que actualizar solo la colección inversa no basta.
+**Fallo deliberado.** Cambia temporalmente `name = "cliente_id"` por `name = "cliente"` en `@JoinColumn` y corre el primer test. La consulta SQL directa debe fallar porque el laboratorio comprueba la columna `cliente_id`. Restaura el nombre y confirma que pasa.
 
-#### Paso 5 · Práctica guiada
+**Entiende.** `nullable = false` expresa la regla en el mapeo; el esquema generado aplica la restricción en H2. En un proyecto persistente, una migración Flyway debe expresar y versionar esa misma regla. El laboratorio no demuestra el comportamiento de PostgreSQL ni de una política de borrado distinta.
 
-Agrega `LineaPedido` y un método de agregado que mantenga ambos lados. Prueba `CascadeType.PERSIST`, luego quítalo y explica qué operación explícita reemplaza la cascada. Intenta eliminar un cliente con pedidos y decide el comportamiento de integridad esperado.
-**Pista:** quita `CascadeType.PERSIST` de `pedidos` en `Cliente` y vuelve a ejecutar el test que guarda cliente y pedido juntos; si falla porque el pedido no aparece en la base, la cascada era la que lo persistía automáticamente — ahora necesitas guardar `Pedido` explícitamente con su propio repositorio antes de guardar `Cliente`.
-#### Paso 6 · Práctica independiente
+**Cierra.** En el **proyecto integrador de RutaFlow**, registra en una nota breve: lado propietario, FK, operación que se propaga, regla de borrado y test que protege cada decisión. En el tema siguiente medirás cómo cargar asociaciones sin consultas inesperadas.
 
-Modela `Envio` y `Parada` para RutaFlow. Define propietario, nulabilidad, cascadas y regla de borrado. Escribe tests para inserción, actualización y borrado; usa migraciones Flyway en vez de `ddl-auto=update` para un esquema persistente.
-
-#### Paso 7 · Cierre y evidencia
-
-Entrega entidades, migración y tests de integridad referencial como incremento del proyecto integrador de RutaFlow. **Cuándo no usarlo:** evita asociaciones bidireccionales si ningún caso de uso las necesita y no uses `CascadeType.REMOVE` sobre datos que deban conservar historial. **Evidencia:** test verde y esquema versionado.
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** actualizar solo la colección `pedidos` de `Cliente` sin llamar `pedido.asignarCliente(this)` (la fila de `pedido` queda con `cliente_id` nulo aunque la colección en memoria se vea correcta), y asumir que `CascadeType.PERSIST` también cubre el borrado — un `cliente.getPedidos().remove(pedido)` no elimina la fila sin `orphanRemoval = true` o un borrado explícito por repositorio.
-**Fuente oficial:** [documentación de Spring Boot](https://docs.spring.io/spring-boot/index.html).
-**Evidencia de aprendizaje:** entrega el log de `./mvnw test` mostrando el fallo cuando falta `pedido.asignarCliente(this)` (clave foránea nula), la corrección que lo deja en verde, y el resultado de intentar eliminar un `Cliente` con pedidos asociados explicando qué regla de integridad referencial aplicaste.
+**Fuente primaria:** [Jakarta Persistence 3.2 API: `@OneToMany`](https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/onetomany) documenta `mappedBy`, cascadas y `orphanRemoval`; [la especificación](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2) define las reglas de propiedad de la relación.
 ### Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso
 
 #### Paso 1 · Objetivo y preparación

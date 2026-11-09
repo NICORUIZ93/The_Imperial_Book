@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 1578,
+      "lines": 1609,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13658,
+      "lines": 13660,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -813,7 +813,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 11071,
+      "lines": 11069,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2416,7 +2416,7 @@
     },
     {
       "path": "examples/java-jpa-lab/README.md",
-      "lines": 19,
+      "lines": 20,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -2482,7 +2482,7 @@
     },
     {
       "path": "examples/java-jpa-lab/src/test/java/academia/pedidos/PedidoJpaLabTest.java",
-      "lines": 81,
+      "lines": 105,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -6325,6 +6325,122 @@
     {
       "path": "examples/spring-boot-upload-push-rutaflow/src/test/java/academia/rutaflow/upload/UploadPushIntegrationTest.java",
       "lines": 124,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-clean-architecture-rutaflow/README.md",
+      "lines": 40,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Clean Architecture y DDD con Spring Boot",
+        "## Ejecutar pruebas y aplicaci\u00f3n",
+        "## Recorrido por archivos"
+      ]
+    },
+    {
+      "path": "examples/spring-clean-architecture-rutaflow/src/main/java/academia/rutaflow/clean/CleanArchitectureApplication.java",
+      "lines": 12,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-clean-architecture-rutaflow/src/main/java/academia/rutaflow/clean/application/AssignDelivery.java",
+      "lines": 23,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-clean-architecture-rutaflow/src/main/java/academia/rutaflow/clean/application/DeliveryRepository.java",
+      "lines": 12,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-clean-architecture-rutaflow/src/main/java/academia/rutaflow/clean/domain/Delivery.java",
+      "lines": 22,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-clean-architecture-rutaflow/src/main/java/academia/rutaflow/clean/domain/DeliveryAlreadyAssigned.java",
+      "lines": 8,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-clean-architecture-rutaflow/src/main/java/academia/rutaflow/clean/domain/DeliveryId.java",
+      "lines": 10,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-clean-architecture-rutaflow/src/main/java/academia/rutaflow/clean/domain/DeliveryStatus.java",
+      "lines": 8,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-clean-architecture-rutaflow/src/main/java/academia/rutaflow/clean/domain/Destination.java",
+      "lines": 10,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-clean-architecture-rutaflow/src/main/java/academia/rutaflow/clean/infrastructure/InMemoryDeliveryRepository.java",
+      "lines": 26,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-clean-architecture-rutaflow/src/main/java/academia/rutaflow/clean/web/DeliveryController.java",
+      "lines": 52,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-clean-architecture-rutaflow/src/test/java/academia/rutaflow/clean/ArchitectureBoundariesTest.java",
+      "lines": 30,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-clean-architecture-rutaflow/src/test/java/academia/rutaflow/clean/application/AssignDeliveryTest.java",
+      "lines": 52,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-clean-architecture-rutaflow/src/test/java/academia/rutaflow/clean/web/DeliveryHttpTest.java",
+      "lines": 40,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -13859,7 +13975,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-16.md",
-      "lines": 153,
+      "lines": 181,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -13868,14 +13984,14 @@
         "## Aprende construyendo",
         "### Dos ejemplos: primero visible, luego real",
         "### Tema 1: Relaciones, lado propietario y ciclo de vida",
+        "#### Subtema 1 \u2014 Sigue la clave for\u00e1nea (8 min)",
+        "#### Subtema 2 \u2014 Mant\u00e9n los dos lados sincronizados (8 min)",
+        "#### Subtema 3 \u2014 Decide qu\u00e9 significa guardar y borrar (10 min)",
+        "#### Subtema 4 \u2014 Verifica y transfiere la decisi\u00f3n (10 min)",
+        "### Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda y modelo mental",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
-        "### Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso"
+        "#### Paso 3 \u00b7 Teor\u00eda y modelo mental"
       ]
     },
     {

@@ -1591,3 +1591,18 @@ confirmó los bloques coincidentes. `./scripts/validate.sh` pasó; auditoría
 pedagógica: 1073/1185 practicables, metodología universal: 1002/1185. El
 laboratorio no persiste ni implementa autenticación. Siguiente: M16 T1,
 relaciones JPA, lado propietario y ciclo de vida.
+
+Spring Boot M16 T1, “Relaciones, lado propietario y ciclo de vida”, se
+reorganizó en cuatro subtemas cortos y conectados al laboratorio existente
+`examples/java-jpa-lab/`: seguir la FK, sincronizar ambos lados, decidir las
+cascadas y transferir las reglas al caso RutaFlow. Se agregó una consulta SQL
+nativa de `pedido.cliente_id` al test de integración y una prueba que confirma
+que `CascadeType.PERSIST` guarda los pedidos pero no borra el cliente y sus
+pedidos en conjunto; Hibernate rechaza borrar al padre mientras el hijo conserva
+la referencia. La suite del laboratorio pasó con 7 pruebas. Se
+ejecutaron dos mutaciones: al omitir `pedido.asignarCliente(this)`, falló el
+test de FK; al cambiar la cascada a `ALL`, falló la prueba de política de
+borrado. Restauradas ambas mutaciones, la suite volvió a pasar. El laboratorio
+usa H2 y no demuestra por sí mismo el comportamiento de PostgreSQL ni una
+migración Flyway. Referencia contrastada: Jakarta Persistence 3.2. Siguiente:
+M16 T2, LAZY, EAGER, N+1 y consultas por caso de uso.

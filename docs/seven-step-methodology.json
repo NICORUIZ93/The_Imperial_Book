@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 27,
-      "prerequisites": 49,
-      "context": 27,
-      "theoryAnalogy": 27,
-      "guidedDemo": 27,
+      "objective": 26,
+      "prerequisites": 48,
+      "context": 26,
+      "theoryAnalogy": 26,
+      "guidedDemo": 26,
       "codeExplanation": 111,
       "execution": 100,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 27,
-      "independentPractice": 27,
-      "closure": 27,
-      "commonErrors": 27,
-      "resources": 57,
-      "standaloneExample": 29,
-      "learningEvidence": 63,
-      "complete": 27
+      "guidedPractice": 26,
+      "independentPractice": 26,
+      "closure": 26,
+      "commonErrors": 26,
+      "resources": 56,
+      "standaloneExample": 28,
+      "learningEvidence": 62,
+      "complete": 26
     }
   },
   "topics": {
@@ -29329,26 +29329,26 @@
         "module": 16,
         "topic": "Tema 1: Relaciones, lado propietario y ciclo de vida",
         "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "objective": false,
+          "prerequisites": false,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 4,
+          "complete": false
         }
       },
       {
