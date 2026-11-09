@@ -432,6 +432,10 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - pendiente Subtema 15.6.3: Rechaza eventos que rompen las reglas · 8 min
   - pendiente Subtema 15.6.4: Delimita el almacenamiento y la reconstrucción · 8 min
 - [pendiente de migrar] Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar
+  - pendiente Subtema 15.7.1: Conserva el trabajo pendiente · 8 min
+  - pendiente Subtema 15.7.2: Confirma juntos el efecto y su estado · 8 min
+  - pendiente Subtema 15.7.3: Reabre y reintenta sin duplicar · 8 min
+  - pendiente Subtema 15.7.4: Define los límites de recuperación · 8 min
 - [pendiente de migrar] Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework
 
 ### Módulo 16: JPA de Spring Boot — Hibernate, Lazy vs Eager y N+1

@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 1545,
+      "lines": 1578,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 17056,
+      "lines": 17113,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13654,
+      "lines": 13656,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 573,
+      "lines": 577,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -6561,6 +6561,58 @@
     {
       "path": "examples/spring-ddd-rutaflow/src/test/java/academia/rutaflow/operations/JourneyTest.java",
       "lines": 39,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-eventsourcing-rutaflow/README.md",
+      "lines": 32,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Event Sourcing con replay en Spring Boot",
+        "## Ejecutar",
+        "## Archivos"
+      ]
+    },
+    {
+      "path": "examples/spring-eventsourcing-rutaflow/src/main/java/academia/rutaflow/eventsourcing/EventSourcingApplication.java",
+      "lines": 7,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-eventsourcing-rutaflow/src/main/java/academia/rutaflow/eventsourcing/OrderEvent.java",
+      "lines": 11,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-eventsourcing-rutaflow/src/main/java/academia/rutaflow/eventsourcing/OrderEventStore.java",
+      "lines": 30,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-eventsourcing-rutaflow/src/main/java/academia/rutaflow/eventsourcing/OrderState.java",
+      "lines": 46,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-eventsourcing-rutaflow/src/test/java/academia/rutaflow/eventsourcing/OrderReplayTest.java",
+      "lines": 63,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -13742,7 +13794,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-15.md",
-      "lines": 801,
+      "lines": 860,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

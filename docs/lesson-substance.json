@@ -1690,7 +1690,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "ea70d46be3136f7d514bb3ce44a13ae08bb50ed3d75df1a8f7a6043d424f85ca",
+    "fingerprint": "c027f3a6af2f591e5aba63e030445877349dcc9636a2a4c443ad421d534b65bf",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10549,9 +10549,9 @@
       {
         "issues": [],
         "module": 15,
-        "tailWords": 80,
+        "tailWords": 0,
         "topic": "Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar",
-        "words": 771
+        "words": 1112
       },
       {
         "issues": [],

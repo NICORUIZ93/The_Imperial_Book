@@ -1556,3 +1556,22 @@ quitado accidentalmente; `./scripts/validate.sh` volvió a pasar. Se aclara que
 el stream no es durable ni multi-réplica, y no se implementan snapshots ni
 proyecciones externas. Fuente consultada: Martin Fowler, Event Sourcing.
 Siguiente: M15 T7, conservar y reintentar una compensación fallida.
+
+Spring Boot M15 T7, “Compensación que falla: conservar trabajo pendiente y
+reintentar sin duplicar”, se adaptó a cuatro subtemas y añadió
+`examples/spring-saga-recovery-rutaflow/`. El laboratorio Spring Boot 4.1.2 / Java
+21 usa JdbcTemplate, TransactionTemplate y H2 en archivo. La prueba crea una
+tarea `PENDING`, fuerza un fallo después de escribir inventario, verifica que la
+transacción revierta el efecto y cierre el pool; una nueva instancia reabre el
+mismo archivo, completa la tarea, y una repetición conserva `release_count=1`.
+La suite pasó: 1 prueba, 0 fallos. Al desactivar transacciones, el test observó
+la escritura parcial; al quitar la salida idempotente, detectó el efecto
+duplicado. Restauradas ambas mutaciones, la suite pasó. La prueba reabre la base
+en la misma JVM para simular el ciclo de dos procesos; no mata la JVM ni
+implementa polling, backoff, broker/outbox, métricas o alarmas. Se conservó el
+anexo Python original porque el validador de material RutaFlow compara esos
+archivos con los bloques visibles de la lección. Fuentes primarias consultadas:
+Spring Framework transaction management, H2 file/in-memory URL docs y
+Microservices.io Saga Pattern. `./scripts/validate.sh` pasó; la auditoría
+pedagógica quedó en 1073/1185 temas practicables y la metodología universal en
+1003/1185. Siguiente: M15 T8, Clean Architecture y DDD táctico.

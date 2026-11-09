@@ -542,27 +542,98 @@ Ejecuta el comando desde `examples/spring-eventsourcing-rutaflow/`.
 
 ### Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar recuperarás una compensación después de un fallo y un reinicio sin aplicar dos veces su efecto. **Prerrequisitos:** saga del tema anterior, transacciones locales, idempotencia y SQLite/Python 3. Es un ejemplo independiente desde carpeta vacía: aísla el participante antes de conectarlo a Kafka u otro coordinador.
+#### Subtema 15.7.1: Conserva el trabajo pendiente · 8 min
 
-#### Paso 2 · Contexto y caso real
-Reservaste inventario y el pago fue rechazado. La liberación de inventario también puede fallar. **¿Por qué es importante?** Devolver «saga terminada» tras capturar la primera excepción oculta trabajo todavía pendiente. El proyecto integrador necesita un estado observable y una acción de recuperación.
+**Contexto.** Una compensación también puede fallar. Si solo guardamos el error en un log y marcamos la saga como terminada, la acción pendiente puede perderse.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Compensar es ejecutar una nueva acción de negocio; no retrocede el tiempo. Se necesita una identidad de operación estable para que un reintento no libere dos veces. En este participante local, el efecto y su marca se guardan en una transacción de SQLite. Un coordinador distribuido además debe persistir qué pidió, qué recibió y qué sigue pendiente.
+**¿Por qué es importante?** Un pedido puede quedar con el inventario reservado aunque ya se rechazó el pago. Un estado `PENDING` permite saber qué reparación falta después de un reinicio.
 
-**Analogía:** devolver un paquete requiere registrar que la devolución ocurrió, no solo enviar una orden y olvidarla. El límite es que múltiples bases y un broker no comparten la transacción SQLite de este ejercicio. No se demuestra atomicidad entre Kafka y una base de datos.
+**Hazlo tú.** Abre `examples/spring-saga-recovery-rutaflow/src/main/resources/schema.sql` y revisa `compensation_job`. Localiza `PENDING` y `DONE` en `CompensationService.java`.
 
-#### Paso 4 · Demostración guiada desde cero
-```bash
-cp -R examples/rutaflow-material/sagas ejemplo-compensacion
-cd ejemplo-compensacion
-python3 -m unittest test_compensacion.py
-python3 compensacion.py
+```text
+PENDING ── compensación exitosa ──> DONE
+   │
+   └── falla la transacción ───────> PENDING
 ```
-Para crear el ejemplo manualmente, guarda estos archivos juntos, sin el prefijo `sagas/`:
 
-Crea `sagas/compensacion.py` con este contenido completo:
+**Resultado esperado.** La tarea fallida mantiene un ID y puede buscarse para un nuevo intento.
+
+**Fallo deliberado.** Cambia temporalmente el estado inicial insertado en `schedule` de `PENDING` a `DONE`. Ejecuta la prueba completa: el servicio debe omitir la tarea y el test falla al esperar una liberación.
+
+**Entiende.** `PENDING` significa “queda trabajo”; no es solo un mensaje de error.
+
+**Cierra.** Indica dónde consultaría el equipo el trabajo pendiente tras reiniciar.
+
+#### Subtema 15.7.2: Confirma juntos el efecto y su estado · 8 min
+
+**Contexto.** Liberar inventario y marcar la compensación deben confirmarse juntos. Si solo ocurre el primero, un reintento podría repetirlo; si solo el segundo, el trabajo se pierde.
+
+**Hazlo tú.** Abre `examples/spring-saga-recovery-rutaflow/src/main/java/academia/rutaflow/sagarecovery/CompensationService.java`. Sigue el `TransactionTemplate`, la lectura `FOR UPDATE` y las escrituras de inventario y estado. Ejecuta desde `examples/spring-saga-recovery-rutaflow/`:
+
+```bash
+./mvnw -q -Dtest=CompensationRecoveryTest test
+```
+
+El núcleo que mantiene juntas las dos escrituras se ve así:
+
+```java
+jdbc.update("UPDATE inventory_reservation SET released = TRUE, release_count = release_count + 1 WHERE id = ?",
+    job.reservationId());
+jdbc.update("UPDATE compensation_job SET status = 'DONE' WHERE id = ? AND status = 'PENDING'",
+    compensationId);
+```
+
+**Resultado esperado.** El fallo inyectado después de actualizar el inventario provoca rollback: la reserva sigue sin liberar y la tarea permanece `PENDING`.
+
+**Fallo deliberado.** Después de crear `TransactionTemplate`, agrega temporalmente `transaction.setPropagationBehavior(org.springframework.transaction.TransactionDefinition.PROPAGATION_NOT_SUPPORTED);`. Ejecuta el test: la primera escritura queda aplicada cuando ocurre el fallo y se detecta el estado parcial. Quita esa línea y repite el test.
+
+**Entiende.** Este límite es una sola base de datos de un participante. La transacción de Spring no convierte varios microservicios en una transacción global.
+
+**Cierra.** Nombra las dos escrituras que esta transacción debe proteger juntas.
+
+#### Subtema 15.7.3: Reabre y reintenta sin duplicar · 8 min
+
+**Contexto.** La memoria del proceso desaparece; una tarea guardada en una base de archivo puede sobrevivir a que la aplicación cierre su conexión.
+
+**Hazlo tú.** En `examples/spring-saga-recovery-rutaflow/src/test/java/academia/rutaflow/sagarecovery/CompensationRecoveryTest.java`, sigue el fallo, el cierre del pool, la reapertura del mismo archivo H2 y la nueva instancia del servicio.
+
+**Resultado esperado.** La nueva instancia lee `PENDING`, completa el trabajo y lo marca `DONE`. Al repetirlo, responde `ALREADY_DONE`; el contador `release_count` sigue en 1.
+
+**Fallo deliberado.** Quita la salida temprana para un trabajo `DONE` y ejecuta el test. La segunda llamada vuelve a liberar inventario y el contador termina en 2. Restaura la comprobación idempotente.
+
+**Entiende.** El ID estable identifica el mismo trabajo entre reintentos. El bloqueo de fila serializa dos intentos simultáneos sobre esta base local.
+
+**Cierra.** Explica por qué el sistema debe reutilizar el mismo ID al reintentar la misma compensación.
+
+#### Subtema 15.7.4: Define los límites de recuperación · 8 min
+
+**Contexto.** El ejemplo conserva el trabajo en H2 y una prueba lo vuelve a ejecutar; todavía no hay un trabajador que descubra pendientes ni un plan de reintentos.
+
+**Hazlo tú.** Revisa `examples/spring-saga-recovery-rutaflow/README.md` y corre la suite completa:
+
+```bash
+./mvnw -q test
+```
+
+**Resultado esperado.** La prueba comprueba fallo después de una escritura, rollback, reapertura de archivo y repetición con un único efecto.
+
+**Fallo deliberado.** En `CompensationRecoveryTest`, cambia `DATABASE_URL` de `jdbc:h2:file:` a `jdbc:h2:mem:`. Al cerrar el pool, el historial se pierde y el test falla al reabrir la base.
+
+**Entiende.** El ejercicio no implementa un broker, outbox, espera entre reintentos, métricas ni alarmas. El ejemplo usa el ID de compensación como clave estable y una transacción local; no coordina bases distintas.
+
+**Cierra.** **Proyecto integrador:** para el pedido del Módulo 12, define el ID estable, el estado pendiente, la operación idempotente y una alarma para trabajos demasiado antiguos. Decide cómo guardar el outbox si el comando de reintento se publica en Kafka o RabbitMQ.
+
+**Fuentes:** [Spring Framework — Transaction Management](https://docs.spring.io/spring-framework/reference/data-access/transaction.html), [H2 — Connection Modes and Database URLs](https://h2database.com/html/features.html#database_url), [Microservices.io — Saga](https://microservices.io/patterns/data/saga.html). La transacción aquí solo cubre cambios en la base del participante local.
+
+#### Material Python de referencia RutaFlow · consulta optativa
+
+El tema se estudia por la ruta Java/Spring Boot anterior. Este anexo conserva el
+material Python original de RutaFlow para comparar una compensación local con
+SQLite. Puedes ejecutarlo desde `examples/rutaflow-material/sagas/` con
+`python3 -m unittest test_compensacion.py`.
+
+Archivo: `examples/rutaflow-material/sagas/compensacion.py` (`compensacion.py`):
+
 ```python
 import sqlite3
 
@@ -598,7 +669,8 @@ if __name__ == '__main__':
         print('Stock final:', db.execute('SELECT cantidad FROM stock').fetchone()[0])
 ```
 
-Crea `sagas/test_compensacion.py` con este contenido completo:
+Archivo: `examples/rutaflow-material/sagas/test_compensacion.py` (`test_compensacion.py`):
+
 ```python
 import sqlite3
 import tempfile
@@ -621,19 +693,6 @@ class CompensacionTest(unittest.TestCase):
                 self.assertEqual('HECHA', db.execute('SELECT estado FROM compensaciones').fetchone()[0])
 if __name__=='__main__':unittest.main()
 ```
-
-**Resultado esperado:** una prueba correcta; al ejecutar el programa por primera vez aparece compensación pendiente y stock final 10. Explica cada bloque: el identificador `liberar-42` conserva la operación, el fallo mantiene PENDIENTE, el reinicio abre el mismo archivo y el segundo intento comprueba HECHA antes de repetir el efecto. La prueba utiliza una base temporal y verifica la cantidad final, no solo una lista de mensajes.
-
-#### Paso 5 · Práctica guiada
-**Fallo deliberado:** elimina la salida temprana cuando el estado es HECHA. Repite la prueba: el stock sube otra vez y falla la expectativa 10. **Pista:** reintentar requiere reconocer el mismo comando; no generes un ID nuevo por cada intento.
-
-#### Paso 6 · Práctica independiente
-Añade contador de intentos, próximo instante permitido y estado de revisión manual tras un límite. Después diseña outbox/inbox para notificar la compensación confirmada sin perder el evento ni duplicar su efecto. No uses un sleep ilimitado dentro de una transacción.
-
-#### Paso 7 · Cierre y evidencia
-**Evidencia de aprendizaje:** fallo, estado persistido antes del reinicio, recuperación y cantidad final. El siguiente paso es probar dos participantes y reentrega real de mensajes. **Errores comunes:** confundir compensación con rollback global, marcar HECHA antes del efecto y reintentar sin observabilidad ni límite. **Límites y decisión de uso:** esta muestra serial no prueba concurrencia entre múltiples consumidores; una variante concurrente necesita bloqueo o transición condicional y pruebas de carreras.
-
-**Fuente oficial:** [patrón Saga](https://microservices.io/patterns/data/saga.html).
 
 ### Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework
 

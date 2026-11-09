@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 29,
-      "prerequisites": 51,
-      "context": 29,
-      "theoryAnalogy": 29,
-      "guidedDemo": 29,
+      "objective": 28,
+      "prerequisites": 50,
+      "context": 28,
+      "theoryAnalogy": 28,
+      "guidedDemo": 28,
       "codeExplanation": 111,
       "execution": 100,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 29,
-      "independentPractice": 29,
-      "closure": 29,
-      "commonErrors": 29,
-      "resources": 59,
-      "standaloneExample": 31,
-      "learningEvidence": 65,
-      "complete": 29
+      "guidedPractice": 28,
+      "independentPractice": 28,
+      "closure": 28,
+      "commonErrors": 28,
+      "resources": 58,
+      "standaloneExample": 30,
+      "learningEvidence": 64,
+      "complete": 28
     }
   },
   "topics": {
@@ -29277,26 +29277,26 @@
         "module": 15,
         "topic": "Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar",
         "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "objective": false,
+          "prerequisites": false,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 4,
+          "complete": false
         }
       },
       {
