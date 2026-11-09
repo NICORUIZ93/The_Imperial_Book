@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 33,
-      "prerequisites": 55,
-      "context": 33,
-      "theoryAnalogy": 33,
-      "guidedDemo": 33,
+      "objective": 32,
+      "prerequisites": 54,
+      "context": 32,
+      "theoryAnalogy": 32,
+      "guidedDemo": 32,
       "codeExplanation": 111,
       "execution": 100,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 33,
-      "independentPractice": 33,
-      "closure": 33,
-      "commonErrors": 33,
+      "guidedPractice": 32,
+      "independentPractice": 32,
+      "closure": 32,
+      "commonErrors": 32,
       "resources": 61,
-      "standaloneExample": 35,
+      "standaloneExample": 34,
       "learningEvidence": 67,
-      "complete": 33
+      "complete": 32
     }
   },
   "topics": {
@@ -29173,26 +29173,26 @@
         "module": 15,
         "topic": "Tema 3: Arquitectura hexagonal verificada con ArchUnit",
         "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "objective": false,
+          "prerequisites": false,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
           "resources": true,
-          "standaloneExample": true,
+          "standaloneExample": false,
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 6,
+          "complete": false
         }
       },
       {

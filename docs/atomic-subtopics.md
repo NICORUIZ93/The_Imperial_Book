@@ -19,7 +19,7 @@ Temas conformes a cuatro pasos: **157/1185**. Tracks inventariados: **14**.
 | node | 2 | 83 | 6 | 6 |
 | react | 0 | 58 | 0 | 0 |
 | rutaflow | 0 | 29 | 0 | 0 |
-| spring-boot | 53 | 111 | 271 | 186 |
+| spring-boot | 53 | 111 | 275 | 186 |
 
 ## Temas pendientes
 
@@ -1044,7 +1044,7 @@ Temas conformes a cuatro pasos: **157/1185**. Tracks inventariados: **14**.
 - M14 ### Tema 6: Archivos y notificaciones push: 14.6: faltan context, action, deliberateFailure, understand, close; 14.6: faltan context, action, deliberateFailure, understand, close; 14.6: faltan context, action, deliberateFailure, understand, close; 14.6: faltan context, action, deliberateFailure, understand, close
 - M15 ### Tema 1: Backpressure real en WebFlux con reactor-test: 15.1: faltan context, action, deliberateFailure, understand, close; 15.1: faltan context, action, deliberateFailure, understand, close; 15.1: faltan context, action, deliberateFailure, understand, close; 15.1: faltan context, action, deliberateFailure, understand, close
 - M15 ### Tema 2: Contenedores Testcontainers reutilizados entre clases: 15.2: faltan context, action, deliberateFailure, understand, close; 15.2: faltan context, action, deliberateFailure, understand, close; 15.2: faltan context, action, deliberateFailure, understand, close; 15.2: faltan context, action, deliberateFailure, understand, close
-- M15 ### Tema 3: Arquitectura hexagonal verificada con ArchUnit: tiene 0 subtemas
+- M15 ### Tema 3: Arquitectura hexagonal verificada con ArchUnit: 15.3: faltan context, action, deliberateFailure, understand, close; 15.3: faltan context, action, deliberateFailure, understand, close; 15.3: faltan context, action, deliberateFailure, understand, close; 15.3: faltan context, action, deliberateFailure, understand, close
 - M15 ### Tema 4: Bulkhead y RateLimiter de Resilience4j: tiene 0 subtemas
 - M15 ### Tema 5: Saga con compensación real: tiene 0 subtemas
 - M15 ### Tema 6: Event Sourcing con replay real: tiene 0 subtemas

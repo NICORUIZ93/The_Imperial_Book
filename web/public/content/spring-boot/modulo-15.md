@@ -205,146 +205,91 @@ Corre `./mvnw -q test` y compara las dos líneas `usa containerId=`.
 
 ### Tema 3: Arquitectura hexagonal verificada con ArchUnit
 
-#### Paso 1 · Objetivo y preparación
+**Objetivo observable:** agregar una regla ejecutable que bloquee dependencias desde `domain` y `application` hacia `infrastructure`.
 
-Al finalizar podrás escribir una regla de ArchUnit (la librería oficial de test de arquitectura para Java) que falla automáticamente si el paquete de dominio depende de infraestructura, congelando la regla hexagonal como código verificable, no como una convención de equipo no forzada.
+**¿Por qué es importante?** El dominio conserva las reglas del negocio; si importa una clase de base de datos o un framework, cambiar esa infraestructura puede arrastrar cambios al negocio. ArchUnit convierte la frontera en un test que muestra qué clase la cruzó.
 
-**Conocimiento previo:** Módulo 10 Tema 6 de este track (DDD y contextos delimitados).
+**Antes de empezar:** entender puertos y adaptadores (Módulo 10, Tema 6). El ejemplo `examples/archunit-hexagonal-rutaflow/` usa Java 25, ArchUnit 1.5.1 y JUnit; no necesita Spring ni Docker.
 
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** Una arquitectura hexagonal (puertos y adaptadores) mantiene el dominio independiente de detalles de infraestructura (framework, base de datos concreta) SOLO si esa regla se respeta consistentemente; sin verificación automatizada, un import accidental de una clase JPA dentro del paquete de dominio pasa desapercibido en una revisión de código apurada.
-
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** puerto (interfaz), adaptador (implementación), regla arquitectónica como test.
-
-El dominio define un **puerto** (`PedidoRepository`, una interfaz) sin saber cómo se implementa; un **adaptador** en el paquete de infraestructura (`JpaPedidoRepository`) implementa ese puerto usando Spring Data JPA. ArchUnit permite expresar la regla "el dominio nunca depende de la infraestructura" como código Java ejecutable en cada build, en vez de una regla solo documentada que nadie verifica automáticamente.
-
-**Analogía:** ArchUnit es un inspector de aduanas automatizado que revisa cada commit para confirmar que ningún paquete cruzó una frontera arquitectónica prohibida, en vez de confiar en que cada desarrollador recuerde la regla por su cuenta.
-
-**Diagrama:**
+```bash
+cd examples/archunit-hexagonal-rutaflow
+./mvnw -q test
+```
 
 ```mermaid
 flowchart LR
-  D[domain: PedidoRepository interfaz] -.->|puerto| A[application: PedidoService]
-  I[infrastructure: JpaPedidoRepository] -->|implementa| D
-  I -.->|PROHIBIDO: domain -> infrastructure| D
+  D[domain: Delivery y puerto] --> A[application: RegisterDelivery]
+  I[infrastructure: InMemoryDeliveryRepository] --> D
+  A -. prohibido .-> I
+  D -. prohibido .-> I
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Subtema 15.3.1: Ubica el puerto y el adaptador · 8 min
 
-Parte de una carpeta vacía, agrega `com.tngtech.archunit:archunit-junit5` al `pom.xml` (la librería oficial de ArchUnit), y crea `src/main/java/io/academia/master/hexagonal/domain/Pedido.java`:
+**Contexto.** El puerto expresa qué necesita el caso de uso; el adaptador decide cómo guardar.
 
-```bash
-mkdir demo-hexagonal
-cd demo-hexagonal
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=data-jpa,h2 -d javaVersion=25 -o app.zip
-unzip app.zip
-mkdir -p src/main/java/io/academia/master/hexagonal/{domain,infrastructure}
-mkdir -p src/test/java/io/academia/master/hexagonal
-```
+**Hazlo tú.** Desde `examples/archunit-hexagonal-rutaflow/`, abre `src/main/java/academia/rutaflow/hexagonal/domain/DeliveryRepository.java`, `application/RegisterDelivery.java` e `infrastructure/InMemoryDeliveryRepository.java`. Sigue el tipo que inyecta el caso de uso y la interfaz que implementa el adaptador.
+
+**Resultado esperado.** `RegisterDelivery` depende de `DeliveryRepository`; no conoce el mapa de `InMemoryDeliveryRepository`.
+
+**Fallo deliberado.** En `RegisterDelivery`, cambia temporalmente el tipo del campo y del parámetro del constructor de `DeliveryRepository` a `InMemoryDeliveryRepository`. Ejecuta la suite: compila, pero ArchUnit rechaza la dependencia application→infrastructure. Restaura el puerto en ambos lugares y confirma los tests verdes.
+
+**Entiende.** El puerto es el enchufe acordado; el adaptador es el aparato conectado. El negocio describe el enchufe, no el fabricante.
+
+**Cierra.** Anota la ruta del puerto y la ruta de su implementación.
+
+#### Subtema 15.3.2: Escribe la regla sobre el bytecode · 8 min
+
+**Contexto.** ArchUnit importa las clases compiladas del paquete y comprueba las relaciones que quedaron en el bytecode.
+
+**Hazlo tú.** Desde `examples/archunit-hexagonal-rutaflow/`, abre `src/test/java/academia/rutaflow/hexagonal/HexagonalArchitectureTest.java`. Lee la regla y ejecútala:
 
 ```java
-// src/main/java/io/academia/master/hexagonal/domain/Pedido.java
-package io.academia.master.hexagonal.domain;
+ArchRule rule = noClasses().that().resideInAPackage("..domain..")
+    .should().dependOnClassesThat().resideInAPackage("..infrastructure..");
 
-public class Pedido {
-    private final String id;
-    public Pedido(String id) { this.id = id; }
-    public String getId() { return id; }
-}
+rule.check(project);
 ```
 
-```java
-// src/main/java/io/academia/master/hexagonal/domain/PedidoRepository.java
-package io.academia.master.hexagonal.domain;
+**Resultado esperado.** La regla pasa con las clases actuales y se examina el mismo paquete `academia.rutaflow.hexagonal`.
 
-// PUERTO: el dominio define el contrato, sin saber cómo se implementa
-public interface PedidoRepository {
-    Pedido buscar(String id);
-}
-```
+**Fallo deliberado.** Añade temporalmente a `domain/Delivery.java` un método que devuelva `InMemoryDeliveryRepository`. Corre `./mvnw -q -Dtest=HexagonalArchitectureTest#dominioNoDependeDeDetallesDeInfraestructura test`: el fallo señala el tipo de retorno. Quita método e import y ejecuta la suite completa.
 
-```java
-// src/main/java/io/academia/master/hexagonal/infrastructure/JpaPedidoRepository.java
-package io.academia.master.hexagonal.infrastructure;
+**Entiende.** La regla mira referencias de bytecode, por ejemplo tipos de campo, retorno, herencia y llamadas. Una cadena con el nombre de una clase usada vía reflexión no es necesariamente una dependencia de bytecode detectada por esta regla.
 
-import io.academia.master.hexagonal.domain.Pedido;
-import io.academia.master.hexagonal.domain.PedidoRepository;
-import org.springframework.stereotype.Repository;
+**Cierra.** Conserva el mensaje de ArchUnit que nombra `Delivery` y `InMemoryDeliveryRepository`.
 
-// ADAPTADOR: implementa el puerto usando un detalle de infraestructura concreto
-@Repository
-public class JpaPedidoRepository implements PedidoRepository {
-    @Override
-    public Pedido buscar(String id) { return new Pedido(id); }
-}
-```
+#### Subtema 15.3.3: Protege también el caso de uso · 8 min
 
-Congela la regla hexagonal con ArchUnit:
+**Contexto.** Prohibir la fuga desde el dominio no basta si application importa la base concreta directamente.
 
-```java
-// src/test/java/io/academia/master/hexagonal/ReglaHexagonalTest.java
-package io.academia.master.hexagonal;
+**Hazlo tú.** Abre `examples/archunit-hexagonal-rutaflow/src/test/java/academia/rutaflow/hexagonal/HexagonalArchitectureTest.java`, sigue `aplicacionNoDependeDeDetallesDeInfraestructura` y compara el nombre de paquetes con la primera regla.
 
-import com.tngtech.archunit.core.importer.ClassFileImporter;
-import com.tngtech.archunit.lang.ArchRule;
-import org.junit.jupiter.api.Test;
+**Resultado esperado.** Los dos tests pasan: ni `domain` ni `application` tienen dependencia hacia `infrastructure`.
 
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
+**Fallo deliberado.** Cambia `RegisterDelivery` para declarar una referencia a `InMemoryDeliveryRepository`; corre solo `aplicacionNoDependeDeDetallesDeInfraestructura`. ArchUnit marca esa referencia. Restaura la dependencia por interfaz.
 
-class ReglaHexagonalTest {
+**Entiende.** Una regla es tan completa como los paquetes que incluye. Si aparece un nuevo paquete como `adapter`, decide y documenta qué lado de la frontera ocupa antes de ampliar el patrón.
 
-    @Test
-    void elDominioNuncaDependeDeLaInfraestructura() {
-        var clases = new ClassFileImporter().importPackages("io.academia.master.hexagonal");
+**Cierra.** Guarda el reporte verde de las dos reglas.
 
-        ArchRule regla = noClasses().that().resideInAPackage("..domain..")
-            .should().dependOnClassesThat().resideInAPackage("..infrastructure..");
+#### Subtema 15.3.4: Decide qué reglas merece mantener · 8 min
 
-        regla.check(clases); // lanza AssertionError real si la regla se viola
-    }
-}
-```
+**Contexto.** Una regla demasiado general puede bloquear decisiones válidas; una regla ausente deja la frontera a la memoria del equipo.
 
-```bash
-./mvnw test -Dtest=ReglaHexagonalTest
-```
+**Hazlo tú.** Desde `examples/archunit-hexagonal-rutaflow/`, lee `src/test/java/academia/rutaflow/hexagonal/HexagonalArchitectureTest.java`, busca `adaptersDeInfraestructuraSeIdentificanComoRepository` y ejecuta `./mvnw -q test`. La regla de ejemplo comprueba el sufijo del adaptador; registra qué paquetes y clases quedan dentro de su alcance.
 
-**Resultado esperado:** `BUILD SUCCESS` con el test en verde: ArchUnit analiza el bytecode REAL compilado (no el código fuente textualmente) y confirma que ninguna clase de `domain` importa o depende de ninguna clase de `infrastructure` — la regla hexagonal congelada como verificación automática, no como una promesa de estilo.
+**Resultado esperado.** La regla nueva pasa con el adaptador actual y explica su alcance en el nombre o comentario.
 
-**Fallo deliberado:** modifica `Pedido.java` (en `domain`) para que importe y use `JpaPedidoRepository` directamente (por ejemplo, agregando un campo `private JpaPedidoRepository repo;`) y ejecuta de nuevo el test. FALLA con un mensaje real y específico de ArchUnit: `Architecture Violation ... Pedido does not satisfy: ... because Pedido.class depends on JpaPedidoRepository` — diagnostica confirmando que ArchUnit atrapa la violación en el momento exacto en que ocurre, en el build, en vez de descubrirse meses después en una revisión de código o, peor, nunca. Revierte el cambio antes de continuar.
+**Fallo deliberado.** Renombra temporalmente el archivo/clase `InMemoryDeliveryRepository` a `InMemoryDeliveryStore` sin actualizar la regla. Ejecuta `adaptersDeInfraestructuraSeIdentificanComoRepository`: falla al encontrar `InMemoryDeliveryStore`. Restaura el nombre y corre la suite completa.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**Entiende.** ArchUnit valida estructura de clases, no calidad del modelo completo ni comportamiento de negocio. Mantén el alcance visible y revisa excepciones en vez de ampliar los patrones hasta que todo pase.
 
-1. Agrega una segunda regla que confirme que las clases en `infrastructure` SÍ pueden depender de `domain` (la dirección permitida), usando `classes().that().resideInAPackage("..infrastructure..").should().dependOnClassesThat().resideInAPackage("..domain..").orShould()...` según corresponda.
-2. Agrega una regla de nomenclatura (`classes().that().resideInAPackage("..infrastructure..").should().haveSimpleNameEndingWith("Repository").orShould()...`) y confirma que se cumple sobre el código existente.
-3. Documenta, en un comentario, la diferencia entre una violación arquitectónica detectada por ArchUnit (en el build) y la misma violación detectada solo en una revisión de código manual (mucho más tarde, si es que se detecta).
-4. Escribe de memoria (sin mirar) una regla ArchUnit que prohíba una dependencia entre dos paquetes, y confirma con un test que se cumple sobre tu propio código. Compara después contra el patrón del Paso 4.
+**Cierra.** Evidencia: suite verde restaurada y explicación de una regla útil para el proyecto integrador.
 
-**Pista:** `new ClassFileImporter().importPackages(...)` analiza el BYTECODE COMPILADO, no el texto fuente — esto significa que ArchUnit detecta dependencias reales incluso a través de generación de código o reflexión indirecta que un simple `grep` sobre el código fuente podría pasar por alto.
+**Transferencia al proyecto integrador:** protege con ArchUnit las capas de una ruta real (controller → caso de uso → puerto → adapter). La prueba actual solo cubre un ejemplo mínimo en memoria; no inspecciona el microservicio del Módulo 12.
 
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio con el método de ArchUnit que expresa "ninguna clase debería depender de":
-
-```java
-ArchRule regla = noClasses().that().resideInAPackage("..domain..")
-    .should().____().resideInAPackage("..infrastructure..");
-```
-
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una regla ArchUnit que prohíba que el dominio dependa de la infraestructura, y un test que la ejecute. Compara después contra el patrón del Paso 4.
-
-#### Paso 7 · Cierre y evidencia
-
-Ya congelas una regla arquitectónica hexagonal como un test ejecutable con ArchUnit, atrapando violaciones en el build en vez de en una revisión manual. El siguiente tema protege llamadas entre servicios con Bulkhead y RateLimiter de Resilience4j, complementando el CircuitBreaker ya visto. **Evidencia:** entrega el resultado de `ReglaHexagonalTest` en verde, y el mensaje de violación real de ArchUnit que produce el fallo deliberado. Fuentes oficiales: [ArchUnit User Guide](https://www.archunit.org/userguide/html/000_Index.html).
-
-**Errores comunes:** documentar una regla arquitectónica solo en un README sin verificación automatizada; definir reglas demasiado laxas que no detectan violaciones reales.
-
-**Cuándo no usarlo:** para un prototipo pequeño de corta vida sin intención de mantenimiento a largo plazo, invertir en reglas ArchUnit puede ser una formalidad desproporcionada frente al beneficio.
-
-Verificar la arquitectura hexagonal con ArchUnit es lo que protegería los límites de capas del proyecto integrador de este track (microservicio productivo, Módulo 12).
+**Fuentes oficiales:** [ArchUnit User Guide](https://www.archunit.org/userguide/html/000_Index.html), [ArchUnit Getting Started](https://www.archunit.org/getting-started).
 
 ### Tema 4: Bulkhead y RateLimiter de Resilience4j
 

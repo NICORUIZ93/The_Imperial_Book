@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 1499,
+      "lines": 1514,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 16828,
+      "lines": 16885,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13646,
+      "lines": 13648,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -677,7 +677,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 159,
+      "lines": 160,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 557,
+      "lines": 561,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -7455,6 +7455,42 @@
       "headings": []
     },
     {
+      "path": "examples/testcontainers-singleton-rutaflow/README.md",
+      "lines": 49,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Un PostgreSQL Testcontainers compartido entre clases",
+        "## Ejecutar",
+        "## Alcance y cuidado"
+      ]
+    },
+    {
+      "path": "examples/testcontainers-singleton-rutaflow/src/test/java/academia/rutaflow/containers/FirstRepositoryTest.java",
+      "lines": 11,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/testcontainers-singleton-rutaflow/src/test/java/academia/rutaflow/containers/SecondRepositoryTest.java",
+      "lines": 11,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/testcontainers-singleton-rutaflow/src/test/java/academia/rutaflow/containers/SharedPostgres.java",
+      "lines": 48,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
       "path": "examples/tracks/android/compose-ui.kt",
       "lines": 38,
       "kind": "example",
@@ -13596,7 +13632,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-15.md",
-      "lines": 1106,
+      "lines": 1051,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

@@ -94,8 +94,8 @@
     "spring-boot": {
       "topics": 111,
       "completeTopics": 53,
-      "topicsWith3to6Subtopics": 78,
-      "subtopics": 271,
+      "topicsWith3to6Subtopics": 79,
+      "subtopics": 275,
       "completeSubtopics": 186
     }
   },
@@ -14354,8 +14354,65 @@
       {
         "module": 15,
         "topic": "### Tema 3: Arquitectura hexagonal verificada con ArchUnit",
-        "subtopicCount": 0,
-        "subtopics": [],
+        "subtopicCount": 4,
+        "subtopics": [
+          {
+            "id": "15.3",
+            "title": "#### Subtema 15.3.1: Ubica el puerto y el adaptador · 8 min",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "15.3",
+            "title": "#### Subtema 15.3.2: Escribe la regla sobre el bytecode · 8 min",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "15.3",
+            "title": "#### Subtema 15.3.3: Protege también el caso de uso · 8 min",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "15.3",
+            "title": "#### Subtema 15.3.4: Decide qué reglas merece mantener · 8 min",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": true
+            },
+            "complete": false
+          }
+        ],
         "complete": false
       },
       {

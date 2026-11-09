@@ -1496,3 +1496,18 @@ en la segunda, la igualdad detectó la diferencia. Restauradas las mutaciones, l
 suite volvió a pasar. README y lección distinguen singleton entre clases de
 `withReuse(true)` entre ejecuciones, prohíben forks paralelos y requieren aislar
 datos. Siguiente: M15 T3, arquitectura hexagonal verificada con ArchUnit.
+
+Spring Boot M15 T3, “Arquitectura hexagonal verificada con ArchUnit”, se dividió
+en cuatro subtemas e incorporó `examples/archunit-hexagonal-rutaflow/`. El
+laboratorio Java 25 / ArchUnit 1.5.1 muestra un puerto de dominio, un caso de
+uso y un adaptador en memoria; protege las dependencias domain→infrastructure y
+application→infrastructure y comprueba la convención de nombre del adaptador.
+La suite restaurada pasó: 3 pruebas, 0 fallos. Se probó una mutación en
+`RegisterDelivery`: al cambiar el puerto por `InMemoryDeliveryRepository`, la
+regla de application falló en constructor, campo y llamada. Otra mutación desde
+`Delivery` produjo el rechazo domain→infrastructure; renombrar el adaptador a
+`InMemoryDeliveryStore` hizo fallar la regla de convención. Las tres mutaciones
+se restauraron y la suite quedó verde. La lección explica el alcance limitado:
+estas reglas inspeccionan bytecode importado y no certifican toda la
+arquitectura, comportamiento ni integración Spring. Siguiente: M15 T4,
+Bulkhead y RateLimiter de Resilience4j.

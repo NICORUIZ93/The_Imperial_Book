@@ -412,6 +412,10 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - pendiente Subtema 15.2.3: Aísla los datos compartidos · 8 min
   - pendiente Subtema 15.2.4: Decide si conviene compartir · 8 min
 - [pendiente de migrar] Tema 3: Arquitectura hexagonal verificada con ArchUnit
+  - pendiente Subtema 15.3.1: Ubica el puerto y el adaptador · 8 min
+  - pendiente Subtema 15.3.2: Escribe la regla sobre el bytecode · 8 min
+  - pendiente Subtema 15.3.3: Protege también el caso de uso · 8 min
+  - pendiente Subtema 15.3.4: Decide qué reglas merece mantener · 8 min
 - [pendiente de migrar] Tema 4: Bulkhead y RateLimiter de Resilience4j
 - [pendiente de migrar] Tema 5: Saga con compensación real
 - [pendiente de migrar] Tema 6: Event Sourcing con replay real
