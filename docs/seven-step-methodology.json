@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 25,
-      "prerequisites": 47,
-      "context": 25,
-      "theoryAnalogy": 25,
-      "guidedDemo": 25,
+      "objective": 24,
+      "prerequisites": 46,
+      "context": 24,
+      "theoryAnalogy": 24,
+      "guidedDemo": 24,
       "codeExplanation": 111,
       "execution": 100,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 25,
-      "independentPractice": 25,
-      "closure": 25,
-      "commonErrors": 25,
-      "resources": 55,
-      "standaloneExample": 27,
-      "learningEvidence": 61,
-      "complete": 25
+      "guidedPractice": 24,
+      "independentPractice": 24,
+      "closure": 24,
+      "commonErrors": 24,
+      "resources": 54,
+      "standaloneExample": 26,
+      "learningEvidence": 60,
+      "complete": 24
     }
   },
   "topics": {
@@ -29381,26 +29381,26 @@
         "module": 17,
         "topic": "Tema 1: DataSource, JdbcTemplate y DAO",
         "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "objective": false,
+          "prerequisites": false,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 4,
+          "complete": false
         }
       },
       {

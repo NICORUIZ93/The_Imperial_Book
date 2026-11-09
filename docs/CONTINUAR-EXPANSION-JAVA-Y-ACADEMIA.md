@@ -1624,3 +1624,17 @@ esperada). La auditoría ahora detecta los cuatro subtemas de ambos temas M16
 con sus acciones, fallos y duraciones. Fuentes primarias: Jakarta Persistence
 3.2 y Spring Data JPA projections. `./scripts/validate.sh` y el validador
 RutaFlow pasaron tras regenerar los reportes. Siguiente: M16 T3.
+
+Spring Boot M17 T1, “DataSource, JdbcTemplate y DAO”, se adaptó a cuatro
+subtemas atómicos y se enlazó con una implementación real de Spring JDBC en
+`examples/java-jpa-lab/`: `EnvioJdbcRepository`, `EnvioRegistro` y una prueba
+slice `@JdbcTest`. El repositorio usa parámetros para valores, mapea filas a
+un record y valida nombres de orden con allowlist. Se agregaron los starters
+JDBC y JDBC test al POM. La suite del laboratorio pasa con 12 pruebas (6 JPA,
+3 JDBC directo y 3 Spring JDBC). Cuatro mutaciones fallaron como se esperaba:
+quitar `@Import`, concatenar la referencia al SQL, permitir cualquier nombre
+en `ORDER BY`, y pedir una columna inexistente en el `RowMapper`. Se usó H2;
+esto no mide rendimiento de producción. Fuentes primarias contrastadas:
+documentación oficial de Spring Boot SQL y Spring Framework JdbcTemplate.
+Pendiente: actualizar reportes, validar y publicar M17 T1. Siguiente: M17 T2,
+`@Transactional`, rollback y límites de transacción.

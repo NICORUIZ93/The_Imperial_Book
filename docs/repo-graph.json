@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 1627,
+      "lines": 1641,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 17284,
+      "lines": 17341,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -314,7 +314,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1090,
+      "lines": 1089,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13659,
+      "lines": 13661,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -813,7 +813,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 11067,
+      "lines": 11065,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 589,
+      "lines": 593,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -2416,7 +2416,7 @@
     },
     {
       "path": "examples/java-jpa-lab/README.md",
-      "lines": 22,
+      "lines": 23,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -2467,6 +2467,14 @@
     {
       "path": "examples/java-jpa-lab/src/main/java/academia/pedidos/PedidoRepository.java",
       "lines": 26,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/java-jpa-lab/src/main/java/academia/pedidos/PedidoResumen.java",
+      "lines": 4,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -13996,7 +14004,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-17.md",
-      "lines": 183,
+      "lines": 188,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14005,14 +14013,14 @@
         "## Aprende construyendo",
         "### Dos ejemplos: primero visible, luego real",
         "### Tema 1: DataSource, JdbcTemplate y DAO",
+        "#### Subtema 17.1 \u00b7 Conecta JdbcTemplate a la base de prueba \u00b7 8 min",
+        "#### Subtema 17.2 \u00b7 Pasa valores como par\u00e1metros \u00b7 8 min",
+        "#### Subtema 17.3 \u00b7 Convierte filas en objetos simples \u00b7 8 min",
+        "#### Subtema 17.4 \u00b7 Valida el ordenamiento din\u00e1mico \u00b7 10 min",
+        "### Tema 2: `@Transactional`, rollback y l\u00edmites de transacci\u00f3n",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda y modelo mental",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
-        "### Tema 2: `@Transactional`, rollback y l\u00edmites de transacci\u00f3n"
+        "#### Paso 3 \u00b7 Teor\u00eda y modelo mental"
       ]
     },
     {

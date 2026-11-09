@@ -5,7 +5,7 @@
 **Proyecto continuo:** RutaFlow: plataforma de entregas basada en servicios.
 **Prerrequisito de entrada:** Java, HTTP, SQL y pruebas; los módulos iniciales vuelven a presentar cada herramienta..
 **Duración objetivo:** temas de 20–45 minutos; cada tema se divide en 3–6 acciones de 5–15 minutos.
-**Estado estructural:** 55/111 temas migrados; auditoría estructural actualizada el 2026-11-03.
+**Estado estructural:** 56/111 temas migrados; auditoría estructural actualizada el 2026-11-03.
 
 ## Índice de módulos y temas
 
@@ -461,7 +461,11 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
 
 [Abrir lección completa](../web/public/content/spring-boot/modulo-17.md)
 
-- [pendiente de migrar] Tema 1: DataSource, JdbcTemplate y DAO
+- [4 pasos] Tema 1: DataSource, JdbcTemplate y DAO
+  - ✓ Subtema 17.1 · Conecta JdbcTemplate a la base de prueba · 8 min
+  - ✓ Subtema 17.2 · Pasa valores como parámetros · 8 min
+  - ✓ Subtema 17.3 · Convierte filas en objetos simples · 8 min
+  - ✓ Subtema 17.4 · Valida el ordenamiento dinámico · 10 min
 - [pendiente de migrar] Tema 2: `@Transactional`, rollback y límites de transacción
 
 ### Módulo 18: Autenticación y backend seguro con Spring Security
@@ -578,7 +582,7 @@ La tabla registra presencia de áreas en el inventario del track, no profundidad
 
 ### Huecos y límites reportados
 
-- El repositorio contiene 111 temas en 26 módulos; 55 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
+- El repositorio contiene 111 temas en 26 módulos; 56 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
 - No hay base para afirmar que el track esté completo: la comparación con la fuente de referencia está pendiente de revisión humana módulo por módulo.
 - Los elementos de la fuente que todavía deben verificarse de forma explícita están enumerados en la tabla anterior; cualquier técnica crítica que no tenga tema propio debe añadirse conservando el currículo base.
 - La ejecución de ejemplos, el comportamiento con brokers/plataformas reales y la calidad pedagógica humana se registran por separado.

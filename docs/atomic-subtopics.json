@@ -93,10 +93,10 @@
     },
     "spring-boot": {
       "topics": 111,
-      "completeTopics": 55,
-      "topicsWith3to6Subtopics": 86,
-      "subtopics": 303,
-      "completeSubtopics": 194
+      "completeTopics": 56,
+      "topicsWith3to6Subtopics": 87,
+      "subtopics": 307,
+      "completeSubtopics": 198
     }
   },
   "topics": {
@@ -14866,9 +14866,66 @@
       {
         "module": 17,
         "topic": "### Tema 1: DataSource, JdbcTemplate y DAO",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 4,
+        "subtopics": [
+          {
+            "id": "17.1",
+            "title": "#### Subtema 17.1 · Conecta JdbcTemplate a la base de prueba · 8 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "17.2",
+            "title": "#### Subtema 17.2 · Pasa valores como parámetros · 8 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "17.3",
+            "title": "#### Subtema 17.3 · Convierte filas en objetos simples · 8 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "17.4",
+            "title": "#### Subtema 17.4 · Valida el ordenamiento dinámico · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 17,

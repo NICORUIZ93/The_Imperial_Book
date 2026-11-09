@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 270,
+    "topicsWithSignals": 271,
     "newLaboratories": 25
   },
   "priorities": {
@@ -12832,7 +12832,9 @@
       "title": "Tema 1: DataSource, JdbcTemplate y DAO",
       "file": "web/public/content/spring-boot/modulo-17.md",
       "line": 14,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -12842,7 +12844,7 @@
       "module": 17,
       "title": "Tema 2: `@Transactional`, rollback y límites de transacción",
       "file": "web/public/content/spring-boot/modulo-17.md",
-      "line": 103,
+      "line": 108,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
