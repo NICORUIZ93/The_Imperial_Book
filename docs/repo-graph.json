@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 1442,
+      "lines": 1456,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 16600,
+      "lines": 16657,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -600,7 +600,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3934,
+      "lines": 3941,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13638,
+      "lines": 13640,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 541,
+      "lines": 545,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -5796,6 +5796,57 @@
     {
       "path": "examples/spring-boot-integrador-rutaflow/src/test/java/academia/rutaflow/integrador/entrega/ArquitecturaIntegradaTest.java",
       "lines": 200,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-boot-jwt-ownership-rutaflow/README.md",
+      "lines": 16,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# JWT firmado y autorizaci\u00f3n por due\u00f1o",
+        "## Ejecutar"
+      ]
+    },
+    {
+      "path": "examples/spring-boot-jwt-ownership-rutaflow/src/main/java/academia/rutaflow/ownership/OwnershipApplication.java",
+      "lines": 12,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-boot-jwt-ownership-rutaflow/src/main/java/academia/rutaflow/ownership/jornada/JornadaController.java",
+      "lines": 29,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-boot-jwt-ownership-rutaflow/src/main/java/academia/rutaflow/ownership/jornada/JornadaOwnership.java",
+      "lines": 15,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-boot-jwt-ownership-rutaflow/src/main/java/academia/rutaflow/ownership/security/JwtSecurityConfig.java",
+      "lines": 64,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-boot-jwt-ownership-rutaflow/src/test/java/academia/rutaflow/ownership/jornada/OwnershipJwtTest.java",
+      "lines": 69,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -13317,7 +13368,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-14.md",
-      "lines": 660,
+      "lines": 595,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

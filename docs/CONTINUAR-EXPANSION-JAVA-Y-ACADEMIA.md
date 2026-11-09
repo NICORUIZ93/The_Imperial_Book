@@ -1439,3 +1439,17 @@ Spring Boot M14 T3, “JPA e Hibernate Spatial”, se convirtió en cuatro subte
 
 
 Spring Boot M14 T4, “JWT Bearer y autorización por roles”, se rehízo en cuatro subtemas con `examples/spring-boot-jwt-ownership-rutaflow/`. El laboratorio crea JWT HS256 firmados con `JwtEncoder`, los valida por el filtro Resource Server y separa 401, rol 403 y ownership 403. Cuatro pruebas pasan: sin Bearer, propietario con ROLE_DRIVER, otro subject con igual rol y propietario sin rol. Al retirar temporalmente la comprobación de propiedad, el test del otro conductor falló con 200; restaurado el guard, toda la suite pasó. El mapa de dueños y la clave son solo demostración; no se declaran integración real con Keycloak ni ownership persistido. Próximo: M14 T5, tiempo real con STOMP.
+
+Spring Boot M14 T5, “Tiempo real con STOMP”, quedó en cuatro subtemas con
+`examples/spring-boot-stomp-rutaflow/`. Se reemplazó el test anterior que
+dependía de `Thread.sleep(200)` por una señal de preparación para probar la
+suscripción. `WebSocketStompClient` se conectó al servidor Spring embebido y
+recibió un `PositionEvent` publicado al topic correcto. La secuencia repetida
+no se vuelve a publicar. La prueba pasó (1 prueba, 0 fallos). Cambiar el topic
+del cliente produjo `expected PositionEvent ... but was null`; omitir el filtro
+de secuencia hizo fallar la comprobación de evento extra. Se restauraron ambas
+mutaciones y la suite volvió a pasar. El broker y el tracker son en memoria; no
+se configuraron autenticación, autorización por topic, persistencia ni relay a
+RabbitMQ, y el laboratorio no prueba un cliente Flutter/Socket.IO. Consultar
+`README.md` del laboratorio antes de ampliar el alcance. Próximo: M14 T6,
+validación real de archivos y notificaciones push.

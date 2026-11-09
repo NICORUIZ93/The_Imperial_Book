@@ -365,173 +365,108 @@ cd examples/spring-boot-jwt-ownership-rutaflow
 
 ### Tema 5: Tiempo real con STOMP
 
-Este laboratorio conserva la variante nativa de Spring con STOMP. Para seguir el temario original de Socket.IO junto al cliente Flutter, utiliza el gateway compatible de [RutaFlow 5](/curso/rutaflow/5). STOMP y Socket.IO no son intercambiables aunque ambos puedan transportar datos sobre WebSocket. Para identidad mediante Keycloak/OIDC consulta también [Spring Boot 10](/curso/spring-boot/10); un ID de envío recibido del cliente no sustituye autorización por recurso.
+**Objetivo observable:** conectar un cliente STOMP por WebSocket, recibir una posición publicada a un topic y demostrar que una secuencia repetida se descarta.
 
-#### Paso 1 · Objetivo y preparación
+**¿Por qué es importante?** Una posición atrasada o repetida puede confundir a quien sigue una entrega. El topic identifica a qué envío pertenece el aviso y la secuencia permite reconocer actualizaciones repetidas o antiguas.
 
-Al finalizar podrás conectar un cliente STOMP real (`WebSocketStompClient`, el cliente de test oficial de Spring) contra un servidor embebido, y confirmar que un mensaje publicado en un topic llega realmente al suscriptor, con secuencia y deduplicación.
+**Antes de empezar:** saber iniciar un proyecto Maven del módulo 0. STOMP es el formato de mensajes y destinos que usa este ejemplo sobre una conexión WebSocket; Socket.IO es otro protocolo. Para Flutter/Socket.IO, continúa en [RutaFlow 5](/curso/rutaflow/5). Para identidad y permisos de la conexión, relaciona este tema con [Spring Boot 10](/curso/spring-boot/10).
 
-**Conocimiento previo:** Módulo 0 de este track (arranque básico de Spring Boot).
+**Recorrido del mensaje:** la app se conecta a `/ws-entregas`; el servidor publica en `/topic/entregas/SHP-1`; el cliente suscrito a ese destino recibe el JSON. Piensa en el topic como un canal de radio: escuchar el canal de otro envío no recibe esta posición.
 
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** Spring soporta WebSocket/STOMP de forma nativa; Socket.IO es un protocolo distinto que requeriría un servidor compatible o un gateway adicional fuera del ecosistema Spring. Para notificar la posición de un conductor en tiempo real a la app del cliente, STOMP sobre WebSocket es la opción que Spring implementa directamente y se puede probar de extremo a extremo sin infraestructura adicional.
-
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** STOMP sobre WebSocket, topic, secuencia, deduplicación.
-
-Spring configura un broker STOMP simple embebido (`@EnableWebSocketMessageBroker`) que enruta mensajes hacia topics (`/topic/entregas/{id}`); los clientes se suscriben y reciben cada mensaje publicado. Cada evento de posición incluye `shipmentId`, `sequence`, `occurredAt` y `schemaVersion`; los consumidores deduplican por `sequence` para tolerar reenvíos de red sin procesar la misma actualización dos veces.
-
-**Analogía:** STOMP sobre WebSocket es como una radio de despacho: el despachador transmite en un canal (`topic`), y todos los que están sintonizados a ese canal específico reciben el mensaje simultáneamente, en vez de que cada receptor tenga que llamar individualmente a preguntar si hay novedades.
-
-**Diagrama:**
-
-```mermaid
-sequenceDiagram
-  participant P as Publicador (backend)
-  participant B as Broker STOMP
-  participant S as Suscriptor (WebSocketStompClient)
-  S->>B: SUBSCRIBE /topic/entregas/1
-  P->>B: SEND posición (sequence=1)
-  B->>S: MESSAGE posición (sequence=1)
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Continuando en `gestion-entregas` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `mkdir gestion-stomp && cd gestion-stomp && curl -fsSL https://start.spring.io/starter.zip -d dependencies=websocket -d javaVersion=25 -o app.zip && unzip app.zip`), crea `src/main/java/io/academia/entregas/tiemporeal/`:
+El laboratorio autocontenido está en `examples/spring-boot-stomp-rutaflow/`. Abre terminal en esa carpeta y ejecuta `./mvnw -q test`. Usa servidor embebido, puerto aleatorio, un cliente `WebSocketStompClient` real y un broker simple local.
 
 ```bash
-mkdir -p src/main/java/io/academia/entregas/tiemporeal
+cd examples/spring-boot-stomp-rutaflow
+./mvnw -q test
 ```
+
+#### Subtema 14.5.1: Abre la conexión y define destinos · 8 min
+
+**Contexto.** El endpoint es la puerta de entrada WebSocket. `/app` señala mensajes que el servidor procesa y `/topic` señala canales de publicación.
+
+**Hazlo tú.** Abre `examples/spring-boot-stomp-rutaflow/src/main/java/academia/rutaflow/stomp/StompConfig.java`. Lee las tres líneas que definen los destinos:
 
 ```java
-// src/main/java/io/academia/entregas/tiemporeal/StompConfig.java
-package io.academia.entregas.tiemporeal;
-
-import org.springframework.context.annotation.Configuration;
-import org.springframework.messaging.simp.config.MessageBrokerRegistry;
-import org.springframework.web.socket.config.annotation.*;
-
-@Configuration
-@EnableWebSocketMessageBroker
-public class StompConfig implements WebSocketMessageBrokerConfigurer {
-    @Override
-    public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/topic");
-        registry.setApplicationDestinationPrefixes("/app");
-    }
-
-    @Override
-    public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws-entregas");
-    }
-}
+registry.enableSimpleBroker("/topic");
+registry.setApplicationDestinationPrefixes("/app");
+registry.addEndpoint("/ws-entregas");
 ```
+
+En `StompEndToEndTest.java`, localiza la conexión `ws://localhost:` y compárala con `/ws-entregas`. Ejecuta desde la raíz del laboratorio: `./mvnw -q test`.
+
+**Resultado esperado.** El test abre conexión WebSocket local al endpoint y finaliza en verde. El puerto lo asigna el sistema para evitar chocar con otro servicio.
+
+**Fallo deliberado.** Cambia solo `/ws-entregas` del test por `/ws-equivocado`; ejecuta `./mvnw -q test`. La conexión falla porque no hay un endpoint registrado con ese nombre. Restaura la ruta.
+
+**Entiende.** Un nombre de destino funciona como dirección postal: el mensaje debe llegar a la ruta que el servidor configuró. `/app` y `/topic` cumplen funciones diferentes.
+
+**Cierra.** Anota qué ruta abre la conexión y qué prefijo leerías para ubicar un mensaje enviado al servidor.
+
+#### Subtema 14.5.2: Suscríbete y recibe una posición · 10 min
+
+**Contexto.** La conexión sola no recibe posiciones; el cliente se suscribe al envío que quiere observar.
+
+**Hazlo tú.** Abre `src/test/java/academia/rutaflow/stomp/StompEndToEndTest.java`. Sigue `session.subscribe(...)`, el evento `PositionEvent` y `PositionPublisher.publish(...)`. El test confirma que el objeto publicado llega de vuelta por el WebSocket.
 
 ```java
-// src/main/java/io/academia/entregas/tiemporeal/PosicionEvento.java
-package io.academia.entregas.tiemporeal;
-
-public record PosicionEvento(String shipmentId, long sequence, String occurredAt, int schemaVersion) {}
+session.subscribe("/topic/entregas/SHP-1", handler(PositionEvent.class, events));
+PositionEvent first = new PositionEvent("SHP-1", 1, "2026-11-09T10:00:00Z", 1);
+assertThat(publisher.publish(first)).isTrue();
+assertThat(events.poll(3, TimeUnit.SECONDS)).isEqualTo(first);
 ```
 
-Confirma con `WebSocketStompClient` (el cliente de test STOMP real y oficial de Spring, no una simulación) que un mensaje publicado llega al suscriptor:
+Ejecuta `./mvnw -q test` desde `examples/spring-boot-stomp-rutaflow/`.
+
+**Resultado esperado.** La prueba recibe `SHP-1` con secuencia `1`; no es una llamada directa al método del cliente, sino servidor, broker y cliente STOMP conectados.
+
+**Fallo deliberado.** Cambia la suscripción a `/topic/entregas/SHP-2`. El test falla porque escucha el canal equivocado. El timeout limitado termina la espera y señala la falta de mensaje; no se cuelga indefinidamente. Restaura `SHP-1`.
+
+**Entiende.** Publicador y suscriptor deben acordar el mismo destino. `PositionEvent` lleva ID, secuencia, hora y versión de esquema para que el receptor pueda interpretar y ordenar cambios.
+
+**Cierra.** Copia del reporte de JUnit la línea que dice cuántas pruebas pasaron y nombra el destino exacto usado.
+
+#### Subtema 14.5.3: Evita procesar dos veces la misma secuencia · 8 min
+
+**Contexto.** Una conexión o productor puede repetir una actualización. Si ambos eventos se aplican, la app puede mostrar dos veces el mismo cambio.
+
+**Hazlo tú.** Abre `src/main/java/academia/rutaflow/stomp/PositionSequenceTracker.java`. Identifica el último número guardado por envío. En `StompEndToEndTest.java`, localiza la segunda publicación del mismo `first`.
 
 ```java
-// src/test/java/io/academia/entregas/tiemporeal/StompTiempoRealTest.java
-package io.academia.entregas.tiemporeal;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.messaging.converter.MappingJackson2MessageConverter;
-import org.springframework.messaging.simp.stomp.*;
-import org.springframework.web.socket.client.standard.StandardWebSocketClient;
-import org.springframework.web.socket.messaging.WebSocketStompClient;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-
-import java.lang.reflect.Type;
-import java.util.concurrent.CompletableFuture;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class StompTiempoRealTest {
-
-    @LocalServerPort
-    private int puerto;
-
-    @Autowired
-    private SimpMessagingTemplate template;
-
-    @Test
-    void unMensajePublicadoLlegaRealmenteAlSuscriptorPorElBrokerStomp() throws Exception {
-        WebSocketStompClient stompClient = new WebSocketStompClient(new StandardWebSocketClient());
-        stompClient.setMessageConverter(new MappingJackson2MessageConverter());
-
-        CompletableFuture<PosicionEvento> recibido = new CompletableFuture<>();
-
-        StompSession session = stompClient
-            .connectAsync("ws://localhost:" + puerto + "/ws-entregas", new StompSessionHandlerAdapter() {})
-            .get();
-
-        session.subscribe("/topic/entregas/1", new StompFrameHandler() {
-            @Override
-            public Type getPayloadType(StompHeaders headers) { return PosicionEvento.class; }
-            @Override
-            public void handleFrame(StompHeaders headers, Object payload) {
-                recibido.complete((PosicionEvento) payload);
-            }
-        });
-
-        Thread.sleep(200); // deja tiempo real para que la suscripción se registre en el broker
-        template.convertAndSend("/topic/entregas/1", new PosicionEvento("SHP-1", 1L, "2026-07-21T10:00:00Z", 1));
-
-        PosicionEvento evento = recibido.get(3, java.util.concurrent.TimeUnit.SECONDS);
-        assertThat(evento.shipmentId()).isEqualTo("SHP-1");
-        assertThat(evento.sequence()).isEqualTo(1L);
-    }
-}
+assertThat(publisher.publish(first)).isTrue();
+assertThat(publisher.publish(first)).isFalse();
+assertThat(events.poll(3, TimeUnit.SECONDS)).isEqualTo(first);
+assertThat(events.poll(250, TimeUnit.MILLISECONDS)).isNull();
 ```
 
-```bash
-./mvnw test -Dtest=StompTiempoRealTest
-```
+Ejecuta `./mvnw -q test` y registra por qué la segunda llamada devuelve `false`.
 
-**Resultado esperado:** `BUILD SUCCESS` con el test en verde: `WebSocketStompClient` (el cliente STOMP real y oficial de Spring, conectado por WebSocket real a un servidor embebido en un puerto aleatorio real) recibe el `PosicionEvento` publicado por `SimpMessagingTemplate.convertAndSend(...)`, confirmando de extremo a extremo que el broker STOMP simple efectivamente enruta el mensaje del publicador al suscriptor.
+**Resultado esperado.** Solo se recibe un evento. Para el mismo envío, una secuencia debe ser mayor que la última aceptada.
 
-**Fallo deliberado:** cambia la suscripción del test de `/topic/entregas/1` a `/topic/entregas/2` (un topic distinto al que se publica) y ejecuta de nuevo el test. FALLA con un `TimeoutException` real en `recibido.get(3, TimeUnit.SECONDS)` — diagnostica confirmando que el broker STOMP enruta estrictamente por el nombre exacto del topic: una suscripción a un topic distinto simplemente nunca recibe el mensaje, sin ningún error explícito, silenciosamente. Restaura el topic correcto antes de continuar.
+**Fallo deliberado.** En `PositionPublisher.publish`, quita temporalmente la condición que consulta `sequences.accept(event)` y publica siempre. Vuelve a ejecutar el test: la última comprobación falla porque llegó el duplicado. Restaura la condición y confirma el test verde.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**Entiende.** El tracker es una regla de orden, no una cola durable. Su mapa vive en memoria y una instancia; al reiniciar se borra y no coordina réplicas.
 
-1. Publica dos eventos con `sequence` 1 y 2 en sucesión, y confirma con el test que el suscriptor los recibe en el orden correcto.
-2. Documenta, en un comentario, por qué STOMP sobre WebSocket usado aquí es una alternativa nativa de Spring a Socket.IO, y qué tendría que agregarse (un servidor Socket.IO compatible o un gateway) si el requisito fuera interoperar específicamente con clientes Socket.IO existentes.
-3. Agrega un segundo suscriptor a un topic distinto (`/topic/entregas/2`) y confirma con un test que cada suscriptor solo recibe los mensajes de SU topic, no los del otro.
-4. Escribe de memoria (sin mirar) una configuración `@EnableWebSocketMessageBroker` mínima, y un test `WebSocketStompClient` que confirme un mensaje recibido de extremo a extremo. Compara después contra el patrón del Paso 4.
+**Cierra.** Guarda reporte verde restaurado y el fallo que observaste al permitir publicar duplicados.
 
-**Pista:** `CompletableFuture<T>` es una forma limpia de puentear el mundo asíncrono de STOMP (el mensaje llega en un callback, en un thread distinto) con el mundo síncrono de un test JUnit: `.get(timeout, unidad)` bloquea el test hasta que el mensaje real llega o expira el timeout.
+#### Subtema 14.5.4: Diagnostica destinos y límites de producción · 10 min
 
-#### Paso 6 · Práctica independiente
+**Contexto.** El broker simple ayuda a aprender y probar el flujo, pero guarda sus suscripciones en memoria. La aplicación no valida aquí quién puede seguir un envío.
 
-**Completa el código:** rellena el espacio con el prefijo de destino que el broker simple de Spring enruta a los suscriptores:
+**Hazlo tú.** Ejecuta la prueba con el topic incorrecto y luego restáuralo. Abre `examples/spring-boot-stomp-rutaflow/README.md`; marca los límites sobre varias instancias, reinicios, autenticación y autorización por envío.
 
-```java
-registry.enableSimpleBroker("____");
-```
+**Resultado esperado.** Puedes explicar por qué el suscriptor incorrecto no ve el mensaje, por qué el mapa de secuencias no basta en varias réplicas y qué permiso falta antes de exponer un envío real.
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una configuración STOMP mínima y un test `WebSocketStompClient` que confirme un mensaje real recibido por un suscriptor. Compara después contra el patrón del Paso 4.
+**Fallo deliberado.** Retira el timeout del `events.poll(...)` y observa que una prueba puede esperar para siempre cuando el destino no coincide. Restáuralo: las pruebas asíncronas necesitan un límite de espera.
 
-#### Paso 7 · Cierre y evidencia
+**Entiende.** Para requisitos de confirmación STOMP, persistencia o múltiples instancias, evalúa un broker externo y su relay. Para clientes Socket.IO, hace falta un servidor compatible o gateway: compartir WebSocket como transporte no vuelve iguales los protocolos.
 
-Ya conectas un cliente STOMP real contra un servidor embebido y confirmas de extremo a extremo que un mensaje publicado llega al suscriptor correcto. El siguiente y último tema de este módulo valida archivos subidos por contenido real, no solo por extensión declarada. **Evidencia:** entrega el resultado de `StompTiempoRealTest` en verde, y el `TimeoutException` real que produce el fallo deliberado al suscribirse al topic incorrecto. Fuentes oficiales: [Spring — WebSocket STOMP](https://docs.spring.io/spring-framework/reference/web/websocket/stomp.html).
+**Cierra.** Evidencia del tema: test verde restaurado, fallo diagnosticado del topic cambiado y respuesta breve sobre cómo proteger `/topic/entregas/{id}`.
 
-**Errores comunes:** asumir que Socket.IO y STOMP son intercambiables sin adaptación; no deduplicar por `sequence` en el consumidor, procesando dos veces un reenvío de red del mismo evento.
+**Transferencia al proyecto integrador:** aplica el flujo a una actualización de ruta: fija un contrato de evento, acuerda el destino con Flutter, y decide dónde guardar deduplicación y permisos. El ejemplo no implementa producción, ni integra Flutter o Keycloak.
 
-**Cuándo no usarlo:** para actualizaciones que toleran un retraso de segundos o minutos (por ejemplo, un resumen diario), polling HTTP periódico simple es suficiente y evita la complejidad operativa de mantener conexiones WebSocket persistentes.
+**Cuándo no usarlo:** si basta con actualizar cada varios minutos, considera una consulta HTTP periódica sencilla. No mantengas conexiones persistentes sin una necesidad de tiempo real.
 
-STOMP sobre WebSocket es la opción que evaluarás si el proyecto integrador de este track (microservicio productivo, Módulo 12) necesita notificaciones en tiempo real.
+**Fuentes oficiales:** [Spring WebSocket y STOMP](https://docs.spring.io/spring-framework/reference/web/websocket/stomp.html), [broker simple: límites y alternativas](https://docs.spring.io/spring-framework/reference/web/websocket/stomp/handle-broker-relay.html).
 
 ### Tema 6: Archivos y notificaciones push
 

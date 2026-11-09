@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 259,
+    "topicsWithSignals": 260,
     "newLaboratories": 25
   },
   "priorities": {
@@ -12676,7 +12676,9 @@
       "title": "Tema 5: Tiempo real con STOMP",
       "file": "web/public/content/spring-boot/modulo-14.md",
       "line": 366,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -12686,7 +12688,7 @@
       "module": 14,
       "title": "Tema 6: Archivos y notificaciones push",
       "file": "web/public/content/spring-boot/modulo-14.md",
-      "line": 536,
+      "line": 471,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

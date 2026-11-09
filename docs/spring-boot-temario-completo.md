@@ -387,6 +387,10 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - pendiente Subtema 14.4.3: Comprueba que el recurso pertenece al subject · 10 min
   - pendiente Subtema 14.4.4: Reproduce y corrige acceso horizontal · 8 min
 - [pendiente de migrar] Tema 5: Tiempo real con STOMP
+  - pendiente Subtema 14.5.1: Abre la conexión y define destinos · 8 min
+  - pendiente Subtema 14.5.2: Suscríbete y recibe una posición · 10 min
+  - pendiente Subtema 14.5.3: Evita procesar dos veces la misma secuencia · 8 min
+  - pendiente Subtema 14.5.4: Diagnostica destinos y límites de producción · 10 min
 - [pendiente de migrar] Tema 6: Archivos y notificaciones push
 
 ### Módulo 15: Spring Master: hexagonal, reactivo y microservicios

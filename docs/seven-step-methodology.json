@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 37,
-      "prerequisites": 59,
-      "context": 37,
-      "theoryAnalogy": 37,
-      "guidedDemo": 37,
+      "objective": 36,
+      "prerequisites": 58,
+      "context": 36,
+      "theoryAnalogy": 36,
+      "guidedDemo": 36,
       "codeExplanation": 111,
       "execution": 100,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 37,
-      "independentPractice": 37,
-      "closure": 37,
-      "commonErrors": 37,
+      "guidedPractice": 36,
+      "independentPractice": 36,
+      "closure": 36,
+      "commonErrors": 36,
       "resources": 61,
-      "standaloneExample": 39,
+      "standaloneExample": 38,
       "learningEvidence": 69,
-      "complete": 37
+      "complete": 36
     }
   },
   "topics": {
@@ -29069,26 +29069,26 @@
         "module": 14,
         "topic": "Tema 5: Tiempo real con STOMP",
         "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "objective": false,
+          "prerequisites": false,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
           "resources": true,
-          "standaloneExample": true,
+          "standaloneExample": false,
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 6,
+          "complete": false
         }
       },
       {

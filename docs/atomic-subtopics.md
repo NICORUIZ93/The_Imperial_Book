@@ -19,7 +19,7 @@ Temas conformes a cuatro pasos: **157/1185**. Tracks inventariados: **14**.
 | node | 2 | 83 | 6 | 6 |
 | react | 0 | 58 | 0 | 0 |
 | rutaflow | 0 | 29 | 0 | 0 |
-| spring-boot | 53 | 111 | 255 | 186 |
+| spring-boot | 53 | 111 | 259 | 186 |
 
 ## Temas pendientes
 
@@ -1040,7 +1040,7 @@ Temas conformes a cuatro pasos: **157/1185**. Tracks inventariados: **14**.
 - M14 ### Tema 2: MySQL y datos espaciales: 14.2: faltan context, action, deliberateFailure, understand, close; 14.2: faltan context, action, deliberateFailure, understand, close; 14.2: faltan context, action, deliberateFailure, understand, close; 14.2: faltan context, action, deliberateFailure, understand, close
 - M14 ### Tema 3: JPA e Hibernate Spatial: 14.3: faltan context, action, deliberateFailure, understand, close; 14.3: faltan context, action, deliberateFailure, understand, close; 14.3: faltan context, action, deliberateFailure, understand, close; 14.3: faltan context, action, deliberateFailure, understand, close
 - M14 ### Tema 4: JWT Bearer y autorización por roles: 14.4: faltan context, action, deliberateFailure, understand, close; 14.4: faltan context, action, deliberateFailure, understand, close; 14.4: faltan context, action, deliberateFailure, understand, close; 14.4: faltan context, action, deliberateFailure, understand, close
-- M14 ### Tema 5: Tiempo real con STOMP: tiene 0 subtemas
+- M14 ### Tema 5: Tiempo real con STOMP: 14.5: faltan context, action, deliberateFailure, understand, close; 14.5: faltan context, action, deliberateFailure, understand, close; 14.5: faltan context, action, deliberateFailure, understand, close; 14.5: faltan context, action, deliberateFailure, understand, close
 - M14 ### Tema 6: Archivos y notificaciones push: tiene 0 subtemas
 - M15 ### Tema 1: Backpressure real en WebFlux con reactor-test: tiene 0 subtemas
 - M15 ### Tema 2: Contenedores Testcontainers reutilizados entre clases: tiene 0 subtemas

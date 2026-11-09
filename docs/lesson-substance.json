@@ -1690,7 +1690,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "54105f55cecd35c360bbd2c338101225560f92c83217e427603c7373f9766ced",
+    "fingerprint": "663c662403da311842da2994802ea7485908bb768994c402beb059ad3ab8545d",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10493,9 +10493,9 @@
       {
         "issues": [],
         "module": 14,
-        "tailWords": 168,
+        "tailWords": 0,
         "topic": "Tema 5: Tiempo real con STOMP",
-        "words": 1314
+        "words": 1119
       },
       {
         "issues": [],

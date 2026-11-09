@@ -99,8 +99,8 @@
     "spring-boot": {
       "topics": 111,
       "code": 106,
-      "commentedCode": 41,
-      "mermaid": 35,
+      "commentedCode": 40,
+      "mermaid": 34,
       "archifyVisual": 2,
       "asciiVisual": 3,
       "misleadingDiagramLabel": 0,
@@ -2694,6 +2694,13 @@
       "track": "spring-boot",
       "module": 14,
       "topic": "Tema 4: JWT Bearer y autorización por roles",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 14,
+      "topic": "Tema 5: Tiempo real con STOMP",
       "missingCode": false,
       "missingComments": true
     },
