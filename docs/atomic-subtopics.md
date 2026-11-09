@@ -2,7 +2,7 @@
 
 > Auditoría estructural. Un encabezado o criterio detectado no demuestra que el ejemplo se haya ejecutado ni que la explicación sea pedagógicamente suficiente.
 
-Temas conformes a cuatro pasos: **158/1185**. Tracks inventariados: **14**.
+Temas conformes a cuatro pasos: **159/1185**. Tracks inventariados: **14**.
 
 | Track | Temas conformes | Temas inventariados | Subtemas detectados | Subtemas con estructura completa |
 |---|---:|---:|---:|---:|
@@ -19,7 +19,7 @@ Temas conformes a cuatro pasos: **158/1185**. Tracks inventariados: **14**.
 | node | 2 | 83 | 6 | 6 |
 | react | 0 | 58 | 0 | 0 |
 | rutaflow | 0 | 29 | 0 | 0 |
-| spring-boot | 54 | 111 | 299 | 190 |
+| spring-boot | 55 | 111 | 303 | 194 |
 
 ## Temas pendientes
 
@@ -1050,7 +1050,6 @@ Temas conformes a cuatro pasos: **158/1185**. Tracks inventariados: **14**.
 - M15 ### Tema 6: Event Sourcing con replay real: 15.6: faltan context, action, deliberateFailure, understand, close; 15.6: faltan context, action, deliberateFailure, understand, close; 15.6: faltan context, action, deliberateFailure, understand, close; 15.6: faltan context, action, deliberateFailure, understand, close
 - M15 ### Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar: 15.7: faltan context, action, deliberateFailure, understand, close; 15.7: faltan context, action, deliberateFailure, understand, close; 15.7: faltan context, action, deliberateFailure, understand, close; 15.7: faltan context, action, deliberateFailure, understand, close
 - M15 ### Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework: 15.8: faltan context, action, deliberateFailure, understand, close; 15.8: faltan context, action, deliberateFailure, understand, close; 15.8: faltan context, action, deliberateFailure, understand, close; 15.8: faltan context, action, deliberateFailure, understand, close
-- M16 ### Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso: tiene 0 subtemas
 - M17 ### Tema 1: DataSource, JdbcTemplate y DAO: tiene 0 subtemas
 - M17 ### Tema 2: `@Transactional`, rollback y límites de transacción: tiene 0 subtemas
 - M18 ### Tema 1: SecurityFilterChain y autorización: tiene 0 subtemas

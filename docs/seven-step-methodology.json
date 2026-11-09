@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 26,
-      "prerequisites": 48,
-      "context": 26,
-      "theoryAnalogy": 26,
-      "guidedDemo": 26,
+      "objective": 25,
+      "prerequisites": 47,
+      "context": 25,
+      "theoryAnalogy": 25,
+      "guidedDemo": 25,
       "codeExplanation": 111,
       "execution": 100,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 26,
-      "independentPractice": 26,
-      "closure": 26,
-      "commonErrors": 26,
-      "resources": 56,
-      "standaloneExample": 28,
-      "learningEvidence": 62,
-      "complete": 26
+      "guidedPractice": 25,
+      "independentPractice": 25,
+      "closure": 25,
+      "commonErrors": 25,
+      "resources": 55,
+      "standaloneExample": 27,
+      "learningEvidence": 61,
+      "complete": 25
     }
   },
   "topics": {
@@ -29355,26 +29355,26 @@
         "module": 16,
         "topic": "Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso",
         "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "objective": false,
+          "prerequisites": false,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 4,
+          "complete": false
         }
       },
       {

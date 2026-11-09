@@ -12820,8 +12820,7 @@
       "file": "web/public/content/spring-boot/modulo-16.md",
       "line": 119,
       "signals": [
-        "ejemplo-breve-revisar-contexto",
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

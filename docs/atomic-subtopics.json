@@ -93,10 +93,10 @@
     },
     "spring-boot": {
       "topics": 111,
-      "completeTopics": 54,
-      "topicsWith3to6Subtopics": 85,
-      "subtopics": 299,
-      "completeSubtopics": 190
+      "completeTopics": 55,
+      "topicsWith3to6Subtopics": 86,
+      "subtopics": 303,
+      "completeSubtopics": 194
     }
   },
   "topics": {
@@ -14802,9 +14802,66 @@
       {
         "module": 16,
         "topic": "### Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 4,
+        "subtopics": [
+          {
+            "id": "16.5",
+            "title": "#### Subtema 16.5 · Cuenta las consultas que dispara la lista · 8 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "16.6",
+            "title": "#### Subtema 16.6 · Pide el cliente que esta pantalla necesita · 8 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "16.7",
+            "title": "#### Subtema 16.7 · Reconoce el límite de LAZY y EAGER · 8 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "16.8",
+            "title": "#### Subtema 16.8 · Pagina una vista pequeña con DTO · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 17,

@@ -5,10 +5,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import jakarta.persistence.EntityManager;
 import java.util.List;
+import org.hibernate.LazyInitializationException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.PageRequest;
 import org.hibernate.SessionFactory;
 import org.hibernate.stat.Statistics;
 
@@ -30,7 +32,8 @@ class PedidoJpaLabTest {
         Long claveForanea = ((Number) entityManager.createNativeQuery(
             "select cliente_id from pedido where referencia = 'RT-101'").getSingleResult()).longValue();
         assertThat(claveForanea).isEqualTo(clienteGuardado);
-        assertThat(entityManager.createQuery("select count(p) from Pedido p", Long.class)
+        assertThat(entityManager.createQuery(
+            "select count(p) from Pedido p where p.referencia like 'RT-10%'", Long.class)
             .getSingleResult()).isEqualTo(2L);
         entityManager.clear();
 
@@ -100,5 +103,63 @@ class PedidoJpaLabTest {
         System.out.printf("N+1=%d, @EntityGraph=%d%n", consultasConNMasUno, consultasConEntityGraph);
         assertThat(consultasConNMasUno).isGreaterThan(consultasConEntityGraph);
         assertThat(consultasConEntityGraph).isEqualTo(1);
+    }
+
+    @Test
+    void accederRelacionLazyDespuesDeSepararLaEntidadFallaConDiagnosticoClaro() {
+        var fabrica = entityManager.getEntityManagerFactory();
+        var escritura = fabrica.createEntityManager();
+        escritura.getTransaction().begin();
+        var cliente = new Cliente("Lina");
+        var pedidoNuevo = new Pedido("RT-LAZY-1");
+        cliente.agregar(pedidoNuevo);
+        escritura.persist(cliente);
+        escritura.getTransaction().commit();
+        Long idPedido = pedidoNuevo.getId();
+        Long idCliente = cliente.getId();
+        escritura.close();
+
+        var lectura = fabrica.createEntityManager();
+        lectura.getTransaction().begin();
+        var pedido = lectura.find(Pedido.class, idPedido);
+        lectura.getTransaction().commit();
+        lectura.close();
+
+        try {
+            assertThatThrownBy(() -> pedido.getCliente().getNombre())
+                .isInstanceOf(LazyInitializationException.class);
+        } finally {
+            var limpieza = fabrica.createEntityManager();
+            limpieza.getTransaction().begin();
+            limpieza.createNativeQuery("delete from pedido where referencia = 'RT-LAZY-1'")
+                .executeUpdate();
+            limpieza.createNativeQuery("delete from cliente where id = :id")
+                .setParameter("id", idCliente).executeUpdate();
+            limpieza.getTransaction().commit();
+            limpieza.close();
+        }
+    }
+
+    @Test
+    void paginaResumenConSoloLasColumnasQueNecesitaLaLista() {
+        var lina = new Cliente("Lina");
+        lina.agregar(new Pedido("RT-PAGE-1"));
+        var teo = new Cliente("Teo");
+        teo.agregar(new Pedido("RT-PAGE-2"));
+        var uma = new Cliente("Uma");
+        uma.agregar(new Pedido("RT-PAGE-3"));
+        entityManager.persist(lina);
+        entityManager.persist(teo);
+        entityManager.persist(uma);
+        entityManager.flush();
+        entityManager.clear();
+
+        var pagina = pedidos.listarResumenes(PageRequest.of(0, 2));
+
+        assertThat(pagina.getContent()).containsExactly(
+            new PedidoResumen("RT-PAGE-1", "Lina"),
+            new PedidoResumen("RT-PAGE-2", "Teo"));
+        assertThat(pagina.getTotalElements()).isEqualTo(3);
+        assertThat(pagina.hasNext()).isTrue();
     }
 }

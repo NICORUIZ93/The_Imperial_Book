@@ -1690,9 +1690,9 @@
     }
   ],
   "summary": {
-    "fingerprint": "125a62869376f621afe21355fb7f6f6f3750c3bef31311e418c9233c7b218870",
+    "fingerprint": "fe7043f3b81047bc66476e7e12e88681043efeb5a2b8bf0173c5d151a945c44e",
     "issues": {
-      "andamiaje-generico": 123,
+      "andamiaje-generico": 122,
       "bloque-repetido": 163,
       "cola-tras-cierre": 331,
       "parrafo-repetido": 5,
@@ -1706,7 +1706,7 @@
     "modules": 256,
     "modulesWithLegacySections": 178,
     "topics": 1185,
-    "topicsWithIssues": 408
+    "topicsWithIssues": 407
   },
   "topics": {
     "android": [
@@ -10565,16 +10565,14 @@
         "module": 16,
         "tailWords": 0,
         "topic": "Tema 1: Relaciones, lado propietario y ciclo de vida",
-        "words": 952
+        "words": 1021
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 16,
-        "tailWords": 183,
+        "tailWords": 0,
         "topic": "Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso",
-        "words": 874
+        "words": 1014
       },
       {
         "issues": [

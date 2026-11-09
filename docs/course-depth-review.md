@@ -1144,7 +1144,7 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | spring-boot / 15 | [Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar](../web/public/content/spring-boot/modulo-15.md) | demostracion-no-delimitada |
 | spring-boot / 15 | [Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework](../web/public/content/spring-boot/modulo-15.md) | demostracion-no-delimitada |
 | spring-boot / 16 | [Tema 1: Relaciones, lado propietario y ciclo de vida](../web/public/content/spring-boot/modulo-16.md) | demostracion-no-delimitada |
-| spring-boot / 16 | [Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso](../web/public/content/spring-boot/modulo-16.md) | ejemplo-breve-revisar-contexto, clase-java-no-visible |
+| spring-boot / 16 | [Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso](../web/public/content/spring-boot/modulo-16.md) | demostracion-no-delimitada |
 | spring-boot / 17 | [Tema 1: DataSource, JdbcTemplate y DAO](../web/public/content/spring-boot/modulo-17.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 17 | [Tema 2: `@Transactional`, rollback y límites de transacción](../web/public/content/spring-boot/modulo-17.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 18 | [Tema 1: SecurityFilterChain y autorización](../web/public/content/spring-boot/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |

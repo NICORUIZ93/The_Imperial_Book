@@ -1606,3 +1606,21 @@ borrado. Restauradas ambas mutaciones, la suite volvió a pasar. El laboratorio
 usa H2 y no demuestra por sí mismo el comportamiento de PostgreSQL ni una
 migración Flyway. Referencia contrastada: Jakarta Persistence 3.2. Siguiente:
 M16 T2, LAZY, EAGER, N+1 y consultas por caso de uso.
+
+Spring Boot M16 T2, “LAZY, EAGER, N+1 y consultas de caso de uso”, ahora tiene
+cuatro subtemas sobre medir consultas, pedir la asociación necesaria con
+`@EntityGraph`, reconocer el límite de `LAZY` tras cerrar el contexto y paginar
+un DTO ligero. En `examples/java-jpa-lab/` se añadieron `PedidoResumen`, una
+consulta `Page<PedidoResumen>` y dos tests nuevos para el error de asociación
+no cargada y la vista paginada. El test N+1 existente muestra 4 consultas para
+3 pedidos con 3 clientes en el entorno fijado, frente a 1 con `@EntityGraph`;
+la lección indica que ese conteo depende de proveedor, caché y datos. El test
+LAZY usa EntityManagers independientes porque el contexto transaccional del
+test original mantenía la sesión abierta y ocultaba el límite. La suite pasa
+con 9 pruebas. Tres mutaciones se detectaron y restauraron: ruta errónea en
+`@EntityGraph`, atributo `apellido` inexistente en el JPQL del DTO, y lectura
+del cliente antes de cerrar el EntityManager (esa lectura evita la excepción
+esperada). La auditoría ahora detecta los cuatro subtemas de ambos temas M16
+con sus acciones, fallos y duraciones. Fuentes primarias: Jakarta Persistence
+3.2 y Spring Data JPA projections. `./scripts/validate.sh` y el validador
+RutaFlow pasaron tras regenerar los reportes. Siguiente: M16 T3.

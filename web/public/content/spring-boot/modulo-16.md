@@ -118,63 +118,108 @@ Después abre `examples/java-jpa-lab/src/test/java/academia/pedidos/PedidoJpaLab
 **Fuente primaria:** [Jakarta Persistence 3.2 API: `@OneToMany`](https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/onetomany) documenta `mappedBy`, cascadas y `orphanRemoval`; [la especificación](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2) define las reglas de propiedad de la relación.
 ### Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso
 
-#### Paso 1 · Objetivo y preparación
+**Meta:** medir qué pasa cuando una lista toca una asociación, reducir consultas sin cambiar el resultado y escoger una forma de carga según la pantalla.
 
-Al finalizar podrás reproducir N+1, elegir una carga apropiada para una pantalla y verificar el plan mediante SQL medido. Continúa con las entidades del tema anterior.
-**Conocimiento previo:** haber seguido el tema anterior de este módulo y tener instalado el entorno del stack.
-#### Paso 2 · Contexto y caso real
+**¿Por qué es importante?** Una página puede verse correcta con tres filas y volverse lenta con miles. Cada consulta adicional viaja a la base; traer entidades completas también consume memoria y puede duplicar filas.
 
-Una pantalla lista veinte clientes y cuenta sus pedidos. Una consulta inicial más veinte consultas por asociación es N+1; una relación EAGER indiscriminada puede sustituirlo por joins enormes o selects secundarios.
+**Evidencia final:** comparación medida entre carga normal y `@EntityGraph`, reproducción del límite de `LAZY` al cerrar el contexto, y una página de resumen que selecciona solo dos campos.
 
-**¿Por qué es importante?** La estrategia de carga afecta latencia, consumo de memoria y número de consultas; medirla antes de producción evita sorpresas que no aparecen con una sola fila de prueba.
+#### Subtema 16.5 · Cuenta las consultas que dispara la lista · 8 min
 
-#### Paso 3 · Teoría y modelo mental
+**Contexto:** `Pedido.cliente` es `LAZY`. Eso evita traer cada cliente sin pedirlo; si luego recorres todos los pedidos y lees su cliente, Hibernate puede hacer una consulta adicional por cliente.
 
-`LAZY` pospone la lectura hasta acceder a la asociación; `EAGER` obliga al proveedor a entregar la asociación disponible, pero no garantiza un JOIN ni una única consulta. Defaults JPA: `ManyToOne` y `OneToOne` son EAGER; `OneToMany` y `ManyToMany` son LAZY. Configura explícitamente las relaciones y carga datos por caso de uso.
+**Hazlo tú:** Desde `examples/java-jpa-lab`, abre `src/test/java/academia/pedidos/PedidoJpaLabTest.java` y ejecuta:
 
-Hibernate puede representar asociaciones LAZY mediante proxies; acceder después de cerrar el contexto puede producir `LazyInitializationException`. No lo soluciones activando `Open Session in View` o haciendo todo EAGER: devuelve DTOs construidos dentro de una transacción con la consulta necesaria.
-**Analogía:** `LAZY` es traer cada dato solo al pedirlo; `EAGER`, traerlo todo por adelantado. El N+1 es llamar al almacén una vez por la lista de pedidos y después una llamada extra por cada pedido para saber su cliente: veinte pedidos, veintiuna llamadas. La consulta por caso de uso es pedir exactamente lo que la pantalla muestra, en un solo viaje.
-#### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/test/java/academia/envios/ConsultaClienteTest.java` dentro.
 ```bash
-curl -fsSL https://start.spring.io/starter.zip -o ejemplo.zip && unzip -o ejemplo.zip -d ejemplo
+./mvnw -Dtest=PedidoJpaLabTest#comparaNMasUnoConCargaPorEntityGraph test
 ```
 
-**Crea** el archivo `src/test/java/academia/envios/ConsultaClienteTest.java` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
-
-
-En `src/test/java/academia/envios/ConsultaClienteTest.java`, persiste veinte clientes con uno o dos pedidos cada uno. Activa `hibernate.generate_statistics=true`. En el test, ejecuta `flush()`, `clear()` y `getStatistics().clear()` antes de contar:
+El test inserta tres pedidos de tres clientes y cuenta sentencias con Hibernate Statistics:
 
 ```java
-List<Cliente> clientes = repository.findAll();
-clientes.forEach(cliente -> cliente.getPedidos().size());
-long consultas = sessionFactory.getStatistics().getPrepareStatementCount();
-System.out.println("Consultas SQL: " + consultas);
+pedidos.findAll().forEach(pedido -> pedido.getCliente().getNombre());
+long consultas = statistics.getPrepareStatementCount();
+System.out.println("Consultas: " + consultas);
 ```
 
-**Ejecuta el ejemplo** (genera el proyecto con Spring Initializr, pega el código y corre las pruebas):
+**Resultado esperado:** con la versión fijada en este laboratorio, se observa `N+1=4`: una consulta de pedidos y tres consultas de cliente. El número cambia con cantidad de clientes distintos, caché y proveedor.
+
+**Fallo deliberado.** Comenta el acceso a `getNombre()` y corre el test. La comparación pierde la diferencia porque ya no se toca la asociación. **Diagnóstico:** el conteo vuelve a reflejar solo la consulta inicial. Restaura la línea.
+
+**Entiende:** N+1 significa una consulta inicial más consultas provocadas al recorrer resultados. Si varios pedidos apuntan al mismo cliente, el contexto de persistencia puede reutilizarlo; cuenta asociaciones distintas y registra la configuración.
+
+**Cierra:** Explica por qué mirar solo el SQL de `findAll()` no mostró el costo completo.
+
+#### Subtema 16.6 · Pide el cliente que esta pantalla necesita · 8 min
+
+**Contexto:** El listado de pedidos sí muestra el nombre del cliente. La consulta debe declararlo; activar `EAGER` en toda la entidad cambia otros casos de uso también.
+
+**Hazlo tú:** En `src/main/java/academia/pedidos/PedidoRepository.java`, compara el método normal con esta consulta declarada:
+
+```java
+@EntityGraph(attributePaths = "cliente")
+List<Pedido> findAllWithClienteByOrderByReferenciaAsc();
+```
+
+El test mide la misma lectura usando ese método y vuelve a leer el nombre:
+
+```java
+pedidos.findAllWithClienteByOrderByReferenciaAsc()
+    .forEach(pedido -> pedido.getCliente().getNombre());
+```
+
+Repite el comando del subtema anterior.
+
+**Resultado esperado:** en este laboratorio se observa `@EntityGraph=1`; la prueba exige que la estrategia reduzca las consultas frente a N+1. La anotación describe los datos necesarios para esta consulta, no el plan SQL exacto en todos los proveedores.
+
+**Fallo deliberado.** Cambia temporalmente `attributePaths = "cliente"` por `attributePaths = "clientes"`. El test debe fallar al resolver una ruta que no existe. **Diagnóstico:** Spring Data indica que no encuentra el atributo `clientes` en `Pedido`. Restaura `cliente`.
+
+**Entiende:** `@EntityGraph` permite declarar el grafo que este método requiere. JPA describe el resultado de carga; Hibernate elige cómo obtenerlo. Verifica SQL en tu versión cuando rendimiento y paginación importan.
+
+**Cierra:** Escribe qué pantalla necesita el cliente y qué pantalla no debería cargarlo.
+
+#### Subtema 16.7 · Reconoce el límite de LAZY y EAGER · 8 min
+
+**Contexto:** Una relación `LAZY` puede consultarse mientras el contexto de persistencia sigue abierto. Si entregas una entidad con una asociación sin cargar y cierras ese contexto, ya no hay sesión que pueda buscarla.
+
+**Hazlo tú:** Abre `examples/java-jpa-lab/src/test/java/academia/pedidos/PedidoJpaLabTest.java`. Ejecuta la prueba que escribe en un contexto, vuelve a leer en otro y cierra el segundo antes de tocar el cliente:
 
 ```bash
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
-./mvnw test
+./mvnw -Dtest=PedidoJpaLabTest#accederRelacionLazyDespuesDeSepararLaEntidadFallaConDiagnosticoClaro test
 ```
-Equivalencias Maven/Gradle en el Módulo 1.
 
+**Resultado esperado:** el test espera `LazyInitializationException` al leer `pedido.getCliente().getNombre()` después de cerrar el EntityManager.
 
-Ejecuta `./mvnw test -Dtest=ConsultaClienteTest`. **Resultado esperado:** observa la consulta raíz y consultas de colección adicionales; el total depende de caché, datos y versión, así que registra también esas condiciones. **Fallo deliberado:** omite `clear()` del contexto y explica cómo la caché de primer nivel hace engañosa una medición repetida.
+**Fallo deliberado.** Mueve la lectura de `getNombre()` antes de `lectura.close()`. La prueba deja de recibir la excepción; devuelve el acceso a después del cierre. **Diagnóstico:** el proxy sí pudo cargar la asociación mientras el EntityManager seguía abierto.
 
-#### Paso 5 · Práctica guiada
+**Entiende:** JPA define `EAGER` como requisito de carga inmediata y `LAZY` como sugerencia que el proveedor puede cumplir. `ManyToOne` es EAGER por defecto; en este modelo se pidió LAZY. No soluciones el error cargando todo EAGER: crea una consulta o DTO para el caso de uso y construye la respuesta dentro de la transacción.
 
-Agrega una consulta dedicada con `@EntityGraph(attributePaths = "pedidos")` o JPQL `left join fetch c.pedidos`. Repite la medición. Prueba paginación: un fetch join de colección duplica filas y puede impedir paginación SQL eficiente. Compara una proyección DTO y registra consulta, filas y memoria.
-**Pista:** combina el `left join fetch c.pedidos` con un parámetro `Pageable` en el mismo método de repositorio y ejecuta el test de paginación; si Hibernate responde con una advertencia de tipo "firstResult/maxResults specified with collection fetch; applying in memory" o ves filas de cliente repetidas, esa es la señal de que el fetch join de colección no combina con paginación SQL.
-#### Paso 6 · Práctica independiente
+**Cierra:** Di en qué línea termina la sesión y qué dato debe salir ya preparado para la respuesta HTTP.
 
-Implementa endpoint de resumen de cliente que solo devuelve nombre y número de pedidos, y endpoint de detalle que devuelve pedidos. No serialices entidades JPA directamente. Diseña pruebas que consulten ambos endpoints y midan cantidad de SQL sin fijar un número frágil si Hibernate puede emitir consultas equivalentes.
+#### Subtema 16.8 · Pagina una vista pequeña con DTO · 10 min
 
-#### Paso 7 · Cierre y evidencia
+**Contexto:** El resumen de pedidos solo presenta referencia y nombre. Cargar entidades completas y sus relaciones trae datos que la fila no muestra.
 
-Entrega reproducción del N+1, versión optimizada, SQL registrado y decisión de carga para resumen/detalle del proyecto integrador de RutaFlow. **Cuándo no usarlo:** `EAGER` no es sinónimo de JOIN ni solución general; `JOIN FETCH` en colecciones grandes puede multiplicar filas. **Evidencia:** tests y comparación reproducible. Referencia: [Jakarta Persistence](https://jakarta.ee/specifications/persistence/).
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** fijar en el test un número exacto de consultas SQL sin considerar que el caché de segundo nivel o una versión distinta de Hibernate puede cambiar el conteo, y combinar `@EntityGraph` sobre una colección con un `Pageable` esperando que la paginación siga resolviéndose en SQL en vez de en memoria.
-**Fuente oficial:** [documentación de Spring Boot](https://docs.spring.io/spring-boot/index.html).
-**Evidencia de aprendizaje:** entrega el conteo de consultas SQL antes y después de agregar `@EntityGraph` o `left join fetch`, la advertencia de Hibernate al paginar sobre una colección, y la explicación de por qué elegiste proyección DTO o fetch join para el endpoint de resumen/detalle.
+**Hazlo tú:** El laboratorio contiene `PedidoResumen`, un `record` con esos dos campos, y este método en `PedidoRepository`:
+
+```java
+@Query("select new academia.pedidos.PedidoResumen(p.referencia, p.cliente.nombre) "
+    + "from Pedido p order by p.referencia")
+Page<PedidoResumen> listarResumenes(Pageable pageable);
+```
+
+Ejecuta la prueba que solicita dos elementos de una página de tres:
+
+```bash
+./mvnw -Dtest=PedidoJpaLabTest#paginaResumenConSoloLasColumnasQueNecesitaLaLista test
+```
+
+**Resultado esperado:** la página contiene dos pares referencia/nombre, declara tres resultados totales y señala que hay otra página. Hibernate emite la consulta de datos y una consulta de conteo.
+
+**Fallo deliberado.** Cambia `p.cliente.nombre` por `p.cliente.apellido` en el JPQL. La consulta falla porque `Cliente` no tiene ese atributo. **Diagnóstico:** Hibernate no puede resolver `apellido` en `Cliente`. Restaura `nombre`.
+
+**Entiende:** Un DTO devuelve solo lo que consume la pantalla. `Page` también suele requerir contar resultados; si ese conteo pesa, evalúa `Slice` o una estrategia específica. Una página DTO evita paginar una colección cargada con `JOIN FETCH` y reduce columnas, pero mide el plan con datos representativos.
+
+**Cierra:** En el proyecto integrador de RutaFlow, define una consulta resumida paginada y otra de detalle. Adjunta SQL, tamaño de página y campos elegidos. No presentes los conteos de H2 como una medición de producción.
+
+**Fuentes primarias:** [Jakarta Persistence 3.2: `@ManyToOne` y estrategias de carga](https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/ManyToOne.html); [Spring Data JPA: proyecciones](https://docs.spring.io/spring-data/jpa/reference/repositories/projections.html).
