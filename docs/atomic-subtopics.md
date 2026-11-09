@@ -19,7 +19,7 @@ Temas conformes a cuatro pasos: **164/1185**. Tracks inventariados: **14**.
 | node | 2 | 83 | 6 | 6 |
 | react | 0 | 58 | 0 | 0 |
 | rutaflow | 0 | 29 | 0 | 0 |
-| spring-boot | 60 | 111 | 323 | 214 |
+| spring-boot | 60 | 111 | 327 | 216 |
 
 ## Temas pendientes
 
@@ -1050,7 +1050,7 @@ Temas conformes a cuatro pasos: **164/1185**. Tracks inventariados: **14**.
 - M15 ### Tema 6: Event Sourcing con replay real: 15.6: faltan context, action, deliberateFailure, understand, close; 15.6: faltan context, action, deliberateFailure, understand, close; 15.6: faltan context, action, deliberateFailure, understand, close; 15.6: faltan context, action, deliberateFailure, understand, close
 - M15 ### Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar: 15.7: faltan context, action, deliberateFailure, understand, close; 15.7: faltan context, action, deliberateFailure, understand, close; 15.7: faltan context, action, deliberateFailure, understand, close; 15.7: faltan context, action, deliberateFailure, understand, close
 - M15 ### Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework: 15.8: faltan context, action, deliberateFailure, understand, close; 15.8: faltan context, action, deliberateFailure, understand, close; 15.8: faltan context, action, deliberateFailure, understand, close; 15.8: faltan context, action, deliberateFailure, understand, close
-- M19 ### Tema 2: Reinicio, JobParameters, retry, skip y listeners: tiene 0 subtemas
+- M19 ### Tema 2: Reinicio, JobParameters, retry, skip y listeners: 19.6: faltan action; 19.8: faltan action
 - M2 ### Tema 1: Por qué DTOs en vez de entidades directamente: 1.3: faltan action
 - M20 ### Tema 1: Scheduling y tareas periódicas: tiene 0 subtemas
 - M20 ### Tema 2: Eventos locales, eventos transaccionales y mensajería: tiene 0 subtemas

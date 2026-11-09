@@ -15,7 +15,7 @@ Compara los límites de transacción y el consumo de memoria con más de un chun
 
 **Meta:** importar un CSV pequeño, filtrar una fila, guardar las válidas y reconocer qué trabajo hace cada parte de Spring Batch.
 
-**Caso visible:** tres pedidos entran; los dos con importe positivo se guardan. El job termina mostrando el total.
+**Caso visible:** cuatro filas entran; dos pedidos válidos se guardan, una tarifa cero se filtra y una fila mal formada se registra como rechazo.
 
 **¿Por qué es importante?** un archivo grande se procesa por partes; si algo falla, el sistema puede conservar el trabajo confirmado y reanudarlo con control.
 
@@ -106,7 +106,7 @@ El writer usa parámetros SQL para guardar referencia e importe. Corre `./mvnw -
 
 Lee `ImportJobTest.java`: consulta `pedido_importado` y compara referencias e importes esperados. Para ver el job arrancar desde consola, usa `./mvnw spring-boot:run`; Spring Boot ejecuta el único Job configurado al iniciar.
 
-**Resultado esperado:** `RF-1001` y `RF-1003` quedan guardados; `RF-1002` no aparece; el paso final imprime el conteo.
+**Resultado esperado:** `RF-1001` y `RF-1003` quedan guardados; `RF-1002` se filtra; la fila mal formada se registra y el paso final imprime el conteo.
 
 **Fallo deliberado:** comenta la llamada `.processor(positiveAmountsOnly)`. **Diagnóstico:** la fila de importe cero también llega a la tabla y la prueba falla. Devuelve el processor.
 
@@ -118,67 +118,98 @@ Lee `ImportJobTest.java`: consulta `pedido_importado` y compara referencias e im
 
 ### Tema 2: Reinicio, JobParameters, retry, skip y listeners
 
-#### Paso 1 · Objetivo y preparación
+**Meta:** reconocer una ejecución lógica, reanudar el job con sus parámetros y separar fallas temporales de filas que no se pueden procesar.
 
-Al finalizar podrás reanudar un job fallido desde su estado guardado, distinguir errores recuperables de registros inválidos y auditar el resultado del lote.
-**Conocimiento previo:** haber seguido el tema anterior de este módulo y tener instalado el entorno del stack.
-#### Paso 2 · Contexto y caso real
+**Caso visible:** un lote guarda su primer chunk y falla en el segundo. El mismo identificador permite reiniciar; un identificador nuevo crea otra instancia y vuelve a leer el archivo.
 
-El job procesó 80 000 filas cuando el sistema perdió conectividad. Reiniciar desde cero puede duplicar efectos; saltar silenciosamente cualquier error hace que la conciliación sea imposible.
+**¿Por qué es importante?** al procesar miles de registros, recuperar el trabajo y explicar los rechazados evita duplicar pagos o perder filas sin causa.
 
-**¿Por qué es importante?** Un lote reanudable evita repetir todo el trabajo y permite conciliar resultados cuando un proceso falla a mitad de camino.
+**Modelo mental:** un checkpoint es el separador que marca hasta dónde llegó el lote; los parámetros identificadores dicen si retomas ese trabajo o comienzas uno nuevo.
 
-#### Paso 3 · Teoría y modelo mental
-
-Una instancia de job se identifica por nombre y parámetros de identificación; sus ejecuciones registran estado y contexto. La reanudación requiere que reader/writer y efectos externos sean compatibles con reinicio. `skip` aplica a datos no recuperables dentro de un límite y debe registrar la fila; `retry` aplica a fallos transitorios con límite/backoff. No clasifiques toda excepción como retryable.
-
-El listener observa inicio/fin para métricas, pero no reemplaza transacciones ni manejo de errores. Un efecto externo debe tener idempotencia para no duplicarse si el job reinicia después de enviarlo.
-**Analogía:** reiniciar un batch es como retomar una serie donde la dejaste, no desde el capítulo uno: los `JobParameters` son el marcador que recuerda dónde ibas. `retry` es volver a intentar una escena que salió mal; `skip` es saltarse un fotograma dañado para no frenar toda la reproducción; y los `listeners` son las notas al margen que registran qué pasó en cada tramo.
-#### Paso 4 · Demostración guiada
-**Crea** el archivo `src/main/java/academia/batch/ImportJobConfig.java` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
-
-
-En `src/main/java/academia/batch/ImportJobConfig.java`, limita el retry a fallos transitorios y el skip a errores de parseo que el negocio permita excluir:
-
-```java
-return new StepBuilder("importarPedidos", jobRepository)
-    .<PedidoImportado, PedidoImportado>chunk(2, transactionManager)
-    .reader(reader)
-    .processor(processor)
-    .writer(writer)
-    .faultTolerant()
-    .retry(TransientDataAccessException.class)
-    .retryLimit(3)
-    .skip(FlatFileParseException.class)
-    .skipLimit(5)
-    .listener(importMetricsListener)
-    .build();
+```mermaid
+flowchart LR
+  Error -->|mismos parámetros| Reinicio[Reanuda instancia]
+  Error -->|parámetro nuevo| Nuevo[Empieza instancia nueva]
 ```
 
-**Ejecuta el ejemplo** (genera el proyecto con Spring Initializr, pega el código y corre las pruebas):
+**Práctica:** fuerza una falla, compara ambos lanzamientos y consulta filas guardadas, referencias rechazadas y estado final.
+
+#### Subtema 19.5 · Reanuda la misma instancia del Job · 10 min
+
+**Contexto:** si un proceso cae tras confirmar un chunk, no vuelvas a iniciar el trabajo a ciegas.
+
+**Hazlo tú:** abre `examples/spring-batch-rutaflow/src/test/java/academia/rutaflow/batch/RestartJobTest.java`. Ejecuta:
 
 ```bash
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
-./mvnw test
+cd examples/spring-batch-rutaflow
+./mvnw -q -Dtest=RestartJobTest#mismaInstanciaReanudaTrasElPrimerChunkConfirmadoSinDuplicarlo test
 ```
-Equivalencias Maven/Gradle en el Módulo 1.
 
+El test lanza el mismo Job con los mismos `JobParameters`; el writer provoca un fallo una vez y vuelve a ejecutarlo. El fixture usa H2 `MERGE` por referencia para hacer idempotente la escritura.
 
-Ejecuta el job con `JobParameters` que incluyan `inputFile=pedidos.csv` y `runDate=2026-10-13`; configura el test para forzar una falla tras el primer chunk y volver a lanzar **la misma instancia lógica**. Ejecuta `./mvnw test -Dtest=ImportJobRestartTest`.
+**Resultado esperado:** primera ejecución `FAILED`; la reanudación `COMPLETED`; la tabla final contiene las cuatro referencias sin duplicados.
 
-**Resultado esperado:** el primer chunk confirmado no se duplica, el job completa al reanudarse y el listener reporta filas omitidas explícitamente. **Fallo deliberado:** genera un `run.id` nuevo para el segundo intento; observarás una nueva instancia que vuelve a iniciar el archivo. Compara con el reinicio de la misma instancia y explica la diferencia.
+**Fallo deliberado:** cambia el parámetro `run` entre los dos lanzamientos. **Diagnóstico:** ya no es la misma instancia; la segunda ejecución empieza el archivo como un trabajo nuevo. Vuelve a usar el mismo valor.
 
-#### Paso 5 · Práctica guiada
+**Entiende:** el `JobRepository` guarda estado para reanudar. Aun así, un chunk o un efecto externo puede repetirse; idempotencia es la protección ante la repetición.
 
-Añade retry acotado para un error temporal de base y skip para una fila con campo inválido; registra referencia y causa sin almacenar datos sensibles. Falla una escritura después de un efecto externo y demuestra por qué un envío de email o evento necesita outbox/idempotencia.
-**Pista:** simula el efecto externo (marca como "enviado" un email o publica un evento) y luego fuerza que la escritura del chunk falle justo después; al reanudar el job, si el email se reenvía o el evento se publica otra vez, ese es el caso exacto que necesita outbox o una clave de idempotencia en el efecto externo, no solo una transacción de base de datos.
-#### Paso 6 · Práctica independiente
+**Cierra:** registra estado de ambas ejecuciones y explica por qué una llamada de pago o email necesita protección adicional en el proyecto RutaFlow.
 
-Diseña un plan para un lote de un millón de filas: chunk size, paginación, restart, deduplicación, archivo de errores y métricas. Como extensión, particiona por rangos disjuntos y programa el job con un scheduler; verifica que dos workers no reclamen el mismo rango.
+#### Subtema 19.6 · Usa parámetros estables para identificar el lote · 8 min
 
-#### Paso 7 · Cierre y evidencia
+**Contexto:** el nombre del archivo identifica la entrada; un `run` nuevo puede representar intencionalmente una nueva ejecución lógica.
 
-Entrega test de fallo y reinicio, parámetros exactos, conteos y política documentada de retry/skip para el proyecto integrador de RutaFlow: el lote de liquidación debe poder reanudarse sin duplicar pagos. **Cuándo no usarlo:** no llames `skip` a errores de infraestructura ni configures retry infinito; no ejecutes jobs simultáneos con parámetros que colisionan. **Evidencia:** log del primer fallo, reanudación y resultado final conciliado. Referencia: [Spring Batch Reference](https://docs.spring.io/spring-batch/reference/).
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** generar un `run.id` o parámetro distinto en cada reintento pensando que "empezar limpio" es más seguro, cuando en realidad eso crea una nueva instancia de job que vuelve a procesar el archivo desde cero, y marcar con `skip` errores de infraestructura (como una pérdida de conectividad) que en realidad necesitan `retry`, descartando filas que sí eran recuperables.
-**Fuente oficial:** [documentación de Spring Boot](https://docs.spring.io/spring-boot/index.html).
+**Hazlo tú:** en el mismo test, compara `parametroIdentificadorNuevoCreaOtraInstanciaDesdeElPrincipio`. Corre `./mvnw -q -Dtest=RestartJobTest test`.
+
+```java
+var params = new JobParametersBuilder()
+    .addString("inputFile", "restart-pedidos.csv")
+    .addLong("run", run)
+    .toJobParameters();
+```
+
+**Resultado esperado:** con el mismo valor se puede relanzar la ejecución fallida; con otro valor se crea una instancia distinta. Los registros del ejemplo usan una clave natural y `MERGE`, así que no duplican filas visibles.
+
+**Fallo deliberado:** genera un `run` aleatorio para cada reintento. **Diagnóstico:** Spring Batch interpreta cada intento como un lote nuevo y pierde la continuidad del checkpoint. Restaura el identificador.
+
+**Entiende:** no uses hora actual como parámetro identificador si quieres reanudar el mismo lote. Guarda una referencia estable del archivo, como nombre y checksum.
+
+**Cierra:** elige qué campos identifican cada archivo de tarifas de RutaFlow y cuáles son solo etiquetas de ejecución.
+
+#### Subtema 19.7 · Distingue retry de skip · 10 min
+
+**Contexto:** una caída temporal de base de datos puede recuperarse; un importe que no se puede leer requiere rechazo explícito.
+
+**Hazlo tú:** abre `ImportJobConfig.java`. Busca `faultTolerant`, `retry`, `retryLimit`, `skip` y `skipLimit`:
+
+```java
+.faultTolerant()
+.retry(TransientDataAccessException.class).retryLimit(2)
+.skip(FlatFileParseException.class).skipLimit(2)
+```
+
+Corre `./mvnw -q clean test`. El writer del ejemplo falla una vez de manera controlada; la cuarta línea del CSV trae un importe inválido.
+
+**Resultado esperado:** el writer vuelve a intentar el error temporal; la fila mal formada se excluye y la prueba encuentra una causa en `batch_rechazo`.
+
+**Fallo deliberado:** elimina `.skip(...)` y ejecuta `ImportJobTest`. **Diagnóstico:** el error de lectura detiene el Job. Restaura el límite de skip.
+
+**Entiende:** limita reintentos y skips. Reintenta solo fallas transitorias; no conviertas una caída permanente en un ciclo infinito ni descartes errores de infraestructura como si fueran datos malos.
+
+**Cierra:** propone qué errores de una importación de tarifas reintentar y cuáles enviar a conciliación.
+
+#### Subtema 19.8 · Deja rastro sin guardar datos sensibles · 8 min
+
+**Contexto:** “leí 500 mil y escribí 499 mil” no explica qué pasó con la diferencia.
+
+**Hazlo tú:** sigue el bean `rechazoAudit` y el test de importación. Ejecuta `./mvnw -q -Dtest=ImportJobTest test`; comprueba el total importado, el total rechazado y los intentos del writer.
+
+**Resultado esperado:** dos pedidos escritos, una fila inválida auditada y un fallo temporal recuperado. El importe cero se cuenta como filtrado por regla de negocio, no como parse error.
+
+**Fallo deliberado:** elimina el listener de skip. **Diagnóstico:** la prueba no encuentra causa registrada aunque el job complete. Restáuralo.
+
+**Entiende:** registra referencia y causa útil, no datos personales completos. Los efectos externos como publicar evento o enviar dinero no quedan cubiertos por la transacción del chunk; usa outbox o idempotency key.
+
+**Cierra:** prepara una conciliación de leídas, filtradas, rechazadas y escritas para el proyecto integrador RutaFlow. La prueba con H2 no mide millones de filas ni garantiza el comportamiento de PostgreSQL en producción.
+
+**Fuentes primarias:** [Spring Batch: reiniciar un Job](https://docs.spring.io/spring-batch/reference/job/configuring-job.html); [Spring Batch: retry](https://docs.spring.io/spring-batch/reference/step/chunk-oriented-processing/retry-logic.html); [Spring Batch: skip](https://docs.spring.io/spring-batch/reference/step/chunk-oriented-processing/configuring-skip.html); [Spring Batch: listeners](https://docs.spring.io/spring-batch/reference/step/chunk-oriented-processing/intercepting-execution.html); [Spring Boot: reiniciar jobs fallidos](https://docs.spring.io/spring-boot/how-to/batch.html).

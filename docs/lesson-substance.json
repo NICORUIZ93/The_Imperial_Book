@@ -1690,7 +1690,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "c6b079fd17342305965c7d0d989a65c9c4c3d0e5932b5b2ece96cc0810412945",
+    "fingerprint": "a70aa09c90164ffe851747fcc9618e176d49dcb854ba791b4c838e146a8d2e8b",
     "issues": {
       "andamiaje-generico": 117,
       "bloque-repetido": 163,
@@ -10607,14 +10607,14 @@
         "module": 19,
         "tailWords": 0,
         "topic": "Tema 1: Job, Step, Tasklet y chunk processing",
-        "words": 891
+        "words": 904
       },
       {
         "issues": [],
         "module": 19,
-        "tailWords": 165,
+        "tailWords": 0,
         "topic": "Tema 2: Reinicio, JobParameters, retry, skip y listeners",
-        "words": 827
+        "words": 907
       },
       {
         "issues": [],

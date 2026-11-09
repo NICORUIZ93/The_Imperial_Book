@@ -497,6 +497,10 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 19.3 · Confirma filas en grupos pequeños · 10 min
   - ✓ Subtema 19.4 · Ejecuta el job y comprueba sus datos · 8 min
 - [pendiente de migrar] Tema 2: Reinicio, JobParameters, retry, skip y listeners
+  - ✓ Subtema 19.5 · Reanuda la misma instancia del Job · 10 min
+  - pendiente Subtema 19.6 · Usa parámetros estables para identificar el lote · 8 min
+  - ✓ Subtema 19.7 · Distingue retry de skip · 10 min
+  - pendiente Subtema 19.8 · Deja rastro sin guardar datos sensibles · 8 min
 
 ### Módulo 20: Integraciones Spring — scheduling, eventos, correo y caché
 

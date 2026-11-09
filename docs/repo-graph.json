@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 1689,
+      "lines": 1705,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 17569,
+      "lines": 17626,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -600,7 +600,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3955,
+      "lines": 3948,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 609,
+      "lines": 613,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -5636,6 +5636,50 @@
     {
       "path": "examples/spring-avro-rutaflow/src/test/java/academia/rutaflow/avro/SchemaRegistrySerdeTest.java",
       "lines": 47,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-batch-rutaflow/README.md",
+      "lines": 33,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Spring Batch \u00b7 importaci\u00f3n peque\u00f1a de RutaFlow",
+        "## Ejecutar",
+        "## Seguir el recorrido"
+      ]
+    },
+    {
+      "path": "examples/spring-batch-rutaflow/src/main/java/academia/rutaflow/batch/BatchApplication.java",
+      "lines": 12,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-batch-rutaflow/src/main/java/academia/rutaflow/batch/ImportJobConfig.java",
+      "lines": 126,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-batch-rutaflow/src/main/java/academia/rutaflow/batch/PedidoImportado.java",
+      "lines": 6,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-batch-rutaflow/src/test/java/academia/rutaflow/batch/ImportJobTest.java",
+      "lines": 29,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -14104,7 +14148,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-19.md",
-      "lines": 185,
+      "lines": 216,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14118,9 +14162,9 @@
         "#### Subtema 19.3 \u00b7 Confirma filas en grupos peque\u00f1os \u00b7 10 min",
         "#### Subtema 19.4 \u00b7 Ejecuta el job y comprueba sus datos \u00b7 8 min",
         "### Tema 2: Reinicio, JobParameters, retry, skip y listeners",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda y modelo mental"
+        "#### Subtema 19.5 \u00b7 Reanuda la misma instancia del Job \u00b7 10 min",
+        "#### Subtema 19.6 \u00b7 Usa par\u00e1metros estables para identificar el lote \u00b7 8 min",
+        "#### Subtema 19.7 \u00b7 Distingue retry de skip \u00b7 10 min"
       ]
     },
     {

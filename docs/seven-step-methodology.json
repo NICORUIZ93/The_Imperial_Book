@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 20,
-      "prerequisites": 42,
-      "context": 20,
-      "theoryAnalogy": 20,
-      "guidedDemo": 20,
+      "objective": 19,
+      "prerequisites": 41,
+      "context": 19,
+      "theoryAnalogy": 19,
+      "guidedDemo": 19,
       "codeExplanation": 111,
       "execution": 100,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 20,
-      "independentPractice": 20,
-      "closure": 20,
-      "commonErrors": 20,
-      "resources": 50,
-      "standaloneExample": 22,
-      "learningEvidence": 57,
-      "complete": 20
+      "guidedPractice": 19,
+      "independentPractice": 19,
+      "closure": 19,
+      "commonErrors": 19,
+      "resources": 49,
+      "standaloneExample": 21,
+      "learningEvidence": 56,
+      "complete": 19
     }
   },
   "topics": {
@@ -29511,26 +29511,26 @@
         "module": 19,
         "topic": "Tema 2: Reinicio, JobParameters, retry, skip y listeners",
         "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "objective": false,
+          "prerequisites": false,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 4,
+          "complete": false
         }
       },
       {

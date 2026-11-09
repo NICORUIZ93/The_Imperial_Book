@@ -12898,7 +12898,7 @@
       "file": "web/public/content/spring-boot/modulo-19.md",
       "line": 119,
       "signals": [
-        "clase-java-no-visible"
+        "demostracion-no-delimitada"
       ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

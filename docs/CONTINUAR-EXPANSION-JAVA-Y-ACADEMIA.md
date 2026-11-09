@@ -1702,3 +1702,19 @@ Spring Batch 6: `chunk(int)` reemplaza el overload `chunk(int, transactionManage
 deprecado. Fuentes primarias contrastadas: Spring Batch chunk processing, Job,
 Tasklet y Spring Boot auto-run. Siguiente: M19 T2, reinicio, JobParameters,
 retry, skip y listeners.
+
+Spring Boot M19 T2, “reinicio, JobParameters, retry, skip y listeners”, se
+organizó en cuatro subtemas ejecutables y amplió el lab Batch: el writer recupera
+una falla transitoria con límite; una fila CSV mal formada se omite y deja causa
+en `batch_rechazo`; los tests lanzan un job que falla en su segundo chunk,
+reanudan con los mismos parámetros y comparan otro valor identificador. La tabla
+de prueba usa clave natural y `MERGE` H2 para que replay no duplique la salida;
+esto enseña idempotencia y no equivale a probar una integración externa ni a
+exactly-once. Suites verdes: 3 pruebas (ImportJobTest 1, RestartJobTest 2).
+Mutaciones detectadas y restauradas: quitar retry, skip, listener y cambiar el
+parámetro `run` al reanudar. `./scripts/validate.sh`, `validate_rutaflow_material.py`
+y `git diff --check` pasaron. Auditoría global: 164/1185 atómicos,
+1073/1185 practicables. Referencias primarias: Spring Batch Job/restart, retry,
+skip/listeners y Spring Boot batch. El entorno local no usa volumen productivo ni
+PostgreSQL para este lab. Siguiente: revisar M20, servicios avanzados de Spring
+(scheduling/eventos/cache/correo), tema por tema antes de tocar contenido.

@@ -94,9 +94,9 @@
     "spring-boot": {
       "topics": 111,
       "completeTopics": 60,
-      "topicsWith3to6Subtopics": 91,
-      "subtopics": 323,
-      "completeSubtopics": 214
+      "topicsWith3to6Subtopics": 92,
+      "subtopics": 327,
+      "completeSubtopics": 216
     }
   },
   "topics": {
@@ -15186,8 +15186,65 @@
       {
         "module": 19,
         "topic": "### Tema 2: Reinicio, JobParameters, retry, skip y listeners",
-        "subtopicCount": 0,
-        "subtopics": [],
+        "subtopicCount": 4,
+        "subtopics": [
+          {
+            "id": "19.5",
+            "title": "#### Subtema 19.5 · Reanuda la misma instancia del Job · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "19.6",
+            "title": "#### Subtema 19.6 · Usa parámetros estables para identificar el lote · 8 min",
+            "criteria": {
+              "context": true,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "19.7",
+            "title": "#### Subtema 19.7 · Distingue retry de skip · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "19.8",
+            "title": "#### Subtema 19.8 · Deja rastro sin guardar datos sensibles · 8 min",
+            "criteria": {
+              "context": true,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": false
+          }
+        ],
         "complete": false
       },
       {

@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 @SpringBootTest
 class ImportJobTest {
     @Autowired JdbcTemplate jdbc;
+    @Autowired ImportJobConfig.RetryOnceItemWriter retryWriter;
 
     @Test
     void procesaCsvFiltraImporteCeroYGuardaLosDosPedidosValidos() {
@@ -21,5 +22,7 @@ class ImportJobTest {
             new PedidoImportado("RF-1001", new BigDecimal("125.50")),
             new PedidoImportado("RF-1003", new BigDecimal("49.99")));
         assertThat(jdbc.queryForObject("select total from batch_resumen", Integer.class)).isEqualTo(2);
+        assertThat(jdbc.queryForObject("select count(*) from batch_rechazo", Integer.class)).isEqualTo(1);
+        assertThat(retryWriter.attempts()).isEqualTo(3);
     }
 }
