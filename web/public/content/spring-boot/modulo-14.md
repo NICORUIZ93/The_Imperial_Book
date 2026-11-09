@@ -282,148 +282,86 @@ Desde `examples/spring-boot-hibernate-spatial-rutaflow/`, ejecuta la suite. Con 
 
 ### Tema 4: JWT Bearer y autorización por roles
 
-#### Paso 1 · Objetivo y preparación
+¿Por qué es importante? Un rol autoriza una clase de acción; no demuestra que el recurso solicitado sea de esa persona. El laboratorio firma JWT con HS256, valida su firma y revisa el dueño de la jornada por separado.
 
-Al finalizar podrás confirmar, con un token JWT real firmado y verificado, que `ROLE_DRIVER` permite acciones de conductor pero NO reemplaza la verificación de que la jornada pertenece a esa identidad específica.
+#### Subtema 14.4.1: Verifica el Bearer firmado · 8 min
 
-**Conocimiento previo:** Módulo 4 de este track (JWT); Módulo 10 Tema 4 (OAuth2/Keycloak).
+**Contexto.** Leer un nombre de un token no demuestra que el token sea auténtico. El servidor comprueba su firma y vencimiento antes de aceptar la identidad.
 
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** Spring Security valida `Authorization: Bearer` mediante resource server y firma asimétrica o simétrica real, nunca criptografía casera. `ROLE_DRIVER` permite el conjunto de acciones de conductor, pero un conductor autenticado con ese rol no debería poder modificar la jornada de OTRO conductor solo por tener el rol correcto.
-
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** resource server, `ROLE_DRIVER`, verificación de propiedad (ownership).
-
-`ROLE_DRIVER` habilita la CAPACIDAD de actuar como conductor; el caso de uso todavía debe verificar que la jornada específica solicitada pertenece al `sub` (subject) del token autenticado. Confundir "tiene el rol correcto" con "es dueño de este recurso específico" produce acceso horizontal entre usuarios del mismo rol.
-
-**Analogía:** tener una credencial de "conductor autorizado" te permite entrar al área de conductores, pero no te da automáticamente las llaves del vehículo de OTRO conductor — cada vehículo verifica su propia llave, no solo la credencial general.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-  T[Token JWT: sub=conductor-A, role=DRIVER] --> R{"¿role=DRIVER?"}
-  R -->|no| F1[403]
-  R -->|sí| O{"¿jornada.conductorId == sub?"}
-  O -->|no, es de otro conductor| F2[403 ownership]
-  O -->|sí| OK[200 autorizado]
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Continuando en `gestion-entregas` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `mkdir gestion-jwt-ownership && cd gestion-jwt-ownership && curl -fsSL https://start.spring.io/starter.zip -d dependencies=web,security -d javaVersion=25 -o app.zip && unzip app.zip`), crea `src/main/java/io/academia/entregas/jornada/JornadaController.java`:
+**Hazlo tú.** Abre `examples/spring-boot-jwt-ownership-rutaflow/src/main/java/academia/rutaflow/ownership/security/JwtSecurityConfig.java`. Sigue el `JwtEncoder`, el `JwtDecoder` HS256 y la conversión de la claim `roles`.
 
 ```bash
-mkdir -p src/main/java/io/academia/entregas/jornada
+cd examples/spring-boot-jwt-ownership-rutaflow
+./mvnw -q test -Dtest=OwnershipJwtTest#conductorPropietarioConTokenFirmadoPuedeActualizar
 ```
 
-```java
-// src/main/java/io/academia/entregas/jornada/JornadaController.java
-package io.academia.entregas.jornada;
+**Resultado esperado.** MockMvc envía un JWT que el propio servidor firma y luego valida; la jornada del subject autorizado responde `200`.
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.*;
+**Fallo deliberado.** Cambia `HS256` a `HS384` solo en el decoder. El token de prueba deja de ser aceptado; restaura el mismo algoritmo en emisor y validador.
 
-import java.util.Map;
+**Entiende.** El token lleva subject y roles. El decoder verifica criptográficamente lo que el cliente envía; no tomes la identidad de un parámetro del request.
 
-@RestController
-@RequestMapping("/api/jornadas")
-public class JornadaController {
+**Cierra.** Identifica quién firma el token y qué componente verifica la firma.
 
-    // simula el dueño real de cada jornada; en producción viene de la base de datos
-    private static final Map<String, String> DUENIO_DE_JORNADA = Map.of("jornada-1", "conductor-A");
+#### Subtema 14.4.2: Distingue autenticación de rol · 8 min
 
-    @PatchMapping("/{jornadaId}/posicion")
-    @PreAuthorize("hasRole('DRIVER')")
-    public ResponseEntity<String> actualizarPosicion(@PathVariable String jornadaId, Authentication auth) {
-        String duenio = DUENIO_DE_JORNADA.get(jornadaId);
-        if (!auth.getName().equals(duenio)) {
-            return ResponseEntity.status(403).body("La jornada no pertenece a este conductor");
-        }
-        return ResponseEntity.ok("Posición actualizada");
-    }
-}
-```
+**Contexto.** Un token válido dice quién inició sesión. El rol decide si esa identidad puede intentar esta acción.
 
-Confirma con `MockMvc` + el post-processor oficial `jwt()` (Módulo 10) que el rol correcto NO es suficiente sin la propiedad correcta:
-
-```java
-// src/test/java/io/academia/entregas/jornada/OwnershipTest.java
-package io.academia.entregas.jornada;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-@WebMvcTest(JornadaController.class)
-class OwnershipTest {
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Test
-    @WithMockUser(username = "conductor-A", roles = "DRIVER")
-    void elDuenioRealDeLaJornadaPuedeActualizarSuPropiaPosicion() throws Exception {
-        mockMvc.perform(patch("/api/jornadas/jornada-1/posicion"))
-            .andExpect(status().isOk());
-    }
-
-    @Test
-    @WithMockUser(username = "conductor-B", roles = "DRIVER")
-    void unConductorConRolCorrectoPeroSinPropiedadRecibe403() throws Exception {
-        mockMvc.perform(patch("/api/jornadas/jornada-1/posicion"))
-            .andExpect(status().isForbidden()); // conductor-B tiene ROLE_DRIVER pero NO es dueño de jornada-1
-    }
-}
-```
+**Hazlo tú.** Ejecuta `sinBearerTokenRecibe401` y `propietarioSinRolDriverRecibe403` en `OwnershipJwtTest`.
 
 ```bash
-./mvnw test -Dtest=OwnershipTest
+./mvnw -q test -Dtest=OwnershipJwtTest#sinBearerTokenRecibe401+propietarioSinRolDriverRecibe403
 ```
 
-**Resultado esperado:** `BUILD SUCCESS` con ambos tests en verde: `conductor-A` (el dueño real registrado de `jornada-1`) recibe `200`; `conductor-B`, autenticado con el MISMO rol `ROLE_DRIVER` válido, recibe `403` — el rol correcto por sí solo NO fue suficiente, confirmando en código la distinción exacta que la teoría describe entre autorización por rol y verificación de propiedad.
+**Resultado esperado.** Sin token, el endpoint devuelve `401`; un token firmado con rol `ROLE_CUSTOMER` devuelve `403` ante `@PreAuthorize("hasRole('DRIVER')")`.
 
-**Fallo deliberado:** quita la comprobación `if (!auth.getName().equals(duenio))` del controller (dejando solo `@PreAuthorize("hasRole('DRIVER')")`) y ejecuta de nuevo `unConductorConRolCorrectoPeroSinPropiedadRecibe403`. El test FALLA porque `conductor-B` ahora recibe `200` — diagnostica confirmando la vulnerabilidad real de acceso horizontal: cualquier conductor autenticado podría modificar la jornada de cualquier otro conductor con solo tener el rol correcto, exactamente el riesgo que la teoría advierte. Restaura la comprobación antes de continuar.
+**Fallo deliberado.** Cambia el rol del token del segundo caso a `ROLE_DRIVER`. El test deja de recibir `403`; restaura `ROLE_CUSTOMER`.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**Entiende.** `401` señala que falta una identidad aceptada; `403` que la identidad autenticada no tiene permiso para la acción.
 
-1. Reemplaza el `Map` estático por una consulta real a un repositorio (`JpaRepository`) y confirma con un `@DataJpaTest` que la búsqueda del dueño real funciona contra una base de datos real.
-2. Agrega un tercer test con un usuario SIN `ROLE_DRIVER` (por ejemplo `roles = "ADMIN"`) y confirma que recibe `403` por `@PreAuthorize`, antes incluso de llegar a la comprobación de propiedad.
-3. Extrae la comprobación de propiedad a un método reutilizable `@PreAuthorize("hasRole('DRIVER') and @jornadaAuthz.esDuenio(#jornadaId, authentication)")` usando un bean de autorización personalizado, y confirma con un test que el comportamiento es idéntico al Paso 4.
-4. Escribe de memoria (sin mirar) un endpoint con `@PreAuthorize("hasRole('DRIVER')")` más una comprobación de propiedad manual, y dos tests `@WithMockUser` que confirmen 200 y 403. Compara después contra el patrón del Paso 4.
+**Cierra.** Explica por qué el dueño sin rol puede autenticarse y aun así recibir `403`.
 
-**Pista:** `@WithMockUser(username = "...", roles = "DRIVER")` es una alternativa más simple que `jwt()` cuando no necesitas simular claims específicos del token, solo un usuario autenticado con un nombre y roles determinados — ambas son formas oficiales de `spring-security-test`.
+#### Subtema 14.4.3: Comprueba que el recurso pertenece al subject · 10 min
 
-#### Paso 6 · Práctica independiente
+**Contexto.** Dos personas pueden tener el mismo rol y aun así no tener acceso a las jornadas de la otra.
 
-**Completa el código:** rellena el espacio con el método de `Authentication` que devuelve la identidad del usuario autenticado:
+**Hazlo tú.** Abre `JornadaController.java` y `JornadaOwnership.java`. Ejecuta los dos casos:
 
-```java
-if (!auth.____().equals(duenio)) {
-    return ResponseEntity.status(403).body("...");
-}
+```bash
+./mvnw -q test -Dtest=OwnershipJwtTest#conductorPropietarioConTokenFirmadoPuedeActualizar+mismoRolPeroOtroPropietarioRecibe403
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un endpoint protegido por rol MÁS verificación de propiedad, y dos tests que confirmen que el rol correcto sin la propiedad correcta recibe 403. Compara después contra el patrón del Paso 4.
+**Resultado esperado.** `conductor-A`, dueño de `jornada-1`, recibe `200`; `conductor-B` tiene el mismo rol y recibe `403`.
 
-#### Paso 7 · Cierre y evidencia
+**Fallo deliberado.** Cambia el subject de `conductor-B` a `conductor-A`. Ahora el segundo test recibe `200`; restaura `conductor-B`.
 
-Ya demuestras en código la distinción entre autorización por rol y verificación de propiedad del recurso, confirmando que confundirlas produce una vulnerabilidad real de acceso horizontal. El siguiente tema conecta actualizaciones de posición en tiempo real vía STOMP, el protocolo que Spring implementa de forma nativa. **Evidencia:** entrega el resultado de `OwnershipTest` en verde, y el acceso horizontal real que produce el fallo deliberado al quitar la comprobación de propiedad. Fuentes oficiales: [Spring Security — Method Security](https://docs.spring.io/spring-security/reference/servlet/authorization/method-security.html).
+**Entiende.** `hasRole` comprueba la capacidad. `perteneceA` compara el subject firmado con el dueño del recurso. En producción ese dueño debe salir de la base de datos.
 
-**Errores comunes:** confiar únicamente en `hasRole(...)` para recursos con un dueño específico, sin verificar la propiedad; comparar identidades de forma insegura (por ejemplo, ignorando mayúsculas/minúsculas) permitiendo bypasses sutiles.
+**Cierra.** Explica qué condición produciría `403` aunque la firma y el rol fueran correctos.
 
-**Cuándo no usarlo:** para recursos verdaderamente compartidos entre todos los usuarios de un rol (por ejemplo, un catálogo de zonas de entrega visible para todos los conductores), la verificación de propiedad adicional no aplica y solo `hasRole(...)` es suficiente.
+#### Subtema 14.4.4: Reproduce y corrige acceso horizontal · 8 min
 
-La autorización por roles con JWT Bearer de este tema es la que protegerá los endpoints sensibles del proyecto integrador de este track (microservicio productivo, Módulo 12).
+**Contexto.** Si el servidor omite la comprobación del dueño, cualquier conductor con el rol puede cambiar otra jornada.
+
+**Hazlo tú.** En `JornadaController.actualizarPosicion`, comenta temporalmente el bloque que llama a `ownership.perteneceA(...)` y corre `mismoRolPeroOtroPropietarioRecibe403`.
+
+```bash
+./mvnw -q test -Dtest=OwnershipJwtTest#mismoRolPeroOtroPropietarioRecibe403
+```
+
+**Resultado esperado.** El test falla: el usuario ajeno recibió `200`, no `403`. Restaura el bloque y vuelve a ejecutar `./mvnw -q test`; deben pasar las cuatro pruebas.
+
+**Fallo deliberado.** Conserva el cambio sin propiedad solo durante esa prueba; la comparación de status muestra la vulnerabilidad. No publiques esa variante.
+
+**Entiende.** Esta muestra usa un mapa fijo y una clave local para hacer visible cada decisión. No integra Keycloak ni obtiene dueños de una base de datos. **Límite:** HMAC usa una clave compartida; en un sistema real, elige un proveedor de identidad y gestiona sus claves y rotación.
+
+**Cierra.** Guarda el resultado completo restaurado y anota que firma y rol no reemplazan la autorización por recurso.
+
+**Transferencia al proyecto integrador:** aplica el filtro de rol y la comprobación de dueño a las rutas que modifican posiciones; consulta el propietario en persistencia y devuelve el status HTTP que el cliente pueda manejar.
+
+**Fuentes:** [Spring Security: JWT Resource Server](https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html), [Spring Security: Method Security](https://docs.spring.io/spring-security/reference/servlet/authorization/method-security.html) y [Spring Security Test](https://docs.spring.io/spring-security/reference/servlet/test/index.html).
+
+---
 
 ### Tema 5: Tiempo real con STOMP
 

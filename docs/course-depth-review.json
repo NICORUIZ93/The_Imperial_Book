@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 258,
+    "topicsWithSignals": 259,
     "newLaboratories": 25
   },
   "priorities": {
@@ -12663,7 +12663,9 @@
       "title": "Tema 4: JWT Bearer y autorización por roles",
       "file": "web/public/content/spring-boot/modulo-14.md",
       "line": 283,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -12673,7 +12675,7 @@
       "module": 14,
       "title": "Tema 5: Tiempo real con STOMP",
       "file": "web/public/content/spring-boot/modulo-14.md",
-      "line": 428,
+      "line": 366,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -12684,7 +12686,7 @@
       "module": 14,
       "title": "Tema 6: Archivos y notificaciones push",
       "file": "web/public/content/spring-boot/modulo-14.md",
-      "line": 598,
+      "line": 536,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

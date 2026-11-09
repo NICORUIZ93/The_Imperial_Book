@@ -382,6 +382,10 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - pendiente Subtema 14.3.3: Detecta dos escrituras sobre versiones distintas · 10 min
   - pendiente Subtema 14.3.4: Observa la pérdida si quitas @Version · 8 min
 - [pendiente de migrar] Tema 4: JWT Bearer y autorización por roles
+  - pendiente Subtema 14.4.1: Verifica el Bearer firmado · 8 min
+  - pendiente Subtema 14.4.2: Distingue autenticación de rol · 8 min
+  - pendiente Subtema 14.4.3: Comprueba que el recurso pertenece al subject · 10 min
+  - pendiente Subtema 14.4.4: Reproduce y corrige acceso horizontal · 8 min
 - [pendiente de migrar] Tema 5: Tiempo real con STOMP
 - [pendiente de migrar] Tema 6: Archivos y notificaciones push
 

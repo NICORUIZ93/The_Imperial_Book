@@ -94,8 +94,8 @@
     "spring-boot": {
       "topics": 111,
       "completeTopics": 53,
-      "topicsWith3to6Subtopics": 73,
-      "subtopics": 251,
+      "topicsWith3to6Subtopics": 74,
+      "subtopics": 255,
       "completeSubtopics": 186
     }
   },
@@ -14034,8 +14034,65 @@
       {
         "module": 14,
         "topic": "### Tema 4: JWT Bearer y autorización por roles",
-        "subtopicCount": 0,
-        "subtopics": [],
+        "subtopicCount": 4,
+        "subtopics": [
+          {
+            "id": "14.4",
+            "title": "#### Subtema 14.4.1: Verifica el Bearer firmado · 8 min",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "14.4",
+            "title": "#### Subtema 14.4.2: Distingue autenticación de rol · 8 min",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "14.4",
+            "title": "#### Subtema 14.4.3: Comprueba que el recurso pertenece al subject · 10 min",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "14.4",
+            "title": "#### Subtema 14.4.4: Reproduce y corrige acceso horizontal · 8 min",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": true
+            },
+            "complete": false
+          }
+        ],
         "complete": false
       },
       {

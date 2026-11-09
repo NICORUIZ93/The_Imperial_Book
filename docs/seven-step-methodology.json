@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 38,
-      "prerequisites": 60,
-      "context": 38,
-      "theoryAnalogy": 38,
-      "guidedDemo": 38,
+      "objective": 37,
+      "prerequisites": 59,
+      "context": 37,
+      "theoryAnalogy": 37,
+      "guidedDemo": 37,
       "codeExplanation": 111,
       "execution": 100,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 38,
-      "independentPractice": 38,
-      "closure": 38,
-      "commonErrors": 38,
-      "resources": 62,
-      "standaloneExample": 40,
-      "learningEvidence": 70,
-      "complete": 38
+      "guidedPractice": 37,
+      "independentPractice": 37,
+      "closure": 37,
+      "commonErrors": 37,
+      "resources": 61,
+      "standaloneExample": 39,
+      "learningEvidence": 69,
+      "complete": 37
     }
   },
   "topics": {
@@ -29043,26 +29043,26 @@
         "module": 14,
         "topic": "Tema 4: JWT Bearer y autorización por roles",
         "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "objective": false,
+          "prerequisites": false,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 4,
+          "complete": false
         }
       },
       {

@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 1439,
+      "lines": 1442,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 16543,
+      "lines": 16600,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -600,7 +600,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3927,
+      "lines": 3934,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13636,
+      "lines": 13638,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 537,
+      "lines": 541,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -5605,6 +5605,49 @@
     {
       "path": "examples/spring-boot-cancel-rutaflow/src/test/java/academia/rutaflow/cancel/entrega/CancelacionContratoTest.java",
       "lines": 75,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-boot-hibernate-spatial-rutaflow/README.md",
+      "lines": 21,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# JTS, Hibernate Spatial y bloqueo optimista",
+        "## Ejecutar"
+      ]
+    },
+    {
+      "path": "examples/spring-boot-hibernate-spatial-rutaflow/src/main/java/academia/rutaflow/hibernate/HibernateSpatialApplication.java",
+      "lines": 12,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-boot-hibernate-spatial-rutaflow/src/main/java/academia/rutaflow/hibernate/posicion/PosicionConductor.java",
+      "lines": 45,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-boot-hibernate-spatial-rutaflow/src/main/java/academia/rutaflow/hibernate/posicion/PosicionConductorRepository.java",
+      "lines": 6,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-boot-hibernate-spatial-rutaflow/src/test/java/academia/rutaflow/hibernate/posicion/PosicionConductorTest.java",
+      "lines": 70,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -13274,7 +13317,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-14.md",
-      "lines": 722,
+      "lines": 660,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

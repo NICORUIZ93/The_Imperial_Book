@@ -1690,7 +1690,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "03b354f77884a5b3a677aa4d3aa4ab2c1ebf5dcd6c21ae72d142820065502d2c",
+    "fingerprint": "54105f55cecd35c360bbd2c338101225560f92c83217e427603c7373f9766ced",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10486,9 +10486,9 @@
       {
         "issues": [],
         "module": 14,
-        "tailWords": 183,
+        "tailWords": 0,
         "topic": "Tema 4: JWT Bearer y autorización por roles",
-        "words": 1176
+        "words": 715
       },
       {
         "issues": [],

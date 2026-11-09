@@ -12,7 +12,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 | angular | 71 | 3 | HTML/CSS/TypeScript explícitos; RxJS y estado con ejemplos completos | Rutas, formularios, datos remotos y cambios sin guardar comprobados con navegador |
 | react | 58 | 46 | JSX y estado antes de efectos; proveedor, dependencias y API visibles | Carga, error, vacío y carrera de respuestas; caché observada, no supuesta |
 | java | 101 | 79 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
-| spring-boot | 111 | 77 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
+| spring-boot | 111 | 78 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
 | android | 58 | 0 | Kotlin antes de Compose; distinguir recomposición, recreación y muerte de proceso | App instalable con permisos, restauración, persistencia y pruebas en dispositivo |
 | ios | 56 | 4 | Swift antes de SwiftUI; explicitar macOS/Xcode y destino | Cancelación, estados de red, persistencia y accesibilidad comprobados en simulador |
 | flutter | 106 | 10 | Dart antes de widgets; ejemplo con main y destino de ejecución | Restauración, red, pruebas de widget, integración y publicación por plataforma |
@@ -1132,7 +1132,7 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | spring-boot / 14 | [Tema 1: CRUD API y contratos](../web/public/content/spring-boot/modulo-14.md) | demostracion-no-delimitada |
 | spring-boot / 14 | [Tema 2: MySQL y datos espaciales](../web/public/content/spring-boot/modulo-14.md) | demostracion-no-delimitada |
 | spring-boot / 14 | [Tema 3: JPA e Hibernate Spatial](../web/public/content/spring-boot/modulo-14.md) | demostracion-no-delimitada |
-| spring-boot / 14 | [Tema 4: JWT Bearer y autorización por roles](../web/public/content/spring-boot/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 14 | [Tema 4: JWT Bearer y autorización por roles](../web/public/content/spring-boot/modulo-14.md) | demostracion-no-delimitada |
 | spring-boot / 14 | [Tema 5: Tiempo real con STOMP](../web/public/content/spring-boot/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 14 | [Tema 6: Archivos y notificaciones push](../web/public/content/spring-boot/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 15 | [Tema 1: Backpressure real en WebFlux con reactor-test](../web/public/content/spring-boot/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
