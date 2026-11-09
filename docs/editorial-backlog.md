@@ -14,10 +14,10 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | Ejecución | 1116 | 69 |
 | Resultado | 1183 | 2 |
 | Modificación | 1130 | 55 |
-| Conexión con un proyecto | 1090 | 95 |
+| Conexión con un proyecto | 1089 | 96 |
 | Modelo mental | 1185 | 0 |
-| Límites | 1123 | 62 |
-| **Perfil de criterios detectado** | **1074** | **111** |
+| Límites | 1122 | 63 |
+| **Perfil de criterios detectado** | **1073** | **112** |
 
 ## Prioridad por track
 
@@ -36,7 +36,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | node | 83 | 0 | 0 | 0 | 0 | 1 | 2 | 1 |
 | react | 58 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | rutaflow | 29 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| spring-boot | 111 | 5 | 0 | 11 | 0 | 7 | 32 | 20 |
+| spring-boot | 111 | 5 | 0 | 11 | 0 | 7 | 33 | 21 |
 
 ## Pendientes por tema
 
@@ -129,6 +129,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 - [spring-boot · módulo 13](../web/public/content/spring-boot/modulo-13.md) · Tema 4: Observabilidad sirve a un objetivo y a una decisión: conexión con un proyecto, límites.
 - [spring-boot · módulo 14](../web/public/content/spring-boot/modulo-14.md) · Tema 1: CRUD API y contratos: conexión con un proyecto, límites.
 - [spring-boot · módulo 14](../web/public/content/spring-boot/modulo-14.md) · Tema 2: MySQL y datos espaciales: ejecución, conexión con un proyecto.
+- [spring-boot · módulo 14](../web/public/content/spring-boot/modulo-14.md) · Tema 3: JPA e Hibernate Spatial: conexión con un proyecto, límites.
 - [spring-boot · módulo 21](../web/public/content/spring-boot/modulo-21.md) · Tema 1: Productor, tópico, key y consumidor: conexión con un proyecto, límites.
 - [spring-boot · módulo 21](../web/public/content/spring-boot/modulo-21.md) · Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia: conexión con un proyecto.
 - [spring-boot · módulo 21](../web/public/content/spring-boot/modulo-21.md) · Tema 3: Outbox transaccional y flujo de negocio: conexión con un proyecto.

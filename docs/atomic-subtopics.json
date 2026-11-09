@@ -94,8 +94,8 @@
     "spring-boot": {
       "topics": 111,
       "completeTopics": 53,
-      "topicsWith3to6Subtopics": 72,
-      "subtopics": 247,
+      "topicsWith3to6Subtopics": 73,
+      "subtopics": 251,
       "completeSubtopics": 186
     }
   },
@@ -13970,8 +13970,65 @@
       {
         "module": 14,
         "topic": "### Tema 3: JPA e Hibernate Spatial",
-        "subtopicCount": 0,
-        "subtopics": [],
+        "subtopicCount": 4,
+        "subtopics": [
+          {
+            "id": "14.3",
+            "title": "#### Subtema 14.3.1: Crea un punto Java con el SRID correcto · 8 min",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "14.3",
+            "title": "#### Subtema 14.3.2: Mapea Point al campo de la entidad · 8 min",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "14.3",
+            "title": "#### Subtema 14.3.3: Detecta dos escrituras sobre versiones distintas · 10 min",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "14.3",
+            "title": "#### Subtema 14.3.4: Observa la pérdida si quitas @Version · 8 min",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": true
+            },
+            "complete": false
+          }
+        ],
         "complete": false
       },
       {

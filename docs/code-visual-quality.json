@@ -99,8 +99,8 @@
     "spring-boot": {
       "topics": 111,
       "code": 106,
-      "commentedCode": 43,
-      "mermaid": 37,
+      "commentedCode": 42,
+      "mermaid": 36,
       "archifyVisual": 2,
       "asciiVisual": 3,
       "misleadingDiagramLabel": 0,
@@ -2680,6 +2680,13 @@
       "track": "spring-boot",
       "module": 14,
       "topic": "Tema 2: MySQL y datos espaciales",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 14,
+      "topic": "Tema 3: JPA e Hibernate Spatial",
       "missingCode": false,
       "missingComments": true
     },

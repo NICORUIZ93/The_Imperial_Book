@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 1436,
+      "lines": 1439,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 16486,
+      "lines": 16543,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -600,7 +600,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3920,
+      "lines": 3927,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13634,
+      "lines": 13636,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -677,7 +677,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 158,
+      "lines": 159,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 533,
+      "lines": 537,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -5797,6 +5797,26 @@
     {
       "path": "examples/spring-boot-layered-jar-rutaflow/src/main/java/academia/rutaflow/EstadoRutaController.java",
       "lines": 15,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-boot-mysql-spatial-rutaflow/README.md",
+      "lines": 29,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Consultas espaciales MySQL: RutaFlow",
+        "## Requisitos",
+        "## Ejecutar pruebas"
+      ]
+    },
+    {
+      "path": "examples/spring-boot-mysql-spatial-rutaflow/src/test/java/academia/rutaflow/spatial/ConsultaEspacialMySqlTest.java",
+      "lines": 101,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -13254,7 +13274,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-14.md",
-      "lines": 810,
+      "lines": 722,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

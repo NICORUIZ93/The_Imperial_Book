@@ -377,6 +377,10 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - pendiente Subtema 14.2.3: Comprueba el índice con EXPLAIN · 8 min
   - pendiente Subtema 14.2.4: Separa candidatos cercanos de una ruta · 8 min
 - [pendiente de migrar] Tema 3: JPA e Hibernate Spatial
+  - pendiente Subtema 14.3.1: Crea un punto Java con el SRID correcto · 8 min
+  - pendiente Subtema 14.3.2: Mapea Point al campo de la entidad · 8 min
+  - pendiente Subtema 14.3.3: Detecta dos escrituras sobre versiones distintas · 10 min
+  - pendiente Subtema 14.3.4: Observa la pérdida si quitas @Version · 8 min
 - [pendiente de migrar] Tema 4: JWT Bearer y autorización por roles
 - [pendiente de migrar] Tema 5: Tiempo real con STOMP
 - [pendiente de migrar] Tema 6: Archivos y notificaciones push

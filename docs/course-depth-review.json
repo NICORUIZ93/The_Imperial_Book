@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 257,
+    "topicsWithSignals": 258,
     "newLaboratories": 25
   },
   "priorities": {
@@ -12650,7 +12650,9 @@
       "title": "Tema 3: JPA e Hibernate Spatial",
       "file": "web/public/content/spring-boot/modulo-14.md",
       "line": 200,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -12660,7 +12662,7 @@
       "module": 14,
       "title": "Tema 4: JWT Bearer y autorización por roles",
       "file": "web/public/content/spring-boot/modulo-14.md",
-      "line": 371,
+      "line": 283,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -12671,7 +12673,7 @@
       "module": 14,
       "title": "Tema 5: Tiempo real con STOMP",
       "file": "web/public/content/spring-boot/modulo-14.md",
-      "line": 516,
+      "line": 428,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -12682,7 +12684,7 @@
       "module": 14,
       "title": "Tema 6: Archivos y notificaciones push",
       "file": "web/public/content/spring-boot/modulo-14.md",
-      "line": 686,
+      "line": 598,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

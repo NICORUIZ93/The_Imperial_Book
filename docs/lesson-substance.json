@@ -1690,7 +1690,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "29ea1230e8dc1a2439f6597db6d8ac58b8b66caadc6d0cc9ed08258c2c5f401e",
+    "fingerprint": "03b354f77884a5b3a677aa4d3aa4ab2c1ebf5dcd6c21ae72d142820065502d2c",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10479,9 +10479,9 @@
       {
         "issues": [],
         "module": 14,
-        "tailWords": 146,
+        "tailWords": 0,
         "topic": "Tema 3: JPA e Hibernate Spatial",
-        "words": 1261
+        "words": 726
       },
       {
         "issues": [],

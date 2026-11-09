@@ -199,174 +199,86 @@ TESTCONTAINERS_RYUK_DISABLED=true ./mvnw -q test -Dtest=ConsultaEspacialMySqlTes
 
 ### Tema 3: JPA e Hibernate Spatial
 
-#### Paso 1 · Objetivo y preparación
+¿Por qué es importante? La aplicación necesita trabajar con puntos GPS como datos tipados y conservar los cambios cuando dos conductores actualizan una posición casi al mismo tiempo. El laboratorio conecta JTS, Hibernate Spatial y MySQL real.
 
-Al finalizar podrás mapear una columna `POINT` de MySQL a un tipo `org.locationtech.jts.geom.Point` real vía Hibernate Spatial, y confirmar con un test que las coordenadas persisten y se leen sin pérdida de precisión, junto con bloqueo optimista real ante una actualización concurrente.
+#### Subtema 14.3.1: Crea un punto Java con el SRID correcto · 8 min
 
-**Conocimiento previo:** Tema 2 de este módulo; Módulo 3 de este track (JPA y `@Version`).
+**Contexto.** JTS representa geometría con objetos Java. El SRID del objeto debe coincidir con el de la columna MySQL.
 
-#### Paso 2 · Contexto y caso real
+**Hazlo tú.** Abre `examples/spring-boot-hibernate-spatial-rutaflow/src/test/java/academia/rutaflow/hibernate/posicion/PosicionConductorTest.java` y encuentra `GeometryFactory` con SRID `4326` y la creación de `Coordinate(-74.08, 4.61)`.
 
-**¿Por qué es importante?** JPA modela agregados y Hibernate traduce persistencia, pero no reemplaza entender SQL: Hibernate Spatial integra `Geometry`/`Point` como un tipo Java de primera clase, permitiendo que el código de dominio trabaje con coordenadas tipadas en vez de strings WKT crudos, mientras las migraciones Flyway siguen gestionando SRID, constraints e índices explícitamente.
-
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** `Geometry`/`Point` de Hibernate Spatial, `@Version` para bloqueo optimista.
-
-Hibernate Spatial mapea columnas espaciales de MySQL a tipos JTS (`org.locationtech.jts.geom.Point`) reales en Java, con conversión automática hacia/desde WKT en el driver. Se evitan problemas N+1 mediante proyecciones o fetch explícito (Módulo 3). Una transacción que actualiza la posición de un conductor debe validar `@Version` para detectar ediciones concurrentes sobre una versión obsoleta de la misma fila.
-
-**Analogía:** Hibernate Spatial es un traductor bilingüe permanente entre el "idioma" de coordenadas Java (objetos `Point` tipados) y el "idioma" de MySQL (WKT/WKB binario), sin que el código de dominio necesite conocer los detalles de la traducción.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-  J["Point (Java, JTS)"] -->|Hibernate Spatial| M["POINT SRID 4326 (MySQL)"]
-  M -->|lectura| J
+```java
+var geometria = new GeometryFactory(new PrecisionModel(), 4326);
+var punto = geometria.createPoint(new Coordinate(-74.08, 4.61));
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+Desde `examples/spring-boot-hibernate-spatial-rutaflow/`, ejecuta la suite. Con Docker usa `./mvnw -q test`; con Podman Machine en macOS consulta los comandos de `README.md`.
 
-Continuando en `gestion-espacial` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía y genera un proyecto nuevo con `mkdir gestion-hibernate-spatial && cd gestion-hibernate-spatial && curl -fsSL https://start.spring.io/starter.zip -d dependencies=data-jpa,mysql -d javaVersion=25 -o app.zip && unzip app.zip` y agrega `org.hibernate.orm:hibernate-spatial` al `pom.xml`), crea `src/main/java/io/academia/entregas/espacial/PosicionConductor.java`:
+**Resultado esperado.** El proyecto levanta MySQL 8.0.36 y la prueba recupera coordenadas `X=-74.08`, `Y=4.61` y `SRID=4326`.
+
+**Fallo deliberado.** Crea el `GeometryFactory` sin el SRID `4326`. La aserción del SRID falla; restáuralo.
+
+**Entiende.** X guarda longitud y Y latitud en este punto. La prueba hace explícito el SRID en vez de confiar en valores por defecto.
+
+**Cierra.** Anota X, Y y el SRID observados tras leer el punto de MySQL.
+
+#### Subtema 14.3.2: Mapea Point al campo de la entidad · 8 min
+
+**Contexto.** Hibernate Spatial agrega el mapeo para que el repositorio guarde un `Point` JTS como columna geométrica de MySQL.
+
+**Hazlo tú.** Abre `src/main/java/academia/rutaflow/hibernate/posicion/PosicionConductor.java`. Revisa el tipo `Point`, `@Column(columnDefinition = "POINT SRID 4326")` y el test `puntoJtsPersisteYSeLeeConSusCoordenadasYSrid`.
 
 ```bash
-mkdir -p src/main/java/io/academia/entregas/espacial
+./mvnw -q test -Dtest=PosicionConductorTest#puntoJtsPersisteYSeLeeConSusCoordenadasYSrid
 ```
 
-```java
-// src/main/java/io/academia/entregas/espacial/PosicionConductor.java
-package io.academia.entregas.espacial;
+**Resultado esperado.** La prueba guarda y vuelve a leer la entidad desde MySQL; las dos coordenadas y el SRID coinciden con los valores creados.
 
-import jakarta.persistence.*;
-import org.locationtech.jts.geom.Point;
+**Fallo deliberado.** Cambia el tipo Java de `Point` por `String`. El mapeo deja de representar la columna espacial y la compilación o persistencia falla; restaura `Point`.
 
-@Entity
-public class PosicionConductor {
-    @Id @GeneratedValue
-    private Long id;
+**Entiende.** La columna espacial se declara en el esquema SQL y `hibernate-spatial` proporciona el puente hacia JTS. La anotación `columnDefinition` no administra una migración de producción.
 
-    @Column(columnDefinition = "POINT SRID 4326")
-    private Point ubicacion;
+**Cierra.** Señala qué dependencia aporta el tipo geométrico y qué prueba confirma el ida y vuelta.
 
-    @Version
-    private Long version;
+#### Subtema 14.3.3: Detecta dos escrituras sobre versiones distintas · 10 min
 
-    protected PosicionConductor() {}
+**Contexto.** Dos peticiones pueden leer la misma versión antes de intentar guardar cambios diferentes.
 
-    public PosicionConductor(Point ubicacion) { this.ubicacion = ubicacion; }
-
-    public Long getId() { return id; }
-    public Point getUbicacion() { return ubicacion; }
-    public void actualizarUbicacion(Point nueva) { this.ubicacion = nueva; }
-}
-```
-
-Confirma con un test contra Testcontainers MySQL que el `Point` persiste sin pérdida de precisión, y que `@Version` detecta un conflicto real:
-
-```java
-// src/test/java/io/academia/entregas/espacial/PosicionConductorTest.java
-package io.academia.entregas.espacial;
-
-import org.junit.jupiter.api.Test;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.PrecisionModel;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.orm.ObjectOptimisticLockingFailureException;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.MySQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-@Testcontainers
-@SpringBootTest
-class PosicionConductorTest {
-
-    @Container
-    static MySQLContainer<?> mysql = new MySQLContainer<>("mysql:8.0");
-
-    @DynamicPropertySource
-    static void props(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", mysql::getJdbcUrl);
-        registry.add("spring.datasource.username", mysql::getUsername);
-        registry.add("spring.datasource.password", mysql::getPassword);
-    }
-
-    @Autowired
-    private PosicionConductorRepository repository;
-
-    private static final GeometryFactory FACTORY = new GeometryFactory(new PrecisionModel(), 4326);
-
-    @Test
-    void elPuntoPersisteYSeLeeSinPerdidaDePrecision() {
-        var punto = FACTORY.createPoint(new Coordinate(-74.08, 4.61));
-        var guardado = repository.save(new PosicionConductor(punto));
-
-        var leido = repository.findById(guardado.getId()).orElseThrow();
-
-        assertThat(leido.getUbicacion().getX()).isEqualTo(-74.08);
-        assertThat(leido.getUbicacion().getY()).isEqualTo(4.61);
-    }
-
-    @Test
-    void unaActualizacionConcurrenteSobreVersionObsoletaLanzaExcepcionRealDeBloqueoOptimista() {
-        var original = repository.save(new PosicionConductor(FACTORY.createPoint(new Coordinate(-74.0, 4.6))));
-
-        var copiaA = repository.findById(original.getId()).orElseThrow();
-        var copiaB = repository.findById(original.getId()).orElseThrow();
-
-        copiaA.actualizarUbicacion(FACTORY.createPoint(new Coordinate(-74.1, 4.7)));
-        repository.saveAndFlush(copiaA); // incrementa la versión real en la base
-
-        copiaB.actualizarUbicacion(FACTORY.createPoint(new Coordinate(-74.2, 4.8)));
-        assertThatThrownBy(() -> repository.saveAndFlush(copiaB))
-            .isInstanceOf(ObjectOptimisticLockingFailureException.class); // copiaB tiene una version ya obsoleta
-    }
-}
-```
+**Hazlo tú.** En `PosicionConductorTest`, sigue `versionDetectaLaSegundaEscrituraBasadaEnUnaLecturaVieja`. Ejecuta solo esa prueba:
 
 ```bash
-./mvnw test -Dtest=PosicionConductorTest
+./mvnw -q test -Dtest=PosicionConductorTest#versionDetectaLaSegundaEscrituraBasadaEnUnaLecturaVieja
 ```
 
-**Resultado esperado:** `BUILD SUCCESS` con ambos tests en verde: el primero confirma que las coordenadas `X`/`Y` del `Point` sobreviven un ciclo real de guardado y lectura contra MySQL sin pérdida de precisión; el segundo confirma, con dos copias reales de la misma fila divergiendo, que Hibernate lanza `ObjectOptimisticLockingFailureException` real cuando la segunda actualización usa una `@Version` ya obsoleta respecto a la base.
+**Resultado esperado.** La primera copia se guarda; Hibernate rechaza la segunda con `ObjectOptimisticLockingFailureException` porque lleva una versión obsoleta.
 
-**Fallo deliberado:** quita el campo `@Version` de `PosicionConductor` y ejecuta de nuevo `unaActualizacionConcurrenteSobreVersionObsoletaLanzaExcepcionRealDeBloqueoOptimista`. El test FALLA porque `repository.saveAndFlush(copiaB)` ya NO lanza ninguna excepción — la segunda actualización simplemente sobrescribe silenciosamente los cambios de la primera (la actualización de `copiaA` se pierde sin ningún aviso) — diagnostica confirmando que `@Version` es lo único que convierte una condición de carrera silenciosa en un error explícito y manejable. Restaura `@Version` antes de continuar.
+**Fallo deliberado.** Invierte las dos llamadas `actualizarUbicacion`. El conflicto sigue apareciendo: quien intenta guardar en segundo lugar detecta que la versión cambió. Restáuralas para conservar el ejemplo.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**Entiende.** `@Version` agrega un número a la fila. Hibernate incluye ese número en la actualización; si otra escritura ya lo cambió, la fila no coincide y la operación falla.
 
-1. Agrega un segundo test que confirme que, tras el `ObjectOptimisticLockingFailureException` del Paso 4, releer la entidad (`repository.findById(...)`) devuelve la versión actualizada por `copiaA`, no un estado corrupto.
-2. Documenta, en un comentario, la diferencia entre el bloqueo optimista (`@Version`, detecta el conflicto DESPUÉS) y un bloqueo pesimista (`SELECT ... FOR UPDATE`, previene el conflicto ANTES) para este mismo caso de uso.
-3. Escribe un test que confirme N+1 real: una consulta que carga 10 `PosicionConductor` y accede a `.getUbicacion()` de cada uno dispara consultas adicionales, contrastando con una proyección que evita ese costo.
-4. Escribe de memoria (sin mirar) una entidad con un campo `Point` de Hibernate Spatial y `@Version`, y un test que confirme el conflicto optimista real. Compara después contra el patrón del Paso 4.
+**Cierra.** Identifica cuál escritura se conserva y cuál debe volver a leer antes de reintentar.
 
-**Pista:** `GeometryFactory` con un `PrecisionModel` y el SRID correcto (4326) es la forma oficial de JTS para construir objetos `Point` en Java antes de persistirlos — construir un `Point` sin especificar el SRID correcto puede producir un desajuste silencioso con la columna `POINT SRID 4326` de la base.
+#### Subtema 14.3.4: Observa la pérdida si quitas @Version · 8 min
 
-#### Paso 6 · Práctica independiente
+**Contexto.** Sin comprobación de versión, la segunda copia puede sobrescribir el cambio reciente sin avisar.
 
-**Completa el código:** rellena el espacio con la anotación que activa el bloqueo optimista sobre la entidad:
+**Hazlo tú.** Quita temporalmente `@Version` en `PosicionConductor.java` y repite el test del subtema anterior.
 
-```java
-@____
-private Long version;
+```bash
+./mvnw -q test -Dtest=PosicionConductorTest#versionDetectaLaSegundaEscrituraBasadaEnUnaLecturaVieja
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una entidad con un campo `Point` de Hibernate Spatial y `@Version`, y un test que confirme `ObjectOptimisticLockingFailureException` real ante una actualización concurrente. Compara después contra el patrón del Paso 4.
+**Resultado esperado.** El test queda rojo: esperaba una excepción y Hibernate permitió la actualización. Restaura `@Version` y ejecuta de nuevo la prueba; vuelve a verde.
 
-#### Paso 7 · Cierre y evidencia
+**Fallo deliberado.** Conserva solo la mutación sin `@Version` durante la prueba. Compara cuál coordenada termina guardada y explica cómo se perdió la actualización más nueva.
 
-Ya mapeas coordenadas espaciales a tipos Java reales con Hibernate Spatial, y confirmas bloqueo optimista real ante actualizaciones concurrentes. El siguiente tema protege estos endpoints con JWT real y verificación de propiedad del recurso. **Evidencia:** entrega el resultado de `PosicionConductorTest` en verde, y la pérdida silenciosa de datos que produce el fallo deliberado al quitar `@Version`. Fuentes oficiales: [Hibernate Spatial](https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#spatial).
+**Entiende.** El bloqueo optimista no bloquea la fila mientras lees; detecta el conflicto al guardar. Si ocurre, el caso de uso decide si debe volver a leer y pedir una decisión al usuario.
 
-**Errores comunes:** construir un `Point` de JTS sin especificar el SRID correcto; omitir `@Version` en entidades sujetas a actualizaciones concurrentes frecuentes, permitiendo pérdidas silenciosas de datos.
+**Cierra.** Guarda la ejecución verde y el error real de la mutación. El siguiente tema agrega autenticación y comprueba propiedad del recurso.
 
-**Cuándo no usarlo:** para datos geográficos de solo lectura, cargados una vez y nunca actualizados concurrentemente, `@Version` no aporta ninguna protección necesaria.
+**Fuentes:** [Hibernate Spatial y mapeo JTS](https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#spatial), [Hibernate: bloqueo optimista con `@Version`](https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#locking-optimistic) y [MySQL: tipos espaciales](https://dev.mysql.com/doc/refman/8.0/en/spatial-type-overview.html).
 
-Mapear tipos espaciales con Hibernate Spatial es la misma disciplina de mapeo objeto-relacional que usa el proyecto integrador de este track (microservicio productivo, Módulo 12).
+---
 
 ### Tema 4: JWT Bearer y autorización por roles
 
