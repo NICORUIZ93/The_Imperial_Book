@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 1424,
+      "lines": 1427,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 16258,
+      "lines": 16315,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -600,7 +600,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3892,
+      "lines": 3899,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13626,
+      "lines": 13628,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -677,7 +677,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 154,
+      "lines": 155,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 517,
+      "lines": 521,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -5536,6 +5536,49 @@
       "headings": []
     },
     {
+      "path": "examples/spring-boot-idempotency-rutaflow/README.md",
+      "lines": 24,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Idempotencia con PostgreSQL",
+        "## Ejecutar"
+      ]
+    },
+    {
+      "path": "examples/spring-boot-idempotency-rutaflow/scripts/verify-idempotency.sh",
+      "lines": 23,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-boot-idempotency-rutaflow/src/main/java/academia/rutaflow/idempotency/IdempotencyApplication.java",
+      "lines": 12,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-boot-idempotency-rutaflow/src/main/java/academia/rutaflow/idempotency/IdempotencyService.java",
+      "lines": 30,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-boot-idempotency-rutaflow/src/test/java/academia/rutaflow/idempotency/IdempotencyRaceTest.java",
+      "lines": 70,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
       "path": "examples/spring-boot-integrador-rutaflow/README.md",
       "lines": 45,
       "kind": "example",
@@ -5634,7 +5677,7 @@
     },
     {
       "path": "examples/spring-boot-integrador-rutaflow/src/test/java/academia/rutaflow/integrador/entrega/ArquitecturaIntegradaTest.java",
-      "lines": 172,
+      "lines": 200,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -13115,7 +13158,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-13.md",
-      "lines": 578,
+      "lines": 531,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

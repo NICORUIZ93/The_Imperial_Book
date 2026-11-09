@@ -352,6 +352,10 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 13.2.3: Fuerza una carrera entre dos solicitudes · 10 min
   - ✓ Subtema 13.2.4: Separa reintentos HTTP de reenvíos Kafka · 10 min
 - [pendiente de migrar] Tema 3: Contratos ejecutables protegen despliegues independientes
+  - pendiente Subtema 13.3.1: Lee la respuesta que recibe la app · 8 min
+  - pendiente Subtema 13.3.2: Fija nombres y valores que usa el cliente · 8 min
+  - pendiente Subtema 13.3.3: Comprueba el error que ve el consumidor · 8 min
+  - pendiente Subtema 13.3.4: Protege cambios entre despliegues · 10 min
 - [pendiente de migrar] Tema 4: Observabilidad sirve a un objetivo y a una decisión
 
 ### Módulo 14: Backend de entregas: MySQL espacial, archivos y tiempo real

@@ -257,131 +257,84 @@ Dibuja ambas claves: HTTP `operation_key` para repetir una solicitud; Kafka `eve
 
 ### Tema 3: Contratos ejecutables protegen despliegues independientes
 
-#### Paso 1 · Objetivo y preparación
+¿Por qué es importante? El contrato es lo que el consumidor recibe por HTTP: status, headers y JSON; una discrepancia puede romper apps móviles que se actualizan después del backend. El laboratorio real vive en `examples/spring-boot-integrador-rutaflow/`; sus pruebas usan Spring, seguridad y PostgreSQL con Testcontainers. **Requisito:** Docker debe estar iniciado para ejecutar esa suite.
 
-Al finalizar podrás verificar, con `MockMvc` contra el JSON real producido por un endpoint, que la API cumple el contrato exacto que un consumidor externo espera, y demostrar en código qué tipo de cambio (status, campo, enum) rompe ese contrato de forma silenciosa.
+#### Subtema 13.3.1: Lee la respuesta que recibe la app · 8 min
 
-**Conocimiento previo:** Módulo 2 de este track (controllers y DTOs).
+**Contexto.** Un cambio puede compilar en el servidor y romper la app móvil. Primero identifica qué cruza la red.
 
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** Tests internos verdes no ejecutan código de consumidores desplegados por otros equipos, ni de dispositivos móviles que no se actualizan al mismo tiempo que el backend. Un cambio que parece inocuo desde dentro del servicio (renombrar un campo, agregar un valor a un enum) puede romper silenciosamente a un consumidor que no puede desplegarse en sincronía.
-
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** contract test, backward compatibility, additive change, Problem Details.
-
-OpenAPI documenta request, response, seguridad y errores, usando DTOs públicos (no entidades JPA directamente expuestas). `application/problem+json` (RFC 7807, ya usado en el Módulo 5) da errores consistentes con `type`, `title`, `status`, `detail` e `instance`/correlation ID, sin exponer el stack trace interno. Los cambios aditivos (campo opcional nuevo, endpoint nuevo) suelen ser más seguros, pero agregar un valor a un enum es un cambio frecuentemente incompatible para consumidores con un `switch` exhaustivo sobre ese enum, que no sabría manejar el valor nuevo.
-
-**Analogía:** el contrato no es una foto del proveedor, sino el calibre que ambos equipos pasan antes de ensamblar. Si mide detalles innecesarios, impide cualquier mejora; si no mide nada, deja piezas incompatibles.
-
-**Diagrama:**
-
-```
-┌── Cambio aditivo ────────────┐   ┌── Cambio potencialmente roto ─────┐
-│ campo opcional nuevo          │   │ nuevo valor de enum                │
-│ endpoint nuevo                │   │ renombrar/reordenar un campo        │
-│ generalmente SEGURO           │   │ cambiar unidad/zona horaria/semántica│
-└──────────────────────┘   └───────────────────────────┘
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Continuando en `demo-consistencia` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `mkdir demo-contratos && cd demo-contratos && curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip app.zip`), crea `src/main/java/io/academia/consistencia/api/PedidoController.java`:
+**Hazlo tú.** Abre `src/main/java/academia/rutaflow/integrador/entrega/EntregaController.java` y `EntregaResponse.java`. Anota método y ruta, status exitoso, encabezado de ubicación y campos JSON. Mira `postRecorreHttpCapasFlywayYPostgres` en `src/test/java/academia/rutaflow/integrador/entrega/ArquitecturaIntegradaTest.java`.
 
 ```bash
-mkdir -p src/main/java/io/academia/consistencia/api
+cd examples/spring-boot-integrador-rutaflow
+./mvnw -q test -Dtest=ArquitecturaIntegradaTest#postRecorreHttpCapasFlywayYPostgres
 ```
 
-```java
-// src/main/java/io/academia/consistencia/api/PedidoController.java
-package io.academia.consistencia.api;
+**Resultado esperado.** La prueba recibe `201`, un `Location` con `/api/entregas/<id>` y JSON con `destinatario` y `estado`.
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+**Fallo deliberado.** Cambia temporalmente `ResponseEntity.created(ubicacion)` a `ResponseEntity.ok()`. La prueba espera `201` y debe fallar con `200`. Restaura `created`.
 
-@RestController
-@RequestMapping("/api/orders")
-public class PedidoController {
+**Entiende.** El contrato contiene lo que necesita el cliente, no las clases privadas que el servidor usa para guardar datos.
 
-    public enum Estado { ACCEPTED, REJECTED }
+**Cierra.** Sin mirar el código, enumera ruta, status, header y campos de respuesta.
 
-    public record PedidoResponse(String id, Estado status) {}
+#### Subtema 13.3.2: Fija nombres y valores que usa el cliente · 8 min
 
-    @PostMapping
-    public ResponseEntity<PedidoResponse> crear(@RequestBody(required = false) String body) {
-        return ResponseEntity.status(201).body(new PedidoResponse("PED-001", Estado.ACCEPTED));
-    }
-}
-```
+**Contexto.** Un cliente puede depender del texto exacto `CREADA` o del campo `destinatario`; lo que viaja por JSON define el contrato.
 
-Formaliza el contrato que un consumidor externo espera como un test `MockMvc` real contra el JSON producido:
-
-```java
-// src/test/java/io/academia/consistencia/api/ContratoPedidoTest.java
-package io.academia.consistencia.api;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.web.servlet.MockMvc;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-@WebMvcTest(PedidoController.class)
-class ContratoPedidoTest {
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Test
-    void elContratoExigeStatus201ConIdYStatusAccepted() throws Exception {
-        mockMvc.perform(post("/api/orders").contentType("application/json").content("{}"))
-            .andExpect(status().isCreated()) // el consumidor depende EXACTAMENTE de 201, no de 200
-            .andExpect(jsonPath("$.id").isNotEmpty())
-            .andExpect(jsonPath("$.status").value("ACCEPTED")); // el consumidor tiene un switch exhaustivo sobre este valor
-    }
-}
-```
+**Hazlo tú.** Ejecuta `contratoDeCreacionConservaStatusLocationYCamposPublicos` en `ArquitecturaIntegradaTest`. Verifica status `201`, `Location`, `id`, `destinatario` y `estado`.
 
 ```bash
-./mvnw test -Dtest=ContratoPedidoTest
+./mvnw -q test -Dtest=ArquitecturaIntegradaTest#contratoDeCreacionConservaStatusLocationYCamposPublicos
 ```
 
-**Resultado esperado:** `BUILD SUCCESS` con el test en verde: contra el JSON REAL producido por el controller (no una descripción de OpenAPI sin verificar), el contrato exige específicamente `201`, un campo `id` no vacío y `status` con el valor exacto `"ACCEPTED"` — un cambio de status a `200`, un campo renombrado, o un valor de enum distinto haría fallar este test antes de llegar a producción.
+**Resultado esperado.** El test comprueba el JSON que produce Spring MVC y PostgreSQL, no un ejemplo JSON escrito aparte.
 
-**Fallo deliberado:** cambia el enum `Estado` para renombrar `ACCEPTED` a `CONFIRMED` (un cambio que "suena" equivalente desde dentro del servicio) y ejecuta de nuevo el test. FALLA con `AssertionError` real: `$.status` esperaba `"ACCEPTED"` pero recibió `"CONFIRMED"` — diagnostica confirmando que un consumidor externo con un `switch` exhaustivo sobre el valor textual `"ACCEPTED"` se rompería silenciosamente en producción con este cambio, algo que ningún test interno del servicio (que solo verifica su propia lógica) detectaría sin este contrato explícito. Restaura `ACCEPTED` antes de continuar.
+**Fallo deliberado.** En `EntregaResponse.java`, renombra temporalmente `destinatario` a `cliente`; repite el test. Debe fallar porque falta `$.destinatario`. Restaura el nombre y vuelve a ejecutarlo.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**Entiende.** Renombrar un campo es incompatible aunque Java compile. Añadir un campo opcional suele ser más compatible; añadir un valor enum puede romper clientes que solo manejan valores conocidos.
 
-1. Agrega un campo opcional nuevo (`estimatedDelivery`) al `PedidoResponse` y confirma con un test que el contrato existente (`id`, `status`) sigue pasando sin modificación — un cambio aditivo real y verificado, no solo asumido seguro.
-2. Agrega un tercer valor al enum `Estado` (`PENDING`) y documenta, en un comentario del test, qué tipo de consumidor específico (uno con `switch` exhaustivo en Java, TypeScript o Kotlin) se rompería al recibir ese valor nuevo sin haберse actualizado primero.
-3. Escribe un test de contrato para el caso de error (`400 Bad Request` con `Problem Details`) cuando el body de la petición es inválido.
-4. Escribe de memoria (sin mirar) un test `MockMvc` que verifique el `status` HTTP exacto y el valor exacto de un campo enum en la respuesta JSON. Compara después contra el patrón del Paso 4.
+**Cierra.** Di qué cambió y qué expectativa del test lo detectó.
 
-**Pista:** `jsonPath("$.status").value("ACCEPTED")` verifica el VALOR TEXTUAL exacto del JSON producido, no el nombre de la constante Java del enum — si `@JsonProperty` o una estrategia de serialización personalizada transforma ese valor, el contrato debe verificar el texto que realmente viaja por la red, no el nombre interno de la constante.
+#### Subtema 13.3.3: Comprueba el error que ve el consumidor · 8 min
 
-#### Paso 6 · Práctica independiente
+**Contexto.** Los errores también forman parte del contrato. El cliente necesita distinguir una solicitud inválida de una caída del servidor.
 
-**Completa el código:** rellena el espacio con el matcher de MockMvc que verifica el valor exacto de un campo JSON en la respuesta:
+**Hazlo tú.** Ejecuta `contratoDeErrorRechazaDestinatarioVacioSinGuardar`. Sigue `@NotBlank` en `CrearEntregaRequest.java` hasta el status `400`.
 
-```java
-mockMvc.perform(post("/api/orders")...)
-    .andExpect(____("$.status").value("ACCEPTED"));
+```bash
+./mvnw -q test -Dtest=ArquitecturaIntegradaTest#contratoDeErrorRechazaDestinatarioVacioSinGuardar
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `PedidoController` con un enum de estado, y un test `MockMvc` que verifique el contrato exacto de status HTTP y valor de enum. Compara después contra el patrón del Paso 4.
+**Resultado esperado.** La API devuelve `400 Bad Request` y no crea otra entrega. El proyecto todavía no fija un esquema JSON de error; no supongas que devuelve Problem Details.
 
-#### Paso 7 · Cierre y evidencia
+**Fallo deliberado.** Quita temporalmente `@NotBlank` y repite el test. El destinatario de espacios deja de rechazarse; la prueba debe fallar. Restaura la anotación.
 
-Ya verificas contratos HTTP contra el JSON real producido por la API, demostrando en código qué cambios rompen silenciosamente a consumidores externos. El siguiente y último tema conecta trazas, métricas y logs para responder preguntas operativas reales durante un incidente. **Evidencia:** entrega el resultado de `ContratoPedidoTest` en verde, y el `AssertionError` real que produce renombrar un valor de enum. Fuentes oficiales: [Spring Cloud Contract](https://docs.spring.io/spring-cloud-contract/reference/) y [RFC 7807 — Problem Details](https://www.rfc-editor.org/rfc/rfc7807).
+**Entiende.** RFC 9457 define un formato estándar de error HTTP, pero citarlo no lo activa. Si se adopta, fija sus campos y media type con una prueba.
 
-**Errores comunes:** copiar la respuesta completa como contrato en vez de conservar solo las expectativas mínimas significativas, volviendo imposible evolucionar la API; generar una página Swagger sin verificarla contra tráfico real, asumiendo que documentar es lo mismo que garantizar.
+**Cierra.** Anota qué garantiza la prueba y qué no garantiza sobre el cuerpo de error.
 
-**Cuándo no usarlo:** para un endpoint interno consumido únicamente por el mismo equipo que lo mantiene, desplegado siempre en conjunto, la sobrecarga de un contrato formal versionado puede no justificarse frente a coordinar el cambio directamente entre las mismas personas.
+#### Subtema 13.3.4: Protege cambios entre despliegues · 10 min
 
-Los contratos ejecutables de este tema son los que permitirán desplegar el proyecto integrador de este track (microservicio productivo, Módulo 12) de forma independiente de sus consumidores.
+**Contexto.** El backend y la app móvil se actualizan por separado. Conserva lo que los clientes vigentes ya entienden.
+
+**Hazlo tú.** En `EntregaResponse`, añade temporalmente `String nota` y ejecuta las pruebas de contrato. Restaura el DTO. En `docs/salida-a-produccion.md`, registra cambios de nombres, tipos, valores o significado antes de desplegarlos.
+
+```bash
+./mvnw -q test -Dtest=ArquitecturaIntegradaTest
+```
+
+**Resultado esperado.** Las pruebas de respuesta, autenticación, validación y configuración pasan. Que siga pasando un test aditivo no prueba que todo cliente externo acepte campos desconocidos.
+
+**Fallo deliberado.** Renombra un campo en una rama de práctica, guarda la salida roja y revierte el cambio; confirma la salida verde.
+
+**Entiende.** OpenAPI describe rutas y esquemas; las pruebas ejecutables comprueban comportamiento. Para equipos que despliegan en momentos distintos, estudia Spring Cloud Contract y verifica stubs en proveedor y consumidor.
+
+**Cierra.** Conserva una ejecución verde y un fallo deliberado restaurado. La cobertura estructural no prueba compatibilidad de todos los consumidores.
+
+**Fuentes:** [Spring MVC Test](https://docs.spring.io/spring-framework/reference/testing/mockmvc.html), [Spring Cloud Contract](https://docs.spring.io/spring-cloud-contract/reference/), [RFC 9457: Problem Details](https://www.rfc-editor.org/rfc/rfc9457).
+
+---
 
 ### Tema 4: Observabilidad sirve a un objetivo y a una decisión
 

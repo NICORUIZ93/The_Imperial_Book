@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 253,
+    "topicsWithSignals": 254,
     "newLaboratories": 25
   },
   "priorities": {
@@ -12598,7 +12598,9 @@
       "title": "Tema 3: Contratos ejecutables protegen despliegues independientes",
       "file": "web/public/content/spring-boot/modulo-13.md",
       "line": 258,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -12608,7 +12610,7 @@
       "module": 13,
       "title": "Tema 4: Observabilidad sirve a un objetivo y a una decisión",
       "file": "web/public/content/spring-boot/modulo-13.md",
-      "line": 386,
+      "line": 339,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

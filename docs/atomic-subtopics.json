@@ -94,8 +94,8 @@
     "spring-boot": {
       "topics": 111,
       "completeTopics": 53,
-      "topicsWith3to6Subtopics": 68,
-      "subtopics": 231,
+      "topicsWith3to6Subtopics": 69,
+      "subtopics": 235,
       "completeSubtopics": 186
     }
   },
@@ -13714,8 +13714,65 @@
       {
         "module": 13,
         "topic": "### Tema 3: Contratos ejecutables protegen despliegues independientes",
-        "subtopicCount": 0,
-        "subtopics": [],
+        "subtopicCount": 4,
+        "subtopics": [
+          {
+            "id": "13.3",
+            "title": "#### Subtema 13.3.1: Lee la respuesta que recibe la app · 8 min",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "13.3",
+            "title": "#### Subtema 13.3.2: Fija nombres y valores que usa el cliente · 8 min",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "13.3",
+            "title": "#### Subtema 13.3.3: Comprueba el error que ve el consumidor · 8 min",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "13.3",
+            "title": "#### Subtema 13.3.4: Protege cambios entre despliegues · 10 min",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": true
+            },
+            "complete": false
+          }
+        ],
         "complete": false
       },
       {

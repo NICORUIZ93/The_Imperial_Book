@@ -33,6 +33,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -93,6 +94,33 @@ class ArquitecturaIntegradaTest {
         assertThat(response.body()).contains("\"destinatario\":\"Tienda Norte\"")
             .contains("\"estado\":\"CREADA\"");
         assertThat(entregas.existsByDestinatario("Tienda Norte")).isTrue();
+    }
+
+    @Test
+    void contratoDeCreacionConservaStatusLocationYCamposPublicos() throws Exception {
+        mockMvc.perform(post("/api/entregas")
+                .header("Authorization", "Bearer " + token("ROLE_USER"))
+                .contentType("application/json")
+                .content("{\"destinatario\":\"Contrato M13\"}"))
+            .andExpect(status().isCreated())
+            .andExpect(header().exists("Location"))
+            .andExpect(header().string("Location", org.hamcrest.Matchers.containsString("/api/entregas/")))
+            .andExpect(jsonPath("$.id").isNumber())
+            .andExpect(jsonPath("$.destinatario").value("Contrato M13"))
+            .andExpect(jsonPath("$.estado").value("CREADA"));
+    }
+
+    @Test
+    void contratoDeErrorRechazaDestinatarioVacioSinGuardar() throws Exception {
+        long antes = entregas.count();
+
+        mockMvc.perform(post("/api/entregas")
+                .header("Authorization", "Bearer " + token("ROLE_USER"))
+                .contentType("application/json")
+                .content("{\"destinatario\":\" \"}"))
+            .andExpect(status().isBadRequest());
+
+        assertThat(entregas.count()).isEqualTo(antes);
     }
 
     @Test

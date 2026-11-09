@@ -99,10 +99,10 @@
     "spring-boot": {
       "topics": 111,
       "code": 106,
-      "commentedCode": 47,
+      "commentedCode": 46,
       "mermaid": 39,
       "archifyVisual": 2,
-      "asciiVisual": 5,
+      "asciiVisual": 4,
       "misleadingDiagramLabel": 0,
       "filePath": 111,
       "runCommand": 111,
@@ -2652,6 +2652,13 @@
       "track": "spring-boot",
       "module": 13,
       "topic": "Tema 2: Recuperación implica duplicación segura",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 13,
+      "topic": "Tema 3: Contratos ejecutables protegen despliegues independientes",
       "missingCode": false,
       "missingComments": true
     },
