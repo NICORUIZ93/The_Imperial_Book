@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 36,
-      "prerequisites": 58,
-      "context": 36,
-      "theoryAnalogy": 36,
-      "guidedDemo": 36,
+      "objective": 35,
+      "prerequisites": 57,
+      "context": 35,
+      "theoryAnalogy": 35,
+      "guidedDemo": 35,
       "codeExplanation": 111,
       "execution": 100,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 36,
-      "independentPractice": 36,
-      "closure": 36,
-      "commonErrors": 36,
+      "guidedPractice": 35,
+      "independentPractice": 35,
+      "closure": 35,
+      "commonErrors": 35,
       "resources": 61,
-      "standaloneExample": 38,
-      "learningEvidence": 69,
-      "complete": 36
+      "standaloneExample": 37,
+      "learningEvidence": 68,
+      "complete": 35
     }
   },
   "topics": {
@@ -29095,26 +29095,26 @@
         "module": 14,
         "topic": "Tema 6: Archivos y notificaciones push",
         "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "objective": false,
+          "prerequisites": false,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
           "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 5,
+          "complete": false
         }
       },
       {

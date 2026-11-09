@@ -470,125 +470,105 @@ Ejecuta `./mvnw -q test` y registra por qué la segunda llamada devuelve `false`
 
 ### Tema 6: Archivos y notificaciones push
 
-#### Paso 1 · Objetivo y preparación
+**Objetivo observable:** aceptar una imagen decodificable de una lista permitida, guardar su contenido bajo una clave nueva y enviar un aviso solo tras el commit.
 
-Al finalizar podrás rechazar, con detección REAL del tipo de contenido (no la extensión declarada por el cliente), un archivo cuyo contenido no coincide con el tipo MIME que afirma ser.
+**¿Por qué es importante?** El nombre `foto.jpg` y el encabezado `Content-Type` los elige el cliente; por sí solos no demuestran qué bytes se recibieron. Y si se envía un push antes de confirmar la transacción, el teléfono podría anunciar una foto que luego no se guardó.
 
-**Conocimiento previo:** Módulo 13 de este track (transactional outbox).
+**Antes de empezar:** manejar un POST y reconocer una transacción del Módulo 13. Sigue el laboratorio `examples/spring-boot-upload-push-rutaflow/`; H2, el almacén de objetos y el gateway de push son de demostración, no servicios externos.
 
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** La base almacena metadatos y hash; las fotografías viven en almacenamiento de objetos con claves no predecibles y URLs firmadas. Confiar en la extensión del archivo (`.jpg`) o en el `Content-Type` declarado por el cliente para decidir si un archivo es realmente una imagen es una vulnerabilidad conocida: un atacante puede subir cualquier contenido con una extensión falsa.
-
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** detección real de MIME, outbox para notificaciones tras commit.
-
-Se valida el MIME real inspeccionando los primeros bytes del archivo (los "magic numbers" que identifican el formato real, independientemente del nombre declarado), no la extensión ni el header `Content-Type` proporcionado por el cliente. Un outbox (Módulo 13) dispara la notificación push DESPUÉS del commit de la transacción, usando el mecanismo real de `TransactionSynchronizationManager.registerSynchronization(...)` de Spring para garantizar que la notificación solo se envía si la transacción efectivamente se comprometió.
-
-**Analogía:** confiar en la extensión declarada de un archivo es como aceptar la palabra de alguien sobre el contenido de un paquete sellado sin abrirlo; inspeccionar los bytes reales es como pesar y escanear el paquete para confirmar que su contenido real coincide con lo declarado.
-
-**Diagrama:**
-
-```
-┌── Extensión .jpg declarada ──────┐   confiar ciegamente = VULNERABLE
-└──────────────────────────┘
-┌── Bytes reales inspeccionados ───┐   magic number FFD8FF = JPEG real
-└──────────────────────────┘
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Continuando en `gestion-entregas` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía y genera un proyecto nuevo con `mkdir gestion-archivos && cd gestion-archivos && curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip app.zip`), crea `src/main/java/io/academia/entregas/archivos/ValidadorMime.java`:
-
-```bash
-mkdir -p src/main/java/io/academia/entregas/archivos
-```
-
-```java
-// src/main/java/io/academia/entregas/archivos/ValidadorMime.java
-package io.academia.entregas.archivos;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
-public class ValidadorMime {
-
-    // detecta el tipo REAL inspeccionando los primeros bytes (magic numbers), no la extensión declarada
-    public static boolean esJpegReal(byte[] contenido) throws IOException {
-        try (InputStream in = new ByteArrayInputStream(contenido)) {
-            String tipoDetectado = java.net.URLConnection.guessContentTypeFromStream(in);
-            return "image/jpeg".equals(tipoDetectado);
-        }
-    }
-}
-```
-
-Confirma con contenido real (un JPEG mínimo válido frente a texto plano disfrazado de `.jpg`) que la detección funciona por bytes, no por nombre:
-
-```java
-// src/test/java/io/academia/entregas/archivos/ValidadorMimeTest.java
-package io.academia.entregas.archivos;
-
-import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-class ValidadorMimeTest {
-
-    // los primeros bytes reales (magic number) de un archivo JPEG válido
-    private static final byte[] JPEG_REAL = new byte[] {
-        (byte) 0xFF, (byte) 0xD8, (byte) 0xFF, (byte) 0xE0, 0x00, 0x10, 0x4A, 0x46, 0x49, 0x46
-    };
-
-    @Test
-    void unContenidoConMagicNumberJpegSeDetectaComoJpegReal() throws Exception {
-        assertThat(ValidadorMime.esJpegReal(JPEG_REAL)).isTrue();
-    }
-
-    @Test
-    void textoPlanoDisfrazadoDeJpgSeRechazaPorSuContenidoReal() throws Exception {
-        byte[] textoDisfrazado = "esto es solo texto plano, no una imagen real".getBytes();
-        assertThat(ValidadorMime.esJpegReal(textoDisfrazado)).isFalse(); // el NOMBRE podría decir "foto.jpg", el CONTENIDO no miente
-    }
-}
+```mermaid
+sequenceDiagram
+  participant App as App cliente
+  participant Api as API Spring
+  participant Tx as Transacción
+  participant Push as Listener y gateway de ejemplo
+  App->>Api: POST foto multipart
+  Api->>Api: Decodifica imagen y verifica límites
+  Api->>Tx: Guarda bytes y metadatos
+  Tx-->>Push: AFTER_COMMIT: entrega evento
+  Push->>Push: Registra el aviso de prueba
 ```
 
 ```bash
-./mvnw test -Dtest=ValidadorMimeTest
+cd examples/spring-boot-upload-push-rutaflow
+./mvnw -q test
 ```
 
-**Resultado esperado:** `BUILD SUCCESS` con ambos tests en verde: el contenido con el magic number real de JPEG (`FF D8 FF E0...`) se detecta correctamente como `image/jpeg`; el texto plano (que un atacante podría renombrar a `foto.jpg` para intentar pasar la validación de extensión) se rechaza porque su contenido REAL no coincide con ningún formato de imagen, sin importar cómo se llame el archivo.
+#### Subtema 14.6.1: Recibe el archivo con límites · 8 min
 
-**Fallo deliberado:** reemplaza la validación por `nombreArchivo.endsWith(".jpg")` (confiando solo en la extensión del nombre, el patrón inseguro común) y documenta el resultado: un archivo de texto plano renombrado a `malware.jpg` pasaría esta validación exitosamente, porque el nombre "miente" de forma consistente con lo que la validación insegura verifica — diagnostica confirmando por qué la teoría insiste en inspeccionar bytes reales: la extensión del archivo es un dato controlado enteramente por quien lo sube, no una propiedad verificable del contenido. Restaura la validación por magic number antes de continuar.
+**Contexto.** Spring recibe el archivo multipart. El límite protege el servicio de cargas mayores al tamaño previsto; también se controla el alto y ancho de las imágenes.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**Hazlo tú.** Abre `src/main/resources/application.properties` y `UploadController.java`. Encuentra `max-file-size`, `max-request-size`, `app.upload.max-bytes` y el endpoint `POST /api/fotos`. Ejecuta el laboratorio:
 
-1. Agrega una validación de tamaño máximo (por ejemplo, 5MB) y un test que confirme el rechazo de un archivo que excede ese límite, independientemente de si el contenido es un JPEG válido.
-2. Agrega un segundo formato válido (PNG, con magic number `89 50 4E 47`) y confirma con un test que ambos formatos válidos son aceptados mientras un tercero no reconocido es rechazado.
-3. Documenta en un comentario, usando `TransactionSynchronizationManager.registerSynchronization`, la diferencia entre publicar una notificación push DENTRO de la transacción (arriesgado: podría anunciar algo que luego se revierte) y DESPUÉS del commit (seguro).
-4. Escribe de memoria (sin mirar) un validador que inspeccione el magic number real de un archivo, y un test que confirme el rechazo de contenido disfrazado. Compara después contra el patrón del Paso 4.
+```bash
+./mvnw -q test
+```
 
-**Pista:** `java.net.URLConnection.guessContentTypeFromStream(...)` es una utilidad real del propio JDK que inspecciona los primeros bytes del stream para adivinar el tipo de contenido — no requiere ninguna librería externa para esta validación básica, aunque para validación más robusta en producción conviene usar Apache Tika.
+**Resultado esperado.** Las pruebas multipart arrancan en Spring local. Un archivo que supera el límite configurado recibe `415` del validador; el límite multipart del servidor es una barrera anterior, con su propio error HTTP.
 
-#### Paso 6 · Práctica independiente
+**Fallo deliberado.** Sube el límite de bytes y comenta la comprobación `bytes.length > maxBytes` en `ImageContentValidator`. Ejecuta `archivoQueSuperaElLimiteConfiguradoSeRechaza`: deja de demostrar el rechazo. Restaura ambas líneas y corre la suite completa.
 
-**Completa el código:** rellena el espacio con el método real del JDK que detecta el tipo de contenido inspeccionando los bytes del stream:
+**Entiende.** Poner un límite es como definir el tamaño de una caja antes de abrirla. Un archivo pequeño también puede declarar dimensiones enormes, por eso se acota el total de píxeles antes de decodificar.
+
+**Cierra.** Escribe los dos límites que verificaste: bytes del archivo e imagen decodificada.
+
+#### Subtema 14.6.2: Comprueba el contenido de la imagen · 10 min
+
+**Contexto.** Un MIME declarado correcto todavía puede esconder texto o una imagen truncada. La validación debe abrir y decodificar el contenido, no confiar solo en el sufijo o los primeros bytes.
+
+**Hazlo tú.** Lee `ImageContentValidator.validate`. Observa que permite PNG/JPEG, obtiene dimensiones, compara el MIME declarado y lee la imagen. En `UploadPushIntegrationTest`, los PNG válidos se crean con `ImageIO`; el caso de firma parcial prueba que una cabecera no basta.
 
 ```java
-String tipoDetectado = java.net.URLConnection.____(in);
+if (!detectedType.equalsIgnoreCase(declaredMediaType)) {
+    throw new InvalidImageException("El tipo declarado no coincide con la imagen detectada");
+}
+if (reader.read(0) == null) throw new InvalidImageException("No se pudo decodificar la imagen");
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un validador de MIME real por magic number, y un test que confirme el rechazo de contenido disfrazado con una extensión falsa. Compara después contra el patrón del Paso 4.
+**Resultado esperado.** Una imagen PNG completa pasa; texto renombrado `.jpg`, MIME falso y PNG truncado reciben `415` y no crean filas ni avisos.
 
-#### Paso 7 · Cierre y evidencia
+**Fallo deliberado.** En el test `textoDisfrazadoComoJpegNoGuardaNiNotifica`, conserva el nombre `.jpg` y `image/jpeg`, pero reemplaza el contenido por texto válido. La respuesta debe seguir siendo `415`. Cambia temporalmente el servicio para aceptar el MIME sin llamar a `validator.validate`: el test falla al recibir `201`; restaura la validación y vuelve a ejecutar la suite.
 
-Ya validas archivos por su contenido real, no por la extensión declarada, y conectas notificaciones push al commit real de una transacción mediante `TransactionSynchronizationManager`. Este era el último tema del módulo; el siguiente módulo del track continúa con garantías de consistencia distribuida sobre este mismo backend. **Evidencia:** entrega el resultado de `ValidadorMimeTest` en verde, y la vulnerabilidad real que documenta el fallo deliberado al validar solo por extensión. Fuentes oficiales: [Spring — Transaction Synchronization](https://docs.spring.io/spring-framework/reference/data-access/transaction/programmatic.html) y [OWASP — Unrestricted File Upload](https://owasp.org/www-community/vulnerabilities/Unrestricted_File_Upload).
+**Entiende.** `ImageIO` ayuda a confirmar que el contenido se puede leer como una imagen del tipo permitido; no certifica que el archivo sea benigno. Además, el nombre original del cliente no se usa como clave de almacenamiento.
 
-**Errores comunes:** validar únicamente por extensión de archivo o `Content-Type` declarado, ambos controlados por quien sube el archivo; publicar una notificación push antes del commit, arriesgando anunciar un cambio que luego se revierte.
+**Cierra.** Guarda el resultado de la prueba verde y explica por qué la firma aislada puede aceptar un archivo incompleto.
 
-**Cuándo no usarlo:** para archivos generados internamente por el propio sistema (nunca subidos directamente por un usuario externo no confiable), la validación exhaustiva de magic number puede ser una precaución innecesaria frente al riesgo real.
+#### Subtema 14.6.3: Notifica solo tras guardar · 10 min
 
-El manejo de archivos y notificaciones push de este tema son extensiones que podrías incorporar al proyecto integrador de este track (microservicio productivo, Módulo 12).
+**Contexto.** La base y el push no comparten una sola transacción. Espera a que H2 confirme antes de llamar al gateway; si hay rollback, no avises.
+
+**Hazlo tú.** Sigue `UploadService.accept` (insert y publicación del evento), `PushAfterCommitListener` (`AFTER_COMMIT`) y `RecordingPushGateway`. En `rollbackNoDejaArchivoMetadataNiPush`, una transacción externa fuerza rollback y se comprueba que no quede fila, objeto o push.
+
+```java
+@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+public void afterCommit(UploadAccepted event) {
+    gateway.send(event);
+}
+```
+
+**Resultado esperado.** `imagenValidaSeGuardaYNotificaDespuesDelCommit` comprueba la fila y un aviso. `rollbackNoDejaArchivoMetadataNiPush` comprueba cero avisos y limpia el objeto temporal.
+
+**Fallo deliberado.** Cambia temporalmente `@TransactionalEventListener(AFTER_COMMIT)` por `@EventListener` y corre solo `rollbackNoDejaArchivoMetadataNiPush`: el gateway registra el aviso inmediatamente y la transacción luego falla. Restaura el listener transaccional y ejecuta `./mvnw -q test`.
+
+**Entiende.** El aviso se parece a enviar un recibo después de guardar la compra. **Límite:** `AFTER_COMMIT` es un evento en memoria; una caída del proceso puede perderlo. Para reintentos confiables necesitas el outbox transaccional del Módulo 13.
+
+**Cierra.** Anota qué cambia entre el test de commit y el test de rollback.
+
+#### Subtema 14.6.4: Traza el archivo y define qué falta · 8 min
+
+**Contexto.** El laboratorio usa una clave UUID en un almacén en memoria, registra metadatos en H2 y prueba un gateway que solo conserva avisos en una lista.
+
+**Hazlo tú.** Abre `InMemoryImageObjectStore`, `schema.sql` y `README.md`. Traza desde el POST los pasos validar → guardar objeto → insertar metadatos → commit → gateway. Comprueba que el nombre `malware.jpg` no se reutiliza como clave.
+
+**Resultado esperado.** Puedes encontrar la fila, el MIME detectado, el tamaño, dimensiones y el ID de evento en el resultado de la prueba.
+
+**Fallo deliberado.** Quita temporalmente la acción `objectStore.delete(storageKey)` del `afterCompletion` cuando hay rollback y vuelve a ejecutar `rollbackNoDejaArchivoMetadataNiPush`. El test detecta el archivo huérfano; restaura la limpieza.
+
+**Entiende.** Para producción faltan almacenamiento persistente fuera del webroot, autorización por envío, cuota, protección de descarga, análisis de amenazas y un proveedor real de push. La aplicación debería transformar/re-encodear imágenes cuando corresponda. No afirmes que este validador por sí solo bloquea todos los archivos peligrosos.
+
+**Cierra.** Evidencia: suite verde restaurada, rechazo de contenido falso y registro de la prueba de rollback. El proyecto integrador puede reutilizar el flujo; no se ha integrado a su almacenamiento ni a un proveedor móvil.
+
+**Transferencia al proyecto integrador:** guarda la clave del objeto y metadatos junto al envío, enlaza el push mediante un outbox durable y prueba recuperación/idempotencia del consumidor.
+
+**Fuentes oficiales:** [Spring: eventos ligados a transacción](https://docs.spring.io/spring-framework/reference/data-access/transaction/event.html), [Spring Boot: límites multipart](https://docs.spring.io/spring-boot/appendix/application-properties/) y [OWASP: File Upload Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html). La firma de archivo es una defensa adicional, no un escaneo de seguridad.
 

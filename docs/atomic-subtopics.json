@@ -94,8 +94,8 @@
     "spring-boot": {
       "topics": 111,
       "completeTopics": 53,
-      "topicsWith3to6Subtopics": 75,
-      "subtopics": 259,
+      "topicsWith3to6Subtopics": 76,
+      "subtopics": 263,
       "completeSubtopics": 186
     }
   },
@@ -14162,8 +14162,65 @@
       {
         "module": 14,
         "topic": "### Tema 6: Archivos y notificaciones push",
-        "subtopicCount": 0,
-        "subtopics": [],
+        "subtopicCount": 4,
+        "subtopics": [
+          {
+            "id": "14.6",
+            "title": "#### Subtema 14.6.1: Recibe el archivo con límites · 8 min",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "14.6",
+            "title": "#### Subtema 14.6.2: Comprueba el contenido de la imagen · 10 min",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "14.6",
+            "title": "#### Subtema 14.6.3: Notifica solo tras guardar · 10 min",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": true
+            },
+            "complete": false
+          },
+          {
+            "id": "14.6",
+            "title": "#### Subtema 14.6.4: Traza el archivo y define qué falta · 8 min",
+            "criteria": {
+              "context": false,
+              "action": false,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": false,
+              "close": false,
+              "duration": true
+            },
+            "complete": false
+          }
+        ],
         "complete": false
       },
       {

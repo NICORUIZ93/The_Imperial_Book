@@ -1453,3 +1453,23 @@ se configuraron autenticación, autorización por topic, persistencia ni relay a
 RabbitMQ, y el laboratorio no prueba un cliente Flutter/Socket.IO. Consultar
 `README.md` del laboratorio antes de ampliar el alcance. Próximo: M14 T6,
 validación real de archivos y notificaciones push.
+
+Spring Boot M14 T6, “Archivos y notificaciones push”, se rehízo en cuatro
+subtemas y añadió `examples/spring-boot-upload-push-rutaflow/`. Se reemplazó la
+prueba engañosa de diez bytes con JPEG por un POST multipart contra Spring MVC:
+ImageIO abre y decodifica PNG/JPEG, compara el MIME declarado, limita bytes y
+píxeles, almacena bajo UUID y escribe metadatos en H2. El evento se entrega por
+`@TransactionalEventListener(AFTER_COMMIT)` a un gateway de prueba. Seis pruebas
+pasaron: imagen válida y fila/push, texto disfrazado, firma PNG truncada, MIME
+discordante, tamaño excesivo y rollback sin fila/objeto/push. Al sustituir el
+listener por `@EventListener`, el test de rollback falló al encontrar el aviso;
+restaurado `AFTER_COMMIT`, la suite volvió a pasar. Esto no integra FCM/APNs ni
+un outbox durable, S3, antivirus, CDN o autorización; el README y la lección
+explican esos límites y remiten a M13 para entrega fiable. Las referencias
+primarias consultadas son Spring transaction-bound events, propiedades
+multipart de Spring Boot, Java ImageIO y OWASP File Upload.
+
+El siguiente paso de expansión es Spring Boot M15 T1, “Backpressure real en
+WebFlux con reactor-test”. Revisa si el ejemplo que cita el tema existe y corre
+tal como está escrito; conserva el contrato Contexto → Hazlo tú → Entiende →
+Cierra, amplía por subtemas observables y entrega cada tema en su propio commit.

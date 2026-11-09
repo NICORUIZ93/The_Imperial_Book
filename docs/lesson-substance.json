@@ -1690,7 +1690,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "663c662403da311842da2994802ea7485908bb768994c402beb059ad3ab8545d",
+    "fingerprint": "44a0b68e92e0600d37dc57f18bf50e7a91cef6657119cf253050eabc38d365d4",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10500,9 +10500,9 @@
       {
         "issues": [],
         "module": 14,
-        "tailWords": 191,
+        "tailWords": 0,
         "topic": "Tema 6: Archivos y notificaciones push",
-        "words": 1159
+        "words": 1087
       },
       {
         "issues": [],

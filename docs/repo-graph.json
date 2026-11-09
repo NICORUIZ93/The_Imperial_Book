@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 1456,
+      "lines": 1476,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 16657,
+      "lines": 16714,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13640,
+      "lines": 13642,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 545,
+      "lines": 549,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -6024,6 +6024,82 @@
     {
       "path": "examples/spring-boot-probes-rutaflow/src/test/java/academia/rutaflow/probes/ProbeEndpointsTest.java",
       "lines": 46,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-boot-stomp-rutaflow/README.md",
+      "lines": 35,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Spring Boot STOMP: posiciones RutaFlow",
+        "## Ejecutar",
+        "## Qu\u00e9 ense\u00f1a y qu\u00e9 no"
+      ]
+    },
+    {
+      "path": "examples/spring-boot-stomp-rutaflow/src/main/java/academia/rutaflow/stomp/PositionEvent.java",
+      "lines": 4,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-boot-stomp-rutaflow/src/main/java/academia/rutaflow/stomp/PositionPublisher.java",
+      "lines": 22,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-boot-stomp-rutaflow/src/main/java/academia/rutaflow/stomp/PositionSequenceTracker.java",
+      "lines": 27,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-boot-stomp-rutaflow/src/main/java/academia/rutaflow/stomp/ReadyAck.java",
+      "lines": 4,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-boot-stomp-rutaflow/src/main/java/academia/rutaflow/stomp/ReadyController.java",
+      "lines": 15,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-boot-stomp-rutaflow/src/main/java/academia/rutaflow/stomp/StompApplication.java",
+      "lines": 12,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-boot-stomp-rutaflow/src/main/java/academia/rutaflow/stomp/StompConfig.java",
+      "lines": 30,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-boot-stomp-rutaflow/src/test/java/academia/rutaflow/stomp/StompEndToEndTest.java",
+      "lines": 57,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -13368,7 +13444,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-14.md",
-      "lines": 595,
+      "lines": 575,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

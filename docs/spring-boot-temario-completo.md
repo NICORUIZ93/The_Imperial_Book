@@ -392,6 +392,10 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - pendiente Subtema 14.5.3: Evita procesar dos veces la misma secuencia · 8 min
   - pendiente Subtema 14.5.4: Diagnostica destinos y límites de producción · 10 min
 - [pendiente de migrar] Tema 6: Archivos y notificaciones push
+  - pendiente Subtema 14.6.1: Recibe el archivo con límites · 8 min
+  - pendiente Subtema 14.6.2: Comprueba el contenido de la imagen · 10 min
+  - pendiente Subtema 14.6.3: Notifica solo tras guardar · 10 min
+  - pendiente Subtema 14.6.4: Traza el archivo y define qué falta · 8 min
 
 ### Módulo 15: Spring Master: hexagonal, reactivo y microservicios
 
