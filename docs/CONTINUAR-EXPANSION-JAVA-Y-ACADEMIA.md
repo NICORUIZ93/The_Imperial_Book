@@ -1482,3 +1482,17 @@ lugar de tres de `4`. Ambas mutaciones se restauraron y la suite volvió a pasar
 El test usa `Flux.range` local: no demuestra memoria, rendimiento ni capacidad
 de carga de una app WebFlux real. Siguiente: M15 T2, contenedores Testcontainers
 reutilizados entre clases.
+
+Spring Boot M15 T2, “Contenedores Testcontainers reutilizados entre clases”, se
+convirtió en cuatro subtemas y creó `examples/testcontainers-singleton-rutaflow/`.
+El laboratorio usa Testcontainers 2.0.5/PostgreSQL y dos clases que heredan el
+singleton manual; un `@AfterAll` heredado compara sus IDs sin depender del orden.
+Con Podman, la suite conjunta pasó (2 pruebas) y ambas clases observaron el ID
+`dc351572263f8e2aa76086578fa4534584199e31481b937f1729a80604945d06`. Cada clase
+ejecutada por separado arrancó otro contenedor (IDs `d26fb2...` y `c9ac5b...`),
+demostrando que compartir solo ocurre en la misma JVM. Al quitar `POSTGRES.start`,
+ambas pruebas fallaron por puerto sin contenedor iniciado; al guardar un ID falso
+en la segunda, la igualdad detectó la diferencia. Restauradas las mutaciones, la
+suite volvió a pasar. README y lección distinguen singleton entre clases de
+`withReuse(true)` entre ejecuciones, prohíben forks paralelos y requieren aislar
+datos. Siguiente: M15 T3, arquitectura hexagonal verificada con ArchUnit.

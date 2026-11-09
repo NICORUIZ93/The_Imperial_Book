@@ -407,6 +407,10 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - pendiente Subtema 15.1.3: Mira la demanda sin límite · 8 min
   - pendiente Subtema 15.1.4: Observa cómo `limitRate` cambia las tandas · 10 min
 - [pendiente de migrar] Tema 2: Contenedores Testcontainers reutilizados entre clases
+  - pendiente Subtema 15.2.1: Arranca el singleton una sola vez · 8 min
+  - pendiente Subtema 15.2.2: Comprueba la base desde cada clase · 8 min
+  - pendiente Subtema 15.2.3: Aísla los datos compartidos · 8 min
+  - pendiente Subtema 15.2.4: Decide si conviene compartir · 8 min
 - [pendiente de migrar] Tema 3: Arquitectura hexagonal verificada con ArchUnit
 - [pendiente de migrar] Tema 4: Bulkhead y RateLimiter de Resilience4j
 - [pendiente de migrar] Tema 5: Saga con compensación real

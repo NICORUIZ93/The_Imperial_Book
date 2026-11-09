@@ -1690,7 +1690,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "2e75a215ace5e2dd80fbcda8239c51801539cc270c16eefeb35c50557e0109f9",
+    "fingerprint": "f10201e4a6880b590698ac68b06fd36e785ffe7d808d0abbf1bb55b546815a00",
     "issues": {
       "andamiaje-generico": 124,
       "bloque-repetido": 163,
@@ -10514,9 +10514,9 @@
       {
         "issues": [],
         "module": 15,
-        "tailWords": 167,
+        "tailWords": 0,
         "topic": "Tema 2: Contenedores Testcontainers reutilizados entre clases",
-        "words": 966
+        "words": 892
       },
       {
         "issues": [],

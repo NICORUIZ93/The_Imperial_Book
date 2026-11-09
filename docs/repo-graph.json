@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 1485,
+      "lines": 1499,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 16771,
+      "lines": 16828,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -600,7 +600,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3941,
+      "lines": 3948,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13644,
+      "lines": 13646,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 553,
+      "lines": 557,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -6915,6 +6915,14 @@
     {
       "path": "examples/spring-reactor-rutaflow/src/main/java/academia/rutaflow/reactor/EntregaFlows.java",
       "lines": 24,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-reactor-rutaflow/src/test/java/academia/rutaflow/reactor/BackpressureDemandTest.java",
+      "lines": 64,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -13588,7 +13596,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-15.md",
-      "lines": 1139,
+      "lines": 1106,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -13601,10 +13609,10 @@
         "#### Subtema 15.1.3: Mira la demanda sin l\u00edmite \u00b7 8 min",
         "#### Subtema 15.1.4: Observa c\u00f3mo `limitRate` cambia las tandas \u00b7 10 min",
         "### Tema 2: Contenedores Testcontainers reutilizados entre clases",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda con analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero"
+        "#### Subtema 15.2.1: Arranca el singleton una sola vez \u00b7 8 min",
+        "#### Subtema 15.2.2: Comprueba la base desde cada clase \u00b7 8 min",
+        "#### Subtema 15.2.3: A\u00edsla los datos compartidos \u00b7 8 min",
+        "#### Subtema 15.2.4: Decide si conviene compartir \u00b7 8 min"
       ]
     },
     {

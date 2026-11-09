@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 34,
-      "prerequisites": 56,
-      "context": 34,
-      "theoryAnalogy": 34,
-      "guidedDemo": 34,
+      "objective": 33,
+      "prerequisites": 55,
+      "context": 33,
+      "theoryAnalogy": 33,
+      "guidedDemo": 33,
       "codeExplanation": 111,
       "execution": 100,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 34,
-      "independentPractice": 34,
-      "closure": 34,
-      "commonErrors": 34,
+      "guidedPractice": 33,
+      "independentPractice": 33,
+      "closure": 33,
+      "commonErrors": 33,
       "resources": 61,
-      "standaloneExample": 36,
-      "learningEvidence": 68,
-      "complete": 34
+      "standaloneExample": 35,
+      "learningEvidence": 67,
+      "complete": 33
     }
   },
   "topics": {
@@ -29147,26 +29147,26 @@
         "module": 15,
         "topic": "Tema 2: Contenedores Testcontainers reutilizados entre clases",
         "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "objective": false,
+          "prerequisites": false,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
           "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 5,
+          "complete": false
         }
       },
       {

@@ -110,131 +110,98 @@ Ejecuta `./mvnw -q -Dtest=BackpressureDemandTest test`.
 
 ### Tema 2: Contenedores Testcontainers reutilizados entre clases
 
-#### Paso 1 · Objetivo y preparación
+**Objetivo observable:** hacer que dos clases JUnit consulten el mismo PostgreSQL Testcontainers dentro de una ejecución de pruebas y comparar el ID real observado por cada una.
 
-Al finalizar podrás aplicar el patrón oficial de "singleton container" de Testcontainers para que dos clases de test distintas reutilicen el MISMO contenedor real, confirmado comparando el `containerId` real entre ambas.
+**¿Por qué es importante?** Crear contenedores cuesta tiempo. Un singleton puede evitar arranques repetidos cuando varias clases necesitan la misma base; también significa que esas pruebas comparten estado y ciclo de vida.
 
-**Conocimiento previo:** Módulo 6 de este track (Testcontainers básico).
+**Antes de empezar:** conocer Testcontainers básico (Módulo 6). El laboratorio `examples/testcontainers-singleton-rutaflow/` usa Testcontainers 2.0.5, dos clases JUnit y Postgres. Solo ejecuta `SELECT 1`, no comparte filas modificadas.
 
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** Sin reutilización, cada clase de test con `@Testcontainers` arranca y detiene su propio contenedor, y una suite con decenas de clases puede pasar minutos solo levantando y bajando bases de datos idénticas repetidamente, ralentizando el ciclo de feedback de CI.
-
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** singleton container, `getContainerId()`, contenedor compartido entre clases.
-
-El patrón oficial de "singleton container" de Testcontainers arranca un único contenedor estático (sin `@Container`/`@Testcontainers` gestionándolo automáticamente por clase) y lo comparte entre todas las clases de test que lo necesiten dentro de la misma ejecución de la suite, en vez de un contenedor nuevo por clase.
-
-**Analogía:** es como compartir una sala de reuniones ya preparada entre varias reuniones consecutivas del mismo día, en vez de montar y desmontar la sala completa para cada reunión individual.
-
-**Diagrama:**
-
-```
-┌── Sin reutilización ─────────────┐  N clases = N contenedores arrancados
-└──────────────────────────┘
-┌── Con singleton container ───────┐  N clases = 1 contenedor compartido
-└──────────────────────────┘
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Parte de una carpeta vacía y crea `src/test/java/io/academia/master/singleton/ContenedorCompartido.java`:
+**Comando:** desde esa carpeta, Docker compatible ejecuta `./mvnw -q test`. En macOS con Podman, sigue los comandos exactos del README para apuntar al socket local y desactivar Ryuk rootless.
 
 ```bash
-mkdir demo-testcontainers-singleton
-cd demo-testcontainers-singleton
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=data-jpa -d javaVersion=25 -o app.zip
-unzip app.zip
-mkdir -p src/test/java/io/academia/master/singleton
+cd examples/testcontainers-singleton-rutaflow
+./mvnw -q test
 ```
 
+#### Subtema 15.2.1: Arranca el singleton una sola vez · 8 min
+
+**Contexto.** `@Container` estático comparte el contenedor entre métodos de una clase. El patrón singleton manual permite compartirlo entre varias clases que heredan una base común.
+
+**Hazlo tú.** Abre `src/test/java/academia/rutaflow/containers/SharedPostgres.java`. Encuentra el campo estático y el bloque de arranque:
+
 ```java
-// src/test/java/io/academia/master/singleton/ContenedorCompartido.java
-package io.academia.master.singleton;
+static final PostgreSQLContainer POSTGRES = new PostgreSQLContainer("postgres:16-alpine");
 
-import org.testcontainers.containers.PostgreSQLContainer;
-
-public abstract class ContenedorCompartido {
-    // sin @Container: arranca UNA sola vez, compartido por TODAS las subclases del proceso de test
-    static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:16-alpine");
-
-    static {
-        POSTGRES.start(); // arranque explícito único; Testcontainers reutiliza esta instancia hasta que la JVM termine
-    }
+static {
+    POSTGRES.start();
 }
 ```
 
+**Resultado esperado.** El contenedor comienza al cargar la clase base y las dos clases lectoras heredan la misma referencia.
+
+**Fallo deliberado.** Quita temporalmente `POSTGRES.start()` y ejecuta la suite. Las dos clases fallan con `Mapped port can only be obtained after the container is started`. Restaura el bloque y vuelve a probar.
+
+**Entiende.** Una sola cocina prepara comida para dos mesas; ambas dependen de que esa cocina exista. El cierre ocurre cuando termina la JVM de tests.
+
+**Cierra.** Señala por qué esta base no lleva las anotaciones `@Testcontainers` y `@Container`.
+
+#### Subtema 15.2.2: Comprueba la base desde cada clase · 8 min
+
+**Contexto.** Que un ID exista no confirma que PostgreSQL acepte consultas. Cada clase ejecuta una consulta pequeña y guarda el ID que observó.
+
+**Hazlo tú.** Abre `FirstRepositoryTest.java` y `SecondRepositoryTest.java`; ambas llaman al método heredado `queryAndRecordContainerId()`.
+
 ```java
-// src/test/java/io/academia/master/singleton/PrimeraClaseTest.java
-package io.academia.master.singleton;
-
-import org.junit.jupiter.api.Test;
-
-public class PrimeraClaseTest extends ContenedorCompartido {
-    static String containerIdVistoAqui;
-
-    @Test
-    void registraElContainerIdRealVistoDesdeEstaClase() {
-        containerIdVistoAqui = POSTGRES.getContainerId();
-    }
+try (Connection connection = DriverManager.getConnection(
+        POSTGRES.getJdbcUrl(), POSTGRES.getUsername(), POSTGRES.getPassword());
+     Statement statement = connection.createStatement();
+     ResultSet result = statement.executeQuery("SELECT 1")) {
+    assertThat(result.next()).isTrue();
+    assertThat(result.getInt(1)).isEqualTo(1);
 }
 ```
 
-```java
-// src/test/java/io/academia/master/singleton/SegundaClaseTest.java
-package io.academia.master.singleton;
+Corre `./mvnw -q test` y compara las dos líneas `usa containerId=`.
 
-import org.junit.jupiter.api.Test;
+**Resultado esperado.** Ambas consultas pasan y muestran el mismo ID de contenedor. Al terminar la segunda clase, el `@AfterAll` heredado verifica la igualdad sin depender del orden de las clases.
 
-import static org.assertj.core.api.Assertions.assertThat;
+**Fallo deliberado.** Cambia una de las consultas de `SELECT 1` a `SELECT columna_que_no_existe`. Solo la clase que ejecuta esa consulta falla. Restaura `SELECT 1` y corre la suite completa.
 
-public class SegundaClaseTest extends ContenedorCompartido {
+**Entiende.** El ID igual en ambos logs es la evidencia de que las clases accedieron al mismo contenedor en esa JVM. No mide cuánto tiempo se ahorró.
 
-    @Test
-    void elContainerIdEsElMismoQueElDeLaPrimeraClase() {
-        String idAqui = POSTGRES.getContainerId();
-        assertThat(idAqui).isEqualTo(PrimeraClaseTest.containerIdVistoAqui); // MISMO contenedor real, no uno nuevo
-    }
-}
-```
+**Cierra.** Guarda el reporte JUnit y los IDs iguales de la ejecución actual.
 
-```bash
-./mvnw test -Dtest=PrimeraClaseTest,SegundaClaseTest
-```
+#### Subtema 15.2.3: Aísla los datos compartidos · 8 min
 
-**Resultado esperado:** `BUILD SUCCESS` con ambos tests en verde, ejecutados en el orden correcto: `SegundaClaseTest` confirma que `POSTGRES.getContainerId()` devuelve el MISMO ID de contenedor Docker real que `PrimeraClaseTest` observó — evidencia concreta (un ID de contenedor real, no una suposición) de que ambas clases comparten la misma instancia en ejecución, en vez de arrancar contenedores separados.
+**Contexto.** Las clases comparten la base junto con el contenedor. Una prueba que inserta filas puede alterar lo que observa la siguiente.
 
-**Fallo deliberado:** quita el bloque `static { POSTGRES.start(); }` (dejando que cada clase dependa de un arranque implícito que no ocurre de forma compartida) y ejecuta de nuevo. Los tests fallan con errores de conexión reales (el contenedor nunca arrancó) — diagnostica confirmando que el patrón singleton container depende explícitamente de un arranque estático único y deliberado, no de la gestión automática por clase que `@Testcontainers`/`@Container` normalmente proveen. Restaura el bloque `static` antes de continuar.
+**Hazlo tú.** Lee `junit-platform.properties` y confirma que el paralelismo de Jupiter está apagado. Inspecciona las dos pruebas: usan `SELECT 1` y no cambian filas.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**Resultado esperado.** Las dos clases pasan en secuencia y no necesitan limpiar datos.
 
-1. Agrega una tercera clase de test que extienda `ContenedorCompartido` y confirma que también comparte el mismo `containerId`.
-2. Documenta, en un comentario, por qué este patrón requiere que las clases NO usen `@Testcontainers`/`@Container` (que gestionarían el ciclo de vida automáticamente por clase, entrando en conflicto con el arranque manual compartido).
-3. Mide con `System.currentTimeMillis()` el tiempo total de ejecutar las dos clases con el contenedor compartido, comparado con una versión donde cada clase usa su propio `@Container` independiente, y documenta la diferencia real observada.
-4. Escribe de memoria (sin mirar) una clase base `ContenedorCompartido` con arranque estático único, y dos clases de test que confirmen el mismo `containerId`. Compara después contra el patrón del Paso 4.
+**Fallo deliberado.** En `SharedPostgres.queryAndRecordContainerId`, guarda temporalmente el texto `id-falso` en lugar del ID real para `SecondRepositoryTest`. La consulta todavía pasa, pero la comprobación `@AfterAll` falla al encontrar IDs distintos. Restaura el ID real y confirma la suite verde.
 
-**Pista:** `getContainerId()` devuelve el ID real y único que Docker asignó al contenedor en ejecución — es la forma más directa de confirmar con evidencia, no solo con inferencia por velocidad, si dos referencias apuntan al mismo contenedor físico o a instancias distintas.
+**Entiende.** **Límite:** singleton no significa base limpia por clase. Si cambias datos, limpia cada prueba con claves únicas, transacciones realmente aisladas o esquemas por clase.
 
-#### Paso 6 · Práctica independiente
+**Cierra.** Escribe qué limpieza necesitaría tu caso de prueba si insertara una entrega.
 
-**Completa el código:** rellena el espacio con el método real de Testcontainers que devuelve el identificador único del contenedor en ejecución:
+#### Subtema 15.2.4: Decide si conviene compartir · 8 min
 
-```java
-String id = POSTGRES.____();
-```
+**Contexto.** El singleton comparte el ciclo de vida dentro de una JVM; el modo `withReuse(true)` trata de conservar contenedores entre ejecuciones locales y tiene una configuración diferente.
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una clase base con un contenedor compartido arrancado estáticamente, y dos clases de test que confirmen el mismo `containerId`. Compara después contra el patrón del Paso 4.
+**Hazlo tú.** Lee el README del laboratorio y la guía oficial de ciclo manual. Busca las diferencias entre `@Container` estático por clase, el singleton manual entre clases y la reutilización persistente local.
 
-#### Paso 7 · Cierre y evidencia
+**Resultado esperado.** Puedes decir qué alcance comparte cada patrón y cuándo debes limpiar filas o evitar forks paralelos.
 
-Ya aplicas el patrón oficial de contenedor compartido de Testcontainers, confirmado con evidencia real del `containerId`, para acelerar una suite de tests con múltiples clases. El siguiente tema congela reglas arquitectónicas de un diseño hexagonal con una herramienta que las verifica automáticamente. **Evidencia:** entrega el resultado de ambos tests en verde, y el error de conexión real que produce el fallo deliberado sin el arranque estático. Fuentes oficiales: [Testcontainers — Manual Container Lifecycle Control](https://java.testcontainers.org/test_framework_integration/manual_lifecycle_control/).
+**Fallo deliberado.** Ejecuta cada clase por separado con `./mvnw -q -Dtest=FirstRepositoryTest test` y luego `./mvnw -q -Dtest=SecondRepositoryTest test`. Los IDs cambian porque son dos ejecuciones/JVM distintas; el singleton solo comparte dentro de la ejecución conjunta. Después vuelve a correr `./mvnw -q test` para comprobar un ID compartido.
 
-**Errores comunes:** combinar el patrón singleton container con `@Testcontainers`/`@Container` en la misma clase, causando conflictos de ciclo de vida; olvidar el arranque estático explícito, dejando el contenedor sin iniciar.
+**Entiende.** Usa singleton si has medido que el arranque repetido domina el tiempo de pruebas y puedes aislar estado. Para pocas clases, conserva el ciclo de vida administrado por JUnit.
 
-**Cuándo no usarlo:** para una suite pequeña de una o dos clases de test, la complejidad adicional de gestionar el ciclo de vida manualmente no compensa el ahorro de tiempo, que sería mínimo.
+**Cierra.** Evidencia: ambas consultas verdes, dos IDs reales iguales y una razón concreta para usar o no el patrón en el proyecto integrador.
 
-Reutilizar contenedores Testcontainers entre clases es la optimización que mantendría rápida la suite de pruebas del proyecto integrador de este track (microservicio productivo, Módulo 12).
+**Transferencia al proyecto integrador:** úsalo solo si varias suites comparten el mismo servicio externo y cada prueba conserva aislamiento de datos. La prueba actual no demuestra ahorro de tiempo; mide tu pipeline antes de decidir.
+
+**Fuentes oficiales:** [Testcontainers: ciclo manual y singleton](https://java.testcontainers.org/test_framework_integration/manual_lifecycle_control/), [integración JUnit 5](https://java.testcontainers.org/test_framework_integration/junit_5/) y [configuración Podman](https://java.testcontainers.org/supported_docker_environment/).
 
 ### Tema 3: Arquitectura hexagonal verificada con ArchUnit
 
