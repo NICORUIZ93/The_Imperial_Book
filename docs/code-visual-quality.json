@@ -99,7 +99,7 @@
     "spring-boot": {
       "topics": 111,
       "code": 106,
-      "commentedCode": 40,
+      "commentedCode": 41,
       "mermaid": 37,
       "archifyVisual": 1,
       "asciiVisual": 0,
@@ -2771,13 +2771,6 @@
       "track": "spring-boot",
       "module": 2,
       "topic": "Tema 1: Por qué DTOs en vez de entidades directamente",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "spring-boot",
-      "module": 20,
-      "topic": "Tema 2: Eventos locales, eventos transaccionales y mensajería",
       "missingCode": false,
       "missingComments": true
     },

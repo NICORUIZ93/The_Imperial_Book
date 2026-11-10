@@ -109,73 +109,113 @@ Sigue la llamada desde scheduler hasta servicio. Ejecuta desde `examples/spring-
 
 ### Tema 2: Eventos locales, eventos transaccionales y mensajería
 
-#### Paso 1 · Objetivo y preparación
+**Meta:** distinguir un aviso dentro del proceso, una acción posterior al commit y un mensaje que debe sobrevivir al reinicio.
 
-Al finalizar podrás elegir entre un evento Spring en memoria, una publicación después del commit y mensajería duradera mediante Kafka/outbox. Necesitas el servicio transaccional de los módulos anteriores.
-**Conocimiento previo:** haber seguido el tema anterior de este módulo y tener instalado el entorno del stack.
-#### Paso 2 · Contexto y caso real
+**¿Por qué es importante?** Notificar antes de guardar puede anunciar un envío que no existe; confiar solo en el aviso local puede perderlo si el proceso se cierra.
 
-Al crear un envío, una auditoría local debe reaccionar al cambio. **¿Por qué es importante?** Separar responsabilidades ayuda a mantener el servicio de negocio legible, pero un evento solo en memoria puede perderse si el proceso cae.
+**Evidencia final:** para el proyecto integrador RutaFlow, explica qué se guarda junto al envío, qué puede publicarse de nuevo y cómo el consumidor evita repetir el efecto.
 
-#### Paso 3 · Teoría y modelo mental
+#### Subtema 20.5 · Sigue el evento dentro de la aplicación · 8 min
 
-`ApplicationEventPublisher` desacopla componentes dentro de una misma aplicación y proceso; por sí solo no persiste ni distribuye el evento. `@TransactionalEventListener(phase = AFTER_COMMIT)` espera a que la transacción local termine antes de notificar. Aun así, el proceso puede caer entre el commit y la publicación.
+**Contexto:** al aceptar una imagen, RutaFlow debe guardar sus metadatos y pedir una notificación sin acoplar el servicio al proveedor push.
 
-Kafka u otro broker ofrece entrega entre procesos, con garantías que dependen de configuración y límites transaccionales. El patrón outbox escribe el evento en la misma transacción que el dato de negocio; un dispatcher lo publica después. El modelo mental: el evento local es una nota entre equipos de la misma oficina; el outbox es un registro en el libro de despacho que sobrevive al cierre.
-**Analogía:** un evento local es gritar algo en la misma sala y que lo oiga quien está presente; un evento transaccional es esperar a que se firme el contrato antes de anunciar la noticia (si la transacción se cae, el anuncio nunca sale); y la mensajería es dejar el recado en un buzón para que otra oficina lo procese cuando pueda, aunque ahora esté cerrada.
-#### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/main/java/academia/envios/EnvioCreado.java` dentro.
-```bash
-curl -fsSL https://start.spring.io/starter.zip -o ejemplo.zip && unzip -o ejemplo.zip -d ejemplo
-```
-
-
-En `src/main/java/academia/envios/EnvioCreado.java` declara un evento inmutable; en el servicio transaccional:
+**Hazlo tú:** abre `examples/spring-boot-upload-push-rutaflow/src/main/java/academia/rutaflow/upload/UploadService.java` y sigue `publishEvent` hasta `PushAfterCommitListener.java`:
 
 ```java
-publisher.publishEvent(new EnvioCreado(envioId));
+@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+public void afterCommit(UploadAccepted event) { gateway.send(event); }
 ```
 
-**Ejecuta el ejemplo** (genera el proyecto con Spring Initializr, pega el código y corre las pruebas):
+Desde `examples/spring-boot-upload-push-rutaflow`, ejecuta:
 
 ```bash
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
-./mvnw test
+./mvnw -q -Dtest=UploadPushIntegrationTest#imagenValidaSeGuardaYNotificaDespuesDelCommit test
 ```
-Equivalencias Maven/Gradle en el Módulo 1.
 
+**Resultado esperado:** la prueba confirma que se guardan archivo y metadatos, y se envía una notificación.
 
-El listener en `src/main/java/academia/envios/AuditoriaEnvio.java`:
+**Fallo deliberado:** cambia temporalmente `@TransactionalEventListener` por `@EventListener` y ejecuta `UploadPushIntegrationTest#rollbackNoDejaArchivoMetadataNiPush`. **Diagnóstico:** el test observa la notificación antes de que la transacción exterior haga rollback. Restablece la anotación.
+
+**Entiende:** `ApplicationEventPublisher` conecta componentes del mismo proceso; el evento no queda guardado ni llega por sí mismo a otra aplicación.
+
+**Cierra:** dibuja las tres llamadas desde el servicio hasta el gateway y señala en cuál línea sale el proceso a un proveedor externo.
+
+#### Subtema 20.6 · Comprueba qué significa “después del commit” · 8 min
+
+**Contexto:** el listener no debe anunciar una operación que la base de datos terminó revirtiendo.
+
+**Hazlo tú:** abre `examples/spring-boot-upload-push-rutaflow/src/test/java/academia/rutaflow/upload/UploadPushIntegrationTest.java` y ejecuta:
+
+```bash
+./mvnw -q -Dtest=UploadPushIntegrationTest#rollbackNoDejaArchivoMetadataNiPush test
+```
+
+**Resultado esperado:** no queda fila, archivo ni push. La anotación espera al commit, pero la llamada externa todavía vive en el mismo proceso.
+
+**Fallo deliberado:** quita `@TransactionalEventListener` o cambia la fase por `BEFORE_COMMIT`. **Diagnóstico:** el listener puede ejecutarse antes del rollback; vuelve a `AFTER_COMMIT` y repite la prueba.
+
+**Entiende:** `AFTER_COMMIT` evita publicar antes de confirmar SQL; queda una ventana entre el commit y la ejecución del listener. Si el proceso cae allí, esta notificación local puede perderse. La opción `fallbackExecution` no es necesaria aquí; por defecto el listener necesita una transacción activa.
+
+**Cierra:** escribe una oración que describa qué protege la prueba y qué no puede proteger.
+
+#### Subtema 20.7 · Guarda el evento junto con el envío · 10 min
+
+**Contexto:** si el mensaje debe sobrevivir al reinicio, guardar solo el envío y luego llamar Kafka deja una ventana en la que el envío existe pero el evento se pierde.
+
+**Hazlo tú:** abre `examples/spring-kafka-rutaflow/src/main/java/academia/rutaflow/outbox/CrearEnvioService.java` y comprueba que ambos `INSERT` están dentro del mismo método `@Transactional`. Ejecuta desde `examples/spring-kafka-rutaflow`:
 
 ```java
-@Component
-public class AuditoriaEnvio {
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void alCrear(EnvioCreado evento) {
-        registrarAuditoria(evento.envioId());
-    }
+@Transactional
+public EnvioCreado crear(String referencia) {
+    // ...
+    jdbc.update("INSERT INTO envio (envio_id, referencia) VALUES (?, ?)", envioId, referencia);
+    jdbc.update("""
+            INSERT INTO outbox_event
+                (event_id, aggregate_id, event_type, payload, created_at)
+            VALUES (?, ?, ?, ?, ?)
+            """, evento.eventId(), envioId, "EnvioCreado", payload, evento.occurredAt());
+    return evento;
 }
 ```
 
-Escribe un test `@SpringBootTest` que publique el evento dentro de una transacción confirmada y otro que fuerce rollback. Ejecuta `./mvnw test -Dtest=AuditoriaEnvioTest`.
+```bash
+./mvnw -q -Dtest=EnvioEventPublisherTest#guardaEnvioYOutboxEnLaMismaTransaccion test
+```
 
-**Resultado esperado:** el listener actúa después del commit y no actúa cuando la transacción revierte. **Fallo deliberado:** reemplaza la anotación por `@EventListener`, fuerza rollback y observa la auditoría que quedó aunque el envío no se persistió.
+**Resultado esperado:** el test fuerza el fallo del `INSERT` outbox y verifica que también se revierte el envío.
 
-#### Paso 5 · Práctica guiada
+**Fallo deliberado:** elimina temporalmente el `INSERT INTO outbox_event` y repite el test. **Diagnóstico:** ya no ocurre la violación SQL esperada y la prueba falla: el registro de negocio quedó sin su evento. Restaura el `INSERT`.
 
-Agrega una tabla outbox con `event_id` único, tipo, payload y `published_at`; escribe el evento dentro de la transacción de negocio. Implementa un dispatcher que publique de forma repetible e idempotente y marque el resultado solo al confirmar la publicación.
-**Pista:** ejecuta el dispatcher dos veces sobre la misma fila del outbox sin marcar `published_at` entre medio (simula un reintento tras una caída) y observa el efecto aguas abajo; si se duplica, el dispatcher no es idempotente — necesitas marcar la fila como publicada dentro de la misma operación que confirma el envío al broker, o deduplicar por `event_id` en el consumidor.
-#### Paso 6 · Práctica independiente
+**Entiende:** la base de datos confirma los dos registros juntos. `OutboxDispatcher.java` los busca después, espera el ACK de Kafka y recién entonces marca `published_at`; el proceso puede caer tras el ACK y antes de marcar la fila.
 
-Para el proyecto integrador de RutaFlow, decide cuáles eventos son locales (actualizar una métrica dentro del proceso) y cuáles deben sobrevivir un reinicio (notificar a Kafka, enviar correo). Implementa la persistencia del evento en el outbox dentro de la transacción que crea el envío, y luego sigue el laboratorio completo de Kafka del módulo 21 para publicar y consumirlo. Dibuja el límite de transacción y prueba la caída entre commit y dispatcher.
+**Cierra:** compara `published_at IS NULL` antes y después de ejecutar `dispatcherPublicaYMarcaSoloDespuesDelAck`.
 
-#### Paso 7 · Cierre y evidencia
+#### Subtema 20.8 · Repite la entrega sin repetir el efecto · 10 min
 
-Entrega pruebas de commit/rollback, tabla outbox y duplicado controlado. **Cuándo no usarlo:** no uses eventos locales para integración entre microservicios ni asumas que `AFTER_COMMIT` es durable. **Evidencia:** test que muestra los límites de entrega y test de reintento sin efecto duplicado.
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** asumir que `@TransactionalEventListener(phase = AFTER_COMMIT)` ya es "durable" y no necesita outbox, cuando el proceso puede caer entre el commit y la ejecución del listener, y publicar al dispatcher antes de marcar la fila del outbox como publicada, de forma que un reinicio a mitad de camino reenvía el mismo evento sin control de duplicados.
-**Fuente oficial:** [documentación de Spring Boot](https://docs.spring.io/spring-boot/index.html).
-**Evidencia de aprendizaje:** entrega el resultado del test que confirma que la auditoría solo se ejecuta tras el commit (y no tras un rollback), el fallo observado al reemplazar `@TransactionalEventListener` por `@EventListener` simple, y el resultado de ejecutar el dispatcher del outbox dos veces sobre el mismo evento sin duplicar el efecto.
+**Contexto:** si el ACK de Kafka llegó pero falló la marca SQL, el dispatcher volverá a enviar el evento. El consumidor debe tolerar esa entrega repetida.
+
+**Hazlo tú:** abre `examples/spring-kafka-rutaflow/src/main/java/academia/rutaflow/inbox/InboxProcessor.java` y el test `EnvioEventPublisherTest.java`. Ejecuta:
+
+```java
+if (existente != null && existente > 0) return false;
+jdbc.update("INSERT INTO evento_procesado (event_id, processed_at) VALUES (?, ?)",
+        evento.eventId(), clock.instant());
+```
+
+```bash
+./mvnw -q -Dtest=EnvioEventPublisherTest#inboxHaceIdempotenteElEfectoDeNegocio test
+./mvnw -q -Dtest=EnvioEventPublisherTest#replayTrasFallarLaMarcaDespuesDelAckConservaUnaSolaProyeccion test
+```
+
+**Resultado esperado:** el segundo manejo del mismo `event_id` no repite el efecto; el replay puede observar dos entregas y una sola proyección.
+
+**Fallo deliberado:** quita la comprobación/registro de `event_id` en `InboxProcessor`. **Diagnóstico:** la prueba de inbox deja de poder ignorar el duplicado (o choca con la restricción única); restaura la deduplicación.
+
+**Entiende:** outbox + Kafka permite reintentos con entrega al menos una vez. La tabla inbox hace idempotente el efecto de negocio; no convierte el dispatcher en exactly-once. **Límite:** el laboratorio usa H2 y Kafka embebido, no reclama filas con lease y no debe correr con varios dispatchers.
+
+**Cierra:** entrega el resultado de los dos tests y marca en un diagrama el commit SQL, ACK de Kafka, marca `published_at` y deduplicación inbox.
+
+**Fuentes primarias:** [Spring Framework: eventos ligados a transacciones](https://docs.spring.io/spring-framework/reference/data-access/transaction/event.html); [Spring for Apache Kafka: transacciones](https://docs.spring.io/spring-kafka/reference/kafka/transactions.html).
 ### Tema 3: Correo con Spring Mail y entrega recuperable
 
 #### Paso 1 · Objetivo y preparación

@@ -1690,9 +1690,9 @@
     }
   ],
   "summary": {
-    "fingerprint": "7f98ee3e11014d2e71a7edac4e37d083abe4e315bee3e93446004848b04a41b0",
+    "fingerprint": "299070e89d1aa516d1607cb7a8500958cf9f0ff3dd57fe55b8ed50e199abb3be",
     "issues": {
-      "andamiaje-generico": 116,
+      "andamiaje-generico": 115,
       "bloque-repetido": 163,
       "cola-tras-cierre": 331,
       "parrafo-repetido": 5,
@@ -1706,7 +1706,7 @@
     "modules": 256,
     "modulesWithLegacySections": 178,
     "topics": 1185,
-    "topicsWithIssues": 401
+    "topicsWithIssues": 400
   },
   "topics": {
     "android": [
@@ -10666,13 +10666,11 @@
         "words": 760
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 20,
-        "tailWords": 182,
+        "tailWords": 0,
         "topic": "Tema 2: Eventos locales, eventos transaccionales y mensajería",
-        "words": 865
+        "words": 883
       },
       {
         "issues": [

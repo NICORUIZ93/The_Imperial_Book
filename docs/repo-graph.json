@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 1721,
+      "lines": 1764,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 17683,
+      "lines": 17740,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -314,7 +314,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1083,
+      "lines": 1082,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -600,7 +600,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3941,
+      "lines": 3934,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13666,
+      "lines": 13668,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -813,7 +813,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 11055,
+      "lines": 11053,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 617,
+      "lines": 621,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -7421,6 +7421,56 @@
     {
       "path": "examples/spring-saga-rutaflow/src/test/java/academia/rutaflow/saga/OrderSagaTest.java",
       "lines": 58,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-scheduling-rutaflow/README.md",
+      "lines": 19,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Scheduling \u00b7 revisi\u00f3n de pedidos RutaFlow"
+      ]
+    },
+    {
+      "path": "examples/spring-scheduling-rutaflow/src/main/java/academia/rutaflow/scheduling/PedidosScheduler.java",
+      "lines": 20,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-scheduling-rutaflow/src/main/java/academia/rutaflow/scheduling/RevisionPedidos.java",
+      "lines": 18,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-scheduling-rutaflow/src/main/java/academia/rutaflow/scheduling/SchedulingApplication.java",
+      "lines": 14,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-scheduling-rutaflow/src/main/resources/application.yml",
+      "lines": 5,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-scheduling-rutaflow/src/test/java/academia/rutaflow/scheduling/PedidosSchedulerTest.java",
+      "lines": 28,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -14198,7 +14248,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-20.md",
-      "lines": 702,
+      "lines": 742,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14212,9 +14262,9 @@
         "#### Subtema 20.3 \u00b7 Comprueba la tarea sin dormir en el test \u00b7 8 min",
         "#### Subtema 20.4 \u00b7 Evita duplicados al desplegar varias r\u00e9plicas \u00b7 10 min",
         "### Tema 2: Eventos locales, eventos transaccionales y mensajer\u00eda",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda y modelo mental"
+        "#### Subtema 20.5 \u00b7 Sigue el evento dentro de la aplicaci\u00f3n \u00b7 8 min",
+        "#### Subtema 20.6 \u00b7 Comprueba qu\u00e9 significa \u201cdespu\u00e9s del commit\u201d \u00b7 8 min",
+        "#### Subtema 20.7 \u00b7 Guarda el evento junto con el env\u00edo \u00b7 10 min"
       ]
     },
     {

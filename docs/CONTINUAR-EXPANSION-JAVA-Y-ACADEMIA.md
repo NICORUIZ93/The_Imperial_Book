@@ -1735,3 +1735,29 @@ regeneraron índices y reportes; `./scripts/validate.sh`, el validador RutaFlow 
 perfil practicable. Fuentes primarias contrastadas: Spring Framework Scheduling
 y Spring Boot Task Execution. Siguiente: M20 T2, eventos locales,
 `@TransactionalEventListener`, mensajería y outbox.
+
+Spring Boot M20 T2, “Eventos locales, eventos transaccionales y mensajería”, se
+reescribió en cuatro subtemas 20.5–20.8 conectados a dos laboratorios existentes.
+El primero sigue el evento Spring del servicio de carga hasta el gateway y prueba
+commit/rollback con H2. El segundo verifica outbox y envío en una sola transacción;
+el tercero demuestra ACK de Kafka, replay tras fallar la marca SQL e inbox con
+deduplicación. La lección corrige la afirmación previa de que el dispatcher es
+idempotente: el transporte puede repetir; la inbox evita repetir el efecto de
+negocio. También declara la ventana de pérdida de `AFTER_COMMIT`, el límite de
+`fallbackExecution`, entrega al menos una vez y las limitaciones del dispatcher
+didáctico (sin lease ni varias instancias).
+
+Verificación limpia: `spring-boot-upload-push-rutaflow` pasó sus 6 pruebas;
+`spring-kafka-rutaflow` pasó sus 10 pruebas con Kafka embebido y H2. Tres fallos
+deliberados se comprobaron y restauraron: cambiar a `@EventListener` hizo que el
+push quedara tras rollback; quitar el `INSERT` outbox hizo fallar la prueba de
+atomicidad; quitar la consulta de deduplicación hizo fallar la prueba de inbox.
+Los logs temporales están en `/tmp/m20t2-mutation-*.log`. Los tests no prueban
+caídas de proceso reales ni concurrencia con PostgreSQL. Fuentes primarias:
+Spring Framework transaction-bound events y Spring for Apache Kafka transactions.
+Se regeneraron todos los índices e informes. `./scripts/validate.sh` pasó (23
+pruebas, 4 omitidas), `validate_rutaflow_material.py` pasó y `git diff --check`
+quedó limpio. La auditoría global actual marca 167/1185 temas atómicos y
+1073/1185 practicables; M20 T2 se reconoce como cuatro subtemas. El conteo es
+estructural: no implica ejecución real de cada ejercicio ni revisión humana.
+Siguiente: Spring Boot M20 T3, correo con Spring Mail y entrega recuperable.

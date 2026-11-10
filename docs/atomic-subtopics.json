@@ -93,10 +93,10 @@
     },
     "spring-boot": {
       "topics": 111,
-      "completeTopics": 62,
-      "topicsWith3to6Subtopics": 93,
-      "subtopics": 331,
-      "completeSubtopics": 222
+      "completeTopics": 63,
+      "topicsWith3to6Subtopics": 94,
+      "subtopics": 335,
+      "completeSubtopics": 226
     }
   },
   "topics": {
@@ -15614,9 +15614,66 @@
       {
         "module": 20,
         "topic": "### Tema 2: Eventos locales, eventos transaccionales y mensajería",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 4,
+        "subtopics": [
+          {
+            "id": "20.5",
+            "title": "#### Subtema 20.5 · Sigue el evento dentro de la aplicación · 8 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "20.6",
+            "title": "#### Subtema 20.6 · Comprueba qué significa “después del commit” · 8 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "20.7",
+            "title": "#### Subtema 20.7 · Guarda el evento junto con el envío · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "20.8",
+            "title": "#### Subtema 20.8 · Repite la entrega sin repetir el efecto · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 20,

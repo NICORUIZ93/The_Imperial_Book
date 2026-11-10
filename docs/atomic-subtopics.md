@@ -2,7 +2,7 @@
 
 > Auditoría estructural. Un encabezado o criterio detectado no demuestra que el ejemplo se haya ejecutado ni que la explicación sea pedagógicamente suficiente.
 
-Temas conformes a cuatro pasos: **166/1185**. Tracks inventariados: **14**.
+Temas conformes a cuatro pasos: **167/1185**. Tracks inventariados: **14**.
 
 | Track | Temas conformes | Temas inventariados | Subtemas detectados | Subtemas con estructura completa |
 |---|---:|---:|---:|---:|
@@ -19,7 +19,7 @@ Temas conformes a cuatro pasos: **166/1185**. Tracks inventariados: **14**.
 | node | 2 | 83 | 6 | 6 |
 | react | 0 | 58 | 0 | 0 |
 | rutaflow | 0 | 29 | 0 | 0 |
-| spring-boot | 62 | 111 | 331 | 222 |
+| spring-boot | 63 | 111 | 335 | 226 |
 
 ## Temas pendientes
 
@@ -1051,7 +1051,6 @@ Temas conformes a cuatro pasos: **166/1185**. Tracks inventariados: **14**.
 - M15 ### Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar: 15.7: faltan context, action, deliberateFailure, understand, close; 15.7: faltan context, action, deliberateFailure, understand, close; 15.7: faltan context, action, deliberateFailure, understand, close; 15.7: faltan context, action, deliberateFailure, understand, close
 - M15 ### Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework: 15.8: faltan context, action, deliberateFailure, understand, close; 15.8: faltan context, action, deliberateFailure, understand, close; 15.8: faltan context, action, deliberateFailure, understand, close; 15.8: faltan context, action, deliberateFailure, understand, close
 - M2 ### Tema 1: Por qué DTOs en vez de entidades directamente: 1.3: faltan action
-- M20 ### Tema 2: Eventos locales, eventos transaccionales y mensajería: tiene 0 subtemas
 - M20 ### Tema 3: Correo con Spring Mail y entrega recuperable: tiene 0 subtemas
 - M20 ### Tema 4: Caché con Spring Cache, Caffeine y Redis: tiene 0 subtemas
 - M20 ### Tema 5: @Async y ejecutores: trabajo en segundo plano con límites: tiene 0 subtemas
