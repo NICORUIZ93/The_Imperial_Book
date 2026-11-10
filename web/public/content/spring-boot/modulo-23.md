@@ -1,329 +1,342 @@
-# Módulo 23: Spring Modulith y límites del monolito modular
+# Módulo 23: Spring Modulith: límites, eventos y pruebas modulares
 
 ## Aprende construyendo
 
-Este módulo convierte el paquete Java en una frontera de negocio verificable. Trabajarás con Spring Boot 4.0.9, Java 21 y Spring Modulith 2.0.8. Usa Maven 3.6.3 o superior; las versiones pueden cambiar, así que contrasta el BOM y la matriz del proyecto antes de actualizar. Spring Modulith ayuda a ordenar una aplicación; no convierte por sí solo un monolito en microservicios.
-
----
+Continúa el dominio del módulo 22 con Spring Boot 4.1.2 y Spring Modulith 2.1.1, fijados en el POM del laboratorio. Trabajarás sobre `pedidos` y `notificaciones` reales, en lugar de imaginar paquetes vacíos. El registro JDBC usa H2 durante las pruebas. Un módulo es una frontera lógica dentro del proceso; no equivale a un microservicio.
 
 ### Tema 1: módulos y límites entre paquetes
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar separarás `orders`, `inventory` y `shipping` por responsabilidades, y harás fallar el build cuando un módulo viole las dependencias permitidas. **Prerrequisitos:** paquetes Java, inyección de dependencias, JUnit y el Módulo 22 (arquitectura). Comprueba `java -version` y `mvn -version`.
+**Meta:** detectar una dependencia de un módulo hacia una clase interna de otro.
 
-**Ejemplo independiente:** crea una carpeta vacía y descarga un proyecto base con `curl -G 'https://start.spring.io/starter.zip' --data-urlencode 'type=maven-project' --data-urlencode 'language=java' --data-urlencode 'bootVersion=4.0.9' --data-urlencode 'javaVersion=21' --data-urlencode 'groupId=dev.rutaflow' --data-urlencode 'artifactId=modulith-lab' --data-urlencode 'name=modulith-lab' --data-urlencode 'dependencies=web,test' -o modulith-lab.zip`; ejecuta `unzip modulith-lab.zip -d modulith-lab && cd modulith-lab`.
+**¿Por qué es importante?** Separar carpetas no impide acoplamiento; una verificación repetible hace visible la dependencia prohibida.
 
-#### Paso 2 · Contexto y caso real
-El pedido crea una reserva de inventario y, después, una solicitud de envío. Si `orders` importa clases privadas de `inventory`, un refactor interno puede romper consumidores sin que el contrato lo advierta. En RutaFlow los equipos necesitan cambiar cada capacidad sin buscar dependencias ocultas por todo el repositorio.
+**Prerrequisitos:** M22 T1, paquetes Java, imports y JUnit. Duración: 30–40 min.
 
-#### ¿Por qué es importante?
-Separar paquetes visualmente no basta. La prueba de arquitectura hace que una dependencia prohibida sea un error repetible del build, antes de llegar al despliegue.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-Spring Modulith detecta módulos de aplicación en subpaquetes directos del paquete raíz. Un módulo puede publicar interfaces/servicios en su API pública y conservar implementación en paquetes internos. `ApplicationModules.verify()` verifica ciclos y accesos a internals. Como en un edificio, una puerta marcada “público” es el acceso permitido; pasar por una pared interna crea acoplamiento.
-
-#### Paso 4 · Demostración guiada desde cero
-En `pom.xml`, agrega al `dependencyManagement` el BOM y dependencia de test. Mantén el parent `spring-boot-starter-parent` 4.0.9. Crea `src/main/java/dev/rutaflow/ShippingApplication.java`:
-
-```xml
-<dependencyManagement>
-  <dependencies>
-    <dependency>
-      <groupId>org.springframework.modulith</groupId>
-      <artifactId>spring-modulith-bom</artifactId>
-      <version>2.0.8</version>
-      <type>pom</type>
-      <scope>import</scope>
-    </dependency>
-  </dependencies>
-</dependencyManagement>
-<dependencies>
-  <dependency>
-    <groupId>org.springframework.modulith</groupId>
-    <artifactId>spring-modulith-starter-test</artifactId>
-    <scope>test</scope>
-  </dependency>
-</dependencies>
-```
-
-```java
-package dev.rutaflow;
-
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-@SpringBootApplication
-public class ShippingApplication {
-    public static void main(String[] args) {
-        SpringApplication.run(ShippingApplication.class, args);
-    }
-}
-```
-
-Ubica `orders`, `inventory` y `shipping` como subpaquetes de `dev.rutaflow`. Crea `src/test/java/dev/rutaflow/ModuleBoundariesTest.java`:
-
-```java
-package dev.rutaflow;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.modulith.core.ApplicationModules;
-
-class ModuleBoundariesTest {
-    @Test
-    void modulesHaveNoCyclesAndUsePublicApis() {
-        ApplicationModules.of(ShippingApplication.class).verify();
-    }
-}
-```
-
-Ejecuta `./mvnw test` (o `mvn test` si aún no tienes wrapper). Observa el resumen JUnit y la ausencia de violaciones; el wrapper conserva la versión de Maven para otros equipos.
-
-#### Paso 5 · Práctica guiada
-Añade en `orders` una llamada a `inventory.internal.StockTable`. **Pista:** la prueba informa qué paquete no pertenece a la API de ese módulo; mueve el contrato a la raíz pública de `inventory` o sustituye el acceso por un evento/servicio expuesto.
-
-#### Paso 6 · Práctica independiente
-Agrega un ciclo `orders -> inventory -> shipping -> orders` en el código de prueba; registra la cadena detectada y corrige una sola dependencia para volver a un grafo acíclico. No hagas público un paquete solo para silenciar la regla.
-
-#### Paso 7 · Cierre y evidencia
-Entrega el árbol de paquetes, prueba verde y salida de una violación deliberada corregida. El siguiente tema pasa de la relación directa a comunicar cambios con eventos del dominio.
-
-**Fallo deliberado:** crea deliberadamente un ciclo de dependencias entre dos módulos y ejecuta el test; diagnostica el informe y elimina el acoplamiento mínimo necesario.
+**Preparación:** JDK 25 y el repositorio. Desde su raíz copia `examples/spring-modulith-rutaflow` a una carpeta nueva, entra y ejecuta el wrapper incluido:
 
 ```bash
-./mvnw test
+cp -R examples/spring-modulith-rutaflow practica-m23-t1
+cd practica-m23-t1
+./mvnw -q test
 ```
 
-**Resultado esperado:** el build termina `BUILD SUCCESS` sin dependencias internas y falla con un ciclo real. **Errores comunes:** creer que todo subpaquete es automáticamente API pública, permitir una dependencia solo para hacer pasar el test y leer una estructura verificada como prueba de calidad de negocio. Diagrama: `orders -> API inventory`; ningún arco regresa a orders. Fuente oficial: [verificación de estructura](https://docs.spring.io/spring-modulith/reference/verification.html).
+**Analogía:** los módulos son habitaciones con puertas públicas; un import a internals atraviesa una pared. Esa comparación no decide por sí sola qué API es conveniente.
 
-**Proyecto propio:** carpeta `modulith-lab`. **Cuándo extraer un microservicio:** cuando haya motivo operativo/equipo/datos claro, no solo porque los paquetes ya estén ordenados. Evidencia de aprendizaje: entrega la salida positiva y negativa del test de arquitectura.
+#### Subtema 23.1.1 · Reconoce la frontera verificable · 10 min
 
----
+**Contexto:** Los paquetes inmediatos de la aplicación definen capacidades de negocio.
+
+**Hazlo tú:** Abre `src/main/java/academia/rutaflow/modulith/RutaFlowModulithApplication.java` y `src/test/java/academia/rutaflow/modulith/ArquitecturaModularTest.java`. Sigue ApplicationModules.of y verify.
+
+```bash
+./mvnw -q -Dtest=ArquitecturaModularTest test
+```
+
+**Resultado esperado:** La prueba no encuentra ciclos ni accesos a internals en el laboratorio actual.
+
+**Fallo deliberado:** En NotificacionListener.java, añade un campo con tipo academia.rutaflow.modulith.pedidos.internal.PedidoInterno.
+
+**Diagnóstico:** Java permite el tipo público, pero Modulith detecta que otro módulo accede al paquete interno; elimina el campo.
+
+**Entiende:** verify comprueba relaciones estáticas del modelo modular. No verifica autorización, transacciones distribuidas ni corrección de negocio.
+
+**Cierra:** Guarda la dependencia rechazada y el resultado correcto tras retirarla.
+
+#### Subtema 23.1.2 · Publica contratos pequeños · 10 min
+
+**Contexto:** Notificaciones necesita saber que un pedido se creó, sin leer su dirección privada.
+
+**Hazlo tú:** Abre `src/main/java/academia/rutaflow/modulith/pedidos/PedidoCreado.java` y compáralo con `pedidos/internal/PedidoInterno.java`. El evento solo contiene pedidoId.
+
+```bash
+./mvnw -q -Dtest=ArquitecturaModularTest,PedidosModuleTest test
+```
+
+**Resultado esperado:** El evento público se puede referenciar y el módulo Pedidos publica RF-205.
+
+**Fallo deliberado:** Importa PedidoInterno desde el listener para extraer direccionPrivada.
+
+**Diagnóstico:** la prueba de frontera rechaza el acoplamiento aunque el código compile; vuelve a usar PedidoCreado.
+
+**Entiende:** Un contrato de evento debe contener lo que el consumidor necesita y permitir evolución. Público en Java no significa API pública del módulo.
+
+**Cierra:** Anota qué dato privado quedó fuera y por qué no es necesario para el aviso.
+
+#### Subtema 23.1.3 · Comprueba antes de mover paquetes · 10 min
+
+**Contexto:** Cambiar el paquete de una clase puede cambiar su visibilidad modular.
+
+**Hazlo tú:** En `src/test/java/academia/rutaflow/modulith/ArquitecturaModularTest.java`, lee qué clase raíz delimita el análisis. Ejecuta desde la carpeta copiada.
+
+```bash
+./mvnw -q test
+```
+
+**Resultado esperado:** Arquitectura y pruebas de eventos pasan con la estructura actual.
+
+**Fallo deliberado:** Mueve PedidoCreado al paquete internal y cambia el import del listener para que compile.
+
+**Diagnóstico:** el consumidor ya depende de un interno; verify falla. Restaura el paquete público original.
+
+**Entiende:** Una refactorización de paquetes puede alterar el contrato aunque el IDE actualice imports. Comprueba arquitectura y consumidores juntos.
+
+**Cierra:** Guarda los paquetes públicos y los internos en una nota de tu proyecto.
+
+**Práctica independiente:** En una copia añade un módulo facturacion que use solo PedidoCreado. Escribe un test de frontera y luego un acceso interno deliberado; conserva el contraste. No lo presentes como servicio desplegado.
+
+**Hito del tema:** conserva el resultado ejecutado, el fallo diagnosticado y restaurado, una explicación propia del mecanismo y tu ejercicio independiente. En el proyecto integrador RutaFlow aplica la decisión solo cuando puedas justificar su alcance. La suite del laboratorio no acredita un despliegue productivo ni la resolución de tu ejercicio.
+
+**Fuente primaria:** [Spring Modulith: fundamentos](https://docs.spring.io/spring-modulith/reference/fundamentals.html)
 
 ### Tema 2: eventos entre módulos sin importar implementación
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar un cambio de pedido publicará `OrderPlaced` y `shipping` lo atenderá sin recibir una referencia a `OrderService`. **Prerrequisitos:** Tema 1, records Java y eventos Spring. Continúa en `modulith-lab` y agrega dependencia de Spring Modulith test/runtime mediante el BOM.
+**Meta:** publicar un hecho de negocio y observar su reacción local después del commit.
 
-**Ejemplo independiente:** crea carpeta vacía `modulith-events-lab`, genera un proyecto Spring Boot 4.0.9/Java 21 con `web,test` desde Spring Initializr y aplica únicamente los archivos de esta lección; ejecuta `./mvnw test`.
+**¿Por qué es importante?** Invocar directamente internals de otro módulo oculta el contrato y acopla cambios.
 
-#### Paso 2 · Contexto y caso real
-Al confirmar un pedido, el módulo de envíos debe pedir una etiqueta. Una llamada directa permite que `orders` conozca cómo arranca `shipping`; un evento expresa qué pasó y deja que el suscriptor decida qué hacer.
+**Prerrequisitos:** M20 T2 y M23 T1. Duración: 30–40 min.
 
-#### ¿Por qué es importante?
-Un evento desacopla el lenguaje de negocio y el momento del efecto. En un monolito el evento sigue ejecutándose dentro de la misma aplicación y comparte proceso; no tiene automáticamente las garantías de Kafka ni de una outbox durable.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-El productor publica un hecho inmutable; un listener reacciona. El publicador no enumera todos los receptores, igual que una notificación de “pedido creado” no dicta qué equipo debe atenderlo. Si se necesita recuperación tras caída, estudia registro de publicaciones de Modulith o una outbox con almacenamiento duradero.
-
-#### Paso 4 · Demostración guiada
-Crea `src/main/java/dev/rutaflow/orders/OrderPlaced.java` y un publicador:
-
-```java
-package dev.rutaflow.orders;
-
-import java.time.Instant;
-
-public record OrderPlaced(String orderId, String destination, Instant occurredAt) {
-    public OrderPlaced {
-        if (orderId == null || orderId.isBlank()) throw new IllegalArgumentException("orderId requerido");
-    }
-}
-```
-
-```java
-package dev.rutaflow.orders;
-
-import java.time.Instant;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.stereotype.Service;
-
-@Service
-public class PlaceOrder {
-    private final ApplicationEventPublisher events;
-    public PlaceOrder(ApplicationEventPublisher events) { this.events = events; }
-
-    public void execute(String id, String destination) {
-        // Publica el hecho; no llama al servicio de otro módulo.
-        events.publishEvent(new OrderPlaced(id, destination, Instant.now()));
-    }
-}
-```
-
-Crea `src/main/java/dev/rutaflow/shipping/ShippingListener.java`:
-
-```java
-package dev.rutaflow.shipping;
-
-import dev.rutaflow.orders.OrderPlaced;
-import org.springframework.modulith.ApplicationModuleListener;
-import org.springframework.stereotype.Component;
-
-record ShipmentRequested(String orderId, String destination) {}
-
-@Component
-class ShippingListener {
-    private final ShippingRequests requests;
-    ShippingListener(ShippingRequests requests) { this.requests = requests; }
-
-    @ApplicationModuleListener
-    void on(OrderPlaced event) {
-        requests.create(new ShipmentRequested(event.orderId(), event.destination()));
-    }
-}
-```
-
-Agrega al API público de `shipping` un contrato `ShippingRequests.create(ShipmentRequested)` y `findByOrderId(String)` (devuelve `null` si todavía no existe), e implementación fake para el test. Ejecuta `./mvnw test`; observa la solicitud una vez por publicación.
-
-#### Paso 5 · Práctica guiada
-Usa `@ApplicationModuleListener` y verifica el evento recibido con `PublishedEvents`. **Pista:** el evento debe contener identificador y datos del hecho, no una entidad JPA gestionada ni contraseña del proveedor.
-
-#### Paso 6 · Práctica independiente
-Publica el mismo `OrderPlaced` dos veces y diseña deduplicación con `orderId` más tipo de efecto. Anota qué aporta el patrón y por qué el listener necesita idempotencia aun dentro de un proceso.
-
-#### Paso 7 · Cierre y evidencia
-Entrega productor, listener y test de evento recibido. El siguiente tema genera documentación visible de los límites y dependencias.
-
-**Fallo deliberado:** publica un evento sin `orderId` y comprueba el error antes de procesar el envío; después repite la publicación para observar por qué un listener duplicable debe ser idempotente.
+**Preparación:** JDK 25 y el repositorio. Desde su raíz copia `examples/spring-modulith-rutaflow` a una carpeta nueva, entra y ejecuta el wrapper incluido:
 
 ```bash
-./mvnw test
+cp -R examples/spring-modulith-rutaflow practica-m23-t2
+cd practica-m23-t2
+./mvnw -q test
 ```
 
-**Resultado esperado:** el test observa un evento con el ID correcto y la prueba inválida falla con `orderId requerido`. **Errores comunes:** usar evento para ocultar una dependencia síncrona necesaria, publicar una entidad mutable y asumir durabilidad sin configurar registro/outbox. Fuentes oficiales: [eventos de aplicación](https://docs.spring.io/spring-modulith/reference/events.html), [tests de módulos](https://docs.spring.io/spring-modulith/reference/testing.html).
+**Analogía:** el evento es un aviso acordado entre oficinas; publicar el aviso no equivale a confirmar su recepción durable.
 
-**Proyecto propio:** `src/main/java/dev/rutaflow/orders/PlaceOrder.java`. **Cuándo preferir una llamada:** cuando el caso de uso necesita resultado inmediato y la abstracción pública del otro módulo es apropiada. Evidencia de aprendizaje: entrega salida de test y decisión justificada entre evento y llamada.
+#### Subtema 23.2.1 · Publica desde el servicio · 10 min
 
----
+**Contexto:** PedidosService declara una operación transaccional que publica PedidoCreado.
+
+**Hazlo tú:** Abre `src/main/java/academia/rutaflow/modulith/pedidos/PedidosService.java` y `src/test/java/academia/rutaflow/modulith/pedidos/PedidosModuleTest.java`. Sigue crear hasta publishEvent.
+
+```bash
+./mvnw -q -Dtest=PedidosModuleTest test
+```
+
+**Resultado esperado:** PublishedEvents contiene un PedidoCreado con RF-205.
+
+**Fallo deliberado:** Quita events.publishEvent de crear.
+
+**Diagnóstico:** el conjunto de eventos observado queda vacío y falla la cantidad esperada; restaura publicación.
+
+**Entiende:** PublishedEvents observa eventos del contexto de test; no demuestra que Kafka, RabbitMQ o una app móvil recibieran datos.
+
+**Cierra:** Conserva ID y cantidad del evento observado.
+
+#### Subtema 23.2.2 · Reacciona mediante el contrato · 10 min
+
+**Contexto:** El listener consume PedidoCreado y actualiza la bandeja local.
+
+**Hazlo tú:** Abre `src/main/java/academia/rutaflow/modulith/notificaciones/NotificacionListener.java` y `src/test/java/academia/rutaflow/modulith/notificaciones/NotificacionesModuleTest.java`. Sigue ApplicationModuleListener hasta agregar.
+
+```bash
+./mvnw -q -Dtest=NotificacionesModuleTest test
+```
+
+**Resultado esperado:** La bandeja llega a contener Pedido recibido: RF-204 antes del timeout de prueba.
+
+**Fallo deliberado:** Omite bandeja.agregar en el listener.
+
+**Diagnóstico:** la espera termina sin el aviso esperado; restaura la llamada. El timeout del test evita una espera infinita, no define un SLA.
+
+**Entiende:** ApplicationModuleListener combina manejo transaccional y asíncrono. El registro de publicaciones ayuda a gestionar pendientes; no convierte un efecto externo en transacción distribuida.
+
+**Cierra:** Guarda el aviso y explica la diferencia entre publicar y consumir.
+
+#### Subtema 23.2.3 · Separa registro y efecto durable · 10 min
+
+**Contexto:** El laboratorio registra publicaciones con JDBC en H2, pero la bandeja y la base de test son locales.
+
+**Hazlo tú:** Abre `src/test/resources/application.yml` y `src/main/java/academia/rutaflow/modulith/notificaciones/BandejaNotificaciones.java`. Identifica qué se perdería al reiniciar.
+
+```bash
+./mvnw -q -Dtest=NotificacionesModuleTest test
+```
+
+**Resultado esperado:** La reacción local pasa; no se produce una prueba de reinicio ni de recuperación entre procesos.
+
+**Fallo deliberado:** Escribe en tu evidencia que este test prueba un broker externo.
+
+**Diagnóstico:** no existe conexión a broker en el test ni configuración de ese transporte; corrige la afirmación y distingue H2 de un almacén persistente externo.
+
+**Entiende:** Para probar recuperación debes conservar una base relacional real, provocar publicación pendiente, reiniciar y observar reintento con idempotencia del efecto. Esa prueba no está implementada aquí.
+
+**Cierra:** Enumera lo demostrado y el experimento que aún necesita infraestructura persistente.
+
+**Práctica independiente:** Añade un segundo evento autorizado y un listener de prueba. Comprueba que el aviso aparece una vez en el caso normal; estudia por separado replay y deduplicación antes de prometer exactamente una vez.
+
+**Hito del tema:** conserva el resultado ejecutado, el fallo diagnosticado y restaurado, una explicación propia del mecanismo y tu ejercicio independiente. En el proyecto integrador RutaFlow aplica la decisión solo cuando puedas justificar su alcance. La suite del laboratorio no acredita un despliegue productivo ni la resolución de tu ejercicio.
+
+**Fuente primaria:** [Spring Modulith: eventos](https://docs.spring.io/spring-modulith/reference/events.html)
 
 ### Tema 3: documentación generada y mapa de dependencias
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar generarás diagramas de módulos desde la estructura verificada y los compararás con el diseño aprobado. **Prerrequisitos:** Temas 1–2 y Mermaid/UML básico. Crea una carpeta de proyecto independiente llamada `modulith-docs-lab`.
+**Meta:** generar PlantUML y fichas Asciidoc desde el modelo modular y contrastar una relación con un import.
 
-**Ejemplo independiente:** en una carpeta vacía descarga una app Boot 4.0.9 con Java 21 y `web,test`, agrega el BOM/artefactos Modulith 2.0.9, crea dos paquetes de módulo y ejecuta `./mvnw test`.
+**¿Por qué es importante?** Una documentación manual puede divergir del código; la generación reduce ese desfase sin validar todas las decisiones.
 
-#### Paso 2 · Contexto y caso real
-En una revisión de RutaFlow, el diagrama dibujado meses atrás muestra que inventario depende de envíos, pero el código actual invirtió la relación. La documentación generada facilita hallar divergencias; una imagen generada no aprueba la arquitectura por el equipo.
+**Prerrequisitos:** M22 T2 y M23 T1. Duración: 30–40 min.
 
-#### ¿Por qué es importante?
-La documentación queda desactualizada si vive fuera del código. Generar a partir del modelo de módulos permite revisar cambios junto con el build y discutir decisiones con evidencia.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-`Documenter` lee el modelo `ApplicationModules` y crea artefactos de documentación (diagramas/snippets) para inspección. El diagrama refleja dependencias detectadas por Spring Modulith, no llamadas HTTP externas, brokers ni topología de infraestructura que no están en el modelo.
-
-#### Paso 4 · Demostración guiada
-El starter de test del Tema 1 incluye `spring-modulith-docs`; crea `src/test/java/dev/rutaflow/ModuleDocumentationTest.java`:
-
-```java
-package dev.rutaflow;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.modulith.core.ApplicationModules;
-import org.springframework.modulith.docs.Documenter;
-
-class ModuleDocumentationTest {
-    @Test
-    void writeModuleDiagrams() {
-        var modules = ApplicationModules.of(ShippingApplication.class).verify();
-        new Documenter(modules)
-                .writeModulesAsPlantUml()
-                .writeIndividualModulesAsPlantUml();
-    }
-}
-```
-
-Corre `./mvnw -Dtest=ModuleDocumentationTest test` y busca los archivos en `target/spring-modulith-docs`. Abre los `.puml` con PlantUML o conserva el texto en revisión.
-
-#### Paso 5 · Práctica guiada
-Añade `pricing` como módulo y corre la generación otra vez. **Pista:** verifica que el nuevo nodo y sus flechas coinciden con imports permitidos; anota una relación inesperada y localiza la referencia Java responsable.
-
-#### Paso 6 · Práctica independiente
-Convierte una dependencia circular en una dependencia unilateral más un evento del Tema 2; regenera el diagrama y enlaza el resultado desde `docs/architecture/modules.md`.
-
-#### Paso 7 · Cierre y evidencia
-Entrega el comando, artefactos generados y una diferencia explicada respecto al dibujo aprobado. El siguiente tema usa estos límites para probar un módulo con su contexto reducido.
-
-**Fallo deliberado:** introduce deliberadamente una dependencia prohibida y confirma que la verificación falla aunque el generador pueda producir archivos; diagnostica por separado el error de arquitectura.
+**Preparación:** JDK 25 y el repositorio. Desde su raíz copia `examples/spring-modulith-rutaflow` a una carpeta nueva, entra y ejecuta el wrapper incluido:
 
 ```bash
-./mvnw -Dtest=ModuleDocumentationTest test
+cp -R examples/spring-modulith-rutaflow practica-m23-t3
+cd practica-m23-t3
+./mvnw -q test
 ```
 
-**Resultado esperado:** existen diagramas PlantUML reproducibles y un nodo por módulo detectado. **Errores comunes:** dibujar la infraestructura como si la detectara Modulith, aceptar el diagrama sin verificar dependencias y olvidar versionar/enlazar el artefacto útil. Fuentes oficiales: [documentación Modulith](https://docs.spring.io/spring-modulith/reference/documentation.html), [proyecto Spring Modulith](https://spring.io/projects/spring-modulith).
+**Analogía:** el mapa generado es una fotografía de los paquetes analizados, no del despliegue completo ni de su tráfico.
 
-**Proyecto propio:** `docs/architecture/modules.md`. **Cuándo actualizar:** cuando cambie la estructura de paquetes o sus dependencias públicas. Evidencia: entrega el diagrama y enlaza una relación con su import de código.
+#### Subtema 23.3.1 · Genera documentos reproducibles · 10 min
 
----
+**Contexto:** Documenter usa el mismo ApplicationModules que analiza las fronteras.
+
+**Hazlo tú:** Abre `src/test/java/academia/rutaflow/modulith/DocumentacionModularTest.java`. Sigue new Documenter(modules).writeDocumentation().
+
+```bash
+./mvnw -q -Dtest=DocumentacionModularTest test
+```
+
+**Resultado esperado:** target/spring-modulith-docs contiene archivos .puml y .adoc; el test comprueba que existen ambos formatos.
+
+**Fallo deliberado:** Comenta writeDocumentation, elimina solo target/spring-modulith-docs y repite.
+
+**Diagnóstico:** faltan los archivos generados; la prueba falla. Restaura la generación; conservar salidas anteriores habría ocultado este fallo.
+
+**Entiende:** Crear PlantUML no equivale a renderizar PNG ni publicar una página. El test verifica archivos, no legibilidad de una imagen.
+
+**Cierra:** Guarda nombres y fecha de generación y señala que no se renderizó una imagen aquí.
+
+#### Subtema 23.3.2 · Contrasta una relación con código · 10 min
+
+**Contexto:** Notificaciones depende del contrato de Pedidos para interpretar PedidoCreado.
+
+**Hazlo tú:** Abre un .puml bajo `target/spring-modulith-docs` y contrasta la dependencia con el import de `src/main/java/academia/rutaflow/modulith/notificaciones/NotificacionListener.java`.
+
+```bash
+./mvnw -q -Dtest=ArquitecturaModularTest,DocumentacionModularTest test
+```
+
+**Resultado esperado:** La relación del mapa tiene un import rastreable y la verificación modular sigue pasando.
+
+**Fallo deliberado:** Dibuja manualmente una dependencia Pedidos hacia Notificaciones sin cambiar el código.
+
+**Diagnóstico:** el mapa editado ya no es una salida fiel de Documenter; regenera y contrasta los archivos en lugar de tratar la edición como evidencia.
+
+**Entiende:** El diagrama describe módulos y relaciones estáticas; no demuestra dónde corre cada módulo ni si una llamada ocurrió durante un incidente.
+
+**Cierra:** Escribe archivo origen, símbolo importado y relación que lo representa.
+
+#### Subtema 23.3.3 · Versiona la explicación junto al mapa · 10 min
+
+**Contexto:** Un artefacto de build puede regenerarse; las decisiones y límites también deben conservarse.
+
+**Hazlo tú:** Crea `docs/mapa-modular.md` en la copia y enlaza generación, módulos, import respaldado y límites. Revisa `README.md` del laboratorio.
+
+```bash
+./mvnw -q -Dtest=DocumentacionModularTest test
+```
+
+**Resultado esperado:** La guía indica cómo reconstruir el mapa y no promete descubrir infraestructura externa.
+
+**Fallo deliberado:** Afirma que el mapa prueba recuperación del broker Kafka.
+
+**Diagnóstico:** el modelo inspecciona paquetes Java y aquí no analiza ningún despliegue Kafka; elimina esa conclusión.
+
+**Entiende:** Acompaña documentación generada con contexto de operación y ADR. Un enlace a un archivo temporal de target puede romperse si no se publica el artefacto.
+
+**Cierra:** Conserva comando, relación respaldada y ubicación donde publicarías el resultado.
+
+**Práctica independiente:** Agrega un módulo nuevo a la copia, genera de nuevo y compara dependencias y canvas. Documenta una relación esperada y comprueba su import; no añadas flechas para mejorar apariencia.
+
+**Hito del tema:** conserva el resultado ejecutado, el fallo diagnosticado y restaurado, una explicación propia del mecanismo y tu ejercicio independiente. En el proyecto integrador RutaFlow aplica la decisión solo cuando puedas justificar su alcance. La suite del laboratorio no acredita un despliegue productivo ni la resolución de tu ejercicio.
+
+**Fuente primaria:** [Spring Modulith: Documenter](https://docs.spring.io/spring-modulith/reference/documentation.html)
 
 ### Tema 4: pruebas de integración por módulo
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar probarás el módulo `orders` sin cargar todo el contexto y esperarás un resultado observable de su interacción. **Prerrequisitos:** Temas 1–3, JUnit 5 y eventos Spring. Crea `modulith-module-test-lab` a partir de Spring Initializr (Boot 4.0.9, Java 21, `web,test`).
+**Meta:** distinguir un test modular acotado del contexto completo y localizar qué evidencia produce cada uno.
 
-**Ejemplo independiente:** crea una carpeta vacía, descarga el proyecto con Spring Initializr y agrega `spring-modulith-starter-test` 2.0.9 según la guía vigente; configura Maven wrapper y corre `./mvnw test`.
+**¿Por qué es importante?** Ampliar todo test a la aplicación completa puede esconder dependencias que deberían ser explícitas.
 
-#### Paso 2 · Contexto y caso real
-Un `@SpringBootTest` que levanta seguridad, base, correo y todos los módulos puede tardar y exigir servicios irrelevantes para probar `orders`. Un test de módulo inicia solo el módulo bajo estudio o las dependencias declaradas.
+**Prerrequisitos:** M6 y M23 T1–T3. Duración: 30–40 min.
 
-#### ¿Por qué es importante?
-Tests pequeños reducen fallas ambientales, pero no deben fingir que prueban la aplicación completa. Define el límite de test y una capa separada para contrato, broker, HTTP y despliegue.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-`@ApplicationModuleTest` acota el bootstrap a un módulo. `Scenario` publica un estímulo y espera un evento o cambio de estado. Es una prueba de integración dentro del proceso Spring; para Kafka real todavía necesitas test con broker/adapter.
-
-#### Paso 4 · Demostración guiada
-Crea `src/test/java/dev/rutaflow/orders/OrderModuleTests.java`:
-
-```java
-package dev.rutaflow.orders;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import static org.assertj.core.api.Assertions.assertThat;
-import org.springframework.modulith.test.ApplicationModuleTest;
-import org.springframework.modulith.test.Scenario;
-
-@ApplicationModuleTest
-class OrderModuleTests {
-    @Autowired ShippingRequests requests;
-
-    @Test
-    void placingOrderPublishesEvent(Scenario scenario) {
-        scenario.publish(new OrderPlaced("ord-42", "Calle 10", java.time.Instant.now()))
-                .andWaitForStateChange(() -> requests.findByOrderId("ord-42"))
-                .andVerify(request -> assertThat(request.destination()).isEqualTo("Calle 10"));
-    }
-}
-```
-
-Adapta el estímulo al servicio público real que crea el pedido y espera `ShipmentRequested` del consumidor del otro módulo. Corre `./mvnw -Dtest=OrderModuleTests test`; la salida JUnit debe indicar el caso aprobado.
-
-#### Paso 5 · Práctica guiada
-Limita el test a `orders` y agrega una dependencia de módulo requerida de forma explícita si forma parte del contrato de prueba. **Pista:** si falta un bean, comprueba primero si pertenece al límite declarado, no amplíes el bootstrap a toda la app sin motivo.
-
-#### Paso 6 · Práctica independiente
-Escribe un test que espere cambio de estado y otro que cubra publicación duplicada. Anota qué capa falta para afirmar que el evento sobrevive a una caída completa del proceso.
-
-#### Paso 7 · Cierre y evidencia
-Entrega test verde, salida de fallo ante estado no esperado y límite de lo que el test acredita. El siguiente tema de la ruta es Spring GraphQL para exponer una API de consultas y cambios.
-
-**Fallo deliberado:** espera `ShipmentRequested` sin publicarlo y observa el timeout; diagnostica el estímulo faltante en vez de alargar indiscriminadamente el tiempo.
+**Preparación:** JDK 25 y el repositorio. Desde su raíz copia `examples/spring-modulith-rutaflow` a una carpeta nueva, entra y ejecuta el wrapper incluido:
 
 ```bash
-./mvnw -Dtest=OrderModuleTests test
+cp -R examples/spring-modulith-rutaflow practica-m23-t4
+cd practica-m23-t4
+./mvnw -q test
 ```
 
-**Resultado esperado:** el escenario observa el evento/cambio esperado en el tiempo definido; un evento ausente causa fallo legible. **Errores comunes:** creer que prueba transporte externo, cargar dependencias al azar y omitir eventos duplicados/fallidos. Fuente oficial: [integración de módulos y Scenario](https://docs.spring.io/spring-modulith/reference/testing.html).
+**Analogía:** un ensayo de una oficina comprueba su trabajo; un ensayo conjunto comprueba el intercambio entre oficinas. Ninguno ensaya automáticamente toda la red.
 
-**Proyecto propio:** `src/test/java/dev/rutaflow/orders/OrderModuleTests.java`. **Cuándo usar test de módulo:** para contratos e integración interna; usa otros tipos para transporte/infraestructura real. Evidencia de aprendizaje: entrega el test, la salida y una frase sobre el límite de cobertura.
+#### Subtema 23.4.1 · Ejecuta solo Pedidos · 10 min
 
----
+**Contexto:** ApplicationModuleTest limita el contexto al módulo donde vive la prueba.
 
-## Referencias oficiales consultadas
+**Hazlo tú:** Abre `src/test/java/academia/rutaflow/modulith/pedidos/PedidosModuleTest.java` y ubica su paquete y anotación.
 
-- [Spring Modulith: guía](https://docs.spring.io/spring-modulith/reference/)
-- [Verificación de módulos](https://docs.spring.io/spring-modulith/reference/verification.html)
-- [Eventos](https://docs.spring.io/spring-modulith/reference/events.html)
-- [Documentación generada](https://docs.spring.io/spring-modulith/reference/documentation.html)
-- [Pruebas de módulos](https://docs.spring.io/spring-modulith/reference/testing.html)
-- [Spring Boot: requisitos](https://docs.spring.io/spring-boot/system-requirements.html)
+```bash
+./mvnw -q -Dtest=PedidosModuleTest test
+```
+
+**Resultado esperado:** Pedidos publica un evento sin necesitar cargar la bandeja de Notificaciones como colaborador del servicio.
+
+**Fallo deliberado:** Inyecta BandejaNotificaciones en el test modular sin ampliar el alcance.
+
+**Diagnóstico:** el contexto acotado no ofrece ese bean de otro módulo; restaura el test y explica la dependencia que intentaste introducir.
+
+**Entiende:** El aislamiento modular ayuda a detectar acoplamiento. Un mock externo puede satisfacer una dependencia explícita, pero entonces no prueba su implementación real.
+
+**Cierra:** Guarda anotación, módulo cargado y colaboración que no participó.
+
+#### Subtema 23.4.2 · Contrasta con el test del flujo · 10 min
+
+**Contexto:** NotificacionesModuleTest usa SpringBootTest para observar la reacción entre dos módulos reales.
+
+**Hazlo tú:** Abre `src/test/java/academia/rutaflow/modulith/notificaciones/NotificacionesModuleTest.java` y compáralo con el test anterior.
+
+```bash
+./mvnw -q -Dtest=PedidosModuleTest,NotificacionesModuleTest test
+```
+
+**Resultado esperado:** Ambos pasan, con evidencias distintas: publicación en un módulo y aviso en un contexto más amplio.
+
+**Fallo deliberado:** Sustituye SpringBootTest por ApplicationModuleTest en el test de Notificaciones manteniendo la inyección de PedidosService.
+
+**Diagnóstico:** el alcance cambia y el bean externo puede faltar; no amplíes silenciosamente el test para ocultar ese cambio. Restaura la configuración inicial.
+
+**Entiende:** Spring Modulith ofrece Scenario para expresar estímulo y espera en otros escenarios. Este laboratorio usa PublishedEvents y Awaitility; no declara ejecutada una prueba Scenario que no existe.
+
+**Cierra:** Escribe por qué este flujo exige ambos módulos y qué transporte sigue fuera.
+
+#### Subtema 23.4.3 · Cierra la matriz de alcance · 10 min
+
+**Contexto:** La suite junta frontera, publicación, reacción y generación documental.
+
+**Hazlo tú:** Abre `pom.xml` y los cuatro tests bajo `src/test/java/academia/rutaflow/modulith/`. Ejecuta una suite limpia.
+
+```bash
+./mvnw -q clean test
+```
+
+**Resultado esperado:** Cuatro pruebas correctas, incluida DocumentacionModularTest; el registro JDBC usa H2 de test.
+
+**Fallo deliberado:** Quita la publicación del evento y ejecuta la suite.
+
+**Diagnóstico:** las pruebas de publicación/reacción fallan aunque la frontera estática pueda seguir válida; restaura y repite.
+
+**Entiende:** Una prueba de arquitectura y una de comportamiento responden preguntas distintas. Ninguna mide todavía recuperación tras caída de proceso o autorización de usuario.
+
+**Cierra:** Conserva conteos, pruebas seleccionadas y límites sin presentar cuatro tests como todas las garantías del sistema.
+
+**Práctica independiente:** Escribe una prueba modular de una regla nueva y otra del flujo entre módulos. Declara en cada una qué dependencia es real, cuál simulada y si existe transporte externo.
+
+**Hito del tema:** conserva el resultado ejecutado, el fallo diagnosticado y restaurado, una explicación propia del mecanismo y tu ejercicio independiente. En el proyecto integrador RutaFlow aplica la decisión solo cuando puedas justificar su alcance. La suite del laboratorio no acredita un despliegue productivo ni la resolución de tu ejercicio.
+
+**Fuente primaria:** [Spring Modulith: pruebas modulares](https://docs.spring.io/spring-modulith/reference/testing.html)
+

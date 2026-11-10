@@ -88,6 +88,9 @@ Conserva la salida del test y señala qué pareja de valores demuestra el orden.
 
 **Fuente:** [Spring Boot con Kafka](https://docs.spring.io/spring-boot/reference/messaging/kafka.html) y [Apache Kafka](https://kafka.apache.org/documentation/).
 
+
+**Aplicación y decisión:** En el proyecto integrador, usa la key del envío para conservar orden por partición y registra el grupo de cada consumidor. Límite: ese orden no es global entre particiones ni prueba el orden de efectos de dos sistemas externos.
+
 ### Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia
 
 **Duración estimada:** 30 min.
@@ -170,6 +173,9 @@ Anota qué filas desaparecieron en el rollback y cuáles se crean al reintentar.
 
 **Fuente:** [Spring Kafka: manejo de errores](https://docs.spring.io/spring-kafka/reference/kafka/annotation-error-handling.html) y [Apache Kafka](https://kafka.apache.org/documentation/).
 
+
+**Aplicación y decisión:** En el proyecto integrador, distingue fallos transitorios y datos inválidos antes de reintentar. Mantén inbox con unicidad del evento y un procedimiento de replay desde DLT; llegar a DLT no significa resolver el incidente.
+
 ### Tema 3: Outbox transaccional y flujo de negocio
 
 **Duración estimada:** 30 min.
@@ -251,6 +257,9 @@ Guarda el resultado y explica por qué el replay puede duplicar mensajes, pero n
 - [ ] Inbox deja una sola proyección y anoté el límite de una instancia.
 
 **Fuente:** [Spring Framework: transacciones declarativas](https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative.html) y [Transactional Outbox](https://microservices.io/patterns/data/transactional-outbox.html).
+
+
+**Aplicación y decisión:** En el proyecto integrador, guarda envío e intención outbox en una misma transacción y permite que el consumidor deduplique reenvíos. No atribuyas atomicidad entre SQL y Kafka a la anotación local del servicio.
 
 ## Capstone del módulo
 

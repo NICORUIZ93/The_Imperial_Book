@@ -224,11 +224,13 @@ Buscar una guía devuelve cero o una entrega. Listar guías puede devolver mucha
 
 Desde `examples/spring-reactor-rutaflow`, abre `src/main/java/academia/rutaflow/reactor/EntregaFlows.java` y `src/test/java/academia/rutaflow/reactor/MonoFluxTest.java`. Ejecuta:
 
-    ./mvnw -Dtest=MonoFluxTest#monoEntregaCeroOUnaGuia test
+```bash
+./mvnw -Dtest=MonoFluxTest#monoEntregaCeroOUnaGuia test
+```
 
-**Resultado esperado.** El `Mono` del código `RF-1200` emite una guía y completa. La búsqueda de `1200` completa sin emitir valor.
+**Resultado esperado:** El `Mono` del código `RF-1200` emite una guía y completa. La búsqueda de `1200` completa sin emitir valor.
 
-**Fallo deliberado.** Cambia la expectativa `Guía RF-1200` por `Guía RF-1201`. **Diagnóstico:** `StepVerifier` muestra el valor esperado y el valor recibido; revisa el código que pasó el test. Restáurala.
+**Fallo deliberado:** Cambia la expectativa `Guía RF-1200` por `Guía RF-1201`. **Diagnóstico:** `StepVerifier` muestra el valor esperado y el valor recibido; revisa el código que pasó el test. Restáurala.
 
 **3. Entiende**
 
@@ -248,11 +250,13 @@ Una consulta sin coincidencias no es lo mismo que una consulta que falló. El cl
 
 En `MonoFluxTest.java`, ejecuta:
 
-    ./mvnw -Dtest=MonoFluxTest#errorEsUnaSenalDistintaDeCompletarVacio test
+```bash
+./mvnw -Dtest=MonoFluxTest#errorEsUnaSenalDistintaDeCompletarVacio test
+```
 
-**Resultado esperado.** `expectErrorMessage` recibe `código inválido`; el test del subtema anterior verifica un `Mono` vacío con `verifyComplete`.
+**Resultado esperado:** `expectErrorMessage` recibe `código inválido`; el test del subtema anterior verifica un `Mono` vacío con `verifyComplete`.
 
-**Fallo deliberado.** Sustituye `expectErrorMessage("código inválido")` por `verifyComplete()`. **Diagnóstico:** el publisher terminó con `onError`, no con `onComplete`; StepVerifier reporta que esperaba completar sin error. Restablece la aserción del error.
+**Fallo deliberado:** Sustituye `expectErrorMessage("código inválido")` por `verifyComplete()`. **Diagnóstico:** el publisher terminó con `onError`, no con `onComplete`; StepVerifier reporta que esperaba completar sin error. Restablece la aserción del error.
 
 **3. Entiende**
 
@@ -272,11 +276,13 @@ Un publisher puede capturar un valor al crearse o calcularlo en cada suscripció
 
 Lee `siguienteNumero` en `EntregaFlows.java` y ejecuta:
 
-    ./mvnw -Dtest=MonoFluxTest#deferEjecutaElCalculoUnaVezPorSuscripcion test
+```bash
+./mvnw -Dtest=MonoFluxTest#deferEjecutaElCalculoUnaVezPorSuscripcion test
+```
 
-**Resultado esperado.** Antes de suscribirse el contador vale 0. Dos suscripciones separadas reciben 1 y 2.
+**Resultado esperado:** Antes de suscribirse el contador vale 0. Dos suscripciones separadas reciben 1 y 2.
 
-**Fallo deliberado.** Cambia `Mono.defer(() -> Mono.just(contador.incrementAndGet()))` por `Mono.just(contador.incrementAndGet())`. **Diagnóstico:** el contador aumenta al construir el publisher, antes de `StepVerifier`; restaura `defer`.
+**Fallo deliberado:** Cambia `Mono.defer(() -> Mono.just(contador.incrementAndGet()))` por `Mono.just(contador.incrementAndGet())`. **Diagnóstico:** el contador aumenta al construir el publisher, antes de `StepVerifier`; restaura `defer`.
 
 **3. Entiende**
 
@@ -296,11 +302,13 @@ Un listado puede tener más elementos de los que el consumidor quiere procesar d
 
 En `MonoFluxTest.java`, revisa `fluxRespetaLaDemandaYEmiteEnOrden` y ejecútalo:
 
-    ./mvnw -Dtest=MonoFluxTest#fluxRespetaLaDemandaYEmiteEnOrden test
+```bash
+./mvnw -Dtest=MonoFluxTest#fluxRespetaLaDemandaYEmiteEnOrden test
+```
 
-**Resultado esperado.** El test inicia con demanda cero. Cada `thenRequest(1)` permite observar el siguiente código, en orden, hasta que la secuencia completa.
+**Resultado esperado:** El test inicia con demanda cero. Cada `thenRequest(1)` permite observar el siguiente código, en orden, hasta que la secuencia completa.
 
-**Fallo deliberado.** Cambia el primer `thenRequest(1)` a `thenRequest(2)`. **Diagnóstico:** `expectNoEvent` debe detectar que llegó `RF-1201` antes del segundo pedido; el publisher respondió a una demanda de dos. Restaura el valor `1`.
+**Fallo deliberado:** Cambia el primer `thenRequest(1)` a `thenRequest(2)`. **Diagnóstico:** `expectNoEvent` debe detectar que llegó `RF-1201` antes del segundo pedido; el publisher respondió a una demanda de dos. Restaura el valor `1`.
 
 **3. Entiende**
 
@@ -313,6 +321,9 @@ Entrega la salida de los cuatro tests y explica con tus palabras la diferencia e
 **Fuentes oficiales:** [Reactor: introducción y suscripción](https://projectreactor.io/docs/core/release/reference/reactiveProgramming.html), [Reactor: hot y cold publishers](https://projectreactor.io/docs/core/release/reference/advancedFeatures/reactor-hotCold.html), [Reactor: pruebas con StepVerifier](https://projectreactor.io/docs/core/release/reference/testing.html).
 
 **¿Por qué es importante?** Elegir y probar el tipo de publisher ayuda a conservar la diferencia entre ausencia de datos, secuencias y errores sin bloquear la respuesta.
+
+
+**Aplicación y decisión:** En el proyecto integrador, usa Mono para una respuesta y Flux para una secuencia solo cuando la cadena pueda conservar su contrato de demanda. El límite es explícito: un repositorio bloqueante sigue bloqueando aunque se envuelva en Mono; la prueba Reactor no demuestra rendimiento de producción.
 
 ### Tema 2: WebClient y composición no bloqueante
 
@@ -330,11 +341,13 @@ Desde `examples/spring-webclient-rutaflow`, abre `src/main/java/academia/rutaflo
 
 Ejecuta la prueba que crea el cliente contra un servidor local:
 
-    ./mvnw -Dtest=TarifaClientTest#composesLocationAndTariffRequestsInOrder test
+```bash
+./mvnw -Dtest=TarifaClientTest#composesLocationAndTariffRequestsInOrder test
+```
 
-**Resultado esperado.** El cliente se construye con la dirección asignada por MockWebServer y el test termina sin conectarse a una API de Internet.
+**Resultado esperado:** El cliente se construye con la dirección asignada por MockWebServer y el test termina sin conectarse a una API de Internet.
 
-**Fallo deliberado.** En una copia cambia `builder.baseUrl(baseUrl).build()` por `builder.baseUrl(baseUrl + "/incorrecto").build()`. **Diagnóstico:** el servidor recibe una ruta con el prefijo equivocado y las aserciones de `getTarget()` fallan. Restaura la URL base recibida.
+**Fallo deliberado:** En una copia cambia `builder.baseUrl(baseUrl).build()` por `builder.baseUrl(baseUrl + "/incorrecto").build()`. **Diagnóstico:** el servidor recibe una ruta con el prefijo equivocado y las aserciones de `getTarget()` fallan. Restaura la URL base recibida.
 
 **3. Entiende**
 
@@ -354,11 +367,13 @@ La tarifa depende de la zona. Primero se consulta ubicación por código de env�
 
 Lee `calcularTarifaCompleta` en `TarifaClient.java` y el test `composesLocationAndTariffRequestsInOrder`. Ejecútalo:
 
-    ./mvnw -Dtest=TarifaClientTest#composesLocationAndTariffRequestsInOrder test
+```bash
+./mvnw -Dtest=TarifaClientTest#composesLocationAndTariffRequestsInOrder test
+```
 
-**Resultado esperado.** El test recibe `15.5`; MockWebServer registra primero `/ubicacion/RF-001` y luego `/tarifa?zona=zona-sur`.
+**Resultado esperado:** El test recibe `15.5`; MockWebServer registra primero `/ubicacion/RF-001` y luego `/tarifa?zona=zona-sur`.
 
-**Fallo deliberado.** En una copia cambia `flatMap` por `map`. **Diagnóstico:** el resultado pasa a ser `Mono<Mono<Double>>`; el método espera `Mono<Double>` y ya no compila. `flatMap` une el resultado reactivo que devuelve la segunda llamada. Restaura `flatMap`.
+**Fallo deliberado:** En una copia cambia `flatMap` por `map`. **Diagnóstico:** el resultado pasa a ser `Mono<Mono<Double>>`; el método espera `Mono<Double>` y ya no compila. `flatMap` une el resultado reactivo que devuelve la segunda llamada. Restaura `flatMap`.
 
 **3. Entiende**
 
@@ -378,11 +393,13 @@ Un servicio externo puede responder `503` en vez de un cuerpo válido. `retrieve
 
 En `TarifaClientTest.java`, ejecuta `httpServerErrorArrivesAsReactiveError`:
 
-    ./mvnw -Dtest=TarifaClientTest#httpServerErrorArrivesAsReactiveError test
+```bash
+./mvnw -Dtest=TarifaClientTest#httpServerErrorArrivesAsReactiveError test
+```
 
-**Resultado esperado.** MockWebServer recibe la primera petición y responde `503`; StepVerifier observa `WebClientResponseException` en el `Mono` compuesto.
+**Resultado esperado:** MockWebServer recibe la primera petición y responde `503`; StepVerifier observa `WebClientResponseException` en el `Mono` compuesto.
 
-**Fallo deliberado.** Cambia el estado de respuesta de `503` a `200` sin agregar un cuerpo JSON. **Diagnóstico:** `retrieve()` ya no produce un error por estado HTTP; el body vacío completa sin tarifa y la expectativa `expectError` falla. Restaura `503`.
+**Fallo deliberado:** Cambia el estado de respuesta de `503` a `200` sin agregar un cuerpo JSON. **Diagnóstico:** `retrieve()` ya no produce un error por estado HTTP; el body vacío completa sin tarifa y la expectativa `expectError` falla. Restaura `503`.
 
 **3. Entiende**
 
@@ -402,11 +419,13 @@ Una llamada externa puede tardar demasiado. Un timeout da por terminada la esper
 
 Revisa `calcularTarifaConPlazo` y `timeoutCancelsAResponseThatArrivesTooLate`. Ejecuta:
 
-    ./mvnw -Dtest=TarifaClientTest#timeoutCancelsAResponseThatArrivesTooLate test
+```bash
+./mvnw -Dtest=TarifaClientTest#timeoutCancelsAResponseThatArrivesTooLate test
+```
 
-**Resultado esperado.** La primera respuesta llega; la segunda se retrasa 300 ms. El límite de 80 ms termina el `Mono` con `TimeoutException` antes de la respuesta.
+**Resultado esperado:** La primera respuesta llega; la segunda se retrasa 300 ms. El límite de 80 ms termina el `Mono` con `TimeoutException` antes de la respuesta.
 
-**Fallo deliberado.** En una copia elimina `.timeout(timeout)` y vuelve a ejecutar el test. **Diagnóstico:** sin el límite, el publisher recibe el número cuando termina el retraso en vez de emitir `TimeoutException`. Restaura `.timeout(timeout)`.
+**Fallo deliberado:** En una copia elimina `.timeout(timeout)` y vuelve a ejecutar el test. **Diagnóstico:** sin el límite, el publisher recibe el número cuando termina el retraso en vez de emitir `TimeoutException`. Restaura `.timeout(timeout)`.
 
 **3. Entiende**
 
@@ -419,6 +438,9 @@ Registra cuánto tarda la respuesta simulada y qué error produjo el timeout. Lu
 **Fuentes oficiales:** [Spring WebClient](https://docs.spring.io/spring-framework/reference/web/webflux-webclient.html), [clientes REST de Spring Framework 7](https://docs.spring.io/spring-framework/reference/integration/rest-clients.html), [MockWebServer de OkHttp](https://github.com/square/okhttp/tree/master/mockwebserver).
 
 **¿Por qué es importante?** La composición evita bloquear durante la espera de red, y manejar error y timeout impide que una dependencia lenta o caída deje la operación sin límite.
+
+
+**Aplicación y decisión:** En el proyecto integrador, fija un timeout de la dependencia y comprueba el cuerpo de error del cliente HTTP. No mezcles block con el event loop; conservar composición no elimina la necesidad de límites de conexión y tratamiento de error.
 
 ### Tema 3: Cuándo WebFlux vale la complejidad, y R2DBC
 
@@ -440,9 +462,9 @@ Abre `examples/spring-webflux-decision-rutaflow/README.md` y compara estas combi
 | I/O bloqueante con muchas esperas concurrentes | MVC con virtual threads o WebFlux con aislamiento | conexiones DB, pools y límites del cliente |
 | HTTP y SQL reactivos, streaming o alta concurrencia I/O | WebFlux + WebClient + R2DBC | que las dependencias y el equipo soporten Reactor |
 
-**Resultado esperado.** Para cada fila puedes nombrar una medida que comprobarías: p95 de latencia, peticiones en vuelo, uso de threads, CPU o saturación del pool de conexiones.
+**Resultado esperado:** Para cada fila puedes nombrar una medida que comprobarías: p95 de latencia, peticiones en vuelo, uso de threads, CPU o saturación del pool de conexiones.
 
-**Fallo deliberado.** Recomienda WebFlux solo porque una API tiene muchas rutas. **Diagnóstico:** la cantidad de endpoints no describe concurrencia, tiempo de espera ni dependencias; pide esos datos antes de elegir.
+**Fallo deliberado:** Recomienda WebFlux solo porque una API tiene muchas rutas. **Diagnóstico:** la cantidad de endpoints no describe concurrencia, tiempo de espera ni dependencias; pide esos datos antes de elegir.
 
 **3. Entiende**
 
@@ -462,11 +484,13 @@ Reactor rechaza operaciones `block()` en threads marcados como no bloqueables, c
 
 Abre `src/main/java/academia/rutaflow/decision/DeliveryController.java` en `examples/spring-webflux-decision-rutaflow`. Ejecuta la prueba HTTP:
 
-    ./mvnw -Dtest=DecisionApplicationTest#blockInsideNettyEventLoopIsRejected test
+```bash
+./mvnw -Dtest=DecisionApplicationTest#blockInsideNettyEventLoopIsRejected test
+```
 
-**Resultado esperado.** `/demo/block` responde 500 porque `Mono.delay(...).block()` intenta esperar en el thread que atiende WebFlux.
+**Resultado esperado:** `/demo/block` responde 500 porque `Mono.delay(...).block()` intenta esperar en el thread que atiende WebFlux.
 
-**Fallo deliberado.** Sustituye `Mono.delay(Duration.ofMillis(10)).block()` por `Mono.just("dato").block()` y ejecuta la prueba. **Diagnóstico:** un `Mono.just` puede devolver el valor escalar inmediatamente; esa ruta no demuestra un bloqueo real y el test recibe 200. Restaura la espera con `Mono.delay`.
+**Fallo deliberado:** Sustituye `Mono.delay(Duration.ofMillis(10)).block()` por `Mono.just("dato").block()` y ejecuta la prueba. **Diagnóstico:** un `Mono.just` puede devolver el valor escalar inmediatamente; esa ruta no demuestra un bloqueo real y el test recibe 200. Restaura la espera con `Mono.delay`.
 
 **3. Entiende**
 
@@ -486,11 +510,13 @@ Devolver `Mono` desde un método no vuelve reactiva una consulta JDBC. Para SQL 
 
 Abre `src/main/java/academia/rutaflow/decision/DeliveryRepository.java` y `src/main/resources/application.yml`. Desde la carpeta del laboratorio ejecuta:
 
-    ./mvnw -Dtest=DecisionApplicationTest#r2dbcReadsAnExistingDelivery test
+```bash
+./mvnw -Dtest=DecisionApplicationTest#r2dbcReadsAnExistingDelivery test
+```
 
-**Resultado esperado.** El endpoint `/deliveries/RF-001` devuelve `200` con estado `IN_ROUTE`; la consulta usa `DatabaseClient` y el driver H2 R2DBC en memoria.
+**Resultado esperado:** El endpoint `/deliveries/RF-001` devuelve `200` con estado `IN_ROUTE`; la consulta usa `DatabaseClient` y el driver H2 R2DBC en memoria.
 
-**Fallo deliberado.** Cambia el parámetro nombrado `:code` de la consulta a `:trackingCode` sin cambiar `.bind("code", trackingCode)`. **Diagnóstico:** el nombre del parámetro SQL ya no coincide con el valor enlazado y la prueba deja de recibir la entrega. Restaura `:code`.
+**Fallo deliberado:** Cambia el parámetro nombrado `:code` de la consulta a `:trackingCode` sin cambiar `.bind("code", trackingCode)`. **Diagnóstico:** el nombre del parámetro SQL ya no coincide con el valor enlazado y la prueba deja de recibir la entrega. Restaura `:code`.
 
 **3. Entiende**
 
@@ -510,7 +536,9 @@ A veces una librería heredada solo ofrece una llamada síncrona. Mientras prepa
 
 Revisa `isolateBlockingCall` en `DeliveryController.java` y ejecuta:
 
-    ./mvnw -Dtest=DecisionApplicationTest#unavoidableBlockingCallCanBeIsolatedOnBoundedElastic test
+```bash
+./mvnw -Dtest=DecisionApplicationTest#unavoidableBlockingCallCanBeIsolatedOnBoundedElastic test
+```
 
 El patrón es:
 
@@ -519,9 +547,9 @@ Mono.fromCallable(() -> clienteBloqueante.consultar(codigo))
     .subscribeOn(Schedulers.boundedElastic());
 ```
 
-**Resultado esperado.** `/demo/legacy` devuelve el nombre de un thread `boundedElastic`. El código duerme 25 ms para representar una dependencia síncrona; no es una medición de rendimiento.
+**Resultado esperado:** `/demo/legacy` devuelve el nombre de un thread `boundedElastic`. El código duerme 25 ms para representar una dependencia síncrona; no es una medición de rendimiento.
 
-**Fallo deliberado.** En una copia quita `.subscribeOn(Schedulers.boundedElastic())`. **Diagnóstico:** la prueba deja de recibir un nombre que empieza por `boundedElastic-`; el callable volvió al event loop. Restaura `subscribeOn`.
+**Fallo deliberado:** En una copia quita `.subscribeOn(Schedulers.boundedElastic())`. **Diagnóstico:** la prueba deja de recibir un nombre que empieza por `boundedElastic-`; el callable volvió al event loop. Restaura `subscribeOn`.
 
 **3. Entiende**
 
@@ -536,6 +564,9 @@ Entrega las pruebas de HTTP y R2DBC en verde. Para una elección real, compara M
 **¿Por qué es importante?** El modelo reactivo solo aporta si la espera bloqueante no vuelve a ocupar el event loop y los límites reales del sistema permiten aprovecharlo.
 
 ---
+
+
+**Aplicación y decisión:** En el proyecto integrador, compara una vertical MVC/JDBC y otra WebFlux/R2DBC con carga equivalente antes de elegir. La diferencia de modelo de programación no acredita más throughput; el laboratorio demuestra persistencia reactiva local y debe medirse aparte.
 
 ## Laboratorio del módulo
 

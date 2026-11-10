@@ -764,6 +764,9 @@ El primer servidor devuelve `302` apuntando al segundo; el cliente debe devolver
 **Cierra:** conserva la suite verde y resume qué limita el filtro y qué parte debe cubrir el proxy o la red. No afirmes que un test local certifica el control de todos los destinos de producción.
 
 ---
+
+**Aplicación y decisión:** En el proyecto integrador, aplica el filtro IP también al destino resuelto y controla redirects; validar solo la cadena inicial no limita una redirección posterior. El laboratorio local no acredita todas las condiciones DNS ni una política de red del despliegue.
+
 ### Tema 5: Flujo de login completo — de `/api/auth/login` a una ruta protegida
 
 Al final podrás encadenar el login, la emisión del JWT del subtema 4.4 y el acceso protegido del subtema 4.5. Conserva el paquete `com.example.demo` y una única clase `JwtService`.
@@ -1001,6 +1004,9 @@ void emailDesconocidoUsaElMismoError() throws Exception {
 
 ---
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+
+**Aplicación y decisión:** Límite de este login: firmar y verificar un JWT no implementa por sí solo revocación, recuperación de cuenta ni protección del almacenamiento del cliente. Conserva las reglas de autorización por recurso aunque el token sea válido.
+
 ## Laboratorio práctico
 
 **Objetivo del laboratorio:** construir una API protegida con JWT y rutas con autorización por rol.

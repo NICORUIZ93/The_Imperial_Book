@@ -14,7 +14,7 @@ CONTENT = ROOT / "web/public/content"
 JSON_REPORT = ROOT / "docs/atomic-subtopics.json"
 MD_REPORT = ROOT / "docs/atomic-subtopics.md"
 TOPIC = re.compile(r"^### Tema(?:\s|:).*$", re.MULTILINE)
-SUBTOPIC = re.compile(r"^#### Subtema\s+(\d+\.\d+)\b.*$", re.MULTILINE)
+SUBTOPIC = re.compile(r"^#### Subtema\s+(\d+(?:\.\d+)+)\b.*$", re.MULTILINE)
 
 
 def matches(pattern: str, text: str) -> bool:

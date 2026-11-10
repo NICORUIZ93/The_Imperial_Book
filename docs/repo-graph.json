@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 1780,
+      "lines": 1862,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -306,7 +306,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 17797,
+      "lines": 18096,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -314,7 +314,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1081,
+      "lines": 1076,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -600,7 +600,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3934,
+      "lines": 3941,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -636,7 +636,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13670,
+      "lines": 13680,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -813,7 +813,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 11051,
+      "lines": 11049,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1088,7 +1088,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 625,
+      "lines": 646,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -5489,7 +5489,7 @@
     },
     {
       "path": "examples/rutaflow-material/spring-ai/src/test/java/academia/ChatToolsTest.java",
-      "lines": 36,
+      "lines": 59,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -5497,7 +5497,7 @@
     },
     {
       "path": "examples/rutaflow-material/spring-ai/src/test/java/academia/RagScopeTest.java",
-      "lines": 32,
+      "lines": 47,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -5505,7 +5505,7 @@
     },
     {
       "path": "examples/rutaflow-material/verification.json",
-      "lines": 91,
+      "lines": 93,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -6433,6 +6433,90 @@
     {
       "path": "examples/spring-boot-upload-push-rutaflow/src/test/java/academia/rutaflow/upload/UploadPushIntegrationTest.java",
       "lines": 124,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-cache-rutaflow/README.md",
+      "lines": 44,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Cach\u00e9 de tarifas en RutaFlow",
+        "## Integraci\u00f3n Redis",
+        "## L\u00edmites"
+      ]
+    },
+    {
+      "path": "examples/spring-cache-rutaflow/src/main/java/academia/rutaflow/cache/CacheConfiguration.java",
+      "lines": 9,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-cache-rutaflow/src/main/java/academia/rutaflow/cache/CacheRutaflowApplication.java",
+      "lines": 12,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-cache-rutaflow/src/main/java/academia/rutaflow/cache/CatalogoTarifaRepository.java",
+      "lines": 43,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-cache-rutaflow/src/main/java/academia/rutaflow/cache/Tarifa.java",
+      "lines": 6,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-cache-rutaflow/src/main/java/academia/rutaflow/cache/TarifaRepository.java",
+      "lines": 11,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-cache-rutaflow/src/main/java/academia/rutaflow/cache/TarifaService.java",
+      "lines": 32,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-cache-rutaflow/src/main/resources/application-redis.yml",
+      "lines": 11,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-cache-rutaflow/src/main/resources/application.yml",
+      "lines": 7,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-cache-rutaflow/src/test/java/academia/rutaflow/cache/TarifaServiceTest.java",
+      "lines": 89,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -14339,7 +14423,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-20.md",
-      "lines": 797,
+      "lines": 1063,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

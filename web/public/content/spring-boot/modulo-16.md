@@ -40,7 +40,7 @@ cd examples/java-jpa-lab
 
 **Resultado esperado:** verde; el test consulta `cliente_id` directamente y confirma que coincide con el ID del cliente.
 
-**Fallo deliberado.** En `Cliente.agregar`, comenta `pedido.asignarCliente(this);` y repite el comando. El test debe fallar: la lista Java contiene el pedido, pero falta el vínculo que JPA escribe en la fila. **Diagnóstico:** revisa la columna `cliente_id` y el error de restricción que devuelve el test.
+**Fallo deliberado:** En `Cliente.agregar`, comenta `pedido.asignarCliente(this);` y repite el comando. El test debe fallar: la lista Java contiene el pedido, pero falta el vínculo que JPA escribe en la fila. **Diagnóstico:** revisa la columna `cliente_id` y el error de restricción que devuelve el test.
 
 **Entiende:** `@ManyToOne` es el lado propietario porque tiene la columna. `mappedBy` significa “esta lista refleja la relación definida por `Pedido.cliente`”. Vuelve a poner la llamada y ejecuta el test para dejarlo verde.
 
@@ -65,7 +65,7 @@ Abre `examples/java-jpa-lab/src/test/java/academia/pedidos/PedidoJpaLabTest.java
 
 **Resultado esperado:** dos filas de pedido y ambas con la FK del cliente; después de `clear()`, JPQL las recupera en orden.
 
-**Fallo deliberado.** Comenta cualquiera de las dos líneas de `agregar` y mira qué expectativa falla. **Diagnóstico:** si falta el `add`, la colección queda vacía; si falta `asignarCliente`, no se guarda la FK. Restaura la línea antes de seguir.
+**Fallo deliberado:** Comenta cualquiera de las dos líneas de `agregar` y mira qué expectativa falla. **Diagnóstico:** si falta el `add`, la colección queda vacía; si falta `asignarCliente`, no se guarda la FK. Restaura la línea antes de seguir.
 
 **Entiende:** `clear()` vacía la memoria de trabajo de JPA. Por eso el test vuelve a leer desde H2 y no confunde los objetos que ya tenía en memoria con lo que realmente quedó guardado.
 
@@ -89,7 +89,7 @@ Abre `examples/java-jpa-lab/src/test/java/academia/pedidos/PedidoJpaLabTest.java
 
 **Resultado esperado:** verde porque el test espera que Hibernate rechace el borrado mientras el pedido todavía apunta al cliente (`TransientPropertyValueException`). No interpreta `PERSIST` como permiso para borrar al hijo.
 
-**Fallo deliberado.** Cambia `cascade = CascadeType.PERSIST` por `cascade = CascadeType.ALL` y repite. El test debe fallar porque ahora también se propaga el borrado. Restaura `PERSIST`. **Diagnóstico:** el test ya no recibe la excepción esperada porque `ALL` también elimina al pedido.
+**Fallo deliberado:** Cambia `cascade = CascadeType.PERSIST` por `cascade = CascadeType.ALL` y repite. El test debe fallar porque ahora también se propaga el borrado. Restaura `PERSIST`. **Diagnóstico:** el test ya no recibe la excepción esperada porque `ALL` también elimina al pedido.
 
 **Entiende:** Una cascada es una regla explícita sobre operaciones del ciclo de vida. No activa todas las operaciones mágicamente: `PERSIST` guarda; `REMOVE` borra; `orphanRemoval` borra un hijo al quitarlo de la relación. Para pedidos históricos, elige borrado lógico o conserva el cliente; no añadas `ALL` por comodidad.
 
@@ -109,7 +109,7 @@ Después abre `examples/java-jpa-lab/src/test/java/academia/pedidos/PedidoJpaLab
 
 **Resultado esperado:** pasan las pruebas de relación, cascada, búsqueda y carga. La FK consultada coincide con el cliente guardado; Hibernate rechaza borrar al cliente mientras el pedido conserva esa referencia.
 
-**Fallo deliberado.** Cambia temporalmente `name = "cliente_id"` por `name = "cliente"` en `@JoinColumn` y corre el primer test. La consulta SQL directa debe fallar porque el laboratorio comprueba la columna `cliente_id`. **Diagnóstico:** busca el error de columna inexistente. Restaura el nombre y confirma que pasa.
+**Fallo deliberado:** Cambia temporalmente `name = "cliente_id"` por `name = "cliente"` en `@JoinColumn` y corre el primer test. La consulta SQL directa debe fallar porque el laboratorio comprueba la columna `cliente_id`. **Diagnóstico:** busca el error de columna inexistente. Restaura el nombre y confirma que pasa.
 
 **Entiende:** `nullable = false` expresa la regla en el mapeo; el esquema generado aplica la restricción en H2. En un proyecto persistente, una migración Flyway debe expresar y versionar esa misma regla. El laboratorio no demuestra el comportamiento de PostgreSQL ni de una política de borrado distinta.
 
@@ -144,7 +144,7 @@ System.out.println("Consultas: " + consultas);
 
 **Resultado esperado:** con la versión fijada en este laboratorio, se observa `N+1=4`: una consulta de pedidos y tres consultas de cliente. El número cambia con cantidad de clientes distintos, caché y proveedor.
 
-**Fallo deliberado.** Comenta el acceso a `getNombre()` y corre el test. La comparación pierde la diferencia porque ya no se toca la asociación. **Diagnóstico:** el conteo vuelve a reflejar solo la consulta inicial. Restaura la línea.
+**Fallo deliberado:** Comenta el acceso a `getNombre()` y corre el test. La comparación pierde la diferencia porque ya no se toca la asociación. **Diagnóstico:** el conteo vuelve a reflejar solo la consulta inicial. Restaura la línea.
 
 **Entiende:** N+1 significa una consulta inicial más consultas provocadas al recorrer resultados. Si varios pedidos apuntan al mismo cliente, el contexto de persistencia puede reutilizarlo; cuenta asociaciones distintas y registra la configuración.
 
@@ -172,7 +172,7 @@ Repite el comando del subtema anterior.
 
 **Resultado esperado:** en este laboratorio se observa `@EntityGraph=1`; la prueba exige que la estrategia reduzca las consultas frente a N+1. La anotación describe los datos necesarios para esta consulta, no el plan SQL exacto en todos los proveedores.
 
-**Fallo deliberado.** Cambia temporalmente `attributePaths = "cliente"` por `attributePaths = "clientes"`. El test debe fallar al resolver una ruta que no existe. **Diagnóstico:** Spring Data indica que no encuentra el atributo `clientes` en `Pedido`. Restaura `cliente`.
+**Fallo deliberado:** Cambia temporalmente `attributePaths = "cliente"` por `attributePaths = "clientes"`. El test debe fallar al resolver una ruta que no existe. **Diagnóstico:** Spring Data indica que no encuentra el atributo `clientes` en `Pedido`. Restaura `cliente`.
 
 **Entiende:** `@EntityGraph` permite declarar el grafo que este método requiere. JPA describe el resultado de carga; Hibernate elige cómo obtenerlo. Verifica SQL en tu versión cuando rendimiento y paginación importan.
 
@@ -190,7 +190,7 @@ Repite el comando del subtema anterior.
 
 **Resultado esperado:** el test espera `LazyInitializationException` al leer `pedido.getCliente().getNombre()` después de cerrar el EntityManager.
 
-**Fallo deliberado.** Mueve la lectura de `getNombre()` antes de `lectura.close()`. La prueba deja de recibir la excepción; devuelve el acceso a después del cierre. **Diagnóstico:** el proxy sí pudo cargar la asociación mientras el EntityManager seguía abierto.
+**Fallo deliberado:** Mueve la lectura de `getNombre()` antes de `lectura.close()`. La prueba deja de recibir la excepción; devuelve el acceso a después del cierre. **Diagnóstico:** el proxy sí pudo cargar la asociación mientras el EntityManager seguía abierto.
 
 **Entiende:** JPA define `EAGER` como requisito de carga inmediata y `LAZY` como sugerencia que el proveedor puede cumplir. `ManyToOne` es EAGER por defecto; en este modelo se pidió LAZY. No soluciones el error cargando todo EAGER: crea una consulta o DTO para el caso de uso y construye la respuesta dentro de la transacción.
 
@@ -216,7 +216,7 @@ Ejecuta la prueba que solicita dos elementos de una página de tres:
 
 **Resultado esperado:** la página contiene dos pares referencia/nombre, declara tres resultados totales y señala que hay otra página. Hibernate emite la consulta de datos y una consulta de conteo.
 
-**Fallo deliberado.** Cambia `p.cliente.nombre` por `p.cliente.apellido` en el JPQL. La consulta falla porque `Cliente` no tiene ese atributo. **Diagnóstico:** Hibernate no puede resolver `apellido` en `Cliente`. Restaura `nombre`.
+**Fallo deliberado:** Cambia `p.cliente.nombre` por `p.cliente.apellido` en el JPQL. La consulta falla porque `Cliente` no tiene ese atributo. **Diagnóstico:** Hibernate no puede resolver `apellido` en `Cliente`. Restaura `nombre`.
 
 **Entiende:** Un DTO devuelve solo lo que consume la pantalla. `Page` también suele requerir contar resultados; si ese conteo pesa, evalúa `Slice` o una estrategia específica. Una página DTO evita paginar una colección cargada con `JOIN FETCH` y reduce columnas, pero mide el plan con datos representativos.
 

@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 276,
+    "topicsWithSignals": 281,
     "newLaboratories": 25
   },
   "priorities": {
@@ -13027,7 +13027,9 @@
       "title": "Tema 4: Caché con Spring Cache, Caffeine y Redis",
       "file": "web/public/content/spring-boot/modulo-20.md",
       "line": 342,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -13037,8 +13039,10 @@
       "module": 20,
       "title": "Tema 5: @Async y ejecutores: trabajo en segundo plano con límites",
       "file": "web/public/content/spring-boot/modulo-20.md",
-      "line": 417,
-      "signals": [],
+      "line": 513,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -13048,8 +13052,10 @@
       "module": 20,
       "title": "Tema complementario: Integraciones empresariales, SOAP y fronteras de protocolo",
       "file": "web/public/content/spring-boot/modulo-20.md",
-      "line": 581,
-      "signals": [],
+      "line": 637,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -13059,8 +13065,10 @@
       "module": 20,
       "title": "Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo",
       "file": "web/public/content/spring-boot/modulo-20.md",
-      "line": 640,
-      "signals": [],
+      "line": 750,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": true,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -13070,8 +13078,10 @@
       "module": 20,
       "title": "Tema 7: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar",
       "file": "web/public/content/spring-boot/modulo-20.md",
-      "line": 727,
-      "signals": [],
+      "line": 924,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": true,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"

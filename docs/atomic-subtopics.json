@@ -93,10 +93,10 @@
     },
     "spring-boot": {
       "topics": 111,
-      "completeTopics": 64,
-      "topicsWith3to6Subtopics": 95,
-      "subtopics": 339,
-      "completeSubtopics": 230
+      "completeTopics": 111,
+      "topicsWith3to6Subtopics": 111,
+      "subtopics": 393,
+      "completeSubtopics": 393
     }
   },
   "topics": {
@@ -12699,12 +12699,12 @@
               "context": true,
               "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
+              "deliberateFailure": true,
               "understand": true,
               "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
             "id": "5.2",
@@ -12713,43 +12713,43 @@
               "context": true,
               "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
+              "deliberateFailure": true,
               "understand": true,
               "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
             "id": "5.3",
             "title": "#### Subtema 5.3: Resuelve el nombre del servicio por entorno · 10 min",
             "criteria": {
               "context": true,
-              "action": false,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
+              "deliberateFailure": true,
               "understand": true,
               "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
             "id": "5.4",
             "title": "#### Subtema 5.4: Ajusta el cliente al presupuesto de la operación · 5 min",
             "criteria": {
               "context": true,
-              "action": false,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
+              "deliberateFailure": true,
               "understand": true,
               "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           }
         ],
-        "complete": false
+        "complete": true
       },
       {
         "module": 10,
@@ -12763,12 +12763,12 @@
               "context": true,
               "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
+              "deliberateFailure": true,
               "understand": true,
               "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
             "id": "6.2",
@@ -12777,12 +12777,12 @@
               "context": true,
               "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
+              "deliberateFailure": true,
               "understand": true,
               "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
             "id": "6.3",
@@ -12791,29 +12791,29 @@
               "context": true,
               "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
+              "deliberateFailure": true,
               "understand": true,
               "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
             "id": "6.4",
             "title": "#### Subtema 6.4: Cambia el contrato sin romper datos · 10 min",
             "criteria": {
               "context": true,
-              "action": false,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
+              "deliberateFailure": true,
               "understand": true,
               "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           }
         ],
-        "complete": false
+        "complete": true
       },
       {
         "module": 10,
@@ -12827,12 +12827,12 @@
               "context": true,
               "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
+              "deliberateFailure": true,
               "understand": true,
               "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
             "id": "7.2",
@@ -12841,26 +12841,26 @@
               "context": true,
               "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
+              "deliberateFailure": true,
               "understand": true,
               "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
             "id": "7.3",
             "title": "#### Subtema 7.3: Evita compartir almacenamiento entre contextos · 5 min",
             "criteria": {
               "context": true,
-              "action": false,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
+              "deliberateFailure": true,
               "understand": true,
               "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
             "id": "7.4",
@@ -12869,15 +12869,15 @@
               "context": true,
               "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
+              "deliberateFailure": true,
               "understand": true,
               "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           }
         ],
-        "complete": false
+        "complete": true
       },
       {
         "module": 10,
@@ -13397,7 +13397,7 @@
         "subtopicCount": 4,
         "subtopics": [
           {
-            "id": "12.1",
+            "id": "12.1.1",
             "title": "#### Subtema 12.1.1: Sigue una petición por las capas · 8 min",
             "criteria": {
               "context": true,
@@ -13411,7 +13411,7 @@
             "complete": true
           },
           {
-            "id": "12.1",
+            "id": "12.1.2",
             "title": "#### Subtema 12.1.2: Deja que Flyway cree la tabla · 10 min",
             "criteria": {
               "context": true,
@@ -13425,7 +13425,7 @@
             "complete": true
           },
           {
-            "id": "12.1",
+            "id": "12.1.3",
             "title": "#### Subtema 12.1.3: Valida la solicitud antes de guardar · 10 min",
             "criteria": {
               "context": true,
@@ -13439,7 +13439,7 @@
             "complete": true
           },
           {
-            "id": "12.1",
+            "id": "12.1.4",
             "title": "#### Subtema 12.1.4: Comprueba HTTP y PostgreSQL juntos · 12 min",
             "criteria": {
               "context": true,
@@ -13461,7 +13461,7 @@
         "subtopicCount": 4,
         "subtopics": [
           {
-            "id": "12.2",
+            "id": "12.2.1",
             "title": "#### Subtema 12.2.1: Verifica un JWT firmado · 10 min",
             "criteria": {
               "context": true,
@@ -13475,7 +13475,7 @@
             "complete": true
           },
           {
-            "id": "12.2",
+            "id": "12.2.2",
             "title": "#### Subtema 12.2.2: Distingue identidad de permiso · 10 min",
             "criteria": {
               "context": true,
@@ -13489,7 +13489,7 @@
             "complete": true
           },
           {
-            "id": "12.2",
+            "id": "12.2.3",
             "title": "#### Subtema 12.2.3: Cuenta solo las entregas guardadas · 10 min",
             "criteria": {
               "context": true,
@@ -13503,7 +13503,7 @@
             "complete": true
           },
           {
-            "id": "12.2",
+            "id": "12.2.4",
             "title": "#### Subtema 12.2.4: Consulta la métrica sin abrirla a todos · 10 min",
             "criteria": {
               "context": true,
@@ -13525,7 +13525,7 @@
         "subtopicCount": 4,
         "subtopics": [
           {
-            "id": "12.3",
+            "id": "12.3.1",
             "title": "#### Subtema 12.3.1: Protege la migración con una prueba de configuración · 8 min",
             "criteria": {
               "context": true,
@@ -13539,7 +13539,7 @@
             "complete": true
           },
           {
-            "id": "12.3",
+            "id": "12.3.2",
             "title": "#### Subtema 12.3.2: Comprueba el flujo integrado completo · 10 min",
             "criteria": {
               "context": true,
@@ -13553,7 +13553,7 @@
             "complete": true
           },
           {
-            "id": "12.3",
+            "id": "12.3.3",
             "title": "#### Subtema 12.3.3: Declara lo que todavía falta para desplegar · 8 min",
             "criteria": {
               "context": true,
@@ -13567,7 +13567,7 @@
             "complete": true
           },
           {
-            "id": "12.3",
+            "id": "12.3.4",
             "title": "#### Subtema 12.3.4: Deja una ruta técnica para el siguiente nivel · 8 min",
             "criteria": {
               "context": true,
@@ -13589,7 +13589,7 @@
         "subtopicCount": 4,
         "subtopics": [
           {
-            "id": "13.1",
+            "id": "13.1.1",
             "title": "#### Subtema 13.1.1: Detecta la transacción al entrar por el proxy · 8 min",
             "criteria": {
               "context": true,
@@ -13603,7 +13603,7 @@
             "complete": true
           },
           {
-            "id": "13.1",
+            "id": "13.1.2",
             "title": "#### Subtema 13.1.2: Observa una llamada interna con `this` · 8 min",
             "criteria": {
               "context": true,
@@ -13617,7 +13617,7 @@
             "complete": true
           },
           {
-            "id": "13.1",
+            "id": "13.1.3",
             "title": "#### Subtema 13.1.3: Corrige el límite extrayendo otro bean · 10 min",
             "criteria": {
               "context": true,
@@ -13631,7 +13631,7 @@
             "complete": true
           },
           {
-            "id": "13.1",
+            "id": "13.1.4",
             "title": "#### Subtema 13.1.4: Comprueba la frontera antes de añadir escrituras · 8 min",
             "criteria": {
               "context": true,
@@ -13653,7 +13653,7 @@
         "subtopicCount": 4,
         "subtopics": [
           {
-            "id": "13.2",
+            "id": "13.2.1",
             "title": "#### Subtema 13.2.1: Deja que la base imponga la clave única · 8 min",
             "criteria": {
               "context": true,
@@ -13667,7 +13667,7 @@
             "complete": true
           },
           {
-            "id": "13.2",
+            "id": "13.2.2",
             "title": "#### Subtema 13.2.2: Registra un intento sin lanzar una excepción · 8 min",
             "criteria": {
               "context": true,
@@ -13681,7 +13681,7 @@
             "complete": true
           },
           {
-            "id": "13.2",
+            "id": "13.2.3",
             "title": "#### Subtema 13.2.3: Fuerza una carrera entre dos solicitudes · 10 min",
             "criteria": {
               "context": true,
@@ -13695,7 +13695,7 @@
             "complete": true
           },
           {
-            "id": "13.2",
+            "id": "13.2.4",
             "title": "#### Subtema 13.2.4: Separa reintentos HTTP de reenvíos Kafka · 10 min",
             "criteria": {
               "context": true,
@@ -13717,63 +13717,63 @@
         "subtopicCount": 4,
         "subtopics": [
           {
-            "id": "13.3",
+            "id": "13.3.1",
             "title": "#### Subtema 13.3.1: Lee la respuesta que recibe la app · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "13.3",
+            "id": "13.3.2",
             "title": "#### Subtema 13.3.2: Fija nombres y valores que usa el cliente · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "13.3",
+            "id": "13.3.3",
             "title": "#### Subtema 13.3.3: Comprueba el error que ve el consumidor · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "13.3",
+            "id": "13.3.4",
             "title": "#### Subtema 13.3.4: Protege cambios entre despliegues · 10 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           }
         ],
-        "complete": false
+        "complete": true
       },
       {
         "module": 13,
@@ -13781,63 +13781,63 @@
         "subtopicCount": 4,
         "subtopics": [
           {
-            "id": "13.4",
+            "id": "13.4.1",
             "title": "#### Subtema 13.4.1: Instrumenta el trabajo de negocio · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "13.4",
+            "id": "13.4.2",
             "title": "#### Subtema 13.4.2: Sigue una solicitud entre servicios · 10 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "13.4",
+            "id": "13.4.3",
             "title": "#### Subtema 13.4.3: Mantén las etiquetas de métricas acotadas · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "13.4",
+            "id": "13.4.4",
             "title": "#### Subtema 13.4.4: Convierte la señal en una decisión · 10 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           }
         ],
-        "complete": false
+        "complete": true
       },
       {
         "module": 14,
@@ -13845,63 +13845,63 @@
         "subtopicCount": 4,
         "subtopics": [
           {
-            "id": "14.1",
+            "id": "14.1.1",
             "title": "#### Subtema 14.1.1: Modela estados que sí existen · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "14.1",
+            "id": "14.1.2",
             "title": "#### Subtema 14.1.2: Devuelve un contrato público pequeño · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "14.1",
+            "id": "14.1.3",
             "title": "#### Subtema 14.1.3: Cancela sin destruir el historial · 10 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "14.1",
+            "id": "14.1.4",
             "title": "#### Subtema 14.1.4: Repite DELETE sin cambiar el resultado · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           }
         ],
-        "complete": false
+        "complete": true
       },
       {
         "module": 14,
@@ -13909,63 +13909,63 @@
         "subtopicCount": 4,
         "subtopics": [
           {
-            "id": "14.2",
+            "id": "14.2.1",
             "title": "#### Subtema 14.2.1: Guarda puntos con un SRID fijo · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "14.2",
+            "id": "14.2.2",
             "title": "#### Subtema 14.2.2: Especifica cómo leer latitud y longitud · 10 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "14.2",
+            "id": "14.2.3",
             "title": "#### Subtema 14.2.3: Comprueba el índice con EXPLAIN · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "14.2",
+            "id": "14.2.4",
             "title": "#### Subtema 14.2.4: Separa candidatos cercanos de una ruta · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           }
         ],
-        "complete": false
+        "complete": true
       },
       {
         "module": 14,
@@ -13973,63 +13973,63 @@
         "subtopicCount": 4,
         "subtopics": [
           {
-            "id": "14.3",
+            "id": "14.3.1",
             "title": "#### Subtema 14.3.1: Crea un punto Java con el SRID correcto · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "14.3",
+            "id": "14.3.2",
             "title": "#### Subtema 14.3.2: Mapea Point al campo de la entidad · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "14.3",
+            "id": "14.3.3",
             "title": "#### Subtema 14.3.3: Detecta dos escrituras sobre versiones distintas · 10 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "14.3",
+            "id": "14.3.4",
             "title": "#### Subtema 14.3.4: Observa la pérdida si quitas @Version · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           }
         ],
-        "complete": false
+        "complete": true
       },
       {
         "module": 14,
@@ -14037,63 +14037,63 @@
         "subtopicCount": 4,
         "subtopics": [
           {
-            "id": "14.4",
+            "id": "14.4.1",
             "title": "#### Subtema 14.4.1: Verifica el Bearer firmado · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "14.4",
+            "id": "14.4.2",
             "title": "#### Subtema 14.4.2: Distingue autenticación de rol · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "14.4",
+            "id": "14.4.3",
             "title": "#### Subtema 14.4.3: Comprueba que el recurso pertenece al subject · 10 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "14.4",
+            "id": "14.4.4",
             "title": "#### Subtema 14.4.4: Reproduce y corrige acceso horizontal · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           }
         ],
-        "complete": false
+        "complete": true
       },
       {
         "module": 14,
@@ -14101,63 +14101,63 @@
         "subtopicCount": 4,
         "subtopics": [
           {
-            "id": "14.5",
+            "id": "14.5.1",
             "title": "#### Subtema 14.5.1: Abre la conexión y define destinos · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "14.5",
+            "id": "14.5.2",
             "title": "#### Subtema 14.5.2: Suscríbete y recibe una posición · 10 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "14.5",
+            "id": "14.5.3",
             "title": "#### Subtema 14.5.3: Evita procesar dos veces la misma secuencia · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "14.5",
+            "id": "14.5.4",
             "title": "#### Subtema 14.5.4: Diagnostica destinos y límites de producción · 10 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           }
         ],
-        "complete": false
+        "complete": true
       },
       {
         "module": 14,
@@ -14165,63 +14165,63 @@
         "subtopicCount": 4,
         "subtopics": [
           {
-            "id": "14.6",
+            "id": "14.6.1",
             "title": "#### Subtema 14.6.1: Recibe el archivo con límites · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "14.6",
+            "id": "14.6.2",
             "title": "#### Subtema 14.6.2: Comprueba el contenido de la imagen · 10 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "14.6",
+            "id": "14.6.3",
             "title": "#### Subtema 14.6.3: Notifica solo tras guardar · 10 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "14.6",
+            "id": "14.6.4",
             "title": "#### Subtema 14.6.4: Traza el archivo y define qué falta · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           }
         ],
-        "complete": false
+        "complete": true
       },
       {
         "module": 15,
@@ -14229,63 +14229,63 @@
         "subtopicCount": 4,
         "subtopics": [
           {
-            "id": "15.1",
+            "id": "15.1.1",
             "title": "#### Subtema 15.1.1: Empieza con cero solicitudes · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "15.1",
+            "id": "15.1.2",
             "title": "#### Subtema 15.1.2: Solicita tres y luego siete · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "15.1",
+            "id": "15.1.3",
             "title": "#### Subtema 15.1.3: Mira la demanda sin límite · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "15.1",
+            "id": "15.1.4",
             "title": "#### Subtema 15.1.4: Observa cómo `limitRate` cambia las tandas · 10 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           }
         ],
-        "complete": false
+        "complete": true
       },
       {
         "module": 15,
@@ -14293,63 +14293,63 @@
         "subtopicCount": 4,
         "subtopics": [
           {
-            "id": "15.2",
+            "id": "15.2.1",
             "title": "#### Subtema 15.2.1: Arranca el singleton una sola vez · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "15.2",
+            "id": "15.2.2",
             "title": "#### Subtema 15.2.2: Comprueba la base desde cada clase · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "15.2",
+            "id": "15.2.3",
             "title": "#### Subtema 15.2.3: Aísla los datos compartidos · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "15.2",
+            "id": "15.2.4",
             "title": "#### Subtema 15.2.4: Decide si conviene compartir · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           }
         ],
-        "complete": false
+        "complete": true
       },
       {
         "module": 15,
@@ -14357,63 +14357,63 @@
         "subtopicCount": 4,
         "subtopics": [
           {
-            "id": "15.3",
+            "id": "15.3.1",
             "title": "#### Subtema 15.3.1: Ubica el puerto y el adaptador · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "15.3",
+            "id": "15.3.2",
             "title": "#### Subtema 15.3.2: Escribe la regla sobre el bytecode · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "15.3",
+            "id": "15.3.3",
             "title": "#### Subtema 15.3.3: Protege también el caso de uso · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "15.3",
+            "id": "15.3.4",
             "title": "#### Subtema 15.3.4: Decide qué reglas merece mantener · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           }
         ],
-        "complete": false
+        "complete": true
       },
       {
         "module": 15,
@@ -14421,63 +14421,63 @@
         "subtopicCount": 4,
         "subtopics": [
           {
-            "id": "15.4",
+            "id": "15.4.1",
             "title": "#### Subtema 15.4.1: Separa concurrencia de ritmo · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "15.4",
+            "id": "15.4.2",
             "title": "#### Subtema 15.4.2: Mantén la llamada dentro del Bulkhead · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "15.4",
+            "id": "15.4.3",
             "title": "#### Subtema 15.4.3: Cuenta permisos por período · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "15.4",
+            "id": "15.4.4",
             "title": "#### Subtema 15.4.4: Decide el límite y observa sus fronteras · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           }
         ],
-        "complete": false
+        "complete": true
       },
       {
         "module": 15,
@@ -14485,63 +14485,63 @@
         "subtopicCount": 4,
         "subtopics": [
           {
-            "id": "15.5",
+            "id": "15.5.1",
             "title": "#### Subtema 15.5.1: Dibuja los pasos del pedido · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "15.5",
+            "id": "15.5.2",
             "title": "#### Subtema 15.5.2: Ejecuta y compensa en orden inverso · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "15.5",
+            "id": "15.5.3",
             "title": "#### Subtema 15.5.3: Compara fallo y éxito · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "15.5",
+            "id": "15.5.4",
             "title": "#### Subtema 15.5.4: Delimita la demo y planea la recuperación · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           }
         ],
-        "complete": false
+        "complete": true
       },
       {
         "module": 15,
@@ -14549,63 +14549,63 @@
         "subtopicCount": 4,
         "subtopics": [
           {
-            "id": "15.6",
+            "id": "15.6.1",
             "title": "#### Subtema 15.6.1: Guarda hechos, no solo el estado final · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "15.6",
+            "id": "15.6.2",
             "title": "#### Subtema 15.6.2: Reconstruye el pedido paso a paso · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "15.6",
+            "id": "15.6.3",
             "title": "#### Subtema 15.6.3: Rechaza eventos que rompen las reglas · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "15.6",
+            "id": "15.6.4",
             "title": "#### Subtema 15.6.4: Delimita el almacenamiento y la reconstrucción · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           }
         ],
-        "complete": false
+        "complete": true
       },
       {
         "module": 15,
@@ -14613,63 +14613,63 @@
         "subtopicCount": 4,
         "subtopics": [
           {
-            "id": "15.7",
+            "id": "15.7.1",
             "title": "#### Subtema 15.7.1: Conserva el trabajo pendiente · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "15.7",
+            "id": "15.7.2",
             "title": "#### Subtema 15.7.2: Confirma juntos el efecto y su estado · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "15.7",
+            "id": "15.7.3",
             "title": "#### Subtema 15.7.3: Reabre y reintenta sin duplicar · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "15.7",
+            "id": "15.7.4",
             "title": "#### Subtema 15.7.4: Define los límites de recuperación · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           }
         ],
-        "complete": false
+        "complete": true
       },
       {
         "module": 15,
@@ -14677,63 +14677,63 @@
         "subtopicCount": 4,
         "subtopics": [
           {
-            "id": "15.8",
+            "id": "15.8.1",
             "title": "#### Subtema 15.8.1: Haz que el agregado proteja la regla · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "15.8",
+            "id": "15.8.2",
             "title": "#### Subtema 15.8.2: Conecta el caso de uso a un puerto · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "15.8",
+            "id": "15.8.3",
             "title": "#### Subtema 15.8.3: Usa Spring como adaptador HTTP · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
-            "id": "15.8",
+            "id": "15.8.4",
             "title": "#### Subtema 15.8.4: Comprueba el corte vertical y sus límites · 8 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           }
         ],
-        "complete": false
+        "complete": true
       },
       {
         "module": 16,
@@ -15285,17 +15285,17 @@
             "title": "#### Subtema 1.3: Cambia el modelo interno sin cambiar la API · 10 min",
             "criteria": {
               "context": true,
-              "action": false,
+              "action": true,
               "expectedResult": true,
               "deliberateFailure": true,
               "understand": true,
               "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           }
         ],
-        "complete": false
+        "complete": true
       },
       {
         "module": 2,
@@ -15742,37 +15742,336 @@
       {
         "module": 20,
         "topic": "### Tema 4: Caché con Spring Cache, Caffeine y Redis",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 5,
+        "subtopics": [
+          {
+            "id": "20.13",
+            "title": "#### Subtema 20.13 · Comprueba qué trabajo ahorra una caché · 7 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "20.14",
+            "title": "#### Subtema 20.14 · Invalida o reemplaza la copia al actualizar · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "20.15",
+            "title": "#### Subtema 20.15 · Pon un límite de memoria y de antigüedad · 8 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "20.16",
+            "title": "#### Subtema 20.16 · Mide las lecturas que realmente evitas · 8 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "20.17",
+            "title": "#### Subtema 20.17 · Comprueba una caché compartida en Redis · 12 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 20,
         "topic": "### Tema 5: @Async y ejecutores: trabajo en segundo plano con límites",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 4,
+        "subtopics": [
+          {
+            "id": "20.18",
+            "title": "#### Subtema 20.18 · Ejecuta una llamada a través del proxy · 8 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "20.19",
+            "title": "#### Subtema 20.19 · Diagnostica la auto-invocación · 8 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "20.20",
+            "title": "#### Subtema 20.20 · Observa el error del trabajo · 8 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "20.21",
+            "title": "#### Subtema 20.21 · Rechaza trabajo cuando no queda capacidad · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 20,
         "topic": "### Tema complementario: Integraciones empresariales, SOAP y fronteras de protocolo",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 4,
+        "subtopics": [
+          {
+            "id": "20.22",
+            "title": "#### Subtema 20.22 · Lee un contrato antes de adaptar el dominio · 7 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "20.23",
+            "title": "#### Subtema 20.23 · Separa prefijo de namespace y versión · 7 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "20.24",
+            "title": "#### Subtema 20.24 · Rechaza campos vacíos y respuestas Fault · 8 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "20.25",
+            "title": "#### Subtema 20.25 · Define garantías del adaptador del proyecto · 8 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 20,
         "topic": "### Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 4,
+        "subtopics": [
+          {
+            "id": "20.26",
+            "title": "#### Subtema 20.26 · Separa ChatClient del modelo · 9 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "20.27",
+            "title": "#### Subtema 20.27 · Autoriza antes de consultar el envío · 9 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "20.28",
+            "title": "#### Subtema 20.28 · Aísla permisos entre dos sesiones · 9 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "20.29",
+            "title": "#### Subtema 20.29 · Revisa qué argumentos puede proponer el modelo · 8 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 20,
         "topic": "### Tema 7: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 4,
+        "subtopics": [
+          {
+            "id": "20.30",
+            "title": "#### Subtema 20.30 · Filtra la empresa antes de construir contexto · 9 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "20.31",
+            "title": "#### Subtema 20.31 · Conserva un resultado vacío cuando no hay evidencia · 8 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "20.32",
+            "title": "#### Subtema 20.32 · Limita resultados después de filtrar y conserva IDs · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "20.33",
+            "title": "#### Subtema 20.33 · Excluye documentos sin empresa y delimita la siguiente prueba · 9 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 21,
@@ -15927,79 +16226,552 @@
       {
         "module": 22,
         "topic": "### Tema 1: Hexagonal: puertos que hablan el idioma del dominio",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "22.1.1",
+            "title": "#### Subtema 22.1.1 · Ejecuta el ejemplo completo y reconoce sus límites · 12 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "22.1.2",
+            "title": "#### Subtema 22.1.2 · Amplía una consulta del puerto sin filtrar infraestructura · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "22.1.3",
+            "title": "#### Subtema 22.1.3 · Transfiere la regla a una cancelación independiente · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 22,
         "topic": "### Tema 2: C4: contexto, contenedores, componentes y código",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "22.2.1",
+            "title": "#### Subtema 22.2.1 · Ejecuta el ejemplo completo y reconoce sus límites · 12 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "22.2.2",
+            "title": "#### Subtema 22.2.2 · Contrasta un contenedor con el código que existiría · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "22.2.3",
+            "title": "#### Subtema 22.2.3 · Añade una relación solo después de justificarla · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 22,
         "topic": "### Tema 3: ADR: decisiones con contexto, alternativas y consecuencias",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "22.3.1",
+            "title": "#### Subtema 22.3.1 · Ejecuta el ejemplo completo y reconoce sus límites · 12 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "22.3.2",
+            "title": "#### Subtema 22.3.2 · Compara alternativas con condiciones concretas · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "22.3.3",
+            "title": "#### Subtema 22.3.3 · Reemplaza una decisión conservando el historial · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 23,
         "topic": "### Tema 1: módulos y límites entre paquetes",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "23.1.1",
+            "title": "#### Subtema 23.1.1 · Reconoce la frontera verificable · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "23.1.2",
+            "title": "#### Subtema 23.1.2 · Publica contratos pequeños · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "23.1.3",
+            "title": "#### Subtema 23.1.3 · Comprueba antes de mover paquetes · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 23,
         "topic": "### Tema 2: eventos entre módulos sin importar implementación",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "23.2.1",
+            "title": "#### Subtema 23.2.1 · Publica desde el servicio · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "23.2.2",
+            "title": "#### Subtema 23.2.2 · Reacciona mediante el contrato · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "23.2.3",
+            "title": "#### Subtema 23.2.3 · Separa registro y efecto durable · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 23,
         "topic": "### Tema 3: documentación generada y mapa de dependencias",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "23.3.1",
+            "title": "#### Subtema 23.3.1 · Genera documentos reproducibles · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "23.3.2",
+            "title": "#### Subtema 23.3.2 · Contrasta una relación con código · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "23.3.3",
+            "title": "#### Subtema 23.3.3 · Versiona la explicación junto al mapa · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 23,
         "topic": "### Tema 4: pruebas de integración por módulo",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "23.4.1",
+            "title": "#### Subtema 23.4.1 · Ejecuta solo Pedidos · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "23.4.2",
+            "title": "#### Subtema 23.4.2 · Contrasta con el test del flujo · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "23.4.3",
+            "title": "#### Subtema 23.4.3 · Cierra la matriz de alcance · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 24,
         "topic": "### Tema 1: schema-first con tipos y consultas",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "24.1.1",
+            "title": "#### Subtema 24.1.1 · Lee el contrato antes del resolver · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "24.1.2",
+            "title": "#### Subtema 24.1.2 · Solicita un campo que no existe · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "24.1.3",
+            "title": "#### Subtema 24.1.3 · Define el contrato de ausencia · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 24,
         "topic": "### Tema 2: data fetchers, relaciones y problema N+1",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "24.2.1",
+            "title": "#### Subtema 24.2.1 · Pide datos anidados · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "24.2.2",
+            "title": "#### Subtema 24.2.2 · Relaciona cada resultado con su padre · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "24.2.3",
+            "title": "#### Subtema 24.2.3 · Mide la frontera correcta · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 24,
         "topic": "### Tema 3: mutations y subscriptions",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "24.3.1",
+            "title": "#### Subtema 24.3.1 · Valida la transición · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "24.3.2",
+            "title": "#### Subtema 24.3.2 · Suscríbete antes de producir el cambio · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "24.3.3",
+            "title": "#### Subtema 24.3.3 · Declara límites del transporte y la emisión · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 24,
         "topic": "### Tema 4: pruebas GraphQL con GraphQlTester",
-        "subtopicCount": 0,
-        "subtopics": [],
-        "complete": false
+        "subtopicCount": 3,
+        "subtopics": [
+          {
+            "id": "24.4.1",
+            "title": "#### Subtema 24.4.1 · Ejecuta la matriz del servicio · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "24.4.2",
+            "title": "#### Subtema 24.4.2 · Comprueba HTTP como otra capa · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "24.4.3",
+            "title": "#### Subtema 24.4.3 · Cierra con errores y alcance explícitos · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          }
+        ],
+        "complete": true
       },
       {
         "module": 25,
@@ -16689,17 +17461,17 @@
             "title": "#### Subtema 4.21 · Quitar la validación y observar el riesgo · 10 min",
             "criteria": {
               "context": true,
-              "action": false,
+              "action": true,
               "expectedResult": true,
               "deliberateFailure": true,
               "understand": true,
               "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           }
         ],
-        "complete": false
+        "complete": true
       },
       {
         "module": 5,
@@ -16758,48 +17530,48 @@
         "subtopics": [
           {
             "id": "6.1",
-            "title": "#### Subtema 6.1 · Recortar la prueba a la web (10 min)",
+            "title": "#### Subtema 6.1 · Recortar la prueba a la web · 10 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
-              "duration": false
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
             "id": "6.2",
-            "title": "#### Subtema 6.2 · Ver la validación y el error JSON (10 min)",
+            "title": "#### Subtema 6.2 · Ver la validación y el error JSON · 10 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
-              "duration": false
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
             "id": "6.3",
-            "title": "#### Subtema 6.3 · Diagnosticar una dependencia que falta (10 min)",
+            "title": "#### Subtema 6.3 · Diagnosticar una dependencia que falta · 10 min",
             "criteria": {
-              "context": false,
-              "action": false,
-              "expectedResult": false,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
-              "duration": false
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
             },
-            "complete": false
+            "complete": true
           }
         ],
-        "complete": false
+        "complete": true
       },
       {
         "module": 6,
@@ -16808,48 +17580,48 @@
         "subtopics": [
           {
             "id": "6.4",
-            "title": "#### Subtema 6.4 · Conectar el slice a un PostgreSQL desechable (10 min)",
+            "title": "#### Subtema 6.4 · Conectar el slice a un PostgreSQL desechable · 10 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
-              "duration": false
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
             "id": "6.5",
-            "title": "#### Subtema 6.5 · Comprobar motor y operación del repositorio (10 min)",
+            "title": "#### Subtema 6.5 · Comprobar motor y operación del repositorio · 10 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
-              "duration": false
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
             "id": "6.6",
-            "title": "#### Subtema 6.6 · Detectar que el test cayó en H2 (10 min)",
+            "title": "#### Subtema 6.6 · Detectar que el test cayó en H2 · 10 min",
             "criteria": {
-              "context": false,
-              "action": false,
-              "expectedResult": false,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
-              "duration": false
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
             },
-            "complete": false
+            "complete": true
           }
         ],
-        "complete": false
+        "complete": true
       },
       {
         "module": 6,
@@ -16858,48 +17630,48 @@
         "subtopics": [
           {
             "id": "6.7",
-            "title": "#### Subtema 6.7 · Crear y consultar con las capas reales (10 min)",
+            "title": "#### Subtema 6.7 · Crear y consultar con las capas reales · 10 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
-              "duration": false
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
             "id": "6.8",
-            "title": "#### Subtema 6.8 · Separar error de autenticación y flujo válido (10 min)",
+            "title": "#### Subtema 6.8 · Separar error de autenticación y flujo válido · 10 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
-              "duration": false
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
             "id": "6.9",
-            "title": "#### Subtema 6.9 · Ver qué integración detecta el test (10 min)",
+            "title": "#### Subtema 6.9 · Ver qué integración detecta el test · 10 min",
             "criteria": {
-              "context": false,
-              "action": false,
-              "expectedResult": false,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
-              "duration": false
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
             },
-            "complete": false
+            "complete": true
           }
         ],
-        "complete": false
+        "complete": true
       },
       {
         "module": 7,
@@ -16908,48 +17680,48 @@
         "subtopics": [
           {
             "id": "7.1",
-            "title": "#### Subtema 7.1 · Registrar una dependencia y su indicador (10 min)",
+            "title": "#### Subtema 7.1 · Registrar una dependencia y su indicador · 10 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
-              "duration": false
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
             "id": "7.2",
-            "title": "#### Subtema 7.2 · Comprobar `UP`, `DOWN` y acceso protegido (10 min)",
+            "title": "#### Subtema 7.2 · Comprobar `UP`, `DOWN` y acceso protegido · 10 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
-              "duration": false
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
             "id": "7.3",
-            "title": "#### Subtema 7.3 · Diagnosticar un estado `UP` falso (10 min)",
+            "title": "#### Subtema 7.3 · Diagnosticar un estado `UP` falso · 10 min",
             "criteria": {
-              "context": false,
-              "action": false,
-              "expectedResult": false,
+              "context": true,
+              "action": true,
+              "expectedResult": true,
               "deliberateFailure": true,
-              "understand": false,
-              "close": false,
-              "duration": false
+              "understand": true,
+              "close": true,
+              "duration": true
             },
-            "complete": false
+            "complete": true
           }
         ],
-        "complete": false
+        "complete": true
       },
       {
         "module": 7,
@@ -16958,48 +17730,48 @@
         "subtopics": [
           {
             "id": "7.4",
-            "title": "#### Subtema 7.4 · Registrar un contador en el servicio real (10 min)",
+            "title": "#### Subtema 7.4 · Registrar un contador en el servicio real · 10 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
-              "duration": false
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
             "id": "7.5",
-            "title": "#### Subtema 7.5 · Verificar valor y tag en el endpoint (10 min)",
+            "title": "#### Subtema 7.5 · Verificar valor y tag en el endpoint · 10 min",
             "criteria": {
-              "context": false,
-              "action": false,
+              "context": true,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
-              "duration": false
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
             "id": "7.6",
-            "title": "#### Subtema 7.6 · Detectar un contador que nunca sube (10 min)",
+            "title": "#### Subtema 7.6 · Detectar un contador que nunca sube · 10 min",
             "criteria": {
-              "context": false,
-              "action": false,
-              "expectedResult": false,
-              "deliberateFailure": false,
-              "understand": false,
-              "close": false,
-              "duration": false
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
             },
-            "complete": false
+            "complete": true
           }
         ],
-        "complete": false
+        "complete": true
       },
       {
         "module": 7,
@@ -17227,57 +17999,57 @@
               "context": true,
               "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
+              "deliberateFailure": true,
               "understand": true,
               "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
             "id": "4.2",
             "title": "#### Subtema 4.2 · Mantener el estado local con callbacks reales · 10 min",
             "criteria": {
               "context": true,
-              "action": false,
-              "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": true,
-              "close": true,
-              "duration": true
-            },
-            "complete": false
-          },
-          {
-            "id": "4.3",
-            "title": "#### Subtema 4.3 · Ver el rebalanceo al entrar el segundo consumer · 15 min",
-            "criteria": {
-              "context": true,
-              "action": false,
-              "expectedResult": true,
-              "deliberateFailure": false,
-              "understand": true,
-              "close": true,
-              "duration": true
-            },
-            "complete": false
-          },
-          {
-            "id": "4.4",
-            "title": "#### Subtema 4.4 · Usar membresía estática solo para reinicios breves · 10 min",
-            "criteria": {
-              "context": true,
-              "action": false,
+              "action": true,
               "expectedResult": true,
               "deliberateFailure": true,
               "understand": true,
               "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
+          },
+          {
+            "id": "4.3",
+            "title": "#### Subtema 4.3 · Ver el rebalanceo al entrar el segundo consumer · 15 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "4.4",
+            "title": "#### Subtema 4.4 · Usar membresía estática solo para reinicios breves · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
           }
         ],
-        "complete": false
+        "complete": true
       },
       {
         "module": 8,
@@ -17291,12 +18063,12 @@
               "context": true,
               "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
+              "deliberateFailure": true,
               "understand": true,
               "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
             "id": "5.2",
@@ -17305,12 +18077,12 @@
               "context": true,
               "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
+              "deliberateFailure": true,
               "understand": true,
               "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
             "id": "5.3",
@@ -17341,7 +18113,7 @@
             "complete": true
           }
         ],
-        "complete": false
+        "complete": true
       },
       {
         "module": 8,
@@ -17355,12 +18127,12 @@
               "context": true,
               "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
+              "deliberateFailure": true,
               "understand": true,
               "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
             "id": "6.2",
@@ -17383,29 +18155,29 @@
               "context": true,
               "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
+              "deliberateFailure": true,
               "understand": true,
               "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
             "id": "6.4",
             "title": "#### Subtema 6.4 · Probar en memoria y después contra el broker · 15 min",
             "criteria": {
               "context": true,
-              "action": false,
+              "action": true,
               "expectedResult": true,
               "deliberateFailure": true,
               "understand": true,
               "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           }
         ],
-        "complete": false
+        "complete": true
       },
       {
         "module": 8,
@@ -17419,26 +18191,26 @@
               "context": true,
               "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
+              "deliberateFailure": true,
               "understand": true,
               "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
             "id": "7.2",
             "title": "#### Subtema 7.2 · Contar por estado dentro de una ventana · 15 min",
             "criteria": {
               "context": true,
-              "action": false,
+              "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
+              "deliberateFailure": true,
               "understand": true,
               "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
             "id": "7.3",
@@ -17447,12 +18219,12 @@
               "context": true,
               "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
+              "deliberateFailure": true,
               "understand": true,
               "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
             "id": "7.4",
@@ -17461,15 +18233,15 @@
               "context": true,
               "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
+              "deliberateFailure": true,
               "understand": true,
               "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           }
         ],
-        "complete": false
+        "complete": true
       },
       {
         "module": 8,
@@ -17483,12 +18255,12 @@
               "context": true,
               "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
+              "deliberateFailure": true,
               "understand": true,
               "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
             "id": "8.2",
@@ -17497,12 +18269,12 @@
               "context": true,
               "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
+              "deliberateFailure": true,
               "understand": true,
               "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
             "id": "8.3",
@@ -17511,12 +18283,12 @@
               "context": true,
               "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
+              "deliberateFailure": true,
               "understand": true,
               "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
             "id": "8.4",
@@ -17533,7 +18305,7 @@
             "complete": true
           }
         ],
-        "complete": false
+        "complete": true
       },
       {
         "module": 8,

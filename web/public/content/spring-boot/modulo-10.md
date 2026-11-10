@@ -196,6 +196,9 @@ flowchart LR
 
 **Transferencia al proyecto integrador:** carga el descuento desde configuración externa y resuelve por nombre la instancia del servicio que administra catálogo.
 
+
+**Aplicación y decisión:** En el proyecto integrador, decide qué configuración admite recarga y cuál exige reinicio. Límite: SimpleDiscoveryClient usa instancias declaradas; no es descubrimiento automático ni garantiza que el destino esté disponible.
+
 ### Tema 2: Spring Cloud Gateway
 
 El gateway recibe una petición y la reenvía al servicio elegido. En este tema vas a levantar dos procesos locales y comprobarlo con `curl`.
@@ -328,6 +331,9 @@ Conserva dos evidencias: respuesta y log del caso correcto; respuesta y ausencia
 **Fuentes oficiales:** [matriz de compatibilidad Spring Cloud](https://spring.io/projects/spring-cloud), [starter y requisitos de Gateway WebFlux](https://docs.spring.io/spring-cloud-gateway/reference/spring-cloud-gateway-server-webflux/starter.html), [rutas y configuración](https://docs.spring.io/spring-cloud-gateway/reference/spring-cloud-gateway-server-webflux/configuration.html).
 
 **Cuándo usarlo:** cuando varios servicios necesitan un punto de entrada con rutas compartidas. Si solo publicas un servicio sencillo, añade el gateway cuando exista una necesidad concreta de enrutamiento o políticas transversales.
+
+
+**Aplicación y decisión:** En el proyecto integrador, el gateway enruta hacia servicios que siguen aplicando autorización por recurso. No concentres toda la seguridad en una ruta pública del gateway: un acceso interno puede saltarse ese punto de entrada.
 
 ### Tema 3: Circuit breaker con Resilience4j
 
@@ -546,6 +552,9 @@ Guarda el resultado del pedido propio y ajeno. Este recorrido manual requiere Ke
 
 **Fuentes oficiales:** [Resource Server JWT de Spring Security](https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html), [administración de roles y tokens de Keycloak](https://www.keycloak.org/docs/26.8.1/server_admin/), [contenedor e importación de realms](https://www.keycloak.org/server/containers) y [TokenRelay de Spring Cloud Gateway](https://docs.spring.io/spring-cloud-gateway/reference/spring-cloud-gateway-server-webflux/gatewayfilter-factories/tokenrelay-factory.html).
 
+
+**Aplicación y decisión:** En el proyecto integrador, conserva identidad verificada al reenviar el token y valida audiencia/issuer en el receptor. Límite: reenviar un Bearer no concede permiso para cualquier entrega ni acredita rotación de claves o cierre de sesión.
+
 ### Tema 5: HTTP Interfaces, deadlines y descubrimiento según el entorno
 
 **Duración:** 40 min. **Prerrequisitos:** Módulo 9 (WebClient), Tema 1 de este módulo (service discovery).
@@ -594,6 +603,8 @@ public interface RouteClient {
 
 **Resultado esperado:** prueba en verde y texto `ruta RF-001` recibido desde el servidor HTTP local.
 
+**Fallo deliberado:** En `RouteClient.java`, cambia `@HttpExchange("/routes")` por `@HttpExchange("/rutas")` y ejecuta el test del contrato. **Diagnóstico:** el servidor de prueba solo atiende `/routes`; la ruta cambiada ya no devuelve `ruta RF-001`. Restaura `/routes`.
+
 **3. Entiende**
 
 La interfaz es el contrato. La prueba verifica el proxy real y el cuerpo HTTP; no simula el método cliente.
@@ -623,7 +634,7 @@ HttpClientSettings.defaults()
 
 **Resultado esperado:** el backend tarda 900 ms; el cliente recibe `ResourceAccessException` y la medición con `System.nanoTime()` queda bajo 750 ms.
 
-**Fallo deliberado:** elimina `.withTimeouts(...)` y repite el test. Debe fallar: el backend responde antes de que el test alcance el límite esperado. Restaura el timeout.
+**Fallo deliberado:** elimina `.withTimeouts(...)` y repite el test. **Diagnóstico:** Debe fallar: el backend responde antes de que el test alcance el límite esperado. Restaura el timeout.
 
 **3. Entiende**
 
@@ -643,9 +654,18 @@ El cliente usa `route-catalog`; la ubicación física puede cambiar entre desarr
 
 Lee `src/main/resources/application.yml` y ejecuta la prueba de `RouteClientDeadlineTest` que llama al nombre lógico. La prueba asigna al `SimpleDiscoveryClient` la URI del servidor local; el `RestClient` lleva `@LoadBalanced`.
 
+Archivo concreto para esta comprobación: `examples/spring-http-deadline-rutaflow/src/main/java/academia/rutaflow/http/RouteClientConfiguration.java`.
+
+
+Para comprobar «Resuelve el nombre del servicio por entorno», consulta: `examples/spring-http-deadline-rutaflow/src/main/java/academia/rutaflow/http/RouteClientConfiguration.java`. Desde `examples/spring-http-deadline-rutaflow` repite la comprobación:
+
+```bash
+./mvnw -q test
+```
+
 **Resultado esperado:** `http://route-catalog/routes/RF-001` termina en el servidor local y devuelve `ruta RF-001`.
 
-**Fallo deliberado:** cambia `route-catalog` en `RouteClientConfiguration.java` por `catalogo-inexistente`. La prueba debe fallar al no encontrar una instancia. Restaura el ID.
+**Fallo deliberado:** cambia `route-catalog` en `RouteClientConfiguration.java` por `catalogo-inexistente`. **Diagnóstico:** La prueba debe fallar al no encontrar una instancia. Restaura el ID.
 
 **3. Entiende**
 
@@ -671,7 +691,16 @@ Como práctica independiente, añade un endpoint lento a la prueba y propone tie
 ./mvnw -q clean test
 ```
 
+
+Para comprobar «Ajusta el cliente al presupuesto de la operación», consulta: `examples/spring-http-deadline-rutaflow/src/main/java/academia/rutaflow/http/RouteClientConfiguration.java`. Desde `examples/spring-http-deadline-rutaflow` repite la comprobación:
+
+```bash
+./mvnw -q test
+```
+
 **Resultado esperado:** ambas pruebas pasan; registra el tiempo del caso lento y explica qué evidencia usarías para ajustar el límite en un servicio real.
+
+**Fallo deliberado:** En `RouteClientConfiguration.java`, eleva el timeout de lectura de 350 a 1500 ms y repite el test del backend de 900 ms. **Diagnóstico:** la respuesta ya no se corta dentro del presupuesto esperado; restaura 350 ms y conserva el contraste.
 
 **3. Entiende**
 
@@ -728,7 +757,7 @@ message TarifaResponse { double monto = 1; }
 
 **Resultado esperado:** aparecen `TarifaRequest`, `TarifaResponse` y `TarifaServiceGrpc` bajo `target/generated-sources/`.
 
-**Fallo deliberado:** cambia el nombre del método a `Cotizar` en el `.proto` sin cambiar la implementación. Regenera; la compilación del servicio falla porque el stub nuevo ya no ofrece `calcular`.
+**Fallo deliberado:** cambia el nombre del método a `Cotizar` en el `.proto` sin cambiar la implementación. **Diagnóstico:** Regenera; la compilación del servicio falla porque el stub nuevo ya no ofrece `calcular`.
 
 **3. Entiende**
 
@@ -760,6 +789,8 @@ class TarifaServiceImpl extends TarifaServiceGrpc.TarifaServiceImplBase {
 
 **Resultado esperado:** el bean `@GrpcService` implementa la clase base generada y calcula `10 × 1500 = 15000`.
 
+**Fallo deliberado:** En `TarifaServiceImpl.java`, cambia el factor 1500 por 150 y ejecuta `TarifaGrpcTest`. **Diagnóstico:** el stub recibe 1500 para 10 km, en lugar de los 15000 del contrato de prueba; restaura el factor.
+
 **3. Entiende**
 
 Spring Boot 4.1 aporta starters y autoconfiguración gRPC; usa Netty por defecto. La anotación registra el servicio generado como bean disponible para gRPC.
@@ -786,7 +817,7 @@ Abre `src/test/java/academia/rutaflow/grpc/TarifaGrpcTest.java`; el stub se impo
 
 **Resultado esperado:** el cliente gRPC recibe `monto=15000` para `distancia_km=10`.
 
-**Fallo deliberado:** cambia el target del canal a otro puerto y ejecuta el test. Debe fallar al no poder conectar; restaura el target dinámico para evitar depender de un puerto ocupado.
+**Fallo deliberado:** cambia el target del canal a otro puerto y ejecuta el test. **Diagnóstico:** Debe fallar al no poder conectar; restaura el target dinámico para evitar depender de un puerto ocupado.
 
 **3. Entiende**
 
@@ -806,7 +837,16 @@ Un servicio móvil o retrasado puede conservar una versión anterior del cliente
 
 En una copia de `tarifa.proto`, cambia el significado de `distancia_km = 1` por millas manteniendo el tag 1. Predice qué leerá un cliente viejo y no publiques ese cambio. Luego añade un campo nuevo con tag 2.
 
+
+Para comprobar «Cambia el contrato sin romper datos», consulta: `examples/spring-grpc-rutaflow/src/main/proto/tarifa.proto`. Desde `examples/spring-grpc-rutaflow` repite la comprobación:
+
+```bash
+./mvnw -q test
+```
+
 **Resultado esperado:** el tag 1 conserva su significado; el cliente viejo puede ignorar el campo nuevo. Cuando elimines un campo, el `.proto` debe reservar su tag y su nombre.
+
+**Fallo deliberado:** En `src/main/proto/tarifa.proto`, añade temporalmente `string unidad = 1;` al mensaje que ya tiene `distancia_km = 1` y ejecuta `./mvnw generate-sources`. **Diagnóstico:** protoc rechaza dos campos con el mismo número; usa un tag nuevo. Esto detecta duplicidad de tags, no un cambio semántico entre clientes de versiones diferentes.
 
 **3. Entiende**
 
@@ -821,6 +861,10 @@ Entrega `./mvnw -q clean test` en verde y una propuesta de evolución con `reser
 **Proyecto integrador RutaFlow:** evalúa gRPC para la consulta interna de tarifas y compara latencia y costo operativo con el cliente HTTP del Tema 5 antes de adoptarlo.
 
 **Fuentes oficiales:** [Spring Boot gRPC 4.1](https://docs.spring.io/spring-boot/reference/io/grpc.html), [Spring gRPC](https://docs.spring.io/spring-grpc/reference/) y [Protocol Buffers: evolución de mensajes](https://protobuf.dev/programming-guides/proto3/#updating).
+
+```bash
+./mvnw -q clean test
+```
 ### Tema 7: DDD para decidir límites y propiedad de datos
 
 **Duración:** 35 min. **Prerrequisito:** Módulo 3 de este track (entidades y JPA). **Meta observable:** protege una regla de negocio dentro de un agregado y explica qué contexto es dueño de esos datos.
@@ -859,6 +903,8 @@ public void record(Position position) {
 
 **Resultado esperado:** la regla está en `Journey`, junto a los datos que protege.
 
+**Fallo deliberado:** En `Journey.java`, cambia el estado inicial de OPEN a CLOSED y ejecuta `JourneyTest#unaJornadaAbiertaAceptaPosiciones`. **Diagnóstico:** una jornada nueva rechaza la primera posición; restaura OPEN.
+
 **3. Entiende**
 
 Un agregado conserva consistencia en una frontera pequeña. El contexto delimitado define vocabulario y propiedad; no equivale a una tabla o paquete cualquiera.
@@ -887,7 +933,7 @@ Lee `src/test/java/academia/rutaflow/operations/JourneyTest.java`.
 
 **Resultado esperado:** la jornada conserva una posición y el segundo registro lanza `JourneyAlreadyClosed`.
 
-**Fallo deliberado:** quita la comprobación de `status` en `Journey.record` y repite el test. Falla porque el agregado deja registrar una posición luego del cierre. Restáurala.
+**Fallo deliberado:** quita la comprobación de `status` en `Journey.record` y repite el test. **Diagnóstico:** Falla porque el agregado deja registrar una posición luego del cierre. Restáurala.
 
 **3. Entiende**
 
@@ -907,7 +953,16 @@ Una foreign key de Facturación hacia la tabla de Operaciones acopla despliegues
 
 Ejecuta `./mvnw -q -Dtest=JourneyTest#laListaExpuestaNoPermiteModificarElAgregado test` y revisa que `positions()` devuelve `List.copyOf`.
 
+
+Para comprobar «Evita compartir almacenamiento entre contextos», consulta: `examples/spring-ddd-rutaflow/src/main/java/academia/rutaflow/operations/Journey.java`. Desde `examples/spring-ddd-rutaflow` repite la comprobación:
+
+```bash
+./mvnw -q test
+```
+
 **Resultado esperado:** modificar la lista recibida lanza `UnsupportedOperationException`; el agregado conserva su estado.
+
+**Fallo deliberado:** En `Journey.positions()`, devuelve `positions` directamente en lugar de `List.copyOf(positions)` y ejecuta `JourneyTest#laListaExpuestaNoPermiteModificarElAgregado`. **Diagnóstico:** la lista externa permite vaciar el agregado y desaparece la excepción esperada; restaura la copia.
 
 **3. Entiende**
 
@@ -917,6 +972,10 @@ Para colaborar, define un contrato o evento versionado con los datos que el otro
 
 Escribe qué datos posee Operaciones y cuál copia mínima podría necesitar Facturación.
 
+
+```bash
+./mvnw -q -Dtest=JourneyTest#laListaExpuestaNoPermiteModificarElAgregado test
+```
 #### Subtema 7.4: Decide si separar el despliegue · 10 min
 
 **1. Contexto**
@@ -932,6 +991,8 @@ Como práctica independiente, añade una regla para una jornada vacía o valida 
 ```
 
 **Resultado esperado:** las tres pruebas existentes y tu nueva prueba pasan.
+
+**Fallo deliberado:** En `Journey.close()`, omite temporalmente `status = JourneyStatus.CLOSED` y ejecuta `JourneyTest#unaJornadaCerradaRechazaNuevasPosiciones`. **Diagnóstico:** cerrar ya no cambia el estado y la siguiente posición se acepta; restaura la transición antes de decidir separar servicios.
 
 **3. Entiende**
 
@@ -1371,6 +1432,9 @@ Entrega la salida del script, el valor tras reinicio y un plan de acceso para pr
 
 **¿Por qué es importante?** Si el límite operativo cambia en una sola réplica, los pedidos reciben decisiones distintas; Bus comunica el cambio al grupo y las lecturas HTTP comprueban qué instancias lo aplicaron.
 
+
+**Aplicación y decisión:** En el proyecto integrador, registra qué propiedad cambió y qué instancias la recibieron antes de afirmar que la configuración convergió. Un build del ejemplo Cloud Bus no prueba por sí solo un evento propagado por RabbitMQ.
+
 ### Tema 11: Micrometer Tracing entre servicios
 
 Duración: 35–45 min. **Meta:** seguir una petición desde Entregas hasta Inventario y comprobar que ambos procesos comparten trace ID. El laboratorio en `examples/spring-tracing-rutaflow/` usa Spring Boot 4.1.2, Micrometer Tracing, OpenTelemetry y Jaeger con OTLP. Spring Boot documenta `spring-boot-starter-opentelemetry` y sus propiedades de exportación; el cliente HTTP debe salir del `RestClient.Builder` autoconfigurado para propagar el contexto.
@@ -1517,6 +1581,9 @@ Entrega la misma traza con sampling activo, el resultado de sampling en cero y l
 
 **¿Por qué es importante?** Un trace ID compartido permite ver el tiempo y el resultado de cada salto entre servicios en una sola solicitud.
 
+
+**Aplicación y decisión:** En el proyecto integrador, sigue una solicitud entre Entregas e Inventario mediante el trace ID, manteniendo datos personales fuera de etiquetas. Límite: compilar el exporter no demuestra que Jaeger recibió spans; ejecuta la verificación de traza para acreditar exportación.
+
 ### Tema 12: Contract testing entre productor y consumidor
 
 Duración: 35–45 min. **Meta:** comprobar el mismo JSON desde dos lados: pruebas generadas contra Conductores y prueba de Pedidos contra el stub publicado. El laboratorio `examples/spring-cloud-contract-rutaflow/` usa Spring Boot 4.1.2, Spring Cloud 2025.1.4 y Spring Cloud Contract 5.0.3. Los equipos acuerdan el contrato; en este ejemplo vive en el repositorio del productor.
@@ -1647,3 +1714,6 @@ Entrega la falla del proveedor, el test del consumidor y una regla de aprobació
 **Fuentes oficiales:** [compatibilidad Spring Cloud](https://spring.io/projects/spring-cloud/), [Maven y generación de pruebas](https://docs.spring.io/spring-cloud-contract/reference/maven-project.html), [contratos](https://docs.spring.io/spring-cloud-contract/reference/project-features-contract.html) y [Stub Runner](https://docs.spring.io/spring-cloud-contract/reference/project-features-stubrunner/stub-runner-core.html).
 
 **¿Por qué es importante?** Los contratos permiten encontrar un cambio incompatible antes de desplegarlo y afectar a otro servicio.
+
+**Aplicación y decisión:** En el proyecto integrador, conserva por separado contrato del proveedor y prueba del consumidor contra su stub. Límite: un stub compatible no garantiza credenciales, red ni datos productivos; completa esas pruebas antes de desplegar.
+

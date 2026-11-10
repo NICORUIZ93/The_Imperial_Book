@@ -209,6 +209,14 @@ El sistema puede reorganizar sus datos sin pedir a cada cliente HTTP que cambie 
 
 Cambia en `src/main/java/com/example/demo/ServicioTareas.java` el valor interno de `"BODEGA-A"` a `"PASILLO-3"`. Vuelve a crear una tarea con el mismo `curl` del subtema anterior.
 
+Archivo concreto para esta comprobación: `src/main/java/com/example/demo/TareaDTO.java`.
+
+Repite la petición del tema desde la terminal (con la aplicación iniciada y el JWT válido de M4 cuando la seguridad esté activa):
+
+```bash
+curl -i -H 'Content-Type: application/json' -H "Authorization: Bearer $TOKEN" -d '{"titulo":"Comprar leche","prioridad":3}' http://localhost:8080/api/tareas
+```
+
 **Resultado esperado:** la respuesta conserva los campos `id`, `titulo` y `prioridad`; el cambio interno no aparece.
 
 **Fallo deliberado:** agrega `ubicacionInterna` como componente a `TareaDTO` y pásalo desde `TareaDTO.from`. **Diagnóstico:** el JSON expone ahora un dato interno; quítalo del contrato de salida.
@@ -856,7 +864,9 @@ En `pom.xml`, dentro de `<dependencies>` añade el starter de Spring MVC:
 
 Desde la raíz del proyecto ejecuta:
 
-    ./mvnw test
+```bash
+./mvnw test
+```
 
 Inicia la app con `./mvnw spring-boot:run`. En otra terminal consulta el documento y la interfaz:
 
@@ -1124,7 +1134,9 @@ public ResponseEntity<PaginaTareasDTO> listar(
 
 Desde la carpeta del proyecto ejecuta:
 
-    ./mvnw test
+```bash
+./mvnw test
+```
 
 Inicia la aplicación y crea tres tareas distintas con el POST del Tema 1. Después pide dos páginas:
 

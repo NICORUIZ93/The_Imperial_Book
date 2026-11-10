@@ -5,7 +5,7 @@
 **Proyecto continuo:** RutaFlow: plataforma de entregas basada en servicios.
 **Prerrequisito de entrada:** Java, HTTP, SQL y pruebas; los módulos iniciales vuelven a presentar cada herramienta..
 **Duración objetivo:** temas de 20–45 minutos; cada tema se divide en 3–6 acciones de 5–15 minutos.
-**Estado estructural:** 64/111 temas migrados; auditoría estructural actualizada el 2026-11-03.
+**Estado estructural:** 69/111 temas migrados; auditoría estructural actualizada el 2026-11-03.
 
 ## Índice de módulos y temas
 
@@ -521,11 +521,32 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 20.10 · Configura SMTP fuera del código · 8 min
   - ✓ Subtema 20.11 · Guarda el envío y la notificación juntos · 10 min
   - ✓ Subtema 20.12 · Limita los reintentos y conserva evidencia útil · 10 min
-- [pendiente de migrar] Tema 4: Caché con Spring Cache, Caffeine y Redis
-- [pendiente de migrar] Tema 5: @Async y ejecutores: trabajo en segundo plano con límites
-- [pendiente de migrar] Tema complementario: Integraciones empresariales, SOAP y fronteras de protocolo
-- [pendiente de migrar] Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo
-- [pendiente de migrar] Tema 7: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar
+- [4 pasos] Tema 4: Caché con Spring Cache, Caffeine y Redis
+  - ✓ Subtema 20.13 · Comprueba qué trabajo ahorra una caché · 7 min
+  - ✓ Subtema 20.14 · Invalida o reemplaza la copia al actualizar · 10 min
+  - ✓ Subtema 20.15 · Pon un límite de memoria y de antigüedad · 8 min
+  - ✓ Subtema 20.16 · Mide las lecturas que realmente evitas · 8 min
+  - ✓ Subtema 20.17 · Comprueba una caché compartida en Redis · 12 min
+- [4 pasos] Tema 5: @Async y ejecutores: trabajo en segundo plano con límites
+  - ✓ Subtema 20.18 · Ejecuta una llamada a través del proxy · 8 min
+  - ✓ Subtema 20.19 · Diagnostica la auto-invocación · 8 min
+  - ✓ Subtema 20.20 · Observa el error del trabajo · 8 min
+  - ✓ Subtema 20.21 · Rechaza trabajo cuando no queda capacidad · 10 min
+- [4 pasos] Tema complementario: Integraciones empresariales, SOAP y fronteras de protocolo
+  - ✓ Subtema 20.22 · Lee un contrato antes de adaptar el dominio · 7 min
+  - ✓ Subtema 20.23 · Separa prefijo de namespace y versión · 7 min
+  - ✓ Subtema 20.24 · Rechaza campos vacíos y respuestas Fault · 8 min
+  - ✓ Subtema 20.25 · Define garantías del adaptador del proyecto · 8 min
+- [4 pasos] Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo
+  - ✓ Subtema 20.26 · Separa ChatClient del modelo · 9 min
+  - ✓ Subtema 20.27 · Autoriza antes de consultar el envío · 9 min
+  - ✓ Subtema 20.28 · Aísla permisos entre dos sesiones · 9 min
+  - ✓ Subtema 20.29 · Revisa qué argumentos puede proponer el modelo · 8 min
+- [4 pasos] Tema 7: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar
+  - ✓ Subtema 20.30 · Filtra la empresa antes de construir contexto · 9 min
+  - ✓ Subtema 20.31 · Conserva un resultado vacío cuando no hay evidencia · 8 min
+  - ✓ Subtema 20.32 · Limita resultados después de filtrar y conserva IDs · 10 min
+  - ✓ Subtema 20.33 · Excluye documentos sin empresa y delimita la siguiente prueba · 9 min
 
 ### Módulo 21: Eventos con Spring Kafka
 
@@ -614,7 +635,7 @@ La tabla registra presencia de áreas en el inventario del track, no profundidad
 
 ### Huecos y límites reportados
 
-- El repositorio contiene 111 temas en 26 módulos; 64 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
+- El repositorio contiene 111 temas en 26 módulos; 69 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
 - No hay base para afirmar que el track esté completo: la comparación con la fuente de referencia está pendiente de revisión humana módulo por módulo.
 - Los elementos de la fuente que todavía deben verificarse de forma explícita están enumerados en la tabla anterior; cualquier técnica crítica que no tenga tema propio debe añadirse conservando el currículo base.
 - La ejecución de ejemplos, el comportamiento con brokers/plataformas reales y la calidad pedagógica humana se registran por separado.

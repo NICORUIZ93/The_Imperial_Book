@@ -14,14 +14,16 @@
       "module": 20,
       "title": "Spring AI: ChatClient y herramientas con autorización fuera del modelo",
       "status": "checked",
-      "evidence": "Maven con JDK25, Spring Boot4.0.9 y Spring AI2.0.2: dos pruebas ChatToolsTest correctas. ChatModel controlado, callback real; no proveedor remoto."
+      "evidence": "JDK25 y Maven Wrapper, Boot4.0.9 y Spring AI2.0.2: cuatro pruebas ChatToolsTest correctas. ChatModel controlado y callback real directo; dos sesiones con permisos distintos y esquema sin identidad del modelo. Quitar autorización fue detectado y restaurado. No proveedor remoto ni bucle LLM.",
+      "reviewedAt": "2026-11-10"
     },
     {
       "track": "spring-boot",
       "module": 20,
       "title": "RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar",
       "status": "checked",
-      "evidence": "Dos pruebas RagScopeTest correctas. Recuperación léxica y aislamiento de tenant; embeddings, vector store y evaluación de LLM pendientes."
+      "evidence": "Cuatro pruebas RagScopeTest correctas: empresa, consulta vacía con corpus no vacío, filtro previo al límite con IDs y rechazo sin empresa. Mutaciones filtro, vacío y orden detectadas y restauradas. Recuperación literal, sin embeddings ni generación. Chrome: ambos temas visibles a 1366 y 390 px, sin error de lección.",
+      "reviewedAt": "2026-11-10"
     },
     {
       "track": "foundations",

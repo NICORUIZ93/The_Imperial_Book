@@ -99,8 +99,8 @@
     "spring-boot": {
       "topics": 111,
       "code": 106,
-      "commentedCode": 41,
-      "mermaid": 37,
+      "commentedCode": 40,
+      "mermaid": 36,
       "archifyVisual": 1,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
@@ -2791,7 +2791,14 @@
     {
       "track": "spring-boot",
       "module": 20,
-      "topic": "Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo",
+      "topic": "Tema 5: @Async y ejecutores: trabajo en segundo plano con límites",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 20,
+      "topic": "Tema complementario: Integraciones empresariales, SOAP y fronteras de protocolo",
       "missingCode": false,
       "missingComments": true
     },

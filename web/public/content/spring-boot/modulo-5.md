@@ -293,6 +293,8 @@ env -u JWT_SECRET_BASE64 ./mvnw -q spring-boot:run
 ./mvnw -q -Dtest=JwtSettingsTest test
 ```
 
+Archivo concreto para esta comprobación: `src/main/java/com/example/demo/JwtSettings.java`.
+
 **Resultado esperado:** los valores válidos arrancan; secreto ausente, vacío, texto que no cabe en `long` y vencimiento `59` fallan. Los callbacks comprueban `hasNotFailed()` o `hasFailed()` según el caso.
 
 **Fallo deliberado y diagnóstico:** quita temporalmente `@Validated` de `JwtSettings` y repite `./mvnw -q -Dtest=JwtSettingsTest#missingSecretHasValidationFailureAtStartup+vencimientoMenorAlMinimoEsRechazado test`. Ambos tests fallan porque el contexto arranca sin aplicar las restricciones. Restaura `@Validated` y corre de nuevo la clase completa.

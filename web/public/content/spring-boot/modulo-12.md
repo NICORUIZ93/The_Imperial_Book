@@ -139,6 +139,15 @@ Guarda como evidencia el resultado de las cinco pruebas y dibuja el recorrido de
 
 **Fuentes:** [migraciones SQL de Flyway en Spring Boot](https://docs.spring.io/spring-boot/how-to/data-initialization.html), [Testcontainers con PostgreSQL](https://java.testcontainers.org/modules/databases/postgres/), [JUnit 5 con Testcontainers](https://java.testcontainers.org/test_framework_integration/junit_5/) y [runtime Podman](https://java.testcontainers.org/supported_docker_environment/).
 
+
+**Aplicación y decisión:** En el proyecto integrador, recorre la petición desde EntregaController hasta Flyway y EntregaRepository. El límite del test local incluye PostgreSQL efímero y JWT de laboratorio; no prueba una plataforma desplegada ni credenciales de producción.
+
+Desde `examples/spring-boot-integrador-rutaflow`, ejecuta la comprobación del laboratorio:
+
+```bash
+bash ./scripts/verify-integration.sh
+```
+
 ### Tema 2: Integra seguridad JWT y observabilidad
 
 **Resultado del tema:** protegerás la creación de entregas con un JWT firmado y el rol `USER`, conservarás la persistencia del Tema 1 y medirás cada creación exitosa con un contador visible en Actuator.
@@ -264,6 +273,15 @@ Resume el recorrido: JWT validado → rol autorizado → fila persistida → con
 
 **Fuentes:** [Spring Security: JWT Resource Server](https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html), [autorización por método](https://docs.spring.io/spring-security/reference/servlet/authorization/method-security.html), [métricas de Spring Boot 4.1.2](https://docs.spring.io/spring-boot/reference/actuator/metrics.html), [exposición y seguridad de Actuator](https://docs.spring.io/spring-boot/reference/actuator/endpoints.html#actuator.endpoints.exposing) y [Micrometer Counters](https://docs.micrometer.io/micrometer/reference/concepts/counters.html).
 
+
+**Aplicación y decisión:** En el proyecto integrador, añade un caso de rol válido sin permiso sobre un recurso y demuestra el rechazo antes de guardar. Conserva métricas protegidas y evita inferir entrega final de un evento a partir de una creación HTTP.
+
+Desde `examples/spring-boot-integrador-rutaflow`, ejecuta la comprobación del laboratorio:
+
+```bash
+bash ./scripts/verify-integration.sh
+```
+
 ### Tema 3: Cierra el servicio con evidencia y próximos pasos
 
 **Resultado del tema:** ejecutarás una guardia automática de configuración, revisarás la suite completa y separarás lo comprobado en local de lo que todavía requiere evidencia del entorno de despliegue.
@@ -379,6 +397,15 @@ Entrega el informe de 5 pruebas verdes y la lista de pendientes con evidencias r
 **Fuentes:** [inicialización de bases en Spring Boot](https://docs.spring.io/spring-boot/how-to/data-initialization.html), [JWT Resource Server](https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html), [métricas y Actuator](https://docs.spring.io/spring-boot/reference/actuator/metrics.html) y [probes de Spring Boot](https://docs.spring.io/spring-boot/reference/actuator/kubernetes-probes.html).
 
 ---
+
+
+**Aplicación y decisión:** En el proyecto integrador, entrega el README de reproducción y el registro de salida a producción con lo ejecutado y lo pendiente. Una suite verde local no reemplaza restauración, carga o recuperación de un despliegue destino.
+
+Desde `examples/spring-boot-integrador-rutaflow`, ejecuta la comprobación del laboratorio:
+
+```bash
+bash ./scripts/verify-integration.sh
+```
 
 ## Laboratorio práctico
 

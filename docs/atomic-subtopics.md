@@ -2,7 +2,7 @@
 
 > Auditoría estructural. Un encabezado o criterio detectado no demuestra que el ejemplo se haya ejecutado ni que la explicación sea pedagógicamente suficiente.
 
-Temas conformes a cuatro pasos: **168/1185**. Tracks inventariados: **14**.
+Temas conformes a cuatro pasos: **215/1185**. Tracks inventariados: **14**.
 
 | Track | Temas conformes | Temas inventariados | Subtemas detectados | Subtemas con estructura completa |
 |---|---:|---:|---:|---:|
@@ -19,7 +19,7 @@ Temas conformes a cuatro pasos: **168/1185**. Tracks inventariados: **14**.
 | node | 2 | 83 | 6 | 6 |
 | react | 0 | 58 | 0 | 0 |
 | rutaflow | 0 | 29 | 0 | 0 |
-| spring-boot | 64 | 111 | 339 | 230 |
+| spring-boot | 111 | 111 | 393 | 393 |
 
 ## Temas pendientes
 
@@ -1028,53 +1028,3 @@ Temas conformes a cuatro pasos: **168/1185**. Tracks inventariados: **14**.
 - M7 ### Tema 2: SLO y respuesta a incidentes: tiene 0 subtemas
 - M7 ### Tema 3: Pruebas end-to-end del sistema completo (app ↔ backend): tiene 0 subtemas
 - M7 ### Tema 4: Continuidad, costes y proyecto final: tiene 0 subtemas
-
-### spring-boot
-
-- M10 ### Tema 5: HTTP Interfaces, deadlines y descubrimiento según el entorno: 5.1: faltan deliberateFailure; 5.2: faltan deliberateFailure; 5.3: faltan action, deliberateFailure; 5.4: faltan action, deliberateFailure
-- M10 ### Tema 6: Spring gRPC, contrato HTTP/2 y evolución segura: 6.1: faltan deliberateFailure; 6.2: faltan deliberateFailure; 6.3: faltan deliberateFailure; 6.4: faltan action, deliberateFailure
-- M10 ### Tema 7: DDD para decidir límites y propiedad de datos: 7.1: faltan deliberateFailure; 7.2: faltan deliberateFailure; 7.3: faltan action, deliberateFailure; 7.4: faltan deliberateFailure
-- M13 ### Tema 3: Contratos ejecutables protegen despliegues independientes: 13.3: faltan context, action, deliberateFailure, understand, close; 13.3: faltan context, action, deliberateFailure, understand, close; 13.3: faltan context, action, deliberateFailure, understand, close; 13.3: faltan context, action, deliberateFailure, understand, close
-- M13 ### Tema 4: Observabilidad sirve a un objetivo y a una decisión: 13.4: faltan context, action, deliberateFailure, understand, close; 13.4: faltan context, action, deliberateFailure, understand, close; 13.4: faltan context, action, deliberateFailure, understand, close; 13.4: faltan context, action, deliberateFailure, understand, close
-- M14 ### Tema 1: CRUD API y contratos: 14.1: faltan context, action, deliberateFailure, understand, close; 14.1: faltan context, action, deliberateFailure, understand, close; 14.1: faltan context, action, deliberateFailure, understand, close; 14.1: faltan context, action, deliberateFailure, understand, close
-- M14 ### Tema 2: MySQL y datos espaciales: 14.2: faltan context, action, deliberateFailure, understand, close; 14.2: faltan context, action, deliberateFailure, understand, close; 14.2: faltan context, action, deliberateFailure, understand, close; 14.2: faltan context, action, deliberateFailure, understand, close
-- M14 ### Tema 3: JPA e Hibernate Spatial: 14.3: faltan context, action, deliberateFailure, understand, close; 14.3: faltan context, action, deliberateFailure, understand, close; 14.3: faltan context, action, deliberateFailure, understand, close; 14.3: faltan context, action, deliberateFailure, understand, close
-- M14 ### Tema 4: JWT Bearer y autorización por roles: 14.4: faltan context, action, deliberateFailure, understand, close; 14.4: faltan context, action, deliberateFailure, understand, close; 14.4: faltan context, action, deliberateFailure, understand, close; 14.4: faltan context, action, deliberateFailure, understand, close
-- M14 ### Tema 5: Tiempo real con STOMP: 14.5: faltan context, action, deliberateFailure, understand, close; 14.5: faltan context, action, deliberateFailure, understand, close; 14.5: faltan context, action, deliberateFailure, understand, close; 14.5: faltan context, action, deliberateFailure, understand, close
-- M14 ### Tema 6: Archivos y notificaciones push: 14.6: faltan context, action, deliberateFailure, understand, close; 14.6: faltan context, action, deliberateFailure, understand, close; 14.6: faltan context, action, deliberateFailure, understand, close; 14.6: faltan context, action, deliberateFailure, understand, close
-- M15 ### Tema 1: Backpressure real en WebFlux con reactor-test: 15.1: faltan context, action, deliberateFailure, understand, close; 15.1: faltan context, action, deliberateFailure, understand, close; 15.1: faltan context, action, deliberateFailure, understand, close; 15.1: faltan context, action, deliberateFailure, understand, close
-- M15 ### Tema 2: Contenedores Testcontainers reutilizados entre clases: 15.2: faltan context, action, deliberateFailure, understand, close; 15.2: faltan context, action, deliberateFailure, understand, close; 15.2: faltan context, action, deliberateFailure, understand, close; 15.2: faltan context, action, deliberateFailure, understand, close
-- M15 ### Tema 3: Arquitectura hexagonal verificada con ArchUnit: 15.3: faltan context, action, deliberateFailure, understand, close; 15.3: faltan context, action, deliberateFailure, understand, close; 15.3: faltan context, action, deliberateFailure, understand, close; 15.3: faltan context, action, deliberateFailure, understand, close
-- M15 ### Tema 4: Bulkhead y RateLimiter de Resilience4j: 15.4: faltan context, action, deliberateFailure, understand, close; 15.4: faltan context, action, deliberateFailure, understand, close; 15.4: faltan context, action, deliberateFailure, understand, close; 15.4: faltan context, action, deliberateFailure, understand, close
-- M15 ### Tema 5: Saga con compensación real: 15.5: faltan context, action, deliberateFailure, understand, close; 15.5: faltan context, action, deliberateFailure, understand, close; 15.5: faltan context, action, deliberateFailure, understand, close; 15.5: faltan context, action, deliberateFailure, understand, close
-- M15 ### Tema 6: Event Sourcing con replay real: 15.6: faltan context, action, deliberateFailure, understand, close; 15.6: faltan context, action, deliberateFailure, understand, close; 15.6: faltan context, action, deliberateFailure, understand, close; 15.6: faltan context, action, deliberateFailure, understand, close
-- M15 ### Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar: 15.7: faltan context, action, deliberateFailure, understand, close; 15.7: faltan context, action, deliberateFailure, understand, close; 15.7: faltan context, action, deliberateFailure, understand, close; 15.7: faltan context, action, deliberateFailure, understand, close
-- M15 ### Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework: 15.8: faltan context, action, deliberateFailure, understand, close; 15.8: faltan context, action, deliberateFailure, understand, close; 15.8: faltan context, action, deliberateFailure, understand, close; 15.8: faltan context, action, deliberateFailure, understand, close
-- M2 ### Tema 1: Por qué DTOs en vez de entidades directamente: 1.3: faltan action
-- M20 ### Tema 4: Caché con Spring Cache, Caffeine y Redis: tiene 0 subtemas
-- M20 ### Tema 5: @Async y ejecutores: trabajo en segundo plano con límites: tiene 0 subtemas
-- M20 ### Tema complementario: Integraciones empresariales, SOAP y fronteras de protocolo: tiene 0 subtemas
-- M20 ### Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo: tiene 0 subtemas
-- M20 ### Tema 7: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar: tiene 0 subtemas
-- M22 ### Tema 1: Hexagonal: puertos que hablan el idioma del dominio: tiene 0 subtemas
-- M22 ### Tema 2: C4: contexto, contenedores, componentes y código: tiene 0 subtemas
-- M22 ### Tema 3: ADR: decisiones con contexto, alternativas y consecuencias: tiene 0 subtemas
-- M23 ### Tema 1: módulos y límites entre paquetes: tiene 0 subtemas
-- M23 ### Tema 2: eventos entre módulos sin importar implementación: tiene 0 subtemas
-- M23 ### Tema 3: documentación generada y mapa de dependencias: tiene 0 subtemas
-- M23 ### Tema 4: pruebas de integración por módulo: tiene 0 subtemas
-- M24 ### Tema 1: schema-first con tipos y consultas: tiene 0 subtemas
-- M24 ### Tema 2: data fetchers, relaciones y problema N+1: tiene 0 subtemas
-- M24 ### Tema 3: mutations y subscriptions: tiene 0 subtemas
-- M24 ### Tema 4: pruebas GraphQL con GraphQlTester: tiene 0 subtemas
-- M5 ### Tema 2: Fallar rápido al arranque: 4.21: faltan action
-- M6 ### Tema 1: Probar un controller con `@WebMvcTest`: 6.1: faltan context, action, deliberateFailure, understand, close, duration; 6.2: faltan context, action, deliberateFailure, understand, close, duration; 6.3: faltan context, action, expectedResult, deliberateFailure, understand, close, duration
-- M6 ### Tema 2: Probar el repositorio contra PostgreSQL con `@DataJpaTest`: 6.4: faltan context, action, deliberateFailure, understand, close, duration; 6.5: faltan context, action, deliberateFailure, understand, close, duration; 6.6: faltan context, action, expectedResult, deliberateFailure, understand, close, duration
-- M6 ### Tema 3: Integrar el flujo con `@SpringBootTest`: 6.7: faltan context, action, deliberateFailure, understand, close, duration; 6.8: faltan context, action, deliberateFailure, understand, close, duration; 6.9: faltan context, action, expectedResult, deliberateFailure, understand, close, duration
-- M7 ### Tema 1: Actuator y health checks personalizados: 7.1: faltan context, action, deliberateFailure, understand, close, duration; 7.2: faltan context, action, deliberateFailure, understand, close, duration; 7.3: faltan context, action, expectedResult, understand, close, duration
-- M7 ### Tema 2: Contar operaciones de negocio con Micrometer: 7.4: faltan context, action, deliberateFailure, understand, close, duration; 7.5: faltan context, action, deliberateFailure, understand, close, duration; 7.6: faltan context, action, expectedResult, deliberateFailure, understand, close, duration
-- M8 ### Tema 4: Rebalanceo de consumer groups y asignación de particiones: 4.1: faltan deliberateFailure; 4.2: faltan action, deliberateFailure; 4.3: faltan action, deliberateFailure; 4.4: faltan action
-- M8 ### Tema 5: Kafka frente a RabbitMQ: 5.1: faltan deliberateFailure; 5.2: faltan deliberateFailure
-- M8 ### Tema 6: Spring Cloud Stream y binders de Kafka/RabbitMQ: 6.1: faltan deliberateFailure; 6.3: faltan deliberateFailure; 6.4: faltan action
-- M8 ### Tema 7: Kafka Streams con Spring para transformar eventos: 7.1: faltan deliberateFailure; 7.2: faltan action, deliberateFailure; 7.3: faltan deliberateFailure; 7.4: faltan deliberateFailure
-- M8 ### Tema 8: Avro y Schema Registry para contratos de eventos: 8.1: faltan deliberateFailure; 8.2: faltan deliberateFailure; 8.3: faltan deliberateFailure

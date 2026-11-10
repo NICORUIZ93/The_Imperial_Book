@@ -133,6 +133,15 @@ Entrega el resultado de las tres pruebas y explica por qué `@Transactional` no 
 
 ---
 
+
+**Aplicación y decisión:** Práctica del proyecto integrador: mueve la anotación transaccional a un método privado y demuestra qué escritura parcial aparece; restaura la frontera pública del servicio. Una transacción SQL no incluye una llamada HTTP ni un evento Kafka.
+
+Desde `examples/spring-boot-transaction-boundary-rutaflow`, ejecuta la comprobación del laboratorio:
+
+```bash
+./mvnw -q test
+```
+
 ### Tema 2: Recuperación implica duplicación segura
 
 **Resultado del tema:** probarás que dos solicitudes simultáneas con la misma clave generan una sola fila en PostgreSQL; luego distinguirás idempotencia HTTP de la deduplicación de eventos Kafka.
@@ -255,86 +264,92 @@ Dibuja ambas claves: HTTP `operation_key` para repetir una solicitud; Kafka `eve
 
 ---
 
+
+**Aplicación y decisión:** En el proyecto integrador, conserva operation_key para repetir HTTP y eventId para deduplicar consumo; son contratos de fronteras distintas. No declares exactamente una vez a partir de una tabla con clave única sin revisar el efecto externo.
+
 ### Tema 3: Contratos ejecutables protegen despliegues independientes
 
 ¿Por qué es importante? El contrato es lo que el consumidor recibe por HTTP: status, headers y JSON; una discrepancia puede romper apps móviles que se actualizan después del backend. El laboratorio real vive en `examples/spring-boot-integrador-rutaflow/`; sus pruebas usan Spring, seguridad y PostgreSQL con Testcontainers. **Requisito:** Docker debe estar iniciado para ejecutar esa suite.
 
 #### Subtema 13.3.1: Lee la respuesta que recibe la app · 8 min
 
-**Contexto.** Un cambio puede compilar en el servidor y romper la app móvil. Primero identifica qué cruza la red.
+**Contexto:** Un cambio puede compilar en el servidor y romper la app móvil. Primero identifica qué cruza la red.
 
-**Hazlo tú.** Abre `src/main/java/academia/rutaflow/integrador/entrega/EntregaController.java` y `EntregaResponse.java`. Anota método y ruta, status exitoso, encabezado de ubicación y campos JSON. Mira `postRecorreHttpCapasFlywayYPostgres` en `src/test/java/academia/rutaflow/integrador/entrega/ArquitecturaIntegradaTest.java`.
+**Hazlo tú:** Abre `src/main/java/academia/rutaflow/integrador/entrega/EntregaController.java` y `EntregaResponse.java`. Anota método y ruta, status exitoso, encabezado de ubicación y campos JSON. Mira `postRecorreHttpCapasFlywayYPostgres` en `src/test/java/academia/rutaflow/integrador/entrega/ArquitecturaIntegradaTest.java`.
 
 ```bash
 cd examples/spring-boot-integrador-rutaflow
 ./mvnw -q test -Dtest=ArquitecturaIntegradaTest#postRecorreHttpCapasFlywayYPostgres
 ```
 
-**Resultado esperado.** La prueba recibe `201`, un `Location` con `/api/entregas/<id>` y JSON con `destinatario` y `estado`.
+**Resultado esperado:** La prueba recibe `201`, un `Location` con `/api/entregas/<id>` y JSON con `destinatario` y `estado`.
 
-**Fallo deliberado.** Cambia temporalmente `ResponseEntity.created(ubicacion)` a `ResponseEntity.ok()`. La prueba espera `201` y debe fallar con `200`. Restaura `created`.
+**Fallo deliberado:** Cambia temporalmente `ResponseEntity.created(ubicacion)` a `ResponseEntity.ok()`. **Diagnóstico:** La prueba espera `201` y debe fallar con `200`. Restaura `created`.
 
-**Entiende.** El contrato contiene lo que necesita el cliente, no las clases privadas que el servidor usa para guardar datos.
+**Entiende:** El contrato contiene lo que necesita el cliente, no las clases privadas que el servidor usa para guardar datos.
 
-**Cierra.** Sin mirar el código, enumera ruta, status, header y campos de respuesta.
+**Cierra:** Sin mirar el código, enumera ruta, status, header y campos de respuesta.
 
 #### Subtema 13.3.2: Fija nombres y valores que usa el cliente · 8 min
 
-**Contexto.** Un cliente puede depender del texto exacto `CREADA` o del campo `destinatario`; lo que viaja por JSON define el contrato.
+**Contexto:** Un cliente puede depender del texto exacto `CREADA` o del campo `destinatario`; lo que viaja por JSON define el contrato.
 
-**Hazlo tú.** Ejecuta `contratoDeCreacionConservaStatusLocationYCamposPublicos` en `ArquitecturaIntegradaTest`. Verifica status `201`, `Location`, `id`, `destinatario` y `estado`.
+**Hazlo tú:** Ejecuta `contratoDeCreacionConservaStatusLocationYCamposPublicos` en `ArquitecturaIntegradaTest`. Verifica status `201`, `Location`, `id`, `destinatario` y `estado`.
 
 ```bash
 ./mvnw -q test -Dtest=ArquitecturaIntegradaTest#contratoDeCreacionConservaStatusLocationYCamposPublicos
 ```
 
-**Resultado esperado.** El test comprueba el JSON que produce Spring MVC y PostgreSQL, no un ejemplo JSON escrito aparte.
+**Resultado esperado:** El test comprueba el JSON que produce Spring MVC y PostgreSQL, no un ejemplo JSON escrito aparte.
 
-**Fallo deliberado.** En `EntregaResponse.java`, renombra temporalmente `destinatario` a `cliente`; repite el test. Debe fallar porque falta `$.destinatario`. Restaura el nombre y vuelve a ejecutarlo.
+**Fallo deliberado:** En `EntregaResponse.java`, renombra temporalmente `destinatario` a `cliente`; repite el test. **Diagnóstico:** Debe fallar porque falta `$.destinatario`. Restaura el nombre y vuelve a ejecutarlo.
 
-**Entiende.** Renombrar un campo es incompatible aunque Java compile. Añadir un campo opcional suele ser más compatible; añadir un valor enum puede romper clientes que solo manejan valores conocidos.
+**Entiende:** Renombrar un campo es incompatible aunque Java compile. Añadir un campo opcional suele ser más compatible; añadir un valor enum puede romper clientes que solo manejan valores conocidos.
 
-**Cierra.** Di qué cambió y qué expectativa del test lo detectó.
+**Cierra:** Di qué cambió y qué expectativa del test lo detectó.
 
 #### Subtema 13.3.3: Comprueba el error que ve el consumidor · 8 min
 
-**Contexto.** Los errores también forman parte del contrato. El cliente necesita distinguir una solicitud inválida de una caída del servidor.
+**Contexto:** Los errores también forman parte del contrato. El cliente necesita distinguir una solicitud inválida de una caída del servidor.
 
-**Hazlo tú.** Ejecuta `contratoDeErrorRechazaDestinatarioVacioSinGuardar`. Sigue `@NotBlank` en `CrearEntregaRequest.java` hasta el status `400`.
+**Hazlo tú:** Ejecuta `contratoDeErrorRechazaDestinatarioVacioSinGuardar`. Sigue `@NotBlank` en `CrearEntregaRequest.java` hasta el status `400`.
 
 ```bash
 ./mvnw -q test -Dtest=ArquitecturaIntegradaTest#contratoDeErrorRechazaDestinatarioVacioSinGuardar
 ```
 
-**Resultado esperado.** La API devuelve `400 Bad Request` y no crea otra entrega. El proyecto todavía no fija un esquema JSON de error; no supongas que devuelve Problem Details.
+**Resultado esperado:** La API devuelve `400 Bad Request` y no crea otra entrega. El proyecto todavía no fija un esquema JSON de error; no supongas que devuelve Problem Details.
 
-**Fallo deliberado.** Quita temporalmente `@NotBlank` y repite el test. El destinatario de espacios deja de rechazarse; la prueba debe fallar. Restaura la anotación.
+**Fallo deliberado:** Quita temporalmente `@NotBlank` y repite el test. **Diagnóstico:** El destinatario de espacios deja de rechazarse; la prueba debe fallar. Restaura la anotación.
 
-**Entiende.** RFC 9457 define un formato estándar de error HTTP, pero citarlo no lo activa. Si se adopta, fija sus campos y media type con una prueba.
+**Entiende:** RFC 9457 define un formato estándar de error HTTP, pero citarlo no lo activa. Si se adopta, fija sus campos y media type con una prueba.
 
-**Cierra.** Anota qué garantiza la prueba y qué no garantiza sobre el cuerpo de error.
+**Cierra:** Anota qué garantiza la prueba y qué no garantiza sobre el cuerpo de error.
 
 #### Subtema 13.3.4: Protege cambios entre despliegues · 10 min
 
-**Contexto.** El backend y la app móvil se actualizan por separado. Conserva lo que los clientes vigentes ya entienden.
+**Contexto:** El backend y la app móvil se actualizan por separado. Conserva lo que los clientes vigentes ya entienden.
 
-**Hazlo tú.** En `EntregaResponse`, añade temporalmente `String nota` y ejecuta las pruebas de contrato. Restaura el DTO. En `docs/salida-a-produccion.md`, registra cambios de nombres, tipos, valores o significado antes de desplegarlos.
+**Hazlo tú:** En `EntregaResponse`, añade temporalmente `String nota` y ejecuta las pruebas de contrato. Restaura el DTO. En `docs/salida-a-produccion.md`, registra cambios de nombres, tipos, valores o significado antes de desplegarlos.
 
 ```bash
 ./mvnw -q test -Dtest=ArquitecturaIntegradaTest
 ```
 
-**Resultado esperado.** Las pruebas de respuesta, autenticación, validación y configuración pasan. Que siga pasando un test aditivo no prueba que todo cliente externo acepte campos desconocidos.
+**Resultado esperado:** Las pruebas de respuesta, autenticación, validación y configuración pasan. Que siga pasando un test aditivo no prueba que todo cliente externo acepte campos desconocidos.
 
-**Fallo deliberado.** Renombra un campo en una rama de práctica, guarda la salida roja y revierte el cambio; confirma la salida verde.
+**Fallo deliberado y diagnóstico:** Renombra un campo en una rama de práctica, guarda la salida roja y revierte el cambio; confirma la salida verde.
 
-**Entiende.** OpenAPI describe rutas y esquemas; las pruebas ejecutables comprueban comportamiento. Para equipos que despliegan en momentos distintos, estudia Spring Cloud Contract y verifica stubs en proveedor y consumidor.
+**Entiende:** OpenAPI describe rutas y esquemas; las pruebas ejecutables comprueban comportamiento. Para equipos que despliegan en momentos distintos, estudia Spring Cloud Contract y verifica stubs en proveedor y consumidor.
 
-**Cierra.** Conserva una ejecución verde y un fallo deliberado restaurado. La cobertura estructural no prueba compatibilidad de todos los consumidores.
+**Cierra:** Conserva una ejecución verde y un fallo deliberado restaurado. La cobertura estructural no prueba compatibilidad de todos los consumidores.
 
 **Fuentes:** [Spring MVC Test](https://docs.spring.io/spring-framework/reference/testing/mockmvc.html), [Spring Cloud Contract](https://docs.spring.io/spring-cloud-contract/reference/), [RFC 9457: Problem Details](https://www.rfc-editor.org/rfc/rfc9457).
 
 ---
+
+
+**Aplicación y decisión:** En el proyecto integrador, guarda status, Location y campos públicos como contrato del cliente. Límite: el test no certifica compatibilidad de todas las versiones móviles; cualquier cambio de significado exige revisión del consumidor.
 
 ### Tema 4: Observabilidad sirve a un objetivo y a una decisión
 
@@ -342,9 +357,9 @@ cd examples/spring-boot-integrador-rutaflow
 
 #### Subtema 13.4.1: Instrumenta el trabajo de negocio · 8 min
 
-**Contexto.** Spring registra automáticamente parte del tráfico; una observación propia debe señalar una operación que ayude a contestar una pregunta.
+**Contexto:** Spring registra automáticamente parte del tráfico; una observación propia debe señalar una operación que ayude a contestar una pregunta.
 
-**Hazlo tú.** En `src/main/java/academia/rutaflow/tracing/DeliveryController.java`, sigue el bloque que envuelve la llamada al inventario:
+**Hazlo tú:** En `src/main/java/academia/rutaflow/tracing/DeliveryController.java`, sigue el bloque que envuelve la llamada al inventario:
 
 ```java
 Observation.createNotStarted("rutaflow.delivery.prepare", observations)
@@ -361,68 +376,78 @@ cd examples/spring-tracing-rutaflow
 ./mvnw -q package -DskipTests
 ```
 
-**Resultado esperado.** Maven crea el JAR del servicio sin ejecutar el flujo. La observación de negocio se llama `rutaflow.delivery.prepare` y etiqueta una operación fija.
+**Resultado esperado:** Maven crea el JAR del servicio sin ejecutar el flujo. La observación de negocio se llama `rutaflow.delivery.prepare` y etiqueta una operación fija.
 
-**Fallo deliberado.** Cambia el nombre de observación por `rutaflow.test.prepare`. Revisa el cambio en el código y restaura el nombre; el empaquetado por sí solo no prueba que Jaeger recibió una traza.
+**Fallo deliberado:** Cambia el nombre de observación por `rutaflow.test.prepare`. **Diagnóstico:** Revisa el cambio en el código y restaura el nombre; el empaquetado por sí solo no prueba que Jaeger recibió una traza.
 
-**Entiende.** Una observación marca trabajo y contexto. La evidencia de que se exportó se obtiene del backend de trazas, no de que el proyecto compile.
+**Entiende:** Una observación marca trabajo y contexto. La evidencia de que se exportó se obtiene del backend de trazas, no de que el proyecto compile.
 
-**Cierra.** Explica qué trabajo mide ese nombre y qué pregunta respondería durante un incidente.
+**Cierra:** Explica qué trabajo mide ese nombre y qué pregunta respondería durante un incidente.
 
 #### Subtema 13.4.2: Sigue una solicitud entre servicios · 10 min
 
-**Contexto.** La app de Entregas llama a Inventario por HTTP. El trace ID permite encontrar ambos spans como parte del mismo recorrido.
+**Contexto:** La app de Entregas llama a Inventario por HTTP. El trace ID permite encontrar ambos spans como parte del mismo recorrido.
 
-**Hazlo tú.** Con Docker Compose o Podman Compose disponible, desde `examples/spring-tracing-rutaflow/` ejecuta:
+**Hazlo tú:** Con Docker Compose o Podman Compose disponible, desde `examples/spring-tracing-rutaflow/` ejecuta:
 
 ```bash
 ./scripts/verify-trace.sh
 ```
 
-**Resultado esperado.** El script consulta `GET /deliveries/RF-314`, muestra la respuesta con inventario reservado y encuentra una traza con los servicios `entregas` e `inventario`. Guarda el trace ID que imprime.
+**Resultado esperado:** El script consulta `GET /deliveries/RF-314`, muestra la respuesta con inventario reservado y encuentra una traza con los servicios `entregas` e `inventario`. Guarda el trace ID que imprime.
 
-**Fallo deliberado.** En `DeliveryController.java`, cambia `/inventory/RF-314` por `/inventories/RF-314` y repite el script. Falla la respuesta esperada porque Inventario no tiene esa ruta. Restaura `/inventory/RF-314`.
+**Fallo deliberado:** En `DeliveryController.java`, cambia `/inventory/RF-314` por `/inventories/RF-314` y repite el script. **Diagnóstico:** Falla la respuesta esperada porque Inventario no tiene esa ruta. Restaura `/inventory/RF-314`.
 
-**Entiende.** La llamada fallida ayuda a ubicar qué frontera revisar. La traza no corrige el error: aporta el recorrido para diagnosticarlo.
+**Entiende:** La llamada fallida ayuda a ubicar qué frontera revisar. La traza no corrige el error: aporta el recorrido para diagnosticarlo.
 
-**Cierra.** Indica qué servicio inició la petición y cuál debía reservar inventario.
+**Cierra:** Indica qué servicio inició la petición y cuál debía reservar inventario.
 
 #### Subtema 13.4.3: Mantén las etiquetas de métricas acotadas · 8 min
 
-**Contexto.** Cada combinación distinta de etiquetas métricas puede crear una serie nueva. Los IDs de pedido cambian casi en cada solicitud.
+**Contexto:** Cada combinación distinta de etiquetas métricas puede crear una serie nueva. Los IDs de pedido cambian casi en cada solicitud.
 
-**Hazlo tú.** En `DeliveryController.java`, compara la etiqueta fija `operation` con `pedidoId`, que cambia por entrega:
+**Hazlo tú:** En `DeliveryController.java`, compara la etiqueta fija `operation` con `pedidoId`, que cambia por entrega:
 
 ```java
 .lowCardinalityKeyValue("operation", "reserve-inventory")
 .highCardinalityKeyValue("pedidoId", "RF-314")
 ```
 
-**Resultado esperado.** `operation` puede etiquetar métricas y trazas; `pedidoId` se conserva para buscar la traza, pero Micrometer no lo convierte en tag métrico. Spring Boot envía etiquetas de alta cardinalidad solo a trazas.
+**Resultado esperado:** `operation` puede etiquetar métricas y trazas; `pedidoId` se conserva para buscar la traza, pero Micrometer no lo convierte en tag métrico. Spring Boot envía etiquetas de alta cardinalidad solo a trazas.
 
-**Fallo deliberado.** Cambia temporalmente `highCardinalityKeyValue` por `lowCardinalityKeyValue` para `pedidoId`. Explica por qué muchos IDs pueden multiplicar las series de métricas. Restaura `highCardinalityKeyValue`.
+**Fallo deliberado:** Cambia temporalmente `highCardinalityKeyValue` por `lowCardinalityKeyValue` para `pedidoId`. **Diagnóstico:** Explica por qué muchos IDs pueden multiplicar las series de métricas. Restaura `highCardinalityKeyValue`.
 
-**Entiende.** El trace ID agrupa spans del recorrido; `pedidoId` es contexto de negocio. Los dos ayudan a investigar, pero no son tags métricos.
+**Entiende:** El trace ID agrupa spans del recorrido; `pedidoId` es contexto de negocio. Los dos ayudan a investigar, pero no son tags métricos.
 
-**Cierra.** Clasifica `operation`, `pedidoId` y `traceId`; justifica qué sistema debería recibir cada uno.
+**Cierra:** Clasifica `operation`, `pedidoId` y `traceId`; justifica qué sistema debería recibir cada uno.
 
 #### Subtema 13.4.4: Convierte la señal en una decisión · 10 min
 
-**Contexto.** Una pantalla llena de gráficas no indica qué debe hacer el equipo. Elige una medida que describa una experiencia que importe.
+**Contexto:** Una pantalla llena de gráficas no indica qué debe hacer el equipo. Elige una medida que describa una experiencia que importe.
 
-**Hazlo tú.** Completa este objetivo para el flujo de entregas: “Al menos ___ % de las confirmaciones terminan en menos de ___ ms durante ___ días”. Señala qué dato permitiría calcularlo y qué acción tomarías al incumplirlo.
+**Hazlo tú:** Completa este objetivo para el flujo de entregas: “Al menos ___ % de las confirmaciones terminan en menos de ___ ms durante ___ días”. Señala qué dato permitiría calcularlo y qué acción tomarías al incumplirlo.
 
-**Resultado esperado.** El SLI mide una proporción y una latencia; el SLO añade objetivo y ventana. Una traza aislada explica una solicitud, pero no calcula por sí sola el porcentaje de todas las solicitudes.
 
-**Fallo deliberado.** Usa como alerta “hay un span con error”. Explica por qué una solicitud fallida no revela si el servicio incumplió el objetivo para sus usuarios. Sustitúyelo por una medida de proporción/latencia y una acción concreta.
+Para comprobar «Convierte la señal en una decisión», consulta: `examples/spring-tracing-rutaflow/src/main/java/academia/rutaflow/tracing/DeliveryController.java`. Desde `examples/spring-tracing-rutaflow` repite la comprobación:
 
-**Entiende.** Métricas muestran tendencias agregadas; trazas ayudan a inspeccionar recorridos individuales. No uses liveness para reiniciar el proceso cada vez que una dependencia externa deja de responder.
+```bash
+bash ./scripts/verify-trace.sh
+```
 
-**Cierra.** Guarda el objetivo, su ventana y la primera acción operativa. La ejecución Jaeger sigue pendiente si no tienes Docker o Podman disponible.
+**Resultado esperado:** El SLI mide una proporción y una latencia; el SLO añade objetivo y ventana. Una traza aislada explica una solicitud, pero no calcula por sí sola el porcentaje de todas las solicitudes.
+
+**Fallo deliberado:** Usa como alerta “hay un span con error”. **Diagnóstico:** Explica por qué una solicitud fallida no revela si el servicio incumplió el objetivo para sus usuarios. Sustitúyelo por una medida de proporción/latencia y una acción concreta.
+
+**Entiende:** Métricas muestran tendencias agregadas; trazas ayudan a inspeccionar recorridos individuales. No uses liveness para reiniciar el proceso cada vez que una dependencia externa deja de responder.
+
+**Cierra:** Guarda el objetivo, su ventana y la primera acción operativa. La ejecución Jaeger sigue pendiente si no tienes Docker o Podman disponible.
 
 **Fuentes:** [Micrometer Observation](https://docs.micrometer.io/micrometer/reference/observation.html), [Spring Boot observability](https://docs.spring.io/spring-boot/reference/actuator/observability.html) y [OpenTelemetry: conceptos de señales](https://opentelemetry.io/docs/concepts/signals/).
 
 ---
+
+
+**Aplicación y decisión:** En el proyecto integrador, usa el trace ID para localizar la llamada lenta y relaciona esa señal con un objetivo de servicio. Límite: ver dos spans no acredita observabilidad completa ni protección de todos los datos registrados.
 
 ## Revisión oficial de plataforma — julio de 2026
 

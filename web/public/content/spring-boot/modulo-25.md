@@ -89,6 +89,9 @@ Guarda la salida y el mensaje exacto que indica por qué se rechaza el dato.
 
 **Fuente:** [abstracción de binders](https://docs.spring.io/spring-cloud-stream/reference/spring-cloud-stream/overview-binder-abstraction.html).
 
+
+**Aplicación y decisión:** En el proyecto integrador, conserva nombres lógicos de binding en código y destinos de broker en configuración. Límite: cambiar destination puede desconectar un consumidor sin cambiar una sola línea de la función.
+
 ### Tema 2: binder Kafka y binder RabbitMQ
 
 **Duración estimada:** 30 min.
@@ -182,6 +185,9 @@ Entrega una comparación con una evidencia observada en cada broker.
 
 **Fuentes:** [binder Kafka](https://docs.spring.io/spring-cloud-stream/reference/kafka/kafka-binder/), [binder RabbitMQ](https://docs.spring.io/spring-cloud-stream/reference/rabbit/rabbit_overview.html).
 
+
+**Aplicación y decisión:** Práctica del proyecto integrador: ejecuta la misma entrada en perfiles separados y registra el tópico Kafka o exchange/cola Rabbit que recibió la salida. La diferencia de transporte no desaparece por compartir Function; el test binder no acredita esa ejecución de broker.
+
 ### Tema 3: reintentos, error handler y dead-letter
 
 **Duración estimada:** 30 min.
@@ -261,6 +267,9 @@ Escribe qué persona o proceso revisaría el mensaje antes de reenviarlo.
 - [ ] Documenté cómo revisar antes de replay.
 
 **Fuentes:** [DLQ para Kafka](https://docs.spring.io/spring-cloud-stream/reference/kafka/kafka-binder/dlq.html), [dead-letter en RabbitMQ](https://docs.spring.io/spring-cloud-stream/reference/rabbit/rabbit_overview.html).
+
+
+**Aplicación y decisión:** Práctica del proyecto integrador: clasifica un fallo transitorio y otro permanente, fija intentos y demuestra el destino final del evento. Límite: replay desde DLQ puede repetir efectos; conserva idempotencia y no reintentes errores de contrato indefinidamente.
 
 ### Tema 4: test binder y límites de la prueba
 
@@ -343,6 +352,9 @@ Marca cada capa como ejecutada o pendiente y enlaza su evidencia.
 - [ ] No presenté una prueba local como certificación de integración.
 
 **Fuente:** [test binder de Spring Cloud Stream](https://docs.spring.io/spring-cloud-stream/reference/spring-cloud-stream/spring_integration_test_binder.html).
+
+
+**Aplicación y decisión:** Práctica del proyecto integrador: agrega otra zona válida y un código inválido al test binder. Registra qué comprueba la función en memoria y qué queda para el broker; no informes una cola desplegada a partir de InputDestination.
 
 ## Capstone del módulo
 

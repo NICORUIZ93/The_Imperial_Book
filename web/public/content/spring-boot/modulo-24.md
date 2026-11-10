@@ -1,314 +1,345 @@
-# Módulo 24: Spring GraphQL para pedidos y entregas
+# Módulo 24: Spring GraphQL: contrato, datos anidados y cambios
 
 ## Aprende construyendo
 
-Expondrás un contrato GraphQL con Spring Boot 4.0.9, Java 21 y Spring for GraphQL 2.0.6. Los schemas describen qué puede pedir el cliente; los data fetchers resuelven campos en el servidor. Las versiones se fijan para el laboratorio, no se presentan como la última versión universal.
-
----
+El laboratorio fija Java 25 y Spring Boot 4.1.2. Todas las pruebas pasan por el schema y los resolvers reales con ExecutionGraphQlServiceTester. Los datos están en memoria y no hay autenticación; es un laboratorio local, no un backend listo para publicar. HTTP y WebSocket se verifican por separado del servicio GraphQL.
 
 ### Tema 1: schema-first con tipos y consultas
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar publicarás un esquema GraphQL para consultar una entrega y ejecutarás una petición HTTP con respuesta visible. **Prerrequisitos:** Java 21, DTOs y API HTTP de Spring Boot. Descarga una app de Spring Initializr con Boot 4.0.9, Java 21 y dependencias `graphql,web,test`.
+**Meta:** consultar una entrega declarada en el schema y observar el rechazo de un campo inexistente.
 
-**Ejemplo independiente:** crea una carpeta vacía `graphql-schema-lab`, descarga desde `https://start.spring.io/starter.zip` con `bootVersion=4.0.9`, `javaVersion=21`, `dependencies=graphql,web,test`, extrae y ejecuta `./mvnw test`.
+**¿Por qué es importante?** El cliente elige campos del contrato público, sin acceso libre a la base del servidor.
 
-#### Paso 2 · Contexto y caso real
-Una pantalla de seguimiento necesita ID, estado y fecha estimada, mientras otra quiere solo ID/estado. REST puede resolverlo con endpoints distintos; GraphQL deja que el cliente solicite los campos declarados en un schema común.
+**Prerrequisitos:** M2, DTOs, JSON y HTTP. Duración: 30–40 min.
 
-#### ¿Por qué es importante?
-El schema es contrato de tipos y operaciones, no una consulta directa sin límites a la base. Mantén autorización, validación, costo de consultas y ownership en los servicios del servidor.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-En schema-first escribes primero `type Query` y los tipos de salida; cada campo tiene un resolver (data fetcher) o se lee de un objeto. Como un menú de restaurante, el cliente elige platos del menú publicado; no puede pedir una tabla privada que no esté en el schema.
-
-#### Paso 4 · Demostración guiada desde cero
-En `pom.xml`, verifica `spring-boot-starter-graphql` y `spring-boot-starter-web` con versiones gestionadas por Boot 4.0.9. Crea `src/main/resources/graphql/schema.graphqls`:
-
-```graphql
-type Query {
-  shipment(id: ID!): Shipment
-}
-
-type Shipment {
-  id: ID!
-  status: String!
-  estimatedArrival: String
-}
-```
-
-Crea `src/main/java/dev/rutaflow/ShipmentController.java`:
-
-```java
-package dev.rutaflow;
-
-import java.util.Map;
-import org.springframework.graphql.data.method.annotation.Argument;
-import org.springframework.graphql.data.method.annotation.QueryMapping;
-import org.springframework.stereotype.Controller;
-
-record Shipment(String id, String status, String estimatedArrival) {}
-
-@Controller
-class ShipmentController {
-    private final Map<String, Shipment> shipments = Map.of(
-            "sh-42", new Shipment("sh-42", "IN_TRANSIT", "2026-11-04T15:00:00Z"));
-
-    @QueryMapping
-    Shipment shipment(@Argument String id) {
-        return shipments.get(id);
-    }
-}
-```
-
-Ejecuta `./mvnw spring-boot:run`; en otra terminal consulta `curl -s http://localhost:8080/graphql -H 'Content-Type: application/json' -d '{"query":"{ shipment(id: \"sh-42\") { id status estimatedArrival } }"}'`. Espera `data.shipment.status = IN_TRANSIT`.
-
-#### Paso 5 · Práctica guiada
-Agrega `deliveryAddress` al tipo y devuelve solo los últimos cuatro caracteres de un código ficticio en el laboratorio. **Pista:** valida primero el schema y la forma de la respuesta GraphQL; no expongas datos sensibles por comodidad.
-
-#### Paso 6 · Práctica independiente
-Agrega el caso ID desconocido y decide si la respuesta será `null` o error de negocio. Documenta el contrato y prueba ambos estados con comandos curl separados.
-
-#### Paso 7 · Cierre y evidencia
-Entrega schema, resolver, petición HTTP y salida exacta para encontrado/no encontrado. El siguiente tema resuelve campos anidados y evita consultas repetidas por fila.
-
-**Fallo deliberado:** solicita deliberadamente el campo `trackingSecret` que no está en el schema; observa el error de validación GraphQL antes de llegar al resolver y quita el campo.
+**Preparación:** JDK 25 y el repositorio. Desde su raíz copia `examples/spring-graphql-rutaflow` a una carpeta nueva, entra y ejecuta el wrapper incluido:
 
 ```bash
-./mvnw test
+cp -R examples/spring-graphql-rutaflow practica-m24-t1
+cd practica-m24-t1
+./mvnw -q test
 ```
 
-**Resultado esperado:** el schema compila, el query válido devuelve el ID/estado y un campo inexistente se rechaza. **Errores comunes:** usar entidad JPA como contrato público, confundir HTTP 200 con una operación GraphQL sin errores y dejar el endpoint sin autenticación. Fuentes oficiales: [Spring GraphQL Boot starter](https://docs.spring.io/spring-graphql/reference/boot-starter.html), [controladores anotados](https://docs.spring.io/spring-graphql/reference/controllers.html).
+**Analogía:** el schema es un menú: elegir un plato permitido no concede acceso a la cocina. Los permisos siguen siendo responsabilidad del servidor.
 
-**Proyecto propio:** `src/main/resources/graphql/schema.graphqls`. **Cuándo usar GraphQL:** cuando clientes necesitan seleccionar conjuntos de campos con un contrato compartido; un endpoint REST sencillo sigue siendo una buena opción si el contrato es fijo. Evidencia de aprendizaje: entrega query válido, rechazo de campo desconocido y explicación.
+#### Subtema 24.1.1 · Lee el contrato antes del resolver · 10 min
 
----
+**Contexto:** Query declara entrega(id) y su retorno puede ser null.
+
+**Hazlo tú:** Abre `src/main/resources/graphql/schema.graphqls` y `src/main/java/academia/rutaflow/graphql/EntregaController.java`. Sigue Query.entrega hasta @QueryMapping.
+
+```bash
+./mvnw -q -Dtest=EntregaGraphqlTest#consultaValidaYRechazaCampoInexistente test
+```
+
+**Resultado esperado:** ENV-1 tiene estado CREADA; el test también comprueba un campo inválido.
+
+**Fallo deliberado:** Quita estado del tipo Entrega en el schema y repite.
+
+**Diagnóstico:** la consulta ya no cumple el contrato; GraphQL rechaza el campo. Restaura el schema.
+
+**Entiende:** Schema-first fija tipos y operaciones; el resolver devuelve un objeto que aporta los datos. Que un campo exista no demuestra autorización de lectura.
+
+**Cierra:** Guarda consulta, campo elegido y respuesta del test.
+
+#### Subtema 24.1.2 · Solicita un campo que no existe · 10 min
+
+**Contexto:** El motor valida la operación antes de resolver datos.
+
+**Hazlo tú:** Abre `src/test/java/academia/rutaflow/graphql/EntregaGraphqlTest.java` y localiza la consulta con secreto. Revisa que la prueba exige errores.
+
+```bash
+./mvnw -q -Dtest=EntregaGraphqlTest#consultaValidaYRechazaCampoInexistente test
+```
+
+**Resultado esperado:** El campo secreto provoca un error de validación; no se añade al DTO por petición del cliente.
+
+**Fallo deliberado:** Cambia la consulta inválida para pedir id, dejando la aserción de error.
+
+**Diagnóstico:** la consulta ahora es válida y la expectativa de errores falla; restaura secreto para conservar el caso negativo.
+
+**Entiende:** Un error GraphQL no se deduce solo del status HTTP. Examina data y errors según el transporte que ejecutes.
+
+**Cierra:** Distingue un error de schema de una entrega inexistente.
+
+#### Subtema 24.1.3 · Define el contrato de ausencia · 10 min
+
+**Contexto:** Un ID desconocido puede devolver null porque entrega no lleva !.
+
+**Hazlo tú:** Lee `idAusenteEsNullYEstadoInvalidoEsError` en `src/test/java/academia/rutaflow/graphql/EntregaGraphqlTest.java` y consulta NO-EXISTE.
+
+```bash
+./mvnw -q -Dtest=EntregaGraphqlTest#idAusenteEsNullYEstadoInvalidoEsError test
+```
+
+**Resultado esperado:** entrega es null; la misma prueba distingue una mutación con estado inválido.
+
+**Fallo deliberado:** Cambia el retorno de entrega a Entrega! en el schema sin cambiar el comportamiento para ID ausente.
+
+**Diagnóstico:** la ausencia pasa a violar no-null y produce errores; restaura el contrato nullable o diseña un error deliberado con nuevas pruebas.
+
+**Entiende:** Nullabilidad describe qué puede faltar; no reemplaza reglas de negocio ni es una política de seguridad.
+
+**Cierra:** Guarda la decisión de null para ausencia y anota cuándo elegirías un error explícito.
+
+**Práctica independiente:** Añade una entrega ficticia y una prueba que consulte solo su id. Después modifica un campo interno y comprueba que no aparece si no forma parte del schema.
+
+**Hito del tema:** conserva el resultado ejecutado, el fallo diagnosticado y restaurado, una explicación propia del mecanismo y tu ejercicio independiente. En el proyecto integrador RutaFlow aplica la decisión solo cuando puedas justificar su alcance. La suite del laboratorio no acredita un despliegue productivo ni la resolución de tu ejercicio.
+
+**Fuente primaria:** [Spring GraphQL: controladores anotados](https://docs.spring.io/spring-graphql/reference/controllers.html)
 
 ### Tema 2: data fetchers, relaciones y problema N+1
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar implementarás resolver anidado para paradas de una entrega y agruparás la carga de conductores en lotes. **Prerrequisitos:** Tema 1, relaciones y consultas SQL básicas. Crea proyecto independiente `graphql-fetcher-lab` con Boot 4.0.9/Java 21/GraphQL/Web/Test.
+**Meta:** resolver conductores de dos entregas mediante una sola invocación batch observada.
 
-**Ejemplo independiente:** desde carpeta vacía genera `graphql-fetcher-lab` con Spring Initializr; incluye schema, modelos y controlador de esta lección y ejecuta `./mvnw test`.
+**¿Por qué es importante?** Un resolver por fila puede multiplicar llamadas al origen aunque la consulta del cliente parezca pequeña.
 
-#### Paso 2 · Contexto y caso real
-`query { shipments { stops { address } } }` puede causar una consulta por entrega y otra por cada parada. Con 100 entregas, un fetcher ingenuo podría disparar cientos de consultas aunque el JSON sea pequeño.
+**Prerrequisitos:** M24 T1 y colecciones Java. Duración: 30–40 min.
 
-#### ¿Por qué es importante?
-Un query GraphQL representa un grafo de campos; resolver cada nodo de forma independiente puede multiplicar llamadas a base, servicios o API externas. Mide SQL/cantidad de llamadas y usa batching con límites.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-`@QueryMapping` resuelve un campo raíz, `@SchemaMapping` un campo de un tipo padre, y `@BatchMapping` junta padres para resolver el campo en lote. Un data fetcher es como un encargado que trae el dato bajo demanda; si cada persona hace un viaje separado, se pierde tiempo.
-
-#### Paso 4 · Demostración guiada
-En `src/main/resources/graphql/schema.graphqls` agrega `type Shipment { id: ID! driver: Driver stops: [Stop!]! }` y define `Driver`/`Stop`. Crea `src/main/java/dev/rutaflow/ShipmentFields.java`:
-
-```java
-package dev.rutaflow;
-
-import java.util.List;
-import java.util.Map;
-import org.springframework.graphql.data.method.annotation.BatchMapping;
-import org.springframework.graphql.data.method.annotation.SchemaMapping;
-import org.springframework.stereotype.Controller;
-
-record Driver(String id, String name) {}
-record Stop(String id, String address) {}
-record Shipment(String id, String status, String estimatedArrival) {}
-
-@Controller
-class ShipmentFields {
-    private final DriverService drivers;
-    private final Map<String, List<Stop>> stopsByShipment = Map.of(
-            "sh-42", List.of(new Stop("stop-1", "Calle 10")));
-    ShipmentFields(DriverService drivers) { this.drivers = drivers; }
-
-    @BatchMapping(typeName = "Shipment", field = "driver")
-    Map<Shipment, Driver> driver(List<Shipment> shipments) {
-        // Una búsqueda por los IDs reunidos, no una búsqueda por cada Shipment.
-        return drivers.findForShipments(shipments);
-    }
-
-    @SchemaMapping(typeName = "Shipment", field = "stops")
-    List<Stop> stops(Shipment shipment) {
-        return stopsByShipment.getOrDefault(shipment.id(), List.of());
-    }
-}
-```
-
-Implementa `DriverService.findForShipments` con un fake de laboratorio que devuelva un mapa por shipment. Ejecuta `./mvnw test` y registra llamadas del servicio para query de 1 y 20 entregas.
-
-#### Paso 5 · Práctica guiada
-Convierte un resolver que hace `findByShipmentId` dentro de un bucle en `@BatchMapping`. **Pista:** retorna cada clave `Shipment` que entró al lote; prueba lista vacía y un shipment sin conductor.
-
-#### Paso 6 · Práctica independiente
-Agrega un límite máximo de 50 entregas por petición y test que cuente llamadas al servicio. Compara el número antes/después y anota por qué batching no resuelve automáticamente todos los N+1 remotos.
-
-#### Paso 7 · Cierre y evidencia
-Entrega respuesta GraphQL, conteo de llamadas y prueba de campo ausente. El siguiente tema añade escritura y actualización en vivo con límites del transporte.
-
-**Fallo deliberado:** restaura deliberadamente el fetcher que llama al servicio por cada fila y haz que el test falle al detectar más de una llamada para el lote.
+**Preparación:** JDK 25 y el repositorio. Desde su raíz copia `examples/spring-graphql-rutaflow` a una carpeta nueva, entra y ejecuta el wrapper incluido:
 
 ```bash
-./mvnw test
+cp -R examples/spring-graphql-rutaflow practica-m24-t2
+cd practica-m24-t2
+./mvnw -q test
 ```
 
-**Resultado esperado:** una consulta de varias entregas ejecuta una carga por lote; los campos opcionales respetan el contrato. **Errores comunes:** asumir que `@BatchMapping` fija cardinalidad, retornar mapa sin claves y no limitar profundidad/cantidad de resultados. Fuente oficial: [batch mappings](https://docs.spring.io/spring-graphql/reference/controllers.html#controllers.schema-mapping.batch).
+**Analogía:** reunir dos solicitudes al mismo mostrador evita dos viajes; sigue siendo necesario medir el coste real del mostrador.
 
-**Proyecto propio:** `src/main/java/dev/rutaflow/ShipmentFields.java`. **Cuándo añadir batching:** cuando el perfil muestre repetición de fetches y se pueda agrupar la lectura. Evidencia de aprendizaje: entrega salida de test y medición de llamadas.
+#### Subtema 24.2.1 · Pide datos anidados · 10 min
 
----
+**Contexto:** Cada Entrega declara conductor, que se resuelve por separado de id y estado.
+
+**Hazlo tú:** Abre `src/main/java/academia/rutaflow/graphql/EntregaController.java` y sigue el método conductores anotado @BatchMapping(typeName="Entrega", field="conductor").
+
+```bash
+./mvnw -q -Dtest=EntregaGraphqlTest#batchResuelveDosEntregasEnUnaInvocacion test
+```
+
+**Resultado esperado:** Dos entregas reciben conductor Ana y el contador consultasEnLote queda en 1.
+
+**Fallo deliberado:** Cambia field a conductorEquivocado.
+
+**Diagnóstico:** el mapping ya no coincide con el schema; la consulta no obtiene el conductor no-null esperado. Restaura conductor.
+
+**Entiende:** El resolver batch recibe una lista de padres y devuelve un Map que vincula cada padre con su resultado. Aquí el origen es memoria, no SQL.
+
+**Cierra:** Conserva los dos nombres y el conteo de una invocación.
+
+#### Subtema 24.2.2 · Relaciona cada resultado con su padre · 10 min
+
+**Contexto:** El batch necesita una asociación correcta, no solo una lista de conductores.
+
+**Hazlo tú:** En `src/main/java/academia/rutaflow/graphql/EntregaController.java`, localiza resultado.put(e, new Conductor(...)). Relaciónalo con el record Entrega.
+
+```bash
+./mvnw -q -Dtest=EntregaGraphqlTest#batchResuelveDosEntregasEnUnaInvocacion test
+```
+
+**Resultado esperado:** Cada padre del resultado recibe el conductor definido por el adaptador de demostración.
+
+**Fallo deliberado:** Devuelve un Map vacío desde conductores.
+
+**Diagnóstico:** conductor es obligatorio en el schema; faltan valores y la consulta produce errores. Restaura el mapa.
+
+**Entiende:** El contrato no demuestra por sí solo que el conductor pertenece a la empresa o que la asignación es vigente. Un repositorio real debe aplicar esas restricciones.
+
+**Cierra:** Dibuja dos padres y las claves que enlazan sus resultados.
+
+#### Subtema 24.2.3 · Mide la frontera correcta · 10 min
+
+**Contexto:** Una invocación del batch no equivale automáticamente a una consulta SQL.
+
+**Hazlo tú:** Abre `src/test/java/academia/rutaflow/graphql/EntregaGraphqlTest.java` y `src/main/java/academia/rutaflow/graphql/EntregaController.java`, ubica lotes.incrementAndGet y la aserción de contador.
+
+```bash
+./mvnw -q -Dtest=EntregaGraphqlTest#batchResuelveDosEntregasEnUnaInvocacion test
+```
+
+**Resultado esperado:** El contador observa la invocación Java, sin base de datos ni medición de latencia.
+
+**Fallo deliberado:** Incrementa el contador dentro del bucle en lugar de una vez por lote.
+
+**Diagnóstico:** la expectativa cambia de 1 a 2 aunque el mapping siga siendo batch; restaura el contador para medir invocaciones.
+
+**Entiende:** Para medir N+1 SQL necesitas un repositorio y un contador de consultas del motor/proveedor. Limita también profundidad, tamaño y autorización de la consulta GraphQL.
+
+**Cierra:** Escribe qué mide el test y qué experimento falta para afirmar una reducción SQL.
+
+**Práctica independiente:** Asigna dos conductores distintos en memoria, conserva el batch y demuestra la correspondencia de cada entrega. Después diseña el test SQL que necesitarías antes de publicar una cifra de rendimiento.
+
+**Hito del tema:** conserva el resultado ejecutado, el fallo diagnosticado y restaurado, una explicación propia del mecanismo y tu ejercicio independiente. En el proyecto integrador RutaFlow aplica la decisión solo cuando puedas justificar su alcance. La suite del laboratorio no acredita un despliegue productivo ni la resolución de tu ejercicio.
+
+**Fuente primaria:** [Spring GraphQL: BatchMapping](https://docs.spring.io/spring-graphql/reference/controllers.html#controllers.batch-mapping)
+
+
+**Aplicación y decisión:** Límite de la demostración N+1: el contador mide llamadas al método batch, no consultas SQL ni tiempo ahorrado. Mantén autorización por empresa y mide el repositorio real antes de convertir ese conteo en una recomendación de rendimiento.
 
 ### Tema 3: mutations y subscriptions
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar cambiarás el estado de una entrega y emitirás eventos a un cliente conectado por WebSocket. **Prerrequisitos:** Temas 1–2, records Java y nociones de Reactor. Crea `graphql-live-lab` desde cero con Boot 4.0.9, Java 21, `graphql,web,websocket,test`.
+**Meta:** cambiar un estado permitido y recibir el cambio a través de una suscripción local.
 
-**Ejemplo independiente:** genera `graphql-live-lab` en carpeta vacía y agrega solo schema, controller y pruebas de esta lección; arranca con `./mvnw spring-boot:run`.
+**¿Por qué es importante?** Actualizar datos y avisar de cambios tienen garantías distintas; una señal en memoria puede perderse.
 
-#### Paso 2 · Contexto y caso real
-El operador confirma “entregado” con una mutation; la pantalla del cliente se suscribe para recibir cambios de estado. La respuesta GraphQL puede ser inmediata para la escritura y un flujo WebSocket para notificaciones posteriores.
+**Prerrequisitos:** M24 T1, Flux y pruebas Reactor. Duración: 30–40 min.
 
-#### ¿Por qué es importante?
-Subscriptions no son un WebSocket genérico ni un broker durable. La implementación reactiva local sirve para aprender; varias instancias, reconexión y replay requieren infraestructura, autorización y cursor/offset definidos.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-`@MutationMapping` resuelve una operación que modifica estado. `@SubscriptionMapping` devuelve `Publisher`/`Flux` de resultados; el transporte WebSocket entrega eventos al cliente. Como suscribirse a avisos de una ruta, cada conexión solo recibe los cambios que cubra la política del sistema.
-
-#### Paso 4 · Demostración guiada
-Extiende el schema:
-
-```graphql
-type Mutation { markDelivered(id: ID!): Shipment! }
-type Subscription { shipmentChanged(id: ID!): Shipment! }
-```
-
-Crea `src/main/java/dev/rutaflow/ShipmentLiveController.java`:
-
-```java
-package dev.rutaflow;
-
-import java.util.concurrent.ConcurrentHashMap;
-import org.springframework.graphql.data.method.annotation.Argument;
-import org.springframework.graphql.data.method.annotation.MutationMapping;
-import org.springframework.graphql.data.method.annotation.SubscriptionMapping;
-import org.springframework.stereotype.Controller;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Sinks;
-
-@Controller
-class ShipmentLiveController {
-    private final ShipmentService service;
-    private final ConcurrentHashMap<String, Sinks.Many<Shipment>> updates = new ConcurrentHashMap<>();
-    ShipmentLiveController(ShipmentService service) { this.service = service; }
-
-    @MutationMapping
-    Shipment markDelivered(@Argument String id) {
-        Shipment changed = service.markDelivered(id);
-        updates.computeIfAbsent(id, key -> Sinks.many().multicast().onBackpressureBuffer())
-                .tryEmitNext(changed);
-        return changed;
-    }
-
-    @SubscriptionMapping
-    Flux<Shipment> shipmentChanged(@Argument String id) {
-        return updates.computeIfAbsent(id, key -> Sinks.many().multicast().onBackpressureBuffer()).asFlux();
-    }
-}
-```
-
-Añade `spring.graphql.websocket.path=/graphql` en `application.yml`; conecta un cliente compatible por WebSocket y observa el cambio. Explica que el sink local vive en una instancia, no persiste y debe retirarse al cerrar conexiones en una app real.
-
-#### Paso 5 · Práctica guiada
-Haz que la mutation requiera una clave idempotente de operación y que un estado inválido no emita evento. **Pista:** valida transición antes de publicar y separa error de negocio de fallo de transporte.
-
-#### Paso 6 · Práctica independiente
-Diseña una prueba con dos cambios y cliente reconectado; documenta cómo Kafka/Rabbit/outbox y una versión/cursor resolverían el replay fuera del proceso único.
-
-#### Paso 7 · Cierre y evidencia
-Entrega petición mutation, secuencia subscription y una limitación documentada del sink local. El siguiente tema automatiza queries/mutations con `GraphQlTester`.
-
-**Fallo deliberado:** intenta deliberadamente marcar como entregado una parada cancelada; verifica que no se modifica el estado ni se emite una notificación.
+**Preparación:** JDK 25 y el repositorio. Desde su raíz copia `examples/spring-graphql-rutaflow` a una carpeta nueva, entra y ejecuta el wrapper incluido:
 
 ```bash
-./mvnw test
+cp -R examples/spring-graphql-rutaflow practica-m24-t3
+cd practica-m24-t3
+./mvnw -q test
 ```
 
-**Resultado esperado:** la mutation válida devuelve estado actualizado y el cliente ya suscrito recibe el nuevo evento; transición inválida queda rechazada. **Errores comunes:** tratar eventos en memoria como durable, no autenticar subscriptions y olvidar backpressure/limpieza de sinks. Fuentes oficiales: [controladores anotados](https://docs.spring.io/spring-graphql/reference/controllers.html), [transporte WebSocket](https://docs.spring.io/spring-graphql/reference/transports.html).
+**Analogía:** la mutación cambia la pizarra y la suscripción escucha el aviso; quien llega después puede no haber oído lo anterior.
 
-**Proyecto propio:** `src/main/java/dev/rutaflow/ShipmentLiveController.java`. **Cuándo usar subscription:** cuando el cliente necesita actualizaciones empujadas y la app define sesión, autorización, reintento y escala. Evidencia: entrega la secuencia y un test de transición inválida.
+#### Subtema 24.3.1 · Valida la transición · 10 min
 
----
+**Contexto:** cambiarEstado permite EN_RUTA y rechaza otros valores en el laboratorio.
+
+**Hazlo tú:** Abre `src/main/java/academia/rutaflow/graphql/EntregaController.java` y localiza @MutationMapping, la validación y el guardado en datos.
+
+```bash
+./mvnw -q -Dtest=EntregaGraphqlTest#idAusenteEsNullYEstadoInvalidoEsError test
+```
+
+**Resultado esperado:** INVENTADO provoca un error y no se trata como un estado permitido.
+
+**Fallo deliberado:** Elimina la comprobación de EN_RUTA.
+
+**Diagnóstico:** el valor inventado se acepta y la aserción que exige errores falla; restaura la regla.
+
+**Entiende:** Es una regla mínima didáctica; una máquina de estados real debe comprobar estado previo, autorización y concurrencia.
+
+**Cierra:** Guarda el caso rechazado y explica dónde deben vivir reglas del dominio real.
+
+#### Subtema 24.3.2 · Suscríbete antes de producir el cambio · 10 min
+
+**Contexto:** El test registra el consumidor antes de invocar la mutación.
+
+**Hazlo tú:** Abre `src/test/java/academia/rutaflow/graphql/EntregaGraphqlTest.java` y sigue StepVerifier.create, then, assertNext y thenCancel.
+
+```bash
+./mvnw -q -Dtest=EntregaGraphqlTest#mutacionEmiteCambioALaSuscripcionLocal test
+```
+
+**Resultado esperado:** La mutación devuelve EN_RUTA y el flujo recibe un elemento con ese estado; el test cancela y termina.
+
+**Fallo deliberado:** Omite cambios.tryEmitNext(nueva) en el controller.
+
+**Diagnóstico:** la mutación puede pasar pero el flujo no recibe el evento y vence el límite de cinco segundos; restaura emisión.
+
+**Entiende:** El timeout es una protección de la prueba. No demuestra entrega WebSocket, persistencia ni recuperación de un evento perdido.
+
+**Cierra:** Conserva resultado de mutación y evento observado por separado.
+
+#### Subtema 24.3.3 · Declara límites del transporte y la emisión · 10 min
+
+**Contexto:** ExecutionGraphQlServiceTester ejecuta el servicio sin cliente de red.
+
+**Hazlo tú:** Abre `pom.xml`, `src/main/java/academia/rutaflow/graphql/EntregaController.java` y `src/test/java/academia/rutaflow/graphql/EntregaGraphqlTest.java`. Identifica el Sinks en memoria y la ausencia de cliente WebSocket.
+
+```bash
+./mvnw -q -Dtest=EntregaGraphqlTest#mutacionEmiteCambioALaSuscripcionLocal test
+```
+
+**Resultado esperado:** La evidencia corresponde a una suscripción local del servicio GraphQL.
+
+**Fallo deliberado:** Escribe que este test verificó reconexión WebSocket tras reinicio.
+
+**Diagnóstico:** no se abrió ese transporte ni se reinició el proceso; corrige la conclusión y diseña otro experimento.
+
+**Entiende:** tryEmitNext devuelve un resultado de emisión; ignorarlo no garantiza recepción del cliente. Este laboratorio no asegura backpressure bajo carga ni replay.
+
+**Cierra:** Documenta qué ocurriría si no hay suscriptores o si falla la emisión antes de integrar notificaciones reales.
+
+**Práctica independiente:** Añade comprobación del resultado de emisión y una prueba del comportamiento elegido ante falta de suscriptores. Define por separado qué historial se recupera después de una reconexión; no lo prometas con un Sink local.
+
+**Hito del tema:** conserva el resultado ejecutado, el fallo diagnosticado y restaurado, una explicación propia del mecanismo y tu ejercicio independiente. En el proyecto integrador RutaFlow aplica la decisión solo cuando puedas justificar su alcance. La suite del laboratorio no acredita un despliegue productivo ni la resolución de tu ejercicio.
+
+**Fuente primaria:** [Spring GraphQL: subscriptions y controladores](https://docs.spring.io/spring-graphql/reference/controllers.html)
 
 ### Tema 4: pruebas GraphQL con GraphQlTester
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar probarás schema, respuesta, error y mutation sin depender de una base real. **Prerrequisitos:** Temas 1–3 y JUnit. Crea `graphql-test-lab` con Spring Initializr; agrega GraphQL, Web y Test.
+**Meta:** conservar casos positivos y negativos del contrato y distinguir ejecución directa de HTTP.
 
-**Ejemplo independiente:** genera el proyecto Spring Boot 4.0.9/Java 21 en una carpeta vacía; crea controller y schema mínimos, añade `spring-graphql-test` y `spring-boot-graphql-test` en scope test y ejecuta `./mvnw test`.
+**¿Por qué es importante?** Un test del servicio no detecta por sí solo una URL HTTP incorrecta, CORS o negociación WebSocket.
 
-#### Paso 2 · Contexto y caso real
-Un controller puede compilar y aun así dejar schema sin resolver, devolver null para campo no nulo o cambiar la forma del JSON. Un test de contrato detecta estas fallas antes de que Flutter o web consuman la API.
+**Prerrequisitos:** M6 y M24 T1–T3. Duración: 30–40 min.
 
-#### ¿Por qué es importante?
-`GraphQlTester` mantiene una API común para probar ejecución directa, HTTP, WebSocket o RSocket. Cada modo prueba un límite distinto: ejecución directa no prueba sockets ni red.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-El test envía un documento GraphQL, selecciona una ruta JSON con `path`, compara valores y exige que no queden errores. Como probar un formulario, comprueba campos y mensajes, no solo que la página cargue.
-
-#### Paso 4 · Demostración guiada
-Agrega `spring-graphql-test` y `spring-boot-graphql-test` en scope test, con versiones gestionadas por Boot. Crea `src/test/java/dev/rutaflow/ShipmentGraphQlTest.java`:
-
-```java
-package dev.rutaflow;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.graphql.test.autoconfigure.GraphQlTest;
-import org.springframework.graphql.test.tester.GraphQlTester;
-
-@GraphQlTest(ShipmentController.class)
-class ShipmentGraphQlTest {
-    @Autowired GraphQlTester graphQlTester;
-
-    @Test
-    void returnsRequestedShipmentFields() {
-        graphQlTester.document("{ shipment(id: \"sh-42\") { id status } }")
-                .execute()
-                .path("shipment.id").entity(String.class).isEqualTo("sh-42")
-                .path("shipment.status").entity(String.class).isEqualTo("IN_TRANSIT")
-                .path("errors").doesNotExist();
-    }
-}
-```
-
-Si el controller requiere `ShipmentService`, agrega un `@MockitoBean` fake (o un test slice con bean de prueba) que devuelva un resultado conocido. Corre `./mvnw -Dtest=ShipmentGraphQlTest test`.
-
-#### Paso 5 · Práctica guiada
-Agrega query de ID inexistente y verifica su contrato; prueba una mutation válida. **Pista:** usa `errors().verify()` para dejar claro si el caso debe fallar en GraphQL o responder una carga con error esperado.
-
-#### Paso 6 · Práctica independiente
-Prueba que solicitar `trackingSecret` produce error de validación, y una prueba de permisos para otro usuario. Marca aparte las pruebas HTTP/WebSocket que no haya ejecutado este slice.
-
-#### Paso 7 · Cierre y evidencia
-Entrega salida de tests, documento de operación usado y límites de la prueba slice. El siguiente tema de la ruta es Spring Cloud Stream para mensajería entre procesos.
-
-**Fallo deliberado:** renombra `status` en el resolver pero no en el schema; corre el test y sigue el error hasta campo sin data fetcher/property compatible.
+**Preparación:** JDK 25 y el repositorio. Desde su raíz copia `examples/spring-graphql-rutaflow` a una carpeta nueva, entra y ejecuta el wrapper incluido:
 
 ```bash
-./mvnw -Dtest=ShipmentGraphQlTest test
+cp -R examples/spring-graphql-rutaflow practica-m24-t4
+cd practica-m24-t4
+./mvnw -q test
 ```
 
-**Resultado esperado:** query válida compara `sh-42`/`IN_TRANSIT`; campo inexistente o error inesperado hace fallar el test. **Errores comunes:** tratar status HTTP 200 como éxito, ocultar errores con filtros generales y decir “WebSocket probado” tras ejecutar un test slice. Fuentes oficiales: [GraphQlTester](https://docs.spring.io/spring-graphql/reference/testing.html), [testing de Spring Boot GraphQL](https://docs.spring.io/spring-boot/reference/web/spring-graphql.html).
+**Analogía:** el mismo pedido puede probarse en la cocina o entregarse por mensajero; el ensayo de cocina no verifica el trayecto.
 
-**Proyecto propio:** `src/test/java/dev/rutaflow/ShipmentGraphQlTest.java`. **Cuándo usar HTTP/WS tester:** cuando quieras verificar el transporte además de la ejecución de schema. Evidencia de aprendizaje: entrega el test y una matriz de unidad/slice/HTTP/WS.
+#### Subtema 24.4.1 · Ejecuta la matriz del servicio · 10 min
 
----
+**Contexto:** La clase contiene consulta, campo inválido, batch, cambio, suscripción y ausencia.
 
-## Referencias oficiales consultadas
+**Hazlo tú:** Abre `src/test/java/academia/rutaflow/graphql/EntregaGraphqlTest.java` y registra qué assert protege cada comportamiento.
 
-- [Spring GraphQL 2.0.6](https://docs.spring.io/spring-graphql/reference/)
-- [Spring Boot 4.0 requisitos](https://docs.spring.io/spring-boot/4.0/system-requirements.html)
-- [Boot starter y transports](https://docs.spring.io/spring-graphql/reference/boot-starter.html)
-- [Controllers, Query/Mutation/Subscription](https://docs.spring.io/spring-graphql/reference/controllers.html)
-- [GraphQlTester](https://docs.spring.io/spring-graphql/reference/testing.html)
+```bash
+./mvnw -q clean test
+```
+
+**Resultado esperado:** Cuatro métodos correctos con múltiples aserciones; no son cuatro transportes probados.
+
+**Fallo deliberado:** Quita un campo consultado del schema y ejecuta toda la clase.
+
+**Diagnóstico:** falla el contrato antes o durante resolución según el campo; restaura y conserva la suite verde.
+
+**Entiende:** ExecutionGraphQlServiceTester evita variabilidad de red para aislar schema y resolvers. Los límites de ese aislamiento deben constar en el informe.
+
+**Cierra:** Guarda los cuatro nombres de test y la garantía de cada uno.
+
+#### Subtema 24.4.2 · Comprueba HTTP como otra capa · 10 min
+
+**Contexto:** El starter webmvc expone /graphql cuando la app arranca.
+
+**Hazlo tú:** Desde esta carpeta ejecuta `./mvnw spring-boot:run`; en otra terminal envía el comando siguiente. Revisa `src/main/resources/graphql/schema.graphqls`.
+
+```bash
+curl -s http://localhost:8080/graphql -H 'Content-Type: application/json' -d '{"query":"{ entrega(id: \"ENV-1\") { id estado } }"}'
+```
+
+**Resultado esperado:** El JSON HTTP contiene data.entrega.id y estado CREADA en una instancia recién iniciada. Detén la aplicación con Ctrl+C al terminar.
+
+**Fallo deliberado:** Solicita /graphql-equivocado en lugar de /graphql.
+
+**Diagnóstico:** la ruta HTTP no existe aunque la suite de servicio pueda pasar; restaura la URL.
+
+**Entiende:** La prueba HTTP añade servidor, ruta y serialización de transporte. No se añaden automáticamente autenticación, TLS o prueba de navegador.
+
+**Cierra:** Conserva URL, petición y cuerpo recibido; diferencia errores HTTP de la lista errors GraphQL.
+
+#### Subtema 24.4.3 · Cierra con errores y alcance explícitos · 10 min
+
+**Contexto:** Un backend local sin seguridad no debe confundirse con la API productiva del proyecto.
+
+**Hazlo tú:** Abre `README.md` del laboratorio y crea `docs/evidencia-graphql.md` con columnas servicio, HTTP, WebSocket, autorización y durabilidad.
+
+```bash
+./mvnw -q test
+```
+
+**Resultado esperado:** Puedes marcar servicio cuando la suite pasa y HTTP solo si ejecutaste la petición; las otras columnas quedan sin acreditar hasta sus pruebas específicas.
+
+**Fallo deliberado:** Marca WebSocket como probado basándote únicamente en el test de servicio.
+
+**Diagnóstico:** el tester utilizado no negocia WebSocket; corrige el alcance y anota el cliente y escenario que faltan.
+
+**Entiende:** El siguiente incremento productivo requiere autorización por recurso, validación, límites de consulta, persistencia y política de errores. No se implementan por completar este tema.
+
+**Cierra:** Entrega tu matriz con evidencia concreta y pendientes, sin confundir porcentaje editorial con cobertura de producción.
+
+**Práctica independiente:** Añade un test negativo de permiso en el servicio de dominio antes de incorporar autenticación HTTP. Luego diseña una prueba con HttpGraphQlTester o WebSocketGraphQlTester y conserva su ejecución separada.
+
+**Hito del tema:** conserva el resultado ejecutado, el fallo diagnosticado y restaurado, una explicación propia del mecanismo y tu ejercicio independiente. En el proyecto integrador RutaFlow aplica la decisión solo cuando puedas justificar su alcance. La suite del laboratorio no acredita un despliegue productivo ni la resolución de tu ejercicio.
+
+**Fuente primaria:** [Spring GraphQL: tipos de tester y transportes](https://docs.spring.io/spring-graphql/reference/testing.html)
+

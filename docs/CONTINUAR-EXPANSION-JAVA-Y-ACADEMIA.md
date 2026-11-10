@@ -1777,3 +1777,85 @@ ambiguo que puede causar un correo duplicado. `./scripts/validate.sh`,
 no certifica la ejecución de cada práctica. Fuentes primarias: Spring Boot email
 support y Spring Framework email. Siguiente: Spring Boot M20 T4, caché local y
 compartida.
+
+Spring Boot M20 T4, “Caché con Spring Cache, Caffeine y Redis”, se retomó desde
+los cambios locales existentes y quedó en cinco subtemas 20.13–20.17. El lab
+`examples/spring-cache-rutaflow/` comprueba claves por zona, invalidación,
+`@CachePut`, límites Caffeine y métricas hit/miss. Se corrigió su README,
+que aún afirmaba que solo existían pruebas Caffeine, y se añadió el hito final.
+La suite limpia pasó con seis pruebas Caffeine y una Redis real en un contenedor
+Redis 7.4 efímero, detenido y eliminado al terminar. Dos gestores en una JVM
+comparten valor, TTL e invalidación; no prueba varias JVM, origen compartido,
+carga, expiración por espera ni fallos de red durante escritura.
+
+Tres mutaciones fueron detectadas y restauradas: quitar `@Cacheable`,
+`@CacheEvict` y `@CachePut`. Se contrastaron las fuentes primarias de Spring Boot
+caching, Spring Data Redis cache y Spring Framework cache annotations. Build
+Angular y 17 pruebas unitarias pasaron. `./scripts/validate.sh` pasó tras regenerar
+índices y reportes. Atomicidad estructural: 169/1185; perfil practicable:
+1073/1185. No equivale a ejecución de toda la academia ni revisión humana.
+La suite Chrome completa se interrumpió tras diez casos correctos al no seguir
+avanzando en los casos Archify; su cierre queda incompleto, sin atribuir una causa
+confirmada. La comprobación dirigida en Chrome pasó: M20 T4 abre y muestra el subtema Redis;
+se guardó captura temporal en `/tmp/imperial-cache-lesson.png`. El primer intento
+dirigido usó un selector incorrecto; se corrigió a la tarjeta real de la lección.
+
+Se inspeccionaron los cuatro PNG de la raíz de Descargas (tres únicos); propuestas
+y cobertura en `docs/revision-imagenes-descargas-2026-11-10.md`. No se copiaron
+capturas personales ni se cambiaron versiones a partir de publicaciones sociales.
+Siguiente: M20 T5, `@Async`, ejecutores limitados y diagnóstico de autocall;
+después priorizar comparación JWT/sesiones y migración Strangler con prácticas.
+
+Spring Boot M20 T5, “@Async y ejecutores”, y el tema complementario de contratos
+SOAP quedaron reorganizados en cuatro subtemas cada uno (20.18–20.25). Se
+sustituyó la prueba frágil basada en tiempo y el conteo incorrecto de pruebas
+por `examples/spring-async-rutaflow/`: cuatro tests verifican proxy externo,
+auto-invocación, Future excepcional y rechazo con dos tareas activas y una en
+cola. Pasaron las cuatro pruebas; quitar `@EnableAsync` y ampliar la cola fueron
+mutaciones detectadas y restauradas. No contacta SMS, no demuestra velocidad,
+persistencia, propagación de identidad ni recuperación tras reinicio.
+
+El tema complementario mezclaba comandos Maven con un ejemplo Python. Ahora usa
+`examples/soap-contract-rutaflow/`, sin dependencias: cuatro tests pasan para
+extracción, prefijo equivalente, versión/id inválidos y rechazo de Fault.
+Eliminar el control de Fault fue detectado; restaurado el código, vuelven a pasar.
+Solo analiza literales confiables: no prueba endpoint SOAP, WSDL, seguridad XML
+ni interoperabilidad. Las fuentes primarias consultadas fueron Spring Framework
+Task Execution/Scheduling y W3C SOAP 1.2. No se cambió el runtime Angular.
+
+Chrome verificó ambos temas y sus últimos subtemas a 1366 y 390 píxeles de ancho.
+No se repitió la suite completa cuyo cierre anterior quedó incompleto. Los
+reportes e índices se regeneraron; atomicidad estructural 171/1185 (14,43 %),
+frente a 169/1185 al comenzar; perfil practicable 1073/1185. Esta cobertura no
+certifica ejecución de todos los ejemplos ni revisión pedagógica humana.
+Siguiente: revisar M20 T6 y T7 (Spring AI y RAG) con los laboratorios existentes,
+sin dar por evaluado un modelo real a partir de un stub. Después, comparación
+JWT/sesiones y migración Strangler de las propuestas de Descargas.
+
+Spring Boot M20 T6–T7, Spring AI y RAG, quedaron en cuatro subtemas cada uno
+(20.26–20.33). Se conservaron Boot 4.0.9 y Spring AI 2.0.2, contrastados con
+la documentación primaria de compatibilidad, ChatClient, herramientas y RAG.
+El laboratorio existente `examples/rutaflow-material/spring-ai/` incorpora
+Maven Wrapper y README; se corrigió la ambigüedad de carpetas al copiarlo.
+ChatToolsTest usa conjuntos independientes de permisos por sesión y comprueba
+que el esquema de herramienta no solicita identidad al modelo. RagScopeTest
+incluye corpus no vacío para la pregunta vacía, filtro antes de límite, IDs
+conservados y exclusión de documentos sin empresa.
+
+La suite limpia pasó con ocho pruebas (cuatro por clase). Cuatro mutaciones
+fueron detectadas y restauradas: omitir autorización, omitir filtro de empresa,
+devolver corpus ante pregunta vacía y limitar antes de filtrar. Los fragmentos
+completos de los dos tests y el POM siguen coincidiendo con el material publicado;
+`verification.json` conserva evidencia actualizada por tema. Chrome comprobó
+ambos temas y sus últimos subtemas a 1366 y 390 px sin alerta de error de lección.
+No se repitió la suite global de navegador cuyo cierre previo quedó incompleto.
+
+Límites: ChatModel controlado; callback invocado directamente; recuperación
+literal sin embeddings, vector store ni generación. No se acredita selección
+automática de herramientas, resistencia a prompt injection ni calidad de LLM.
+Se regeneran los índices y reportes y se ejecuta `./scripts/validate.sh`.
+Atomicidad: 173/1185 (14,60 %), frente a 171 al comenzar; perfil practicable
+1073/1185. Es cobertura estructural, no certificación de aprendizaje.
+Siguiente: continuar con Spring Boot M21 T1 (mensajería y entrega) revisando
+primero los laboratorios existentes. Las propuestas JWT/sesiones y Strangler
+siguen en `docs/revision-imagenes-descargas-2026-11-10.md` para ampliar después.
