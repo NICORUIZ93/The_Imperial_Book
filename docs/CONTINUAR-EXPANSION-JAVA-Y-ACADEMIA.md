@@ -1761,3 +1761,19 @@ quedó limpio. La auditoría global actual marca 167/1185 temas atómicos y
 1073/1185 practicables; M20 T2 se reconoce como cuatro subtemas. El conteo es
 estructural: no implica ejecución real de cada ejercicio ni revisión humana.
 Siguiente: Spring Boot M20 T3, correo con Spring Mail y entrega recuperable.
+
+Spring Boot M20 T3, “Correo con Spring Mail y entrega recuperable”, quedó en
+cuatro subtemas 20.9–20.12 y un laboratorio nuevo
+`examples/spring-mail-rutaflow/`. El código prepara `SimpleMailMessage`, configura
+SMTP mediante variables externas y timeouts finitos, guarda envío/outbox en la
+misma transacción, reintenta con espera creciente y aparta el evento tras tres
+fallos. Las pruebas simulan el gateway, no contactan una cuenta real.
+`./mvnw -q clean test` pasó con 4 pruebas; tres mutaciones fueron detectadas y restauradas:
+asunto incorrecto, quitar `@Transactional` y reducir el límite de reintentos.
+Los tests no prueban aceptación por un proveedor real ni resuelven el timeout
+ambiguo que puede causar un correo duplicado. `./scripts/validate.sh`,
+`validate_rutaflow_material.py` y `git diff --check` pasaron. Auditoría global:
+168/1185 temas atómicos y 1073/1185 practicables; el indicador es estructural,
+no certifica la ejecución de cada práctica. Fuentes primarias: Spring Boot email
+support y Spring Framework email. Siguiente: Spring Boot M20 T4, caché local y
+compartida.

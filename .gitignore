@@ -60,3 +60,4 @@ examples/rutaflow-material/clean-architecture/build/
 
 # Salida de compilación de ejemplos Java (Gradle/Javac)
 examples/**/bin/
+examples/**/target/

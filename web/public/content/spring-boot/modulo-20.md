@@ -218,72 +218,127 @@ jdbc.update("INSERT INTO evento_procesado (event_id, processed_at) VALUES (?, ?)
 **Fuentes primarias:** [Spring Framework: eventos ligados a transacciones](https://docs.spring.io/spring-framework/reference/data-access/transaction/event.html); [Spring for Apache Kafka: transacciones](https://docs.spring.io/spring-kafka/reference/kafka/transactions.html).
 ### Tema 3: Correo con Spring Mail y entrega recuperable
 
-#### Paso 1 · Objetivo y preparación
+**Meta:** preparar un correo, proteger la configuración SMTP y reintentar una notificación fallida sin retrasar el guardado del envío.
 
-Al finalizar podrás crear un mensaje de correo desde un servicio, sustituir SMTP en tests y definir una política de reintento sin bloquear una transacción de negocio.
-**Conocimiento previo:** haber seguido el tema anterior de este módulo y tener instalado el entorno del stack.
-#### Paso 2 · Contexto y caso real
+**¿Por qué es importante?** SMTP es otro servicio remoto: puede tardar, fallar o aceptar el mensaje justo antes de que se pierda la respuesta.
 
-Después de asignar un conductor, el cliente recibe confirmación por correo. **¿Por qué es importante?** El proveedor SMTP es una dependencia externa: puede tardar, rechazar el mensaje o aceptar el correo aunque la respuesta se pierda.
+**Evidencia final:** tests que inspeccionan el mensaje, comprueban el rollback conjunto y observan reintentos con límite.
 
-#### Paso 3 · Teoría y modelo mental
+#### Subtema 20.9 · Construye el mensaje y revísalo sin enviar correo · 8 min
 
-`JavaMailSender` crea y envía mensajes; la configuración de host/puerto/credenciales debe venir de entorno o secret manager. El envío no es transaccional con la base de datos. No mantengas una transacción SQL abierta durante la llamada SMTP ni registres credenciales o contenido sensible en logs.
+**Contexto:** queremos revisar destinatario, asunto y texto antes de depender de una cuenta SMTP.
 
-La operación de negocio debe confirmar independientemente del canal de notificación; un outbox permite reintentar con estado observable. La deduplicación requiere un identificador estable del evento, porque SMTP no ofrece una garantía general de entrega exactamente una vez.
-**Analogía:** enviar correo con entrega recuperable es como el correo certificado: si el cartero no encuentra al destinatario, no tira la carta, la guarda y reintenta. El registro de intentos es el comprobante que te deja saber si llegó o sigue pendiente de reenvío.
-#### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/main/java/academia/notificaciones/CorreoPedido.java` dentro.
-```bash
-curl -fsSL https://start.spring.io/starter.zip -o ejemplo.zip && unzip -o ejemplo.zip -d ejemplo
-```
-
-
-Genera el proyecto con `mail` y configura `spring.mail.host`, puerto y credenciales por variables externas. En `src/main/java/academia/notificaciones/CorreoPedido.java`:
+**Hazlo tú:** abre `examples/spring-mail-rutaflow/src/main/java/academia/rutaflow/mail/JavaMailCorreoGateway.java` y su test `JavaMailCorreoGatewayTest.java`:
 
 ```java
-@Service
-public class CorreoPedido {
-    private final JavaMailSender sender;
+SimpleMailMessage message = new SimpleMailMessage();
+message.setFrom(remitente);
+message.setTo(correo.destinatario());
+message.setSubject(correo.asunto());
+message.setText(correo.texto());
+sender.send(message);
+```
 
-    public CorreoPedido(JavaMailSender sender) { this.sender = sender; }
+Desde `examples/spring-mail-rutaflow`, ejecuta:
 
-    public void enviarConfirmacion(String destinatario, String referencia) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(destinatario);
-        message.setSubject("Pedido confirmado");
-        message.setText("Referencia: " + referencia);
-        sender.send(message);
-    }
+```bash
+./mvnw -q -Dtest=JavaMailCorreoGatewayTest test
+```
+
+**Resultado esperado:** una prueba confirma remitente, destinatario, asunto y referencia; usa un `JavaMailSender` simulado, así que no contacta SMTP.
+
+**Fallo deliberado:** cambia el asunto por `Envío cancelado`. **Diagnóstico:** el test detecta que el texto enviado no coincide con la confirmación; restaura el asunto.
+
+**Entiende:** `SimpleMailMessage` sirve para texto simple. Si necesitas HTML o archivos adjuntos, Spring ofrece `MimeMessage`; usa esa forma solo cuando el mensaje lo requiera.
+
+**Cierra:** indica qué campo del test protegería a un cliente de recibir un mensaje equivocado.
+
+#### Subtema 20.10 · Configura SMTP fuera del código · 8 min
+
+**Contexto:** el servidor de salida (SMTP) y sus credenciales cambian entre tu equipo, pruebas y producción; el código debe poder moverse sin editarlo.
+
+**Hazlo tú:** abre `examples/spring-mail-rutaflow/src/main/resources/application.yml`:
+
+```yaml
+spring:
+  mail:
+    host: ${MAIL_HOST:localhost}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      "[mail.smtp.connectiontimeout]": 5000
+      "[mail.smtp.timeout]": 3000
+      "[mail.smtp.writetimeout]": 5000
+```
+
+Ejecuta la prueba sin servidor:
+
+```bash
+./mvnw -q -Dtest=JavaMailCorreoGatewayTest test
+```
+
+**Resultado esperado:** las pruebas no necesitan credenciales; el adaptador queda separado de la conexión real. Los límites de tiempo evitan esperar sin fin a un servidor SMTP.
+
+**Fallo deliberado:** escribe una contraseña de prueba literal en `application.yml` y busca claves en el archivo con `rg -n 'password|secret|token' src/main/resources`. **Diagnóstico:** el valor quedaría versionado; quítalo y léelo desde el entorno o el gestor de secretos.
+
+**Entiende:** variables como `MAIL_PASSWORD` son el puente entre el entorno y `spring.mail.password`. No imprimas esas variables ni contraseñas en logs.
+
+**Cierra:** anota qué tres valores configurarías en el servicio de despliegue sin guardarlos en Git.
+
+#### Subtema 20.11 · Guarda el envío y la notificación juntos · 10 min
+
+**Contexto:** si el envío se confirma y el proceso se cierra antes de llamar SMTP, la confirmación debe quedar esperando en una fila recuperable.
+
+**Hazlo tú:** abre `examples/spring-mail-rutaflow/src/main/java/academia/rutaflow/mail/ConfirmarEnvioService.java`:
+
+```java
+@Transactional
+public UUID confirmar(String referencia, String destinatario) {
+    UUID envioId = UUID.randomUUID();
+    jdbc.update("INSERT INTO envio (envio_id, referencia) VALUES (?, ?)", envioId, referencia);
+    jdbc.update("""
+            INSERT INTO correo_outbox
+                (event_id, envio_id, destinatario, asunto, cuerpo, next_attempt_at)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """, eventId, envioId, destinatario, asunto, texto, clock.instant());
+    return envioId;
 }
 ```
 
-**Ejecuta el ejemplo** (genera el proyecto con Spring Initializr, pega el código y corre las pruebas):
+En `examples/spring-mail-rutaflow`, ejecuta las pruebas de transacción y reintento:
 
 ```bash
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
-./mvnw test
+./mvnw -q -Dtest=MailOutboxTest#confirmacionYCorreoPendienteSeGuardanEnLaMismaTransaccion test
+./mvnw -q -Dtest=MailOutboxTest#falloTransitorioSeReintentaDespuesYQuedaMarcadoComoEnviado test
 ```
-Equivalencias Maven/Gradle en el Módulo 1.
 
+**Resultado esperado:** si falla insertar el correo, también se revierte el envío; ante un fallo transitorio se guarda el contador y la hora del próximo intento.
 
-En un test, reemplaza `JavaMailSender` con un mock y captura `SimpleMailMessage`; valida destinatario y asunto sin enviar correo. Ejecuta `./mvnw test -Dtest=CorreoPedidoTest`.
+**Fallo deliberado:** quita `@Transactional` y repite la primera prueba. **Diagnóstico:** queda el envío aunque el outbox no se insertó; restaura la anotación.
 
-**Resultado esperado:** el mock recibe un mensaje con los campos esperados y ningún SMTP externo se contacta. **Fallo deliberado:** usa credenciales SMTP literales y falla la configuración en CI; mueve el secreto a variables externas y falla explícitamente si falta en el perfil de producción.
+**Entiende:** outbox significa “bandeja de salida”: es una fila pendiente, no una llamada SMTP. El dispatcher contacta SMTP después de que la transacción del envío terminó.
 
-#### Paso 5 · Práctica guiada
+**Cierra:** explica por qué la espera y reintento ocurren fuera de la transacción que creó el envío.
 
-Simula timeout SMTP y registra el intento fallido en outbox con siguiente fecha de reintento y número de intentos. Asegura que una segunda ejecución del dispatcher no envía dos notificaciones con el mismo `event_id` cuando el proveedor admite clave de idempotencia; documenta el riesgo residual cuando no la admite.
-**Pista:** ejecuta el dispatcher dos veces para el mismo `event_id` del outbox simulando que el primer intento quedó en un timeout ambiguo (no sabes si el correo salió o no); si el proveedor SMTP no te da una clave de idempotencia, verás que no puedes garantizar cero duplicados y debes documentar ese posible reenvío como riesgo residual aceptado, no intentar resolverlo con más reintentos.
-#### Paso 6 · Práctica independiente
+#### Subtema 20.12 · Limita los reintentos y conserva evidencia útil · 10 min
 
-Añade una plantilla de correo de confirmación para el proyecto integrador de RutaFlow. Prueba caracteres acentuados, destinatario inválido, fallo SMTP y redacción de logs. Separa contenido de correo del método que confirma el pedido.
+**Contexto:** repetir para siempre tapa errores permanentes y puede llenar la cola.
 
-#### Paso 7 · Cierre y evidencia
+**Hazlo tú:** abre `examples/spring-mail-rutaflow/src/main/java/academia/rutaflow/mail/MailOutboxDispatcher.java` y ejecuta:
 
-Entrega implementación, test del mock y flujo de outbox/retry. **Cuándo no usarlo:** no envíes correo síncrono en la transacción HTTP crítica ni guardes contraseña en `application.yml` versionado. **Evidencia:** prueba de mensaje, prueba de fallo y configuración sin secretos.
-**Errores comunes:** enviar el correo dentro de la misma transacción que confirma el pedido (si SMTP tarda o falla, arriesga revertir una operación de negocio que ya era válida), y reintentar un envío fallido sin registrar número de intentos ni próxima fecha de reintento, perdiendo la capacidad de distinguir un fallo transitorio de uno permanente.
-**Fuente oficial:** [documentación de Spring Boot](https://docs.spring.io/spring-boot/index.html).
+```bash
+./mvnw -q -Dtest=MailOutboxTest#agotaTresIntentosYConservaElErrorSinSeguirEnviando test
+```
+
+**Resultado esperado:** tras tres fallos, la fila queda apartada para revisión (`dead_lettered_at`) con un tipo de error; no sigue enviándose.
+
+**Fallo deliberado:** cambia `MAX_INTENTOS` de 3 a 1. **Diagnóstico:** la prueba observa que se aparta tras el primer error, antes de probar la recuperación; restaura el límite.
+
+**Entiende:** la espera crece de 30 a 60 segundos y luego llega al límite. Un timeout no siempre dice si el proveedor recibió el correo; si lo recibió y la aplicación reintenta, puede llegar duplicado. SMTP no promete exactamente una entrega; este laboratorio no simula una respuesta perdida tras aceptación.
+
+**Cierra:** para el proyecto integrador RutaFlow, adjunta los resultados de los tres tests y acuerda qué equipo revisa las filas apartadas. No uses correo síncrono dentro de la transacción HTTP crítica ni guardes mensajes sensibles más tiempo del necesario.
+
+**Fuentes primarias:** [Spring Boot: envío de correo y timeouts SMTP](https://docs.spring.io/spring-boot/reference/io/email.html); [Spring Framework: `JavaMailSender`, `SimpleMailMessage` y MIME](https://docs.spring.io/spring-framework/reference/integration/email.html).
 ### Tema 4: Caché con Spring Cache, Caffeine y Redis
 
 #### Paso 1 · Objetivo y preparación
