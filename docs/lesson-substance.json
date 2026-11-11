@@ -1690,7 +1690,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "82fa3a1260d854a2b1a719c06942d8dbe6557d6ff1d77b20d34d8961790564d7",
+    "fingerprint": "eb1255669cb460e34b312b8fb5611a78cd841568c9d17df4b5aa2b150758474e",
     "issues": {
       "andamiaje-generico": 113,
       "bloque-repetido": 163,
@@ -10271,7 +10271,7 @@
         "module": 0,
         "tailWords": 0,
         "topic": "Tema 1: Inversión de control y el contenedor de Spring",
-        "words": 926
+        "words": 961
       },
       {
         "issues": [],
@@ -10292,7 +10292,7 @@
         "module": 1,
         "tailWords": 0,
         "topic": "Tema 1: Spring Initializr y starters",
-        "words": 922
+        "words": 962
       },
       {
         "issues": [],
@@ -10383,7 +10383,7 @@
         "module": 10,
         "tailWords": 0,
         "topic": "Tema 11: Micrometer Tracing entre servicios",
-        "words": 1063
+        "words": 1062
       },
       {
         "issues": [],
@@ -10411,14 +10411,14 @@
         "module": 11,
         "tailWords": 0,
         "topic": "Tema 3: Health checks para Kubernetes",
-        "words": 1021
+        "words": 1024
       },
       {
         "issues": [],
         "module": 12,
         "tailWords": 0,
         "topic": "Tema 1: Arquitectura del microservicio integrador",
-        "words": 1056
+        "words": 1087
       },
       {
         "issues": [],
@@ -10432,7 +10432,7 @@
         "module": 12,
         "tailWords": 0,
         "topic": "Tema 3: Cierra el servicio con evidencia y próximos pasos",
-        "words": 970
+        "words": 988
       },
       {
         "issues": [],
@@ -10453,7 +10453,7 @@
         "module": 13,
         "tailWords": 0,
         "topic": "Tema 3: Contratos ejecutables protegen despliegues independientes",
-        "words": 751
+        "words": 775
       },
       {
         "issues": [],
@@ -10474,21 +10474,21 @@
         "module": 14,
         "tailWords": 0,
         "topic": "Tema 2: MySQL y datos espaciales",
-        "words": 937
+        "words": 979
       },
       {
         "issues": [],
         "module": 14,
         "tailWords": 0,
         "topic": "Tema 3: JPA e Hibernate Spatial",
-        "words": 798
+        "words": 805
       },
       {
         "issues": [],
         "module": 14,
         "tailWords": 0,
         "topic": "Tema 4: JWT Bearer y autorización por roles",
-        "words": 748
+        "words": 755
       },
       {
         "issues": [],
@@ -10502,28 +10502,28 @@
         "module": 14,
         "tailWords": 0,
         "topic": "Tema 6: Archivos y notificaciones push",
-        "words": 1187
+        "words": 1205
       },
       {
         "issues": [],
         "module": 15,
         "tailWords": 0,
         "topic": "Tema 1: Backpressure real en WebFlux con reactor-test",
-        "words": 971
+        "words": 989
       },
       {
         "issues": [],
         "module": 15,
         "tailWords": 0,
         "topic": "Tema 2: Contenedores Testcontainers reutilizados entre clases",
-        "words": 956
+        "words": 964
       },
       {
         "issues": [],
         "module": 15,
         "tailWords": 0,
         "topic": "Tema 3: Arquitectura hexagonal verificada con ArchUnit",
-        "words": 937
+        "words": 949
       },
       {
         "issues": [],
@@ -10537,21 +10537,21 @@
         "module": 15,
         "tailWords": 0,
         "topic": "Tema 5: Saga con compensación real",
-        "words": 862
+        "words": 874
       },
       {
         "issues": [],
         "module": 15,
         "tailWords": 0,
         "topic": "Tema 6: Event Sourcing con replay real",
-        "words": 803
+        "words": 809
       },
       {
         "issues": [],
         "module": 15,
         "tailWords": 0,
         "topic": "Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar",
-        "words": 1207
+        "words": 1219
       },
       {
         "issues": [],
@@ -10565,7 +10565,7 @@
         "module": 16,
         "tailWords": 0,
         "topic": "Tema 1: Relaciones, lado propietario y ciclo de vida",
-        "words": 1021
+        "words": 1022
       },
       {
         "issues": [],
@@ -10621,7 +10621,7 @@
         "module": 2,
         "tailWords": 0,
         "topic": "Tema 1: Por qué DTOs en vez de entidades directamente",
-        "words": 1134
+        "words": 1182
       },
       {
         "issues": [],
@@ -10656,7 +10656,7 @@
         "module": 2,
         "tailWords": 0,
         "topic": "Tema 6: Paginación HTTP con validación y un límite de recursos explícito",
-        "words": 1214
+        "words": 1245
       },
       {
         "issues": [],
@@ -10697,21 +10697,21 @@
         "issues": [],
         "module": 20,
         "tailWords": 0,
-        "topic": "Tema complementario: Integraciones empresariales, SOAP y fronteras de protocolo",
+        "topic": "Tema 6: Integraciones empresariales, SOAP y fronteras de protocolo",
         "words": 1251
       },
       {
         "issues": [],
         "module": 20,
         "tailWords": 0,
-        "topic": "Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo",
+        "topic": "Tema 7: Spring AI: ChatClient y herramientas con autorización fuera del modelo",
         "words": 1632
       },
       {
         "issues": [],
         "module": 20,
         "tailWords": 0,
-        "topic": "Tema 7: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar",
+        "topic": "Tema 8: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar",
         "words": 1398
       },
       {
@@ -10845,7 +10845,7 @@
         "module": 3,
         "tailWords": 0,
         "topic": "Tema 1: Entidades y repositorios derivados",
-        "words": 1232
+        "words": 1284
       },
       {
         "issues": [],
@@ -10866,7 +10866,7 @@
         "module": 4,
         "tailWords": 0,
         "topic": "Tema 1: SecurityFilterChain moderno",
-        "words": 1191
+        "words": 1224
       },
       {
         "issues": [],
@@ -10957,7 +10957,7 @@
         "module": 7,
         "tailWords": 0,
         "topic": "Tema 3: Liveness y readiness sin reinicios en cadena",
-        "words": 1486
+        "words": 1489
       },
       {
         "issues": [],
@@ -10985,7 +10985,7 @@
         "module": 8,
         "tailWords": 0,
         "topic": "Tema 4: Rebalanceo de consumer groups y asignación de particiones",
-        "words": 1249
+        "words": 1267
       },
       {
         "issues": [],
@@ -11006,14 +11006,14 @@
         "module": 8,
         "tailWords": 0,
         "topic": "Tema 7: Kafka Streams con Spring para transformar eventos",
-        "words": 925
+        "words": 923
       },
       {
         "issues": [],
         "module": 8,
         "tailWords": 0,
         "topic": "Tema 8: Avro y Schema Registry para contratos de eventos",
-        "words": 1005
+        "words": 1037
       },
       {
         "issues": [],

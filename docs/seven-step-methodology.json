@@ -276,8 +276,8 @@
       "closure": 0,
       "commonErrors": 3,
       "resources": 33,
-      "standaloneExample": 6,
-      "learningEvidence": 48,
+      "standaloneExample": 5,
+      "learningEvidence": 47,
       "complete": 0
     }
   },
@@ -28928,10 +28928,10 @@
           "commonErrors": false,
           "resources": false,
           "standaloneExample": false,
-          "learningEvidence": true
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 5,
+          "stepsPassed": 4,
           "complete": false
         }
       },
@@ -29551,11 +29551,11 @@
           "closure": false,
           "commonErrors": false,
           "resources": false,
-          "standaloneExample": true,
+          "standaloneExample": false,
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 5,
+          "stepsPassed": 4,
           "complete": false
         }
       },
@@ -29821,7 +29821,7 @@
       },
       {
         "module": 20,
-        "topic": "Tema complementario: Integraciones empresariales, SOAP y fronteras de protocolo",
+        "topic": "Tema 6: Integraciones empresariales, SOAP y fronteras de protocolo",
         "criteria": {
           "objective": false,
           "prerequisites": true,
@@ -29847,7 +29847,7 @@
       },
       {
         "module": 20,
-        "topic": "Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo",
+        "topic": "Tema 7: Spring AI: ChatClient y herramientas con autorización fuera del modelo",
         "criteria": {
           "objective": false,
           "prerequisites": true,
@@ -29873,7 +29873,7 @@
       },
       {
         "module": 20,
-        "topic": "Tema 7: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar",
+        "topic": "Tema 8: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar",
         "criteria": {
           "objective": false,
           "prerequisites": true,

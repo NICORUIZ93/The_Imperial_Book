@@ -1,7 +1,8 @@
 # Tareas: referencia acumulativa de los módulos 2–7
 
 Este proyecto reúne el estado final de la API: DTO y MapStruct, JPA, Flyway,
-validación, errores HTTP, JWT, CORS y Actuator. Usa Java 25 y las versiones fijadas
+validación, errores HTTP, JWT, CORS y Actuator. Incluye paginación validada,
+OpenAPI publicado y el ejercicio de campo interno `notaInterna`, excluido del DTO. Usa Java 25 y las versiones fijadas
 en `pom.xml`. Es una referencia para comparar tu trabajo al terminar los módulos;
 contiene cambios posteriores a las primeras prácticas y no sustituye construirlas
 paso a paso.
@@ -60,8 +61,9 @@ Detén la aplicación con Ctrl+C; H2 pierde los datos al cerrar el proceso.
 
 El usuario y contraseña están fijados para demostración. No es un sistema de
 identidad de producción: no incluye revocación, rotación de claves ni usuarios
-persistentes. Se incluyen anotaciones OpenAPI, pero no un servidor de documentación
-Swagger ni una prueba de `/v3/api-docs`. No se acredita tráfico real de navegador,
+persistentes. `ContratoOpenApiTest` comprueba `/v3/api-docs` por HTTP real;
+`PaginacionTareasTest` comprueba límites, orden y páginas sin repetir filas mediante
+MockMvc. Las 43 pruebas no acreditan tráfico real de navegador,
 carga, despliegue o equivalencia completa entre PostgreSQL y H2. Los endpoints
 de Actuator siguen protegidos; los detalles amplios de salud se habilitan solo
 en el perfil de pruebas.

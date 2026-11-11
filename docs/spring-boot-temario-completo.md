@@ -532,17 +532,17 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 20.19 · Diagnostica la auto-invocación · 8 min
   - ✓ Subtema 20.20 · Observa el error del trabajo · 8 min
   - ✓ Subtema 20.21 · Rechaza trabajo cuando no queda capacidad · 10 min
-- [4 pasos] Tema complementario: Integraciones empresariales, SOAP y fronteras de protocolo
+- [4 pasos] Tema 6: Integraciones empresariales, SOAP y fronteras de protocolo
   - ✓ Subtema 20.22 · Lee un contrato antes de adaptar el dominio · 7 min
   - ✓ Subtema 20.23 · Separa prefijo de namespace y versión · 7 min
   - ✓ Subtema 20.24 · Rechaza campos vacíos y respuestas Fault · 8 min
   - ✓ Subtema 20.25 · Define garantías del adaptador del proyecto · 8 min
-- [4 pasos] Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo
+- [4 pasos] Tema 7: Spring AI: ChatClient y herramientas con autorización fuera del modelo
   - ✓ Subtema 20.26 · Separa ChatClient del modelo · 9 min
   - ✓ Subtema 20.27 · Autoriza antes de consultar el envío · 9 min
   - ✓ Subtema 20.28 · Aísla permisos entre dos sesiones · 9 min
   - ✓ Subtema 20.29 · Revisa qué argumentos puede proponer el modelo · 8 min
-- [4 pasos] Tema 7: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar
+- [4 pasos] Tema 8: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar
   - ✓ Subtema 20.30 · Filtra la empresa antes de construir contexto · 9 min
   - ✓ Subtema 20.31 · Conserva un resultado vacío cuando no hay evidencia · 8 min
   - ✓ Subtema 20.32 · Limita resultados después de filtrar y conserva IDs · 10 min

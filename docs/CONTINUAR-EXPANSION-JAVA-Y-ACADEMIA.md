@@ -1887,3 +1887,19 @@ Redis, se corrigieron test y lección y la prueba dirigida pasó. La suite globa
 con Archify conserva su cierre incompleto; los seis casos dirigidos no la
 sustituyen. Las propuestas de Descargas siguen trazadas en su informe, separadas
 de la cobertura de los 111 temas actuales.
+
+### Revisión individual posterior de Spring · 11 de noviembre de 2026
+
+El usuario pidió comprobar claridad, desarrollo real, Gradle y vigencia uno por
+uno. La matriz `docs/SPRING-BOOT-REVISION-TEMA-POR-TEMA.md` documenta los 111 temas
+y el JSON enumera 393 subtemas con cuerpo. Se corrigieron dependencias anticipadas,
+comandos, imports, referencias al lab equivocado y cuentas antiguas. Modulith
+ahora se copia con wrapper autónomo; el script AOT no requiere target previo.
+Se mantienen separados Maven verificado, Gradle sin implementar, versiones
+compatibles y versiones de infraestructura fijadas (MySQL 8.0.36).
+Las comprobaciones dirigidas sumaron 57 JUnit correctas, con M0–M1 en una referencia
+nueva y M2–M7 ampliado a 43 pruebas, incluyendo OpenAPI, paginación y más casos
+negativos. Fuente de evidencia: `docs/spring-boot-topic-review-execution.json`.
+No afirmar que se ejecutaron individualmente todos los ejercicios o todos sus
+fallos deliberados. Se contrastaron fuentes primarias y se registraron respuestas
+HTTP de enlaces sin interpretar 200 como validación semántica.

@@ -30,6 +30,8 @@ Visita `http://localhost:8080`. Un 404 significa que el servidor sí arrancó pe
 
 Gradle también está soportado por Spring Boot, pero estos laboratorios no incluyen `build.gradle(.kts)` ni `gradlew`. Para ejecutar Gradle sobre JDK 25 necesitas Gradle **9.1 o posterior**; el mínimo general 8.14 de Boot no basta para esa JVM. Consulta [requisitos Boot](https://docs.spring.io/spring-boot/system-requirements.html) y [compatibilidad Gradle/Java](https://docs.gradle.org/current/userguide/compatibility.html). Cambiar solo `mvnw` por `gradlew` no migra BOM, procesadores ni plugins.
 
+**Referencia al cerrar M0–M1:** `examples/spring-fundamentos-rutaflow/README.md` reúne las clases finales y cinco pruebas. Úsala para comparar después de escribir tus archivos; no equivale a haber ejecutado cada cambio y fallo del recorrido.
+
 ## Aprende construyendo
 
 ### Tema 1: Inversión de control y el contenedor de Spring

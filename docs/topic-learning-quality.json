@@ -25237,7 +25237,7 @@
       },
       {
         "module": 20,
-        "topic": "Tema complementario: Integraciones empresariales, SOAP y fronteras de protocolo",
+        "topic": "Tema 6: Integraciones empresariales, SOAP y fronteras de protocolo",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -25259,7 +25259,7 @@
       },
       {
         "module": 20,
-        "topic": "Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo",
+        "topic": "Tema 7: Spring AI: ChatClient y herramientas con autorización fuera del modelo",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -25281,7 +25281,7 @@
       },
       {
         "module": 20,
-        "topic": "Tema 7: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar",
+        "topic": "Tema 8: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar",
         "criteria": {
           "explanation": true,
           "code": true,

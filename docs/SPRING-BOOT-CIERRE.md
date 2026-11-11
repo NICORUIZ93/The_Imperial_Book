@@ -3,6 +3,8 @@
 Revisión: 11 de noviembre de 2026. Aplicación oficial: Angular `web/`.
 Contenido: `web/public/content/spring-boot/modulo-0.md` a `modulo-25.md`.
 
+**Revisión posterior, tema por tema:** consulta [la matriz individual](SPRING-BOOT-REVISION-TEMA-POR-TEMA.md). Detectó y corrigió problemas de secuencia, referencias y ejecución que este primer cierre estructural no acreditaba. Incluye el estado real de Gradle y vigencia de versiones. La referencia M2–M7 pasó de 31 a 43 pruebas al incorporar piezas que faltaban.
+
 ## Qué significa el avance
 
 | Alcance | Resultado | Interpretación |

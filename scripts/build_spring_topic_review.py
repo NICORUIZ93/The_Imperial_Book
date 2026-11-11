@@ -54,13 +54,17 @@ def build():
     subs = [sub for module in modules for topic in module['topics'] for sub in topic['subtopics']]
     paths = sorted(set(path.rstrip('.') for module in modules for path in re.findall(r'(?<![\w/])examples/[\w./-]+', (ROOT / module['source']).read_text())))
     missing = [path for path in paths if not (ROOT / path).exists()]
+    lab_roots = {ROOT / Path(*Path(path).parts[:2]) for path in paths}
+    gradle_builds = sorted(str(build.relative_to(ROOT)) for lab in lab_roots
+                           for build in lab.rglob('build.gradle*')
+                           if not any(part in {'target', 'node_modules', 'build'} for part in build.relative_to(lab).parts))
     report = {
         'date': '2026-11-11',
         'scope': 'Lectura técnica asistida y revisión de secuencia por tema; inventario de todos los subtemas. No revisión pedagógica humana ni ejecución individual de 393 ejercicios.',
         'summary': {'modules': len(modules), 'topics': len(rows), 'subtopics': len(subs),
                     'subtopicsWithBody': sum(sub['hasBodyBeyondHeading'] for sub in subs),
                     'explicitRepositoryPaths': len(paths), 'missingRepositoryPaths': missing,
-                    'gradleLaboratories': 0},
+                    'gradleLaboratories': len(gradle_builds), 'gradleBuildFiles': gradle_builds},
         'modules': modules,
     }
     intro = (ROOT / 'docs/spring-boot-topic-review-intro.md').read_text()

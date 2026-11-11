@@ -1162,9 +1162,9 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | spring-boot / 20 | [Tema 3: Correo con Spring Mail y entrega recuperable](../web/public/content/spring-boot/modulo-20.md) | demostracion-no-delimitada |
 | spring-boot / 20 | [Tema 4: Caché con Spring Cache, Caffeine y Redis](../web/public/content/spring-boot/modulo-20.md) | demostracion-no-delimitada |
 | spring-boot / 20 | [Tema 5: @Async y ejecutores: trabajo en segundo plano con límites](../web/public/content/spring-boot/modulo-20.md) | demostracion-no-delimitada |
-| spring-boot / 20 | [Tema complementario: Integraciones empresariales, SOAP y fronteras de protocolo](../web/public/content/spring-boot/modulo-20.md) | demostracion-no-delimitada |
-| spring-boot / 20 | [Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo](../web/public/content/spring-boot/modulo-20.md) | demostracion-no-delimitada |
-| spring-boot / 20 | [Tema 7: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar](../web/public/content/spring-boot/modulo-20.md) | demostracion-no-delimitada |
+| spring-boot / 20 | [Tema 6: Integraciones empresariales, SOAP y fronteras de protocolo](../web/public/content/spring-boot/modulo-20.md) | demostracion-no-delimitada |
+| spring-boot / 20 | [Tema 7: Spring AI: ChatClient y herramientas con autorización fuera del modelo](../web/public/content/spring-boot/modulo-20.md) | demostracion-no-delimitada |
+| spring-boot / 20 | [Tema 8: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar](../web/public/content/spring-boot/modulo-20.md) | demostracion-no-delimitada |
 | spring-boot / 21 | [Tema 1: Productor, tópico, key y consumidor](../web/public/content/spring-boot/modulo-21.md) | demostracion-no-delimitada |
 | spring-boot / 21 | [Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia](../web/public/content/spring-boot/modulo-21.md) | demostracion-no-delimitada |
 | spring-boot / 21 | [Tema 3: Outbox transaccional y flujo de negocio](../web/public/content/spring-boot/modulo-21.md) | demostracion-no-delimitada |

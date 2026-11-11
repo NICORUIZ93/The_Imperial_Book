@@ -2798,7 +2798,7 @@
     {
       "track": "spring-boot",
       "module": 20,
-      "topic": "Tema complementario: Integraciones empresariales, SOAP y fronteras de protocolo",
+      "topic": "Tema 6: Integraciones empresariales, SOAP y fronteras de protocolo",
       "missingCode": false,
       "missingComments": true
     },

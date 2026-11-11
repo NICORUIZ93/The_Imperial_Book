@@ -1,0 +1,69 @@
+{
+  "date": "2026-11-11",
+  "scope": "Comprobaciones dirigidas de los cambios de secuencia; sin afirmar ejecución de todos los ejercicios o todos los fallos deliberados",
+  "environment": "JDK 25; PostgreSQL Testcontainers mediante socket Podman unix explícito; Ryuk desactivado en rootless",
+  "junitTests": 57,
+  "results": [
+    {
+      "project": "examples/spring-fundamentos-rutaflow",
+      "command": "./mvnw -q clean test",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-tareas-rutaflow",
+      "command": "./mvnw -q clean test",
+      "tests": 43,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/testcontainers-singleton-rutaflow",
+      "command": "./mvnw -q clean test",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/archunit-hexagonal-rutaflow",
+      "command": "./mvnw -q clean test",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-modulith-rutaflow",
+      "command": "./mvnw -q clean test",
+      "isolation": "Copia a directorio temporal sin target y sin hermanos; wrapper autónomo",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "additional": [
+    {
+      "project": "examples/spring-boot-native-rutaflow",
+      "command": "./scripts/verify-aot.sh",
+      "isolation": "copia sin target inicial",
+      "result": "AOT JVM, metadata y endpoints; no binario nativo"
+    },
+    {
+      "service": "https://start.spring.io/starter.zip",
+      "parameters": {
+        "type": "maven-project",
+        "language": "java",
+        "javaVersion": "25",
+        "bootVersion": "4.1.2",
+        "packageName": "com.example.demo",
+        "dependencies": "web"
+      },
+      "result": "ZIP descargado y abierto; POM Boot 4.1.2, DemoApplication en paquete indicado y mvnw presentes. No se ejecuta otra suite Maven sobre ese ZIP."
+    }
+  ]
+}

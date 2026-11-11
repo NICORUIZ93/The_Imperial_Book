@@ -1,8 +1,8 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-11-11 14:32 UTC
+Generated: 2026-11-11 19:22 UTC
 Root: `The_Imperial_Book`
-Indexed files: 1351
+Indexed files: 1389
 Import edges: 60
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -16,23 +16,23 @@ For automated lookups, use `docs/repo-graph.json`.
 ## Project Shape
 
 - `angular-app`: 59 files
-- `automation-script`: 36 files
+- `automation-script`: 37 files
 - `course-content`: 262 files
-- `documentation`: 63 files
-- `example`: 875 files
+- `documentation`: 66 files
+- `example`: 903 files
 - `local-infra`: 1 files
-- `project-file`: 55 files
+- `project-file`: 61 files
 
 ## File Types
 
-- `.md`: 388
-- `.java`: 342
-- `.py`: 164
-- `.json`: 70
+- `.md`: 393
+- `.java`: 366
+- `.py`: 165
+- `.json`: 76
 - `.ts`: 66
 - `.js`: 54
 - `.html`: 38
-- `.yml`: 32
+- `.yml`: 34
 - `.mjs`: 28
 - `.rs`: 25
 - `.dart`: 24
@@ -53,7 +53,7 @@ For automated lookups, use `docs/repo-graph.json`.
 
 - `README.md` (308 lines, documentation)
   - headings: # The_Imperial_Book, ## Como empezar, ## Levantar Floci, # 1. Levantar todos los servicios, # 2. Verificar Floci AWS
-- `scripts/validate.sh` (137 lines, automation-script)
+- `scripts/validate.sh` (138 lines, automation-script)
 - `scripts/build_repo_graph.py` (477 lines, automation-script)
   - symbols: FileNode, repo_files, read_text, classify, parse_ts_symbols, parse_ts_imports, parse_python_symbols, parse_python_imports, parse_markdown_headings, unique
 - `web/src/app/app.ts` (11 lines, angular-app)
@@ -190,6 +190,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `scripts/build_prerequisite_graph.py` (114 lines) - symbols: topics_for, build, render, main; imports: __future__, argparse, json, re, pathlib
 - `scripts/build_priority_temarios.py` (191 lines) - symbols: build, main; imports: __future__, argparse, json, re, pathlib
 - `scripts/build_repo_graph.py` (477 lines) - symbols: FileNode, repo_files, read_text, classify, parse_ts_symbols, parse_ts_imports, parse_python_symbols, parse_python_imports; imports: __future__, argparse, ast, json, re, subprocess, collections, dataclasses
+- `scripts/build_spring_topic_review.py` (96 lines) - symbols: build, main; imports: pathlib, argparse, json, re
 - `scripts/build_web_topic_index.py` (75 lines) - symbols: slugify, clean_topic_title, main; imports: __future__, json, re, sys, unicodedata, collections, pathlib
 - `scripts/catalog_external_library.py` (49 lines) - symbols: main; imports: argparse, hashlib, json, pathlib, pymupdf
 - `scripts/clean_legacy_tails.py` (184 lines) - symbols: legacy_candidates, trim_topic, dedupe_topic, fences_balanced, topic_slice, safe_trim, clean_file, main; imports: __future__, argparse, re, sys, pathlib, audit_lesson_substance, audit_seven_step_methodology, audit_topic_learning_quality
@@ -197,8 +198,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `scripts/fix_lessons.py` (114 lines) - symbols: safe_print, iter_text_check_files, find_text_quality_issues, main; imports: ast, glob, os, re
 - `scripts/prepare_study_diagram.py` (39 lines) - symbols: main; imports: argparse, hashlib, json, pathlib
 - `scripts/start.sh` (10 lines)
-- `scripts/tests/test_backup_verified.py` (104 lines) - symbols: BackupVerificationTests; imports: os, shutil, subprocess, tempfile, unittest, pathlib, shlex
-- ... 18 more files
+- ... 19 more files
 
 ### course-content
 
@@ -231,7 +231,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `CONTRIBUTING.md` (31 lines) - headings: # Contribuir a The Imperial Book, ## Antes de abrir un cambio, ## Licencias
 - `README.md` (308 lines) - headings: # The_Imperial_Book, ## Como empezar, ## Levantar Floci, # 1. Levantar todos los servicios
 - `docs/CONTINUAR-7-PASOS.md` (26 lines) - headings: # Migración a cuatro pasos y subtemas atómicos, ## Formato que se aplica, ## Estado de migración
-- `docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md` (1890 lines) - headings: # Continuidad: expansión Java y academia, ## Encargo y razón, ## Fuentes de verdad y rutas, ## Contrato de cada tema
+- `docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md` (1906 lines) - headings: # Continuidad: expansión Java y academia, ## Encargo y razón, ## Fuentes de verdad y rutas, ## Contrato de cada tema
 - `docs/ESTANDAR-DE-CODIGO.md` (56 lines) - headings: # Estándar transversal de código y diseño, ## Prioridades, ## Clean Code con criterio, ## SOLID cuando aporta valor
 - `docs/MATRIZ-CURRICULAR.md` (73 lines) - headings: # Matriz curricular auditable, ## Progresión de competencia, ## Cobertura por módulo, ## Método de evaluación
 - `docs/METODOLOGIA-DE-APRENDIZAJE.md` (67 lines) - headings: # Metodología Aprende construyendo, ## Estructura de tema y subtema, ### Hito al final de cada tema, ### Ruta del proyecto
@@ -241,8 +241,8 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/RUNBOOKS-CLOUD.md` (1633 lines) - headings: # Cloud Runbooks — Troubleshooting Operacional, ## Runbook 1: DynamoDB Throttling, ### Síntomas, ### Diagnosis
 - `docs/RUNBOOKS-DEVOPS.md` (1409 lines) - headings: # DevOps Runbooks — Troubleshooting Operacional, ## Runbook 1: Docker Image Build Failures, ### Síntomas, ### Diagnosis
 - `docs/SKILLS-VISUALES-Y-ESTUDIO.md` (94 lines) - headings: # Skills para visuales y estudio desde cero, ## Selección y uso, ## Recorrido que debe comprobarse, ## Cómo usar las skills en una revisión
-- `docs/atomic-subtopics.md` (1031 lines) - headings: # Auditoría de subtemas atómicos, ## Temas pendientes, ### android, ### angular
-- ... 45 more files
+- `docs/SPRING-BOOT-CIERRE.md` (120 lines) - headings: # Spring Boot: cierre editorial y verificación, ## Qué significa el avance, ## Metodología aplicada, ## Cambios de cierre
+- ... 48 more files
 
 ### example
 
@@ -264,7 +264,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `examples/archify/temas/cloud/modulo-22-tema-5-edge-routes.review-2/modulo-22-tema-5-edge-routes.finalize.json` (1012 lines)
 - `examples/archify/temas/foundations/modulo-12-tema-10-lazo-p.workflow.json` (183 lines)
 - `examples/archify/temas/foundations/modulo-12-tema-17-plc-scan.workflow.json` (189 lines)
-- ... 857 more files
+- ... 885 more files
 
 ### local-infra
 
@@ -290,4 +290,4 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/official-sources.json` (195 lines)
 - `docs/official-topic-atlas.json` (175 lines)
 - `docs/prerequisite-graph.json` (13043 lines)
-- ... 37 more files
+- ... 43 more files

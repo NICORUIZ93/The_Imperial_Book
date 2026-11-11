@@ -5055,15 +5055,15 @@
       },
       {
         "title": "Integraciones empresariales, SOAP y fronteras de protocolo",
-        "fragment": "tema-complementario-integraciones-empresariales-soap-y-fronteras-de-protocolo"
+        "fragment": "tema-6-integraciones-empresariales-soap-y-fronteras-de-protocolo"
       },
       {
         "title": "Spring AI: ChatClient y herramientas con autorización fuera del modelo",
-        "fragment": "tema-6-spring-ai-chatclient-y-herramientas-con-autorizacion-fuera-del-modelo"
+        "fragment": "tema-7-spring-ai-chatclient-y-herramientas-con-autorizacion-fuera-del-modelo"
       },
       {
         "title": "RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar",
-        "fragment": "tema-7-rag-desde-la-frontera-de-datos-recuperar-evidencia-autorizada-antes-de-generar"
+        "fragment": "tema-8-rag-desde-la-frontera-de-datos-recuperar-evidencia-autorizada-antes-de-generar"
       }
     ],
     "21": [

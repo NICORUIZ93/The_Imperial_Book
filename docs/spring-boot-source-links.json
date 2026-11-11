@@ -1,0 +1,2010 @@
+{
+  "date": "2026-11-11",
+  "scope": "Accesibilidad de referencias; HTTP 200 no acredita exactitud sem\u00e1ntica ni versi\u00f3n de cada ejemplo",
+  "sources": [
+    {
+      "url": "https://alistair.cockburn.us/hexagonal-architecture/",
+      "status": 200,
+      "resolved": "https://alistair.cockburn.us/hexagonal-architecture",
+      "modules": [
+        "web/public/content/spring-boot/modulo-22.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-data/jpa/reference/",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-data/jpa/reference/",
+      "modules": [
+        "web/public/content/spring-boot/modulo-14.md",
+        "web/public/content/spring-boot/modulo-22.md"
+      ]
+    },
+    {
+      "url": "https://c4model.com/",
+      "status": 200,
+      "resolved": "https://c4model.com/",
+      "modules": [
+        "web/public/content/spring-boot/modulo-22.md"
+      ]
+    },
+    {
+      "url": "https://mermaid.js.org/syntax/flowchart.html",
+      "status": 200,
+      "resolved": "https://mermaid.js.org/syntax/flowchart.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-22.md"
+      ]
+    },
+    {
+      "url": "https://docs.aws.amazon.com/prescriptive-guidance/latest/architectural-decision-records/adr-process.html",
+      "status": 200,
+      "resolved": "https://docs.aws.amazon.com/prescriptive-guidance/latest/architectural-decision-records/adr-process.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-22.md"
+      ]
+    },
+    {
+      "url": "https://martinfowler.com/bliki/ArchitectureDecisionRecord.html",
+      "status": 200,
+      "resolved": "https://martinfowler.com/bliki/ArchitectureDecisionRecord.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-22.md"
+      ]
+    },
+    {
+      "url": "https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/OneToMany.html",
+      "status": 200,
+      "resolved": "https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/OneToMany.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-16.md"
+      ]
+    },
+    {
+      "url": "https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2",
+      "status": 200,
+      "resolved": "https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2",
+      "modules": [
+        "web/public/content/spring-boot/modulo-16.md"
+      ]
+    },
+    {
+      "url": "https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/ManyToOne.html",
+      "status": 200,
+      "resolved": "https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/ManyToOne.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-16.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-data/jpa/reference/repositories/projections.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-data/jpa/reference/repositories/projections.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-16.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/how-to/data-initialization.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/how-to/data-initialization.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-12.md"
+      ]
+    },
+    {
+      "url": "https://java.testcontainers.org/modules/databases/postgres/",
+      "status": 200,
+      "resolved": "https://java.testcontainers.org/modules/databases/postgres/",
+      "modules": [
+        "web/public/content/spring-boot/modulo-12.md",
+        "web/public/content/spring-boot/modulo-13.md",
+        "web/public/content/spring-boot/modulo-6.md"
+      ]
+    },
+    {
+      "url": "https://java.testcontainers.org/test_framework_integration/junit_5/",
+      "status": 200,
+      "resolved": "https://java.testcontainers.org/test_framework_integration/junit_5/",
+      "modules": [
+        "web/public/content/spring-boot/modulo-12.md",
+        "web/public/content/spring-boot/modulo-15.md",
+        "web/public/content/spring-boot/modulo-6.md"
+      ]
+    },
+    {
+      "url": "https://java.testcontainers.org/supported_docker_environment/",
+      "status": 200,
+      "resolved": "https://java.testcontainers.org/supported_docker_environment/",
+      "modules": [
+        "web/public/content/spring-boot/modulo-12.md",
+        "web/public/content/spring-boot/modulo-15.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-10.md",
+        "web/public/content/spring-boot/modulo-12.md",
+        "web/public/content/spring-boot/modulo-14.md",
+        "web/public/content/spring-boot/modulo-18.md",
+        "web/public/content/spring-boot/modulo-4.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-security/reference/servlet/authorization/method-security.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-security/reference/servlet/authorization/method-security.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-12.md",
+        "web/public/content/spring-boot/modulo-14.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/reference/actuator/metrics.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/reference/actuator/metrics.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-12.md",
+        "web/public/content/spring-boot/modulo-20.md",
+        "web/public/content/spring-boot/modulo-7.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/reference/actuator/endpoints.html#actuator.endpoints.exposing",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/reference/actuator/endpoints.html#actuator.endpoints.exposing",
+      "modules": [
+        "web/public/content/spring-boot/modulo-12.md",
+        "web/public/content/spring-boot/modulo-7.md"
+      ]
+    },
+    {
+      "url": "https://docs.micrometer.io/micrometer/reference/concepts/counters.html",
+      "status": 200,
+      "resolved": "https://docs.micrometer.io/micrometer/reference/concepts/counters.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-12.md",
+        "web/public/content/spring-boot/modulo-7.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/reference/actuator/endpoints.html#actuator.endpoints.kubernetes-probes",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/reference/actuator/endpoints.html#actuator.endpoints.kubernetes-probes",
+      "modules": [
+        "web/public/content/spring-boot/modulo-11.md",
+        "web/public/content/spring-boot/modulo-12.md",
+        "web/public/content/spring-boot/modulo-7.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-13.md",
+        "web/public/content/spring-boot/modulo-21.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/annotations.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/annotations.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-13.md",
+        "web/public/content/spring-boot/modulo-17.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/data-access/jdbc.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-framework/reference/data-access/jdbc.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-13.md"
+      ]
+    },
+    {
+      "url": "https://www.postgresql.org/docs/current/sql-insert.html",
+      "status": 200,
+      "resolved": "https://www.postgresql.org/docs/current/sql-insert.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-13.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/testing/mockmvc.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-framework/reference/testing/mockmvc.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-13.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-cloud-contract/reference/",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-cloud-contract/reference/",
+      "modules": [
+        "web/public/content/spring-boot/modulo-13.md"
+      ]
+    },
+    {
+      "url": "https://www.rfc-editor.org/rfc/rfc9457",
+      "status": 200,
+      "resolved": "https://www.rfc-editor.org/info/rfc9457/",
+      "modules": [
+        "web/public/content/spring-boot/modulo-13.md",
+        "web/public/content/spring-boot/modulo-2.md"
+      ]
+    },
+    {
+      "url": "https://docs.micrometer.io/micrometer/reference/observation.html",
+      "status": 200,
+      "resolved": "https://docs.micrometer.io/micrometer/reference/observation.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-13.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/reference/actuator/observability.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/reference/actuator/observability.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-13.md"
+      ]
+    },
+    {
+      "url": "https://opentelemetry.io/docs/concepts/signals/",
+      "status": 200,
+      "resolved": "https://opentelemetry.io/docs/concepts/signals/",
+      "modules": [
+        "web/public/content/spring-boot/modulo-13.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/reference/",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/reference/",
+      "modules": [
+        "web/public/content/spring-boot/modulo-13.md",
+        "web/public/content/spring-boot/modulo-14.md",
+        "web/public/content/spring-boot/modulo-15.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-modulith/reference/fundamentals.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-modulith/reference/fundamentals.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-23.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-modulith/reference/events.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-modulith/reference/events.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-10.md",
+        "web/public/content/spring-boot/modulo-23.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-modulith/reference/documentation.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-modulith/reference/documentation.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-23.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-modulith/reference/testing.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-modulith/reference/testing.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-10.md",
+        "web/public/content/spring-boot/modulo-23.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/reference/data/sql.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/reference/data/sql.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-17.md",
+        "web/public/content/spring-boot/modulo-2.md",
+        "web/public/content/spring-boot/modulo-9.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/data-access/jdbc/core.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-framework/reference/data-access/jdbc/core.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-17.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/rolling-back.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/rolling-back.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-17.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-security/reference/servlet/test/mockmvc/authentication.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-security/reference/servlet/test/mockmvc/authentication.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-4.md"
+      ]
+    },
+    {
+      "url": "https://github.com/jwtk/jjwt#installation",
+      "status": 200,
+      "resolved": "https://github.com/jwtk/jjwt#installation",
+      "modules": [
+        "web/public/content/spring-boot/modulo-4.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-security/reference/servlet/integrations/cors.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-security/reference/servlet/integrations/cors.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-18.md",
+        "web/public/content/spring-boot/modulo-4.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/web/webmvc-cors.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-framework/reference/web/webmvc-cors.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-4.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-security/reference/features/exploits/csrf.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-security/reference/features/exploits/csrf.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-4.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/api/java/org/springframework/boot/http/client/InetAddressFilter.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/api/java/org/springframework/boot/http/client/InetAddressFilter.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-4.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/api/java/org/springframework/boot/http/client/HttpClientSettings.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/api/java/org/springframework/boot/http/client/HttpClientSettings.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-10.md",
+        "web/public/content/spring-boot/modulo-4.md"
+      ]
+    },
+    {
+      "url": "https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.1-Release-Notes",
+      "status": 200,
+      "resolved": "https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.1-Release-Notes",
+      "modules": [
+        "web/public/content/spring-boot/modulo-4.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-security/reference/features/authentication/password-storage.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-security/reference/features/authentication/password-storage.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-4.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-security/reference/servlet/authentication/index.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-security/reference/servlet/authentication/index.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-4.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-security/reference/servlet/authorization/authorize-http-requests.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-security/reference/servlet/authorization/authorize-http-requests.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-18.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-validation.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-validation.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-18.md",
+        "web/public/content/spring-boot/modulo-2.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/reference/io/rest-client.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/reference/io/rest-client.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-10.md",
+        "web/public/content/spring-boot/modulo-18.md"
+      ]
+    },
+    {
+      "url": "https://adoptium.net/installation/",
+      "status": 200,
+      "resolved": "https://adoptium.net/installation/",
+      "modules": [
+        "web/public/content/spring-boot/modulo-0.md"
+      ]
+    },
+    {
+      "url": "https://adoptium.net/installation/linux/",
+      "status": 200,
+      "resolved": "https://adoptium.net/installation/linux/",
+      "modules": [
+        "web/public/content/spring-boot/modulo-0.md"
+      ]
+    },
+    {
+      "url": "https://start.spring.io/",
+      "status": 200,
+      "resolved": "https://start.spring.io/",
+      "modules": [
+        "web/public/content/spring-boot/modulo-0.md",
+        "web/public/content/spring-boot/modulo-1.md",
+        "web/public/content/spring-boot/modulo-2.md",
+        "web/public/content/spring-boot/modulo-9.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/system-requirements.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/system-requirements.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-0.md"
+      ]
+    },
+    {
+      "url": "https://docs.gradle.org/current/userguide/compatibility.html",
+      "status": 200,
+      "resolved": "https://docs.gradle.org/current/userguide/compatibility.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-0.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/reference/using/spring-beans-and-dependency-injection.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/reference/using/spring-beans-and-dependency-injection.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-0.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-0.md",
+        "web/public/content/spring-boot/modulo-5.md",
+        "web/public/content/spring-boot/modulo-6.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/core/beans/dependencies/factory-collaborators.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-framework/reference/core/beans/dependencies/factory-collaborators.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-0.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/core/beans/classpath-scanning.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-framework/reference/core/beans/classpath-scanning.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-0.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/core/beans/factory-scopes.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-framework/reference/core/beans/factory-scopes.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-0.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/reference/using/auto-configuration.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/reference/using/auto-configuration.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-0.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/reference/web/servlet.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/reference/web/servlet.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-0.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-batch/reference/step/chunk-oriented-processing.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-batch/reference/step/chunk-oriented-processing.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-19.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-batch/reference/job/configuring-job.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-batch/reference/job/configuring-job.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-19.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-batch/reference/step/tasklet.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-batch/reference/step/tasklet.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-19.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/reference/io/spring-batch.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/reference/io/spring-batch.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-19.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-batch/reference/step/chunk-oriented-processing/retry-logic.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-batch/reference/step/chunk-oriented-processing/retry-logic.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-19.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-batch/reference/step/chunk-oriented-processing/configuring-skip.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-batch/reference/step/chunk-oriented-processing/configuring-skip.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-19.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-batch/reference/step/chunk-oriented-processing/intercepting-execution.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-batch/reference/step/chunk-oriented-processing/intercepting-execution.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-19.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/how-to/batch.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/how-to/batch.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-19.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/initializr/docs/current/reference/html/",
+      "status": 200,
+      "resolved": "https://docs.spring.io/initializr/docs/current/reference/html/",
+      "modules": [
+        "web/public/content/spring-boot/modulo-1.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/reference/using/build-systems.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/reference/using/build-systems.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-1.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/reference/web/index.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/reference/web/index.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-1.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/reference/features/external-config.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/reference/features/external-config.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-1.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/reference/features/profiles.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/reference/features/profiles.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-1.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/reference/actuator/endpoints.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/reference/actuator/endpoints.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-1.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/api/java/org/springframework/boot/context/properties/ConfigurationPropertiesScan.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/api/java/org/springframework/boot/context/properties/ConfigurationPropertiesScan.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-5.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/reference/features/external-config.html#features.external-config.typesafe-configuration-properties",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/reference/features/external-config.html#features.external-config.typesafe-configuration-properties",
+      "modules": [
+        "web/public/content/spring-boot/modulo-5.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/api/java/org/springframework/boot/context/properties/NestedConfigurationProperty.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/api/java/org/springframework/boot/context/properties/NestedConfigurationProperty.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-5.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/api/java/org/springframework/boot/context/properties/bind/validation/BindValidationException.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/api/java/org/springframework/boot/context/properties/bind/validation/BindValidationException.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-5.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html#testing.spring-boot-applications.testing-auto-configuration",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html#testing.spring-boot-applications.testing-auto-configuration",
+      "modules": [
+        "web/public/content/spring-boot/modulo-5.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-ann-rest-exceptions.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-ann-rest-exceptions.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-5.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/requestbody.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/requestbody.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-2.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-data/jpa/reference/repositories/core-concepts.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-data/jpa/reference/repositories/core-concepts.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-2.md"
+      ]
+    },
+    {
+      "url": "https://jakarta.ee/specifications/bean-validation/",
+      "status": 200,
+      "resolved": "https://jakarta.ee/specifications/bean-validation/",
+      "modules": [
+        "web/public/content/spring-boot/modulo-2.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-exceptionhandler.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-exceptionhandler.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-2.md"
+      ]
+    },
+    {
+      "url": "https://projectlombok.org/setup/maven",
+      "status": 200,
+      "resolved": "https://projectlombok.org/setup/maven",
+      "modules": [
+        "web/public/content/spring-boot/modulo-2.md"
+      ]
+    },
+    {
+      "url": "https://mapstruct.org/documentation/stable/reference/pdf/mapstruct-reference-guide.pdf",
+      "status": 200,
+      "resolved": "https://mapstruct.org/documentation/stable/reference/pdf/mapstruct-reference-guide.pdf",
+      "modules": [
+        "web/public/content/spring-boot/modulo-2.md"
+      ]
+    },
+    {
+      "url": "https://mapstruct.org/faq/",
+      "status": 200,
+      "resolved": "https://mapstruct.org/faq/",
+      "modules": [
+        "web/public/content/spring-boot/modulo-2.md"
+      ]
+    },
+    {
+      "url": "https://springdoc.org/",
+      "status": 200,
+      "resolved": "https://springdoc.org/",
+      "modules": [
+        "web/public/content/spring-boot/modulo-2.md"
+      ]
+    },
+    {
+      "url": "https://spec.openapis.org/oas/latest.html",
+      "status": 200,
+      "resolved": "https://spec.openapis.org/oas/latest.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-2.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-data/commons/reference/repositories/core-concepts.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-data/commons/reference/repositories/core-concepts.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-2.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-data/commons/reference/repositories/query-methods-details.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-data/commons/reference/repositories/query-methods-details.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-2.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/api/java/org/springframework/boot/webmvc/test/autoconfigure/WebMvcTest.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/api/java/org/springframework/boot/webmvc/test/autoconfigure/WebMvcTest.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-6.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/api/java/org/springframework/boot/webmvc/test/autoconfigure/AutoConfigureMockMvc.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/api/java/org/springframework/boot/webmvc/test/autoconfigure/AutoConfigureMockMvc.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-11.md",
+        "web/public/content/spring-boot/modulo-6.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html#testing.spring-boot-applications.spring-data-jpa-tests",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html#testing.spring-boot-applications.spring-data-jpa-tests",
+      "modules": [
+        "web/public/content/spring-boot/modulo-6.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/api/java/org/springframework/boot/jdbc/test/autoconfigure/AutoConfigureTestDatabase.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/api/java/org/springframework/boot/jdbc/test/autoconfigure/AutoConfigureTestDatabase.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-6.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring/reference/testing/mockmvc.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring/reference/testing/mockmvc.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-6.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/reference/actuator/endpoints.html#actuator.endpoints.health",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/reference/actuator/endpoints.html#actuator.endpoints.health",
+      "modules": [
+        "web/public/content/spring-boot/modulo-7.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/api/java/org/springframework/boot/health/contributor/HealthIndicator.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/api/java/org/springframework/boot/health/contributor/HealthIndicator.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-7.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/appendix/dependency-versions/coordinates.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/appendix/dependency-versions/coordinates.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-7.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/api/java/org/springframework/boot/availability/AvailabilityChangeEvent.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/api/java/org/springframework/boot/availability/AvailabilityChangeEvent.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-7.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/api/java/org/springframework/boot/availability/ApplicationAvailability.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/api/java/org/springframework/boot/availability/ApplicationAvailability.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-7.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/4.1/reference/testing/spring-boot-applications.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-3.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-3.md"
+      ]
+    },
+    {
+      "url": "https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#hql-explicit-association-joins",
+      "status": 200,
+      "resolved": "https://docs.hibernate.org/orm/current/userguide/html_single/",
+      "modules": [
+        "web/public/content/spring-boot/modulo-3.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-data/jpa/docs/current/api/org/springframework/data/jpa/repository/EntityGraph.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-data/jpa/docs/current/api/org/springframework/data/jpa/repository/EntityGraph.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-3.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/4.1/how-to/data-initialization.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/how-to/data-initialization.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-3.md"
+      ]
+    },
+    {
+      "url": "https://documentation.red-gate.com/fd/versioned-migrations-273973333.html",
+      "status": 200,
+      "resolved": "https://documentation.red-gate.com/fd/versioned-migrations-273973333.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-3.md"
+      ]
+    },
+    {
+      "url": "https://documentation.red-gate.com/flyway/flyway-concepts/migrations/flyway-schema-history-table",
+      "status": 200,
+      "resolved": "https://documentation.red-gate.com/flyway/flyway-concepts/migrations/flyway-schema-history-table",
+      "modules": [
+        "web/public/content/spring-boot/modulo-3.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-kafka/reference/kafka/sending-messages.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-kafka/reference/kafka/sending-messages.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-8.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-kafka/reference/kafka/receiving-messages.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-kafka/reference/kafka/receiving-messages.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-8.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-kafka/reference/4.0/testing.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-kafka/reference/4.0/testing.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-8.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-kafka/docs/4.0.x/api/org/springframework/kafka/test/utils/KafkaTestUtils.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-kafka/docs/4.0.x/api/org/springframework/kafka/test/utils/KafkaTestUtils.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-8.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-kafka/reference/kafka/annotation-error-handling.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-kafka/reference/kafka/annotation-error-handling.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-21.md",
+        "web/public/content/spring-boot/modulo-8.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-kafka/reference/kafka/annotation-error-handling.html#publishing-dead-letter-records",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-kafka/reference/kafka/annotation-error-handling.html#publishing-dead-letter-records",
+      "modules": [
+        "web/public/content/spring-boot/modulo-8.md"
+      ]
+    },
+    {
+      "url": "https://kafka.apache.org/41/configuration/producer-configs/",
+      "status": 200,
+      "resolved": "https://kafka.apache.org/41/configuration/producer-configs/",
+      "modules": [
+        "web/public/content/spring-boot/modulo-8.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-kafka/reference/4.0/kafka/exactly-once.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-kafka/reference/4.0/kafka/exactly-once.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-8.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-kafka/reference/4.0/kafka/transactions.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-kafka/reference/4.0/kafka/transactions.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-8.md"
+      ]
+    },
+    {
+      "url": "https://kafka.apache.org/28/design/design/",
+      "status": 200,
+      "resolved": "https://kafka.apache.org/28/design/design/",
+      "modules": [
+        "web/public/content/spring-boot/modulo-8.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-kafka/reference/4.0/kafka/receiving-messages/rebalance-listeners.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-kafka/reference/4.0/kafka/receiving-messages/rebalance-listeners.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-8.md"
+      ]
+    },
+    {
+      "url": "https://kafka.apache.org/42/generated/consumer_config.html",
+      "status": 200,
+      "resolved": "https://kafka.apache.org/42/generated/consumer_config.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-8.md"
+      ]
+    },
+    {
+      "url": "https://kafka.apache.org/43/operations/consumer-rebalance-protocol/",
+      "status": 200,
+      "resolved": "https://kafka.apache.org/43/operations/consumer-rebalance-protocol/",
+      "modules": [
+        "web/public/content/spring-boot/modulo-8.md"
+      ]
+    },
+    {
+      "url": "https://kafka.apache.org/42/implementation/log/",
+      "status": 200,
+      "resolved": "https://kafka.apache.org/42/implementation/log/",
+      "modules": [
+        "web/public/content/spring-boot/modulo-8.md"
+      ]
+    },
+    {
+      "url": "https://kafka.apache.org/42/configuration/topic-configs/",
+      "status": 200,
+      "resolved": "https://kafka.apache.org/42/configuration/topic-configs/",
+      "modules": [
+        "web/public/content/spring-boot/modulo-8.md"
+      ]
+    },
+    {
+      "url": "https://www.rabbitmq.com/docs/consumers",
+      "status": 200,
+      "resolved": "https://www.rabbitmq.com/docs/consumers",
+      "modules": [
+        "web/public/content/spring-boot/modulo-8.md"
+      ]
+    },
+    {
+      "url": "https://www.rabbitmq.com/docs/confirms",
+      "status": 200,
+      "resolved": "https://www.rabbitmq.com/docs/confirms",
+      "modules": [
+        "web/public/content/spring-boot/modulo-8.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-amqp/reference/amqp/containerAttributes.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-amqp/reference/amqp/containerAttributes.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-8.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-amqp/reference/amqp/connections.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-amqp/reference/amqp/connections.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-8.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-cloud-stream/reference/spring-cloud-stream/overview-binder-abstraction.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-cloud-stream/reference/spring-cloud-stream/overview-binder-abstraction.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-25.md",
+        "web/public/content/spring-boot/modulo-8.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-cloud-stream/reference/spring-cloud-stream/spring_integration_test_binder.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-cloud-stream/reference/spring-cloud-stream/spring_integration_test_binder.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-25.md",
+        "web/public/content/spring-boot/modulo-8.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-cloud-stream/reference/kafka/kafka-binder/",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-cloud-stream/reference/kafka/kafka-binder/",
+      "modules": [
+        "web/public/content/spring-boot/modulo-25.md",
+        "web/public/content/spring-boot/modulo-8.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-cloud-stream/reference/rabbit/spring-cloud-stream-binder-rabbit.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-cloud-stream/reference/rabbit/spring-cloud-stream-binder-rabbit.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-8.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-cloud-stream/reference/spring-cloud-stream/overview-error-handling.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-cloud-stream/reference/spring-cloud-stream/overview-error-handling.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-8.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/4.1/reference/messaging/kafka.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/reference/messaging/kafka.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-8.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-kafka/reference/streams.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-kafka/reference/streams.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-8.md"
+      ]
+    },
+    {
+      "url": "https://kafka.apache.org/42/documentation/streams/developer-guide/dsl-api/",
+      "status": 200,
+      "resolved": "https://kafka.apache.org/42/documentation/streams/developer-guide/dsl-api/",
+      "modules": [
+        "web/public/content/spring-boot/modulo-8.md"
+      ]
+    },
+    {
+      "url": "https://kafka.apache.org/42/streams/developer-guide/testing/",
+      "status": 200,
+      "resolved": "https://kafka.apache.org/42/streams/developer-guide/testing/",
+      "modules": [
+        "web/public/content/spring-boot/modulo-8.md"
+      ]
+    },
+    {
+      "url": "https://avro.apache.org/docs/1.12.0/specification/",
+      "status": 200,
+      "resolved": "https://avro.apache.org/docs/1.12.0/specification/",
+      "modules": [
+        "web/public/content/spring-boot/modulo-8.md"
+      ]
+    },
+    {
+      "url": "https://docs.confluent.io/platform/current/schema-registry/develop/api.html",
+      "status": 200,
+      "resolved": "https://docs.confluent.io/platform/current/schema-registry/develop/api.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-8.md"
+      ]
+    },
+    {
+      "url": "https://docs.confluent.io/platform/current/schema-registry/fundamentals/schema-evolution.html",
+      "status": 200,
+      "resolved": "https://docs.confluent.io/platform/current/schema-registry/fundamentals/schema-evolution.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-8.md"
+      ]
+    },
+    {
+      "url": "https://docs.confluent.io/platform/current/schema-registry/fundamentals/serdes-develop/serdes-avro.html",
+      "status": 200,
+      "resolved": "https://docs.confluent.io/platform/current/schema-registry/fundamentals/serdes-develop/serdes-avro.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-8.md"
+      ]
+    },
+    {
+      "url": "https://docs.confluent.io/platform/7.9/installation/versions-interoperability.html",
+      "status": 200,
+      "resolved": "https://docs.confluent.io/platform/7.9/installation/versions-interoperability.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-8.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/reference/messaging/amqp.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/reference/messaging/amqp.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-8.md"
+      ]
+    },
+    {
+      "url": "https://spring.io/projects/spring-cloud",
+      "status": 200,
+      "resolved": "https://spring.io/projects/spring-cloud/",
+      "modules": [
+        "web/public/content/spring-boot/modulo-10.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-cloud-config/reference/server/environment-repository/file-system-backend.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-cloud-config/reference/server/environment-repository/file-system-backend.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-10.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-cloud-config/reference/server/environment-repository.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-cloud-config/reference/server/environment-repository.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-10.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-cloud-commons/reference/spring-cloud-commons/common-abstractions.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-cloud-commons/reference/spring-cloud-commons/common-abstractions.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-10.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-cloud-gateway/reference/spring-cloud-gateway-server-webflux/starter.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-cloud-gateway/reference/spring-cloud-gateway-server-webflux/starter.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-10.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-cloud-gateway/reference/spring-cloud-gateway-server-webflux/configuration.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-cloud-gateway/reference/spring-cloud-gateway-server-webflux/configuration.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-10.md"
+      ]
+    },
+    {
+      "url": "https://resilience4j.readme.io/docs/circuitbreaker",
+      "status": 200,
+      "resolved": "https://resilience4j.readme.io/docs/circuitbreaker",
+      "modules": [
+        "web/public/content/spring-boot/modulo-10.md"
+      ]
+    },
+    {
+      "url": "https://github.com/resilience4j/resilience4j/blob/v2.4.0/resilience4j-circuitbreaker/src/main/java/io/github/resilience4j/circuitbreaker/CircuitBreakerConfig.java",
+      "status": 200,
+      "resolved": "https://github.com/resilience4j/resilience4j/blob/v2.4.0/resilience4j-circuitbreaker/src/main/java/io/github/resilience4j/circuitbreaker/CircuitBreakerConfig.java",
+      "modules": [
+        "web/public/content/spring-boot/modulo-10.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-cloud-circuitbreaker/reference/spring-cloud-circuitbreaker-resilience4j.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-cloud-circuitbreaker/reference/spring-cloud-circuitbreaker-resilience4j.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-10.md"
+      ]
+    },
+    {
+      "url": "https://www.keycloak.org/docs/26.8.1/server_admin/",
+      "status": 200,
+      "resolved": "https://www.keycloak.org/docs/26.8.1/server_admin/",
+      "modules": [
+        "web/public/content/spring-boot/modulo-10.md"
+      ]
+    },
+    {
+      "url": "https://www.keycloak.org/server/containers",
+      "status": 200,
+      "resolved": "https://www.keycloak.org/server/containers",
+      "modules": [
+        "web/public/content/spring-boot/modulo-10.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-cloud-gateway/reference/spring-cloud-gateway-server-webflux/gatewayfilter-factories/tokenrelay-factory.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-cloud-gateway/reference/spring-cloud-gateway-server-webflux/gatewayfilter-factories/tokenrelay-factory.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-10.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/integration/rest-clients.html#rest-http-interface",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-framework/reference/integration/rest-clients.html#rest-http-interface",
+      "modules": [
+        "web/public/content/spring-boot/modulo-10.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/reference/io/grpc.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/reference/io/grpc.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-10.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-grpc/reference/",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-grpc/reference/",
+      "modules": [
+        "web/public/content/spring-boot/modulo-10.md"
+      ]
+    },
+    {
+      "url": "https://protobuf.dev/programming-guides/proto3/#updating",
+      "status": 200,
+      "resolved": "https://protobuf.dev/programming-guides/proto3/#updating",
+      "modules": [
+        "web/public/content/spring-boot/modulo-10.md"
+      ]
+    },
+    {
+      "url": "https://martinfowler.com/bliki/DDD_Aggregate.html",
+      "status": 200,
+      "resolved": "https://martinfowler.com/bliki/DDD_Aggregate.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-10.md",
+        "web/public/content/spring-boot/modulo-15.md"
+      ]
+    },
+    {
+      "url": "https://docs.temporal.io/develop/java/integrations/spring-boot-integration",
+      "status": 200,
+      "resolved": "https://docs.temporal.io/develop/java/integrations/spring-boot-integration",
+      "modules": [
+        "web/public/content/spring-boot/modulo-10.md"
+      ]
+    },
+    {
+      "url": "https://docs.temporal.io/develop/java/best-practices/testing-suite",
+      "status": 200,
+      "resolved": "https://docs.temporal.io/develop/java/best-practices/testing-suite",
+      "modules": [
+        "web/public/content/spring-boot/modulo-10.md"
+      ]
+    },
+    {
+      "url": "https://docs.temporal.io/workflow-definition",
+      "status": 200,
+      "resolved": "https://docs.temporal.io/workflow-definition",
+      "modules": [
+        "web/public/content/spring-boot/modulo-10.md"
+      ]
+    },
+    {
+      "url": "https://docs.temporal.io/design-patterns",
+      "status": 200,
+      "resolved": "https://docs.temporal.io/design-patterns",
+      "modules": [
+        "web/public/content/spring-boot/modulo-10.md"
+      ]
+    },
+    {
+      "url": "https://central.sonatype.com/artifact/io.temporal/temporal-spring-boot-starter",
+      "status": 200,
+      "resolved": "https://central.sonatype.com/artifact/io.temporal/temporal-spring-boot-starter",
+      "modules": [
+        "web/public/content/spring-boot/modulo-10.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-modulith/reference/verification.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-modulith/reference/verification.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-10.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-modulith/docs/current/api/org/springframework/modulith/test/ApplicationModuleTest.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-modulith/docs/current/api/org/springframework/modulith/test/ApplicationModuleTest.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-10.md"
+      ]
+    },
+    {
+      "url": "https://central.sonatype.com/artifact/org.springframework.modulith/spring-modulith-starter-test",
+      "status": 200,
+      "resolved": "https://central.sonatype.com/artifact/org.springframework.modulith/spring-modulith-starter-test",
+      "modules": [
+        "web/public/content/spring-boot/modulo-10.md"
+      ]
+    },
+    {
+      "url": "https://spring.io/projects/spring-cloud/",
+      "status": 200,
+      "resolved": "https://spring.io/projects/spring-cloud/",
+      "modules": [
+        "web/public/content/spring-boot/modulo-10.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-cloud-bus/reference/spring-cloud-bus/bus-endpoints.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-cloud-bus/reference/spring-cloud-bus/bus-endpoints.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-10.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-cloud-bus/reference/",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-cloud-bus/reference/",
+      "modules": [
+        "web/public/content/spring-boot/modulo-10.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/reference/actuator/tracing.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/reference/actuator/tracing.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-10.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/4.1/reference/actuator/observability.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/reference/actuator/observability.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-10.md"
+      ]
+    },
+    {
+      "url": "https://docs.micrometer.io/tracing/reference/",
+      "status": 200,
+      "resolved": "https://docs.micrometer.io/tracing/reference/",
+      "modules": [
+        "web/public/content/spring-boot/modulo-10.md"
+      ]
+    },
+    {
+      "url": "https://www.jaegertracing.io/docs/2.22/getting-started/",
+      "status": 200,
+      "resolved": "https://www.jaegertracing.io/docs/2.22/getting-started/",
+      "modules": [
+        "web/public/content/spring-boot/modulo-10.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-cloud-contract/reference/maven-project.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-cloud-contract/reference/maven-project.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-10.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-cloud-contract/reference/project-features-contract.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-cloud-contract/reference/project-features-contract.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-10.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-cloud-contract/reference/project-features-stubrunner/stub-runner-core.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-cloud-contract/reference/project-features-stubrunner/stub-runner-core.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-10.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-graphql/reference/controllers.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-graphql/reference/controllers.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-24.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-graphql/reference/controllers.html#controllers.batch-mapping",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-graphql/reference/controllers.html#controllers.batch-mapping",
+      "modules": [
+        "web/public/content/spring-boot/modulo-24.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-graphql/reference/testing.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-graphql/reference/testing.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-24.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/integration/scheduling.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-framework/reference/integration/scheduling.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-20.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/reference/features/task-execution-and-scheduling.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/reference/features/task-execution-and-scheduling.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-20.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/data-access/transaction/event.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-framework/reference/data-access/transaction/event.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-14.md",
+        "web/public/content/spring-boot/modulo-20.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-kafka/reference/kafka/transactions.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-kafka/reference/kafka/transactions.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-20.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/reference/io/email.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/reference/io/email.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-20.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/integration/email.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-framework/reference/integration/email.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-20.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/reference/io/caching.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/reference/io/caching.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-20.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-data/redis/reference/redis/redis-cache.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-data/redis/reference/redis/redis-cache.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-20.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/reference/data/nosql.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/reference/data/nosql.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-20.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-data/redis/reference/upgrading.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-data/redis/reference/upgrading.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-20.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/integration/cache/annotations.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-framework/reference/integration/cache/annotations.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-20.md"
+      ]
+    },
+    {
+      "url": "https://www.w3.org/TR/soap12-part1/",
+      "status": 200,
+      "resolved": "https://www.w3.org/TR/soap12-part1/",
+      "modules": [
+        "web/public/content/spring-boot/modulo-20.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-ai/reference/api/chatclient.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-ai/reference/api/chatclient.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-20.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-ai/reference/api/tools.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-ai/reference/api/tools.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-20.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-ai/reference/getting-started.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-ai/reference/getting-started.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-20.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-ai/reference/api/retrieval-augmented-generation.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-ai/reference/api/retrieval-augmented-generation.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-20.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/web/webmvc.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-framework/reference/web/webmvc.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-14.md"
+      ]
+    },
+    {
+      "url": "https://dev.mysql.com/doc/refman/8.0/en/gis-wkt-functions.html",
+      "status": 403,
+      "error": "HTTP Error 403: Forbidden",
+      "modules": [
+        "web/public/content/spring-boot/modulo-14.md"
+      ]
+    },
+    {
+      "url": "https://dev.mysql.com/doc/refman/8.0/en/spatial-convenience-functions.html",
+      "status": 403,
+      "error": "HTTP Error 403: Forbidden",
+      "modules": [
+        "web/public/content/spring-boot/modulo-14.md"
+      ]
+    },
+    {
+      "url": "https://dev.mysql.com/doc/refman/8.4/en/spatial-index-optimization.html",
+      "status": 403,
+      "error": "HTTP Error 403: Forbidden",
+      "modules": [
+        "web/public/content/spring-boot/modulo-14.md"
+      ]
+    },
+    {
+      "url": "https://java.testcontainers.org/modules/databases/mysql/",
+      "status": 200,
+      "resolved": "https://java.testcontainers.org/modules/databases/mysql/",
+      "modules": [
+        "web/public/content/spring-boot/modulo-14.md"
+      ]
+    },
+    {
+      "url": "https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#spatial",
+      "status": 200,
+      "resolved": "https://docs.hibernate.org/orm/current/userguide/html_single/",
+      "modules": [
+        "web/public/content/spring-boot/modulo-14.md"
+      ]
+    },
+    {
+      "url": "https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#locking-optimistic",
+      "status": 200,
+      "resolved": "https://docs.hibernate.org/orm/current/userguide/html_single/",
+      "modules": [
+        "web/public/content/spring-boot/modulo-14.md"
+      ]
+    },
+    {
+      "url": "https://dev.mysql.com/doc/refman/8.0/en/spatial-type-overview.html",
+      "status": 403,
+      "error": "HTTP Error 403: Forbidden",
+      "modules": [
+        "web/public/content/spring-boot/modulo-14.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-security/reference/servlet/test/index.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-security/reference/servlet/test/index.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-14.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/web/websocket/stomp.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-framework/reference/web/websocket/stomp.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-14.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/web/websocket/stomp/handle-broker-relay.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-framework/reference/web/websocket/stomp/handle-broker-relay.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-14.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/appendix/application-properties/",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/appendix/application-properties/",
+      "modules": [
+        "web/public/content/spring-boot/modulo-11.md",
+        "web/public/content/spring-boot/modulo-14.md"
+      ]
+    },
+    {
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html",
+      "status": 200,
+      "resolved": "https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-14.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/reference/messaging/kafka.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/reference/messaging/kafka.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-21.md"
+      ]
+    },
+    {
+      "url": "https://kafka.apache.org/documentation/",
+      "status": 200,
+      "resolved": "https://kafka.apache.org/documentation/",
+      "modules": [
+        "web/public/content/spring-boot/modulo-21.md"
+      ]
+    },
+    {
+      "url": "https://microservices.io/patterns/data/transactional-outbox.html",
+      "status": 200,
+      "resolved": "https://microservices.io/patterns/data/transactional-outbox.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-21.md"
+      ]
+    },
+    {
+      "url": "https://projectreactor.io/docs/core/release/reference/testing.html",
+      "status": 200,
+      "resolved": "https://projectreactor.io/docs/core/release/reference/testing.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-15.md",
+        "web/public/content/spring-boot/modulo-9.md"
+      ]
+    },
+    {
+      "url": "https://projectreactor.io/docs/core/release/reference/subscribe-backpressure.html",
+      "status": 200,
+      "resolved": "https://projectreactor.io/docs/core/release/reference/subscribe-backpressure.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-15.md"
+      ]
+    },
+    {
+      "url": "https://github.com/reactive-streams/reactive-streams-jvm",
+      "status": 200,
+      "resolved": "https://github.com/reactive-streams/reactive-streams-jvm",
+      "modules": [
+        "web/public/content/spring-boot/modulo-15.md"
+      ]
+    },
+    {
+      "url": "https://java.testcontainers.org/test_framework_integration/manual_lifecycle_control/",
+      "status": 200,
+      "resolved": "https://java.testcontainers.org/test_framework_integration/manual_lifecycle_control/",
+      "modules": [
+        "web/public/content/spring-boot/modulo-15.md"
+      ]
+    },
+    {
+      "url": "https://www.archunit.org/userguide/html/000_Index.html",
+      "status": 200,
+      "resolved": "https://www.archunit.org/userguide/html/000_Index.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-15.md"
+      ]
+    },
+    {
+      "url": "https://www.archunit.org/getting-started",
+      "status": 200,
+      "resolved": "https://www.archunit.org/getting-started",
+      "modules": [
+        "web/public/content/spring-boot/modulo-15.md"
+      ]
+    },
+    {
+      "url": "https://resilience4j.readme.io/docs/bulkhead",
+      "status": 200,
+      "resolved": "https://resilience4j.readme.io/docs/bulkhead",
+      "modules": [
+        "web/public/content/spring-boot/modulo-15.md"
+      ]
+    },
+    {
+      "url": "https://resilience4j.readme.io/docs/ratelimiter",
+      "status": 200,
+      "resolved": "https://resilience4j.readme.io/docs/ratelimiter",
+      "modules": [
+        "web/public/content/spring-boot/modulo-15.md"
+      ]
+    },
+    {
+      "url": "https://microservices.io/patterns/data/saga.html",
+      "status": 200,
+      "resolved": "https://microservices.io/patterns/data/saga.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-15.md"
+      ]
+    },
+    {
+      "url": "https://martinfowler.com/eaaDev/EventSourcing.html",
+      "status": 200,
+      "resolved": "https://martinfowler.com/eaaDev/EventSourcing.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-15.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/data-access/transaction.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-framework/reference/data-access/transaction.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-15.md"
+      ]
+    },
+    {
+      "url": "https://h2database.com/html/features.html#database_url",
+      "status": 200,
+      "resolved": "https://h2database.com/html/features.html#database_url",
+      "modules": [
+        "web/public/content/spring-boot/modulo-15.md"
+      ]
+    },
+    {
+      "url": "https://projectreactor.io/docs/core/release/reference/reactiveProgramming.html",
+      "status": 200,
+      "resolved": "https://projectreactor.io/docs/core/release/reference/reactiveProgramming.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-9.md"
+      ]
+    },
+    {
+      "url": "https://projectreactor.io/docs/core/release/reference/advancedFeatures/reactor-hotCold.html",
+      "status": 200,
+      "resolved": "https://projectreactor.io/docs/core/release/reference/advancedFeatures/reactor-hotCold.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-9.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/web/webflux-webclient.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-framework/reference/web/webflux-webclient.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-9.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/integration/rest-clients.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-framework/reference/integration/rest-clients.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-9.md"
+      ]
+    },
+    {
+      "url": "https://github.com/square/okhttp/tree/master/mockwebserver",
+      "status": 200,
+      "resolved": "https://github.com/lysine-dev/okhttp/tree/main/mockwebserver",
+      "modules": [
+        "web/public/content/spring-boot/modulo-9.md"
+      ]
+    },
+    {
+      "url": "https://projectreactor.io/docs/core/release/reference/faq.html#faq.wrap-blocking",
+      "status": 200,
+      "resolved": "https://projectreactor.io/docs/core/release/reference/faq.html#faq.wrap-blocking",
+      "modules": [
+        "web/public/content/spring-boot/modulo-9.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/data-access/r2dbc.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-framework/reference/data-access/r2dbc.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-9.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/reference/features/spring-application.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/reference/features/spring-application.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-9.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/maven-plugin/packaging.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/maven-plugin/packaging.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-11.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/reference/packaging/container-images/dockerfiles.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/reference/packaging/container-images/dockerfiles.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-11.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/maven-plugin/aot.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/maven-plugin/aot.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-11.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/reference/packaging/native-image/introducing-graalvm-native-images.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/reference/packaging/native-image/introducing-graalvm-native-images.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-11.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/reference/packaging/native-image/advanced-topics.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-boot/reference/packaging/native-image/advanced-topics.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-11.md"
+      ]
+    },
+    {
+      "url": "https://www.graalvm.org/reference-manual/native-image/",
+      "status": 200,
+      "resolved": "https://www.graalvm.org/reference-manual/native-image/",
+      "modules": [
+        "web/public/content/spring-boot/modulo-11.md"
+      ]
+    },
+    {
+      "url": "https://kubernetes.io/docs/concepts/workloads/pods/probes/",
+      "status": 200,
+      "resolved": "https://kubernetes.io/docs/concepts/workloads/pods/probes/",
+      "modules": [
+        "web/public/content/spring-boot/modulo-11.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-cloud-stream/reference/rabbit/rabbit_overview.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-cloud-stream/reference/rabbit/rabbit_overview.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-25.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-cloud-stream/reference/kafka/kafka-binder/dlq.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-cloud-stream/reference/kafka/kafka-binder/dlq.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-25.md"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-cloud-release/reference/index.html",
+      "status": 200,
+      "resolved": "https://docs.spring.io/spring-cloud-release/reference/index.html",
+      "modules": [
+        "web/public/content/spring-boot/modulo-25.md"
+      ]
+    }
+  ]
+}
