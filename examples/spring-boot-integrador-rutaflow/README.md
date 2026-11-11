@@ -42,3 +42,17 @@ La clave por defecto es solo para el laboratorio local. En un entorno desplegado
 define `RUTAFLOW_JWT_SECRET_BASE64` fuera del repositorio o conecta un emisor de
 identidad; no compartas la clave de demostración. Este ejemplo no incluye
 publicación de eventos.
+
+## Alternativa Gradle
+
+Desde esta misma carpeta, con JDK 25:
+
+```bash
+./gradlew clean classes test
+```
+
+Usa las mismas fuentes y pruebas del laboratorio. Consulta la [guía del curso](../../docs/SPRING-BOOT-GRADLE.md)
+para perfiles, filtros de tests, procesadores y tareas especiales. Los resultados
+JUnit de Gradle están en `build/test-results/`; una compilación sin tests no
+acredita el escenario de integración. Los scripts que llaman a `mvnw` siguen
+usando Maven y su carpeta `target/`.

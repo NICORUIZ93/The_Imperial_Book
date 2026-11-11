@@ -5,6 +5,51 @@ Cada tema se practica por separado con su propia repetición progresiva y su pro
 
 **Referencia al cerrar M0–M1:** `examples/spring-fundamentos-rutaflow/README.md` reúne las clases finales y cinco pruebas. Úsala para comparar después de escribir tus archivos; no equivale a haber ejecutado cada cambio y fallo del recorrido.
 
+## Alternativa comprobable con Gradle
+
+Elige Maven o Gradle para una misma sesión. Ambos ejecutan las mismas clases y
+pruebas; sus archivos de build tienen sintaxis diferente. En las instrucciones
+que siguen, `pom.xml` y `mvnw` son la ruta original Maven. Si eliges Gradle, abre
+`build.gradle` del laboratorio y usa las equivalencias de esta sección.
+
+Desde la raíz del repositorio:
+
+```bash
+cd examples/spring-fundamentos-rutaflow
+./gradlew --version
+./gradlew clean classes test
+./gradlew bootRun --args='--spring.profiles.active=dev'
+```
+
+En Windows PowerShell usa `.\gradlew.bat`. Java debe ser 25; el Wrapper descarga
+Gradle 9.8.2. El test genera su informe en `build/reports/tests/test/`. En otra
+terminal consulta `curl http://localhost:8080/perfil`: debes recibir
+`banner=Desarrollo; entorno=compartido`. Detén el proceso con Ctrl+C antes de
+cambiar de práctica.
+
+**Fallo y diagnóstico:** si escribes `--spring.profiles.active=deev`, aparece el
+banner base: no existe `application-deev.yml`. Corrige a `dev` y repite la petición.
+Conserva ambas respuestas y explica qué archivo cambió el valor.
+
+| Cuando el tema indica Maven | En la alternativa Gradle |
+|---|---|
+| `./mvnw test` | `./gradlew test` |
+| `./mvnw clean test` | `./gradlew clean classes test` |
+| `./mvnw -Dtest=ServicioEnviosTest test` | `./gradlew test --tests '*ServicioEnviosTest'` |
+| `./mvnw spring-boot:run` | `./gradlew bootRun` |
+| argumento de perfil Maven | `./gradlew bootRun --args='--spring.profiles.active=dev'` |
+| agregar una dependencia XML al POM | agregar sus coordenadas a `dependencies` en `build.gradle` |
+
+`implementation` añade código principal; `testImplementation` añade bibliotecas
+de tests. `platform(...)` importa versiones del BOM, no todas sus dependencias.
+Lombok/MapStruct requieren además `annotationProcessor`. gRPC, contratos y AOT
+necesitan tareas específicas ya declaradas en sus laboratorios: consulta
+`docs/SPRING-BOOT-GRADLE.md`. No conviertas un plugin Maven en una dependencia
+normal ni esperes archivos de Gradle dentro de `target/`.
+
+**Fuentes:** [plugin Gradle de Boot](https://docs.spring.io/spring-boot/gradle-plugin/getting-started.html),
+[compatibilidad Java/Gradle](https://docs.gradle.org/current/userguide/compatibility.html).
+
 ## Aprende construyendo
 
 ### Tema 1: Spring Initializr y starters

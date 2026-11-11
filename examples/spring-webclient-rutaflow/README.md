@@ -11,3 +11,17 @@ Los tests verifican que WebClient envía dos peticiones reales en orden, convier
 `TarifaClient` recibe `tarifa.base-url` mediante `@Value`; Spring Boot entrega el `WebClient.Builder`. Los tests pasan la URL local del MockWebServer directamente para aislarse de configuración externa.
 
 La prueba de timeout tiene límites explícitos para no esperar indefinidamente. Si una segunda respuesta no está encolada, el dispatcher de MockWebServer puede esperar a que se agregue una respuesta; por eso la verificación StepVerifier también establece un plazo y cierra el servidor en `@AfterEach`.
+
+## Alternativa Gradle
+
+Desde esta misma carpeta, con JDK 25:
+
+```bash
+./gradlew clean classes test
+```
+
+Usa las mismas fuentes y pruebas del laboratorio. Consulta la [guía del curso](../../docs/SPRING-BOOT-GRADLE.md)
+para perfiles, filtros de tests, procesadores y tareas especiales. Los resultados
+JUnit de Gradle están en `build/test-results/`; una compilación sin tests no
+acredita el escenario de integración. Los scripts que llaman a `mvnw` siguen
+usando Maven y su carpeta `target/`.

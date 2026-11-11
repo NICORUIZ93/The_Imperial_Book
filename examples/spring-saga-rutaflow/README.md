@@ -29,3 +29,17 @@ Una saga no hace rollback automático ni aislamiento ACID entre servicios. Si
 una compensación falla, esta demo se interrumpe y no persiste qué quedó
 pendiente. La recuperación durable, los reintentos idempotentes y el outbox
 quedan fuera de este laboratorio; M15 T7 trabaja la compensación que falla.
+
+## Alternativa Gradle
+
+Desde esta misma carpeta, con JDK 25:
+
+```bash
+./gradlew clean classes test
+```
+
+Usa las mismas fuentes y pruebas del laboratorio. Consulta la [guía del curso](../../docs/SPRING-BOOT-GRADLE.md)
+para perfiles, filtros de tests, procesadores y tareas especiales. Los resultados
+JUnit de Gradle están en `build/test-results/`; una compilación sin tests no
+acredita el escenario de integración. Los scripts que llaman a `mvnw` siguen
+usando Maven y su carpeta `target/`.

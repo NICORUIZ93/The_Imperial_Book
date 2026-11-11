@@ -45,7 +45,7 @@ def build():
                 'topic': index + 1, 'title': title,
                 'line': text[:match.start()].count('\n') + 1,
                 'review': notes[str(number)][index],
-                'buildRoute': 'javac/Node.js' if number == 22 else 'Python (complemento SOAP)' if number == 20 and index == 5 else 'Maven',
+                'buildRoute': 'javac/Node.js' if number == 22 else 'Python (complemento SOAP)' if number == 20 and index == 5 else 'Maven y alternativa Gradle',
                 'subtopics': subtopics,
             })
             link = f'../{relative}#L{text[:match.start()].count(chr(10)) + 1}'
@@ -64,7 +64,7 @@ def build():
         'summary': {'modules': len(modules), 'topics': len(rows), 'subtopics': len(subs),
                     'subtopicsWithBody': sum(sub['hasBodyBeyondHeading'] for sub in subs),
                     'explicitRepositoryPaths': len(paths), 'missingRepositoryPaths': missing,
-                    'gradleLaboratories': len(gradle_builds), 'gradleBuildFiles': gradle_builds},
+                    'gradleLaboratories': len(json.loads((ROOT / 'docs/spring-gradle-labs.json').read_text())['projects']) if (ROOT / 'docs/spring-gradle-labs.json').exists() else len(gradle_builds), 'gradleBuildFiles': gradle_builds},
         'modules': modules,
     }
     intro = (ROOT / 'docs/spring-boot-topic-review-intro.md').read_text()

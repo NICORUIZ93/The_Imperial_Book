@@ -36,3 +36,17 @@ datos ni seguridad; los nombres y estados son datos ficticios de aprendizaje.
 Para los cambios de YAML a Properties y precedencia CLI, sigue los pasos de M1:
 la suite final no ejecuta cada modificación manual ni sus fallos deliberados.
 Este proyecto utiliza Maven; no incluye una variante Gradle verificada.
+
+## Alternativa Gradle
+
+Desde esta misma carpeta, con JDK 25:
+
+```bash
+./gradlew clean classes test
+```
+
+Usa las mismas fuentes y pruebas del laboratorio. Consulta la [guía del curso](../../docs/SPRING-BOOT-GRADLE.md)
+para perfiles, filtros de tests, procesadores y tareas especiales. Los resultados
+JUnit de Gradle están en `build/test-results/`; una compilación sin tests no
+acredita el escenario de integración. Los scripts que llaman a `mvnw` siguen
+usando Maven y su carpeta `target/`.

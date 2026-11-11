@@ -39,3 +39,17 @@ Los tiempos son valores didácticos para el backend local. Un timeout de lectura
 no es automáticamente un deadline extremo a extremo: el tiempo total puede
 incluir conexión, colas, reintentos y varias llamadas; coordina esos límites
 con el presupuesto de latencia del producto.
+
+## Alternativa Gradle
+
+Desde esta misma carpeta, con JDK 25:
+
+```bash
+./gradlew clean classes test
+```
+
+Usa las mismas fuentes y pruebas del laboratorio. Consulta la [guía del curso](../../docs/SPRING-BOOT-GRADLE.md)
+para perfiles, filtros de tests, procesadores y tareas especiales. Los resultados
+JUnit de Gradle están en `build/test-results/`; una compilación sin tests no
+acredita el escenario de integración. Los scripts que llaman a `mvnw` siguen
+usando Maven y su carpeta `target/`.

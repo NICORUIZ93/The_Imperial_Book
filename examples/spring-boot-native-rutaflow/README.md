@@ -50,3 +50,19 @@ Restaura la anotación antes de compilar el binario. En la imagen nativa, llama
 Una imagen nativa depende de sistema operativo y arquitectura; registra la
 plataforma junto al artefacto. Compara tiempos y memoria en el mismo entorno, no
 asumas que un binario nativo siempre gana.
+
+## Alternativa Gradle
+
+Desde esta misma carpeta, con JDK 25:
+
+```bash
+./gradlew clean classes test
+```
+
+Usa las mismas fuentes y pruebas del laboratorio. Consulta la [guía del curso](../../docs/SPRING-BOOT-GRADLE.md)
+para perfiles, filtros de tests, procesadores y tareas especiales. Los resultados
+JUnit de Gradle están en `build/test-results/`; una compilación sin tests no
+acredita el escenario de integración. Los scripts que llaman a `mvnw` siguen
+usando Maven y su carpeta `target/`.
+
+Para AOT sobre JVM: `./scripts/verify-gradle-aot.sh`. No compila un binario nativo.

@@ -45,3 +45,17 @@ internas, rendimiento, autorización ni que el despliegue productivo ejecute esa
 versión. El stub representa la respuesta pactada: no es una copia del productor.
 Cada equipo debe publicar artefactos versionados y decidir qué versión de stubs
 consume cada build.
+
+## Alternativa Gradle
+
+Desde esta misma carpeta, con JDK 25:
+
+```bash
+./gradlew clean verifyContracts
+```
+
+Usa las mismas fuentes y pruebas del laboratorio. Consulta la [guía del curso](../../docs/SPRING-BOOT-GRADLE.md)
+para perfiles, filtros de tests, procesadores y tareas especiales. Los resultados
+JUnit de Gradle están en `build/test-results/`; una compilación sin tests no
+acredita el escenario de integración. Los scripts que llaman a `mvnw` siguen
+usando Maven y su carpeta `target/`.

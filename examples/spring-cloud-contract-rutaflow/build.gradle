@@ -1,0 +1,12 @@
+plugins { id 'base' }
+
+// Aislar también publishToMavenLocal, para no aceptar stubs de otro build.
+System.setProperty('maven.repo.local', layout.buildDirectory.dir('stub-repository').get().asFile.absolutePath)
+
+group = 'academia.rutaflow'
+version = '0.1.0-SNAPSHOT'
+
+// Ejecutar el consumidor exige publicar primero el stub generado por Gradle.
+tasks.register('verifyContracts') {
+    dependsOn ':pedidos-consumer:test'
+}

@@ -33,3 +33,17 @@ Si el código postal empieza por `XX`, la función falla de forma repetible. El 
 ## Límites de la prueba
 
 El test binder valida mapping dentro de la aplicación. Los perfiles con broker deben probarse por separado; una suite verde del binder no demuestra que el broker esté disponible ni que la topología se creó como se esperaba.
+
+## Alternativa Gradle
+
+Desde esta misma carpeta, con JDK 25:
+
+```bash
+./gradlew clean classes test
+```
+
+Usa las mismas fuentes y pruebas del laboratorio. Consulta la [guía del curso](../../docs/SPRING-BOOT-GRADLE.md)
+para perfiles, filtros de tests, procesadores y tareas especiales. Los resultados
+JUnit de Gradle están en `build/test-results/`; una compilación sin tests no
+acredita el escenario de integración. Los scripts que llaman a `mvnw` siguen
+usando Maven y su carpeta `target/`.

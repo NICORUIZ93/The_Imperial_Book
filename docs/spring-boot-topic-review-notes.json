@@ -5,7 +5,7 @@
     "Estereotipos → árbol de dependencias → prototype/ObjectProvider; no confunde prototype con scope request."
   ],
   "1": [
-    "Generación aislada con Boot y paquete fijados; vuelve explícitamente al proyecto acumulativo. Maven, sin build Gradle.",
+    "Generación aislada con Boot y paquete fijados; vuelve explícitamente al proyecto acumulativo. Maven original y alternativa Gradle con Wrapper y comandos propios.",
     "YAML → Properties → sobrescritura CLI; clean evita recursos antiguos y las claves tienen salida comprobable.",
     "Base → perfil dev → capas. Corregido el resumen que pedía JPA/PostgreSQL antes de enseñarlos."
   ],
@@ -72,7 +72,7 @@
     "Fronteras → verify → evento → receptor; se reutiliza el lab de M23. Documentación generada es un cuarto test adicional.",
     "Broker → dos instancias → busenv → reinicio; script específico necesario, Maven con cero tests no acredita propagación.",
     "Jaeger → dos procesos → traza → sampling; referencia snapshot sustituida por versión estable. No mide carga.",
-    "Contrato → prueba generada → stub consumidor → rotura. Multi-módulo Maven y artefacto stubs explícitos, sin receta Gradle."
+    "Contrato → prueba generada → stub consumidor → rotura. Multi-módulo Maven y alternativa Gradle generan la prueba y el artefacto stubs; el recorrido Gradle usa repositorio aislado."
   ],
   "11": [
     "Inspección JAR → tools/capas → Dockerfile → cambio; reutilización de imagen requiere build y runtime aparte.",

@@ -18,11 +18,13 @@ Esta revisión encontró y corrigió fallos que el conteo de marcadores no detec
   corte integrador. M16–M21 refuerzan temas previos con otros casos; la numeración
   no significa que todas las carpetas se fusionen automáticamente. Se aclararon
   esas transiciones, reinicios, dependencias y estados de partida.
-- **¿Está con Gradle?** No. La ruta comprobada utiliza Maven. No hay laboratorios
-  Spring de este curso con `build.gradle(.kts)` y `gradlew` mantenidos/verificados.
-  M22 usa Java directo/Node y el complemento SOAP de M20 usa Python. Una mención a
-  Gradle en una explicación no constituye una implementación. Migrar todo requiere
-  traducir BOM, procesadores, contratos, perfiles y plugins, y ejecutar sus builds.
+- **¿Está con Gradle?** La revisión inicial solo comprobaba Maven. La ampliación
+  posterior agrega builds Groovy y wrappers Gradle 9.8.2 a los 50 proyectos raíz
+  del inventario `spring-gradle-labs.json`, incluyendo contratos multi-módulo.
+  Consulta [la guía Gradle](SPRING-BOOT-GRADLE.md) y la ejecución registrada en
+  `spring-gradle-verification.json`. Las fuentes y pruebas son compartidas;
+  M22 sigue usando Java directo/Node y el complemento SOAP de M20, Python.
+  Esta ampliación no acredita todos los ejercicios ni escenarios de producción.
 - **¿Está actualizada?** La base usa Boot 4.1.2 y Java 25. Se contrastaron sus APIs
   y matrices de compatibilidad con fuentes primarias; se corrigieron tres enlaces
   404, una referencia snapshot y una regla antigua de Avro. Hay versiones fijadas

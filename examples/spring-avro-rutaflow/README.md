@@ -42,3 +42,17 @@ Registra v1, consulta v2 antes de registrarlo y verifica que el cambio incompati
 La API debe indicar compatibilidad para v2 y is_compatible: false para el campo requerido sin default. No registres el esquema incompatible durante esta práctica. El Registry guarda sus metadatos en Kafka; usa esta topología local solo para aprendizaje.
 
 Confluent Platform 7.9 se alinea con Kafka 3.9.x; el compose existente fija Kafka 3.9.1 y el overlay Schema Registry 7.9.0. El laboratorio no publica aún eventos Avro en un tópico Kafka real: la prueba serde usa el mock y la práctica REST verifica registro/compatibilidad en el Registry.
+
+## Alternativa Gradle
+
+Desde esta misma carpeta, con JDK 25:
+
+```bash
+./gradlew clean classes test
+```
+
+Usa las mismas fuentes y pruebas del laboratorio. Consulta la [guía del curso](../../docs/SPRING-BOOT-GRADLE.md)
+para perfiles, filtros de tests, procesadores y tareas especiales. Los resultados
+JUnit de Gradle están en `build/test-results/`; una compilación sin tests no
+acredita el escenario de integración. Los scripts que llaman a `mvnw` siguen
+usando Maven y su carpeta `target/`.

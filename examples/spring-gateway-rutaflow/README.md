@@ -50,3 +50,17 @@ Un 404 por sí solo no dice quién lo produjo: comprueba el path recibido y el
 contador del servicio. Gateway WebFlux requiere el runtime Netty; no funciona
 como aplicación Servlet/WAR. En producción, el gateway ayuda con entrada y
 enrutamiento, pero el servicio conserva autorización sobre sus propios datos.
+
+## Alternativa Gradle
+
+Desde esta misma carpeta, con JDK 25:
+
+```bash
+./gradlew clean classes test
+```
+
+Usa las mismas fuentes y pruebas del laboratorio. Consulta la [guía del curso](../../docs/SPRING-BOOT-GRADLE.md)
+para perfiles, filtros de tests, procesadores y tareas especiales. Los resultados
+JUnit de Gradle están en `build/test-results/`; una compilación sin tests no
+acredita el escenario de integración. Los scripts que llaman a `mvnw` siguen
+usando Maven y su carpeta `target/`.

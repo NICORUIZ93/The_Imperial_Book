@@ -47,3 +47,17 @@ Solo deben salir los dos pedidos despachados; el conteo sube dentro de la ventan
 La app usa `spring.kafka.streams.application-id=rutaflow-pedidos-streams-v1`; cambia ese ID para una nueva aplicación lógica o para un ejercicio aislado. No limpies el estado ni reutilices un ID de producción para experimentar.
 
 El conteo usa store `conteo-despachados-por-minuto` y ventana de un minuto con 10 segundos de gracia. Los tópicos internos de estado requieren configuración de retención y replicación apropiada en producción; este broker local de un nodo solo sirve para aprendizaje.
+
+## Alternativa Gradle
+
+Desde esta misma carpeta, con JDK 25:
+
+```bash
+./gradlew clean classes test
+```
+
+Usa las mismas fuentes y pruebas del laboratorio. Consulta la [guía del curso](../../docs/SPRING-BOOT-GRADLE.md)
+para perfiles, filtros de tests, procesadores y tareas especiales. Los resultados
+JUnit de Gradle están en `build/test-results/`; una compilación sin tests no
+acredita el escenario de integración. Los scripts que llaman a `mvnw` siguen
+usando Maven y su carpeta `target/`.

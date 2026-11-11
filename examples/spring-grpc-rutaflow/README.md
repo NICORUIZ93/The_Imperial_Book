@@ -28,3 +28,17 @@ La prueba usa un proceso de prueba con servidor real en socket y cliente gRPC;
 no mide latencia comparada con REST/JSON, no prueba varias réplicas, seguridad,
 TLS ni compatibilidad entre versiones del esquema. Mide el comportamiento del
 servicio local y valida que el cliente generado completa una llamada gRPC.
+
+## Alternativa Gradle
+
+Desde esta misma carpeta, con JDK 25:
+
+```bash
+./gradlew clean classes test
+```
+
+Usa las mismas fuentes y pruebas del laboratorio. Consulta la [guía del curso](../../docs/SPRING-BOOT-GRADLE.md)
+para perfiles, filtros de tests, procesadores y tareas especiales. Los resultados
+JUnit de Gradle están en `build/test-results/`; una compilación sin tests no
+acredita el escenario de integración. Los scripts que llaman a `mvnw` siguen
+usando Maven y su carpeta `target/`.

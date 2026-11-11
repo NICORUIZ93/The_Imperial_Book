@@ -59,3 +59,17 @@ No registra procesos ni sustituye un registro operativo como Eureka, Consul o
 Kubernetes. El backend nativo está destinado a comenzar y probar; producción
 requiere escoger un repositorio y proteger la configuración de acuerdo con el
 entorno.
+
+## Alternativa Gradle
+
+Desde esta misma carpeta, con JDK 25:
+
+```bash
+./gradlew clean classes test
+```
+
+Usa las mismas fuentes y pruebas del laboratorio. Consulta la [guía del curso](../../docs/SPRING-BOOT-GRADLE.md)
+para perfiles, filtros de tests, procesadores y tareas especiales. Los resultados
+JUnit de Gradle están en `build/test-results/`; una compilación sin tests no
+acredita el escenario de integración. Los scripts que llaman a `mvnw` siguen
+usando Maven y su carpeta `target/`.

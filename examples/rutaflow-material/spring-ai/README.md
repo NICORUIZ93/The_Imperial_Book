@@ -25,3 +25,17 @@ No demuestra resistencia a prompt injection ni calidad de respuestas de un LLM.
 Fuentes: https://docs.spring.io/spring-ai/reference/api/chatclient.html
 https://docs.spring.io/spring-ai/reference/api/tools.html
 https://docs.spring.io/spring-ai/reference/api/retrieval-augmented-generation.html
+
+## Alternativa Gradle
+
+Desde esta misma carpeta, con JDK 25:
+
+```bash
+./gradlew clean classes test
+```
+
+Usa las mismas fuentes y pruebas del laboratorio. Consulta la [guía del curso](../../../docs/SPRING-BOOT-GRADLE.md)
+para perfiles, filtros de tests, procesadores y tareas especiales. Los resultados
+JUnit de Gradle están en `build/test-results/`; una compilación sin tests no
+acredita el escenario de integración. Los scripts que llaman a `mvnw` siguen
+usando Maven y su carpeta `target/`.

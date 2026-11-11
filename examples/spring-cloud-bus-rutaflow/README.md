@@ -52,3 +52,17 @@ No copies esta exposición a producción: limita red, autenticación, autorizaci
 trazas de cambios y valores aceptados. `busrefresh` vuelve a cargar beans con
 `@RefreshScope` desde su fuente de configuración; `busenv` inyecta un cambio
 operacional temporal. Ninguno convierte el cambio en una configuración duradera.
+
+## Alternativa Gradle
+
+Desde esta misma carpeta, con JDK 25:
+
+```bash
+./gradlew clean classes test
+```
+
+Usa las mismas fuentes y pruebas del laboratorio. Consulta la [guía del curso](../../docs/SPRING-BOOT-GRADLE.md)
+para perfiles, filtros de tests, procesadores y tareas especiales. Los resultados
+JUnit de Gradle están en `build/test-results/`; una compilación sin tests no
+acredita el escenario de integración. Los scripts que llaman a `mvnw` siguen
+usando Maven y su carpeta `target/`.

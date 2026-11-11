@@ -46,3 +46,17 @@ las dos clases comparten el ID.
 - Testcontainers limpia el singleton al finalizar la JVM a través del
   mecanismo de limpieza configurado. Con Podman rootless se desactiva Ryuk según
   la configuración indicada arriba.
+
+## Alternativa Gradle
+
+Desde esta misma carpeta, con JDK 25:
+
+```bash
+./gradlew clean classes test
+```
+
+Usa las mismas fuentes y pruebas del laboratorio. Consulta la [guía del curso](../../docs/SPRING-BOOT-GRADLE.md)
+para perfiles, filtros de tests, procesadores y tareas especiales. Los resultados
+JUnit de Gradle están en `build/test-results/`; una compilación sin tests no
+acredita el escenario de integración. Los scripts que llaman a `mvnw` siguen
+usando Maven y su carpeta `target/`.

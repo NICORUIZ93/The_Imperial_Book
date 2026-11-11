@@ -1,0 +1,39 @@
+// Gradle alternativo: mismas fuentes Java y versiones fijadas que pom.xml.
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '4.1.2'
+}
+
+group = 'academia.rutaflow'
+version = '0.1.0'
+
+java { toolchain { languageVersion = JavaLanguageVersion.of(25) } }
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    implementation platform('org.springframework.boot:spring-boot-dependencies:4.1.2')
+    annotationProcessor platform('org.springframework.boot:spring-boot-dependencies:4.1.2')
+    implementation platform('org.springframework.cloud:spring-cloud-dependencies:2025.1.4')
+    annotationProcessor platform('org.springframework.cloud:spring-cloud-dependencies:2025.1.4')
+    implementation 'org.springframework.cloud:spring-cloud-starter-gateway-server-webflux'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 21
+    options.compilerArgs.add('-parameters')
+}
+
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
+    systemProperty 'file.encoding', 'UTF-8'
+    if (providers.gradleProperty('redisIntegration').isPresent()) {
+        systemProperty 'redis.integration', 'true'
+    }
+}

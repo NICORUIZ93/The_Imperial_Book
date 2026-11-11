@@ -67,3 +67,17 @@ MockMvc. Las 43 pruebas no acreditan tráfico real de navegador,
 carga, despliegue o equivalencia completa entre PostgreSQL y H2. Los endpoints
 de Actuator siguen protegidos; los detalles amplios de salud se habilitan solo
 en el perfil de pruebas.
+
+## Alternativa Gradle
+
+Desde esta misma carpeta, con JDK 25:
+
+```bash
+./gradlew clean classes test
+```
+
+Usa las mismas fuentes y pruebas del laboratorio. Consulta la [guía del curso](../../docs/SPRING-BOOT-GRADLE.md)
+para perfiles, filtros de tests, procesadores y tareas especiales. Los resultados
+JUnit de Gradle están en `build/test-results/`; una compilación sin tests no
+acredita el escenario de integración. Los scripts que llaman a `mvnw` siguen
+usando Maven y su carpeta `target/`.
