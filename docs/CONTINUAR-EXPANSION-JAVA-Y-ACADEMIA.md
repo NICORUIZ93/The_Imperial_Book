@@ -1859,3 +1859,31 @@ Atomicidad: 173/1185 (14,60 %), frente a 171 al comenzar; perfil practicable
 Siguiente: continuar con Spring Boot M21 T1 (mensajería y entrega) revisando
 primero los laboratorios existentes. Las propuestas JWT/sesiones y Strangler
 siguen en `docs/revision-imagenes-descargas-2026-11-10.md` para ampliar después.
+
+## Cierre Spring Boot · 11 de noviembre de 2026
+
+El estado anterior que apuntaba a M21 queda reemplazado por la revisión de los
+26 módulos: 111/111 temas y 393/393 subtemas cumplen la estructura atómica;
+111/111 tienen perfil practicable textual. La academia queda en 215/1185 temas
+atómicos (18,14 %). Esto no certifica ejecución de todos los fragmentos ni
+aprendizaje humano. El alcance, la metodología y las limitaciones están en
+`docs/SPRING-BOOT-CIERRE.md`.
+
+La referencia acumulativa M2–M7 tiene instrucciones y 31 pruebas pasando,
+incluida PostgreSQL real. Se probaron login, creación y lectura por HTTP;
+GraphQL también respondió por HTTP y rechazó un campo inválido. Se verificaron
+52 visitas al curso (26 módulos por dos anchos), seis pruebas dirigidas de
+navegador y 17 unitarias Angular. Se corrigió el espaciado móvil de las etapas
+y la descripción de subscription local en el catálogo. Build Angular y
+validación general pasan; permanece la advertencia de tamaño inicial del build.
+
+El detalle Maven queda en `docs/spring-boot-lab-verification.json`; los proyectos
+con cero tests son solo compilación. Se ejecutaron además los scripts de capas,
+AOT sobre JVM y tracing con Jaeger. No se afirma compilación nativa ni escenario
+completo de Token Relay/Cloud Bus a partir de Maven. La prueba Redis opcional
+queda omitida en la tanda predeterminada y se ejecuta por separado. Detectó una
+carrera por escrituras diferidas; se añadió `immediateWrites()` bajo el perfil
+Redis, se corrigieron test y lección y la prueba dirigida pasó. La suite global Playwright previa
+con Archify conserva su cierre incompleto; los seis casos dirigidos no la
+sustituyen. Las propuestas de Descargas siguen trazadas en su informe, separadas
+de la cobertura de los 111 temas actuales.

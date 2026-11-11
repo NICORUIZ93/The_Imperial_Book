@@ -3,6 +3,8 @@
 Este módulo compara pruebas de MVC, persistencia e integración. Cada tema debe indicar qué capas ejecuta y qué deja fuera; la evidencia funcional está en las respuestas y fallos observados.
 
 
+**Referencia ejecutable al terminar los módulos 2–7:** en la raíz del repositorio, abre `examples/spring-tareas-rutaflow/README.md`. Incluye el estado final y pruebas; algunas clases incorporan cambios de módulos posteriores. Construye primero las prácticas de este módulo y usa la referencia para comparar y diagnosticar.
+
 ## Aprende construyendo
 
 ### Tema 1: Probar un controller con `@WebMvcTest`
@@ -253,7 +255,7 @@ En un entorno con Docker Engine o una API compatible activa, ejecuta:
 ./mvnw -q -Dtest=TareaRepositoryPostgresTest test
 ```
 
-Archivo concreto para esta comprobación: `src/test/java/com/example/demo/TareaControllerSliceTest.java`.
+Archivo concreto para esta comprobación: `src/test/java/com/example/demo/TareaRepositoryPostgresTest.java`.
 
 **Resultado esperado:** Pasan dos pruebas: el driver informa `PostgreSQL` y el repositorio devuelve la tarea guardada. `@DataJpaTest` abre una transacción por método y la revierte al terminar. El campo `static` comparte un contenedor entre los métodos de esta clase; la prueba no certifica todas las consultas ni todas las versiones de PostgreSQL.
 
@@ -378,7 +380,7 @@ void exigeTokenParaConsultarTareas() throws Exception {
 
 Vuelve a ejecutar `./mvnw -q -Dtest=TareaFlowEndToEndTest test`.
 
-Archivo concreto para esta comprobación: `src/test/java/com/example/demo/TareaControllerSliceTest.java`.
+Archivo concreto para esta comprobación: `src/test/java/com/example/demo/TareaFlowEndToEndTest.java`.
 
 **Resultado esperado:** Pasan dos métodos: la ruta completa autenticada y el `401` sin token. El primero usa la firma real del JWT, pero crea el token directamente; no prueba el endpoint de login. `MockMvc` ejercita MVC y los filtros en memoria, sin iniciar un servidor ni probar navegador, proxy o TLS.
 

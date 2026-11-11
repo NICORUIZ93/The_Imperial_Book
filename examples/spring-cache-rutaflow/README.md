@@ -22,6 +22,12 @@ REDIS_PORT=16379 ./mvnw -q -Dredis.integration=true -Dtest=RedisTarifaTest test
 podman stop rutaflow-cache-lab
 ```
 
+`RedisWriteConfiguration` activa `immediateWrites()` únicamente con el perfil
+Redis. Spring Data Redis 4 con Lettuce permite escrituras e invalidaciones
+diferidas; aquí ambos gestores esperan que terminen para comprobar visibilidad
+inmediata. Bloquea al llamador y no garantiza una transacción con el origen.
+Véase la [guía de migración oficial](https://docs.spring.io/spring-data/redis/reference/upgrading.html).
+
 Espera `PONG` y una prueba correcta. Dos gestores en la misma JVM comparten una
 entrada, comprueban su TTL de hasta 300 segundos y observan su invalidación.
 El prefijo aleatorio aísla cada ejecución; la limpieza elimina solo su clave.

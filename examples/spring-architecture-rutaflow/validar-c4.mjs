@@ -1,4 +1,4 @@
-// Comprueba que el C4 tenga los cuatro niveles y los contenedores reales.
+// Comprueba que el C4 tenga los cuatro niveles y los contenedores propuestos.
 import { readFile } from 'node:fs/promises';
 
 const texto = await readFile('docs/c4/envios.md', 'utf8');

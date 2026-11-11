@@ -36,4 +36,18 @@ void jpqlYMetodoDerivadoDevuelvenLasMismasTareas() {
             derivado.stream().map(Tarea::getTitulo).toList()
         );
 }
+
+@Test
+void filtraPrioridadMinimaIncluyendoElLimite() {
+    tareas.save(new Tarea("Sobre", 1, "A"));
+    tareas.save(new Tarea("Caja", 2, "B"));
+    tareas.save(new Tarea("Pallet", 3, "C"));
+    tareas.flush();
+
+    var resultado = tareas.findByPrioridadGreaterThanEqual(2);
+
+    assertThat(resultado).extracting(Tarea::getTitulo)
+        .containsExactlyInAnyOrder("Caja", "Pallet");
+}
+
 }

@@ -19,7 +19,7 @@ Empiezas un servicio nuevo. Generar un proyecto te entrega estructura, Maven Wra
 
 **2. Hazlo tú**
 
-Crea una carpeta de trabajo y genera un proyecto Java 25 con Maven y la capacidad `web` de [Spring Initializr](https://start.spring.io/):
+Para observar Initializr sin sobrescribir `academia-spring`, crea una carpeta experimental distinta y genera un proyecto Java 25 con Maven y la capacidad `web` de [Spring Initializr](https://start.spring.io/):
 
 ```bash
 mkdir ejemplo-spring-m1
@@ -28,6 +28,8 @@ curl -fsSL -G 'https://start.spring.io/starter.zip' \
   -d type=maven-project \
   -d language=java \
   -d javaVersion=25 \
+  -d bootVersion=4.1.2 \
+  -d packageName=com.example.demo \
   -d dependencies=web \
   -o app.zip
 unzip app.zip
@@ -46,7 +48,7 @@ Initializr no crea tu producto completo: prepara una estructura inicial con opci
 
 **4. Cierra**
 
-Guarda el `pom.xml` y anota el valor del `<version>` de Spring Boot. El siguiente paso usará el controlador del proyecto para observar qué hizo disponible el starter.
+Guarda el `pom.xml` y anota el valor del `<version>` de Spring Boot. Continúa los demás temas en `academia-spring`, que ya tiene el mismo paquete y starter web; la carpeta experimental solo conserva esta comparación. El siguiente paso usará el controlador del proyecto para observar qué hizo disponible el starter.
 
 #### Subtema 1.2: Conecta el starter web con una ruta · 10 min
 
@@ -482,7 +484,7 @@ La estructura por capas de este tema es la que organiza el proyecto integrador d
 
 | Paso | Acción | Código | Explicación |
 |---|---|---|---|
-| 1 | Generar el proyecto con Spring Initializr | web, data-jpa, postgresql | Verifica las dependencias generadas |
+| 1 | Revisar el proyecto web generado con Spring Initializr | web | JPA y base de datos se agregan cuando se usan en M2–M3 |
 | 2 | Convertir a `application.yml` | Ver Tema 2 | Compara la legibilidad |
 | 3 | Crear `application-dev.yml`/`application-prod.yml` | Ver Tema 3 | Arranca con `--spring.profiles.active=dev` |
 | 4 | Organizar en paquetes por capa | Ver Tema 3 | `controller/`, `service/`, `repository/`, `dto/` |

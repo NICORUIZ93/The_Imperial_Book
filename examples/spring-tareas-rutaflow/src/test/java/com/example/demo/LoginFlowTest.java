@@ -39,4 +39,29 @@ class LoginFlowTest {
         assertEquals("ana@rutaflow.dev", mapper.readTree(protegida).get("email").asText());
         assertEquals("ROLE_ADMIN", mapper.readTree(protegida).get("rol").asText());
     }
+
+@Test
+void passwordIncorrectaNoEmiteToken() throws Exception {
+    String body = """
+        {"email":"ana@rutaflow.dev","password":"incorrecta"}
+        """;
+    var respuesta = mockMvc.perform(post("/api/auth/login")
+            .contentType(MediaType.APPLICATION_JSON).content(body))
+        .andExpect(status().isUnauthorized())
+        .andReturn().getResponse();
+    assertEquals("{\"error\":\"Credenciales inválidas\"}", respuesta.getContentAsString());
+}
+
+@Test
+void emailDesconocidoUsaElMismoError() throws Exception {
+    String body = """
+        {"email":"nadie@rutaflow.dev","password":"incorrecta"}
+        """;
+    var respuesta = mockMvc.perform(post("/api/auth/login")
+            .contentType(MediaType.APPLICATION_JSON).content(body))
+        .andExpect(status().isUnauthorized())
+        .andReturn().getResponse();
+    assertEquals("{\"error\":\"Credenciales inválidas\"}", respuesta.getContentAsString());
+}
+
 }

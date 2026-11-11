@@ -2,7 +2,7 @@
 
 ## Aprende construyendo
 
-Continúa el dominio del módulo 22 con Spring Boot 4.1.2 y Spring Modulith 2.1.1, fijados en el POM del laboratorio. Trabajarás sobre `pedidos` y `notificaciones` reales, en lugar de imaginar paquetes vacíos. El registro JDBC usa H2 durante las pruebas. Un módulo es una frontera lógica dentro del proceso; no equivale a un microservicio.
+Aplica las fronteras del módulo 22 a otro dominio de laboratorio, Pedidos y Notificaciones, con Spring Boot 4.1.2 y Spring Modulith 2.1.1, fijados en el POM del laboratorio. Trabajarás sobre `pedidos` y `notificaciones` reales, en lugar de imaginar paquetes vacíos. El registro JDBC usa H2 durante las pruebas. Un módulo es una frontera lógica dentro del proceso; no equivale a un microservicio.
 
 ### Tema 1: módulos y límites entre paquetes
 

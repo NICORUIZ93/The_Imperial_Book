@@ -12,7 +12,9 @@ Desde esta carpeta:
 ```
 
 Las pruebas verifican dependencias entre paquetes, publicación de `PedidoCreado`
-y entrega del evento al módulo Notificaciones. H2 no conserva datos al reiniciar;
+y entrega del evento al módulo Notificaciones. `DocumentacionModularTest` también
+genera archivos PlantUML y AsciiDoc en `target/spring-modulith-docs/`; esto no
+equivale a renderizar o revisar visualmente los diagramas. H2 no conserva datos al reiniciar;
 no se prueba recuperación de una publicación pendiente tras reiniciar el proceso,
 un broker ni procesos separados. `PedidoInterno` existe para demostrar una clase
 que no debe importarse desde otro módulo. Para ejecutar la app fuera de pruebas,

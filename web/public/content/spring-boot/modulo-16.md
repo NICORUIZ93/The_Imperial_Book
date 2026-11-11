@@ -115,7 +115,7 @@ Después abre `examples/java-jpa-lab/src/test/java/academia/pedidos/PedidoJpaLab
 
 **Cierra:** En el **proyecto integrador de RutaFlow**, registra en una nota breve: lado propietario, FK, operación que se propaga, regla de borrado y test que protege cada decisión. En el tema siguiente medirás cómo cargar asociaciones sin consultas inesperadas.
 
-**Fuente primaria:** [Jakarta Persistence 3.2 API: `@OneToMany`](https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/onetomany) documenta `mappedBy`, cascadas y `orphanRemoval`; [la especificación](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2) define las reglas de propiedad de la relación.
+**Fuente primaria:** [Jakarta Persistence 3.2 API: `@OneToMany`](https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/OneToMany.html) documenta `mappedBy`, cascadas y `orphanRemoval`; [la especificación](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2) define las reglas de propiedad de la relación.
 ### Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso
 
 **Meta:** medir qué pasa cuando una lista toca una asociación, reducir consultas sin cambiar el resultado y escoger una forma de carga según la pantalla.

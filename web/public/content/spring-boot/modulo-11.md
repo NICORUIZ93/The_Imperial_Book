@@ -455,7 +455,7 @@ Los grupos de probes de Spring no incluyen automáticamente todas las dependenci
 
 Entrega la salida de `./scripts/verify-probes.sh`, el manifiesto y la decisión de qué dependencias deben afectar readiness.
 
-Fuentes oficiales: [probes de Spring Boot](https://docs.spring.io/spring-boot/reference/actuator/kubernetes-probes.html), [propiedad probes en Spring Boot 4.1.2](https://docs.spring.io/spring-boot/appendix/application-properties/), [pruebas MockMvc de Spring Boot 4.1.2](https://docs.spring.io/spring-boot/api/java/org/springframework/boot/webmvc/test/autoconfigure/AutoConfigureMockMvc.html), [diferencias entre probes en Kubernetes](https://kubernetes.io/docs/concepts/workloads/pods/probes/). El manifiesto de ejemplo no se aplicó a un clúster en esta revisión.
+Fuentes oficiales: [probes de Spring Boot](https://docs.spring.io/spring-boot/reference/actuator/endpoints.html#actuator.endpoints.kubernetes-probes), [propiedad probes en Spring Boot 4.1.2](https://docs.spring.io/spring-boot/appendix/application-properties/), [pruebas MockMvc de Spring Boot 4.1.2](https://docs.spring.io/spring-boot/api/java/org/springframework/boot/webmvc/test/autoconfigure/AutoConfigureMockMvc.html), [diferencias entre probes en Kubernetes](https://kubernetes.io/docs/concepts/workloads/pods/probes/). El manifiesto de ejemplo no se aplicó a un clúster en esta revisión.
 
 ## Laboratorio práctico
 

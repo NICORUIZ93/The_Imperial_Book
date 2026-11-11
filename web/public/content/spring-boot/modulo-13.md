@@ -330,7 +330,7 @@ cd examples/spring-boot-integrador-rutaflow
 
 **Contexto:** El backend y la app móvil se actualizan por separado. Conserva lo que los clientes vigentes ya entienden.
 
-**Hazlo tú:** En `EntregaResponse`, añade temporalmente `String nota` y ejecuta las pruebas de contrato. Restaura el DTO. En `docs/salida-a-produccion.md`, registra cambios de nombres, tipos, valores o significado antes de desplegarlos.
+**Hazlo tú:** En `EntregaResponse`, añade temporalmente `String nota` y actualiza las llamadas a su constructor (incluido su factory) para pasar `null` al nuevo componente; el compilador exige la nueva aridad del record. Después ejecuta las pruebas de contrato. Restaura el DTO. En `docs/salida-a-produccion.md`, registra cambios de nombres, tipos, valores o significado antes de desplegarlos.
 
 ```bash
 ./mvnw -q test -Dtest=ArquitecturaIntegradaTest

@@ -39,4 +39,10 @@ class TareaFlowEndToEndTest {
             .andExpect(jsonPath("$.id").value(Long.parseLong(id)))
             .andExpect(jsonPath("$.titulo").value("Caja térmica"));
     }
+@Test
+void exigeTokenParaConsultarTareas() throws Exception {
+    mockMvc.perform(get("/api/tareas"))
+        .andExpect(status().isUnauthorized());
+}
+
 }

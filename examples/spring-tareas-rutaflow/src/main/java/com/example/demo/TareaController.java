@@ -1,4 +1,8 @@
 package com.example.demo;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.data.domain.Page;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Max;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -47,4 +51,18 @@ public class TareaController {
     public ResponseEntity<TareaDTO> buscar(@PathVariable Long id) {
         return ResponseEntity.ok(servicio.buscar(id));
     }
+
+@GetMapping
+@Operation(summary = "Listar tareas por página")
+@ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Página de tareas"),
+        @ApiResponse(responseCode = "400", description = "Parámetros inválidos",
+                content = @Content(schema = @Schema(implementation = ApiError.class)))})
+public ResponseEntity<PaginaTareasDTO> listar(
+        @RequestParam(defaultValue = "0") @Min(0) @Max(1000) int page,
+        @RequestParam(defaultValue = "20") @Min(1) @Max(50) int size) {
+    Page<TareaDTO> resultado = servicio.listar(page, size);
+    return ResponseEntity.ok(PaginaTareasDTO.from(resultado));
+}
+
 }

@@ -2,10 +2,15 @@
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
-if ! ./mvnw -q clean package -Pnative >target/aot-build.log 2>&1; then
-  tail -60 target/aot-build.log
+# clean elimina target; conserva el log fuera de ese directorio durante el build.
+build_log="$(mktemp)"
+if ! ./mvnw -q clean package -Pnative >"$build_log" 2>&1; then
+  tail -60 "$build_log"
+  rm -f "$build_log"
   exit 1
 fi
+mkdir -p target
+mv "$build_log" target/aot-build.log
 JAR=target/spring-boot-native-rutaflow-0.1.0-SNAPSHOT.jar
 test -f target/spring-aot/main/sources/academia/rutaflow/nativeimage/NativeRutaApplication__ApplicationContextInitializer.java
 test -f target/spring-aot/main/resources/META-INF/native-image/academia.rutaflow/spring-boot-native-rutaflow/reachability-metadata.json

@@ -521,7 +521,7 @@ public void onPartitionsAssigned(Collection<TopicPartition> partitions) {
 Busca `containerProps.setConsumerRebalanceListener(rebalanceListener)`: ahí Spring entrega el listener al contenedor. Ejecuta el mismo test focalizado de 4.1.
 
 
-Para comprobar «Mantener el estado local con callbacks reales», consulta: `examples/spring-kafka-rutaflow/pom.xml`. Desde `examples/spring-kafka-rutaflow` repite la comprobación:
+Para comprobar «Mantener el estado local con callbacks reales», consulta: `examples/spring-kafka-rutaflow/src/test/java/academia/rutaflow/event/EnvioEventPublisherTest.java`. Desde `examples/spring-kafka-rutaflow` repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -554,7 +554,7 @@ Lee `unSegundoConsumidorProvocaRebalanceoYActualizaAsignaciones` en el mismo arc
 ```
 
 
-Para comprobar «Ver el rebalanceo al entrar el segundo consumer», consulta: `examples/spring-kafka-rutaflow/pom.xml`. Desde `examples/spring-kafka-rutaflow` repite la comprobación:
+Para comprobar «Ver el rebalanceo al entrar el segundo consumer», consulta: `examples/spring-kafka-rutaflow/src/test/java/academia/rutaflow/event/EnvioEventPublisherTest.java`. Desde `examples/spring-kafka-rutaflow` repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -593,7 +593,7 @@ spring:
 Define un ID estable y único por réplica (por ejemplo, ordinal de StatefulSet). No uses el mismo literal fijo para todas las réplicas de un Deployment. Este laboratorio no simula reinicios ni mide el timeout; no cambies la configuración general de pruebas.
 
 
-Para comprobar «Usar membresía estática solo para reinicios breves», consulta: `examples/spring-kafka-rutaflow/pom.xml`. Desde `examples/spring-kafka-rutaflow` repite la comprobación:
+Para comprobar «Usar membresía estática solo para reinicios breves», consulta: `examples/spring-kafka-rutaflow/src/test/java/academia/rutaflow/event/EnvioEventPublisherTest.java`. Desde `examples/spring-kafka-rutaflow` repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -1074,7 +1074,7 @@ application.id, bootstrap servers, SerDes y estado local son decisiones de opera
 
 Enumera los tópicos visibles y explica por qué una aplicación aislada necesita un application.id propio.
 
-**Fuentes oficiales:** [Kafka Streams en Spring Boot 4.0](https://docs.spring.io/spring-boot/4.0/reference/messaging/kafka.html), [integración Kafka Streams de Spring Kafka](https://docs.spring.io/spring-kafka/reference/streams.html), [DSL Kafka Streams 4.2](https://kafka.apache.org/42/documentation/streams/developer-guide/dsl-api/) y [TopologyTestDriver](https://kafka.apache.org/42/documentation/streams/developer-guide/testing.html).
+**Fuentes oficiales:** [Kafka Streams en Spring Boot 4.1](https://docs.spring.io/spring-boot/4.1/reference/messaging/kafka.html), [integración Kafka Streams de Spring Kafka](https://docs.spring.io/spring-kafka/reference/streams.html), [DSL Kafka Streams 4.2](https://kafka.apache.org/42/documentation/streams/developer-guide/dsl-api/) y [TopologyTestDriver](https://kafka.apache.org/42/streams/developer-guide/testing/).
 
 **Transferencia al proyecto integrador:** conserva una key estable por pedido, separa evento original de proyección agregada y registra application.id, SerDes, tópicos internos y política de estado.
 
@@ -1161,7 +1161,7 @@ Luego ejecuta el caso que muestra qué pasa cuando el lector exige el campo sin 
 
 **3. Entiende**
 
-Avro usa el default del esquema lector cuando el escritor no tenía ese campo. La unión debe poner null primero si null es el valor por defecto. El default ayuda a leer; no hace que el campo desaparezca de registros escritos con v2.
+Avro usa el default del esquema lector cuando el escritor no tenía ese campo. En este ejemplo se usa `["null", "string"]` y default `null`. En Avro 1.12 el default debe corresponder a un miembro de la unión; no es una regla universal que ese miembro deba ser el primero. Revisa también qué admiten las herramientas de los consumidores. El default ayuda a leer; no hace que el campo desaparezca de registros escritos con v2.
 
 **4. Cierra**
 

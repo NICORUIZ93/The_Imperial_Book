@@ -8,10 +8,10 @@ Cada tema se practica por separado con su propia repetición progresiva y su pro
 Completa primero los fundamentos del track Java o asegúrate de entender clases, interfaces, excepciones y colecciones. Instala **JDK 25**, Git y un editor: IntelliJ IDEA Community es la opción más sencilla para Spring; VS Code con Extension Pack for Java y Spring Boot Extension Pack también funciona.
 
 - **Windows:** instala Eclipse Temurin JDK 25, Git e IntelliJ; verifica `java --version` y `javac --version` en PowerShell.
-- **macOS:** usa `brew install --cask temurin` y `brew install git`; instala IntelliJ desde JetBrains Toolbox.
-- **Ubuntu/Debian:** ejecuta `sudo apt install openjdk-25-jdk git`; descarga IntelliJ o usa SDKMAN.
+- **macOS:** instala específicamente Temurin **25** desde [Adoptium](https://adoptium.net/installation/); un paquete sin versión puede instalar otro JDK. Usa `brew install git` para Git.
+- **Ubuntu/Debian:** instala JDK **25** con las [instrucciones de Adoptium para Linux](https://adoptium.net/installation/linux/); la disponibilidad de `openjdk-25-jdk` depende de la distribución y sus repositorios. Instala Git con `sudo apt install git`.
 
-No necesitas instalar Maven si el proyecto incluye `mvnw`/`mvnw.cmd`: ese *wrapper* descarga la versión correcta. En [start.spring.io](https://start.spring.io/) elige Java, Maven, Spring Boot estable, JDK 25 y la dependencia **Spring Web**. Descarga, descomprime y ejecuta:
+No necesitas instalar Maven si el proyecto incluye `mvnw`/`mvnw.cmd`: ese *wrapper* descarga la versión correcta. En [start.spring.io](https://start.spring.io/) elige Java, Maven, **Spring Boot 4.1.2**, JDK 25 y la dependencia **Spring Web**. Usa artifact `academia-spring` y establece explícitamente el paquete **`com.example.demo`**, que usan los archivos de estas lecciones. Descarga, descomprime y ejecuta:
 
 ```bash
 # macOS/Linux
@@ -23,6 +23,12 @@ No necesitas instalar Maven si el proyecto incluye `mvnw`/`mvnw.cmd`: ese *wrapp
 
 Visita `http://localhost:8080`. Un 404 significa que el servidor sí arrancó pero aún no existe una ruta; "connection refused" significa que no arrancó. Lee siempre desde la primera línea `Caused by:` del error, no solo la última.
 
+
+**Herramienta y continuidad:** la ruta ejecutable de este curso utiliza **Maven**, no Gradle. `pom.xml` define el build y `mvnw` lo ejecuta. Conserva `academia-spring` de M0 a M7. En M1 la generación de un proyecto es un experimento separado; aplica después la configuración a tu proyecto base. Desde M8 hay laboratorios aislados con infraestructura propia; cada tema identifica su carpeta, y M12 integra una selección de esas piezas. No copies todas sus configuraciones sobre una sola aplicación.
+
+**Regla de ejecución:** ejecuta los comandos desde la carpeta que contiene el `pom.xml` del proyecto indicado. Antes de cambiar de laboratorio, detén el servidor con Ctrl+C para liberar su puerto. Tras cambiar Java o recursos, reinicia `spring-boot:run` salvo que hayas configurado recarga explícitamente. Una práctica independiente puede cambiar el estado esperado: restaura la base indicada antes de continuar.
+
+Gradle también está soportado por Spring Boot, pero estos laboratorios no incluyen `build.gradle(.kts)` ni `gradlew`. Para ejecutar Gradle sobre JDK 25 necesitas Gradle **9.1 o posterior**; el mínimo general 8.14 de Boot no basta para esa JVM. Consulta [requisitos Boot](https://docs.spring.io/spring-boot/system-requirements.html) y [compatibilidad Gradle/Java](https://docs.gradle.org/current/userguide/compatibility.html). Cambiar solo `mvnw` por `gradlew` no migra BOM, procesadores ni plugins.
 
 ## Aprende construyendo
 
@@ -169,7 +175,7 @@ public class EnviosController {
 }
 ```
 
-Con la aplicación activa, abre otra terminal y ejecuta:
+Detén el proceso anterior con Ctrl+C y vuelve a ejecutar `./mvnw spring-boot:run` para cargar el controlador nuevo. Con la aplicación activa, abre otra terminal y ejecuta:
 
 ```bash
 curl http://localhost:8080/envios/RF-42
@@ -185,7 +191,7 @@ Spring Boot registra `@Repository`, `@Service` y `@RestController` como beans y 
 
 **Límite y decisión:** este repositorio guarda el resultado en el código y pierde cualquier cambio al reiniciar. Sirve para observar el cableado, no para guardar envíos reales; una base de datos será necesaria cuando el dato deba sobrevivir al cierre.
 
-**Práctica independiente:** modifica `RepositorioMemoriaEnvios.buscarEstado` para devolver `Entregado: <codigo>` y repite la petición con otro código. El servicio y el controlador no deberían cambiar.
+**Práctica independiente:** modifica `RepositorioMemoriaEnvios.buscarEstado` para devolver `Entregado: <codigo>` y repite la petición con otro código. El servicio y el controlador no deberían cambiar. Al terminar, restaura `En ruta: <codigo>`: los tests del siguiente tema parten de ese valor.
 
 **4. Cierra**
 
@@ -538,7 +544,7 @@ Los estereotipos (`@Service`, `@Repository`, `@Controller`) que uses aquí son l
 
 ## Ruta de proyecto progresivo desde carpeta vacía
 
-No crees un proyecto desechable por módulo. Conserva un único repositorio que evoluciona durante todo el track y etiqueta cada hito (`git tag modulo-N`). Empieza con genera `academia-spring` en `start.spring.io`, descomprímelo en una carpeta vacía y ejecuta `git init`. Ejecuta el comando paso a paso, inspecciona los archivos generados y registra versiones y precondiciones en el README.
+No crees un proyecto desechable por módulo. Conserva un único repositorio que evoluciona durante todo el track y etiqueta cada hito (`git tag modulo-N`). Empieza generando `academia-spring` en `start.spring.io`, descomprímelo en una carpeta vacía y ejecuta `git init`. Ejecuta el comando paso a paso, inspecciona los archivos generados y registra versiones y precondiciones en el README.
 
 | Hito | Evolución acumulativa | Evidencia antes de avanzar |
 |---|---|---|

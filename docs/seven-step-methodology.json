@@ -262,23 +262,23 @@
     },
     "spring-boot": {
       "topics": 111,
-      "objective": 11,
+      "objective": 0,
       "prerequisites": 37,
-      "context": 11,
-      "theoryAnalogy": 11,
-      "guidedDemo": 11,
+      "context": 0,
+      "theoryAnalogy": 0,
+      "guidedDemo": 0,
       "codeExplanation": 111,
-      "execution": 100,
+      "execution": 107,
       "expectedResult": 111,
       "deliberateFailure": 111,
-      "guidedPractice": 11,
-      "independentPractice": 11,
-      "closure": 11,
-      "commonErrors": 11,
-      "resources": 41,
-      "standaloneExample": 14,
-      "learningEvidence": 54,
-      "complete": 11
+      "guidedPractice": 0,
+      "independentPractice": 0,
+      "closure": 0,
+      "commonErrors": 3,
+      "resources": 33,
+      "standaloneExample": 6,
+      "learningEvidence": 48,
+      "complete": 0
     }
   },
   "topics": {
@@ -28867,7 +28867,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -28879,7 +28879,7 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 4,
+          "stepsPassed": 5,
           "complete": false
         }
       },
@@ -29979,286 +29979,286 @@
         "module": 22,
         "topic": "Tema 1: Hexagonal: puertos que hablan el idioma del dominio",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true,
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 9,
+          "complete": false
         }
       },
       {
         "module": 22,
         "topic": "Tema 2: C4: contexto, contenedores, componentes y código",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true,
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 9,
+          "complete": false
         }
       },
       {
         "module": 22,
         "topic": "Tema 3: ADR: decisiones con contexto, alternativas y consecuencias",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true,
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 9,
+          "complete": false
         }
       },
       {
         "module": 23,
         "topic": "Tema 1: módulos y límites entre paquetes",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 5,
+          "complete": false
         }
       },
       {
         "module": 23,
         "topic": "Tema 2: eventos entre módulos sin importar implementación",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 5,
+          "complete": false
         }
       },
       {
         "module": 23,
         "topic": "Tema 3: documentación generada y mapa de dependencias",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 5,
+          "complete": false
         }
       },
       {
         "module": 23,
         "topic": "Tema 4: pruebas de integración por módulo",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 5,
+          "complete": false
         }
       },
       {
         "module": 24,
         "topic": "Tema 1: schema-first con tipos y consultas",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 5,
+          "complete": false
         }
       },
       {
         "module": 24,
         "topic": "Tema 2: data fetchers, relaciones y problema N+1",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 6,
+          "complete": false
         }
       },
       {
         "module": 24,
         "topic": "Tema 3: mutations y subscriptions",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 5,
+          "complete": false
         }
       },
       {
         "module": 24,
         "topic": "Tema 4: pruebas GraphQL con GraphQlTester",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 6,
+          "complete": false
         }
       },
       {
@@ -30973,7 +30973,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -30985,7 +30985,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 4,
+          "stepsPassed": 5,
           "complete": false
         }
       },
@@ -30999,7 +30999,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -31011,7 +31011,7 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 5,
+          "stepsPassed": 6,
           "complete": false
         }
       },
@@ -31025,7 +31025,33 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": false,
+          "resources": true,
+          "standaloneExample": false,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 7,
+          "complete": false
+        }
+      },
+      {
+        "module": 9,
+        "topic": "Tema 1: Mono y Flux",
+        "criteria": {
+          "objective": false,
+          "prerequisites": false,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -31043,32 +31069,6 @@
       },
       {
         "module": 9,
-        "topic": "Tema 1: Mono y Flux",
-        "criteria": {
-          "objective": false,
-          "prerequisites": false,
-          "context": false,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
-          "codeExplanation": true,
-          "execution": false,
-          "expectedResult": true,
-          "deliberateFailure": true,
-          "guidedPractice": false,
-          "independentPractice": false,
-          "closure": false,
-          "commonErrors": false,
-          "resources": true,
-          "standaloneExample": false,
-          "learningEvidence": true
-        },
-        "classification": {
-          "stepsPassed": 5,
-          "complete": false
-        }
-      },
-      {
-        "module": 9,
         "topic": "Tema 2: WebClient y composición no bloqueante",
         "criteria": {
           "objective": false,
@@ -31077,7 +31077,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -31089,7 +31089,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 4,
+          "stepsPassed": 5,
           "complete": false
         }
       },
@@ -31103,7 +31103,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -31115,7 +31115,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 4,
+          "stepsPassed": 5,
           "complete": false
         }
       }

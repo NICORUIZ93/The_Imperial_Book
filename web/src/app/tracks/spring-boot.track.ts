@@ -321,7 +321,7 @@ export const SPRING_BOOT_MODULES: CourseModule[] = [
       'Prueba el flujo con @ApplicationModuleTest y Scenario; separa el alcance del test de una integración con broker externo',
     ],
     ['¿Qué garantiza la verificación del módulo y qué queda fuera?', '¿Por qué evento local no equivale a Kafka ni a outbox durable?', '¿Qué infraestructura no aparece en el diagrama de módulos generado?'],
-    ['Spring Modulith 2.0', 'ApplicationModules', 'ApplicationModuleListener', 'Scenario', 'PlantUML'],
+    ['Spring Modulith 2.1', 'ApplicationModules', 'ApplicationModuleListener', 'Scenario', 'PlantUML'],
     'Monolito RutaFlow con límites sin ciclos, eventos de aplicación verificados, diagramas generados y tests acotados por módulo.'),
   m(24, 'Spring GraphQL: schema, data fetchers y subscriptions', 'Spring GraphQL', 'Experto', '5 h', '#6db33f',
     'Diseña un schema GraphQL de entregas, resuelve campos con data fetchers y batching, agrega mutations/subscriptions y verifica contrato y errores con GraphQlTester.',
@@ -329,7 +329,7 @@ export const SPRING_BOOT_MODULES: CourseModule[] = [
     [
       'Crea schema.graphqls y resuelve query de entrega con @QueryMapping y argumentos tipados',
       'Resuelve conductor/paradas anidadas, agrupa fetches con @BatchMapping y cuenta llamadas para detectar N+1',
-      'Cambia estado con @MutationMapping y emite actualización GraphQL WebSocket; explica límites del flujo local',
+      'Cambia estado con @MutationMapping y comprueba una subscription local; distingue la prueba del transporte WebSocket',
       'Prueba campos, errores y mutation con GraphQlTester; reporta HTTP/WebSocket solo si esa capa se ejecutó',
     ],
     ['¿Qué ocurre cuando un campo existe en schema pero no tiene data fetcher/properties?', '¿Por qué batching reduce consultas N+1 y qué limitación no elimina?', '¿Qué hace falta para que una subscription sea recuperable en varias instancias?'],

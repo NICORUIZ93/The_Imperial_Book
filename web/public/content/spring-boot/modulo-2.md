@@ -3,6 +3,8 @@
 Cada tema separa el contrato HTTP (DTOs) de la persistencia interna (entidades), automatiza la validación de entrada y centraliza el manejo de errores — las tres piezas que hacen que una API REST sea predecible para quien la consume.
 
 
+**Referencia ejecutable al terminar los módulos 2–7:** en la raíz del repositorio, abre `examples/spring-tareas-rutaflow/README.md`. Incluye el estado final y pruebas; algunas clases incorporan cambios de módulos posteriores. Construye primero las prácticas de este módulo y usa la referencia para comparar y diagnosticar.
+
 ## Aprende construyendo
 
 ### Tema 1: Por qué DTOs en vez de entidades directamente
@@ -19,7 +21,21 @@ Primero tendrás una tabla pequeña en una base de datos en memoria. H2 permite 
 
 **2. Hazlo tú**
 
-Desde una carpeta vacía, genera con [Spring Initializr](https://start.spring.io/) un proyecto Maven con Java 25 y capacidades `web`, `data-jpa` y `h2`. Crea `src/main/java/com/example/demo/Tarea.java`:
+Continúa `academia-spring` de M0–M1, con paquete `com.example.demo`. En `<dependencies>` de `pom.xml`, conserva el starter web y agrega:
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-jpa</artifactId>
+</dependency>
+<dependency>
+    <groupId>com.h2database</groupId>
+    <artifactId>h2</artifactId>
+    <scope>runtime</scope>
+</dependency>
+```
+
+Si empiezas directamente aquí, genera en [Spring Initializr](https://start.spring.io/) Java 25, Maven, Boot 4.1.2, paquete `com.example.demo` y capacidades `web`, `data-jpa` y `h2`. Crea `src/main/java/com/example/demo/Tarea.java`:
 
 ```java
 package com.example.demo;
@@ -211,10 +227,10 @@ Cambia en `src/main/java/com/example/demo/ServicioTareas.java` el valor interno 
 
 Archivo concreto para esta comprobación: `src/main/java/com/example/demo/TareaDTO.java`.
 
-Repite la petición del tema desde la terminal (con la aplicación iniciada y el JWT válido de M4 cuando la seguridad esté activa):
+Reinicia la aplicación tras cambiar Java y repite la petición. En este módulo todavía no agregaste seguridad ni necesitas un token:
 
 ```bash
-curl -i -H 'Content-Type: application/json' -H "Authorization: Bearer $TOKEN" -d '{"titulo":"Comprar leche","prioridad":3}' http://localhost:8080/api/tareas
+curl -i -H 'Content-Type: application/json' -d '{"titulo":"Comprar leche","prioridad":3}' http://localhost:8080/api/tareas
 ```
 
 **Resultado esperado:** la respuesta conserva los campos `id`, `titulo` y `prioridad`; el cambio interno no aparece.
@@ -296,10 +312,10 @@ public ResponseEntity<TareaDTO> crear(
 Desde la carpeta del proyecto ejecuta `./mvnw test` y luego `./mvnw spring-boot:run`. En otra terminal prueba una petición válida y otra inválida:
 
 ```bash
-curl -i -X POST http://localhost:8080/api/tareas \\
+curl -i -X POST http://localhost:8080/api/tareas \
   -H 'Content-Type: application/json'   -d '{"titulo":"Entregar paquete","prioridad":1}'
 
-curl -i -X POST http://localhost:8080/api/tareas \\
+curl -i -X POST http://localhost:8080/api/tareas \
   -H 'Content-Type: application/json'   -d '{"titulo":"   ","prioridad":0}'
 ```
 
@@ -1115,7 +1131,7 @@ public Page<TareaDTO> listar(int page, int size) {
 
 Importa Page, PageRequest y Sort desde org.springframework.data.domain.
 
-En src/main/java/com/example/demo/TareaController.java, importa Page y agrega este método:
+En `src/main/java/com/example/demo/TareaController.java`, importa `Page` y `org.springframework.web.bind.annotation.RequestParam`, y agrega este método:
 
 ```java
 @GetMapping
@@ -1161,7 +1177,7 @@ Guarda los dos cuerpos JSON y comprueba que sus items no se repiten. Anota qué 
 
 **1. Contexto**
 
-Una página de un millón de filas puede consumir memoria y ancho de banda. Define un tamaño entre 1 y 50 y permite como máximo 1000 páginas por offset.
+Una página de un millón de filas puede consumir memoria y ancho de banda. Define un tamaño entre 1 y 50 y permite índices de página entre 0 y 1000, ambos incluidos, con paginación por offset.
 
 **2. Hazlo tú**
 
@@ -1198,7 +1214,7 @@ curl -i 'http://localhost:8080/api/tareas?size=0'
 curl -i 'http://localhost:8080/api/tareas?size=51'
 ```
 
-**Resultado esperado:** tamaño 2 responde 200; 0 y 51 responden 400 con codigo: VALIDACION. El método del controller no recibe los parámetros inválidos.
+**Resultado esperado:** tamaño 2 responde 200; 0 y 51 responden 400 con codigo: VALIDACION. El método del controller no recibe los parámetros inválidos. El límite `page=1000` es inclusivo: con página inicial cero permite 1001 índices; se rechaza `page=1001`.
 
 En ContratoOpenApiTest.java, añade dos comprobaciones para que el contrato incluya la ruta y el error:
 

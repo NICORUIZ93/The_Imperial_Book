@@ -38,7 +38,7 @@ sequenceDiagram
 Archivo concreto para esta comprobación: `examples/spring-reactor-rutaflow/src/test/java/academia/rutaflow/reactor/BackpressureDemandTest.java`.
 
 
-Para comprobar «Empieza con cero solicitudes», consulta: `examples/spring-reactor-rutaflow/pom.xml`. Desde `examples/spring-reactor-rutaflow` repite la comprobación:
+Para comprobar «Empieza con cero solicitudes», consulta: `examples/spring-reactor-rutaflow/src/test/java/academia/rutaflow/reactor/BackpressureDemandTest.java`. Desde `examples/spring-reactor-rutaflow` repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -70,7 +70,7 @@ assertThat(upstreamRequests).containsExactly(3L, 7L);
 Ejecuta la prueba y compara tu predicción con `upstreamRequests`.
 
 
-Para comprobar «Solicita tres y luego siete», consulta: `examples/spring-reactor-rutaflow/pom.xml`. Desde `examples/spring-reactor-rutaflow` repite la comprobación:
+Para comprobar «Solicita tres y luego siete», consulta: `examples/spring-reactor-rutaflow/src/test/java/academia/rutaflow/reactor/BackpressureDemandTest.java`. Desde `examples/spring-reactor-rutaflow` repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -91,7 +91,7 @@ Para comprobar «Solicita tres y luego siete», consulta: `examples/spring-react
 **Hazlo tú:** Ejecuta `stepVerifierSinParametroInicialSolicitaDemandaIlimitada` y lee la lista capturada por `doOnRequest`.
 
 
-Para comprobar «Mira la demanda sin límite», consulta: `examples/spring-reactor-rutaflow/pom.xml`. Desde `examples/spring-reactor-rutaflow` repite la comprobación:
+Para comprobar «Mira la demanda sin límite», consulta: `examples/spring-reactor-rutaflow/src/test/java/academia/rutaflow/reactor/BackpressureDemandTest.java`. Desde `examples/spring-reactor-rutaflow` repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -201,7 +201,7 @@ Corre `./mvnw -q test` y compara las dos líneas `usa containerId=`.
 **Hazlo tú:** Lee `junit-platform.properties` y confirma que el paralelismo de Jupiter está apagado. Inspecciona las dos pruebas: usan `SELECT 1` y no cambian filas.
 
 
-Para comprobar «Aísla los datos compartidos», consulta: `examples/spring-boot-idempotency-rutaflow/pom.xml`. Desde `examples/spring-boot-idempotency-rutaflow` repite la comprobación:
+Para comprobar «Aísla los datos compartidos», consulta: `examples/testcontainers-singleton-rutaflow/src/test/java/academia/rutaflow/containers/SharedPostgres.java`. Desde `examples/testcontainers-singleton-rutaflow` repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -222,7 +222,7 @@ Para comprobar «Aísla los datos compartidos», consulta: `examples/spring-boot
 **Hazlo tú:** Lee el README del laboratorio y la guía oficial de ciclo manual. Busca las diferencias entre `@Container` estático por clase, el singleton manual entre clases y la reutilización persistente local.
 
 
-Para comprobar «Decide si conviene compartir», consulta: `examples/spring-boot-idempotency-rutaflow/pom.xml`. Desde `examples/spring-boot-idempotency-rutaflow` repite la comprobación:
+Para comprobar «Decide si conviene compartir», consulta: `examples/testcontainers-singleton-rutaflow/src/test/java/academia/rutaflow/containers/SharedPostgres.java`. Desde `examples/testcontainers-singleton-rutaflow` repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -274,7 +274,7 @@ flowchart LR
 Archivo concreto para esta comprobación: `examples/archunit-hexagonal-rutaflow/src/main/java/academia/rutaflow/hexagonal/application/RegisterDelivery.java`.
 
 
-Para comprobar «Ubica el puerto y el adaptador», consulta: `examples/archunit-hexagonal-rutaflow/pom.xml`. Desde `examples/archunit-hexagonal-rutaflow` repite la comprobación:
+Para comprobar «Ubica el puerto y el adaptador», consulta: `examples/archunit-hexagonal-rutaflow/src/test/java/academia/rutaflow/hexagonal/HexagonalArchitectureTest.java`. Desde `examples/archunit-hexagonal-rutaflow` repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -320,7 +320,7 @@ rule.check(project);
 Archivo concreto para esta comprobación: `examples/archunit-hexagonal-rutaflow/src/test/java/academia/rutaflow/hexagonal/HexagonalArchitectureTest.java`.
 
 
-Para comprobar «Protege también el caso de uso», consulta: `examples/archunit-hexagonal-rutaflow/pom.xml`. Desde `examples/archunit-hexagonal-rutaflow` repite la comprobación:
+Para comprobar «Protege también el caso de uso», consulta: `examples/archunit-hexagonal-rutaflow/src/test/java/academia/rutaflow/hexagonal/HexagonalArchitectureTest.java`. Desde `examples/archunit-hexagonal-rutaflow` repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -452,7 +452,7 @@ Para comprobar «Protege también el caso de uso», consulta: `examples/archunit
 ```
 
 
-Para comprobar «Dibuja los pasos del pedido», consulta: `examples/spring-saga-rutaflow/pom.xml`. Desde `examples/spring-saga-rutaflow` repite la comprobación:
+Para comprobar «Dibuja los pasos del pedido», consulta: `examples/spring-saga-rutaflow/src/test/java/academia/rutaflow/saga/OrderSagaTest.java`. Desde `examples/spring-saga-rutaflow` repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -509,7 +509,7 @@ Para comprobar «Dibuja los pasos del pedido», consulta: `examples/spring-saga-
 **Hazlo tú:** Revisa el límite al final de `examples/spring-saga-rutaflow/README.md` y compara este orquestador síncrono con el Módulo 13 y el próximo M15 T7.
 
 
-Para comprobar «Delimita la demo y planea la recuperación», consulta: `examples/spring-saga-rutaflow/pom.xml`. Desde `examples/spring-saga-rutaflow` repite la comprobación:
+Para comprobar «Delimita la demo y planea la recuperación», consulta: `examples/spring-saga-rutaflow/src/test/java/academia/rutaflow/saga/OrderSagaTest.java`. Desde `examples/spring-saga-rutaflow` repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -543,7 +543,7 @@ PedidoCreado → PedidoConfirmado → PedidoCancelado
 Archivo concreto para esta comprobación: `examples/spring-eventsourcing-rutaflow/src/main/java/academia/rutaflow/eventsourcing/OrderEvent.java`.
 
 
-Para comprobar «Guarda hechos, no solo el estado final», consulta: `examples/spring-eventsourcing-rutaflow/pom.xml`. Desde `examples/spring-eventsourcing-rutaflow` repite la comprobación:
+Para comprobar «Guarda hechos, no solo el estado final», consulta: `examples/spring-eventsourcing-rutaflow/src/test/java/academia/rutaflow/eventsourcing/OrderReplayTest.java`. Desde `examples/spring-eventsourcing-rutaflow` repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -641,7 +641,7 @@ PENDING ── compensación exitosa ──> DONE
 Archivo concreto para esta comprobación: `examples/spring-saga-recovery-rutaflow/src/main/java/academia/rutaflow/sagarecovery/CompensationService.java`.
 
 
-Para comprobar «Conserva el trabajo pendiente», consulta: `examples/spring-saga-recovery-rutaflow/pom.xml`. Desde `examples/spring-saga-recovery-rutaflow` repite la comprobación:
+Para comprobar «Conserva el trabajo pendiente», consulta: `examples/spring-saga-recovery-rutaflow/src/test/java/academia/rutaflow/sagarecovery/CompensationRecoveryTest.java`. Desde `examples/spring-saga-recovery-rutaflow` repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -691,7 +691,7 @@ jdbc.update("UPDATE compensation_job SET status = 'DONE' WHERE id = ? AND status
 Archivo concreto para esta comprobación: `examples/spring-saga-recovery-rutaflow/src/test/java/academia/rutaflow/sagarecovery/CompensationRecoveryTest.java`.
 
 
-Para comprobar «Reabre y reintenta sin duplicar», consulta: `examples/spring-saga-recovery-rutaflow/pom.xml`. Desde `examples/spring-saga-recovery-rutaflow` repite la comprobación:
+Para comprobar «Reabre y reintenta sin duplicar», consulta: `examples/spring-saga-recovery-rutaflow/src/test/java/academia/rutaflow/sagarecovery/CompensationRecoveryTest.java`. Desde `examples/spring-saga-recovery-rutaflow` repite la comprobación:
 
 ```bash
 ./mvnw -q test

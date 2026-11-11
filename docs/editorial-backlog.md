@@ -9,15 +9,15 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | Criterio | Cubierto | Pendiente |
 |---|---:|---:|
 | Explicación | 1185 | 0 |
-| Código | 1141 | 44 |
+| Código | 1146 | 39 |
 | Ruta | 1185 | 0 |
-| Ejecución | 1116 | 69 |
+| Ejecución | 1127 | 58 |
 | Resultado | 1183 | 2 |
-| Modificación | 1130 | 55 |
-| Conexión con un proyecto | 1089 | 96 |
+| Modificación | 1137 | 48 |
+| Conexión con un proyecto | 1122 | 63 |
 | Modelo mental | 1185 | 0 |
-| Límites | 1122 | 63 |
-| **Perfil de criterios detectado** | **1073** | **112** |
+| Límites | 1143 | 42 |
+| **Perfil de criterios detectado** | **1111** | **74** |
 
 ## Prioridad por track
 
@@ -36,7 +36,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | node | 83 | 0 | 0 | 0 | 0 | 1 | 2 | 1 |
 | react | 58 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | rutaflow | 29 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| spring-boot | 111 | 5 | 0 | 11 | 0 | 7 | 33 | 21 |
+| spring-boot | 111 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 
 ## Pendientes por tema
 
@@ -114,44 +114,6 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 - [java · módulo 9](../web/public/content/java/modulo-9.md) · Tema 3: Tests parametrizados y cobertura: código, ejecución, modificación, conexión con un proyecto.
 - [node · módulo 14](../web/public/content/node/modulo-14.md) · Tema 7: Kafka desde Node: clave, grupo consumidor y offset: conexión con un proyecto, límites.
 - [node · módulo 14](../web/public/content/node/modulo-14.md) · Tema 8: RabbitMQ desde Node: exchange, cola y confirmaciones: modificación, conexión con un proyecto.
-- [spring-boot · módulo 10](../web/public/content/spring-boot/modulo-10.md) · Tema 1: Config Server y service discovery: límites.
-- [spring-boot · módulo 10](../web/public/content/spring-boot/modulo-10.md) · Tema 2: Spring Cloud Gateway: conexión con un proyecto.
-- [spring-boot · módulo 10](../web/public/content/spring-boot/modulo-10.md) · Tema 4: OAuth2/OIDC, Keycloak y Token Relay sin perder la frontera de autorización: conexión con un proyecto, límites.
-- [spring-boot · módulo 10](../web/public/content/spring-boot/modulo-10.md) · Tema 10: Spring Cloud Bus para propagar cambios de configuración: conexión con un proyecto.
-- [spring-boot · módulo 10](../web/public/content/spring-boot/modulo-10.md) · Tema 11: Micrometer Tracing entre servicios: conexión con un proyecto, límites.
-- [spring-boot · módulo 10](../web/public/content/spring-boot/modulo-10.md) · Tema 12: Contract testing entre productor y consumidor: conexión con un proyecto, límites.
-- [spring-boot · módulo 12](../web/public/content/spring-boot/modulo-12.md) · Tema 1: Arquitectura del microservicio integrador: ejecución, conexión con un proyecto, límites.
-- [spring-boot · módulo 12](../web/public/content/spring-boot/modulo-12.md) · Tema 2: Integra seguridad JWT y observabilidad: ejecución, conexión con un proyecto.
-- [spring-boot · módulo 12](../web/public/content/spring-boot/modulo-12.md) · Tema 3: Cierra el servicio con evidencia y próximos pasos: ejecución, conexión con un proyecto.
-- [spring-boot · módulo 13](../web/public/content/spring-boot/modulo-13.md) · Tema 1: `@Transactional` funciona en una frontera, no como encantamiento: ejecución, modificación, conexión con un proyecto.
-- [spring-boot · módulo 13](../web/public/content/spring-boot/modulo-13.md) · Tema 2: Recuperación implica duplicación segura: conexión con un proyecto.
-- [spring-boot · módulo 13](../web/public/content/spring-boot/modulo-13.md) · Tema 3: Contratos ejecutables protegen despliegues independientes: conexión con un proyecto, límites.
-- [spring-boot · módulo 13](../web/public/content/spring-boot/modulo-13.md) · Tema 4: Observabilidad sirve a un objetivo y a una decisión: conexión con un proyecto, límites.
-- [spring-boot · módulo 14](../web/public/content/spring-boot/modulo-14.md) · Tema 1: CRUD API y contratos: conexión con un proyecto, límites.
-- [spring-boot · módulo 14](../web/public/content/spring-boot/modulo-14.md) · Tema 2: MySQL y datos espaciales: ejecución, conexión con un proyecto.
-- [spring-boot · módulo 14](../web/public/content/spring-boot/modulo-14.md) · Tema 3: JPA e Hibernate Spatial: conexión con un proyecto, límites.
-- [spring-boot · módulo 21](../web/public/content/spring-boot/modulo-21.md) · Tema 1: Productor, tópico, key y consumidor: conexión con un proyecto, límites.
-- [spring-boot · módulo 21](../web/public/content/spring-boot/modulo-21.md) · Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia: conexión con un proyecto.
-- [spring-boot · módulo 21](../web/public/content/spring-boot/modulo-21.md) · Tema 3: Outbox transaccional y flujo de negocio: conexión con un proyecto.
-- [spring-boot · módulo 25](../web/public/content/spring-boot/modulo-25.md) · Tema 1: bindings y destinations: conexión con un proyecto, límites.
-- [spring-boot · módulo 25](../web/public/content/spring-boot/modulo-25.md) · Tema 2: binder Kafka y binder RabbitMQ: modificación, conexión con un proyecto, límites.
-- [spring-boot · módulo 25](../web/public/content/spring-boot/modulo-25.md) · Tema 3: reintentos, error handler y dead-letter: modificación, conexión con un proyecto, límites.
-- [spring-boot · módulo 25](../web/public/content/spring-boot/modulo-25.md) · Tema 4: test binder y límites de la prueba: modificación, conexión con un proyecto.
-- [spring-boot · módulo 4](../web/public/content/spring-boot/modulo-4.md) · Tema 4: Reducir SSRF en clientes HTTP con InetAddressFilter: conexión con un proyecto.
-- [spring-boot · módulo 4](../web/public/content/spring-boot/modulo-4.md) · Tema 5: Flujo de login completo — de `/api/auth/login` a una ruta protegida: límites.
-- [spring-boot · módulo 6](../web/public/content/spring-boot/modulo-6.md) · Tema 1: Probar un controller con `@WebMvcTest`: modificación, conexión con un proyecto, límites.
-- [spring-boot · módulo 6](../web/public/content/spring-boot/modulo-6.md) · Tema 2: Probar el repositorio contra PostgreSQL con `@DataJpaTest`: modificación, conexión con un proyecto, límites.
-- [spring-boot · módulo 6](../web/public/content/spring-boot/modulo-6.md) · Tema 3: Integrar el flujo con `@SpringBootTest`: modificación, conexión con un proyecto, límites.
-- [spring-boot · módulo 7](../web/public/content/spring-boot/modulo-7.md) · Tema 1: Actuator y health checks personalizados: conexión con un proyecto.
-- [spring-boot · módulo 7](../web/public/content/spring-boot/modulo-7.md) · Tema 2: Contar operaciones de negocio con Micrometer: conexión con un proyecto, límites.
-- [spring-boot · módulo 7](../web/public/content/spring-boot/modulo-7.md) · Tema 3: Liveness y readiness sin reinicios en cadena: conexión con un proyecto, límites.
-- [spring-boot · módulo 8](../web/public/content/spring-boot/modulo-8.md) · Tema 6: Spring Cloud Stream y binders de Kafka/RabbitMQ: límites.
-- [spring-boot · módulo 8](../web/public/content/spring-boot/modulo-8.md) · Tema 7: Kafka Streams con Spring para transformar eventos: código, ejecución, límites.
-- [spring-boot · módulo 8](../web/public/content/spring-boot/modulo-8.md) · Tema 8: Avro y Schema Registry para contratos de eventos: código, ejecución.
-- [spring-boot · módulo 8](../web/public/content/spring-boot/modulo-8.md) · Tema 9: RabbitMQ con Spring AMQP: routing, ack y prefetch: código, ejecución, conexión con un proyecto.
-- [spring-boot · módulo 9](../web/public/content/spring-boot/modulo-9.md) · Tema 1: Mono y Flux: código, ejecución, conexión con un proyecto.
-- [spring-boot · módulo 9](../web/public/content/spring-boot/modulo-9.md) · Tema 2: WebClient y composición no bloqueante: código, ejecución, conexión con un proyecto.
-- [spring-boot · módulo 9](../web/public/content/spring-boot/modulo-9.md) · Tema 3: Cuándo WebFlux vale la complejidad, y R2DBC: ejecución, conexión con un proyecto.
 
 ## Regla de cierre
 

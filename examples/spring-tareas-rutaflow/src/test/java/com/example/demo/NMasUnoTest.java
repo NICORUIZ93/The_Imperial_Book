@@ -36,4 +36,32 @@ class NMasUnoTest {
 
         assertThat(stats.getPrepareStatementCount()).isEqualTo(4L);
     }
+
+@Test
+void joinFetchCargaLosPedidosEnLaConsultaPrincipal() {
+    crearTresClientesConPedido();
+    Statistics stats = sessionFactory.getStatistics();
+    stats.clear();
+
+    for (Cliente cliente : clientes.buscarTodosConPedidos()) {
+        assertThat(cliente.getPedidos()).hasSize(1);
+    }
+
+    assertThat(stats.getPrepareStatementCount()).isEqualTo(1L);
+}
+
+
+@Test
+void entityGraphCargaLosPedidosEnLaConsulta() {
+    crearTresClientesConPedido();
+    Statistics stats = sessionFactory.getStatistics();
+    stats.clear();
+
+    for (Cliente cliente : clientes.findAll()) {
+        assertThat(cliente.getPedidos()).hasSize(1);
+    }
+
+    assertThat(stats.getPrepareStatementCount()).isEqualTo(1L);
+}
+
 }

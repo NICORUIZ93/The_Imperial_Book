@@ -2,6 +2,8 @@
 
 Este módulo continúa el backend `academia-spring` creado en los módulos 1 y 2. Ejecuta los ejemplos con la base H2 de pruebas; el test comprueba datos reales, no repositorios simulados.
 
+**Referencia ejecutable al terminar los módulos 2–7:** en la raíz del repositorio, abre `examples/spring-tareas-rutaflow/README.md`. Incluye el estado final y pruebas; algunas clases incorporan cambios de módulos posteriores. Construye primero las prácticas de este módulo y usa la referencia para comparar y diagnosticar.
+
 ## Aprende construyendo
 
 ### Tema 1: Entidades y repositorios derivados
@@ -22,7 +24,17 @@ flowchart LR
 
 **Contexto:** Antes de filtrar una lista, comprueba el viaje más pequeño: Java guarda una tarea, la base asigna su ID y luego el repositorio la busca. Así separas un problema de persistencia de un problema de consulta.
 
-**Hazlo tú:** En `academia-spring`, crea `src/test/java/com/example/demo/TareaRepositoryTest.java`:
+**Hazlo tú:** En `academia-spring`, agrega a `<dependencies>` de `pom.xml` el starter del slice JPA de Boot 4, si todavía no existe:
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-jpa-test</artifactId>
+    <scope>test</scope>
+</dependency>
+```
+
+No basta con el starter general de pruebas para disponer de todos los slices modulares. Crea `src/test/java/com/example/demo/TareaRepositoryTest.java`:
 
 ```java
 package com.example.demo;

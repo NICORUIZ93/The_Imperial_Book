@@ -3,6 +3,8 @@
 Actuator reúne señales técnicas y operativas. Cada práctica debe comprobar qué respuesta produce y qué información revela según el entorno.
 
 
+**Referencia ejecutable al terminar los módulos 2–7:** en la raíz del repositorio, abre `examples/spring-tareas-rutaflow/README.md`. Incluye el estado final y pruebas; algunas clases incorporan cambios de módulos posteriores. Construye primero las prácticas de este módulo y usa la referencia para comparar y diagnosticar.
+
 ## Aprende construyendo
 
 ### Tema 1: Actuator y health checks personalizados
@@ -538,7 +540,7 @@ Ejecuta solo esta prueba:
 
 **Fallo deliberado:** quita temporalmente `@AfterEach` del método `restableceEstados` y ejecuta `./mvnw -q clean test`. **Diagnóstico:** si `BROKEN` queda en el contexto, otro test de health puede recibir `503` aun con la pasarela sana. Restaura `@AfterEach` y repite la suite.
 
-**Entiende:** usa `AvailabilityChangeEvent` para comunicar estados del ciclo de vida de la aplicación —por ejemplo, dejar de aceptar tráfico durante un apagado ordenado—. No lo publiques desde un endpoint público ni cambies liveness al detectar una avería remota. La prueba aisló cada estado y conservó la autenticación. Documentación primaria: [Spring Boot 4.1.2 — Kubernetes Probes](https://docs.spring.io/spring-boot/reference/actuator/kubernetes-probes.html), [AvailabilityChangeEvent API](https://docs.spring.io/spring-boot/api/java/org/springframework/boot/availability/AvailabilityChangeEvent.html) y [ApplicationAvailability API](https://docs.spring.io/spring-boot/api/java/org/springframework/boot/availability/ApplicationAvailability.html).
+**Entiende:** usa `AvailabilityChangeEvent` para comunicar estados del ciclo de vida de la aplicación —por ejemplo, dejar de aceptar tráfico durante un apagado ordenado—. No lo publiques desde un endpoint público ni cambies liveness al detectar una avería remota. La prueba aisló cada estado y conservó la autenticación. Documentación primaria: [Spring Boot 4.1.2 — Kubernetes Probes](https://docs.spring.io/spring-boot/reference/actuator/endpoints.html#actuator.endpoints.kubernetes-probes), [AvailabilityChangeEvent API](https://docs.spring.io/spring-boot/api/java/org/springframework/boot/availability/AvailabilityChangeEvent.html) y [ApplicationAvailability API](https://docs.spring.io/spring-boot/api/java/org/springframework/boot/availability/ApplicationAvailability.html).
 
 **Cierra:** explica con tus palabras qué estado retira una instancia del tráfico y cuál le pide al orquestador reiniciarla; usa como evidencia los códigos `503` y `200` de las pruebas.
 

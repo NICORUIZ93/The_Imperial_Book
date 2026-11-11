@@ -7,9 +7,10 @@ import org.mapstruct.ReportingPolicy;
 
 @Mapper(
         componentModel = "spring",
-        unmappedTargetPolicy = ReportingPolicy.ERROR)
+        unmappedTargetPolicy = ReportingPolicy.ERROR,
+        unmappedSourcePolicy = ReportingPolicy.ERROR)
 public interface TareaMapper {
-    @BeanMapping(ignoreUnmappedSourceProperties = "ubicacionInterna")
+    @BeanMapping(ignoreUnmappedSourceProperties = {"ubicacionInterna", "notaInterna"})
     @Mapping(target = "id", source = "id")
     @Mapping(target = "titulo", source = "titulo")
     @Mapping(target = "prioridad", source = "prioridad")

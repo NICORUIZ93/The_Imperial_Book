@@ -13,6 +13,7 @@ import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.cache.RedisCacheWriter;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.test.context.ActiveProfiles;
@@ -38,7 +39,8 @@ class RedisTarifaTest {
     @Test
     void dosGestoresCompartenValorTtlEInvalidacion() {
         assertThat(cacheManager).isInstanceOf(RedisCacheManager.class);
-        RedisCacheManager segundo = RedisCacheManager.builder(connectionFactory)
+        RedisCacheManager segundo = RedisCacheManager.builder(RedisCacheWriter.create(connectionFactory,
+                        config -> config.immediateWrites()))
                 .cacheDefaults(RedisCacheConfiguration.defaultCacheConfig()
                         .prefixCacheNameWith(PREFIJO).entryTtl(Duration.ofMinutes(5)))
                 .build();

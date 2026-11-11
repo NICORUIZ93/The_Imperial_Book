@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 256,
     "topics": 1185,
-    "topicsWithSignals": 281,
+    "topicsWithSignals": 292,
     "newLaboratories": 25
   },
   "priorities": {
@@ -12350,7 +12350,7 @@
       "module": 10,
       "title": "Tema 2: Spring Cloud Gateway",
       "file": "web/public/content/spring-boot/modulo-10.md",
-      "line": 199,
+      "line": 202,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -12363,7 +12363,7 @@
       "module": 10,
       "title": "Tema 3: Circuit breaker con Resilience4j",
       "file": "web/public/content/spring-boot/modulo-10.md",
-      "line": 332,
+      "line": 338,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -12376,7 +12376,7 @@
       "module": 10,
       "title": "Tema 4: OAuth2/OIDC, Keycloak y Token Relay sin perder la frontera de autorización",
       "file": "web/public/content/spring-boot/modulo-10.md",
-      "line": 418,
+      "line": 424,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -12389,7 +12389,7 @@
       "module": 10,
       "title": "Tema 5: HTTP Interfaces, deadlines y descubrimiento según el entorno",
       "file": "web/public/content/spring-boot/modulo-10.md",
-      "line": 549,
+      "line": 558,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -12402,7 +12402,7 @@
       "module": 10,
       "title": "Tema 6: Spring gRPC, contrato HTTP/2 y evolución segura",
       "file": "web/public/content/spring-boot/modulo-10.md",
-      "line": 688,
+      "line": 717,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -12415,7 +12415,7 @@
       "module": 10,
       "title": "Tema 7: DDD para decidir límites y propiedad de datos",
       "file": "web/public/content/spring-boot/modulo-10.md",
-      "line": 824,
+      "line": 868,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -12428,7 +12428,7 @@
       "module": 10,
       "title": "Tema 8: Orquestar pedidos con Temporal y Spring Boot",
       "file": "web/public/content/spring-boot/modulo-10.md",
-      "line": 946,
+      "line": 1007,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -12441,7 +12441,7 @@
       "module": 10,
       "title": "Tema 9: Comprueba módulos antes de separar servicios",
       "file": "web/public/content/spring-boot/modulo-10.md",
-      "line": 1104,
+      "line": 1165,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -12454,7 +12454,7 @@
       "module": 10,
       "title": "Tema 10: Spring Cloud Bus para propagar cambios de configuración",
       "file": "web/public/content/spring-boot/modulo-10.md",
-      "line": 1244,
+      "line": 1305,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -12467,7 +12467,7 @@
       "module": 10,
       "title": "Tema 11: Micrometer Tracing entre servicios",
       "file": "web/public/content/spring-boot/modulo-10.md",
-      "line": 1374,
+      "line": 1438,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -12480,7 +12480,7 @@
       "module": 10,
       "title": "Tema 12: Contract testing entre productor y consumidor",
       "file": "web/public/content/spring-boot/modulo-10.md",
-      "line": 1520,
+      "line": 1587,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -12545,7 +12545,7 @@
       "module": 12,
       "title": "Tema 2: Integra seguridad JWT y observabilidad",
       "file": "web/public/content/spring-boot/modulo-12.md",
-      "line": 142,
+      "line": 151,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -12558,7 +12558,7 @@
       "module": 12,
       "title": "Tema 3: Cierra el servicio con evidencia y próximos pasos",
       "file": "web/public/content/spring-boot/modulo-12.md",
-      "line": 267,
+      "line": 285,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -12584,7 +12584,7 @@
       "module": 13,
       "title": "Tema 2: Recuperación implica duplicación segura",
       "file": "web/public/content/spring-boot/modulo-13.md",
-      "line": 136,
+      "line": 145,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -12597,7 +12597,7 @@
       "module": 13,
       "title": "Tema 3: Contratos ejecutables protegen despliegues independientes",
       "file": "web/public/content/spring-boot/modulo-13.md",
-      "line": 258,
+      "line": 270,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -12610,7 +12610,7 @@
       "module": 13,
       "title": "Tema 4: Observabilidad sirve a un objetivo y a una decisión",
       "file": "web/public/content/spring-boot/modulo-13.md",
-      "line": 339,
+      "line": 354,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -12636,7 +12636,7 @@
       "module": 14,
       "title": "Tema 2: MySQL y datos espaciales",
       "file": "web/public/content/spring-boot/modulo-14.md",
-      "line": 98,
+      "line": 101,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -12649,7 +12649,7 @@
       "module": 14,
       "title": "Tema 3: JPA e Hibernate Spatial",
       "file": "web/public/content/spring-boot/modulo-14.md",
-      "line": 200,
+      "line": 227,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -12662,7 +12662,7 @@
       "module": 14,
       "title": "Tema 4: JWT Bearer y autorización por roles",
       "file": "web/public/content/spring-boot/modulo-14.md",
-      "line": 283,
+      "line": 320,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -12675,7 +12675,7 @@
       "module": 14,
       "title": "Tema 5: Tiempo real con STOMP",
       "file": "web/public/content/spring-boot/modulo-14.md",
-      "line": 366,
+      "line": 410,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -12688,7 +12688,7 @@
       "module": 14,
       "title": "Tema 6: Archivos y notificaciones push",
       "file": "web/public/content/spring-boot/modulo-14.md",
-      "line": 471,
+      "line": 515,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -12714,7 +12714,7 @@
       "module": 15,
       "title": "Tema 2: Contenedores Testcontainers reutilizados entre clases",
       "file": "web/public/content/spring-boot/modulo-15.md",
-      "line": 111,
+      "line": 134,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -12727,7 +12727,7 @@
       "module": 15,
       "title": "Tema 3: Arquitectura hexagonal verificada con ArchUnit",
       "file": "web/public/content/spring-boot/modulo-15.md",
-      "line": 206,
+      "line": 247,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -12740,7 +12740,7 @@
       "module": 15,
       "title": "Tema 4: Bulkhead y RateLimiter de Resilience4j",
       "file": "web/public/content/spring-boot/modulo-15.md",
-      "line": 296,
+      "line": 355,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -12753,7 +12753,7 @@
       "module": 15,
       "title": "Tema 5: Saga con compensación real",
       "file": "web/public/content/spring-boot/modulo-15.md",
-      "line": 377,
+      "line": 436,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -12766,7 +12766,7 @@
       "module": 15,
       "title": "Tema 6: Event Sourcing con replay real",
       "file": "web/public/content/spring-boot/modulo-15.md",
-      "line": 455,
+      "line": 528,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -12779,7 +12779,7 @@
       "module": 15,
       "title": "Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar",
       "file": "web/public/content/spring-boot/modulo-15.md",
-      "line": 543,
+      "line": 625,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -12792,7 +12792,7 @@
       "module": 15,
       "title": "Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework",
       "file": "web/public/content/spring-boot/modulo-15.md",
-      "line": 697,
+      "line": 797,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -12909,7 +12909,7 @@
       "module": 2,
       "title": "Tema 1: Por qué DTOs en vez de entidades directamente",
       "file": "web/public/content/spring-boot/modulo-2.md",
-      "line": 8,
+      "line": 10,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -12922,7 +12922,7 @@
       "module": 2,
       "title": "Tema 2: Validación con Bean Validation y ResponseEntity",
       "file": "web/public/content/spring-boot/modulo-2.md",
-      "line": 228,
+      "line": 238,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -12935,7 +12935,7 @@
       "module": 2,
       "title": "Tema 3: Manejo centralizado de errores con @ControllerAdvice",
       "file": "web/public/content/spring-boot/modulo-2.md",
-      "line": 384,
+      "line": 394,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -12948,7 +12948,7 @@
       "module": 2,
       "title": "Tema 4: Lombok y MapStruct sin exponer datos internos",
       "file": "web/public/content/spring-boot/modulo-2.md",
-      "line": 588,
+      "line": 598,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -12961,7 +12961,7 @@
       "module": 2,
       "title": "Tema 5: OpenAPI con springdoc: el contrato como prueba",
       "file": "web/public/content/spring-boot/modulo-2.md",
-      "line": 823,
+      "line": 833,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -12974,7 +12974,7 @@
       "module": 2,
       "title": "Tema 6: Paginación HTTP con validación y un límite de recursos explícito",
       "file": "web/public/content/spring-boot/modulo-2.md",
-      "line": 1045,
+      "line": 1057,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -13039,7 +13039,7 @@
       "module": 20,
       "title": "Tema 5: @Async y ejecutores: trabajo en segundo plano con límites",
       "file": "web/public/content/spring-boot/modulo-20.md",
-      "line": 513,
+      "line": 515,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -13052,7 +13052,7 @@
       "module": 20,
       "title": "Tema complementario: Integraciones empresariales, SOAP y fronteras de protocolo",
       "file": "web/public/content/spring-boot/modulo-20.md",
-      "line": 637,
+      "line": 639,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -13065,7 +13065,7 @@
       "module": 20,
       "title": "Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo",
       "file": "web/public/content/spring-boot/modulo-20.md",
-      "line": 750,
+      "line": 752,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -13078,7 +13078,7 @@
       "module": 20,
       "title": "Tema 7: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar",
       "file": "web/public/content/spring-boot/modulo-20.md",
-      "line": 924,
+      "line": 926,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -13104,7 +13104,7 @@
       "module": 21,
       "title": "Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia",
       "file": "web/public/content/spring-boot/modulo-21.md",
-      "line": 91,
+      "line": 94,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -13117,7 +13117,7 @@
       "module": 21,
       "title": "Tema 3: Outbox transaccional y flujo de negocio",
       "file": "web/public/content/spring-boot/modulo-21.md",
-      "line": 173,
+      "line": 179,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -13131,7 +13131,9 @@
       "title": "Tema 1: Hexagonal: puertos que hablan el idioma del dominio",
       "file": "web/public/content/spring-boot/modulo-22.md",
       "line": 7,
-      "signals": [],
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -13141,8 +13143,10 @@
       "module": 22,
       "title": "Tema 2: C4: contexto, contenedores, componentes y código",
       "file": "web/public/content/spring-boot/modulo-22.md",
-      "line": 152,
-      "signals": [],
+      "line": 183,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -13152,8 +13156,10 @@
       "module": 22,
       "title": "Tema 3: ADR: decisiones con contexto, alternativas y consecuencias",
       "file": "web/public/content/spring-boot/modulo-22.md",
-      "line": 284,
-      "signals": [],
+      "line": 344,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -13163,8 +13169,10 @@
       "module": 23,
       "title": "Tema 1: módulos y límites entre paquetes",
       "file": "web/public/content/spring-boot/modulo-23.md",
-      "line": 9,
-      "signals": [],
+      "line": 7,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -13174,8 +13182,10 @@
       "module": 23,
       "title": "Tema 2: eventos entre módulos sin importar implementación",
       "file": "web/public/content/spring-boot/modulo-23.md",
-      "line": 102,
-      "signals": [],
+      "line": 91,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -13185,8 +13195,10 @@
       "module": 23,
       "title": "Tema 3: documentación generada y mapa de dependencias",
       "file": "web/public/content/spring-boot/modulo-23.md",
-      "line": 198,
-      "signals": [],
+      "line": 175,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -13196,8 +13208,10 @@
       "module": 23,
       "title": "Tema 4: pruebas de integración por módulo",
       "file": "web/public/content/spring-boot/modulo-23.md",
-      "line": 258,
-      "signals": [],
+      "line": 259,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -13207,8 +13221,10 @@
       "module": 24,
       "title": "Tema 1: schema-first con tipos y consultas",
       "file": "web/public/content/spring-boot/modulo-24.md",
-      "line": 9,
-      "signals": [],
+      "line": 7,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -13218,8 +13234,10 @@
       "module": 24,
       "title": "Tema 2: data fetchers, relaciones y problema N+1",
       "file": "web/public/content/spring-boot/modulo-24.md",
-      "line": 87,
-      "signals": [],
+      "line": 91,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -13229,8 +13247,10 @@
       "module": 24,
       "title": "Tema 3: mutations y subscriptions",
       "file": "web/public/content/spring-boot/modulo-24.md",
-      "line": 162,
-      "signals": [],
+      "line": 178,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -13240,8 +13260,10 @@
       "module": 24,
       "title": "Tema 4: pruebas GraphQL con GraphQlTester",
       "file": "web/public/content/spring-boot/modulo-24.md",
-      "line": 243,
-      "signals": [],
+      "line": 262,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -13264,7 +13286,7 @@
       "module": 25,
       "title": "Tema 2: binder Kafka y binder RabbitMQ",
       "file": "web/public/content/spring-boot/modulo-25.md",
-      "line": 92,
+      "line": 95,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -13277,7 +13299,7 @@
       "module": 25,
       "title": "Tema 3: reintentos, error handler y dead-letter",
       "file": "web/public/content/spring-boot/modulo-25.md",
-      "line": 185,
+      "line": 191,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -13290,7 +13312,7 @@
       "module": 25,
       "title": "Tema 4: test binder y límites de la prueba",
       "file": "web/public/content/spring-boot/modulo-25.md",
-      "line": 265,
+      "line": 274,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -13303,7 +13325,7 @@
       "module": 3,
       "title": "Tema 1: Entidades y repositorios derivados",
       "file": "web/public/content/spring-boot/modulo-3.md",
-      "line": 7,
+      "line": 9,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -13316,7 +13338,7 @@
       "module": 3,
       "title": "Tema 2: El problema N+1 y su corrección",
       "file": "web/public/content/spring-boot/modulo-3.md",
-      "line": 180,
+      "line": 182,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -13329,7 +13351,7 @@
       "module": 3,
       "title": "Tema 3: Migraciones con Flyway",
       "file": "web/public/content/spring-boot/modulo-3.md",
-      "line": 466,
+      "line": 468,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -13342,7 +13364,7 @@
       "module": 4,
       "title": "Tema 1: SecurityFilterChain moderno",
       "file": "web/public/content/spring-boot/modulo-4.md",
-      "line": 8,
+      "line": 10,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -13355,7 +13377,7 @@
       "module": 4,
       "title": "Tema 2: Filtro JWT y autorización por rol",
       "file": "web/public/content/spring-boot/modulo-4.md",
-      "line": 216,
+      "line": 218,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -13368,7 +13390,7 @@
       "module": 4,
       "title": "Tema 3: CORS y CSRF",
       "file": "web/public/content/spring-boot/modulo-4.md",
-      "line": 520,
+      "line": 522,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -13381,7 +13403,7 @@
       "module": 4,
       "title": "Tema 4: Reducir SSRF en clientes HTTP con InetAddressFilter",
       "file": "web/public/content/spring-boot/modulo-4.md",
-      "line": 694,
+      "line": 696,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -13394,7 +13416,7 @@
       "module": 4,
       "title": "Tema 5: Flujo de login completo — de `/api/auth/login` a una ruta protegida",
       "file": "web/public/content/spring-boot/modulo-4.md",
-      "line": 767,
+      "line": 772,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -13407,7 +13429,7 @@
       "module": 5,
       "title": "Tema 1: @ConfigurationProperties tipado",
       "file": "web/public/content/spring-boot/modulo-5.md",
-      "line": 8,
+      "line": 10,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -13420,7 +13442,7 @@
       "module": 5,
       "title": "Tema 2: Fallar rápido al arranque",
       "file": "web/public/content/spring-boot/modulo-5.md",
-      "line": 193,
+      "line": 195,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -13433,7 +13455,7 @@
       "module": 5,
       "title": "Tema 3: Manejo global de excepciones consistente entre entornos",
       "file": "web/public/content/spring-boot/modulo-5.md",
-      "line": 312,
+      "line": 316,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -13446,7 +13468,7 @@
       "module": 6,
       "title": "Tema 1: Probar un controller con `@WebMvcTest`",
       "file": "web/public/content/spring-boot/modulo-6.md",
-      "line": 8,
+      "line": 10,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -13459,7 +13481,7 @@
       "module": 6,
       "title": "Tema 2: Probar el repositorio contra PostgreSQL con `@DataJpaTest`",
       "file": "web/public/content/spring-boot/modulo-6.md",
-      "line": 110,
+      "line": 138,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -13472,7 +13494,7 @@
       "module": 6,
       "title": "Tema 3: Integrar el flujo con `@SpringBootTest`",
       "file": "web/public/content/spring-boot/modulo-6.md",
-      "line": 243,
+      "line": 297,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -13485,7 +13507,7 @@
       "module": 7,
       "title": "Tema 1: Actuator y health checks personalizados",
       "file": "web/public/content/spring-boot/modulo-7.md",
-      "line": 8,
+      "line": 10,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -13498,7 +13520,7 @@
       "module": 7,
       "title": "Tema 2: Contar operaciones de negocio con Micrometer",
       "file": "web/public/content/spring-boot/modulo-7.md",
-      "line": 175,
+      "line": 205,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -13511,7 +13533,7 @@
       "module": 7,
       "title": "Tema 3: Liveness y readiness sin reinicios en cadena",
       "file": "web/public/content/spring-boot/modulo-7.md",
-      "line": 323,
+      "line": 381,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -13576,7 +13598,7 @@
       "module": 8,
       "title": "Tema 5: Kafka frente a RabbitMQ",
       "file": "web/public/content/spring-boot/modulo-8.md",
-      "line": 597,
+      "line": 618,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -13589,7 +13611,7 @@
       "module": 8,
       "title": "Tema 6: Spring Cloud Stream y binders de Kafka/RabbitMQ",
       "file": "web/public/content/spring-boot/modulo-8.md",
-      "line": 735,
+      "line": 756,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -13602,7 +13624,7 @@
       "module": 8,
       "title": "Tema 7: Kafka Streams con Spring para transformar eventos",
       "file": "web/public/content/spring-boot/modulo-8.md",
-      "line": 901,
+      "line": 936,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -13615,7 +13637,7 @@
       "module": 8,
       "title": "Tema 8: Avro y Schema Registry para contratos de eventos",
       "file": "web/public/content/spring-boot/modulo-8.md",
-      "line": 1027,
+      "line": 1084,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -13628,7 +13650,7 @@
       "module": 8,
       "title": "Tema 9: RabbitMQ con Spring AMQP: routing, ack y prefetch",
       "file": "web/public/content/spring-boot/modulo-8.md",
-      "line": 1156,
+      "line": 1230,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -13654,7 +13676,7 @@
       "module": 9,
       "title": "Tema 2: WebClient y composición no bloqueante",
       "file": "web/public/content/spring-boot/modulo-9.md",
-      "line": 317,
+      "line": 328,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -13667,7 +13689,7 @@
       "module": 9,
       "title": "Tema 3: Cuándo WebFlux vale la complejidad, y R2DBC",
       "file": "web/public/content/spring-boot/modulo-9.md",
-      "line": 423,
+      "line": 445,
       "signals": [
         "demostracion-no-delimitada"
       ],

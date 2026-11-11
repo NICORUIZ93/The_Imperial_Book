@@ -123,7 +123,7 @@
     },
     {
       "path": "docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md",
-      "lines": 1862,
+      "lines": 1890,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -135,7 +135,8 @@
         "## Estado de Java",
         "## Estado global honesto",
         "## Flujo de trabajo y publicaci\u00f3n incremental",
-        "## Progreso posterior a Java"
+        "## Progreso posterior a Java",
+        "## Cierre Spring Boot \u00b7 11 de noviembre de 2026"
       ]
     },
     {
@@ -306,7 +307,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 18096,
+      "lines": 18569,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -314,7 +315,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1076,
+      "lines": 1031,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -600,7 +601,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3941,
+      "lines": 3955,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -636,7 +637,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13680,
+      "lines": 13702,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -677,7 +678,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 159,
+      "lines": 121,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1018,6 +1019,18 @@
       ]
     },
     {
+      "path": "docs/revision-imagenes-descargas-2026-11-10.md",
+      "lines": 38,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Revisi\u00f3n de capturas de Descargas \u00b7 10 de noviembre de 2026",
+        "## Texto y contraste con el contenido existente",
+        "## Orden de ampliaci\u00f3n propuesto"
+      ]
+    },
+    {
       "path": "docs/revision-prompt-academia.md",
       "lines": 105,
       "kind": "documentation",
@@ -1088,7 +1101,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 646,
+      "lines": 679,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -5488,6 +5501,16 @@
       "headings": []
     },
     {
+      "path": "examples/rutaflow-material/spring-ai/README.md",
+      "lines": 28,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Spring AI \u00b7 fronteras locales de herramientas y recuperaci\u00f3n"
+      ]
+    },
+    {
       "path": "examples/rutaflow-material/spring-ai/src/test/java/academia/ChatToolsTest.java",
       "lines": 59,
       "kind": "example",
@@ -5509,6 +5532,41 @@
       "kind": "example",
       "symbols": [],
       "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/soap-contract-rutaflow/README.md",
+      "lines": 17,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Contrato local SOAP \u00b7 RutaFlow"
+      ]
+    },
+    {
+      "path": "examples/soap-contract-rutaflow/soap_contrato.py",
+      "lines": 28,
+      "kind": "example",
+      "symbols": [
+        "consultar_id"
+      ],
+      "imports": [
+        "xml.etree.ElementTree"
+      ],
+      "headings": []
+    },
+    {
+      "path": "examples/soap-contract-rutaflow/test_soap_contrato.py",
+      "lines": 27,
+      "kind": "example",
+      "symbols": [
+        "ContratoTest"
+      ],
+      "imports": [
+        "unittest",
+        "soap_contrato"
+      ],
       "headings": []
     },
     {
@@ -5600,6 +5658,137 @@
     {
       "path": "examples/spring-amqp-rutaflow/src/test/java/academia/rutaflow/amqp/RabbitTopologyTest.java",
       "lines": 35,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-architecture-rutaflow/README.md",
+      "lines": 16,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Arquitectura RutaFlow \u00b7 puertos y decisiones"
+      ]
+    },
+    {
+      "path": "examples/spring-architecture-rutaflow/docs/adr/0001-postgresql-en-lugar-de-mongodb.md",
+      "lines": 25,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# 0001 \u2014 PostgreSQL para el estado de env\u00edos",
+        "## Contexto",
+        "## Decisi\u00f3n",
+        "## Alternativas",
+        "## Consecuencias",
+        "## Estado"
+      ]
+    },
+    {
+      "path": "examples/spring-architecture-rutaflow/docs/adr/0002-kafka-para-asignacion.md",
+      "lines": 23,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Kafka para asignaci\u00f3n",
+        "## Contexto",
+        "## Decisi\u00f3n",
+        "## Alternativas",
+        "## Consecuencias",
+        "## Estado"
+      ]
+    },
+    {
+      "path": "examples/spring-architecture-rutaflow/docs/adr/0003-reintentos-con-outbox.md",
+      "lines": 23,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Outbox para conservar la intenci\u00f3n",
+        "## Contexto",
+        "## Decisi\u00f3n",
+        "## Alternativas",
+        "## Consecuencias",
+        "## Estado"
+      ]
+    },
+    {
+      "path": "examples/spring-architecture-rutaflow/docs/c4/envios.md",
+      "lines": 40,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# API de env\u00edos \u00b7 dise\u00f1o propuesto",
+        "## Contexto",
+        "## Contenedores",
+        "## Componentes",
+        "## C\u00f3digo"
+      ]
+    },
+    {
+      "path": "examples/spring-architecture-rutaflow/src/Hexagonal.java",
+      "lines": 52,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-architecture-rutaflow/validar-adr.mjs",
+      "lines": 28,
+      "kind": "example",
+      "symbols": [],
+      "imports": [
+        "node:fs/promises"
+      ],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-architecture-rutaflow/validar-c4.mjs",
+      "lines": 26,
+      "kind": "example",
+      "symbols": [],
+      "imports": [
+        "node:fs/promises"
+      ],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-async-rutaflow/README.md",
+      "lines": 17,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Ejecuci\u00f3n as\u00edncrona acotada \u00b7 RutaFlow"
+      ]
+    },
+    {
+      "path": "examples/spring-async-rutaflow/src/main/java/academia/rutaflow/async/AsyncConfiguration.java",
+      "lines": 23,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-async-rutaflow/src/main/java/academia/rutaflow/async/NotificacionService.java",
+      "lines": 20,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-async-rutaflow/src/test/java/academia/rutaflow/async/AsyncBehaviorTest.java",
+      "lines": 76,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -6440,7 +6629,7 @@
     },
     {
       "path": "examples/spring-cache-rutaflow/README.md",
-      "lines": 44,
+      "lines": 50,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -6509,6 +6698,14 @@
     {
       "path": "examples/spring-cache-rutaflow/src/main/resources/application.yml",
       "lines": 7,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-cache-rutaflow/src/test/java/academia/rutaflow/cache/RedisTarifaTest.java",
+      "lines": 66,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -6964,6 +7161,40 @@
       "headings": []
     },
     {
+      "path": "examples/spring-graphql-rutaflow/README.md",
+      "lines": 19,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# GraphQL RutaFlow \u00b7 contrato y ejecuci\u00f3n local"
+      ]
+    },
+    {
+      "path": "examples/spring-graphql-rutaflow/src/main/java/academia/rutaflow/graphql/EntregaController.java",
+      "lines": 47,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-graphql-rutaflow/src/main/java/academia/rutaflow/graphql/GraphqlApplication.java",
+      "lines": 8,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-graphql-rutaflow/src/test/java/academia/rutaflow/graphql/EntregaGraphqlTest.java",
+      "lines": 49,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
       "path": "examples/spring-grpc-rutaflow/README.md",
       "lines": 31,
       "kind": "example",
@@ -7314,7 +7545,7 @@
     },
     {
       "path": "examples/spring-modulith-rutaflow/README.md",
-      "lines": 20,
+      "lines": 22,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -7374,6 +7605,14 @@
     {
       "path": "examples/spring-modulith-rutaflow/src/test/java/academia/rutaflow/modulith/ArquitecturaModularTest.java",
       "lines": 12,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-modulith-rutaflow/src/test/java/academia/rutaflow/modulith/DocumentacionModularTest.java",
+      "lines": 22,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -7843,6 +8082,350 @@
     {
       "path": "examples/spring-stream-rutaflow/src/test/java/academia/rutaflow/stream/RouteFunctionsTest.java",
       "lines": 45,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tareas-rutaflow/src/main/java/com/example/demo/AdminController.java",
+      "lines": 14,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tareas-rutaflow/src/main/java/com/example/demo/ApiError.java",
+      "lines": 10,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tareas-rutaflow/src/main/java/com/example/demo/AuthController.java",
+      "lines": 35,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tareas-rutaflow/src/main/java/com/example/demo/Cliente.java",
+      "lines": 33,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tareas-rutaflow/src/main/java/com/example/demo/ClienteRepository.java",
+      "lines": 19,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tareas-rutaflow/src/main/java/com/example/demo/CorsConfig.java",
+      "lines": 26,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tareas-rutaflow/src/main/java/com/example/demo/CrearTareaRequest.java",
+      "lines": 12,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tareas-rutaflow/src/main/java/com/example/demo/DemoApplication.java",
+      "lines": 10,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tareas-rutaflow/src/main/java/com/example/demo/GlobalExceptionHandler.java",
+      "lines": 30,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tareas-rutaflow/src/main/java/com/example/demo/JwtFilter.java",
+      "lines": 44,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tareas-rutaflow/src/main/java/com/example/demo/JwtService.java",
+      "lines": 39,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tareas-rutaflow/src/main/java/com/example/demo/JwtSettings.java",
+      "lines": 14,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tareas-rutaflow/src/main/java/com/example/demo/LimiteParadasExcedidoException.java",
+      "lines": 8,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tareas-rutaflow/src/main/java/com/example/demo/LoginRequest.java",
+      "lines": 4,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tareas-rutaflow/src/main/java/com/example/demo/PaginaTareasDTO.java",
+      "lines": 23,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tareas-rutaflow/src/main/java/com/example/demo/Pedido.java",
+      "lines": 34,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tareas-rutaflow/src/main/java/com/example/demo/PedidoRepository.java",
+      "lines": 6,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tareas-rutaflow/src/main/java/com/example/demo/RutasController.java",
+      "lines": 14,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tareas-rutaflow/src/main/java/com/example/demo/SecurityConfig.java",
+      "lines": 46,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tareas-rutaflow/src/main/java/com/example/demo/ServicioExterno.java",
+      "lines": 13,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tareas-rutaflow/src/main/java/com/example/demo/ServicioExternoHealthIndicator.java",
+      "lines": 22,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tareas-rutaflow/src/main/java/com/example/demo/ServicioTareas.java",
+      "lines": 33,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tareas-rutaflow/src/main/java/com/example/demo/Tarea.java",
+      "lines": 37,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tareas-rutaflow/src/main/java/com/example/demo/TareaController.java",
+      "lines": 51,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tareas-rutaflow/src/main/java/com/example/demo/TareaDTO.java",
+      "lines": 5,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tareas-rutaflow/src/main/java/com/example/demo/TareaMapper.java",
+      "lines": 18,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tareas-rutaflow/src/main/java/com/example/demo/TareaNoEncontradaException.java",
+      "lines": 8,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tareas-rutaflow/src/main/java/com/example/demo/TareaRepository.java",
+      "lines": 14,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tareas-rutaflow/src/main/java/com/example/demo/UsuariosController.java",
+      "lines": 16,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tareas-rutaflow/src/test/java/com/example/demo/ActuatorHealthTest.java",
+      "lines": 56,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tareas-rutaflow/src/test/java/com/example/demo/CorsConfigTest.java",
+      "lines": 41,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tareas-rutaflow/src/test/java/com/example/demo/DisponibilidadProbesTest.java",
+      "lines": 73,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tareas-rutaflow/src/test/java/com/example/demo/JwtFilterTest.java",
+      "lines": 46,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tareas-rutaflow/src/test/java/com/example/demo/JwtServiceTest.java",
+      "lines": 17,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tareas-rutaflow/src/test/java/com/example/demo/JwtSettingsTest.java",
+      "lines": 58,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tareas-rutaflow/src/test/java/com/example/demo/LoginFlowTest.java",
+      "lines": 43,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tareas-rutaflow/src/test/java/com/example/demo/MetricasTareasTest.java",
+      "lines": 54,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tareas-rutaflow/src/test/java/com/example/demo/MigracionesTest.java",
+      "lines": 29,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tareas-rutaflow/src/test/java/com/example/demo/NMasUnoTest.java",
+      "lines": 40,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tareas-rutaflow/src/test/java/com/example/demo/TareaControllerSliceTest.java",
+      "lines": 48,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tareas-rutaflow/src/test/java/com/example/demo/TareaFlowEndToEndTest.java",
+      "lines": 43,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tareas-rutaflow/src/test/java/com/example/demo/TareaRepositoryPostgresTest.java",
+      "lines": 52,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-tareas-rutaflow/src/test/java/com/example/demo/TareaRepositoryTest.java",
+      "lines": 40,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -14192,7 +14775,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-10.md",
-      "lines": 1650,
+      "lines": 1720,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14234,7 +14817,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-12.md",
-      "lines": 406,
+      "lines": 433,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14255,7 +14838,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-13.md",
-      "lines": 485,
+      "lines": 510,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14276,7 +14859,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-14.md",
-      "lines": 575,
+      "lines": 644,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14297,7 +14880,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-15.md",
-      "lines": 866,
+      "lines": 966,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14402,7 +14985,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-2.md",
-      "lines": 1243,
+      "lines": 1257,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14423,7 +15006,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-20.md",
-      "lines": 1063,
+      "lines": 1065,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14444,7 +15027,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-21.md",
-      "lines": 262,
+      "lines": 271,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14465,7 +15048,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-22.md",
-      "lines": 417,
+      "lines": 507,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14473,62 +15056,62 @@
         "# M\u00f3dulo 22: Arquitectura: puertos, C4 y decisiones",
         "## Aprende construyendo",
         "### Tema 1: Hexagonal: puertos que hablan el idioma del dominio",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Subtema 22.1.1 \u00b7 Ejecuta el ejemplo completo y reconoce sus l\u00edmites \u00b7 12 min",
+        "#### Subtema 22.1.2 \u00b7 Ampl\u00eda una consulta del puerto sin filtrar infraestructura \u00b7 10 min",
+        "#### Subtema 22.1.3 \u00b7 Transfiere la regla a una cancelaci\u00f3n independiente \u00b7 10 min",
         "### Tema 2: C4: contexto, contenedores, componentes y c\u00f3digo",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+        "#### Subtema 22.2.1 \u00b7 Ejecuta el ejemplo completo y reconoce sus l\u00edmites \u00b7 12 min",
+        "#### Subtema 22.2.2 \u00b7 Contrasta un contenedor con el c\u00f3digo que existir\u00eda \u00b7 10 min",
+        "#### Subtema 22.2.3 \u00b7 A\u00f1ade una relaci\u00f3n solo despu\u00e9s de justificarla \u00b7 10 min",
+        "### Tema 3: ADR: decisiones con contexto, alternativas y consecuencias",
+        "#### Subtema 22.3.1 \u00b7 Ejecuta el ejemplo completo y reconoce sus l\u00edmites \u00b7 12 min"
       ]
     },
     {
       "path": "web/public/content/spring-boot/modulo-23.md",
-      "lines": 330,
+      "lines": 343,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
       "headings": [
-        "# M\u00f3dulo 23: Spring Modulith y l\u00edmites del monolito modular",
+        "# M\u00f3dulo 23: Spring Modulith: l\u00edmites, eventos y pruebas modulares",
         "## Aprende construyendo",
         "### Tema 1: m\u00f3dulos y l\u00edmites entre paquetes",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### \u00bfPor qu\u00e9 es importante?",
-        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
-        "### Tema 2: eventos entre m\u00f3dulos sin importar implementaci\u00f3n"
+        "#### Subtema 23.1.1 \u00b7 Reconoce la frontera verificable \u00b7 10 min",
+        "#### Subtema 23.1.2 \u00b7 Publica contratos peque\u00f1os \u00b7 10 min",
+        "#### Subtema 23.1.3 \u00b7 Comprueba antes de mover paquetes \u00b7 10 min",
+        "### Tema 2: eventos entre m\u00f3dulos sin importar implementaci\u00f3n",
+        "#### Subtema 23.2.1 \u00b7 Publica desde el servicio \u00b7 10 min",
+        "#### Subtema 23.2.2 \u00b7 Reacciona mediante el contrato \u00b7 10 min",
+        "#### Subtema 23.2.3 \u00b7 Separa registro y efecto durable \u00b7 10 min",
+        "### Tema 3: documentaci\u00f3n generada y mapa de dependencias",
+        "#### Subtema 23.3.1 \u00b7 Genera documentos reproducibles \u00b7 10 min"
       ]
     },
     {
       "path": "web/public/content/spring-boot/modulo-24.md",
-      "lines": 315,
+      "lines": 346,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
       "headings": [
-        "# M\u00f3dulo 24: Spring GraphQL para pedidos y entregas",
+        "# M\u00f3dulo 24: Spring GraphQL: contrato, datos anidados y cambios",
         "## Aprende construyendo",
         "### Tema 1: schema-first con tipos y consultas",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### \u00bfPor qu\u00e9 es importante?",
-        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
-        "### Tema 2: data fetchers, relaciones y problema N+1"
+        "#### Subtema 24.1.1 \u00b7 Lee el contrato antes del resolver \u00b7 10 min",
+        "#### Subtema 24.1.2 \u00b7 Solicita un campo que no existe \u00b7 10 min",
+        "#### Subtema 24.1.3 \u00b7 Define el contrato de ausencia \u00b7 10 min",
+        "### Tema 2: data fetchers, relaciones y problema N+1",
+        "#### Subtema 24.2.1 \u00b7 Pide datos anidados \u00b7 10 min",
+        "#### Subtema 24.2.2 \u00b7 Relaciona cada resultado con su padre \u00b7 10 min",
+        "#### Subtema 24.2.3 \u00b7 Mide la frontera correcta \u00b7 10 min",
+        "### Tema 3: mutations y subscriptions",
+        "#### Subtema 24.3.1 \u00b7 Valida la transici\u00f3n \u00b7 10 min"
       ]
     },
     {
       "path": "web/public/content/spring-boot/modulo-25.md",
-      "lines": 352,
+      "lines": 364,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14549,7 +15132,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-3.md",
-      "lines": 646,
+      "lines": 648,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14570,7 +15153,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-4.md",
-      "lines": 1029,
+      "lines": 1037,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14591,7 +15174,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-5.md",
-      "lines": 497,
+      "lines": 501,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14612,7 +15195,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-6.md",
-      "lines": 345,
+      "lines": 425,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14620,20 +15203,20 @@
         "# M\u00f3dulo 6: Testing en Spring Boot",
         "## Aprende construyendo",
         "### Tema 1: Probar un controller con `@WebMvcTest`",
-        "#### Subtema 6.1 \u00b7 Recortar la prueba a la web (10 min)",
-        "#### Subtema 6.2 \u00b7 Ver la validaci\u00f3n y el error JSON (10 min)",
-        "#### Subtema 6.3 \u00b7 Diagnosticar una dependencia que falta (10 min)",
+        "#### Subtema 6.1 \u00b7 Recortar la prueba a la web \u00b7 10 min",
+        "#### Subtema 6.2 \u00b7 Ver la validaci\u00f3n y el error JSON \u00b7 10 min",
+        "#### Subtema 6.3 \u00b7 Diagnosticar una dependencia que falta \u00b7 10 min",
         "#### Entiende y cierra",
         "### Tema 2: Probar el repositorio contra PostgreSQL con `@DataJpaTest`",
-        "#### Subtema 6.4 \u00b7 Conectar el slice a un PostgreSQL desechable (10 min)",
-        "#### Subtema 6.5 \u00b7 Comprobar motor y operaci\u00f3n del repositorio (10 min)",
-        "#### Subtema 6.6 \u00b7 Detectar que el test cay\u00f3 en H2 (10 min)",
+        "#### Subtema 6.4 \u00b7 Conectar el slice a un PostgreSQL desechable \u00b7 10 min",
+        "#### Subtema 6.5 \u00b7 Comprobar motor y operaci\u00f3n del repositorio \u00b7 10 min",
+        "#### Subtema 6.6 \u00b7 Detectar que el test cay\u00f3 en H2 \u00b7 10 min",
         "#### Entiende y cierra"
       ]
     },
     {
       "path": "web/public/content/spring-boot/modulo-7.md",
-      "lines": 514,
+      "lines": 575,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14641,20 +15224,20 @@
         "# M\u00f3dulo 7: Observabilidad con Actuator",
         "## Aprende construyendo",
         "### Tema 1: Actuator y health checks personalizados",
-        "#### Subtema 7.1 \u00b7 Registrar una dependencia y su indicador (10 min)",
-        "#### Subtema 7.2 \u00b7 Comprobar `UP`, `DOWN` y acceso protegido (10 min)",
-        "#### Subtema 7.3 \u00b7 Diagnosticar un estado `UP` falso (10 min)",
+        "#### Subtema 7.1 \u00b7 Registrar una dependencia y su indicador \u00b7 10 min",
+        "#### Subtema 7.2 \u00b7 Comprobar `UP`, `DOWN` y acceso protegido \u00b7 10 min",
+        "#### Subtema 7.3 \u00b7 Diagnosticar un estado `UP` falso \u00b7 10 min",
         "#### Entiende y cierra",
         "### Tema 2: Contar operaciones de negocio con Micrometer",
-        "#### Subtema 7.4 \u00b7 Registrar un contador en el servicio real (10 min)",
-        "#### Subtema 7.5 \u00b7 Verificar valor y tag en el endpoint (10 min)",
-        "#### Subtema 7.6 \u00b7 Detectar un contador que nunca sube (10 min)",
+        "#### Subtema 7.4 \u00b7 Registrar un contador en el servicio real \u00b7 10 min",
+        "#### Subtema 7.5 \u00b7 Verificar valor y tag en el endpoint \u00b7 10 min",
+        "#### Subtema 7.6 \u00b7 Detectar un contador que nunca sube \u00b7 10 min",
         "#### Entiende y cierra"
       ]
     },
     {
       "path": "web/public/content/spring-boot/modulo-8.md",
-      "lines": 1276,
+      "lines": 1361,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14675,7 +15258,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-9.md",
-      "lines": 547,
+      "lines": 578,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -15736,7 +16319,7 @@
     },
     {
       "path": "web/src/app/course/lesson-viewer.scss",
-      "lines": 545,
+      "lines": 550,
       "kind": "angular-app",
       "symbols": [],
       "imports": [],

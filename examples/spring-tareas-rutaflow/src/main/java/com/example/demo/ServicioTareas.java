@@ -1,4 +1,7 @@
 package com.example.demo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import org.springframework.stereotype.Service;
 import io.micrometer.core.instrument.Counter;
@@ -29,4 +32,11 @@ public class ServicioTareas {
                 .map(mapper::toDto)
                 .orElseThrow(() -> new TareaNoEncontradaException(id));
     }
+
+public Page<TareaDTO> listar(int page, int size) {
+    var pageable = PageRequest.of(
+            page, size, Sort.by(Sort.Direction.ASC, "id"));
+    return repository.findAll(pageable).map(mapper::toDto);
+}
+
 }

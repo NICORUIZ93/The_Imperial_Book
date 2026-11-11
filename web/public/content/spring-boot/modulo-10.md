@@ -1577,7 +1577,7 @@ Sampling decide qué solicitudes exporta el tracer. El 100% es cómodo para poca
 
 Entrega la misma traza con sampling activo, el resultado de sampling en cero y la tasa propuesta para el entorno de prueba real. Proyecto RutaFlow: vincula trazas con logs sin exportar datos personales. Siguiente tema: probar contratos entre productor y consumidor.
 
-**Fuentes oficiales:** [tracing en Spring Boot](https://docs.spring.io/spring-boot/reference/actuator/tracing.html), [exportación y propagación OTLP](https://docs.spring.io/spring-boot/4.1-SNAPSHOT/reference/actuator/observability.html), [Micrometer Tracing](https://docs.micrometer.io/tracing/reference/) y [Jaeger local con OTLP](https://www.jaegertracing.io/docs/2.22/getting-started/).
+**Fuentes oficiales:** [tracing en Spring Boot](https://docs.spring.io/spring-boot/reference/actuator/tracing.html), [exportación y propagación OTLP](https://docs.spring.io/spring-boot/4.1/reference/actuator/observability.html), [Micrometer Tracing](https://docs.micrometer.io/tracing/reference/) y [Jaeger local con OTLP](https://www.jaegertracing.io/docs/2.22/getting-started/).
 
 **¿Por qué es importante?** Un trace ID compartido permite ver el tiempo y el resultado de cada salto entre servicios en una sola solicitud.
 

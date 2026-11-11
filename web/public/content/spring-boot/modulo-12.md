@@ -33,13 +33,13 @@ POST /api/entregas
   HTTP 201 ← EntregaResponse ← entidad guardada
 ```
 
-**Resultado esperado:** la suite final informa 5 pruebas y 0 fallos; la petición de creación devuelve HTTP 201 y una URL `Location`.
+**Resultado esperado:** la suite final informa 7 pruebas y 0 fallos; la petición de creación devuelve HTTP 201 y una URL `Location`.
 
 **Fallo deliberado:** cambia temporalmente `@PostMapping` por `@PutMapping` y ejecuta `./scripts/verify-integration.sh`. **Diagnóstico:** la prueba recibe un estado distinto a 201 porque envía POST. Restaura `@PostMapping`.
 
 **3. Entiende**
 
-El flujo se puede seguir leyendo los archivos: el controller convierte la entrada y la respuesta HTTP, el service coordina la operación y el repository persiste. El diagrama representa este laboratorio; aún no incluye seguridad ni eventos.
+El flujo se puede seguir leyendo los archivos: el controller convierte la entrada y la respuesta HTTP, el service coordina la operación y el repository persiste. El diagrama recorta las capas de datos; el laboratorio final ya incluye JWT y métricas, que se analizan en el Tema 2. No incluye entrega de eventos a un broker.
 
 **4. Cierra**
 
@@ -65,7 +65,7 @@ CREATE TABLE entrega (
 
 En `application.properties`, `spring.jpa.hibernate.ddl-auto=validate` pide comprobar que la tabla coincide; Flyway aplica la migración.
 
-**Resultado esperado:** Flyway aplica la migración y Hibernate valida la tabla antes de ejecutar las cinco pruebas.
+**Resultado esperado:** Flyway aplica la migración y Hibernate valida la tabla antes de ejecutar las siete pruebas.
 
 **Fallo deliberado:** renombra la migración para que ya no empiece con `V1__` y vuelve a ejecutar `./scripts/verify-integration.sh`. **Diagnóstico:** Flyway no la reconoce y la validación de Hibernate falla porque falta `entrega`. Restaura el nombre `V1__crear_entrega.sql`.
 
@@ -97,7 +97,7 @@ Abre `entrega/CrearEntregaRequest.java` y `entrega/EntregaController.java`. Env�
 
 El test `destinatarioVacioSeRechazaAntesDeGuardar` envía el segundo cuerpo por HTTP real y comprueba que recibe 400. Ejecuta `./scripts/verify-integration.sh`.
 
-**Resultado esperado:** destinatario válido produce 201; destinatario vacío produce 400 y no se guarda. La suite completa mantiene sus cinco pruebas en verde.
+**Resultado esperado:** destinatario válido produce 201; destinatario vacío produce 400 y no se guarda. La suite completa mantiene sus siete pruebas en verde.
 
 **Fallo deliberado:** quita `@Valid` de `crear(...)` y ejecuta `./scripts/verify-integration.sh`. **Diagnóstico:** la validación de `@NotBlank` deja de activarse y la prueba que espera 400 falla. Restaura `@Valid`.
 
@@ -123,7 +123,7 @@ Abre `src/test/java/academia/rutaflow/integrador/entrega/ArquitecturaIntegradaTe
 ./scripts/verify-integration.sh
 ```
 
-**Resultado esperado:** las cinco pruebas pasan; cubren HTTP 201 con persistencia, HTTP 400 sin guardar, reglas JWT 401/403, métrica y guardia de configuración.
+**Resultado esperado:** las siete pruebas pasan; cubren HTTP 201 con persistencia, HTTP 400 sin guardar, reglas JWT 401/403, métrica y guardia de configuración.
 
 **Fallo deliberado:** cambia en la prueba el puerto destino por `port + 1` y ejecútala. **Diagnóstico:** la conexión HTTP falla porque el servidor de prueba escucha en `port`. Restaura `port`.
 
@@ -133,9 +133,9 @@ La app recibe una petición de red local, Flyway prepara PostgreSQL y el reposit
 
 **4. Cierra**
 
-Guarda como evidencia el resultado de las cinco pruebas y dibuja el recorrido desde JSON hasta la fila. Si algo falla, anota primero el primer error y el archivo responsable; no tapes un problema de conexión cambiando el código de negocio.
+Guarda como evidencia el resultado de las siete pruebas y dibuja el recorrido desde JSON hasta la fila. Si algo falla, anota primero el primer error y el archivo responsable; no tapes un problema de conexión cambiando el código de negocio.
 
-**Siguiente:** el Tema 2 añadirá seguridad, persistencia y observabilidad al servicio. Este primer corte no configura autenticación ni métricas.
+**Siguiente:** el Tema 2 analiza la seguridad y las métricas ya presentes en este laboratorio final. No desactives JWT para seguir el Tema 1: sus pruebas envían credenciales válidas cuando corresponde.
 
 **Fuentes:** [migraciones SQL de Flyway en Spring Boot](https://docs.spring.io/spring-boot/how-to/data-initialization.html), [Testcontainers con PostgreSQL](https://java.testcontainers.org/modules/databases/postgres/), [JUnit 5 con Testcontainers](https://java.testcontainers.org/test_framework_integration/junit_5/) y [runtime Podman](https://java.testcontainers.org/supported_docker_environment/).
 
@@ -170,7 +170,7 @@ Abre `src/main/java/academia/rutaflow/integrador/security/JwtSecurityConfig.java
 ./scripts/verify-integration.sh
 ```
 
-**Resultado esperado:** la app inicia y las cinco pruebas pasan; los requests de creación llevan `Authorization: Bearer ...`.
+**Resultado esperado:** la app inicia y las siete pruebas pasan; los requests de creación llevan `Authorization: Bearer ...`.
 
 **Fallo deliberado:** cambia en el convertidor el claim `roles` por `perfiles` y ejecuta el script. **Diagnóstico:** el token todavía tiene una firma válida, pero el convertidor ya no encuentra la autoridad y el request con `ROLE_USER` recibe 403. Restaura `roles`.
 
@@ -304,7 +304,7 @@ En `src/test/java/academia/rutaflow/integrador/entrega/ArquitecturaIntegradaTest
 ./scripts/verify-integration.sh
 ```
 
-**Resultado esperado:** la suite informa 5 pruebas y 0 fallos; la prueba identifica la migración `V1__crear_entrega.sql`.
+**Resultado esperado:** la suite informa 7 pruebas y 0 fallos; la prueba identifica la migración `V1__crear_entrega.sql`.
 
 **Fallo deliberado:** cambia `spring.jpa.hibernate.ddl-auto=validate` a `update` en `application.properties` y ejecuta el script. **Diagnóstico:** la prueba falla con `expected: "validate" but was: "update"`. Restaura `validate`.
 
@@ -324,13 +324,13 @@ Cada pieza aislada puede pasar y el servicio completo fallar. Esta suite recorre
 
 **2. Hazlo tú**
 
-Abre `ArquitecturaIntegradaTest.java` y localiza las cinco pruebas. Ejecuta `./scripts/verify-integration.sh`; observa el informe Surefire final.
+Abre `ArquitecturaIntegradaTest.java` y localiza las siete pruebas. Ejecuta `./scripts/verify-integration.sh`; observa el informe Surefire final.
 
 ```bash
 ./scripts/verify-integration.sh
 ```
 
-**Resultado esperado:** 5 pruebas pasan: creación y persistencia, rechazo del destinatario vacío, autenticación/autorización, contador visible y guardia de configuración.
+**Resultado esperado:** 7 pruebas pasan: las cinco del flujo base (creación/persistencia, validación, JWT, métrica y configuración) y dos contratos adicionales de respuesta y error de M13.
 
 **Fallo deliberado:** quita `metrics` de `management.endpoints.web.exposure.include` y repite el script. **Diagnóstico:** la prueba de Actuator no recibe 200 porque la ruta de métricas ya no se publica. Restaura `health,metrics`.
 
@@ -340,7 +340,7 @@ Abre `ArquitecturaIntegradaTest.java` y localiza las cinco pruebas. Ejecuta `./s
 
 **4. Cierra**
 
-Relaciona cada una de las cinco pruebas con la capa que verifica. No cuentes un 401 o un 403 esperado como fallo de la suite: son los resultados correctos para esos casos.
+Relaciona cada una de las siete pruebas con la capa que verifica. No cuentes un 401 o un 403 esperado como fallo de la suite: son los resultados correctos para esos casos.
 
 #### Subtema 12.3.3: Declara lo que todavía falta para desplegar · 8 min
 
@@ -392,9 +392,9 @@ La API no implementa emisor JWT, despliegue Kubernetes, exporter, TLS, límites 
 
 **4. Cierra**
 
-Entrega el informe de 5 pruebas verdes y la lista de pendientes con evidencias requeridas. Con eso cierras el track describiendo tanto lo demostrado como sus límites.
+Entrega el informe de 7 pruebas verdes y la lista de pendientes con evidencias requeridas. Con eso cierras el hito integrador base. El M13 profundiza fronteras transaccionales, recuperación y contratos; M14–M25 amplían prácticas especializadas.
 
-**Fuentes:** [inicialización de bases en Spring Boot](https://docs.spring.io/spring-boot/how-to/data-initialization.html), [JWT Resource Server](https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html), [métricas y Actuator](https://docs.spring.io/spring-boot/reference/actuator/metrics.html) y [probes de Spring Boot](https://docs.spring.io/spring-boot/reference/actuator/kubernetes-probes.html).
+**Fuentes:** [inicialización de bases en Spring Boot](https://docs.spring.io/spring-boot/how-to/data-initialization.html), [JWT Resource Server](https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html), [métricas y Actuator](https://docs.spring.io/spring-boot/reference/actuator/metrics.html) y [probes de Spring Boot](https://docs.spring.io/spring-boot/reference/actuator/endpoints.html#actuator.endpoints.kubernetes-probes).
 
 ---
 
@@ -421,7 +421,7 @@ bash ./scripts/verify-integration.sh
 | 4 | Exponer Actuator con una métrica de negocio | Módulo 7 | Verifica en `/actuator/metrics` |
 | 5 | Escribir tests de integración con Testcontainers | Módulo 6 | Cubriendo el flujo crítico completo |
 
-**Verificación local:** desde `examples/spring-boot-integrador-rutaflow/`, ejecuta `./scripts/verify-integration.sh`. Las cinco pruebas recorren PostgreSQL real, migración, HTTP, JWT, roles, métrica y guardia de configuración. Este resultado no certifica despliegue productivo; consulta `docs/salida-a-produccion.md` para los pendientes.
+**Verificación local:** desde `examples/spring-boot-integrador-rutaflow/`, ejecuta `./scripts/verify-integration.sh`. Las siete pruebas recorren PostgreSQL real, migración, HTTP, JWT, roles, métrica y guardia de configuración. Este resultado no certifica despliegue productivo; consulta `docs/salida-a-produccion.md` para los pendientes.
 
 **Errores comunes y soluciones**
 

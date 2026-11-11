@@ -25,4 +25,13 @@ class MigracionesTest {
         );
         assertThat(tareas.findById(guardada.getId())).isPresent();
     }
+
+@Test
+void flywayAplicoV1YV2EnOrden() {
+    assertThat(flyway.info().applied())
+        .extracting(migration -> migration.getVersion().getVersion())
+        .contains("1", "2");
+    assertThat(flyway.info().current().getVersion().getVersion()).isEqualTo("2");
+}
+
 }

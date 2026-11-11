@@ -119,7 +119,8 @@ CREATE TABLE punto (
 Desde `examples/spring-boot-mysql-spatial-rutaflow/`, ejecuta:
 
 ```bash
-DOCKER_HOST="$(podman machine inspect --format '{{.ConnectionInfo.PodmanSocket.Path}}')" \
+DOCKER_HOST="unix://$(podman machine inspect --format '{{.ConnectionInfo.PodmanSocket.Path}}')" \
+TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE=/var/run/docker.sock \
 TESTCONTAINERS_RYUK_DISABLED=true ./mvnw -q test
 ```
 
@@ -146,12 +147,13 @@ ST_GeomFromText('POINT(-74.08 4.61)', 4326, 'axis-order=long-lat')
 Ejecuta solo esa prueba:
 
 ```bash
-DOCKER_HOST="$(podman machine inspect --format '{{.ConnectionInfo.PodmanSocket.Path}}')" \
+DOCKER_HOST="unix://$(podman machine inspect --format '{{.ConnectionInfo.PodmanSocket.Path}}')" \
+TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE=/var/run/docker.sock \
 TESTCONTAINERS_RYUK_DISABLED=true ./mvnw -q test -Dtest=ConsultaEspacialMySqlTest#distanciaEntreBogotaYMedellinSeMideEnMetros
 ```
 
 
-Para comprobar «Especifica cómo leer latitud y longitud», consulta: `examples/spring-boot-mysql-spatial-rutaflow/pom.xml`. Desde `examples/spring-boot-mysql-spatial-rutaflow` repite la comprobación:
+Para comprobar «Especifica cómo leer latitud y longitud», consulta: `examples/spring-boot-mysql-spatial-rutaflow/src/test/java/academia/rutaflow/spatial/ConsultaEspacialMySqlTest.java`. Desde `examples/spring-boot-mysql-spatial-rutaflow` repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -172,12 +174,13 @@ Para comprobar «Especifica cómo leer latitud y longitud», consulta: `examples
 **Hazlo tú:** Ejecuta `explainUsaIndiceEspacialParaReducirElAreaDeBusqueda` en `ConsultaEspacialMySqlTest`:
 
 ```bash
-DOCKER_HOST="$(podman machine inspect --format '{{.ConnectionInfo.PodmanSocket.Path}}')" \
+DOCKER_HOST="unix://$(podman machine inspect --format '{{.ConnectionInfo.PodmanSocket.Path}}')" \
+TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE=/var/run/docker.sock \
 TESTCONTAINERS_RYUK_DISABLED=true ./mvnw -q test -Dtest=ConsultaEspacialMySqlTest#explainUsaIndiceEspacialParaReducirElAreaDeBusqueda
 ```
 
 
-Para comprobar «Comprueba el índice con EXPLAIN», consulta: `examples/spring-boot-mysql-spatial-rutaflow/pom.xml`. Desde `examples/spring-boot-mysql-spatial-rutaflow` repite la comprobación:
+Para comprobar «Comprueba el índice con EXPLAIN», consulta: `examples/spring-boot-mysql-spatial-rutaflow/src/test/java/academia/rutaflow/spatial/ConsultaEspacialMySqlTest.java`. Desde `examples/spring-boot-mysql-spatial-rutaflow` repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -198,12 +201,13 @@ Para comprobar «Comprueba el índice con EXPLAIN», consulta: `examples/spring-
 **Hazlo tú:** Ejecuta `srid4326PorDefectoInterpretaElPrimerEjeComoLatitud`. Compara el resultado predeterminado de MySQL con la opción `axis-order=long-lat` que usa el test anterior.
 
 ```bash
-DOCKER_HOST="$(podman machine inspect --format '{{.ConnectionInfo.PodmanSocket.Path}}')" \
+DOCKER_HOST="unix://$(podman machine inspect --format '{{.ConnectionInfo.PodmanSocket.Path}}')" \
+TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE=/var/run/docker.sock \
 TESTCONTAINERS_RYUK_DISABLED=true ./mvnw -q test -Dtest=ConsultaEspacialMySqlTest#srid4326PorDefectoInterpretaElPrimerEjeComoLatitud
 ```
 
 
-Para comprobar «Separa candidatos cercanos de una ruta», consulta: `examples/spring-boot-mysql-spatial-rutaflow/pom.xml`. Desde `examples/spring-boot-mysql-spatial-rutaflow` repite la comprobación:
+Para comprobar «Separa candidatos cercanos de una ruta», consulta: `examples/spring-boot-mysql-spatial-rutaflow/src/test/java/academia/rutaflow/spatial/ConsultaEspacialMySqlTest.java`. Desde `examples/spring-boot-mysql-spatial-rutaflow` repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -278,7 +282,7 @@ Desde `examples/spring-boot-hibernate-spatial-rutaflow/`, ejecuta la suite. Con 
 ```
 
 
-Para comprobar «Detecta dos escrituras sobre versiones distintas», consulta: `examples/spring-boot-hibernate-spatial-rutaflow/pom.xml`. Desde `examples/spring-boot-hibernate-spatial-rutaflow` repite la comprobación:
+Para comprobar «Detecta dos escrituras sobre versiones distintas», consulta: `examples/spring-boot-hibernate-spatial-rutaflow/src/test/java/academia/rutaflow/hibernate/posicion/PosicionConductorTest.java`. Desde `examples/spring-boot-hibernate-spatial-rutaflow` repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -351,7 +355,7 @@ cd examples/spring-boot-jwt-ownership-rutaflow
 ```
 
 
-Para comprobar «Distingue autenticación de rol», consulta: `examples/spring-boot-jwt-ownership-rutaflow/pom.xml`. Desde `examples/spring-boot-jwt-ownership-rutaflow` repite la comprobación:
+Para comprobar «Distingue autenticación de rol», consulta: `examples/spring-boot-jwt-ownership-rutaflow/src/test/java/academia/rutaflow/ownership/jornada/OwnershipJwtTest.java`. Desde `examples/spring-boot-jwt-ownership-rutaflow` repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -570,7 +574,7 @@ if (reader.read(0) == null) throw new InvalidImageException("No se pudo decodifi
 ```
 
 
-Para comprobar «Comprueba el contenido de la imagen», consulta: `examples/spring-boot-upload-push-rutaflow/pom.xml`. Desde `examples/spring-boot-upload-push-rutaflow` repite la comprobación:
+Para comprobar «Comprueba el contenido de la imagen», consulta: `examples/spring-boot-upload-push-rutaflow/src/test/java/academia/rutaflow/upload/UploadPushIntegrationTest.java`. Desde `examples/spring-boot-upload-push-rutaflow` repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -598,7 +602,7 @@ public void afterCommit(UploadAccepted event) {
 ```
 
 
-Para comprobar «Notifica solo tras guardar», consulta: `examples/spring-boot-upload-push-rutaflow/pom.xml`. Desde `examples/spring-boot-upload-push-rutaflow` repite la comprobación:
+Para comprobar «Notifica solo tras guardar», consulta: `examples/spring-boot-upload-push-rutaflow/src/test/java/academia/rutaflow/upload/UploadPushIntegrationTest.java`. Desde `examples/spring-boot-upload-push-rutaflow` repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -623,7 +627,7 @@ Para comprobar «Notifica solo tras guardar», consulta: `examples/spring-boot-u
 **Hazlo tú:** Abre `InMemoryImageObjectStore`, `schema.sql` y `README.md`. Traza desde el POST los pasos validar → guardar objeto → insertar metadatos → commit → gateway. Comprueba que el nombre `malware.jpg` no se reutiliza como clave.
 
 
-Para comprobar «Traza el archivo y define qué falta», consulta: `examples/spring-boot-upload-push-rutaflow/pom.xml`. Desde `examples/spring-boot-upload-push-rutaflow` repite la comprobación:
+Para comprobar «Traza el archivo y define qué falta», consulta: `examples/spring-boot-upload-push-rutaflow/src/test/java/academia/rutaflow/upload/UploadPushIntegrationTest.java`. Desde `examples/spring-boot-upload-push-rutaflow` repite la comprobación:
 
 ```bash
 ./mvnw -q test

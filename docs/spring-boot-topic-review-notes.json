@@ -1,0 +1,165 @@
+{
+  "0": [
+    "Contrato → repositorio → servicio → HTTP. Corregidos reinicio tras crear controller y restauración del ejercicio antes del test siguiente.",
+    "Contrasta new y repositorio falso con contexto e inyección por campo; ambos tests tienen contenido completo.",
+    "Estereotipos → árbol de dependencias → prototype/ObjectProvider; no confunde prototype con scope request."
+  ],
+  "1": [
+    "Generación aislada con Boot y paquete fijados; vuelve explícitamente al proyecto acumulativo. Maven, sin build Gradle.",
+    "YAML → Properties → sobrescritura CLI; clean evita recursos antiguos y las claves tienen salida comprobable.",
+    "Base → perfil dev → capas. Corregido el resumen que pedía JPA/PostgreSQL antes de enseñarlos."
+  ],
+  "2": [
+    "Entidad → DTO → contrato estable. Quitada dependencia anticipada de JWT y detalladas dependencias al continuar M0–M1.",
+    "Bean Validation → ResponseEntity → casos límite. Corregidas dos continuaciones de línea curl.",
+    "ApiError → excepción de ausencia → comparación HTTP; distingue error previsto de un fallo interno.",
+    "Lombok → MapStruct → políticas de campos. Procesadores explícitos, versiones fijadas; los fragmentos son cambios sobre clases previas.",
+    "Springdoc 3.2.0 → anotaciones → prueba HTTP del documento. Se incorpora al laboratorio acumulativo que antes no lo ejecutaba.",
+    "PageRequest → límites → SQL y decisión Page/Slice. Añadido import RequestParam y corregido límite inclusivo 0..1000; referencia ejecutable ampliada."
+  ],
+  "3": [
+    "Guardar → derivación → JPQL. Añadida instrucción real para instalar starter-data-jpa-test, antes solo mencionado como prerrequisito.",
+    "Conteo N+1 → JOIN FETCH → EntityGraph; consulta perezosa separada conserva el contraste. Referencia ampliada a los tres casos.",
+    "V1 → V2 → duplicado/checksum; pruebas incluyen guardado y versiones aplicadas; SQL H2 no equivale a todos los motores."
+  ],
+  "4": [
+    "Cadena Basic → MockMvc → rutas públicas. Añadido starter-webmvc-test antes del primer import modular que lo necesita.",
+    "Firma → filtro → permisos. JWT HS256 local, no proveedor OIDC ni rotación de claves.",
+    "Preflight → DELETE autenticado → método no permitido. Separa CORS, autenticación y CSRF según transporte de credenciales.",
+    "Cliente restringido → servidor loopback → redirects; clasificar metadata IP no demuestra DNS rebinding.",
+    "Hash → login/token → credenciales rechazadas. Se conservaron las dos pruebas negativas en la referencia acumulativa."
+  ],
+  "5": [
+    "Record validado → binding tests → JwtService; incluye actualización del constructor del test previo.",
+    "Configuración ausente/vacía → validación → fallo rápido; no afirma que @NotBlank valide fuerza o Base64 de la clave.",
+    "Regla 20/21 → handler compartido → borde exacto. Referencia ampliada con controller, excepción y ambos tests."
+  ],
+  "6": [
+    "Slice web → validación → mock ausente; addFilters=false limita lo que acredita sobre seguridad.",
+    "Propiedades dinámicas → PostgreSQL real → caída accidental a H2. Corregida referencia que apuntaba al test de controller.",
+    "Creación/GET persistido → 401 → servicio sin guardar. Corregida referencia al archivo; añadido el caso anónimo a la referencia."
+  ],
+  "7": [
+    "Indicador → UP/DOWN/401 → falsa salud; la dependencia controlada no es una pasarela real.",
+    "Contador → endpoint/tag → incremento ausente; un contador después de save no es contabilidad transaccional durable.",
+    "Activación → dependencia solo en readiness → estados; distingue estado de la app y acción del orquestador."
+  ],
+  "8": [
+    "Key → dos grupos → partición/orden. Broker embebido real, sin afirmar un clúster de producción.",
+    "Backoff → intentos/DLT → política y replay; tópico destino y particiones identificables.",
+    "Idempotencia productor → outbox/inbox SQL → aislamiento Kafka; separa garantías y restricciones concurrentes.",
+    "Asignación → callbacks → rebalanceo → membresía estática. Referencias cambiadas del POM al test que demuestra asignación; reinicios estáticos pendientes.",
+    "Distribución → retención → confirms/ack → selección. Usa Node como comparación explícita; no es una implementación Spring adicional.",
+    "Función → binder → rechazo → broker. Test binder no acredita Kafka/Rabbit ni su DLQ.",
+    "Filtro → ventana → TopologyTestDriver → aplicación. Actualizada referencia Boot 4.1 y enlace oficial de testing Kafka.",
+    "Schema → evolución → serde mock → Registry HTTP. Corregida regla antigua del default de unión para Avro 1.12; Registry desplegado requiere ejecución aparte.",
+    "Topología → confirm/return → ack/DLQ → prefetch; tests usan dobles y no acreditan medición real del broker."
+  ],
+  "9": [
+    "Cero/uno/secuencia → error → defer → demanda. No confunde evaluación de just con defer.",
+    "Builder → flatMap → HTTP error → timeout. Servidor local y StepVerifier, con tiempos didácticos.",
+    "Decisión MVC/WebFlux → bloqueo → R2DBC → boundedElastic. No presenta JDBC envuelto en Mono como no bloqueante."
+  ],
+  "10": [
+    "Config por archivos → perfil → SimpleDiscoveryClient; resolución estática no equivale a operar Eureka/Consul.",
+    "Predicado Gateway → StripPrefix → 404 y log del backend. Backend Python es fixture HTTP explícito, no otro microservicio Spring.",
+    "Ventana/fallos → petición bloqueada → HALF_OPEN. Transición forzada prueba recuperación, no temporizador real.",
+    "Issuer → rol → propiedad → TokenRelay; decoder simulado y login OIDC real están separados. Recorrido navegador/Keycloak pendiente.",
+    "HTTP interface → timeout → discovery → presupuesto; timeout local no constituye deadline extremo a extremo.",
+    "Proto → servicio → TCP → evolución; no acredita compatibilidad entre todas las versiones ni TLS.",
+    "Agregado → regla → inmutabilidad → decisión de extracción; memoria y sin publicación durable.",
+    "Workflow/Activity → worker → retry → compensación; entorno Temporal de prueba, efectos externos controlados.",
+    "Fronteras → verify → evento → receptor; se reutiliza el lab de M23. Documentación generada es un cuarto test adicional.",
+    "Broker → dos instancias → busenv → reinicio; script específico necesario, Maven con cero tests no acredita propagación.",
+    "Jaeger → dos procesos → traza → sampling; referencia snapshot sustituida por versión estable. No mide carga.",
+    "Contrato → prueba generada → stub consumidor → rotura. Multi-módulo Maven y artefacto stubs explícitos, sin receta Gradle."
+  ],
+  "11": [
+    "Inspección JAR → tools/capas → Dockerfile → cambio; reutilización de imagen requiere build y runtime aparte.",
+    "AOT → hint → native compile → comparación. Corregido log del script para funcionar sin target; JVM AOT no es un binario nativo.",
+    "Probes → estado → Deployment → fallos; enlace oficial corregido. Kubernetes requiere clúster e imagen disponible."
+  ],
+  "12": [
+    "Capas → Flyway → validación → HTTP/PostgreSQL. Corregidos conteo 5→7 y afirmación de que el lab final aún carecía de JWT.",
+    "Firma → rol → contador → Actuator. Se analiza configuración existente del laboratorio final, no una etapa inexistente sin seguridad.",
+    "Guardia → suite → checklist → siguiente nivel. Corregido cierre prematuro del track; M13–M25 siguen después de este hito."
+  ],
+  "13": [
+    "Proxy → this → otro bean → contraste; estado transaccional no demuestra por sí solo rollback de escrituras.",
+    "Unicidad → ON CONFLICT → carrera → inbox. No es API HTTP idempotente completa: faltan payload, principal y respuesta persistida.",
+    "Contrato público → nombre JSON → error → evolución; añadir campo al record requiere actualizar sus constructores.",
+    "Observation → traza → cardinalidad → objetivo operacional; un SLO necesita medición agregada, no solo una traza."
+  ],
+  "14": [
+    "Estado → DTO → cancelación → repetición. DELETE conserva la fila; el endpoint no implementa borrado físico.",
+    "SRID → orden de ejes → EXPLAIN → distancia/ruta. Corregido esquema unix del socket Podman; MySQL del ejemplo está fijado a 8.0.36.",
+    "JTS/SRID → persistencia → versión → conflicto. Usa MySQL real; no migra automáticamente a la versión más reciente.",
+    "Firma → rol → propiedad → acceso horizontal; dueños en memoria, sin Keycloak en este lab.",
+    "Conexión → posición → secuencia → destino erróneo; WebSocket real local, sin broker durable ni permisos por envío.",
+    "Límites → imagen decodificada → after-commit → almacenamiento. Push controlado, objetos en memoria y ventana de pérdida declarada."
+  ],
+  "15": [
+    "Demanda cero → 3+7 → ilimitada → limitRate; referencias apuntan al test real, no al POM.",
+    "Singleton → dos clases → aislamiento → decisión. Corregidas referencias erróneas a idempotencia: el lab correcto es testcontainers-singleton-rutaflow.",
+    "Puerto → reglas bytecode → aplicación → alcance. ArchUnit requiere su propio lab; no es una prueba funcional.",
+    "Concurrencia/ritmo → bulkhead → permisos → límites; no cuota global entre réplicas.",
+    "Pasos → compensación inversa → éxito → recuperación. Participantes en memoria, no saga distribuida durable.",
+    "Hechos → replay → orden inválido → límites. Event store en memoria; no equivale a Kafka ni outbox.",
+    "PENDING → transacción local → reapertura archivo → repetición; recuperación H2 local, no coordinación de bases remotas.",
+    "Agregado → puerto → HTTP → corte vertical; seis pruebas en memoria, sin seguridad ni JPA."
+  ],
+  "16": [
+    "FK → ambos lados → cascade → flush/clear; corregido enlace a OneToMany, Hibernate/JPA de lab tienen su propio POM.",
+    "N+1 → EntityGraph → contexto cerrado → decisión; medir SQL y no convertir todo a EAGER."
+  ],
+  "17": [
+    "DataSource/DAO → parámetros → RowMapper → orden allowlist; valores y nombres de columna tienen tratamientos distintos.",
+    "Unidad local → rollback runtime → checked/rollbackFor → frontera; no engloba HTTP o Kafka."
+  ],
+  "18": [
+    "Filtro → roles → 401/403 → propiedad; repasa M4/M10 con lab OIDC, no añade un segundo sistema de login.",
+    "DTO → CORS → issuer → SSRF; cambia de lab explícitamente; JWT mock no acredita firma real de Keycloak."
+  ],
+  "19": [
+    "Job/Step → lectura/proceso → chunk → filas; H2 y tamaño de chunk didáctico.",
+    "Restart → parámetros → retry/skip → auditoría. Repositorio de job y parámetros estables determinan la instancia."
+  ],
+  "20": [
+    "Intervalo → servicio → registro/manual → réplicas; no prueba reloj ni exclusión distribuida.",
+    "Evento local → after-commit → outbox → inbox; no confunde listener local con entrega recuperable.",
+    "Mensaje → SMTP config → outbox → agotamiento. Adaptador controlado; no correo realmente entregado.",
+    "Lectura → invalidación/put → límites → métricas → Redis. Writer inmediato explícito para lectura entre gestores; costo de bloqueo explicado.",
+    "Proxy → self-call → Future excepcional → rechazo por capacidad. No acredita durabilidad ni propagación de seguridad.",
+    "Sobre → namespace → validación/Fault → decisión de adaptador. Ejemplo complementario Python, no servidor SOAP Spring ni WSDL ejecutado.",
+    "ChatClient controlado → callback autorizado → sesiones → esquema. Boot 4.0.9 + AI 2.0.2 compatibles, sin calidad LLM real.",
+    "Filtro tenant → vacío → límite/IDs → metadato ausente. Recuperación literal, no embeddings ni generación. Corregida numeración T6–T8."
+  ],
+  "21": [
+    "Publicación → grupos → orden; refuerzo de M8 sobre el mismo lab y sus pruebas.",
+    "Reintentos/DLT → inbox → rollback conjunto; mantiene diferencia entre entrega y efecto idempotente.",
+    "Outbox SQL → ACK → replay; dispatcher didáctico sin lease, una sola instancia."
+  ],
+  "22": [
+    "Java completo → ampliar puerto → cancelación independiente; ejercicios sin solución cerrada no son títulos vacíos.",
+    "Validador → evidencia de relaciones → contenedor hipotético; valida forma C4, no infraestructura real.",
+    "Tres ADR → alternativas → decisión reemplazada; esquema documental no acredita decisión humana."
+  ],
+  "23": [
+    "Modelo modular → contrato público → refactor; wrapper reemplazado por uno autónomo para cumplir los comandos de copia.",
+    "Publicación → reacción → durabilidad; H2 y bandeja en memoria, sin recuperación tras reinicio.",
+    "Generación → relación/import → guía; hay .puml/.adoc, no imágenes renderizadas.",
+    "Módulo aislado → flujo → suite; PublishedEvents/Awaitility ejecutables, Scenario explicado pero no implementado."
+  ],
+  "24": [
+    "Schema → campo inválido → ausencia; nullabilidad y errores GraphQL explícitos.",
+    "Batch → padres → contador; dos padres en una invocación no prueba consultas SQL ni autorización.",
+    "Transición → suscripción previa → emisión local; no negocia WebSocket ni garantiza entrega durable.",
+    "Tester → HTTP curl → matriz; servicio y transporte se verifican por separado."
+  ],
+  "25": [
+    "Función → binding/destino → entrada inválida; test binder en JVM, sin sockets de broker.",
+    "Kafka → Rabbit → diferencias; requiere brokers y cliente/cola de observación, prueba manual separada.",
+    "Retry Kafka → DLQ Rabbit → dato inválido; replay no repara el dato ni reemplaza idempotencia.",
+    "Mapping → error → alcance. Corregida cuenta de dos a tres pruebas del laboratorio; broker real sigue separado."
+  ]
+}

@@ -484,6 +484,8 @@ spring:
       port: ${REDIS_PORT:6379}
 ```
 
+Abre también `src/main/java/academia/rutaflow/cache/RedisWriteConfiguration.java`: personaliza el writer con `RedisCacheWriter.create(connectionFactory, config -> config.immediateWrites())`, conservando TTL y prefijo definidos por Boot. El segundo gestor del test usa la misma política. En Spring Data Redis 4 con Lettuce, escritura e invalidación pueden terminar después del retorno del método; este laboratorio exige visibilidad inmediata y elige esperar la operación. Esa espera bloquea al llamador y no convierte caché y base de datos en una transacción.
+
 Abre `src/test/java/academia/rutaflow/cache/RedisTarifaTest.java`. La prueba crea dos gestores de caché con el mismo prefijo único para comprobar que comparten valores e invalidación. Arranca un Redis de laboratorio en el puerto 16379 (puedes sustituir `podman` por `docker`):
 
 ```bash
@@ -505,7 +507,7 @@ El ejemplo usa el serializador Java predeterminado, por eso `Tarifa` implementa 
 
 **Cierra:** elige Caffeine o Redis para el catálogo de RutaFlow y documenta qué harás si Redis no responde: consultar el origen con límites o devolver un error controlado. No añadas un fallback silencioso a autorización. La prueba usa dos gestores en una JVM; no mide carga, pérdida de red durante una escritura ni varias JVM con una base de datos real.
 
-**Fuentes primarias:** [Spring Boot: proveedores, Caffeine y Redis](https://docs.spring.io/spring-boot/reference/io/caching.html); [Spring Data Redis: TTL, prefijos y serialización](https://docs.spring.io/spring-data/redis/reference/redis/redis-cache.html); [Spring Boot: conexión Redis](https://docs.spring.io/spring-boot/reference/data/nosql.html).
+**Fuentes primarias:** [Spring Boot: proveedores, Caffeine y Redis](https://docs.spring.io/spring-boot/reference/io/caching.html); [Spring Data Redis: TTL, prefijos y serialización](https://docs.spring.io/spring-data/redis/reference/redis/redis-cache.html); [Spring Boot: conexión Redis](https://docs.spring.io/spring-boot/reference/data/nosql.html); [Spring Data Redis: migración y escrituras inmediatas](https://docs.spring.io/spring-data/redis/reference/upgrading.html).
 
 Consulta también [Spring Framework: `@CachePut`, proxies y carga sincronizada](https://docs.spring.io/spring-framework/reference/integration/cache/annotations.html) y [Spring Boot: métricas de caché](https://docs.spring.io/spring-boot/reference/actuator/metrics.html).
 **Hito del tema:** conserva (1) las seis pruebas locales correctas, (2) la predicción y el fallo al quitar la invalidación, (3) el ejercicio CENTRO con contador comprobado y (4) una decisión de proveedor con clave, TTL y respuesta ante indisponibilidad. Adjunta por separado el resultado Redis si lo ejecutaste; omitirlo no demuestra integración compartida. Sigue con M20 T5 para limitar el trabajo en segundo plano.
@@ -634,7 +636,7 @@ Ejecuta desde la carpeta del laboratorio:
 
 ## Ampliación de la página 28 del PDF
 
-### Tema complementario: Integraciones empresariales, SOAP y fronteras de protocolo
+### Tema 6: Integraciones empresariales, SOAP y fronteras de protocolo
 
 **¿Por qué es importante?** confundir un mensaje aceptado con un resultado correcto puede registrar entregas inexistentes; el adaptador debe reconocer contratos y fallos antes de tocar el dominio.
 
@@ -747,7 +749,7 @@ python3 -m unittest -v
 
 ## Aplicación del material de referencia
 
-### Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo
+### Tema 7: Spring AI: ChatClient y herramientas con autorización fuera del modelo
 
 **Meta:** ejecutar ChatClient con un modelo controlado, invocar un callback real y demostrar que dos sesiones no comparten permisos. **Prerrequisitos:** interfaces Java, JUnit, JSON y autorización por recurso de M18. Duración: 35–40 min.
 
@@ -921,7 +923,7 @@ class ChatToolsTest {
 
 ## Aplicación del material de referencia
 
-### Tema 7: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar
+### Tema 8: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar
 
 **Meta:** filtrar documentos por empresa, excluir contexto sin evidencia y conservar referencias antes de generar una respuesta. **Prerrequisitos:** M20 T6, colecciones, metadatos y JUnit. Duración: 35–40 min.
 

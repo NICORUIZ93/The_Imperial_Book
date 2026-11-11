@@ -5,7 +5,7 @@
 **Proyecto continuo:** RutaFlow: plataforma de entregas basada en servicios.
 **Prerrequisito de entrada:** Java, HTTP, SQL y pruebas; los módulos iniciales vuelven a presentar cada herramienta..
 **Duración objetivo:** temas de 20–45 minutos; cada tema se divide en 3–6 acciones de 5–15 minutos.
-**Estado estructural:** 69/111 temas migrados; auditoría estructural actualizada el 2026-11-03.
+**Estado estructural:** 111/111 temas migrados; auditoría estructural actualizada el 2026-11-03.
 
 ## Índice de módulos y temas
 
@@ -49,10 +49,10 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
 
 [Abrir lección completa](../web/public/content/spring-boot/modulo-2.md)
 
-- [pendiente de migrar] Tema 1: Por qué DTOs en vez de entidades directamente
+- [4 pasos] Tema 1: Por qué DTOs en vez de entidades directamente
   - ✓ Subtema 1.1: Crea una entidad y guárdala en H2 · 10 min
   - ✓ Subtema 1.2: Devuelve solo el contrato público · 15 min
-  - pendiente Subtema 1.3: Cambia el modelo interno sin cambiar la API · 10 min
+  - ✓ Subtema 1.3: Cambia el modelo interno sin cambiar la API · 10 min
 - [4 pasos] Tema 2: Validación con Bean Validation y ResponseEntity
   - ✓ Subtema 2.1: Rechaza datos inválidos antes de guardar · 10 min
   - ✓ Subtema 2.2: Devuelve 200 o 404 según exista la tarea · 15 min
@@ -124,10 +124,10 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 4.16 · Agrupar la configuración JWT existente · 10 min
   - ✓ Subtema 4.17 · Probar enlace y límites con un contexto pequeño · 10 min
   - ✓ Subtema 4.18 · Inyectar el record en el JwtService · 10 min
-- [pendiente de migrar] Tema 2: Fallar rápido al arranque
+- [4 pasos] Tema 2: Fallar rápido al arranque
   - ✓ Subtema 4.19 · Probar el valor obligatorio ausente · 10 min
   - ✓ Subtema 4.20 · Rechazar también un secreto vacío · 10 min
-  - pendiente Subtema 4.21 · Quitar la validación y observar el riesgo · 10 min
+  - ✓ Subtema 4.21 · Quitar la validación y observar el riesgo · 10 min
 - [4 pasos] Tema 3: Manejo global de excepciones consistente entre entornos
   - ✓ Subtema 4.22 · Lanzar una excepción del dominio · 10 min
   - ✓ Subtema 4.23 · Extender el manejador sin cambiar el formato · 10 min
@@ -137,31 +137,31 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
 
 [Abrir lección completa](../web/public/content/spring-boot/modulo-6.md)
 
-- [pendiente de migrar] Tema 1: Probar un controller con `@WebMvcTest`
-  - pendiente Subtema 6.1 · Recortar la prueba a la web (10 min)
-  - pendiente Subtema 6.2 · Ver la validación y el error JSON (10 min)
-  - pendiente Subtema 6.3 · Diagnosticar una dependencia que falta (10 min)
-- [pendiente de migrar] Tema 2: Probar el repositorio contra PostgreSQL con `@DataJpaTest`
-  - pendiente Subtema 6.4 · Conectar el slice a un PostgreSQL desechable (10 min)
-  - pendiente Subtema 6.5 · Comprobar motor y operación del repositorio (10 min)
-  - pendiente Subtema 6.6 · Detectar que el test cayó en H2 (10 min)
-- [pendiente de migrar] Tema 3: Integrar el flujo con `@SpringBootTest`
-  - pendiente Subtema 6.7 · Crear y consultar con las capas reales (10 min)
-  - pendiente Subtema 6.8 · Separar error de autenticación y flujo válido (10 min)
-  - pendiente Subtema 6.9 · Ver qué integración detecta el test (10 min)
+- [4 pasos] Tema 1: Probar un controller con `@WebMvcTest`
+  - ✓ Subtema 6.1 · Recortar la prueba a la web · 10 min
+  - ✓ Subtema 6.2 · Ver la validación y el error JSON · 10 min
+  - ✓ Subtema 6.3 · Diagnosticar una dependencia que falta · 10 min
+- [4 pasos] Tema 2: Probar el repositorio contra PostgreSQL con `@DataJpaTest`
+  - ✓ Subtema 6.4 · Conectar el slice a un PostgreSQL desechable · 10 min
+  - ✓ Subtema 6.5 · Comprobar motor y operación del repositorio · 10 min
+  - ✓ Subtema 6.6 · Detectar que el test cayó en H2 · 10 min
+- [4 pasos] Tema 3: Integrar el flujo con `@SpringBootTest`
+  - ✓ Subtema 6.7 · Crear y consultar con las capas reales · 10 min
+  - ✓ Subtema 6.8 · Separar error de autenticación y flujo válido · 10 min
+  - ✓ Subtema 6.9 · Ver qué integración detecta el test · 10 min
 
 ### Módulo 7: Observabilidad con Actuator
 
 [Abrir lección completa](../web/public/content/spring-boot/modulo-7.md)
 
-- [pendiente de migrar] Tema 1: Actuator y health checks personalizados
-  - pendiente Subtema 7.1 · Registrar una dependencia y su indicador (10 min)
-  - pendiente Subtema 7.2 · Comprobar `UP`, `DOWN` y acceso protegido (10 min)
-  - pendiente Subtema 7.3 · Diagnosticar un estado `UP` falso (10 min)
-- [pendiente de migrar] Tema 2: Contar operaciones de negocio con Micrometer
-  - pendiente Subtema 7.4 · Registrar un contador en el servicio real (10 min)
-  - pendiente Subtema 7.5 · Verificar valor y tag en el endpoint (10 min)
-  - pendiente Subtema 7.6 · Detectar un contador que nunca sube (10 min)
+- [4 pasos] Tema 1: Actuator y health checks personalizados
+  - ✓ Subtema 7.1 · Registrar una dependencia y su indicador · 10 min
+  - ✓ Subtema 7.2 · Comprobar `UP`, `DOWN` y acceso protegido · 10 min
+  - ✓ Subtema 7.3 · Diagnosticar un estado `UP` falso · 10 min
+- [4 pasos] Tema 2: Contar operaciones de negocio con Micrometer
+  - ✓ Subtema 7.4 · Registrar un contador en el servicio real · 10 min
+  - ✓ Subtema 7.5 · Verificar valor y tag en el endpoint · 10 min
+  - ✓ Subtema 7.6 · Detectar un contador que nunca sube · 10 min
 - [4 pasos] Tema 3: Liveness y readiness sin reinicios en cadena
   - ✓ Subtema 7.7 · Habilitar las sondas de Spring Boot · 5 min
   - ✓ Subtema 7.8 · Revisar la dependencia solo en readiness · 10 min
@@ -184,30 +184,30 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 3.2 · Guardar envío y evento en la misma transacción SQL · 15 min
   - ✓ Subtema 3.3 · Procesar un `eventId` repetido sin duplicar el efecto · 15 min
   - ✓ Subtema 3.4 · Leer solo registros confirmados de una transacción Kafka · 10 min
-- [pendiente de migrar] Tema 4: Rebalanceo de consumer groups y asignación de particiones
-  - pendiente Subtema 4.1 · Una partición pertenece a un consumer del grupo · 10 min
-  - pendiente Subtema 4.2 · Mantener el estado local con callbacks reales · 10 min
-  - pendiente Subtema 4.3 · Ver el rebalanceo al entrar el segundo consumer · 15 min
-  - pendiente Subtema 4.4 · Usar membresía estática solo para reinicios breves · 10 min
-- [pendiente de migrar] Tema 5: Kafka frente a RabbitMQ
-  - pendiente Subtema 5.1 · Repartir mensajes o dar una copia a cada grupo · 10 min
-  - pendiente Subtema 5.2 · Releer historial o conservar mensajes pendientes · 10 min
+- [4 pasos] Tema 4: Rebalanceo de consumer groups y asignación de particiones
+  - ✓ Subtema 4.1 · Una partición pertenece a un consumer del grupo · 10 min
+  - ✓ Subtema 4.2 · Mantener el estado local con callbacks reales · 10 min
+  - ✓ Subtema 4.3 · Ver el rebalanceo al entrar el segundo consumer · 15 min
+  - ✓ Subtema 4.4 · Usar membresía estática solo para reinicios breves · 10 min
+- [4 pasos] Tema 5: Kafka frente a RabbitMQ
+  - ✓ Subtema 5.1 · Repartir mensajes o dar una copia a cada grupo · 10 min
+  - ✓ Subtema 5.2 · Releer historial o conservar mensajes pendientes · 10 min
   - ✓ Subtema 5.3 · Distinguir confirmación de publicación y confirmación de consumo · 10 min
   - ✓ Subtema 5.4 · Elegir por el flujo y comprobar ambos binders · 15 min
-- [pendiente de migrar] Tema 6: Spring Cloud Stream y binders de Kafka/RabbitMQ
-  - pendiente Subtema 6.1 · Recorrer la función y los destinos reales · 10 min
+- [4 pasos] Tema 6: Spring Cloud Stream y binders de Kafka/RabbitMQ
+  - ✓ Subtema 6.1 · Recorrer la función y los destinos reales · 10 min
   - ✓ Subtema 6.2 · Cambiar el binder sin cambiar la función · 10 min
-  - pendiente Subtema 6.3 · Rechazar una entrada y ubicar la política de reintento · 10 min
-  - pendiente Subtema 6.4 · Probar en memoria y después contra el broker · 15 min
-- [pendiente de migrar] Tema 7: Kafka Streams con Spring para transformar eventos
-  - pendiente Subtema 7.1 · Filtrar sin cambiar la clave del pedido · 10 min
-  - pendiente Subtema 7.2 · Contar por estado dentro de una ventana · 15 min
-  - pendiente Subtema 7.3 · Probar la topología sin confundirla con el clúster · 10 min
-  - pendiente Subtema 7.4 · Configurar Spring y el application.id · 15 min
-- [pendiente de migrar] Tema 8: Avro y Schema Registry para contratos de eventos
-  - pendiente Subtema 8.1 · Definir el evento en un archivo Avro · 10 min
-  - pendiente Subtema 8.2 · Añadir un campo compatible con registros anteriores · 15 min
-  - pendiente Subtema 8.3 · Serializar usando un Registry de prueba en memoria · 10 min
+  - ✓ Subtema 6.3 · Rechazar una entrada y ubicar la política de reintento · 10 min
+  - ✓ Subtema 6.4 · Probar en memoria y después contra el broker · 15 min
+- [4 pasos] Tema 7: Kafka Streams con Spring para transformar eventos
+  - ✓ Subtema 7.1 · Filtrar sin cambiar la clave del pedido · 10 min
+  - ✓ Subtema 7.2 · Contar por estado dentro de una ventana · 15 min
+  - ✓ Subtema 7.3 · Probar la topología sin confundirla con el clúster · 10 min
+  - ✓ Subtema 7.4 · Configurar Spring y el application.id · 15 min
+- [4 pasos] Tema 8: Avro y Schema Registry para contratos de eventos
+  - ✓ Subtema 8.1 · Definir el evento en un archivo Avro · 10 min
+  - ✓ Subtema 8.2 · Añadir un campo compatible con registros anteriores · 15 min
+  - ✓ Subtema 8.3 · Serializar usando un Registry de prueba en memoria · 10 min
   - ✓ Subtema 8.4 · Registrar versiones y consultar compatibilidad real · 15 min
 - [4 pasos] Tema 9: RabbitMQ con Spring AMQP: routing, ack y prefetch
   - ✓ Subtema 9.1 · Declarar exchange, cola, binding y DLQ · 10 min
@@ -256,21 +256,21 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 4.2: Separa token válido de permiso de escritura · 10 min
   - ✓ Subtema 4.3: Comprueba que el pedido pertenece al sujeto del token · 10 min
   - ✓ Subtema 4.4: Reenvía el access token desde el Gateway · 10 min
-- [pendiente de migrar] Tema 5: HTTP Interfaces, deadlines y descubrimiento según el entorno
-  - pendiente Subtema 5.1: Declara el contrato HTTP · 10 min
-  - pendiente Subtema 5.2: Corta la espera de una respuesta lenta · 15 min
-  - pendiente Subtema 5.3: Resuelve el nombre del servicio por entorno · 10 min
-  - pendiente Subtema 5.4: Ajusta el cliente al presupuesto de la operación · 5 min
-- [pendiente de migrar] Tema 6: Spring gRPC, contrato HTTP/2 y evolución segura
-  - pendiente Subtema 6.1: Define el mensaje y el método remoto · 10 min
-  - pendiente Subtema 6.2: Expón la implementación en Spring · 10 min
-  - pendiente Subtema 6.3: Llama el stub por el canal · 10 min
-  - pendiente Subtema 6.4: Cambia el contrato sin romper datos · 10 min
-- [pendiente de migrar] Tema 7: DDD para decidir límites y propiedad de datos
-  - pendiente Subtema 7.1: Encuentra quién es dueño de la regla · 10 min
-  - pendiente Subtema 7.2: Prueba la invariante sin infraestructura · 10 min
-  - pendiente Subtema 7.3: Evita compartir almacenamiento entre contextos · 5 min
-  - pendiente Subtema 7.4: Decide si separar el despliegue · 10 min
+- [4 pasos] Tema 5: HTTP Interfaces, deadlines y descubrimiento según el entorno
+  - ✓ Subtema 5.1: Declara el contrato HTTP · 10 min
+  - ✓ Subtema 5.2: Corta la espera de una respuesta lenta · 15 min
+  - ✓ Subtema 5.3: Resuelve el nombre del servicio por entorno · 10 min
+  - ✓ Subtema 5.4: Ajusta el cliente al presupuesto de la operación · 5 min
+- [4 pasos] Tema 6: Spring gRPC, contrato HTTP/2 y evolución segura
+  - ✓ Subtema 6.1: Define el mensaje y el método remoto · 10 min
+  - ✓ Subtema 6.2: Expón la implementación en Spring · 10 min
+  - ✓ Subtema 6.3: Llama el stub por el canal · 10 min
+  - ✓ Subtema 6.4: Cambia el contrato sin romper datos · 10 min
+- [4 pasos] Tema 7: DDD para decidir límites y propiedad de datos
+  - ✓ Subtema 7.1: Encuentra quién es dueño de la regla · 10 min
+  - ✓ Subtema 7.2: Prueba la invariante sin infraestructura · 10 min
+  - ✓ Subtema 7.3: Evita compartir almacenamiento entre contextos · 5 min
+  - ✓ Subtema 7.4: Decide si separar el despliegue · 10 min
 - [4 pasos] Tema 8: Orquestar pedidos con Temporal y Spring Boot
   - ✓ Subtema 8.1: Separa el plan de los efectos · 10 min
   - ✓ Subtema 8.2: Registra Workers y código Spring · 10 min
@@ -351,96 +351,96 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 13.2.2: Registra un intento sin lanzar una excepción · 8 min
   - ✓ Subtema 13.2.3: Fuerza una carrera entre dos solicitudes · 10 min
   - ✓ Subtema 13.2.4: Separa reintentos HTTP de reenvíos Kafka · 10 min
-- [pendiente de migrar] Tema 3: Contratos ejecutables protegen despliegues independientes
-  - pendiente Subtema 13.3.1: Lee la respuesta que recibe la app · 8 min
-  - pendiente Subtema 13.3.2: Fija nombres y valores que usa el cliente · 8 min
-  - pendiente Subtema 13.3.3: Comprueba el error que ve el consumidor · 8 min
-  - pendiente Subtema 13.3.4: Protege cambios entre despliegues · 10 min
-- [pendiente de migrar] Tema 4: Observabilidad sirve a un objetivo y a una decisión
-  - pendiente Subtema 13.4.1: Instrumenta el trabajo de negocio · 8 min
-  - pendiente Subtema 13.4.2: Sigue una solicitud entre servicios · 10 min
-  - pendiente Subtema 13.4.3: Mantén las etiquetas de métricas acotadas · 8 min
-  - pendiente Subtema 13.4.4: Convierte la señal en una decisión · 10 min
+- [4 pasos] Tema 3: Contratos ejecutables protegen despliegues independientes
+  - ✓ Subtema 13.3.1: Lee la respuesta que recibe la app · 8 min
+  - ✓ Subtema 13.3.2: Fija nombres y valores que usa el cliente · 8 min
+  - ✓ Subtema 13.3.3: Comprueba el error que ve el consumidor · 8 min
+  - ✓ Subtema 13.3.4: Protege cambios entre despliegues · 10 min
+- [4 pasos] Tema 4: Observabilidad sirve a un objetivo y a una decisión
+  - ✓ Subtema 13.4.1: Instrumenta el trabajo de negocio · 8 min
+  - ✓ Subtema 13.4.2: Sigue una solicitud entre servicios · 10 min
+  - ✓ Subtema 13.4.3: Mantén las etiquetas de métricas acotadas · 8 min
+  - ✓ Subtema 13.4.4: Convierte la señal en una decisión · 10 min
 
 ### Módulo 14: Backend de entregas: MySQL espacial, archivos y tiempo real
 
 [Abrir lección completa](../web/public/content/spring-boot/modulo-14.md)
 
-- [pendiente de migrar] Tema 1: CRUD API y contratos
-  - pendiente Subtema 14.1.1: Modela estados que sí existen · 8 min
-  - pendiente Subtema 14.1.2: Devuelve un contrato público pequeño · 8 min
-  - pendiente Subtema 14.1.3: Cancela sin destruir el historial · 10 min
-  - pendiente Subtema 14.1.4: Repite DELETE sin cambiar el resultado · 8 min
-- [pendiente de migrar] Tema 2: MySQL y datos espaciales
-  - pendiente Subtema 14.2.1: Guarda puntos con un SRID fijo · 8 min
-  - pendiente Subtema 14.2.2: Especifica cómo leer latitud y longitud · 10 min
-  - pendiente Subtema 14.2.3: Comprueba el índice con EXPLAIN · 8 min
-  - pendiente Subtema 14.2.4: Separa candidatos cercanos de una ruta · 8 min
-- [pendiente de migrar] Tema 3: JPA e Hibernate Spatial
-  - pendiente Subtema 14.3.1: Crea un punto Java con el SRID correcto · 8 min
-  - pendiente Subtema 14.3.2: Mapea Point al campo de la entidad · 8 min
-  - pendiente Subtema 14.3.3: Detecta dos escrituras sobre versiones distintas · 10 min
-  - pendiente Subtema 14.3.4: Observa la pérdida si quitas @Version · 8 min
-- [pendiente de migrar] Tema 4: JWT Bearer y autorización por roles
-  - pendiente Subtema 14.4.1: Verifica el Bearer firmado · 8 min
-  - pendiente Subtema 14.4.2: Distingue autenticación de rol · 8 min
-  - pendiente Subtema 14.4.3: Comprueba que el recurso pertenece al subject · 10 min
-  - pendiente Subtema 14.4.4: Reproduce y corrige acceso horizontal · 8 min
-- [pendiente de migrar] Tema 5: Tiempo real con STOMP
-  - pendiente Subtema 14.5.1: Abre la conexión y define destinos · 8 min
-  - pendiente Subtema 14.5.2: Suscríbete y recibe una posición · 10 min
-  - pendiente Subtema 14.5.3: Evita procesar dos veces la misma secuencia · 8 min
-  - pendiente Subtema 14.5.4: Diagnostica destinos y límites de producción · 10 min
-- [pendiente de migrar] Tema 6: Archivos y notificaciones push
-  - pendiente Subtema 14.6.1: Recibe el archivo con límites · 8 min
-  - pendiente Subtema 14.6.2: Comprueba el contenido de la imagen · 10 min
-  - pendiente Subtema 14.6.3: Notifica solo tras guardar · 10 min
-  - pendiente Subtema 14.6.4: Traza el archivo y define qué falta · 8 min
+- [4 pasos] Tema 1: CRUD API y contratos
+  - ✓ Subtema 14.1.1: Modela estados que sí existen · 8 min
+  - ✓ Subtema 14.1.2: Devuelve un contrato público pequeño · 8 min
+  - ✓ Subtema 14.1.3: Cancela sin destruir el historial · 10 min
+  - ✓ Subtema 14.1.4: Repite DELETE sin cambiar el resultado · 8 min
+- [4 pasos] Tema 2: MySQL y datos espaciales
+  - ✓ Subtema 14.2.1: Guarda puntos con un SRID fijo · 8 min
+  - ✓ Subtema 14.2.2: Especifica cómo leer latitud y longitud · 10 min
+  - ✓ Subtema 14.2.3: Comprueba el índice con EXPLAIN · 8 min
+  - ✓ Subtema 14.2.4: Separa candidatos cercanos de una ruta · 8 min
+- [4 pasos] Tema 3: JPA e Hibernate Spatial
+  - ✓ Subtema 14.3.1: Crea un punto Java con el SRID correcto · 8 min
+  - ✓ Subtema 14.3.2: Mapea Point al campo de la entidad · 8 min
+  - ✓ Subtema 14.3.3: Detecta dos escrituras sobre versiones distintas · 10 min
+  - ✓ Subtema 14.3.4: Observa la pérdida si quitas @Version · 8 min
+- [4 pasos] Tema 4: JWT Bearer y autorización por roles
+  - ✓ Subtema 14.4.1: Verifica el Bearer firmado · 8 min
+  - ✓ Subtema 14.4.2: Distingue autenticación de rol · 8 min
+  - ✓ Subtema 14.4.3: Comprueba que el recurso pertenece al subject · 10 min
+  - ✓ Subtema 14.4.4: Reproduce y corrige acceso horizontal · 8 min
+- [4 pasos] Tema 5: Tiempo real con STOMP
+  - ✓ Subtema 14.5.1: Abre la conexión y define destinos · 8 min
+  - ✓ Subtema 14.5.2: Suscríbete y recibe una posición · 10 min
+  - ✓ Subtema 14.5.3: Evita procesar dos veces la misma secuencia · 8 min
+  - ✓ Subtema 14.5.4: Diagnostica destinos y límites de producción · 10 min
+- [4 pasos] Tema 6: Archivos y notificaciones push
+  - ✓ Subtema 14.6.1: Recibe el archivo con límites · 8 min
+  - ✓ Subtema 14.6.2: Comprueba el contenido de la imagen · 10 min
+  - ✓ Subtema 14.6.3: Notifica solo tras guardar · 10 min
+  - ✓ Subtema 14.6.4: Traza el archivo y define qué falta · 8 min
 
 ### Módulo 15: Spring Master: hexagonal, reactivo y microservicios
 
 [Abrir lección completa](../web/public/content/spring-boot/modulo-15.md)
 
-- [pendiente de migrar] Tema 1: Backpressure real en WebFlux con reactor-test
-  - pendiente Subtema 15.1.1: Empieza con cero solicitudes · 8 min
-  - pendiente Subtema 15.1.2: Solicita tres y luego siete · 8 min
-  - pendiente Subtema 15.1.3: Mira la demanda sin límite · 8 min
-  - pendiente Subtema 15.1.4: Observa cómo `limitRate` cambia las tandas · 10 min
-- [pendiente de migrar] Tema 2: Contenedores Testcontainers reutilizados entre clases
-  - pendiente Subtema 15.2.1: Arranca el singleton una sola vez · 8 min
-  - pendiente Subtema 15.2.2: Comprueba la base desde cada clase · 8 min
-  - pendiente Subtema 15.2.3: Aísla los datos compartidos · 8 min
-  - pendiente Subtema 15.2.4: Decide si conviene compartir · 8 min
-- [pendiente de migrar] Tema 3: Arquitectura hexagonal verificada con ArchUnit
-  - pendiente Subtema 15.3.1: Ubica el puerto y el adaptador · 8 min
-  - pendiente Subtema 15.3.2: Escribe la regla sobre el bytecode · 8 min
-  - pendiente Subtema 15.3.3: Protege también el caso de uso · 8 min
-  - pendiente Subtema 15.3.4: Decide qué reglas merece mantener · 8 min
-- [pendiente de migrar] Tema 4: Bulkhead y RateLimiter de Resilience4j
-  - pendiente Subtema 15.4.1: Separa concurrencia de ritmo · 8 min
-  - pendiente Subtema 15.4.2: Mantén la llamada dentro del Bulkhead · 8 min
-  - pendiente Subtema 15.4.3: Cuenta permisos por período · 8 min
-  - pendiente Subtema 15.4.4: Decide el límite y observa sus fronteras · 8 min
-- [pendiente de migrar] Tema 5: Saga con compensación real
-  - pendiente Subtema 15.5.1: Dibuja los pasos del pedido · 8 min
-  - pendiente Subtema 15.5.2: Ejecuta y compensa en orden inverso · 8 min
-  - pendiente Subtema 15.5.3: Compara fallo y éxito · 8 min
-  - pendiente Subtema 15.5.4: Delimita la demo y planea la recuperación · 8 min
-- [pendiente de migrar] Tema 6: Event Sourcing con replay real
-  - pendiente Subtema 15.6.1: Guarda hechos, no solo el estado final · 8 min
-  - pendiente Subtema 15.6.2: Reconstruye el pedido paso a paso · 8 min
-  - pendiente Subtema 15.6.3: Rechaza eventos que rompen las reglas · 8 min
-  - pendiente Subtema 15.6.4: Delimita el almacenamiento y la reconstrucción · 8 min
-- [pendiente de migrar] Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar
-  - pendiente Subtema 15.7.1: Conserva el trabajo pendiente · 8 min
-  - pendiente Subtema 15.7.2: Confirma juntos el efecto y su estado · 8 min
-  - pendiente Subtema 15.7.3: Reabre y reintenta sin duplicar · 8 min
-  - pendiente Subtema 15.7.4: Define los límites de recuperación · 8 min
-- [pendiente de migrar] Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework
-  - pendiente Subtema 15.8.1: Haz que el agregado proteja la regla · 8 min
-  - pendiente Subtema 15.8.2: Conecta el caso de uso a un puerto · 8 min
-  - pendiente Subtema 15.8.3: Usa Spring como adaptador HTTP · 8 min
-  - pendiente Subtema 15.8.4: Comprueba el corte vertical y sus límites · 8 min
+- [4 pasos] Tema 1: Backpressure real en WebFlux con reactor-test
+  - ✓ Subtema 15.1.1: Empieza con cero solicitudes · 8 min
+  - ✓ Subtema 15.1.2: Solicita tres y luego siete · 8 min
+  - ✓ Subtema 15.1.3: Mira la demanda sin límite · 8 min
+  - ✓ Subtema 15.1.4: Observa cómo `limitRate` cambia las tandas · 10 min
+- [4 pasos] Tema 2: Contenedores Testcontainers reutilizados entre clases
+  - ✓ Subtema 15.2.1: Arranca el singleton una sola vez · 8 min
+  - ✓ Subtema 15.2.2: Comprueba la base desde cada clase · 8 min
+  - ✓ Subtema 15.2.3: Aísla los datos compartidos · 8 min
+  - ✓ Subtema 15.2.4: Decide si conviene compartir · 8 min
+- [4 pasos] Tema 3: Arquitectura hexagonal verificada con ArchUnit
+  - ✓ Subtema 15.3.1: Ubica el puerto y el adaptador · 8 min
+  - ✓ Subtema 15.3.2: Escribe la regla sobre el bytecode · 8 min
+  - ✓ Subtema 15.3.3: Protege también el caso de uso · 8 min
+  - ✓ Subtema 15.3.4: Decide qué reglas merece mantener · 8 min
+- [4 pasos] Tema 4: Bulkhead y RateLimiter de Resilience4j
+  - ✓ Subtema 15.4.1: Separa concurrencia de ritmo · 8 min
+  - ✓ Subtema 15.4.2: Mantén la llamada dentro del Bulkhead · 8 min
+  - ✓ Subtema 15.4.3: Cuenta permisos por período · 8 min
+  - ✓ Subtema 15.4.4: Decide el límite y observa sus fronteras · 8 min
+- [4 pasos] Tema 5: Saga con compensación real
+  - ✓ Subtema 15.5.1: Dibuja los pasos del pedido · 8 min
+  - ✓ Subtema 15.5.2: Ejecuta y compensa en orden inverso · 8 min
+  - ✓ Subtema 15.5.3: Compara fallo y éxito · 8 min
+  - ✓ Subtema 15.5.4: Delimita la demo y planea la recuperación · 8 min
+- [4 pasos] Tema 6: Event Sourcing con replay real
+  - ✓ Subtema 15.6.1: Guarda hechos, no solo el estado final · 8 min
+  - ✓ Subtema 15.6.2: Reconstruye el pedido paso a paso · 8 min
+  - ✓ Subtema 15.6.3: Rechaza eventos que rompen las reglas · 8 min
+  - ✓ Subtema 15.6.4: Delimita el almacenamiento y la reconstrucción · 8 min
+- [4 pasos] Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar
+  - ✓ Subtema 15.7.1: Conserva el trabajo pendiente · 8 min
+  - ✓ Subtema 15.7.2: Confirma juntos el efecto y su estado · 8 min
+  - ✓ Subtema 15.7.3: Reabre y reintenta sin duplicar · 8 min
+  - ✓ Subtema 15.7.4: Define los límites de recuperación · 8 min
+- [4 pasos] Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework
+  - ✓ Subtema 15.8.1: Haz que el agregado proteja la regla · 8 min
+  - ✓ Subtema 15.8.2: Conecta el caso de uso a un puerto · 8 min
+  - ✓ Subtema 15.8.3: Usa Spring como adaptador HTTP · 8 min
+  - ✓ Subtema 15.8.4: Comprueba el corte vertical y sus límites · 8 min
 
 ### Módulo 16: JPA de Spring Boot — Hibernate, Lazy vs Eager y N+1
 
@@ -569,27 +569,60 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
 
 [Abrir lección completa](../web/public/content/spring-boot/modulo-22.md)
 
-- [pendiente de migrar] Tema 1: Hexagonal: puertos que hablan el idioma del dominio
-- [pendiente de migrar] Tema 2: C4: contexto, contenedores, componentes y código
-- [pendiente de migrar] Tema 3: ADR: decisiones con contexto, alternativas y consecuencias
+- [4 pasos] Tema 1: Hexagonal: puertos que hablan el idioma del dominio
+  - ✓ Subtema 22.1.1 · Ejecuta el ejemplo completo y reconoce sus límites · 12 min
+  - ✓ Subtema 22.1.2 · Amplía una consulta del puerto sin filtrar infraestructura · 10 min
+  - ✓ Subtema 22.1.3 · Transfiere la regla a una cancelación independiente · 10 min
+- [4 pasos] Tema 2: C4: contexto, contenedores, componentes y código
+  - ✓ Subtema 22.2.1 · Ejecuta el ejemplo completo y reconoce sus límites · 12 min
+  - ✓ Subtema 22.2.2 · Contrasta un contenedor con el código que existiría · 10 min
+  - ✓ Subtema 22.2.3 · Añade una relación solo después de justificarla · 10 min
+- [4 pasos] Tema 3: ADR: decisiones con contexto, alternativas y consecuencias
+  - ✓ Subtema 22.3.1 · Ejecuta el ejemplo completo y reconoce sus límites · 12 min
+  - ✓ Subtema 22.3.2 · Compara alternativas con condiciones concretas · 10 min
+  - ✓ Subtema 22.3.3 · Reemplaza una decisión conservando el historial · 10 min
 
-### Módulo 23: Spring Modulith y límites del monolito modular
+### Módulo 23: Spring Modulith: límites, eventos y pruebas modulares
 
 [Abrir lección completa](../web/public/content/spring-boot/modulo-23.md)
 
-- [pendiente de migrar] Tema 1: módulos y límites entre paquetes
-- [pendiente de migrar] Tema 2: eventos entre módulos sin importar implementación
-- [pendiente de migrar] Tema 3: documentación generada y mapa de dependencias
-- [pendiente de migrar] Tema 4: pruebas de integración por módulo
+- [4 pasos] Tema 1: módulos y límites entre paquetes
+  - ✓ Subtema 23.1.1 · Reconoce la frontera verificable · 10 min
+  - ✓ Subtema 23.1.2 · Publica contratos pequeños · 10 min
+  - ✓ Subtema 23.1.3 · Comprueba antes de mover paquetes · 10 min
+- [4 pasos] Tema 2: eventos entre módulos sin importar implementación
+  - ✓ Subtema 23.2.1 · Publica desde el servicio · 10 min
+  - ✓ Subtema 23.2.2 · Reacciona mediante el contrato · 10 min
+  - ✓ Subtema 23.2.3 · Separa registro y efecto durable · 10 min
+- [4 pasos] Tema 3: documentación generada y mapa de dependencias
+  - ✓ Subtema 23.3.1 · Genera documentos reproducibles · 10 min
+  - ✓ Subtema 23.3.2 · Contrasta una relación con código · 10 min
+  - ✓ Subtema 23.3.3 · Versiona la explicación junto al mapa · 10 min
+- [4 pasos] Tema 4: pruebas de integración por módulo
+  - ✓ Subtema 23.4.1 · Ejecuta solo Pedidos · 10 min
+  - ✓ Subtema 23.4.2 · Contrasta con el test del flujo · 10 min
+  - ✓ Subtema 23.4.3 · Cierra la matriz de alcance · 10 min
 
-### Módulo 24: Spring GraphQL para pedidos y entregas
+### Módulo 24: Spring GraphQL: contrato, datos anidados y cambios
 
 [Abrir lección completa](../web/public/content/spring-boot/modulo-24.md)
 
-- [pendiente de migrar] Tema 1: schema-first con tipos y consultas
-- [pendiente de migrar] Tema 2: data fetchers, relaciones y problema N+1
-- [pendiente de migrar] Tema 3: mutations y subscriptions
-- [pendiente de migrar] Tema 4: pruebas GraphQL con GraphQlTester
+- [4 pasos] Tema 1: schema-first con tipos y consultas
+  - ✓ Subtema 24.1.1 · Lee el contrato antes del resolver · 10 min
+  - ✓ Subtema 24.1.2 · Solicita un campo que no existe · 10 min
+  - ✓ Subtema 24.1.3 · Define el contrato de ausencia · 10 min
+- [4 pasos] Tema 2: data fetchers, relaciones y problema N+1
+  - ✓ Subtema 24.2.1 · Pide datos anidados · 10 min
+  - ✓ Subtema 24.2.2 · Relaciona cada resultado con su padre · 10 min
+  - ✓ Subtema 24.2.3 · Mide la frontera correcta · 10 min
+- [4 pasos] Tema 3: mutations y subscriptions
+  - ✓ Subtema 24.3.1 · Valida la transición · 10 min
+  - ✓ Subtema 24.3.2 · Suscríbete antes de producir el cambio · 10 min
+  - ✓ Subtema 24.3.3 · Declara límites del transporte y la emisión · 10 min
+- [4 pasos] Tema 4: pruebas GraphQL con GraphQlTester
+  - ✓ Subtema 24.4.1 · Ejecuta la matriz del servicio · 10 min
+  - ✓ Subtema 24.4.2 · Comprueba HTTP como otra capa · 10 min
+  - ✓ Subtema 24.4.3 · Cierra con errores y alcance explícitos · 10 min
 
 ### Módulo 25: La misma función con Kafka y RabbitMQ
 
@@ -635,7 +668,7 @@ La tabla registra presencia de áreas en el inventario del track, no profundidad
 
 ### Huecos y límites reportados
 
-- El repositorio contiene 111 temas en 26 módulos; 69 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
+- El repositorio contiene 111 temas en 26 módulos; 111 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
 - No hay base para afirmar que el track esté completo: la comparación con la fuente de referencia está pendiente de revisión humana módulo por módulo.
 - Los elementos de la fuente que todavía deben verificarse de forma explícita están enumerados en la tabla anterior; cualquier técnica crítica que no tenga tema propio debe añadirse conservando el currículo base.
 - La ejecución de ejemplos, el comportamiento con brokers/plataformas reales y la calidad pedagógica humana se registran por separado.
