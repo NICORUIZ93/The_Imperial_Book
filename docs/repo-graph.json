@@ -16595,7 +16595,7 @@
     },
     {
       "path": "web/public/content/java/modulo-12.md",
-      "lines": 476,
+      "lines": 733,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -19862,7 +19862,7 @@
     },
     {
       "path": "web/src/app/app.spec.ts",
-      "lines": 182,
+      "lines": 326,
       "kind": "angular-app",
       "symbols": [],
       "imports": [

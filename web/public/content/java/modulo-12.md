@@ -459,6 +459,263 @@ Conserva la llamada externa y enumera las tareas coordinadas. Fuente: [catálogo
 
 ---
 
+## Laboratorio complementario: Strategy, Singleton y Observer en RutaFlow
+
+### Objetivo y preparación
+
+Compara tres decisiones distintas: intercambiar una tarifa, controlar una instancia y avisar a varios interesados. Crea una carpeta vacía y entra en ella. Después crea manualmente `StrategyDemo.java`, `SingletonDemo.java` y `ObserverDemo.java` con los contenidos completos indicados abajo; son programas sin dependencias externas y debes escribirlos tú.
+
+```bash
+mkdir laboratorio-strategy-singleton-observer
+cd laboratorio-strategy-singleton-observer
+```
+
+Usa el JDK del curso y ejecuta todos los comandos dentro de esta carpeta. Este laboratorio modela el dominio del proyecto integrador RutaFlow; no está conectado a su backend.
+
+### Strategy: elegir una política sin cambiar al consumidor
+
+Escribe este contenido completo en `StrategyDemo.java`:
+
+```java
+public class StrategyDemo {
+    interface Tarifa {
+        int calcular(int kilometros);
+    }
+
+    static final class Normal implements Tarifa {
+        public int calcular(int kilometros) {
+            return 500 + 100 * kilometros;
+        }
+    }
+
+    static final class Express implements Tarifa {
+        public int calcular(int kilometros) {
+            return 900 + 150 * kilometros;
+        }
+    }
+
+    static final class Recogida implements Tarifa {
+        public int calcular(int kilometros) {
+            return 0;
+        }
+    }
+
+    record Cotizador(Tarifa tarifa) {
+        Cotizador {
+            java.util.Objects.requireNonNull(tarifa, "tarifa");
+        }
+
+        int cotizar(int kilometros) {
+            if (kilometros < 0) {
+                throw new IllegalArgumentException("kilometros negativos");
+            }
+            return tarifa.calcular(kilometros);
+        }
+    }
+
+    public static void main(String[] args) {
+        if (args.length == 1 && args[0].equals("fallo")) {
+            System.out.println("fallo=" + new Cotizador(new Normal()).cotizar(-1));
+            return;
+        }
+        System.out.println("normal=" + new Cotizador(new Normal()).cotizar(10));
+        System.out.println("express=" + new Cotizador(new Express()).cotizar(10));
+        System.out.println("recogida=" + new Cotizador(new Recogida()).cotizar(10));
+    }
+}
+```
+
+Ejecuta:
+
+```bash
+java StrategyDemo.java
+```
+
+**Salida esperada:** `normal=1500`, `express=2400`, `recogida=0`, en líneas separadas. Los importes son centavos enteros para evitar errores de coma flotante. `Cotizador` valida la distancia y delega el cálculo a `Tarifa`; quien lo construye elige `Normal`, `Express` o `Recogida`. Es como contratar un transportista: el contrato de servicio permanece aunque cambie la política de cobro.
+
+Una fábrica con `switch`, como la del Tema 2, es una **simple factory**. No equivale por sí sola al patrón GoF Factory Method, que permite variar la creación mediante subclases. Crear una estrategia y ejecutarla son responsabilidades distintas.
+
+**Fallo deliberado:** ejecuta `java StrategyDemo.java fallo`. La primera línea del error contiene `java.lang.IllegalArgumentException: kilometros negativos`. El consumidor recibe `-1`; la guarda de `cotizar` rechaza una distancia inválida antes de delegar. **Corrección:** cambia la llamada `cotizar(-1)` por `cotizar(10)` y repite el comando; imprime `fallo=1500`. Conservar la validación protege todas las estrategias.
+
+**Práctica independiente:** añade `TarifaEmpresa` con 300 centavos fijos y 80 por kilómetro. Para 10 km debe devolver 1100. Inyéctala sin editar `Cotizador`. Explica dónde decides qué tarifa corresponde a cada cliente.
+
+**Cuándo no usarlo:** si solo existe una fórmula estable, una función basta. Strategy permite sustituir el cálculo; no resuelve por sí mismo selección por permisos, persistencia ni validación de reglas comerciales.
+
+### Singleton: identidad única y dependencia explícita
+
+Escribe este contenido completo en `SingletonDemo.java`:
+
+```java
+public class SingletonDemo {
+    interface Config {
+        String moneda();
+    }
+
+    enum Configuracion implements Config {
+        INSTANCIA("COP");
+
+        private final String moneda;
+
+        Configuracion(String moneda) {
+            this.moneda = moneda;
+        }
+
+        public String moneda() {
+            return moneda;
+        }
+    }
+
+    public static void main(String[] args) {
+        Config produccion = Configuracion.INSTANCIA;
+        Config prueba = () -> "USD";
+
+        System.out.println("misma instancia=" + (produccion == Configuracion.INSTANCIA));
+        System.out.println("produccion=" + produccion.moneda());
+        System.out.println("prueba=" + prueba.moneda());
+
+        if (args.length == 1 && args[0].equals("fallo")) {
+            String actual = Configuracion.INSTANCIA.moneda();
+            if (!"USD".equals(actual)) {
+                throw new IllegalStateException(
+                        "dependencia global: esperado USD, obtenido " + actual);
+            }
+        }
+    }
+}
+```
+
+Ejecuta:
+
+```bash
+java SingletonDemo.java
+```
+
+**Salida esperada:** `misma instancia=true`, `produccion=COP`, `prueba=USD`. El `enum Configuracion` tiene un único valor. El consumidor recibe una interfaz `Config`, por lo que una prueba puede suministrar otra moneda sin mutar estado global. La identidad única es local a la clase cargada: no coordina varias JVM ni réplicas del servicio.
+
+| Implementación | Inicialización | Coste o límite |
+|---|---|---|
+| Eager, campo `static final` | Al inicializar la clase | Puede crear un recurso que no se necesita |
+| Lazy sin sincronización | En el primer acceso | Dos hilos pueden construir instancias distintas |
+| Método `static synchronized` | En el primer acceso | Usa el monitor en cada acceso |
+| Double-checked locking | En el primer acceso | Requiere `volatile`, segunda comprobación dentro del bloqueo y cuidado con el modelo de memoria |
+| `enum` con un valor | Al inicializar el enum | Conciso; no permite heredar de otra clase y sigue siendo una dependencia global si se consulta directamente |
+
+Garantizar construcción segura no vuelve seguros los campos mutables. Tampoco convierte una conexión JDBC compartida en un pool. Prefiere inyección de dependencias cuando necesitas reemplazar recursos, aislar pruebas o controlar el cierre de conexiones.
+
+**Fallo deliberado:** ejecuta `java SingletonDemo.java fallo`. Después de las tres salidas normales obtendrás `java.lang.IllegalStateException: dependencia global: esperado USD, obtenido COP`. La variable `actual` consulta directamente `Configuracion.INSTANCIA.moneda`, ignorando la configuración de prueba. **Corrección:** sustituye esa expresión por `prueba.moneda()` y repite el comando; la ejecución termina sin excepción. No cambies la expectativa a COP: ocultaría el acoplamiento.
+
+**Práctica independiente:** inyecta dos configuraciones distintas en dos consumidores simultáneos y comprueba que ninguno cambia la moneda del otro. Explica por qué un singleton mutable global haría esta prueba más frágil.
+
+### Observer: alta, notificación y baja
+
+**¿Cuándo usarlo?**
+- Un cambio de estado en un objeto debe disparar actualizaciones en otros sin que el primero conozca a los segundos.
+- Varios interesados distintos (cliente, auditoría, métricas) necesitan enterarse del mismo evento sin coordinarse entre sí.
+- Necesitas poder agregar un nuevo interesado sin modificar la clase que emite el evento.
+
+**Beneficios:**
+- Bajo acoplamiento: `Entrega` nunca importa ni conoce las clases concretas de sus observadores, solo el contrato `Observador`.
+- Agregar o quitar un interesado no exige tocar el código que publica el evento.
+- Las notificaciones son automáticas y ocurren en el mismo instante en que cambia el estado.
+
+**Estructura formal (GoF) y cómo se mapea en este ejercicio:**
+
+| Rol GoF | En esta demo |
+|---|---|
+| `Observer` (contrato de actualización) | Interfaz `Observador` con el método `actualizar(String estado)` |
+| `Subject` (contrato de alta/baja/notificación) | Los métodos `suscribir`/`cancelar`/`publicar` de `Entrega` |
+| `ConcreteSubject` (estado real que cambia) | La propia clase `Entrega` |
+| `ConcreteObserver` (reacción concreta a la notificación) | Las lambdas `cliente` y `auditoria` que implementan `Observador` |
+
+El GoF original separa `Subject` de `ConcreteSubject` en dos tipos distintos cuando el dominio tiene **varios tipos de sujetos** intercambiables (por ejemplo, distintas clases de eventos emitiendo notificaciones bajo el mismo contrato). Aquí hay un único tipo de sujeto (`Entrega`), así que fusionar el contrato y la implementación en una sola clase es una simplificación válida, no un error: extraer una interfaz `Subject` separada sin un segundo sujeto real que la implemente sería una abstracción prematura. Del mismo modo, usar lambdas en vez de clases `ConcreteObserverA`/`B`/`C` con nombre propio es idiomático en Java moderno para observadores con una sola responsabilidad: ambas formas implementan el mismo contrato `Observador`.
+
+Escribe este contenido completo en `ObserverDemo.java`:
+
+```java
+import java.util.ArrayList;
+import java.util.List;
+
+public class ObserverDemo {
+    interface Observador {
+        void actualizar(String estado);
+    }
+
+    static final class Entrega {
+        private final List<Observador> observadores = new ArrayList<>();
+
+        void suscribir(Observador observador) {
+            observadores.add(observador);
+        }
+
+        void cancelar(Observador observador) {
+            observadores.remove(observador);
+        }
+
+        void publicar(String estado) {
+            for (Observador observador : new ArrayList<>(observadores)) {
+                observador.actualizar(estado);
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        Observador cliente = estado -> System.out.println("cliente=" + estado);
+        Observador auditoria = estado -> System.out.println("auditoria=" + estado);
+
+        if (args.length == 1 && args[0].equals("fallo")) {
+            Entrega entregaConFallo = new Entrega();
+            entregaConFallo.suscribir(estado -> {
+                throw new IllegalStateException("observador no disponible");
+            });
+            entregaConFallo.suscribir(cliente);
+            entregaConFallo.suscribir(auditoria);
+            entregaConFallo.publicar("EN_CAMINO");
+            return;
+        }
+
+        Entrega entrega = new Entrega();
+        entrega.suscribir(cliente);
+        entrega.suscribir(auditoria);
+        entrega.publicar("EN_CAMINO");
+        entrega.cancelar(cliente);
+        entrega.publicar("ENTREGADA");
+    }
+}
+```
+
+Ejecuta:
+
+```bash
+java ObserverDemo.java
+```
+
+**Salida esperada:** `cliente=EN_CAMINO`, `auditoria=EN_CAMINO`, `auditoria=ENTREGADA`. `Entrega` conoce únicamente el contrato `Observador`. Después de cancelar la suscripción del cliente, auditoría continúa recibiendo eventos. Es como una lista de avisos de entrega: cada interesado se registra y puede retirarse.
+
+La implementación es síncrona, de un solo hilo y conserva el orden de registro. El patrón no exige ese orden en otras implementaciones. Se recorre una copia de la lista: una baja dentro de un callback se aplica al próximo evento. Registra cada observador una sola vez; esta versión permite duplicados.
+
+**Fallo deliberado:** ejecuta `java ObserverDemo.java fallo`. Un primer observador lanza `java.lang.IllegalStateException: observador no disponible`; cliente y auditoría no reciben el evento porque la excepción interrumpe el bucle. **Corrección:** elimina la suscripción deliberadamente defectuosa y repite el comando con `fallo`; ahora aparecen `cliente=EN_CAMINO` y `auditoria=EN_CAMINO`. Ejecuta después sin argumentos para recuperar también la baja del cliente y la salida `auditoria=ENTREGADA`. Como ejercicio avanzado, decide si debes aislar cada callback con manejo de errores o fallar toda la operación. Si los aíslas, registra qué observador falló; nunca ignores la excepción silenciosamente.
+
+**Práctica independiente:** agrega un observador de métricas, cancélalo después de `EN_CAMINO` y demuestra que no recibe `ENTREGADA`. Luego agrega uno que se desuscriba dentro de su callback y explica el efecto de la instantánea.
+
+**Ejemplos reales de este mismo patrón:** notificaciones de redes sociales (un post nuevo avisa a cada seguidor suscrito), actualizaciones en tiempo real de un dashboard (un valor cambia y cada widget suscrito se redibuja), listeners de eventos en una GUI (un clic notifica a cada handler registrado), sistemas de mensajería pub/sub, y el propio par auditoría/cliente de este ejercicio — un registro de auditoría que nunca debería poder cancelarse igual que el cliente.
+
+**Límites:** una lista en memoria no ofrece durabilidad, reintentos ni entrega entre procesos. Los callbacks lentos bloquean al emisor; olvidar cancelar suscripciones retiene referencias. Para eventos de negocio persistentes estudia outbox y mensajería en los módulos correspondientes.
+
+### Diseño y evidencia
+
+Entrega las tres salidas, el diagnóstico de cada fallo y tus ejercicios. En el proyecto integrador, redacta una decisión sobre dónde seleccionar tarifas, cómo inyectar configuración por cliente y qué hacer si auditoría falla después de registrar una entrega. Distingue una notificación de interfaz prescindible de un registro de negocio que debe sobrevivir a un reinicio.
+
+<details>
+<summary>Orientación para contrastar tu diseño</summary>
+
+Selecciona la tarifa en la composición del caso de uso e inyecta su contrato. Mantén la configuración inmutable y explícita; una instancia global no sustituye el aislamiento entre clientes. Usa Observer para avisos locales cuando aceptas sus límites. Si la entrega y su evento deben persistir juntos, considera una transacción con outbox y consumidores idempotentes, documentando el coste operativo adicional.
+
+</details>
+
+Referencia de lectura: Alexander Shvets, *Sumérgete en los patrones de diseño*, edición v2021-1.7, páginas impresas 148–157, 358–373 y 391–405. Los ejemplos anteriores son originales de The Imperial Book. El registro de revisión y las páginas PDF están en `docs/biblioteca/shvets-patrones.md`.
+
+---
+
 ## Proyecto integrador: conectar patrones en RutaFlow
 
 **Objetivo:** decidir qué patrón resuelve cada variación real y conservar el flujo de envío legible.

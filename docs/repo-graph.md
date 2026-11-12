@@ -1,6 +1,6 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-11-12 20:27 UTC
+Generated: 2026-11-12 20:46 UTC
 Root: `the_imperial_book`
 Indexed files: 1614
 Import edges: 67
@@ -168,7 +168,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/src/app/app.config.ts` (19 lines) - imports: @angular/core, @angular/router, ./app.routes
 - `web/src/app/app.html` (4 lines)
 - `web/src/app/app.routes.ts` (37 lines) - imports: @angular/router, ./catalog/course-catalog, ./catalog/curriculum-library, ./course/course-shell, ./course/track-overview, ./course/lesson-viewer
-- `web/src/app/app.spec.ts` (182 lines) - imports: @angular/core/testing, @angular/router, @angular/router/testing, ./app, ./app.routes, ./catalog/course-catalog, ./content.service, ./course-data
+- `web/src/app/app.spec.ts` (326 lines) - imports: @angular/core/testing, @angular/router, @angular/router/testing, ./app, ./app.routes, ./catalog/course-catalog, ./content.service, ./course-data
 - `web/src/app/app.ts` (11 lines) - symbols: App; imports: @angular/core, @angular/router, ./command-palette
 - `web/src/app/catalog/course-catalog.html` (35 lines) - symbols: main-content, catalog-title, first-session-title, continue-title, tracks-title, beginner-title, backup-title
 - `web/src/app/catalog/course-catalog.scss` (243 lines)
