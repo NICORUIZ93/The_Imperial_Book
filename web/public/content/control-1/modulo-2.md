@@ -114,6 +114,31 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
 
 **Comprobación.** sympy da \(\frac{5}{s - 2}\), igual a la tabla.
 
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 1 con la transformada de Laplace de sympy.
+
+```python
+# verificacion.py
+from sympy import symbols, exp, laplace_transform
+
+t, s = symbols("t s", positive=True)
+F, _, _ = laplace_transform(exp(-2 * t), t, s)
+print("F(s):", F)
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `F(s): 1/(s + 2)`, igual al \(\dfrac{1}{s+2}\) calculado a mano en el Ejemplo 1.
+
+**Práctica:** cambia `exp(-2 * t)` por `t**2` y vuelve a ejecutar. Resultado esperado: `2/s**3`.
+
+**Límite:** la integral de la definición solo converge para \(s\) mayor que cierto valor (aquí \(s>-2\)); por eso la tabla y sus propiedades existen, para no repetir esa integral (y su análisis de convergencia) en cada ejercicio.
+
 ### Tema 2: La tabla
 
 **¿Por qué es importante?** La tabla es lo que usarás en cada examen para pasar del tiempo a \(s\) y de vuelta; entender cada fila evita errores de memoria.
@@ -249,6 +274,31 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
    **¿Por qué?** Cada fila de la tabla está demostrada en este capítulo; aquí solo se aplica.
 
 **Resultado.** \(F(s) = \frac{s + 1}{\left(s + 1\right)^{2} + 4}\).
+
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 6 (polo repetido) con la tabla simbólica.
+
+```python
+# verificacion.py
+from sympy import symbols, exp, laplace_transform
+
+t, s = symbols("t s", positive=True)
+F, _, _ = laplace_transform(t * exp(-4 * t), t, s)
+print("F(s):", F)
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `F(s): (s + 4)**(-2)`, igual al \(\dfrac{1}{(s+4)^2}\) del Ejemplo 6.
+
+**Práctica:** cambia `t * exp(-4 * t)` por `3*exp(-2*t)*sympy.sin(5*t)` (importa `sin` de sympy) y confirma que da \(\dfrac{15}{(s+2)^2+25}\).
+
+**Límite:** la tabla solo cubre las formas listadas (escalón, rampa, exponencial, seno/coseno y sus combinaciones); una función que no se pueda descomponer en esos bloques exige volver a la integral de definición o usar una tabla más amplia.
 
 ### Tema 3: Propiedades
 
@@ -481,6 +531,31 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
 
 **Resultado.** \(G(s) = \dfrac{1}{s(s+1)}\); invirtiendo, \(g(t) = 1 - e^{-t}\), que es justo la integral calculada a mano.
 
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 8 (fracciones parciales de la EDO transformada).
+
+```python
+# verificacion.py
+from sympy import symbols, apart
+
+s = symbols("s")
+Y = (s + 3) / ((s + 1) * (s + 2))
+print("fracciones parciales:", apart(Y))
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `fracciones parciales: -1/(s + 2) + 2/(s + 1)`, que invertido da \(y(t) = 2e^{-t} - e^{-2t}\), igual al Ejemplo 8. SymPy puede cambiar el orden de los sumandos sin cambiar la expresión.
+
+**Práctica:** cambia `Y` por la transformada de \(y''+5y'+6y=0\) con \(y(0)=2\), \(y'(0)=0\) (debes construir \(Y(s)\) primero) y confirma sus fracciones parciales.
+
+**Límite:** la propiedad de la derivada \(sF(s)-f(0)\) exige que \(f\) y sus derivadas sean continuas por tramos y de orden exponencial; con discontinuidades o condiciones iniciales en \(t\neq0\) hay que desplazar el origen antes de aplicarla.
+
 ### Tema 4: Valor final y valor inicial
 
 **¿Por qué es importante?** El valor final te dice a dónde llega un sistema sin resolverlo completo, y saber cuándo no aplica evita respuestas falsas.
@@ -635,6 +710,29 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
 **Resultado.** **No se puede aplicar** el teorema; el límite numérico sería engañoso.
 
 **Comprobación.** \(y(t) = \frac{5}{9} - \frac{5 \cos{\left(3 t \right)}}{9}\) no converge.
+
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 1 del teorema del valor final.
+
+```python
+# verificacion.py
+from sympy import symbols, limit
+
+s = symbols("s")
+sY = 10 / (s + 2)
+print("valor_final:", limit(sY, s, 0))
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `valor_final: 5`, igual al Ejemplo 1.
+
+**Límite:** este script no revisa estabilidad; antes de confiar en el número hay que verificar a mano (como en los Ejemplos 6 y 7) que todos los polos de \(sY(s)\) están en el semiplano izquierdo, o el resultado numérico será engañoso.
 
 #### Práctica para resolver sola o solo
 

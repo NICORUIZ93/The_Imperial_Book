@@ -213,6 +213,31 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
 
 **Comprobación.** \(y(0) = 2\) y el valor inicial \(\lim_{s\to\infty}sY(s) = 2\) coinciden.
 
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 1 con fracciones parciales simbólicas.
+
+```python
+# verificacion.py
+from sympy import symbols, apart
+
+s = symbols("s")
+Y = 6 / (s * (s + 3))
+print("fracciones:", apart(Y))
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `fracciones: -2/(s + 3) + 2/s`, igual a \(A=2\), \(B=-2\) del Ejemplo 1. El orden de los sumandos puede variar.
+
+**Práctica:** cambia `Y` por \(\dfrac{10}{(s+1)(s+4)}\) y confirma los coeficientes del Ejemplo 4.
+
+**Límite:** `apart` solo separa factores reales distintos tal cual están escritos; si el denominador tiene un factor cuadrático irreducible (polos complejos, Tema 3) no lo descompone en seno/coseno — hay que completar el cuadrado a mano.
+
 ### Tema 2: Caso 2: polos repetidos
 
 **¿Por qué es importante?** Los polos repetidos aparecen en los sistemas críticamente amortiguados y necesitan un tratamiento distinto.
@@ -366,6 +391,31 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
 **Resultado.** \(y(t) = t^{2} e^{- 2 t}\).
 
 **Comprobación.** \(y(0) = 0\), igual al valor inicial \(0\).
+
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 1 (polo repetido).
+
+```python
+# verificacion.py
+from sympy import symbols, apart
+
+s = symbols("s")
+Y = 1 / (s * (s + 1) ** 2)
+print("fracciones:", apart(Y))
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `fracciones: -1/(s + 1) - 1/(s + 1)**2 + 1/s`, igual a \(A=1\), \(B=-1\), \(C=-1\) del Ejemplo 1. El orden de los sumandos puede variar.
+
+**Práctica:** cambia `Y` por \(\dfrac{4}{s^2(s+2)}\) y confirma los coeficientes del Ejemplo 4.
+
+**Límite:** el coeficiente \(B\) de la potencia más baja sale de derivar lo que queda tras tapar; con multiplicidad 3 o más hay que derivar varias veces y dividir por el factorial correspondiente, no solo una vez.
 
 ### Tema 3: Caso 3: polos complejos (completar el cuadrado)
 
@@ -608,6 +658,31 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
   
   </details>
 
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar que completar el cuadrado del Ejemplo 2 es correcto.
+
+```python
+# verificacion.py
+from sympy import symbols, expand
+
+s = symbols("s")
+completado = expand((s + 1) ** 2 + 36)
+print("completado:", completado)
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `completado: s**2 + 2*s + 37`, igual al denominador original del Ejemplo 2.
+
+**Práctica:** completa el cuadrado de \(s^2+4s+13\) a mano, confirma con el script (`(s + 2) ** 2 + 9`) y verifica que expande de vuelta a `s**2 + 4*s + 13`.
+
+**Límite:** completar el cuadrado solo aplica a un factor cuadrático; si el denominador tiene un factor cúbico o mayor con raíces complejas, se necesita descomposición en fracciones parciales de orden superior o un cambio de variable distinto.
+
 ### Tema 4: Resolver una ecuación diferencial completa
 
 **¿Por qué es importante?** Es el uso más directo de todo el capítulo: transformar, despejar, partir en fracciones e invertir. Así se resuelve cualquier sistema lineal con entrada y condiciones iniciales.
@@ -727,4 +802,30 @@ Los polos del sistema producen la parte transitoria (la que se apaga si el siste
 **Resultado.** \(y(t) = \frac{\left(e^{2 t} + 3\right) e^{- 3 t}}{2}\).
 
 **Comprobación.** \(y(0) = 2\) coincide con la condición inicial.
+
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 1 resolviendo la EDO directamente.
+
+```python
+# verificacion.py
+from sympy import symbols, Function, dsolve, Eq, Derivative
+
+t = symbols("t")
+y = Function("y")
+sol = dsolve(Eq(Derivative(y(t), t) + 2 * y(t), 4), y(t), ics={y(0): 0})
+print("y(t):", sol)
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `y(t): Eq(y(t), 2 - 2*exp(-2*t))`, igual al Ejemplo 1.
+
+**Práctica:** cambia la ecuación y las condiciones iniciales para resolver \(y''+4y=8\) con \(y(0)=0,\ y'(0)=0\) (usa `Derivative(y(t), t, 2)`) y confirma el Ejemplo 4.
+
+**Límite:** `dsolve` resuelve la ecuación completa de un tirón; en el examen debes mostrar el camino (transformar, despejar, partir en fracciones, invertir) paso a paso, no solo el resultado final.
 

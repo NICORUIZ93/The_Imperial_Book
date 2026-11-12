@@ -139,6 +139,32 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
 
 **Resultado.** \(Z(s) = \frac{4 s}{s^{2} + 4}\).
 
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 2 (R en serie con L).
+
+```python
+# verificacion.py
+from sympy import symbols
+
+s = symbols("s")
+R, L = 2000, 0.5
+Z = R + L * s
+print("Z(s):", Z)
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `Z(s): 0.5*s + 2000`, igual a \(\dfrac{s}{2}+2000\) del Ejemplo 2.
+
+**Práctica:** usa sympy (`from sympy import symbols, simplify, Rational`) para construir \(Z = \dfrac{R \cdot Z_C}{R+Z_C}\) con \(R=1000\), \(C=\)`Rational(1, 1000000)` y confirma el resultado del Ejemplo 3: \(\dfrac{1000000}{s+1000}\).
+
+**Límite:** la tabla de impedancias asume condiciones iniciales cero; un capacitor con carga inicial o una bobina con corriente inicial aportan una fuente extra en serie que esta fórmula no incluye.
+
 ### Tema 2: Circuitos pasivos: divisor de voltaje
 
 **¿Por qué es importante?** El divisor de voltaje en Laplace da la función de transferencia de los circuitos RC y RLC en una línea.
@@ -244,6 +270,33 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
    **¿Por qué?** Es el divisor de voltaje de siempre, pero con impedancias.
 
 **Resultado.** \(G(s) = \frac{2}{s^{2} + 2 s + 2}\); ganancia DC \(1\).
+
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 1 (RC pasa-bajas).
+
+```python
+# verificacion.py
+from sympy import symbols, simplify, Rational
+
+s = symbols("s")
+R = 10000
+C = Rational(1, 10000)  # 100 microfaradios
+G = simplify((1 / (C * s)) / (R + 1 / (C * s)))
+print("G(s):", G)
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `G(s): 1/(s + 1)`, igual al Ejemplo 1 (\(\tau=1\) s).
+
+**Práctica:** cambia a la red RLC del Ejemplo 3 (\(L=1\), \(R=2\), \(C=\)`Rational(1, 5)`) construyendo \(Z_{total}=Ls+R+1/(Cs)\) y \(Z_{salida}=1/(Cs)\); confirma que da \(\dfrac{5}{s^2+2s+5}\).
+
+**Límite:** el divisor de voltaje asume que no se extrae corriente en la salida (carga de impedancia infinita); si conectas una carga comparable a \(Z_{salida}\), hay que incluirla en el cálculo o el resultado deja de ser válido.
 
 ### Tema 3: El op-amp inversor
 
@@ -404,6 +457,34 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
    **¿Por qué?** La entrada inversora es tierra virtual y no entra corriente al op-amp: la corriente de \(Z_i\) pasa toda por \(Z_f\).
 
 **Resultado.** \(-\dfrac{1}{RCs}\): integral pura. El signo menos se corrige con un segundo inversor de ganancia −1.
+
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 2 (controlador PI).
+
+```python
+# verificacion.py
+from sympy import symbols, simplify, Rational, apart
+
+s = symbols("s")
+R1, R2 = 10000, 100000
+C = Rational(1, 100000)  # 10 microfaradios
+Zf = R2 + 1 / (C * s)
+G = simplify(-Zf / R1)
+print("G(s):", apart(G))
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** algo equivalente a `-10 - 10/s`, igual al Ejemplo 2 (\(K_p=10\), \(K_i=10\)).
+
+**Práctica:** cambia a \(Z_i=C\), \(Z_f=R\) con \(R=1\,000\,000\) y \(C=\)`Rational(1, 1000000)` (práctica 2 de esta sección) y confirma que da \(-s\): un derivador puro.
+
+**Límite:** la fórmula \(-Z_f/Z_i\) asume un op-amp ideal (ganancia infinita, sin corriente de entrada); con ganancia finita \(A\) aparece el factor de corrección demostrado arriba, y a frecuencias cercanas al ancho de banda del op-amp real el inversor deja de comportarse como el modelo ideal.
 
 #### Práctica para resolver sola o solo
 

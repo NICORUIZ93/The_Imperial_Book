@@ -466,8 +466,9 @@ test('lector: muestra la transferencia al proyecto y los límites editoriales', 
 
   await page.goto('/curso/cloud/0');
   const cloudTopic = page.locator('.topic-card').first();
-  await expect(cloudTopic.getByText('Límites y decisión de uso:', { exact: true })).toBeVisible();
-  await expect(cloudTopic).toContainText('Un comando interpretado por Bash');
+  await expect(cloudTopic.getByText('Transferencia al proyecto integrador cloud:', { exact: true })).toBeVisible();
+  await expect(cloudTopic.getByText('Límite:', { exact: true })).toBeVisible();
+  await expect(cloudTopic).toContainText('macOS/Linux y Windows escriben algunas órdenes de forma distinta');
 });
 
 test('estructura: cada Tema se muestra como una tarjeta separada, no anidado en otro', async ({ page }) => {

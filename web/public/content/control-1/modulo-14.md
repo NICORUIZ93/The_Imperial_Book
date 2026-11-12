@@ -114,6 +114,33 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
 
 **Resultado.** \(e_{ss} = \lim_{s\to0} sE(s) = 1\).
 
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 1.
+
+```python
+# verificacion.py
+from sympy import symbols, limit
+
+s = symbols("s")
+G = 10 / (s + 2)
+R = 1 / s
+E = R / (1 + G)
+print("e_ss:", limit(s * E, s, 0))
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `e_ss: 1/6`, igual al Ejemplo 1.
+
+**Práctica:** cambia `G` a `10/(s*(s+2))` y `R` a `1/s**2` (rampa) y confirma \(e_{ss}=1/5\) (Ejemplo 3).
+
+**Límite:** esta fórmula exige confirmar primero que el lazo cerrado es estable; en el Ejemplo 5 de este tema el número que da el límite (\(1/4\)) es engañoso porque el sistema en lazo cerrado en realidad es inestable — el error final no tiene sentido físico ahí.
+
 ### Tema 2: Tipo de sistema y constantes
 
 **¿Por qué es importante?** El tipo de sistema y las constantes \(K_p\), \(K_v\), \(K_a\) te dicen el error sin simular y orientan qué acción de control agregar.
@@ -292,4 +319,32 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
    **¿Por qué?** \(K_p = \lim G\), \(K_v = \lim sG\), \(K_a = \lim s^2G\) cuando \(s\to0\).
 
 **Resultado.** Escalón: \(e = 0\); rampa: \(e = \frac{2}{5}\); parábola: \(e = \infty\).
+
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 1 de este tema (tipo 0).
+
+```python
+# verificacion.py
+from sympy import symbols, limit, N
+
+s = symbols("s")
+G = 10 / ((s + 1) * (s + 2))
+Kp = limit(G, s, 0)
+e_ss = 1 / (1 + Kp)
+print("Kp:", Kp)
+print("e_ss:", N(e_ss, 3))
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `Kp: 5` y `e_ss: 0.167`, igual al Ejemplo 1 (16,7 % de error).
+
+**Práctica:** cambia `G` a `10/(s*(s+2))` y calcula \(K_v=\lim_{s\to0}sG\) (Ejemplo 2) para confirmar \(K_v=5\), \(e=0{,}2\).
+
+**Límite:** estas constantes (\(K_p\), \(K_v\), \(K_a\)) se calculan sobre \(G\) de **lazo abierto**, no sobre la función de lazo cerrado; mezclarlas es uno de los errores comunes señalados al final de esta sección.
 

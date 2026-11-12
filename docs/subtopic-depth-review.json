@@ -5452,6 +5452,7 @@
       "topic": "Tema 1: Cómo está armado cada capítulo",
       "status": "pending",
       "semanticHeadings": [
+        "Verificación con código",
         "El temario",
         "Qué faltó en el Parcial 1",
         "Plan de dos semanas"
@@ -5472,7 +5473,8 @@
         "Ejemplo 3 · Pasar \\(-1 - \\sqrt{3} j\\) a forma polar · *Intermedio*",
         "Ejemplo 4 · Pasar \\(5 - 12 j\\) a forma polar · *Intermedio*",
         "Ejemplo 5 · Pasar \\(-4\\) a forma polar · *Básico*",
-        "Ejemplo 6 · Pasar \\(3 j\\) a forma polar · *Básico*"
+        "Ejemplo 6 · Pasar \\(3 j\\) a forma polar · *Básico*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -5493,7 +5495,8 @@
         "Más ejemplos resueltos",
         "Ejemplo 6 · Dividir multiplicando por el conjugado · *Intermedio*",
         "Ejemplo 7 · Multiplicar y dividir en forma polar · *Intermedio*",
-        "Ejemplo 8 · Potencia de un complejo · *Intermedio*"
+        "Ejemplo 8 · Potencia de un complejo · *Intermedio*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -5513,7 +5516,8 @@
         "Ejemplo 5 · Raíces de \\(s^{2} + 4 s + 13\\) · *Básico*",
         "Ejemplo 6 · Raíces de \\(s^{2} + 6 s + 9\\) · *Básico*",
         "Ejemplo 7 · Raíces de \\(s^{2} + 2 s - 3\\) · *Básico*",
-        "Ejemplo 8 · Raíces de \\(s^{2} + \\frac{4 s}{5} + 4\\) · *Intermedio*"
+        "Ejemplo 8 · Raíces de \\(s^{2} + \\frac{4 s}{5} + 4\\) · *Intermedio*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -5531,7 +5535,8 @@
         "Ejemplo 3 · Magnitud y fase de \\(G(s) = \\frac{4}{s \\left(s + 2\\right)}\\) en \\(\\omega = 2\\) · *Intermedio*",
         "Ejemplo 4 · Magnitud y fase de \\(G(s) = \\frac{25}{s^{2} + 4 s + 25}\\) en \\(\\omega = 5\\) · *Intermedio*",
         "Ejemplo 5 · Magnitud y fase de \\(G(s) = \\frac{s + 1}{s + 10}\\) en \\(\\omega = 1\\) · *Intermedio*",
-        "Ejemplo 6 · Magnitud y fase de \\(G(s) = \\frac{100}{\\left(s + 1\\right) \\left(s + 10\\right)}\\) en \\(\\omega = 3\\) · *Avanzado*"
+        "Ejemplo 6 · Magnitud y fase de \\(G(s) = \\frac{100}{\\left(s + 1\\right) \\left(s + 10\\right)}\\) en \\(\\omega = 3\\) · *Avanzado*",
+        "Verificación con código"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
@@ -5550,7 +5555,8 @@
         "Ejemplo 2 · Forma canónica de \\(\\frac{1}{s^{2} + 3 s + 2}\\) · *Básico*",
         "Ejemplo 3 · Forma canónica de \\(\\frac{1}{s^{2} + 4 s + 8}\\) · *Básico*",
         "Ejemplo 4 · Forma canónica de \\(\\frac{1}{s^{3} + 6 s^{2} + 11 s + 6}\\) · *Intermedio*",
-        "Ejemplo 5 · Forma canónica de \\(\\frac{1}{s^{2} + 9}\\) · *Intermedio*"
+        "Ejemplo 5 · Forma canónica de \\(\\frac{1}{s^{2} + 9}\\) · *Intermedio*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -5567,7 +5573,8 @@
         "Más ejemplos resueltos",
         "Ejemplo 3 · De matrices a función de transferencia · *Intermedio*",
         "Ejemplo 4 · De matrices a función de transferencia · *Intermedio*",
-        "Ejemplo 5 · De matrices a función de transferencia · *Avanzado*"
+        "Ejemplo 5 · De matrices a función de transferencia · *Avanzado*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -5585,7 +5592,8 @@
         "Ejemplo 3 · Leer K y τ de \\(\\frac{10}{s + 5}\\) · *Básico*",
         "Ejemplo 4 · Leer K y τ de \\(\\frac{3}{\\frac{s}{2} + 3}\\) · *Intermedio*",
         "Ejemplo 5 · Leer K y τ de \\(\\frac{8}{4 s + 2}\\) · *Intermedio*",
-        "Ejemplo 6 · Leer K y τ de \\(\\frac{1}{s + \\frac{1}{10}}\\) · *Intermedio*"
+        "Ejemplo 6 · Leer K y τ de \\(\\frac{1}{s + \\frac{1}{10}}\\) · *Intermedio*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -5604,7 +5612,8 @@
         "Más ejemplos resueltos",
         "Ejemplo 5 · Respuesta de \\(\\frac{4}{2 s + 1}\\) a un escalón de amplitud 3 · *Básico*",
         "Ejemplo 6 · Respuesta de \\(\\frac{5}{s + 5}\\) a un impulso unitario · *Básico*",
-        "Ejemplo 7 · Respuesta de \\(\\frac{2}{s + 2}\\) a un rampa unitaria · *Intermedio*"
+        "Ejemplo 7 · Respuesta de \\(\\frac{2}{s + 2}\\) a un rampa unitaria · *Intermedio*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -5621,7 +5630,8 @@
         "Más ejemplos resueltos",
         "Ejemplo 3 · Escalón en \\(\\dfrac{2e^{-1s}}{5s+1}\\) · *Básico*",
         "Ejemplo 4 · Escalón en \\(\\dfrac{\\frac{1}{2}e^{-3s}}{10s+1}\\) · *Intermedio*",
-        "Ejemplo 5 · Escalón en \\(\\dfrac{4e^{-\\frac{1}{2}s}}{2s+1}\\) · *Intermedio*"
+        "Ejemplo 5 · Escalón en \\(\\dfrac{4e^{-\\frac{1}{2}s}}{2s+1}\\) · *Intermedio*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -5638,7 +5648,8 @@
         "Ejemplo 2 · Identificar el modelo: valor final 10, 63 % en t = 4 s · *Básico*",
         "Ejemplo 3 · Identificar el modelo: valor final 2,5, 63 % en t = 12 s · *Básico*",
         "Ejemplo 4 · Identificar el modelo: valor final 50, 63 % en t = 0,8 s · *Intermedio*",
-        "Ejemplo 5 · Identificar el modelo: valor final 3, 63 % en t = 9 s, retardo 2 s · *Intermedio*"
+        "Ejemplo 5 · Identificar el modelo: valor final 3, 63 % en t = 9 s, retardo 2 s · *Intermedio*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -5656,7 +5667,8 @@
         "Ejemplo 3 · Leer K, ωn y ζ de \\(\\frac{50}{s^{2} + 6 s + 25}\\) · *Básico*",
         "Ejemplo 4 · Leer K, ωn y ζ de \\(\\frac{9}{2 s^{2} + 3 s + 18}\\) · *Intermedio*",
         "Ejemplo 5 · Leer K, ωn y ζ de \\(\\frac{4}{s^{2} + s + 4}\\) · *Básico*",
-        "Ejemplo 6 · Leer K, ωn y ζ de \\(\\frac{100}{s^{2} + 20 s + 100}\\) · *Intermedio*"
+        "Ejemplo 6 · Leer K, ωn y ζ de \\(\\frac{100}{s^{2} + 20 s + 100}\\) · *Intermedio*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -5673,7 +5685,8 @@
         "Ejemplo 2 · Predice antes de mover el simulador: ζ = 0,5, ωn = 2 · *Básico*",
         "Ejemplo 3 · Predice antes de mover el simulador: ζ = 0,9, ωn = 2 · *Básico*",
         "Ejemplo 4 · Predice antes de mover el simulador: ζ = 0,3, ωn = 1 · *Básico*",
-        "Ejemplo 5 · Predice antes de mover el simulador: ζ = 0,3, ωn = 4 · *Básico*"
+        "Ejemplo 5 · Predice antes de mover el simulador: ζ = 0,3, ωn = 4 · *Básico*",
+        "Verificación con código"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
@@ -5693,7 +5706,8 @@
         "Ejemplo 3 · Clasificar \\(\\frac{9}{s^{2} + 10 s + 9}\\) · *Básico*",
         "Ejemplo 4 · Clasificar \\(\\frac{9}{s^{2} + 9}\\) · *Básico*",
         "Ejemplo 5 · Clasificar \\(\\frac{4}{s^{2} + 5 s + 4}\\) · *Intermedio*",
-        "Ejemplo 6 · Clasificar \\(\\frac{25}{s^{2} + 4 s + 25}\\) · *Intermedio*"
+        "Ejemplo 6 · Clasificar \\(\\frac{25}{s^{2} + 4 s + 25}\\) · *Intermedio*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -5715,7 +5729,8 @@
         "Más ejemplos resueltos",
         "Ejemplo 8 · Especificaciones con ζ = 0,6 y ωn = 5 · *Básico*",
         "Ejemplo 9 · Especificaciones con ζ = 0,25 y ωn = 10 · *Intermedio*",
-        "Ejemplo 10 · Especificaciones con ζ = 0,7 y ωn = 1,5 · *Intermedio*"
+        "Ejemplo 10 · Especificaciones con ζ = 0,7 y ωn = 1,5 · *Intermedio*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -5732,7 +5747,8 @@
         "Ejemplo 2 · De especificaciones a G(s): Mp = 5 %, ts = 4 s, K = 1 · *Intermedio*",
         "Ejemplo 3 · De especificaciones a G(s): Mp = 20 %, ts = 1 s, K = 2 · *Intermedio*",
         "Ejemplo 4 · De especificaciones a G(s): Mp = 16,3 %, ts = 0,8 s, K = 1 · *Avanzado*",
-        "Ejemplo 5 · De especificaciones a G(s): Mp = 30 %, ts = 3 s, K = 5 · *Avanzado*"
+        "Ejemplo 5 · De especificaciones a G(s): Mp = 30 %, ts = 3 s, K = 5 · *Avanzado*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -5750,7 +5766,8 @@
         "Ejemplo 3 · ¿Es dominante el par complejo si el tercer polo está en −10? · *Intermedio*",
         "Ejemplo 4 · ¿Es dominante el par complejo si el tercer polo está en −4? · *Intermedio*",
         "Ejemplo 5 · ¿Es dominante el par complejo si el tercer polo está en −50? · *Básico*",
-        "Ejemplo 6 · ¿Es dominante el par complejo si el tercer polo está en −3? · *Avanzado*"
+        "Ejemplo 6 · ¿Es dominante el par complejo si el tercer polo está en −3? · *Avanzado*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -5767,7 +5784,8 @@
         "Ejemplo 2 · Efecto de un cero en s = −2 · *Intermedio*",
         "Ejemplo 3 · Efecto de un cero en s = −1 · *Intermedio*",
         "Ejemplo 4 · Efecto de un cero en s = −0,5 · *Avanzado*",
-        "Ejemplo 5 · Efecto de un cero en s = −5 · *Básico*"
+        "Ejemplo 5 · Efecto de un cero en s = −5 · *Básico*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -5784,7 +5802,8 @@
         "Ejemplo 2 · Respuesta inversa con cero en s = +1 · *Intermedio*",
         "Ejemplo 3 · Respuesta inversa con cero en s = +2 · *Intermedio*",
         "Ejemplo 4 · Respuesta inversa con cero en s = +3 · *Intermedio*",
-        "Ejemplo 5 · Respuesta inversa con cero en s = +4 · *Avanzado*"
+        "Ejemplo 5 · Respuesta inversa con cero en s = +4 · *Avanzado*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -5802,7 +5821,8 @@
         "Ejemplo 3 · Error final de \\(\\frac{10}{s \\left(s + 2\\right)}\\) ante rampa · *Intermedio*",
         "Ejemplo 4 · Error final de \\(\\frac{5}{s + 1}\\) ante rampa · *Intermedio*",
         "Ejemplo 5 · Error final de \\(\\frac{20}{s^{2} \\left(s + 5\\right)}\\) ante parábola · *Avanzado*",
-        "Ejemplo 6 · Error final de \\(\\frac{8}{\\left(s + 1\\right) \\left(s + 4\\right)}\\) ante escalón de amplitud 3 · *Básico*"
+        "Ejemplo 6 · Error final de \\(\\frac{8}{\\left(s + 1\\right) \\left(s + 4\\right)}\\) ante escalón de amplitud 3 · *Básico*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -5822,7 +5842,8 @@
         "Ejemplo 5 · Tipo y constantes de \\(\\frac{50}{\\left(s + 2\\right) \\left(s + 5\\right)}\\) · *Básico*",
         "Ejemplo 6 · Tipo y constantes de \\(\\frac{12}{s \\left(s + 3\\right)}\\) · *Básico*",
         "Ejemplo 7 · Tipo y constantes de \\(\\frac{30 s + 30}{s^{2} \\left(s + 6\\right)}\\) · *Intermedio*",
-        "Ejemplo 8 · Tipo y constantes de \\(\\frac{100}{s \\left(s + 4\\right) \\left(s + 10\\right)}\\) · *Intermedio*"
+        "Ejemplo 8 · Tipo y constantes de \\(\\frac{100}{s \\left(s + 4\\right) \\left(s + 10\\right)}\\) · *Intermedio*",
+        "Verificación con código"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
@@ -5842,7 +5863,8 @@
         "Ejemplo 3 · ¿Estable? \\(G(s) = \\frac{1}{s \\left(s + 2\\right)}\\) · *Básico*",
         "Ejemplo 4 · ¿Estable? \\(G(s) = \\frac{1}{s^{2} + 4}\\) · *Básico*",
         "Ejemplo 5 · ¿Estable? \\(G(s) = \\frac{1}{s^{2} + 2 s + 10}\\) · *Básico*",
-        "Ejemplo 6 · ¿Estable? \\(G(s) = \\frac{1}{s^{2} - s + 4}\\) · *Intermedio*"
+        "Ejemplo 6 · ¿Estable? \\(G(s) = \\frac{1}{s^{2} - s + 4}\\) · *Intermedio*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -5860,7 +5882,8 @@
         "Ejemplo 3 · Routh de \\(s^{3} + 6 s^{2} + 11 s + 6\\) · *Básico*",
         "Ejemplo 4 · Routh de \\(s^{3} + 2 s^{2} + 3 s + 10\\) · *Intermedio*",
         "Ejemplo 5 · Routh de \\(s^{4} + 4 s^{3} + 6 s^{2} + 4 s + 5\\) · *Intermedio*",
-        "Ejemplo 6 · Routh de \\(2 s^{3} + 3 s^{2} + 5 s + 1\\) · *Básico*"
+        "Ejemplo 6 · Routh de \\(2 s^{3} + 3 s^{2} + 5 s + 1\\) · *Básico*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -5877,7 +5900,8 @@
         "Más ejemplos resueltos",
         "Ejemplo 3 · Cero en la primera columna · *Intermedio*",
         "Ejemplo 4 · Fila completa de ceros · *Avanzado*",
-        "Ejemplo 5 · Polinomio con un coeficiente faltante · *Básico*"
+        "Ejemplo 5 · Polinomio con un coeficiente faltante · *Básico*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -5890,6 +5914,7 @@
       "status": "pending",
       "semanticHeadings": [
         "Ejemplo 1 · Rango de K · *Nivel parcial*",
+        "Verificación con código",
         "Más ejemplos resueltos",
         "Ejemplo 2 · Rango de K para \\(G = \\dfrac{K}{s \\left(s + 2\\right) \\left(s + 4\\right)}\\) · *Básico*",
         "Ejemplo 3 · Rango de K para \\(G = \\dfrac{K}{\\left(s + 1\\right) \\left(s + 2\\right) \\left(s + 3\\right)}\\) · *Intermedio*",
@@ -5913,7 +5938,8 @@
         "Ejemplo 3 · Leer el polo \\(-3 \\pm j4\\) · *Básico*",
         "Ejemplo 4 · Leer el polo \\(-4 \\pm j3\\) · *Intermedio*",
         "Ejemplo 5 · Leer el polo \\(-0{,}5 \\pm j2\\) · *Intermedio*",
-        "Ejemplo 6 · Leer el polo \\(-5 \\pm j8{,}66\\) · *Intermedio*"
+        "Ejemplo 6 · Leer el polo \\(-5 \\pm j8{,}66\\) · *Intermedio*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -5931,7 +5957,8 @@
         "Ejemplo 3 · Estabilidad por la posición de los polos: \\(-3\\), \\(-1 \\pm 2j\\) · *Básico*",
         "Ejemplo 4 · Estabilidad por la posición de los polos: \\(2\\), \\(-5\\) · *Básico*",
         "Ejemplo 5 · Estabilidad por la posición de los polos: \\(\\pm 4j\\), \\(-1\\) · *Intermedio*",
-        "Ejemplo 6 · Estabilidad por la posición de los polos: \\(0\\), \\(0\\), \\(-2\\) · *Intermedio*"
+        "Ejemplo 6 · Estabilidad por la posición de los polos: \\(0\\), \\(0\\), \\(-2\\) · *Intermedio*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -5944,6 +5971,7 @@
       "status": "pending",
       "semanticHeadings": [
         "Ejemplo 1 · Zona desde especificaciones · *Intermedio*",
+        "Verificación con código",
         "Ejemplo 2 · Tres especificaciones · *Intermedio*",
         "Ejemplo 3 · ¿Cumple un candidato? · *Nivel parcial*",
         "Ejemplo 4 · De polos a G(s) y su zona (Parcial 2) · *Nivel parcial*",
@@ -5969,7 +5997,8 @@
         "Ejemplo 3 · ¿Está \\(-2+3j\\) en el lugar de \\(K\\,/((s+1)(s+3))\\)? · *Básico*",
         "Ejemplo 4 · ¿Está \\(-0{,}5+1j\\) en el lugar de \\(K\\,/(s(s+2)(s+4))\\)? · *Intermedio*",
         "Ejemplo 5 · ¿Está \\(-3+1{,}732j\\) en el lugar de \\(K\\,(s+3)/(s(s+1))\\)? · *Intermedio*",
-        "Ejemplo 6 · ¿Está \\(-3+4j\\) en el lugar de \\(K\\,/(s(s+6))\\)? · *Básico*"
+        "Ejemplo 6 · ¿Está \\(-3+4j\\) en el lugar de \\(K\\,/(s(s+6))\\)? · *Básico*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -5988,7 +6017,8 @@
         "Ejemplo 4 · Reglas del lugar de \\(K\\frac{1}{s \\left(s + 1\\right) \\left(s + 5\\right)}\\) · *Intermedio*",
         "Ejemplo 5 · Reglas del lugar de \\(K\\frac{1}{s \\left(s + 3\\right) \\left(s + 6\\right)}\\) · *Intermedio*",
         "Ejemplo 6 · Reglas del lugar de \\(K\\frac{s + 2}{s \\left(s + 1\\right) \\left(s + 6\\right)}\\) · *Avanzado*",
-        "Ejemplo 7 · Reglas del lugar de \\(K\\frac{1}{\\left(s + 1\\right) \\left(s + 2\\right) \\left(s + 4\\right)}\\) · *Intermedio*"
+        "Ejemplo 7 · Reglas del lugar de \\(K\\frac{1}{\\left(s + 1\\right) \\left(s + 2\\right) \\left(s + 4\\right)}\\) · *Intermedio*",
+        "Verificación con código"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
@@ -6004,6 +6034,7 @@
       "semanticHeadings": [
         "Ejemplos resueltos",
         "Ejemplo 1 · Elegir K para ζ = 0,5 en \\(\\dfrac{K}{s(s+4)}\\) · *Básico*",
+        "Verificación con código",
         "Ejemplo 2 · Elegir K para ζ = 0,6 en \\(\\dfrac{K}{s(s+6)}\\) · *Básico*",
         "Ejemplo 3 · Elegir K para ζ = 0,707 en \\(\\dfrac{K}{s(s+2)}\\) · *Intermedio*",
         "Ejemplo 4 · Elegir K para ζ = 0,4 en \\(\\dfrac{K}{s(s+10)}\\) · *Intermedio*",
@@ -6024,7 +6055,8 @@
         "Ejemplo 2 · ¿Qué mira la acción Integral (I)? · *Básico*",
         "Ejemplo 3 · ¿Qué mira la acción Derivativa (D)? · *Básico*",
         "Ejemplo 4 · La ducha como PID · *Básico*",
-        "Ejemplo 5 · Leer un PID escrito en s · *Intermedio*"
+        "Ejemplo 5 · Leer un PID escrito en s · *Intermedio*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -6041,7 +6073,8 @@
         "Ejemplo 2 · Error ante escalón con P con Kp = 18 · *Básico*",
         "Ejemplo 3 · Error ante escalón con PI · *Intermedio*",
         "Ejemplo 4 · Error ante escalón con P con Kp = 98 · *Básico*",
-        "Ejemplo 5 · Error ante escalón con PI con Ki = 5 · *Intermedio*"
+        "Ejemplo 5 · Error ante escalón con PI con Ki = 5 · *Intermedio*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -6064,7 +6097,8 @@
         "Más ejemplos resueltos",
         "Ejemplo 5 · Efecto de P (Kp = 8) sobre \\(P = \\frac{1}{s \\left(s + 4\\right)}\\) · *Intermedio*",
         "Ejemplo 6 · Efecto de P (Kp = 20) sobre \\(P = \\frac{1}{s \\left(s + 4\\right)}\\) · *Intermedio*",
-        "Ejemplo 7 · Efecto de PD (Kp = 20, Kd = 4) sobre \\(P = \\frac{1}{s \\left(s + 4\\right)}\\) · *Intermedio*"
+        "Ejemplo 7 · Efecto de PD (Kp = 20, Kd = 4) sobre \\(P = \\frac{1}{s \\left(s + 4\\right)}\\) · *Intermedio*",
+        "Verificación con código"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
@@ -6084,7 +6118,8 @@
         "Ejemplo 2 · Elegir controlador: Horno industrial lento, sin ruido en el senso… · *Intermedio*",
         "Ejemplo 3 · Elegir controlador: Posición de un motor que oscila demasiado con… · *Intermedio*",
         "Ejemplo 4 · Elegir controlador: Medición de flujo muy ruidosa.… · *Intermedio*",
-        "Ejemplo 5 · Elegir controlador: Brazo que debe llegar rápido, sin sobrepico y… · *Intermedio*"
+        "Ejemplo 5 · Elegir controlador: Brazo que debe llegar rápido, sin sobrepico y… · *Intermedio*",
+        "Verificación con código"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
@@ -6105,6 +6140,7 @@
         "Detalles de implementación real",
         "Más ejemplos resueltos",
         "Ejemplo 3 · Ziegler-Nichols por oscilación: Ku = 10, Pu = 2 s · *Básico*",
+        "Verificación con código",
         "Ejemplo 4 · Ziegler-Nichols por oscilación: Ku = 4,8, Pu = 1,2 s · *Intermedio*",
         "Ejemplo 5 · Ziegler-Nichols por oscilación: Ku = 25, Pu = 0,5 s · *Intermedio*",
         "Ejemplo 6 · Obtener Ku y Pu con Routh · *Avanzado*"
@@ -6124,7 +6160,8 @@
         "Ejemplo 2 · Adelanto que aporta 30° de fase · *Básico*",
         "Ejemplo 3 · Adelanto que aporta 45° de fase · *Intermedio*",
         "Ejemplo 4 · Adelanto que aporta 55° de fase · *Intermedio*",
-        "Ejemplo 5 · Adelanto que aporta 20° de fase · *Básico*"
+        "Ejemplo 5 · Adelanto que aporta 20° de fase · *Básico*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -6141,7 +6178,8 @@
         "Ejemplo 2 · Atraso para subir Kv de 2 a 20 · *Básico*",
         "Ejemplo 3 · Atraso para subir Kv de 5 a 50 · *Intermedio*",
         "Ejemplo 4 · Atraso para subir Kv de 1 a 8 · *Intermedio*",
-        "Ejemplo 5 · Atraso para subir Kv de 10 a 40 · *Básico*"
+        "Ejemplo 5 · Atraso para subir Kv de 10 a 40 · *Básico*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -6155,6 +6193,7 @@
       "semanticHeadings": [
         "Más ejemplos resueltos",
         "Ejemplo 1 · Compensador con op-amps: R1 = 100 kΩ, C1 = 1 µF, R2 = 10 kΩ, C2 = 1 µF · *Intermedio*",
+        "Verificación con código",
         "Ejemplo 2 · Compensador con op-amps: R1 = 10 kΩ, C1 = 10 µF, R2 = 1 kΩ, C2 = 10 µF · *Intermedio*",
         "Ejemplo 3 · Compensador con op-amps: R1 = 1 kΩ, C1 = 1 µF, R2 = 10 kΩ, C2 = 1 µF · *Intermedio*",
         "Ejemplo 4 · Compensador con op-amps: R1 = 220 kΩ, C1 = 1 µF, R2 = 22 kΩ, C2 = 0,47 µF · *Avanzado*",
@@ -6177,7 +6216,8 @@
         "Ejemplo 2 · \\(\\mathcal{L}\\{1\\}\\) con la definición · *Básico*",
         "Ejemplo 3 · \\(\\mathcal{L}\\{e^{- 3 t}\\}\\) con la definición · *Básico*",
         "Ejemplo 4 · \\(\\mathcal{L}\\{t\\}\\) con la definición · *Intermedio*",
-        "Ejemplo 5 · \\(\\mathcal{L}\\{5 e^{2 t}\\}\\) con la definición · *Intermedio*"
+        "Ejemplo 5 · \\(\\mathcal{L}\\{5 e^{2 t}\\}\\) con la definición · *Intermedio*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -6196,7 +6236,8 @@
         "Ejemplo 4 · Transformada de \\(t^{2}\\) con la tabla · *Básico*",
         "Ejemplo 5 · Transformada de \\(- 2 t + 7 + e^{- t}\\) con la tabla · *Intermedio*",
         "Ejemplo 6 · Transformada de \\(t e^{- 4 t}\\) con la tabla · *Intermedio*",
-        "Ejemplo 7 · Transformada de \\(e^{- t} \\cos{\\left(2 t \\right)}\\) con la tabla · *Intermedio*"
+        "Ejemplo 7 · Transformada de \\(e^{- t} \\cos{\\left(2 t \\right)}\\) con la tabla · *Intermedio*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -6218,7 +6259,8 @@
         "Más ejemplos resueltos",
         "Ejemplo 8 · Transformar una EDO con condiciones iniciales · *Intermedio*",
         "Ejemplo 9 · Desplazamiento en s · *Intermedio*",
-        "Ejemplo 10 · Integral de una señal · *Básico*"
+        "Ejemplo 10 · Integral de una señal · *Básico*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -6237,7 +6279,8 @@
         "Ejemplo 4 · Valor final de \\(\\frac{10}{s \\left(s + 5\\right)}\\) · *Básico*",
         "Ejemplo 5 · Valor final de \\(\\frac{2 s + 8}{s \\left(s^{2} + 4 s + 8\\right)}\\) · *Intermedio*",
         "Ejemplo 6 · Valor final de \\(\\frac{3}{s \\left(s - 1\\right)}\\) · *Intermedio*",
-        "Ejemplo 7 · Valor final de \\(\\frac{5}{s \\left(s^{2} + 9\\right)}\\) · *Avanzado*"
+        "Ejemplo 7 · Valor final de \\(\\frac{5}{s \\left(s^{2} + 9\\right)}\\) · *Avanzado*",
+        "Verificación con código"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
@@ -6256,7 +6299,8 @@
         "Ejemplo 2 · Salida de \\(\\frac{5}{s + 1}\\) ante \\(2\\sin(t)\\) · *Básico*",
         "Ejemplo 3 · Salida de \\(\\frac{100}{s^{2} + 2 s + 100}\\) ante \\(1\\sin(10t)\\) · *Intermedio*",
         "Ejemplo 4 · Salida de \\(\\frac{1}{s + 2}\\) ante \\(4\\sin(2t)\\) · *Básico*",
-        "Ejemplo 5 · Salida de \\(\\frac{50}{\\left(s + 1\\right) \\left(s + 10\\right)}\\) ante \\(1\\sin(5t)\\) · *Intermedio*"
+        "Ejemplo 5 · Salida de \\(\\frac{50}{\\left(s + 1\\right) \\left(s + 10\\right)}\\) ante \\(1\\sin(5t)\\) · *Intermedio*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -6278,7 +6322,8 @@
         "Ejemplo 7 · De -6 dB a magnitud · *Básico*",
         "Ejemplo 8 · De 34 dB a magnitud · *Intermedio*",
         "Ejemplo 9 · Ganancia total de dos bloques en serie · *Intermedio*",
-        "Ejemplo 10 · Leer una pendiente de −40 dB/década · *Intermedio*"
+        "Ejemplo 10 · Leer una pendiente de −40 dB/década · *Intermedio*",
+        "Verificación con código"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
@@ -6298,7 +6343,8 @@
         "Ejemplo 3 · Bode asintótico de Polo simple \\(\\dfrac{1}{s/5 + 1}\\) · *Básico*",
         "Ejemplo 4 · Bode asintótico de Cero simple \\(s/2 + 1\\) · *Básico*",
         "Ejemplo 5 · Bode asintótico de Polos complejos \\(\\dfrac{100}{s^2 + 4s + 100}\\) · *Intermedio*",
-        "Ejemplo 6 · Bode asintótico de Producto \\(\\dfrac{10}{s(s/10 + 1)}\\) · *Intermedio*"
+        "Ejemplo 6 · Bode asintótico de Producto \\(\\dfrac{10}{s(s/10 + 1)}\\) · *Intermedio*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -6316,7 +6362,8 @@
         "Ejemplo 3 · Márgenes de \\(\\frac{10}{s^{3} + 3 s^{2} + 2 s}\\) · *Intermedio*",
         "Ejemplo 4 · Márgenes de \\(\\frac{40}{s^{3} + 6 s^{2} + 8 s}\\) · *Intermedio*",
         "Ejemplo 5 · Márgenes de \\(\\frac{5}{s^{3} + 3 s^{2} + 3 s + 1}\\) · *Intermedio*",
-        "Ejemplo 6 · Márgenes de \\(\\frac{100}{s^{3} + 15 s^{2} + 50 s}\\) · *Avanzado*"
+        "Ejemplo 6 · Márgenes de \\(\\frac{100}{s^{3} + 15 s^{2} + 50 s}\\) · *Avanzado*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -6335,7 +6382,8 @@
         "Parcial 2",
         "Salida ante escalón · ver capítulo 13 · *Punto 1*",
         "Polos en −3 ± 5j · ver capítulo 17 · *Punto 2*",
-        "Desde la gráfica · ver capítulo 13 y capítulo 17 · *Punto 3*"
+        "Desde la gráfica · ver capítulo 13 y capítulo 17 · *Punto 3*",
+        "Verificación con código del parcial"
       ],
       "prioritySignals": [],
       "review": null
@@ -6353,7 +6401,8 @@
         "Escalón · *Punto 4*",
         "Polos y zona · *Punto 5*",
         "Desde la gráfica · *Punto 6*",
-        "Formulario"
+        "Formulario",
+        "Verificación con código del simulacro"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
@@ -6374,7 +6423,8 @@
         "Ejemplo 4 · Polos reales distintos: \\(\\frac{10}{\\left(s + 1\\right) \\left(s + 4\\right)}\\) · *Básico*",
         "Ejemplo 5 · Polos reales distintos: \\(\\frac{s + 5}{s \\left(s + 2\\right) \\left(s + 3\\right)}\\) · *Intermedio*",
         "Ejemplo 6 · Polos reales distintos: \\(\\frac{4}{s^{2} + 5 s + 4}\\) · *Básico*",
-        "Ejemplo 7 · Polos reales distintos: \\(\\frac{2 s + 1}{s \\left(s + 1\\right)}\\) · *Básico*"
+        "Ejemplo 7 · Polos reales distintos: \\(\\frac{2 s + 1}{s \\left(s + 1\\right)}\\) · *Básico*",
+        "Verificación con código"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
@@ -6394,7 +6444,8 @@
         "Ejemplo 3 · Polo repetido: \\(\\frac{s + 3}{\\left(s + 1\\right)^{2}}\\) · *Básico*",
         "Ejemplo 4 · Polo repetido: \\(\\frac{4}{s^{2} \\left(s + 2\\right)}\\) · *Intermedio*",
         "Ejemplo 5 · Polo repetido: \\(\\frac{9}{s \\left(s + 3\\right)^{2}}\\) · *Intermedio*",
-        "Ejemplo 6 · Polo repetido: \\(\\frac{2}{\\left(s + 2\\right)^{3}}\\) · *Básico*"
+        "Ejemplo 6 · Polo repetido: \\(\\frac{2}{\\left(s + 2\\right)^{3}}\\) · *Básico*",
+        "Verificación con código"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
@@ -6416,7 +6467,8 @@
         "Ejemplo 5 · Polos complejos: \\(\\frac{5}{s^{2} + 2 s + 5}\\) · *Básico*",
         "Ejemplo 6 · Polos complejos: \\(\\frac{s + 3}{s^{2} + 4 s + 13}\\) · *Intermedio*",
         "Ejemplo 7 · Polos complejos: \\(\\frac{2 s + 1}{s^{2} + 6 s + 25}\\) · *Intermedio*",
-        "Ejemplo 8 · Escalón en un sistema con polos complejos · *Avanzado*"
+        "Ejemplo 8 · Escalón en un sistema con polos complejos · *Avanzado*",
+        "Verificación con código"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
@@ -6435,7 +6487,8 @@
         "Ejemplo 2 · Resolver \\(y''+5y'+6y=6\\) · *Intermedio*",
         "Ejemplo 3 · Resolver \\(y''+2y'+5y=0\\) · *Intermedio*",
         "Ejemplo 4 · Resolver \\(y''+4y=8\\) · *Intermedio*",
-        "Ejemplo 5 · Resolver \\(y'+3y=e^{- t}\\) · *Avanzado*"
+        "Ejemplo 5 · Resolver \\(y'+3y=e^{- t}\\) · *Avanzado*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -6448,6 +6501,7 @@
       "status": "pending",
       "semanticHeadings": [
         "Ejemplo 1 · Primer orden · *Básico*",
+        "Verificación con código",
         "Ejemplo 2 · Con condición inicial · *Básico*",
         "Ejemplo 3 · Segundo orden · *Intermedio*",
         "Ejemplo 4 · Un sistema físico · *Intermedio*",
@@ -6475,7 +6529,8 @@
         "Ejemplo 3 · ¿Lazo abierto o cerrado? Control de crucero de un carro · *Básico*",
         "Ejemplo 4 · ¿Lazo abierto o cerrado? Semáforo de tiempo fijo · *Básico*",
         "Ejemplo 5 · ¿Lazo abierto o cerrado? Riego por goteo con sensor de humedad · *Básico*",
-        "Ejemplo 6 · ¿Lazo abierto o cerrado? Lavadora que llena el tambor por tiempo · *Básico*"
+        "Ejemplo 6 · ¿Lazo abierto o cerrado? Lavadora que llena el tambor por tiempo · *Básico*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -6494,7 +6549,8 @@
         "Ejemplo 3 · Elementos del lazo: nivel de un tanque de agua · *Básico*",
         "Ejemplo 4 · Elementos del lazo: velocidad de un motor dc · *Básico*",
         "Ejemplo 5 · Elementos del lazo: posición de un brazo robótico · *Básico*",
-        "Ejemplo 6 · Elementos del lazo: iluminación automática · *Básico*"
+        "Ejemplo 6 · Elementos del lazo: iluminación automática · *Básico*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -6515,7 +6571,8 @@
         "Más ejemplos resueltos",
         "Ejemplo 7 · Lazo con \\(G = \\frac{10}{s + 1}\\) y \\(H = 1\\) · *Básico*",
         "Ejemplo 8 · Lazo con \\(G = \\frac{5}{s \\left(s + 2\\right)}\\) y \\(H = 2\\) · *Intermedio*",
-        "Ejemplo 9 · Lazo con \\(G = \\frac{4}{s + 3}\\) y \\(H = \\frac{1}{s + 1}\\) · *Intermedio*"
+        "Ejemplo 9 · Lazo con \\(G = \\frac{4}{s + 3}\\) y \\(H = \\frac{1}{s + 1}\\) · *Intermedio*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -6532,7 +6589,8 @@
         "Ejemplo 2 · Mover un punto de suma hacia la izquierda · *Intermedio*",
         "Ejemplo 3 · Mover un punto de toma hacia adelante · *Intermedio*",
         "Ejemplo 4 · Mover un sumador hacia la derecha · *Intermedio*",
-        "Ejemplo 5 · Lazo menor dentro de un lazo mayor · *Intermedio*"
+        "Ejemplo 5 · Lazo menor dentro de un lazo mayor · *Intermedio*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -6549,7 +6607,8 @@
         "Ejemplo 2 · Dibujar el grafo: Lazo \\(G\\) con realimentación \\(H\\) · *Intermedio*",
         "Ejemplo 3 · Dibujar el grafo: Dos bloques en serie con realimentación de cada uno · *Intermedio*",
         "Ejemplo 4 · Dibujar el grafo: Entrada con perturbación · *Intermedio*",
-        "Ejemplo 5 · Dibujar el grafo: Ecuaciones de un circuito RC en cascada · *Intermedio*"
+        "Ejemplo 5 · Dibujar el grafo: Ecuaciones de un circuito RC en cascada · *Intermedio*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -6567,7 +6626,8 @@
         "Más ejemplos resueltos",
         "Ejemplo 4 · Mason con dos lazos que se tocan · *Intermedio*",
         "Ejemplo 5 · Mason con dos lazos que no se tocan · *Avanzado*",
-        "Ejemplo 6 · Mason con dos caminos directos · *Avanzado*"
+        "Ejemplo 6 · Mason con dos caminos directos · *Avanzado*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -6580,6 +6640,7 @@
       "status": "pending",
       "semanticHeadings": [
         "Ejemplo 1 · Referencia y perturbación · *Nivel parcial*",
+        "Verificación con código",
         "Más ejemplos resueltos",
         "Ejemplo 2 · Referencia y perturbación con \\(C = 10\\), \\(P = \\frac{1}{s + 1}\\) · *Básico*",
         "Ejemplo 3 · Referencia y perturbación con \\(C = 5\\), \\(P = \\frac{2}{s \\left(s + 4\\right)}\\) · *Intermedio*",
@@ -6604,7 +6665,8 @@
         "Ejemplo 3 · Impedancia de una resistencia de 1 kΩ en paralelo con un capacitor de 1 µF · *Intermedio*",
         "Ejemplo 4 · Impedancia de un capacitor de 10 µF en serie con una resistencia de 100 Ω · *Básico*",
         "Ejemplo 5 · Impedancia de R, L y C en serie (R = 10 Ω, L = 0,1 H, C = 1 mF) · *Intermedio*",
-        "Ejemplo 6 · Impedancia de una bobina de 1 H en paralelo con un capacitor de 0,25 F · *Avanzado*"
+        "Ejemplo 6 · Impedancia de una bobina de 1 H en paralelo con un capacitor de 0,25 F · *Avanzado*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -6622,7 +6684,8 @@
         "Más ejemplos resueltos",
         "Ejemplo 4 · Divisor de voltaje: RC pasa bajas (R = 10 kΩ, C = 10 µF) · *Básico*",
         "Ejemplo 5 · Divisor de voltaje: RC pasa altas (R = 1 kΩ, C = 1 mF) · *Intermedio*",
-        "Ejemplo 6 · Divisor de voltaje: RLC con salida en el capacitor (R = 2 Ω, L = 1 H, C = 0,5 F) · *Intermedio*"
+        "Ejemplo 6 · Divisor de voltaje: RLC con salida en el capacitor (R = 2 Ω, L = 1 H, C = 0,5 F) · *Intermedio*",
+        "Verificación con código"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
@@ -6644,7 +6707,8 @@
         "Más ejemplos resueltos",
         "Ejemplo 5 · Controlador PI con op-amp inversor · *Intermedio*",
         "Ejemplo 6 · Controlador PD con op-amp inversor · *Intermedio*",
-        "Ejemplo 7 · Controlador Integrador con op-amp inversor · *Básico*"
+        "Ejemplo 7 · Controlador Integrador con op-amp inversor · *Básico*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -6661,7 +6725,8 @@
         "Ejemplo 2 · Masa-resorte-amortiguador: M = 1, B = 4, K = 20 · *Básico*",
         "Ejemplo 3 · Masa-resorte-amortiguador: M = 2, B = 8, K = 50 · *Intermedio*",
         "Ejemplo 4 · Masa-resorte-amortiguador: M = 0,5, B = 1, K = 8 · *Intermedio*",
-        "Ejemplo 5 · Dos masas acopladas · *Avanzado*"
+        "Ejemplo 5 · Dos masas acopladas · *Avanzado*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -6678,7 +6743,8 @@
         "Ejemplo 2 · Eje con J = 0,5 kg·m², B = 2 N·m·s, K = 10 N·m/rad · *Intermedio*",
         "Ejemplo 3 · Eje con J = 1 kg·m², B = 3 N·m·s, K = 0 N·m/rad · *Básico*",
         "Ejemplo 4 · Eje con J = 2 kg·m², B = 1 N·m·s, K = 8 N·m/rad · *Intermedio*",
-        "Ejemplo 5 · Engranajes · *Intermedio*"
+        "Ejemplo 5 · Engranajes · *Intermedio*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -6695,7 +6761,8 @@
         "Ejemplo 2 · Motor DC (inductancia despreciable): Ra = 1 Ω, K = 0,1, J = 0,01, B = 0,001 · *Intermedio*",
         "Ejemplo 3 · Motor DC (inductancia despreciable): Ra = 2 Ω, K = 0,5, J = 0,05, B = 0,01 · *Intermedio*",
         "Ejemplo 4 · Motor DC (inductancia despreciable): Ra = 0,5 Ω, K = 0,05, J = 0,001, B = 0 · *Avanzado*",
-        "Ejemplo 5 · Motor DC (inductancia despreciable): Ra = 4 Ω, K = 0,2, J = 0,02, B = 0,005 · *Intermedio*"
+        "Ejemplo 5 · Motor DC (inductancia despreciable): Ra = 4 Ω, K = 0,2, J = 0,02, B = 0,005 · *Intermedio*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -6712,7 +6779,8 @@
         "Ejemplo 2 · Horno con resistencia térmica · *Básico*",
         "Ejemplo 3 · Tanque con salida libre (linealizado) · *Intermedio*",
         "Ejemplo 4 · Dos tanques en cascada (no interactuantes) · *Avanzado*",
-        "Ejemplo 5 · Termómetro como sistema de primer orden · *Básico*"
+        "Ejemplo 5 · Termómetro como sistema de primer orden · *Básico*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -6729,7 +6797,8 @@
         "Ejemplo 2 · Analogía fuerza–voltaje: Amortiguador \\(B\\) · *Básico*",
         "Ejemplo 3 · Analogía fuerza–voltaje: Resorte \\(K\\) · *Básico*",
         "Ejemplo 4 · Del RLC serie a la masa-resorte · *Intermedio*",
-        "Ejemplo 5 · Elegir el análogo eléctrico de un eje · *Intermedio*"
+        "Ejemplo 5 · Elegir el análogo eléctrico de un eje · *Intermedio*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null
@@ -6747,7 +6816,8 @@
         "Ejemplo 3 · Linealizar \\(\\sin{\\left(x \\right)}\\) en \\(0\\) · *Básico*",
         "Ejemplo 4 · Linealizar \\(\\sin{\\left(x \\right)}\\) en \\(\\pi\\) · *Intermedio*",
         "Ejemplo 5 · Linealizar \\(\\sqrt{x}\\) en \\(4\\) · *Intermedio*",
-        "Ejemplo 6 · Linealizar \\(x^{2}\\) en \\(3\\) · *Básico*"
+        "Ejemplo 6 · Linealizar \\(x^{2}\\) en \\(3\\) · *Básico*",
+        "Verificación con código"
       ],
       "prioritySignals": [],
       "review": null

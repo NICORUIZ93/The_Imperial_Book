@@ -1,8 +1,8 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-11-12 21:07 UTC
-Root: `the_imperial_book`
-Indexed files: 1614
+Generated: 2026-11-12 22:08 UTC
+Root: `The_Imperial_Book`
+Indexed files: 1616
 Import edges: 67
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -16,19 +16,19 @@ For automated lookups, use `docs/repo-graph.json`.
 ## Project Shape
 
 - `angular-app`: 69 files
-- `automation-script`: 50 files
+- `automation-script`: 51 files
 - `course-content`: 331 files
 - `documentation`: 149 files
 - `example`: 929 files
 - `local-infra`: 1 files
-- `project-file`: 85 files
+- `project-file`: 86 files
 
 ## File Types
 
 - `.md`: 512
 - `.java`: 386
-- `.py`: 178
-- `.json`: 123
+- `.py`: 179
+- `.json`: 124
 - `.ts`: 72
 - `.js`: 54
 - `.html`: 50
@@ -51,7 +51,7 @@ For automated lookups, use `docs/repo-graph.json`.
 
 ## High Signal Files
 
-- `README.md` (390 lines, documentation)
+- `README.md` (388 lines, documentation)
   - headings: # The_Imperial_Book, ## Cómo empezar, ## Requisitos del sistema, ## Levantar Floci, # 1. Levantar todos los servicios
 - `scripts/validate.sh` (220 lines, automation-script)
 - `scripts/build_repo_graph.py` (477 lines, automation-script)
@@ -205,7 +205,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `scripts/build_unified_curriculum.py` (211 lines) - symbols: norm, main; imports: __future__, json, re, unicodedata, collections, pathlib
 - `scripts/build_web_curriculum_catalog.py` (191 lines) - symbols: build_assets, write_json, main; imports: __future__, json, collections, pathlib, typing
 - `scripts/build_web_topic_index.py` (81 lines) - symbols: slugify, clean_topic_title, main; imports: __future__, json, re, sys, unicodedata, collections, pathlib
-- ... 32 more files
+- ... 33 more files
 
 ### course-content
 
@@ -237,7 +237,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `CODE_OF_CONDUCT.md` (25 lines) - headings: # Código de conducta, ## Compromiso, ## Conducta esperada, ## Aplicación
 - `CONTRIBUTING.md` (41 lines) - headings: # Contribuir a The Imperial Book, ## Idioma y commits, ## Antes de abrir un cambio, ## Licencias
 - `MASTER-PROMPT.md` (143 lines) - headings: # MASTER PROMPT — THE IMPERIAL BOOK · RECONSTRUCCIÓN COMPLETA, ## PARTE 1 · METODOLOGÍA EDITORIAL, ### 1.1 Las 12 pautas innegociables, ### 1.2 Regla de preservación
-- `README.md` (390 lines) - headings: # The_Imperial_Book, ## Cómo empezar, ## Requisitos del sistema, ## Levantar Floci
+- `README.md` (388 lines) - headings: # The_Imperial_Book, ## Cómo empezar, ## Requisitos del sistema, ## Levantar Floci
 - `docs/ACADEMIA-EXPERIENCIA-DE-ESTUDIO.md` (66 lines) - headings: # Experiencia de estudio: contrato editorial y de interfaz, ## Principios de aprendizaje, ## Contrato de cada tema, ## Contrato del lector
 - `docs/ACADEMIA-PROTOTIPO-6-CONTEXTOS.md` (46 lines) - headings: # Prototipo editorial: seis contextos, ## Puerta de validación, ## Estado
 - `docs/AUDITORIA-COBERTURA-SPRING-20261101.md` (157 lines) - headings: # Auditoría de cobertura — Track Spring Boot vs temario profesional, ## Resumen de huecos confirmados, ### ALTA (prerrequisitos del núcleo / imprescindibles), ### MEDIA
@@ -297,4 +297,4 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/biblioteca/catalogo.json` (564 lines)
 - `docs/biblioteca/imagenes.json` (577 lines)
 - `docs/book-curriculum-inventory.json` (527350 lines)
-- ... 67 more files
+- ... 68 more files

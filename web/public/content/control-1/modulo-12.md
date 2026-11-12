@@ -152,6 +152,35 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
 
 **Resultado.** \(K = 1,\ \omega_n = 10\,\text{rad/s},\ \zeta = 1\): sistema críticamente amortiguado.
 
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 1 (lectura de parámetros).
+
+```python
+# verificacion.py
+from sympy import sqrt, Rational, N
+
+num, b, c = 370, 2, 37
+wn = sqrt(c)
+zeta = Rational(b, 1) / (2 * wn)
+K = Rational(num, c)
+print("wn:", N(wn, 4))
+print("zeta:", N(zeta, 4))
+print("K:", K)
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `wn: 6.083`, `zeta: 0.1644` y `K: 10`, igual al Ejemplo 1 (\(K=10\), \(\omega_n=6{,}08\), \(\zeta=0{,}164\)).
+
+**Práctica:** cambia `num, b, c` por `16, 4, 16` y confirma \(K=1\), \(\omega_n=4\), \(\zeta=0{,}5\) (Ejemplo 2).
+
+**Límite:** esta lectura directa solo aplica cuando el coeficiente de \(s^2\) ya es 1; si no lo es (como en el Ejemplo 4 de este tema), primero hay que dividir todo el denominador por ese coeficiente.
+
 ### Tema 2: Simulador: mueve ζ y ωn
 
 **¿Por qué es importante?** Mover \(\zeta\) y \(\omega_n\) en el simulador te da la intuición de qué hace cada parámetro antes de usar las fórmulas.
@@ -239,6 +268,36 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
    **¿Por qué?** Los tiempos dependen de \(\omega_n\): duplicar \(\omega_n\) hace todo el doble de rápido sin cambiar la forma.
 
 **Resultado.** Si la curva del simulador coincide, entendiste qué controla cada parámetro: \(\zeta\) la forma, \(\omega_n\) la escala de tiempo.
+
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar las predicciones del Ejemplo 1 antes de mover el simulador.
+
+```python
+# verificacion.py
+from sympy import exp, pi, sqrt, N
+
+zeta, wn = 0.1, 2
+Mp = N(exp(-zeta * pi / sqrt(1 - zeta ** 2)) * 100, 3)
+ts = N(4 / (zeta * wn), 3)
+wd = wn * sqrt(1 - zeta ** 2)
+tp = N(pi / wd, 3)
+print("Mp%:", Mp)
+print("ts:", ts)
+print("tp:", tp)
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `Mp%: 72.9`, `ts: 20.0` y `tp: 1.58`, igual al Ejemplo 1.
+
+**Práctica:** cambia `zeta, wn` a `0.5, 2` y confirma \(M_p\approx16{,}3\,\%\), \(t_s=4\) s (Ejemplo 2).
+
+**Límite:** este script solo predice; verificar que coincide con el simulador no prueba que entendiste de dónde salen las fórmulas — ese es el objetivo de las demostraciones del Tema 4.
 
 ### Tema 3: Los cuatro casos según ζ
 
@@ -344,6 +403,33 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
    **¿Por qué?** Los polos confirman la clasificación: complejos ↔ oscila, reales ↔ no oscila.
 
 **Resultado.** Caso **subamortiguado**: oscila mientras se acerca al valor final.
+
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar la clasificación del Ejemplo 1.
+
+```python
+# verificacion.py
+from sympy import sqrt, Rational, N
+
+num, b, c = 9, 2, 9
+wn = sqrt(c)
+zeta = Rational(b, 1) / (2 * wn)
+print("wn:", wn)
+print("zeta:", N(zeta, 3))
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `wn: 3` y `zeta: 0.333`, confirmando el caso **subamortiguado** (\(0<\zeta<1\)) del Ejemplo 1.
+
+**Práctica:** cambia `b` a `6` y confirma que da \(\zeta=1\) (Ejemplo 2, críticamente amortiguado).
+
+**Límite:** esta clasificación por \(\zeta\) solo aplica a un sistema de segundo orden estándar (sin ceros); un cero en el numerador, cercano a los polos, puede hacer que la respuesta real se vea distinta de lo que predice solo \(\zeta\) (capítulo 14).
 
 ### Tema 4: Fórmulas del caso subamortiguado
 
@@ -684,6 +770,36 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
   
   </details>
 
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar las especificaciones del Ejemplo 1.
+
+```python
+# verificacion.py
+from sympy import sqrt, exp, pi, N
+
+wn, zeta = 5, 0.6
+sigma = zeta * wn
+wd = wn * sqrt(1 - zeta ** 2)
+Mp = N(exp(-sigma * pi / wd) * 100, 3)
+tp = N(pi / wd, 3)
+ts = N(4 / sigma, 3)
+print("sigma:", sigma, "wd:", float(wd))
+print("Mp%:", Mp, "tp:", tp, "ts:", ts)
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `sigma: 3.0 wd: 4.0` y `Mp%: 9.48 tp: 0.785 ts: 1.33` (el 9,48 ≈ 9,5 % del texto, por redondeo), igual al Ejemplo 1.
+
+**Práctica:** cambia `wn, zeta` a `10, 0.25` y confirma los valores del Ejemplo 9 (\(M_p\approx44{,}4\,\%\), \(t_s\approx1{,}6\) s).
+
+**Límite:** \(t_s\approx4/\sigma\) es una aproximación válida para \(\zeta\) entre 0 y 0,7 aproximadamente (demostración 5); fuera de ese rango el tiempo de establecimiento real se aleja de \(4/\sigma\) y conviene usar la fórmula exacta con el logaritmo.
+
 ### Tema 5: De las especificaciones a la función de transferencia
 
 **¿Por qué es importante?** Los parciales piden el camino inverso: dan el sobrepico y el tiempo de establecimiento y preguntan por \(\zeta\), \(\omega_n\), los polos o la \(G(s)\) que los cumple. Es la base de todo el diseño de controladores.
@@ -803,4 +919,33 @@ Si dan el tiempo pico en vez del de establecimiento, se usa \(\omega_d = \pi/t_p
 **Resultado.** \(G(s) \approx \dfrac{69{,}411}{s^2 + 2{,}667s + 13{,}882}\); polos \(-1{,}333\pm j3{,}479\).
 
 **Comprobación.** Con esos valores, \(M_p = 30\,\%\) y \(t_s = 3\) s.
+
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 1 (camino inverso).
+
+```python
+# verificacion.py
+from sympy import log, sqrt, pi, N
+
+Mp, ts = 0.10, 2
+zeta = N(-log(Mp) / sqrt(pi ** 2 + log(Mp) ** 2), 4)
+sigma = 4 / ts
+wn = N(sigma / zeta, 4)
+print("zeta:", zeta)
+print("wn:", wn)
+print("wn^2:", N(wn ** 2, 5))
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `zeta: 0.5912`, `wn: 3.383` y `wn^2: 11.446`, igual al Ejemplo 1.
+
+**Práctica:** cambia `Mp, ts` a `0.05, 4` y confirma el Ejemplo 2 (\(\zeta\approx0{,}69\), \(\omega_n\approx1{,}449\)).
+
+**Límite:** este camino inverso asume que las especificaciones (\(M_p\), \(t_s\)) provienen de un sistema de segundo orden puro; si el sistema real tiene polos adicionales o ceros, el \(\zeta\) y \(\omega_n\) calculados son solo una aproximación del comportamiento dominante.
 

@@ -34,6 +34,7 @@ Dibuja el diagrama de bloques de capítulo 6 y define cada elemento:
 
 </details>
 
+
 #### Función de transferencia con op-amps · ver capítulo 8 · *Punto 2*
 
 Etapa 1: \(R_1\parallel C_1\) a la entrada y \(C_2\) de realimentación. Etapa 2: \(C_3\) a la entrada y \((C_5\) en serie con \(R_2)\parallel C_4\) de realimentación.
@@ -139,3 +140,26 @@ Máximo ≈ 5, valor final 3, pico en \(t \approx 2\) s. (a) \(M_p\); (b) \(G(s)
 > **Ojo:** si la gráfica arranca en \(t = 1\) (retardo de 1 s), \(t_p\) se mide desde ahí: \(t_p = 1\) s, \(\omega_n = 3{,}17\), \(G = \dfrac{30{,}1\,e^{-s}}{s^2+0{,}81s+10{,}03}\).
 
 </details>
+
+#### Verificación con código del parcial
+
+Después de resolver el Punto 3 del Parcial 1 en papel, guarda este contenido en `academia-labs/control-1/verificacion.py`:
+
+```python
+# verificacion.py
+from sympy import symbols, inverse_laplace_transform, simplify, exp, sin
+
+s, t = symbols("s t", positive=True)
+G = 370 / (s**2 + 2*s + 37)
+respuesta = inverse_laplace_transform(G, s, t)
+esperada = 370 * exp(-t) * sin(6*t) / 6
+print("impulso_correcto:", simplify(respuesta - esperada) == 0)
+```
+
+Con el entorno del módulo 0 activo, ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `impulso_correcto: True`; verifica a mano que \(s^2+2s+37=(s+1)^2+36\) y que el factor del seno es \(370/6\). **Práctica:** cambia el numerador a 185 y predice cómo cambia la amplitud antes de ejecutar. **Límite:** la igualdad simbólica comprueba este punto, pero no sustituye la explicación del retardo en el otro inciso ni la interpretación física del sistema.

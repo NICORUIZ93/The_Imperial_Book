@@ -1,0 +1,577 @@
+{
+  "date": "2026-11-12",
+  "python": "3.15.2",
+  "packages": {
+    "sympy": "1.14.0",
+    "scipy": "1.18.1",
+    "matplotlib": "3.11.2"
+  },
+  "scope": "Ejecución de cada bloque Python bajo el encabezado Verificación con código de Control 1. No acredita ejercicios independientes ni revisión pedagógica humana.",
+  "summary": {
+    "snippets": 70,
+    "passed": 70,
+    "failed": 0
+  },
+  "results": [
+    {
+      "source": "web/public/content/control-1/modulo-0.md",
+      "line": 29,
+      "codeSha256": "4f4bb2c905a54326bf6b6b232efd8ae10222ac1af4e171d87882f275b8ebf9f0",
+      "exitCode": 0,
+      "stdout": "sympy: 1.14.0\nscipy: 1.18.1",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-1.md",
+      "line": 156,
+      "codeSha256": "34f7b24926b7b0ded64dc089ddead3be47ada7c7570ec1e415689b131c836356",
+      "exitCode": 0,
+      "stdout": "magnitud: 5.00000000000000\nangulo_grados: 53.1301023541560",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-1.md",
+      "line": 401,
+      "codeSha256": "d3a5d58c038a917f4daf401434bdd480a4ece6080e78c52dd37583e8f8d81542",
+      "exitCode": 0,
+      "stdout": "producto: 17 - 7*I\ndivision: -1/5 + 2*I/5\npotencia: -8*I",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-1.md",
+      "line": 648,
+      "codeSha256": "25e83a9bf0cb33d2ec5471522b20498abccc94fcd05b6b8237f7352db9a7f7e5",
+      "exitCode": 0,
+      "stdout": "raices: [-1 - 6*I, -1 + 6*I]",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-1.md",
+      "line": 785,
+      "codeSha256": "13b345589aa47cb364b6349628203f8e5110eb3b5138110e230aaad83ee896db",
+      "exitCode": 0,
+      "stdout": "magnitud: 3.53553390593274\nfase_grados: -45.0000000000000",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-2.md",
+      "line": 117,
+      "codeSha256": "c8a3254479d33a9201c3c5a2273fa009515e4a0890daa6006a2193b476df4f01",
+      "exitCode": 0,
+      "stdout": "F(s): 1/(s + 2)",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-2.md",
+      "line": 278,
+      "codeSha256": "3394beadd8c02636554fe9f46824ad4b321b5596f9c367a0bb18a8203f027c8f",
+      "exitCode": 0,
+      "stdout": "F(s): (s + 4)**(-2)",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-2.md",
+      "line": 534,
+      "codeSha256": "eb534b6af1fe986cffab923b86933b6de2bc533066baa369a49f46558a8a7675",
+      "exitCode": 0,
+      "stdout": "fracciones parciales: -1/(s + 2) + 2/(s + 1)",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-2.md",
+      "line": 714,
+      "codeSha256": "ed26a76cca28d16a20ac380dca5fe7493e26597e44b098bbb75ba40593bfe468",
+      "exitCode": 0,
+      "stdout": "valor_final: 5",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-3.md",
+      "line": 216,
+      "codeSha256": "0656fab6dc93c36cc2238a0ba242384dfaa6953803142bba1abcb1a463fbb4f3",
+      "exitCode": 0,
+      "stdout": "fracciones: -2/(s + 3) + 2/s",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-3.md",
+      "line": 395,
+      "codeSha256": "335a9a3ab4d2abbcec8133fff8adc3f274a9fe04a4c77245679d19072ad83317",
+      "exitCode": 0,
+      "stdout": "fracciones: -1/(s + 1) - 1/(s + 1)**2 + 1/s",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-3.md",
+      "line": 661,
+      "codeSha256": "181a47db6e7e7248ed365f1bb143429f0dfc063ca13625e77bf870f18ae0eebe",
+      "exitCode": 0,
+      "stdout": "completado: s**2 + 2*s + 37",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-3.md",
+      "line": 806,
+      "codeSha256": "6585842532daafe2a870b7c1119b13cc4342a94277f26b95c1afbb48a6c99229",
+      "exitCode": 0,
+      "stdout": "y(t): Eq(y(t), 2 - 2*exp(-2*t))",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-4.md",
+      "line": 69,
+      "codeSha256": "da8712eef233b3e068274b7b2c54d0d96bddd0d361b2d9dda37e7833033c4369",
+      "exitCode": 0,
+      "stdout": "G(s) simplificado: 6/(s + 3)",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-5.md",
+      "line": 116,
+      "codeSha256": "0984d6fe07cf81803933a1edbcde78ba717a19e80ec34a74fc8ea679479f89a9",
+      "exitCode": 0,
+      "stdout": "lazo_abierto: 1\nlazo_cerrado: 0.009900990099009901",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-5.md",
+      "line": 293,
+      "codeSha256": "328111d051639ebfcbe48da1e454ca27b5f0aa568d00d0b0e6ac6b2a2001f885",
+      "exitCode": 0,
+      "stdout": "variable: temperatura (180 C)\nplanta: horno con aire y paredes\nsensor: termopar\nactuador: resistencia electrica\ncontrolador: calcula error y decide la accion\nperturbacion: apertura de la puerta",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-5.md",
+      "line": 526,
+      "codeSha256": "a195af6412efa02a87709b1363827569b5fa4da5f8afa99176f1005f0a6be3d6",
+      "exitCode": 0,
+      "stdout": "T(s): 10/(s + 12)",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-6.md",
+      "line": 92,
+      "codeSha256": "9a4d83cceeec62c4521715b4ce492ecd5086adc5d83c5a31347f5298bf6f7e72",
+      "exitCode": 0,
+      "stdout": "T: G1*G2/(G1*G2 + G2*H + 1)",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-6.md",
+      "line": 204,
+      "codeSha256": "773a6d201f43a5e5edc745faa69d4df060fb6d3a1f7d272ae737886ffd3daac5",
+      "exitCode": 0,
+      "stdout": "x2/x1: 1",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-6.md",
+      "line": 373,
+      "codeSha256": "3f3ac2ca4f4fc93b774702a82680e04a235442c4b3032087568f10fca19f6da7",
+      "exitCode": 0,
+      "stdout": "T: G1*G2/(G1*G2*H1*H2 + G1*H1 + G2*H2 + 1)\ncoincide_con_factorizado: True",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-6.md",
+      "line": 434,
+      "codeSha256": "c5bc8809dd92019b0af56d1f966e64f2fd3a07cad6fc84ceb6f4df26aefb974c",
+      "exitCode": 0,
+      "stdout": "y_D_infinito: 1/10",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-7.md",
+      "line": 142,
+      "codeSha256": "13ec645d82c5e4fc59212a07b3cc113905f602722427bcb7f8fd64dea5411fec",
+      "exitCode": 0,
+      "stdout": "Z(s): 0.5*s + 2000",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-7.md",
+      "line": 274,
+      "codeSha256": "2343f55115bc3cc37abe48f154bef7e591717a63727d0ee79143f5e06b78589b",
+      "exitCode": 0,
+      "stdout": "G(s): 1/(s + 1)",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-7.md",
+      "line": 461,
+      "codeSha256": "3a368a018e3aaa897d2e41bb2a09a25a92cf3ce4594737f2f2fe910f6fb3431a",
+      "exitCode": 0,
+      "stdout": "G(s): -10 - 10/s",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-8.md",
+      "line": 121,
+      "codeSha256": "ffcad5bcf4064f616f5f3e8ffa42793c07a100afc0807964260802f07dde8879",
+      "exitCode": 0,
+      "stdout": "wn: 4.47\nzeta: 0.447\nfinal: 1/2",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-8.md",
+      "line": 230,
+      "codeSha256": "3d4326ff823d0e53ec35bcf2040d21815c33182f1d25fd68a30517b1312ffa11",
+      "exitCode": 0,
+      "stdout": "wn: 4.472",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-8.md",
+      "line": 363,
+      "codeSha256": "7ecce4d56388aeab40a3321ce544f855e94bb4c8e22521c92551a0bdddd2a041",
+      "exitCode": 0,
+      "stdout": "polos: [-10.0, -2.00]",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-8.md",
+      "line": 471,
+      "codeSha256": "4a0305037c96e045e864670247081e010311ef65b5d8e0b8f0a02709ce6b842d",
+      "exitCode": 0,
+      "stdout": "G(s): 5/(10*s + 1)",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-8.md",
+      "line": 573,
+      "codeSha256": "f9e6845ff30e711316adef1eabb967066096f11b580af5ff0c62953732006079",
+      "exitCode": 0,
+      "stdout": "wn: 4.47\nzeta: 0.447",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-9.md",
+      "line": 133,
+      "codeSha256": "8357d2773a286e57378455822a4c9fec6ccd2d6a3b92f1d8f1ef7f5b7291af37",
+      "exitCode": 0,
+      "stdout": "f(4): 2\nf'(4): 1/4",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-10.md",
+      "line": 113,
+      "codeSha256": "8d731ae69a21760c17f0fb8e6e6345f2f5922f52decbd029a55fa659ac13427b",
+      "exitCode": 0,
+      "stdout": "G(s): 1/(s**2 + 3*s + 2)\nvalores_propios: {-1: 1, -2: 1}",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-10.md",
+      "line": 245,
+      "codeSha256": "7add516913169b540da7cbe4eb4d71a28defa50fc599bd20dc33d7d022013f9f",
+      "exitCode": 0,
+      "stdout": "G(s): 1/(s**2 + 2*s + 5)",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-11.md",
+      "line": 117,
+      "codeSha256": "33d725ea9ef0569d9086b6f730dffd70273ecb5f8a011a5ab944e278723086b0",
+      "exitCode": 0,
+      "stdout": "K: 5\ntau: 2",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-11.md",
+      "line": 313,
+      "codeSha256": "9905edc5d9b482bf57f5c2c4b01033df476f272ca599483bbc867c409c2a9f71",
+      "exitCode": 0,
+      "stdout": "y(t): 3 - 3*exp(-2*t)",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-11.md",
+      "line": 435,
+      "codeSha256": "b6eecc451b67ab5d0b20551d3887b961fb707dc126f906f0289c83e6fda21c2d",
+      "exitCode": 0,
+      "stdout": "y0(t): 2 - 2*exp(-t/4)\ny(t) con retardo 1.5 s: 2 - 2*exp(3/8 - t/4)",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-11.md",
+      "line": 562,
+      "codeSha256": "057df78630ca066a45b6418ebd866a266ee64636adf3782cc1fa06777643e3b4",
+      "exitCode": 0,
+      "stdout": "K: 10.0\ntau: 4.0013110663301035",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-12.md",
+      "line": 155,
+      "codeSha256": "834419bc073a9530585d18ac55bfd6885dcbf97d7d29392a4a8ae4c0fbf6a1f4",
+      "exitCode": 0,
+      "stdout": "wn: 6.083\nzeta: 0.1644\nK: 10",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-12.md",
+      "line": 272,
+      "codeSha256": "9d1553bfe984cc2b32a9c0017b9831da4e26df745ba2c575f30287ae5a7c0742",
+      "exitCode": 0,
+      "stdout": "Mp%: 72.9\nts: 20.0\ntp: 1.58",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-12.md",
+      "line": 407,
+      "codeSha256": "3eebb4349511c43601e9e1059fdc7aa83821e25e81f7bf0a4c215468d4c78934",
+      "exitCode": 0,
+      "stdout": "wn: 3\nzeta: 0.333",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-12.md",
+      "line": 773,
+      "codeSha256": "5fee904952c1a450b41bcba0bab1bf1184b71fd8c85351a00791c877bb56625c",
+      "exitCode": 0,
+      "stdout": "sigma: 3.0 wd: 4.0\nMp%: 9.48 tp: 0.785 ts: 1.33",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-12.md",
+      "line": 923,
+      "codeSha256": "3e7575e857c93c7f1aa48a0ea9d1a1aed2894105390d30f40f2b8158c28e2f56",
+      "exitCode": 0,
+      "stdout": "zeta: 0.5912\nwn: 3.383\nwn^2: 11.446",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-13.md",
+      "line": 131,
+      "codeSha256": "dc3fcd8e571cfbc4fe2d220013de41f984816d1efdad146f61203ca8b04f51fb",
+      "exitCode": 0,
+      "stdout": "zeta: 0.316\nMp_approx%: 35.1",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-13.md",
+      "line": 257,
+      "codeSha256": "e986b61a00f9f2a9d90c1ce703df231253cd3afb16b6546cf2df8050fd681c88",
+      "exitCode": 0,
+      "stdout": "Gz simplificada: 4*(s + 1)/(s**2 + 2*s + 4)",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-13.md",
+      "line": 372,
+      "codeSha256": "6e4f60585ebd9c4e428df31192444a48aa9f2dc08115573a5d3d9c8e86948b05",
+      "exitCode": 0,
+      "stdout": "valor_final: 1\npendiente_inicial: -2",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-14.md",
+      "line": 117,
+      "codeSha256": "c3dbc0d85aee160ee3da2291fa6b412ac7b06a44c8bc89fe5a017d96ff00e424",
+      "exitCode": 0,
+      "stdout": "e_ss: 1/6",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-14.md",
+      "line": 323,
+      "codeSha256": "ab3a7162c2404479725f2578be4b0352192afea1ff5b50af6a62b05f098a7e7c",
+      "exitCode": 0,
+      "stdout": "Kp: 5\ne_ss: 0.167",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-15.md",
+      "line": 97,
+      "codeSha256": "b188005fd44562f307c34f6c7d06fc1d31ab3371ab30687983f289f9818d38c3",
+      "exitCode": 0,
+      "stdout": "polos: [-3, -1]\nestable: True",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-15.md",
+      "line": 307,
+      "codeSha256": "c9a403c74d9e52c664c32f118f23c1a3c6ca1aa3abe5772d7bc5c9799ec8e2c5",
+      "exitCode": 0,
+      "stdout": "raices: [-3, -2, -1]\nraices_en_semiplano_derecho: 0",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-15.md",
+      "line": 436,
+      "codeSha256": "0121b29d9e80b366bfd3d1ce081c3bf0e6f638fcef39beb400e2eade11894d7e",
+      "exitCode": 0,
+      "stdout": "raices: [-2, -2*I, 2*I]",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-15.md",
+      "line": 491,
+      "codeSha256": "db54495534af78b6c60ce99a2b2f606af63ced815ee70f66794f65c97335f937",
+      "exitCode": 0,
+      "stdout": "raices en K=6: [-3, -sqrt(2)*I, sqrt(2)*I]",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-16.md",
+      "line": 119,
+      "codeSha256": "41c27b6435c83c65281ac944633fe1cdb2dee59560772c88bfb65713f37451d2",
+      "exitCode": 0,
+      "stdout": "wn: 2.828\nzeta: 0.7071",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-16.md",
+      "line": 246,
+      "codeSha256": "102abcaa85f4bd0b4e5ce971a3de1031963c1934228dfdc0c9618f649c48cf06",
+      "exitCode": 0,
+      "stdout": "raices: [1/2 - sqrt(7)*I/2, 1/2 + sqrt(7)*I/2]\nestable: False",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-16.md",
+      "line": 325,
+      "codeSha256": "0cef7b40f529dc76bfdf592d93b3404eae184bebb64064f8ed73ead67c5cb6f3",
+      "exitCode": 0,
+      "stdout": "zeta_min: 0.456\ntheta_max: 62.9\nsigma_min: 2.0",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-17.md",
+      "line": 110,
+      "codeSha256": "d2e53b8fafdc1ca959800517252c37117e59c57134e13404fc50050a4b3df316",
+      "exitCode": 0,
+      "stdout": "angulo: -180.0\nK: 8.00",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-17.md",
+      "line": 335,
+      "codeSha256": "0a2c1ed8aec2690e1d33bcfcf6cb93f8c34cbc7acf79220f1feb3636ca35cf74",
+      "exitCode": 0,
+      "stdout": "centroide: -1.0",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-17.md",
+      "line": 395,
+      "codeSha256": "0740631836ea1ce0cb27c8e9db1f97a157575adf7b5be41293ffc7daf939654e",
+      "exitCode": 0,
+      "stdout": "wn: 4.0\nK: 16.0",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-18.md",
+      "line": 92,
+      "codeSha256": "fbc455ed7c30a0a5f34a645ccdc139d344227fc981b9fa4add004b7fa2834d89",
+      "exitCode": 0,
+      "stdout": "Ti: 2.0\nTd: 0.125",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-18.md",
+      "line": 202,
+      "codeSha256": "28c8e1ded47aa1b3047c794bac6ffe6fbc618f4c99b589c2cb2c7175ad4ed976",
+      "exitCode": 0,
+      "stdout": "e_ss: 1/3",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-18.md",
+      "line": 377,
+      "codeSha256": "016f4e572a881c1c102fb7811f814d5adf7e6e534a87298a6f00435be2184e9a",
+      "exitCode": 0,
+      "stdout": "e_ss: 1/10",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-18.md",
+      "line": 484,
+      "codeSha256": "f478c1cb39afd9502103a10252cf58fc5da35ec1758d0e0f88d2d7b0725aba24",
+      "exitCode": 0,
+      "stdout": "Kv: 2\nerror_rampa: 1/2",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-18.md",
+      "line": 603,
+      "codeSha256": "da0740c0b484b40ae52d7553d3cd689a11a627d9f1fa55cee76aaa11aae68fc4",
+      "exitCode": 0,
+      "stdout": "P: 5.0\nPI: 4.5 1.6666666666666667\nPID: 6.0 1.0 0.25",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-19.md",
+      "line": 107,
+      "codeSha256": "5cbf4a24651177e761691ae0c487f3c29762df101de67c6334a3922045e85549",
+      "exitCode": 0,
+      "stdout": "alpha: 0.333",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-19.md",
+      "line": 226,
+      "codeSha256": "432cae9fbfc25f7c2c835d3cf152fe30431fe143aed201b56c6e52ca2e6099d7",
+      "exitCode": 0,
+      "stdout": "beta: 10.0",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-19.md",
+      "line": 284,
+      "codeSha256": "f8539563e47e4919733985b5e44803989132769bbb12929e7088d01f477036e2",
+      "exitCode": 0,
+      "stdout": "cero: -10.0\npolo: -100.0",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-20.md",
+      "line": 86,
+      "codeSha256": "d91c34351741968a54bc3879b324a5390319f075627623b6e49bd0c91d160939",
+      "exitCode": 0,
+      "stdout": "mag: 0.7071\nfase_grados: -45.00",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-20.md",
+      "line": 224,
+      "codeSha256": "3e022ccf3633debf2403cb42603f6b7ad3dab3f49602489a6c8691cec7eb6ff7",
+      "exitCode": 0,
+      "stdout": "dB: 20.00\nmagnitud: 0.5012",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-20.md",
+      "line": 338,
+      "codeSha256": "ed9ef02233e79c84957749a12dc744a808ea30e78cd0dc9e78d058216d9eab61",
+      "exitCode": 0,
+      "stdout": "dB: 26.0",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-20.md",
+      "line": 490,
+      "codeSha256": "c923cfe925bb53e030cd6ff51d30db9de1ce4528ffd93cb590eb848e3bf64f73",
+      "exitCode": 0,
+      "stdout": "cruce: 7.86\nfase: -128.2\nmargen: 51.8",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-21.md",
+      "line": 144,
+      "codeSha256": "6eca275537576e5773f5a789cb1943defaa86f62665e521130131e7dc54284fb",
+      "exitCode": 0,
+      "stdout": "impulso_correcto: True",
+      "stderr": ""
+    },
+    {
+      "source": "web/public/content/control-1/modulo-22.md",
+      "line": 126,
+      "codeSha256": "ed03d4d9d4f7c2a2d3dad6ecc18c1ff70c7926125709c8dfc3b368c18499bce2",
+      "exitCode": 0,
+      "stdout": "PI_correcto: True\nsobrepico_porcentaje: 63.8",
+      "stderr": ""
+    }
+  ]
+}

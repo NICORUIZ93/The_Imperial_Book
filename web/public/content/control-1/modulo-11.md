@@ -114,6 +114,34 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
 
 **Resultado.** \(K = 10\) (valor final ante un escalón unitario) y \(\tau = 10\,\text{s}\); \(t_s \approx 4\tau = 40\,\text{s}\); polo en \(s = -1/\tau = - \frac{1}{10}\).
 
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 1.
+
+```python
+# verificacion.py
+from sympy import symbols, Rational
+
+s = symbols("s")
+num, den = 5, 2 * s + 1
+tau = den.coeff(s, 1)
+K = Rational(num, den.coeff(s, 0))
+print("K:", K)
+print("tau:", tau)
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `K: 5` y `tau: 2`, igual al Ejemplo 1.
+
+**Práctica:** cambia `num, den` por `10, s + 5` y confirma \(K=2\), \(\tau=1/5\) (Ejemplo 3).
+
+**Límite:** esto exige que el denominador sea de primer grado en \(s\); con dos o más polos (segundo orden o mayor) \(K\) sigue siendo \(G(0)\), pero ya no hay un único \(\tau\) — aparecen varias constantes de tiempo (capítulo 13).
+
 ### Tema 2: Respuestas
 
 **¿Por qué es importante?** Las respuestas al impulso, al escalón y a la rampa son las que se piden en los exámenes y las que se miden en el laboratorio.
@@ -282,6 +310,32 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
 
 **Comprobación.** Para \(t\) grande \(y \approx t - 0{,}5\): sigue la rampa con un atraso constante igual a \(\tau = 0{,}5\) s.
 
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar la respuesta al escalón del Ejemplo 1.
+
+```python
+# verificacion.py
+from sympy import symbols, Rational, inverse_laplace_transform
+
+t, s = symbols("t s", positive=True)
+K, tau = 3, Rational(1, 2)
+Y = K / (s * (tau * s + 1))
+print("y(t):", inverse_laplace_transform(Y, s, t))
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `y(t): 3 - 3*exp(-2*t)`, igual a \(3(1-e^{-2t})\) del Ejemplo 1.
+
+**Práctica:** cambia `K, tau` por `1, 1` y la entrada a rampa (`Y = K/(s**2*(tau*s+1))`) y confirma el Ejemplo 4: \(y(t) = t - 1 + e^{-t}\).
+
+**Límite:** `inverse_laplace_transform` asume condiciones iniciales cero y una entrada estándar (impulso, escalón, rampa); con una entrada arbitraria medida en laboratorio hay que calcular su transformada primero, no se puede invertir directamente una señal sin fórmula cerrada.
+
 ### Tema 3: Retardo o tiempo muerto
 
 **¿Por qué es importante?** El retardo aparece en procesos reales (bandas, tuberías, hornos) y en el punto 3 del Parcial 1.
@@ -377,6 +431,34 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
    **¿Por qué?** Propiedad del retardo: \(e^{-Ts}F(s) \to f(t-T)u(t-T)\).
 
 **Resultado.** \(y(t) = 4\left(1 - e^{-(t-\frac{1}{2})/2}\right)u(t-\frac{1}{2})\): no se mueve hasta \(t=\frac{1}{2}\), llega al 63 % en \(t = 2{,}5\) s y se establece en \(\approx 8{,}5\) s.
+
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 1 (escalón con retardo).
+
+```python
+# verificacion.py
+from sympy import symbols, Rational, inverse_laplace_transform
+
+t, s = symbols("t s", positive=True)
+K, tau = 2, 4
+Y0 = K / (s * (tau * s + 1))
+y0 = inverse_laplace_transform(Y0, s, t)
+print("y0(t):", y0)
+print("y(t) con retardo 1.5 s:", y0.subs(t, t - Rational(3, 2)))
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `y0(t): 2 - 2*exp(-t/4)` y `y(t) con retardo 1.5 s: 2 - 2*exp(3/8 - t/4)` (es la misma exponencial corrida: \(3/8 = 1{,}5/4\)), igual al Ejemplo 1 (falta multiplicar por \(u(t-1{,}5)\), que el script no incluye).
+
+**Práctica:** cambia `K, tau` a `4, 5` con retardo `1` s y confirma el Ejemplo 3: \(y(t)=2(1-e^{-(t-1)/5})u(t-1)\).
+
+**Límite:** este script calcula la forma \(y_0(t-T)\) pero no impone que valga cero antes de \(T\); olvidar el factor \(u(t-T)\) a mano (como aquí) es exactamente el error común de esta sección — la expresión sin el escalón unitario predice una salida que no existe antes del retardo.
 
 ### Tema 4: Identificación desde una gráfica
 
@@ -476,6 +558,33 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
    **¿Por qué?** En primer orden \(y(\tau) = K(1-e^{-1}) \approx 0{,}632K\).
 
 **Resultado.** \(G(s) = \dfrac{3e^{-2s}}{7s+1}\).
+
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 2 con el método general (no solo el punto del 63,2 %).
+
+```python
+# verificacion.py
+from sympy import log, Rational
+
+y_inf, A, t_obs, y_obs = 10, 1, 4, Rational(632, 100)
+K = y_inf / A
+tau = -t_obs / log(1 - y_obs / y_inf)
+print("K:", K)
+print("tau:", float(tau))
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `K: 10.0` y `tau: 4.00...` (≈4, el pequeño error viene de redondear 63,2 %), igual al Ejemplo 2.
+
+**Práctica:** cambia los datos a los del Ejemplo 3 (`y_inf=2.5, t_obs=12, y_obs=1.58`) y confirma \(\tau\approx12\) s.
+
+**Límite:** esta fórmula identifica un modelo de primer orden sin retardo; si la curva tarda en arrancar (Ejemplo 5), primero hay que restar ese retardo \(T\) del tiempo observado antes de aplicar la fórmula, o \(\tau\) saldrá sobreestimado.
 
 #### Práctica para resolver sola o solo
 

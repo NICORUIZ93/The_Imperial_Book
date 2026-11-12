@@ -94,6 +94,32 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
 
 **Resultado.** Es **inestable**: hay un polo con parte real positiva, su exponencial crece sin límite.
 
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 1.
+
+```python
+# verificacion.py
+from sympy import symbols, solve
+
+s = symbols("s")
+polos = solve((s + 1) * (s + 3), s)
+print("polos:", polos)
+print("estable:", all(p < 0 for p in polos))
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `polos: [-3, -1]` y `estable: True`, igual al Ejemplo 1.
+
+**Práctica:** cambia el polinomio a `(s - 2) * (s + 1)` y confirma que `estable` da `False` (Ejemplo 2).
+
+**Límite:** este criterio de "mirar el signo de la parte real" solo funciona cuando ya conoces los polos; para polinomios de tercer orden o más, calcular las raíces a mano es difícil — por eso existe el criterio de Routh-Hurwitz (Tema 2), que decide la estabilidad sin resolver el polinomio.
+
 ### Tema 2: El arreglo de Routh
 
 **¿Por qué es importante?** Routh dice cuántas raíces son inestables sin calcularlas, lo que es indispensable para polinomios de tercer orden o más.
@@ -278,6 +304,33 @@ Arreglo completo:
 
 **Comprobación.** Calculando las raíces numéricamente hay 0 con parte real positiva.
 
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar la "Comprobación" del Ejemplo 3: que las raíces reales coinciden con el conteo de Routh.
+
+```python
+# verificacion.py
+from sympy import symbols, solve, re
+
+s = symbols("s")
+raices = solve(s ** 3 + 6 * s ** 2 + 11 * s + 6, s)
+inestables = sum(1 for r in raices if re(r) > 0)
+print("raices:", raices)
+print("raices_en_semiplano_derecho:", inestables)
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `raices: [-3, -2, -1]` y `raices_en_semiplano_derecho: 0`, confirmando el arreglo del Ejemplo 3 (0 cambios de signo → estable).
+
+**Práctica:** cambia el polinomio a `s**3 + 2*s**2 + 3*s + 10` y confirma `raices_en_semiplano_derecho: 2` (Ejemplo 4).
+
+**Límite:** este script resuelve el polinomio exactamente con sympy, algo que no se puede hacer a mano para orden 3 o más; el valor real del arreglo de Routh es que da el conteo de raíces inestables **sin** tener que resolver el polinomio.
+
 ### Tema 3: Casos especiales
 
 **¿Por qué es importante?** Los casos especiales aparecen justo en el límite de estabilidad, que es donde se hacen las preguntas difíciles.
@@ -380,6 +433,31 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
 
 **Resultado.** No: un polinomio con un coeficiente cero o de signo distinto **no puede ser estable**; no hace falta construir el arreglo.
 
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 4 (fila completa de ceros).
+
+```python
+# verificacion.py
+from sympy import symbols, solve
+
+s = symbols("s")
+raices = solve(s ** 3 + 2 * s ** 2 + 4 * s + 8, s)
+print("raices:", raices)
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `raices: [-2, -2*I, 2*I]`, igual al Ejemplo 4 (\(s=\pm2j\) y \(s=-2\): marginalmente estable).
+
+**Práctica:** cambia el polinomio a `s**4 + s**3 + 2*s**2 + 2*s + 3` y confirma que hay 2 raíces con parte real positiva (Ejemplo 3).
+
+**Límite:** resolver el polinomio directamente (como hace este script) es la comprobación, no el método; en el examen debes llegar al mismo conteo de raíces inestables construyendo el arreglo con el truco de \(\varepsilon\) o el polinomio auxiliar, sin resolver el polinomio completo.
+
 ### Tema 4: Rango de K para estabilidad
 
 **¿Por qué es importante?** El rango de \(K\) dice hasta dónde se puede subir la ganancia de un controlador y es la base de Ziegler-Nichols.
@@ -409,6 +487,31 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
    **¿Por qué?** En el límite los polos están sobre el eje imaginario: oscila.
 
 **Resultado:** \(0 < K < 6\); en \(K = 6\) oscila a 1,41 rad/s
+
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar la frecuencia de oscilación en el límite \(K=6\).
+
+```python
+# verificacion.py
+from sympy import symbols, solve
+
+s, K = symbols("s K")
+char = s * (s + 1) * (s + 2) + K
+print("raices en K=6:", solve(char.subs(K, 6), s))
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `raices en K=6: [-3, -sqrt(2)*I, sqrt(2)*I]`, confirmando que en \(K=6\) el sistema oscila a \(\sqrt2\approx1{,}41\) rad/s.
+
+**Práctica:** cambia `char` a \(s(s+1)(s+5)+K\) y evalúa en `K=30` para confirmar la oscilación a \(\sqrt5\) rad/s (práctica 2 de esta sección).
+
+**Límite:** este script confirma el límite de estabilidad sustituyendo un valor numérico de \(K\); no reemplaza construir el arreglo de Routh con \(K\) simbólico, que es lo que realmente da el rango completo (\(0<K<6\)), no solo el punto límite.
 
 #### Errores comunes
 

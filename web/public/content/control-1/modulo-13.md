@@ -128,6 +128,33 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
 
 **Resultado.** La aproximación **no es confiable**: el tercer polo está cerca y vuelve la respuesta más lenta y con menos sobrepico que lo que predicen las fórmulas.
 
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar la aproximación del Ejemplo 1.
+
+```python
+# verificacion.py
+from sympy import sqrt, exp, pi, N
+
+wn = sqrt(10)
+zeta = 2 / (2 * wn)
+Mp = N(exp(-zeta * pi / sqrt(1 - zeta ** 2)) * 100, 3)
+print("zeta:", N(zeta, 3))
+print("Mp_approx%:", Mp)
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `zeta: 0.316` y `Mp_approx%: 35.1`, igual a la aproximación del Ejemplo 1 (el valor exacto es 33,2 %; el error es de unos 2 puntos).
+
+**Práctica:** repite el cálculo del Ejemplo 6 (tercer polo en \(-3\), solo 3 veces más a la izquierda) y observa por qué el enunciado dice que esa aproximación **no es confiable**.
+
+**Límite:** la regla de "5 veces más a la izquierda" es heurística, no exacta; con una relación de 3 a 4 veces (Ejemplos 4 y 6) el error ya es significativo, así que siempre conviene comparar contra la respuesta exacta antes de confiar en la aproximación.
+
 ### Tema 2: Efecto de un cero
 
 **¿Por qué es importante?** Un cero cambia el sobrepico aunque los polos sean los mismos; ignorarlo lleva a diseños que se pasan.
@@ -227,6 +254,33 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
 
 **Resultado.** Sobrepico ≈ 18 % (casi igual al de los polos solos).
 
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar la identidad \(G_z=(1+s/a)G_0\) del Ejemplo 3 (cero en \(-1\)).
+
+```python
+# verificacion.py
+from sympy import symbols, simplify
+
+s = symbols("s")
+a = 1
+G0 = 4 / (s ** 2 + 2 * s + 4)
+Gz = (1 + s / a) * G0
+print("Gz simplificada:", simplify(Gz))
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `Gz simplificada: 4*(s + 1)/(s**2 + 2*s + 4)`, que es \(\dfrac{4s+4}{s^2+2s+4}\) del Ejemplo 3.
+
+**Práctica:** cambia `a` a `10` y confirma que da \(\dfrac{2s}{5}+4\) sobre el mismo denominador (Ejemplo 1, cero lejano con casi ningún efecto en \(M_p\)).
+
+**Límite:** esta fórmula asume un cero real simple en \(-a\) sobre un sistema de segundo orden; con un sistema de orden mayor o un cero complejo, el efecto sobre \(M_p\) ya no sigue esta tabla exacta y hay que simular la respuesta completa.
+
 ### Tema 3: Cero de fase no mínima
 
 **¿Por qué es importante?** Los ceros de fase no mínima explican respuestas que primero van al revés y limitan qué tan rápido se puede controlar.
@@ -314,4 +368,33 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
    **¿Por qué?** Valor inicial aplicado a la derivada.
 
 **Resultado.** Primero baja y luego sube hasta 1: \(y(t) = 1 - \frac{5 e^{- t}}{2} + \frac{3 e^{- 2 t}}{2}\). Es la firma de un cero de fase no mínima.
+
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 2.
+
+```python
+# verificacion.py
+from sympy import symbols, limit, oo
+
+s = symbols("s")
+G = (2 - 2 * s) / ((s + 1) * (s + 2))
+Y = G / s
+valor_final = limit(s * Y, s, 0)
+pendiente_inicial = limit(s * (s * Y), s, oo)
+print("valor_final:", valor_final)
+print("pendiente_inicial:", pendiente_inicial)
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `valor_final: 1` y `pendiente_inicial: -2`, igual al Ejemplo 2 (termina positivo pero empieza bajando).
+
+**Práctica:** cambia `G` por la del Ejemplo 3 (\(\dfrac{4-2s}{(s+2)(2s+2)}\)) y confirma `valor_final: 1` y `pendiente_inicial: -1`.
+
+**Límite:** `valor_final` y `pendiente_inicial` solo dicen el signo de arranque y el destino; no dicen cuánto se hunde la respuesta antes de subir — para ese detalle hay que invertir \(Y(s)\) completa, como en el resultado de cada ejemplo.
 

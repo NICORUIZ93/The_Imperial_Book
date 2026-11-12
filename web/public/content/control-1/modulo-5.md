@@ -113,6 +113,36 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
 
 **Resultado.** Es un sistema de **lazo abierto**.
 
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para ver numéricamente por qué importa cerrar el lazo (la fórmula se demuestra en el Tema 3 de este capítulo).
+
+```python
+# verificacion.py
+# Compara lazo abierto vs. lazo cerrado ante una perturbación D=1,
+# usando Y/D = 1/(1+C*Gp) (se demuestra más adelante, en el Tema 3).
+Gp = 10  # ganancia de la planta
+C = 10   # ganancia del controlador
+D = 1    # perturbación
+
+y_abierto = D
+y_cerrado = D / (1 + C * Gp)
+print("lazo_abierto:", y_abierto)
+print("lazo_cerrado:", y_cerrado)
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `lazo_abierto: 1` y `lazo_cerrado: 0.0099...`, mostrando que el lazo cerrado reduce el efecto de la perturbación unas 100 veces.
+
+**Práctica:** cambia `C` a 1 y a 100 y observa cómo cambia `y_cerrado`. ¿Qué pasa con la perturbación cuando `C` crece mucho?
+
+**Límite:** esta comparación asume que el lazo cerrado es estable; si al cerrar el lazo el sistema se vuelve inestable (puede pasar con \(C\) muy grande en sistemas de orden alto), la fórmula \(1/(1+CG_p)\) deja de tener sentido físico aunque el álgebra la calcule igual.
+
 ### Tema 2: Los elementos
 
 **¿Por qué es importante?** Nombrar y definir cada elemento es exactamente lo que pedía el punto 1 del Parcial 1.
@@ -259,6 +289,36 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
    **¿Por qué?** La perturbación es lo que cambia la salida sin que nadie lo ordene; el lazo cerrado existe para rechazarla.
 
 **Resultado.** Con estos elementos se dibuja el diagrama de bloques del capítulo y se escribe el error \(E = R - Y\).
+
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 2 (horno eléctrico) como una estructura de datos verificable.
+
+```python
+# verificacion.py
+sistema = {
+    "variable": "temperatura (180 C)",
+    "planta": "horno con aire y paredes",
+    "sensor": "termopar",
+    "actuador": "resistencia electrica",
+    "controlador": "calcula error y decide la accion",
+    "perturbacion": "apertura de la puerta",
+}
+for elemento, definicion in sistema.items():
+    print(f"{elemento}: {definicion}")
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** seis líneas, una por elemento, igual a la lista del Ejemplo 2.
+
+**Práctica:** construye el mismo diccionario para «nivel de un tanque de agua» (Ejemplo 3) y ejecútalo.
+
+**Límite:** esta lista nombra los elementos pero no es el diagrama de bloques del Tema 1; dos sistemas pueden compartir los mismos nombres de elementos y tener dinámicas (funciones de transferencia) completamente distintas.
 
 ### Tema 3: Álgebra de bloques
 
@@ -462,6 +522,32 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
    **¿Por qué?** Así desaparecen las fracciones dentro de fracciones.
 
 **Resultado.** \(T(s) = \frac{4 \left(s + 1\right)}{\left(s + 1\right) \left(s + 3\right) + 4}\); polos en lazo cerrado: \(-2 - \sqrt{3} j, -2 + \sqrt{3} j\).
+
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 3 (realimentación unitaria) con cálculo simbólico.
+
+```python
+# verificacion.py
+from sympy import symbols, simplify, together
+
+s = symbols("s")
+G = 10 / (s + 2)
+T = simplify(G / (1 + G))
+print("T(s):", together(T))
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `T(s): 10/(s + 12)`, igual al Ejemplo 3.
+
+**Práctica:** cambia `G` por \(\dfrac{4}{s(s+1)}\) y confirma que da \(\dfrac{4}{s^2+s+4}\) (práctica 1 de esta sección).
+
+**Límite:** la fórmula \(G/(1+GH)\) reduce un solo lazo; con lazos anidados (Ejemplo 6) hay que aplicarla una vez por cada lazo, siempre de adentro hacia afuera — aplicarla directamente al sistema completo da un resultado incorrecto.
 
 #### Práctica para resolver sola o solo
 

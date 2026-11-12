@@ -110,6 +110,35 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
 
 **Resultado.** Comprobación: \(C(sI-A)^{-1}B = \frac{1}{s^{2} + 9}\); valores propios de \(A\): \(- 3 j, 3 j\), que son los polos.
 
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 2 (forma canónica y valores propios).
+
+```python
+# verificacion.py
+from sympy import Matrix, symbols, eye, simplify
+
+s = symbols("s")
+A = Matrix([[0, 1], [-2, -3]])
+B = Matrix([[0], [1]])
+C = Matrix([[1, 0]])
+G = simplify((C * (s * eye(2) - A).inv() * B)[0])
+print("G(s):", G)
+print("valores_propios:", A.eigenvals())
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `G(s): 1/(s**2 + 3*s + 2)` y un diccionario de valores propios con `-1` y `-2` (cada uno con multiplicidad 1), igual al Ejemplo 2 (polos \(-1,-2\)); el orden en que sympy los imprime puede variar.
+
+**Práctica:** repite con las matrices del Ejemplo 4 (3×3, denominador \(s^3+6s^2+11s+6\)) y confirma que los valores propios son \(-1,-2,-3\).
+
+**Límite:** `A.eigenvals()` da los polos directamente porque esta representación es la forma canónica controlable; con otra elección de estados, \(A\) cambia de forma pero sus valores propios (los polos) son siempre los mismos.
+
 ### Tema 2: De estados a función de transferencia
 
 **¿Por qué es importante?** Pasar de matrices a \(G(s)\) muestra que las dos descripciones son equivalentes y que los polos son los valores propios de \(A\).
@@ -212,4 +241,32 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
    **¿Por qué?** Para 2×2: se intercambian los de la diagonal y se cambia el signo de los otros dos.
 
 **Resultado.** \(G(s) = C(sI-A)^{-1}B = \frac{2 \left(s + 3\right)}{s^{2} + 6 s + 8}\).
+
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 3.
+
+```python
+# verificacion.py
+from sympy import Matrix, symbols, eye, simplify
+
+s = symbols("s")
+A = Matrix([[0, 1], [-5, -2]])
+B = Matrix([[0], [1]])
+C = Matrix([[1, 0]])
+G = simplify((C * (s * eye(2) - A).inv() * B)[0])
+print("G(s):", G)
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `G(s): 1/(s**2 + 2*s + 5)`, igual al Ejemplo 3.
+
+**Práctica:** repite con las matrices del Ejemplo 5 (\(A=[[-2,1],[0,-4]]\), \(B=[[0],[2]]\), \(C=[[1,1]]\)) y confirma \(\dfrac{2(s+3)}{s^2+6s+8}\).
+
+**Límite:** la fórmula \(G=C(sI-A)^{-1}B+D\) exige invertir \((sI-A)\) simbólicamente, lo que crece mucho con el tamaño del sistema; para órdenes altos se prefiere calcular solo el polinomio característico \(\det(sI-A)\) y los residuos, no la inversa completa.
 

@@ -1844,7 +1844,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "100afb491c3d6a55bef53908e42952dd7368da27ce371c29cc615f739f49bd16",
+    "fingerprint": "0fc4c431da0d74cfa2843d7c7f1805e349a1da65c0bbd52209da22ba182fed76",
     "issues": {
       "cola-tras-cierre": 1
     },
@@ -3980,490 +3980,490 @@
         "module": 0,
         "tailWords": 0,
         "topic": "Tema 1: Cómo está armado cada capítulo",
-        "words": 656
+        "words": 880
       },
       {
         "issues": [],
         "module": 1,
         "tailWords": 0,
         "topic": "Tema 1: ¿Qué es un número complejo?",
-        "words": 1076
+        "words": 1189
       },
       {
         "issues": [],
         "module": 1,
         "tailWords": 0,
         "topic": "Tema 2: Operaciones",
-        "words": 1538
+        "words": 1693
       },
       {
         "issues": [],
         "module": 1,
         "tailWords": 0,
         "topic": "Tema 3: Raíces de s²+bs+c",
-        "words": 1390
+        "words": 1517
       },
       {
         "issues": [],
         "module": 1,
         "tailWords": 0,
         "topic": "Tema 4: Forma polar, fórmula de Euler y evaluación de G(jω)",
-        "words": 862
+        "words": 1001
       },
       {
         "issues": [],
         "module": 10,
         "tailWords": 0,
         "topic": "Tema 1: La forma de estado",
-        "words": 777
+        "words": 950
       },
       {
         "issues": [],
         "module": 10,
         "tailWords": 0,
         "topic": "Tema 2: De estados a función de transferencia",
-        "words": 789
+        "words": 938
       },
       {
         "issues": [],
         "module": 11,
         "tailWords": 0,
         "topic": "Tema 1: Forma estándar",
-        "words": 804
+        "words": 928
       },
       {
         "issues": [],
         "module": 11,
         "tailWords": 0,
         "topic": "Tema 2: Respuestas",
-        "words": 1169
+        "words": 1313
       },
       {
         "issues": [],
         "module": 11,
         "tailWords": 0,
         "topic": "Tema 3: Retardo o tiempo muerto",
-        "words": 659
+        "words": 861
       },
       {
         "issues": [],
         "module": 11,
         "tailWords": 0,
         "topic": "Tema 4: Identificación desde una gráfica",
-        "words": 831
+        "words": 979
       },
       {
         "issues": [],
         "module": 12,
         "tailWords": 0,
         "topic": "Tema 1: Forma estándar",
-        "words": 819
+        "words": 964
       },
       {
         "issues": [],
         "module": 12,
         "tailWords": 0,
         "topic": "Tema 2: Simulador: mueve ζ y ωn",
-        "words": 695
+        "words": 839
       },
       {
         "issues": [],
         "module": 12,
         "tailWords": 0,
         "topic": "Tema 3: Los cuatro casos según ζ",
-        "words": 616
+        "words": 746
       },
       {
         "issues": [],
         "module": 12,
         "tailWords": 0,
         "topic": "Tema 4: Fórmulas del caso subamortiguado",
-        "words": 2277
+        "words": 2449
       },
       {
         "issues": [],
         "module": 12,
         "tailWords": 0,
         "topic": "Tema 5: De las especificaciones a la función de transferencia",
-        "words": 916
+        "words": 1061
       },
       {
         "issues": [],
         "module": 13,
         "tailWords": 0,
         "topic": "Tema 1: Polos dominantes",
-        "words": 1069
+        "words": 1234
       },
       {
         "issues": [],
         "module": 13,
         "tailWords": 0,
         "topic": "Tema 2: Efecto de un cero",
-        "words": 873
+        "words": 1028
       },
       {
         "issues": [],
         "module": 13,
         "tailWords": 0,
         "topic": "Tema 3: Cero de fase no mínima",
-        "words": 644
+        "words": 784
       },
       {
         "issues": [],
         "module": 14,
         "tailWords": 0,
         "topic": "Tema 1: Fórmula general",
-        "words": 673
+        "words": 802
       },
       {
         "issues": [],
         "module": 14,
         "tailWords": 0,
         "topic": "Tema 2: Tipo de sistema y constantes",
-        "words": 1056
+        "words": 1190
       },
       {
         "issues": [],
         "module": 15,
         "tailWords": 0,
         "topic": "Tema 1: Qué es estabilidad",
-        "words": 616
+        "words": 746
       },
       {
         "issues": [],
         "module": 15,
         "tailWords": 0,
         "topic": "Tema 2: El arreglo de Routh",
-        "words": 1247
+        "words": 1402
       },
       {
         "issues": [],
         "module": 15,
         "tailWords": 0,
         "topic": "Tema 3: Casos especiales",
-        "words": 700
+        "words": 839
       },
       {
         "issues": [],
         "module": 15,
         "tailWords": 0,
         "topic": "Tema 4: Rango de K para estabilidad",
-        "words": 989
+        "words": 1143
       },
       {
         "issues": [],
         "module": 16,
         "tailWords": 0,
         "topic": "Tema 1: Geometría de un polo",
-        "words": 729
+        "words": 857
       },
       {
         "issues": [],
         "module": 16,
         "tailWords": 0,
         "topic": "Tema 2: Estabilidad",
-        "words": 577
+        "words": 720
       },
       {
         "issues": [],
         "module": 16,
         "tailWords": 0,
         "topic": "Tema 3: La zona de diseño",
-        "words": 1405
+        "words": 1553
       },
       {
         "issues": [],
         "module": 17,
         "tailWords": 0,
         "topic": "Tema 1: Las dos condiciones",
-        "words": 800
+        "words": 942
       },
       {
         "issues": [],
         "module": 17,
         "tailWords": 0,
         "topic": "Tema 2: Reglas de construcción (con su porqué)",
-        "words": 1546
+        "words": 1652
       },
       {
         "issues": [],
         "module": 17,
         "tailWords": 0,
         "topic": "Tema 3: Elegir K desde el lugar de las raíces",
-        "words": 754
+        "words": 885
       },
       {
         "issues": [],
         "module": 18,
         "tailWords": 0,
         "topic": "Tema 1: La idea",
-        "words": 482
+        "words": 603
       },
       {
         "issues": [],
         "module": 18,
         "tailWords": 0,
         "topic": "Tema 2: Error en estado estacionario",
-        "words": 670
+        "words": 778
       },
       {
         "issues": [],
         "module": 18,
         "tailWords": 0,
         "topic": "Tema 3: Cada acción, con números",
-        "words": 851
+        "words": 977
       },
       {
         "issues": [],
         "module": 18,
         "tailWords": 0,
         "topic": "Tema 4: Ventajas y desventajas (punto 4 del Parcial 1)",
-        "words": 565
+        "words": 702
       },
       {
         "issues": [],
         "module": 18,
         "tailWords": 0,
         "topic": "Tema 5: Sintonía de Ziegler-Nichols",
-        "words": 1013
+        "words": 1163
       },
       {
         "issues": [],
         "module": 19,
         "tailWords": 0,
         "topic": "Tema 1: Diseño de un adelanto",
-        "words": 707
+        "words": 833
       },
       {
         "issues": [],
         "module": 19,
         "tailWords": 0,
         "topic": "Tema 2: Diseño de un atraso",
-        "words": 765
+        "words": 881
       },
       {
         "issues": [],
         "module": 19,
         "tailWords": 0,
         "topic": "Tema 3: Implementación con op-amps",
-        "words": 766
+        "words": 919
       },
       {
         "issues": [],
         "module": 2,
         "tailWords": 0,
         "topic": "Tema 1: La idea",
-        "words": 700
+        "words": 832
       },
       {
         "issues": [],
         "module": 2,
         "tailWords": 0,
         "topic": "Tema 2: La tabla",
-        "words": 1024
+        "words": 1166
       },
       {
         "issues": [],
         "module": 2,
         "tailWords": 0,
         "topic": "Tema 3: Propiedades",
-        "words": 1422
+        "words": 1575
       },
       {
         "issues": [],
         "module": 2,
         "tailWords": 0,
         "topic": "Tema 4: Valor final y valor inicial",
-        "words": 1183
+        "words": 1280
       },
       {
         "issues": [],
         "module": 20,
         "tailWords": 0,
         "topic": "Tema 1: Qué es la respuesta en frecuencia",
-        "words": 588
+        "words": 706
       },
       {
         "issues": [],
         "module": 20,
         "tailWords": 0,
         "topic": "Tema 2: Decibeles y la escala logarítmica",
-        "words": 672
+        "words": 787
       },
       {
         "issues": [],
         "module": 20,
         "tailWords": 0,
         "topic": "Tema 3: Los bloques básicos",
-        "words": 715
+        "words": 833
       },
       {
         "issues": [],
         "module": 20,
         "tailWords": 0,
         "topic": "Tema 4: Márgenes de estabilidad",
-        "words": 975
+        "words": 1167
       },
       {
         "issues": [],
         "module": 21,
         "tailWords": 0,
         "topic": "Tema 1: Parcial 1",
-        "words": 1041
+        "words": 1187
       },
       {
         "issues": [],
         "module": 22,
         "tailWords": 0,
         "topic": "Tema 1: Simulacro con solución",
-        "words": 1040
+        "words": 1186
       },
       {
         "issues": [],
         "module": 3,
         "tailWords": 0,
         "topic": "Tema 1: Caso 1: polos reales distintos",
-        "words": 1687
+        "words": 1809
       },
       {
         "issues": [],
         "module": 3,
         "tailWords": 0,
         "topic": "Tema 2: Caso 2: polos repetidos",
-        "words": 1261
+        "words": 1389
       },
       {
         "issues": [],
         "module": 3,
         "tailWords": 0,
         "topic": "Tema 3: Caso 3: polos complejos (completar el cuadrado)",
-        "words": 1812
+        "words": 1942
       },
       {
         "issues": [],
         "module": 3,
         "tailWords": 0,
         "topic": "Tema 4: Resolver una ecuación diferencial completa",
-        "words": 779
+        "words": 919
       },
       {
         "issues": [],
         "module": 4,
         "tailWords": 0,
         "topic": "Tema 1: Qué es la función de transferencia",
-        "words": 1669
+        "words": 1802
       },
       {
         "issues": [],
         "module": 5,
         "tailWords": 0,
         "topic": "Tema 1: ¿Qué es un sistema de control?",
-        "words": 751
+        "words": 934
       },
       {
         "issues": [],
         "module": 5,
         "tailWords": 0,
         "topic": "Tema 2: Los elementos",
-        "words": 1244
+        "words": 1377
       },
       {
         "issues": [],
         "module": 5,
         "tailWords": 0,
         "topic": "Tema 3: Álgebra de bloques",
-        "words": 1395
+        "words": 1519
       },
       {
         "issues": [],
         "module": 6,
         "tailWords": 0,
         "topic": "Tema 1: Reglas para mover bloques",
-        "words": 613
+        "words": 744
       },
       {
         "issues": [],
         "module": 6,
         "tailWords": 0,
         "topic": "Tema 2: Grafos de flujo de señal",
-        "words": 715
-      },
-      {
-        "issues": [],
-        "module": 6,
-        "tailWords": 0,
-        "topic": "Tema 3: Regla de Mason",
         "words": 868
       },
       {
         "issues": [],
         "module": 6,
         "tailWords": 0,
+        "topic": "Tema 3: Regla de Mason",
+        "words": 1022
+      },
+      {
+        "issues": [],
+        "module": 6,
+        "tailWords": 0,
         "topic": "Tema 4: Referencia y perturbación juntas",
-        "words": 840
+        "words": 976
       },
       {
         "issues": [],
         "module": 7,
         "tailWords": 0,
         "topic": "Tema 1: Impedancias",
-        "words": 863
+        "words": 996
       },
       {
         "issues": [],
         "module": 7,
         "tailWords": 0,
         "topic": "Tema 2: Circuitos pasivos: divisor de voltaje",
-        "words": 588
+        "words": 736
       },
       {
         "issues": [],
         "module": 7,
         "tailWords": 0,
         "topic": "Tema 3: El op-amp inversor",
-        "words": 1199
+        "words": 1353
       },
       {
         "issues": [],
         "module": 8,
         "tailWords": 0,
         "topic": "Tema 1: Mecánico de traslación",
-        "words": 765
+        "words": 908
       },
       {
         "issues": [],
         "module": 8,
         "tailWords": 0,
         "topic": "Tema 2: Mecánico de rotación",
-        "words": 589
+        "words": 705
       },
       {
         "issues": [],
         "module": 8,
         "tailWords": 0,
         "topic": "Tema 3: Motor DC (electromecánico)",
-        "words": 893
+        "words": 1072
       },
       {
         "issues": [],
         "module": 8,
         "tailWords": 0,
         "topic": "Tema 4: Sistemas térmicos e hidráulicos",
-        "words": 526
+        "words": 659
       },
       {
         "issues": [],
         "module": 8,
         "tailWords": 0,
         "topic": "Tema 5: Analogías",
-        "words": 580
+        "words": 722
       },
       {
         "issues": [],
         "module": 9,
         "tailWords": 0,
         "topic": "Tema 1: La idea",
-        "words": 846
+        "words": 988
       }
     ],
     "devops": [

@@ -33,6 +33,9 @@ La ruta **Control 1** (`web/public/content/control-1/`) cubre sistemas de contro
 desde cero: Laplace, funciones de transferencia, respuesta temporal, estabilidad,
 lugar de las raíces, PID y compensadores. Sus fórmulas se escriben en TeX
 (`\(...\)` en línea y `\[...\]` en bloque) y el visor las renderiza con KaTeX.
+La [verificación de código de Control 1](docs/control-1-code-verification.json)
+registra 70 bloques Python ejecutados; no acredita comprensión ni revisión
+pedagógica humana.
 
 - [Guía web](web/README.md)
 - [Mapa compacto del repo](docs/repo-graph.md)
@@ -228,17 +231,12 @@ marcadores de siete pasos. Los 17 módulos migrados usan la envoltura
 Aprende/Practica/Aplica y 249 conservan el formato anterior; ambos formatos
 pueden contener temas cuyos siete pasos se auditan por separado. Ninguno de esos resultados demuestra que las instrucciones sean
 correctas, que los ejemplos se ejecuten o que el tema enseñe de forma efectiva.
+Los ejemplos de Control 1 tienen verificación ejecutable por tema; falta conectar
+cada práctica con un proyecto de control documentado.
 El estado por tema y las señales adicionales están en
 [`docs/seven-step-methodology.md`](docs/seven-step-methodology.md),
 [`docs/editorial-backlog.md`](docs/editorial-backlog.md) y
 [`docs/full-review.md`](docs/full-review.md).
-
-a quedar desincronizado. La auditoría de presencia editorial informa señales,
-no calidad ni ejecución. La auditoría vigente registra **13/1185** temas con
-3–6 subtemas y cuatro pasos completos; **1172 temas siguen pendientes**. Consulta
-los faltantes por track en [`docs/atomic-subtopics.md`](docs/atomic-subtopics.md).
-Las cifras de siete pasos en [`docs/seven-step-methodology.md`](docs/seven-step-methodology.md)
-son un registro histórico del formato anterior.
 
 ## Licencias
 

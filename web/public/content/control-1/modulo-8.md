@@ -118,6 +118,35 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
 
 **Resultado.** \(\dfrac{X_2}{F} = \dfrac{K}{(M_1s^2+K)(M_2s^2+Bs+K)-K^2}\): un sistema de cuarto orden.
 
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 1 (suspensión).
+
+```python
+# verificacion.py
+from sympy import sqrt, Rational, N
+
+m, b, k = 1, 4, 20
+wn = sqrt(Rational(k, m))
+zeta = Rational(b, 1) / (2 * sqrt(k * m))
+final = 10 * Rational(1, k)
+print("wn:", N(wn, 3))
+print("zeta:", N(zeta, 3))
+print("final:", final)
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `wn: 4.47`, `zeta: 0.447` y `final: 1/2`, igual al Ejemplo 1.
+
+**Práctica:** cambia `m, b, k` a `2, 8, 50` y confirma \(\omega_n=5\), \(\zeta=0{,}4\) (práctica 1 de esta sección).
+
+**Límite:** estas fórmulas valen para un sistema lineal de un solo grado de libertad; con dos masas acopladas (Ejemplo 5) el sistema es de cuarto orden y \(\zeta\), \(\omega_n\) ya no se leen de un solo término cuadrático.
+
 ### Tema 2: Mecánico de rotación
 
 **¿Por qué es importante?** Los sistemas rotacionales modelan ejes, brazos robóticos y antenas.
@@ -197,6 +226,31 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
    **¿Por qué?** Los engranajes reducen la velocidad y aumentan el torque; la carga se ve "más liviana" por el cuadrado de la relación.
 
 **Resultado.** El motor ve 0,08 kg·m² más su propia inercia.
+
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 2 (eje J=0,5, B=2, K=10).
+
+```python
+# verificacion.py
+from sympy import sqrt, Rational, N
+
+J, B, K = Rational(1, 2), 2, 10
+wn = sqrt(K / J)
+print("wn:", N(wn, 4))
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `wn: 4.472`, igual al Ejemplo 2.
+
+**Práctica:** cambia `J, K` a `2, 8` y confirma \(\omega_n=2\) (Ejemplo 4).
+
+**Límite:** esto asume el eje rígido conectado directamente a la carga; con engranajes (Ejemplo 5) la inercia y la fricción de la carga deben reflejarse multiplicando por el cuadrado de la relación de transmisión antes de aplicar esta fórmula.
 
 ### Tema 3: Motor DC (electromecánico)
 
@@ -306,6 +360,33 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
 
 **Resultado.** \(\dfrac{\Omega}{V} = \dfrac{K}{JR_as + BR_a + K^2} \approx \dfrac{3{,}333}{1{,}333s + 1}\): primer orden con \(\tau = 1{,}333\,\text{s}\) y ganancia \(3{,}333\) rad/s por voltio.
 
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar los polos del Ejemplo 1 (motor DC completo).
+
+```python
+# verificacion.py
+from sympy import symbols, solve, N
+
+s = symbols("s")
+R, L, J, B, Kt, Kb = 1, 0.5, 0.01, 0.1, 0.01, 0.01
+den = (L * s + R) * (J * s + B) + Kt * Kb
+polos = solve(den, s)
+print("polos:", sorted(N(p, 3) for p in polos))
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `polos: [-10.0, -2.00]`, igual al Ejemplo 1 (polo eléctrico rápido en −10, polo mecánico lento en −2).
+
+**Práctica:** usa los valores del Ejemplo 3 (\(R_a=2,\ K=0{,}5,\ J=0{,}05,\ B=0{,}01\), sin inductancia) para construir \(G=\dfrac{K}{JR_as+BR_a+K^2}\) y confirma \(\tau\approx0{,}37\) s.
+
+**Límite:** cuando \(L\) no es despreciable el sistema es de segundo orden con dos polos (eléctrico y mecánico); la aproximación de primer orden de los Ejemplos 2 a 5 solo es válida si el polo eléctrico \(R/L\) es mucho más rápido que el mecánico.
+
 ### Tema 4: Sistemas térmicos e hidráulicos
 
 **¿Por qué es importante?** Hornos y tanques son los procesos típicos de la industria y se modelan como sistemas de primer orden.
@@ -387,6 +468,32 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
 
 **Resultado.** \(G(s) = \dfrac{1}{30s+1}\) (ganancia 1, porque al final marca la temperatura real).
 
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 1 (tanque).
+
+```python
+# verificacion.py
+from sympy import symbols
+
+s = symbols("s")
+A, R = 2, 5
+G = R / (A * R * s + 1)
+print("G(s):", G)
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `G(s): 5/(10*s + 1)`, igual a \(K=5\), \(\tau=10\) del Ejemplo 1.
+
+**Práctica:** cambia `A, R` a los del horno del Ejemplo 2 (\(C_t=500\), \(R_t=0{,}2\), usando \(G=R_t/(R_tC_ts+1)\)) y confirma \(\tau=100\) s.
+
+**Límite:** este modelo de primer orden asume mezcla perfecta y una pérdida lineal con la salida; un tanque con válvula de salida turbulenta real (\(q\propto\sqrt h\)) no es lineal y esta fórmula es solo una linealización alrededor de un punto de operación.
+
 ### Tema 5: Analogías
 
 **¿Por qué es importante?** Las analogías te permiten reutilizar lo aprendido en un dominio para entender cualquier otro.
@@ -462,6 +569,34 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
    **¿Por qué?** Primer orden en ambos casos.
 
 **Resultado.** Un RL serie con \(L = 0{,}5\) y \(R = 2\): constante de tiempo \(L/R = J/B = 0{,}25\) s.
+
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 4 (RLC a masa-resorte).
+
+```python
+# verificacion.py
+from sympy import sqrt, Rational, N
+
+R, L, C = 4, 1, Rational(1, 20)
+M, B, K = L, R, 1 / C
+wn = sqrt(K / M)
+zeta = B / (2 * sqrt(K * M))
+print("wn:", N(wn, 3))
+print("zeta:", N(zeta, 3))
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `wn: 4.47` y `zeta: 0.447`, igual al Ejemplo 4.
+
+**Práctica:** usa la analogía del Ejemplo 5 (\(J=0{,}5\), \(B=2\) ↔ \(L=0{,}5\), \(R=2\)) y confirma que \(\tau=L/R=J/B=0{,}25\) s.
+
+**Límite:** la analogía fuerza-voltaje empareja masa↔inductancia y resorte↔capacitancia; existe otra convención (fuerza-corriente) que empareja al revés — mezclar las dos convenciones en el mismo problema da un modelo incorrecto.
 
 #### Práctica para resolver sola o solo
 

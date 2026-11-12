@@ -153,6 +153,31 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
 
 **Comprobación.** \(|z|\cos\theta = 0\) y \(|z|\sin\theta = 3\) devuelven \(a\) y \(b\).
 
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 1 con cálculo simbólico.
+
+```python
+# verificacion.py
+from sympy import I, Abs, arg, deg, N
+
+z = 3 + 4 * I
+print("magnitud:", N(Abs(z)))
+print("angulo_grados:", N(deg(arg(z))))
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `magnitud: 5.00000000000000` y `angulo_grados: 53.1301023541560`, igual al \(5\,\angle\,53{,}1^\circ\) del Ejemplo 1.
+
+**Práctica:** cambia `z` por \(-5+12j\) y vuelve a ejecutar. Resultado esperado: magnitud 13 y ángulo ≈ \(112{,}62^\circ\) (segundo cuadrante).
+
+**Límite:** la forma polar no está definida en \(z=0\) (el ángulo queda indeterminado); ese caso se trata aparte, no con esta fórmula.
+
 ### Tema 2: Operaciones
 
 **¿Por qué es importante?** Multiplicar conjugados y dividir complejos aparece en cada cálculo de polos, ángulos y respuestas en frecuencia.
@@ -373,6 +398,34 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
 
 **Resultado.** \(8\angle270^\circ = - 8 j\).
 
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar los Ejemplos 2, 4 y 8 con cálculo simbólico.
+
+```python
+# verificacion.py
+from sympy import I, expand, nsimplify
+
+producto = expand((2 + 3 * I) * (1 - 5 * I))
+division = nsimplify((1 + 2 * I) / (3 - 4 * I))
+potencia = expand((1 + I) ** 6)
+print("producto:", producto)
+print("division:", division)
+print("potencia:", potencia)
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `producto: 17 - 7*I`, `division: -1/5 + 2*I/5` y `potencia: -8*I`, iguales a los resultados manuales de los Ejemplos 2, 4 y 8.
+
+**Práctica:** calcula \((1+j)(2+3j)\) y \(\dfrac{4+2j}{1+j}\) a mano y confirma modificando `verificacion.py`. Resultado esperado: \(-1+5j\) y \(3-j\).
+
+**Límite:** la regla "multiplica magnitudes y suma ángulos" en polar exige que ambos ángulos estén en el mismo rango (p. ej. \((-180°,180°]\)); si no, hay que normalizar sumando o restando 360° antes de sumar.
+
 ### Tema 3: Raíces de s²+bs+c
 
 **¿Por qué es importante?** Las raíces de \(s^2+bs+c\) son los polos de un sistema de segundo orden: de ellas sale si el sistema oscila o no.
@@ -592,6 +645,31 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
   
   </details>
 
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el atajo del Ejemplo 3.
+
+```python
+# verificacion.py
+from sympy import symbols, solve
+
+s = symbols("s")
+raices = solve(s ** 2 + 2 * s + 37, s)
+print("raices:", raices)
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `raices: [-1 - 6*I, -1 + 6*I]`, igual al \(s=-1\pm6j\) del Ejemplo 3 (atajo).
+
+**Práctica:** cambia el polinomio a \(s^2+8s+41\) y vuelve a ejecutar. Resultado esperado: \(s=-4\pm5j\).
+
+**Límite:** el atajo \(-b/2 \pm j\sqrt{c-b^2/4}\) solo aplica a polinomios de segundo orden con coeficiente 1 en \(s^2\); para orden 3 o mayor no existe una fórmula cerrada general y se recurre a factorización por inspección o métodos numéricos.
+
 ### Tema 4: Forma polar, fórmula de Euler y evaluación de G(jω)
 
 **¿Por qué es importante?** Escribir un complejo como magnitud y ángulo convierte productos y cocientes en operaciones simples, y es exactamente lo que se hace al evaluar \(G(j\omega)\) en respuesta en frecuencia.
@@ -703,4 +781,30 @@ La fórmula de Euler dice \(e^{j\theta} = \cos\theta + j\sin\theta\). Por eso to
 **Resultado.** \(|G| \approx 3{,}029\) (\(9{,}63\,\text{dB}\)) y \(\angle G \approx -88{,}3^\circ\).
 
 **Comprobación.** Forma rectangular: \(G(j3) \approx 0{,}092-3{,}028j\).
+
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 1.
+
+```python
+# verificacion.py
+from sympy import I, Abs, arg, deg, N
+
+s = 2 * I
+G = 10 / (s + 2)
+print("magnitud:", N(Abs(G)))
+print("fase_grados:", N(deg(arg(G))))
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `magnitud: 3.53553390593274` y `fase_grados: -45.0000000000000`, igual al Ejemplo 1 (\(|G|\approx3{,}536\), \(\angle G\approx-45^\circ\)).
+
+**Práctica:** evalúa \(G(s)=\dfrac{20}{s+5}\) en \(\omega=5\) modificando el script. Resultado esperado: magnitud ≈ 2,83 y fase ≈ −45°.
+
+**Límite:** evaluar \(G(j\omega)\) para describir la respuesta en frecuencia en estado estacionario solo tiene sentido si \(G(s)\) es estable; con un polo en el semiplano derecho la salida no converge a una senoidal y la sustitución \(s=j\omega\) pierde su interpretación física.
 

@@ -66,6 +66,31 @@ Todo sistema físico se describe con una ecuación diferencial. Laplace la convi
 
 **Resultado:** \(G(s) = \dfrac{6}{s+3}\), \(y(t) = 2(1-e^{-3t})\)
 
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar que \(G(s)\) queda simplificado como en el Ejemplo 1.
+
+```python
+# verificacion.py
+from sympy import symbols, simplify
+
+s = symbols("s")
+G = 12 / (2 * s + 6)
+print("G(s) simplificado:", simplify(G))
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `G(s) simplificado: 6/(s + 3)`, igual al Ejemplo 1 y evita el error común de dejarlo como \(12/(2s+6)\).
+
+**Práctica:** cambia `G` por \(\dfrac{16}{4s+8}\) (de \(4\dot y+8y=16u\)) y confirma que simplifica a \(\dfrac{4}{s+2}\).
+
+**Límite:** esta simplificación algebraica supone condiciones iniciales cero; si hay una condición inicial distinta de cero (Ejemplo 2), \(G(s)\) no describe toda la salida — hay que sumar aparte la respuesta libre que produce esa condición inicial.
+
 #### Ejemplo 2 · Con condición inicial · *Básico*
 
 > **Qué cambia respecto al anterior:** No hay entrada; lo que mueve al sistema es la condición inicial.

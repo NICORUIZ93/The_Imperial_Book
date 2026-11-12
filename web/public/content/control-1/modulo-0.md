@@ -26,6 +26,37 @@ Todos los capítulos siguen el mismo orden:
 
 **Cómo estudiar un ejemplo:** lee el enunciado, tapa la solución e intenta el primer paso. Después abre la solución y compara solo ese paso, sobre todo el *¿Por qué?*. Repite paso por paso.
 
+#### Verificación con código
+
+Crea la carpeta `academia-labs/control-1` y guarda dentro este script como `verificacion.py`: lo reutilizarás en cada capítulo para comprobar los ejemplos con cálculo simbólico.
+
+```python
+# academia-labs/control-1/verificacion.py
+import sympy
+import scipy
+
+print("sympy:", sympy.__version__)
+print("scipy:", scipy.__version__)
+```
+
+Desde la carpeta creada, prepara un entorno aislado y ejecuta (macOS/Linux):
+
+```bash
+cd academia-labs/control-1
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install sympy scipy matplotlib
+python3 verificacion.py
+```
+
+En PowerShell, desde la misma carpeta, crea el entorno con `py -m venv .venv`, instala con `.\.venv\Scripts\python.exe -m pip install sympy scipy matplotlib` y ejecuta con `.\.venv\Scripts\python.exe verificacion.py`. Para los siguientes capítulos, guarda cada nuevo contenido en `verificacion.py`; en Windows sustituye `python3` por `.\.venv\Scripts\python.exe`.
+
+**Resultado esperado:** dos líneas con los números de versión instalados (por ejemplo `sympy: 1.14.0`). Si ves `ModuleNotFoundError`, confirma que ejecutaste el Python de `.venv` y repite la instalación allí.
+
+**Práctica:** añade `import matplotlib; print("matplotlib:", matplotlib.__version__)` al script y confirma que también está disponible — lo necesitarás para graficar respuestas en el capítulo 13.
+
+**Límite:** verificar que una cuenta numérica coincide con el cálculo manual no demuestra que entendiste el procedimiento; sigue resolviendo cada ejemplo a mano antes de comprobarlo con código.
+
 Los capítulos 10, 11, 20 y 21 (linealización, espacio de estados, compensadores y Bode) son de nivel experto: van más allá de lo que suele preguntarse en los primeros parciales, pero te preparan para Control 2.
 
 Para verificar tus cuentas puedes usar Python con SymPy y SciPy. El proyecto de práctica de la ruta explica cómo preparar la carpeta `academia-labs/control-1`.

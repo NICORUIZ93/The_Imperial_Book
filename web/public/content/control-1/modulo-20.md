@@ -83,6 +83,32 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
 
 **Resultado.** \(y_{ss}(t) \approx 0{,}877\sin(5t -105{,}3^\circ)\).
 
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 1.
+
+```python
+# verificacion.py
+from sympy import I, Abs, arg, deg, N
+
+s = 10 * I
+G = 10 / (s + 10)
+print("mag:", N(Abs(G), 4))
+print("fase_grados:", N(deg(arg(G)), 4))
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `mag: 0.7071` y `fase_grados: -45.00`, igual al Ejemplo 1.
+
+**Práctica:** cambia `s` a `1*I` con `G = 5/(s+1)` y confirma el Ejemplo 2 (\(|G|\approx3{,}536\), fase \(\approx-45°\)).
+
+**Límite:** esta fórmula solo describe la salida en **régimen permanente** (\(y_{ss}\)); no incluye el transitorio inicial, que depende de las condiciones iniciales y se apaga con el tiempo (capítulo 13).
+
 ### Tema 2: Decibeles y la escala logarítmica
 
 **¿Por qué es importante?** Los decibeles y la escala logarítmica convierten productos en sumas y permiten dibujar Bode a mano.
@@ -195,6 +221,33 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
 
 **Resultado.** Hay dos polos más que ceros actuando en ese rango (cada polo aporta −20 dB/década).
 
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar los Ejemplos 1 y 7 (ida y vuelta).
+
+```python
+# verificacion.py
+from sympy import log, N
+
+dB = N(20 * log(10, 10), 4)
+print("dB:", dB)
+
+magnitud = N(10 ** (-6 / 20), 4)
+print("magnitud:", magnitud)
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `dB: 20.00` (Ejemplo 1) y `magnitud: 0.5012` (Ejemplo 7, −6 dB ≈ la mitad).
+
+**Práctica:** cambia `log(10, 10)` a `log(50, 10)` y confirma `dB: 33.98` (Ejemplo 6).
+
+**Límite:** esta conversión es exacta pero solo para la **magnitud**; los ángulos no se convierten a dB, se suman directamente en grados (o radianes) al combinar bloques en serie.
+
 ### Tema 3: Los bloques básicos
 
 **¿Por qué es importante?** Con los bloques básicos trazas el Bode asintótico de cualquier función de transferencia.
@@ -281,6 +334,30 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
    **¿Por qué?** En Bode los factores se suman: se trazan por separado y se suman las rectas.
 
 **Resultado.** Esa es la forma que se suma con los demás factores para obtener el diagrama completo.
+
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 1 (constante \(K=20\)).
+
+```python
+# verificacion.py
+from sympy import log, N
+
+K = 20
+print("dB:", N(20 * log(K, 10), 3))
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `dB: 26.0`, igual a la recta horizontal del Ejemplo 1.
+
+**Práctica:** calcula en cuántos dB se cruza el eje 0 dB el integrador \(1/s\) del Ejemplo 2: ¿en qué \(\omega\) pasa de positivo a negativo?
+
+**Límite:** esta tabla da las **asíntotas** (rectas aproximadas); el valor real en la esquina del polo/cero se desvía hasta 3 dB (demostración de este tema), y la curva real es suave, no angulosa como la asíntota.
 
 ### Tema 4: Márgenes de estabilidad
 
@@ -409,4 +486,32 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
    **¿Por qué?** El margen de ganancia es cuánto se puede multiplicar la ganancia antes de que \(|G| = 1\) en ese punto.
 
 **Resultado.** \(MF \approx 59{,}3^\circ\), \(MG \approx 17{,}5\,\text{dB}\): lazo cerrado **estable**.
+
+#### Verificación con código
+
+En `academia-labs/control-1/verificacion.py`, comprueba el cruce y el margen del Ejemplo 2. La variable `x` representa \(\omega_c^2\); se conserva solo su raíz positiva porque la frecuencia no puede ser negativa.
+
+```python
+# verificacion.py
+from sympy import symbols, solve, sqrt, atan, deg
+
+x = symbols("x", real=True)
+raiz_positiva = next(r for r in solve(x**2 + 100*x - 10000, x) if r > 0)
+omega_c = sqrt(raiz_positiva)
+fase = -90 - deg(atan(omega_c / 10))
+margen = 180 + fase
+print("cruce:", round(float(omega_c), 2))
+print("fase:", round(float(fase), 1))
+print("margen:", round(float(margen), 1))
+```
+
+Con el entorno del módulo 0 activo, ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `cruce: 7.86`, `fase: -128.2`, `margen: 51.8`. Si aparece una frecuencia imaginaria, revisa que elegiste la raíz positiva de \(x\).
+
+**Práctica:** cambia la ganancia de 100 a 25. Sustituye `10000` por `625` en la ecuación de `x` y calcula de nuevo \(\omega_c\), fase y margen antes de ejecutar. **Límite:** este cálculo cubre un cruce de ganancia del Ejemplo 2; para sistemas con varios cruces también hay que inspeccionar todos los cruces y el margen de ganancia.
 

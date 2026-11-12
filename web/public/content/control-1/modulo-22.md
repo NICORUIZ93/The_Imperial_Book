@@ -122,3 +122,28 @@ Todo lo que necesitas en una página.
 | \(\zeta\) | 0,1 | 0,2 | 0,3 | 0,4 | 0,5 | 0,6 | 0,7 | 0,8 |
 |---|---|---|---|---|---|---|---|---|
 | \(M_p\) | 72,9 % | 52,7 % | 37,2 % | 25,4 % | 16,3 % | 9,5 % | 4,6 % | 1,5 % |
+
+#### Verificación con código del simulacro
+
+Resuelve primero los Puntos 2 y 4 en papel. Después guarda este script en `academia-labs/control-1/verificacion.py`:
+
+```python
+# verificacion.py
+from sympy import symbols, simplify, exp, pi
+
+s = symbols("s")
+controlador = 20 * (s + 1) / s
+print("PI_correcto:", simplify(controlador - (20 + 20/s)) == 0)
+sobrepico = 100 * exp(-pi / 7)
+print("sobrepico_porcentaje:", round(float(sobrepico), 1))
+```
+
+Con el entorno del módulo 0 activo, ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `PI_correcto: True` y `sobrepico_porcentaje: 63.8`. El primer resultado confirma la separación de la acción proporcional e integral; el segundo usa los polos \(-1\pm7j\) del Punto 4.
+
+**Práctica:** cambia \(\sigma\) de 1 a 2 en \(e^{-\sigma\pi/\omega_d}\), calcula el nuevo sobrepico sin ejecutar y luego compruébalo. **Límite:** el sobrepico ideal supone el modelo de segundo orden y escalón unitario; no evalúa saturación del actuador del Punto 1.

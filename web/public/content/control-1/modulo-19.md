@@ -104,6 +104,31 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
 
 **Resultado.** El polo queda 2,04 veces más lejos que el cero. La fase máxima ocurre en \(\omega_m = 1/(T\sqrt{\alpha})\).
 
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 2.
+
+```python
+# verificacion.py
+from sympy import sin, pi, N
+
+phi = pi / 6  # 30 grados
+alpha = N((1 - sin(phi)) / (1 + sin(phi)), 3)
+print("alpha:", alpha)
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `alpha: 0.333`, igual al Ejemplo 2 (el polo queda 3 veces más lejos que el cero).
+
+**Práctica:** cambia `phi` a `pi*45/180` y confirma \(\alpha\approx0{,}172\) (Ejemplo 3, 45° de fase).
+
+**Límite:** esta fórmula de \(\alpha\) da la relación cero/polo para la fase **máxima** de un adelanto simple; no dice dónde ubicar ese cero en \(s\) — eso sale de la condición de ángulo en el polo deseado \(s_d\) (procedimiento completo del Ejemplo 1).
+
 ### Tema 2: Diseño de un atraso
 
 **¿Por qué es importante?** El atraso reduce el error final sin dañar el transitorio, algo que la ganancia sola no puede lograr.
@@ -198,6 +223,28 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
 
 **Resultado.** \(C(s) = \dfrac{s + 0{,}1}{s + 0{,}025}\): el error ante rampa baja 4 veces y la respuesta transitoria casi no cambia.
 
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 2.
+
+```python
+# verificacion.py
+z, p = 0.1, 0.01
+print("beta:", z / p)
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `beta: 10.0`, igual al Ejemplo 2 (\(K_v\) se multiplica por 10).
+
+**Práctica:** cambia `z, p` a `0.1, 0.0125` y confirma `beta: 8.0` (Ejemplo 4).
+
+**Límite:** esta multiplicación de \(K_v\) solo es válida si el cero y el polo quedan mucho más cerca del origen que los polos dominantes (regla práctica: a menos de 5° de desviación, como se comprueba en el Ejemplo 1); si \(z\) o \(p\) se acercan demasiado a \(s_d\), sí mueven el transitorio.
+
 ### Tema 3: Implementación con op-amps
 
 **¿Por qué es importante?** Implementar el compensador con op-amps conecta el diseño en papel con un circuito real.
@@ -233,6 +280,31 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
    **¿Por qué?** Cero más cerca del origen que el polo → adelanto; al revés → atraso.
 
 **Resultado.** Es un **adelanto** con ganancia de alta frecuencia \(1\).
+
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 1.
+
+```python
+# verificacion.py
+R1, C1, R2, C2 = 100e3, 1e-6, 10e3, 1e-6
+cero = -1 / (R1 * C1)
+polo = -1 / (R2 * C2)
+print("cero:", cero)
+print("polo:", polo)
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `cero: -10.0` y `polo: -100.0`, igual al Ejemplo 1 (cero más cerca del origen que el polo: es un adelanto).
+
+**Práctica:** cambia los valores a los del Ejemplo 3 (\(R_1=1\text{k}\Omega, C_1=1\mu F, R_2=10\text{k}\Omega, C_2=1\mu F\)) y confirma que ahora el polo (\(-100\)) queda más cerca del origen que el cero (\(-1000\)): es un atraso.
+
+**Límite:** este script solo ubica el cero y el polo; la ganancia de alta frecuencia (\(C_1/C_2\)) y el signo (dos inversores en cascada) hay que calcularlos aparte, como en la demostración de este tema.
 
 #### Ejemplo 2 · Compensador con op-amps: R1 = 10 kΩ, C1 = 10 µF, R2 = 1 kΩ, C2 = 10 µF · *Intermedio*
 

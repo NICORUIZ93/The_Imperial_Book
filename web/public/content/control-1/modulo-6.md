@@ -89,6 +89,32 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
 
 **Resultado.** \(T = \frac{G_{1} G_{2}}{G_{1} G_{2} + G_{2} H + 1}\).
 
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 5 (lazo menor dentro de un lazo mayor).
+
+```python
+# verificacion.py
+from sympy import symbols, simplify
+
+G1, G2, H = symbols("G1 G2 H")
+interno = G1 * G2 / (1 + G2 * H)
+T = simplify(interno / (1 + interno))
+print("T:", T)
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `T: G1*G2/(G1*G2 + G2*H + 1)`, igual al resultado del Ejemplo 5.
+
+**Práctica:** repite el Ejemplo 1 (tres bloques, dos realimentaciones) construyendo `T` paso a paso con sympy y confirma \(\dfrac{G_1G_2G_3}{1+G_2H_1+G_1G_2G_3}\).
+
+**Límite:** estas reglas de movimiento valen para diagramas de una sola entrada y una sola salida (SISO); con varias entradas (referencia y perturbación juntas, Tema 4) hay que aplicar superposición, no mover bloques a ciegas.
+
 ### Tema 2: Grafos de flujo de señal
 
 **¿Por qué es importante?** El grafo de flujo de señal es la representación que usa la regla de Mason; sin él no puedes contar caminos y lazos.
@@ -174,6 +200,31 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
    **¿Por qué?** Se lee cada ecuación de derecha a izquierda.
 
 **Resultado.** Tres lazos: dos propios de cada etapa y uno que conecta las etapas.
+
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 1 resolviendo el sistema de ecuaciones del grafo.
+
+```python
+# verificacion.py
+from sympy import symbols, Eq, solve
+
+x1, x2, x3 = symbols("x1 x2 x3")
+sol = solve([Eq(x2, 3 * x1 - x3), Eq(x3, 2 * x2)], [x2, x3])
+print("x2/x1:", sol[x2] / x1)
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `x2/x1: 1`, lo que coincide con Mason: \(P/(1-L) = 3/(1-(-2)) = 1\), usando el lazo de ganancia \(-2\) del Ejemplo 1.
+
+**Práctica:** arma el sistema de ecuaciones del Ejemplo 2 (\(E=R-Y\), \(Y=GE\)) y confirma que \(Y/R = G/(1+GH)\) con `H` simbólico.
+
+**Límite:** este método de resolver el sistema lineal de nodos es exacto pero no escala a mano para grafos grandes; por eso existe la regla de Mason (Tema 3), que cuenta trayectorias y lazos sin resolver el sistema completo.
 
 ### Tema 3: Regla de Mason
 
@@ -319,6 +370,35 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
 
 **Resultado.** \(T = \dfrac{G_1G_2 + G_3(1+G_2H_1)}{1+G_2H_1}\).
 
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 2 (lazos que no se tocan).
+
+```python
+# verificacion.py
+from sympy import symbols, simplify
+
+G1, G2, H1, H2 = symbols("G1 G2 H1 H2")
+P1 = G1 * G2
+L1, L2 = -G1 * H1, -G2 * H2
+delta = 1 - (L1 + L2) + L1 * L2
+T = simplify(P1 / delta)
+print("T:", T)
+print("coincide_con_factorizado:", simplify((1 + G1 * H1) * (1 + G2 * H2) - delta) == 0)
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `coincide_con_factorizado: True`, confirmando que \(\Delta = (1+G_1H_1)(1+G_2H_2)\) como dice el Ejemplo 2.
+
+**Práctica:** cambia `L1, L2` por lazos que sí se tocan (por ejemplo ambos con el factor `G2`) y comprueba que ya no se puede factorizar igual.
+
+**Límite:** el término \(+L_iL_j\) de \(\Delta\) solo aparece entre lazos que **no comparten ningún nodo**; contar un producto entre lazos que sí se tocan es el error más común de Mason (ver "Errores comunes" más abajo).
+
 ### Tema 4: Referencia y perturbación juntas
 
 **¿Por qué es importante?** Calcular el efecto de una perturbación muestra con números por qué vale la pena cerrar el lazo.
@@ -350,6 +430,31 @@ Con varias entradas se usa superposición: se calcula la salida para cada entrad
    **¿Por qué?** Para comparar el efecto del lazo.
 
 **Resultado:** La perturbación queda reducida 10 veces
+
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el valor final de \(Y/D\) con \(K=9\).
+
+```python
+# verificacion.py
+from sympy import symbols, limit
+
+s, K = symbols("s K")
+YoD = 1 / (s + 1 + K)
+print("y_D_infinito:", limit(YoD, s, 0).subs(K, 9))
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `y_D_infinito: 1/10`, igual al Ejemplo 1 (la perturbación queda reducida 10 veces).
+
+**Práctica:** cambia `K` a 99 y confirma que la reducción pasa a ser de 100 veces (compara con el Tema 1 de este capítulo).
+
+**Límite:** la superposición exige que el sistema sea lineal; con un actuador que satura (por ejemplo, una válvula que no puede abrir más del 100%), la salida real ante \(R\) y \(D\) juntos ya no es la suma de los efectos por separado.
 
 #### Errores comunes
 

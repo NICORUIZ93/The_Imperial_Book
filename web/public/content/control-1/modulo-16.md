@@ -116,6 +116,33 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
 
 **Resultado.** \(M_p \approx 16{,}3\,\%\), \(t_s = 4/\sigma \approx 0{,}8\,\text{s}\), \(t_p = \pi/\omega_d \approx 0{,}363\,\text{s}\).
 
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 1.
+
+```python
+# verificacion.py
+from sympy import sqrt, N
+
+sigma, wd = 2, 2
+wn = sqrt(sigma ** 2 + wd ** 2)
+zeta = sigma / wn
+print("wn:", N(wn, 4))
+print("zeta:", N(zeta, 4))
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `wn: 2.828` y `zeta: 0.7071`, igual al Ejemplo 1 (\(\omega_n\approx2{,}83\), \(\zeta\approx0{,}707\)).
+
+**Práctica:** cambia `sigma, wd` a `1, 3` y confirma \(\omega_n\approx3{,}16\), \(\zeta\approx0{,}316\) (Ejemplo 2).
+
+**Límite:** esta lectura geométrica solo aplica a un polo complejo de un sistema de segundo orden dominante; con polos adicionales o ceros cercanos (capítulo 13), las especificaciones reales se desvían de lo que predice solo la posición de este polo.
+
 ### Tema 2: Estabilidad
 
 **¿Por qué es importante?** Decidir estabilidad mirando el plano s es la forma más rápida de revisar un resultado.
@@ -216,6 +243,32 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
 
 **Resultado.** **Inestable**: el polo doble en el origen da un término \(t\), que crece sin límite (un polo repetido sobre el eje no es marginal).
 
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el caso (b) del Ejemplo 1.
+
+```python
+# verificacion.py
+from sympy import symbols, solve, re
+
+s = symbols("s")
+raices = solve(s ** 2 - s + 2, s)
+print("raices:", raices)
+print("estable:", all(re(r) < 0 for r in raices))
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `raices: [1/2 - sqrt(7)*I/2, 1/2 + sqrt(7)*I/2]` y `estable: False`, igual al caso (b) del Ejemplo 1 (parte real positiva → inestable).
+
+**Práctica:** cambia el polinomio a `(s+1)*(s+4)` (caso a) y confirma `estable: True`.
+
+**Límite:** `re(r) < 0` para cada raíz exacta es la definición misma de estabilidad; en un examen sin software hay que decidirlo mirando los coeficientes (atajo de segundo orden) o con Routh-Hurwitz (capítulo 15) para polinomios más grandes, sin resolver las raíces.
+
 ### Tema 3: La zona de diseño
 
 **¿Por qué es importante?** La zona de diseño traduce especificaciones a una región del plano; es lo que pedía el punto 2 del Parcial 2.
@@ -268,6 +321,35 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
    **¿Por qué?** \(t_s = 4/\sigma\).
 
 **Resultado:** Izquierda de \(s = -2\) y dentro del cono de ±62,9°
+
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar las fronteras del Ejemplo 1.
+
+```python
+# verificacion.py
+from sympy import log, sqrt, pi, acos, deg, N
+
+Mp, ts = 0.20, 2
+zeta_min = N(-log(Mp) / sqrt(pi ** 2 + log(Mp) ** 2), 3)
+theta_max = N(deg(acos(zeta_min)), 3)
+sigma_min = 4 / ts
+print("zeta_min:", zeta_min)
+print("theta_max:", theta_max)
+print("sigma_min:", sigma_min)
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `zeta_min: 0.456`, `theta_max: 62.9` y `sigma_min: 2.0`, igual al Ejemplo 1.
+
+**Práctica:** cambia `Mp, ts` a `0.05, 0.8` y confirma \(\zeta_{\min}\approx0{,}69\), \(\theta_{\max}\approx46{,}4°\), \(\sigma_{\min}=5\) (Ejemplo 2).
+
+**Límite:** esta zona define condiciones **necesarias** sobre un polo dominante de segundo orden; verificar que un candidato cae dentro de la zona (Ejemplo 3) no reemplaza comprobar que de verdad es el polo dominante del sistema completo (capítulo 13).
 
 #### Ejemplo 2 · Tres especificaciones · *Intermedio*
 

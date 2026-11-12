@@ -63,15 +63,15 @@
     "control-1": {
       "topics": 70,
       "explanation": 70,
-      "code": 2,
+      "code": 70,
       "visual": 0,
-      "filePath": 0,
-      "runCommand": 0,
-      "expectedResult": 9,
-      "practice": 19,
+      "filePath": 70,
+      "runCommand": 70,
+      "expectedResult": 70,
+      "practice": 70,
       "project": 0,
       "modelMental": 70,
-      "limitsDecision": 29,
+      "limitsDecision": 70,
       "practicable": 0,
       "genericScaffold": 0,
       "repeatedDemo": 0
@@ -6904,10 +6904,10 @@
         "topic": "Tema 1: Cómo está armado cada capítulo",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
+          "filePath": true,
+          "runCommand": true,
           "expectedResult": true,
           "practice": true,
           "project": false,
@@ -6915,7 +6915,7 @@
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 6,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -6926,18 +6926,18 @@
         "topic": "Tema 1: ¿Qué es un número complejo?",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
-          "practice": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
           "project": false,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 2,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -6948,18 +6948,18 @@
         "topic": "Tema 2: Operaciones",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
-          "practice": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
           "project": false,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 2,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -6970,10 +6970,10 @@
         "topic": "Tema 3: Raíces de s²+bs+c",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
+          "filePath": true,
+          "runCommand": true,
           "expectedResult": true,
           "practice": true,
           "project": false,
@@ -6981,7 +6981,7 @@
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 6,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -6992,18 +6992,18 @@
         "topic": "Tema 4: Forma polar, fórmula de Euler y evaluación de G(jω)",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
-          "practice": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
           "project": false,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 2,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -7014,18 +7014,18 @@
         "topic": "Tema 1: La forma de estado",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
-          "practice": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
           "project": false,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 1,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -7036,18 +7036,18 @@
         "topic": "Tema 2: De estados a función de transferencia",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
-          "practice": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
           "project": false,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 1,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -7058,18 +7058,18 @@
         "topic": "Tema 1: Forma estándar",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
-          "practice": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
           "project": false,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 1,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -7080,18 +7080,18 @@
         "topic": "Tema 2: Respuestas",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
           "practice": true,
           "project": false,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 3,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -7102,18 +7102,18 @@
         "topic": "Tema 3: Retardo o tiempo muerto",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
-          "practice": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
           "project": false,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 1,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -7124,18 +7124,18 @@
         "topic": "Tema 4: Identificación desde una gráfica",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
           "practice": true,
           "project": false,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 3,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -7146,18 +7146,18 @@
         "topic": "Tema 1: Forma estándar",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
-          "practice": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
           "project": false,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 1,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -7170,16 +7170,16 @@
           "explanation": true,
           "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
           "practice": true,
           "project": false,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 5,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -7190,18 +7190,18 @@
         "topic": "Tema 3: Los cuatro casos según ζ",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
-          "practice": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
           "project": false,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 1,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -7212,18 +7212,18 @@
         "topic": "Tema 4: Fórmulas del caso subamortiguado",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
           "practice": true,
           "project": false,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 4,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -7234,18 +7234,18 @@
         "topic": "Tema 5: De las especificaciones a la función de transferencia",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
-          "practice": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
           "project": false,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 1,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -7256,18 +7256,18 @@
         "topic": "Tema 1: Polos dominantes",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
           "practice": true,
           "project": false,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 4,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -7278,18 +7278,18 @@
         "topic": "Tema 2: Efecto de un cero",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
-          "practice": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
           "project": false,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 1,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -7300,18 +7300,18 @@
         "topic": "Tema 3: Cero de fase no mínima",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
-          "practice": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
           "project": false,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 1,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -7322,18 +7322,18 @@
         "topic": "Tema 1: Fórmula general",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
-          "practice": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
           "project": false,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 1,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -7344,18 +7344,18 @@
         "topic": "Tema 2: Tipo de sistema y constantes",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
+          "filePath": true,
+          "runCommand": true,
           "expectedResult": true,
-          "practice": false,
+          "practice": true,
           "project": false,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 3,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -7366,18 +7366,18 @@
         "topic": "Tema 1: Qué es estabilidad",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
+          "filePath": true,
+          "runCommand": true,
           "expectedResult": true,
-          "practice": false,
+          "practice": true,
           "project": false,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 4,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -7388,18 +7388,18 @@
         "topic": "Tema 2: El arreglo de Routh",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
+          "filePath": true,
+          "runCommand": true,
           "expectedResult": true,
-          "practice": false,
+          "practice": true,
           "project": false,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 3,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -7410,18 +7410,18 @@
         "topic": "Tema 3: Casos especiales",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
-          "practice": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
           "project": false,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 2,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -7432,18 +7432,18 @@
         "topic": "Tema 4: Rango de K para estabilidad",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
-          "practice": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
           "project": false,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 2,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -7454,18 +7454,18 @@
         "topic": "Tema 1: Geometría de un polo",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
-          "practice": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
           "project": false,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 1,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -7476,18 +7476,18 @@
         "topic": "Tema 2: Estabilidad",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
-          "practice": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
           "project": false,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 2,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -7498,10 +7498,10 @@
         "topic": "Tema 3: La zona de diseño",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
+          "filePath": true,
+          "runCommand": true,
           "expectedResult": true,
           "practice": true,
           "project": false,
@@ -7509,7 +7509,7 @@
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 6,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -7520,18 +7520,18 @@
         "topic": "Tema 1: Las dos condiciones",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
-          "practice": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
           "project": false,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 1,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -7544,16 +7544,16 @@
           "explanation": true,
           "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
           "practice": true,
           "project": false,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 5,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -7564,18 +7564,18 @@
         "topic": "Tema 3: Elegir K desde el lugar de las raíces",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
-          "practice": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
           "project": false,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 1,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -7586,18 +7586,18 @@
         "topic": "Tema 1: La idea",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
-          "practice": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
           "project": false,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 1,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -7608,18 +7608,18 @@
         "topic": "Tema 2: Error en estado estacionario",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
           "practice": true,
           "project": false,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 3,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -7630,18 +7630,18 @@
         "topic": "Tema 3: Cada acción, con números",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
-          "practice": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
           "project": false,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 1,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -7652,18 +7652,18 @@
         "topic": "Tema 4: Ventajas y desventajas (punto 4 del Parcial 1)",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
-          "practice": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
           "project": false,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 1,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -7674,18 +7674,18 @@
         "topic": "Tema 5: Sintonía de Ziegler-Nichols",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
           "practice": true,
           "project": false,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 4,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -7696,18 +7696,18 @@
         "topic": "Tema 1: Diseño de un adelanto",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
+          "filePath": true,
+          "runCommand": true,
           "expectedResult": true,
-          "practice": false,
+          "practice": true,
           "project": false,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 3,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -7718,18 +7718,18 @@
         "topic": "Tema 2: Diseño de un atraso",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
-          "practice": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
           "project": false,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 1,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -7740,18 +7740,18 @@
         "topic": "Tema 3: Implementación con op-amps",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
-          "practice": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
           "project": false,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 1,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -7762,18 +7762,18 @@
         "topic": "Tema 1: La idea",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
-          "practice": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
           "project": false,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 2,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -7784,18 +7784,18 @@
         "topic": "Tema 2: La tabla",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
-          "practice": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
           "project": false,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 2,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -7806,18 +7806,18 @@
         "topic": "Tema 3: Propiedades",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
-          "practice": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
           "project": false,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 2,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -7828,10 +7828,10 @@
         "topic": "Tema 4: Valor final y valor inicial",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
+          "filePath": true,
+          "runCommand": true,
           "expectedResult": true,
           "practice": true,
           "project": false,
@@ -7839,7 +7839,7 @@
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 6,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -7850,18 +7850,18 @@
         "topic": "Tema 1: Qué es la respuesta en frecuencia",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
-          "practice": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
           "project": false,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 1,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -7872,18 +7872,18 @@
         "topic": "Tema 2: Decibeles y la escala logarítmica",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
-          "practice": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
           "project": false,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 1,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -7894,18 +7894,18 @@
         "topic": "Tema 3: Los bloques básicos",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
-          "practice": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
           "project": false,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 1,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -7916,18 +7916,18 @@
         "topic": "Tema 4: Márgenes de estabilidad",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
           "practice": true,
           "project": false,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 3,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -7938,18 +7938,18 @@
         "topic": "Tema 1: Parcial 1",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
-          "practice": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
           "project": false,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 2,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -7960,18 +7960,18 @@
         "topic": "Tema 1: Simulacro con solución",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
-          "practice": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
           "project": false,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 1,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -7982,18 +7982,18 @@
         "topic": "Tema 1: Caso 1: polos reales distintos",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
-          "practice": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
           "project": false,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 2,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -8004,18 +8004,18 @@
         "topic": "Tema 2: Caso 2: polos repetidos",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
-          "practice": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
           "project": false,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 2,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -8026,18 +8026,18 @@
         "topic": "Tema 3: Caso 3: polos complejos (completar el cuadrado)",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
           "practice": true,
           "project": false,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 4,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -8048,18 +8048,18 @@
         "topic": "Tema 4: Resolver una ecuación diferencial completa",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
-          "practice": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
           "project": false,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 2,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -8070,18 +8070,18 @@
         "topic": "Tema 1: Qué es la función de transferencia",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
           "practice": true,
           "project": false,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 4,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -8092,18 +8092,18 @@
         "topic": "Tema 1: ¿Qué es un sistema de control?",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
-          "practice": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
           "project": false,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 2,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -8114,18 +8114,18 @@
         "topic": "Tema 2: Los elementos",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
-          "practice": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
           "project": false,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 2,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -8136,18 +8136,18 @@
         "topic": "Tema 3: Álgebra de bloques",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
           "practice": true,
           "project": false,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 3,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -8158,18 +8158,18 @@
         "topic": "Tema 1: Reglas para mover bloques",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
-          "practice": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
           "project": false,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 1,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -8180,18 +8180,18 @@
         "topic": "Tema 2: Grafos de flujo de señal",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
-          "practice": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
           "project": false,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 1,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -8202,18 +8202,18 @@
         "topic": "Tema 3: Regla de Mason",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
+          "filePath": true,
+          "runCommand": true,
           "expectedResult": true,
-          "practice": false,
+          "practice": true,
           "project": false,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 3,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -8224,18 +8224,18 @@
         "topic": "Tema 4: Referencia y perturbación juntas",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
           "practice": true,
           "project": false,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 4,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -8246,18 +8246,18 @@
         "topic": "Tema 1: Impedancias",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
-          "practice": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
           "project": false,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 1,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -8268,18 +8268,18 @@
         "topic": "Tema 2: Circuitos pasivos: divisor de voltaje",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
-          "practice": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
           "project": false,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 1,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -8290,18 +8290,18 @@
         "topic": "Tema 3: El op-amp inversor",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
           "practice": true,
           "project": false,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 4,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -8312,18 +8312,18 @@
         "topic": "Tema 1: Mecánico de traslación",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
-          "practice": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
           "project": false,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 2,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -8334,18 +8334,18 @@
         "topic": "Tema 2: Mecánico de rotación",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
-          "practice": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
           "project": false,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 2,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -8356,18 +8356,18 @@
         "topic": "Tema 3: Motor DC (electromecánico)",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
-          "practice": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
           "project": false,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 1,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -8378,18 +8378,18 @@
         "topic": "Tema 4: Sistemas térmicos e hidráulicos",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
-          "practice": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
           "project": false,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 1,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -8400,18 +8400,18 @@
         "topic": "Tema 5: Analogías",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
           "practice": true,
           "project": false,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 3,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -8422,18 +8422,18 @@
         "topic": "Tema 1: La idea",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
-          "filePath": false,
-          "runCommand": false,
-          "expectedResult": false,
-          "practice": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
           "project": false,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 1,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false

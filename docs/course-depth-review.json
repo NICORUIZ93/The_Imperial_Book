@@ -3735,7 +3735,7 @@
       "module": 1,
       "title": "Tema 2: Operaciones",
       "file": "web/public/content/control-1/modulo-1.md",
-      "line": 156,
+      "line": 181,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -3749,7 +3749,7 @@
       "module": 1,
       "title": "Tema 3: Raíces de s²+bs+c",
       "file": "web/public/content/control-1/modulo-1.md",
-      "line": 376,
+      "line": 429,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -3763,7 +3763,7 @@
       "module": 1,
       "title": "Tema 4: Forma polar, fórmula de Euler y evaluación de G(jω)",
       "file": "web/public/content/control-1/modulo-1.md",
-      "line": 595,
+      "line": 673,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -3791,7 +3791,7 @@
       "module": 10,
       "title": "Tema 2: De estados a función de transferencia",
       "file": "web/public/content/control-1/modulo-10.md",
-      "line": 113,
+      "line": 142,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -3819,7 +3819,7 @@
       "module": 11,
       "title": "Tema 2: Respuestas",
       "file": "web/public/content/control-1/modulo-11.md",
-      "line": 117,
+      "line": 145,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -3833,7 +3833,7 @@
       "module": 11,
       "title": "Tema 3: Retardo o tiempo muerto",
       "file": "web/public/content/control-1/modulo-11.md",
-      "line": 285,
+      "line": 339,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -3847,7 +3847,7 @@
       "module": 11,
       "title": "Tema 4: Identificación desde una gráfica",
       "file": "web/public/content/control-1/modulo-11.md",
-      "line": 381,
+      "line": 463,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -3875,7 +3875,7 @@
       "module": 12,
       "title": "Tema 2: Simulador: mueve ζ y ωn",
       "file": "web/public/content/control-1/modulo-12.md",
-      "line": 155,
+      "line": 184,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -3889,7 +3889,7 @@
       "module": 12,
       "title": "Tema 3: Los cuatro casos según ζ",
       "file": "web/public/content/control-1/modulo-12.md",
-      "line": 243,
+      "line": 302,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -3903,7 +3903,7 @@
       "module": 12,
       "title": "Tema 4: Fórmulas del caso subamortiguado",
       "file": "web/public/content/control-1/modulo-12.md",
-      "line": 348,
+      "line": 434,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -3917,7 +3917,7 @@
       "module": 12,
       "title": "Tema 5: De las especificaciones a la función de transferencia",
       "file": "web/public/content/control-1/modulo-12.md",
-      "line": 687,
+      "line": 803,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -3945,7 +3945,7 @@
       "module": 13,
       "title": "Tema 2: Efecto de un cero",
       "file": "web/public/content/control-1/modulo-13.md",
-      "line": 131,
+      "line": 158,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -3959,7 +3959,7 @@
       "module": 13,
       "title": "Tema 3: Cero de fase no mínima",
       "file": "web/public/content/control-1/modulo-13.md",
-      "line": 230,
+      "line": 284,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -3987,7 +3987,7 @@
       "module": 14,
       "title": "Tema 2: Tipo de sistema y constantes",
       "file": "web/public/content/control-1/modulo-14.md",
-      "line": 117,
+      "line": 144,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -4015,7 +4015,7 @@
       "module": 15,
       "title": "Tema 2: El arreglo de Routh",
       "file": "web/public/content/control-1/modulo-15.md",
-      "line": 97,
+      "line": 123,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -4029,7 +4029,7 @@
       "module": 15,
       "title": "Tema 3: Casos especiales",
       "file": "web/public/content/control-1/modulo-15.md",
-      "line": 281,
+      "line": 334,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -4043,7 +4043,7 @@
       "module": 15,
       "title": "Tema 4: Rango de K para estabilidad",
       "file": "web/public/content/control-1/modulo-15.md",
-      "line": 383,
+      "line": 461,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -4071,7 +4071,7 @@
       "module": 16,
       "title": "Tema 2: Estabilidad",
       "file": "web/public/content/control-1/modulo-16.md",
-      "line": 119,
+      "line": 146,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -4085,7 +4085,7 @@
       "module": 16,
       "title": "Tema 3: La zona de diseño",
       "file": "web/public/content/control-1/modulo-16.md",
-      "line": 219,
+      "line": 272,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -4113,7 +4113,7 @@
       "module": 17,
       "title": "Tema 2: Reglas de construcción (con su porqué)",
       "file": "web/public/content/control-1/modulo-17.md",
-      "line": 110,
+      "line": 137,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -4127,7 +4127,7 @@
       "module": 17,
       "title": "Tema 3: Elegir K desde el lugar de las raíces",
       "file": "web/public/content/control-1/modulo-17.md",
-      "line": 308,
+      "line": 359,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -4155,7 +4155,7 @@
       "module": 18,
       "title": "Tema 2: Error en estado estacionario",
       "file": "web/public/content/control-1/modulo-18.md",
-      "line": 92,
+      "line": 117,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -4169,7 +4169,7 @@
       "module": 18,
       "title": "Tema 3: Cada acción, con números",
       "file": "web/public/content/control-1/modulo-18.md",
-      "line": 177,
+      "line": 229,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -4183,7 +4183,7 @@
       "module": 18,
       "title": "Tema 4: Ventajas y desventajas (punto 4 del Parcial 1)",
       "file": "web/public/content/control-1/modulo-18.md",
-      "line": 325,
+      "line": 402,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -4197,7 +4197,7 @@
       "module": 18,
       "title": "Tema 5: Sintonía de Ziegler-Nichols",
       "file": "web/public/content/control-1/modulo-18.md",
-      "line": 407,
+      "line": 511,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -4225,7 +4225,7 @@
       "module": 19,
       "title": "Tema 2: Diseño de un atraso",
       "file": "web/public/content/control-1/modulo-19.md",
-      "line": 107,
+      "line": 132,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -4239,7 +4239,7 @@
       "module": 19,
       "title": "Tema 3: Implementación con op-amps",
       "file": "web/public/content/control-1/modulo-19.md",
-      "line": 201,
+      "line": 248,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -4267,7 +4267,7 @@
       "module": 2,
       "title": "Tema 2: La tabla",
       "file": "web/public/content/control-1/modulo-2.md",
-      "line": 117,
+      "line": 142,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -4281,7 +4281,7 @@
       "module": 2,
       "title": "Tema 3: Propiedades",
       "file": "web/public/content/control-1/modulo-2.md",
-      "line": 253,
+      "line": 303,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -4295,7 +4295,7 @@
       "module": 2,
       "title": "Tema 4: Valor final y valor inicial",
       "file": "web/public/content/control-1/modulo-2.md",
-      "line": 484,
+      "line": 559,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -4323,7 +4323,7 @@
       "module": 20,
       "title": "Tema 2: Decibeles y la escala logarítmica",
       "file": "web/public/content/control-1/modulo-20.md",
-      "line": 86,
+      "line": 112,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -4337,7 +4337,7 @@
       "module": 20,
       "title": "Tema 3: Los bloques básicos",
       "file": "web/public/content/control-1/modulo-20.md",
-      "line": 198,
+      "line": 251,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -4351,7 +4351,7 @@
       "module": 20,
       "title": "Tema 4: Márgenes de estabilidad",
       "file": "web/public/content/control-1/modulo-20.md",
-      "line": 285,
+      "line": 362,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -4407,7 +4407,7 @@
       "module": 3,
       "title": "Tema 2: Caso 2: polos repetidos",
       "file": "web/public/content/control-1/modulo-3.md",
-      "line": 216,
+      "line": 241,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -4421,7 +4421,7 @@
       "module": 3,
       "title": "Tema 3: Caso 3: polos complejos (completar el cuadrado)",
       "file": "web/public/content/control-1/modulo-3.md",
-      "line": 370,
+      "line": 420,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -4435,7 +4435,7 @@
       "module": 3,
       "title": "Tema 4: Resolver una ecuación diferencial completa",
       "file": "web/public/content/control-1/modulo-3.md",
-      "line": 611,
+      "line": 686,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -4477,7 +4477,7 @@
       "module": 5,
       "title": "Tema 2: Los elementos",
       "file": "web/public/content/control-1/modulo-5.md",
-      "line": 116,
+      "line": 146,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -4491,7 +4491,7 @@
       "module": 5,
       "title": "Tema 3: Álgebra de bloques",
       "file": "web/public/content/control-1/modulo-5.md",
-      "line": 263,
+      "line": 323,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -4519,7 +4519,7 @@
       "module": 6,
       "title": "Tema 2: Grafos de flujo de señal",
       "file": "web/public/content/control-1/modulo-6.md",
-      "line": 92,
+      "line": 118,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -4533,7 +4533,7 @@
       "module": 6,
       "title": "Tema 3: Regla de Mason",
       "file": "web/public/content/control-1/modulo-6.md",
-      "line": 178,
+      "line": 229,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -4547,7 +4547,7 @@
       "module": 6,
       "title": "Tema 4: Referencia y perturbación juntas",
       "file": "web/public/content/control-1/modulo-6.md",
-      "line": 322,
+      "line": 402,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -4575,7 +4575,7 @@
       "module": 7,
       "title": "Tema 2: Circuitos pasivos: divisor de voltaje",
       "file": "web/public/content/control-1/modulo-7.md",
-      "line": 142,
+      "line": 168,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -4589,7 +4589,7 @@
       "module": 7,
       "title": "Tema 3: El op-amp inversor",
       "file": "web/public/content/control-1/modulo-7.md",
-      "line": 248,
+      "line": 301,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -4617,7 +4617,7 @@
       "module": 8,
       "title": "Tema 2: Mecánico de rotación",
       "file": "web/public/content/control-1/modulo-8.md",
-      "line": 121,
+      "line": 150,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -4631,7 +4631,7 @@
       "module": 8,
       "title": "Tema 3: Motor DC (electromecánico)",
       "file": "web/public/content/control-1/modulo-8.md",
-      "line": 201,
+      "line": 255,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -4645,7 +4645,7 @@
       "module": 8,
       "title": "Tema 4: Sistemas térmicos e hidráulicos",
       "file": "web/public/content/control-1/modulo-8.md",
-      "line": 309,
+      "line": 390,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -4659,7 +4659,7 @@
       "module": 8,
       "title": "Tema 5: Analogías",
       "file": "web/public/content/control-1/modulo-8.md",
-      "line": 390,
+      "line": 497,
       "signals": [
         "demostracion-no-delimitada"
       ],

@@ -89,6 +89,31 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
 
 **Resultado.** Forma estándar: \(C(s) = K_p\left(1 + \dfrac{1}{T_is} + T_ds\right)\) con \(T_i = K_p/K_i = 2\) s y \(T_d = K_d/K_p = 0{,}125\) s.
 
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 5.
+
+```python
+# verificacion.py
+Kp, Ki, Kd = 4, 2, 0.5
+Ti = Kp / Ki
+Td = Kd / Kp
+print("Ti:", Ti)
+print("Td:", Td)
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `Ti: 2.0` y `Td: 0.125`, igual al Ejemplo 5.
+
+**Práctica:** cambia `Kp, Ki, Kd` a `2, 0.5, 1` y calcula \(T_i\) y \(T_d\) para ese controlador (práctica 3 de la sección final del módulo, con \(T_i=4\)).
+
+**Límite:** esta conversión entre \((K_p,K_i,K_d)\) y \((K_p,T_i,T_d)\) es solo notación; ninguna de las dos formas dice todavía si esas ganancias son buenas — eso depende de cómo responde el lazo cerrado (Tema 3).
+
 ### Tema 2: Error en estado estacionario
 
 **¿Por qué es importante?** El error estacionario muestra con números por qué la acción integral es necesaria en la mayoría de procesos.
@@ -173,6 +198,33 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
    **¿Por qué?** Valor final del error con realimentación unitaria.
 
 **Resultado.** \(e_{ss} = 0\) = 0: la integral lo elimina.
+
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 1.
+
+```python
+# verificacion.py
+from sympy import symbols, limit
+
+s = symbols("s")
+P = 1 / (s + 2)
+C = 4
+e_ss = limit(1 / (1 + C * P), s, 0)
+print("e_ss:", e_ss)
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `e_ss: 1/3`, igual al Ejemplo 1 (33,3 %).
+
+**Práctica:** cambia `C` a `4 + 2/s` (PI) y confirma `e_ss: 0` (Ejemplo 3): la integral lo elimina.
+
+**Límite:** este cálculo solo da el error en **estado estacionario**; no dice nada sobre el sobrepico o el tiempo de establecimiento del transitorio, que hay que revisar aparte (Tema 3).
 
 ### Tema 3: Cada acción, con números
 
@@ -322,6 +374,31 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
 
 **Resultado.** \(M_p \approx 0{,}2\,\%\). La derivada aumenta el amortiguamiento y quita casi todo el sobrepico sin perder velocidad.
 
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 1 de este tema (control P).
+
+```python
+# verificacion.py
+from sympy import Rational
+
+Kp = 9
+e_ss = Rational(1, 1 + Kp)
+print("e_ss:", e_ss)
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `e_ss: 1/10`, igual al Ejemplo 1.
+
+**Práctica:** cambia `Kp` a `99` y confirma `e_ss: 1/100` (el mismo ejemplo con ganancia mayor: el error baja pero nunca llega a cero).
+
+**Límite:** la fórmula \(1/(1+K_p)\) solo aplica a sistemas tipo 0 (sin integrador en la planta); con un integrador en la planta misma, el error ante escalón ya es cero incluso con solo P (como en el Ejemplo 4 de este tema, donde la planta es \(1/s^2\)).
+
 ### Tema 4: Ventajas y desventajas (punto 4 del Parcial 1)
 
 **¿Por qué es importante?** Las ventajas y desventajas son la pregunta teórica más repetida de los parciales.
@@ -403,6 +480,33 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
    **¿Por qué?** Se necesita la rapidez de P, la exactitud de I y el amortiguamiento de D.
 
 **Resultado.** PID, justificado por la ventaja que aporta y la desventaja que se evita.
+
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 1 de este tema.
+
+```python
+# verificacion.py
+from sympy import symbols, limit
+
+s = symbols("s")
+CG = 4 / (s * (s + 2))
+Kv = limit(s * CG, s, 0)
+print("Kv:", Kv)
+print("error_rampa:", 1 / Kv)
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `Kv: 2` y `error_rampa: 1/2`, igual al Ejemplo 1 (escalón 0, rampa 0,5).
+
+**Práctica:** cambia `CG` por la del PD del Ejemplo 7 de Tema 3 (\(CG=\dfrac{4s+20}{s(s+4)}\), usando \(K_d=4\)) y calcula de nuevo \(K_v\).
+
+**Límite:** esta tabla de ventajas/desventajas es una guía general; la elección real de controlador (Ejemplos 2-5) siempre depende del caso concreto — ruido del sensor, velocidad del proceso y tolerancia al sobrepico — no de aplicar la tabla mecánicamente.
 
 ### Tema 5: Sintonía de Ziegler-Nichols
 
@@ -495,6 +599,33 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
    **¿Por qué?** Son las reglas empíricas de Ziegler-Nichols para el método de la ganancia crítica.
 
 **Resultado.** P: \(K_p = 5\). PI: \(K_p = 4{,}5,\ T_i = 1{,}667\) s. PID: \(K_p = 6,\ T_i = 1,\ T_d = 0{,}25\) s, es decir \(K_i = 6,\ K_d = 1{,}5\).
+
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar las tres filas de la tabla con \(K_u=10\), \(P_u=2\).
+
+```python
+# verificacion.py
+Ku, Pu = 10, 2
+Kp_P = 0.5 * Ku
+Kp_PI, Ti_PI = 0.45 * Ku, Pu / 1.2
+Kp_PID, Ti_PID, Td_PID = 0.6 * Ku, Pu / 2, Pu / 8
+print("P:", Kp_P)
+print("PI:", Kp_PI, Ti_PI)
+print("PID:", Kp_PID, Ti_PID, Td_PID)
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `P: 5.0`, `PI: 4.5 1.6666666666666667` y `PID: 6.0 1.0 0.25`, igual al Ejemplo 3.
+
+**Práctica:** cambia `Ku, Pu` a `4.8, 1.2` y confirma los valores del Ejemplo 4 (\(K_p=2{,}4\) para P).
+
+**Límite:** Ziegler-Nichols da un punto de partida, no el ajuste final; en la práctica casi siempre hay que afinar a mano después (reducir sobrepico, verificar saturación del actuador), sobre todo si la planta tiene mucho retardo.
 
 #### Ejemplo 4 · Ziegler-Nichols por oscilación: Ku = 4,8, Pu = 1,2 s · *Intermedio*
 

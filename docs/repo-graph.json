@@ -113,7 +113,7 @@
     },
     {
       "path": "README.md",
-      "lines": 390,
+      "lines": 388,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -2151,6 +2151,14 @@
       ]
     },
     {
+      "path": "docs/control-1-code-verification.json",
+      "lines": 578,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
       "path": "docs/course-curriculum-inventory.json",
       "lines": 53,
       "kind": "project-file",
@@ -2901,7 +2909,7 @@
     },
     {
       "path": "docs/subtopic-depth-review.json",
-      "lines": 21946,
+      "lines": 22016,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -12497,6 +12505,31 @@
       "headings": []
     },
     {
+      "path": "scripts/verify_control1_snippets.py",
+      "lines": 89,
+      "kind": "automation-script",
+      "symbols": [
+        "examples",
+        "execute",
+        "main",
+        "package_version"
+      ],
+      "imports": [
+        "concurrent.futures",
+        "datetime",
+        "hashlib",
+        "importlib.metadata",
+        "json",
+        "os",
+        "pathlib",
+        "re",
+        "subprocess",
+        "sys",
+        "tempfile"
+      ],
+      "headings": []
+    },
+    {
       "path": "scripts/verify_professional_bridges.py",
       "lines": 23,
       "kind": "automation-script",
@@ -12555,7 +12588,7 @@
     },
     {
       "path": "web/e2e/academy.spec.ts",
-      "lines": 818,
+      "lines": 819,
       "kind": "project-file",
       "symbols": [],
       "imports": [
@@ -14105,7 +14138,7 @@
     },
     {
       "path": "web/public/content/control-1/modulo-0.md",
-      "lines": 86,
+      "lines": 117,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14113,6 +14146,8 @@
         "# M\u00f3dulo 0: C\u00f3mo estudiar Control 1",
         "## Aprende construyendo",
         "### Tema 1: C\u00f3mo est\u00e1 armado cada cap\u00edtulo",
+        "#### Verificaci\u00f3n con c\u00f3digo",
+        "# academia-labs/control-1/verificacion.py",
         "#### El temario",
         "#### Qu\u00e9 falt\u00f3 en el Parcial 1",
         "#### Plan de dos semanas"
@@ -14120,7 +14155,7 @@
     },
     {
       "path": "web/public/content/control-1/modulo-1.md",
-      "lines": 707,
+      "lines": 811,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14135,13 +14170,13 @@
         "#### Ejemplo 4 \u00b7 Pasar \\(5 - 12 j\\) a forma polar \u00b7 *Intermedio*",
         "#### Ejemplo 5 \u00b7 Pasar \\(-4\\) a forma polar \u00b7 *B\u00e1sico*",
         "#### Ejemplo 6 \u00b7 Pasar \\(3 j\\) a forma polar \u00b7 *B\u00e1sico*",
-        "### Tema 2: Operaciones",
-        "#### Demostraci\u00f3n \u00b7 de d\u00f3nde sale la magnitud"
+        "#### Verificaci\u00f3n con c\u00f3digo",
+        "# verificacion.py"
       ]
     },
     {
       "path": "web/public/content/control-1/modulo-10.md",
-      "lines": 216,
+      "lines": 273,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14155,14 +14190,14 @@
         "#### Ejemplo 3 \u00b7 Forma can\u00f3nica de \\(\\frac{1}{s^{2} + 4 s + 8}\\) \u00b7 *B\u00e1sico*",
         "#### Ejemplo 4 \u00b7 Forma can\u00f3nica de \\(\\frac{1}{s^{3} + 6 s^{2} + 11 s + 6}\\) \u00b7 *Intermedio*",
         "#### Ejemplo 5 \u00b7 Forma can\u00f3nica de \\(\\frac{1}{s^{2} + 9}\\) \u00b7 *Intermedio*",
-        "### Tema 2: De estados a funci\u00f3n de transferencia",
-        "#### Demostraci\u00f3n",
-        "#### Ejemplo 1 \u00b7 De vuelta a G(s) \u00b7 *Experto*"
+        "#### Verificaci\u00f3n con c\u00f3digo",
+        "# verificacion.py",
+        "### Tema 2: De estados a funci\u00f3n de transferencia"
       ]
     },
     {
       "path": "web/public/content/control-1/modulo-11.md",
-      "lines": 514,
+      "lines": 623,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14177,13 +14212,13 @@
         "#### Ejemplo 4 \u00b7 Leer K y \u03c4 de \\(\\frac{3}{\\frac{s}{2} + 3}\\) \u00b7 *Intermedio*",
         "#### Ejemplo 5 \u00b7 Leer K y \u03c4 de \\(\\frac{8}{4 s + 2}\\) \u00b7 *Intermedio*",
         "#### Ejemplo 6 \u00b7 Leer K y \u03c4 de \\(\\frac{1}{s + \\frac{1}{10}}\\) \u00b7 *Intermedio*",
-        "### Tema 2: Respuestas",
-        "#### Demostraci\u00f3n de la respuesta a la rampa"
+        "#### Verificaci\u00f3n con c\u00f3digo",
+        "# verificacion.py"
       ]
     },
     {
       "path": "web/public/content/control-1/modulo-12.md",
-      "lines": 807,
+      "lines": 952,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14198,13 +14233,13 @@
         "#### Ejemplo 4 \u00b7 Leer K, \u03c9n y \u03b6 de \\(\\frac{9}{2 s^{2} + 3 s + 18}\\) \u00b7 *Intermedio*",
         "#### Ejemplo 5 \u00b7 Leer K, \u03c9n y \u03b6 de \\(\\frac{4}{s^{2} + s + 4}\\) \u00b7 *B\u00e1sico*",
         "#### Ejemplo 6 \u00b7 Leer K, \u03c9n y \u03b6 de \\(\\frac{100}{s^{2} + 20 s + 100}\\) \u00b7 *Intermedio*",
-        "### Tema 2: Simulador: mueve \u03b6 y \u03c9n",
-        "#### M\u00e1s ejemplos resueltos"
+        "#### Verificaci\u00f3n con c\u00f3digo",
+        "# verificacion.py"
       ]
     },
     {
       "path": "web/public/content/control-1/modulo-13.md",
-      "lines": 318,
+      "lines": 401,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14220,12 +14255,12 @@
         "#### Ejemplo 4 \u00b7 \u00bfEs dominante el par complejo si el tercer polo est\u00e1 en \u22124? \u00b7 *Intermedio*",
         "#### Ejemplo 5 \u00b7 \u00bfEs dominante el par complejo si el tercer polo est\u00e1 en \u221250? \u00b7 *B\u00e1sico*",
         "#### Ejemplo 6 \u00b7 \u00bfEs dominante el par complejo si el tercer polo est\u00e1 en \u22123? \u00b7 *Avanzado*",
-        "### Tema 2: Efecto de un cero"
+        "#### Verificaci\u00f3n con c\u00f3digo"
       ]
     },
     {
       "path": "web/public/content/control-1/modulo-14.md",
-      "lines": 296,
+      "lines": 351,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14241,12 +14276,12 @@
         "#### Ejemplo 4 \u00b7 Error final de \\(\\frac{5}{s + 1}\\) ante rampa \u00b7 *Intermedio*",
         "#### Ejemplo 5 \u00b7 Error final de \\(\\frac{20}{s^{2} \\left(s + 5\\right)}\\) ante par\u00e1bola \u00b7 *Avanzado*",
         "#### Ejemplo 6 \u00b7 Error final de \\(\\frac{8}{\\left(s + 1\\right) \\left(s + 4\\right)}\\) ante escal\u00f3n de amplitud 3 \u00b7 *B\u00e1sico*",
-        "### Tema 2: Tipo de sistema y constantes"
+        "#### Verificaci\u00f3n con c\u00f3digo"
       ]
     },
     {
       "path": "web/public/content/control-1/modulo-15.md",
-      "lines": 509,
+      "lines": 612,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14262,12 +14297,12 @@
         "#### Ejemplo 4 \u00b7 \u00bfEstable? \\(G(s) = \\frac{1}{s^{2} + 4}\\) \u00b7 *B\u00e1sico*",
         "#### Ejemplo 5 \u00b7 \u00bfEstable? \\(G(s) = \\frac{1}{s^{2} + 2 s + 10}\\) \u00b7 *B\u00e1sico*",
         "#### Ejemplo 6 \u00b7 \u00bfEstable? \\(G(s) = \\frac{1}{s^{2} - s + 4}\\) \u00b7 *Intermedio*",
-        "### Tema 2: El arreglo de Routh"
+        "#### Verificaci\u00f3n con c\u00f3digo"
       ]
     },
     {
       "path": "web/public/content/control-1/modulo-16.md",
-      "lines": 440,
+      "lines": 522,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14282,13 +14317,13 @@
         "#### Ejemplo 4 \u00b7 Leer el polo \\(-4 \\pm j3\\) \u00b7 *Intermedio*",
         "#### Ejemplo 5 \u00b7 Leer el polo \\(-0{,}5 \\pm j2\\) \u00b7 *Intermedio*",
         "#### Ejemplo 6 \u00b7 Leer el polo \\(-5 \\pm j8{,}66\\) \u00b7 *Intermedio*",
-        "### Tema 2: Estabilidad",
-        "#### Ejemplo 1 \u00b7 Clasificar por estabilidad \u00b7 *B\u00e1sico*"
+        "#### Verificaci\u00f3n con c\u00f3digo",
+        "# verificacion.py"
       ]
     },
     {
       "path": "web/public/content/control-1/modulo-17.md",
-      "lines": 416,
+      "lines": 492,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14304,12 +14339,12 @@
         "#### Ejemplo 4 \u00b7 \u00bfEst\u00e1 \\(-0{,}5+1j\\) en el lugar de \\(K\\,/(s(s+2)(s+4))\\)? \u00b7 *Intermedio*",
         "#### Ejemplo 5 \u00b7 \u00bfEst\u00e1 \\(-3+1{,}732j\\) en el lugar de \\(K\\,(s+3)/(s(s+1))\\)? \u00b7 *Intermedio*",
         "#### Ejemplo 6 \u00b7 \u00bfEst\u00e1 \\(-3+4j\\) en el lugar de \\(K\\,/(s(s+6))\\)? \u00b7 *B\u00e1sico*",
-        "### Tema 2: Reglas de construcci\u00f3n (con su porqu\u00e9)"
+        "#### Verificaci\u00f3n con c\u00f3digo"
       ]
     },
     {
       "path": "web/public/content/control-1/modulo-18.md",
-      "lines": 559,
+      "lines": 690,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14323,14 +14358,14 @@
         "#### Ejemplo 3 \u00b7 \u00bfQu\u00e9 mira la acci\u00f3n Derivativa (D)? \u00b7 *B\u00e1sico*",
         "#### Ejemplo 4 \u00b7 La ducha como PID \u00b7 *B\u00e1sico*",
         "#### Ejemplo 5 \u00b7 Leer un PID escrito en s \u00b7 *Intermedio*",
-        "### Tema 2: Error en estado estacionario",
-        "#### Demostraci\u00f3n \u00b7 el integrador elimina el error ante escal\u00f3n",
-        "#### Demostraci\u00f3n \u00b7 por qu\u00e9 la D amplifica el ruido"
+        "#### Verificaci\u00f3n con c\u00f3digo",
+        "# verificacion.py",
+        "### Tema 2: Error en estado estacionario"
       ]
     },
     {
       "path": "web/public/content/control-1/modulo-19.md",
-      "lines": 293,
+      "lines": 365,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14344,14 +14379,14 @@
         "#### Ejemplo 3 \u00b7 Adelanto que aporta 45\u00b0 de fase \u00b7 *Intermedio*",
         "#### Ejemplo 4 \u00b7 Adelanto que aporta 55\u00b0 de fase \u00b7 *Intermedio*",
         "#### Ejemplo 5 \u00b7 Adelanto que aporta 20\u00b0 de fase \u00b7 *B\u00e1sico*",
-        "### Tema 2: Dise\u00f1o de un atraso",
-        "#### Demostraci\u00f3n \u00b7 el atraso multiplica el error sin mover los polos",
-        "#### Ejemplo 1 \u00b7 Atraso: diez veces menos error \u00b7 *Experto*"
+        "#### Verificaci\u00f3n con c\u00f3digo",
+        "# verificacion.py",
+        "### Tema 2: Dise\u00f1o de un atraso"
       ]
     },
     {
       "path": "web/public/content/control-1/modulo-2.md",
-      "lines": 673,
+      "lines": 771,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14365,14 +14400,14 @@
         "#### Ejemplo 3 \u00b7 \\(\\mathcal{L}\\{e^{- 3 t}\\}\\) con la definici\u00f3n \u00b7 *B\u00e1sico*",
         "#### Ejemplo 4 \u00b7 \\(\\mathcal{L}\\{t\\}\\) con la definici\u00f3n \u00b7 *Intermedio*",
         "#### Ejemplo 5 \u00b7 \\(\\mathcal{L}\\{5 e^{2 t}\\}\\) con la definici\u00f3n \u00b7 *Intermedio*",
-        "### Tema 2: La tabla",
-        "#### Demostraci\u00f3n de cada fila de la tabla",
-        "#### Demostraci\u00f3n \u00b7 Escal\u00f3n: \u2112(u(t)) = 1/s"
+        "#### Verificaci\u00f3n con c\u00f3digo",
+        "# verificacion.py",
+        "### Tema 2: La tabla"
       ]
     },
     {
       "path": "web/public/content/control-1/modulo-20.md",
-      "lines": 413,
+      "lines": 518,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14387,13 +14422,13 @@
         "#### Ejemplo 3 \u00b7 Salida de \\(\\frac{100}{s^{2} + 2 s + 100}\\) ante \\(1\\sin(10t)\\) \u00b7 *Intermedio*",
         "#### Ejemplo 4 \u00b7 Salida de \\(\\frac{1}{s + 2}\\) ante \\(4\\sin(2t)\\) \u00b7 *B\u00e1sico*",
         "#### Ejemplo 5 \u00b7 Salida de \\(\\frac{50}{\\left(s + 1\\right) \\left(s + 10\\right)}\\) ante \\(1\\sin(5t)\\) \u00b7 *Intermedio*",
-        "### Tema 2: Decibeles y la escala logar\u00edtmica",
-        "#### M\u00e1s ejemplos resueltos"
+        "#### Verificaci\u00f3n con c\u00f3digo",
+        "# verificacion.py"
       ]
     },
     {
       "path": "web/public/content/control-1/modulo-21.md",
-      "lines": 142,
+      "lines": 166,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14408,12 +14443,13 @@
         "#### Parcial 2",
         "#### Salida ante escal\u00f3n \u00b7 ver cap\u00edtulo 13 \u00b7 *Punto 1*",
         "#### Polos en \u22123 \u00b1 5j \u00b7 ver cap\u00edtulo 17 \u00b7 *Punto 2*",
-        "#### Desde la gr\u00e1fica \u00b7 ver cap\u00edtulo 13 y cap\u00edtulo 17 \u00b7 *Punto 3*"
+        "#### Desde la gr\u00e1fica \u00b7 ver cap\u00edtulo 13 y cap\u00edtulo 17 \u00b7 *Punto 3*",
+        "#### Verificaci\u00f3n con c\u00f3digo del parcial"
       ]
     },
     {
       "path": "web/public/content/control-1/modulo-22.md",
-      "lines": 125,
+      "lines": 150,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14428,12 +14464,13 @@
         "#### Polos y zona \u00b7 *Punto 5*",
         "#### Desde la gr\u00e1fica \u00b7 *Punto 6*",
         "#### Teor\u00eda \u00b7 *Punto 7*",
-        "#### Formulario"
+        "#### Formulario",
+        "#### Verificaci\u00f3n con c\u00f3digo del simulacro"
       ]
     },
     {
       "path": "web/public/content/control-1/modulo-3.md",
-      "lines": 731,
+      "lines": 832,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14454,7 +14491,7 @@
     },
     {
       "path": "web/public/content/control-1/modulo-4.md",
-      "lines": 264,
+      "lines": 289,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14464,18 +14501,18 @@
         "### Tema 1: Qu\u00e9 es la funci\u00f3n de transferencia",
         "#### Demostraci\u00f3n \u00b7 por qu\u00e9 G(s) no depende de la entrada",
         "#### Ejemplo 1 \u00b7 Primer orden \u00b7 *B\u00e1sico*",
+        "#### Verificaci\u00f3n con c\u00f3digo",
+        "# verificacion.py",
         "#### Ejemplo 2 \u00b7 Con condici\u00f3n inicial \u00b7 *B\u00e1sico*",
         "#### Ejemplo 3 \u00b7 Segundo orden \u00b7 *Intermedio*",
         "#### Ejemplo 4 \u00b7 Un sistema f\u00edsico \u00b7 *Intermedio*",
         "#### Ejemplo 5 \u00b7 Resolver completa \u00b7 *Nivel parcial*",
-        "#### Errores comunes",
-        "#### M\u00e1s ejemplos resueltos",
-        "#### Ejemplo 6 \u00b7 De la ecuaci\u00f3n a \\(G(s)\\) \u00b7 *B\u00e1sico*"
+        "#### Errores comunes"
       ]
     },
     {
       "path": "web/public/content/control-1/modulo-5.md",
-      "lines": 492,
+      "lines": 578,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14490,13 +14527,13 @@
         "#### Ejemplo 4 \u00b7 \u00bfLazo abierto o cerrado? Sem\u00e1foro de tiempo fijo \u00b7 *B\u00e1sico*",
         "#### Ejemplo 5 \u00b7 \u00bfLazo abierto o cerrado? Riego por goteo con sensor de humedad \u00b7 *B\u00e1sico*",
         "#### Ejemplo 6 \u00b7 \u00bfLazo abierto o cerrado? Lavadora que llena el tambor por tiempo \u00b7 *B\u00e1sico*",
-        "### Tema 2: Los elementos",
-        "#### Cinco sistemas listos para el punto 1"
+        "#### Verificaci\u00f3n con c\u00f3digo",
+        "# verificacion.py"
       ]
     },
     {
       "path": "web/public/content/control-1/modulo-6.md",
-      "lines": 438,
+      "lines": 543,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14510,14 +14547,14 @@
         "#### Ejemplo 3 \u00b7 Mover un punto de toma hacia adelante \u00b7 *Intermedio*",
         "#### Ejemplo 4 \u00b7 Mover un sumador hacia la derecha \u00b7 *Intermedio*",
         "#### Ejemplo 5 \u00b7 Lazo menor dentro de un lazo mayor \u00b7 *Intermedio*",
-        "### Tema 2: Grafos de flujo de se\u00f1al",
-        "#### M\u00e1s ejemplos resueltos",
-        "#### Ejemplo 1 \u00b7 Dibujar el grafo: \\(x_2 = 3x_1 - x_3\\), \\(x_3 = 2x_2\\) \u00b7 *Intermedio*"
+        "#### Verificaci\u00f3n con c\u00f3digo",
+        "# verificacion.py",
+        "### Tema 2: Grafos de flujo de se\u00f1al"
       ]
     },
     {
       "path": "web/public/content/control-1/modulo-7.md",
-      "lines": 442,
+      "lines": 523,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14533,12 +14570,12 @@
         "#### Ejemplo 4 \u00b7 Impedancia de un capacitor de 10 \u00b5F en serie con una resistencia de 100 \u03a9 \u00b7 *B\u00e1sico*",
         "#### Ejemplo 5 \u00b7 Impedancia de R, L y C en serie (R = 10 \u03a9, L = 0,1 H, C = 1 mF) \u00b7 *Intermedio*",
         "#### Ejemplo 6 \u00b7 Impedancia de una bobina de 1 H en paralelo con un capacitor de 0,25 F \u00b7 *Avanzado*",
-        "### Tema 2: Circuitos pasivos: divisor de voltaje"
+        "#### Verificaci\u00f3n con c\u00f3digo"
       ]
     },
     {
       "path": "web/public/content/control-1/modulo-8.md",
-      "lines": 484,
+      "lines": 619,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14553,13 +14590,13 @@
         "#### Ejemplo 3 \u00b7 Masa-resorte-amortiguador: M = 2, B = 8, K = 50 \u00b7 *Intermedio*",
         "#### Ejemplo 4 \u00b7 Masa-resorte-amortiguador: M = 0,5, B = 1, K = 8 \u00b7 *Intermedio*",
         "#### Ejemplo 5 \u00b7 Dos masas acopladas \u00b7 *Avanzado*",
-        "### Tema 2: Mec\u00e1nico de rotaci\u00f3n",
-        "#### M\u00e1s ejemplos resueltos"
+        "#### Verificaci\u00f3n con c\u00f3digo",
+        "# verificacion.py"
       ]
     },
     {
       "path": "web/public/content/control-1/modulo-9.md",
-      "lines": 133,
+      "lines": 159,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14573,7 +14610,9 @@
         "#### Ejemplo 3 \u00b7 Linealizar \\(\\sin{\\left(x \\right)}\\) en \\(0\\) \u00b7 *B\u00e1sico*",
         "#### Ejemplo 4 \u00b7 Linealizar \\(\\sin{\\left(x \\right)}\\) en \\(\\pi\\) \u00b7 *Intermedio*",
         "#### Ejemplo 5 \u00b7 Linealizar \\(\\sqrt{x}\\) en \\(4\\) \u00b7 *Intermedio*",
-        "#### Ejemplo 6 \u00b7 Linealizar \\(x^{2}\\) en \\(3\\) \u00b7 *B\u00e1sico*"
+        "#### Ejemplo 6 \u00b7 Linealizar \\(x^{2}\\) en \\(3\\) \u00b7 *B\u00e1sico*",
+        "#### Verificaci\u00f3n con c\u00f3digo",
+        "# verificacion.py"
       ]
     },
     {

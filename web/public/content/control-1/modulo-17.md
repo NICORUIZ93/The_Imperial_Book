@@ -107,6 +107,33 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
 
 **Resultado.** Sí, con \(K \approx 25\).
 
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 1 (ángulo y ganancia en \(-2+2j\)).
+
+```python
+# verificacion.py
+from sympy import I, arg, deg, N, Abs
+
+s = -2 + 2 * I
+angulo = -(deg(arg(s)) + deg(arg(s + 4)))
+K = N(Abs(s) * Abs(s + 4), 3)
+print("angulo:", N(angulo, 4))
+print("K:", K)
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `angulo: -180.0` y `K: 8.00`, igual al Ejemplo 1 (está en el lugar, con \(K\approx8\)).
+
+**Práctica:** cambia `s` a `-1 + 1*I` y confirma que el ángulo da aproximadamente \(-153{,}4°\) (Ejemplo 2): no está en el lugar.
+
+**Límite:** este script evalúa un punto a la vez; para **dibujar** el lugar completo se usan las reglas de construcción (Tema 2), no se prueba punto por punto si está en el lugar.
+
 ### Tema 2: Reglas de construcción (con su porqué)
 
 **¿Por qué es importante?** Con las reglas dibujas a mano cómo se mueven los polos al cambiar la ganancia y eliges el \(K\) que cumple las especificaciones.
@@ -305,6 +332,30 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
 
 **Resultado.** Estable para \(0 < K < 90\).
 
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el centroide del Ejemplo 1.
+
+```python
+# verificacion.py
+poles = [0, -1, -2]
+n_m = 3
+centroide = sum(poles) / n_m
+print("centroide:", centroide)
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `centroide: -1.0`, igual al Ejemplo 1 (\(\sigma_a=-1\)).
+
+**Práctica:** cambia `poles` a `[0, -1, -5]` y confirma el centroide \(-2\) del Ejemplo 4.
+
+**Límite:** este cálculo del centroide no verifica si un punto del eje real pertenece al lugar (regla 4) ni dónde está el punto de ruptura (regla 6); ambas exigen aplicar las reglas específicas de este tema, no solo promediar los polos.
+
 ### Tema 3: Elegir K desde el lugar de las raíces
 
 **¿Por qué es importante?** El lugar de las raíces se dibuja para decidir: con él se elige la ganancia que da el amortiguamiento o la rapidez pedidos, que es lo que se pregunta en el examen y lo que se hace al ajustar un controlador real.
@@ -340,6 +391,31 @@ Para órdenes mayores se usa la recta de \(\zeta\) constante (ángulo \(\theta =
    **¿Por qué?** El término independiente es \(K\).
 
 **Resultado.** \(K \approx 16\): \(M_p \approx 16{,}3\,\%\), \(t_s \approx 2\,\text{s}\).
+
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 1 de este tema.
+
+```python
+# verificacion.py
+a, zeta = 4, 0.5
+wn = a / (2 * zeta)
+K = wn ** 2
+print("wn:", wn)
+print("K:", K)
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `wn: 4.0` y `K: 16.0`, igual al Ejemplo 1.
+
+**Práctica:** cambia `a, zeta` a `6, 0.6` y confirma `K: 25.0` (Ejemplo 2).
+
+**Límite:** esta receta (comparar con \(s^2+2\zeta\omega_ns+\omega_n^2\)) solo funciona para un lazo de **segundo orden** sin ceros; con un cero en \(G\) o un tercer polo, el punto del lugar para un \(\zeta\) dado ya no cae exactamente sobre esta parábola simple y hay que usar la recta de \(\zeta\) constante descrita arriba.
 
 #### Ejemplo 2 · Elegir K para ζ = 0,6 en \(\dfrac{K}{s(s+6)}\) · *Básico*
 
