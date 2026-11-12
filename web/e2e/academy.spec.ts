@@ -69,13 +69,16 @@ test('diagramas: renderiza Mermaid en capítulos con etiquetas complejas', async
 });
 
 test('diagramas Archify: muestra Java y Spring Boot dentro de la lección', async ({ page }) => {
-  for (const path of ['/curso/java/4', '/curso/spring-boot/0']) {
-    await page.goto(path);
-    const figure = page.locator('.archify-visual').first();
-    const topicCard = figure.locator('xpath=ancestor::section[contains(@class, "topic-card")]');
+  for (const { path, topicIndex } of [
+    { path: '/curso/java/0', topicIndex: 1 },
+    { path: '/curso/spring-boot/0', topicIndex: 0 },
+  ]) {
+    await page.goto(path, { waitUntil: 'domcontentloaded' });
+    const topicCard = page.locator('.topic-card').nth(topicIndex);
     if (!(await topicCard.getAttribute('class'))?.includes('expanded')) {
       await topicCard.locator('.topic-toggle').click();
     }
+    const figure = topicCard.locator('.archify-visual').first();
     await expect(figure).toBeVisible();
     await expect(figure.locator('iframe')).toHaveAttribute('src', /\/visuals\/temas\/.+\.html\?embed=1$/);
     await expect(figure.getByRole('link')).toHaveAttribute('target', '_blank');
