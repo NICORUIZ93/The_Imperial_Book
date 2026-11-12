@@ -209,7 +209,7 @@ def main() -> None:
     else:
         JSON_REPORT.write_text(json_text, encoding="utf-8"); MD_REPORT.write_text(md_text, encoding="utf-8")
     count = sum(row["topics"] for row in data["summary"].values())
-    if count == 0 or len(data["summary"]) != 14:
+    if count == 0 or len(data["summary"]) != 15:
         raise SystemExit(f"Inventario visible inválido: {count} temas en {len(data['summary'])} tracks")
     practicable = sum(row["practicable"] for row in data["summary"].values())
     generic = sum(row["genericScaffold"] for row in data["summary"].values())

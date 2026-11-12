@@ -547,3 +547,8 @@ $sans-ui:var(--font-sans);
 .lesson-markdown ::ng-deep .topic-heading.topic-verified::after { content:' · evidencia registrada'; color:var(--accent); font:600 10px/1 var(--font-sans); letter-spacing:.04em; }
 .lesson-markdown ::ng-deep .topic-focus-link { display:inline-block; margin-top:10px; color:var(--accent); font:600 11px/1.2 var(--font-sans); letter-spacing:.04em; text-transform:uppercase; text-decoration:none; }
 .lesson-markdown ::ng-deep .topic-focus-link:hover { text-decoration:underline; }
+
+// Fórmulas renderizadas con KaTeX (track Control 1).
+.lesson-markdown ::ng-deep .math-display { display:block; margin:18px 0; overflow-x:auto; overflow-y:hidden; text-align:center; }
+.lesson-markdown ::ng-deep .math-inline .katex { font-size:1.05em; }
+.lesson-markdown ::ng-deep .katex-display { margin:0; }

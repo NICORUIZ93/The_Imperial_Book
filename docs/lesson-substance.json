@@ -459,6 +459,121 @@
       "track": "cloud"
     },
     {
+      "legacySections": [],
+      "module": 0,
+      "track": "control-1"
+    },
+    {
+      "legacySections": [],
+      "module": 1,
+      "track": "control-1"
+    },
+    {
+      "legacySections": [],
+      "module": 10,
+      "track": "control-1"
+    },
+    {
+      "legacySections": [],
+      "module": 11,
+      "track": "control-1"
+    },
+    {
+      "legacySections": [],
+      "module": 12,
+      "track": "control-1"
+    },
+    {
+      "legacySections": [],
+      "module": 13,
+      "track": "control-1"
+    },
+    {
+      "legacySections": [],
+      "module": 14,
+      "track": "control-1"
+    },
+    {
+      "legacySections": [],
+      "module": 15,
+      "track": "control-1"
+    },
+    {
+      "legacySections": [],
+      "module": 16,
+      "track": "control-1"
+    },
+    {
+      "legacySections": [],
+      "module": 17,
+      "track": "control-1"
+    },
+    {
+      "legacySections": [],
+      "module": 18,
+      "track": "control-1"
+    },
+    {
+      "legacySections": [],
+      "module": 19,
+      "track": "control-1"
+    },
+    {
+      "legacySections": [],
+      "module": 2,
+      "track": "control-1"
+    },
+    {
+      "legacySections": [],
+      "module": 20,
+      "track": "control-1"
+    },
+    {
+      "legacySections": [],
+      "module": 21,
+      "track": "control-1"
+    },
+    {
+      "legacySections": [],
+      "module": 22,
+      "track": "control-1"
+    },
+    {
+      "legacySections": [],
+      "module": 3,
+      "track": "control-1"
+    },
+    {
+      "legacySections": [],
+      "module": 4,
+      "track": "control-1"
+    },
+    {
+      "legacySections": [],
+      "module": 5,
+      "track": "control-1"
+    },
+    {
+      "legacySections": [],
+      "module": 6,
+      "track": "control-1"
+    },
+    {
+      "legacySections": [],
+      "module": 7,
+      "track": "control-1"
+    },
+    {
+      "legacySections": [],
+      "module": 8,
+      "track": "control-1"
+    },
+    {
+      "legacySections": [],
+      "module": 9,
+      "track": "control-1"
+    },
+    {
       "legacySections": [
         "## Ruta de proyecto progresivo desde carpeta vacía",
         "**Errores comunes y soluciones**"
@@ -1690,7 +1805,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "459fa0ffeca595962e219bac8f42259968dd632ae10362f104199863cc1e8ecb",
+    "fingerprint": "3135a41517b7e8868fdef8c77881c1b76636e97701c89061f883d8793fcffb88",
     "issues": {
       "andamiaje-generico": 113,
       "bloque-repetido": 163,
@@ -1703,9 +1818,9 @@
       "## Ruta de proyecto progresivo desde carpeta vacía": 12,
       "**Errores comunes y soluciones**": 176
     },
-    "modules": 256,
+    "modules": 279,
     "modulesWithLegacySections": 178,
-    "topics": 1185,
+    "topics": 1217,
     "topicsWithIssues": 398
   },
   "topics": {
@@ -4028,6 +4143,232 @@
         "tailWords": 586,
         "topic": "Tema 5: Documentación de la API y guía de despliegue",
         "words": 740
+      }
+    ],
+    "control-1": [
+      {
+        "issues": [],
+        "module": 0,
+        "tailWords": 0,
+        "topic": "Tema 1: Cómo está armado cada capítulo",
+        "words": 656
+      },
+      {
+        "issues": [],
+        "module": 1,
+        "tailWords": 0,
+        "topic": "Tema 1: ¿Qué es un número complejo?",
+        "words": 1396
+      },
+      {
+        "issues": [],
+        "module": 1,
+        "tailWords": 0,
+        "topic": "Tema 2: Raíces de s²+bs+c",
+        "words": 949
+      },
+      {
+        "issues": [],
+        "module": 10,
+        "tailWords": 0,
+        "topic": "Tema 1: La forma de estado",
+        "words": 585
+      },
+      {
+        "issues": [],
+        "module": 11,
+        "tailWords": 0,
+        "topic": "Tema 1: Forma estándar",
+        "words": 998
+      },
+      {
+        "issues": [],
+        "module": 11,
+        "tailWords": 0,
+        "topic": "Tema 2: Retardo o tiempo muerto",
+        "words": 664
+      },
+      {
+        "issues": [],
+        "module": 12,
+        "tailWords": 0,
+        "topic": "Tema 1: Forma estándar",
+        "words": 2301
+      },
+      {
+        "issues": [],
+        "module": 13,
+        "tailWords": 0,
+        "topic": "Tema 1: Polos dominantes",
+        "words": 701
+      },
+      {
+        "issues": [],
+        "module": 14,
+        "tailWords": 0,
+        "topic": "Tema 1: Fórmula general",
+        "words": 738
+      },
+      {
+        "issues": [],
+        "module": 15,
+        "tailWords": 0,
+        "topic": "Tema 1: Qué es estabilidad",
+        "words": 656
+      },
+      {
+        "issues": [],
+        "module": 15,
+        "tailWords": 0,
+        "topic": "Tema 2: Casos especiales",
+        "words": 652
+      },
+      {
+        "issues": [],
+        "module": 16,
+        "tailWords": 0,
+        "topic": "Tema 1: Geometría de un polo",
+        "words": 1320
+      },
+      {
+        "issues": [],
+        "module": 17,
+        "tailWords": 0,
+        "topic": "Tema 1: Las dos condiciones",
+        "words": 1049
+      },
+      {
+        "issues": [],
+        "module": 18,
+        "tailWords": 0,
+        "topic": "Tema 1: La idea",
+        "words": 934
+      },
+      {
+        "issues": [],
+        "module": 18,
+        "tailWords": 0,
+        "topic": "Tema 2: Ventajas y desventajas (punto 4 del Parcial 1)",
+        "words": 861
+      },
+      {
+        "issues": [],
+        "module": 19,
+        "tailWords": 0,
+        "topic": "Tema 1: Diseño de un adelanto",
+        "words": 694
+      },
+      {
+        "issues": [],
+        "module": 2,
+        "tailWords": 0,
+        "topic": "Tema 1: La idea",
+        "words": 724
+      },
+      {
+        "issues": [],
+        "module": 2,
+        "tailWords": 0,
+        "topic": "Tema 2: Propiedades",
+        "words": 1142
+      },
+      {
+        "issues": [],
+        "module": 2,
+        "tailWords": 0,
+        "topic": "Tema 3: Valor final y valor inicial",
+        "words": 721
+      },
+      {
+        "issues": [],
+        "module": 20,
+        "tailWords": 0,
+        "topic": "Tema 1: Qué es la respuesta en frecuencia",
+        "words": 872
+      },
+      {
+        "issues": [],
+        "module": 21,
+        "tailWords": 0,
+        "topic": "Tema 1: Parcial 1",
+        "words": 1041
+      },
+      {
+        "issues": [],
+        "module": 22,
+        "tailWords": 0,
+        "topic": "Tema 1: Simulacro con solución",
+        "words": 1040
+      },
+      {
+        "issues": [],
+        "module": 3,
+        "tailWords": 0,
+        "topic": "Tema 1: Caso 1: polos reales distintos",
+        "words": 655
+      },
+      {
+        "issues": [],
+        "module": 3,
+        "tailWords": 0,
+        "topic": "Tema 2: Caso 2: polos repetidos",
+        "words": 1337
+      },
+      {
+        "issues": [],
+        "module": 4,
+        "tailWords": 0,
+        "topic": "Tema 1: Qué es la función de transferencia",
+        "words": 1139
+      },
+      {
+        "issues": [],
+        "module": 5,
+        "tailWords": 0,
+        "topic": "Tema 1: ¿Qué es un sistema de control?",
+        "words": 647
+      },
+      {
+        "issues": [],
+        "module": 5,
+        "tailWords": 0,
+        "topic": "Tema 2: Álgebra de bloques",
+        "words": 1078
+      },
+      {
+        "issues": [],
+        "module": 6,
+        "tailWords": 0,
+        "topic": "Tema 1: Reglas para mover bloques",
+        "words": 1275
+      },
+      {
+        "issues": [],
+        "module": 7,
+        "tailWords": 0,
+        "topic": "Tema 1: Impedancias",
+        "words": 688
+      },
+      {
+        "issues": [],
+        "module": 7,
+        "tailWords": 0,
+        "topic": "Tema 2: El op-amp inversor",
+        "words": 953
+      },
+      {
+        "issues": [],
+        "module": 8,
+        "tailWords": 0,
+        "topic": "Tema 1: Mecánico de traslación",
+        "words": 1137
+      },
+      {
+        "issues": [],
+        "module": 9,
+        "tailWords": 0,
+        "topic": "Tema 1: La idea",
+        "words": 491
       }
     ],
     "devops": [

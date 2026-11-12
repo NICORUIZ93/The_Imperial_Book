@@ -139,7 +139,7 @@ def main() -> None:
         MD_REPORT.write_text(md_text, encoding="utf-8")
     total = sum(row["topics"] for row in data["summary"].values())
     complete = sum(row["completeTopics"] for row in data["summary"].values())
-    if total < 1 or len(data["summary"]) != 14:
+    if total < 1 or len(data["summary"]) != 15:
         raise SystemExit(f"Inventario inválido: {total} temas en {len(data['summary'])} tracks")
     print(f"Estructura atómica auditada: {complete}/{total} temas completos en {len(data['summary'])} tracks")
     if args.require_complete and complete != total:

@@ -312,6 +312,38 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | cloud / 9 | [Tema 3: Archivos adjuntos en S3 y procesamiento en segundo plano con SQS](../web/public/content/cloud/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 9 | [Tema 4: API Gateway e IAM de mínimo privilegio para el proyecto](../web/public/content/cloud/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 9 | [Tema 5: Documentación de la API y guía de despliegue](../web/public/content/cloud/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
+| control-1 / 0 | [Tema 1: Cómo está armado cada capítulo](../web/public/content/control-1/modulo-0.md) | demostracion-no-delimitada |
+| control-1 / 1 | [Tema 1: ¿Qué es un número complejo?](../web/public/content/control-1/modulo-1.md) | demostracion-no-delimitada |
+| control-1 / 1 | [Tema 2: Raíces de s²+bs+c](../web/public/content/control-1/modulo-1.md) | demostracion-no-delimitada |
+| control-1 / 10 | [Tema 1: La forma de estado](../web/public/content/control-1/modulo-10.md) | demostracion-no-delimitada |
+| control-1 / 11 | [Tema 1: Forma estándar](../web/public/content/control-1/modulo-11.md) | demostracion-no-delimitada |
+| control-1 / 11 | [Tema 2: Retardo o tiempo muerto](../web/public/content/control-1/modulo-11.md) | demostracion-no-delimitada |
+| control-1 / 12 | [Tema 1: Forma estándar](../web/public/content/control-1/modulo-12.md) | demostracion-no-delimitada |
+| control-1 / 13 | [Tema 1: Polos dominantes](../web/public/content/control-1/modulo-13.md) | demostracion-no-delimitada |
+| control-1 / 14 | [Tema 1: Fórmula general](../web/public/content/control-1/modulo-14.md) | demostracion-no-delimitada |
+| control-1 / 15 | [Tema 1: Qué es estabilidad](../web/public/content/control-1/modulo-15.md) | demostracion-no-delimitada |
+| control-1 / 15 | [Tema 2: Casos especiales](../web/public/content/control-1/modulo-15.md) | demostracion-no-delimitada |
+| control-1 / 16 | [Tema 1: Geometría de un polo](../web/public/content/control-1/modulo-16.md) | demostracion-no-delimitada |
+| control-1 / 17 | [Tema 1: Las dos condiciones](../web/public/content/control-1/modulo-17.md) | demostracion-no-delimitada |
+| control-1 / 18 | [Tema 1: La idea](../web/public/content/control-1/modulo-18.md) | demostracion-no-delimitada |
+| control-1 / 18 | [Tema 2: Ventajas y desventajas (punto 4 del Parcial 1)](../web/public/content/control-1/modulo-18.md) | demostracion-no-delimitada |
+| control-1 / 19 | [Tema 1: Diseño de un adelanto](../web/public/content/control-1/modulo-19.md) | demostracion-no-delimitada |
+| control-1 / 2 | [Tema 1: La idea](../web/public/content/control-1/modulo-2.md) | demostracion-no-delimitada |
+| control-1 / 2 | [Tema 2: Propiedades](../web/public/content/control-1/modulo-2.md) | demostracion-no-delimitada |
+| control-1 / 2 | [Tema 3: Valor final y valor inicial](../web/public/content/control-1/modulo-2.md) | demostracion-no-delimitada |
+| control-1 / 20 | [Tema 1: Qué es la respuesta en frecuencia](../web/public/content/control-1/modulo-20.md) | demostracion-no-delimitada |
+| control-1 / 21 | [Tema 1: Parcial 1](../web/public/content/control-1/modulo-21.md) | demostracion-no-delimitada |
+| control-1 / 22 | [Tema 1: Simulacro con solución](../web/public/content/control-1/modulo-22.md) | demostracion-no-delimitada |
+| control-1 / 3 | [Tema 1: Caso 1: polos reales distintos](../web/public/content/control-1/modulo-3.md) | demostracion-no-delimitada |
+| control-1 / 3 | [Tema 2: Caso 2: polos repetidos](../web/public/content/control-1/modulo-3.md) | demostracion-no-delimitada |
+| control-1 / 4 | [Tema 1: Qué es la función de transferencia](../web/public/content/control-1/modulo-4.md) | demostracion-no-delimitada |
+| control-1 / 5 | [Tema 1: ¿Qué es un sistema de control?](../web/public/content/control-1/modulo-5.md) | demostracion-no-delimitada |
+| control-1 / 5 | [Tema 2: Álgebra de bloques](../web/public/content/control-1/modulo-5.md) | demostracion-no-delimitada |
+| control-1 / 6 | [Tema 1: Reglas para mover bloques](../web/public/content/control-1/modulo-6.md) | demostracion-no-delimitada |
+| control-1 / 7 | [Tema 1: Impedancias](../web/public/content/control-1/modulo-7.md) | demostracion-no-delimitada |
+| control-1 / 7 | [Tema 2: El op-amp inversor](../web/public/content/control-1/modulo-7.md) | demostracion-no-delimitada |
+| control-1 / 8 | [Tema 1: Mecánico de traslación](../web/public/content/control-1/modulo-8.md) | demostracion-no-delimitada |
+| control-1 / 9 | [Tema 1: La idea](../web/public/content/control-1/modulo-9.md) | demostracion-no-delimitada |
 | devops / 0 | [Tema 1: Sistema de archivos y permisos (chmod/chown)](../web/public/content/devops/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 0 | [Tema 2: Procesos, señales y jobs en segundo plano](../web/public/content/devops/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 0 | [Tema 3: Pipes, redirección y filtros (grep, awk, sed)](../web/public/content/devops/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |

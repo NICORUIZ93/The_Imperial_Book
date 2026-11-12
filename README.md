@@ -3,7 +3,7 @@
 Academia en español para estudiar desarrollo profesional y cloud local. La
 experiencia oficial es una aplicación Angular con lecciones Markdown.
 
-La academia reúne 14 rutas, 256 módulos y 1185 temas editoriales en formato de
+La academia reúne 15 rutas, 279 módulos y 1217 temas editoriales en formato de
 libro. El método vigente usa 3–6 subtemas y cuatro pasos por subtema. La migración
 sigue parcial; consulta [`docs/atomic-subtopics.md`](docs/atomic-subtopics.md).
 Ninguna métrica automática sustituye la revisión técnica ni demuestra por sí sola
@@ -20,6 +20,12 @@ que un ejemplo se ejecutó.
 - [Sustancia de las lecciones: repetición, cola y andamiaje](docs/lesson-substance.md)
 - [Continuación de la metodología de cuatro pasos](docs/CONTINUAR-7-PASOS.md)
 - [Auditoría estructural de subtemas atómicos](docs/atomic-subtopics.md)
+
+La ruta **Control 1** (`web/public/content/control-1/`) cubre sistemas de control
+desde cero: Laplace, funciones de transferencia, respuesta temporal, estabilidad,
+lugar de las raíces, PID y compensadores. Sus fórmulas se escriben en TeX
+(`\(...\)` en línea y `\[...\]` en bloque) y el visor las renderiza con KaTeX.
+
 - [Guia web](web/README.md)
 - [Mapa compacto del repo](docs/repo-graph.md)
 - [Índice de las 69 páginas e integración de merged.pdf](docs/merged-pdf-review.md)
@@ -153,8 +159,8 @@ El contrato editorial que debe alcanzar cada tema es:
 ## Tracks de la academia
 
 La versión Angular tiene su propio contenido, más amplio, en formato Markdown
-(`web/public/content/<track>/modulo-N.md`), organizado en 14 tracks, 256
-módulos y 1185 temas editoriales visibles. Cada módulo prioriza una secuencia de
+(`web/public/content/<track>/modulo-N.md`), organizado en 15 tracks, 279
+módulos y 1217 temas editoriales visibles. Cada módulo prioriza una secuencia de
 temas prácticos. El sílabo y el estándar de calidad viven en documentos
 centrales; las fuentes específicas permanecen junto al tema que sustentan. No
 existen rutas separadas de cuestionarios, rúbricas o laboratorios repetidos.
@@ -219,10 +225,11 @@ independientes.
 | iOS | 15 | SwiftUI, concurrencia moderna, SwiftData |
 | Flutter | 23 | Widgets, gestión de estado, FFI, entrega, operación, compras, suscripciones y monetización móvil |
 | RutaFlow | 8 | Proyecto integrador de entregas, GPS, datos y operación |
+| Control 1 | 23 | Laplace, respuesta temporal, estabilidad, PID y diseño |
 
 `scripts/validate.sh` valida automaticamente que el numero de archivos
 Markdown de cada track coincida con los modulos declarados en su fuente
-TypeScript, que el índice web corresponda a esos 14 tracks y que los reportes de
+TypeScript, que el índice web corresponda a esos 15 tracks y que los reportes de
 calidad permanezcan sincronizados con el Markdown real.
 
 ## Actualización tecnológica

@@ -82,7 +82,49 @@
     },
     {
       "path": "README.md",
-      "lines": 308,
+      "lines": 315,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# The_Imperial_Book",
+        "## Como empezar",
+        "## Levantar Floci",
+        "# 1. Levantar todos los servicios",
+        "# 2. Verificar Floci AWS",
+        "# 3. Verificar Azure",
+        "# 4. Verificar GCP",
+        "# 5. Validar todo el entorno",
+        "# docker compose --profile multicloud up   # AWS + Azure + GCP",
+        "## Metodologia",
+        "## Tracks de la academia",
+        "## Licencias"
+      ]
+    },
+    {
+      "path": "README.md",
+      "lines": 315,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# The_Imperial_Book",
+        "## Como empezar",
+        "## Levantar Floci",
+        "# 1. Levantar todos los servicios",
+        "# 2. Verificar Floci AWS",
+        "# 3. Verificar Azure",
+        "# 4. Verificar GCP",
+        "# 5. Validar todo el entorno",
+        "# docker compose --profile multicloud up   # AWS + Azure + GCP",
+        "## Metodologia",
+        "## Tracks de la academia",
+        "## Licencias"
+      ]
+    },
+    {
+      "path": "README.md",
+      "lines": 315,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -354,7 +396,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 18569,
+      "lines": 18802,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -362,7 +404,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1031,
+      "lines": 1067,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -372,13 +414,13 @@
         "### android",
         "### angular",
         "### cloud",
+        "### control-1",
         "### devops",
         "### flutter",
         "### foundations",
         "### ios",
         "### javascript",
-        "### kotlin-multiplatform",
-        "### node"
+        "### kotlin-multiplatform"
       ]
     },
     {
@@ -684,7 +726,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13702,
+      "lines": 14118,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -692,7 +734,7 @@
     },
     {
       "path": "docs/course-depth-review.md",
-      "lines": 1215,
+      "lines": 1247,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -725,7 +767,35 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 121,
+      "lines": 154,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Deuda editorial verificable",
+        "## Estado global",
+        "## Prioridad por track",
+        "## Pendientes por tema",
+        "## Regla de cierre"
+      ]
+    },
+    {
+      "path": "docs/editorial-backlog.md",
+      "lines": 154,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Deuda editorial verificable",
+        "## Estado global",
+        "## Prioridad por track",
+        "## Pendientes por tema",
+        "## Regla de cierre"
+      ]
+    },
+    {
+      "path": "docs/editorial-backlog.md",
+      "lines": 154,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -861,7 +931,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 11049,
+      "lines": 11390,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1113,7 +1183,23 @@
     },
     {
       "path": "docs/seven-step-methodology.json",
-      "lines": 31125,
+      "lines": 31979,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "docs/seven-step-methodology.json",
+      "lines": 31979,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "docs/seven-step-methodology.json",
+      "lines": 31979,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1121,7 +1207,29 @@
     },
     {
       "path": "docs/seven-step-methodology.md",
-      "lines": 31,
+      "lines": 32,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Auditor\u00eda de metodolog\u00eda universal por tema",
+        "## Interpretaci\u00f3n"
+      ]
+    },
+    {
+      "path": "docs/seven-step-methodology.md",
+      "lines": 32,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Auditor\u00eda de metodolog\u00eda universal por tema",
+        "## Interpretaci\u00f3n"
+      ]
+    },
+    {
+      "path": "docs/seven-step-methodology.md",
+      "lines": 32,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1264,7 +1372,23 @@
     },
     {
       "path": "docs/topic-learning-quality.json",
-      "lines": 26341,
+      "lines": 27063,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "docs/topic-learning-quality.json",
+      "lines": 27063,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "docs/topic-learning-quality.json",
+      "lines": 27063,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1272,7 +1396,29 @@
     },
     {
       "path": "docs/topic-learning-quality.md",
-      "lines": 26,
+      "lines": 27,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Auditor\u00eda pedag\u00f3gica tema por tema",
+        "## Regla editorial"
+      ]
+    },
+    {
+      "path": "docs/topic-learning-quality.md",
+      "lines": 27,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Auditor\u00eda pedag\u00f3gica tema por tema",
+        "## Regla editorial"
+      ]
+    },
+    {
+      "path": "docs/topic-learning-quality.md",
+      "lines": 27,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -10081,7 +10227,7 @@
     },
     {
       "path": "scripts/validate.sh",
-      "lines": 138,
+      "lines": 139,
       "kind": "automation-script",
       "symbols": [],
       "imports": [],
@@ -10122,7 +10268,7 @@
     },
     {
       "path": "scripts/validate_learning_priorities.py",
-      "lines": 93,
+      "lines": 94,
       "kind": "automation-script",
       "symbols": [],
       "imports": [
@@ -10288,7 +10434,7 @@
     },
     {
       "path": "web/angular.json",
-      "lines": 101,
+      "lines": 106,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -10296,7 +10442,27 @@
     },
     {
       "path": "web/e2e/academy.spec.ts",
-      "lines": 333,
+      "lines": 362,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [
+        "@playwright/test"
+      ],
+      "headings": []
+    },
+    {
+      "path": "web/e2e/academy.spec.ts",
+      "lines": 362,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [
+        "@playwright/test"
+      ],
+      "headings": []
+    },
+    {
+      "path": "web/e2e/academy.spec.ts",
+      "lines": 362,
       "kind": "project-file",
       "symbols": [],
       "imports": [
@@ -10306,7 +10472,7 @@
     },
     {
       "path": "web/package.json",
-      "lines": 46,
+      "lines": 47,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -11780,6 +11946,457 @@
       ]
     },
     {
+      "path": "web/public/content/control-1/modulo-0.md",
+      "lines": 86,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 0: C\u00f3mo estudiar Control 1",
+        "## Aprende construyendo",
+        "### Tema 1: C\u00f3mo est\u00e1 armado cada cap\u00edtulo",
+        "#### El temario",
+        "#### Qu\u00e9 falt\u00f3 en el Parcial 1",
+        "#### Plan de dos semanas"
+      ]
+    },
+    {
+      "path": "web/public/content/control-1/modulo-1.md",
+      "lines": 360,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 1: N\u00fameros complejos",
+        "## Aprende construyendo",
+        "### Tema 1: \u00bfQu\u00e9 es un n\u00famero complejo?",
+        "#### Operaciones",
+        "#### Demostraci\u00f3n \u00b7 de d\u00f3nde sale la magnitud",
+        "#### Forma polar y f\u00f3rmula de Euler",
+        "#### Demostraci\u00f3n de la f\u00f3rmula de Euler (series de Taylor)",
+        "#### Ejemplo 1 \u00b7 Sumar dos complejos \u00b7 *B\u00e1sico*",
+        "#### Ejemplo 2 \u00b7 Multiplicar dos complejos \u00b7 *B\u00e1sico*",
+        "#### Ejemplo 3 \u00b7 Multiplicar por el conjugado \u00b7 *B\u00e1sico*",
+        "#### Ejemplo 4 \u00b7 Dividir \u00b7 *Intermedio*",
+        "#### Ejemplo 5 \u00b7 Magnitud y \u00e1ngulo \u00b7 *Intermedio*"
+      ]
+    },
+    {
+      "path": "web/public/content/control-1/modulo-10.md",
+      "lines": 105,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 10: Introducci\u00f3n al espacio de estados",
+        "## Aprende construyendo",
+        "### Tema 1: La forma de estado",
+        "#### Ejemplo 1 \u00b7 A espacio de estados \u00b7 *Experto*",
+        "#### De estados a funci\u00f3n de transferencia",
+        "#### Demostraci\u00f3n",
+        "#### Ejemplo 2 \u00b7 De vuelta a G(s) \u00b7 *Experto*",
+        "#### Ejemplo 3 \u00b7 Masa-resorte en estados \u00b7 *Experto*"
+      ]
+    },
+    {
+      "path": "web/public/content/control-1/modulo-11.md",
+      "lines": 263,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 11: Sistemas de primer orden y retardo",
+        "## Aprende construyendo",
+        "### Tema 1: Forma est\u00e1ndar",
+        "#### Respuestas",
+        "#### Demostraci\u00f3n de la respuesta a la rampa",
+        "#### Demostraci\u00f3n de la respuesta al escal\u00f3n y de los porcentajes",
+        "#### Ejemplo 1 \u00b7 Ya en forma est\u00e1ndar \u00b7 *B\u00e1sico*",
+        "#### Ejemplo 2 \u00b7 Primero hay que llevarlo a la forma est\u00e1ndar \u00b7 *B\u00e1sico*",
+        "#### Ejemplo 3 \u00b7 Escal\u00f3n de amplitud 4 \u00b7 *Intermedio*",
+        "#### Ejemplo 4 \u00b7 Rampa \u00b7 *Intermedio*",
+        "### Tema 2: Retardo o tiempo muerto",
+        "#### Ejemplo 5 \u00b7 Escal\u00f3n con retardo \u00b7 *Intermedio*"
+      ]
+    },
+    {
+      "path": "web/public/content/control-1/modulo-12.md",
+      "lines": 356,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 12: Sistemas de segundo orden",
+        "## Aprende construyendo",
+        "### Tema 1: Forma est\u00e1ndar",
+        "#### Ejemplo 1 \u00b7 Leer los par\u00e1metros \u00b7 *B\u00e1sico*",
+        "#### Simulador: mueve \u03b6 y \u03c9n",
+        "#### Los cuatro casos seg\u00fan \u03b6",
+        "#### F\u00f3rmulas del caso subamortiguado",
+        "#### Demostraci\u00f3n completa de las f\u00f3rmulas",
+        "#### Demostraci\u00f3n \u00b7 1 \u00b7 Los polos",
+        "#### Demostraci\u00f3n \u00b7 2 \u00b7 La respuesta al escal\u00f3n",
+        "#### Demostraci\u00f3n \u00b7 3 \u00b7 Tiempo pico y sobrepico",
+        "#### Demostraci\u00f3n \u00b7 4 \u00b7 De Mp a \u03b6 (f\u00f3rmula inversa)"
+      ]
+    },
+    {
+      "path": "web/public/content/control-1/modulo-13.md",
+      "lines": 101,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 13: Polos dominantes, polos adicionales y ceros",
+        "## Aprende construyendo",
+        "### Tema 1: Polos dominantes",
+        "#### Demostraci\u00f3n \u00b7 por qu\u00e9 el polo lejano casi no aporta",
+        "#### Ejemplo 1 \u00b7 Aproximar por polos dominantes \u00b7 *Nivel parcial*",
+        "#### Efecto de un cero",
+        "#### Demostraci\u00f3n \u00b7 el cero suma la derivada",
+        "#### Cero de fase no m\u00ednima",
+        "#### Ejemplo 2 \u00b7 Cero en el semiplano derecho \u00b7 *Experto*"
+      ]
+    },
+    {
+      "path": "web/public/content/control-1/modulo-14.md",
+      "lines": 143,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 14: Error en estado estacionario",
+        "## Aprende construyendo",
+        "### Tema 1: F\u00f3rmula general",
+        "#### Demostraci\u00f3n",
+        "#### Tipo de sistema y constantes",
+        "#### Demostraci\u00f3n de cada caso",
+        "#### Ejemplo 1 \u00b7 Tipo 0 con escal\u00f3n \u00b7 *B\u00e1sico*",
+        "#### Ejemplo 2 \u00b7 Tipo 1 con rampa \u00b7 *Intermedio*",
+        "#### Ejemplo 3 \u00b7 Tipo 2 con par\u00e1bola \u00b7 *Intermedio*",
+        "#### Ejemplo 4 \u00b7 Dise\u00f1ar K para un error \u00b7 *Nivel parcial*",
+        "#### Errores comunes"
+      ]
+    },
+    {
+      "path": "web/public/content/control-1/modulo-15.md",
+      "lines": 197,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 15: Estabilidad y criterio de Routh-Hurwitz",
+        "## Aprende construyendo",
+        "### Tema 1: Qu\u00e9 es estabilidad",
+        "#### Demostraci\u00f3n \u00b7 estable \u21d4 polos en el semiplano izquierdo",
+        "#### El arreglo de Routh",
+        "#### Ejemplo 1 \u00b7 Estable \u00b7 *B\u00e1sico*",
+        "#### Ejemplo 2 \u00b7 Inestable con coeficientes positivos \u00b7 *Intermedio*",
+        "### Tema 2: Casos especiales",
+        "#### Ejemplo 3 \u00b7 Un cero en la primera columna \u00b7 *Nivel parcial*",
+        "#### Ejemplo 4 \u00b7 Una fila completa de ceros \u00b7 *Experto*",
+        "#### Rango de K para estabilidad",
+        "#### Ejemplo 5 \u00b7 Rango de K \u00b7 *Nivel parcial*"
+      ]
+    },
+    {
+      "path": "web/public/content/control-1/modulo-16.md",
+      "lines": 223,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 16: Plano s, estabilidad y zona de dise\u00f1o",
+        "## Aprende construyendo",
+        "### Tema 1: Geometr\u00eda de un polo",
+        "#### Estabilidad",
+        "#### Ejemplo 1 \u00b7 Clasificar por estabilidad \u00b7 *B\u00e1sico*",
+        "#### Ejemplo 2 \u00b7 Leer todo desde el polo \u00b7 *Intermedio*",
+        "#### La zona de dise\u00f1o",
+        "#### Demostraci\u00f3n \u00b7 por qu\u00e9 cada especificaci\u00f3n es esa frontera",
+        "#### Ejemplo 3 \u00b7 Zona desde especificaciones \u00b7 *Intermedio*",
+        "#### Ejemplo 4 \u00b7 Tres especificaciones \u00b7 *Intermedio*",
+        "#### Ejemplo 5 \u00b7 \u00bfCumple un candidato? \u00b7 *Nivel parcial*",
+        "#### Ejemplo 6 \u00b7 De polos a G(s) y su zona (Parcial 2) \u00b7 *Nivel parcial*"
+      ]
+    },
+    {
+      "path": "web/public/content/control-1/modulo-17.md",
+      "lines": 139,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 17: Lugar geom\u00e9trico de las ra\u00edces",
+        "## Aprende construyendo",
+        "### Tema 1: Las dos condiciones",
+        "#### Demostraci\u00f3n \u00b7 C\u00f3mo se eval\u00faan (geometr\u00eda)",
+        "#### Reglas de construcci\u00f3n (con su porqu\u00e9)",
+        "#### Ejemplo 1 \u00b7 Dos polos \u00b7 *B\u00e1sico*",
+        "#### Ejemplo 2 \u00b7 Tres polos \u00b7 *Nivel parcial*",
+        "#### Ejemplo 3 \u00b7 Con un cero \u00b7 *Nivel parcial*",
+        "#### Errores comunes"
+      ]
+    },
+    {
+      "path": "web/public/content/control-1/modulo-18.md",
+      "lines": 292,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 18: Acciones b\u00e1sicas de control: P, I, D",
+        "## Aprende construyendo",
+        "### Tema 1: La idea",
+        "#### Error en estado estacionario",
+        "#### Demostraci\u00f3n \u00b7 el integrador elimina el error ante escal\u00f3n",
+        "#### Demostraci\u00f3n \u00b7 por qu\u00e9 la D amplifica el ruido",
+        "#### Cada acci\u00f3n, con n\u00fameros",
+        "#### ON/OFF (dos posiciones)",
+        "#### Proporcional: C(s) = Kp",
+        "#### Ejemplo 1 \u00b7 El P deja error \u00b7 *B\u00e1sico*",
+        "#### Ejemplo 2 \u00b7 El precio de subir Kp \u00b7 *Intermedio*",
+        "#### Integral: C(s) = Ki/s"
+      ]
+    },
+    {
+      "path": "web/public/content/control-1/modulo-19.md",
+      "lines": 106,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 19: Compensadores de adelanto y atraso",
+        "## Aprende construyendo",
+        "### Tema 1: Dise\u00f1o de un adelanto",
+        "#### Ejemplo 1 \u00b7 Adelanto: el doble de r\u00e1pido \u00b7 *Experto*",
+        "#### Dise\u00f1o de un atraso",
+        "#### Demostraci\u00f3n \u00b7 el atraso multiplica el error sin mover los polos",
+        "#### Ejemplo 2 \u00b7 Atraso: diez veces menos error \u00b7 *Experto*",
+        "#### Implementaci\u00f3n con op-amps",
+        "#### Demostraci\u00f3n"
+      ]
+    },
+    {
+      "path": "web/public/content/control-1/modulo-2.md",
+      "lines": 406,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 2: Transformada de Laplace",
+        "## Aprende construyendo",
+        "### Tema 1: La idea",
+        "#### Ejemplo 1 \u00b7 Calcular una transformada con la definici\u00f3n \u00b7 *B\u00e1sico*",
+        "#### La tabla",
+        "#### Demostraci\u00f3n de cada fila de la tabla",
+        "#### Demostraci\u00f3n \u00b7 Escal\u00f3n: \u2112(u(t)) = 1/s",
+        "#### Demostraci\u00f3n \u00b7 Rampa: \u2112(t) = 1/s\u00b2 (integraci\u00f3n por partes)",
+        "#### Demostraci\u00f3n \u00b7 Seno y coseno (con Euler, cap\u00edtulo 2)",
+        "#### Demostraci\u00f3n \u00b7 Impulso: \u2112(\u03b4(t)) = 1",
+        "### Tema 2: Propiedades",
+        "#### Demostraci\u00f3n de cada propiedad"
+      ]
+    },
+    {
+      "path": "web/public/content/control-1/modulo-20.md",
+      "lines": 118,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 20: Respuesta en frecuencia y diagramas de Bode",
+        "## Aprende construyendo",
+        "### Tema 1: Qu\u00e9 es la respuesta en frecuencia",
+        "#### Demostraci\u00f3n",
+        "#### Decibeles y la escala logar\u00edtmica",
+        "#### Los bloques b\u00e1sicos",
+        "#### Demostraci\u00f3n \u00b7 el polo de primer orden",
+        "#### M\u00e1rgenes de estabilidad",
+        "#### Ejemplo 1 \u00b7 Un polo simple \u00b7 *B\u00e1sico*",
+        "#### Ejemplo 2 \u00b7 Bode y margen de fase \u00b7 *Experto*"
+      ]
+    },
+    {
+      "path": "web/public/content/control-1/modulo-21.md",
+      "lines": 142,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 21: Parciales resueltos",
+        "## Aprende construyendo",
+        "### Tema 1: Parcial 1",
+        "#### Sistema de control y sus elementos \u00b7 ver cap\u00edtulo 6 \u00b7 *Punto 1*",
+        "#### Funci\u00f3n de transferencia con op-amps \u00b7 ver cap\u00edtulo 8 \u00b7 *Punto 2*",
+        "#### Respuesta al impulso \u00b7 ver cap\u00edtulo 4 y cap\u00edtulo 12 \u00b7 *Punto 3*",
+        "#### Ventajas y desventajas \u00b7 ver cap\u00edtulo 19 \u00b7 *Punto 4*",
+        "#### Parcial 2",
+        "#### Salida ante escal\u00f3n \u00b7 ver cap\u00edtulo 13 \u00b7 *Punto 1*",
+        "#### Polos en \u22123 \u00b1 5j \u00b7 ver cap\u00edtulo 17 \u00b7 *Punto 2*",
+        "#### Desde la gr\u00e1fica \u00b7 ver cap\u00edtulo 13 y cap\u00edtulo 17 \u00b7 *Punto 3*"
+      ]
+    },
+    {
+      "path": "web/public/content/control-1/modulo-22.md",
+      "lines": 125,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 22: Simulacro y formulario",
+        "## Aprende construyendo",
+        "### Tema 1: Simulacro con soluci\u00f3n",
+        "#### Sistema de control \u00b7 *Punto 1*",
+        "#### Circuito \u00b7 *Punto 2*",
+        "#### Impulso \u00b7 *Punto 3*",
+        "#### Escal\u00f3n \u00b7 *Punto 4*",
+        "#### Polos y zona \u00b7 *Punto 5*",
+        "#### Desde la gr\u00e1fica \u00b7 *Punto 6*",
+        "#### Teor\u00eda \u00b7 *Punto 7*",
+        "#### Formulario"
+      ]
+    },
+    {
+      "path": "web/public/content/control-1/modulo-3.md",
+      "lines": 314,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 3: Transformada inversa",
+        "## Aprende construyendo",
+        "### Tema 1: Caso 1: polos reales distintos",
+        "#### Demostraci\u00f3n \u00b7 por qu\u00e9 funciona el tapado",
+        "#### Ejemplo 1 \u00b7 Dos factores, numerador constante \u00b7 *B\u00e1sico*",
+        "#### Ejemplo 2 \u00b7 Numerador con s \u00b7 *B\u00e1sico*",
+        "#### Ejemplo 3 \u00b7 Tres factores \u00b7 *Intermedio*",
+        "### Tema 2: Caso 2: polos repetidos",
+        "#### Demostraci\u00f3n \u00b7 polos repetidos",
+        "#### Ejemplo 4 \u00b7 Polo repetido \u00b7 *Intermedio*",
+        "#### Caso 3: polos complejos (completar el cuadrado)",
+        "#### Demostraci\u00f3n \u00b7 por qu\u00e9 no hace falta trabajar con complejos"
+      ]
+    },
+    {
+      "path": "web/public/content/control-1/modulo-4.md",
+      "lines": 189,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 4: Ecuaciones diferenciales y funci\u00f3n de transferencia",
+        "## Aprende construyendo",
+        "### Tema 1: Qu\u00e9 es la funci\u00f3n de transferencia",
+        "#### Demostraci\u00f3n \u00b7 por qu\u00e9 G(s) no depende de la entrada",
+        "#### Ejemplo 1 \u00b7 Primer orden \u00b7 *B\u00e1sico*",
+        "#### Ejemplo 2 \u00b7 Con condici\u00f3n inicial \u00b7 *B\u00e1sico*",
+        "#### Ejemplo 3 \u00b7 Segundo orden \u00b7 *Intermedio*",
+        "#### Ejemplo 4 \u00b7 Un sistema f\u00edsico \u00b7 *Intermedio*",
+        "#### Ejemplo 5 \u00b7 Resolver completa \u00b7 *Nivel parcial*",
+        "#### Errores comunes",
+        "#### Pr\u00e1ctica"
+      ]
+    },
+    {
+      "path": "web/public/content/control-1/modulo-5.md",
+      "lines": 259,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 5: Sistemas de control y diagramas de bloques",
+        "## Aprende construyendo",
+        "### Tema 1: \u00bfQu\u00e9 es un sistema de control?",
+        "#### Los elementos",
+        "#### Cinco sistemas listos para el punto 1",
+        "#### Ejemplo 1 \u00b7 Describir un sistema (como en el punto 1) \u00b7 *B\u00e1sico*",
+        "### Tema 2: \u00c1lgebra de bloques",
+        "#### Demostraci\u00f3n de la f\u00f3rmula de realimentaci\u00f3n",
+        "#### Demostraci\u00f3n \u00b7 la realimentaci\u00f3n rechaza perturbaciones",
+        "#### Ejemplo 2 \u00b7 Serie \u00b7 *B\u00e1sico*",
+        "#### Ejemplo 3 \u00b7 Paralelo \u00b7 *B\u00e1sico*",
+        "#### Ejemplo 4 \u00b7 Realimentaci\u00f3n unitaria \u00b7 *B\u00e1sico*"
+      ]
+    },
+    {
+      "path": "web/public/content/control-1/modulo-6.md",
+      "lines": 201,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 6: Reducci\u00f3n de diagramas de bloques y regla de Mason",
+        "## Aprende construyendo",
+        "### Tema 1: Reglas para mover bloques",
+        "#### Ejemplo 1 \u00b7 Lazos entrelazados por reducci\u00f3n \u00b7 *Intermedio*",
+        "#### Grafos de flujo de se\u00f1al",
+        "#### Regla de Mason",
+        "#### Demostraci\u00f3n en el caso de un lazo (y por qu\u00e9 \u0394 tiene esa forma)",
+        "#### Ejemplo 2 \u00b7 El mismo sistema con Mason \u00b7 *Intermedio*",
+        "#### Ejemplo 3 \u00b7 Lazos que no se tocan \u00b7 *Nivel parcial*",
+        "#### Ejemplo 4 \u00b7 Dos trayectorias \u00b7 *Nivel parcial*",
+        "#### Referencia y perturbaci\u00f3n juntas",
+        "#### Ejemplo 5 \u00b7 Referencia y perturbaci\u00f3n \u00b7 *Nivel parcial*"
+      ]
+    },
+    {
+      "path": "web/public/content/control-1/modulo-7.md",
+      "lines": 295,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 7: Circuitos y amplificadores operacionales",
+        "## Aprende construyendo",
+        "### Tema 1: Impedancias",
+        "#### Demostraci\u00f3n de las impedancias",
+        "#### Ejemplo 1 \u00b7 Combinar impedancias \u00b7 *B\u00e1sico*",
+        "#### Circuitos pasivos: divisor de voltaje",
+        "#### Demostraci\u00f3n del divisor",
+        "#### Ejemplo 2 \u00b7 RC pasa-bajas \u00b7 *B\u00e1sico*",
+        "#### Ejemplo 3 \u00b7 RC pasa-altas \u00b7 *B\u00e1sico*",
+        "#### Ejemplo 4 \u00b7 RLC serie \u00b7 *Intermedio*",
+        "### Tema 2: El op-amp inversor",
+        "#### Demostraci\u00f3n del inversor (con ganancia finita A)"
+      ]
+    },
+    {
+      "path": "web/public/content/control-1/modulo-8.md",
+      "lines": 179,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 8: Modelado de sistemas f\u00edsicos",
+        "## Aprende construyendo",
+        "### Tema 1: Mec\u00e1nico de traslaci\u00f3n",
+        "#### Demostraci\u00f3n \u00b7 Derivaci\u00f3n \u00b7 masa, resorte y amortiguador",
+        "#### Ejemplo 1 \u00b7 Suspensi\u00f3n \u00b7 *Intermedio*",
+        "#### Mec\u00e1nico de rotaci\u00f3n",
+        "#### Motor DC (electromec\u00e1nico)",
+        "#### Demostraci\u00f3n \u00b7 Derivaci\u00f3n de \u03c9/V",
+        "#### Ejemplo 2 \u00b7 Motor DC con valores \u00b7 *Nivel parcial*",
+        "#### Sistemas t\u00e9rmicos e hidr\u00e1ulicos",
+        "#### Ejemplo 3 \u00b7 Tanque \u00b7 *Intermedio*",
+        "#### Analog\u00edas"
+      ]
+    },
+    {
+      "path": "web/public/content/control-1/modulo-9.md",
+      "lines": 72,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 9: Linealizaci\u00f3n",
+        "## Aprende construyendo",
+        "### Tema 1: La idea",
+        "#### Ejemplo 1 \u00b7 Tanque con salida libre \u00b7 *Experto*",
+        "#### Ejemplo 2 \u00b7 P\u00e9ndulo \u00b7 *Experto*"
+      ]
+    },
+    {
       "path": "web/public/content/devops/modulo-0.md",
       "lines": 1090,
       "kind": "course-content",
@@ -12177,6 +12794,80 @@
         "### Tema 2: PromQL esencial",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
+    },
+    {
+      "path": "web/public/content/figures/control-1-lugar-raices/figure-light.html",
+      "lines": 441,
+      "kind": "course-content",
+      "symbols": [
+        "plotRL",
+        "oRL",
+        "sRL",
+        "mRL",
+        "sRLst"
+      ],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/content/figures/control-1-lugar-raices/figure.html",
+      "lines": 441,
+      "kind": "course-content",
+      "symbols": [
+        "plotRL",
+        "oRL",
+        "sRL",
+        "mRL",
+        "sRLst"
+      ],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/content/figures/control-1-segundo-orden/figure-light.html",
+      "lines": 455,
+      "kind": "course-content",
+      "symbols": [
+        "plotSim",
+        "plotPoles",
+        "oK",
+        "sK",
+        "oZ",
+        "sZ",
+        "oW",
+        "sW",
+        "regime",
+        "mMp",
+        "mTp",
+        "mTs",
+        "mYf",
+        "mPo"
+      ],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/content/figures/control-1-segundo-orden/figure.html",
+      "lines": 455,
+      "kind": "course-content",
+      "symbols": [
+        "plotSim",
+        "plotPoles",
+        "oK",
+        "sK",
+        "oZ",
+        "sZ",
+        "oW",
+        "sW",
+        "regime",
+        "mMp",
+        "mTp",
+        "mTs",
+        "mYf",
+        "mPo"
+      ],
+      "imports": [],
+      "headings": []
     },
     {
       "path": "web/public/content/figures/event-loop-dispatcher/figure-light.html",
@@ -15749,7 +16440,7 @@
     },
     {
       "path": "web/public/content/topic-index.json",
-      "lines": 5283,
+      "lines": 5459,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -16621,6 +17312,72 @@
       "headings": []
     },
     {
+      "path": "web/src/app/catalog/course-catalog.ts",
+      "lines": 158,
+      "kind": "angular-app",
+      "symbols": [
+        "CourseCatalogComponent",
+        "query",
+        "category",
+        "backupStatus",
+        "cards",
+        "featuredTracks",
+        "foundationTracks",
+        "mobileTracks",
+        "filteredCards",
+        "resumableTracks",
+        "totalModules"
+      ],
+      "imports": [
+        "@angular/common",
+        "@angular/core",
+        "@angular/router",
+        "lucide-angular",
+        "../course-data",
+        "../track-guides",
+        "../command-palette.service",
+        "../icon-registry",
+        "../official-updates",
+        "../progress.service",
+        "../theme.service",
+        "../topic-index.service"
+      ],
+      "headings": []
+    },
+    {
+      "path": "web/src/app/catalog/course-catalog.ts",
+      "lines": 158,
+      "kind": "angular-app",
+      "symbols": [
+        "CourseCatalogComponent",
+        "query",
+        "category",
+        "backupStatus",
+        "cards",
+        "featuredTracks",
+        "foundationTracks",
+        "mobileTracks",
+        "filteredCards",
+        "resumableTracks",
+        "totalModules"
+      ],
+      "imports": [
+        "@angular/common",
+        "@angular/core",
+        "@angular/router",
+        "lucide-angular",
+        "../course-data",
+        "../track-guides",
+        "../command-palette.service",
+        "../icon-registry",
+        "../official-updates",
+        "../progress.service",
+        "../theme.service",
+        "../topic-index.service"
+      ],
+      "headings": []
+    },
+    {
       "path": "web/src/app/command-palette.html",
       "lines": 29,
       "kind": "angular-app",
@@ -16678,7 +17435,7 @@
     },
     {
       "path": "web/src/app/content.service.ts",
-      "lines": 40,
+      "lines": 78,
       "kind": "angular-app",
       "symbols": [
         "ContentService"
@@ -16789,7 +17546,23 @@
     },
     {
       "path": "web/src/app/course/lesson-viewer.scss",
-      "lines": 550,
+      "lines": 555,
+      "kind": "angular-app",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/src/app/course/lesson-viewer.scss",
+      "lines": 555,
+      "kind": "angular-app",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/src/app/course/lesson-viewer.scss",
+      "lines": 555,
       "kind": "angular-app",
       "symbols": [],
       "imports": [],
@@ -16797,7 +17570,7 @@
     },
     {
       "path": "web/src/app/course/lesson-viewer.ts",
-      "lines": 1164,
+      "lines": 1197,
       "kind": "angular-app",
       "symbols": [
         "LessonViewerComponent",
@@ -16843,7 +17616,114 @@
         "../technical-glossary",
         "../learning-prompts",
         "../topic-index.service",
-        "mermaid"
+        "mermaid",
+        "katex"
+      ],
+      "headings": []
+    },
+    {
+      "path": "web/src/app/course/lesson-viewer.ts",
+      "lines": 1197,
+      "kind": "angular-app",
+      "symbols": [
+        "LessonViewerComponent",
+        "focusedTopicIndex",
+        "track",
+        "module",
+        "officialSource",
+        "courseGuide",
+        "trackProject",
+        "projectStep",
+        "projectProgress",
+        "showTrackProject",
+        "moduleIndex",
+        "levelIndex",
+        "levelFillPercent",
+        "chapterPrerequisite",
+        "isCloudIntroduction",
+        "previousModule",
+        "nextModule",
+        "chapterAnnouncement",
+        "chapterTopics",
+        "focusedTopic",
+        "currentTopicIndex",
+        "lessonHtml",
+        "lessonLoading",
+        "lessonError"
+      ],
+      "imports": [
+        "@angular/common",
+        "@angular/core",
+        "@angular/core/rxjs-interop",
+        "@angular/router",
+        "lucide-angular",
+        "rxjs",
+        "@angular/platform-browser",
+        "../course-data",
+        "../course-module.model",
+        "../content.service",
+        "../progress.service",
+        "../theme.service",
+        "../track-guides",
+        "../learning-activities",
+        "../technical-glossary",
+        "../learning-prompts",
+        "../topic-index.service",
+        "mermaid",
+        "katex"
+      ],
+      "headings": []
+    },
+    {
+      "path": "web/src/app/course/lesson-viewer.ts",
+      "lines": 1197,
+      "kind": "angular-app",
+      "symbols": [
+        "LessonViewerComponent",
+        "focusedTopicIndex",
+        "track",
+        "module",
+        "officialSource",
+        "courseGuide",
+        "trackProject",
+        "projectStep",
+        "projectProgress",
+        "showTrackProject",
+        "moduleIndex",
+        "levelIndex",
+        "levelFillPercent",
+        "chapterPrerequisite",
+        "isCloudIntroduction",
+        "previousModule",
+        "nextModule",
+        "chapterAnnouncement",
+        "chapterTopics",
+        "focusedTopic",
+        "currentTopicIndex",
+        "lessonHtml",
+        "lessonLoading",
+        "lessonError"
+      ],
+      "imports": [
+        "@angular/common",
+        "@angular/core",
+        "@angular/core/rxjs-interop",
+        "@angular/router",
+        "lucide-angular",
+        "rxjs",
+        "@angular/platform-browser",
+        "../course-data",
+        "../course-module.model",
+        "../content.service",
+        "../progress.service",
+        "../theme.service",
+        "../track-guides",
+        "../learning-activities",
+        "../technical-glossary",
+        "../learning-prompts",
+        "../topic-index.service",
+        "mermaid",
+        "katex"
       ],
       "headings": []
     },
@@ -16896,7 +17776,7 @@
     },
     {
       "path": "web/src/app/course-data.ts",
-      "lines": 887,
+      "lines": 889,
       "kind": "angular-app",
       "symbols": [
         "ServiceGroup",
@@ -16917,7 +17797,8 @@
         "./tracks/ios.track",
         "./tracks/flutter.track",
         "./tracks/foundations.track",
-        "./tracks/rutaflow.track"
+        "./tracks/rutaflow.track",
+        "./tracks/control-1.track"
       ],
       "headings": []
     },
@@ -16934,7 +17815,7 @@
     },
     {
       "path": "web/src/app/icon-registry.ts",
-      "lines": 36,
+      "lines": 37,
       "kind": "angular-app",
       "symbols": [],
       "imports": [
@@ -17043,7 +17924,7 @@
     },
     {
       "path": "web/src/app/project-bootstrap.ts",
-      "lines": 143,
+      "lines": 152,
       "kind": "angular-app",
       "symbols": [
         "ProjectBootstrap",
@@ -17095,7 +17976,7 @@
     },
     {
       "path": "web/src/app/track-guides.ts",
-      "lines": 25,
+      "lines": 26,
       "kind": "angular-app",
       "symbols": [
         "TrackGuide"
@@ -17120,6 +18001,16 @@
       "symbols": [
         "contador"
       ],
+      "imports": [
+        "../course-module.model"
+      ],
+      "headings": []
+    },
+    {
+      "path": "web/src/app/tracks/control-1.track.ts",
+      "lines": 263,
+      "kind": "angular-app",
+      "symbols": [],
       "imports": [
         "../course-module.model"
       ],
@@ -17504,6 +18395,10 @@
     {
       "source": "web/src/app/course-data.ts",
       "target": "web/src/app/tracks/rutaflow.track.ts"
+    },
+    {
+      "source": "web/src/app/course-data.ts",
+      "target": "web/src/app/tracks/control-1.track.ts"
     },
     {
       "source": "web/src/app/learning-activities.spec.ts",

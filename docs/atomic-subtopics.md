@@ -2,13 +2,14 @@
 
 > Auditoría estructural. Un encabezado o criterio detectado no demuestra que el ejemplo se haya ejecutado ni que la explicación sea pedagógicamente suficiente.
 
-Temas conformes a cuatro pasos: **215/1185**. Tracks inventariados: **14**.
+Temas conformes a cuatro pasos: **215/1217**. Tracks inventariados: **15**.
 
 | Track | Temas conformes | Temas inventariados | Subtemas detectados | Subtemas con estructura completa |
 |---|---:|---:|---:|---:|
 | android | 0 | 58 | 0 | 0 |
 | angular | 0 | 71 | 0 | 0 |
 | cloud | 0 | 156 | 0 | 0 |
+| control-1 | 0 | 32 | 0 | 0 |
 | devops | 0 | 113 | 0 | 0 |
 | flutter | 1 | 106 | 3 | 3 |
 | foundations | 0 | 99 | 0 | 0 |
@@ -316,6 +317,41 @@ Temas conformes a cuatro pasos: **215/1185**. Tracks inventariados: **14**.
 - M9 ### Tema 3: Archivos adjuntos en S3 y procesamiento en segundo plano con SQS: tiene 0 subtemas
 - M9 ### Tema 4: API Gateway e IAM de mínimo privilegio para el proyecto: tiene 0 subtemas
 - M9 ### Tema 5: Documentación de la API y guía de despliegue: tiene 0 subtemas
+
+### control-1
+
+- M0 ### Tema 1: Cómo está armado cada capítulo: tiene 0 subtemas
+- M1 ### Tema 1: ¿Qué es un número complejo?: tiene 0 subtemas
+- M1 ### Tema 2: Raíces de s²+bs+c: tiene 0 subtemas
+- M10 ### Tema 1: La forma de estado: tiene 0 subtemas
+- M11 ### Tema 1: Forma estándar: tiene 0 subtemas
+- M11 ### Tema 2: Retardo o tiempo muerto: tiene 0 subtemas
+- M12 ### Tema 1: Forma estándar: tiene 0 subtemas
+- M13 ### Tema 1: Polos dominantes: tiene 0 subtemas
+- M14 ### Tema 1: Fórmula general: tiene 0 subtemas
+- M15 ### Tema 1: Qué es estabilidad: tiene 0 subtemas
+- M15 ### Tema 2: Casos especiales: tiene 0 subtemas
+- M16 ### Tema 1: Geometría de un polo: tiene 0 subtemas
+- M17 ### Tema 1: Las dos condiciones: tiene 0 subtemas
+- M18 ### Tema 1: La idea: tiene 0 subtemas
+- M18 ### Tema 2: Ventajas y desventajas (punto 4 del Parcial 1): tiene 0 subtemas
+- M19 ### Tema 1: Diseño de un adelanto: tiene 0 subtemas
+- M2 ### Tema 1: La idea: tiene 0 subtemas
+- M2 ### Tema 2: Propiedades: tiene 0 subtemas
+- M2 ### Tema 3: Valor final y valor inicial: tiene 0 subtemas
+- M20 ### Tema 1: Qué es la respuesta en frecuencia: tiene 0 subtemas
+- M21 ### Tema 1: Parcial 1: tiene 0 subtemas
+- M22 ### Tema 1: Simulacro con solución: tiene 0 subtemas
+- M3 ### Tema 1: Caso 1: polos reales distintos: tiene 0 subtemas
+- M3 ### Tema 2: Caso 2: polos repetidos: tiene 0 subtemas
+- M4 ### Tema 1: Qué es la función de transferencia: tiene 0 subtemas
+- M5 ### Tema 1: ¿Qué es un sistema de control?: tiene 0 subtemas
+- M5 ### Tema 2: Álgebra de bloques: tiene 0 subtemas
+- M6 ### Tema 1: Reglas para mover bloques: tiene 0 subtemas
+- M7 ### Tema 1: Impedancias: tiene 0 subtemas
+- M7 ### Tema 2: El op-amp inversor: tiene 0 subtemas
+- M8 ### Tema 1: Mecánico de traslación: tiene 0 subtemas
+- M9 ### Tema 1: La idea: tiene 0 subtemas
 
 ### devops
 

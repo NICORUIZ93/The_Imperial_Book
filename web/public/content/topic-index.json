@@ -1281,6 +1281,182 @@
       }
     ]
   },
+  "control-1": {
+    "0": [
+      {
+        "title": "Cómo está armado cada capítulo",
+        "fragment": "tema-1-como-esta-armado-cada-capitulo"
+      }
+    ],
+    "1": [
+      {
+        "title": "¿Qué es un número complejo?",
+        "fragment": "tema-1-que-es-un-numero-complejo"
+      },
+      {
+        "title": "Raíces de s²+bs+c",
+        "fragment": "tema-2-raices-de-s-bs-c"
+      }
+    ],
+    "10": [
+      {
+        "title": "La forma de estado",
+        "fragment": "tema-1-la-forma-de-estado"
+      }
+    ],
+    "11": [
+      {
+        "title": "Forma estándar",
+        "fragment": "tema-1-forma-estandar"
+      },
+      {
+        "title": "Retardo o tiempo muerto",
+        "fragment": "tema-2-retardo-o-tiempo-muerto"
+      }
+    ],
+    "12": [
+      {
+        "title": "Forma estándar",
+        "fragment": "tema-1-forma-estandar"
+      }
+    ],
+    "13": [
+      {
+        "title": "Polos dominantes",
+        "fragment": "tema-1-polos-dominantes"
+      }
+    ],
+    "14": [
+      {
+        "title": "Fórmula general",
+        "fragment": "tema-1-formula-general"
+      }
+    ],
+    "15": [
+      {
+        "title": "Qué es estabilidad",
+        "fragment": "tema-1-que-es-estabilidad"
+      },
+      {
+        "title": "Casos especiales",
+        "fragment": "tema-2-casos-especiales"
+      }
+    ],
+    "16": [
+      {
+        "title": "Geometría de un polo",
+        "fragment": "tema-1-geometria-de-un-polo"
+      }
+    ],
+    "17": [
+      {
+        "title": "Las dos condiciones",
+        "fragment": "tema-1-las-dos-condiciones"
+      }
+    ],
+    "18": [
+      {
+        "title": "La idea",
+        "fragment": "tema-1-la-idea"
+      },
+      {
+        "title": "Ventajas y desventajas (punto 4 del Parcial 1)",
+        "fragment": "tema-2-ventajas-y-desventajas-punto-4-del-parcial-1"
+      }
+    ],
+    "19": [
+      {
+        "title": "Diseño de un adelanto",
+        "fragment": "tema-1-diseno-de-un-adelanto"
+      }
+    ],
+    "2": [
+      {
+        "title": "La idea",
+        "fragment": "tema-1-la-idea"
+      },
+      {
+        "title": "Propiedades",
+        "fragment": "tema-2-propiedades"
+      },
+      {
+        "title": "Valor final y valor inicial",
+        "fragment": "tema-3-valor-final-y-valor-inicial"
+      }
+    ],
+    "20": [
+      {
+        "title": "Qué es la respuesta en frecuencia",
+        "fragment": "tema-1-que-es-la-respuesta-en-frecuencia"
+      }
+    ],
+    "21": [
+      {
+        "title": "Parcial 1",
+        "fragment": "tema-1-parcial-1"
+      }
+    ],
+    "22": [
+      {
+        "title": "Simulacro con solución",
+        "fragment": "tema-1-simulacro-con-solucion"
+      }
+    ],
+    "3": [
+      {
+        "title": "Caso 1: polos reales distintos",
+        "fragment": "tema-1-caso-1-polos-reales-distintos"
+      },
+      {
+        "title": "Caso 2: polos repetidos",
+        "fragment": "tema-2-caso-2-polos-repetidos"
+      }
+    ],
+    "4": [
+      {
+        "title": "Qué es la función de transferencia",
+        "fragment": "tema-1-que-es-la-funcion-de-transferencia"
+      }
+    ],
+    "5": [
+      {
+        "title": "¿Qué es un sistema de control?",
+        "fragment": "tema-1-que-es-un-sistema-de-control"
+      },
+      {
+        "title": "Álgebra de bloques",
+        "fragment": "tema-2-algebra-de-bloques"
+      }
+    ],
+    "6": [
+      {
+        "title": "Reglas para mover bloques",
+        "fragment": "tema-1-reglas-para-mover-bloques"
+      }
+    ],
+    "7": [
+      {
+        "title": "Impedancias",
+        "fragment": "tema-1-impedancias"
+      },
+      {
+        "title": "El op-amp inversor",
+        "fragment": "tema-2-el-op-amp-inversor"
+      }
+    ],
+    "8": [
+      {
+        "title": "Mecánico de traslación",
+        "fragment": "tema-1-mecanico-de-traslacion"
+      }
+    ],
+    "9": [
+      {
+        "title": "La idea",
+        "fragment": "tema-1-la-idea"
+      }
+    ]
+  },
   "devops": {
     "0": [
       {
