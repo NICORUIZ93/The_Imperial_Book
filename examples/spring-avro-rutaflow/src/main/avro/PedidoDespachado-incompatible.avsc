@@ -1,0 +1,10 @@
+{
+  "type": "record",
+  "name": "PedidoDespachado",
+  "namespace": "academia.eventos",
+  "fields": [
+    {"name": "pedidoId", "type": "string"},
+    {"name": "estado", "type": "string"},
+    {"name": "zonaEntrega", "type": "string"}
+  ]
+}

@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: rutaflow-http-client
+  cloud:
+    discovery:
+      client:
+        simple:
+          instances:
+            route-catalog:
+              - uri: ${RUTAFLOW_CATALOG_URL:http://localhost:8081}
+---
+spring:
+  config:
+    activate:
+      on-profile: produccion
+  cloud:
+    discovery:
+      client:
+        simple:
+          instances:
+            route-catalog:
+              - uri: ${RUTAFLOW_CATALOG_URL}

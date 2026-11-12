@@ -407,6 +407,8 @@ La integración de bajo riesgo recoge datos sensibles mediante componentes del p
 
 **Analogía:** una ficha de guardarropa apunta a un objeto, pero no reemplaza todas las comprobaciones para entregarlo. El límite es que el proveedor define alcance, reutilización y requisitos de cada referencia. Usar tokenización no certifica automáticamente cumplimiento ni elimina obligaciones de seguridad.
 
+**Frontera del cobro:** `┌─ cliente → servidor: pedido + referencia opaca ─┐`<br>`├─ servidor → proveedor: autorización autenticada ─┤`<br>`└─ proveedor → webhook verificado → pedido actualizado ┘`. La respuesta del navegador no confirma el pago.
+
 **Diagrama:**
 
 ```mermaid
@@ -430,7 +432,7 @@ node --test contrato.test.mjs
 ```
 El comando de prueba debe ejecutarse después de guardar ambos archivos:
 
-Crea `contrato.mjs` con este contenido completo:
+Crea `payments/contrato.mjs` dentro de la carpeta `ejemplo-pagos` con este contenido completo:
 ```javascript
 export function prepararCobro({ paymentMethodId, amountCents, currency }) {
   if (typeof paymentMethodId !== 'string' || !/^pm_test_[a-z0-9]+$/.test(paymentMethodId)) {

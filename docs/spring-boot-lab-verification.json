@@ -1,0 +1,741 @@
+{
+  "date": "2026-11-11",
+  "scope": "Proyectos Maven enumerados; cero pruebas equivale solo a compilaci\u00f3n, no a integraci\u00f3n ni imagen nativa",
+  "results": [
+    {
+      "project": "examples/spring-amqp-rutaflow",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 10.2,
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-async-rutaflow",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 4.5,
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-avro-rutaflow",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 9.2,
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-batch-rutaflow",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 9.5,
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-boot-cancel-rutaflow",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 7.0,
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-boot-hibernate-spatial-rutaflow",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 13.9,
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-boot-idempotency-rutaflow",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 7.2,
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-boot-integrador-rutaflow",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 12.5,
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-boot-jwt-ownership-rutaflow",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 6.9,
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-boot-layered-jar-rutaflow",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 2.8,
+      "tests": 0,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-boot-mysql-spatial-rutaflow",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 12.9,
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-boot-native-rutaflow",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 3.3,
+      "tests": 0,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-boot-probes-rutaflow",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 5.9,
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-boot-stomp-rutaflow",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 14.4,
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-boot-transaction-boundary-rutaflow",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 13.4,
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-boot-upload-push-rutaflow",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 12.7,
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-cache-rutaflow",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 15.5,
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 1
+    },
+    {
+      "project": "examples/spring-clean-architecture-rutaflow",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 9.3,
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-cloud-bus-rutaflow",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 11.9,
+      "tests": 0,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-cloud-config-discovery-rutaflow",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 21.1,
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-cloud-contract-rutaflow",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "verify"
+      ],
+      "exitCode": 0,
+      "seconds": 32.8,
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-ddd-rutaflow",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 9.3,
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-eventsourcing-rutaflow",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 12.1,
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-gateway-rutaflow",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 31.0,
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-graphql-rutaflow",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 26.6,
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-grpc-rutaflow",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 31.7,
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-http-deadline-rutaflow",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 18.5,
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-kafka-rutaflow",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 36.8,
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-kafka-streams-rutaflow",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 11.1,
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-mail-rutaflow",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 10.1,
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-modulith-rutaflow",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 12.8,
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-reactor-rutaflow",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 9.4,
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-resilience-rutaflow",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 12.1,
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-saga-recovery-rutaflow",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 5.8,
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-saga-rutaflow",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 6.3,
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-scheduling-rutaflow",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 7.5,
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-security-keycloak-rutaflow",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 10.9,
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-ssrf",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 7.3,
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-stream-rutaflow",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 15.3,
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-tareas-rutaflow",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 32.6,
+      "tests": 31,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-temporal-rutaflow",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 15.2,
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-token-relay-rutaflow",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 31.3,
+      "tests": 0,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-tracing-rutaflow",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 11.1,
+      "tests": 0,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-webclient-rutaflow",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 5.8,
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-webflux-decision-rutaflow",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 19.0,
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/java-jpa-lab",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 15.8,
+      "tests": 15,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/rutaflow-material/spring-ai",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 11.2,
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "summary": {
+    "projects": 47,
+    "successfulProjects": 47,
+    "tests": 192,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 1
+  },
+  "followUps": [
+    {
+      "project": "examples/spring-cache-rutaflow",
+      "command": [
+        "./mvnw",
+        "-q",
+        "clean",
+        "test",
+        "-Dredis.integration=true"
+      ],
+      "environment": {
+        "REDIS_PORT": 16379
+      },
+      "redisImage": "docker.io/library/redis:7.4-alpine",
+      "exitCode": 0,
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": "Fallo intermitente detectado con writer diferido; corregido con immediateWrites en ambos gestores. Contenedor ef\u00edmero detenido y eliminado."
+    }
+  ]
+}

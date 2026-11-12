@@ -1,743 +1,542 @@
 # Módulo 18: HTTP, seguridad y backend con Java
 
-**Proyecto del módulo:** cada tema comienza en una carpeta vacía. Crearás manualmente los archivos indicados y los compilarás con las herramientas del JDK; no necesitas copiar código ni proyectos del repositorio de la academia.
-
 ## Aprende construyendo
 
-Java estándar incluye un cliente HTTP moderno, pero un cliente seguro no equivale a un servidor seguro. Construirás una llamada saliente acotada y comprobarás cómo transportar credenciales sin confundir autenticación con autorización.
+Java estándar incluye un cliente HTTP moderno, pero un cliente seguro no equivale a un servidor seguro. En este módulo construirás una llamada saliente robusta y reconocerás cómo transportar credenciales sin confundir JWT con autorización.
 
 ### Dos ejemplos: primero visible, luego real
 
-- **Ejemplo sencillo:** consulta un `/health` local con `HttpClient`, límite de conexión y límite total; observa 200, 404 y timeout.
-- **Caso RutaFlow:** consulta un proveedor de geocodificación con host permitido, TLS, `X-Correlation-ID` y presupuesto total de tiempo. Un 503 puede reintentarse con backoff y jitter; un POST de liquidación no se reintenta sin una clave idempotente.
+- **Ejemplo sencillo:** consulta un `/health` local con `HttpClient`, límite de conexión y límite total; prueba 200, 404 y timeout.
+- **Caso RutaFlow:** consulta un proveedor de geocodificación con host configurado por entorno, allowlist, TLS, `X-Correlation-ID` y presupuesto total de tiempo. Un 503 puede reintentarse con backoff y jitter; un POST de liquidación no se reintenta sin una clave idempotente.
 
-La comprobación debe incluir timeout, límite de intentos, respuesta inválida y rechazo de destino no permitido. La autenticación del proveedor no autoriza por sí sola a un usuario de RutaFlow para consultar el envío de otro tenant.
+La prueba real debe incluir timeout, límite de intentos, respuesta inválida y rechazo de destino no permitido. La autenticación del proveedor no autoriza por sí sola a un usuario de RutaFlow para consultar el envío de otro tenant.
 
-### Tema 1: HttpClient, REST, timeouts y fallos · Intermedio · 2 h
+### Tema 1: HttpClient, REST, timeouts y fallos
 
-#### Aprende
+#### Paso 1 · Objetivo y preparación
 
-**Prerrequisitos:** JDK 27 o superior, dos terminales y conocimientos básicos de excepciones. Comprueba `java -version` y `javac -version`.
+Al finalizar podrás enviar un GET HTTP con `HttpClient`, timeout acotado, validación del estado y parseo separado de la respuesta. Requiere JDK 25+ y una API de prueba local o simulada. Comprueba `java -version` y crea la carpeta `mkdir -p java-http-t01/src`.
+**Conocimiento previo:** Java M0 Temas 1–3 (clases, excepciones y métodos); no se necesita un servidor externo.
+#### Paso 2 · Contexto y caso real
 
-**Al terminar podrás:** escribir y ejecutar un GET con `HttpClient`, timeout de conexión y de solicitud, validación del estado y separación entre transporte y cuerpo; producirás y diagnosticarás respuestas 200, 404 y timeout.
+El servicio de envíos consulta una API externa para validar una dirección. Si esa API no responde, los hilos pueden quedar ocupados y acumular solicitudes.
 
-**Por qué importa:** el servicio de envíos consulta una API externa para validar direcciones. Si esa API no responde, los hilos pueden quedar ocupados y acumular solicitudes. Un timeout protege tu capacidad, pero no garantiza que el otro sistema no haya procesado la operación.
+#### Paso 3 · Teoría y modelo mental
 
-**Mapa de subtemas críticos**
+`HttpClient` reutilizable administra conexiones; `HttpRequest` define destino, método, headers y timeout; `HttpResponse` contiene estado y cuerpo. Un timeout limita la espera, pero no crea un retry seguro. Reintenta solo fallos transitorios y operaciones idempotentes, con límite, espera creciente y jitter. No reintentes automáticamente un POST que podría haber sido aplicado aunque la respuesta se perdiera.
 
-| Subtema | Papel | Evidencia |
-|---|---|---|
-| `HttpClient` reutilizable y su pool | Prerrequisito | Un cliente sirve varias solicitudes |
-| `HttpRequest`: método, headers, body | Núcleo | GET a `/health` devuelve 200 |
-| Timeout de conexión vs de solicitud | Núcleo | `/slow` produce `HttpTimeoutException` |
-| Separar transporte de cuerpo | Núcleo | Validar `statusCode()` antes de parsear body |
-| Diagnosticar 200 / 404 / timeout | Diagnóstico | Tres respuestas distintas observadas |
-| Reintento solo de idempotentes | Límite | POST no se reintenta a ciegas |
-| Backoff con jitter y límite | Variante | Espera creciente, no reintento infinito |
+Piensa en el timeout como el tiempo máximo que mantienes abierta una llamada telefónica, no como una garantía de que el otro sistema no haya recibido el mensaje.
+**Analogía:** llamar a un servicio remoto es como pedir algo por teléfono a otra oficina: a veces no contestan (timeout), a veces contestan tarde o con un "no" (fallo). El `HttpClient` es tu teléfono; poner un timeout es colgar si nadie responde en vez de esperar para siempre con el auricular en la oreja.
+#### Paso 4 · Demostración guiada
 
-Cada fila tiene su explicación individual a continuación.
-
-**`HttpClient` reutilizable y su pool (prerrequisito).** `HttpClient` es caro de crear y está pensado para reutilizarse: administra un pool de conexiones y las mantiene vivas entre solicitudes (keep-alive). Crear uno por petición desperdicia conexiones y descriptores; se construye una vez y se comparte.
-
-**`HttpRequest`: método, headers, body (núcleo).** `HttpRequest.newBuilder(uri)` define el destino y permite fijar método (`GET()`, `POST(publisher)`), headers y el cuerpo. Es inmutable una vez construido, así que una misma plantilla no arrastra estado entre llamadas. El GET a `/health` devuelve `200` con el JSON del servidor.
-
-**Timeout de conexión vs de solicitud (núcleo).** Hay dos relojes distintos: el timeout de conexión (`HttpClient.connectTimeout`) acota establecer el socket; el timeout de solicitud (`HttpRequest.timeout`) acota la respuesta completa. El endpoint `/slow` duerme 5 s, así que con un timeout de solicitud menor se lanza `HttpTimeoutException` sin colgar el hilo indefinidamente.
-
-**Separar transporte de cuerpo (núcleo).** `HttpResponse` trae `statusCode()` (transporte) y `body()` (contenido). Parsear el cuerpo sin mirar antes el estado lleva a interpretar un error 404 como datos válidos. Primero se valida el código, luego se procesa el cuerpo según corresponda.
-
-**Diagnosticar 200 / 404 / timeout (diagnóstico).** Los tres resultados son distintos y requieren manejo distinto: 200 es éxito, 404 es un error de recurso que no mejora reintentando, y un timeout es un fallo transitorio donde no sabes si el servidor procesó la operación. El laboratorio produce los tres contra endpoints dedicados.
-
-**Reintento solo de idempotentes (límite).** Un GET es idempotente: repetirlo no cambia estado. Un POST que crea un cobro no lo es: si su respuesta se perdió, podría haberse aplicado igualmente. Reintentar ese POST a ciegas duplica la operación; por eso el reintento automático se limita a operaciones idempotentes o a POST protegidos por clave de idempotencia.
-
-**Backoff con jitter y límite (variante).** Reintentar inmediatamente y en bucle amplifica una caída (efecto estampida). Un backoff exponencial con jitter espaciando los intentos, más un número máximo, reparte la carga y evita sincronizar a todos los clientes golpeando el servicio al mismo tiempo.
-
-`HttpClient` reutilizable administra conexiones; `HttpRequest` define destino, método, headers y timeout; `HttpResponse` contiene estado y cuerpo. Reintenta únicamente fallos transitorios de operaciones idempotentes, con límite, espera creciente y jitter. No reintentes automáticamente un POST que podría haber sido aplicado aunque su respuesta se perdiera.
-
-**Analogía:** el timeout es el tiempo máximo que mantienes abierta una llamada telefónica. Colgar evita esperar para siempre, pero no demuestra que la otra oficina no haya anotado el pedido.
-
-Comienza en una carpeta vacía y crea los directorios de trabajo:
-
-```bash
-mkdir java-http-acotado
-cd java-http-acotado
-mkdir src
-```
-
-Crea manualmente `src/ServidorSalud.java`:
+En `src/main/java/academia/http/ConsultaDireccion.java`:
 
 ```java
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpServer;
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.nio.charset.StandardCharsets;
+package academia.http;
 
-public final class ServidorSalud {
-    public static void main(String[] args) throws IOException {
-        HttpServer servidor = HttpServer.create(new InetSocketAddress(8080), 0);
-        servidor.createContext("/health", intercambio ->
-            responder(intercambio, 200, "{\"estado\":\"ok\"}"));
-        servidor.createContext("/missing", intercambio ->
-            responder(intercambio, 404, "{\"error\":\"no existe\"}"));
-        servidor.createContext("/slow", intercambio -> {
-            try {
-                Thread.sleep(5_000);
-                responder(intercambio, 200, "{\"estado\":\"tarde\"}");
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        });
-        servidor.start();
-        System.out.println("Servidor en http://localhost:8080");
-    }
-
-    private static void responder(HttpExchange intercambio, int estado, String cuerpo)
-            throws IOException {
-        byte[] bytes = cuerpo.getBytes(StandardCharsets.UTF_8);
-        intercambio.getResponseHeaders().set("Content-Type", "application/json");
-        intercambio.sendResponseHeaders(estado, bytes.length);
-        try (var salida = intercambio.getResponseBody()) {
-            salida.write(bytes);
-        }
-    }
-}
-```
-
-Crea manualmente `src/ConsultaDireccion.java`:
-
-```java
 import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.net.http.HttpTimeoutException;
+import java.net.http.*;
 import java.time.Duration;
 
 public final class ConsultaDireccion {
-    private static final HttpClient CLIENT = HttpClient.newBuilder()
+    private final HttpClient client = HttpClient.newBuilder()
         .connectTimeout(Duration.ofSeconds(2))
         .followRedirects(HttpClient.Redirect.NEVER)
         .build();
 
-    static String consultar(URI uri) throws Exception {
+    public String consultar(URI uri) throws Exception {
         HttpRequest request = HttpRequest.newBuilder(uri)
-            .timeout(Duration.ofSeconds(1))
+            .timeout(Duration.ofSeconds(3))
             .header("Accept", "application/json")
             .GET()
             .build();
         HttpResponse<String> response =
-            CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+            client.send(request, HttpResponse.BodyHandlers.ofString());
         if (response.statusCode() != 200) {
             throw new IllegalStateException("API respondió HTTP " + response.statusCode());
         }
         return response.body();
     }
-
-    public static void main(String[] args) throws Exception {
-        System.out.println("health: " + consultar(URI.create("http://localhost:8080/health")));
-        try {
-            consultar(URI.create("http://localhost:8080/missing"));
-        } catch (IllegalStateException e) {
-            System.out.println("missing: " + e.getMessage());
-        }
-        try {
-            consultar(URI.create("http://localhost:8080/slow"));
-        } catch (HttpTimeoutException e) {
-            System.out.println("slow: timeout acotado");
-        }
-    }
 }
 ```
 
-Compila en una terminal:
+**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
 
 ```bash
-javac --add-modules jdk.httpserver -d out src/ServidorSalud.java src/ConsultaDireccion.java
+# Maven
+mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+cd app && mvn test
+# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
 ```
 
-En esa misma terminal, inicia el servidor:
+Ejecuta un servidor local de prueba y llama a `consultar(URI.create("http://localhost:8080/health"))`; ejecuta tests con `./mvnw test`.
 
-```bash
-java --add-modules jdk.httpserver -cp out ServidorSalud
-```
+**Resultado esperado:** HTTP 200 devuelve el cuerpo; 404 y timeout aparecen como errores explícitos. **Fallo deliberado:** elimina el timeout del request y detén el servidor de prueba; observa la llamada bloqueada. Restaura el límite y verifica que el test termina acotadamente.
 
-En la segunda terminal, situada en `java-http-acotado`, ejecuta:
+#### Paso 5 · Práctica guiada
 
-```bash
-java -cp out ConsultaDireccion
-```
+Agrega manejo distinto para 4xx, 5xx y timeout. Implementa un retry de máximo dos intentos únicamente para GET ante 502/503/504, con backoff. El test debe verificar el máximo de intentos y que un 400 no se reintenta.
+**Pista:** si el test cuenta más de dos llamadas para un 503, o ve que un 400 también se reintentó, la condición del retry está mal acotada: debe comprobar el código de estado (502/503/504) Y el método (solo GET) antes de reintentar, no solo uno de los dos.
 
-**Resultado esperado en el cliente:**
+#### Paso 6 · Práctica independiente
 
-```text
-health: {"estado":"ok"}
-missing: API respondió HTTP 404
-slow: timeout acotado
-```
+Consume un endpoint de RutaFlow con un DTO validado. Añade correlación de request, límite de tamaño de respuesta y una allowlist de hosts configurada por el servicio. No aceptes URLs arbitrarias del usuario.
 
-**Fallo deliberado y corrección:** elimina `.timeout(Duration.ofSeconds(1))`, vuelve a compilar y ejecuta. `/slow` espera unos cinco segundos y devuelve `{"estado":"tarde"}` en lugar de lanzar timeout. El límite de conexión no limita toda la respuesta. Restaura el timeout de la solicitud, recompila y comprueba de nuevo `slow: timeout acotado`.
+#### Subtema 1.1: Consultar un health local · 10 min
 
-#### Practica
+**1. Contexto**
 
-**Práctica guiada:** crea `src/ClienteReintentos.java`, reutilizando únicamente lo que acabas de escribir en este tema. Clasifica 4xx como errores no reintentables y 502/503/504 como transitorios. Implementa como máximo dos intentos solo para GET, con backoff creciente y jitter. Añade al servidor una ruta que devuelva 503 la primera vez y 200 la segunda, y otra que devuelva siempre 400; registra el número de llamadas por ruta.
+Prueba el cliente sin depender de internet ni cuentas externas.
 
-```bash
-javac --add-modules jdk.httpserver -d out src/*.java
-java --add-modules jdk.httpserver -cp out ServidorSalud
-# En la otra terminal:
-java -cp out ClienteReintentos
-```
+**2. Hazlo tú**
 
-**Resultado esperado:** la ruta transitoria recibe exactamente dos llamadas y termina en 200; la ruta 400 recibe una sola. Un POST simulado no se reintenta aunque reciba 503.
-
-**Ejercicio independiente:** crea `src/ClienteGeocodificacion.java` y `src/Ubicacion.java`. Consume una respuesta JSON de laboratorio con un DTO validado, `X-Correlation-ID`, allowlist de hosts y límite de bytes antes de convertir el cuerpo a `String`. No aceptes URLs arbitrarias del usuario ni reintentes POST sin idempotencia. Ejecuta casos de host rechazado, cuerpo excesivo, JSON inválido y 503.
-
-**Resultado esperado:** cada caso termina con un diagnóstico distinto, el conteo de intentos no supera dos y ningún destino fuera de la allowlist abre una conexión.
-
-#### Aplica
-
-Lleva el cliente al **[Proyecto integrador: proveedor externo de RutaFlow](#proyecto-18-cliente-http-seguro-para-rutaflow)**. La consulta de geocodificación debe tener timeout, correlación, allowlist y reintentos solo para GET; la liquidación POST debe permanecer sin reintento automático.
-
-**Checklist de salida**
-
-- [ ] Creaste los archivos manualmente en una carpeta inicialmente vacía.
-- [ ] `HttpClient` limita tanto la conexión como la solicitud completa.
-- [ ] 200, 404 y timeout producen resultados observables y diferentes.
-- [ ] Los reintentos se limitan a GET y a 502/503/504, con máximo dos intentos.
-- [ ] Un cuerpo grande o un host no permitido se rechaza antes de procesarlo.
-- [ ] Puedes explicar por qué un timeout no vuelve seguro reintentar un POST.
-
-**Errores comunes:** omitir timeout, cargar respuestas sin límite en memoria y reintentar operaciones no idempotentes. Para cuerpos grandes usa un `BodyHandler` de streaming con una política de tamaño.
-
-**Fuentes oficiales revisadas el 2026-11-01:** [`HttpClient` (API Java SE 27)](https://docs.oracle.com/en/java/javase/27/docs/api/java.net.http/java/net/http/HttpClient.html) y [`HttpServer` (API Java SE 27)](https://docs.oracle.com/en/java/javase/27/docs/api/jdk.httpserver/com/sun/net/httpserver/HttpServer.html).
-
-### Tema 2: Tokens, validación y límites de seguridad · Avanzado · 2 h
-
-#### Aprende
-
-**Prerrequisitos:** fundamentos de HTTP y excepciones. No necesitas archivos del tema anterior ni ninguna credencial real.
-
-**Al terminar podrás:** construir un cliente y un servidor locales que transporten un bearer sin registrarlo, validar entrada no confiable y demostrar que una identidad autenticada puede recibir 403 al pedir un recurso de otro tenant.
-
-**Por qué importa:** un token válido confirma una identidad, pero no demuestra que ese usuario pueda leer cualquier envío. TLS, autenticación y autorización por objeto resuelven amenazas diferentes.
-
-**Mapa de subtemas críticos**
-
-| Subtema | Papel | Evidencia |
-|---|---|---|
-| Autenticación vs autorización por objeto | Núcleo | Token válido pero 403 por tenant ajeno |
-| Bearer en header `Authorization`, sin loguearlo | Núcleo | Header presente; nunca en logs |
-| Validar entrada en cada frontera | Núcleo | Guía `ENV-[0-9]+` o 400 |
-| JWT/OAuth2/OIDC: qué resuelve cada uno | Prerrequisito | Token fijo solo para ver el header |
-| SSRF: validar esquema, host y DNS | Diagnóstico | Rango privado bloqueado al conectar |
-| Parametrización ≠ autorización | Límite | SQL seguro aún necesita control por objeto |
-| No criptografía propia | Error frecuente | Validación delegada a componentes confiables |
-
-Cada fila tiene su explicación individual a continuación.
-
-**Autenticación vs autorización por objeto (núcleo).** Autenticar responde "¿quién eres?"; autorizar por objeto responde "¿puedes tocar *este* recurso?". El servidor del laboratorio acepta un token válido (autenticado) pero devuelve 403 si el `X-Tenant` del usuario no coincide con el tenant del envío: la identidad es correcta, el permiso sobre ese objeto no.
-
-**Bearer en header `Authorization`, sin loguearlo (núcleo).** El token viaja en `Authorization: Bearer <token>`. Es una credencial: registrarlo en logs o URLs lo expone a cualquiera con acceso a esos registros. El cliente lo envía en el header y el código evita imprimirlo, redactándolo si acaso.
-
-**Validar entrada en cada frontera (núcleo).** Todo dato externo se valida al entrar: la guía debe cumplir `ENV-[0-9]+` o el servidor responde 400 antes de usarla. No se asume que un cliente "correcto" mandará datos bien formados; cada frontera revalida longitud, formato y rango.
-
-**JWT/OAuth2/OIDC: qué resuelve cada uno (prerrequisito).** JWT es un formato de claims firmado (no necesariamente cifrado); OAuth 2.0 es un marco de *autorización*; OpenID Connect añade *identidad* sobre OAuth2. En producción un componente confiable valida firma, emisor, audiencia y expiración; el laboratorio usa un token fijo solo para hacer visible el header, nunca para implementar criptografía casera.
-
-**SSRF: validar esquema, host y DNS (diagnóstico).** Si el servidor acepta una URL del usuario para llamarla, un atacante puede apuntar a servicios internos (metadata del cloud, `127.0.0.1`). La defensa valida esquema y host, resuelve el DNS y bloquea rangos privados/no enrutables *también en el momento de conectar*; una regex sobre la URL se burla con redirecciones o DNS rebinding.
-
-**Parametrización ≠ autorización (límite).** Las consultas parametrizadas evitan inyección SQL, pero no deciden si este usuario puede ver esta fila. Un query seguro que devuelve el envío de otro tenant sigue siendo una fuga: la autorización por objeto es una comprobación aparte, no un efecto de usar `PreparedStatement`.
-
-**No criptografía propia (error frecuente).** Verificar firmas, emisores y expiración de tokens a mano es una fuente clásica de vulnerabilidades (algoritmo `none`, comparación no constante). Se delega a bibliotecas y servidores de identidad probados; el curso muestra el mecanismo sin pretender sustituir esos componentes.
-
-JWT es un formato de claims firmado, no necesariamente cifrado. OAuth 2.0 es un marco de autorización y OpenID Connect añade identidad. En producción, un servidor valida firma, emisor, audiencia, expiración y permisos con componentes confiables; este laboratorio usa un token fijo exclusivamente para hacer visible el header, no para enseñar criptografía propia.
-
-Valida longitud, formato, rangos y reglas de negocio en cada frontera. Las consultas parametrizadas evitan inyección SQL, pero no reemplazan autorización por objeto. Contra SSRF, valida esquema y host, resuelve DNS y bloquea rangos privados o no enrutables también al conectar; una expresión regular sobre la URL no basta.
-
-**Analogía:** un token es la pulsera de un festival. Revisar autenticidad y caducidad demuestra que puedes entrar; la pulsera de zona general sigue sin abrir el backstage.
-
-Empieza en otra carpeta vacía:
-
-```bash
-mkdir java-bearer-autorizacion
-cd java-bearer-autorizacion
-mkdir src
-```
-
-Crea manualmente `src/ServidorEnvios.java`:
+Crea `java-http-t01/src/Salud.java`:
 
 ```java
-import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
-import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.nio.charset.StandardCharsets;
+import java.net.URI;
+import java.net.http.*;
+import java.time.Duration;
 
-public final class ServidorEnvios {
-    public static void main(String[] args) throws IOException {
-        HttpServer servidor = HttpServer.create(new InetSocketAddress(8081), 0);
-        servidor.createContext("/envios/", ServidorEnvios::consultar);
-        servidor.start();
-        System.out.println("Servidor de laboratorio en http://localhost:8081");
-    }
-
-    private static void consultar(HttpExchange intercambio) throws IOException {
-        String autorizacion = intercambio.getRequestHeaders().getFirst("Authorization");
-        if (!"Bearer token-de-prueba".equals(autorizacion)) {
-            responder(intercambio, 401, "credencial ausente o inválida");
-            return;
-        }
-        String guia = intercambio.getRequestURI().getPath().substring("/envios/".length());
-        if (!guia.matches("ENV-[0-9]+")) {
-            responder(intercambio, 400, "guía inválida");
-            return;
-        }
-        String tenantDelUsuario = intercambio.getRequestHeaders().getFirst("X-Tenant");
-        String tenantDelRecurso = "A";
-        if (!tenantDelRecurso.equals(tenantDelUsuario)) {
-            responder(intercambio, 403, "el envío pertenece a otro tenant");
-            return;
-        }
-        responder(intercambio, 200, "guía=" + guia + ", destino=Cali");
-    }
-
-    private static void responder(HttpExchange intercambio, int estado, String cuerpo)
-            throws IOException {
-        byte[] bytes = cuerpo.getBytes(StandardCharsets.UTF_8);
-        intercambio.sendResponseHeaders(estado, bytes.length);
-        try (var salida = intercambio.getResponseBody()) {
-            salida.write(bytes);
-        }
+public class Salud {
+    public static void main(String[] args) throws Exception {
+        var server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        server.createContext("/health", exchange -> {
+            byte[] body = "ok".getBytes();
+            exchange.sendResponseHeaders(200, body.length);
+            exchange.getResponseBody().write(body);
+            exchange.close();
+        });
+        server.start();
+        try {
+            var uri = URI.create("http://127.0.0.1:" + server.getAddress().getPort() + "/health");
+            var request = HttpRequest.newBuilder(uri).timeout(Duration.ofSeconds(2)).GET().build();
+            var response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println("HTTP " + response.statusCode() + ": " + response.body());
+        } finally { server.stop(0); }
     }
 }
 ```
 
-Crea manualmente `src/ClienteAutenticado.java`:
+Ejecuta `java --add-modules jdk.httpserver java-http-t01/src/Salud.java`.
+
+**Resultado esperado:** `HTTP 200: ok`.
+
+**Fallo deliberado**: cambia `/health` por `/healthz`. **Resultado del fallo:** el estado pasa a HTTP 404; el servidor devuelve su respuesta 404 por defecto. **Diagnóstico:** la ruta no coincide con la que registró el servidor local.
+
+**3. Entiende**
+
+El puerto 0 permite que el sistema elija uno libre; el programa consulta el puerto asignado.
+
+**4. Cierra**
+
+Guarda respuesta y estado HTTP observados.
+
+#### Subtema 1.2: Mostrar el motivo de un 404 · 10 min
+
+**1. Contexto**
+
+una respuesta HTTP puede llegar bien y comunicar que el recurso no existe.
+
+**2. Hazlo tú**
+
+Crea `java-http-t01/src/NoExiste.java`:
+
+```java
+import com.sun.net.httpserver.HttpServer;
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.net.http.*;
+import java.time.Duration;
+
+public class NoExiste {
+    public static void main(String[] args) throws Exception {
+        var server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        server.createContext("/envios/RT-404", e -> {
+            byte[] body = "Guía no existe".getBytes();
+            e.sendResponseHeaders(404, body.length);
+            e.getResponseBody().write(body);
+            e.close();
+        });
+        server.start();
+        try {
+            var uri = URI.create("http://127.0.0.1:" + server.getAddress().getPort() + "/envios/RT-404");
+            var request = HttpRequest.newBuilder(uri).timeout(Duration.ofSeconds(2)).GET().build();
+            var response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() != 200)
+                throw new IllegalStateException("API respondió HTTP " + response.statusCode() + ": " + response.body());
+        } finally { server.stop(0); }
+    }
+}
+```
+
+Ejecuta `java --add-modules jdk.httpserver java-http-t01/src/NoExiste.java`.
+
+**Resultado esperado:** `IllegalStateException: API respondió HTTP 404: Guía no existe`.
+
+**Fallo deliberado**: acepta cualquier estado menor que 500. **Resultado del fallo:** el 404 pasa como si fuera éxito. **Diagnóstico:** la conexión contestó, pero no encontró el envío.
+
+**3. Entiende**
+
+Comprueba estado y cuerpo antes de entregar una respuesta como resultado válido.
+
+**4. Cierra**
+
+Conserva la respuesta 404 y el texto que diagnosticó la ruta.
+
+#### Subtema 1.3: Limitar la espera con timeout · 10 min
+
+**1. Contexto**
+
+Si una dependencia tarda demasiado, el cliente debe dejar libre el hilo y reportar el timeout.
+
+**2. Hazlo tú**
+
+Crea `java-http-t01/src/Espera.java`:
+
+```java
+import com.sun.net.httpserver.HttpServer;
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.net.http.*;
+import java.net.http.HttpTimeoutException;
+import java.time.Duration;
+
+public class Espera {
+    public static void main(String[] args) throws Exception {
+        var server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        server.createContext("/lento", e -> {
+            try { Thread.sleep(800); } catch (InterruptedException x) { Thread.currentThread().interrupt(); }
+            try { e.sendResponseHeaders(200, -1); } catch (Exception ignored) { }
+            e.close();
+        });
+        server.start();
+        try {
+            var uri = URI.create("http://127.0.0.1:" + server.getAddress().getPort() + "/lento");
+            var request = HttpRequest.newBuilder(uri).timeout(Duration.ofMillis(100)).GET().build();
+            try { HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString()); }
+            catch (HttpTimeoutException e) { System.out.println("timeout: 100 ms"); }
+        } finally { server.stop(0); }
+    }
+}
+```
+
+Ejecuta `java --add-modules jdk.httpserver java-http-t01/src/Espera.java`.
+
+**Resultado esperado:** `timeout: 100 ms`.
+
+**Fallo deliberado**: sube el timeout a 2 segundos. **Resultado del fallo:** el request acaba después de la demora y no informa timeout. **Diagnóstico:** el límite ahora es mayor que los 800 ms simulados.
+
+**3. Entiende**
+
+timeout limita cuánto espera el cliente; no demuestra que el servidor no recibiera el request.
+
+**4. Cierra**
+
+Anota el timeout configurado, el observado y por qué el servidor aún pudo recibir la petición.
+
+#### Subtema 1.4: Reintentar un GET con un límite · 15 min
+
+**1. Contexto**
+
+ un 503 puede ser temporal; repetir indefinidamente aumenta la carga cuando el proveedor está caído.
+
+**2. Hazlo tú**
+
+Crea `java-http-t01/src/Reintento.java`:
+
+```java
+import com.sun.net.httpserver.HttpServer;
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.net.http.*;
+import java.util.concurrent.atomic.AtomicInteger;
+
+public class Reintento {
+    public static void main(String[] args) throws Exception {
+        var llamadas = new AtomicInteger();
+        var server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        server.createContext("/cotizacion", e -> {
+            int status = llamadas.incrementAndGet() == 1 ? 503 : 200;
+            byte[] body = (status == 200 ? "ok" : "temporal").getBytes();
+            e.sendResponseHeaders(status, body.length);
+            e.getResponseBody().write(body);
+            e.close();
+        });
+        server.start();
+        try {
+            var uri = URI.create("http://127.0.0.1:" + server.getAddress().getPort() + "/cotizacion");
+            for (int intento = 1; intento <= 2; intento++) {
+                var request = HttpRequest.newBuilder(uri).GET().build();
+                var response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+                System.out.println("intento=" + intento + " HTTP " + response.statusCode());
+                if (response.statusCode() != 503) break;
+                Thread.sleep(50);
+            }
+            System.out.println("llamadas=" + llamadas.get());
+        } finally { server.stop(0); }
+    }
+}
+```
+
+Ejecuta `java --add-modules jdk.httpserver java-http-t01/src/Reintento.java`.
+
+**Resultado esperado:** `intento=1 HTTP 503`, `intento=2 HTTP 200`, `llamadas=2`.
+
+**Fallo deliberado**: cambia GET por un POST que liquida un pago y conserva el retry. **Resultado del fallo:** el pago podría enviarse dos veces. **Diagnóstico:** un POST de escritura necesita idempotencia y una política acordada antes de repetirlo.
+
+**3. Entiende**
+
+Limita intentos y espera; decide qué operación se puede repetir antes de automatizar el retry.
+
+#### Paso 7 · Cierre y evidencia
+
+Entrega tests de éxito, 404, 503 y timeout con número de intentos comprobado para el proyecto integrador de RutaFlow, usando el cliente para consultar un proveedor externo; como siguiente paso transporta una credencial de forma segura sobre ese mismo cliente. Errores comunes: no fijar un timeout explícito y dejar que una API externa caída bloquee hilos indefinidamente, reintentar automáticamente un POST no idempotente ante una respuesta perdida, y cargar un cuerpo de respuesta potencialmente enorme completo en memoria sin un `BodyHandler` de streaming. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/docs/api/java.net.http/java/net/http/HttpClient.html.
+**¿Por qué es importante?** Porque un timeout explícito y un manejo de errores diferenciado por código de estado protegen la capacidad del propio servicio cuando una dependencia externa falla o no responde, en vez de acumular hilos bloqueados indefinidamente.
+**Evidencia de aprendizaje:** entrega los tests de éxito (200), error de cliente (404) y timeout, junto con el reintento acotado verificado solo para operaciones idempotentes.
+**Conceptos clave:** `HttpClient`, `HttpRequest`/`HttpResponse`, timeout, reintento idempotente con backoff y jitter.
+
+**Cuándo no usarlo:** llamadas con cuerpo enorme no deben cargarse sin límite en memoria; usa un `BodyHandler` de streaming.
+
+**4. Cierra**
+
+Guarda secuencia de respuestas y cantidad de intentos.
+
+### Tema 2: Tokens, validación y límites de seguridad
+
+#### Paso 1 · Objetivo y preparación
+
+Al finalizar podrás explicar y probar el transporte seguro de una credencial bearer, validar datos no confiables y distinguir autenticación de autorización. El ejercicio usa una API local de laboratorio; no implementes criptografía propia. Crea la carpeta `mkdir -p java-http-t02/src`.
+**Conocimiento previo:** Java M18 Tema 1 (cliente HTTP y estados de respuesta) y Java M0 Temas 1–3; usa credenciales ficticias del laboratorio.
+#### Paso 2 · Contexto y caso real
+
+El cliente móvil envía el token de un usuario junto a una solicitud de consulta. Un token válido confirma una identidad, pero no demuestra que ese usuario pueda leer cualquier envío.
+
+#### Paso 3 · Teoría y modelo mental
+
+JWT es un formato de claims firmado, no necesariamente cifrado: quien lo obtiene puede leer sus claims. OAuth 2.0 es un marco de autorización; OpenID Connect añade una capa de identidad. Un cliente Java normalmente obtiene un token de un proveedor confiable y lo envía por HTTPS como `Authorization: Bearer ...`; el servidor valida firma, emisor, audiencia, expiración y permisos. No registres tokens ni los guardes en el código fuente.
+
+Valida longitud, formato, rangos y reglas de negocio en cada frontera. Las consultas parametrizadas evitan inyección SQL, pero no reemplazan autorización por objeto. Para SSRF, valida esquema/host, resuelve DNS y bloquea rangos privados/no enrutable también en la conexión; una comprobación textual de URL no es suficiente.
+**Analogía:** un token es como la pulsera de un festival: demuestra que pagaste la entrada sin tener que mostrar el DNI en cada puesto. Validarlo es revisar que la pulsera sea auténtica y no haya caducado; el límite de seguridad es que la pulsera de la zona general no te abre el backstage.
+#### Paso 4 · Demostración guiada
+
+En el cliente del tema anterior, añade una credencial cargada desde una variable de entorno y evita imprimirla:
+
+```java
+String token = System.getenv("ACADEMIA_API_TOKEN");
+if (token == null || token.isBlank()) {
+    throw new IllegalStateException("Falta ACADEMIA_API_TOKEN");
+}
+
+HttpRequest request = HttpRequest.newBuilder(uri)
+    .timeout(Duration.ofSeconds(3))
+    .header("Authorization", "Bearer " + token)
+    .GET()
+    .build();
+```
+
+**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+
+```bash
+# Maven
+mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+cd app && mvn test
+# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
+```
+
+Ejecuta con `ACADEMIA_API_TOKEN=token-de-prueba ./mvnw test` (en PowerShell, configura `$env:ACADEMIA_API_TOKEN` antes). Un test con servidor stub debe comprobar el header sin escribir el valor en logs.
+
+**Resultado esperado:** el servidor de laboratorio recibe el bearer; no hay secreto en el repositorio. **Fallo deliberado:** usa HTTP plano contra una máquina externa o registra el header completo. Identifica exposición en tránsito/logs y retira ambas prácticas; no uses tokens reales.
+
+#### Paso 5 · Práctica guiada
+
+Prueba valores vacíos, excesivamente largos y con formato inválido antes de construir el request. A continuación intenta consultar una IP privada con una URL configurada externamente: debe rechazarse por política, no por una expresión regular improvisada.
+**Pista:** si tu validación solo revisa el texto de la URL (por ejemplo, rechazar "localhost" con una expresión regular), una URL que resuelve por DNS a `127.0.0.1` la esquiva igual; resuelve el host primero y bloquea el rango de IP resultante, no solo el string original.
+#### Paso 6 · Práctica independiente
+
+Diseña una matriz de autorización para `envio:leer`, `envio:asignar` y `envio:liquidar`. Escribe pruebas de acceso permitido/denegado y agrega expiración corta al token de test. Explica por qué TLS, expiración, audience y autorización de propiedad resuelven problemas diferentes.
+
+#### Subtema 2.1: Enviar un bearer local sin imprimir el secreto · 10 min
+
+**1. Contexto**
+
+El servidor debe recibir una credencial ficticia sin que el programa la escriba en la terminal.
+
+**2. Hazlo tú**
+
+Crea `java-http-t02/src/BearerLocal.java`:
+
+```java
+import com.sun.net.httpserver.HttpServer;
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.net.http.*;
+
+public class BearerLocal {
+    public static void main(String[] args) throws Exception {
+        String token = System.getenv("ACADEMIA_API_TOKEN");
+        if (token == null || token.isBlank()) throw new IllegalStateException("Falta ACADEMIA_API_TOKEN");
+        var server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        server.createContext("/privado", e -> {
+            boolean presente = ("Bearer " + token).equals(e.getRequestHeaders().getFirst("Authorization"));
+            byte[] body = (presente ? "credencial presente" : "credencial ausente").getBytes();
+            e.sendResponseHeaders(presente ? 200 : 401, body.length);
+            e.getResponseBody().write(body);
+            e.close();
+        });
+        server.start();
+        try {
+            var uri = URI.create("http://127.0.0.1:" + server.getAddress().getPort() + "/privado");
+            var request = HttpRequest.newBuilder(uri).header("Authorization", "Bearer " + token).GET().build();
+            var response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println("HTTP " + response.statusCode() + ": " + response.body());
+        } finally { server.stop(0); }
+    }
+}
+```
+
+Ejecuta `ACADEMIA_API_TOKEN=prueba-local java --add-modules jdk.httpserver java-http-t02/src/BearerLocal.java` (PowerShell: `$env:ACADEMIA_API_TOKEN='prueba-local'; java --add-modules jdk.httpserver java-http-t02/src/BearerLocal.java`).
+
+**Resultado esperado:** `HTTP 200: credencial presente`; la salida nunca muestra el token.
+
+**Fallo deliberado**: agrega `System.out.println(token)`. **Resultado del fallo:** se expone el valor ficticio en la terminal. **Diagnóstico:** registra si hay credencial, nunca su contenido; en producción usa un secreto real solo desde un gestor de secretos y HTTPS.
+
+**3. Entiende**
+
+El laboratorio usa token inventado y loopback; no pegues secretos reales en comandos o código.
+
+**4. Cierra**
+
+Conserva prueba válida, faltante y token ficticio sin copiar el secreto.
+
+#### Subtema 2.2: Rechazar destinos fuera de una lista permitida · 10 min
+
+**1. Contexto**
+
+no permitas que una URL externa apunte a una consola o base de datos interna.
+
+**2. Hazlo tú**
+
+Crea `java-http-t02/src/DestinoSeguro.java`:
 
 ```java
 import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-import java.util.UUID;
+import java.util.Set;
 
-public final class ClienteAutenticado {
-    public static void main(String[] args) throws Exception {
-        String token = System.getenv("ACADEMIA_API_TOKEN");
-        if (token == null || token.isBlank() || token.length() > 2048
-                || token.chars().anyMatch(Character::isWhitespace)) {
-            throw new IllegalArgumentException("ACADEMIA_API_TOKEN ausente o inválido");
-        }
-        String tenant = args.length == 1 ? args[0] : "A";
-        URI uri = URI.create("http://localhost:8081/envios/ENV-1");
-        HttpClient cliente = HttpClient.newBuilder()
-            .connectTimeout(Duration.ofSeconds(2))
-            .build();
-        HttpRequest request = HttpRequest.newBuilder(uri)
-            .timeout(Duration.ofSeconds(2))
-            .header("Authorization", "Bearer " + token)
-            .header("X-Tenant", tenant)
-            .header("X-Correlation-ID", UUID.randomUUID().toString())
-            .GET()
-            .build();
-        HttpResponse<String> response =
-            cliente.send(request, HttpResponse.BodyHandlers.ofString());
-        System.out.println("tenant=" + tenant + ", HTTP " + response.statusCode()
-            + ": " + response.body());
+public class DestinoSeguro {
+    static URI validar(String valor) {
+        URI uri = URI.create(valor);
+        if (!"https".equalsIgnoreCase(uri.getScheme())) throw new IllegalArgumentException("Se requiere HTTPS");
+        if (!Set.of("api.rutaflow.example").contains(uri.getHost()))
+            throw new IllegalArgumentException("Host fuera de allowlist");
+        if (uri.getUserInfo() != null) throw new IllegalArgumentException("No se permite userinfo");
+        return uri;
+    }
+    public static void main(String[] args) {
+        try { validar("http://127.0.0.1/admin"); }
+        catch (IllegalArgumentException e) { System.out.println("rechazada: " + e.getMessage()); }
     }
 }
 ```
 
-El HTTP plano está permitido aquí únicamente porque cliente y servidor son locales y el token es ficticio. Fuera de loopback exige HTTPS y un proveedor de identidad real.
+Ejecuta `java java-http-t02/src/DestinoSeguro.java`.
 
-Compila y arranca el servidor en una terminal:
+**Resultado esperado:** `rechazada: Se requiere HTTPS`.
 
-```bash
-javac --add-modules jdk.httpserver -d out src/*.java
-java --add-modules jdk.httpserver -cp out ServidorEnvios
-```
+**Fallo deliberado**: quita la comprobación del host y prueba `https://127.0.0.1/admin`. **Resultado del fallo:** el destino privado pasa el chequeo de esquema. **Diagnóstico:** HTTPS cifra el canal, no restringe el destino; en producción combina allowlist con bloqueo de rangos privados en red y revisión de DNS/redirecciones.
 
-En otra terminal de la misma carpeta, ejecuta las dos consultas:
+**3. Entiende**
 
-```bash
-ACADEMIA_API_TOKEN=token-de-prueba java -cp out ClienteAutenticado A
-ACADEMIA_API_TOKEN=token-de-prueba java -cp out ClienteAutenticado B
-```
+ una URL con esquema seguro aún puede apuntar a una dirección prohibida.
 
-En PowerShell, asigna primero `$env:ACADEMIA_API_TOKEN="token-de-prueba"` y ejecuta después los mismos comandos `java`.
+**4. Cierra**
 
-**Resultado esperado:**
+Guarda los dos destinos permitidos y el rechazado.
 
-```text
-tenant=A, HTTP 200: guía=ENV-1, destino=Cali
-tenant=B, HTTP 403: el envío pertenece a otro tenant
-```
+#### Subtema 2.3: Comprobar quién puede leer cada envío · 10 min
 
-**Fallo deliberado y corrección:** sustituye temporalmente la comprobación de tenant por `if (false)`. La misma credencial obtiene 200 para el tenant B: la autenticación sigue funcionando, pero la autorización por objeto desapareció. Restaura `if (!tenantDelRecurso.equals(tenantDelUsuario))`, recompila y confirma el 403. Añadir después un log del header completo sería otro fallo: expone el secreto; no lo hagas con credenciales reales.
+**1. Contexto**
 
-#### Practica
+ autenticar a Ana no significa que pueda leer los envíos de otras personas.
 
-**Práctica guiada:** crea `src/ValidadorSolicitud.java` con un `main` que pruebe tokens vacíos, de más de 2048 caracteres, con espacios y guías con formato incorrecto. Añade `src/PoliticaDestino.java`: resuelve con `InetAddress.getAllByName` cada host configurado y rechaza direcciones loopback, link-local, site-local, multicast o no enrutables cuando el destino sea externo. No uses una regex de nombres como sustituto de DNS.
+**2. Hazlo tú**
 
-```bash
-javac -d out src/ValidadorSolicitud.java src/PoliticaDestino.java
-java -cp out ValidadorSolicitud
-java -cp out PoliticaDestino
-```
-
-**Resultado esperado:** cada entrada inválida se rechaza antes de construir un request; un hostname que resuelve a una dirección prohibida se rechaza aunque su texto parezca legítimo.
-
-**Ejercicio independiente:** crea `src/PruebasAcceso.java` con una matriz para `envio:leer`, `envio:asignar` y `envio:liquidar`, usuarios de dos tenants y un token de prueba expirado. Escribe un ejecutable sin frameworks que compruebe permitido/denegado y explique en su salida qué regla decidió. Incluye casos de audiencia incorrecta y propiedad correcta sin permiso suficiente.
-
-**Resultado esperado:** la matriz distingue 401 de identidad inválida o expirada y 403 de identidad válida sin permiso o sin propiedad; no imprime tokens.
-
-#### Aplica
-
-Completa el **[Proyecto integrador: autorización por envío de RutaFlow](#proyecto-18-cliente-http-seguro-para-rutaflow)**. Cada consulta debe validar credencial, permiso y tenant del recurso; los destinos de proveedores deben pasar una política SSRF y ningún log puede contener el bearer.
-
-**Checklist de salida**
-
-- [ ] El laboratorio se construyó desde una carpeta vacía y usa solo un token ficticio.
-- [ ] El bearer viaja en `Authorization` y nunca aparece en la salida.
-- [ ] Una credencial válida para el tenant equivocado recibe 403.
-- [ ] Tokens y guías inválidos se rechazan antes de llamar al servidor.
-- [ ] La política de destino evalúa las IP resueltas, no solo el texto de la URL.
-- [ ] Puedes distinguir TLS, autenticación, audiencia/expiración y autorización por objeto.
-
-**Errores comunes:** guardar secretos en código, registrar tokens, confundir JWT con cifrado y tratar autenticación como permiso universal. No guardes contraseñas en JWT ni uses un token como sustituto automático de un diseño de revocación.
-
-**Fuentes oficiales revisadas el 2026-11-01:** [`HttpClient` (API Java SE 27)](https://docs.oracle.com/en/java/javase/27/docs/api/java.net.http/java/net/http/HttpClient.html), [OWASP Cheat Sheet Series](https://cheatsheetseries.owasp.org/), [OAuth 2.0](https://oauth.net/2/) y [OpenID Connect](https://openid.net/developers/how-connect-works/).
-
-### Tema 3: Sockets TCP y UDP — la red que hay debajo de HttpClient · Avanzado · 2 h
-
-#### Aprende
-
-**Prerrequisitos:** Temas 1–2 de este módulo, excepciones y try-with-resources; JDK 27 o superior y dos terminales. Comprueba `java -version` y `javac -version`.
-
-**Al terminar podrás:** abrir un servidor TCP con `ServerSocket`, conectar un cliente con `Socket`, intercambiar líneas por los streams, enviar y recibir datagramas UDP con `DatagramSocket`, aplicar timeouts de lectura, y explicar por qué HTTP se apoya en TCP y el tracking en tiempo real puede usar UDP.
-
-**Por qué importa:** `HttpClient` (Tema 1) es cómodo, pero esconde la red. RutaFlow rastrea vehículos en tiempo real: entender el socket que hay debajo permite decidir entre una conexión fiable y ordenada (TCP) y un envío ligero sin garantía de entrega (UDP), diagnosticar un puerto ocupado o un cliente que no cierra, y aplicar timeouts para no colgar un hilo indefinidamente.
-
-**Mapa de subtemas críticos**
-
-| Subtema | Papel | Evidencia del tema |
-|---|---|---|
-| modelo cliente/servidor y puertos | Prerrequisito | un servidor escucha en un puerto; el cliente conecta a host:puerto |
-| `ServerSocket` y `accept()` | Núcleo | `accept()` bloquea hasta que llega una conexión |
-| `Socket` y los streams de I/O | Núcleo | leer/escribir líneas por `getInputStream`/`getOutputStream` |
-| TCP: fiable, ordenado, orientado a conexión | Núcleo | el eco llega íntegro y en orden |
-| UDP: `DatagramSocket` y `DatagramPacket` | Variante | datagrama sin conexión ni garantía de entrega |
-| TCP frente a UDP (decisión) | Decisión | fiabilidad frente a latencia/overhead |
-| timeouts de socket (`setSoTimeout`) | Diagnóstico | una lectura sin datos lanza `SocketTimeoutException` |
-| cierre de recursos y puerto ocupado | Límite | no cerrar deja el puerto o la conexión colgados |
-| un cliente por hilo frente a virtual threads | Decisión | `accept()` en bucle; un virtual thread por conexión |
-
-Cada fila tiene su explicación individual a continuación.
-
-**Modelo cliente/servidor y puertos (prerrequisito).** Un **servidor** se queda escuchando en un **puerto** (un número de 0 a 65535) de una interfaz de red; un **cliente** inicia la comunicación conectándose a `host:puerto`. El puerto 0 pide al sistema uno **efímero** libre (útil en pruebas). Dos procesos no pueden escuchar el mismo puerto a la vez.
-
-**`ServerSocket` y `accept()` (núcleo).** `new ServerSocket(puerto)` abre el punto de escucha. `server.accept()` **bloquea** el hilo hasta que un cliente se conecta y entonces devuelve un `Socket` ya conectado a ese cliente. Un servidor real llama `accept()` en un bucle para atender muchas conexiones.
-
-**`Socket` y los streams de I/O (núcleo).** Un `Socket` conectado expone `getInputStream()` y `getOutputStream()`: la red se lee y escribe como cualquier flujo de bytes. Para texto se envuelven en `BufferedReader`/`PrintWriter` con un **charset explícito** (`UTF_8`); así `readLine()`/`println()` intercambian líneas. Define siempre el charset: el por defecto de la plataforma causa bugs entre máquinas.
-
-**TCP: fiable, ordenado, orientado a conexión (núcleo).** TCP establece una conexión y garantiza que los bytes llegan **completos, sin duplicados y en orden**, retransmitiendo lo que se pierde. Por eso HTTP, bases de datos y la mayoría de protocolos de aplicación van sobre TCP. El coste: el establecimiento de conexión (handshake) y el control de flujo añaden latencia y overhead.
-
-**UDP: `DatagramSocket` y `DatagramPacket` (variante).** UDP envía **datagramas** sueltos sin conexión previa: `DatagramSocket` para enviar/recibir y `DatagramPacket` para empaquetar los bytes con destino `host:puerto`. **No garantiza** entrega, orden ni unicidad: un datagrama puede perderse, llegar duplicado o desordenado. A cambio es ligero y de baja latencia.
-
-**TCP frente a UDP (decisión).** Usa **TCP** cuando no puedes perder ni desordenar datos (una liquidación, un pedido): la fiabilidad es obligatoria. Usa **UDP** cuando prefieres velocidad y toleras pérdidas (telemetría de posición GPS que se actualiza constantemente: si se pierde un ping, el siguiente lo corrige). La decisión no es "cuál es mejor", sino qué garantiza el dominio.
-
-**Timeouts de socket (diagnóstico).** `socket.setSoTimeout(ms)` limita cuánto bloquea una **lectura**: si no llegan datos en ese plazo, lanza `SocketTimeoutException` en vez de colgar el hilo para siempre. Es imprescindible en red real, donde el otro extremo puede no responder nunca. Sin timeout, un `accept()`/`read()`/`receive()` bloquea indefinidamente.
-
-**Cierre de recursos y puerto ocupado (límite).** Los sockets son recursos del sistema: ciérralos con try-with-resources (`Socket`, `ServerSocket` y `DatagramSocket` son `AutoCloseable`). No cerrar deja conexiones y puertos ocupados; reintentar `new ServerSocket(mismoPuerto)` sin liberar el anterior da `BindException: Address already in use`.
-
-**Un cliente por hilo frente a virtual threads (decisión).** El patrón clásico es: `accept()` en bucle y atender cada conexión en su propio hilo para no bloquear a los demás. Con **virtual threads** (Módulo 5) puedes lanzar un hilo por conexión de forma barata (`Thread.ofVirtual().start(...)` o un executor de virtual threads), ideal para muchas conexiones de I/O bloqueante sin agotar hilos de plataforma.
-
-**Analogía (con su límite):** TCP es una llamada telefónica (estableces la línea, hablas en orden y sabes si se cortó); UDP es echar postales al buzón (van ligeras, pero alguna puede perderse o llegar desordenada). La analogía explica la fiabilidad; no explica puertos, timeouts ni el manejo de streams, que son mecanismos concretos del socket.
-
-Comienza en una carpeta vacía:
-
-```bash
-mkdir java-sockets
-cd java-sockets
-mkdir src
-```
-
-Crea manualmente `src/DemoSockets.java` (servidor y cliente en el mismo programa para una demostración autocontenida; en un caso real irían en procesos separados):
+Crea `java-http-t02/src/Propiedad.java`:
 
 ```java
-import java.io.*;
-import java.net.*;
-import java.nio.charset.StandardCharsets;
-
-public class DemoSockets {
-    public static void main(String[] args) throws Exception {
-        // ---- TCP: servidor eco en un virtual thread, cliente en el main ----
-        ServerSocket server = new ServerSocket(0);           // puerto efímero libre
-        int puertoTcp = server.getLocalPort();
-        Thread servidor = Thread.ofVirtual().start(() -> {
-            try (Socket cliente = server.accept();            // bloquea hasta conexión
-                 var in = new BufferedReader(new InputStreamReader(cliente.getInputStream(), StandardCharsets.UTF_8));
-                 var out = new PrintWriter(new OutputStreamWriter(cliente.getOutputStream(), StandardCharsets.UTF_8), true)) {
-                out.println("ECO:" + in.readLine());
-            } catch (IOException e) { throw new UncheckedIOException(e); }
-        });
-        try (Socket s = new Socket("localhost", puertoTcp);
-             var out = new PrintWriter(new OutputStreamWriter(s.getOutputStream(), StandardCharsets.UTF_8), true);
-             var in = new BufferedReader(new InputStreamReader(s.getInputStream(), StandardCharsets.UTF_8))) {
-            out.println("GUIA ENV-1");
-            System.out.println("TCP respuesta=" + in.readLine());
-        }
-        servidor.join();
-        server.close();
-
-        // ---- UDP: datagrama sin conexión (telemetría ligera) ----
-        DatagramSocket receptor = new DatagramSocket(0);
-        int puertoUdp = receptor.getLocalPort();
-        Thread rx = Thread.ofVirtual().start(() -> {
-            try {
-                byte[] buf = new byte[256];
-                DatagramPacket p = new DatagramPacket(buf, buf.length);
-                receptor.receive(p);                          // bloquea hasta datagrama
-                System.out.println("UDP recibido=" + new String(p.getData(), 0, p.getLength(), StandardCharsets.UTF_8));
-            } catch (IOException e) { throw new UncheckedIOException(e); }
-        });
-        try (DatagramSocket emisor = new DatagramSocket()) {
-            byte[] datos = "ping-gps".getBytes(StandardCharsets.UTF_8);
-            emisor.send(new DatagramPacket(datos, datos.length, InetAddress.getLoopbackAddress(), puertoUdp));
-        }
-        rx.join();
-        receptor.close();
-
-        // ---- timeout de lectura ----
-        try (DatagramSocket conTimeout = new DatagramSocket()) {
-            conTimeout.setSoTimeout(300);                     // ms
-            try { conTimeout.receive(new DatagramPacket(new byte[16], 16)); }
-            catch (SocketTimeoutException e) { System.out.println("UDP timeout: SocketTimeoutException"); }
-        }
+public class Propiedad {
+    record Envio(String guia, String propietario) {}
+    static boolean puedeLeer(String usuario, Envio envio) {
+        return usuario.equals(envio.propietario());
+    }
+    public static void main(String[] args) {
+        var envio = new Envio("RT-8", "ana");
+        System.out.println("ana=" + puedeLeer("ana", envio));
+        System.out.println("leo=" + puedeLeer("leo", envio));
     }
 }
 ```
 
-Compila y ejecuta:
+Ejecuta `java java-http-t02/src/Propiedad.java`.
 
-```bash
-javac -d out src/DemoSockets.java
-java -cp out DemoSockets
-```
+**Resultado esperado:** `ana=true` y `leo=false`.
 
-**Resultado esperado (verificado con Temurin 27.0.1):**
+**Fallo deliberado**: haz que `puedeLeer` siempre devuelva `true`. **Resultado del fallo:** Leo obtiene acceso al envío de Ana. **Diagnóstico:** comprobar el rol general no comprueba la propiedad de este objeto.
 
-```text
-TCP respuesta=ECO:GUIA ENV-1
-UDP recibido=ping-gps
-UDP timeout: SocketTimeoutException
-```
+**3. Entiende**
 
-Léelo subtema por subtema: el servidor TCP esperó en `accept()`, recibió la línea íntegra y respondió el eco (fiable y ordenado); el datagrama UDP llegó sin conexión previa (`ping-gps`); y un `receive()` con `setSoTimeout(300)` sin datos lanzó `SocketTimeoutException` en vez de colgar.
+Decide el permiso para cada envío y acción, además de validar la identidad.
 
-**Fallo deliberado — puerto ocupado:** abre dos `ServerSocket` en el **mismo** puerto fijo (por ejemplo `new ServerSocket(9099)` dos veces sin cerrar el primero). El segundo lanza:
+**4. Cierra**
 
-```text
-java.net.BindException: Address already in use
-```
+Conserva una autorización permitida y otra denegada.
 
-Es el diagnóstico típico de "el servidor ya está corriendo" o "no cerré el anterior". Ciérralo con try-with-resources o usa el puerto 0 para uno efímero.
+#### Subtema 2.4: Rechazar identificadores con formato inválido · 10 min
 
-#### Practica
+**1. Contexto**
 
-**Práctica guiada:** convierte el servidor TCP en uno que atienda **varias** conexiones: pon `accept()` en un bucle y atiende cada `Socket` en su propio virtual thread (`Thread.ofVirtual().start(...)`). Lanza tres clientes que envíen líneas distintas y comprueba que las tres reciben su eco sin bloquearse entre sí. Añade `setSoTimeout` al socket del cliente y provoca un timeout conectando a un servidor que no responde.
+ valida una guía antes de pasarla a SQL o a otro servicio.
 
-**Ejercicio independiente:** implementa un **receptor UDP de telemetría GPS** para RutaFlow: un `DatagramSocket` que reciba en bucle datagramas `vehiculoId;lat;lon`, los valide (formato y rangos de coordenadas) y descarte los malformados sin caerse. Un emisor envía 10 datagramas, uno de ellos corrupto. Confirma que el receptor procesa los válidos e ignora el corrupto, y explica por qué con UDP debes tolerar pérdidas y datagramas fuera de orden en vez de asumir que todos llegan.
+**2. Hazlo tú**
 
-#### Aplica
-
-Integra ambos en el **[Proyecto integrador de RutaFlow](#proyecto-18-cliente-http-seguro-para-rutaflow)**: justifica por qué la liquidación y la consulta de envíos van sobre TCP/HTTP (no pueden perderse) y por qué el flujo de posiciones de los vehículos puede ir sobre UDP (tolera pérdidas, prioriza latencia). Documenta los timeouts de cada socket.
-
-**Checklist de salida**
-
-- [ ] `DemoSockets.java` imprime el eco TCP, el datagrama UDP y el timeout.
-- [ ] El servidor TCP usa `accept()` y atiende al cliente por los streams con charset explícito.
-- [ ] El eco TCP llega íntegro y en orden; el datagrama UDP llega sin conexión previa.
-- [ ] `setSoTimeout` provoca `SocketTimeoutException` ante una lectura sin datos.
-- [ ] Reusar un puerto ocupado produce `BindException: Address already in use`.
-- [ ] Justificas TCP para datos que no pueden perderse y UDP para telemetría tolerante a pérdidas.
-
-**Errores comunes:** olvidar el charset explícito en los streams (bugs entre plataformas); no cerrar sockets (puertos y conexiones colgados); no poner timeout (hilos bloqueados para siempre); asumir que UDP garantiza entrega u orden; y usar un hilo de plataforma por conexión cuando hay muchas conexiones de I/O (usa virtual threads).
-
-**Fuentes oficiales revisadas el 2026-11-01:** [`Socket` (API Java SE 27)](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/net/Socket.html), [`ServerSocket` (API Java SE 27)](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/net/ServerSocket.html) y [`DatagramSocket` (API Java SE 27)](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/net/DatagramSocket.html).
-
-### Tema 4: Seguridad defensiva — hash, HMAC, firma y cifrado · Avanzado · 2 h 30 min
-
-#### Aprende
-
-**Prerrequisitos:** Temas 1–3 de este módulo, arreglos de bytes y excepciones; JDK 27 o superior. Comprueba `java -version`. Enfoque **defensivo y autorizado**: proteger datos propios, nunca atacar sistemas de terceros ni implementar criptografía casera en producción.
-
-**Al terminar podrás:** calcular un hash con `MessageDigest`, autenticar un mensaje con `Mac` (HMAC), firmar y verificar con un par de claves (`Signature`), cifrar y descifrar con AES-GCM (`Cipher`), y decidir cuál usar según necesites integridad, autenticidad, no repudio o confidencialidad.
-
-**Por qué importa:** RutaFlow transporta liquidaciones y datos personales. Confundir "hash" con "cifrado", o usar hash para contraseñas, o un IV repetido en cifrado, son errores que comprometen datos reales. Las APIs del JDK (`java.security`, `javax.crypto`) implementan primitivas probadas; tu trabajo es **elegirlas y combinarlas bien**, no reinventarlas.
-
-**Mapa de subtemas críticos**
-
-| Subtema | Papel | Evidencia del tema |
-|---|---|---|
-| hash criptográfico (`MessageDigest`) | Núcleo | SHA-256 determinista y de una vía |
-| comparación en tiempo constante | Diagnóstico | `MessageDigest.isEqual` frente a `==`/`equals` |
-| hash NO sirve para contraseñas | Límite | contraseñas: Argon2/bcrypt con sal, no SHA directo |
-| HMAC (`Mac`) | Variante | integridad + autenticidad con clave compartida |
-| firma digital (`Signature`, par de claves) | Núcleo | no repudio; se verifica con la clave pública |
-| cifrado simétrico AES-GCM (`Cipher`) | Núcleo | confidencialidad + detección de manipulación |
-| IV/nonce único y gestión de claves | Diagnóstico | reusar IV o hardcodear clave rompe el cifrado |
-| hash vs HMAC vs firma vs cifrado | Decisión | qué propiedad resuelve cada uno |
-
-Cada fila tiene su explicación individual a continuación.
-
-**Hash criptográfico (núcleo).** `MessageDigest.getInstance("SHA-256").digest(bytes)` produce un resumen de tamaño fijo (32 bytes) de cualquier entrada. Es **determinista** (misma entrada → mismo hash) y de **una sola vía** (no se puede revertir al original). Sirve para **integridad**: comprobar que unos datos no cambiaron. No uses MD5 ni SHA-1, rotos para uso criptográfico.
-
-**Comparación en tiempo constante (diagnóstico).** Para comparar dos hashes o tags, usa `MessageDigest.isEqual(a, b)`, **no** `Arrays.equals` ni `==`: `isEqual` compara en **tiempo constante** y evita filtrar información por el tiempo de respuesta (timing attack). Es un detalle pequeño con impacto real en seguridad.
-
-**El hash NO sirve para contraseñas (límite).** Un error grave: guardar `SHA-256(contraseña)`. Los hashes rápidos permiten probar miles de millones por segundo. Para contraseñas se usa un algoritmo **lento y con sal** diseñado a propósito (Argon2, bcrypt, PBKDF2), que el JDK ofrece como `PBKDF2WithHmacSHA256` o librerías dedicadas. El hash simple es para integridad de datos, no para credenciales.
-
-**HMAC (variante).** `Mac.getInstance("HmacSHA256")` con una **clave compartida** produce un tag que prueba a la vez **integridad y autenticidad**: solo quien tiene la clave pudo generarlo. Se usa para verificar que un mensaje viene de quien dice y no fue alterado (webhooks firmados, tokens). A diferencia del hash puro, requiere una clave secreta.
-
-**Firma digital (núcleo).** Con un **par de claves** (privada/pública), `Signature` firma con la **privada** y cualquiera verifica con la **pública**. Aporta **no repudio**: solo el dueño de la privada pudo firmar, y la verificación falla si el mensaje cambió un solo byte. Es la base de JWT firmados, certificados TLS y actualizaciones firmadas.
-
-**Cifrado simétrico AES-GCM (núcleo).** `Cipher.getInstance("AES/GCM/NoPadding")` cifra con una clave AES para lograr **confidencialidad** (nadie sin la clave lee el dato). GCM es un modo **autenticado** (AEAD): además de ocultar, **detecta manipulación** del texto cifrado. Es el modo recomendado hoy; evita modos sin autenticación como ECB (filtra patrones) o CBC sin MAC.
-
-**IV/nonce único y gestión de claves (diagnóstico).** AES-GCM necesita un **IV (nonce)** que debe ser **único por cada cifrado con la misma clave** (genéralo con `SecureRandom`); reutilizar un IV rompe la seguridad de GCM por completo. Y la **clave nunca se hardcodea** en el código ni se mete en el repositorio: va en un gestor de secretos o variable de entorno protegida. El IV sí puede viajar junto al texto cifrado (no es secreto), pero no repetirse.
-
-**Hash vs HMAC vs firma vs cifrado (decisión).** Cada primitiva resuelve una propiedad distinta: **hash** = integridad (¿cambió?); **HMAC** = integridad + autenticidad con secreto compartido; **firma** = integridad + autenticidad + no repudio con clave pública; **cifrado** = confidencialidad (+ integridad en GCM). Elegir la equivocada (cifrar cuando querías firmar, hashear una contraseña) es el error de diseño más común.
-
-**Analogía (con su límite):** el hash es el precinto de un paquete (si está roto, alguien lo abrió); la firma es la firma notariada (demuestra quién la hizo); el cifrado es la caja fuerte (nadie ve el contenido sin la llave). La analogía ayuda a elegir; no explica el IV único, el tiempo constante ni por qué el hash no vale para contraseñas, que son reglas concretas del uso correcto.
-
-Comienza en una carpeta vacía:
-
-```bash
-mkdir java-seguridad
-cd java-seguridad
-mkdir src
-```
-
-Crea manualmente `src/DemoSeguridad.java`:
+Crea `java-http-t02/src/ValidarGuia.java`:
 
 ```java
-import java.security.*;
-import javax.crypto.*;
-import javax.crypto.spec.*;
-
-public class DemoSeguridad {
-    public static void main(String[] args) throws Exception {
-        byte[] msg = "guia ENV-1".getBytes();
-
-        // 1) hash SHA-256: integridad (determinista, de una vía)
-        byte[] h = MessageDigest.getInstance("SHA-256").digest(msg);
-        System.out.println("sha256(len)=" + h.length);
-        boolean igual = MessageDigest.isEqual(h, MessageDigest.getInstance("SHA-256").digest(msg));
-        System.out.println("hash determinista=" + igual);   // comparación en tiempo constante
-
-        // 2) HMAC: integridad + autenticidad con clave compartida
-        SecretKey macKey = KeyGenerator.getInstance("HmacSHA256").generateKey();
-        Mac mac = Mac.getInstance("HmacSHA256");
-        mac.init(macKey);
-        System.out.println("hmac(len)=" + mac.doFinal(msg).length);
-
-        // 3) firma digital: no repudio con par de claves
-        KeyPairGenerator kpg = KeyPairGenerator.getInstance("EC");
-        kpg.initialize(256);
-        KeyPair par = kpg.generateKeyPair();
-        Signature firmar = Signature.getInstance("SHA256withECDSA");
-        firmar.initSign(par.getPrivate());
-        firmar.update(msg);
-        byte[] firma = firmar.sign();
-        Signature verificar = Signature.getInstance("SHA256withECDSA");
-        verificar.initVerify(par.getPublic());
-        verificar.update(msg);
-        System.out.println("firma valida=" + verificar.verify(firma));
-        Signature v2 = Signature.getInstance("SHA256withECDSA");
-        v2.initVerify(par.getPublic());
-        v2.update("guia ENV-2".getBytes());                  // mensaje alterado
-        System.out.println("firma de msg alterado=" + v2.verify(firma));
-
-        // 4) cifrado AES-GCM: confidencialidad + detección de manipulación
-        KeyGenerator aesKg = KeyGenerator.getInstance("AES");
-        aesKg.init(256);
-        SecretKey aesKey = aesKg.generateKey();
-        byte[] iv = new byte[12];
-        SecureRandom.getInstanceStrong().nextBytes(iv);      // IV único por cifrado
-        Cipher c = Cipher.getInstance("AES/GCM/NoPadding");
-        c.init(Cipher.ENCRYPT_MODE, aesKey, new GCMParameterSpec(128, iv));
-        byte[] cifrado = c.doFinal(msg);
-        Cipher d = Cipher.getInstance("AES/GCM/NoPadding");
-        d.init(Cipher.DECRYPT_MODE, aesKey, new GCMParameterSpec(128, iv));
-        System.out.println("descifrado=" + new String(d.doFinal(cifrado)));
-        cifrado[0] ^= 1;                                     // manipular un byte
-        try {
-            Cipher d2 = Cipher.getInstance("AES/GCM/NoPadding");
-            d2.init(Cipher.DECRYPT_MODE, aesKey, new GCMParameterSpec(128, iv));
-            d2.doFinal(cifrado);
-        } catch (AEADBadTagException e) {
-            System.out.println("GCM detecto manipulacion: AEADBadTagException");
-        }
+public class ValidarGuia {
+    static String validar(String guia) {
+        if (guia == null || !guia.matches("RT-[0-9]{1,6}"))
+            throw new IllegalArgumentException("Guía inválida");
+        return guia;
+    }
+    public static void main(String[] args) {
+        System.out.println(validar("RT-82"));
+        try { System.out.println(validar("RT-82 OR 1=1")); }
+        catch (IllegalArgumentException e) { System.out.println(e.getMessage()); }
     }
 }
 ```
 
-Nota: la clave AES se genera con `KeyGenerator.getInstance("AES")` inicializado a 256 bits (`init(256)`); no la hardcodees. Compila y ejecuta:
+Ejecuta `java java-http-t02/src/ValidarGuia.java`.
 
-```bash
-javac -d out src/DemoSeguridad.java
-java -cp out DemoSeguridad
-```
+**Resultado esperado:** `RT-82` y después `Guía inválida`.
 
-**Resultado esperado (verificado con Temurin 27.0.1):**
+**Fallo deliberado**: reemplaza la expresión completa por `guia.startsWith("RT-")`. **Resultado del fallo:** `RT-82 OR 1=1` pasa. **Diagnóstico:** un prefijo no valida toda la entrada; comprueba el formato completo y usa consultas parametrizadas en la capa de datos.
 
-```text
-sha256(len)=32
-hash determinista=true
-hmac(len)=32
-firma valida=true
-firma de msg alterado=false
-descifrado=guia ENV-1
-GCM detecto manipulacion: AEADBadTagException
-```
+**3. Entiende**
 
-Léelo subtema por subtema: el hash es determinista y de 32 bytes; el HMAC autentica con clave compartida; la firma es **válida con el mensaje original y falsa si cambia un byte** (`firma de msg alterado=false`); y AES-GCM descifra bien pero **detecta la manipulación** de un byte con `AEADBadTagException`.
+Formato, autorización y parametrización SQL resuelven problemas distintos.
 
-**Fallo deliberado — IV reutilizado:** cifra **dos** mensajes distintos con la **misma** clave y el **mismo** IV. GCM no lanza error, pero reutilizar el nonce rompe su seguridad (permite recuperar información). El código "funciona" pero es inseguro: por eso el IV debe generarse nuevo con `SecureRandom` en cada cifrado. Es un fallo silencioso que solo la revisión detecta.
+#### Paso 7 · Cierre y evidencia
 
-#### Practica
+Entrega pruebas del header, validación y denegación, sin incluir credenciales reales, como incremento del proyecto integrador de RutaFlow: cada consulta de envío debe comprobar la propiedad o el permiso además del rol; con esto cerrás el módulo. Errores comunes: registrar el token completo en logs o guardarlo en el código fuente, confundir un token válido (autenticación) con permiso sobre un recurso específico (autorización), y validar una URL externa solo con una expresión regular en vez de resolver DNS y bloquear rangos privados. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/docs/api/java.net.http/java/net/http/HttpClient.html y https://cheatsheetseries.owasp.org/.
+**¿Por qué es importante?** Porque la identidad (quién eres), los permisos sobre cada recurso específico (qué podés hacer con ESTE envío) y la protección de la credencial misma resuelven tres amenazas distintas; un token válido nunca implica por sí solo que su dueño pueda leer cualquier recurso.
+**Evidencia de aprendizaje:** entrega la prueba del header `Authorization: Bearer` sin exponerlo en logs, la validación de entradas hostiles, y el rechazo de una URL con IP privada por política explícita.
+**Conceptos clave:** JWT, OAuth 2.0, OpenID Connect, autenticación frente a autorización, SSRF.
 
-**Práctica guiada:** crea `src/VerificadorIntegridad.java` que reciba un archivo, calcule su SHA-256 y lo compare con un hash esperado usando `MessageDigest.isEqual`. Provoca una comparación con `Arrays.equals` y explica por qué `isEqual` (tiempo constante) es preferible para datos sensibles. Después modifica un byte del archivo y confirma que el hash cambia por completo (efecto avalancha).
+**Cuándo no usarlo:** no guardes contraseñas dentro de JWT ni uses JWT como sustituto automático de sesiones; el servidor debe poder revocar o limitar tokens según el diseño.
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 
-**Ejercicio independiente:** implementa `src/SobreSeguro.java` para RutaFlow: cifra una liquidación con AES-GCM (IV aleatorio por mensaje, guardado junto al texto cifrado) **y** fírmala con ECDSA. El receptor verifica la firma y descifra; comprueba que una firma inválida o un texto manipulado se rechazan. Explica qué propiedad aporta cada primitiva y por qué cifrar sin firmar deja abierto el repudio.
+**4. Cierra**
 
-#### Aplica
-
-En el **[Proyecto integrador de RutaFlow](#proyecto-18-cliente-http-seguro-para-rutaflow)**: protege la liquidación con cifrado AES-GCM y firma ECDSA, verifica la integridad de un artefacto descargado con SHA-256, y documenta de dónde sale cada clave (gestor de secretos / entorno), nunca del código. No implementes tu propio algoritmo criptográfico.
-
-**Checklist de salida**
-
-- [ ] `DemoSeguridad.java` imprime el hash, el HMAC, la firma válida/inválida y el descifrado.
-- [ ] La firma falla al cambiar un byte del mensaje (no repudio real).
-- [ ] AES-GCM descifra correctamente y lanza `AEADBadTagException` si se manipula el cifrado.
-- [ ] Usas `MessageDigest.isEqual` en vez de `==`/`Arrays.equals` para comparar hashes.
-- [ ] Generas un IV nuevo con `SecureRandom` en cada cifrado y no hardcodeas claves.
-- [ ] Distingues hash (integridad), HMAC (autenticidad compartida), firma (no repudio) y cifrado (confidencialidad).
-
-**Errores comunes:** hashear contraseñas con SHA directo en vez de Argon2/bcrypt/PBKDF2; reutilizar el IV de AES-GCM; comparar hashes con `==`; confundir cifrar con firmar; hardcodear claves en el código o el repositorio; y usar MD5/SHA-1 o AES-ECB. Nunca implementes criptografía propia para producción.
-
-**Fuentes oficiales revisadas el 2026-11-01:** [`MessageDigest` (API Java SE 27)](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/security/MessageDigest.html), [`Cipher` (API Java SE 27)](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/javax/crypto/Cipher.html), [`Signature` (API Java SE 27)](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/security/Signature.html) y [OWASP Cryptographic Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Cryptographic_Storage_Cheat_Sheet.html).
-
-## Laboratorio del capítulo
-
-### Proyecto 18: cliente HTTP seguro para RutaFlow
-
-Desde una carpeta vacía crea `cliente-rutaflow/` y escribe manualmente un proyecto JDK con un servidor stub y un cliente. No copies los proyectos anteriores: implementa aquí las clases necesarias.
-
-1. Un GET de geocodificación con timeouts, correlación, allowlist y límite de respuesta.
-2. Reintentos acotados con backoff y jitter solo para GET y 502/503/504.
-3. Un POST de liquidación sin reintento automático.
-4. Bearer ficticio cargado por entorno, sin aparición en logs.
-5. Autorización por permiso y tenant además de autenticación.
-6. Casos ejecutables para 200, 400, 401, 403, 503, timeout, host rechazado y cuerpo excesivo.
-
-**Verificación:** el 400 no se reintenta; el 503 agota como máximo dos intentos; el POST se ejecuta una sola vez; un token válido no cruza tenants; el verificador termina incluso cuando el servidor deja de responder.
+Guarda entrada válida, inválida y la regla que la rechazó.

@@ -16,6 +16,8 @@ Crea `academia-labs/microservices`, luego `src/` y `evidence/`. Comprueba `java 
 
 **Al terminar podrás:** compilar y ejecutar un servidor Java en un proceso independiente, localizar su PID y comprobar qué dirección y puerto escucha antes de enviar una petición HTTP.
 
+**¿Por qué es importante?** Un microservicio es, antes que nada, un proceso separado que escucha en una dirección de red: si no puedes comprobar qué PID atiende qué puerto, cualquier fallo posterior entre servicios se confunde con un error de código.
+
 #### Paso 1 · Objetivo y preparación
 
 Usarás **JDK 25** porque es la LTS fijada para el laboratorio de Microservicios. Comprueba `java --version`, `javac --version`, `curl --version` y crea `academia-labs/microservices/m0-t1/{src,evidence}`. Si no puedes distinguir un archivo `.java` de una JVM en ejecución, vuelve a Java M0 T1 antes de continuar.

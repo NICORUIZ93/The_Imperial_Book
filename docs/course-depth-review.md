@@ -8,23 +8,23 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 |---|---:|---:|---|---|
 | foundations | 100 | 13 | HTML/CSS antes de frameworks; archivos y ejecución antes de persistencia avanzada | Interfaz semántica operable por teclado, algoritmo con casos límite y SQL reproducible |
 | javascript | 88 | 6 | Formularios, DOM y errores de red antes de patrones avanzados | Cliente que conserva entrada, anuncia errores y distingue cancelación de fallo |
-| node | 77 | 7 | HTTP y validación antes de autenticación e integraciones | API con límites de carga, paginación estable, pruebas y cierre ordenado |
+| node | 83 | 15 | HTTP y validación antes de autenticación e integraciones | API con límites de carga, paginación estable, pruebas y cierre ordenado |
 | angular | 71 | 3 | HTML/CSS/TypeScript explícitos; RxJS y estado con ejemplos completos | Rutas, formularios, datos remotos y cambios sin guardar comprobados con navegador |
 | react | 58 | 46 | JSX y estado antes de efectos; proveedor, dependencias y API visibles | Carga, error, vacío y carrera de respuestas; caché observada, no supuesta |
-| java | 109 | 11 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
-| spring-boot | 107 | 3 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
+| java | 111 | 79 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
+| spring-boot | 113 | 111 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
 | microservices | 11 | 1 | Procesos, red y fallo parcial antes de patrones; monolito modular antes de extracción | Contratos evolutivos, datos propios, idempotencia, recuperación y observabilidad demostradas |
 | android | 74 | 1 | Kotlin antes de Compose; distinguir recomposición, recreación y muerte de proceso | App instalable con permisos, restauración, persistencia y pruebas en dispositivo |
 | ios | 56 | 4 | Swift antes de SwiftUI; explicitar macOS/Xcode y destino | Cancelación, estados de red, persistencia y accesibilidad comprobados en simulador |
-| flutter | 63 | 4 | Dart antes de widgets; ejemplo con main y destino de ejecución | Restauración, red, pruebas de widget, integración y publicación por plataforma |
+| flutter | 106 | 8 | Dart antes de widgets; ejemplo con main y destino de ejecución | Restauración, red, pruebas de widget, integración y publicación por plataforma |
 | kotlin-multiplatform | 56 | 2 | Kotlin y source sets antes de interoperabilidad | Política común sin dependencias nativas; reloj controlado y pruebas por destino |
-| cloud | 156 | 0 | Terminal/HTTP/Docker antes de servicios; emulación distinta de cloud real | Infraestructura, permisos mínimos, restauración ensayada, RPO/RTO y costes observados |
+| cloud | 156 | 2 | Terminal/HTTP/Docker antes de servicios; emulación distinta de cloud real | Infraestructura, permisos mínimos, restauración ensayada, RPO/RTO y costes observados |
 | devops | 129 | 3 | Aplicación ejecutable antes de CI/CD; código de salida y artefactos identificables | Pipeline con promoción, rollback comprobado, observabilidad e incidente ensayado |
 | rutaflow | 29 | 1 | Integrar una especialidad por incremento; dominio y contratos antes de microservicios | Flujo completo con versión antigua/nueva, fallo y recuperación sin pérdida semántica |
 
 ## Registro tema por tema
 
-Revisión humana firmada: 0/1184 temas. Pre-lectura registrada sin firma: 14. La pre-lectura no acredita ejecución, comprensión ni calidad pedagógica; consulta `docs/manual-review-log.md`.
+Revisión humana firmada: 0/1273 temas. Pre-lectura registrada sin firma: 14. La pre-lectura no acredita ejecución, comprensión ni calidad pedagógica; consulta `docs/manual-review-log.md`.
 Los laboratorios nuevos tienen una verificación técnica separada; la ejecución correcta tampoco demuestra comprensión.
 
 | Curso / módulo | Tema | Señales para revisar |
@@ -174,10 +174,10 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | angular / 9 | [Tema 1: Store propio con signals](../web/public/content/angular/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
 | angular / 9 | [Tema 2: NgRx — actions, reducers y selectors](../web/public/content/angular/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
 | angular / 9 | [Tema 3: Cuándo NgRx justifica su complejidad](../web/public/content/angular/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
-| cloud / 0 | [Tema 1: Fundamentos absolutos — qué es una terminal, un comando y un sistema operativo](../web/public/content/cloud/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
+| cloud / 0 | [Tema 1: Fundamentos absolutos — qué es una terminal, un comando y un sistema operativo](../web/public/content/cloud/modulo-0.md) | ejemplo-breve-revisar-contexto |
 | cloud / 0 | [Tema 2: Fundamentos de redes — direcciones IP, puertos, HTTP y APIs](../web/public/content/cloud/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 0 | [Tema 3: Qué vas a aprender y cómo está estructurado el curso](../web/public/content/cloud/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| cloud / 0 | [Tema 4: Qué es Floci — definición, propósito y comparativa con LocalStack](../web/public/content/cloud/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
+| cloud / 0 | [Tema 4: Qué es Floci — definición, propósito y comparativa con LocalStack](../web/public/content/cloud/modulo-0.md) | ejemplo-breve-revisar-contexto |
 | cloud / 0 | [Tema 5: Servicios que emula Floci — AWS, Azure y GCP](../web/public/content/cloud/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 0 | [Tema 6: Ventajas y limitaciones de practicar con un emulador local](../web/public/content/cloud/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 0 | [Tema 7: Metodología de estudio — teoría, laboratorio y evaluación en cada módulo](../web/public/content/cloud/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
@@ -330,6 +330,38 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | cloud / 9 | [Tema 3: Archivos adjuntos en S3 y procesamiento en segundo plano con SQS](../web/public/content/cloud/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 9 | [Tema 4: API Gateway e IAM de mínimo privilegio para el proyecto](../web/public/content/cloud/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 9 | [Tema 5: Documentación de la API y guía de despliegue](../web/public/content/cloud/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
+| control-1 / 0 | [Tema 1: Cómo está armado cada capítulo](../web/public/content/control-1/modulo-0.md) | demostracion-no-delimitada |
+| control-1 / 1 | [Tema 1: ¿Qué es un número complejo?](../web/public/content/control-1/modulo-1.md) | demostracion-no-delimitada |
+| control-1 / 1 | [Tema 2: Raíces de s²+bs+c](../web/public/content/control-1/modulo-1.md) | demostracion-no-delimitada |
+| control-1 / 10 | [Tema 1: La forma de estado](../web/public/content/control-1/modulo-10.md) | demostracion-no-delimitada |
+| control-1 / 11 | [Tema 1: Forma estándar](../web/public/content/control-1/modulo-11.md) | demostracion-no-delimitada |
+| control-1 / 11 | [Tema 2: Retardo o tiempo muerto](../web/public/content/control-1/modulo-11.md) | demostracion-no-delimitada |
+| control-1 / 12 | [Tema 1: Forma estándar](../web/public/content/control-1/modulo-12.md) | demostracion-no-delimitada |
+| control-1 / 13 | [Tema 1: Polos dominantes](../web/public/content/control-1/modulo-13.md) | demostracion-no-delimitada |
+| control-1 / 14 | [Tema 1: Fórmula general](../web/public/content/control-1/modulo-14.md) | demostracion-no-delimitada |
+| control-1 / 15 | [Tema 1: Qué es estabilidad](../web/public/content/control-1/modulo-15.md) | demostracion-no-delimitada |
+| control-1 / 15 | [Tema 2: Casos especiales](../web/public/content/control-1/modulo-15.md) | demostracion-no-delimitada |
+| control-1 / 16 | [Tema 1: Geometría de un polo](../web/public/content/control-1/modulo-16.md) | demostracion-no-delimitada |
+| control-1 / 17 | [Tema 1: Las dos condiciones](../web/public/content/control-1/modulo-17.md) | demostracion-no-delimitada |
+| control-1 / 18 | [Tema 1: La idea](../web/public/content/control-1/modulo-18.md) | demostracion-no-delimitada |
+| control-1 / 18 | [Tema 2: Ventajas y desventajas (punto 4 del Parcial 1)](../web/public/content/control-1/modulo-18.md) | demostracion-no-delimitada |
+| control-1 / 19 | [Tema 1: Diseño de un adelanto](../web/public/content/control-1/modulo-19.md) | demostracion-no-delimitada |
+| control-1 / 2 | [Tema 1: La idea](../web/public/content/control-1/modulo-2.md) | demostracion-no-delimitada |
+| control-1 / 2 | [Tema 2: Propiedades](../web/public/content/control-1/modulo-2.md) | demostracion-no-delimitada |
+| control-1 / 2 | [Tema 3: Valor final y valor inicial](../web/public/content/control-1/modulo-2.md) | demostracion-no-delimitada |
+| control-1 / 20 | [Tema 1: Qué es la respuesta en frecuencia](../web/public/content/control-1/modulo-20.md) | demostracion-no-delimitada |
+| control-1 / 21 | [Tema 1: Parcial 1](../web/public/content/control-1/modulo-21.md) | demostracion-no-delimitada |
+| control-1 / 22 | [Tema 1: Simulacro con solución](../web/public/content/control-1/modulo-22.md) | demostracion-no-delimitada |
+| control-1 / 3 | [Tema 1: Caso 1: polos reales distintos](../web/public/content/control-1/modulo-3.md) | demostracion-no-delimitada |
+| control-1 / 3 | [Tema 2: Caso 2: polos repetidos](../web/public/content/control-1/modulo-3.md) | demostracion-no-delimitada |
+| control-1 / 4 | [Tema 1: Qué es la función de transferencia](../web/public/content/control-1/modulo-4.md) | demostracion-no-delimitada |
+| control-1 / 5 | [Tema 1: ¿Qué es un sistema de control?](../web/public/content/control-1/modulo-5.md) | demostracion-no-delimitada |
+| control-1 / 5 | [Tema 2: Álgebra de bloques](../web/public/content/control-1/modulo-5.md) | demostracion-no-delimitada |
+| control-1 / 6 | [Tema 1: Reglas para mover bloques](../web/public/content/control-1/modulo-6.md) | demostracion-no-delimitada |
+| control-1 / 7 | [Tema 1: Impedancias](../web/public/content/control-1/modulo-7.md) | demostracion-no-delimitada |
+| control-1 / 7 | [Tema 2: El op-amp inversor](../web/public/content/control-1/modulo-7.md) | demostracion-no-delimitada |
+| control-1 / 8 | [Tema 1: Mecánico de traslación](../web/public/content/control-1/modulo-8.md) | demostracion-no-delimitada |
+| control-1 / 9 | [Tema 1: La idea](../web/public/content/control-1/modulo-9.md) | demostracion-no-delimitada |
 | devops / 0 | [Tema 1: Sistema de archivos y permisos (chmod/chown)](../web/public/content/devops/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 0 | [Tema 2: Procesos, señales y jobs en segundo plano](../web/public/content/devops/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 0 | [Tema 3: Pipes, redirección y filtros (grep, awk, sed)](../web/public/content/devops/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
@@ -492,9 +524,52 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | flutter / 15 | [Tema 4: Clean Architecture](../web/public/content/flutter/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 15 | [Tema 5: Internacionalización completa](../web/public/content/flutter/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 15 | [Tema 6: Builds, firma y despliegue](../web/public/content/flutter/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 16 | [Tema 1: reconocer cuándo usar FFI y crear el paquete](../web/public/content/flutter/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 16 | [Tema 2: generar bindings C seguros para Dart](../web/public/content/flutter/modulo-16.md) | ejemplo-breve-revisar-contexto |
+| flutter / 16 | [Tema 3: conectar una biblioteca Rust mediante una ABI C](../web/public/content/flutter/modulo-16.md) | ejemplo-breve-revisar-contexto |
+| flutter / 16 | [Tema 4: compilar y empaquetar bibliotecas por plataforma](../web/public/content/flutter/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 16 | [Tema 5: medir rendimiento y evitar bloquear la interfaz](../web/public/content/flutter/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 16 | [Tema 6: propiedad de memoria, liberación y errores](../web/public/content/flutter/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 17 | [Tema 1: macros de Dart y alternativas disponibles](../web/public/content/flutter/modulo-17.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 17 | [Tema 2: generación avanzada con build_runner](../web/public/content/flutter/modulo-17.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 17 | [Tema 3: reflexión limitada y registro tipado](../web/public/content/flutter/modulo-17.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 17 | [Tema 4: recorrer el AST de Dart con analyzer](../web/public/content/flutter/modulo-17.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 17 | [Tema 5: crear un builder pequeño para build_runner](../web/public/content/flutter/modulo-17.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 17 | [Tema 6: diseñar y validar un paquete Dart](../web/public/content/flutter/modulo-17.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 18 | [Tema 1: la frontera entre Dart y el código nativo](../web/public/content/flutter/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 18 | [Tema 2: secretos fuera del binario](../web/public/content/flutter/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 18 | [Tema 3: fluidez y presupuesto de frames](../web/public/content/flutter/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 18 | [Tema 4: protocolo, telemetría y contención](../web/public/content/flutter/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 18 | [Tema 5: reportes de fallos con Crashlytics y Sentry](../web/public/content/flutter/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 18 | [Tema 6: analítica con privacidad y consentimiento](../web/public/content/flutter/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 18 | [Tema 7: monitoreo de rendimiento en una versión publicada](../web/public/content/flutter/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 19 | [Tema 1: estado de la jornada con Riverpod](../web/public/content/flutter/modulo-19.md) | demostracion-no-delimitada |
+| flutter / 19 | [Tema 2: mapa y permiso de ubicación](../web/public/content/flutter/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 19 | [Tema 3: posiciones en tiempo real con Socket.IO](../web/public/content/flutter/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 19 | [Tema 4: animar el marcador sin saltos](../web/public/content/flutter/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 19 | [Tema 5: confirmaciones offline y sincronización](../web/public/content/flutter/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 19 | [Tema 6: carga de evidencia con Dio y notificaciones](../web/public/content/flutter/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 2 | [Tema 1: MediaQuery vs LayoutBuilder](../web/public/content/flutter/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 2 | [Tema 2: Cómo Flutter calcula tamaños](../web/public/content/flutter/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 2 | [Tema 3: Breakpoints propios y SafeArea](../web/public/content/flutter/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 20 | [Tema 1: pruebas unitarias y de widget con Flutter Test](../web/public/content/flutter/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 20 | [Tema 2: golden e integración de un flujo real](../web/public/content/flutter/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 20 | [Tema 3: perfilado y presupuesto de rendimiento](../web/public/content/flutter/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 20 | [Tema 4: Clean Architecture y sustitución de dependencias](../web/public/content/flutter/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 20 | [Tema 5: internacionalización y formatos locales](../web/public/content/flutter/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 20 | [Tema 6: builds por plataforma, firma y entrega](../web/public/content/flutter/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 21 | [Tema 1: catálogo y flujo con `in_app_purchase`](../web/public/content/flutter/modulo-21.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 21 | [Tema 2: suscripciones Android, planes base y cambios](../web/public/content/flutter/modulo-21.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 21 | [Tema 3: suscripciones iOS con StoreKit](../web/public/content/flutter/modulo-21.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 21 | [Tema 4: restauración de compras y entitlement](../web/public/content/flutter/modulo-21.md) | ejemplo-breve-revisar-contexto |
+| flutter / 21 | [Tema 5: pruebas de IAP en sandbox](../web/public/content/flutter/modulo-21.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 21 | [Tema 6: validación de transacciones en servidor](../web/public/content/flutter/modulo-21.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 22 | [Tema 1: configurar AdMob y cargar el primer banner de prueba](../web/public/content/flutter/modulo-22.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 22 | [Tema 2: elegir mediación, bidding y waterfall](../web/public/content/flutter/modulo-22.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 22 | [Tema 3: banners, interstitials y anuncios recompensados](../web/public/content/flutter/modulo-22.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 22 | [Tema 4: consentimiento, privacidad y audiencias](../web/public/content/flutter/modulo-22.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 22 | [Tema 5: pruebas de anuncios y diagnóstico de no-fill](../web/public/content/flutter/modulo-22.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 22 | [Tema 6: comparar AdMob, AppLovin MAX y Unity LevelPlay](../web/public/content/flutter/modulo-22.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 3 | [Tema 1: go_router: navegación como función de la URL](../web/public/content/flutter/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 3 | [Tema 2: Guards y deep linking](../web/public/content/flutter/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 3 | [Tema 3: Transiciones personalizadas](../web/public/content/flutter/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
@@ -678,77 +753,79 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | ios / 9 | [Tema 1: XCTest clásico y Swift Testing](../web/public/content/ios/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
 | ios / 9 | [Tema 2: Testing de código async](../web/public/content/ios/modulo-9.md) | ejemplo-breve-revisar-contexto |
 | ios / 9 | [Tema 3: UI Tests con XCUITest](../web/public/content/ios/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 0 | [Tema 0: Instalar Eclipse Temurin JDK 27 en macOS, Windows y Ubuntu · Básico · 15 min](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 0 | [Tema 1: Del código fuente a la JVM · Básico · 35 min](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 0 | [Tema 2: public static void main — qué significa cada palabra · Básico · 30 min](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 0 | [Tema 3: JDK, JRE y JVM · Básico · 30 min](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 0 | [Tema 4: Tipos primitivos vs referencias · Básico · 40 min](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 0 | [Tema 5: Variables, conversiones y `String` · Intermedio · 45 min](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 0 | [Tema 6: Operadores, precedencia y control de flujo · Intermedio · 45 min](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 0 | [Tema 7: Arreglos, wrappers y paso de argumentos · Intermedio · 45 min](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 0 | [Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`) · Intermedio · 50 min](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 1 | [Tema 1: Clases, objetos, constructores y encapsulación · Básico · 40 min](../web/public/content/java/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 1 | [Tema 2: Herencia y sobreescritura · Intermedio · 1 h](../web/public/content/java/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 1 | [Tema 3: Interfaces, clases abstractas y cuándo usar cada una · Intermedio · 50 min](../web/public/content/java/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 1 | [Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso · Intermedio · 55 min](../web/public/content/java/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 10 | [Tema 1: module-info.java y encapsulación fuerte · Intermedio · 50 min](../web/public/content/java/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 10 | [Tema 2: Migración incremental y cuándo JPMS aporta valor · Avanzado · 55 min](../web/public/content/java/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 10 | [Tema 3: `opens` para acceso reflexivo controlado de frameworks · Avanzado · 60 min](../web/public/content/java/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 11 | [Tema 1: Generaciones de memoria y recolectores · Avanzado · 55 min](../web/public/content/java/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 11 | [Tema 2: Java Flight Recorder y JIT compilation · Avanzado · 55 min](../web/public/content/java/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 11 | [Tema 3: Referencias especiales y heap dumps · Avanzado · 60 min](../web/public/content/java/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 11 | [Tema 4: Foreign Function & Memory API (Java 22) · Experto · 55 min](../web/public/content/java/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 12 | [Tema 1: Builder — configuración paso a paso y validación · Intermedio · 45 min](../web/public/content/java/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 12 | [Tema 2: Factory Method y Strategy · Intermedio · 55 min](../web/public/content/java/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 12 | [Tema 3: Abstract Factory y familias de productos compatibles · Avanzado · 50 min](../web/public/content/java/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 12 | [Tema 4: SOLID y cuándo NO aplicar un patrón · Avanzado · 60 min](../web/public/content/java/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 12 | [Tema 5: Prototype — copiar configuración sin compartir estado mutable · Intermedio · 45 min](../web/public/content/java/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 12 | [Tema 6: Patrones estructurales — elegir por intención · Avanzado · 65 min](../web/public/content/java/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 13 | [Tema 1: Arquitectura por capas del proyecto integrador · Avanzado · 50 min](../web/public/content/java/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 13 | [Tema 2: Integrando concurrencia, modelado y testing · Experto · 60 min](../web/public/content/java/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 13 | [Tema 3: Build reproducible y cierre del track · Avanzado · 50 min](../web/public/content/java/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 14 | [Tema 1: Compartir memoria requiere orden y visibilidad · Experto · 60 min](../web/public/content/java/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 14 | [Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo · Experto · 65 min](../web/public/content/java/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 14 | [Tema 3: Deserializar es permitir construcción y comportamiento · Experto · 60 min](../web/public/content/java/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 14 | [Tema 4: El runtime es parte del artefacto y necesita ciclo de vida · Experto · 60 min](../web/public/content/java/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 15 | [Tema 1: Maven avanzado · Avanzado · 55 min](../web/public/content/java/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 15 | [Tema 2: Gradle y builds reproducibles · Avanzado · 45 min](../web/public/content/java/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 15 | [Tema 3: Proyectos multi-módulo sin ciclos · Experto · 1 h 15 min](../web/public/content/java/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 15 | [Tema 4: JUnit 5, Mockito y assertions expresivas · Avanzado · 55 min](../web/public/content/java/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 15 | [Tema 5: Pruebas de integración reproducibles · Experto · 1 h](../web/public/content/java/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 15 | [Tema 6: SLF4J, Logback, MDC y logging estructurado · Avanzado · 55 min](../web/public/content/java/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 16 | [Tema 1: Entidades y relaciones JPA · Intermedio · 55 min](../web/public/content/java/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 16 | [Tema 2: FetchType.LAZY, EAGER y el problema N+1 · Avanzado · 1 h](../web/public/content/java/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 17 | [Tema 1: JDBC, PreparedStatement y DAO · Intermedio · 1 h](../web/public/content/java/modulo-17.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 17 | [Tema 2: Transacciones, ACID y aislamiento · Avanzado · 1 h 15 min](../web/public/content/java/modulo-17.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 18 | [Tema 1: HttpClient, REST, timeouts y fallos · Intermedio · 2 h](../web/public/content/java/modulo-18.md) | clase-java-no-visible |
-| java / 18 | [Tema 2: Tokens, validación y límites de seguridad · Avanzado · 2 h](../web/public/content/java/modulo-18.md) | clase-java-no-visible |
-| java / 18 | [Tema 3: Sockets TCP y UDP — la red que hay debajo de HttpClient · Avanzado · 2 h](../web/public/content/java/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 18 | [Tema 4: Seguridad defensiva — hash, HMAC, firma y cifrado · Avanzado · 2 h 30 min](../web/public/content/java/modulo-18.md) | clase-java-no-visible |
-| java / 19 | [Tema 1: Reflexión y anotaciones en tiempo de ejecución · Intermedio · 90 min](../web/public/content/java/modulo-19.md) | clase-java-no-visible |
-| java / 19 | [Tema 2: Expresiones regulares con Pattern y Matcher · Intermedio · 90 min](../web/public/content/java/modulo-19.md) | clase-java-no-visible |
-| java / 19 | [Tema 3: Dinero exacto con BigDecimal · Básico · 75 min](../web/public/content/java/modulo-19.md) | clase-java-no-visible |
-| java / 19 | [Tema 4: Assertions y diseño por contrato · Intermedio · 75 min](../web/public/content/java/modulo-19.md) | clase-java-no-visible |
-| java / 19 | [Tema 5: ServiceLoader: plugins sin acoplar implementaciones · Avanzado · 2 h](../web/public/content/java/modulo-19.md) | clase-java-no-visible |
-| java / 19 | [Tema 6: Proxies dinámicos: así funcionan @Transactional y los mocks · Avanzado · 90 min](../web/public/content/java/modulo-19.md) | clase-java-no-visible |
-| java / 19 | [Tema 7: Internacionalización: números, monedas, fechas y orden de texto · Intermedio · 90 min](../web/public/content/java/modulo-19.md) | clase-java-no-visible |
-| java / 2 | [Tema 1: List, Set, Map y sus implementaciones · Básico · 45 min](../web/public/content/java/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 2 | [Tema 2: Genéricos, wildcards y type erasure · Intermedio · 45 min](../web/public/content/java/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 2 | [Tema 3: Comparable vs Comparator, e iteración · Intermedio · 50 min](../web/public/content/java/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 20 | [Tema 1: Lambdas a fondo — tipo objetivo, captura y referencias a métodos · Intermedio · 120 min](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 20 | [Tema 2: Las cuatro formas: Predicate, Function, Consumer y Supplier · Básico · 75 min](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 20 | [Tema 3: Componer sin anidar: andThen, compose, negate y reglas encadenadas · Intermedio · 75 min](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 20 | [Tema 4: Streams como composición: pereza, orden y efectos que se esconden · Intermedio · 90 min](../web/public/content/java/modulo-20.md) | clase-java-no-visible |
-| java / 20 | [Tema 5: Function y BiFunction — transformar con una o dos entradas · Básico · 30 min](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 20 | [Tema 6: UnaryOperator y BinaryOperator — cuando entrada y salida comparten tipo · Básico · 20 min](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 20 | [Tema 7: Referencias a métodos — las cuatro formas · Básico · 25 min](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 20 | [Tema 8: Optional — ausencia explícita sin null · Intermedio · 30 min](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 20 | [Tema 9: Streams intermedios — map, filter, flatMap y sorted · Intermedio · 35 min](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 20 | [Tema 10: Streams terminales — collect, reduce, forEach y find · Intermedio · 35 min](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 20 | [Tema 11: Collectors — toList, toMap, groupingBy y joining · Intermedio · 35 min](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 20 | [Tema 12: Streams paralelos — cuándo ayudan y cuándo engañan · Avanzado · 30 min](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 20 | [Tema 13: Pureza y efectos secundarios — razonar sobre funciones · Intermedio · 30 min](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 20 | [Tema 14: Flow API — reactive streams en la biblioteca estándar · Avanzado · 30 min](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 0 | [Tema 1: Del código fuente a la JVM](../web/public/content/java/modulo-0.md) | demostracion-no-delimitada |
+| java / 0 | [Tema 2: public static void main — qué significa cada palabra](../web/public/content/java/modulo-0.md) | demostracion-no-delimitada |
+| java / 0 | [Tema 3: JDK, JRE y JVM](../web/public/content/java/modulo-0.md) | demostracion-no-delimitada |
+| java / 0 | [Tema 4: Tipos primitivos vs referencias](../web/public/content/java/modulo-0.md) | demostracion-no-delimitada |
+| java / 0 | [Tema 5: Variables, conversiones y `String`](../web/public/content/java/modulo-0.md) | demostracion-no-delimitada |
+| java / 0 | [Tema 6: Operadores, precedencia y control de flujo](../web/public/content/java/modulo-0.md) | demostracion-no-delimitada |
+| java / 0 | [Tema 7: Arreglos, wrappers y paso de argumentos](../web/public/content/java/modulo-0.md) | demostracion-no-delimitada |
+| java / 0 | [Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`)](../web/public/content/java/modulo-0.md) | demostracion-no-delimitada |
+| java / 1 | [Tema 1: Clases, objetos, constructores y encapsulación](../web/public/content/java/modulo-1.md) | demostracion-no-delimitada |
+| java / 1 | [Tema 2: Herencia y sobreescritura](../web/public/content/java/modulo-1.md) | demostracion-no-delimitada |
+| java / 1 | [Tema 3: Interfaces, clases abstractas y cuándo usar cada una](../web/public/content/java/modulo-1.md) | demostracion-no-delimitada |
+| java / 1 | [Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso](../web/public/content/java/modulo-1.md) | demostracion-no-delimitada |
+| java / 10 | [Tema 1: module-info.java y encapsulación fuerte](../web/public/content/java/modulo-10.md) | demostracion-no-delimitada |
+| java / 10 | [Tema 2: Migración incremental y cuándo JPMS aporta valor](../web/public/content/java/modulo-10.md) | demostracion-no-delimitada |
+| java / 10 | [Tema 3: opens para acceso reflexivo controlado de frameworks](../web/public/content/java/modulo-10.md) | demostracion-no-delimitada |
+| java / 11 | [Tema 1: Generaciones de memoria y recolectores](../web/public/content/java/modulo-11.md) | demostracion-no-delimitada |
+| java / 11 | [Tema 2: Java Flight Recorder y JIT compilation](../web/public/content/java/modulo-11.md) | demostracion-no-delimitada |
+| java / 11 | [Tema 3: Referencias especiales y heap dumps](../web/public/content/java/modulo-11.md) | demostracion-no-delimitada |
+| java / 11 | [Tema 4: Foreign Function & Memory API (Java 22)](../web/public/content/java/modulo-11.md) | demostracion-no-delimitada |
+| java / 12 | [Tema 1: Builder — configuración paso a paso y validación](../web/public/content/java/modulo-12.md) | demostracion-no-delimitada |
+| java / 12 | [Tema 2: Factory Method y Strategy](../web/public/content/java/modulo-12.md) | demostracion-no-delimitada |
+| java / 12 | [Tema 3: Abstract Factory y familias de productos compatibles](../web/public/content/java/modulo-12.md) | demostracion-no-delimitada |
+| java / 12 | [Tema 4: SOLID y cuándo NO aplicar un patrón](../web/public/content/java/modulo-12.md) | demostracion-no-delimitada |
+| java / 12 | [Tema 5: Prototype: copiar un objeto sin compartir sus datos](../web/public/content/java/modulo-12.md) | demostracion-no-delimitada |
+| java / 12 | [Tema 6: Patrones estructurales para conectar piezas existentes](../web/public/content/java/modulo-12.md) | demostracion-no-delimitada |
+| java / 13 | [Tema 1: Arquitectura por capas del proyecto integrador](../web/public/content/java/modulo-13.md) | demostracion-no-delimitada |
+| java / 13 | [Tema 2: Integrando concurrencia, modelado y testing](../web/public/content/java/modulo-13.md) | demostracion-no-delimitada |
+| java / 13 | [Tema 3: Build reproducible y cierre del track](../web/public/content/java/modulo-13.md) | demostracion-no-delimitada |
+| java / 14 | [Tema 1: Compartir memoria requiere orden y visibilidad](../web/public/content/java/modulo-14.md) | demostracion-no-delimitada |
+| java / 14 | [Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo](../web/public/content/java/modulo-14.md) | demostracion-no-delimitada |
+| java / 14 | [Tema 3: Deserializar es permitir construcción y comportamiento](../web/public/content/java/modulo-14.md) | demostracion-no-delimitada |
+| java / 14 | [Tema 4: El runtime es parte del artefacto y necesita ciclo de vida](../web/public/content/java/modulo-14.md) | demostracion-no-delimitada |
+| java / 15 | [Tema 1: Maven avanzado](../web/public/content/java/modulo-15.md) | demostracion-no-delimitada |
+| java / 15 | [Tema 2: Gradle y builds reproducibles](../web/public/content/java/modulo-15.md) | demostracion-no-delimitada |
+| java / 15 | [Tema 3: Proyectos multi-módulo sin ciclos](../web/public/content/java/modulo-15.md) | demostracion-no-delimitada |
+| java / 15 | [Tema 4: JUnit 5, Mockito y assertions expresivas](../web/public/content/java/modulo-15.md) | demostracion-no-delimitada |
+| java / 15 | [Tema 5: Pruebas de integración reproducibles](../web/public/content/java/modulo-15.md) | demostracion-no-delimitada |
+| java / 15 | [Tema 6: SLF4J, Logback, MDC y logging estructurado](../web/public/content/java/modulo-15.md) | demostracion-no-delimitada |
+| java / 16 | [Tema 1: Entidades y relaciones JPA](../web/public/content/java/modulo-16.md) | demostracion-no-delimitada |
+| java / 16 | [Tema 2: FetchType.LAZY, EAGER y el problema N+1](../web/public/content/java/modulo-16.md) | demostracion-no-delimitada |
+| java / 16 | [Tema 3: Relaciones uno a uno, muchos a muchos y herencia](../web/public/content/java/modulo-16.md) | demostracion-no-delimitada |
+| java / 16 | [Tema 4: Ciclo de vida, EntityManager y consultas tipadas](../web/public/content/java/modulo-16.md) | demostracion-no-delimitada |
+| java / 16 | [Tema 5: Búsquedas dinámicas con Criteria y Querydsl](../web/public/content/java/modulo-16.md) | demostracion-no-delimitada |
+| java / 16 | [Tema 6: EntityGraph y cachés de persistencia](../web/public/content/java/modulo-16.md) | demostracion-no-delimitada |
+| java / 16 | [Tema 7: Concurrencia, transacciones y propagación](../web/public/content/java/modulo-16.md) | demostracion-no-delimitada |
+| java / 16 | [Tema 8: Migraciones y pruebas JPA con Testcontainers](../web/public/content/java/modulo-16.md) | demostracion-no-delimitada |
+| java / 17 | [Tema 1: JDBC, PreparedStatement y DAO](../web/public/content/java/modulo-17.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 17 | [Tema 2: Transacciones, ACID y aislamiento](../web/public/content/java/modulo-17.md) | clase-java-no-visible |
+| java / 18 | [Tema 1: HttpClient, REST, timeouts y fallos](../web/public/content/java/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 18 | [Tema 2: Tokens, validación y límites de seguridad](../web/public/content/java/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 19 | [Tema 1: Reflexión y anotaciones en tiempo de ejecución](../web/public/content/java/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 19 | [Tema 2: Expresiones regulares con Pattern y Matcher](../web/public/content/java/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 19 | [Tema 3: Dinero exacto con BigDecimal](../web/public/content/java/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 19 | [Tema 4: Assertions y diseño por contrato](../web/public/content/java/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 19 | [Tema 5: ServiceLoader: plugins sin acoplar implementaciones](../web/public/content/java/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 19 | [Tema 6: Proxies dinámicos: así funcionan @Transactional y los mocks](../web/public/content/java/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 19 | [Tema 7: Internacionalización: números, monedas, fechas y orden de texto](../web/public/content/java/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 2 | [Tema 1: List, Set, Map y sus implementaciones](../web/public/content/java/modulo-2.md) | demostracion-no-delimitada |
+| java / 2 | [Tema 2: Genéricos, wildcards y type erasure](../web/public/content/java/modulo-2.md) | demostracion-no-delimitada |
+| java / 2 | [Tema 3: Comparable vs Comparator, e iteración](../web/public/content/java/modulo-2.md) | demostracion-no-delimitada |
+| java / 20 | [Tema 1: Las cuatro formas: Predicate, Function, Consumer y Supplier](../web/public/content/java/modulo-20.md) | demostracion-no-delimitada |
+| java / 20 | [Tema 2: Componer sin anidar: andThen, compose, negate y reglas encadenadas](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 20 | [Tema 3: Streams como composición: pereza, orden y efectos que se esconden](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 20 | [Tema 4: Function y BiFunction: transformar uno o dos datos](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 20 | [Tema 5: UnaryOperator y BinaryOperator: la salida conserva el tipo](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 20 | [Tema 6: Referencias a métodos: escribir la operación sin repetirla](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 20 | [Tema 7: Optional: buscar un envío que puede no existir](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 20 | [Tema 8: Streams intermedios: filtrar, transformar, aplanar y ordenar](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 20 | [Tema 9: Streams terminales: encontrar, contar y combinar resultados](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 20 | [Tema 10: Collectors: formar listas, mapas, grupos y texto](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 20 | [Tema 11: Streams paralelos: comparar antes de acelerarlos](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 20 | [Tema 12: Pureza y efectos: calcular separado de guardar o imprimir](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 20 | [Tema 13: Flow API: publicar datos con demanda y cierre](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 21 | [Tema 1: Qué es la superficie pública de una API · Básico · 40 min](../web/public/content/java/modulo-21.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 21 | [Tema 2: Compatibilidad binaria frente a compatibilidad de fuente · Intermedio · 45 min](../web/public/content/java/modulo-21.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 21 | [Tema 3: Evolucionar sin romper: default methods, deprecación y retirada · Intermedio · 45 min](../web/public/content/java/modulo-21.md) | Sin señales de estos detectores; revisión pendiente |
@@ -759,34 +836,34 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | java / 22 | [Tema 3: Copia defensiva, copia superficial y clone · Intermedio · 40 min](../web/public/content/java/modulo-22.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 22 | [Tema 4: Enums de dominio: estado, código y comportamiento · Intermedio · 45 min](../web/public/content/java/modulo-22.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 22 | [Tema 5: Clases anidadas, this$0 y la referencia que retiene · Avanzado · 45 min](../web/public/content/java/modulo-22.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 3 | [Tema 1: Checked vs unchecked exceptions · Básico · 40 min](../web/public/content/java/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 3 | [Tema 2: try-with-resources · Básico · 40 min](../web/public/content/java/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 3 | [Tema 3: Excepciones personalizadas y no tragar excepciones · Intermedio · 45 min](../web/public/content/java/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 4 | [Tema 1: Stream API — map, filter, reduce, collect · Básico · 45 min](../web/public/content/java/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 4 | [Tema 2: Optional — evitar null explícitamente · Intermedio · 40 min](../web/public/content/java/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 4 | [Tema 3: Streams paralelos y referencias a métodos · Intermedio · 45 min](../web/public/content/java/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 4 | [Tema 4: Stream Gatherers (Java 24) · Avanzado · 50 min](../web/public/content/java/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 5 | [Tema 1: ExecutorService y gestión de hilos · Intermedio · 50 min](../web/public/content/java/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 5 | [Tema 2: CompletableFuture · Intermedio · 45 min](../web/public/content/java/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 5 | [Tema 3: Virtual threads · Intermedio · 50 min](../web/public/content/java/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 5 | [Tema 4: Condiciones de carrera y sincronización · Intermedio · 50 min](../web/public/content/java/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 5 | [Tema 5: Structured Concurrency (StructuredTaskScope, preview en JDK 27) · Avanzado · 55 min](../web/public/content/java/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 5 | [Tema 6: Scoped Values frente a ThreadLocal (Java 25) · Avanzado · 50 min](../web/public/content/java/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 5 | [Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos · Avanzado · 45 min](../web/public/content/java/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 6 | [Tema 1: NIO.2 — Path y Files · Intermedio · 45 min](../web/public/content/java/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 6 | [Tema 2: Serialización con Jackson · Intermedio · 50 min](../web/public/content/java/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 6 | [Tema 3: Archivos grandes y recursos del classpath · Intermedio · 45 min](../web/public/content/java/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 7 | [Tema 1: record — modelos inmutables sin boilerplate · Básico · 45 min](../web/public/content/java/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 7 | [Tema 2: sealed — jerarquías cerradas y exhaustividad · Intermedio · 45 min](../web/public/content/java/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 7 | [Tema 3: Pattern matching exhaustivo y para instanceof · Intermedio · 45 min](../web/public/content/java/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 7 | [Tema 4: Unnamed variables y patterns (_, Java 22) · Avanzado · 50 min](../web/public/content/java/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 8 | [Tema 1: pom.xml vs build.gradle.kts · Básico · 45 min](../web/public/content/java/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 8 | [Tema 2: Ciclo de vida de build y scopes · Intermedio · 45 min](../web/public/content/java/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 8 | [Tema 3: Proyectos multi-módulo · Intermedio · 50 min](../web/public/content/java/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 8 | [Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas · Avanzado · 50 min](../web/public/content/java/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 9 | [Tema 1: JUnit 5 — anotaciones y ciclo de vida · Básico · 45 min](../web/public/content/java/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 9 | [Tema 2: Mockito — aislar dependencias · Intermedio · 50 min](../web/public/content/java/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 9 | [Tema 3: Tests parametrizados y cobertura · Intermedio · 50 min](../web/public/content/java/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 3 | [Tema 1: Checked vs unchecked exceptions](../web/public/content/java/modulo-3.md) | demostracion-no-delimitada |
+| java / 3 | [Tema 2: try-with-resources](../web/public/content/java/modulo-3.md) | demostracion-no-delimitada |
+| java / 3 | [Tema 3: Excepciones personalizadas y no tragar excepciones](../web/public/content/java/modulo-3.md) | demostracion-no-delimitada |
+| java / 4 | [Tema 1: Stream API — map, filter, reduce, collect](../web/public/content/java/modulo-4.md) | demostracion-no-delimitada |
+| java / 4 | [Tema 2: Optional — evitar null explícitamente](../web/public/content/java/modulo-4.md) | demostracion-no-delimitada |
+| java / 4 | [Tema 3: Streams paralelos y referencias a métodos](../web/public/content/java/modulo-4.md) | demostracion-no-delimitada |
+| java / 4 | [Tema 4: Stream Gatherers (Java 24)](../web/public/content/java/modulo-4.md) | demostracion-no-delimitada |
+| java / 5 | [Tema 1: ExecutorService y gestión de hilos](../web/public/content/java/modulo-5.md) | demostracion-no-delimitada |
+| java / 5 | [Tema 2: CompletableFuture](../web/public/content/java/modulo-5.md) | demostracion-no-delimitada |
+| java / 5 | [Tema 3: Virtual threads](../web/public/content/java/modulo-5.md) | demostracion-no-delimitada |
+| java / 5 | [Tema 4: Condiciones de carrera y sincronización](../web/public/content/java/modulo-5.md) | demostracion-no-delimitada |
+| java / 5 | [Tema 5: Structured Concurrency (StructuredTaskScope, Java 25)](../web/public/content/java/modulo-5.md) | demostracion-no-delimitada |
+| java / 5 | [Tema 6: Scoped Values frente a ThreadLocal (Java 25)](../web/public/content/java/modulo-5.md) | demostracion-no-delimitada |
+| java / 5 | [Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos](../web/public/content/java/modulo-5.md) | demostracion-no-delimitada |
+| java / 6 | [Tema 1: NIO.2 — Path y Files](../web/public/content/java/modulo-6.md) | demostracion-no-delimitada |
+| java / 6 | [Tema 2: Serialización con Jackson](../web/public/content/java/modulo-6.md) | demostracion-no-delimitada |
+| java / 6 | [Tema 3: Archivos grandes y recursos del classpath](../web/public/content/java/modulo-6.md) | demostracion-no-delimitada |
+| java / 7 | [Tema 1: record — modelos inmutables sin boilerplate](../web/public/content/java/modulo-7.md) | demostracion-no-delimitada |
+| java / 7 | [Tema 2: sealed — jerarquías cerradas y exhaustividad](../web/public/content/java/modulo-7.md) | demostracion-no-delimitada |
+| java / 7 | [Tema 3: Pattern matching exhaustivo y para instanceof](../web/public/content/java/modulo-7.md) | demostracion-no-delimitada |
+| java / 7 | [Tema 4: Unnamed variables y patterns (_, Java 22)](../web/public/content/java/modulo-7.md) | demostracion-no-delimitada |
+| java / 8 | [Tema 1: pom.xml vs build.gradle.kts](../web/public/content/java/modulo-8.md) | demostracion-no-delimitada |
+| java / 8 | [Tema 2: Ciclo de vida de build y scopes](../web/public/content/java/modulo-8.md) | demostracion-no-delimitada |
+| java / 8 | [Tema 3: Proyectos multi-módulo](../web/public/content/java/modulo-8.md) | demostracion-no-delimitada |
+| java / 8 | [Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas](../web/public/content/java/modulo-8.md) | demostracion-no-delimitada |
+| java / 9 | [Tema 1: JUnit 5 — anotaciones y ciclo de vida](../web/public/content/java/modulo-9.md) | demostracion-no-delimitada |
+| java / 9 | [Tema 2: Mockito — aislar dependencias](../web/public/content/java/modulo-9.md) | demostracion-no-delimitada |
+| java / 9 | [Tema 3: Tests parametrizados y cobertura](../web/public/content/java/modulo-9.md) | demostracion-no-delimitada |
 | javascript / 0 | [Tema 1: Variables — `const`, `let` y `var`](../web/public/content/javascript/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | javascript / 0 | [Tema 2: Tipos primitivos y `typeof`](../web/public/content/javascript/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | javascript / 0 | [Tema 3: Conversión, coerción e igualdad](../web/public/content/javascript/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
@@ -931,7 +1008,7 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | kotlin-multiplatform / 9 | [Tema 1: kotlin.test en commonTest](../web/public/content/kotlin-multiplatform/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
 | kotlin-multiplatform / 9 | [Tema 2: Fakes en vez de mocks](../web/public/content/kotlin-multiplatform/modulo-9.md) | ejemplo-breve-revisar-contexto |
 | kotlin-multiplatform / 9 | [Tema 3: runTest para coroutines](../web/public/content/kotlin-multiplatform/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
-| microservices / 0 | [Tema 1: Proceso, host, puerto, socket y DNS · Fundamentos · 70 min](../web/public/content/microservices/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
+| microservices / 0 | [Tema 1: Ejecutar dos procesos Java y comprobar su socket HTTP · Fundamentos · 45 min](../web/public/content/microservices/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | microservices / 0 | [Tema 2: Latencia, deadline y timeouts por fase · Aplicación · 80 min](../web/public/content/microservices/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | microservices / 0 | [Tema 3: Fallo parcial, resultado desconocido e idempotencia · Integración · 90 min](../web/public/content/microservices/modulo-0.md) | clase-java-no-visible |
 | microservices / 0 | [Tema 4: Relojes, causalidad, concurrencia y orden · Integración · 80 min](../web/public/content/microservices/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
@@ -972,12 +1049,18 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | node / 13 | [Tema 3: Reintentar sin duplicar el efecto · Avanzado · 120 min](../web/public/content/node/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 13 | [Tema 4: Webhooks verificables y recuperación por reconciliación · Avanzado · 100 min](../web/public/content/node/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 13 | [Tema 5: OpenAPI como contrato ejecutable · Avanzado · 100 min](../web/public/content/node/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 14 | [Tema 1: TypeScript en Node.js · Avanzado · 60 min](../web/public/content/node/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 14 | [Tema 2: GraphQL avanzado y Federation · Avanzado · 105 min](../web/public/content/node/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 14 | [Tema 3: Microservicios, Kafka, RabbitMQ y sagas · Avanzado · 105 min](../web/public/content/node/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 14 | [Tema 4: Serverless multi-cloud · Avanzado · 75 min](../web/public/content/node/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 14 | [Tema 5: Docker productivo con Node · Avanzado · 90 min](../web/public/content/node/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 14 | [Tema 6: CI/CD y promoción de artefactos · Avanzado · 105 min](../web/public/content/node/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 14 | [Tema 1: TypeScript en Node.js](../web/public/content/node/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 14 | [Tema 2: GraphQL avanzado y Federation](../web/public/content/node/modulo-14.md) | comprobar-script-test |
+| node / 14 | [Tema 3: Compensar una entrega cuando falla un paso](../web/public/content/node/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 14 | [Tema 4: Serverless multi-cloud](../web/public/content/node/modulo-14.md) | comprobar-script-test |
+| node / 14 | [Tema 5: Docker productivo con Node](../web/public/content/node/modulo-14.md) | comprobar-script-test |
+| node / 14 | [Tema 6: CI/CD y promoción de artefactos](../web/public/content/node/modulo-14.md) | comprobar-script-test |
+| node / 14 | [Tema 7: Kafka desde Node: clave, grupo consumidor y offset](../web/public/content/node/modulo-14.md) | demostracion-no-delimitada |
+| node / 14 | [Tema 8: RabbitMQ desde Node: exchange, cola y confirmaciones](../web/public/content/node/modulo-14.md) | demostracion-no-delimitada |
+| node / 15 | [Tema 1: Deno y permisos explícitos](../web/public/content/node/modulo-15.md) | ejemplo-breve-revisar-contexto |
+| node / 15 | [Tema 2: Bun reúne runtime, paquetes, pruebas y bundler](../web/public/content/node/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 15 | [Tema 3: Migrar un proyecto Node a Bun sin perder reproducibilidad](../web/public/content/node/modulo-15.md) | comprobar-script-test |
+| node / 15 | [Tema 4: Elegir entre Node, Deno y Bun](../web/public/content/node/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 2 | [Tema 1: fs/promises frente a callbacks · Intermedio · 45 min](../web/public/content/node/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 2 | [Tema 2: Streams básicos: Readable, Writable y Transform · Intermedio · 60 min](../web/public/content/node/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 2 | [Tema 3: Backpressure: write() y el evento drain · Avanzado · 55 min](../web/public/content/node/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
@@ -1106,110 +1189,116 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | rutaflow / 7 | [Tema 2: SLO y respuesta a incidentes](../web/public/content/rutaflow/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | rutaflow / 7 | [Tema 3: Pruebas end-to-end del sistema completo (app ↔ backend)](../web/public/content/rutaflow/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | rutaflow / 7 | [Tema 4: Continuidad, costes y proyecto final](../web/public/content/rutaflow/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 0 | [Tema 1: Inversión de control y el contenedor de Spring · Básico · 20 min](../web/public/content/spring-boot/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 0 | [Tema 2: Inyección por constructor vs por campo · Básico · 20 min](../web/public/content/spring-boot/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 0 | [Tema 3: Estereotipos, autoconfiguración y scopes · Intermedio · 25 min](../web/public/content/spring-boot/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 0 | [Tema 4: Ciclo de vida de un bean y BeanPostProcessor · Intermedio · 30 min](../web/public/content/spring-boot/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 0 | [Tema 5: AOP con @Aspect y @Around — preocupaciones transversales · Avanzado · 40 min](../web/public/content/spring-boot/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 1 | [Tema 1: Spring Initializr y starters · Básico · 20 min](../web/public/content/spring-boot/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 1 | [Tema 2: application.yml vs application.properties · Básico · 20 min](../web/public/content/spring-boot/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 1 | [Tema 3: Perfiles y estructura por capas · Intermedio · 30 min](../web/public/content/spring-boot/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 1 | [Tema 4: Crear tu propia auto-configuración condicional · Avanzado · 40 min](../web/public/content/spring-boot/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 10 | [Tema 1: Config Server y service discovery · Intermedio · 45 min](../web/public/content/spring-boot/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 10 | [Tema 2: Spring Cloud Gateway · Intermedio · 40 min](../web/public/content/spring-boot/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 10 | [Tema 3: Circuit breaker con Resilience4j · Avanzado · 45 min](../web/public/content/spring-boot/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 10 | [Tema 4: OAuth2/OIDC, Keycloak y Token Relay sin perder la frontera de autorización · Avanzado · 50 min](../web/public/content/spring-boot/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 10 | [Tema 5: HTTP Interfaces, deadlines y descubrimiento según el entorno · Avanzado · 45 min](../web/public/content/spring-boot/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 10 | [Tema 6: Spring gRPC para comunicación interna de alta frecuencia (Spring Boot 4.1) · Avanzado · 50 min](../web/public/content/spring-boot/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 10 | [Tema 7: DDD para decidir límites y propiedad de datos · Avanzado · 45 min](../web/public/content/spring-boot/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 10 | [Tema 8: Orquestación de microservicios con Temporal y Spring Boot · Experto · 60 min](../web/public/content/spring-boot/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 11 | [Tema 1: Fat JAR vs capas de Docker · Intermedio · 45 min](../web/public/content/spring-boot/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 11 | [Tema 2: GraalVM native image · Avanzado · 45 min](../web/public/content/spring-boot/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 11 | [Tema 3: Health checks para Kubernetes · Intermedio · 40 min](../web/public/content/spring-boot/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 12 | [Tema 1: Arquitectura del microservicio integrador · Experto · 3 h](../web/public/content/spring-boot/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 12 | [Tema 2: Integrando seguridad, persistencia y observabilidad · Experto · 2 h 40 min](../web/public/content/spring-boot/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 12 | [Tema 3: Cierre del track y próximos pasos · Experto · 1 h 20 min](../web/public/content/spring-boot/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 13 | [Tema 1: `@Transactional` funciona en una frontera, no como encantamiento · Experto · 1 h 55 min](../web/public/content/spring-boot/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 13 | [Tema 2: Recuperación implica duplicación segura · Experto · 2 h 35 min](../web/public/content/spring-boot/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 13 | [Tema 3: Contratos ejecutables protegen despliegues independientes · Experto · 1 h 45 min](../web/public/content/spring-boot/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 13 | [Tema 4: Observabilidad sirve a un objetivo y a una decisión · Experto · 1 h 45 min](../web/public/content/spring-boot/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 13 | [Tema 5: Inbox, 2PC y el teorema CAP: límites de la consistencia distribuida · Experto · 1 h 30 min](../web/public/content/spring-boot/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 14 | [Tema 1: CRUD API y contratos · Experto · 2 h 15 min](../web/public/content/spring-boot/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 14 | [Tema 2: MySQL y datos espaciales · Experto · 1 h 45 min](../web/public/content/spring-boot/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 14 | [Tema 3: JPA e Hibernate Spatial · Experto · 2 h 15 min](../web/public/content/spring-boot/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 14 | [Tema 4: JWT Bearer y autorización por roles · Experto · 1 h 55 min](../web/public/content/spring-boot/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 14 | [Tema 5: Tiempo real con STOMP · Experto · 2 h 15 min](../web/public/content/spring-boot/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 14 | [Tema 6: Archivos y notificaciones push · Experto · 1 h 35 min](../web/public/content/spring-boot/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 15 | [Tema 1: Backpressure real en WebFlux con reactor-test · Experto · 1 h 30 min](../web/public/content/spring-boot/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 15 | [Tema 2: Contenedores Testcontainers reutilizados entre clases · Experto · 1 h 40 min](../web/public/content/spring-boot/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 15 | [Tema 3: Arquitectura hexagonal verificada con ArchUnit · Experto · 1 h 50 min](../web/public/content/spring-boot/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 15 | [Tema 4: Bulkhead y RateLimiter de Resilience4j · Experto · 1 h 55 min](../web/public/content/spring-boot/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 15 | [Tema 5: Saga con compensación real · Experto · 2 h 10 min](../web/public/content/spring-boot/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 15 | [Tema 6: Event Sourcing con replay real · Experto · 2 h](../web/public/content/spring-boot/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 15 | [Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar · Experto · 1 h 15 min](../web/public/content/spring-boot/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 15 | [Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework · Experto · 1 h 50 min](../web/public/content/spring-boot/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 15 | [Tema 9: CQRS y saga por coreografía · Experto · 1 h 20 min](../web/public/content/spring-boot/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 16 | [Tema 1: Relaciones, lado propietario y ciclo de vida · Avanzado · 1 h 50 min](../web/public/content/spring-boot/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 16 | [Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso · Avanzado · 1 h 40 min](../web/public/content/spring-boot/modulo-16.md) | ejemplo-breve-revisar-contexto, clase-java-no-visible |
-| spring-boot / 17 | [Tema 1: DataSource, JdbcTemplate y DAO · Avanzado · 1 h 40 min](../web/public/content/spring-boot/modulo-17.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 17 | [Tema 2: `@Transactional`, rollback y límites de transacción · Avanzado · 1 h 20 min](../web/public/content/spring-boot/modulo-17.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 18 | [Tema 1: SecurityFilterChain y autorización · Avanzado · 1 h 30 min](../web/public/content/spring-boot/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 18 | [Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP · Avanzado · 1 h 20 min](../web/public/content/spring-boot/modulo-18.md) | ejemplo-breve-revisar-contexto |
-| spring-boot / 18 | [Tema 3: Levantar tu propio OAuth2 Authorization Server · Experto · 50 min](../web/public/content/spring-boot/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 19 | [Tema 1: Job, Step, Tasklet y chunk processing · Avanzado · 1 h 40 min](../web/public/content/spring-boot/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 19 | [Tema 2: Reinicio, JobParameters, retry, skip y listeners · Avanzado · 1 h 20 min](../web/public/content/spring-boot/modulo-19.md) | clase-java-no-visible |
-| spring-boot / 19 | [Tema 3: Particionamiento con múltiples workers y remote chunking · Experto · 1 h 30 min](../web/public/content/spring-boot/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 2 | [Tema 1: Por qué DTOs en vez de entidades directamente · Intermedio · 30 min](../web/public/content/spring-boot/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 2 | [Tema 2: Validación con Bean Validation y ResponseEntity · Intermedio · 25 min](../web/public/content/spring-boot/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 2 | [Tema 3: Manejo centralizado de errores con @ControllerAdvice · Intermedio · 30 min](../web/public/content/spring-boot/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 2 | [Tema 4: Lombok y MapStruct sin exponer datos internos · Intermedio · 40 min](../web/public/content/spring-boot/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 2 | [Tema 5: OpenAPI con springdoc: el contrato como prueba · Intermedio · 40 min](../web/public/content/spring-boot/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 2 | [Tema 6: Paginación HTTP con validación y un límite de recursos explícito · Intermedio · 35 min](../web/public/content/spring-boot/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 2 | [Tema 7: HandlerInterceptor frente a Filter y @ControllerAdvice · Avanzado · 35 min](../web/public/content/spring-boot/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 2 | [Tema 8: Negociación de contenido con HttpMessageConverters · Avanzado · 35 min](../web/public/content/spring-boot/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 20 | [Tema 1: Scheduling y tareas periódicas · Avanzado · 1 h 10 min](../web/public/content/spring-boot/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 20 | [Tema 2: Eventos locales, eventos transaccionales y mensajería · Avanzado · 1 h 20 min](../web/public/content/spring-boot/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 20 | [Tema 3: Correo con Spring Mail y entrega recuperable · Avanzado · 1 h 10 min](../web/public/content/spring-boot/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 20 | [Tema 4: Caché con Spring Cache, Caffeine y Redis · Avanzado · 1 h 20 min](../web/public/content/spring-boot/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 20 | [Tema 5: @Async y ejecutores: trabajo en segundo plano con límites · Avanzado · 1 h 40 min](../web/public/content/spring-boot/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 20 | [Tema complementario: Integraciones empresariales, SOAP y fronteras de protocolo · Avanzado · 50 min](../web/public/content/spring-boot/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 20 | [Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo · Avanzado · 1 h 30 min](../web/public/content/spring-boot/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 20 | [Tema 7: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar · Avanzado · 1 h 10 min](../web/public/content/spring-boot/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 21 | [Tema 1: Productor, tópico, key y consumidor · Experto · 1 h 20 min](../web/public/content/spring-boot/modulo-21.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 21 | [Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia · Experto · 1 h 50 min](../web/public/content/spring-boot/modulo-21.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 21 | [Tema 3: Outbox transaccional y flujo de negocio · Experto · 1 h 50 min](../web/public/content/spring-boot/modulo-21.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 22 | [Tema 1: Hexagonal: puertos que hablan el idioma del dominio · Experto · 1 h 10 min](../web/public/content/spring-boot/modulo-22.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 22 | [Tema 2: C4: contexto, contenedores, componentes y código · Experto · 1 h 20 min](../web/public/content/spring-boot/modulo-22.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 22 | [Tema 3: ADR: decisiones con contexto, alternativas y consecuencias · Experto · 1 h 10 min](../web/public/content/spring-boot/modulo-22.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 23 | [Tema 1: CompletableFuture, @Async y el bug de la autoinvocación · Avanzado · 1 h 20 min](../web/public/content/spring-boot/modulo-23.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 23 | [Tema 2: Locks, deadlocks, semáforos y MDC en concurrencia · Experto · 1 h 30 min](../web/public/content/spring-boot/modulo-23.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 3 | [Tema 1: Entidades y repositorios derivados · Intermedio · 35 min](../web/public/content/spring-boot/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 3 | [Tema 2: El problema N+1 y su corrección · Avanzado · 50 min](../web/public/content/spring-boot/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 3 | [Tema 3: Migraciones con Flyway · Intermedio · 35 min](../web/public/content/spring-boot/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 3 | [Tema 4: Proyecciones, Specifications y auditoría de entidades · Avanzado · 45 min](../web/public/content/spring-boot/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 4 | [Tema 1: SecurityFilterChain moderno · Intermedio · 40 min](../web/public/content/spring-boot/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 4 | [Tema 2: Filtro JWT y autorización por rol · Avanzado · 55 min](../web/public/content/spring-boot/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 4 | [Tema 3: CORS y CSRF · Intermedio · 35 min](../web/public/content/spring-boot/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 4 | [Tema 4: Protección SSRF con InetAddressFilter (Spring Boot 4.1) · Experto · 50 min](../web/public/content/spring-boot/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 4 | [Tema 5: Flujo de login completo — de `/api/auth/login` a una ruta protegida · Avanzado · 45 min](../web/public/content/spring-boot/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 5 | [Tema 1: @ConfigurationProperties tipado · Intermedio · 35 min](../web/public/content/spring-boot/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 5 | [Tema 2: Fallar rápido al arranque · Intermedio · 30 min](../web/public/content/spring-boot/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 5 | [Tema 3: Manejo global de excepciones consistente entre entornos · Avanzado · 40 min](../web/public/content/spring-boot/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 6 | [Tema 1: Slices de testing — @WebMvcTest · Intermedio · 35 min](../web/public/content/spring-boot/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 6 | [Tema 2: @DataJpaTest con Testcontainers · Avanzado · 50 min](../web/public/content/spring-boot/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 6 | [Tema 3: @SpringBootTest completo y estrategia de pirámide de tests · Avanzado · 45 min](../web/public/content/spring-boot/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 6 | [Tema 4: Slices adicionales — @JsonTest, @RestClientTest y @TestConfiguration · Avanzado · 40 min](../web/public/content/spring-boot/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 7 | [Tema 1: Actuator y health checks personalizados · Intermedio · 35 min](../web/public/content/spring-boot/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 7 | [Tema 2: Métricas de negocio con Micrometer · Avanzado · 45 min](../web/public/content/spring-boot/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 7 | [Tema 3: Liveness vs readiness · Intermedio · 30 min](../web/public/content/spring-boot/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 7 | [Tema 4: Tracing distribuido con Micrometer Tracing · Avanzado · 45 min](../web/public/content/spring-boot/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 8 | [Tema 1: Producers y consumers con Spring Kafka · Avanzado · 50 min](../web/public/content/spring-boot/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 8 | [Tema 2: Dead-letter queue · Avanzado · 45 min](../web/public/content/spring-boot/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 8 | [Tema 3: Productor idempotente y transacciones (exactly-once) · Experto · 50 min](../web/public/content/spring-boot/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 8 | [Tema 4: Rebalanceo de consumer groups y partition assignment · Avanzado · 45 min](../web/public/content/spring-boot/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 8 | [Tema 5: Kafka frente a RabbitMQ · Intermedio · 35 min](../web/public/content/spring-boot/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 8 | [Tema 6: RabbitMQ a fondo — exchanges, routing keys y dead-letter exchange · Avanzado · 50 min](../web/public/content/spring-boot/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 9 | [Tema 1: Mono y Flux · Intermedio · 40 min](../web/public/content/spring-boot/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 9 | [Tema 2: WebClient y composición no bloqueante · Avanzado · 45 min](../web/public/content/spring-boot/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 9 | [Tema 3: Cuándo WebFlux vale la complejidad, y R2DBC · Avanzado · 40 min](../web/public/content/spring-boot/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 9 | [Tema 4: Virtual threads como alternativa a WebFlux · Avanzado · 35 min](../web/public/content/spring-boot/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 0 | [Tema 1: Inversión de control y el contenedor de Spring](../web/public/content/spring-boot/modulo-0.md) | demostracion-no-delimitada |
+| spring-boot / 0 | [Tema 2: Inyección por constructor vs por campo](../web/public/content/spring-boot/modulo-0.md) | demostracion-no-delimitada |
+| spring-boot / 0 | [Tema 3: Estereotipos, autoconfiguración y scopes](../web/public/content/spring-boot/modulo-0.md) | demostracion-no-delimitada |
+| spring-boot / 1 | [Tema 1: Spring Initializr y starters](../web/public/content/spring-boot/modulo-1.md) | demostracion-no-delimitada |
+| spring-boot / 1 | [Tema 2: application.yml vs application.properties](../web/public/content/spring-boot/modulo-1.md) | demostracion-no-delimitada |
+| spring-boot / 1 | [Tema 3: Perfiles y estructura por capas](../web/public/content/spring-boot/modulo-1.md) | demostracion-no-delimitada |
+| spring-boot / 10 | [Tema 1: Config Server y service discovery](../web/public/content/spring-boot/modulo-10.md) | demostracion-no-delimitada |
+| spring-boot / 10 | [Tema 2: Spring Cloud Gateway](../web/public/content/spring-boot/modulo-10.md) | demostracion-no-delimitada |
+| spring-boot / 10 | [Tema 3: Circuit breaker con Resilience4j](../web/public/content/spring-boot/modulo-10.md) | demostracion-no-delimitada |
+| spring-boot / 10 | [Tema 4: OAuth2/OIDC, Keycloak y Token Relay sin perder la frontera de autorización](../web/public/content/spring-boot/modulo-10.md) | demostracion-no-delimitada |
+| spring-boot / 10 | [Tema 5: HTTP Interfaces, deadlines y descubrimiento según el entorno](../web/public/content/spring-boot/modulo-10.md) | demostracion-no-delimitada |
+| spring-boot / 10 | [Tema 6: Spring gRPC, contrato HTTP/2 y evolución segura](../web/public/content/spring-boot/modulo-10.md) | demostracion-no-delimitada |
+| spring-boot / 10 | [Tema 7: DDD para decidir límites y propiedad de datos](../web/public/content/spring-boot/modulo-10.md) | demostracion-no-delimitada |
+| spring-boot / 10 | [Tema 8: Orquestar pedidos con Temporal y Spring Boot](../web/public/content/spring-boot/modulo-10.md) | demostracion-no-delimitada |
+| spring-boot / 10 | [Tema 9: Comprueba módulos antes de separar servicios](../web/public/content/spring-boot/modulo-10.md) | demostracion-no-delimitada |
+| spring-boot / 10 | [Tema 10: Spring Cloud Bus para propagar cambios de configuración](../web/public/content/spring-boot/modulo-10.md) | demostracion-no-delimitada |
+| spring-boot / 10 | [Tema 11: Micrometer Tracing entre servicios](../web/public/content/spring-boot/modulo-10.md) | demostracion-no-delimitada |
+| spring-boot / 10 | [Tema 12: Contract testing entre productor y consumidor](../web/public/content/spring-boot/modulo-10.md) | demostracion-no-delimitada |
+| spring-boot / 11 | [Tema 1: Fat JAR vs capas de Docker](../web/public/content/spring-boot/modulo-11.md) | demostracion-no-delimitada |
+| spring-boot / 11 | [Tema 2: GraalVM native image](../web/public/content/spring-boot/modulo-11.md) | demostracion-no-delimitada |
+| spring-boot / 11 | [Tema 3: Health checks para Kubernetes](../web/public/content/spring-boot/modulo-11.md) | demostracion-no-delimitada |
+| spring-boot / 12 | [Tema 1: Arquitectura del microservicio integrador](../web/public/content/spring-boot/modulo-12.md) | demostracion-no-delimitada |
+| spring-boot / 12 | [Tema 2: Integra seguridad JWT y observabilidad](../web/public/content/spring-boot/modulo-12.md) | demostracion-no-delimitada |
+| spring-boot / 12 | [Tema 3: Cierra el servicio con evidencia y próximos pasos](../web/public/content/spring-boot/modulo-12.md) | demostracion-no-delimitada |
+| spring-boot / 13 | [Tema 1: `@Transactional` funciona en una frontera, no como encantamiento](../web/public/content/spring-boot/modulo-13.md) | demostracion-no-delimitada |
+| spring-boot / 13 | [Tema 2: Recuperación implica duplicación segura](../web/public/content/spring-boot/modulo-13.md) | demostracion-no-delimitada |
+| spring-boot / 13 | [Tema 3: Contratos ejecutables protegen despliegues independientes](../web/public/content/spring-boot/modulo-13.md) | demostracion-no-delimitada |
+| spring-boot / 13 | [Tema 4: Observabilidad sirve a un objetivo y a una decisión](../web/public/content/spring-boot/modulo-13.md) | demostracion-no-delimitada |
+| spring-boot / 14 | [Tema 1: CRUD API y contratos](../web/public/content/spring-boot/modulo-14.md) | demostracion-no-delimitada |
+| spring-boot / 14 | [Tema 2: MySQL y datos espaciales](../web/public/content/spring-boot/modulo-14.md) | demostracion-no-delimitada |
+| spring-boot / 14 | [Tema 3: JPA e Hibernate Spatial](../web/public/content/spring-boot/modulo-14.md) | demostracion-no-delimitada |
+| spring-boot / 14 | [Tema 4: JWT Bearer y autorización por roles](../web/public/content/spring-boot/modulo-14.md) | demostracion-no-delimitada |
+| spring-boot / 14 | [Tema 5: Tiempo real con STOMP](../web/public/content/spring-boot/modulo-14.md) | demostracion-no-delimitada |
+| spring-boot / 14 | [Tema 6: Archivos y notificaciones push](../web/public/content/spring-boot/modulo-14.md) | demostracion-no-delimitada |
+| spring-boot / 15 | [Tema 1: Backpressure real en WebFlux con reactor-test](../web/public/content/spring-boot/modulo-15.md) | demostracion-no-delimitada |
+| spring-boot / 15 | [Tema 2: Contenedores Testcontainers reutilizados entre clases](../web/public/content/spring-boot/modulo-15.md) | demostracion-no-delimitada |
+| spring-boot / 15 | [Tema 3: Arquitectura hexagonal verificada con ArchUnit](../web/public/content/spring-boot/modulo-15.md) | demostracion-no-delimitada |
+| spring-boot / 15 | [Tema 4: Bulkhead y RateLimiter de Resilience4j](../web/public/content/spring-boot/modulo-15.md) | demostracion-no-delimitada |
+| spring-boot / 15 | [Tema 5: Saga con compensación real](../web/public/content/spring-boot/modulo-15.md) | demostracion-no-delimitada |
+| spring-boot / 15 | [Tema 6: Event Sourcing con replay real](../web/public/content/spring-boot/modulo-15.md) | demostracion-no-delimitada |
+| spring-boot / 15 | [Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar](../web/public/content/spring-boot/modulo-15.md) | demostracion-no-delimitada |
+| spring-boot / 15 | [Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework](../web/public/content/spring-boot/modulo-15.md) | demostracion-no-delimitada |
+| spring-boot / 16 | [Tema 1: Relaciones, lado propietario y ciclo de vida](../web/public/content/spring-boot/modulo-16.md) | demostracion-no-delimitada |
+| spring-boot / 16 | [Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso](../web/public/content/spring-boot/modulo-16.md) | demostracion-no-delimitada |
+| spring-boot / 17 | [Tema 1: DataSource, JdbcTemplate y DAO](../web/public/content/spring-boot/modulo-17.md) | demostracion-no-delimitada |
+| spring-boot / 17 | [Tema 2: `@Transactional`, rollback y límites de transacción](../web/public/content/spring-boot/modulo-17.md) | demostracion-no-delimitada |
+| spring-boot / 18 | [Tema 1: SecurityFilterChain y autorización](../web/public/content/spring-boot/modulo-18.md) | demostracion-no-delimitada |
+| spring-boot / 18 | [Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP](../web/public/content/spring-boot/modulo-18.md) | demostracion-no-delimitada |
+| spring-boot / 19 | [Tema 1: Job, Step, Tasklet y chunk processing](../web/public/content/spring-boot/modulo-19.md) | demostracion-no-delimitada |
+| spring-boot / 19 | [Tema 2: Reinicio, JobParameters, retry, skip y listeners](../web/public/content/spring-boot/modulo-19.md) | demostracion-no-delimitada |
+| spring-boot / 2 | [Tema 1: Por qué DTOs en vez de entidades directamente](../web/public/content/spring-boot/modulo-2.md) | demostracion-no-delimitada |
+| spring-boot / 2 | [Tema 2: Validación con Bean Validation y ResponseEntity](../web/public/content/spring-boot/modulo-2.md) | demostracion-no-delimitada |
+| spring-boot / 2 | [Tema 3: Manejo centralizado de errores con @ControllerAdvice](../web/public/content/spring-boot/modulo-2.md) | demostracion-no-delimitada |
+| spring-boot / 2 | [Tema 4: Lombok y MapStruct sin exponer datos internos](../web/public/content/spring-boot/modulo-2.md) | demostracion-no-delimitada |
+| spring-boot / 2 | [Tema 5: OpenAPI con springdoc: el contrato como prueba](../web/public/content/spring-boot/modulo-2.md) | demostracion-no-delimitada |
+| spring-boot / 2 | [Tema 6: Paginación HTTP con validación y un límite de recursos explícito](../web/public/content/spring-boot/modulo-2.md) | demostracion-no-delimitada |
+| spring-boot / 20 | [Tema 1: Scheduling y tareas periódicas](../web/public/content/spring-boot/modulo-20.md) | demostracion-no-delimitada |
+| spring-boot / 20 | [Tema 2: Eventos locales, eventos transaccionales y mensajería](../web/public/content/spring-boot/modulo-20.md) | demostracion-no-delimitada |
+| spring-boot / 20 | [Tema 3: Correo con Spring Mail y entrega recuperable](../web/public/content/spring-boot/modulo-20.md) | demostracion-no-delimitada |
+| spring-boot / 20 | [Tema 4: Caché con Spring Cache, Caffeine y Redis](../web/public/content/spring-boot/modulo-20.md) | demostracion-no-delimitada |
+| spring-boot / 20 | [Tema 5: @Async y ejecutores: trabajo en segundo plano con límites](../web/public/content/spring-boot/modulo-20.md) | demostracion-no-delimitada |
+| spring-boot / 20 | [Tema 6: Integraciones empresariales, SOAP y fronteras de protocolo](../web/public/content/spring-boot/modulo-20.md) | demostracion-no-delimitada |
+| spring-boot / 20 | [Tema 7: Spring AI: ChatClient y herramientas con autorización fuera del modelo](../web/public/content/spring-boot/modulo-20.md) | demostracion-no-delimitada |
+| spring-boot / 20 | [Tema 8: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar](../web/public/content/spring-boot/modulo-20.md) | demostracion-no-delimitada |
+| spring-boot / 21 | [Tema 1: Productor, tópico, key y consumidor](../web/public/content/spring-boot/modulo-21.md) | demostracion-no-delimitada |
+| spring-boot / 21 | [Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia](../web/public/content/spring-boot/modulo-21.md) | demostracion-no-delimitada |
+| spring-boot / 21 | [Tema 3: Outbox transaccional y flujo de negocio](../web/public/content/spring-boot/modulo-21.md) | demostracion-no-delimitada |
+| spring-boot / 22 | [Tema 1: Hexagonal: puertos que hablan el idioma del dominio](../web/public/content/spring-boot/modulo-22.md) | demostracion-no-delimitada |
+| spring-boot / 22 | [Tema 2: C4: contexto, contenedores, componentes y código](../web/public/content/spring-boot/modulo-22.md) | demostracion-no-delimitada |
+| spring-boot / 22 | [Tema 3: ADR: decisiones con contexto, alternativas y consecuencias](../web/public/content/spring-boot/modulo-22.md) | demostracion-no-delimitada |
+| spring-boot / 23 | [Tema 1: módulos y límites entre paquetes](../web/public/content/spring-boot/modulo-23.md) | demostracion-no-delimitada |
+| spring-boot / 23 | [Tema 2: eventos entre módulos sin importar implementación](../web/public/content/spring-boot/modulo-23.md) | demostracion-no-delimitada |
+| spring-boot / 23 | [Tema 3: documentación generada y mapa de dependencias](../web/public/content/spring-boot/modulo-23.md) | demostracion-no-delimitada |
+| spring-boot / 23 | [Tema 4: pruebas de integración por módulo](../web/public/content/spring-boot/modulo-23.md) | demostracion-no-delimitada |
+| spring-boot / 24 | [Tema 1: schema-first con tipos y consultas](../web/public/content/spring-boot/modulo-24.md) | demostracion-no-delimitada |
+| spring-boot / 24 | [Tema 2: data fetchers, relaciones y problema N+1](../web/public/content/spring-boot/modulo-24.md) | demostracion-no-delimitada |
+| spring-boot / 24 | [Tema 3: mutations y subscriptions](../web/public/content/spring-boot/modulo-24.md) | demostracion-no-delimitada |
+| spring-boot / 24 | [Tema 4: pruebas GraphQL con GraphQlTester](../web/public/content/spring-boot/modulo-24.md) | demostracion-no-delimitada |
+| spring-boot / 25 | [Tema 1: bindings y destinations](../web/public/content/spring-boot/modulo-25.md) | demostracion-no-delimitada |
+| spring-boot / 25 | [Tema 2: binder Kafka y binder RabbitMQ](../web/public/content/spring-boot/modulo-25.md) | demostracion-no-delimitada |
+| spring-boot / 25 | [Tema 3: reintentos, error handler y dead-letter](../web/public/content/spring-boot/modulo-25.md) | demostracion-no-delimitada |
+| spring-boot / 25 | [Tema 4: test binder y límites de la prueba](../web/public/content/spring-boot/modulo-25.md) | demostracion-no-delimitada |
+| spring-boot / 26 | [Tema 1: CompletableFuture, @Async y el bug de la autoinvocación · Avanzado · 1 h 20 min](../web/public/content/spring-boot/modulo-26.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 26 | [Tema 2: Locks, deadlocks, semáforos y MDC en concurrencia · Experto · 1 h 30 min](../web/public/content/spring-boot/modulo-26.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 3 | [Tema 1: Entidades y repositorios derivados](../web/public/content/spring-boot/modulo-3.md) | demostracion-no-delimitada |
+| spring-boot / 3 | [Tema 2: El problema N+1 y su corrección](../web/public/content/spring-boot/modulo-3.md) | demostracion-no-delimitada |
+| spring-boot / 3 | [Tema 3: Migraciones con Flyway](../web/public/content/spring-boot/modulo-3.md) | demostracion-no-delimitada |
+| spring-boot / 4 | [Tema 1: SecurityFilterChain moderno](../web/public/content/spring-boot/modulo-4.md) | demostracion-no-delimitada |
+| spring-boot / 4 | [Tema 2: Filtro JWT y autorización por rol](../web/public/content/spring-boot/modulo-4.md) | demostracion-no-delimitada |
+| spring-boot / 4 | [Tema 3: CORS y CSRF](../web/public/content/spring-boot/modulo-4.md) | demostracion-no-delimitada |
+| spring-boot / 4 | [Tema 4: Reducir SSRF en clientes HTTP con InetAddressFilter](../web/public/content/spring-boot/modulo-4.md) | demostracion-no-delimitada |
+| spring-boot / 4 | [Tema 5: Flujo de login completo — de `/api/auth/login` a una ruta protegida](../web/public/content/spring-boot/modulo-4.md) | demostracion-no-delimitada |
+| spring-boot / 5 | [Tema 1: @ConfigurationProperties tipado](../web/public/content/spring-boot/modulo-5.md) | demostracion-no-delimitada |
+| spring-boot / 5 | [Tema 2: Fallar rápido al arranque](../web/public/content/spring-boot/modulo-5.md) | demostracion-no-delimitada |
+| spring-boot / 5 | [Tema 3: Manejo global de excepciones consistente entre entornos](../web/public/content/spring-boot/modulo-5.md) | demostracion-no-delimitada |
+| spring-boot / 6 | [Tema 1: Probar un controller con `@WebMvcTest`](../web/public/content/spring-boot/modulo-6.md) | demostracion-no-delimitada |
+| spring-boot / 6 | [Tema 2: Probar el repositorio contra PostgreSQL con `@DataJpaTest`](../web/public/content/spring-boot/modulo-6.md) | demostracion-no-delimitada |
+| spring-boot / 6 | [Tema 3: Integrar el flujo con `@SpringBootTest`](../web/public/content/spring-boot/modulo-6.md) | demostracion-no-delimitada |
+| spring-boot / 7 | [Tema 1: Actuator y health checks personalizados](../web/public/content/spring-boot/modulo-7.md) | demostracion-no-delimitada |
+| spring-boot / 7 | [Tema 2: Contar operaciones de negocio con Micrometer](../web/public/content/spring-boot/modulo-7.md) | demostracion-no-delimitada |
+| spring-boot / 7 | [Tema 3: Liveness y readiness sin reinicios en cadena](../web/public/content/spring-boot/modulo-7.md) | demostracion-no-delimitada |
+| spring-boot / 8 | [Tema 1: Producers y consumers con Spring Kafka](../web/public/content/spring-boot/modulo-8.md) | demostracion-no-delimitada |
+| spring-boot / 8 | [Tema 2: Dead-letter queue](../web/public/content/spring-boot/modulo-8.md) | demostracion-no-delimitada |
+| spring-boot / 8 | [Tema 3: Transacciones Kafka y SQL: idempotencia y límites de exactly-once](../web/public/content/spring-boot/modulo-8.md) | demostracion-no-delimitada |
+| spring-boot / 8 | [Tema 4: Rebalanceo de consumer groups y asignación de particiones](../web/public/content/spring-boot/modulo-8.md) | demostracion-no-delimitada |
+| spring-boot / 8 | [Tema 5: Kafka frente a RabbitMQ](../web/public/content/spring-boot/modulo-8.md) | demostracion-no-delimitada |
+| spring-boot / 8 | [Tema 6: Spring Cloud Stream y binders de Kafka/RabbitMQ](../web/public/content/spring-boot/modulo-8.md) | demostracion-no-delimitada |
+| spring-boot / 8 | [Tema 7: Kafka Streams con Spring para transformar eventos](../web/public/content/spring-boot/modulo-8.md) | demostracion-no-delimitada |
+| spring-boot / 8 | [Tema 8: Avro y Schema Registry para contratos de eventos](../web/public/content/spring-boot/modulo-8.md) | demostracion-no-delimitada |
+| spring-boot / 8 | [Tema 9: RabbitMQ con Spring AMQP: routing, ack y prefetch](../web/public/content/spring-boot/modulo-8.md) | demostracion-no-delimitada |
+| spring-boot / 9 | [Tema 1: Mono y Flux](../web/public/content/spring-boot/modulo-9.md) | demostracion-no-delimitada |
+| spring-boot / 9 | [Tema 2: WebClient y composición no bloqueante](../web/public/content/spring-boot/modulo-9.md) | demostracion-no-delimitada |
+| spring-boot / 9 | [Tema 3: Cuándo WebFlux vale la complejidad, y R2DBC](../web/public/content/spring-boot/modulo-9.md) | demostracion-no-delimitada |

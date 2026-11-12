@@ -2,10 +2,10 @@
 
 > Las señales automáticas no prueban profundidad ni ausencia de ella. Un tema sólo queda revisado mediante el registro humano con mapa de subtemas críticos, evidencia y fuentes.
 
-- Temas inventariados: 1184
-- Revisados humanamente para subtemas: 350
-- Pendientes: 834
-- Candidatos prioritarios por señales: 792
+- Temas inventariados: 1273
+- Revisados humanamente para subtemas: 146
+- Pendientes: 1127
+- Candidatos prioritarios por señales: 1009
 
 ## Cobertura por track
 
@@ -14,18 +14,19 @@
 | android | 74 | 0 | 74 |
 | angular | 71 | 71 | 0 |
 | cloud | 156 | 0 | 156 |
+| control-1 | 32 | 0 | 32 |
 | devops | 129 | 0 | 129 |
-| flutter | 63 | 63 | 0 |
+| flutter | 106 | 63 | 43 |
 | foundations | 100 | 0 | 100 |
 | ios | 56 | 0 | 56 |
-| java | 109 | 109 | 0 |
+| java | 111 | 10 | 101 |
 | javascript | 88 | 0 | 88 |
 | kotlin-multiplatform | 56 | 0 | 56 |
 | microservices | 11 | 0 | 11 |
-| node | 77 | 0 | 77 |
+| node | 83 | 0 | 83 |
 | react | 58 | 0 | 58 |
 | rutaflow | 29 | 0 | 29 |
-| spring-boot | 107 | 107 | 0 |
+| spring-boot | 113 | 2 | 111 |
 
 ## Cola prioritaria
 
@@ -98,9 +99,9 @@
 - `android/modulo-9` — Tema 1: Testing de ViewModels con fakes y runTest — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `android/modulo-9` — Tema 2: Compose UI Testing — lista conceptos clave sin mapa interno verificable
 - `android/modulo-9` — Tema 3: Testing end-to-end con Activity real, y fakes vs mocks — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `cloud/modulo-0` — Tema 1: Fundamentos absolutos — qué es una terminal, un comando y un sistema operativo — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `cloud/modulo-0` — Tema 2: Fundamentos de redes — direcciones IP, puertos, HTTP y APIs — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `cloud/modulo-0` — Tema 3: Qué vas a aprender y cómo está estructurado el curso — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `cloud/modulo-0` — Tema 1: Fundamentos absolutos — qué es una terminal, un comando y un sistema operativo — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `cloud/modulo-0` — Tema 2: Fundamentos de redes — direcciones IP, puertos, HTTP y APIs — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `cloud/modulo-0` — Tema 3: Qué vas a aprender y cómo está estructurado el curso — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `cloud/modulo-0` — Tema 4: Qué es Floci — definición, propósito y comparativa con LocalStack — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `cloud/modulo-0` — Tema 5: Servicios que emula Floci — AWS, Azure y GCP — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `cloud/modulo-0` — Tema 6: Ventajas y limitaciones de practicar con un emulador local — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
@@ -246,6 +247,11 @@
 - `cloud/modulo-9` — Tema 3: Archivos adjuntos en S3 y procesamiento en segundo plano con SQS — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `cloud/modulo-9` — Tema 4: API Gateway e IAM de mínimo privilegio para el proyecto — lista conceptos clave sin mapa interno verificable
 - `cloud/modulo-9` — Tema 5: Documentación de la API y guía de despliegue — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `control-1/modulo-18` — Tema 2: Ventajas y desventajas (punto 4 del Parcial 1) — título agrupa varios conceptos
+- `control-1/modulo-2` — Tema 3: Valor final y valor inicial — título agrupa varios conceptos
+- `control-1/modulo-22` — Tema 1: Simulacro con solución — título agrupa varios conceptos
+- `control-1/modulo-3` — Tema 1: Caso 1: polos reales distintos — título agrupa varios conceptos
+- `control-1/modulo-3` — Tema 2: Caso 2: polos repetidos — título agrupa varios conceptos
 - `devops/modulo-0` — Tema 1: Sistema de archivos y permisos (chmod/chown) — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `devops/modulo-0` — Tema 2: Procesos, señales y jobs en segundo plano — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `devops/modulo-0` — Tema 3: Pipes, redirección y filtros (grep, awk, sed) — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
@@ -375,6 +381,40 @@
 - `devops/modulo-9` — Tema 5: SLI, SLO, SLA — lista conceptos clave sin mapa interno verificable
 - `devops/modulo-9` — Tema 6: OpenTelemetry como estándar de instrumentación — lista conceptos clave sin mapa interno verificable
 - `devops/modulo-9` — Tema 7: Métricas DORA — Lead Time, Deployment Frequency, MTTR, Change Failure Rate — lista conceptos clave sin mapa interno verificable
+- `flutter/modulo-16` — Tema 1: reconocer cuándo usar FFI y crear el paquete — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `flutter/modulo-16` — Tema 4: compilar y empaquetar bibliotecas por plataforma — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `flutter/modulo-16` — Tema 5: medir rendimiento y evitar bloquear la interfaz — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `flutter/modulo-16` — Tema 6: propiedad de memoria, liberación y errores — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `flutter/modulo-17` — Tema 1: macros de Dart y alternativas disponibles — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `flutter/modulo-17` — Tema 2: generación avanzada con build_runner — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `flutter/modulo-17` — Tema 3: reflexión limitada y registro tipado — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `flutter/modulo-17` — Tema 4: recorrer el AST de Dart con analyzer — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `flutter/modulo-17` — Tema 6: diseñar y validar un paquete Dart — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `flutter/modulo-18` — Tema 1: la frontera entre Dart y el código nativo — título agrupa varios conceptos
+- `flutter/modulo-18` — Tema 3: fluidez y presupuesto de frames — título agrupa varios conceptos
+- `flutter/modulo-18` — Tema 4: protocolo, telemetría y contención — título agrupa varios conceptos
+- `flutter/modulo-18` — Tema 5: reportes de fallos con Crashlytics y Sentry — título agrupa varios conceptos
+- `flutter/modulo-18` — Tema 6: analítica con privacidad y consentimiento — título agrupa varios conceptos
+- `flutter/modulo-19` — Tema 1: estado de la jornada con Riverpod — título agrupa varios conceptos
+- `flutter/modulo-19` — Tema 2: mapa y permiso de ubicación — título agrupa varios conceptos
+- `flutter/modulo-19` — Tema 3: posiciones en tiempo real con Socket.IO — título agrupa varios conceptos
+- `flutter/modulo-19` — Tema 5: confirmaciones offline y sincronización — título agrupa varios conceptos
+- `flutter/modulo-19` — Tema 6: carga de evidencia con Dio y notificaciones — título agrupa varios conceptos
+- `flutter/modulo-20` — Tema 1: pruebas unitarias y de widget con Flutter Test — título agrupa varios conceptos
+- `flutter/modulo-20` — Tema 3: perfilado y presupuesto de rendimiento — título agrupa varios conceptos
+- `flutter/modulo-20` — Tema 4: Clean Architecture y sustitución de dependencias — título agrupa varios conceptos
+- `flutter/modulo-20` — Tema 5: internacionalización y formatos locales — título agrupa varios conceptos
+- `flutter/modulo-20` — Tema 6: builds por plataforma, firma y entrega — título agrupa varios conceptos
+- `flutter/modulo-21` — Tema 1: catálogo y flujo con `in_app_purchase` — título agrupa varios conceptos
+- `flutter/modulo-21` — Tema 2: suscripciones Android, planes base y cambios — título agrupa varios conceptos
+- `flutter/modulo-21` — Tema 3: suscripciones iOS con StoreKit — título agrupa varios conceptos
+- `flutter/modulo-21` — Tema 4: restauración de compras y entitlement — título agrupa varios conceptos
+- `flutter/modulo-22` — Tema 1: configurar AdMob y cargar el primer banner de prueba — título agrupa varios conceptos
+- `flutter/modulo-22` — Tema 2: elegir mediación, bidding y waterfall — título agrupa varios conceptos
+- `flutter/modulo-22` — Tema 3: banners, interstitials y anuncios recompensados — título agrupa varios conceptos
+- `flutter/modulo-22` — Tema 4: consentimiento, privacidad y audiencias — título agrupa varios conceptos
+- `flutter/modulo-22` — Tema 5: pruebas de anuncios y diagnóstico de no-fill — título agrupa varios conceptos
+- `flutter/modulo-22` — Tema 6: comparar AdMob, AppLovin MAX y Unity LevelPlay — título agrupa varios conceptos
 - `foundations/modulo-0` — Tema 1: Computador, sistema operativo, programa y proceso · Básico · 90 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `foundations/modulo-0` — Tema 3: Archivos, carpetas y rutas sin perderse — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `foundations/modulo-0` — Tema 5: Primer programa, primer error y primera evidencia — título agrupa varios conceptos; menos de dos encabezados semánticos internos
@@ -522,6 +562,88 @@
 - `ios/modulo-9` — Tema 1: XCTest clásico y Swift Testing — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `ios/modulo-9` — Tema 2: Testing de código async — lista conceptos clave sin mapa interno verificable
 - `ios/modulo-9` — Tema 3: UI Tests con XCUITest — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `java/modulo-0` — Tema 3: JDK, JRE y JVM — título agrupa varios conceptos
+- `java/modulo-0` — Tema 4: Tipos primitivos vs referencias — título agrupa varios conceptos
+- `java/modulo-0` — Tema 5: Variables, conversiones y `String` — título agrupa varios conceptos
+- `java/modulo-0` — Tema 6: Operadores, precedencia y control de flujo — título agrupa varios conceptos
+- `java/modulo-0` — Tema 7: Arreglos, wrappers y paso de argumentos — título agrupa varios conceptos
+- `java/modulo-0` — Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`) — título agrupa varios conceptos
+- `java/modulo-1` — Tema 1: Clases, objetos, constructores y encapsulación — título agrupa varios conceptos
+- `java/modulo-1` — Tema 2: Herencia y sobreescritura — título agrupa varios conceptos
+- `java/modulo-1` — Tema 3: Interfaces, clases abstractas y cuándo usar cada una — título agrupa varios conceptos
+- `java/modulo-1` — Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso — título agrupa varios conceptos
+- `java/modulo-10` — Tema 1: module-info.java y encapsulación fuerte — título agrupa varios conceptos
+- `java/modulo-10` — Tema 2: Migración incremental y cuándo JPMS aporta valor — título agrupa varios conceptos
+- `java/modulo-11` — Tema 1: Generaciones de memoria y recolectores — título agrupa varios conceptos
+- `java/modulo-11` — Tema 2: Java Flight Recorder y JIT compilation — título agrupa varios conceptos
+- `java/modulo-11` — Tema 3: Referencias especiales y heap dumps — título agrupa varios conceptos
+- `java/modulo-12` — Tema 1: Builder — configuración paso a paso y validación — título agrupa varios conceptos
+- `java/modulo-12` — Tema 2: Factory Method y Strategy — título agrupa varios conceptos
+- `java/modulo-12` — Tema 3: Abstract Factory y familias de productos compatibles — título agrupa varios conceptos
+- `java/modulo-12` — Tema 4: SOLID y cuándo NO aplicar un patrón — título agrupa varios conceptos
+- `java/modulo-12` — Tema 5: Prototype: copiar un objeto sin compartir sus datos — título agrupa varios conceptos
+- `java/modulo-13` — Tema 2: Integrando concurrencia, modelado y testing — título agrupa varios conceptos
+- `java/modulo-13` — Tema 3: Build reproducible y cierre del track — título agrupa varios conceptos
+- `java/modulo-14` — Tema 1: Compartir memoria requiere orden y visibilidad — título agrupa varios conceptos
+- `java/modulo-14` — Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo — título agrupa varios conceptos
+- `java/modulo-14` — Tema 3: Deserializar es permitir construcción y comportamiento — título agrupa varios conceptos
+- `java/modulo-14` — Tema 4: El runtime es parte del artefacto y necesita ciclo de vida — título agrupa varios conceptos
+- `java/modulo-15` — Tema 2: Gradle y builds reproducibles — título agrupa varios conceptos
+- `java/modulo-15` — Tema 4: JUnit 5, Mockito y assertions expresivas — título agrupa varios conceptos
+- `java/modulo-15` — Tema 6: SLF4J, Logback, MDC y logging estructurado — título agrupa varios conceptos
+- `java/modulo-16` — Tema 1: Entidades y relaciones JPA — título agrupa varios conceptos
+- `java/modulo-16` — Tema 2: FetchType.LAZY, EAGER y el problema N+1 — título agrupa varios conceptos
+- `java/modulo-16` — Tema 3: Relaciones uno a uno, muchos a muchos y herencia — título agrupa varios conceptos
+- `java/modulo-16` — Tema 4: Ciclo de vida, EntityManager y consultas tipadas — título agrupa varios conceptos
+- `java/modulo-16` — Tema 5: Búsquedas dinámicas con Criteria y Querydsl — título agrupa varios conceptos
+- `java/modulo-16` — Tema 6: EntityGraph y cachés de persistencia — título agrupa varios conceptos
+- `java/modulo-16` — Tema 7: Concurrencia, transacciones y propagación — título agrupa varios conceptos
+- `java/modulo-16` — Tema 8: Migraciones y pruebas JPA con Testcontainers — título agrupa varios conceptos
+- `java/modulo-17` — Tema 1: JDBC, PreparedStatement y DAO — título agrupa varios conceptos
+- `java/modulo-17` — Tema 2: Transacciones, ACID y aislamiento — título agrupa varios conceptos
+- `java/modulo-18` — Tema 1: HttpClient, REST, timeouts y fallos — título agrupa varios conceptos
+- `java/modulo-18` — Tema 2: Tokens, validación y límites de seguridad — título agrupa varios conceptos
+- `java/modulo-19` — Tema 1: Reflexión y anotaciones en tiempo de ejecución — título agrupa varios conceptos
+- `java/modulo-19` — Tema 2: Expresiones regulares con Pattern y Matcher — título agrupa varios conceptos
+- `java/modulo-19` — Tema 3: Dinero exacto con BigDecimal — título agrupa varios conceptos
+- `java/modulo-19` — Tema 4: Assertions y diseño por contrato — título agrupa varios conceptos
+- `java/modulo-19` — Tema 5: ServiceLoader: plugins sin acoplar implementaciones — título agrupa varios conceptos
+- `java/modulo-19` — Tema 6: Proxies dinámicos: así funcionan @Transactional y los mocks — título agrupa varios conceptos
+- `java/modulo-19` — Tema 7: Internacionalización: números, monedas, fechas y orden de texto — título agrupa varios conceptos
+- `java/modulo-2` — Tema 1: List, Set, Map y sus implementaciones — título agrupa varios conceptos
+- `java/modulo-2` — Tema 2: Genéricos, wildcards y type erasure — título agrupa varios conceptos
+- `java/modulo-2` — Tema 3: Comparable vs Comparator, e iteración — título agrupa varios conceptos
+- `java/modulo-20` — Tema 1: Las cuatro formas: Predicate, Function, Consumer y Supplier — título agrupa varios conceptos
+- `java/modulo-20` — Tema 2: Componer sin anidar: andThen, compose, negate y reglas encadenadas — título agrupa varios conceptos
+- `java/modulo-20` — Tema 3: Streams como composición: pereza, orden y efectos que se esconden — título agrupa varios conceptos
+- `java/modulo-20` — Tema 4: Function y BiFunction: transformar uno o dos datos — título agrupa varios conceptos
+- `java/modulo-20` — Tema 5: UnaryOperator y BinaryOperator: la salida conserva el tipo — título agrupa varios conceptos
+- `java/modulo-20` — Tema 6: Referencias a métodos: escribir la operación sin repetirla — título agrupa varios conceptos
+- `java/modulo-20` — Tema 7: Optional: buscar un envío que puede no existir — título agrupa varios conceptos
+- `java/modulo-20` — Tema 8: Streams intermedios: filtrar, transformar, aplanar y ordenar — título agrupa varios conceptos
+- `java/modulo-20` — Tema 9: Streams terminales: encontrar, contar y combinar resultados — título agrupa varios conceptos
+- `java/modulo-20` — Tema 10: Collectors: formar listas, mapas, grupos y texto — título agrupa varios conceptos
+- `java/modulo-20` — Tema 11: Streams paralelos: comparar antes de acelerarlos — título agrupa varios conceptos
+- `java/modulo-20` — Tema 12: Pureza y efectos: calcular separado de guardar o imprimir — título agrupa varios conceptos
+- `java/modulo-20` — Tema 13: Flow API: publicar datos con demanda y cierre — título agrupa varios conceptos
+- `java/modulo-3` — Tema 1: Checked vs unchecked exceptions — título agrupa varios conceptos
+- `java/modulo-3` — Tema 3: Excepciones personalizadas y no tragar excepciones — título agrupa varios conceptos
+- `java/modulo-4` — Tema 3: Streams paralelos y referencias a métodos — título agrupa varios conceptos
+- `java/modulo-5` — Tema 1: ExecutorService y gestión de hilos — título agrupa varios conceptos
+- `java/modulo-5` — Tema 4: Condiciones de carrera y sincronización — título agrupa varios conceptos
+- `java/modulo-5` — Tema 6: Scoped Values frente a ThreadLocal (Java 25) — título agrupa varios conceptos
+- `java/modulo-5` — Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos — título agrupa varios conceptos
+- `java/modulo-6` — Tema 1: NIO.2 — Path y Files — título agrupa varios conceptos
+- `java/modulo-6` — Tema 2: Serialización con Jackson — título agrupa varios conceptos
+- `java/modulo-6` — Tema 3: Archivos grandes y recursos del classpath — título agrupa varios conceptos
+- `java/modulo-7` — Tema 2: sealed — jerarquías cerradas y exhaustividad — título agrupa varios conceptos
+- `java/modulo-7` — Tema 3: Pattern matching exhaustivo y para instanceof — título agrupa varios conceptos
+- `java/modulo-7` — Tema 4: Unnamed variables y patterns (_, Java 22) — título agrupa varios conceptos
+- `java/modulo-8` — Tema 1: pom.xml vs build.gradle.kts — título agrupa varios conceptos
+- `java/modulo-8` — Tema 2: Ciclo de vida de build y scopes — título agrupa varios conceptos
+- `java/modulo-8` — Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas — título agrupa varios conceptos
+- `java/modulo-9` — Tema 1: JUnit 5 — anotaciones y ciclo de vida — título agrupa varios conceptos
+- `java/modulo-9` — Tema 3: Tests parametrizados y cobertura — título agrupa varios conceptos
 - `javascript/modulo-0` — Tema 1: Variables — `const`, `let` y `var` — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `javascript/modulo-0` — Tema 2: Tipos primitivos y `typeof` — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `javascript/modulo-0` — Tema 4: Template literals y mensajes seguros — título agrupa varios conceptos; menos de dos encabezados semánticos internos
@@ -665,7 +787,7 @@
 - `kotlin-multiplatform/modulo-9` — Tema 1: kotlin.test en commonTest — lista conceptos clave sin mapa interno verificable
 - `kotlin-multiplatform/modulo-9` — Tema 2: Fakes en vez de mocks — lista conceptos clave sin mapa interno verificable
 - `kotlin-multiplatform/modulo-9` — Tema 3: runTest para coroutines — lista conceptos clave sin mapa interno verificable
-- `microservices/modulo-0` — Tema 1: Proceso, host, puerto, socket y DNS · Fundamentos · 70 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `microservices/modulo-0` — Tema 1: Ejecutar dos procesos Java y comprobar su socket HTTP · Fundamentos · 45 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `microservices/modulo-0` — Tema 2: Latencia, deadline y timeouts por fase · Aplicación · 80 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `microservices/modulo-0` — Tema 4: Relojes, causalidad, concurrencia y orden · Integración · 80 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `microservices/modulo-0` — Tema 5: Serialización, evolución y falacias distribuidas · Experto · 100 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
@@ -696,10 +818,16 @@
 - `node/modulo-12` — Tema 5: Posiciones espaciales y Socket.IO con orden recuperable · Avanzado · 150 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `node/modulo-12` — Tema 6: Archivos y notificaciones push sin convertirlos en autorización · Avanzado · 150 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `node/modulo-13` — Tema 4: Webhooks verificables y recuperación por reconciliación · Avanzado · 100 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `node/modulo-14` — Tema 2: GraphQL avanzado y Federation · Avanzado · 105 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `node/modulo-14` — Tema 3: Microservicios, Kafka, RabbitMQ y sagas · Avanzado · 105 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `node/modulo-14` — Tema 5: Docker productivo con Node · Avanzado · 90 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `node/modulo-14` — Tema 6: CI/CD y promoción de artefactos · Avanzado · 105 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `node/modulo-14` — Tema 1: TypeScript en Node.js — lista conceptos clave sin mapa interno verificable
+- `node/modulo-14` — Tema 2: GraphQL avanzado y Federation — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `node/modulo-14` — Tema 4: Serverless multi-cloud — lista conceptos clave sin mapa interno verificable
+- `node/modulo-14` — Tema 5: Docker productivo con Node — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `node/modulo-14` — Tema 6: CI/CD y promoción de artefactos — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `node/modulo-14` — Tema 7: Kafka desde Node: clave, grupo consumidor y offset — título agrupa varios conceptos
+- `node/modulo-14` — Tema 8: RabbitMQ desde Node: exchange, cola y confirmaciones — título agrupa varios conceptos
+- `node/modulo-15` — Tema 1: Deno y permisos explícitos — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `node/modulo-15` — Tema 2: Bun reúne runtime, paquetes, pruebas y bundler — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `node/modulo-15` — Tema 4: Elegir entre Node, Deno y Bun — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `node/modulo-2` — Tema 1: fs/promises frente a callbacks · Intermedio · 45 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `node/modulo-2` — Tema 2: Streams básicos: Readable, Writable y Transform · Intermedio · 60 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `node/modulo-2` — Tema 3: Backpressure: write() y el evento drain · Avanzado · 55 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
@@ -821,6 +949,96 @@
 - `rutaflow/modulo-7` — Tema 2: SLO y respuesta a incidentes — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `rutaflow/modulo-7` — Tema 3: Pruebas end-to-end del sistema completo (app ↔ backend) — lista conceptos clave sin mapa interno verificable
 - `rutaflow/modulo-7` — Tema 4: Continuidad, costes y proyecto final — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `spring-boot/modulo-0` — Tema 1: Inversión de control y el contenedor de Spring — título agrupa varios conceptos
+- `spring-boot/modulo-0` — Tema 2: Inyección por constructor vs por campo — título agrupa varios conceptos
+- `spring-boot/modulo-0` — Tema 3: Estereotipos, autoconfiguración y scopes — título agrupa varios conceptos
+- `spring-boot/modulo-1` — Tema 1: Spring Initializr y starters — título agrupa varios conceptos
+- `spring-boot/modulo-1` — Tema 2: application.yml vs application.properties — título agrupa varios conceptos
+- `spring-boot/modulo-1` — Tema 3: Perfiles y estructura por capas — título agrupa varios conceptos
+- `spring-boot/modulo-10` — Tema 1: Config Server y service discovery — título agrupa varios conceptos
+- `spring-boot/modulo-10` — Tema 3: Circuit breaker con Resilience4j — título agrupa varios conceptos
+- `spring-boot/modulo-10` — Tema 4: OAuth2/OIDC, Keycloak y Token Relay sin perder la frontera de autorización — título agrupa varios conceptos
+- `spring-boot/modulo-10` — Tema 5: HTTP Interfaces, deadlines y descubrimiento según el entorno — título agrupa varios conceptos
+- `spring-boot/modulo-10` — Tema 6: Spring gRPC, contrato HTTP/2 y evolución segura — título agrupa varios conceptos
+- `spring-boot/modulo-10` — Tema 7: DDD para decidir límites y propiedad de datos — título agrupa varios conceptos
+- `spring-boot/modulo-10` — Tema 8: Orquestar pedidos con Temporal y Spring Boot — título agrupa varios conceptos
+- `spring-boot/modulo-10` — Tema 12: Contract testing entre productor y consumidor — título agrupa varios conceptos
+- `spring-boot/modulo-11` — Tema 1: Fat JAR vs capas de Docker — título agrupa varios conceptos
+- `spring-boot/modulo-12` — Tema 2: Integra seguridad JWT y observabilidad — título agrupa varios conceptos
+- `spring-boot/modulo-12` — Tema 3: Cierra el servicio con evidencia y próximos pasos — título agrupa varios conceptos
+- `spring-boot/modulo-13` — Tema 4: Observabilidad sirve a un objetivo y a una decisión — título agrupa varios conceptos
+- `spring-boot/modulo-14` — Tema 1: CRUD API y contratos — título agrupa varios conceptos
+- `spring-boot/modulo-14` — Tema 2: MySQL y datos espaciales — título agrupa varios conceptos
+- `spring-boot/modulo-14` — Tema 4: JWT Bearer y autorización por roles — título agrupa varios conceptos
+- `spring-boot/modulo-14` — Tema 5: Tiempo real con STOMP — título agrupa varios conceptos
+- `spring-boot/modulo-14` — Tema 6: Archivos y notificaciones push — título agrupa varios conceptos
+- `spring-boot/modulo-15` — Tema 1: Backpressure real en WebFlux con reactor-test — título agrupa varios conceptos
+- `spring-boot/modulo-15` — Tema 3: Arquitectura hexagonal verificada con ArchUnit — título agrupa varios conceptos
+- `spring-boot/modulo-15` — Tema 4: Bulkhead y RateLimiter de Resilience4j — título agrupa varios conceptos
+- `spring-boot/modulo-15` — Tema 5: Saga con compensación real — título agrupa varios conceptos
+- `spring-boot/modulo-15` — Tema 6: Event Sourcing con replay real — título agrupa varios conceptos
+- `spring-boot/modulo-15` — Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar — título agrupa varios conceptos
+- `spring-boot/modulo-15` — Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework — título agrupa varios conceptos
+- `spring-boot/modulo-16` — Tema 1: Relaciones, lado propietario y ciclo de vida — título agrupa varios conceptos
+- `spring-boot/modulo-16` — Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso — título agrupa varios conceptos
+- `spring-boot/modulo-17` — Tema 1: DataSource, JdbcTemplate y DAO — título agrupa varios conceptos
+- `spring-boot/modulo-17` — Tema 2: `@Transactional`, rollback y límites de transacción — título agrupa varios conceptos
+- `spring-boot/modulo-18` — Tema 1: SecurityFilterChain y autorización — título agrupa varios conceptos
+- `spring-boot/modulo-18` — Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP — título agrupa varios conceptos
+- `spring-boot/modulo-19` — Tema 1: Job, Step, Tasklet y chunk processing — título agrupa varios conceptos
+- `spring-boot/modulo-19` — Tema 2: Reinicio, JobParameters, retry, skip y listeners — título agrupa varios conceptos
+- `spring-boot/modulo-2` — Tema 2: Validación con Bean Validation y ResponseEntity — título agrupa varios conceptos
+- `spring-boot/modulo-2` — Tema 3: Manejo centralizado de errores con @ControllerAdvice — título agrupa varios conceptos
+- `spring-boot/modulo-2` — Tema 4: Lombok y MapStruct sin exponer datos internos — título agrupa varios conceptos
+- `spring-boot/modulo-2` — Tema 5: OpenAPI con springdoc: el contrato como prueba — título agrupa varios conceptos
+- `spring-boot/modulo-2` — Tema 6: Paginación HTTP con validación y un límite de recursos explícito — título agrupa varios conceptos
+- `spring-boot/modulo-20` — Tema 1: Scheduling y tareas periódicas — título agrupa varios conceptos
+- `spring-boot/modulo-20` — Tema 2: Eventos locales, eventos transaccionales y mensajería — título agrupa varios conceptos
+- `spring-boot/modulo-20` — Tema 3: Correo con Spring Mail y entrega recuperable — título agrupa varios conceptos
+- `spring-boot/modulo-20` — Tema 4: Caché con Spring Cache, Caffeine y Redis — título agrupa varios conceptos
+- `spring-boot/modulo-20` — Tema 5: @Async y ejecutores: trabajo en segundo plano con límites — título agrupa varios conceptos
+- `spring-boot/modulo-20` — Tema 6: Integraciones empresariales, SOAP y fronteras de protocolo — título agrupa varios conceptos
+- `spring-boot/modulo-20` — Tema 7: Spring AI: ChatClient y herramientas con autorización fuera del modelo — título agrupa varios conceptos
+- `spring-boot/modulo-20` — Tema 8: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar — título agrupa varios conceptos
+- `spring-boot/modulo-21` — Tema 1: Productor, tópico, key y consumidor — título agrupa varios conceptos
+- `spring-boot/modulo-21` — Tema 3: Outbox transaccional y flujo de negocio — título agrupa varios conceptos
+- `spring-boot/modulo-22` — Tema 1: Hexagonal: puertos que hablan el idioma del dominio — título agrupa varios conceptos
+- `spring-boot/modulo-22` — Tema 2: C4: contexto, contenedores, componentes y código — título agrupa varios conceptos
+- `spring-boot/modulo-22` — Tema 3: ADR: decisiones con contexto, alternativas y consecuencias — título agrupa varios conceptos
+- `spring-boot/modulo-23` — Tema 1: módulos y límites entre paquetes — título agrupa varios conceptos
+- `spring-boot/modulo-23` — Tema 3: documentación generada y mapa de dependencias — título agrupa varios conceptos
+- `spring-boot/modulo-24` — Tema 1: schema-first con tipos y consultas — título agrupa varios conceptos
+- `spring-boot/modulo-24` — Tema 2: data fetchers, relaciones y problema N+1 — título agrupa varios conceptos
+- `spring-boot/modulo-24` — Tema 3: mutations y subscriptions — título agrupa varios conceptos
+- `spring-boot/modulo-24` — Tema 4: pruebas GraphQL con GraphQlTester — título agrupa varios conceptos
+- `spring-boot/modulo-25` — Tema 1: bindings y destinations — título agrupa varios conceptos
+- `spring-boot/modulo-25` — Tema 2: binder Kafka y binder RabbitMQ — título agrupa varios conceptos
+- `spring-boot/modulo-25` — Tema 3: reintentos, error handler y dead-letter — título agrupa varios conceptos
+- `spring-boot/modulo-25` — Tema 4: test binder y límites de la prueba — título agrupa varios conceptos
+- `spring-boot/modulo-3` — Tema 1: Entidades y repositorios derivados — título agrupa varios conceptos
+- `spring-boot/modulo-3` — Tema 2: El problema N+1 y su corrección — título agrupa varios conceptos
+- `spring-boot/modulo-3` — Tema 3: Migraciones con Flyway — título agrupa varios conceptos
+- `spring-boot/modulo-4` — Tema 2: Filtro JWT y autorización por rol — título agrupa varios conceptos
+- `spring-boot/modulo-4` — Tema 3: CORS y CSRF — título agrupa varios conceptos
+- `spring-boot/modulo-4` — Tema 4: Reducir SSRF en clientes HTTP con InetAddressFilter — título agrupa varios conceptos
+- `spring-boot/modulo-4` — Tema 5: Flujo de login completo — de `/api/auth/login` a una ruta protegida — título agrupa varios conceptos
+- `spring-boot/modulo-6` — Tema 1: Probar un controller con `@WebMvcTest` — título agrupa varios conceptos
+- `spring-boot/modulo-6` — Tema 2: Probar el repositorio contra PostgreSQL con `@DataJpaTest` — título agrupa varios conceptos
+- `spring-boot/modulo-6` — Tema 3: Integrar el flujo con `@SpringBootTest` — título agrupa varios conceptos
+- `spring-boot/modulo-7` — Tema 1: Actuator y health checks personalizados — título agrupa varios conceptos
+- `spring-boot/modulo-7` — Tema 2: Contar operaciones de negocio con Micrometer — título agrupa varios conceptos
+- `spring-boot/modulo-7` — Tema 3: Liveness y readiness sin reinicios en cadena — título agrupa varios conceptos
+- `spring-boot/modulo-8` — Tema 1: Producers y consumers con Spring Kafka — título agrupa varios conceptos
+- `spring-boot/modulo-8` — Tema 3: Transacciones Kafka y SQL: idempotencia y límites de exactly-once — título agrupa varios conceptos
+- `spring-boot/modulo-8` — Tema 4: Rebalanceo de consumer groups y asignación de particiones — título agrupa varios conceptos
+- `spring-boot/modulo-8` — Tema 5: Kafka frente a RabbitMQ — título agrupa varios conceptos
+- `spring-boot/modulo-8` — Tema 6: Spring Cloud Stream y binders de Kafka/RabbitMQ — título agrupa varios conceptos
+- `spring-boot/modulo-8` — Tema 7: Kafka Streams con Spring para transformar eventos — título agrupa varios conceptos
+- `spring-boot/modulo-8` — Tema 8: Avro y Schema Registry para contratos de eventos — título agrupa varios conceptos
+- `spring-boot/modulo-8` — Tema 9: RabbitMQ con Spring AMQP: routing, ack y prefetch — título agrupa varios conceptos
+- `spring-boot/modulo-9` — Tema 1: Mono y Flux — título agrupa varios conceptos
+- `spring-boot/modulo-9` — Tema 2: WebClient y composición no bloqueante — título agrupa varios conceptos
+- `spring-boot/modulo-9` — Tema 3: Cuándo WebFlux vale la complejidad, y R2DBC — título agrupa varios conceptos
 
 ## Revisados
 
@@ -958,77 +1176,6 @@
 - `flutter/modulo-9` — Tema 1: Unit tests y widget tests — testWidgets; WidgetTester.pump
 - `flutter/modulo-9` — Tema 2: Mocking con mocktail — mocktail when()/verify()
 - `flutter/modulo-9` — Tema 3: Integration tests — integration_test package
-- `java/modulo-0` — Tema 0: Instalar Eclipse Temurin JDK 27 en macOS, Windows y Ubuntu · Básico · 15 min — JDK frente a runtime; PATH frente a JAVA_HOME; Version, distribucion y arquitectura
-- `java/modulo-0` — Tema 1: Del código fuente a la JVM · Básico · 35 min — archivo fuente .java y nombre de clase public; compilación con javac y -d; bytecode y formato .class; verificación/interpretación/JIT; major version del class file (71=27, 69=25); JDK de compilación vs runtime; nombre binario, paquete y ruta; ClassNotFoundException vs NoClassDefFoundError; compilación manual vs build tool
-- `java/modulo-0` — Tema 2: public static void main — qué significa cada palabra · Básico · 30 min — firma de método; public (accesible al launcher); static (sin instancia previa); void vs código de salida del proceso; nombre main como contrato; String[] args y String... args; sobrecargas de main; clases anidadas y múltiples entry points; lanzamiento de fuente única; errores de firma
-- `java/modulo-0` — Tema 3: JDK, JRE y JVM · Básico · 30 min — JVM como máquina abstracta; runtime y bibliotecas estándar; JDK y herramientas; JRE histórico vs runtime actual; distribución, proveedor y licencia; LTS vs feature release; JAVA_HOME y PATH; runtime personalizado con jlink; arquitectura del binario; verificación de instalación
-- `java/modulo-0` — Tema 4: Tipos primitivos vs referencias · Básico · 40 min — ocho tipos primitivos; referencia, objeto y null; copia de valor primitivo; copia de referencia y aliasing; identidad vs igualdad (== vs equals); campos, locales y valores por defecto; paso por valor; arrays como referencias; memoria y GC (sin mito stack/heap); final vs inmutabilidad
-- `java/modulo-0` — Tema 5: Variables, conversiones y `String` · Intermedio · 45 min — declaración, inicialización y var; alcance y shadowing; widening y narrowing; overflow y underflow; promoción numérica; IEEE 754; BigDecimal desde texto; String inmutable y pool; ==/equals/Objects.equals; StringBuilder y text blocks
-- `java/modulo-0` — Tema 6: Operadores, precedencia y control de flujo · Intermedio · 45 min — aritméticos y división entera; relacionales, lógicos y cortocircuito; asignación compuesta e incremento; precedencia y asociatividad; if y expresión condicional; switch statement vs expression y fall-through; exhaustividad con enum/sealed; ciclos for/while/do-while; break/continue y etiquetas; pattern matching en decisiones
-- `java/modulo-0` — Tema 7: Arreglos, wrappers y paso de argumentos · Intermedio · 45 min — declaración/creación/inicialización de array; índices y longitud fija; arrays multidimensionales y dentados; copia superficial (clone/copyOf/arraycopy); varargs; wrappers; boxing/unboxing y null; caché de wrappers; genéricos y ausencia de primitivos; paso por valor y mutación
-- `java/modulo-0` — Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`) · Intermedio · 50 min — entrada por argumentos y Scanner; parseo y validación; LocalDate/LocalTime/LocalDateTime; Instant; ZoneId y ZonedDateTime; OffsetDateTime; Duration y Period; DateTimeFormatter y locale; DST, huecos y solapamientos; Date/Calendar e interoperabilidad
-- `java/modulo-1` — Tema 1: Clases, objetos, constructores y encapsulación · Básico · 40 min — clase vs objeto/instancia; campos de instancia y this; constructor e invariantes; constructor por defecto vs explícito; sobrecarga de constructores y this(...); encapsulación private y final; getters sin setters; campos estáticos vs instancia; identidad de objetos (==); cuándo NO imponer invariantes
-- `java/modulo-1` — Tema 2: Herencia y sobreescritura · Intermedio · 1 h — extends y qué se hereda; super(...) en el constructor; sobreescritura y @Override; polimorfismo de subtipo (dispatch dinámico); super.metodo(); Object y sus métodos; instanceof y downcasting; final/sealed para limitar herencia; @interface, @Target, @Retention; retención y reflexión
-- `java/modulo-1` — Tema 3: Interfaces, clases abstractas y cuándo usar cada una · Intermedio · 50 min — interfaz como contrato; métodos default y static en interfaz; implementación múltiple; colisión de default (diamante); clase abstracta y método abstracto; clase abstracta no instanciable; interfaz vs clase abstracta; herencia simple vs múltiples interfaces; interfaz funcional
-- `java/modulo-1` — Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso · Intermedio · 55 min — sobrecarga: misma firma de nombre, distinta de parámetros; resolución de sobrecarga en compilación; sobreescritura (contraste); covarianza del tipo de retorno; private; package-private; protected; public; mínimo privilegio
-- `java/modulo-10` — Tema 1: module-info.java y encapsulación fuerte · Intermedio · 50 min — module-info.java; exports y encapsulación fuerte; requires; requires transitive; module path vs classpath; named/automatic/unnamed modules
-- `java/modulo-10` — Tema 2: Migración incremental y cuándo JPMS aporta valor · Avanzado · 55 min — migración bottom-up (hoja primero); automatic modules como puente; requires transitive en migración; module not found; costo/beneficio de JPMS
-- `java/modulo-10` — Tema 3: `opens` para acceso reflexivo controlado de frameworks · Avanzado · 60 min — exports vs opens; InaccessibleObjectException; opens ... to acotado; exports ... to cualificado; open module; cuándo NO abrir
-- `java/modulo-11` — Tema 1: Generaciones de memoria y recolectores · Avanzado · 55 min — hipótesis generacional débil; generación joven vs vieja; G1 (throughput/pausas, default JDK 27); ZGC (latencia); medir antes de tunear; heap vs memoria nativa
-- `java/modulo-11` — Tema 2: Java Flight Recorder y JIT compilation · Avanzado · 55 min — JFR y bajo overhead en producción; eventos y jfr print; interpretación vs JIT; warm-up; inlining del JIT; -Xint para contrastar
-- `java/modulo-11` — Tema 3: Referencias especiales y heap dumps · Avanzado · 60 min — referencia fuerte vs especial; SoftReference vs WeakReference; PhantomReference y ReferenceQueue; OutOfMemoryError por caché sin límite; heap dump (HeapDumpOnOutOfMemoryError); análisis: retained size y dominators
-- `java/modulo-11` — Tema 4: Foreign Function & Memory API (Java 22) · Experto · 55 min — FFM vs JNI; Linker y downcallHandle; FunctionDescriptor y layouts; MemorySegment y Arena; cierre del Arena e invalidez; --enable-native-access
-- `java/modulo-12` — Tema 1: Builder — configuración paso a paso y validación · Intermedio · 45 min — el problema del constructor telescópico; encadenamiento fluido; validación en build(); campos obligatorios vs opcionales; producto inmutable con constructor privado; Builder vs record/constructor
-- `java/modulo-12` — Tema 2: Factory Method y Strategy · Intermedio · 55 min — Factory simple (switch central); Factory Method (GoF); producto común y creador; Strategy (algoritmo intercambiable); inyección de la estrategia; qué varía: creación o algoritmo
-- `java/modulo-12` — Tema 3: Abstract Factory y familias de productos compatibles · Avanzado · 50 min — familia de productos relacionados; la interfaz de la fábrica abstracta; fábricas concretas por familia; coherencia garantizada por la fábrica; selección en composición; Abstract Factory vs Factory Method
-- `java/modulo-12` — Tema 4: SOLID y cuándo NO aplicar un patrón · Avanzado · 60 min — SRP (responsabilidad única); OCP (abierto/cerrado); LSP (sustitución de Liskov); ISP (segregación de interfaces); DIP (inversión de dependencias); cuándo NO aplicar un patrón
-- `java/modulo-12` — Tema 5: Prototype — copiar configuración sin compartir estado mutable · Intermedio · 45 min — clonar una configuración existente; copia superficial vs profunda; campos mutables y copia defensiva; clone()/Cloneable y sus problemas; Prototype vs Builder/new
-- `java/modulo-12` — Tema 6: Patrones estructurales — elegir por intención · Avanzado · 65 min — Adapter: traducir una interfaz; Decorator: añadir responsabilidad; Proxy: controlar el acceso; Facade: simplificar un subsistema; Bridge: separar abstracción de implementación; elegir por intención, no por forma
-- `java/modulo-13` — Tema 1: Arquitectura por capas del proyecto integrador · Avanzado · 50 min — capas: dominio, servicio, aplicación; dirección de la dependencia; dominio sin infraestructura; puerto y adaptador (inversión); ensamblaje en el bootstrap; fitness function de la frontera
-- `java/modulo-13` — Tema 2: Integrando concurrencia, modelado y testing · Experto · 60 min — resultado explícito con sealed (Exito/Error); fallo esperado vs error interno; procesamiento concurrente del lote; reparto de éxitos y errores; prueba con dependencia simulada
-- `java/modulo-13` — Tema 3: Build reproducible y cierre del track · Avanzado · 50 min — orden única y documentada; build reproducible; project.build.outputTimestamp; comparación byte a byte; fijar entorno y versiones; fuente única de verdad
-- `java/modulo-14` — Tema 1: Compartir memoria requiere orden y visibilidad · Experto · 60 min — carrera de datos y resultado permitido por el JMM; volatile como happens-before write->read; otras aristas happens-before (monitor, start/join); volatile no da atomicidad en read-modify-write; AtomicLong/LongAdder; publicación segura de colecciones (copia defensiva); inmutabilidad superficial vs profunda en records
-- `java/modulo-14` — Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo · Experto · 65 min — dead code elimination del JIT; consumir resultado: retorno vs Blackhole; warmup, forks e iteraciones; @State/@Setup/@Param; procesador de anotaciones genera BenchmarkList; Score vs Error (distribución); microbenchmark != latencia de usuario
-- `java/modulo-14` — Tema 3: Deserializar es permitir construcción y comportamiento · Experto · 60 min — deserialización ejecuta construcción, no solo lectura; allowlist por patrón terminada en !*; java.base/* necesario para tipos internos; límites maxdepth/maxrefs/maxbytes; el filtro no sustituye validación del DTO; preferir JSON con DTO cerrado; allowlist, no denylist de gadgets
-- `java/modulo-14` — Tema 4: El runtime es parte del artefacto y necesita ciclo de vida · Experto · 60 min — jdeps --print-module-deps descubre módulos; jlink enlaza una imagen autocontenida; módulo ausente => fallo en ejecución; detección estática no ve reflexión/ServiceLoader; -Xmx no cubre memoria no-heap; ciclo de vida: reconstruir ante parche del JDK
-- `java/modulo-15` — Tema 1: Maven avanzado · Avanzado · 55 min — reactor y orden de construcción; dependencyManagement fija versión sin añadir dependencia; BOM importado con scope import; convergencia de versiones transitivas; Enforcer requireJavaVersion; POM efectivo como fuente de verdad; perfiles solo para variantes de build, no secretos
-- `java/modulo-15` — Tema 2: Gradle y builds reproducibles · Avanzado · 45 min — entradas no deterministas (timestamp, orden, ruta); jar --date fija fechas; orden de entrada estable; equivalencia Gradle isPreserveFileTimestamps=false; wrapper y toolchain; dependency locking y verification metadata; caché solo fiable para tareas deterministas
-- `java/modulo-15` — Tema 3: Proyectos multi-módulo sin ciclos · Experto · 1 h 15 min — separación en capas domain/application/infrastructure/api; dirección de dependencias (infra->app); puerto en application, adaptador en infrastructure; ArchUnit sobre bytecode detecta la violación real; freeOfCycles() entre slices; el build impide la dependencia inversa; un módulo por paquete es sobre-ingeniería
-- `java/modulo-15` — Tema 4: JUnit 5, Mockito y assertions expresivas · Avanzado · 55 min — fake con estado real vs mock de frontera; @ExtendWith(MockitoExtension) y @Mock; aserción de estado con AssertJ; verify del contrato observable; no mockear la clase bajo prueba; verifyNoMoreInteractions con criterio; ArgumentCaptor vs afirmar estado
-- `java/modulo-15` — Tema 5: Pruebas de integración reproducibles · Experto · 1 h — Testcontainers inicia PostgreSQL versionado; Flyway crea el esquema con migración versionada; JDBC real con tipos NUMERIC/DATE; Surefire vs Failsafe (unit vs IT); aislamiento de datos entre pruebas; esperar condición, no tiempo fijo; migración aplicada es inmutable
-- `java/modulo-15` — Tema 6: SLF4J, Logback, MDC y logging estructurado · Avanzado · 55 min — SLF4J fachada, Logback implementación; logging parametrizado {}; MDC asocia contexto al hilo; MDC.putCloseable restaura al cerrar; contaminación de MDC en pool reutilizado; encoder JSON para campos consultables; no registrar secretos ni duplicar stack traces
-- `java/modulo-16` — Tema 1: Entidades y relaciones JPA · Intermedio · 55 min — @Entity, @Id, @GeneratedValue; lado propietario (@JoinColumn) vs inverso (mappedBy); sincronizar ambos lados en el agregado; CascadeType.PERSIST no implica REMOVE; @Enumerated(EnumType.STRING); unidireccional cuando solo navegas en un sentido; no exponer setters generales
-- `java/modulo-16` — Tema 2: FetchType.LAZY, EAGER y el problema N+1 · Avanzado · 1 h — defaults de fetch (to-one EAGER, to-many LAZY); el problema N+1 medido; JOIN FETCH resuelve en una consulta; medir con contexto limpio (clear()); EAGER != un único join; paginar fetch de colección es en memoria; proyección DTO para listados
-- `java/modulo-17` — Tema 1: JDBC, PreparedStatement y DAO · Intermedio · 1 h — DataSource como fuente de conexiones; PreparedStatement fija estructura, enlaza valores; try-with-resources cierra Connection/ResultSet; DAO encapsula SQL y mapeo; parámetros protegen valores, no identificadores; comprobar executeUpdate(); no crear un DAO genérico
-- `java/modulo-17` — Tema 2: Transacciones, ACID y aislamiento · Avanzado · 1 h 15 min — ACID: atomicidad y durabilidad; setAutoCommit(false) + commit/rollback; una sola conexión para toda la unidad; aislamiento y qué anomalías evita; bloqueo optimista con version; idempotencia con UNIQUE; no abrir transacción durante HTTP
-- `java/modulo-18` — Tema 1: HttpClient, REST, timeouts y fallos · Intermedio · 2 h — HttpClient reutilizable y su pool; HttpRequest: método, headers, body; timeout de conexión vs de solicitud; separar transporte de cuerpo; diagnosticar 200/404/timeout; reintento solo de idempotentes; backoff con jitter y límite
-- `java/modulo-18` — Tema 2: Tokens, validación y límites de seguridad · Avanzado · 2 h — autenticación vs autorización por objeto; bearer en header Authorization, sin loguearlo; validar entrada en cada frontera; JWT/OAuth2/OIDC: qué resuelve cada uno; SSRF: validar esquema, host y DNS; parametrización != autorización; no criptografía propia
-- `java/modulo-18` — Tema 3: Sockets TCP y UDP — la red que hay debajo de HttpClient · Avanzado · 2 h — modelo cliente/servidor y puertos; ServerSocket y accept(); Socket y streams de I/O con charset explícito; TCP fiable, ordenado, orientado a conexión; UDP DatagramSocket/DatagramPacket; TCP frente a UDP; timeouts de socket (setSoTimeout); cierre de recursos y puerto ocupado; un cliente por hilo frente a virtual threads
-- `java/modulo-18` — Tema 4: Seguridad defensiva — hash, HMAC, firma y cifrado · Avanzado · 2 h 30 min — hash criptográfico (MessageDigest); comparación en tiempo constante (MessageDigest.isEqual); hash no sirve para contraseñas; HMAC (Mac); firma digital (Signature, par de claves); cifrado simétrico AES-GCM (Cipher); IV/nonce único y gestión de claves; hash vs HMAC vs firma vs cifrado
-- `java/modulo-19` — Tema 1: Reflexión y anotaciones en tiempo de ejecución · Intermedio · 90 min — Class<?> y descriptores (Field, Method); @Retention(RUNTIME) para ver anotaciones; isAnnotationPresent y getAnnotation; setAccessible(true) y opens (JPMS); invocar por nombre (Method.invoke); coste y optimización del acceso reflectivo; no usar reflexión en lógica de negocio
-- `java/modulo-19` — Tema 2: Expresiones regulares con Pattern y Matcher · Intermedio · 90 min — Pattern compilado una vez, reutilizable; clases, cuantificadores y límites (\b, {6}); grupos con nombre (?<ciudad>...); find() vs matches(); escapes en literal Java (\\d); replaceAll con referencias ${nombre}; ReDoS por backtracking catastrófico
-- `java/modulo-19` — Tema 3: Dinero exacto con BigDecimal · Básico · 75 min — double es binario inexacto para dinero; construir desde String, no double; escala y RoundingMode explícitos; HALF_UP comercial vs HALF_EVEN bancario; equals vs compareTo; reparto que cuadra al total; cuándo double sí sirve
-- `java/modulo-19` — Tema 4: Assertions y diseño por contrato · Intermedio · 75 min — precondición pública con excepción; invariante interna con assert; -ea activa las assertions (off por defecto); postcondición al final del método; localizar la invariante rota; assert nunca para datos externos; assert sin efectos secundarios necesarios
-- `java/modulo-19` — Tema 5: ServiceLoader: plugins sin acoplar implementaciones · Avanzado · 2 h — servicio = interfaz; proveedor = implementación; descriptor META-INF/services/<interfaz>; constructor público sin argumentos; ServiceLoader.load descubre e instancia perezoso; extender sin tocar el consumidor; descriptor ausente => 0 proveedores (sin error); uses/provides en JPMS
-- `java/modulo-19` — Tema 6: Proxies dinámicos: así funcionan @Transactional y los mocks · Avanzado · 90 min — Proxy.newProxyInstance genera una clase; InvocationHandler.invoke intercepta todo; delegar en el objeto real; desenvolver InvocationTargetException; proxy JDK solo con interfaces; auto-invocación no pasa por el proxy; cuándo un Decorator manual es mejor
-- `java/modulo-19` — Tema 7: Internacionalización: números, monedas, fechas y orden de texto · Intermedio · 90 min — Locale (idioma+región) con forLanguageTag/of; NumberFormat número y moneda por región; DateTimeFormatter.ofLocalizedDate; Collator ordena por idioma, no Unicode; MessageFormat con choice (plurales); ResourceBundle separa textos por idioma; localizar es presentación, no intercambio
-- `java/modulo-2` — Tema 1: List, Set, Map y sus implementaciones · Básico · 45 min — List y sus implementaciones (ArrayList/LinkedList); complejidad Big-O; Set y unicidad; equals/hashCode como contrato; orden de iteración por implementación; Map y sus implementaciones; colecciones inmutables (List.of); iteración y ConcurrentModificationException; medición informal vs benchmark
-- `java/modulo-2` — Tema 2: Genéricos, wildcards y type erasure · Intermedio · 45 min — clase genérica <T>; seguridad de tipos en compilación; método genérico; bounded type parameter; wildcard ? extends (productor); wildcard ? super (consumidor, PECS); type erasure; límites del erasure (new T[], instanceof); raw types
-- `java/modulo-2` — Tema 3: Comparable vs Comparator, e iteración · Intermedio · 50 min — Comparable y orden natural; contrato de compareTo; el bug de la resta (a-b); Comparator externo; Comparator.comparing y key extractor; encadenar thenComparing/reversed; orden con nulos (nullsFirst); consistencia compareTo/equals; iterar Map con entrySet()
-- `java/modulo-20` — Tema 1: Lambdas a fondo — tipo objetivo, captura y referencias a métodos · Intermedio · 120 min — Interfaz funcional y método SAM; Sintaxis de parámetros y cuerpo; Tipo objetivo e inferencia; Captura y variable efectivamente final; Alcance de this; Cuatro formas de referencias a métodos; Sobrecarga ambigua; Excepciones checked; Especializaciones primitivas; Identidad y serialización
-- `java/modulo-20` — Tema 2: Las cuatro formas: Predicate, Function, Consumer y Supplier · Básico · 75 min — Predicate<T>: decidir un boolean; Function<T,R>: transformar; Consumer<T>: efecto sin retorno; Supplier<T>: proveer sin argumentos; Métodos SAM (test/apply/accept/get); Aridad de la lambda vs la interfaz; Clase con nombre cuando hay estado o dominio
-- `java/modulo-20` — Tema 3: Componer sin anidar: andThen, compose, negate y reglas encadenadas · Intermedio · 75 min — Predicate.and/or/negate; Function.andThen (f luego g); Function.compose (g sobre f); El orden de composición es la regla de negocio; Referencias a método en la cadena; Motivos de rechazo vs un solo boolean; Cadena legible vs tipo Resultado
-- `java/modulo-20` — Tema 4: Streams como composición: pereza, orden y efectos que se esconden · Intermedio · 90 min — Stream describe trabajo, no es colección; Operaciones perezosas (filter/map/peek); Operaciones terminales disparan el recorrido; Consumo único del Stream; peek es para depurar, no para lógica; Efectos escondidos en map; Agregar con reduce/collect sin efectos
-- `java/modulo-20` — Tema 5: Function y BiFunction — transformar con una o dos entradas · Básico · 30 min — Function<T,R>: una entrada; BiFunction<T,U,R>: dos entradas; BiFunction.andThen; BiFunction no tiene compose; Tres o mas entradas: objeto o currying; Boxing en genericos de Function
-- `java/modulo-20` — Tema 6: UnaryOperator y BinaryOperator — cuando entrada y salida comparten tipo · Básico · 20 min — UnaryOperator<T> extiende Function<T,T>; BinaryOperator<T> extiende BiFunction<T,T,T>; Encaja con List.replaceAll/Stream.reduce; minBy/maxBy como BinaryOperator; El tipo se conserva; Identidad correcta en reduce
-- `java/modulo-20` — Tema 7: Referencias a métodos — las cuatro formas · Básico · 25 min — Referencia estatica; Instancia particular; Instancia arbitraria; Constructor Tipo::new; Equivalencia con la lambda (SAM); Cuando la lambda es mas clara
-- `java/modulo-20` — Tema 8: Optional — ausencia explícita sin null · Intermedio · 30 min — Optional.of/empty/ofNullable; map transforma si hay valor; orElse/orElseThrow; flatMap evita Optional<Optional>; Antipatron isPresent()+get(); Optional no para campos ni parametros
-- `java/modulo-20` — Tema 9: Streams intermedios — map, filter, flatMap y sorted · Intermedio · 35 min — filter selecciona por predicado; map transforma cada elemento; flatMap aplana flujos anidados; sorted ordena el flujo; Son perezosas; flatMap vs map con colecciones
-- `java/modulo-20` — Tema 10: Streams terminales — collect, reduce, forEach y find · Intermedio · 35 min — toList/collect materializan; reduce agrega a un valor; forEach para efectos no para construir; findFirst/anyMatch cortocircuitan; La terminal cierra el Stream; reduce necesita operacion asociativa
-- `java/modulo-20` — Tema 11: Collectors — toList, toMap, groupingBy y joining · Intermedio · 35 min — toList/toSet; toMap con clave y valor; groupingBy agrupa por clasificador; Colector posterior (summingInt); joining une cadenas; toMap sin merge ante duplicados
-- `java/modulo-20` — Tema 12: Streams paralelos — cuándo ayudan y cuándo engañan · Avanzado · 30 min — parallel() divide el trabajo; Operacion asociativa y sin estado; Resultado correcto no siempre mas rapido; ForkJoinPool.commonPool compartido; Estado compartido rompe en paralelo; Medir antes de paralelizar
-- `java/modulo-20` — Tema 13: Pureza y efectos secundarios — razonar sobre funciones · Intermedio · 30 min — Funcion pura: determinista y sin efectos; Efecto secundario: I/O, estado, reloj; Transparencia referencial; Efectos en los bordes, nucleo puro; Impureza oculta rompe tests y paralelo; Pureza no significa sin estado nunca
-- `java/modulo-20` — Tema 14: Flow API — reactive streams en la biblioteca estándar · Avanzado · 30 min — Las cuatro interfaces Flow; SubmissionPublisher como publicador; onSubscribe/onNext/onComplete; Subscription.request(n) = demanda; Backpressure: el consumidor marca el ritmo; Flow es el contrato no una libreria reactiva
 - `java/modulo-21` — Tema 1: Qué es la superficie pública de una API · Básico · 40 min — niveles de acceso frente a superficie real; tipos expuestos en la firma; constante public static final en línea; encapsulación por paquete y JPMS; error de tipo de retorno inaccesible; javap -public como vista del cliente; sacar el tipo interno de la firma
 - `java/modulo-21` — Tema 2: Compatibilidad binaria frente a compatibilidad de fuente · Intermedio · 45 min — compatibilidad de fuente frente a binaria; enlace perezoso de la JVM; NoSuchMethodError con descriptor completo; constante en línea no se propaga; casos de ida y vuelta fuente/binario; confundir NoClassDefFoundError con NoSuchMethodError; subir versión mayor con todos los consumidores
 - `java/modulo-21` — Tema 3: Evolucionar sin romper: default methods, deprecación y retirada · Intermedio · 45 min — método default como crecimiento seguro; delegación del default al método abstracto; método abstracto añadido rompe binarios; AbstractMethodError frente a NoSuchMethodError; deprecación con forRemoval y since; interfaz sellada cambia el cálculo; documentar la política de retirada
@@ -1039,138 +1186,5 @@
 - `java/modulo-22` — Tema 3: Copia defensiva, copia superficial y clone · Intermedio · 40 min — copia superficial comparte referencias; constructor de copia defensiva; copiar colecciones internas (List.copyOf/new ArrayList); clone() superficial y Cloneable; inmutabilidad como alternativa a copiar; copiar en el getter frente a en el constructor; fuga de estado mutable por referencia compartida
 - `java/modulo-22` — Tema 4: Enums de dominio: estado, código y comportamiento · Intermedio · 45 min — campo propio y constructor privado; comportamiento por constante (método abstracto); ordinal inestable frente a código estable; switch exhaustivo sin default; values() devuelve arreglo nuevo; EnumMap/EnumSet con orden de declaración; serialización por nombre devuelve la misma instancia
 - `java/modulo-22` — Tema 5: Clases anidadas, this$0 y la referencia que retiene · Avanzado · 45 min — clase interna no estática y su exterior; campo sintético this$0; clase anidada static sin exterior; retención del exterior por la interna; this en clase anónima frente a lambda; interna inconstruible sin exterior; static por defecto como decisión de diseño
-- `java/modulo-3` — Tema 1: Checked vs unchecked exceptions · Básico · 40 min — jerarquía Throwable/Error/Exception/RuntimeException; checked y throws; unchecked (RuntimeException); try/catch/finally; orden de catch (específico antes que general); multicatch (A|B); Error y qué no capturar
-- `java/modulo-3` — Tema 2: try-with-resources · Básico · 40 min — AutoCloseable y close(); cierre garantizado ante excepción; múltiples recursos y orden inverso; suppressed exceptions; try-with-resources vs finally manual
-- `java/modulo-3` — Tema 3: Excepciones personalizadas y no tragar excepciones · Intermedio · 45 min — excepción de dominio propia; checked vs unchecked para dominio; encadenamiento de causa (cause); wrapping checked->unchecked; no tragar: el catch vacío; preservar el rastro al relanzar
-- `java/modulo-4` — Tema 1: Stream API — map, filter, reduce, collect · Básico · 45 min — pipeline declarativo vs bucle; intermedias vs terminales; pereza y consumo único; Collectors (toList/groupingBy/joining/summingDouble); reduce con identidad; streams primitivos (IntStream); iterate/generate + limit; pureza y efectos secundarios
-- `java/modulo-4` — Tema 2: Optional — evitar null explícitamente · Intermedio · 40 min — Optional como tipo de retorno; creación (of/ofNullable/empty); map/flatMap/filter; orElse vs orElseGet; orElseThrow / ifPresent; get() sin comprobar; dónde NO usar Optional (ni campo ni parámetro)
-- `java/modulo-4` — Tema 3: Streams paralelos y referencias a métodos · Intermedio · 45 min — parallelStream() y ForkJoinPool; correctitud antes que velocidad; overhead de paralelización; estado compartido y condiciones de carrera; referencias a métodos; medición informal vs JMH
-- `java/modulo-4` — Tema 4: Stream Gatherers (Java 24) · Avanzado · 50 min — límite de map/filter (sin memoria); Stream.gather(); Gatherers.windowSliding(n); Gatherers.windowFixed(n); gatherer vs reduce; cuándo basta map/filter
-- `java/modulo-5` — Tema 1: ExecutorService y gestión de hilos · Intermedio · 50 min — Runnable vs Callable; submit y Future; Future.get y ExecutionException; invokeAll; shutdown vs shutdownNow; awaitTermination; tipos de pool y cola no acotada
-- `java/modulo-5` — Tema 2: CompletableFuture · Intermedio · 45 min — supplyAsync/runAsync; thenApply vs thenCompose; thenCombine; exceptionally vs handle; CompletionException; elegir el executor
-- `java/modulo-5` — Tema 3: Virtual threads · Intermedio · 50 min — platform thread vs virtual thread; carrier thread y montado/desmontado; I/O-bound vs CPU-bound; newVirtualThreadPerTaskExecutor; pinning y JEP 491; backpressure
-- `java/modulo-5` — Tema 4: Condiciones de carrera y sincronización · Intermedio · 50 min — condición de carrera; ++ no es atómico; synchronized; AtomicInteger y CAS; volatile: visibilidad != atomicidad; primitivas de coordinación (ReentrantLock/Semaphore/CountDownLatch); deadlock
-- `java/modulo-5` — Tema 5: Structured Concurrency (StructuredTaskScope, preview en JDK 27) · Avanzado · 55 min — estado preview en JDK 27; StructuredTaskScope.open y fork; join y Subtask.get(); Joiner (política allSuccessfulOrThrow); cancelación conjunta vs CompletableFuture suelto; scope acota ciclo de vida, no latencia
-- `java/modulo-5` — Tema 6: Scoped Values frente a ThreadLocal (Java 25) · Avanzado · 50 min — ScopedValue vs ThreadLocal; where(...).run(...) y get(); inmutabilidad del binding; herencia por subtareas estructuradas; liberación automática al salir; estado: ScopedValue estable, scope preview
-- `java/modulo-5` — Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos · Avanzado · 45 min — get(timeout) y TimeoutException; cancel(true) como señal; interrupción cooperativa; InterruptedException y restaurar la marca; dejar de esperar != detener el trabajo; terminación verificada del executor
-- `java/modulo-6` — Tema 1: NIO.2 — Path y Files · Intermedio · 45 min — Path vs clase File; operaciones de Files; createDirectories y jerarquía; Files.walk como stream; resolve vs normalize (orden importa); path traversal (..); enlaces simbólicos y toRealPath
-- `java/modulo-6` — Tema 2: Serialización con Jackson · Intermedio · 50 min — ObjectMapper y ciclo serializar/deserializar; records como modelo serializable; campos ausentes y valores por defecto; deserialización estricta (FAIL_ON_*); JsonNode/Map para JSON irregular; versión fija de la dependencia
-- `java/modulo-6` — Tema 3: Archivos grandes y recursos del classpath · Intermedio · 45 min — cargar todo vs streaming; BufferedReader/readLine; memoria por línea; Files.lines como stream; recurso del classpath (getResourceAsStream); classpath vs sistema de archivos
-- `java/modulo-7` — Tema 1: record — modelos inmutables sin boilerplate · Básico · 45 min — declaración y qué genera; accesores sin get; equals/hashCode/toString por valor; componentes final e inmutabilidad superficial; constructor compacto; constructor canónico y copia defensiva; wither para actualizar; cuándo NO usar record
-- `java/modulo-7` — Tema 2: sealed — jerarquías cerradas y exhaustividad · Intermedio · 45 min — sealed y permits; final/sealed/non-sealed en subtipos; exhaustividad en switch sin default; sealed + records = ADT; alcance de permits (mismo módulo/paquete); cuándo NO sellar
-- `java/modulo-7` — Tema 3: Pattern matching exhaustivo y para instanceof · Intermedio · 45 min — instanceof con binding; type pattern en switch; record patterns (deconstrucción); guardas when; exhaustividad sobre sealed; case null
-- `java/modulo-7` — Tema 4: Unnamed variables y patterns (_, Java 22) · Avanzado · 50 min — _ en record pattern; _ en catch; _ en bucles y recursos; _ no es una variable; descarte explícito vs nombre sin usar
-- `java/modulo-8` — Tema 1: pom.xml vs build.gradle.kts · Básico · 45 min — coordenadas (groupId:artifactId:version); declaración de dependencias; versión fija y reproducibilidad; repositorio y resolución; dependencias transitivas; XML declarativo vs DSL
-- `java/modulo-8` — Tema 2: Ciclo de vida de build y scopes · Intermedio · 45 min — fases del ciclo de vida; una fase implica las anteriores; binding fase->goal y plugins; scope de dependencia; el JAR plano no trae dependencias
-- `java/modulo-8` — Tema 3: Proyectos multi-módulo · Intermedio · 50 min — POM agregador (packaging pom) y módulos; herencia del padre; dependencia interna explícita; dirección de la dependencia; reactor y orden de build; ciclos entre módulos
-- `java/modulo-8` — Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas · Avanzado · 50 min — mismo problema, dos filosofías; equivalencia de comandos; el wrapper (gradlew/mvnw); estructura estándar compartida; cuál elegir (no los dos)
-- `java/modulo-9` — Tema 1: JUnit 5 — anotaciones y ciclo de vida · Básico · 45 min — @Test y aserciones; ciclo de vida (@BeforeEach/@AfterEach); @BeforeAll/@AfterAll; instancia por prueba y @TestInstance; aislamiento e independencia del orden; aserciones expresivas (assertThrows/assertAll)
-- `java/modulo-9` — Tema 2: Mockito — aislar dependencias · Intermedio · 50 min — mock vs dependencia real; @Mock/@InjectMocks; stub: when(...).thenReturn(...); verify sobre interacción; argument matchers (any/eq); thenThrow para simular fallos; cuándo NO mockear
-- `java/modulo-9` — Tema 3: Tests parametrizados y cobertura · Intermedio · 50 min — @ParameterizedTest + @ValueSource; @CsvSource (varios parámetros); @MethodSource (datos complejos); cobertura de líneas y ramas (JaCoCo); qué NO mide la cobertura; aserciones fluidas (AssertJ)
-- `spring-boot/modulo-0` — Tema 1: Inversión de control y el contenedor de Spring · Básico · 20 min — acoplamiento con new frente a IoC; el contenedor crea y conecta beans; estereotipo registra la clase como bean; depender de la abstracción, no la implementación; component scanning por paquete; @Primary/@Qualifier ante varios candidatos; cuándo IoC es ceremonia excesiva
-- `spring-boot/modulo-0` — Tema 2: Inyección por constructor vs por campo · Básico · 20 min — inyección por constructor permite final; test sin contenedor con new; inyección por campo se asigna tras construir; NullPointerException al instanciar con new; reflexión para testear campo privado; pérdida de inmutabilidad con campo no-final; constructor gigante → objeto de configuración
-- `spring-boot/modulo-0` — Tema 3: Estereotipos, autoconfiguración y scopes · Intermedio · 25 min — @Component/@Service/@Repository; @Repository traduce excepciones de persistencia; spring-boot-starter-webmvc autoconfigura; singleton (default): una instancia por contenedor; prototype: instancia nueva por resolución; prototype ≠ una instancia por petición HTTP; scope irrelevante sin estado mutable
-- `spring-boot/modulo-0` — Tema 4: Ciclo de vida de un bean y BeanPostProcessor · Intermedio · 30 min — Orden de fases de inicializacion; @PostConstruct como hook estandar; InitializingBean.afterPropertiesSet; @PreDestroy / DisposableBean al cerrar; BeanPostProcessor envuelve todos los beans; Recursos de prototype no se destruyen solos; Abrir recurso en el constructor
-- `spring-boot/modulo-0` — Tema 5: AOP con @Aspect y @Around — preocupaciones transversales · Avanzado · 40 min — @Aspect + @EnableAspectJAutoProxy; @Around y ProceedingJoinPoint.proceed(); Pointcut execution(...); El advice conserva la excepcion original; El proxy es el mecanismo (igual que @Transactional); Auto-invocacion no pasa por el aspecto; Abusar de AOP oscurece el flujo
-- `spring-boot/modulo-1` — Tema 1: Spring Initializr y starters · Básico · 20 min — Spring Initializr como generador; Starter como dependencia curada; BOM y resolución de versiones; Starter web vs otros starters; Anotación ausente sin el starter; Dependencia suelta vs starter; Cuándo no usar starters; Starters mínimos del proyecto
-- `spring-boot/modulo-1` — Tema 2: application.yml vs application.properties · Básico · 20 min — Pares clave-valor en .properties; Indentación jerárquica en .yml; Equivalencia funcional de ambos formatos; Detección automática del archivo; Sensibilidad a la indentación de YAML; Error de indentación silencioso; Mezclar .properties y .yml; Elección de formato por legibilidad
-- `spring-boot/modulo-1` — Tema 3: Perfiles y estructura por capas · Intermedio · 30 min — Configuración base en application.yml; Perfil como sobreescritura parcial; Activación explícita del perfil; Configuración fusionada efectiva; Perfil nunca activo por defecto; Olvidar activar el perfil al desplegar; Separación por capas controller/service/repository; Perfiles solo cuando hay varios entornos; spring.profiles.group (perfil paraguas)
-- `spring-boot/modulo-1` — Tema 4: Crear tu propia auto-configuración condicional · Avanzado · 40 min — @AutoConfiguration como marca de clase candidata; AutoConfiguration.imports; @ConditionalOnProperty; ApplicationContextRunner; ausencia de registro vs condicion no cumplida
-- `spring-boot/modulo-10` — Tema 1: Config Server y service discovery · Intermedio · 45 min — Config Server; service discovery
-- `spring-boot/modulo-10` — Tema 2: Spring Cloud Gateway · Intermedio · 40 min — rutas programáticas; predicates/filters
-- `spring-boot/modulo-10` — Tema 3: Circuit breaker con Resilience4j · Avanzado · 45 min — CircuitBreaker standalone; estados CLOSED/OPEN/HALF_OPEN
-- `spring-boot/modulo-10` — Tema 4: OAuth2/OIDC, Keycloak y Token Relay sin perder la frontera de autorización · Avanzado · 50 min — oauth2-resource-server; Token Relay; frontera de autorización
-- `spring-boot/modulo-10` — Tema 5: HTTP Interfaces, deadlines y descubrimiento según el entorno · Avanzado · 45 min — @HttpExchange proxy; withReadTimeout; ResourceAccessException; RestClient vs WebClient vs RestTemplate (decision)
-- `spring-boot/modulo-10` — Tema 6: Spring gRPC para comunicación interna de alta frecuencia (Spring Boot 4.1) · Avanzado · 50 min — @GrpcService; GrpcChannelFactory.createChannel; identidad de campo por número (protobuf)
-- `spring-boot/modulo-10` — Tema 7: DDD para decidir límites y propiedad de datos · Avanzado · 45 min — agregado con invariante encapsulada; propiedad de datos entre servicios
-- `spring-boot/modulo-10` — Tema 8: Orquestación de microservicios con Temporal y Spring Boot · Experto · 60 min — @WorkflowImpl(workers=...); @ActivityImpl(workers=...); Saga.addCompensation; TestWorkflowEnvironment
-- `spring-boot/modulo-11` — Tema 1: Fat JAR vs capas de Docker · Intermedio · 45 min — spring-boot-jarmode layertools
-- `spring-boot/modulo-11` — Tema 2: GraalVM native image · Avanzado · 45 min — spring-boot:process-aot; @ImportRuntimeHints; limitación explícita sin GraalVM instalado
-- `spring-boot/modulo-11` — Tema 3: Health checks para Kubernetes · Intermedio · 40 min — liveness/readiness probes
-- `spring-boot/modulo-12` — Tema 1: Arquitectura del microservicio integrador · Experto · 3 h — integración de módulos previos
-- `spring-boot/modulo-12` — Tema 2: Integrando seguridad, persistencia y observabilidad · Experto · 2 h 40 min — integración seguridad+persistencia+observabilidad
-- `spring-boot/modulo-12` — Tema 3: Cierre del track y próximos pasos · Experto · 1 h 20 min — checklist de cierre del track
-- `spring-boot/modulo-13` — Tema 1: `@Transactional` funciona en una frontera, no como encantamiento · Experto · 1 h 55 min — @Transactional como frontera explícita
-- `spring-boot/modulo-13` — Tema 2: Recuperación implica duplicación segura · Experto · 2 h 35 min — idempotencia en recuperación; catch de DataIntegrityViolationException fuera del método @Transactional (evita UnexpectedRollbackException)
-- `spring-boot/modulo-13` — Tema 3: Contratos ejecutables protegen despliegues independientes · Experto · 1 h 45 min — contract testing ejecutable
-- `spring-boot/modulo-13` — Tema 4: Observabilidad sirve a un objetivo y a una decisión · Experto · 1 h 45 min — observabilidad orientada a objetivo
-- `spring-boot/modulo-13` — Tema 5: Inbox, 2PC y el teorema CAP: límites de la consistencia distribuida · Experto · 1 h 30 min — inbox: deduplicación de eventos reentregados en el consumidor; mismo patrón de dos métodos (catch fuera de @Transactional) que corrige la regresión del Tema 2; 2PC bloquea ante la caída del coordinador entre prepare y commit; teorema CAP aplicado a la elección de disponibilidad sobre consistencia fuerte
-- `spring-boot/modulo-14` — Tema 1: CRUD API y contratos · Experto · 2 h 15 min — CRUD con contrato DTO
-- `spring-boot/modulo-14` — Tema 2: MySQL y datos espaciales · Experto · 1 h 45 min — tipos espaciales MySQL
-- `spring-boot/modulo-14` — Tema 3: JPA e Hibernate Spatial · Experto · 2 h 15 min — org.hibernate.orm:hibernate-spatial; tipos JTS
-- `spring-boot/modulo-14` — Tema 4: JWT Bearer y autorización por roles · Experto · 1 h 55 min — ownership vs rol
-- `spring-boot/modulo-14` — Tema 5: Tiempo real con STOMP · Experto · 2 h 15 min — @EnableWebSocketMessageBroker; WebSocketStompClient; STOMP != Socket.IO
-- `spring-boot/modulo-14` — Tema 6: Archivos y notificaciones push · Experto · 1 h 35 min — detección real de MIME
-- `spring-boot/modulo-15` — Tema 1: Backpressure real en WebFlux con reactor-test · Experto · 1 h 30 min — reactor-test StepVerifier
-- `spring-boot/modulo-15` — Tema 2: Contenedores Testcontainers reutilizados entre clases · Experto · 1 h 40 min — contenedor singleton reutilizado
-- `spring-boot/modulo-15` — Tema 3: Arquitectura hexagonal verificada con ArchUnit · Experto · 1 h 50 min — archunit-junit5; ArchRuleDefinition.noClasses
-- `spring-boot/modulo-15` — Tema 4: Bulkhead y RateLimiter de Resilience4j · Experto · 1 h 55 min — Bulkhead; RateLimiter
-- `spring-boot/modulo-15` — Tema 5: Saga con compensación real · Experto · 2 h 10 min — Saga.addCompensation / compensate en orden inverso
-- `spring-boot/modulo-15` — Tema 6: Event Sourcing con replay real · Experto · 2 h — replay desde el log de eventos
-- `spring-boot/modulo-15` — Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar · Experto · 1 h 15 min — reintento idempotente de compensación
-- `spring-boot/modulo-15` — Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework · Experto · 1 h 50 min — caso de uso independiente de framework
-- `spring-boot/modulo-15` — Tema 9: CQRS y saga por coreografía · Experto · 1 h 20 min — modelo de escritura y lectura como clases/tablas distintas conectadas por evento; fase AFTER_COMMIT y transacción REQUIRES_NEW para la proyección local; saga coreografiada: ningún componente conoce la secuencia completa; compensación disparada por evento, no por llamada directa de un coordinador; diferencia entre evento local síncrono y mensajería distribuida durable; frontera de doble escritura y patrón outbox; idempotencia, orden y evolución de contratos de evento; observabilidad por correlationId, estado de saga y detección de ciclos
-- `spring-boot/modulo-16` — Tema 1: Relaciones, lado propietario y ciclo de vida · Avanzado · 1 h 50 min — lado propietario de la relación
-- `spring-boot/modulo-16` — Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso · Avanzado · 1 h 40 min — FetchType; N+1
-- `spring-boot/modulo-17` — Tema 1: DataSource, JdbcTemplate y DAO · Avanzado · 1 h 40 min — JdbcTemplate; patrón DAO
-- `spring-boot/modulo-17` — Tema 2: `@Transactional`, rollback y límites de transacción · Avanzado · 1 h 20 min — propagación transaccional
-- `spring-boot/modulo-18` — Tema 1: SecurityFilterChain y autorización · Avanzado · 1 h 30 min — SecurityFilterChain
-- `spring-boot/modulo-18` — Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP · Avanzado · 1 h 20 min — validación DTO + OIDC
-- `spring-boot/modulo-18` — Tema 3: Levantar tu propio OAuth2 Authorization Server · Experto · 50 min — OAuth2AuthorizationServerConfigurer (instanciado con constructor, sin factory estatico); RegisteredClient con AuthorizationGrantType.CLIENT_CREDENTIALS; JWKSource con clave RSA generada al arrancar; POST /oauth2/token real con httpBasic; 401 ante credenciales invalidas
-- `spring-boot/modulo-19` — Tema 1: Job, Step, Tasklet y chunk processing · Avanzado · 1 h 40 min — chunk-oriented processing
-- `spring-boot/modulo-19` — Tema 2: Reinicio, JobParameters, retry, skip y listeners · Avanzado · 1 h 20 min — JobParameters; retry/skip policy
-- `spring-boot/modulo-19` — Tema 3: Particionamiento con múltiples workers y remote chunking · Experto · 1 h 30 min — Partitioner y ExecutionContext por partición; verificación de cobertura sin huecos ni duplicados; reubicación de paquetes en Spring Batch 6; PlatformTransactionManager requerido por spring-boot-starter-jdbc
-- `spring-boot/modulo-2` — Tema 1: Por qué DTOs en vez de entidades directamente · Intermedio · 30 min — DTO de entrada/salida; Acoplamiento entidad-contrato; Mapeo manual vs herramienta
-- `spring-boot/modulo-2` — Tema 2: Validación con Bean Validation y ResponseEntity · Intermedio · 25 min — @Valid en controller; ResponseEntity.status(); jakarta.validation constraints
-- `spring-boot/modulo-2` — Tema 3: Manejo centralizado de errores con @ControllerAdvice · Intermedio · 30 min — @RestControllerAdvice; @ExceptionHandler; MethodArgumentNotValidException
-- `spring-boot/modulo-2` — Tema 4: Lombok y MapStruct sin exponer datos internos · Intermedio · 40 min — lombok-mapstruct-binding orden; MapStruct componentModel=spring; unmappedTargetPolicy=ERROR
-- `spring-boot/modulo-2` — Tema 5: OpenAPI con springdoc: el contrato como prueba · Intermedio · 40 min — springdoc-openapi-starter-webmvc-ui 3.x; /v3/api-docs; swagger-ui.html
-- `spring-boot/modulo-2` — Tema 6: Paginación HTTP con validación y un límite de recursos explícito · Intermedio · 35 min — Validación de page/size; 400 vs 200 en tamaño inválido; Orden estable con desempate; Offset vs cursor
-- `spring-boot/modulo-2` — Tema 7: HandlerInterceptor frente a Filter y @ControllerAdvice · Avanzado · 35 min — preHandle/postHandle/afterCompletion; preHandle=false corta la cadena y omite afterCompletion; Filter vs HandlerInterceptor: acceso al handler resuelto; WebMvcConfigurer.addInterceptors; spring-boot-webmvc-test (dependencia explicita en Boot 4)
-- `spring-boot/modulo-2` — Tema 8: Negociación de contenido con HttpMessageConverters · Avanzado · 35 min — produces en @GetMapping; HttpMessageConverter autoconfigurado por classpath; 406 Not Acceptable; mismo DTO/controller, distinta representacion por converter
-- `spring-boot/modulo-20` — Tema 1: Scheduling y tareas periódicas · Avanzado · 1 h 10 min — @Scheduled
-- `spring-boot/modulo-20` — Tema 2: Eventos locales, eventos transaccionales y mensajería · Avanzado · 1 h 20 min — @TransactionalEventListener
-- `spring-boot/modulo-20` — Tema 3: Correo con Spring Mail y entrega recuperable · Avanzado · 1 h 10 min — JavaMailSender
-- `spring-boot/modulo-20` — Tema 4: Caché con Spring Cache, Caffeine y Redis · Avanzado · 1 h 20 min — @Cacheable; Caffeine vs Redis
-- `spring-boot/modulo-20` — Tema 5: @Async y ejecutores: trabajo en segundo plano con límites · Avanzado · 1 h 40 min — @Async; ThreadPoolTaskExecutor
-- `spring-boot/modulo-20` — Tema complementario: Integraciones empresariales, SOAP y fronteras de protocolo · Avanzado · 50 min — Spring Integration; SOAP legacy
-- `spring-boot/modulo-20` — Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo · Avanzado · 1 h 30 min — spring-ai-bom 2.0.2; ChatClient.builder(chatModel); @Tool con autorización fuera del modelo
-- `spring-boot/modulo-20` — Tema 7: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar · Avanzado · 1 h 10 min — autorización antes de recuperar evidencia para RAG
-- `spring-boot/modulo-21` — Tema 1: Productor, tópico, key y consumidor · Experto · 1 h 20 min — key de partición
-- `spring-boot/modulo-21` — Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia · Experto · 1 h 50 min — at-least-once + idempotencia
-- `spring-boot/modulo-21` — Tema 3: Outbox transaccional y flujo de negocio · Experto · 1 h 50 min — outbox pattern transaccional
-- `spring-boot/modulo-22` — Tema 1: Hexagonal: puertos que hablan el idioma del dominio · Experto · 1 h 10 min — puertos del dominio
-- `spring-boot/modulo-22` — Tema 2: C4: contexto, contenedores, componentes y código · Experto · 1 h 20 min — niveles del modelo C4
-- `spring-boot/modulo-22` — Tema 3: ADR: decisiones con contexto, alternativas y consecuencias · Experto · 1 h 10 min — estructura de un ADR
-- `spring-boot/modulo-23` — Tema 1: CompletableFuture, @Async y el bug de la autoinvocación · Avanzado · 1 h 20 min — autoinvocación bypasea el proxy @Async; bean orquestador separado restaura el proxy; thenCombine/exceptionally/orTimeout sobre CompletableFuture
-- `spring-boot/modulo-23` — Tema 2: Locks, deadlocks, semáforos y MDC en concurrencia · Experto · 1 h 30 min — deadlock por locks en orden inverso, verificado con join(timeout); orden total consistente elimina el deadlock; Semaphore acota concurrencia máxima; MDC es ThreadLocal y requiere TaskDecorator para propagarse a un executor
-- `spring-boot/modulo-3` — Tema 1: Entidades y repositorios derivados · Intermedio · 35 min — @Entity/@Id/@GeneratedValue; JpaRepository; @DataJpaTest
-- `spring-boot/modulo-3` — Tema 2: El problema N+1 y su corrección · Avanzado · 50 min — Hibernate Statistics; FetchType; JOIN FETCH / EntityGraph
-- `spring-boot/modulo-3` — Tema 3: Migraciones con Flyway · Intermedio · 35 min — db/migration naming; spring.flyway.enabled; reparación de migración fallida
-- `spring-boot/modulo-3` — Tema 4: Proyecciones, Specifications y auditoría de entidades · Avanzado · 45 min — proyeccion por interfaz (SQL selecciona solo esas columnas); JpaSpecificationExecutor + Specification.where().and(); @EnableJpaAuditing + @EntityListeners(AuditingEntityListener.class); Querydsl original sin mantenimiento, fork OpenFeign best-effort; spring-boot-data-jpa-test (dependencia explicita Boot 4)
-- `spring-boot/modulo-4` — Tema 1: SecurityFilterChain moderno · Intermedio · 40 min — SecurityFilterChain bean; HttpSecurity DSL
-- `spring-boot/modulo-4` — Tema 2: Filtro JWT y autorización por rol · Avanzado · 55 min — jjwt-api/impl/jackson split; OncePerRequestFilter; roles en claims
-- `spring-boot/modulo-4` — Tema 3: CORS y CSRF · Intermedio · 35 min — CorsConfigurationSource; csrf.disable() para API stateless
-- `spring-boot/modulo-4` — Tema 4: Protección SSRF con InetAddressFilter (Spring Boot 4.1) · Experto · 50 min — InetAddressFilter.externalAddresses(); HttpClientSettings.withInetAddressFilter; FilteredHostException; DNS rebinding
-- `spring-boot/modulo-4` — Tema 5: Flujo de login completo — de `/api/auth/login` a una ruta protegida · Avanzado · 45 min — login endpoint; token en Authorization header; ruta protegida 401 vs 200
-- `spring-boot/modulo-5` — Tema 1: @ConfigurationProperties tipado · Intermedio · 35 min — @ConfigurationProperties; binding por constructor
-- `spring-boot/modulo-5` — Tema 2: Fallar rápido al arranque · Intermedio · 30 min — fail-fast al arranque; validación de propiedades obligatorias
-- `spring-boot/modulo-5` — Tema 3: Manejo global de excepciones consistente entre entornos · Avanzado · 40 min — ProblemDetail RFC 9457; consistencia entre perfiles
-- `spring-boot/modulo-6` — Tema 1: Slices de testing — @WebMvcTest · Intermedio · 35 min — @WebMvcTest; MockMvc; @MockBean vs @MockitoBean
-- `spring-boot/modulo-6` — Tema 2: @DataJpaTest con Testcontainers · Avanzado · 50 min — @DataJpaTest; @Container; @ServiceConnection
-- `spring-boot/modulo-6` — Tema 3: @SpringBootTest completo y estrategia de pirámide de tests · Avanzado · 45 min — pirámide de tests; RANDOM_PORT; cuándo NO usar @SpringBootTest
-- `spring-boot/modulo-6` — Tema 4: Slices adicionales — @JsonTest, @RestClientTest y @TestConfiguration · Avanzado · 40 min — @JsonTest + JacksonTester; Jackson2Tester deprecado desde Boot 4.0; @RestClientTest + MockRestServiceServer; paquete org.springframework.boot.restclient.test.autoconfigure (Boot 4); RestClient.Builder manual rompe el mock; @TestConfiguration agrega beans solo para el test
-- `spring-boot/modulo-7` — Tema 1: Actuator y health checks personalizados · Intermedio · 35 min — HealthIndicator custom; /actuator/health
-- `spring-boot/modulo-7` — Tema 2: Métricas de negocio con Micrometer · Avanzado · 45 min — MeterRegistry; Counter/Timer custom
-- `spring-boot/modulo-7` — Tema 3: Liveness vs readiness · Intermedio · 30 min — liveness vs readiness groups; probes para Kubernetes
-- `spring-boot/modulo-7` — Tema 4: Tracing distribuido con Micrometer Tracing · Avanzado · 45 min — Tracer.currentSpan(); @Observed crea span hijo (mismo traceId, spanId distinto); management.observations.annotations.enabled (false por defecto, fallo silencioso); spring-boot-starter-aspectj (renombrado desde -aop en Boot 4); management.tracing.sampling.probability
-- `spring-boot/modulo-8` — Tema 1: Producers y consumers con Spring Kafka · Avanzado · 50 min — KafkaTemplate; @KafkaListener; ConsumerFactory/ProducerFactory
-- `spring-boot/modulo-8` — Tema 2: Dead-letter queue · Avanzado · 45 min — @RetryableTopic; DeadLetterPublishingRecoverer
-- `spring-boot/modulo-8` — Tema 3: Productor idempotente y transacciones (exactly-once) · Experto · 50 min — enable.idempotence; KafkaTransactionManager; exactly-once semantics
-- `spring-boot/modulo-8` — Tema 4: Rebalanceo de consumer groups y partition assignment · Avanzado · 45 min — ConsumerRebalanceListener; cooperative-sticky assignor
-- `spring-boot/modulo-8` — Tema 5: Kafka frente a RabbitMQ · Intermedio · 35 min — modelo de log vs cola; orden vs enrutamiento flexible
-- `spring-boot/modulo-8` — Tema 6: RabbitMQ a fondo — exchanges, routing keys y dead-letter exchange · Avanzado · 50 min — TopicExchange + routing key con patron (* vs #); ackMode=MANUAL + basicAck/basicNack; x-dead-letter-exchange en la cola; mensaje sin binding coincidente se pierde en silencio; requeue=true en bucle infinito vs requeue=false + DLX
-- `spring-boot/modulo-9` — Tema 1: Mono y Flux · Intermedio · 40 min — Mono vs Flux; evaluación perezosa (cold)
-- `spring-boot/modulo-9` — Tema 2: WebClient y composición no bloqueante · Avanzado · 45 min — WebClient.Builder; composición con flatMap
-- `spring-boot/modulo-9` — Tema 3: Cuándo WebFlux vale la complejidad, y R2DBC · Avanzado · 40 min — WebFlux vs WebMVC decisión; R2DBC no bloqueante
-- `spring-boot/modulo-9` — Tema 4: Virtual threads como alternativa a WebFlux · Avanzado · 35 min — spring.threads.virtual.enabled (false por defecto); Thread.currentThread().isVirtual(); verificacion requiere servidor real, no MockMvc; pinning de hilos virtuales en secciones synchronized largas; virtual threads (secuencial) vs WebFlux (reactivo)
+- `spring-boot/modulo-26` — Tema 1: CompletableFuture, @Async y el bug de la autoinvocación · Avanzado · 1 h 20 min — autoinvocación bypasea el proxy @Async; bean orquestador separado restaura el proxy; thenCombine/exceptionally/orTimeout sobre CompletableFuture
+- `spring-boot/modulo-26` — Tema 2: Locks, deadlocks, semáforos y MDC en concurrencia · Experto · 1 h 30 min — deadlock por locks en orden inverso, verificado con join(timeout); orden total consistente elimina el deadlock; Semaphore acota concurrencia máxima; MDC es ThreadLocal y requiere TaskDecorator para propagarse a un executor

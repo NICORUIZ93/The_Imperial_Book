@@ -3,647 +3,437 @@
 
 ## Aprende construyendo
 
-### Tema 1: Checked vs unchecked exceptions · Básico · 40 min
+### Tema 1: Checked vs unchecked exceptions
 
-**Paso 1 · Objetivo y preparación**
+Una excepción indica que una operación no pudo completarse. Practicarás cuándo declararla, cuándo manejarla y qué error no debes esconder.
 
-**Prerrequisito:** Módulos 0–2 de Java (clases, colecciones); JDK 27 o posterior. Comprueba `java --version` y `javac --version`.
+**¿Por qué es importante?** Clasificar el fallo permite responder a una entrada externa sin convertir cada bug en una excepción silenciosa. **Modelo mental:** una checked exception obliga a tomar una decisión visible; una unchecked no obliga al compilador, pero sigue necesitando diagnóstico.
 
-**Al finalizar podrás:** ubicar una excepción en la jerarquía `Throwable`; decidir checked (`throws`) frente a unchecked; usar `try`/`catch`/`finally`, multicatch y el orden correcto de `catch`; y explicar por qué un `Error` no se captura.
+**Proyecto integrador:** propaga errores de lectura hasta la capa que informa al operador. **Límite:** no captures una excepción si no puedes recuperarte ni añadir contexto. **Práctica:** quita temporalmente throws y observa el error de compilación.
 
-#### Aprende
+#### Subtema 1.1: Maneja un archivo que no existe · 10 min
 
-**Paso 2 · Contexto y caso profesional**
+**1. Contexto**
 
-**Caso profesional (escenario de RutaFlow):** al cargar configuración puede faltar un archivo por una condición externa; leer una posición inválida de una lista suele indicar un error de lógica. La capa que decide si reintentar, informar o propagar debe distinguir ambos casos.
+La ruta del archivo viene del usuario; puede estar mal escrita o no existir.
 
-**Paso 3 · Teoría, modelo mental y analogía**
+**2. Hazlo tú**
 
-**¿Por qué es importante?** El compilador obliga a manejar las checked exceptions porque representan condiciones externas previsibles que el desarrollador debe considerar explícitamente; las unchecked no se obligan porque típicamente indican bugs de programación, no condiciones externas esperables en cada punto del código.
-
-Las checked exceptions obligan al compilador a verificar que el código las declare o las maneje; las unchecked no imponen esa obligación porque típicamente señalan errores de programación.
-
-**Mapa de subtemas críticos**
-
-| Subtema | Papel | Evidencia del tema |
-|---|---|---|
-| jerarquía `Throwable`/`Error`/`Exception`/`RuntimeException` | Prerrequisito | dónde encaja cada excepción determina si es checked |
-| checked y `throws` | Núcleo | el compilador obliga a declarar o manejar |
-| unchecked (`RuntimeException`) | Núcleo | no se declaran; señalan bugs |
-| `try`/`catch`/`finally` | Núcleo | `finally` corre haya o no excepción |
-| orden de `catch` (específico antes que general) | Diagnóstico | invertirlo no compila (`already been caught`) |
-| multicatch (`A | B`) | Variante | un bloque para tipos sin relación de herencia |
-| `Error` y qué no capturar | Límite | `OutOfMemoryError` no es una condición recuperable normal |
-
-Cada fila tiene su explicación individual a continuación.
-
-**Jerarquía `Throwable`/`Error`/`Exception`/`RuntimeException` (prerrequisito).** Todo lo lanzable hereda de `Throwable`. Debajo hay dos ramas: `Error` (fallos graves de la JVM, como `OutOfMemoryError`) y `Exception`. Dentro de `Exception`, `RuntimeException` y sus subclases son **unchecked**; el resto de `Exception` son **checked**. Saber dónde encaja una excepción es lo que determina si el compilador te obliga a manejarla.
-
-**Checked y `throws` (núcleo).** Una excepción checked (como `IOException`) obliga: el método que puede lanzarla la declara con `throws`, y quien lo invoca debe capturarla o volver a declararla. El código no compila si se omite. Representan condiciones externas previsibles (archivo ausente, red caída).
-
-**Unchecked (`RuntimeException`) (núcleo).** Las subclases de `RuntimeException` (`NullPointerException`, `IndexOutOfBoundsException`) no se declaran ni se obliga a capturarlas, porque suelen indicar **bugs** del programa, no condiciones externas esperables en cada punto.
-
-**`try`/`catch`/`finally` (núcleo).** `try` delimita el código que puede fallar, `catch` maneja un tipo de excepción, y `finally` se ejecuta **siempre** (haya excepción o no, incluso si hay `return`), ideal para liberar recursos. En el Tema 2 verás que try-with-resources lo hace mejor para recursos.
-
-**Orden de `catch` (diagnóstico).** Si usas varios `catch`, el **más específico va primero**. Poner `catch (Exception)` antes de `catch (IOException)` no compila: `exception IOException has already been caught`, porque el general ya habría capturado todo y el específico sería inalcanzable.
-
-**Multicatch (variante).** `catch (NumberFormatException | NullPointerException e)` maneja en un solo bloque dos tipos **sin relación de herencia** entre sí, cuando la reacción es la misma. No puedes combinar un tipo con su propia subclase (sería redundante).
-
-**`Error` y qué no capturar (límite).** Los `Error` (como `OutOfMemoryError`, `StackOverflowError`) señalan fallos del entorno de ejecución de los que normalmente **no** puedes recuperarte. No los captures "por si acaso": déjalos propagar. Capturar `Throwable` para "atraparlo todo" oculta estos fallos y suele empeorar el diagnóstico.
-
-Las excepciones checked (como `IOException`) son verificadas por el compilador: cualquier método que pueda lanzar una excepción checked debe declararlo explícitamente en su firma con `throws` (`void leerArchivo() throws IOException { ... }`), y cualquier código que invoque ese método está obligado, también verificado en tiempo de compilación, a manejar esa excepción con un `try`/`catch` o a propagarla declarándola también con `throws` en su propia firma, sin excepción posible — el código simplemente no compila si se omite ese manejo obligatorio.
-
-Las excepciones unchecked (subclases de `RuntimeException`, como `IndexOutOfBoundsException` o `NullPointerException`) no requieren esa declaración obligatoria ni ese manejo verificado por el compilador, reflejando una distinción de diseño deliberada: las excepciones checked típicamente representan condiciones externas previsibles y recuperables (un archivo que podría no existir, una conexión de red que podría fallar), donde forzar al desarrollador a considerar explícitamente ese caso mediante el compilador tiene sentido; las excepciones unchecked típicamente representan errores de programación (acceder a un índice fuera de rango, invocar un método sobre una referencia nula) que en la mayoría de los casos indican un bug en el código, no una condición externa esperable que deba manejarse explícitamente en cada punto de la aplicación.
-
-**Analogía:** una excepción checked es como un formulario de aduana obligatorio que debes completar explícitamente antes de continuar tu viaje, verificado activamente antes de que puedas proceder; una excepción unchecked es como una alarma de incendio que puede activarse en cualquier momento sin que nadie la haya anticipado explícitamente en cada paso del edificio, indicando generalmente que algo salió estructuralmente mal, no una condición externa rutinaria esperada.
-
-**Conceptos clave:** obligación de manejo verificada en compilación, indicación de bug.
-
-**Código del ejemplo:**
+Crea `src/LeerConfig.java`:
 
 ```java
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 
-final class TiposDeExcepcion {
-    static String leerArchivo(Path ruta) throws IOException {
+public class LeerConfig {
+    static String leer(Path ruta) throws IOException {
         return Files.readString(ruta);
     }
 
-    static String elemento(List<String> elementos, int indice) {
-        return elementos.get(indice);
+    public static void main(String[] args) {
+        try {
+            System.out.println(leer(Path.of("config.properties")));
+        } catch (IOException error) {
+            System.err.println("No pude leer la configuración: " + error.getMessage());
+        }
     }
 }
 ```
 
-Distinguir qué falla es una condición externa recuperable (checked) de qué es un bug (unchecked) es la misma decisión que tomarás en cada capa del proyecto integrador de este track al diseñar su manejo de errores.
-
-**Cuándo no usarlo:** declarar `throws` para una excepción checked en cada capa intermedia que solo la propaga sin manejarla realmente ensucia la firma de métodos que no aportan ningún manejo real; en esos casos, envolver la excepción checked en una unchecked propia (Tema 3) en la capa que sí puede decidir algo suele ser más limpio.
-
-**Implicación práctica:** Forzar al compilador a verificar una excepción checked solo tiene sentido para condiciones externas genuinamente recuperables; aplicar esa misma obligación a algo que en realidad es un bug de programación solo ensucia la firma de los métodos sin ganar nada.
-
-#### Practica
-
-**Paso 4 · Demostración guiada desde cero**
-
-**Desde cero:** parte de una carpeta vacía y prepara la estructura.
+Desde la carpeta del proyecto ejecuta:
 
 ```bash
-mkdir ejemplo-checked-unchecked
-cd ejemplo-checked-unchecked
-mkdir -p src/main/java/academia/excepciones
+javac -d out src/LeerConfig.java
+java -cp out LeerConfig
 ```
 
-**Crea** `src/main/java/academia/excepciones/LectorConfig.java` con un método `leer(String ruta) throws IOException` y un `main` que además provoque una `IndexOutOfBoundsException` accediendo a una lista vacía:
+**Resultado esperado:** si no existe `config.properties`, el programa muestra el mensaje de error y termina sin imprimir un stack trace completo.
+
+**Fallo deliberado:** elimina `throws IOException` de la firma. **Diagnóstico:** el compilador exige capturar o declarar la excepción checked; restablece `throws` o añade un `try/catch`.
+
+**3. Entiende**
+
+`IOException` está checked: el compilador obliga a decidir qué hacer o a propagarla. El archivo es una entrada externa, así que informar el problema es útil.
+
+**4. Cierra**
+
+Guarda el archivo y explica qué decisión tomó el programa cuando faltó el archivo.
+
+#### Subtema 1.2: Propaga una checked exception hasta quien puede resolverla · 10 min
+
+**1. Contexto**
+
+Una función auxiliar no siempre sabe qué hacer si falla la lectura. Puede dejar que la capa que presenta el resultado decida cómo informar.
+
+**2. Hazlo tú**
+
+En `src/LeerYPropagar.java`, compara estos métodos:
 
 ```java
-package academia.excepciones;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
+
+public class LeerYPropagar {
+    static String leer(Path ruta) throws IOException {
+        return Files.readString(ruta);
+    }
+
+    static int contarLineas(Path ruta) throws IOException {
+        return leer(ruta).lines().toList().size();
+    }
+
+    public static void main(String[] args) {
+        try {
+            System.out.println(contarLineas(Path.of("config.properties")));
+        } catch (IOException error) {
+            System.err.println("No se pudo contar: " + error.getMessage());
+        }
+    }
+}
+```
+
+Crea `config.properties` con dos líneas y compila y ejecuta:
+
+```bash
+javac -d out src/LeerYPropagar.java
+java -cp out LeerYPropagar
+```
+
+**Resultado esperado:** muestra `2`; si quitas el archivo, el método `main` presenta el error.
+
+**Fallo deliberado:** borra `throws IOException` de `contarLineas`. **Diagnóstico:** la excepción sigue siendo checked aunque haya atravesado otro método; cada método que la propaga debe declararlo.
+
+**3. Entiende**
+
+Propagar no significa ignorar: la firma deja visible que la operación puede fallar y entrega la decisión a quien tiene contexto para responder.
+
+**4. Cierra**
+
+Dibuja el camino `leer → contarLineas → main` y marca dónde se atiende el error.
+
+#### Subtema 1.3: Trata una entrada inválida como error de programa · 10 min
+
+**1. Contexto**
+
+Una posición inexistente en una lista suele indicar que el programa no comprobó sus límites; capturarla como si fuera un fallo normal puede ocultar el bug.
+
+**2. Hazlo tú**
+
+Crea `src/IndiceSeguro.java`:
+
+```java
 import java.util.List;
 
-public final class LectorConfig {
-    static String leer(String ruta) throws IOException {
-        return Files.readString(Path.of(ruta));
-    }
-}
-
-final class Main {
-    public static void main(String[] args) {
-        String ruta = args.length > 0 ? args[0] : "config.properties";
-        try {
-            System.out.println(LectorConfig.leer(ruta));
-        } catch (IOException e) {
-            System.out.println("No se pudo leer " + ruta + ": " + e.getMessage());
+public class IndiceSeguro {
+    static String obtener(List<String> guias, int indice) {
+        if (indice < 0 || indice >= guias.size()) {
+            throw new IllegalArgumentException("Índice fuera de rango: " + indice);
         }
-
-        List<String> vacia = new ArrayList<>();
-        System.out.println(vacia.get(0));
-    }
-}
-```
-
-**Ejecuta el ejemplo** (compila y ejecuta con un archivo que no existe):
-
-```bash
-javac -d out src/main/java/academia/excepciones/LectorConfig.java
-java -cp out academia.excepciones.Main config.properties
-```
-
-**Resultado esperado:** el `catch` informa que no se pudo leer `config.properties` y, después, la JVM muestra el rastro de `IndexOutOfBoundsException` porque esa segunda falla no está capturada.
-
-**Fallo deliberado:** quita `throws IOException` de la firma de `leer` y recompila. El compilador rechaza el código porque `Files.readString` lanza una excepción checked que ya no está declarada; restaura `throws` y confirma que el acceso a `vacia.get(0)` sigue sin exigir ninguna declaración.
-
-**Pista:** el error de compilación aparece dentro de `leer`, no en la llamada del `main`. **Resultado esperado:** confirmas que el mismo `try/catch` no es exigido para la `IndexOutOfBoundsException`.
-
-**Si falla.** Si el programa no imprime el mensaje del `catch`, el archivo existe y la lectura funcionó: cambia el argumento por una ruta inexistente. Si la `IndexOutOfBoundsException` no aparece, la lista tiene elementos en la posición 0. Si al quitar `throws` el compilador no se queja, estás compilando otra versión del archivo.
-
-**Paso 5 · Práctica guiada**
-
-Cambia la lista vacía por una lista con `"RF-1"` y accede a los índices 0 y 1 en ejecuciones separadas. Antes de ejecutar, predice cuál índice funciona y cuál lanza `IndexOutOfBoundsException`; explica por qué el compilador no te obliga a capturar esta última.
-
-**Pista:** el índice válido único es 0. Si el acceso inválido se captura como `IOException`, el tipo de la excepción no coincide con la condición producida.
-
-Ahora cierra los subtemas de orden de catch, multicatch, finally y jerarquía. Crea `src/main/java/academia/excepciones/Demo.java`:
-
-```java
-package academia.excepciones;
-import java.io.*;
-import java.nio.file.*;
-
-public final class Demo {
-    public static void main(String[] args) {
-        try {
-            Files.readString(Path.of("no-existe.txt"));
-        } catch (NoSuchFileException e) {      // específico primero
-            System.out.println("especifico: NoSuchFileException");
-        } catch (IOException e) {              // general después
-            System.out.println("general: IOException");
-        } finally {
-            System.out.println("finally siempre corre");
-        }
-        try {
-            Integer.parseInt("x");
-        } catch (NumberFormatException | NullPointerException e) {  // multicatch
-            System.out.println("multicatch: " + e.getClass().getSimpleName());
-        }
-        RuntimeException re = new IllegalStateException("x");
-        System.out.println("es Exception? " + (re instanceof Exception));
-    }
-}
-```
-
-```bash
-javac -d out src/main/java/academia/excepciones/Demo.java
-java -cp out academia.excepciones.Demo
-```
-
-**Salida esperada (verificada con Temurin 27.0.1):**
-
-```text
-especifico: NoSuchFileException
-finally siempre corre
-multicatch: NumberFormatException
-es Exception? true
-```
-
-El `catch` específico ganó al general; `finally` corrió; el multicatch atrapó `NumberFormatException`; y `RuntimeException` es una `Exception` (de ahí que el compilador no la obligue, pero se pueda capturar). **Fallo deliberado:** invierte el orden de los `catch` (pon `catch (IOException)` antes de `catch (NoSuchFileException)`, que es su subclase). No compila: `exception NoSuchFileException has already been caught`, porque el general lo captura todo y el específico queda inalcanzable.
-
-#### Aplica
-
-**Paso 6 · Práctica independiente**
-
-Clasifica en una tabla tres excepciones más de la biblioteca estándar (`FileNotFoundException`, `NullPointerException`, `NumberFormatException`) como checked o unchecked, ubica cada una en la jerarquía `Throwable`, y explica en una frase por qué esa clasificación tiene sentido.
-
-**Paso 7 · Cierre**
-
-**Checklist de salida.**
-
-- [ ] `LectorConfig.java` compila con `throws IOException`; quitarlo no compila.
-- [ ] Ejecutar con una ruta inexistente muestra el mensaje del `catch`.
-- [ ] La lista vacía produce `IndexOutOfBoundsException` sin declaración previa.
-- [ ] El `catch` específico gana al general y `finally` siempre corre.
-- [ ] El multicatch atrapa `NumberFormatException` con un solo bloque.
-- [ ] Invertir el orden de `catch` no compila (`already been caught`).
-- [ ] Ubicas `FileNotFoundException`/`NullPointerException`/`NumberFormatException` en la jerarquía.
-
-**Si falla.** Si `FileNotFoundException` te genera dudas, es subclase de `IOException`, luego checked. Si el orden invertido compila, no hay relación de subtipo entre los `catch`. Si `finally` no corre, está fuera del `try`.
-
-Guarda el código, la salida del `Demo`, el `throws` obligatorio, la excepción unchecked no declarada y el error del orden de `catch`.
-
-**Antes del siguiente tema:** explica qué recurso debe liberarse aun cuando una excepción interrumpe el flujo, por qué el `catch` específico va primero, y por qué un `Error` no se captura.
-
-**Errores comunes:** declarar `throws Exception` genérico; capturar `Throwable`/`Error` ocultando fallos graves; poner el `catch` general antes del específico; y tratar una `NullPointerException` como condición externa recuperable.
-
-**Fuentes oficiales revisadas el 2026-11-01:** [dev.java: Exceptions](https://dev.java/learn/exceptions/), [`Throwable` (API Java SE 27)](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/Throwable.html) y [The Java Tutorials: Exceptions](https://docs.oracle.com/javase/tutorial/essential/exceptions/).
-
-### Tema 2: try-with-resources · Básico · 40 min
-
-**Paso 1 · Objetivo y preparación**
-
-**Prerrequisito:** Tema 1 de este módulo (`try`/`catch`); JDK 27 o posterior. Comprueba `java --version` y `javac --version`.
-
-**Al finalizar podrás:** implementar `AutoCloseable`; garantizar el cierre ante excepción; cerrar varios recursos en orden inverso; e identificar una suppressed exception cuando el cuerpo y el `close()` fallan.
-
-#### Aprende
-
-**Paso 2 · Contexto y caso profesional**
-
-**Caso profesional (escenario de RutaFlow):** un proceso lee un reporte de entregas y falla al validar una fila. El descriptor del archivo debe cerrarse tanto en la ruta normal como en la de error, sin duplicar limpieza en cada rama.
-
-**Paso 3 · Teoría, modelo mental y analogía**
-
-**¿Por qué es importante?** try-with-resources garantiza el cierre correcto de un recurso incluso ante una excepción, eliminando la necesidad de un bloque `finally` manual repetitivo y propenso a errores de omisión.
-
-Declarar el recurso dentro del paréntesis del `try` garantiza `close()` automático al salir del bloque, sea por finalización normal o por excepción.
-
-**Mapa de subtemas críticos**
-
-| Subtema | Papel | Evidencia del tema |
-|---|---|---|
-| `AutoCloseable` y `close()` | Núcleo | una clase propia se cierra sola en el `try` |
-| cierre garantizado ante excepción | Núcleo | `close()` corre aunque el cuerpo lance |
-| múltiples recursos y orden inverso | Variante | se cierran en orden contrario al de apertura |
-| suppressed exceptions | Diagnóstico | si el cuerpo y el `close()` fallan, el segundo queda "suprimido" |
-| try-with-resources frente a `finally` manual | Decisión | menos código y sin olvidos |
-
-Cada fila tiene su explicación individual a continuación.
-
-**`AutoCloseable` y `close()` (núcleo).** Cualquier clase que implemente `AutoCloseable` (un único método `close()`) puede ir en el paréntesis del `try (...)`. Java llama a `close()` por ti al salir del bloque. No se limita a archivos: una conexión, un lock o un handle propio se benefician igual.
-
-**Cierre garantizado ante excepción (núcleo).** La garantía clave: `close()` se invoca **salgas como salgas** del bloque, incluso si el cuerpo lanza. Por eso el mensaje de cierre aparece **antes** de que el `catch` externo maneje el error.
-
-**Múltiples recursos y orden inverso (variante).** Puedes declarar varios recursos separados por `;` en el mismo `try`. Se cierran en **orden inverso** al de apertura (el último abierto se cierra primero), igual que desapilar: importa cuando un recurso depende de otro.
-
-**Suppressed exceptions (diagnóstico).** Si el cuerpo lanza una excepción **y** además `close()` lanza otra, Java conserva la del cuerpo como principal y adjunta la del cierre como **suprimida**, accesible con `getSuppressed()`. Así no pierdes la causa original. Un `finally` manual, en cambio, tiende a que la excepción del cierre **tape** la del cuerpo.
-
-**Try-with-resources frente a `finally` manual (decisión).** El patrón antiguo (`finally` con comprobación de `null` y `close()` dentro de otro `try`) es verboso y fácil de escribir mal, y puede ocultar la excepción original. Usa try-with-resources siempre que el recurso sea `AutoCloseable`; reserva `finally` para limpieza que no sea de un recurso cerrable.
-
-`try (BufferedReader reader = Files.newBufferedReader(ruta)) { String linea = reader.readLine(); }` declara un recurso dentro del propio paréntesis del `try`, garantizando que Java invoque automáticamente `reader.close()` al finalizar el bloque, sin necesidad de un bloque `finally` manual explícito para ese propósito, y crucialmente incluso si ocurre una excepción dentro del bloque `try`: el cierre del recurso está garantizado sin importar cómo se abandone el bloque (normalmente, o mediante una excepción propagada).
-
-Cualquier clase que implemente la interfaz `AutoCloseable` (que declara un único método `close()`) puede usarse dentro de un try-with-resources, no solo las clases estándar de manejo de archivos: escribir una clase propia que gestione algún recurso externo (una conexión, un handle del sistema operativo) e implementar `AutoCloseable` en ella permite que también se beneficie de esta garantía automática de cierre, sin tener que escribir manualmente el patrón repetitivo de un bloque `finally` que verifica si el recurso no es nulo antes de cerrarlo, un patrón considerablemente más verboso y propenso a errores que el equivalente moderno con try-with-resources.
-
-**Analogía:** try-with-resources es como un sistema de préstamo de bicicletas que garantiza automáticamente que la bicicleta se devuelva a su estación correspondiente al finalizar el recorrido, incluso si el ciclista tuvo un percance en el camino, sin depender de que el ciclista recuerde manualmente devolverla por su cuenta en cada situación posible.
-
-**Conceptos clave:** `AutoCloseable`, cierre garantizado incluso ante error.
-
-**Código del ejemplo:**
-
-```java
-try (BufferedReader reader = Files.newBufferedReader(ruta)) {
-    String linea = reader.readLine();
-} // reader.close() se llama automáticamente, incluso si hay una excepción
-```
-
-Cualquier recurso propio del proyecto integrador de este track (una conexión, un archivo temporal) que necesite liberarse siempre debe implementar `AutoCloseable` y abrirse dentro de un try-with-resources, nunca con un `finally` manual.
-
-**Cuándo no usarlo:** try-with-resources requiere que el recurso implemente `AutoCloseable`; para un objeto que no gestiona ningún recurso externo (memoria, archivos, conexiones) y que el recolector de basura puede liberar normalmente, no hay nada que cerrar y esta técnica no aplica.
-
-**Implicación práctica:** Un recurso que no se cierra ante una excepción (un archivo, una conexión) se queda abierto indefinidamente, y un `finally` manual escrito a mano es fácil de olvidar o de escribir mal, mientras que try-with-resources garantiza el cierre sin ese riesgo.
-
-#### Practica
-
-**Paso 4 · Demostración guiada desde cero**
-
-**Desde cero:** parte de una carpeta vacía y prepara la estructura.
-
-```bash
-mkdir ejemplo-try-with-resources
-cd ejemplo-try-with-resources
-mkdir -p src/main/java/academia/recursos
-```
-
-**Crea** `src/main/java/academia/recursos/ReporteEntregas.java` con una clase propia que implemente `AutoCloseable`, registre cuándo se abre y cuándo se cierra, y lance una excepción a mitad del bloque:
-
-```java
-package academia.recursos;
-
-public final class ReporteEntregas implements AutoCloseable {
-    private final String nombre;
-
-    ReporteEntregas(String nombre) {
-        this.nombre = nombre;
-        System.out.println("Abierto: " + nombre);
-    }
-
-    void procesar(boolean falla) {
-        System.out.println("Procesando: " + nombre);
-        if (falla) {
-            throw new IllegalStateException("Fallo a mitad del procesamiento");
-        }
-    }
-
-    @Override
-    public void close() {
-        System.out.println("Cerrado: " + nombre);
+        return guias.get(indice);
     }
 
     public static void main(String[] args) {
-        try (ReporteEntregas reporte = new ReporteEntregas("entregas.csv")) {
-            reporte.procesar(true);
-        } catch (IllegalStateException e) {
-            System.out.println("Capturado: " + e.getMessage());
+        System.out.println(obtener(List.of("RT-1", "RT-2"), 1));
+    }
+}
+```
+
+Ejecuta desde la carpeta del proyecto:
+
+```bash
+javac -d out src/IndiceSeguro.java
+java -cp out IndiceSeguro
+```
+
+**Resultado esperado:** imprime `RT-2`. El método informa claramente una entrada inválida en vez de fallar más adelante con un acceso accidental fuera de rango.
+
+**Fallo deliberado:** llama `obtener(List.of("RT-1"), 2)`. **Diagnóstico:** `IllegalArgumentException` es unchecked; no exige `throws`, pero el método la lanza con una razón útil para quien lo llamó.
+
+**3. Entiende**
+
+Checked no significa “buena” y unchecked no significa “ignorable”. Elige según quién puede recuperarse y si el compilador debe exigir una decisión.
+
+**4. Cierra**
+
+Clasifica `IOException` y `IllegalArgumentException` y explica qué capa puede responder a cada una.
+
+**Fuentes oficiales:** [Java exceptions](https://dev.java/learn/exceptions/), [clases de excepción](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Exception.html).
+
+### Tema 2: try-with-resources
+
+El bloque `try-with-resources` cierra archivos y otros recursos incluso cuando el cuerpo termina con error.
+
+**¿Por qué es importante?** Archivos y conexiones que quedan abiertos pueden agotar recursos del proceso. **Modelo mental:** try-with-resources devuelve automáticamente lo que tomó prestado.
+
+**Proyecto integrador:** cierra cada archivo temporal tras procesar una guía. **Límite:** el recurso debe implementar AutoCloseable. **Práctica:** fuerza una excepción dentro del bloque y confirma que close se ejecuta.
+
+#### Subtema 2.1: Lee un archivo y deja que Java lo cierre · 10 min
+
+**1. Contexto**
+
+Un archivo abierto ocupa un recurso del sistema. Debe cerrarse al terminar de leerlo.
+
+**2. Hazlo tú**
+
+Crea `src/LeerLineas.java`:
+
+```java
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+public class LeerLineas {
+    public static void main(String[] args) throws IOException {
+        try (BufferedReader lector = Files.newBufferedReader(Path.of("guias.txt"))) {
+            lector.lines().forEach(System.out::println);
         }
     }
 }
 ```
 
-**Ejecuta el ejemplo** (el bloque `try` termina con una excepción):
+Crea `guias.txt` con dos guías y ejecuta:
 
 ```bash
-javac -d out src/main/java/academia/recursos/ReporteEntregas.java
-java -cp out academia.recursos.ReporteEntregas
+javac -d out src/LeerLineas.java
+java -cp out LeerLineas
 ```
 
-**Resultado esperado:** `Abierto: entregas.csv`, `Procesando: entregas.csv`, `Cerrado: entregas.csv` y recién después `Capturado: Fallo a mitad del procesamiento`: el cierre ocurre antes de que el `catch` maneje el error.
+**Resultado esperado:** imprime las dos guías y cierra el archivo al salir del bloque.
 
-**Paso 5 · Práctica guiada**
+**Fallo deliberado:** intenta abrir un archivo que no existe. **Diagnóstico:** aparece `IOException`; el fallo no impide que Java cierre cualquier recurso que sí hubiera alcanzado a abrirse.
 
-**Fallo deliberado:** cambia `reporte.procesar(true)` por `reporte.procesar(false)` y vuelve a ejecutar. El cierre ocurre igual, con o sin excepción; confirma en la salida que el mensaje de cierre aparece en ambos casos. Restaura el `true` al terminar.
+**3. Entiende**
 
-**Pista:** si el mensaje `Cerrado` no aparece antes del `catch`, el recurso no se está declarando dentro del paréntesis del `try`. **Resultado esperado:** `close()` se invoca siempre, sea cual sea el camino de salida del bloque.
+Los paréntesis del `try` declaran un recurso `AutoCloseable`. Java invoca `close()` automáticamente al abandonar el bloque.
 
-Ahora cierra los subtemas de orden inverso y suppressed. Crea `src/main/java/academia/recursos/Demo.java`:
+**4. Cierra**
+
+Señala la línea que abre el archivo y confirma que no escribiste una llamada manual a `close()`.
+
+#### Subtema 2.2: Comprueba el cierre aunque ocurra un error · 10 min
+
+**1. Contexto**
+
+El cierre también debe ocurrir si el código que usa el recurso lanza una excepción.
+
+**2. Hazlo tú**
+
+Crea `src/RecursoDemo.java`:
 
 ```java
-package academia.recursos;
-
-public final class Demo {
-    static final class Recurso implements AutoCloseable {
-        final String n; Recurso(String n) { this.n = n; System.out.println("abre " + n); }
-        @Override public void close() { System.out.println("cierra " + n); }
+public class RecursoDemo {
+    static class Aviso implements AutoCloseable {
+        public void close() {
+            System.out.println("recurso cerrado");
+        }
     }
+
     public static void main(String[] args) {
-        try (Recurso a = new Recurso("A"); Recurso b = new Recurso("B")) {   // orden inverso al cerrar
-            System.out.println("cuerpo");
-        }
-        System.out.println("---");
-        try (AutoCloseable r = () -> { throw new RuntimeException("fallo al cerrar"); }) {
-            throw new RuntimeException("fallo en el cuerpo");
-        } catch (Exception e) {
-            System.out.println("principal: " + e.getMessage());
-            for (Throwable s : e.getSuppressed()) System.out.println("suppressed: " + s.getMessage());
+        try (Aviso aviso = new Aviso()) {
+            System.out.println("trabajo");
+            throw new IllegalStateException("fallo de prueba");
+        } catch (IllegalStateException error) {
+            System.out.println("error atendido");
         }
     }
 }
 ```
 
-```bash
-javac -d out src/main/java/academia/recursos/Demo.java
-java -cp out academia.recursos.Demo
-```
-
-**Salida esperada (verificada con Temurin 27.0.1):**
-
-```text
-abre A
-abre B
-cuerpo
-cierra B
-cierra A
----
-principal: fallo en el cuerpo
-suppressed: fallo al cerrar
-```
-
-`B` se cierra antes que `A` (orden inverso al de apertura); y cuando el cuerpo **y** el `close()` fallan, la excepción del cuerpo es la principal y la del cierre queda **suprimida** (`getSuppressed()`), sin perderse. Un `finally` manual habría dejado que la del cierre tapara la original.
-
-**Si falla.** Si la clase no compila, `close()` debe ser `public`. Si el orden de cierre parece el de apertura, revisa que ambos recursos estén en el mismo `try (...)`. Si no ves la suppressed, confirma que tanto el cuerpo como el `close()` lanzan.
-
-#### Aplica
-
-**Paso 6 · Práctica independiente**
-
-Convierte el patrón antiguo en moderno: escribe primero un método que abra un recurso y lo cierre en un `finally` manual (con comprobación de `null`), y reescríbelo con try-with-resources. Compara ambos en líneas de código y explica qué olvido evita la versión moderna.
-
-**Paso 7 · Cierre**
-
-**Checklist de salida.**
-
-- [ ] `ReporteEntregas.java` compila e implementa `AutoCloseable`.
-- [ ] El cierre ocurre antes del `catch`, tanto con `procesar(true)` como con `procesar(false)`.
-- [ ] Dos recursos se cierran en orden inverso al de apertura (`cierra B`, luego `cierra A`).
-- [ ] Cuando el cuerpo y el `close()` fallan, la del cierre queda como suppressed.
-- [ ] `getSuppressed()` recupera la excepción del cierre sin perder la principal.
-- [ ] Explicas por qué `finally` manual es más propenso a errores.
-
-**Si falla.** Si el segundo recurso no se cierra, ambos deben estar en el mismo `try (...)` separados por `;`. Si el orden de cierre parece el de apertura, revisa la declaración. Si no ves la suppressed, el cuerpo o el `close()` no está lanzando.
-
-Guarda la clase `AutoCloseable`, la salida con y sin excepción, el orden de cierre inverso y la suppressed exception.
-
-**Antes del siguiente tema:** explica cuándo se invoca `close()`, en qué orden se cierran varios recursos, y qué es una suppressed exception.
-
-**Errores comunes:** cerrar en un `finally` que se salta antes de abrirse el recurso; olvidar el orden inverso de cierre; dejar que la excepción del `close()` tape la del cuerpo; y usar try-with-resources con algo que no implementa `AutoCloseable`.
-
-**Fuentes oficiales revisadas el 2026-11-01:** [dev.java: Exceptions](https://dev.java/learn/exceptions/), [`AutoCloseable` (API Java SE 27)](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/AutoCloseable.html) y [The Java Tutorials: try-with-resources](https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html).
-
-### Tema 3: Excepciones personalizadas y no tragar excepciones · Intermedio · 45 min
-
-**Paso 1 · Objetivo y preparación**
-
-**Prerrequisito:** Temas 1–2 de este módulo; JDK 27 o posterior. Comprueba `java --version` y `javac --version`.
-
-**Al finalizar podrás:** definir una excepción de dominio; decidir checked frente a unchecked; encadenar la causa y envolver checked en unchecked sin perder el origen; y diagnosticar por qué un catch vacío o un relanzamiento sin causa hacen invisible un bug.
-
-#### Aprende
-
-**Paso 2 · Contexto y caso profesional**
-
-**Caso profesional (escenario de RutaFlow):** un retiro supera el saldo disponible. La aplicación debe informar la regla de dominio incumplida y conservar contexto para el diagnóstico; un `catch` vacío hace parecer que la operación terminó correctamente.
-
-**Paso 3 · Teoría, modelo mental y analogía**
-
-**¿Por qué es importante?** Las excepciones personalizadas comunican con precisión qué condición de error específica ocurrió; un catch vacío oculta errores reales haciendo el bug correspondiente invisible y mucho más difícil de diagnosticar posteriormente.
-
-Una excepción personalizada (`SaldoInsuficienteException`) comunica con precisión qué condición ocurrió; un catch vacío oculta el error, dejando el bug invisible hasta que sus consecuencias aparezcan mucho después y sin relación aparente con la causa.
-
-**Mapa de subtemas críticos**
-
-| Subtema | Papel | Evidencia del tema |
-|---|---|---|
-| excepción de dominio propia | Núcleo | `SaldoInsuficienteException` expresa la regla violada |
-| checked frente a unchecked para dominio | Decisión | extender `RuntimeException` o `Exception` según el caso |
-| encadenamiento de causa (`cause`) | Núcleo | el constructor `(mensaje, Throwable)` conserva el origen |
-| wrapping checked → unchecked | Variante | envolver `IOException` sin ensuciar cada firma |
-| no tragar: el catch vacío | Diagnóstico | un `catch {}` hace invisible el fallo |
-| preservar el rastro al relanzar | Diagnóstico | relanzar sin causa pierde el stack original |
-
-Cada fila tiene su explicación individual a continuación.
-
-**Excepción de dominio propia (núcleo).** Una clase como `SaldoInsuficienteException` nombra **qué regla de negocio** se incumplió, en vez de un `RuntimeException` genérico. Permite que quien la captura reaccione distinto según el tipo, sin inspeccionar el texto del mensaje.
-
-**Checked frente a unchecked para dominio (decisión).** Extiende `RuntimeException` (unchecked) cuando la condición es un error que el llamador normalmente **no** puede recuperar en el acto (regla de negocio violada), que es lo más común en dominios modernos. Extiende `Exception` (checked) solo si quieres **obligar** al llamador a tratar el caso. La tendencia actual favorece unchecked de dominio para no contaminar firmas.
-
-**Encadenamiento de causa (núcleo).** Al crear una excepción, pásale la original como **causa** con el constructor `(String mensaje, Throwable causa)`. Así `getCause()` recupera el origen y el stack trace muestra "caused by:". Conservar la causa es lo que hace diagnosticable un fallo que cruzó varias capas.
-
-**Wrapping checked → unchecked (variante).** Cuando una capa baja lanza una checked (`IOException`) pero las capas intermedias no pueden hacer nada útil, **envuélvela** en una unchecked de dominio (`throw new ConfigException(msg, e)`) **conservando la causa**. Evita propagar `throws IOException` por toda la pila sin aportar manejo real.
-
-**No tragar: el catch vacío (diagnóstico).** `catch (Exception e) {}` es el antipatrón de "tragar" la excepción: el fallo desaparece sin rastro y el bug aparece después, lejos de su causa. Como mínimo registra (`log.error(...)`) y decide explícitamente: relanzar, manejar, o ignorar con una razón comentada.
-
-**Preservar el rastro al relanzar (diagnóstico).** Si capturas y relanzas una excepción nueva **sin** pasar la causa (`throw new RuntimeException("falló")`), `getCause()` queda `null` y pierdes el stack original. Siempre encadena la causa al relanzar; es la diferencia entre un error rastreable y uno ciego.
-
-Definir una excepción personalizada específica del dominio de la aplicación (`class SaldoInsuficienteException extends RuntimeException { SaldoInsuficienteException(String mensaje) { super(mensaje); } }`) permite comunicar de forma mucho más precisa y expresiva qué condición de error específica ocurrió, en comparación con lanzar una excepción genérica de propósito general (como `RuntimeException` directamente, o `IllegalStateException`), facilitando además que el código que captura esa excepción específica pueda reaccionar de forma diferenciada según el tipo exacto de excepción capturado, en vez de tener que inspeccionar el mensaje de texto de una excepción genérica para determinar qué condición específica ocurrió realmente.
-
-Un catch vacío (`try { operacionRiesgosa(); } catch (Exception e) { }`) es un antipatrón grave conocido como "tragar" la excepción: el error ocurrido desaparece silenciosamente sin ningún registro ni indicación de que algo falló, haciendo que el bug correspondiente se vuelva invisible y extremadamente difícil de diagnosticar más adelante, cuando sus consecuencias downstream eventualmente se manifiesten de forma confusa y aparentemente no relacionada con su causa raíz real; la práctica correcta como mínimo registra el error (`log.error("Falló la operación", e)`) antes de decidir explícitamente si relanzarlo, manejarlo apropiadamente, o (en casos verdaderamente justificados y documentados) ignorarlo deliberadamente con una razón explícita comentada.
-
-**Analogía:** un catch vacío es como desactivar silenciosamente la alarma de incendio de un edificio sin investigar qué la activó, dejando que el problema real subyacente (que sí existe y sigue sin resolverse) permanezca completamente invisible hasta que eventualmente cause un daño mucho mayor y más difícil de rastrear hasta su causa original.
-
-**Conceptos clave:** modelar errores de dominio, antipatrón del catch vacío.
-
-**Código del ejemplo:**
-
-```java
-class SaldoInsuficienteException extends RuntimeException {
-    SaldoInsuficienteException(String mensaje) { super(mensaje); }
-}
-if (saldo < monto) throw new SaldoInsuficienteException("Saldo: " + saldo);
-
-// MAL: oculta el error, hace el bug invisible
-try { operacionRiesgosa(); } catch (Exception e) { }
-// BIEN: al menos registra el error antes de decidir qué hacer
-try { operacionRiesgosa(); } catch (Exception e) {
-    log.error("Falló la operación", e);
-    throw e; // o maneja explícitamente
-}
-```
-
-Cada regla de negocio violable del proyecto integrador de este track (saldo insuficiente, cuenta bloqueada, entrega duplicada) debería tener su propia excepción de dominio, nunca un `RuntimeException` genérico ni un catch vacío que la oculte.
-
-**Cuándo no usarlo:** crear una excepción de dominio propia para un error que solo ocurre en un único lugar y nunca necesita reacción diferenciada es ceremonia innecesaria; una `IllegalArgumentException` genérica con un mensaje claro puede bastar en ese caso.
-
-**Implicación práctica:** Una excepción de dominio específica permite reaccionar distinto según qué regla de negocio se violó, mientras que un catch vacío convierte cualquier error real en un bug invisible que solo se descubre mucho después, por sus consecuencias, no por su causa.
-
-#### Practica
-
-**Paso 4 · Demostración guiada desde cero**
-
-**Desde cero:** parte de una carpeta vacía y prepara la estructura.
+Compila y ejecuta:
 
 ```bash
-mkdir ejemplo-excepcion-dominio
-cd ejemplo-excepcion-dominio
-mkdir -p src/main/java/academia/billetera
+javac -d out src/RecursoDemo.java
+java -cp out RecursoDemo
 ```
 
-**Crea** `src/main/java/academia/billetera/Billetera.java` con `SaldoInsuficienteException`, un método `retirar(double monto)` que la lance y un `main` que primero capture con un catch vacío y luego registre el error:
+**Resultado esperado:** aparecen, en orden, `trabajo`, `recurso cerrado` y `error atendido`.
+
+**Fallo deliberado:** mueve la excepción a una línea anterior al `try`. **Diagnóstico:** el recurso todavía no se había abierto; vuelve a lanzarla dentro del bloque para observar el cierre automático.
+
+**3. Entiende**
+
+Java cierra el recurso antes de entrar al `catch` asociado. El cierre no depende de que la salida del bloque sea normal.
+
+**4. Cierra**
+
+Entrega la salida con las tres líneas en el orden correcto.
+
+#### Subtema 2.3: Cierra varios recursos en orden inverso · 10 min
+
+**1. Contexto**
+
+Un proceso puede abrir un lector y luego otro recurso que depende de él. Debe cerrar primero lo último que abrió.
+
+**2. Hazlo tú**
+
+En `src/OrdenDeCierre.java`, crea dos recursos que impriman su nombre desde `close()` y decláralos así:
 
 ```java
-package academia.billetera;
+public class OrdenDeCierre {
+    static class Recurso implements AutoCloseable {
+        private final String nombre;
+        Recurso(String nombre) { this.nombre = nombre; }
+        public void close() { System.out.println("cierro " + nombre); }
+    }
 
-class SaldoInsuficienteException extends RuntimeException {
-    SaldoInsuficienteException(String mensaje) { super(mensaje); }
+    public static void main(String[] args) {
+        try (Recurso archivo = new Recurso("archivo");
+             Recurso lector = new Recurso("lector")) {
+            System.out.println("leo");
+        }
+    }
 }
+```
 
-public final class Billetera {
-    private double saldo;
+Compila y ejecuta `javac -d out src/OrdenDeCierre.java` y después `java -cp out OrdenDeCierre`.
 
-    Billetera(double saldoInicial) { this.saldo = saldoInicial; }
+**Resultado esperado:** imprime `leo`, `cierro lector` y `cierro archivo`.
 
-    void retirar(double monto) {
-        if (monto <= 0) {
-            throw new IllegalArgumentException("El monto debe ser positivo");
-        }
-        if (saldo < monto) {
-            throw new SaldoInsuficienteException("Saldo: " + saldo + ", monto: " + monto);
-        }
+**Fallo deliberado:** intercambia el orden esperado de las dos últimas líneas en tu nota. **Diagnóstico:** Java cierra en el orden inverso al de declaración; corrige tu predicción.
+
+**3. Entiende**
+
+El orden inverso permite liberar primero el recurso que se abrió después y que puede depender del anterior.
+
+**4. Cierra**
+
+Escribe el orden de apertura y cierre sin mirar el código.
+
+**Fuente oficial:** [Java try-with-resources](https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html).
+
+### Tema 3: Excepciones personalizadas y no tragar excepciones
+
+Usa una excepción propia para una regla del negocio y conserva suficiente información para diagnosticar el fallo.
+
+**¿Por qué es importante?** Un error de negocio debe poder reconocerse y explicarse sin esconder el fallo real. **Modelo mental:** el tipo de excepción es la etiqueta del problema; el mensaje añade el dato que ayuda a resolverlo.
+
+**Proyecto integrador:** informa saldo insuficiente antes de confirmar un retiro. **Límite:** no devuelvas detalles internos ni secretos al cliente. **Práctica:** compara el catch vacío con el mensaje visible.
+
+```bash
+javac -d out src/Billetera.java
+java -cp out Billetera
+```
+
+#### Subtema 3.1: Representa un saldo insuficiente · 10 min
+
+**1. Contexto**
+
+Retirar más dinero del disponible es una condición concreta de una billetera, no un error técnico genérico.
+
+**2. Hazlo tú**
+
+Crea `src/Billetera.java`:
+
+```java
+public class Billetera {
+    private int saldo;
+
+    public Billetera(int saldoInicial) {
+        saldo = saldoInicial;
+    }
+
+    public void retirar(int monto) {
+        if (monto <= 0) throw new IllegalArgumentException("El monto debe ser positivo");
+        if (monto > saldo) throw new SaldoInsuficienteException(monto, saldo);
         saldo -= monto;
     }
-}
 
-final class Main {
+    static class SaldoInsuficienteException extends RuntimeException {
+        SaldoInsuficienteException(int monto, int saldo) {
+            super("No alcanza: retiro " + monto + ", saldo " + saldo);
+        }
+    }
+
     public static void main(String[] args) {
-        Billetera billetera = new Billetera(100);
-
-        try {
-            billetera.retirar(150);
-        } catch (SaldoInsuficienteException e) {
-            // catch vacío: el fallo no deja rastro
-        }
-
-        try {
-            billetera.retirar(150);
-        } catch (SaldoInsuficienteException e) {
-            System.err.println("Falló el retiro: " + e.getMessage());
-        }
+        new Billetera(5000).retirar(8000);
     }
 }
 ```
 
-**Ejecuta el ejemplo** (compara el catch vacío con el catch que registra):
+Ejecuta `javac -d out src/Billetera.java` y `java -cp out Billetera`.
 
-```bash
-javac -d out src/main/java/academia/billetera/Billetera.java
-java -cp out academia.billetera.Main
-```
+**Resultado esperado:** el programa señala `SaldoInsuficienteException` y explica el monto solicitado y el saldo actual.
 
-**Resultado esperado:** el primer retiro fallido no deja ningún rastro; el segundo imprime `Falló el retiro: Saldo: 100.0, monto: 150.0` en la salida de error. La diferencia entre ambos intentos es exactamente el problema del catch vacío.
+**Fallo deliberado:** cambia la excepción específica por `RuntimeException`. **Diagnóstico:** el error pierde el nombre del evento de negocio; restaura la clase específica.
 
-**Paso 5 · Práctica guiada**
+**3. Entiende**
 
-Ahora cierra el subtema de **encadenamiento de causa** y wrapping checked→unchecked. Crea `src/main/java/academia/billetera/Demo.java`:
+Un tipo propio permite distinguir este caso de otros fallos. El mensaje añade datos útiles para diagnosticar, pero no debe incluir secretos.
+
+**4. Cierra**
+
+Explica qué regla protege `retirar` y qué información lleva la excepción.
+
+#### Subtema 3.2: Atiende el error donde puedes informar al usuario · 10 min
+
+**1. Contexto**
+
+La billetera protege la regla; la capa que muestra el resultado decide cómo comunicar que no se pudo retirar.
+
+**2. Hazlo tú**
+
+Modifica `src/Billetera.java` para envolver la llamada de `main` con un `try/catch` específico:
 
 ```java
-package academia.billetera;
-import java.io.*;
-import java.nio.file.*;
-
-public final class Demo {
-    static final class ConfigException extends RuntimeException {
-        ConfigException(String m, Throwable causa) { super(m, causa); }   // conserva la causa
-    }
-    static void cargar(String ruta) {
-        try {
-            Files.readString(Path.of(ruta));
-        } catch (IOException e) {
-            throw new ConfigException("No se pudo cargar " + ruta, e);     // wrap checked→unchecked
-        }
-    }
-    public static void main(String[] args) {
-        try {
-            cargar("no-existe.properties");
-        } catch (ConfigException e) {
-            System.out.println("mensaje: " + e.getMessage());
-            System.out.println("causa: " + e.getCause().getClass().getSimpleName());
-        }
-    }
+try {
+    new Billetera(5000).retirar(8000);
+    System.out.println("Retiro completado");
+} catch (SaldoInsuficienteException error) {
+    System.err.println("No se realizó el retiro: " + error.getMessage());
 }
 ```
 
-```bash
-javac -d out src/main/java/academia/billetera/Demo.java
-java -cp out academia.billetera.Demo
+Compila y ejecuta la clase.
+
+**Resultado esperado:** aparece el motivo de rechazo y no aparece `Retiro completado`.
+
+**Fallo deliberado:** captura `IllegalArgumentException` en vez de `SaldoInsuficienteException`. **Diagnóstico:** el tipo capturado no coincide y el error de saldo se propaga; captura la excepción que lanza la regla.
+
+**3. Entiende**
+
+Atrapa el tipo que sabes manejar. Si una capa no puede recuperarse, deja que la excepción llegue a una capa que sí pueda informar o decidir.
+
+**4. Cierra**
+
+Guarda la salida del caso rechazado y explica por qué no se anunció un retiro exitoso.
+
+#### Subtema 3.3: No ocultes fallos con un catch vacío · 10 min
+
+**1. Contexto**
+
+Un `catch` vacío hace parecer que la operación funcionó, aunque haya fallado.
+
+**2. Hazlo tú**
+
+En `src/Billetera.java`, sustituye temporalmente el manejo anterior por:
+
+```java
+try {
+    new Billetera(5000).retirar(8000);
+} catch (RuntimeException error) {
+    // intencionalmente vacío para observar el antipatrón
+}
+System.out.println("El proceso sigue, pero el retiro falló");
 ```
 
-**Salida esperada (verificada con Temurin 27.0.1):**
+Ejecuta y luego cambia el `catch` por uno que capture `SaldoInsuficienteException` e imprima el mensaje.
 
-```text
-mensaje: No se pudo cargar no-existe.properties
-causa: NoSuchFileException
-```
+**Resultado esperado:** el primer caso no informa la causa; el segundo la muestra y permite distinguir el rechazo del éxito.
 
-La `IOException` original quedó envuelta en `ConfigException` **conservando la causa** (`getCause()`), así el stack trace muestra "caused by:". **Fallo deliberado:** relanza sin pasar la causa (`throw new ConfigException("...", null)` o `throw new RuntimeException("falló")`) y comprueba que `getCause()` es `null`: perdiste el origen del fallo. Vuelve a encadenar la causa.
+**Fallo deliberado:** vuelve a dejar vacío el `catch`. **Diagnóstico:** la salida termina sin explicar por qué se rechazó la operación; restaura un manejo visible o propaga el error.
 
-**Si falla.** Si `getCause()` es `null`, no pasaste la causa al constructor. Si la `ConfigException` no compila, su constructor debe declarar `(String, Throwable)` y llamar `super(m, causa)`. Si no se lanza nada, la ruta existe.
+**3. Entiende**
 
-**Paso 5 · Práctica guiada**
+Capturar una excepción y no hacer nada no repara el problema. Evita atrapar `RuntimeException` de forma general salvo que una frontera de la aplicación tenga una respuesta deliberada.
 
-**Fallo deliberado:** comenta el segundo bloque `try`/`catch` (el que registra) y vuelve a ejecutar. El programa termina sin imprimir nada aunque ambos retiros fallaron; restaura el bloque y confirma que ahora el fallo es visible y diagnosticable.
+**4. Cierra**
 
-**Pista:** la salida de error puede verse mezclada con la salida estándar según la terminal; ejecuta con `2>&1` si quieres comparar ambas en el mismo flujo. **Resultado esperado:** el mismo error, pero ahora diagnosticable.
+Conserva ambas salidas y señala cuál deja evidencia útil para quien da soporte.
 
-**Si falla.** Si el compilador no acepta `catch (SaldoInsuficienteException e)`, revisa que la clase esté en el mismo paquete y que `retirar` la lance realmente. Si el primer retiro imprime un mensaje, el catch vacío no está vacío. Si el segundo no imprime nada, el registro está en el bloque equivocado.
-
-#### Aplica
-
-**Paso 6 · Práctica independiente**
-
-Agrega una segunda excepción de dominio (`CuentaBloqueadaException`) y un bloque que capture ambas por separado, reaccionando distinto a cada una en vez de tratarlas como un `Exception` genérico.
-
-**Paso 7 · Cierre**
-
-**Checklist de salida.**
-
-- [ ] `Billetera.java` compila y la excepción de dominio extiende `RuntimeException`.
-- [ ] El retiro con catch vacío no deja rastro; con registro imprime saldo y monto.
-- [ ] `ConfigException` envuelve una `IOException` conservando la causa (`getCause()`).
-- [ ] Relanzar sin pasar la causa deja `getCause()` en `null` y pierde el origen.
-- [ ] `CuentaBloqueadaException` se captura por separado de `SaldoInsuficienteException`.
-- [ ] Explicas por qué un catch vacío y un relanzamiento sin causa dificultan el diagnóstico.
-
-**Si falla.** Si `getCause()` es `null`, no encadenaste la causa. Si ambas excepciones caen en el mismo `catch`, revisa el orden (específico antes que general). Si `CuentaBloqueadaException` no se lanza, falta su condición.
-
-Guarda ambas excepciones, la salida silenciosa del catch vacío, la salida registrada y la cadena de causa conservada.
-
-**Antes del siguiente tema:** explica qué información añade una excepción de dominio, por qué debes encadenar la causa al envolver, y qué decisión explícita toma cada `catch`.
-
-**Errores comunes:** usar un catch vacío "para que no se rompa"; relanzar sin pasar la causa; capturar `Exception` genérico cuando necesitas reaccionar distinto; y devolver el stack trace completo al cliente en vez de un mensaje de dominio con registro técnico interno.
-
-**Fuentes oficiales revisadas el 2026-11-01:** [dev.java: Exceptions](https://dev.java/learn/exceptions/), [`Throwable(String, Throwable)` — causa (API Java SE 27)](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/Throwable.html#%3Cinit%3E(java.lang.String,java.lang.Throwable)) y [The Java Tutorials: Exceptions](https://docs.oracle.com/javase/tutorial/essential/exceptions/).
+**Fuentes oficiales:** [Java exceptions](https://dev.java/learn/exceptions/) y [try-with-resources](https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html).
 
 ## Construcción guiada del capítulo
 

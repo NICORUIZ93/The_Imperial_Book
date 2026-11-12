@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baselineCommit": "07733a29",
-  "reviewedAt": "2026-11-03",
+  "reviewedAt": "2026-11-12",
   "method": "Inventario de los 378 temas sin dominio reconocido en la línea base; verificación HTTP de citas ya escritas para 19 proveedores documentales inequívocos.",
   "limits": "El éxito HTTP no prueba pertinencia, actualidad de versiones ni calidad pedagógica. Todos los temas conservan revisión manual pendiente.",
   "providerHostsReviewed": [
@@ -20,7 +20,6 @@
     "cyclonedx.org",
     "dart.dev",
     "datatracker.ietf.org",
-    "dev.java",
     "docs.ansible.com",
     "docs.arduino.cc",
     "docs.aws.amazon.com",
@@ -37,8 +36,8 @@
     "docs.python.org",
     "docs.scipy.org",
     "docs.sigstore.dev",
+    "docs.spring.io",
     "docs.stripe.com",
-    "docs.temporal.io",
     "docs.usebruno.com",
     "docs.zephyrproject.org",
     "documentation.red-gate.com",
@@ -61,15 +60,12 @@
     "java.testcontainers.org",
     "javadoc.io",
     "jotai.org",
-    "junit.org",
     "kafka.apache.org",
-    "kafka.js.org",
     "ktor.io",
     "kubernetes.io",
     "learn.microsoft.com",
     "learning.postman.com",
     "letsencrypt.org",
-    "logback.qos.ch",
     "man.openbsd.org",
     "man7.org",
     "maplibre.org",
@@ -123,7 +119,6 @@
     "rollupjs.org",
     "rxjs.dev",
     "scikit-learn.org",
-    "site.mockito.org",
     "slsa.dev",
     "socket.io",
     "spec.graphql.org",
@@ -131,7 +126,6 @@
     "springdoc.org",
     "sqldelight.github.io",
     "sre.google",
-    "start.spring.io",
     "stately.ai",
     "swagger.io",
     "swc.rs",
@@ -148,7 +142,6 @@
     "web.dev",
     "webpack.js.org",
     "webstore.iec.ch",
-    "wiremock.org",
     "www.apollographql.com",
     "www.archunit.org",
     "www.atlassian.com",
@@ -1551,7 +1544,7 @@
         "https://git-scm.com/doc"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 397,
+      "line": 333,
       "originalProseUrls": [
         "https://git-scm.com/doc"
       ],
@@ -3590,27 +3583,10 @@
         "https://www.apollographql.com/docs/federation/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 158,
+      "line": 81,
       "originalProseUrls": [
         "https://graphql.org/learn/federation/",
         "https://www.apollographql.com/docs/federation/"
-      ],
-      "recognitionStatus": "primary-domain-detected",
-      "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
-    },
-    {
-      "track": "node",
-      "path": "web/public/content/node/modulo-14.md",
-      "topic": "Tema 3: Microservicios, Kafka, RabbitMQ y sagas",
-      "providerCitations": [
-        "https://kafka.js.org/docs/getting-started",
-        "https://microservices.io/patterns/data/saga.html"
-      ],
-      "applicabilityReview": "revisión manual pendiente",
-      "line": 437,
-      "originalProseUrls": [
-        "https://kafka.js.org/docs/getting-started",
-        "https://microservices.io/patterns/data/saga.html"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -4448,18 +4424,14 @@
       "path": "web/public/content/java/modulo-0.md",
       "topic": "Tema 1: Del código fuente a la JVM",
       "providerCitations": [
-        "https://docs.oracle.com/en/java/javase/27/docs/specs/man/java.html",
-        "https://docs.oracle.com/en/java/javase/27/docs/specs/man/javac.html",
-        "https://docs.oracle.com/javase/specs/jvms/se27/html/jvms-4.html",
-        "https://docs.oracle.com/javase/specs/jvms/se27/html/jvms-5.html"
+        "https://docs.oracle.com/en/java/javase/25/docs/specs/man/java.html",
+        "https://docs.oracle.com/en/java/javase/25/docs/specs/man/javac.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 158,
+      "line": 28,
       "originalProseUrls": [
-        "https://docs.oracle.com/en/java/javase/27/docs/specs/man/java.html",
-        "https://docs.oracle.com/en/java/javase/27/docs/specs/man/javac.html",
-        "https://docs.oracle.com/javase/specs/jvms/se27/html/jvms-4.html",
-        "https://docs.oracle.com/javase/specs/jvms/se27/html/jvms-5.html"
+        "https://docs.oracle.com/en/java/javase/25/docs/specs/man/java.html",
+        "https://docs.oracle.com/en/java/javase/25/docs/specs/man/javac.html"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -4469,13 +4441,11 @@
       "path": "web/public/content/java/modulo-10.md",
       "topic": "Tema 2: Migración incremental y cuándo JPMS aporta valor",
       "providerCitations": [
-        "https://dev.java/learn/modules/",
         "https://openjdk.org/jeps/261"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 173,
+      "line": 76,
       "originalProseUrls": [
-        "https://dev.java/learn/modules/",
         "https://openjdk.org/jeps/261"
       ],
       "recognitionStatus": "primary-domain-detected",
@@ -4486,14 +4456,12 @@
       "path": "web/public/content/java/modulo-11.md",
       "topic": "Tema 1: Generaciones de memoria y recolectores",
       "providerCitations": [
-        "https://docs.oracle.com/en/java/javase/27/gctuning/",
-        "https://openjdk.org/jeps/523"
+        "https://docs.oracle.com/en/java/javase/25/gctuning/garbage-collector-implementation.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
       "line": 6,
       "originalProseUrls": [
-        "https://docs.oracle.com/en/java/javase/27/gctuning/",
-        "https://openjdk.org/jeps/523"
+        "https://docs.oracle.com/en/java/javase/25/gctuning/garbage-collector-implementation.html"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -4503,14 +4471,14 @@
       "path": "web/public/content/java/modulo-11.md",
       "topic": "Tema 2: Java Flight Recorder y JIT compilation",
       "providerCitations": [
-        "https://docs.oracle.com/en/java/javase/27/docs/specs/man/jfr.html",
-        "https://docs.oracle.com/en/java/javase/27/jfapi/"
+        "https://docs.oracle.com/en/java/javase/25/docs/specs/man/jfr.html",
+        "https://docs.oracle.com/en/java/javase/25/jfapi/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 144,
+      "line": 76,
       "originalProseUrls": [
-        "https://docs.oracle.com/en/java/javase/27/docs/specs/man/jfr.html",
-        "https://docs.oracle.com/en/java/javase/27/jfapi/"
+        "https://docs.oracle.com/en/java/javase/25/docs/specs/man/jfr.html",
+        "https://docs.oracle.com/en/java/javase/25/jfapi/"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -4520,14 +4488,12 @@
       "path": "web/public/content/java/modulo-11.md",
       "topic": "Tema 3: Referencias especiales y heap dumps",
       "providerCitations": [
-        "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/ref/package-summary.html",
-        "https://docs.oracle.com/en/java/javase/27/docs/specs/man/jhsdb.html"
+        "https://docs.oracle.com/en/java/javase/25/docs/specs/man/jcmd.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 290,
+      "line": 148,
       "originalProseUrls": [
-        "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/ref/package-summary.html",
-        "https://docs.oracle.com/en/java/javase/27/docs/specs/man/jhsdb.html"
+        "https://docs.oracle.com/en/java/javase/25/docs/specs/man/jcmd.html"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -4537,13 +4503,13 @@
       "path": "web/public/content/java/modulo-11.md",
       "topic": "Tema 4: Foreign Function & Memory API (Java 22)",
       "providerCitations": [
-        "https://docs.oracle.com/en/java/javase/27/core/foreign-function-and-memory-api.html",
+        "https://docs.oracle.com/en/java/javase/22/core/foreign-function-and-memory-api.html",
         "https://openjdk.org/jeps/454"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 449,
+      "line": 218,
       "originalProseUrls": [
-        "https://docs.oracle.com/en/java/javase/27/core/foreign-function-and-memory-api.html",
+        "https://docs.oracle.com/en/java/javase/22/core/foreign-function-and-memory-api.html",
         "https://openjdk.org/jeps/454"
       ],
       "recognitionStatus": "primary-domain-detected",
@@ -4554,14 +4520,12 @@
       "path": "web/public/content/java/modulo-12.md",
       "topic": "Tema 1: Builder — configuración paso a paso y validación",
       "providerCitations": [
-        "https://docs.oracle.com/en/java/javase/27/",
-        "https://refactoring.guru/design-patterns/builder"
+        "https://docs.oracle.com/javase/specs/jls/se25/html/jls-8.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
       "line": 6,
       "originalProseUrls": [
-        "https://docs.oracle.com/en/java/javase/27/",
-        "https://refactoring.guru/design-patterns/builder"
+        "https://docs.oracle.com/javase/specs/jls/se25/html/jls-8.html"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -4571,14 +4535,12 @@
       "path": "web/public/content/java/modulo-12.md",
       "topic": "Tema 2: Factory Method y Strategy",
       "providerCitations": [
-        "https://refactoring.guru/design-patterns/factory-method",
-        "https://refactoring.guru/design-patterns/strategy"
+        "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/Function.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 188,
+      "line": 78,
       "originalProseUrls": [
-        "https://refactoring.guru/design-patterns/factory-method",
-        "https://refactoring.guru/design-patterns/strategy"
+        "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/Function.html"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -4588,46 +4550,12 @@
       "path": "web/public/content/java/modulo-12.md",
       "topic": "Tema 3: Abstract Factory y familias de productos compatibles",
       "providerCitations": [
-        "https://refactoring.guru/design-patterns/abstract-factory"
+        "https://docs.oracle.com/javase/specs/jls/se25/html/jls-9.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 415,
+      "line": 150,
       "originalProseUrls": [
-        "https://refactoring.guru/design-patterns/abstract-factory"
-      ],
-      "recognitionStatus": "primary-domain-detected",
-      "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
-    },
-    {
-      "track": "java",
-      "path": "web/public/content/java/modulo-12.md",
-      "topic": "Tema 5: Prototype — copiar configuración sin compartir estado mutable",
-      "providerCitations": [
-        "https://refactoring.guru/design-patterns/prototype",
-        "https://refactoring.guru/files/design-patterns-es-demo.pdf"
-      ],
-      "applicabilityReview": "revisión manual pendiente",
-      "line": 786,
-      "originalProseUrls": [
-        "https://refactoring.guru/design-patterns/prototype",
-        "https://refactoring.guru/files/design-patterns-es-demo.pdf"
-      ],
-      "recognitionStatus": "primary-domain-detected",
-      "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
-    },
-    {
-      "track": "java",
-      "path": "web/public/content/java/modulo-12.md",
-      "topic": "Tema 6: Patrones estructurales — elegir por intención",
-      "providerCitations": [
-        "https://refactoring.guru/design-patterns/adapter",
-        "https://refactoring.guru/design-patterns/structural-patterns"
-      ],
-      "applicabilityReview": "revisión manual pendiente",
-      "line": 978,
-      "originalProseUrls": [
-        "https://refactoring.guru/design-patterns/adapter",
-        "https://refactoring.guru/design-patterns/structural-patterns"
+        "https://docs.oracle.com/javase/specs/jls/se25/html/jls-9.html"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -4637,16 +4565,12 @@
       "path": "web/public/content/java/modulo-14.md",
       "topic": "Tema 1: Compartir memoria requiere orden y visibilidad",
       "providerCitations": [
-        "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/atomic/AtomicLong.html",
-        "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/atomic/LongAdder.html",
-        "https://docs.oracle.com/javase/specs/jls/se27/html/jls-17.html"
+        "https://docs.oracle.com/javase/specs/jls/se25/html/jls-17.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 7,
+      "line": 8,
       "originalProseUrls": [
-        "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/atomic/AtomicLong.html",
-        "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/atomic/LongAdder.html",
-        "https://docs.oracle.com/javase/specs/jls/se27/html/jls-17.html"
+        "https://docs.oracle.com/javase/specs/jls/se25/html/jls-17.html"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -4656,14 +4580,11 @@
       "path": "web/public/content/java/modulo-14.md",
       "topic": "Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo",
       "providerCitations": [
-        "https://maven.apache.org/plugins/maven-compiler-plugin/compile-mojo.html#annotationProcessorPaths",
         "https://openjdk.org/projects/code-tools/jmh/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 133,
+      "line": 78,
       "originalProseUrls": [
-        "https://github.com/openjdk/jmh/tree/master/jmh-samples/src/main/java/org/openjdk/jmh/samples",
-        "https://maven.apache.org/plugins/maven-compiler-plugin/compile-mojo.html#annotationProcessorPaths",
         "https://openjdk.org/projects/code-tools/jmh/"
       ],
       "recognitionStatus": "primary-domain-detected",
@@ -4674,14 +4595,12 @@
       "path": "web/public/content/java/modulo-14.md",
       "topic": "Tema 3: Deserializar es permitir construcción y comportamiento",
       "providerCitations": [
-        "https://docs.oracle.com/en/java/javase/27/core/serialization-filtering1.html",
-        "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/io/ObjectInputFilter.html"
+        "https://docs.oracle.com/en/java/javase/25/core/java-serialization-filters.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 293,
+      "line": 150,
       "originalProseUrls": [
-        "https://docs.oracle.com/en/java/javase/27/core/serialization-filtering1.html",
-        "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/io/ObjectInputFilter.html"
+        "https://docs.oracle.com/en/java/javase/25/core/java-serialization-filters.html"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -4692,15 +4611,13 @@
       "topic": "Tema 4: El runtime es parte del artefacto y necesita ciclo de vida",
       "providerCitations": [
         "https://docs.oracle.com/en/java/javase/25/",
-        "https://docs.oracle.com/en/java/javase/27/docs/specs/man/jdeps.html",
-        "https://docs.oracle.com/en/java/javase/27/docs/specs/man/jlink.html"
+        "https://docs.oracle.com/en/java/javase/25/docs/specs/man/jlink.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 452,
+      "line": 220,
       "originalProseUrls": [
         "https://docs.oracle.com/en/java/javase/25/",
-        "https://docs.oracle.com/en/java/javase/27/docs/specs/man/jdeps.html",
-        "https://docs.oracle.com/en/java/javase/27/docs/specs/man/jlink.html"
+        "https://docs.oracle.com/en/java/javase/25/docs/specs/man/jlink.html"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -4711,13 +4628,13 @@
       "topic": "Tema 1: Maven avanzado",
       "providerCitations": [
         "https://maven.apache.org/enforcer/maven-enforcer-plugin/",
-        "https://maven.apache.org/pom.html"
+        "https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 9,
+      "line": 7,
       "originalProseUrls": [
         "https://maven.apache.org/enforcer/maven-enforcer-plugin/",
-        "https://maven.apache.org/pom.html"
+        "https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -4727,16 +4644,14 @@
       "path": "web/public/content/java/modulo-15.md",
       "topic": "Tema 2: Gradle y builds reproducibles",
       "providerCitations": [
-        "https://docs.gradle.org/9.1.0/release-notes.html",
-        "https://docs.gradle.org/current/userguide/build_cache.html",
-        "https://docs.oracle.com/en/java/javase/27/docs/specs/man/jar.html"
+        "https://docs.gradle.org/current/userguide/declaring_configurations.html",
+        "https://docs.gradle.org/current/userguide/dependency_verification.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 233,
+      "line": 79,
       "originalProseUrls": [
-        "https://docs.gradle.org/9.1.0/release-notes.html",
-        "https://docs.gradle.org/current/userguide/build_cache.html",
-        "https://docs.oracle.com/en/java/javase/27/docs/specs/man/jar.html"
+        "https://docs.gradle.org/current/userguide/declaring_configurations.html",
+        "https://docs.gradle.org/current/userguide/dependency_verification.html"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -4746,14 +4661,18 @@
       "path": "web/public/content/java/modulo-15.md",
       "topic": "Tema 3: Proyectos multi-módulo sin ciclos",
       "providerCitations": [
+        "https://docs.gradle.org/current/userguide/multi_project_builds.html",
         "https://maven.apache.org/guides/mini/guide-multiple-modules.html",
-        "https://www.archunit.org/"
+        "https://www.archunit.org/getting-started",
+        "https://www.archunit.org/userguide/html/000_Index.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 351,
+      "line": 151,
       "originalProseUrls": [
+        "https://docs.gradle.org/current/userguide/multi_project_builds.html",
         "https://maven.apache.org/guides/mini/guide-multiple-modules.html",
-        "https://www.archunit.org/"
+        "https://www.archunit.org/getting-started",
+        "https://www.archunit.org/userguide/html/000_Index.html"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -4762,35 +4681,29 @@
       "track": "java",
       "path": "web/public/content/java/modulo-15.md",
       "topic": "Tema 4: JUnit 5, Mockito y assertions expresivas",
-      "providerCitations": [
-        "https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html",
-        "https://junit.org/junit5/docs/current/user-guide/"
-      ],
+      "providerCitations": [],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 628,
+      "line": 223,
       "originalProseUrls": [
-        "https://assertj.github.io/doc/",
-        "https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html",
-        "https://junit.org/junit5/docs/current/user-guide/"
+        "https://docs.junit.org/current/user-guide/",
+        "https://github.com/mockito/mockito/releases"
       ],
-      "recognitionStatus": "primary-domain-detected",
-      "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
+      "recognitionStatus": "unrecognized-source-pending",
+      "reason": "El host no está clasificado o la URL es local/de ejemplo; revisión manual pendiente."
     },
     {
       "track": "java",
       "path": "web/public/content/java/modulo-15.md",
       "topic": "Tema 5: Pruebas de integración reproducibles",
       "providerCitations": [
-        "https://documentation.red-gate.com/flyway/",
-        "https://java.testcontainers.org/",
-        "https://wiremock.org/"
+        "https://java.testcontainers.org/modules/databases/postgres/",
+        "https://java.testcontainers.org/test_framework_integration/junit_5/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 832,
+      "line": 295,
       "originalProseUrls": [
-        "https://documentation.red-gate.com/flyway/",
-        "https://java.testcontainers.org/",
-        "https://wiremock.org/"
+        "https://java.testcontainers.org/modules/databases/postgres/",
+        "https://java.testcontainers.org/test_framework_integration/junit_5/"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -4799,32 +4712,25 @@
       "track": "java",
       "path": "web/public/content/java/modulo-15.md",
       "topic": "Tema 6: SLF4J, Logback, MDC y logging estructurado",
-      "providerCitations": [
-        "https://logback.qos.ch/manual/mdc.html"
-      ],
+      "providerCitations": [],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 1058,
+      "line": 386,
       "originalProseUrls": [
-        "https://github.com/logfellow/logstash-logback-encoder",
-        "https://logback.qos.ch/manual/mdc.html",
-        "https://www.slf4j.org/manual.html"
+        "https://github.com/qos-ch/logback/releases"
       ],
-      "recognitionStatus": "primary-domain-detected",
-      "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
+      "recognitionStatus": "unrecognized-source-pending",
+      "reason": "El host no está clasificado o la URL es local/de ejemplo; revisión manual pendiente."
     },
     {
       "track": "java",
       "path": "web/public/content/java/modulo-16.md",
       "topic": "Tema 1: Entidades y relaciones JPA",
       "providerCitations": [
-        "https://docs.oracle.com/en/java/javase/27/",
         "https://jakarta.ee/specifications/persistence/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 18,
+      "line": 14,
       "originalProseUrls": [
-        "https://docs.oracle.com/en/java/javase/27/",
-        "https://hibernate.org/orm/documentation/",
         "https://jakarta.ee/specifications/persistence/"
       ],
       "recognitionStatus": "primary-domain-detected",
@@ -4835,16 +4741,13 @@
       "path": "web/public/content/java/modulo-16.md",
       "topic": "Tema 2: FetchType.LAZY, EAGER y el problema N+1",
       "providerCitations": [
-        "https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#fetching",
-        "https://docs.oracle.com/en/java/javase/27/",
-        "https://jakarta.ee/specifications/persistence/"
+        "https://jakarta.ee/specifications/persistence/4.0/apidocs/jakarta.persistence/jakarta/persistence/entitygraph"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 258,
+      "line": 91,
       "originalProseUrls": [
-        "https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#fetching",
-        "https://docs.oracle.com/en/java/javase/27/",
-        "https://jakarta.ee/specifications/persistence/"
+        "https://docs.hibernate.org/orm/6.6/introduction/html_single/",
+        "https://jakarta.ee/specifications/persistence/4.0/apidocs/jakarta.persistence/jakarta/persistence/entitygraph"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -4854,15 +4757,14 @@
       "path": "web/public/content/java/modulo-17.md",
       "topic": "Tema 1: JDBC, PreparedStatement y DAO",
       "providerCitations": [
-        "https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/PreparedStatement.html",
-        "https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/javax/sql/DataSource.html"
+        "https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/PreparedStatement.html",
+        "https://jakarta.ee/specifications/persistence/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 22,
+      "line": 14,
       "originalProseUrls": [
-        "https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/PreparedStatement.html",
-        "https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/javax/sql/DataSource.html",
-        "https://h2database.com/html/main.html"
+        "https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/PreparedStatement.html",
+        "https://jakarta.ee/specifications/persistence/"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -4872,14 +4774,13 @@
       "path": "web/public/content/java/modulo-17.md",
       "topic": "Tema 2: Transacciones, ACID y aislamiento",
       "providerCitations": [
-        "https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/Connection.html",
+        "https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/Connection.html",
         "https://jakarta.ee/specifications/persistence/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 237,
+      "line": 180,
       "originalProseUrls": [
-        "https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/Connection.html",
-        "https://h2database.com/html/advanced.html#transaction_isolation",
+        "https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/Connection.html",
         "https://jakarta.ee/specifications/persistence/"
       ],
       "recognitionStatus": "primary-domain-detected",
@@ -4890,14 +4791,13 @@
       "path": "web/public/content/java/modulo-18.md",
       "topic": "Tema 1: HttpClient, REST, timeouts y fallos",
       "providerCitations": [
-        "https://docs.oracle.com/en/java/javase/27/docs/api/java.net.http/java/net/http/HttpClient.html",
-        "https://docs.oracle.com/en/java/javase/27/docs/api/jdk.httpserver/com/sun/net/httpserver/HttpServer.html"
+        "https://docs.oracle.com/en/java/javase/25/docs/api/java.net.http/java/net/http/HttpClient.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 16,
+      "line": 14,
       "originalProseUrls": [
-        "https://docs.oracle.com/en/java/javase/27/docs/api/java.net.http/java/net/http/HttpClient.html",
-        "https://docs.oracle.com/en/java/javase/27/docs/api/jdk.httpserver/com/sun/net/httpserver/HttpServer.html"
+        "http://localhost:8080/health",
+        "https://docs.oracle.com/en/java/javase/25/docs/api/java.net.http/java/net/http/HttpClient.html"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -4908,15 +4808,14 @@
       "topic": "Tema 2: Tokens, validación y límites de seguridad",
       "providerCitations": [
         "https://cheatsheetseries.owasp.org/",
-        "https://docs.oracle.com/en/java/javase/27/docs/api/java.net.http/java/net/http/HttpClient.html"
+        "https://docs.oracle.com/en/java/javase/25/docs/api/java.net.http/java/net/http/HttpClient.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 214,
+      "line": 306,
       "originalProseUrls": [
+        "https://127.0.0.1/admin",
         "https://cheatsheetseries.owasp.org/",
-        "https://docs.oracle.com/en/java/javase/27/docs/api/java.net.http/java/net/http/HttpClient.html",
-        "https://oauth.net/2/",
-        "https://openid.net/developers/how-connect-works/"
+        "https://docs.oracle.com/en/java/javase/25/docs/api/java.net.http/java/net/http/HttpClient.html"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -4926,65 +4825,14 @@
       "path": "web/public/content/java/modulo-19.md",
       "topic": "Tema 7: Internacionalización: números, monedas, fechas y orden de texto",
       "providerCitations": [
-        "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/Locale.html",
-        "https://docs.oracle.com/en/java/javase/27/intl/internationalization-overview.html"
+        "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Locale.html",
+        "https://docs.oracle.com/javase/tutorial/i18n/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 1014,
+      "line": 1228,
       "originalProseUrls": [
-        "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/Locale.html",
-        "https://docs.oracle.com/en/java/javase/27/intl/internationalization-overview.html"
-      ],
-      "recognitionStatus": "primary-domain-detected",
-      "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
-    },
-    {
-      "track": "java",
-      "path": "web/public/content/java/modulo-20.md",
-      "topic": "Tema 2: Las cuatro formas: Predicate, Function, Consumer y Supplier",
-      "providerCitations": [
-        "https://dev.java/learn/lambdas/",
-        "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/function/package-summary.html"
-      ],
-      "applicabilityReview": "revisión manual pendiente",
-      "line": 255,
-      "originalProseUrls": [
-        "https://dev.java/learn/lambdas/",
-        "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/function/package-summary.html"
-      ],
-      "recognitionStatus": "primary-domain-detected",
-      "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
-    },
-    {
-      "track": "java",
-      "path": "web/public/content/java/modulo-20.md",
-      "topic": "Tema 3: Componer sin anidar: andThen, compose, negate y reglas encadenadas",
-      "providerCitations": [
-        "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/function/Function.html",
-        "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/function/Predicate.html"
-      ],
-      "applicabilityReview": "revisión manual pendiente",
-      "line": 410,
-      "originalProseUrls": [
-        "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/function/Function.html",
-        "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/function/Predicate.html"
-      ],
-      "recognitionStatus": "primary-domain-detected",
-      "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
-    },
-    {
-      "track": "java",
-      "path": "web/public/content/java/modulo-20.md",
-      "topic": "Tema 4: Streams como composición: pereza, orden y efectos que se esconden",
-      "providerCitations": [
-        "https://dev.java/learn/api/streams/",
-        "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/stream/Stream.html"
-      ],
-      "applicabilityReview": "revisión manual pendiente",
-      "line": 547,
-      "originalProseUrls": [
-        "https://dev.java/learn/api/streams/",
-        "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/stream/Stream.html"
+        "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Locale.html",
+        "https://docs.oracle.com/javase/tutorial/i18n/"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -4994,14 +4842,12 @@
       "path": "web/public/content/java/modulo-4.md",
       "topic": "Tema 4: Stream Gatherers (Java 24)",
       "providerCitations": [
-        "https://docs.oracle.com/en/java/javase/24/core/stream-gatherers.html",
-        "https://openjdk.org/jeps/485"
+        "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/stream/Gatherers.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 632,
+      "line": 379,
       "originalProseUrls": [
-        "https://docs.oracle.com/en/java/javase/24/core/stream-gatherers.html",
-        "https://openjdk.org/jeps/485"
+        "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/stream/Gatherers.html"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -5011,33 +4857,12 @@
       "path": "web/public/content/java/modulo-5.md",
       "topic": "Tema 1: ExecutorService y gestión de hilos",
       "providerCitations": [
-        "https://dev.java/learn/concurrency/",
-        "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/ExecutorService.html",
-        "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/Executors.html"
+        "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/ExecutorService.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 8,
+      "line": 6,
       "originalProseUrls": [
-        "https://dev.java/learn/concurrency/",
-        "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/ExecutorService.html",
-        "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/Executors.html"
-      ],
-      "recognitionStatus": "primary-domain-detected",
-      "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
-    },
-    {
-      "track": "java",
-      "path": "web/public/content/java/modulo-5.md",
-      "topic": "Tema 5: Structured Concurrency (StructuredTaskScope, preview en JDK 27)",
-      "providerCitations": [
-        "https://docs.oracle.com/en/java/javase/27/core/structured-concurrency.html",
-        "https://openjdk.org/jeps/533"
-      ],
-      "applicabilityReview": "revisión manual pendiente",
-      "line": 807,
-      "originalProseUrls": [
-        "https://docs.oracle.com/en/java/javase/27/core/structured-concurrency.html",
-        "https://openjdk.org/jeps/533"
+        "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/ExecutorService.html"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -5047,14 +4872,14 @@
       "path": "web/public/content/java/modulo-5.md",
       "topic": "Tema 6: Scoped Values frente a ThreadLocal (Java 25)",
       "providerCitations": [
-        "https://docs.oracle.com/en/java/javase/27/core/scoped-values.html",
-        "https://openjdk.org/jeps/506"
+        "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/ScopedValue.html",
+        "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/ThreadLocal.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 993,
+      "line": 602,
       "originalProseUrls": [
-        "https://docs.oracle.com/en/java/javase/27/core/scoped-values.html",
-        "https://openjdk.org/jeps/506"
+        "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/ScopedValue.html",
+        "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/ThreadLocal.html"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -5064,14 +4889,12 @@
       "path": "web/public/content/java/modulo-5.md",
       "topic": "Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos",
       "providerCitations": [
-        "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/ExecutorService.html",
-        "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/Future.html"
+        "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletableFuture.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 1187,
+      "line": 742,
       "originalProseUrls": [
-        "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/ExecutorService.html",
-        "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/Future.html"
+        "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletableFuture.html"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -5081,13 +4904,11 @@
       "path": "web/public/content/java/modulo-7.md",
       "topic": "Tema 4: Unnamed variables y patterns (_, Java 22)",
       "providerCitations": [
-        "https://docs.oracle.com/en/java/javase/27/language/unnamed-variables-and-patterns.html",
         "https://openjdk.org/jeps/456"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 622,
+      "line": 263,
       "originalProseUrls": [
-        "https://docs.oracle.com/en/java/javase/27/language/unnamed-variables-and-patterns.html",
         "https://openjdk.org/jeps/456"
       ],
       "recognitionStatus": "primary-domain-detected",
@@ -5098,14 +4919,13 @@
       "path": "web/public/content/java/modulo-8.md",
       "topic": "Tema 1: pom.xml vs build.gradle.kts",
       "providerCitations": [
-        "https://docs.gradle.org/current/userguide/compatibility.html",
+        "https://docs.gradle.org/current/userguide/",
         "https://maven.apache.org/guides/"
       ],
       "applicabilityReview": "revisión manual pendiente",
       "line": 6,
       "originalProseUrls": [
-        "https://docs.gradle.org/current/userguide/compatibility.html",
-        "https://github.com/FasterXML/jackson/wiki/Jackson-Release-2.21",
+        "https://docs.gradle.org/current/userguide/",
         "https://maven.apache.org/guides/"
       ],
       "recognitionStatus": "primary-domain-detected",
@@ -5116,16 +4936,14 @@
       "path": "web/public/content/java/modulo-8.md",
       "topic": "Tema 2: Ciclo de vida de build y scopes",
       "providerCitations": [
-        "https://junit.org/",
-        "https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html",
-        "https://maven.apache.org/surefire/maven-surefire-plugin/"
+        "https://docs.gradle.org/current/userguide/declaring_configurations.html",
+        "https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 168,
+      "line": 76,
       "originalProseUrls": [
-        "https://junit.org/",
-        "https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html",
-        "https://maven.apache.org/surefire/maven-surefire-plugin/"
+        "https://docs.gradle.org/current/userguide/declaring_configurations.html",
+        "https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -5135,14 +4953,14 @@
       "path": "web/public/content/java/modulo-8.md",
       "topic": "Tema 3: Proyectos multi-módulo",
       "providerCitations": [
-        "https://maven.apache.org/guides/mini/guide-multiple-modules.html",
-        "https://maven.apache.org/guides/mini/guide-multiple-modules.html#reactor"
+        "https://docs.gradle.org/current/userguide/multi_project_builds.html",
+        "https://maven.apache.org/guides/mini/guide-multiple-modules.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 331,
+      "line": 148,
       "originalProseUrls": [
-        "https://maven.apache.org/guides/mini/guide-multiple-modules.html",
-        "https://maven.apache.org/guides/mini/guide-multiple-modules.html#reactor"
+        "https://docs.gradle.org/current/userguide/multi_project_builds.html",
+        "https://maven.apache.org/guides/mini/guide-multiple-modules.html"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -5152,15 +4970,13 @@
       "path": "web/public/content/java/modulo-8.md",
       "topic": "Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas",
       "providerCitations": [
-        "https://docs.gradle.org/current/userguide/migrating_from_maven.html",
-        "https://docs.gradle.org/current/userguide/userguide.html",
+        "https://docs.gradle.org/current/userguide/",
         "https://maven.apache.org/guides/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 523,
+      "line": 220,
       "originalProseUrls": [
-        "https://docs.gradle.org/current/userguide/migrating_from_maven.html",
-        "https://docs.gradle.org/current/userguide/userguide.html",
+        "https://docs.gradle.org/current/userguide/",
         "https://maven.apache.org/guides/"
       ],
       "recognitionStatus": "primary-domain-detected",
@@ -5170,50 +4986,41 @@
       "track": "java",
       "path": "web/public/content/java/modulo-9.md",
       "topic": "Tema 1: JUnit 5 — anotaciones y ciclo de vida",
-      "providerCitations": [
-        "https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/Assertions.html",
-        "https://junit.org/junit5/docs/current/user-guide/"
-      ],
+      "providerCitations": [],
       "applicabilityReview": "revisión manual pendiente",
       "line": 6,
       "originalProseUrls": [
-        "https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/Assertions.html",
-        "https://junit.org/junit5/docs/current/user-guide/"
+        "https://docs.junit.org/current/user-guide/"
       ],
-      "recognitionStatus": "primary-domain-detected",
-      "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
+      "recognitionStatus": "unrecognized-source-pending",
+      "reason": "El host no está clasificado o la URL es local/de ejemplo; revisión manual pendiente."
     },
     {
       "track": "java",
       "path": "web/public/content/java/modulo-9.md",
       "topic": "Tema 2: Mockito — aislar dependencias",
-      "providerCitations": [
-        "https://javadoc.io/doc/org.mockito/mockito-junit-jupiter/latest/org/mockito/junit/jupiter/MockitoExtension.html",
-        "https://site.mockito.org/"
-      ],
+      "providerCitations": [],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 196,
+      "line": 78,
       "originalProseUrls": [
-        "https://javadoc.io/doc/org.mockito/mockito-junit-jupiter/latest/org/mockito/junit/jupiter/MockitoExtension.html",
-        "https://site.mockito.org/"
+        "https://github.com/mockito/mockito",
+        "https://github.com/mockito/mockito/releases"
       ],
-      "recognitionStatus": "primary-domain-detected",
-      "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
+      "recognitionStatus": "unrecognized-source-pending",
+      "reason": "El host no está clasificado o la URL es local/de ejemplo; revisión manual pendiente."
     },
     {
       "track": "java",
       "path": "web/public/content/java/modulo-9.md",
       "topic": "Tema 3: Tests parametrizados y cobertura",
       "providerCitations": [
-        "https://junit.org/junit5/docs/current/user-guide/#writing-tests-parameterized-tests",
-        "https://www.jacoco.org/jacoco/trunk/doc/"
+        "https://www.jacoco.org/jacoco/trunk/doc/changes.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 415,
+      "line": 150,
       "originalProseUrls": [
-        "https://assertj.github.io/doc/",
-        "https://junit.org/junit5/docs/current/user-guide/#writing-tests-parameterized-tests",
-        "https://www.jacoco.org/jacoco/trunk/doc/"
+        "https://docs.junit.org/current/user-guide/",
+        "https://www.jacoco.org/jacoco/trunk/doc/changes.html"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -5223,14 +5030,15 @@
       "path": "web/public/content/spring-boot/modulo-10.md",
       "topic": "Tema 3: Circuit breaker con Resilience4j",
       "providerCitations": [
-        "https://resilience4j.readme.io/docs/circuitbreaker",
-        "https://start.spring.io/starter.zip"
+        "https://docs.spring.io/spring-cloud-circuitbreaker/reference/spring-cloud-circuitbreaker-resilience4j.html",
+        "https://resilience4j.readme.io/docs/circuitbreaker"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 435,
+      "line": 338,
       "originalProseUrls": [
-        "https://resilience4j.readme.io/docs/circuitbreaker",
-        "https://start.spring.io/starter.zip"
+        "https://docs.spring.io/spring-cloud-circuitbreaker/reference/spring-cloud-circuitbreaker-resilience4j.html",
+        "https://github.com/resilience4j/resilience4j/blob/v2.4.0/resilience4j-circuitbreaker/src/main/java/io/github/resilience4j/circuitbreaker/CircuitBreakerConfig.java",
+        "https://resilience4j.readme.io/docs/circuitbreaker"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -5243,29 +5051,9 @@
         "https://martinfowler.com/bliki/DDD_Aggregate.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 1240,
+      "line": 868,
       "originalProseUrls": [
         "https://martinfowler.com/bliki/DDD_Aggregate.html"
-      ],
-      "recognitionStatus": "primary-domain-detected",
-      "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
-    },
-    {
-      "track": "spring-boot",
-      "path": "web/public/content/spring-boot/modulo-10.md",
-      "topic": "Tema 8: Orquestación de microservicios con Temporal y Spring Boot",
-      "providerCitations": [
-        "https://docs.temporal.io/design-patterns/saga-pattern",
-        "https://docs.temporal.io/develop/java/spring-boot-integration",
-        "https://docs.temporal.io/develop/java/workflows/basics"
-      ],
-      "applicabilityReview": "revisión manual pendiente",
-      "line": 1452,
-      "originalProseUrls": [
-        "https://central.sonatype.com/artifact/io.temporal/temporal-spring-boot-starter",
-        "https://docs.temporal.io/design-patterns/saga-pattern",
-        "https://docs.temporal.io/develop/java/spring-boot-integration",
-        "https://docs.temporal.io/develop/java/workflows/basics"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -5275,13 +5063,15 @@
       "path": "web/public/content/spring-boot/modulo-14.md",
       "topic": "Tema 2: MySQL y datos espaciales",
       "providerCitations": [
-        "https://start.spring.io/starter.zip"
+        "https://java.testcontainers.org/modules/databases/mysql/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 222,
+      "line": 101,
       "originalProseUrls": [
-        "https://dev.mysql.com/doc/refman/8.0/en/spatial-type-overview.html",
-        "https://start.spring.io/starter.zip"
+        "https://dev.mysql.com/doc/refman/8.0/en/gis-wkt-functions.html",
+        "https://dev.mysql.com/doc/refman/8.0/en/spatial-convenience-functions.html",
+        "https://dev.mysql.com/doc/refman/8.4/en/spatial-index-optimization.html",
+        "https://java.testcontainers.org/modules/databases/mysql/"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -5291,14 +5081,15 @@
       "path": "web/public/content/spring-boot/modulo-14.md",
       "topic": "Tema 3: JPA e Hibernate Spatial",
       "providerCitations": [
-        "https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#spatial",
-        "https://start.spring.io/starter.zip"
+        "https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#locking-optimistic",
+        "https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#spatial"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 388,
+      "line": 231,
       "originalProseUrls": [
-        "https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#spatial",
-        "https://start.spring.io/starter.zip"
+        "https://dev.mysql.com/doc/refman/8.0/en/spatial-type-overview.html",
+        "https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#locking-optimistic",
+        "https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#spatial"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -5308,11 +5099,14 @@
       "path": "web/public/content/spring-boot/modulo-15.md",
       "topic": "Tema 1: Backpressure real en WebFlux con reactor-test",
       "providerCitations": [
+        "https://projectreactor.io/docs/core/release/reference/subscribe-backpressure.html",
         "https://projectreactor.io/docs/core/release/reference/testing.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
       "line": 8,
       "originalProseUrls": [
+        "https://github.com/reactive-streams/reactive-streams-jvm",
+        "https://projectreactor.io/docs/core/release/reference/subscribe-backpressure.html",
         "https://projectreactor.io/docs/core/release/reference/testing.html"
       ],
       "recognitionStatus": "primary-domain-detected",
@@ -5323,11 +5117,15 @@
       "path": "web/public/content/spring-boot/modulo-15.md",
       "topic": "Tema 2: Contenedores Testcontainers reutilizados entre clases",
       "providerCitations": [
+        "https://java.testcontainers.org/supported_docker_environment/",
+        "https://java.testcontainers.org/test_framework_integration/junit_5/",
         "https://java.testcontainers.org/test_framework_integration/manual_lifecycle_control/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 154,
+      "line": 134,
       "originalProseUrls": [
+        "https://java.testcontainers.org/supported_docker_environment/",
+        "https://java.testcontainers.org/test_framework_integration/junit_5/",
         "https://java.testcontainers.org/test_framework_integration/manual_lifecycle_control/"
       ],
       "recognitionStatus": "primary-domain-detected",
@@ -5338,11 +5136,13 @@
       "path": "web/public/content/spring-boot/modulo-15.md",
       "topic": "Tema 3: Arquitectura hexagonal verificada con ArchUnit",
       "providerCitations": [
+        "https://www.archunit.org/getting-started",
         "https://www.archunit.org/userguide/html/000_Index.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 312,
+      "line": 247,
       "originalProseUrls": [
+        "https://www.archunit.org/getting-started",
         "https://www.archunit.org/userguide/html/000_Index.html"
       ],
       "recognitionStatus": "primary-domain-detected",
@@ -5357,7 +5157,7 @@
         "https://resilience4j.readme.io/docs/ratelimiter"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 485,
+      "line": 355,
       "originalProseUrls": [
         "https://resilience4j.readme.io/docs/bulkhead",
         "https://resilience4j.readme.io/docs/ratelimiter"
@@ -5373,7 +5173,7 @@
         "https://microservices.io/patterns/data/saga.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 668,
+      "line": 436,
       "originalProseUrls": [
         "https://microservices.io/patterns/data/saga.html"
       ],
@@ -5388,7 +5188,7 @@
         "https://martinfowler.com/eaaDev/EventSourcing.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 873,
+      "line": 528,
       "originalProseUrls": [
         "https://martinfowler.com/eaaDev/EventSourcing.html"
       ],
@@ -5400,11 +5200,14 @@
       "path": "web/public/content/spring-boot/modulo-15.md",
       "topic": "Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar",
       "providerCitations": [
+        "https://docs.spring.io/spring-framework/reference/data-access/transaction.html",
         "https://microservices.io/patterns/data/saga.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 1074,
+      "line": 625,
       "originalProseUrls": [
+        "https://docs.spring.io/spring-framework/reference/data-access/transaction.html",
+        "https://h2database.com/html/features.html#database_url",
         "https://microservices.io/patterns/data/saga.html"
       ],
       "recognitionStatus": "primary-domain-detected",
@@ -5415,11 +5218,13 @@
       "path": "web/public/content/spring-boot/modulo-2.md",
       "topic": "Tema 2: Validación con Bean Validation y ResponseEntity",
       "providerCitations": [
+        "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-validation.html",
         "https://jakarta.ee/specifications/bean-validation/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 156,
+      "line": 252,
       "originalProseUrls": [
+        "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-validation.html",
         "https://jakarta.ee/specifications/bean-validation/"
       ],
       "recognitionStatus": "primary-domain-detected",
@@ -5430,14 +5235,16 @@
       "path": "web/public/content/spring-boot/modulo-2.md",
       "topic": "Tema 4: Lombok y MapStruct sin exponer datos internos",
       "providerCitations": [
-        "https://mapstruct.org/documentation/stable/reference/html/",
-        "https://projectlombok.org/features/"
+        "https://mapstruct.org/documentation/stable/reference/pdf/mapstruct-reference-guide.pdf",
+        "https://mapstruct.org/faq/",
+        "https://projectlombok.org/setup/maven"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 430,
+      "line": 612,
       "originalProseUrls": [
-        "https://mapstruct.org/documentation/stable/reference/html/",
-        "https://projectlombok.org/features/"
+        "https://mapstruct.org/documentation/stable/reference/pdf/mapstruct-reference-guide.pdf",
+        "https://mapstruct.org/faq/",
+        "https://projectlombok.org/setup/maven"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -5451,26 +5258,11 @@
         "https://springdoc.org/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 663,
+      "line": 847,
       "originalProseUrls": [
-        "http://localhost:puerto/v3/api-docs",
+        "http://localhost:8080/swagger-ui/index.html",
         "https://spec.openapis.org/oas/latest.html",
         "https://springdoc.org/"
-      ],
-      "recognitionStatus": "primary-domain-detected",
-      "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
-    },
-    {
-      "track": "spring-boot",
-      "path": "web/public/content/spring-boot/modulo-20.md",
-      "topic": "Tema complementario: Integraciones empresariales, SOAP y fronteras de protocolo",
-      "providerCitations": [
-        "https://www.w3.org/TR/soap12-part1/"
-      ],
-      "applicabilityReview": "revisión manual pendiente",
-      "line": 682,
-      "originalProseUrls": [
-        "https://www.w3.org/TR/soap12-part1/"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -5483,7 +5275,7 @@
         "https://c4model.com/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 181,
+      "line": 183,
       "originalProseUrls": [
         "https://c4model.com/",
         "https://mermaid.js.org/syntax/flowchart.html"
@@ -5496,12 +5288,14 @@
       "path": "web/public/content/spring-boot/modulo-3.md",
       "topic": "Tema 2: El problema N+1 y su corrección",
       "providerCitations": [
-        "https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#fetching"
+        "https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#hql-explicit-association-joins",
+        "https://docs.spring.io/spring-data/jpa/docs/current/api/org/springframework/data/jpa/repository/EntityGraph.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 233,
+      "line": 192,
       "originalProseUrls": [
-        "https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#fetching"
+        "https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#hql-explicit-association-joins",
+        "https://docs.spring.io/spring-data/jpa/docs/current/api/org/springframework/data/jpa/repository/EntityGraph.html"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -5511,58 +5305,16 @@
       "path": "web/public/content/spring-boot/modulo-3.md",
       "topic": "Tema 3: Migraciones con Flyway",
       "providerCitations": [
-        "https://documentation.red-gate.com/flyway/flyway-concepts/migrations"
+        "https://docs.spring.io/spring-boot/4.1/how-to/data-initialization.html",
+        "https://documentation.red-gate.com/fd/versioned-migrations-273973333.html",
+        "https://documentation.red-gate.com/flyway/flyway-concepts/migrations/flyway-schema-history-table"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 427,
+      "line": 478,
       "originalProseUrls": [
-        "https://documentation.red-gate.com/flyway/flyway-concepts/migrations"
-      ],
-      "recognitionStatus": "primary-domain-detected",
-      "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
-    },
-    {
-      "track": "spring-boot",
-      "path": "web/public/content/spring-boot/modulo-4.md",
-      "topic": "Tema 4: Protección SSRF con InetAddressFilter (Spring Boot 4.1)",
-      "providerCitations": [
-        "https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.1-Release-Notes"
-      ],
-      "applicabilityReview": "revisión manual pendiente",
-      "line": 663,
-      "originalProseUrls": [
-        "http://169.254.169.254/latest/meta-data/iam/security-credentials/",
-        "https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.1-Release-Notes"
-      ],
-      "recognitionStatus": "primary-domain-detected",
-      "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
-    },
-    {
-      "track": "spring-boot",
-      "path": "web/public/content/spring-boot/modulo-6.md",
-      "topic": "Tema 2: @DataJpaTest con Testcontainers",
-      "providerCitations": [
-        "https://java.testcontainers.org/modules/databases/postgres/"
-      ],
-      "applicabilityReview": "revisión manual pendiente",
-      "line": 217,
-      "originalProseUrls": [
-        "https://java.testcontainers.org/modules/databases/postgres/"
-      ],
-      "recognitionStatus": "primary-domain-detected",
-      "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
-    },
-    {
-      "track": "spring-boot",
-      "path": "web/public/content/spring-boot/modulo-8.md",
-      "topic": "Tema 4: Rebalanceo de consumer groups y partition assignment",
-      "providerCitations": [
-        "https://kafka.apache.org/documentation/#consumerconfigs"
-      ],
-      "applicabilityReview": "revisión manual pendiente",
-      "line": 697,
-      "originalProseUrls": [
-        "https://kafka.apache.org/documentation/#consumerconfigs"
+        "https://docs.spring.io/spring-boot/4.1/how-to/data-initialization.html",
+        "https://documentation.red-gate.com/fd/versioned-migrations-273973333.html",
+        "https://documentation.red-gate.com/flyway/flyway-concepts/migrations/flyway-schema-history-table"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -5572,14 +5324,16 @@
       "path": "web/public/content/spring-boot/modulo-9.md",
       "topic": "Tema 1: Mono y Flux",
       "providerCitations": [
-        "https://projectreactor.io/docs/core/release/reference/testing.html",
-        "https://start.spring.io/starter.zip"
+        "https://projectreactor.io/docs/core/release/reference/advancedFeatures/reactor-hotCold.html",
+        "https://projectreactor.io/docs/core/release/reference/reactiveProgramming.html",
+        "https://projectreactor.io/docs/core/release/reference/testing.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
       "line": 213,
       "originalProseUrls": [
-        "https://projectreactor.io/docs/core/release/reference/testing.html",
-        "https://start.spring.io/starter.zip"
+        "https://projectreactor.io/docs/core/release/reference/advancedFeatures/reactor-hotCold.html",
+        "https://projectreactor.io/docs/core/release/reference/reactiveProgramming.html",
+        "https://projectreactor.io/docs/core/release/reference/testing.html"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -5589,11 +5343,17 @@
       "path": "web/public/content/spring-boot/modulo-9.md",
       "topic": "Tema 3: Cuándo WebFlux vale la complejidad, y R2DBC",
       "providerCitations": [
+        "https://docs.spring.io/spring-boot/reference/data/sql.html",
+        "https://docs.spring.io/spring-boot/reference/features/spring-application.html",
+        "https://docs.spring.io/spring-framework/reference/data-access/r2dbc.html",
         "https://projectreactor.io/docs/core/release/reference/faq.html#faq.wrap-blocking"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 578,
+      "line": 445,
       "originalProseUrls": [
+        "https://docs.spring.io/spring-boot/reference/data/sql.html",
+        "https://docs.spring.io/spring-boot/reference/features/spring-application.html",
+        "https://docs.spring.io/spring-framework/reference/data-access/r2dbc.html",
         "https://projectreactor.io/docs/core/release/reference/faq.html#faq.wrap-blocking"
       ],
       "recognitionStatus": "primary-domain-detected",
@@ -6282,7 +6042,7 @@
         "https://project-osrm.org/docs/v5.24.0/api/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 537,
+      "line": 540,
       "originalProseUrls": [
         "http://localhost:5000",
         "https://github.com/Project-OSRM/osrm-backend",
@@ -6692,42 +6452,6 @@
       "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
-      "url": "https://dev.java/learn/api/streams/",
-      "status": 0,
-      "finalUrl": "https://dev.java/learn/api/streams/",
-      "contentType": "",
-      "title": null,
-      "checkedAt": null,
-      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://dev.java/learn/concurrency/",
-      "status": 0,
-      "finalUrl": "https://dev.java/learn/concurrency/",
-      "contentType": "",
-      "title": null,
-      "checkedAt": null,
-      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://dev.java/learn/lambdas/",
-      "status": 0,
-      "finalUrl": "https://dev.java/learn/lambdas/",
-      "contentType": "",
-      "title": null,
-      "checkedAt": null,
-      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://dev.java/learn/modules/",
-      "status": 0,
-      "finalUrl": "https://dev.java/learn/modules/",
-      "contentType": "",
-      "title": null,
-      "checkedAt": null,
-      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
       "url": "https://docs.ansible.com/ansible/latest/collections/ansible/builtin/lineinfile_module.html",
       "status": 200,
       "finalUrl": "https://docs.ansible.com/projects/ansible/latest/collections/ansible/builtin/lineinfile_module.html",
@@ -6897,58 +6621,58 @@
       "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
-      "url": "https://docs.gradle.org/9.1.0/release-notes.html",
-      "status": 200,
-      "finalUrl": "https://docs.gradle.org/9.1.0/release-notes.html",
-      "contentType": "text/html",
-      "title": null,
-      "checkedAt": "2026-10-31T15:33:19.085302+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://docs.gradle.org/current/userguide/build_cache.html",
-      "status": 200,
-      "finalUrl": "https://docs.gradle.org/current/userguide/build_cache.html",
-      "contentType": "text/html",
-      "title": null,
-      "checkedAt": "2026-10-31T15:33:19.472750+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://docs.gradle.org/current/userguide/compatibility.html",
+      "url": "https://docs.gradle.org/current/userguide/",
       "status": 0,
-      "finalUrl": "https://docs.gradle.org/current/userguide/compatibility.html",
+      "finalUrl": "https://docs.gradle.org/current/userguide/",
       "contentType": "",
       "title": null,
       "checkedAt": null,
       "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
-      "url": "https://docs.gradle.org/current/userguide/migrating_from_maven.html",
-      "status": 200,
-      "finalUrl": "https://docs.gradle.org/current/userguide/migrating_from_maven.html",
-      "contentType": "text/html",
-      "title": "Migrating Builds From Apache Maven",
-      "checkedAt": "2026-10-31T15:07:21.919191+00:00",
-      "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
-    },
-    {
-      "url": "https://docs.gradle.org/current/userguide/userguide.html",
-      "status": 200,
-      "finalUrl": "https://docs.gradle.org/current/userguide/userguide.html",
-      "contentType": "text/html",
-      "title": "Gradle User Manual",
-      "checkedAt": "2026-10-31T15:07:21.405728+00:00",
-      "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
-    },
-    {
-      "url": "https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#fetching",
-      "status": 200,
-      "finalUrl": "https://docs.hibernate.org/orm/current/userguide/html_single/",
-      "contentType": "text/html; charset=UTF-8",
+      "url": "https://docs.gradle.org/current/userguide/declaring_configurations.html",
+      "status": 0,
+      "finalUrl": "https://docs.gradle.org/current/userguide/declaring_configurations.html",
+      "contentType": "",
       "title": null,
-      "checkedAt": "2026-10-31T15:33:51.298909+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
+      "url": "https://docs.gradle.org/current/userguide/dependency_verification.html",
+      "status": 0,
+      "finalUrl": "https://docs.gradle.org/current/userguide/dependency_verification.html",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
+      "url": "https://docs.gradle.org/current/userguide/multi_project_builds.html",
+      "status": 0,
+      "finalUrl": "https://docs.gradle.org/current/userguide/multi_project_builds.html",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
+      "url": "https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#hql-explicit-association-joins",
+      "status": 0,
+      "finalUrl": "https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#hql-explicit-association-joins",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
+      "url": "https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#locking-optimistic",
+      "status": 0,
+      "finalUrl": "https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#locking-optimistic",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
       "url": "https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#spatial",
@@ -7077,13 +6801,22 @@
       "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
     },
     {
-      "url": "https://docs.oracle.com/en/java/javase/24/core/stream-gatherers.html",
-      "status": 200,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/24/core/stream-gatherers.html",
-      "contentType": "text/html",
+      "url": "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Locale.html",
+      "status": 0,
+      "finalUrl": "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Locale.html",
+      "contentType": "",
       "title": null,
-      "checkedAt": "2026-10-31T15:33:19.508070+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
+      "url": "https://docs.oracle.com/en/java/javase/22/core/foreign-function-and-memory-api.html",
+      "status": 0,
+      "finalUrl": "https://docs.oracle.com/en/java/javase/22/core/foreign-function-and-memory-api.html",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
       "url": "https://docs.oracle.com/en/java/javase/25/",
@@ -7095,324 +6828,189 @@
       "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
     },
     {
-      "url": "https://docs.oracle.com/en/java/javase/27/",
+      "url": "https://docs.oracle.com/en/java/javase/25/core/java-serialization-filters.html",
       "status": 0,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/27/",
+      "finalUrl": "https://docs.oracle.com/en/java/javase/25/core/java-serialization-filters.html",
       "contentType": "",
       "title": null,
       "checkedAt": null,
       "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
-      "url": "https://docs.oracle.com/en/java/javase/27/core/foreign-function-and-memory-api.html",
+      "url": "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/ScopedValue.html",
       "status": 0,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/27/core/foreign-function-and-memory-api.html",
+      "finalUrl": "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/ScopedValue.html",
       "contentType": "",
       "title": null,
       "checkedAt": null,
       "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
-      "url": "https://docs.oracle.com/en/java/javase/27/core/scoped-values.html",
+      "url": "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/ThreadLocal.html",
       "status": 0,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/27/core/scoped-values.html",
+      "finalUrl": "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/ThreadLocal.html",
       "contentType": "",
       "title": null,
       "checkedAt": null,
       "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
-      "url": "https://docs.oracle.com/en/java/javase/27/core/serialization-filtering1.html",
+      "url": "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletableFuture.html",
       "status": 0,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/27/core/serialization-filtering1.html",
+      "finalUrl": "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletableFuture.html",
       "contentType": "",
       "title": null,
       "checkedAt": null,
       "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
-      "url": "https://docs.oracle.com/en/java/javase/27/core/structured-concurrency.html",
-      "status": 200,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/27/core/structured-concurrency.html",
-      "contentType": "text/html",
-      "title": null,
-      "checkedAt": "2026-11-02T00:19:48.107728+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/io/ObjectInputFilter.html",
+      "url": "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/ExecutorService.html",
       "status": 0,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/io/ObjectInputFilter.html",
+      "finalUrl": "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/ExecutorService.html",
       "contentType": "",
       "title": null,
       "checkedAt": null,
       "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
-      "url": "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/ref/package-summary.html",
+      "url": "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/Function.html",
       "status": 0,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/ref/package-summary.html",
+      "finalUrl": "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/Function.html",
       "contentType": "",
       "title": null,
       "checkedAt": null,
       "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
-      "url": "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/Locale.html",
+      "url": "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/stream/Gatherers.html",
       "status": 0,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/Locale.html",
+      "finalUrl": "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/stream/Gatherers.html",
       "contentType": "",
       "title": null,
       "checkedAt": null,
       "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
-      "url": "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/ExecutorService.html",
+      "url": "https://docs.oracle.com/en/java/javase/25/docs/api/java.net.http/java/net/http/HttpClient.html",
       "status": 0,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/ExecutorService.html",
+      "finalUrl": "https://docs.oracle.com/en/java/javase/25/docs/api/java.net.http/java/net/http/HttpClient.html",
       "contentType": "",
       "title": null,
       "checkedAt": null,
       "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
-      "url": "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/Executors.html",
+      "url": "https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/Connection.html",
       "status": 0,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/Executors.html",
+      "finalUrl": "https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/Connection.html",
       "contentType": "",
       "title": null,
       "checkedAt": null,
       "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
-      "url": "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/Future.html",
+      "url": "https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/PreparedStatement.html",
       "status": 0,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/Future.html",
+      "finalUrl": "https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/PreparedStatement.html",
       "contentType": "",
       "title": null,
       "checkedAt": null,
       "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
-      "url": "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/atomic/AtomicLong.html",
+      "url": "https://docs.oracle.com/en/java/javase/25/docs/specs/man/java.html",
       "status": 0,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/atomic/AtomicLong.html",
+      "finalUrl": "https://docs.oracle.com/en/java/javase/25/docs/specs/man/java.html",
       "contentType": "",
       "title": null,
       "checkedAt": null,
       "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
-      "url": "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/atomic/LongAdder.html",
+      "url": "https://docs.oracle.com/en/java/javase/25/docs/specs/man/javac.html",
       "status": 0,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/atomic/LongAdder.html",
+      "finalUrl": "https://docs.oracle.com/en/java/javase/25/docs/specs/man/javac.html",
       "contentType": "",
       "title": null,
       "checkedAt": null,
       "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
-      "url": "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/function/Function.html",
+      "url": "https://docs.oracle.com/en/java/javase/25/docs/specs/man/jcmd.html",
       "status": 0,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/function/Function.html",
+      "finalUrl": "https://docs.oracle.com/en/java/javase/25/docs/specs/man/jcmd.html",
       "contentType": "",
       "title": null,
       "checkedAt": null,
       "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
-      "url": "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/function/Predicate.html",
+      "url": "https://docs.oracle.com/en/java/javase/25/docs/specs/man/jfr.html",
       "status": 0,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/function/Predicate.html",
+      "finalUrl": "https://docs.oracle.com/en/java/javase/25/docs/specs/man/jfr.html",
       "contentType": "",
       "title": null,
       "checkedAt": null,
       "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
-      "url": "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/function/package-summary.html",
+      "url": "https://docs.oracle.com/en/java/javase/25/docs/specs/man/jlink.html",
       "status": 0,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/function/package-summary.html",
+      "finalUrl": "https://docs.oracle.com/en/java/javase/25/docs/specs/man/jlink.html",
       "contentType": "",
       "title": null,
       "checkedAt": null,
       "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
-      "url": "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/stream/Stream.html",
+      "url": "https://docs.oracle.com/en/java/javase/25/gctuning/garbage-collector-implementation.html",
       "status": 0,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/stream/Stream.html",
+      "finalUrl": "https://docs.oracle.com/en/java/javase/25/gctuning/garbage-collector-implementation.html",
       "contentType": "",
       "title": null,
       "checkedAt": null,
       "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
-      "url": "https://docs.oracle.com/en/java/javase/27/docs/api/java.net.http/java/net/http/HttpClient.html",
+      "url": "https://docs.oracle.com/en/java/javase/25/jfapi/",
       "status": 0,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/api/java.net.http/java/net/http/HttpClient.html",
+      "finalUrl": "https://docs.oracle.com/en/java/javase/25/jfapi/",
       "contentType": "",
       "title": null,
       "checkedAt": null,
       "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
-      "url": "https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/Connection.html",
+      "url": "https://docs.oracle.com/javase/specs/jls/se25/html/jls-17.html",
       "status": 0,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/Connection.html",
+      "finalUrl": "https://docs.oracle.com/javase/specs/jls/se25/html/jls-17.html",
       "contentType": "",
       "title": null,
       "checkedAt": null,
       "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
-      "url": "https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/PreparedStatement.html",
+      "url": "https://docs.oracle.com/javase/specs/jls/se25/html/jls-8.html",
       "status": 0,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/PreparedStatement.html",
+      "finalUrl": "https://docs.oracle.com/javase/specs/jls/se25/html/jls-8.html",
       "contentType": "",
       "title": null,
       "checkedAt": null,
       "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
-      "url": "https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/javax/sql/DataSource.html",
+      "url": "https://docs.oracle.com/javase/specs/jls/se25/html/jls-9.html",
       "status": 0,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/javax/sql/DataSource.html",
+      "finalUrl": "https://docs.oracle.com/javase/specs/jls/se25/html/jls-9.html",
       "contentType": "",
       "title": null,
       "checkedAt": null,
       "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
-      "url": "https://docs.oracle.com/en/java/javase/27/docs/api/jdk.httpserver/com/sun/net/httpserver/HttpServer.html",
+      "url": "https://docs.oracle.com/javase/tutorial/i18n/",
       "status": 0,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/api/jdk.httpserver/com/sun/net/httpserver/HttpServer.html",
-      "contentType": "",
-      "title": null,
-      "checkedAt": null,
-      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://docs.oracle.com/en/java/javase/27/docs/specs/man/jar.html",
-      "status": 0,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/specs/man/jar.html",
-      "contentType": "",
-      "title": null,
-      "checkedAt": null,
-      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://docs.oracle.com/en/java/javase/27/docs/specs/man/java.html",
-      "status": 0,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/specs/man/java.html",
-      "contentType": "",
-      "title": null,
-      "checkedAt": null,
-      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://docs.oracle.com/en/java/javase/27/docs/specs/man/javac.html",
-      "status": 0,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/specs/man/javac.html",
-      "contentType": "",
-      "title": null,
-      "checkedAt": null,
-      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://docs.oracle.com/en/java/javase/27/docs/specs/man/jdeps.html",
-      "status": 0,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/specs/man/jdeps.html",
-      "contentType": "",
-      "title": null,
-      "checkedAt": null,
-      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://docs.oracle.com/en/java/javase/27/docs/specs/man/jfr.html",
-      "status": 0,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/specs/man/jfr.html",
-      "contentType": "",
-      "title": null,
-      "checkedAt": null,
-      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://docs.oracle.com/en/java/javase/27/docs/specs/man/jhsdb.html",
-      "status": 0,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/specs/man/jhsdb.html",
-      "contentType": "",
-      "title": null,
-      "checkedAt": null,
-      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://docs.oracle.com/en/java/javase/27/docs/specs/man/jlink.html",
-      "status": 0,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/27/docs/specs/man/jlink.html",
-      "contentType": "",
-      "title": null,
-      "checkedAt": null,
-      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://docs.oracle.com/en/java/javase/27/gctuning/",
-      "status": 0,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/27/gctuning/",
-      "contentType": "",
-      "title": null,
-      "checkedAt": null,
-      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://docs.oracle.com/en/java/javase/27/intl/internationalization-overview.html",
-      "status": 0,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/27/intl/internationalization-overview.html",
-      "contentType": "",
-      "title": null,
-      "checkedAt": null,
-      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://docs.oracle.com/en/java/javase/27/jfapi/",
-      "status": 0,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/27/jfapi/",
-      "contentType": "",
-      "title": null,
-      "checkedAt": null,
-      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://docs.oracle.com/en/java/javase/27/language/unnamed-variables-and-patterns.html",
-      "status": 0,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/27/language/unnamed-variables-and-patterns.html",
-      "contentType": "",
-      "title": null,
-      "checkedAt": null,
-      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://docs.oracle.com/javase/specs/jls/se27/html/jls-17.html",
-      "status": 0,
-      "finalUrl": "https://docs.oracle.com/javase/specs/jls/se27/html/jls-17.html",
-      "contentType": "",
-      "title": null,
-      "checkedAt": null,
-      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://docs.oracle.com/javase/specs/jvms/se27/html/jvms-4.html",
-      "status": 0,
-      "finalUrl": "https://docs.oracle.com/javase/specs/jvms/se27/html/jvms-4.html",
-      "contentType": "",
-      "title": null,
-      "checkedAt": null,
-      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://docs.oracle.com/javase/specs/jvms/se27/html/jvms-5.html",
-      "status": 0,
-      "finalUrl": "https://docs.oracle.com/javase/specs/jvms/se27/html/jvms-5.html",
+      "finalUrl": "https://docs.oracle.com/javase/tutorial/i18n/",
       "contentType": "",
       "title": null,
       "checkedAt": null,
@@ -7770,6 +7368,78 @@
       "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
+      "url": "https://docs.spring.io/spring-boot/4.1/how-to/data-initialization.html",
+      "status": 0,
+      "finalUrl": "https://docs.spring.io/spring-boot/4.1/how-to/data-initialization.html",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/reference/data/sql.html",
+      "status": 0,
+      "finalUrl": "https://docs.spring.io/spring-boot/reference/data/sql.html",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/reference/features/spring-application.html",
+      "status": 0,
+      "finalUrl": "https://docs.spring.io/spring-boot/reference/features/spring-application.html",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
+      "url": "https://docs.spring.io/spring-cloud-circuitbreaker/reference/spring-cloud-circuitbreaker-resilience4j.html",
+      "status": 0,
+      "finalUrl": "https://docs.spring.io/spring-cloud-circuitbreaker/reference/spring-cloud-circuitbreaker-resilience4j.html",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
+      "url": "https://docs.spring.io/spring-data/jpa/docs/current/api/org/springframework/data/jpa/repository/EntityGraph.html",
+      "status": 0,
+      "finalUrl": "https://docs.spring.io/spring-data/jpa/docs/current/api/org/springframework/data/jpa/repository/EntityGraph.html",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/data-access/r2dbc.html",
+      "status": 0,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/data-access/r2dbc.html",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/data-access/transaction.html",
+      "status": 0,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/data-access/transaction.html",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-validation.html",
+      "status": 0,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-validation.html",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
       "url": "https://docs.stripe.com/idempotency",
       "status": 200,
       "finalUrl": "https://docs.stripe.com/api/idempotent_requests",
@@ -7785,33 +7455,6 @@
       "contentType": "text/html; charset=utf-8",
       "title": null,
       "checkedAt": "2026-10-31T15:33:52.693871+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://docs.temporal.io/design-patterns/saga-pattern",
-      "status": 200,
-      "finalUrl": "https://docs.temporal.io/design-patterns/saga-pattern",
-      "contentType": "text/html; charset=utf-8",
-      "title": null,
-      "checkedAt": "2026-10-31T15:33:52.994098+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://docs.temporal.io/develop/java/spring-boot-integration",
-      "status": 200,
-      "finalUrl": "https://docs.temporal.io/develop/java/integrations/spring-boot-integration",
-      "contentType": "text/html; charset=utf-8",
-      "title": null,
-      "checkedAt": "2026-10-31T15:33:53.398634+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://docs.temporal.io/develop/java/workflows/basics",
-      "status": 200,
-      "finalUrl": "https://docs.temporal.io/develop/java/workflows/basics",
-      "contentType": "text/html; charset=utf-8",
-      "title": null,
-      "checkedAt": "2026-10-31T15:33:53.854390+00:00",
       "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
@@ -7833,22 +7476,22 @@
       "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
-      "url": "https://documentation.red-gate.com/flyway/",
-      "status": 200,
-      "finalUrl": "https://documentation.red-gate.com/flyway/",
-      "contentType": "text/html;charset=utf-8",
+      "url": "https://documentation.red-gate.com/fd/versioned-migrations-273973333.html",
+      "status": 0,
+      "finalUrl": "https://documentation.red-gate.com/fd/versioned-migrations-273973333.html",
+      "contentType": "",
       "title": null,
-      "checkedAt": "2026-11-02T00:19:48.111232+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
-      "url": "https://documentation.red-gate.com/flyway/flyway-concepts/migrations",
-      "status": 200,
-      "finalUrl": "https://documentation.red-gate.com/flyway/flyway-concepts/migrations",
-      "contentType": "text/html;charset=utf-8",
+      "url": "https://documentation.red-gate.com/flyway/flyway-concepts/migrations/flyway-schema-history-table",
+      "status": 0,
+      "finalUrl": "https://documentation.red-gate.com/flyway/flyway-concepts/migrations/flyway-schema-history-table",
+      "contentType": "",
       "title": null,
-      "checkedAt": "2026-10-31T15:37:57.771406+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
       "url": "https://documentation.ubuntu.com/server/how-to/security/openssh-server/",
@@ -8067,15 +7710,6 @@
       "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
-      "url": "https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.1-Release-Notes",
-      "status": 200,
-      "finalUrl": "https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.1-Release-Notes",
-      "contentType": "text/html; charset=utf-8",
-      "title": null,
-      "checkedAt": "2026-10-31T15:36:39.610551+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
       "url": "https://grafana.com/docs/grafana/latest/administration/provisioning/",
       "status": 200,
       "finalUrl": "https://grafana.com/docs/grafana/latest/administration/provisioning/",
@@ -8211,13 +7845,22 @@
       "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
-      "url": "https://java.testcontainers.org/",
-      "status": 200,
-      "finalUrl": "https://java.testcontainers.org/",
-      "contentType": "text/html; charset=UTF-8",
+      "url": "https://jakarta.ee/specifications/persistence/4.0/apidocs/jakarta.persistence/jakarta/persistence/entitygraph",
+      "status": 0,
+      "finalUrl": "https://jakarta.ee/specifications/persistence/4.0/apidocs/jakarta.persistence/jakarta/persistence/entitygraph",
+      "contentType": "",
       "title": null,
-      "checkedAt": "2026-11-02T00:19:48.112562+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
+      "url": "https://java.testcontainers.org/modules/databases/mysql/",
+      "status": 0,
+      "finalUrl": "https://java.testcontainers.org/modules/databases/mysql/",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
       "url": "https://java.testcontainers.org/modules/databases/postgres/",
@@ -8227,6 +7870,24 @@
       "title": null,
       "checkedAt": "2026-10-31T15:33:57.004256+00:00",
       "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
+      "url": "https://java.testcontainers.org/supported_docker_environment/",
+      "status": 0,
+      "finalUrl": "https://java.testcontainers.org/supported_docker_environment/",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
+      "url": "https://java.testcontainers.org/test_framework_integration/junit_5/",
+      "status": 0,
+      "finalUrl": "https://java.testcontainers.org/test_framework_integration/junit_5/",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
       "url": "https://java.testcontainers.org/test_framework_integration/manual_lifecycle_control/",
@@ -8265,24 +7926,6 @@
       "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
-      "url": "https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html",
-      "status": 200,
-      "finalUrl": "https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html",
-      "contentType": "text/html; charset=UTF-8",
-      "title": null,
-      "checkedAt": "2026-11-02T00:19:48.242654+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://javadoc.io/doc/org.mockito/mockito-junit-jupiter/latest/org/mockito/junit/jupiter/MockitoExtension.html",
-      "status": 0,
-      "finalUrl": "https://javadoc.io/doc/org.mockito/mockito-junit-jupiter/latest/org/mockito/junit/jupiter/MockitoExtension.html",
-      "contentType": "",
-      "title": null,
-      "checkedAt": null,
-      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
       "url": "https://jotai.org/docs/introduction",
       "status": 200,
       "finalUrl": "https://jotai.org/docs",
@@ -8292,66 +7935,12 @@
       "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
-      "url": "https://junit.org/",
-      "status": 0,
-      "finalUrl": "https://junit.org/",
-      "contentType": "",
-      "title": null,
-      "checkedAt": null,
-      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/Assertions.html",
-      "status": 0,
-      "finalUrl": "https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/Assertions.html",
-      "contentType": "",
-      "title": null,
-      "checkedAt": null,
-      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://junit.org/junit5/docs/current/user-guide/",
-      "status": 200,
-      "finalUrl": "https://docs.junit.org/6.1.3/overview.html",
-      "contentType": "text/html; charset=utf-8",
-      "title": null,
-      "checkedAt": "2026-10-31T15:33:57.300294+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://junit.org/junit5/docs/current/user-guide/#writing-tests-parameterized-tests",
-      "status": 200,
-      "finalUrl": "https://docs.junit.org/6.1.3/overview.html",
-      "contentType": "text/html; charset=utf-8",
-      "title": null,
-      "checkedAt": "2026-10-31T15:33:57.445180+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
       "url": "https://kafka.apache.org/documentation/",
       "status": 200,
       "finalUrl": "https://kafka.apache.org/documentation/",
       "contentType": "text/html",
       "title": null,
       "checkedAt": "2026-11-02T00:19:48.482136+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://kafka.apache.org/documentation/#consumerconfigs",
-      "status": 200,
-      "finalUrl": "https://kafka.apache.org/documentation/#consumerconfigs",
-      "contentType": "text/html",
-      "title": null,
-      "checkedAt": "2026-10-31T15:33:57.528144+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://kafka.js.org/docs/getting-started",
-      "status": 200,
-      "finalUrl": "https://kafka.js.org/docs/getting-started",
-      "contentType": "text/html; charset=utf-8",
-      "title": null,
-      "checkedAt": "2026-10-31T15:33:57.709747+00:00",
       "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
@@ -8427,15 +8016,6 @@
       "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
-      "url": "https://logback.qos.ch/manual/mdc.html",
-      "status": 200,
-      "finalUrl": "https://logback.qos.ch/manual/mdc.html",
-      "contentType": "text/html",
-      "title": null,
-      "checkedAt": "2026-10-31T15:33:58.758880+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
       "url": "https://man.openbsd.org/sshd_config",
       "status": 200,
       "finalUrl": "https://man.openbsd.org/sshd_config",
@@ -8499,13 +8079,22 @@
       "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
-      "url": "https://mapstruct.org/documentation/stable/reference/html/",
-      "status": 200,
-      "finalUrl": "https://mapstruct.org/documentation/stable/reference/html/",
-      "contentType": "text/html; charset=utf-8",
+      "url": "https://mapstruct.org/documentation/stable/reference/pdf/mapstruct-reference-guide.pdf",
+      "status": 0,
+      "finalUrl": "https://mapstruct.org/documentation/stable/reference/pdf/mapstruct-reference-guide.pdf",
+      "contentType": "",
       "title": null,
-      "checkedAt": "2026-10-31T15:34:00.012036+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
+      "url": "https://mapstruct.org/faq/",
+      "status": 0,
+      "finalUrl": "https://mapstruct.org/faq/",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
       "url": "https://martinfowler.com/articles/feature-toggles.html",
@@ -8632,42 +8221,6 @@
       "title": null,
       "checkedAt": "2026-10-31T15:33:20.294629+00:00",
       "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://maven.apache.org/guides/mini/guide-multiple-modules.html#reactor",
-      "status": 0,
-      "finalUrl": "https://maven.apache.org/guides/mini/guide-multiple-modules.html#reactor",
-      "contentType": "",
-      "title": null,
-      "checkedAt": null,
-      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://maven.apache.org/plugins/maven-compiler-plugin/compile-mojo.html#annotationProcessorPaths",
-      "status": 0,
-      "finalUrl": "https://maven.apache.org/plugins/maven-compiler-plugin/compile-mojo.html#annotationProcessorPaths",
-      "contentType": "",
-      "title": null,
-      "checkedAt": null,
-      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://maven.apache.org/pom.html",
-      "status": 200,
-      "finalUrl": "https://maven.apache.org/pom.html",
-      "contentType": "text/html",
-      "title": null,
-      "checkedAt": "2026-11-02T00:19:48.492261+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://maven.apache.org/surefire/maven-surefire-plugin/",
-      "status": 0,
-      "finalUrl": "https://maven.apache.org/surefire/maven-surefire-plugin/",
-      "contentType": "",
-      "title": null,
-      "checkedAt": null,
-      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
       "url": "https://microservices.io/patterns/data/saga.html",
@@ -9066,42 +8619,6 @@
       "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
     },
     {
-      "url": "https://openjdk.org/jeps/485",
-      "status": 200,
-      "finalUrl": "https://openjdk.org/jeps/485",
-      "contentType": "text/html",
-      "title": "JEP 485: Stream Gatherers",
-      "checkedAt": "2026-10-31T15:07:26.004836+00:00",
-      "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
-    },
-    {
-      "url": "https://openjdk.org/jeps/506",
-      "status": 200,
-      "finalUrl": "https://openjdk.org/jeps/506",
-      "contentType": "text/html",
-      "title": "JEP 506: Scoped Values",
-      "checkedAt": "2026-10-31T15:07:25.867022+00:00",
-      "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
-    },
-    {
-      "url": "https://openjdk.org/jeps/523",
-      "status": 0,
-      "finalUrl": "https://openjdk.org/jeps/523",
-      "contentType": "",
-      "title": null,
-      "checkedAt": null,
-      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://openjdk.org/jeps/533",
-      "status": 200,
-      "finalUrl": "https://openjdk.org/jeps/533",
-      "contentType": "text/html",
-      "title": null,
-      "checkedAt": "2026-11-02T00:19:48.645906+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
       "url": "https://openjdk.org/projects/code-tools/jmh/",
       "status": 200,
       "finalUrl": "https://openjdk.org/projects/code-tools/jmh/",
@@ -9300,13 +8817,22 @@
       "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
-      "url": "https://projectlombok.org/features/",
-      "status": 200,
-      "finalUrl": "https://projectlombok.org/features/",
-      "contentType": "text/html; charset=utf-8",
+      "url": "https://projectlombok.org/setup/maven",
+      "status": 0,
+      "finalUrl": "https://projectlombok.org/setup/maven",
+      "contentType": "",
       "title": null,
-      "checkedAt": "2026-10-31T15:34:04.853714+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
+      "url": "https://projectreactor.io/docs/core/release/reference/advancedFeatures/reactor-hotCold.html",
+      "status": 0,
+      "finalUrl": "https://projectreactor.io/docs/core/release/reference/advancedFeatures/reactor-hotCold.html",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
       "url": "https://projectreactor.io/docs/core/release/reference/faq.html#faq.wrap-blocking",
@@ -9316,6 +8842,24 @@
       "title": null,
       "checkedAt": "2026-10-31T15:34:04.891652+00:00",
       "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
+      "url": "https://projectreactor.io/docs/core/release/reference/reactiveProgramming.html",
+      "status": 0,
+      "finalUrl": "https://projectreactor.io/docs/core/release/reference/reactiveProgramming.html",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
+      "url": "https://projectreactor.io/docs/core/release/reference/subscribe-backpressure.html",
+      "status": 0,
+      "finalUrl": "https://projectreactor.io/docs/core/release/reference/subscribe-backpressure.html",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
       "url": "https://projectreactor.io/docs/core/release/reference/testing.html",
@@ -9615,69 +9159,6 @@
       "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
-      "url": "https://refactoring.guru/design-patterns/abstract-factory",
-      "status": 200,
-      "finalUrl": "https://refactoring.guru/design-patterns/abstract-factory",
-      "contentType": "text/html; charset=utf-8",
-      "title": null,
-      "checkedAt": "2026-10-31T15:34:08.097502+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://refactoring.guru/design-patterns/adapter",
-      "status": 200,
-      "finalUrl": "https://refactoring.guru/design-patterns/adapter",
-      "contentType": "text/html; charset=utf-8",
-      "title": null,
-      "checkedAt": "2026-10-31T15:34:08.223939+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://refactoring.guru/design-patterns/builder",
-      "status": 200,
-      "finalUrl": "https://refactoring.guru/design-patterns/builder",
-      "contentType": "text/html; charset=utf-8",
-      "title": null,
-      "checkedAt": "2026-10-31T15:34:08.467702+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://refactoring.guru/design-patterns/factory-method",
-      "status": 200,
-      "finalUrl": "https://refactoring.guru/design-patterns/factory-method",
-      "contentType": "text/html; charset=utf-8",
-      "title": null,
-      "checkedAt": "2026-10-31T15:34:08.514171+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://refactoring.guru/design-patterns/prototype",
-      "status": 200,
-      "finalUrl": "https://refactoring.guru/design-patterns/prototype",
-      "contentType": "text/html; charset=utf-8",
-      "title": null,
-      "checkedAt": "2026-10-31T15:34:08.547861+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://refactoring.guru/design-patterns/strategy",
-      "status": 200,
-      "finalUrl": "https://refactoring.guru/design-patterns/strategy",
-      "contentType": "text/html; charset=utf-8",
-      "title": null,
-      "checkedAt": "2026-10-31T15:34:08.550709+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://refactoring.guru/design-patterns/structural-patterns",
-      "status": 200,
-      "finalUrl": "https://refactoring.guru/design-patterns/structural-patterns",
-      "contentType": "text/html; charset=utf-8",
-      "title": null,
-      "checkedAt": "2026-10-31T15:34:08.794586+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
       "url": "https://refactoring.guru/es/design-patterns/chain-of-responsibility",
       "status": 200,
       "finalUrl": "https://refactoring.guru/es/design-patterns/chain-of-responsibility",
@@ -9747,15 +9228,6 @@
       "contentType": "text/html; charset=utf-8",
       "title": null,
       "checkedAt": "2026-10-31T15:34:09.451431+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://refactoring.guru/files/design-patterns-es-demo.pdf",
-      "status": 200,
-      "finalUrl": "https://refactoring.guru/files/design-patterns-es-demo.pdf",
-      "contentType": "application/pdf",
-      "title": null,
-      "checkedAt": "2026-10-31T15:34:09.508499+00:00",
       "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
@@ -9891,15 +9363,6 @@
       "contentType": "text/html; charset=utf-8",
       "title": null,
       "checkedAt": "2026-10-31T15:34:11.517671+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://site.mockito.org/",
-      "status": 200,
-      "finalUrl": "https://site.mockito.org/",
-      "contentType": "text/html; charset=utf-8",
-      "title": null,
-      "checkedAt": "2026-10-31T15:34:11.654942+00:00",
       "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
@@ -10080,15 +9543,6 @@
       "contentType": "text/html",
       "title": null,
       "checkedAt": "2026-10-31T15:33:30.535597+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://start.spring.io/starter.zip",
-      "status": 200,
-      "finalUrl": "https://start.spring.io/starter.zip",
-      "contentType": "application/zip",
-      "title": null,
-      "checkedAt": "2026-10-31T15:34:12.156855+00:00",
       "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
@@ -10443,15 +9897,6 @@
       "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
-      "url": "https://wiremock.org/",
-      "status": 200,
-      "finalUrl": "https://wiremock.org/",
-      "contentType": "text/html",
-      "title": null,
-      "checkedAt": "2026-10-31T15:34:15.906557+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
       "url": "https://www.apollographql.com/docs/federation/",
       "status": 200,
       "finalUrl": "https://www.apollographql.com/docs/graphos/schema-design/federated-schemas/federation",
@@ -10461,13 +9906,13 @@
       "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
-      "url": "https://www.archunit.org/",
-      "status": 200,
-      "finalUrl": "https://www.archunit.org/",
-      "contentType": "text/html; charset=utf-8",
+      "url": "https://www.archunit.org/getting-started",
+      "status": 0,
+      "finalUrl": "https://www.archunit.org/getting-started",
+      "contentType": "",
       "title": null,
-      "checkedAt": "2026-10-31T15:34:16.058398+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
       "url": "https://www.archunit.org/userguide/html/000_Index.html",
@@ -10578,13 +10023,13 @@
       "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
     },
     {
-      "url": "https://www.jacoco.org/jacoco/trunk/doc/",
-      "status": 200,
-      "finalUrl": "https://www.jacoco.org/jacoco/trunk/doc/",
-      "contentType": "text/html; charset=utf-8",
+      "url": "https://www.jacoco.org/jacoco/trunk/doc/changes.html",
+      "status": 0,
+      "finalUrl": "https://www.jacoco.org/jacoco/trunk/doc/changes.html",
+      "contentType": "",
       "title": null,
-      "checkedAt": "2026-10-31T15:34:17.016271+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
       "url": "https://www.jenkins.io/doc/book/pipeline/syntax/",
@@ -11199,15 +10644,6 @@
       "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
     },
     {
-      "url": "https://www.w3.org/TR/soap12-part1/",
-      "status": 200,
-      "finalUrl": "https://www.w3.org/TR/soap12-part1/",
-      "contentType": "text/html; charset=utf-8",
-      "title": null,
-      "checkedAt": "2026-10-31T15:34:20.160277+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
       "url": "https://www.w3.org/TR/webnn/",
       "status": 200,
       "finalUrl": "https://www.w3.org/TR/webnn/",
@@ -11246,13 +10682,13 @@
   ],
   "responsible": "Agente Qoder (inventario y HTTP; no firma pedagógica humana)",
   "summary": {
-    "baselineUnrecognizedTopics": 378,
-    "additionalRecognizedTopics": 378,
-    "remainingUnrecognizedTopics": 0,
-    "applicabilityPendingTopics": 378,
-    "urlsChecked": 539,
-    "urlsReachable": 492,
-    "urlsPending": 47
+    "baselineUnrecognizedTopics": 366,
+    "additionalRecognizedTopics": 362,
+    "remainingUnrecognizedTopics": 4,
+    "applicabilityPendingTopics": 366,
+    "urlsChecked": 503,
+    "urlsReachable": 452,
+    "urlsPending": 51
   },
   "corrections": [
     {

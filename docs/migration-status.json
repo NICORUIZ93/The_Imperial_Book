@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-01",
+  "updatedAt": "2026-11-12",
   "format": {
     "requiredSections": [
       "Aprende",
@@ -58,8 +58,7 @@
         10,
         11,
         12,
-        13,
-        14
+        13
       ]
     },
     "angular": {
@@ -80,58 +79,15 @@
         22
       ],
       "migratedModules": [
-        0,
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        7,
-        8,
-        9,
-        10,
-        11,
-        12,
-        13,
-        14,
-        15,
-        16,
-        17,
-        18,
-        19,
-        20,
         21,
         22
       ]
     },
     "spring-boot": {
       "originalModules": 23,
-      "originalTopics": 91,
+      "originalTopics": 113,
       "migratedModules": [
-        0,
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        7,
-        8,
-        9,
-        10,
-        11,
-        12,
-        13,
-        14,
-        15,
-        16,
-        17,
-        18,
-        19,
-        20,
-        21,
-        22
+        26
       ]
     },
     "kotlin-multiplatform": {
@@ -151,7 +107,7 @@
     },
     "flutter": {
       "originalModules": 16,
-      "originalTopics": 63,
+      "originalTopics": 106,
       "migratedModules": []
     }
   }

@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: spring-webflux-decision-rutaflow
+  r2dbc:
+    url: r2dbc:h2:mem:///deliveries;DB_CLOSE_DELAY=-1
+    username: sa
+    password: ""
+  sql:
+    init:
+      mode: always
+server:
+  port: 8080

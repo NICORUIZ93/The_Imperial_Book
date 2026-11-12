@@ -61,6 +61,12 @@ examples/rutaflow-material/clean-architecture/build/
 
 # Salida de compilación de ejemplos Java (Gradle/Javac)
 examples/**/bin/
+examples/**/target/
+
+# Gradle de los laboratorios: conservar wrappers y fuentes
+examples/**/.gradle/
+examples/**/build/
+!examples/**/gradle/wrapper/gradle-wrapper.jar
 
 # Artefactos pesados generados / huérfanos — se conservan en disco local pero no se versionan.
 # PDF de imágenes RutaFlow: no lo consume validate.sh, la app ni el contenido (huérfano).

@@ -17,6 +17,44 @@ const ANATOMY_BLOCK = /<pre><code class="language-anatomy">([\s\S]*?)<\/code><\/
 const slugPattern = /^[a-z0-9-]+$/;
 export const ANATOMY_SLUG_CLASS_PREFIX = 'anatomy-figure--';
 
+// Fórmulas TeX: \( ... \) en línea y \[ ... \] en bloque (track Control 1).
+// Se capturan antes de que marked procese escapes, '_' o '*', y se emiten como
+// texto escapado dentro de un contenedor con clase; lesson-viewer.ts las
+// renderiza con KaTeX después del binding, igual que mermaid.run().
+const escapeTex = (tex: string): string =>
+  tex.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+marked.use({
+  extensions: [
+    {
+      name: 'mathBlock',
+      level: 'block',
+      start: (src: string) => src.match(/^ {0,3}\\\[/m)?.index,
+      tokenizer(src: string) {
+        const match = /^ {0,3}\\\[([\s\S]+?)\\\][ \t]*(?:\n+|$)/.exec(src);
+        return match ? { type: 'mathBlock', raw: match[0], text: match[1].trim() } : undefined;
+      },
+      renderer: (token) => `<div class="math math-display">${escapeTex(token['text'] as string)}</div>\n`,
+    },
+    {
+      name: 'mathInline',
+      level: 'inline',
+      start: (src: string) => {
+        const index = src.search(/\\[([]/);
+        return index >= 0 ? index : undefined;
+      },
+      tokenizer(src: string) {
+        const match = /^\\\(([\s\S]+?)\\\)/.exec(src) ?? /^\\\[([\s\S]+?)\\\]/.exec(src);
+        if (!match) return undefined;
+        return { type: 'mathInline', raw: match[0], text: match[1], display: match[0].startsWith('\\[') };
+      },
+      renderer: (token) => token['display']
+        ? `<span class="math math-display">${escapeTex(token['text'] as string)}</span>`
+        : `<span class="math math-inline">${escapeTex(token['text'] as string)}</span>`,
+    },
+  ],
+});
+
 @Injectable({ providedIn: 'root' })
 export class ContentService {
   /** Una lección registrada debe existir. Propagar el error evita presentar como

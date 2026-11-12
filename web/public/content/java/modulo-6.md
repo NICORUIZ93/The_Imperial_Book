@@ -3,659 +3,368 @@
 
 ## Aprende construyendo
 
-### Tema 1: NIO.2 — Path y Files · Intermedio · 45 min
+### Tema 1: NIO.2 — Path y Files
 
-**Paso 1 · Objetivo y preparación**
+**¿Por qué es importante?** Las rutas recibidas desde afuera pueden apuntar a archivos que la aplicación no debería leer.
 
-**Prerrequisito:** Módulos 0–4 de Java (streams); JDK 27 o posterior y un editor. Comprueba `java --version`; este ejemplo se compila con `javac`, sin Maven.
+#### Subtema 1.1: Lee y escribe un archivo pequeño · 10 min
 
-**Al finalizar podrás:** leer, escribir, copiar y recorrer archivos con `Path`/`Files`; usar `Files.walk` como stream; distinguir `resolve` de `normalize`; y validar que la ruta resuelta (léxica y real) permanezca dentro de un directorio permitido.
+**1. Contexto**
 
-#### Aprende
+El motor debe guardar un comprobante de prueba y luego leerlo.
 
-**Paso 2 · Contexto y caso profesional**
+**2. Hazlo tú**
 
-**Caso profesional:** una plataforma de entregas procesa comprobantes subidos por el usuario; si el nombre de archivo contiene `../`, resolverlo sin validar podría escapar del directorio de comprobantes.
-
-**Paso 3 · Teoría, modelo mental y analogía**
-
-**¿Por qué es importante?** NIO.2 ofrece una API más expresiva y con mejor manejo de errores que la antigua clase `File`, simplificando operaciones comunes de archivos que antes requerían código considerablemente más verboso.
-
-`Path` representa una ubicación; `Files` ofrece operaciones explícitas de alto nivel. Validar que la ruta resuelta (`normalize()`) siga dentro del directorio permitido evita un path traversal.
-
-**Mapa de subtemas críticos**
-
-| Subtema | Papel | Evidencia del tema |
-|---|---|---|
-| `Path` frente a la clase `File` | Prerrequisito | `Path` inmutable y expresivo (`getFileName`/`getParent`) |
-| operaciones de `Files` | Núcleo | `readString`/`writeString`/`copy`/`exists`/`size` |
-| `createDirectories` y jerarquía | Variante | crear la ruta de carpetas de una vez |
-| `Files.walk` como stream | Variante | recorrer el árbol de directorios perezosamente |
-| `resolve` frente a `normalize` | Diagnóstico | el orden importa: resolver y luego normalizar |
-| path traversal (`..`) | Diagnóstico | `startsWith` detecta el escape léxico |
-| enlaces simbólicos y `toRealPath` | Límite | la ruta real puede salir del directorio |
-
-Cada fila tiene su explicación individual a continuación.
-
-**`Path` frente a la clase `File` (prerrequisito).** `Path` (NIO.2, desde Java 7) reemplaza a la vieja `java.io.File`. Es **inmutable** y expresivo: `path.getFileName()`, `getParent()`, `resolve()`, `relativize()`. `File` sigue existiendo pero da menos detalle de error y una API más pobre para copiar, mover o recorrer. En código nuevo usa `Path`/`Files`.
-
-**Operaciones de `Files` (núcleo).** `Files` es la clase utilitaria de alto nivel: `readString`/`writeString` (texto completo de una vez), `copy`/`move`/`delete`, `exists`, `size`, `isRegularFile`/`isDirectory`. Sustituyen el código verboso de `Reader`/`Writer`/`Stream` para los casos comunes.
-
-**`createDirectories` y jerarquía (variante).** `Files.createDirectories(ruta)` crea toda la cadena de carpetas que falte (como `mkdir -p`), sin fallar si ya existen. Úsalo antes de escribir en una subcarpeta que puede no existir aún.
-
-**`Files.walk` como stream (variante).** `Files.walk(dir)` devuelve un `Stream<Path>` perezoso que recorre el árbol recursivamente; combínalo con `filter(Files::isRegularFile)` y las operaciones del Módulo 4. **Ciérralo** con try-with-resources (mantiene descriptores abiertos). Es la alternativa moderna a la recursión manual de directorios.
-
-**`resolve` frente a `normalize` (diagnóstico).** `base.resolve(nombre)` une una ruta base con un nombre relativo; `normalize()` colapsa los `.`/`..` léxicos. El **orden importa**: primero resuelves contra la base y **después** normalizas, para detectar si el resultado se salió. Normalizar antes de resolver no protege.
-
-**Path traversal (`..`) (diagnóstico).** Un nombre externo con `../../../fuera.txt` puede escapar del directorio permitido. Tras `resolve + normalize`, comprueba con `resuelta.startsWith(base)`: si no empieza por la base, rechaza **antes** de leer. Es la defensa léxica contra path traversal.
-
-**Enlaces simbólicos y `toRealPath` (límite).** La comprobación léxica no basta: un enlace simbólico dentro del directorio puede apuntar fuera. `toRealPath()` resuelve el enlace a su destino real; vuelve a comprobar `startsWith(base)` sobre la ruta real. Aun así, ninguna comprobación elimina las carreras si otro proceso modifica el directorio a la vez.
-
-`Path` y `Files` forman parte de NIO.2 desde Java 7; `Path.of`, `Files.readString` y `Files.writeString` están disponibles desde Java 11. La antigua clase `File` sigue existiendo, pero sus operaciones ofrecen menos detalles de error y una API menos expresiva para copiar, mover o recorrer directorios.
-
-`Files` ofrece métodos de alto nivel considerablemente más convenientes que sus equivalentes con `File`: `Files.exists(ruta)` (verificar existencia), `Files.copy(origen, destino)` (copiar), `Files.walk(directorio)` (recorrer recursivamente un árbol de directorios como un stream, Módulo 4, en vez de una API recursiva manual más verbosa), y `Files.writeString(ruta, "nuevo contenido")` para escribir directamente sin necesidad de gestionar manualmente un `Writer` o `OutputStream` para el caso simple de escribir contenido de texto completo de una sola vez.
-
-**Analogía:** la antigua clase `File` es como un mapa antiguo y básico que solo indica si un camino existe o no, sin más detalle; NIO.2 con `Path`/`Files` es como un sistema de navegación moderno que no solo confirma la existencia de un camino, sino que ofrece rutas alternativas expresivas y detalles específicos sobre cualquier problema encontrado en el trayecto.
-
-**Conceptos clave:** API moderna frente a la clase File legada, operaciones expresivas.
-
-**Código del ejemplo:**
+Crea `src/Archivos.java`:
 
 ```java
-Path ruta = Path.of("datos.txt");
-String contenido = Files.readString(ruta);
-Files.writeString(ruta, "nuevo contenido");
-```
-
-La validación de la demostración bloquea el escape léxico: primero resuelve el nombre contra el directorio base, lo normaliza y comprueba el prefijo por componentes de ruta antes de leer.
-
-```java
-Path resuelta = directorioBase.resolve(nombreArchivo).normalize();
-if (!resuelta.startsWith(directorioBase)) {
-    throw new IllegalArgumentException("Ruta fuera del directorio permitido: " + nombreArchivo);
-}
-```
-
-Con `nombreArchivo = "../../../fuera.txt"`, `resolve` seguido de `normalize()` produce una ruta que sale de `directorioBase`; `startsWith` lo detecta antes de leer. La normalización por sí sola no detiene un enlace simbólico que apunta fuera del directorio, por eso el ejemplo también compara la ruta real resuelta. Ninguna comprobación por nombre elimina todas las carreras si otro proceso puede modificar el directorio al mismo tiempo.
-
-Este validador de rutas es exactamente lo que necesitará cualquier endpoint del proyecto integrador de este track que reciba un nombre de archivo desde afuera (subir un comprobante, descargar un reporte).
-
-**Cuándo no usarlo:** validar manualmente contra path traversal como aquí es necesario cuando el nombre de archivo viene de una fuente externa no confiable; para una ruta construida enteramente por el propio código, sin ningún componente proporcionado por el usuario, esta validación es innecesaria.
-
-**Implicación práctica:** Aceptar un nombre de archivo externo sin validar la contención léxica y la ruta real permite leer archivos fuera del área prevista; un endpoint de producción también debe proteger el directorio contra modificaciones concurrentes no confiables.
-
-#### Practica
-
-**Paso 4 · Demostración guiada desde cero**
-
-Parte de una carpeta vacía y prepara la estructura.
-
-```bash
-mkdir ejemplo-nio-path-traversal
-cd ejemplo-nio-path-traversal
-mkdir -p src/main/java/academia/archivos
-```
-
-**Crea** `LectorComprobantes.java` con un método que reciba un nombre de archivo, lo resuelva contra un directorio base permitido con `Path.resolve` + `normalize()`, y rechace la lectura si el resultado queda fuera de ese directorio:
-
-```java
-package academia.archivos;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public final class LectorComprobantes {
-    private final Path directorioBase;
-
-    public LectorComprobantes(Path directorioBase) throws IOException {
-        this.directorioBase = directorioBase.toRealPath();
-    }
-
-    public String leer(String nombreArchivo) throws IOException {
-        if (nombreArchivo == null || nombreArchivo.isBlank()) {
-            throw new IllegalArgumentException("El nombre del archivo es obligatorio");
-        }
-        Path resuelta = directorioBase.resolve(nombreArchivo).normalize();
-        if (!resuelta.startsWith(directorioBase)) {
-            throw new IllegalArgumentException("Ruta fuera del directorio permitido");
-        }
-        Path rutaReal = resuelta.toRealPath();
-        if (!rutaReal.startsWith(directorioBase)) {
-            throw new IllegalArgumentException("La ruta real sale del directorio permitido");
-        }
-        return Files.readString(rutaReal);
-    }
-
+public class Archivos {
     public static void main(String[] args) throws IOException {
-        Path base = Path.of("comprobantes").toAbsolutePath().normalize();
-        Files.createDirectories(base);
-        Path demo = base.resolve("comprobante-001.txt");
-        if (!Files.exists(demo)) {
-            Files.writeString(demo, "monto=125000;estado=PAGADO");
-        }
-        System.out.println(new LectorComprobantes(base).leer(args[0]));
+        Path comprobante = Path.of("datos", "RT-1.txt");
+        Files.createDirectories(comprobante.getParent());
+        Files.writeString(comprobante, "RT-1;ENTREGADO");
+        System.out.println(Files.readString(comprobante));
     }
 }
 ```
 
-**Ejecuta el ejemplo:**
+Desde la carpeta del proyecto ejecuta `javac -d out src/Archivos.java` y `java -cp out Archivos`.
 
-```bash
-javac -d out src/main/java/academia/archivos/LectorComprobantes.java
-java -cp out academia.archivos.LectorComprobantes comprobante-001.txt
-```
+**Resultado esperado:** crea `datos/RT-1.txt` e imprime `RT-1;ENTREGADO`.
 
-**Resultado esperado:** crea `comprobantes/comprobante-001.txt` si no existe e imprime `monto=125000;estado=PAGADO`.
+**Fallo deliberado:** reemplaza `createDirectories` por nada y borra la carpeta `datos`. **Diagnóstico:** no existe el directorio padre; créalo antes de escribir el archivo.
 
-**Paso 5 · Práctica guiada**
+**3. Entiende**
 
-Repite con `../../../fuera.txt` y confirma que falla antes de `Files.readString`. En un entorno que permita crear enlaces simbólicos, crea dentro de `comprobantes` un enlace a un archivo fuera del directorio y verifica que la comparación con `toRealPath()` también lo rechaza.
+`Path` describe una ruta; `Files` realiza la operación sobre el sistema de archivos.
 
-**Pista:** `normalize()` detecta `..` en la ruta léxica; `toRealPath()` sigue el enlace y permite comprobar su destino. La segunda comprobación requiere que el archivo exista.
+**4. Cierra**
 
-**Fallo deliberado:** invoca el mismo programa con `../../../fuera.txt` como nombre de archivo (`java -cp out academia.archivos.LectorComprobantes ../../../fuera.txt`).
+Guarda el archivo y señala qué llamada creó la carpeta.
 
-**Pista:** `resolve` + `normalize()` produce una ruta que ya no empieza con el directorio base, `startsWith` lo detecta y el programa termina antes de leer nada.
+#### Subtema 1.2: Rechaza una ruta que sale del directorio · 10 min
 
-Ahora cierra los subtemas de operaciones de `Files` y `walk`. Crea `src/main/java/academia/archivos/DemoFiles.java`:
+**1. Contexto**
+
+Un nombre como `../../secreto.txt` no debe permitir salir de la carpeta de comprobantes.
+
+**2. Hazlo tú**
+
+Crea `src/ComprobanteSeguro.java`:
 
 ```java
-package academia.archivos;
-import java.nio.file.*;
-import java.util.*;
-import java.util.stream.*;
+import java.nio.file.Path;
 
-public class DemoFiles {
-    public static void main(String[] args) throws Exception {
-        Path base = Files.createTempDirectory("nio-demo");
-        Path a = base.resolve("a.txt");
-        Files.writeString(a, "monto=100");                     // escribir texto completo
-        System.out.println("readString=" + Files.readString(a));
-        System.out.println("exists=" + Files.exists(a) + " size=" + Files.size(a));
-        Path b = base.resolve("sub/b.txt");
-        Files.createDirectories(b.getParent());                // crea la jerarquía
-        Files.copy(a, b);                                      // copiar
-        try (Stream<Path> w = Files.walk(base)) {              // recorrer como stream
-            List<String> archivos = w.filter(Files::isRegularFile)
-                .map(p -> base.relativize(p).toString()).sorted().toList();
-            System.out.println("walk=" + archivos);
+public class ComprobanteSeguro {
+    static Path resolver(Path base, String nombre) {
+        Path raiz = base.toAbsolutePath().normalize();
+        Path destino = raiz.resolve(nombre).normalize();
+        if (!destino.startsWith(raiz)) {
+            throw new IllegalArgumentException("Ruta fuera de comprobantes");
         }
-        Path fuera = base.resolve("../fuera.txt").normalize();
-        System.out.println("sale de base? " + !fuera.startsWith(base));
-        try (Stream<Path> todo = Files.walk(base)) {           // limpieza (hojas primero)
-            todo.sorted(Comparator.reverseOrder()).forEach(p -> { try { Files.delete(p); } catch (Exception e) {} });
-        }
+        return destino;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(resolver(Path.of("comprobantes"), args[0]));
     }
 }
 ```
 
-```bash
-javac -d out src/main/java/academia/archivos/DemoFiles.java
-java -cp out academia.archivos.DemoFiles
-```
+Compila y ejecuta con `javac -d out src/ComprobanteSeguro.java` y `java -cp out ComprobanteSeguro RT-1.txt`. Repite con `../../secreto.txt`.
 
-**Salida esperada (verificada con Temurin 27.0.1; el tamaño es fijo, el nombre temporal varía):**
+**Resultado esperado:** el nombre simple queda dentro de `comprobantes`; el otro se rechaza antes de leer.
 
-```text
-readString=monto=100
-exists=true size=9
-copia... (walk muestra ambos archivos)
-walk=[a.txt, sub/b.txt]
-sale de base? true
-```
+**Fallo deliberado:** quita `normalize()`. **Diagnóstico:** segmentos `..` pueden seguir en la ruta y evadir la comparación; normaliza después de resolver.
 
-`writeString`/`readString` manejan el texto completo; `size` devuelve 9 bytes; `createDirectories` creó `sub/`; `copy` duplicó el archivo; `walk` recorrió el árbol y listó los dos archivos; y `resolve + normalize` detectó el escape de la base.
+**3. Entiende**
 
-**Si falla.** Si `../../../etc/passwd` imprime contenido, la validación se aplicó después de leer o la base no se normalizó. Si `walk` deja descriptores abiertos, no lo cerraste con try-with-resources. Si el programa falla con `ArrayIndexOutOfBoundsException`, falta pasar el nombre de archivo como argumento al `LectorComprobantes`.
+Valida la ruta resuelta y normalizada, no solo el texto que escribió la persona. En aplicaciones sensibles también considera enlaces simbólicos y permisos del sistema.
 
-#### Aplica
+**4. Cierra**
 
-**Paso 6 · Práctica independiente**
+Conserva la salida válida y el error de ruta externa.
 
-Agrega `Files.copy` para respaldar el comprobante leído a un directorio de archivo, y pruebas para el rechazo de `..` y de un enlace simbólico externo cuando el sistema de archivos lo permita.
+#### Subtema 1.3: Recorre una carpeta y cierra el stream · 10 min
 
-**Paso 7 · Cierre**
+**1. Contexto**
 
-**Checklist de salida.**
+Un reporte puede necesitar listar comprobantes sin abrirlos todos.
 
-- [ ] `LectorComprobantes.java` compila; un nombre válido imprime `monto=125000;estado=PAGADO`.
-- [ ] `../../../etc/passwd` se rechaza con `IllegalArgumentException` antes de leer.
-- [ ] `Files.writeString`/`readString`/`copy`/`size` producen la salida del `DemoFiles`.
-- [ ] `Files.walk` (cerrado con try-with-resources) lista los archivos del árbol.
-- [ ] `resolve` + `normalize` detecta el escape de la base; `toRealPath` cubre el enlace simbólico.
-- [ ] Explicas por qué se normaliza después de resolver y no antes.
+**2. Hazlo tú**
 
-**Si falla.** Si `Files.copy` falla porque el destino existe, decide explícitamente si sobrescribir (`REPLACE_EXISTING`) o rechazar. Si la prueba con `..` no lanza, revisa que esté llamando `leer` y no construyendo la ruta por fuera del validador.
-
-Guarda el validador de rutas, la prueba de traversal rechazada y la lectura válida.
-
-**Antes del siguiente tema:** explica la diferencia entre normalizar una ruta y resolverla en el sistema de archivos, incluyendo el caso de un enlace simbólico.
-
-**Errores comunes:** concatenar rutas con `+` en vez de `resolve()`, confiar en la extensión del archivo sin validar la ruta completa resuelta, y normalizar antes de resolver en vez de después (el orden importa: primero `resolve`, después `normalize()`).
-
-**Fuentes oficiales revisadas el 2026-11-01:** [dev.java: File System](https://dev.java/learn/java-io/file-system/), [`Path` (API Java SE 27)](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/nio/file/Path.html) y [`Files` (API Java SE 27)](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/nio/file/Files.html).
-
----
-
-### Tema 2: Serialización con Jackson · Intermedio · 50 min
-
-**Paso 1 · Objetivo y preparación**
-
-**Prerrequisito:** Tema 1 de este módulo y records (Módulo 7); JDK 27 o posterior, Maven y un editor. Comprueba `java --version` y `mvn --version`.
-
-**Al finalizar podrás:** serializar y deserializar un `record` a/desde JSON con Jackson confirmando que el ciclo preserva los datos; manejar campos ausentes; activar deserialización estricta; y decidir entre record tipado y `JsonNode`.
-
-#### Aprende
-
-**Paso 2 · Contexto y caso profesional**
-
-Una API de entregas necesita convertir un objeto `Entrega` a JSON para responder a un cliente, y reconstruir un objeto `Entrega` a partir del JSON que envía otro servicio, sin escribir manualmente el parsing campo por campo.
-
-**Paso 3 · Teoría, modelo mental y analogía**
-
-**¿Por qué es importante?** Jackson automatiza la conversión entre objetos Java y JSON basándose en la estructura de la clase, eliminando la necesidad de escribir manualmente lógica de parsing y serialización campo por campo.
-
-`ObjectMapper` serializa un objeto Java a JSON y deserializa en la dirección inversa, inspeccionando la estructura de la clase por reflexión. Los `record` (Módulo 7) son un modelo de datos particularmente natural para esto, sin anotaciones adicionales en el caso simple.
-
-**Mapa de subtemas críticos**
-
-| Subtema | Papel | Evidencia del tema |
-|---|---|---|
-| `ObjectMapper` y el ciclo serializar/deserializar | Núcleo | `writeValueAsString`/`readValue` conservan los datos |
-| records como modelo serializable | Variante | sin anotaciones si los nombres coinciden |
-| campos ausentes y valores por defecto | Diagnóstico | un JSON incompleto deja el valor por defecto del tipo |
-| deserialización estricta | Diagnóstico | `FAIL_ON_*` rechaza JSON que no cuadra |
-| `JsonNode`/`Map` para JSON irregular | Decisión | árbol genérico cuando la forma varía |
-| versión fija de la dependencia | Límite | fijar Jackson evita cambios silenciosos |
-
-Cada fila tiene su explicación individual a continuación.
-
-**`ObjectMapper` y el ciclo (núcleo).** `ObjectMapper.writeValueAsString(obj)` serializa a JSON y `readValue(json, Clase.class)` reconstruye el objeto. El ciclo completo (objeto → JSON → objeto) debe conservar los datos: si el reconstruido es `equals()` al original, el mapeo es correcto. Reutiliza un `ObjectMapper` (es thread-safe una vez configurado).
-
-**Records como modelo serializable (variante).** Un `record` es un modelo natural: Jackson reconoce sus componentes como propiedades sin anotaciones, siempre que los nombres del JSON coincidan con los del record. Aporta inmutabilidad y `equals`/`hashCode` gratis (Módulo 7). Cuando los nombres difieren, se usan anotaciones (`@JsonProperty`).
-
-**Campos ausentes y valores por defecto (diagnóstico).** Si el JSON **omite** un campo, Jackson deja el valor por defecto del tipo (`0` para `double`, `null` para referencias). Esto puede pasar desapercibido: un peso que llega como `0.0` porque faltaba en el JSON parece un dato válido. Decide si eso es aceptable o debe rechazarse.
-
-**Deserialización estricta (diagnóstico).** Para no aceptar JSON malformado en silencio, activa features como `FAIL_ON_UNKNOWN_PROPERTIES` (rechaza campos extra) o `FAIL_ON_MISSING_CREATOR_PROPERTIES` (exige los del constructor). Convierte un "funcionó pero con datos incompletos" en un error explícito en la frontera.
-
-**`JsonNode`/`Map` para JSON irregular (decisión).** Cuando la forma del JSON varía o no la controlas, mapear a un `record` tipado se rompe en cada cambio. Alternativa: parsear a `JsonNode` o `Map<String,Object>` y extraer los campos que necesitas. Más tolerante, menos seguro de tipos: elige según cuánto controles el contrato.
-
-**Versión fija de la dependencia (límite).** Jackson evoluciona; fija una **versión exacta** en el `pom.xml`/`build.gradle` (aquí 2.21.x) en vez de un rango abierto, para que una actualización no cambie el comportamiento de serialización sin que lo decidas. La deserialización de JSON no confiable, además, tiene implicaciones de seguridad (ver M14 T3).
-
-Jackson es la librería estándar de facto para convertir objetos Java a JSON y viceversa: `ObjectMapper mapper = new ObjectMapper(); String json = mapper.writeValueAsString(new Persona("Ana", 28));` serializa un objeto Java (aquí, un `record Persona(String nombre, int edad) {}`, Módulo 7) a su representación JSON equivalente, mientras `mapper.readValue(json, Persona.class)` realiza la operación inversa, reconstruyendo un objeto Java a partir de una cadena JSON, inspeccionando por reflexión la estructura de la clase de destino para determinar cómo mapear cada campo del JSON a su propiedad correspondiente.
-
-Usar records (Módulo 7) como modelos de datos serializables con Jackson es una combinación particularmente natural: los records ya proporcionan constructores, getters y `equals`/`hashCode` generados automáticamente sin boilerplate manual, y Jackson los soporta de forma nativa desde versiones recientes, reconociendo automáticamente los componentes del record como las propiedades a serializar/deserializar, sin necesidad de anotaciones adicionales en el caso simple donde los nombres de los campos JSON coinciden directamente con los nombres de los componentes del record.
-
-**Analogía:** Jackson es como un traductor bidireccional especializado entre dos idiomas (objetos Java y JSON), capaz de traducir automáticamente en ambas direcciones basándose en la estructura conocida de cada objeto, sin que el desarrollador tenga que escribir manualmente las reglas de traducción para cada campo individual.
-
-**Conceptos clave:** `ObjectMapper`, serializar/deserializar, records como modelos de datos.
-
-**Código del ejemplo:**
+En `src/Listar.java`, recorre `datos` con `Files.list` dentro de try-with-resources e imprime cada nombre:
 
 ```java
-record Persona(String nombre, int edad) {}
-
-ObjectMapper mapper = new ObjectMapper();
-String json = mapper.writeValueAsString(new Persona("Ana", 28));
-Persona persona = mapper.readValue(json, Persona.class);
+try (var archivos = Files.list(Path.of("datos"))) {
+    archivos.map(Path::getFileName).forEach(System.out::println);
+}
 ```
 
-Cada respuesta de API del proyecto integrador de este track usará esta misma combinación (`record` + Jackson) para convertir entidades de dominio a JSON y viceversa.
+Integra el bloque en una clase con `main`, crea dos archivos usando el Tema 1 y ejecuta `javac -d out src/Listar.java` y `java -cp out Listar`.
 
-**Cuándo no usarlo:** para un JSON con forma muy irregular o que cambia con frecuencia sin control, mapearlo directamente a un `record` tipado puede romperse en cada cambio; en ese caso, parsear a una estructura genérica (`Map`/`JsonNode`) y extraer campos según se necesiten es más tolerante a variaciones.
+**Resultado esperado:** aparecen los nombres de ambos comprobantes; el stream del directorio queda cerrado.
 
-**Implicación práctica:** Serializar y deserializar manualmente campo por campo es repetitivo y propenso a errores de sincronización entre el modelo Java y el JSON; Jackson automatiza esa conversión inspeccionando la estructura real del `record`, y falla con un mensaje específico cuando algo no coincide.
+**Fallo deliberado:** usa `Files.walk` para recorrer una carpeta enorme sin cerrar su stream. **Diagnóstico:** los streams de archivos administran recursos del sistema; envuélvelos en try-with-resources.
 
-#### Practica
+**3. Entiende**
 
-**Paso 4 · Demostración guiada desde cero**
+`Files.list` y `Files.walk` devuelven streams que deben cerrarse. Para un directorio directo usa `list`; `walk` también visita subdirectorios.
 
-Parte de una carpeta vacía y prepara un proyecto Maven con Jackson.
+**4. Cierra**
 
-```bash
-mkdir ejemplo-jackson-record
-cd ejemplo-jackson-record
-mkdir -p src/main/java/academia/json
-```
+Explica por qué este stream se cierra como un archivo. Fuente oficial: [Path y Files](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Files.html).
 
-**Crea** `pom.xml` con una versión fija de Jackson y del plugin que compila los records:
+**Proyecto integrador:** valida la carpeta de comprobantes y lista los archivos que puede procesar. **Límite:** la comprobación de ruta no sustituye los permisos del sistema operativo.
+
+### Tema 2: Serialización con Jackson
+
+**¿Por qué es importante?** Los servicios intercambian JSON; convertirlo con tipos claros hace más fácil detectar datos inválidos.
+
+#### Subtema 2.1: Convierte un record a JSON y de vuelta · 10 min
+
+**1. Contexto**
+
+La aplicación debe enviar los datos de una entrega como JSON y reconstruir el tipo al recibirlos.
+
+**2. Hazlo tú**
+
+En la raíz de una carpeta vacía crea este `pom.xml` para que el ejemplo compile sin pasos implícitos. Requiere JDK 25 y Maven:
 
 ```xml
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>academia</groupId>
-  <artifactId>ejemplo-jackson</artifactId>
-  <version>1.0</version>
-  <properties>
-    <maven.compiler.release>27</maven.compiler.release>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
-  <dependencies>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <version>2.21.8</version>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.16.0</version>
-      </plugin>
-    </plugins>
-  </build>
+  <groupId>academia</groupId><artifactId>io-json</artifactId><version>1.0</version>
+  <properties><maven.compiler.release>25</maven.compiler.release><project.build.sourceEncoding>UTF-8</project.build.sourceEncoding></properties>
+  <dependencies><dependency><groupId>com.fasterxml.jackson.core</groupId><artifactId>jackson-databind</artifactId><version>2.22.4</version></dependency></dependencies>
+  <build><plugins>
+    <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId><version>3.16.0</version></plugin>
+    <plugin><groupId>org.codehaus.mojo</groupId><artifactId>exec-maven-plugin</artifactId><version>3.6.4</version></plugin>
+  </plugins></build>
 </project>
 ```
 
-**Crea** `SerializacionEntrega.java` con `record Entrega(String numero, String estado, double pesoKg) {}` y un `main` que serialice una instancia a JSON con `ObjectMapper`, la imprima, y luego la deserialice de vuelta confirmando que el objeto reconstruido es `equals()` al original:
+Crea `src/main/java/EntregaJson.java`:
 
 ```java
-package academia.json;
-
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 
-record Entrega(String numero, String estado, double pesoKg) {}
+public class EntregaJson {
+    record Envio(String guia, String estado) {}
 
-public final class SerializacionEntrega {
     public static void main(String[] args) throws Exception {
-        ObjectMapper mapper = new ObjectMapper();
-        Entrega original = new Entrega("E-001", "EN_RUTA", 12.5);
-
-        String json = mapper.writeValueAsString(original);
+        var mapper = new ObjectMapper();
+        String json = mapper.writeValueAsString(new Envio("RT-1", "EN_RUTA"));
         System.out.println(json);
-
-        Entrega reconstruida = mapper.readValue(json, Entrega.class);
-        System.out.println("Iguales: " + original.equals(reconstruida));
-
-        String incompleto = "{\"numero\":\"E-001\",\"estado\":\"EN_RUTA\"}";
-        Entrega conPredeterminado = mapper.readValue(incompleto, Entrega.class);
-        System.out.println("Peso predeterminado: " + conPredeterminado.pesoKg());
-
-        ObjectMapper estricto = mapper.copy()
-            .enable(DeserializationFeature.FAIL_ON_MISSING_CREATOR_PROPERTIES);
-        try {
-            estricto.readValue(incompleto, Entrega.class);
-            throw new IllegalStateException("Se esperaba un error por pesoKg ausente");
-        } catch (MismatchedInputException e) {
-            System.out.println("Falta un dato obligatorio: pesoKg");
-        }
+        Envio recibido = mapper.readValue(json, Envio.class);
+        System.out.println(recibido.guia() + " " + recibido.estado());
     }
 }
 ```
 
-**Ejecuta el ejemplo** (Maven resuelve Jackson y construye el classpath):
+Ejecuta `mvn -q compile exec:java -Dexec.mainClass=EntregaJson`.
 
-```bash
-mvn -q compile dependency:build-classpath -Dmdep.outputFile=cp.txt
-java -cp "target/classes:$(cat cp.txt)" academia.json.SerializacionEntrega
-```
+**Resultado esperado:** aparece el JSON y luego `RT-1 EN_RUTA`.
 
-**Resultado esperado:** imprime `{"numero":"E-001","estado":"EN_RUTA","pesoKg":12.5}`, `Iguales: true`, `Peso predeterminado: 0.0` y `Falta un dato obligatorio: pesoKg`.
+**Fallo deliberado:** cambia `guia` por `codigo` en el JSON antes de deserializar. **Diagnóstico:** el tipo espera un campo llamado `guia`; verifica el contrato o documenta un alias.
 
-**Paso 5 · Práctica guiada**
+**3. Entiende**
 
-Deserializa `{"numero":"E-001","estado":"EN_RUTA"}` con un mapper predeterminado y otro que habilite `FAIL_ON_MISSING_CREATOR_PROPERTIES`. Compara el `0.0` de la primera conversión con la excepción explícita de la segunda.
+`ObjectMapper` convierte objetos a JSON y JSON a objetos. El record limita los campos que acepta tu código.
 
-**Fallo deliberado:** quita el campo `pesoKg` del JSON y deserializa con un mapper estricto. Con el `ObjectMapper` predeterminado no falla: completa `pesoKg` con `0.0`. Para que el dato obligatorio se verifique, activa la comprobación:
+**4. Cierra**
 
-```java
-import com.fasterxml.jackson.databind.DeserializationFeature;
+Conserva el JSON producido y el objeto reconstruido.
 
-ObjectMapper estricto = new ObjectMapper()
-    .enable(DeserializationFeature.FAIL_ON_MISSING_CREATOR_PROPERTIES);
-```
+#### Subtema 2.2: Rechaza JSON mal formado · 10 min
 
-**Pista:** con la verificación estricta, Jackson lanza `MismatchedInputException: Missing creator property 'pesoKg'`. **Resultado esperado:** el error nombra exactamente el campo faltante, no un fallo genérico.
+**1. Contexto**
 
-**Si falla.** Si `mvn` no encuentra `jackson-databind`, revisa la versión fijada en `pom.xml` y la conexión al repositorio. Si el `record` no se reconstruye, confirma que los nombres del JSON coinciden con los componentes. Si el campo faltante no genera error, no activaste `FAIL_ON_MISSING_CREATOR_PROPERTIES`.
+Un cuerpo HTTP puede estar truncado o tener comillas sin cerrar.
 
-#### Aplica
+**2. Hazlo tú**
 
-**Paso 6 · Práctica independiente**
-
-Agrega un segundo `record` anidado (por ejemplo `Entrega` con un campo `Destinatario` propio) y confirma que Jackson serializa/deserializa la estructura anidada completa sin configuración adicional.
-
-**Paso 7 · Cierre**
-
-**Checklist de salida.**
-
-- [ ] `pom.xml` fija una versión concreta de `jackson-databind`.
-- [ ] `SerializacionEntrega.java` compila con `mvn -q compile`.
-- [ ] El JSON serializado contiene `numero`, `estado` y `pesoKg`.
-- [ ] La deserialización reconstruye un objeto `equals()` al original.
-- [ ] El JSON sin `pesoKg` se completa con `0.0` con el mapper predeterminado.
-- [ ] Con `FAIL_ON_MISSING_CREATOR_PROPERTIES` el error nombra `pesoKg`.
-
-**Si falla.** Si la estructura anidada no se reconstruye, revisa que el `record` interno también sea accesible para Jackson. Si la comparación `equals` falla, imprime ambos objetos y compara campo por campo antes de cambiar el modelo.
-
-Guarda el `record`, el JSON serializado y la confirmación de igualdad tras el ciclo completo.
-
-**Antes del siguiente tema:** explica qué error se evita al habilitar `FAIL_ON_MISSING_CREATOR_PROPERTIES` y por qué las versiones de dependencia y plugin deben estar fijadas.
-
-**Errores comunes:** olvidar un constructor sin argumentos o getters/setters esperando que Jackson los necesite para un `record` (no los necesita), asumir que un campo faltante en el JSON siempre falla cuando el mapper predeterminado completa `0.0` en un `double` (activa `FAIL_ON_MISSING_CREATOR_PROPERTIES` si el dato es obligatorio), y no fijar una versión concreta de Jackson en el proyecto.
-
-**Fuentes oficiales revisadas el 2026-11-01:** [Jackson Documentation](https://github.com/FasterXML/jackson-docs), [Apache Maven Compiler Plugin](https://maven.apache.org/plugins/maven-compiler-plugin/) y [Maven Central: jackson-databind 2.21.8](https://repo.maven.apache.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.21.8/).
-
----
-
-### Tema 3: Archivos grandes y recursos del classpath · Intermedio · 45 min
-
-**Paso 1 · Objetivo y preparación**
-
-**Prerrequisito:** Tema 1 de este módulo; JDK 27 o posterior y un editor. Comprueba `java --version`; el ejemplo se compila con `javac`, sin Maven.
-
-**Al finalizar podrás:** procesar un archivo grande línea por línea sin cargarlo completo en memoria; recorrerlo con `Files.lines`; reconocer el límite de la línea más larga; y cargar un recurso empaquetado del classpath con `getResourceAsStream`.
-
-#### Aprende
-
-**Paso 2 · Contexto y caso profesional**
-
-Un reporte diario de entregas puede tener cientos de miles de líneas; cargarlo completo con `readAllBytes` antes de procesarlo agotaría la memoria disponible en un servidor con recursos limitados.
-
-**Paso 3 · Teoría, modelo mental y analogía**
-
-**¿Por qué es importante?** Leer un archivo grande línea por línea con un buffer evita problemas de memoria que cargar el archivo completo (`readAllBytes`) no evita; los recursos del classpath garantizan disponibilidad empaquetada junto con el código, sin depender de la ubicación específica del sistema de archivos del entorno de destino.
-
-Un `BufferedReader` procesa línea por línea, manteniendo la línea actual y el buffer; la memoria depende también de la longitud de esa línea. `getResourceAsStream` abre un recurso empaquetado en el classpath, sin convertirlo en una ruta del sistema de archivos.
-
-**Mapa de subtemas críticos**
-
-| Subtema | Papel | Evidencia del tema |
-|---|---|---|
-| cargar todo frente a streaming | Núcleo | `readAllLines` crece con el archivo; `readLine` no |
-| `BufferedReader`/`readLine` | Núcleo | procesa línea a línea sin retener todo |
-| memoria por línea | Límite | una línea enorme todavía consume memoria |
-| `Files.lines` como stream | Variante | recorrer líneas como `Stream<String>` perezoso |
-| recurso del classpath (`getResourceAsStream`) | Núcleo | recurso empaquetado, no ruta del sistema de archivos |
-| classpath frente a sistema de archivos | Decisión | empaquetado y portable vs ubicación concreta |
-
-Cada fila tiene su explicación individual a continuación.
-
-**Cargar todo frente a streaming (núcleo).** `Files.readString`/`readAllBytes`/`readAllLines` cargan el archivo **completo** en memoria: bien para archivos pequeños, inviable para uno que se acerca a la memoria disponible. El streaming línea a línea procesa sin retener todo: la memoria no crece con el tamaño del archivo.
-
-**`BufferedReader`/`readLine` (núcleo).** `Files.newBufferedReader(ruta)` + `while ((linea = reader.readLine()) != null)` lee una línea cada vez, dentro de un try-with-resources. Es el patrón para reportes grandes: procesas y descartas cada línea sin acumularlas.
-
-**Memoria por línea (límite).** El streaming no es mágico: la memoria depende de la **línea más larga** y del buffer, no del total. Un archivo con una sola línea gigantesca (un JSON enorme en una línea) todavía puede agotar memoria. Para esos casos necesitas parsing incremental (streaming parser), no `readLine`.
-
-**`Files.lines` como stream (variante).** `Files.lines(ruta)` devuelve un `Stream<String>` perezoso que combina con las operaciones del Módulo 4 (`filter`/`count`). **Ciérralo** con try-with-resources (mantiene el archivo abierto). Es la forma funcional del streaming línea a línea.
-
-**Recurso del classpath (núcleo).** `getClass().getResourceAsStream("/config.json")` abre un archivo empaquetado en el **classpath** (desde `src/main/resources`, dentro del JAR en producción), no una ruta del sistema de archivos. Devuelve un `InputStream`; si el recurso no existe, es `null` (compruébalo). No uses `Files` para leer algo que vive dentro del JAR.
-
-**Classpath frente a sistema de archivos (decisión).** Un recurso del classpath **viaja con el código** y está disponible en cualquier despliegue; un archivo del sistema de archivos depende de existir en una ruta concreta de la máquina. Usa classpath para configuración/plantillas empaquetadas con la app; usa `Files` para datos externos (subidas, reportes generados).
-
-Leer un archivo grande completo de una sola vez (con `Files.readAllBytes` o `Files.readString`, apropiados para archivos pequeños) carga necesariamente el contenido completo en memoria simultáneamente, un enfoque que se vuelve problemático o directamente inviable para archivos cuyo tamaño se acerca o supera la memoria disponible. La alternativa procesa el archivo línea por línea:
+En `src/main/java/EntregaJson.java` intenta deserializar el texto `{"guia":` y captura `JsonProcessingException` para imprimir `JSON inválido`.
 
 ```java
-try (BufferedReader reader = Files.newBufferedReader(rutaGrande)) {
-    String linea;
-    while ((linea = reader.readLine()) != null) {
-        procesar(linea);
-    }
+try {
+    mapper.readValue("{\"guia\":", Envio.class);
+} catch (com.fasterxml.jackson.core.JsonProcessingException invalido) {
+    System.out.println("JSON inválido");
 }
 ```
 
-Este patrón no conserva todas las líneas: su memoria de procesamiento depende de la línea más larga y del buffer, no del tamaño total del archivo. Una sola línea enorme todavía puede requerir mucha memoria.
+Vuelve a ejecutar con Maven.
 
-`getResourceAsStream("/config.json")` carga un archivo empaquetado dentro del propio JAR de la aplicación (típicamente ubicado en `src/main/resources` durante el desarrollo, y empaquetado dentro del JAR final en producción), a diferencia de `Files`, que opera sobre el sistema de archivos real del sistema operativo donde la aplicación se ejecuta: los recursos del classpath viajan empaquetados junto con el propio código compilado de la aplicación, garantizando que estén disponibles sin importar en qué máquina o entorno específico se despliegue esa aplicación, mientras que un archivo en el sistema de archivos real depende de que exista físicamente en esa ubicación específica del sistema donde la aplicación se ejecuta en ese momento.
+**Resultado esperado:** el programa informa el JSON inválido en vez de ocultar la excepción.
 
-**Analogía:** leer un archivo completo de una sola vez es como intentar cargar un libro entero en la memoria de una sola mirada; leerlo línea por línea con un buffer es como leerlo página por página, recordando solo la página actual sin necesidad de mantener el libro completo abierto simultáneamente en la mente. Un recurso del classpath es como un anexo que viaja empaquetado junto con el manual de instrucciones mismo, disponible en cualquier lugar donde ese manual se distribuya, a diferencia de un archivo suelto que depende de existir físicamente en un lugar específico del destino.
+**Fallo deliberado:** captura `Exception` y no imprimas ni propagues nada. **Diagnóstico:** el error queda invisible; maneja el error de formato en el límite HTTP y registra el contexto interno necesario.
 
-**Conceptos clave:** procesamiento línea por línea, evitar cargar todo en memoria, `getResourceAsStream`.
+**3. Entiende**
 
-Para una exportación o reporte grande del proyecto integrador, procesa línea por línea cuando el caso lo permita; conserva el contenido completo solo si su tamaño está acotado y cabe razonablemente en memoria.
+Un JSON sintácticamente mal formado no se puede convertir. No devuelvas el stack trace al cliente.
 
-**Cuándo no usarlo:** para un archivo pequeño (un archivo de configuración de unas pocas líneas), procesar línea por línea con `BufferedReader` es más código del necesario; `Files.readString`/`readAllLines` es más simple y no representa ningún riesgo de memoria en ese caso.
+**4. Cierra**
 
-**Implicación práctica:** `readAllLines()` retiene todas las líneas y crece con el archivo; `BufferedReader` conserva una línea a la vez, aunque una línea individual puede ser grande.
+Guarda la respuesta para el cuerpo inválido.
 
-#### Practica
+#### Subtema 2.3: Decide qué hacer con campos nuevos · 10 min
 
-**Paso 4 · Demostración guiada desde cero**
+**1. Contexto**
 
-Parte de una carpeta vacía y prepara la estructura.
+Una versión nueva del servicio puede agregar un campo que una versión vieja no conoce.
 
-```bash
-mkdir ejemplo-archivo-grande
-cd ejemplo-archivo-grande
-mkdir -p src/main/java/academia/streaming
-mkdir -p src/main/resources
-```
+**2. Hazlo tú**
 
-**Crea** `src/main/resources/config.json`:
-
-```json
-{"modo":"local","maximoLineas":500000}
-```
-
-**Crea** `ProcesadorReporte.java` que genere primero un archivo de 500 000 líneas, y luego lo procese con `BufferedReader`/`readLine()` contando cuántas líneas cumplen una condición, midiendo la memoria usada con `Runtime.getRuntime().totalMemory() - freeMemory()`:
+En `src/main/java/EntregaJson.java` prueba `{"guia":"RT-1","estado":"EN_RUTA","zona":"Norte"}` con el record actual. Luego configura `FAIL_ON_UNKNOWN_PROPERTIES` en `false` y repite:
 
 ```java
-package academia.streaming;
+mapper.configure(
+    com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
+    false);
+```
 
+Ejecuta `mvn -q compile exec:java -Dexec.mainClass=EntregaJson`.
+
+**Resultado esperado:** la primera deserialización rechaza el campo extra; la segunda lo ignora y lee guía y estado.
+
+**Fallo deliberado:** ignora todos los campos desconocidos sin revisar el contrato de la API. **Diagnóstico:** puedes perder una señal de incompatibilidad; decide entre esquema estricto y compatibilidad según el consumidor.
+
+**3. Entiende**
+
+La tolerancia a campos nuevos facilita despliegues graduales, pero también puede esconder errores de nombre. La decisión depende de quién mantiene el contrato.
+
+**4. Cierra**
+
+Anota si el lector de RutaFlow debe ser estricto o tolerante. Fuentes oficiales: [Jackson Databind](https://github.com/FasterXML/jackson-databind) y [release notes 2.22](https://github.com/FasterXML/jackson/wiki/Jackson-Release-2.22).
+
+**Límite:** la versión indicada es Jackson 2.x; Jackson 3 cambia paquetes y coordenadas. No mezcles imports de las dos versiones.
+
+### Tema 3: Archivos grandes y recursos del classpath
+
+**¿Por qué es importante?** Cargar un archivo enorme completo puede agotar la memoria; un recurso del classpath viaja junto al artefacto.
+
+#### Subtema 3.1: Procesa un archivo línea por línea · 10 min
+
+**1. Contexto**
+
+Un reporte diario puede tener cientos de miles de registros. Para contar entregas no necesitas mantener todo el archivo en memoria.
+
+**2. Hazlo tú**
+
+Crea `src/ContarLineas.java`:
+
+```java
 import java.io.BufferedReader;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 
-public final class ProcesadorReporte {
-    static final Path ARCHIVO = Path.of("reporte-entregas.txt");
-
-    static void generar(long lineas) throws IOException {
-        try (var escritor = Files.newBufferedWriter(ARCHIVO)) {
-            for (long i = 1; i <= lineas; i++) {
-                escritor.write("ENTREGA-" + i + ";estado=" + (i % 2 == 0 ? "PAGADO" : "PENDIENTE"));
-                escritor.newLine();
-            }
+public class ContarLineas {
+    public static void main(String[] args) throws Exception {
+        long total = 0;
+        try (BufferedReader lector = Files.newBufferedReader(Path.of(args[0]))) {
+            while (lector.readLine() != null) total++;
         }
-    }
-
-    static long procesar() throws IOException {
-        long pagadas = 0;
-        try (BufferedReader reader = Files.newBufferedReader(ARCHIVO)) {
-            String linea;
-            while ((linea = reader.readLine()) != null) {
-                if (linea.endsWith("estado=PAGADO")) {
-                    pagadas++;
-                }
-            }
-        }
-        return pagadas;
-    }
-
-    static long procesarCompleto() throws IOException {
-        List<String> lineas = Files.readAllLines(ARCHIVO);
-        System.out.printf("Heap con todas las líneas retenidas: %.1f MB%n",
-            memoriaUsada() / 1_048_576.0);
-        return lineas.stream()
-            .filter(linea -> linea.endsWith("estado=PAGADO"))
-            .count();
-    }
-
-    static String cargarConfiguracion() throws IOException {
-        try (var recurso = ProcesadorReporte.class.getResourceAsStream("/config.json")) {
-            if (recurso == null) {
-                throw new IOException("No se encontró /config.json en el classpath");
-            }
-            return new String(recurso.readAllBytes(), StandardCharsets.UTF_8);
-        }
-    }
-
-    static long memoriaUsada() {
-        Runtime runtime = Runtime.getRuntime();
-        return runtime.totalMemory() - runtime.freeMemory();
-    }
-
-    public static void main(String[] args) throws IOException {
-        generar(500_000);
-        long antes = memoriaUsada();
-        long pagadas = procesar();
-        long despues = memoriaUsada();
-        System.out.println("Líneas pagadas: " + pagadas);
-        System.out.printf("Memoria antes: %.1f MB%n", antes / 1_048_576.0);
-        System.out.printf("Memoria después: %.1f MB%n", despues / 1_048_576.0);
-        System.out.println("Líneas pagadas con readAllLines: " + procesarCompleto());
-        System.out.println("Configuración: " + cargarConfiguracion());
+        System.out.println(total);
     }
 }
 ```
 
-**Ejecuta el ejemplo** y agrega el recurso a la salida de compilación para que esté en el classpath:
+Crea `reporte.txt` con varias líneas y ejecuta `javac -d out src/ContarLineas.java` y `java -cp out ContarLineas reporte.txt`.
 
-```bash
-javac -d out src/main/java/academia/streaming/ProcesadorReporte.java
-cp src/main/resources/config.json out/
-java -cp out academia.streaming.ProcesadorReporte
+**Resultado esperado:** imprime la cantidad de líneas y no carga una lista con todo el archivo.
+
+**Fallo deliberado:** cambia el código para usar `Files.readAllLines`. **Diagnóstico:** ahora todas las líneas se mantienen en una lista; vuelve a leer una por una para acotar memoria.
+
+**3. Entiende**
+
+`BufferedReader` conserva un buffer y entrega el archivo por partes. `readAllLines` materializa la lista completa.
+
+**4. Cierra**
+
+Registra el número de líneas y el recurso que try-with-resources cerró.
+
+#### Subtema 3.2: Carga un archivo empacado en el JAR · 10 min
+
+**1. Contexto**
+
+La configuración que acompaña al programa debe estar disponible aunque cambie el directorio actual.
+
+**2. Hazlo tú**
+
+Guarda `modo=demo` en `src/main/resources/config.properties`. Crea `src/main/java/ConfigClasspath.java`:
+
+```java
+import java.io.InputStream;
+import java.util.Properties;
+
+public class ConfigClasspath {
+    public static void main(String[] args) throws Exception {
+        try (InputStream recurso =
+                 ConfigClasspath.class.getResourceAsStream("/config.properties")) {
+            if (recurso == null) throw new IllegalStateException("Falta config.properties");
+            var propiedades = new Properties();
+            propiedades.load(recurso);
+            System.out.println(propiedades.getProperty("modo"));
+        }
+    }
+}
 ```
 
-**Resultado esperado:** ambas variantes cuentan `250000` líneas pagadas y el programa imprime la configuración. Los valores del heap son observaciones aproximadas afectadas por el recolector; no son una medida del pico de asignaciones. El archivo generado tiene 500 000 líneas.
+Empaqueta el recurso junto a la clase con Maven y ejecuta `mvn -q package`.
 
-**Paso 5 · Práctica guiada**
+**Resultado esperado:** la salida es `demo` desde el recurso ubicado en el classpath.
 
-Compara `procesar()` con `procesarCompleto()`: comprueba que devuelven el mismo conteo y observa que `readAllLines()` mantiene la lista viva mientras la procesa. Repite con otro número de líneas; razona sobre la diferencia de memoria por estructura, no sobre un valor exacto del heap.
+**Fallo deliberado:** cambia el nombre por `/config-inexistente.properties`. **Diagnóstico:** `getResourceAsStream` devuelve null si no existe; verifica el nombre y la ubicación bajo resources.
 
-**Fallo deliberado:** reemplaza `BufferedReader`/`readLine()` por `Files.readAllLines()` en el proceso principal. Predice qué ocurre con la memoria retenida antes de ejecutar la variante.
+**3. Entiende**
 
-**Pista:** `BufferedReader` no conserva la lista completa; `readAllLines()` sí. El heap puede variar entre ejecuciones porque interviene el recolector.
+El classpath busca recursos dentro del artefacto; `Path` busca rutas del sistema operativo. No uses ambos como si fueran lo mismo.
 
-**Si falla.** Si el conteo no es 250 000, la condición de paridad o el sufijo de estado cambiaron. Si `getResourceAsStream` devuelve `null`, copia el recurso a `out/` antes de ejecutar. Si el archivo no se crea, revisa permisos del directorio de trabajo.
+**4. Cierra**
 
-#### Aplica
+Guarda la salida desde la ejecución empaquetada.
 
-**Paso 6 · Práctica independiente**
+#### Subtema 3.3: Elige entre leer todo o transmitir · 10 min
 
-Empaqueta las clases y el recurso en un JAR con `jar --create --file reporte.jar -C out .`; ejecútalo con `java -cp reporte.jar academia.streaming.ProcesadorReporte` y confirma que lee la misma configuración.
+**1. Contexto**
 
-**Paso 7 · Cierre**
+Un archivo de configuración pequeño y un reporte de cientos de miles de filas tienen necesidades distintas.
 
-**Checklist de salida.**
+**2. Hazlo tú**
 
-- [ ] `ProcesadorReporte.java` compila y ejecuta con `javac` y `java -cp out`.
-- [ ] El archivo generado tiene 500 000 líneas.
-- [ ] El conteo de líneas pagadas es 250 000.
-- [ ] Comparaste la lista retenida por `readAllLines()` con el procesamiento de una línea a la vez.
-- [ ] `getResourceAsStream("/config.json")` carga el recurso empaquetado.
-- [ ] El recurso sigue disponible después de empaquetar en un JAR.
+En `src/ContarLineas.java` ejecuta la versión `BufferedReader` ya creada. Después crea `src/ContarTodo.java` con esta variante completa y corre ambas con el mismo archivo:
 
-**Si falla.** Si `getResourceAsStream` devuelve `null`, el recurso no se copió a `out/` o la ruta no empieza con `/`. Si el JAR no incluye el recurso, revisa que `config.json` esté en `out/` antes de crearlo.
+```java
+import java.nio.file.Files;
+import java.nio.file.Path;
 
-Guarda ambos conteos, la observación de memoria y la lectura del recurso dentro del JAR.
+public class ContarTodo {
+    public static void main(String[] args) throws Exception {
+        System.out.println(Files.readAllLines(Path.of(args[0])).size());
+    }
+}
+```
 
-**Antes del siguiente tema:** explica por qué una lectura línea por línea reduce lo retenido pero no limita el tamaño de una línea individual, y cómo un recurso viaja dentro del JAR.
+Compila con `javac -d out src/ContarTodo.java` y ejecuta `java -cp out ContarTodo reporte.txt`; genera un archivo más grande repitiendo líneas antes de comparar.
 
-**Errores comunes:** leer todo el archivo con `readAllBytes`/`readAllLines` sin considerar su tamaño real, olvidar que `getResourceAsStream` devuelve `null` (no lanza excepción) si el recurso no existe en el classpath, y no cerrar el `BufferedReader` con try-with-resources dejando el descriptor de archivo abierto.
+**Resultado esperado:** ambas versiones cuentan lo mismo; la lista completa necesita memoria proporcional al archivo, mientras que el lector procesa progresivamente.
 
-**Fuentes oficiales revisadas el 2026-11-01:** [dev.java: File System](https://dev.java/learn/java-io/file-system/), [`BufferedReader` (API Java SE 27)](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/io/BufferedReader.html) y [`Files.lines` (API Java SE 27)](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/nio/file/Files.html#lines(java.nio.file.Path)).
+**Fallo deliberado:** usa `readAllLines` con el reporte grande y concluye que siempre es más simple. **Diagnóstico:** comprueba el tamaño y memoria disponible; elige la lectura completa solo si el archivo cabe con holgura.
 
----
+**3. Entiende**
+
+La lectura completa es cómoda para archivos chicos; el streaming mantiene bajo el espacio de trabajo, a cambio de procesar cada fila durante la lectura.
+
+**4. Cierra**
+
+Anota el tamaño del archivo y cuál lectura elegiste. Fuentes oficiales: [BufferedReader](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/io/BufferedReader.html) y [recursos de clase](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html#getResourceAsStream(java.lang.String)).
+
+**Proyecto integrador:** procesa comprobantes grandes línea por línea y empaqueta la configuración con el JAR.
 
 ## Construcción guiada del capítulo
 

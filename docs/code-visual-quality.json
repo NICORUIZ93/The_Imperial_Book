@@ -15,14 +15,14 @@
     "cloud": {
       "topics": 156,
       "code": 156,
-      "commentedCode": 124,
-      "mermaid": 80,
+      "commentedCode": 118,
+      "mermaid": 74,
       "archifyVisual": 4,
       "asciiVisual": 18,
       "misleadingDiagramLabel": 0,
       "filePath": 150,
       "runCommand": 156,
-      "officialSource": 156
+      "officialSource": 154
     },
     "devops": {
       "topics": 129,
@@ -49,16 +49,16 @@
       "officialSource": 88
     },
     "node": {
-      "topics": 77,
-      "code": 77,
-      "commentedCode": 25,
-      "mermaid": 28,
+      "topics": 83,
+      "code": 83,
+      "commentedCode": 30,
+      "mermaid": 32,
       "archifyVisual": 0,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
-      "filePath": 77,
-      "runCommand": 77,
-      "officialSource": 77
+      "filePath": 83,
+      "runCommand": 83,
+      "officialSource": 80
     },
     "angular": {
       "topics": 71,
@@ -85,40 +85,40 @@
       "officialSource": 58
     },
     "java": {
-      "topics": 109,
-      "code": 109,
-      "commentedCode": 57,
-      "mermaid": 41,
-      "archifyVisual": 3,
+      "topics": 111,
+      "code": 72,
+      "commentedCode": 22,
+      "mermaid": 18,
+      "archifyVisual": 1,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
-      "filePath": 108,
-      "runCommand": 109,
-      "officialSource": 108
+      "filePath": 111,
+      "runCommand": 111,
+      "officialSource": 106
     },
     "spring-boot": {
-      "topics": 107,
-      "code": 107,
-      "commentedCode": 89,
-      "mermaid": 60,
-      "archifyVisual": 4,
-      "asciiVisual": 21,
+      "topics": 113,
+      "code": 113,
+      "commentedCode": 40,
+      "mermaid": 36,
+      "archifyVisual": 1,
+      "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
-      "filePath": 107,
-      "runCommand": 107,
-      "officialSource": 107
+      "filePath": 113,
+      "runCommand": 113,
+      "officialSource": 112
     },
     "microservices": {
       "topics": 11,
       "code": 11,
-      "commentedCode": 2,
+      "commentedCode": 3,
       "mermaid": 0,
       "archifyVisual": 0,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
       "filePath": 10,
       "runCommand": 8,
-      "officialSource": 10
+      "officialSource": 11
     },
     "kotlin-multiplatform": {
       "topics": 56,
@@ -157,16 +157,16 @@
       "officialSource": 56
     },
     "flutter": {
-      "topics": 63,
-      "code": 63,
-      "commentedCode": 50,
-      "mermaid": 53,
+      "topics": 106,
+      "code": 106,
+      "commentedCode": 61,
+      "mermaid": 82,
       "archifyVisual": 0,
       "asciiVisual": 14,
       "misleadingDiagramLabel": 0,
-      "filePath": 63,
-      "runCommand": 63,
-      "officialSource": 63
+      "filePath": 103,
+      "runCommand": 103,
+      "officialSource": 99
     },
     "rutaflow": {
       "topics": 29,
@@ -221,6 +221,48 @@
       "track": "foundations",
       "module": 7,
       "topic": "Tema 5: Records de C#: igualdad por valor no implica inmutabilidad profunda",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "cloud",
+      "module": 0,
+      "topic": "Tema 1: Fundamentos absolutos — qué es una terminal, un comando y un sistema operativo",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "cloud",
+      "module": 0,
+      "topic": "Tema 2: Fundamentos de redes — direcciones IP, puertos, HTTP y APIs",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "cloud",
+      "module": 0,
+      "topic": "Tema 4: Qué es Floci — definición, propósito y comparativa con LocalStack",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "cloud",
+      "module": 0,
+      "topic": "Tema 5: Servicios que emula Floci — AWS, Azure y GCP",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "cloud",
+      "module": 0,
+      "topic": "Tema 6: Ventajas y limitaciones de practicar con un emulador local",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "cloud",
+      "module": 0,
+      "topic": "Tema 7: Metodología de estudio — teoría, laboratorio y evaluación en cada módulo",
       "missingCode": false,
       "missingComments": true
     },
@@ -997,42 +1039,49 @@
     {
       "track": "node",
       "module": 14,
-      "topic": "Tema 1: TypeScript en Node.js · Avanzado · 60 min",
+      "topic": "Tema 1: TypeScript en Node.js",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "node",
       "module": 14,
-      "topic": "Tema 2: GraphQL avanzado y Federation · Avanzado · 105 min",
+      "topic": "Tema 2: GraphQL avanzado y Federation",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "node",
       "module": 14,
-      "topic": "Tema 3: Microservicios, Kafka, RabbitMQ y sagas · Avanzado · 105 min",
+      "topic": "Tema 3: Compensar una entrega cuando falla un paso",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "node",
       "module": 14,
-      "topic": "Tema 4: Serverless multi-cloud · Avanzado · 75 min",
+      "topic": "Tema 5: Docker productivo con Node",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "node",
       "module": 14,
-      "topic": "Tema 5: Docker productivo con Node · Avanzado · 90 min",
+      "topic": "Tema 6: CI/CD y promoción de artefactos",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "node",
       "module": 14,
-      "topic": "Tema 6: CI/CD y promoción de artefactos · Avanzado · 105 min",
+      "topic": "Tema 7: Kafka desde Node: clave, grupo consumidor y offset",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "node",
+      "module": 14,
+      "topic": "Tema 8: RabbitMQ desde Node: exchange, cola y confirmaciones",
       "missingCode": false,
       "missingComments": true
     },
@@ -1346,498 +1395,1135 @@
     },
     {
       "track": "java",
+      "module": 0,
+      "topic": "Tema 1: Del código fuente a la JVM",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 0,
+      "topic": "Tema 2: public static void main — qué significa cada palabra",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 0,
+      "topic": "Tema 3: JDK, JRE y JVM",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 0,
+      "topic": "Tema 4: Tipos primitivos vs referencias",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 0,
+      "topic": "Tema 5: Variables, conversiones y `String`",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 0,
+      "topic": "Tema 6: Operadores, precedencia y control de flujo",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 0,
+      "topic": "Tema 7: Arreglos, wrappers y paso de argumentos",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 0,
+      "topic": "Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`)",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
       "module": 1,
-      "topic": "Tema 1: Clases, objetos, constructores y encapsulación · Básico · 40 min",
+      "topic": "Tema 1: Clases, objetos, constructores y encapsulación",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 1,
+      "topic": "Tema 2: Herencia y sobreescritura",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 1,
+      "topic": "Tema 3: Interfaces, clases abstractas y cuándo usar cada una",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 1,
+      "topic": "Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 10,
-      "topic": "Tema 3: `opens` para acceso reflexivo controlado de frameworks · Avanzado · 60 min",
-      "missingCode": false,
-      "missingComments": true
+      "topic": "Tema 1: module-info.java y encapsulación fuerte",
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "java",
+      "module": 10,
+      "topic": "Tema 2: Migración incremental y cuándo JPMS aporta valor",
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "java",
+      "module": 10,
+      "topic": "Tema 3: opens para acceso reflexivo controlado de frameworks",
+      "missingCode": true,
+      "missingComments": false
     },
     {
       "track": "java",
       "module": 11,
-      "topic": "Tema 1: Generaciones de memoria y recolectores · Avanzado · 55 min",
-      "missingCode": false,
-      "missingComments": true
+      "topic": "Tema 1: Generaciones de memoria y recolectores",
+      "missingCode": true,
+      "missingComments": false
     },
     {
       "track": "java",
       "module": 11,
-      "topic": "Tema 2: Java Flight Recorder y JIT compilation · Avanzado · 55 min",
+      "topic": "Tema 2: Java Flight Recorder y JIT compilation",
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "java",
+      "module": 11,
+      "topic": "Tema 3: Referencias especiales y heap dumps",
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "java",
+      "module": 11,
+      "topic": "Tema 4: Foreign Function & Memory API (Java 22)",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 12,
-      "topic": "Tema 1: Builder — configuración paso a paso y validación · Intermedio · 45 min",
-      "missingCode": false,
-      "missingComments": true
+      "topic": "Tema 1: Builder — configuración paso a paso y validación",
+      "missingCode": true,
+      "missingComments": false
     },
     {
       "track": "java",
       "module": 12,
-      "topic": "Tema 2: Factory Method y Strategy · Intermedio · 55 min",
-      "missingCode": false,
-      "missingComments": true
+      "topic": "Tema 2: Factory Method y Strategy",
+      "missingCode": true,
+      "missingComments": false
     },
     {
       "track": "java",
       "module": 12,
-      "topic": "Tema 6: Patrones estructurales — elegir por intención · Avanzado · 65 min",
-      "missingCode": false,
-      "missingComments": true
+      "topic": "Tema 3: Abstract Factory y familias de productos compatibles",
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "java",
+      "module": 12,
+      "topic": "Tema 4: SOLID y cuándo NO aplicar un patrón",
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "java",
+      "module": 12,
+      "topic": "Tema 5: Prototype: copiar un objeto sin compartir sus datos",
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "java",
+      "module": 12,
+      "topic": "Tema 6: Patrones estructurales para conectar piezas existentes",
+      "missingCode": true,
+      "missingComments": false
     },
     {
       "track": "java",
       "module": 13,
-      "topic": "Tema 2: Integrando concurrencia, modelado y testing · Experto · 60 min",
-      "missingCode": false,
-      "missingComments": true
+      "topic": "Tema 1: Arquitectura por capas del proyecto integrador",
+      "missingCode": true,
+      "missingComments": false
     },
     {
       "track": "java",
       "module": 13,
-      "topic": "Tema 3: Build reproducible y cierre del track · Avanzado · 50 min",
+      "topic": "Tema 2: Integrando concurrencia, modelado y testing",
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "java",
+      "module": 13,
+      "topic": "Tema 3: Build reproducible y cierre del track",
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "java",
+      "module": 14,
+      "topic": "Tema 1: Compartir memoria requiere orden y visibilidad",
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "java",
+      "module": 14,
+      "topic": "Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo",
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "java",
+      "module": 14,
+      "topic": "Tema 3: Deserializar es permitir construcción y comportamiento",
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "java",
+      "module": 14,
+      "topic": "Tema 4: El runtime es parte del artefacto y necesita ciclo de vida",
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "java",
+      "module": 15,
+      "topic": "Tema 1: Maven avanzado",
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "java",
+      "module": 15,
+      "topic": "Tema 2: Gradle y builds reproducibles",
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "java",
+      "module": 15,
+      "topic": "Tema 3: Proyectos multi-módulo sin ciclos",
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "java",
+      "module": 15,
+      "topic": "Tema 4: JUnit 5, Mockito y assertions expresivas",
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "java",
+      "module": 15,
+      "topic": "Tema 5: Pruebas de integración reproducibles",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 15,
-      "topic": "Tema 1: Maven avanzado · Avanzado · 55 min",
-      "missingCode": false,
-      "missingComments": true
+      "topic": "Tema 6: SLF4J, Logback, MDC y logging estructurado",
+      "missingCode": true,
+      "missingComments": false
     },
     {
       "track": "java",
-      "module": 15,
-      "topic": "Tema 2: Gradle y builds reproducibles · Avanzado · 45 min",
-      "missingCode": false,
-      "missingComments": true
+      "module": 16,
+      "topic": "Tema 1: Entidades y relaciones JPA",
+      "missingCode": true,
+      "missingComments": false
     },
     {
       "track": "java",
-      "module": 15,
-      "topic": "Tema 4: JUnit 5, Mockito y assertions expresivas · Avanzado · 55 min",
-      "missingCode": false,
-      "missingComments": true
+      "module": 16,
+      "topic": "Tema 2: FetchType.LAZY, EAGER y el problema N+1",
+      "missingCode": true,
+      "missingComments": false
     },
     {
       "track": "java",
-      "module": 15,
-      "topic": "Tema 5: Pruebas de integración reproducibles · Experto · 1 h",
-      "missingCode": false,
-      "missingComments": true
+      "module": 16,
+      "topic": "Tema 3: Relaciones uno a uno, muchos a muchos y herencia",
+      "missingCode": true,
+      "missingComments": false
     },
     {
       "track": "java",
-      "module": 15,
-      "topic": "Tema 6: SLF4J, Logback, MDC y logging estructurado · Avanzado · 55 min",
+      "module": 16,
+      "topic": "Tema 4: Ciclo de vida, EntityManager y consultas tipadas",
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "java",
+      "module": 16,
+      "topic": "Tema 5: Búsquedas dinámicas con Criteria y Querydsl",
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "java",
+      "module": 16,
+      "topic": "Tema 6: EntityGraph y cachés de persistencia",
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "java",
+      "module": 16,
+      "topic": "Tema 7: Concurrencia, transacciones y propagación",
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "java",
+      "module": 16,
+      "topic": "Tema 8: Migraciones y pruebas JPA con Testcontainers",
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "java",
+      "module": 17,
+      "topic": "Tema 1: JDBC, PreparedStatement y DAO",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 17,
-      "topic": "Tema 1: JDBC, PreparedStatement y DAO · Intermedio · 1 h",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "java",
-      "module": 17,
-      "topic": "Tema 2: Transacciones, ACID y aislamiento · Avanzado · 1 h 15 min",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "java",
-      "module": 18,
-      "topic": "Tema 2: Tokens, validación y límites de seguridad · Avanzado · 2 h",
+      "topic": "Tema 2: Transacciones, ACID y aislamiento",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 2,
-      "topic": "Tema 1: List, Set, Map y sus implementaciones · Básico · 45 min",
+      "topic": "Tema 1: List, Set, Map y sus implementaciones",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 2,
-      "topic": "Tema 2: Genéricos, wildcards y type erasure · Intermedio · 45 min",
+      "topic": "Tema 2: Genéricos, wildcards y type erasure",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 2,
+      "topic": "Tema 3: Comparable vs Comparator, e iteración",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 20,
-      "topic": "Tema 1: Lambdas a fondo — tipo objetivo, captura y referencias a métodos · Intermedio · 120 min",
+      "topic": "Tema 1: Las cuatro formas: Predicate, Function, Consumer y Supplier",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 20,
-      "topic": "Tema 3: Componer sin anidar: andThen, compose, negate y reglas encadenadas · Intermedio · 75 min",
+      "topic": "Tema 4: Function y BiFunction: transformar uno o dos datos",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 20,
-      "topic": "Tema 5: Function y BiFunction — transformar con una o dos entradas · Básico · 30 min",
+      "topic": "Tema 5: UnaryOperator y BinaryOperator: la salida conserva el tipo",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 20,
-      "topic": "Tema 6: UnaryOperator y BinaryOperator — cuando entrada y salida comparten tipo · Básico · 20 min",
+      "topic": "Tema 6: Referencias a métodos: escribir la operación sin repetirla",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 20,
-      "topic": "Tema 7: Referencias a métodos — las cuatro formas · Básico · 25 min",
+      "topic": "Tema 7: Optional: buscar un envío que puede no existir",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 20,
-      "topic": "Tema 8: Optional — ausencia explícita sin null · Intermedio · 30 min",
+      "topic": "Tema 8: Streams intermedios: filtrar, transformar, aplanar y ordenar",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 20,
-      "topic": "Tema 9: Streams intermedios — map, filter, flatMap y sorted · Intermedio · 35 min",
+      "topic": "Tema 9: Streams terminales: encontrar, contar y combinar resultados",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 20,
-      "topic": "Tema 10: Streams terminales — collect, reduce, forEach y find · Intermedio · 35 min",
+      "topic": "Tema 10: Collectors: formar listas, mapas, grupos y texto",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 20,
-      "topic": "Tema 11: Collectors — toList, toMap, groupingBy y joining · Intermedio · 35 min",
+      "topic": "Tema 11: Streams paralelos: comparar antes de acelerarlos",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 20,
-      "topic": "Tema 12: Streams paralelos — cuándo ayudan y cuándo engañan · Avanzado · 30 min",
+      "topic": "Tema 12: Pureza y efectos: calcular separado de guardar o imprimir",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 20,
-      "topic": "Tema 14: Flow API — reactive streams en la biblioteca estándar · Avanzado · 30 min",
+      "topic": "Tema 13: Flow API: publicar datos con demanda y cierre",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 3,
-      "topic": "Tema 1: Checked vs unchecked exceptions · Básico · 40 min",
+      "topic": "Tema 1: Checked vs unchecked exceptions",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 3,
-      "topic": "Tema 2: try-with-resources · Básico · 40 min",
+      "topic": "Tema 2: try-with-resources",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 4,
-      "topic": "Tema 1: Stream API — map, filter, reduce, collect · Básico · 45 min",
+      "topic": "Tema 1: Stream API — map, filter, reduce, collect",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 4,
-      "topic": "Tema 2: Optional — evitar null explícitamente · Intermedio · 40 min",
+      "topic": "Tema 2: Optional — evitar null explícitamente",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 4,
-      "topic": "Tema 3: Streams paralelos y referencias a métodos · Intermedio · 45 min",
+      "topic": "Tema 3: Streams paralelos y referencias a métodos",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 4,
-      "topic": "Tema 4: Stream Gatherers (Java 24) · Avanzado · 50 min",
+      "topic": "Tema 4: Stream Gatherers (Java 24)",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 5,
-      "topic": "Tema 1: ExecutorService y gestión de hilos · Intermedio · 50 min",
+      "topic": "Tema 1: ExecutorService y gestión de hilos",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 5,
-      "topic": "Tema 2: CompletableFuture · Intermedio · 45 min",
+      "topic": "Tema 2: CompletableFuture",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 5,
-      "topic": "Tema 3: Virtual threads · Intermedio · 50 min",
+      "topic": "Tema 3: Virtual threads",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 5,
-      "topic": "Tema 4: Condiciones de carrera y sincronización · Intermedio · 50 min",
+      "topic": "Tema 4: Condiciones de carrera y sincronización",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 5,
-      "topic": "Tema 5: Structured Concurrency (StructuredTaskScope, preview en JDK 27) · Avanzado · 55 min",
+      "topic": "Tema 5: Structured Concurrency (StructuredTaskScope, Java 25)",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 5,
-      "topic": "Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos · Avanzado · 45 min",
+      "topic": "Tema 6: Scoped Values frente a ThreadLocal (Java 25)",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 5,
+      "topic": "Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 6,
-      "topic": "Tema 1: NIO.2 — Path y Files · Intermedio · 45 min",
+      "topic": "Tema 1: NIO.2 — Path y Files",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 6,
-      "topic": "Tema 2: Serialización con Jackson · Intermedio · 50 min",
+      "topic": "Tema 2: Serialización con Jackson",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 6,
-      "topic": "Tema 3: Archivos grandes y recursos del classpath · Intermedio · 45 min",
+      "topic": "Tema 3: Archivos grandes y recursos del classpath",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 7,
-      "topic": "Tema 2: sealed — jerarquías cerradas y exhaustividad · Intermedio · 45 min",
+      "topic": "Tema 1: record — modelos inmutables sin boilerplate",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 7,
-      "topic": "Tema 3: Pattern matching exhaustivo y para instanceof · Intermedio · 45 min",
+      "topic": "Tema 2: sealed — jerarquías cerradas y exhaustividad",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 7,
+      "topic": "Tema 3: Pattern matching exhaustivo y para instanceof",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 7,
+      "topic": "Tema 4: Unnamed variables y patterns (_, Java 22)",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 8,
-      "topic": "Tema 1: pom.xml vs build.gradle.kts · Básico · 45 min",
-      "missingCode": false,
-      "missingComments": true
+      "topic": "Tema 1: pom.xml vs build.gradle.kts",
+      "missingCode": true,
+      "missingComments": false
     },
     {
       "track": "java",
       "module": 8,
-      "topic": "Tema 2: Ciclo de vida de build y scopes · Intermedio · 45 min",
-      "missingCode": false,
-      "missingComments": true
+      "topic": "Tema 2: Ciclo de vida de build y scopes",
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "java",
+      "module": 8,
+      "topic": "Tema 3: Proyectos multi-módulo",
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "java",
+      "module": 8,
+      "topic": "Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas",
+      "missingCode": true,
+      "missingComments": false
     },
     {
       "track": "java",
       "module": 9,
-      "topic": "Tema 1: JUnit 5 — anotaciones y ciclo de vida · Básico · 45 min",
-      "missingCode": false,
-      "missingComments": true
+      "topic": "Tema 1: JUnit 5 — anotaciones y ciclo de vida",
+      "missingCode": true,
+      "missingComments": false
     },
     {
       "track": "java",
       "module": 9,
-      "topic": "Tema 2: Mockito — aislar dependencias · Intermedio · 50 min",
-      "missingCode": false,
-      "missingComments": true
+      "topic": "Tema 2: Mockito — aislar dependencias",
+      "missingCode": true,
+      "missingComments": false
     },
     {
       "track": "java",
       "module": 9,
-      "topic": "Tema 3: Tests parametrizados y cobertura · Intermedio · 50 min",
+      "topic": "Tema 3: Tests parametrizados y cobertura",
+      "missingCode": true,
+      "missingComments": false
+    },
+    {
+      "track": "spring-boot",
+      "module": 0,
+      "topic": "Tema 1: Inversión de control y el contenedor de Spring",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "spring-boot",
       "module": 0,
-      "topic": "Tema 5: AOP con @Aspect y @Around — preocupaciones transversales · Avanzado · 40 min",
+      "topic": "Tema 2: Inyección por constructor vs por campo",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 1,
+      "topic": "Tema 1: Spring Initializr y starters",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 1,
+      "topic": "Tema 2: application.yml vs application.properties",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 1,
+      "topic": "Tema 3: Perfiles y estructura por capas",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 10,
+      "topic": "Tema 1: Config Server y service discovery",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 10,
+      "topic": "Tema 2: Spring Cloud Gateway",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 10,
+      "topic": "Tema 3: Circuit breaker con Resilience4j",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 10,
+      "topic": "Tema 4: OAuth2/OIDC, Keycloak y Token Relay sin perder la frontera de autorización",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 10,
+      "topic": "Tema 9: Comprueba módulos antes de separar servicios",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 10,
+      "topic": "Tema 10: Spring Cloud Bus para propagar cambios de configuración",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 10,
+      "topic": "Tema 11: Micrometer Tracing entre servicios",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 10,
+      "topic": "Tema 12: Contract testing entre productor y consumidor",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 12,
+      "topic": "Tema 1: Arquitectura del microservicio integrador",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 12,
+      "topic": "Tema 2: Integra seguridad JWT y observabilidad",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 12,
+      "topic": "Tema 3: Cierra el servicio con evidencia y próximos pasos",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 13,
+      "topic": "Tema 1: `@Transactional` funciona en una frontera, no como encantamiento",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 13,
+      "topic": "Tema 2: Recuperación implica duplicación segura",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 13,
+      "topic": "Tema 3: Contratos ejecutables protegen despliegues independientes",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 13,
+      "topic": "Tema 4: Observabilidad sirve a un objetivo y a una decisión",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 14,
+      "topic": "Tema 1: CRUD API y contratos",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 14,
+      "topic": "Tema 2: MySQL y datos espaciales",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 14,
+      "topic": "Tema 3: JPA e Hibernate Spatial",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 14,
+      "topic": "Tema 4: JWT Bearer y autorización por roles",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 14,
+      "topic": "Tema 5: Tiempo real con STOMP",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 15,
+      "topic": "Tema 2: Contenedores Testcontainers reutilizados entre clases",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 15,
+      "topic": "Tema 4: Bulkhead y RateLimiter de Resilience4j",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 15,
+      "topic": "Tema 5: Saga con compensación real",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 15,
+      "topic": "Tema 6: Event Sourcing con replay real",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "spring-boot",
       "module": 16,
-      "topic": "Tema 1: Relaciones, lado propietario y ciclo de vida · Avanzado · 1 h 50 min",
+      "topic": "Tema 1: Relaciones, lado propietario y ciclo de vida",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "spring-boot",
       "module": 16,
-      "topic": "Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso · Avanzado · 1 h 40 min",
+      "topic": "Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "spring-boot",
       "module": 17,
-      "topic": "Tema 1: DataSource, JdbcTemplate y DAO · Avanzado · 1 h 40 min",
+      "topic": "Tema 1: DataSource, JdbcTemplate y DAO",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "spring-boot",
       "module": 17,
-      "topic": "Tema 2: `@Transactional`, rollback y límites de transacción · Avanzado · 1 h 20 min",
+      "topic": "Tema 2: `@Transactional`, rollback y límites de transacción",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "spring-boot",
       "module": 18,
-      "topic": "Tema 1: SecurityFilterChain y autorización · Avanzado · 1 h 30 min",
+      "topic": "Tema 1: SecurityFilterChain y autorización",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "spring-boot",
-      "module": 18,
-      "topic": "Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP · Avanzado · 1 h 20 min",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "spring-boot",
-      "module": 19,
-      "topic": "Tema 1: Job, Step, Tasklet y chunk processing · Avanzado · 1 h 40 min",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "spring-boot",
-      "module": 19,
-      "topic": "Tema 2: Reinicio, JobParameters, retry, skip y listeners · Avanzado · 1 h 20 min",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "spring-boot",
-      "module": 19,
-      "topic": "Tema 3: Particionamiento con múltiples workers y remote chunking · Experto · 1 h 30 min",
+      "module": 2,
+      "topic": "Tema 1: Por qué DTOs en vez de entidades directamente",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "spring-boot",
       "module": 20,
-      "topic": "Tema 1: Scheduling y tareas periódicas · Avanzado · 1 h 10 min",
+      "topic": "Tema 3: Correo con Spring Mail y entrega recuperable",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "spring-boot",
       "module": 20,
-      "topic": "Tema 2: Eventos locales, eventos transaccionales y mensajería · Avanzado · 1 h 20 min",
+      "topic": "Tema 4: Caché con Spring Cache, Caffeine y Redis",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "spring-boot",
       "module": 20,
-      "topic": "Tema 3: Correo con Spring Mail y entrega recuperable · Avanzado · 1 h 10 min",
+      "topic": "Tema 5: @Async y ejecutores: trabajo en segundo plano con límites",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "spring-boot",
       "module": 20,
-      "topic": "Tema 4: Caché con Spring Cache, Caffeine y Redis · Avanzado · 1 h 20 min",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "spring-boot",
-      "module": 20,
-      "topic": "Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo · Avanzado · 1 h 30 min",
+      "topic": "Tema 6: Integraciones empresariales, SOAP y fronteras de protocolo",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "spring-boot",
       "module": 21,
-      "topic": "Tema 3: Outbox transaccional y flujo de negocio · Experto · 1 h 50 min",
+      "topic": "Tema 1: Productor, tópico, key y consumidor",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 21,
+      "topic": "Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 21,
+      "topic": "Tema 3: Outbox transaccional y flujo de negocio",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 23,
+      "topic": "Tema 1: módulos y límites entre paquetes",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 23,
+      "topic": "Tema 2: eventos entre módulos sin importar implementación",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 23,
+      "topic": "Tema 3: documentación generada y mapa de dependencias",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 23,
+      "topic": "Tema 4: pruebas de integración por módulo",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 24,
+      "topic": "Tema 1: schema-first con tipos y consultas",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 24,
+      "topic": "Tema 2: data fetchers, relaciones y problema N+1",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 24,
+      "topic": "Tema 3: mutations y subscriptions",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 24,
+      "topic": "Tema 4: pruebas GraphQL con GraphQlTester",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 25,
+      "topic": "Tema 1: bindings y destinations",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 25,
+      "topic": "Tema 2: binder Kafka y binder RabbitMQ",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 25,
+      "topic": "Tema 3: reintentos, error handler y dead-letter",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 25,
+      "topic": "Tema 4: test binder y límites de la prueba",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 4,
+      "topic": "Tema 2: Filtro JWT y autorización por rol",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 4,
+      "topic": "Tema 4: Reducir SSRF en clientes HTTP con InetAddressFilter",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "spring-boot",
       "module": 6,
-      "topic": "Tema 4: Slices adicionales — @JsonTest, @RestClientTest y @TestConfiguration · Avanzado · 40 min",
+      "topic": "Tema 1: Probar un controller con `@WebMvcTest`",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 6,
+      "topic": "Tema 2: Probar el repositorio contra PostgreSQL con `@DataJpaTest`",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 6,
+      "topic": "Tema 3: Integrar el flujo con `@SpringBootTest`",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 7,
+      "topic": "Tema 1: Actuator y health checks personalizados",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 7,
+      "topic": "Tema 2: Contar operaciones de negocio con Micrometer",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 7,
+      "topic": "Tema 3: Liveness y readiness sin reinicios en cadena",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 8,
+      "topic": "Tema 1: Producers y consumers con Spring Kafka",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 8,
+      "topic": "Tema 2: Dead-letter queue",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 8,
+      "topic": "Tema 3: Transacciones Kafka y SQL: idempotencia y límites de exactly-once",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 8,
+      "topic": "Tema 4: Rebalanceo de consumer groups y asignación de particiones",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 8,
+      "topic": "Tema 5: Kafka frente a RabbitMQ",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 8,
+      "topic": "Tema 7: Kafka Streams con Spring para transformar eventos",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 8,
+      "topic": "Tema 8: Avro y Schema Registry para contratos de eventos",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 8,
+      "topic": "Tema 9: RabbitMQ con Spring AMQP: routing, ack y prefetch",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "spring-boot",
       "module": 9,
-      "topic": "Tema 4: Virtual threads como alternativa a WebFlux · Avanzado · 35 min",
+      "topic": "Tema 1: Mono y Flux",
       "missingCode": false,
       "missingComments": true
     },
     {
-      "track": "microservices",
-      "module": 0,
-      "topic": "Tema 1: Proceso, host, puerto, socket y DNS · Fundamentos · 70 min",
+      "track": "spring-boot",
+      "module": 9,
+      "topic": "Tema 2: WebClient y composición no bloqueante",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 9,
+      "topic": "Tema 3: Cuándo WebFlux vale la complejidad, y R2DBC",
       "missingCode": false,
       "missingComments": true
     },
@@ -2223,6 +2909,230 @@
       "track": "flutter",
       "module": 15,
       "topic": "Tema 5: Internacionalización completa",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 16,
+      "topic": "Tema 1: reconocer cuándo usar FFI y crear el paquete",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 16,
+      "topic": "Tema 4: compilar y empaquetar bibliotecas por plataforma",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 17,
+      "topic": "Tema 6: diseñar y validar un paquete Dart",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 18,
+      "topic": "Tema 1: la frontera entre Dart y el código nativo",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 18,
+      "topic": "Tema 3: fluidez y presupuesto de frames",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 18,
+      "topic": "Tema 4: protocolo, telemetría y contención",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 18,
+      "topic": "Tema 5: reportes de fallos con Crashlytics y Sentry",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 18,
+      "topic": "Tema 6: analítica con privacidad y consentimiento",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 18,
+      "topic": "Tema 7: monitoreo de rendimiento en una versión publicada",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 19,
+      "topic": "Tema 1: estado de la jornada con Riverpod",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 19,
+      "topic": "Tema 2: mapa y permiso de ubicación",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 19,
+      "topic": "Tema 3: posiciones en tiempo real con Socket.IO",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 19,
+      "topic": "Tema 4: animar el marcador sin saltos",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 19,
+      "topic": "Tema 5: confirmaciones offline y sincronización",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 19,
+      "topic": "Tema 6: carga de evidencia con Dio y notificaciones",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 20,
+      "topic": "Tema 1: pruebas unitarias y de widget con Flutter Test",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 20,
+      "topic": "Tema 2: golden e integración de un flujo real",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 20,
+      "topic": "Tema 3: perfilado y presupuesto de rendimiento",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 20,
+      "topic": "Tema 4: Clean Architecture y sustitución de dependencias",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 20,
+      "topic": "Tema 5: internacionalización y formatos locales",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 20,
+      "topic": "Tema 6: builds por plataforma, firma y entrega",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 21,
+      "topic": "Tema 1: catálogo y flujo con `in_app_purchase`",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 21,
+      "topic": "Tema 2: suscripciones Android, planes base y cambios",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 21,
+      "topic": "Tema 3: suscripciones iOS con StoreKit",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 21,
+      "topic": "Tema 4: restauración de compras y entitlement",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 21,
+      "topic": "Tema 5: pruebas de IAP en sandbox",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 21,
+      "topic": "Tema 6: validación de transacciones en servidor",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 22,
+      "topic": "Tema 2: elegir mediación, bidding y waterfall",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 22,
+      "topic": "Tema 3: banners, interstitials y anuncios recompensados",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 22,
+      "topic": "Tema 4: consentimiento, privacidad y audiencias",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 22,
+      "topic": "Tema 5: pruebas de anuncios y diagnóstico de no-fill",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 22,
+      "topic": "Tema 6: comparar AdMob, AppLovin MAX y Unity LevelPlay",
       "missingCode": false,
       "missingComments": true
     },

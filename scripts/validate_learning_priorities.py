@@ -8,7 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CONTENT = ROOT / "web/public/content"
 TRACKS = (
     "foundations", "cloud", "devops", "javascript", "node", "angular", "react",
-    "java", "spring-boot", "microservices", "kotlin-multiplatform", "android", "ios", "flutter", "rutaflow",
+    "java", "spring-boot", "microservices", "kotlin-multiplatform", "android", "ios", "flutter", "rutaflow", "control-1",
 )
 TRACK_SOURCES = {
     "foundations": "web/src/app/tracks/foundations.track.ts",
@@ -26,6 +26,7 @@ TRACK_SOURCES = {
     "ios": "web/src/app/tracks/ios.track.ts",
     "flutter": "web/src/app/tracks/flutter.track.ts",
     "rutaflow": "web/src/app/tracks/rutaflow.track.ts",
+    "control-1": "web/src/app/tracks/control-1.track.ts",
 }
 
 errors: list[str] = []
@@ -51,7 +52,7 @@ for track in TRACKS:
             next_section = re.search(r"^## ", block[heading.end() - heading.start():], re.MULTILINE)
             if next_section:
                 block = block[:heading.end() - heading.start() + next_section.start()]
-            if not re.search(r"\*\*(?:¿Por qué es importante\?|Por qué importa:)\*\*", block):
+            if not re.search(r"\*\*(?:¿Por qué es importante\?|Por qué importa:)\*\*|^#{3,4}\s+¿Por qué es importante\?", block, re.MULTILINE):
                 errors.append(f"{path.relative_to(ROOT)} · {heading.group(0)}: falta importancia explícita")
 
 viewer = (ROOT / "web/src/app/course/lesson-viewer.ts").read_text(encoding="utf-8")
@@ -76,7 +77,7 @@ track_labels = {
     "javascript": "JavaScript", "node": "Node.js", "angular": "Angular",
     "react": "React", "java": "Java", "spring-boot": "Spring Boot", "microservices": "Microservicios",
     "kotlin-multiplatform": "Kotlin Multiplatform", "android": "Android",
-    "ios": "iOS", "flutter": "Flutter", "rutaflow": "RutaFlow",
+    "ios": "iOS", "flutter": "Flutter", "rutaflow": "RutaFlow", "control-1": "Control 1",
 }
 for track, label in track_labels.items():
     track_modules = len(list((CONTENT / track).glob("modulo-*.md")))

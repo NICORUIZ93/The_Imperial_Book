@@ -25,7 +25,22 @@ class RagScopeTest {
         assertEquals("A", docs.getFirst().getMetadata().get("empresa"));
     }
     @Test void sinEvidenciaNoSeInventaContexto() {
-        assertTrue(recuperar("A", "", List.of()).isEmpty());
+        assertTrue(recuperar("A", "", List.of(new Document("Reembolso", Map.of("empresa", "A")))).isEmpty());
         assertTrue(recuperar("A", "factura", List.of(new Document("GPS", Map.of("empresa", "A")))).isEmpty());
+    }
+    @Test void filtraAntesDeLimitarYConservaReferencias() {
+        var corpus = List.of(
+            new Document("b-1", "Reembolso ajeno 1", Map.of("empresa", "B")),
+            new Document("b-2", "Reembolso ajeno 2", Map.of("empresa", "B")),
+            new Document("a-1", "Reembolso autorizado 1", Map.of("empresa", "A")),
+            new Document("a-2", "Reembolso autorizado 2", Map.of("empresa", "A")),
+            new Document("a-3", "Reembolso autorizado 3", Map.of("empresa", "A")));
+        var docs = recuperar("A", "REEMBOLSO", corpus);
+        assertEquals(List.of("a-1", "a-2"), docs.stream().map(Document::getId).toList());
+        assertTrue(docs.stream().allMatch(d -> "A".equals(d.getMetadata().get("empresa"))));
+    }
+    @Test void documentoSinEmpresaNoSeCompartePorDefecto() {
+        var corpus = List.of(new Document("Reembolso sin propietario", Map.of()));
+        assertTrue(recuperar("A", "reembolso", corpus).isEmpty());
     }
 }

@@ -1,0 +1,892 @@
+# Módulo 7: Observabilidad con Actuator
+
+Cada tema declara su nivel, su duración y una verificación reproducible. La salud y las métricas se comprueban con `MockMvc` real contra los endpoints reales de Actuator, para que "health responde UP/DOWN" o "la métrica se incrementó" sean afirmaciones ejecutadas, no solo descritas.
+
+## Aprende construyendo
+
+### Tema 1: Actuator y health checks personalizados · Intermedio · 35 min
+
+**Prerrequisito:** Spring Initializr y starters (Módulo 1); `@Component` y `@Service` (Módulo 1).
+
+**Al terminar podrás:** exponer `/actuator/health` con un `HealthIndicator` personalizado que refleja la disponibilidad real de una dependencia, y confirmar con `MockMvc` real los estados `UP` y `DOWN`.
+
+#### Aprende
+
+**¿Por qué es importante?** Una plataforma de entregas necesita distinguir una aplicación viva de una instancia lista para recibir tráfico; sin señales operativas explícitas, un fallo se descubre por quejas de usuarios en vez de por evidencia observable.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Starter de Actuator | Prerrequisito | `curl ... -d dependencies=web,actuator` genera el proyecto con el starter que expone `/actuator/health` |
+| Exposición explícita de endpoints | Núcleo | `management.endpoints.web.exposure.include=health,metrics,info` en `application.properties` |
+| `HealthIndicator` personalizado | Núcleo | `ServicioExternoHealthIndicator implements HealthIndicator` devuelve `Health.up()`/`Health.down()` |
+| Nombre del bean como clave JSON | Variante | `@Component("servicioExterno")` aparece en `$.components.servicioExterno.status` |
+| Detalle de diagnóstico | Diagnóstico | `Health.down().withDetail("razon", ...)` visible con `show-details=always` |
+| Agregación al estado general | Límite | un solo indicador en `DOWN` degrada `$.status` a `DOWN` → `503` |
+| Señal falsamente positiva | Error frecuente | el fallo deliberado invierte la lógica y `/actuator/health` responde `UP` con la dependencia caída |
+| Fallback transparente sin alerta | Decisión | una dependencia con fallback automático no debería marcarse crítica para evitar alertas innecesarias |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Starter de Actuator (prerrequisito).** El comando `curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web,actuator` incorpora `spring-boot-starter-actuator`, que es lo que habilita automáticamente los endpoints estándar como `/actuator/health`. Sin ese starter en el classpath no existe ningún endpoint que exponer, por lo que es el punto de partida obligatorio antes de personalizar nada.
+
+**Exposición explícita de endpoints (núcleo).** La línea `management.endpoints.web.exposure.include=health,metrics,info` decide qué endpoints quedan accesibles por web, porque no todos deberían estar públicos por defecto. El mecanismo es una lista blanca: lo que no se nombra no se expone, y por eso los ejercicios proponen restringirla a lo necesario para no revelar configuración interna sensible.
+
+**`HealthIndicator` personalizado (núcleo).** `ServicioExternoHealthIndicator implements HealthIndicator` extiende el health check estándar devolviendo `Health.up().build()` o `Health.down()...build()` según `servicioExterno.estaDisponible()`. El mecanismo es que Actuator consulta cada `HealthIndicator` registrado y combina su resultado; así la disponibilidad real de una dependencia externa queda reflejada en la salud expuesta.
+
+**Nombre del bean como clave JSON (variante).** `@Component("servicioExterno")` registra el indicador bajo ese nombre exacto, que Actuator usa como clave dentro de `$.components.servicioExterno.status`. La variante sin nombre explícito deriva la clave del nombre del bean quitando el sufijo `HealthIndicator`, como señala la pista; consultar la clave equivocada hace que el test no encuentre el componente.
+
+**Detalle de diagnóstico (diagnóstico).** `Health.down().withDetail("razon", "servicio externo no responde")` adjunta información adicional que solo es visible cuando `management.endpoint.health.show-details=always`. El límite de este mecanismo es la configuración: con `show-details=never` el bloque `$.components` ya no aparece, como pide verificar el ejercicio 2, de modo que el detalle depende de una decisión explícita de exposición.
+
+**Agregación al estado general (límite).** Actuator combina todos los indicadores: un solo componente en `DOWN` hace que `$.status` global sea `DOWN` y `/actuator/health` responda `503 Service Unavailable`. Este comportamiento, verificado en `healthRespondeDownCuandoLaDependenciaNoEstaDisponible`, marca el límite de cómo interactúan varios indicadores, porque basta uno caído para degradar toda la señal.
+
+**Señal falsamente positiva (error frecuente).** El fallo deliberado cambia `Health.down()` por `Health.up()` en la rama de indisponibilidad, y entonces `/actuator/health` sigue respondiendo `UP` pese a haber llamado `marcarComoNoDisponible()`. El error es grave porque un `HealthIndicator` con lógica invertida esconde activamente un problema real tras una señal falsamente positiva, peor que no tener health check alguno.
+
+**Fallback transparente sin alerta (decisión).** La sección de límites decide no marcar como crítica una dependencia interna cuyo fallo la aplicación ya maneja de forma transparente, por ejemplo con un fallback automático sin degradación visible. La decisión evita generar alertas innecesarias por un problema que en realidad no afecta al servicio, reservando los indicadores para dependencias cuyo fallo sí importa al usuario.
+
+**Conceptos clave:** endpoints estándar de observabilidad, `HealthIndicator` propio.
+
+`spring-boot-starter-actuator`, agregado como dependencia, expone automáticamente endpoints estándar como `/actuator/health` (`{"status": "UP"}` o `"DOWN"`), configurables explícitamente en cuanto a qué endpoints exponer (`management.endpoints.web.exposure.include: health, metrics, info`), dado que no todos deberían estar públicamente expuestos por defecto. `@Component public class ServicioExternoHealthIndicator implements HealthIndicator { public Health health() { return servicioExterno.estaDisponible() ? Health.up().build() : Health.down().build(); } }` extiende el health check estándar para incorporar la disponibilidad real de dependencias externas críticas.
+
+**Analogía:** Actuator es un panel de instrumentos estándar en el tablero de un vehículo, mostrando indicadores comunes esperables; un health indicator personalizado es un sensor adicional específico que verifica una condición particular relevante para ese modelo específico.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+  A["GET /actuator/health"] --> B[Actuator consulta cada HealthIndicator registrado]
+  B --> C["ServicioExternoHealthIndicator.health()"]
+  C -->|disponible| D["UP -> 200"]
+  C -->|no disponible| E["DOWN -> 503"]
+```
+
+#### Practica
+
+**Demo paso a paso.** Desde una carpeta vacía (o continuando en `academia-spring`, o créala con `mkdir -p academia-spring` si es tu primera vez), genera el proyecto con Spring Initializr real (`web`, `actuator`) y crea el health indicator en `src/main/java/com/academia/observabilidad/`:
+
+```bash
+mkdir -p academia-spring/src/main/java/com/academia/observabilidad
+cd academia-spring
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web,actuator -d javaVersion=25 -d artifactId=academia-observabilidad -o app.zip
+unzip -o app.zip
+cat >> src/main/resources/application.properties <<'EOF'
+management.endpoints.web.exposure.include=health,metrics,info
+management.endpoint.health.show-details=always
+EOF
+```
+
+```java
+// src/main/java/com/academia/observabilidad/ServicioExterno.java
+package com.academia.observabilidad;
+
+import org.springframework.stereotype.Component;
+
+// simula una dependencia externa (por ejemplo, una pasarela de pago) cuya disponibilidad puede cambiar
+@Component
+public class ServicioExterno {
+    private volatile boolean disponible = true;
+
+    public boolean estaDisponible() { return disponible; }
+    public void marcarComoNoDisponible() { this.disponible = false; }
+    public void marcarComoDisponible() { this.disponible = true; }
+}
+```
+
+```java
+// src/main/java/com/academia/observabilidad/ServicioExternoHealthIndicator.java
+package com.academia.observabilidad;
+
+import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.stereotype.Component;
+
+@Component("servicioExterno")
+public class ServicioExternoHealthIndicator implements HealthIndicator {
+    private final ServicioExterno servicioExterno;
+
+    public ServicioExternoHealthIndicator(ServicioExterno servicioExterno) {
+        this.servicioExterno = servicioExterno;
+    }
+
+    @Override
+    public Health health() {
+        return servicioExterno.estaDisponible()
+            ? Health.up().build()
+            : Health.down().withDetail("razon", "servicio externo no responde").build();
+    }
+}
+```
+
+**Explicación línea por línea:** `ServicioExterno` simula una dependencia real con un estado mutable (`marcarComoNoDisponible()`/`marcarComoDisponible()`, expuesto para que el test controle el escenario); `@Component("servicioExterno")` registra el indicador bajo ese nombre, que Actuator usa como clave dentro de la respuesta JSON de `/actuator/health` (`{"components": {"servicioExterno": {"status": "UP"}}}`); `Health.down().withDetail(...)` adjunta información de diagnóstico adicional visible cuando `show-details=always`.
+
+Confirma con `MockMvc` real que `/actuator/health` refleja el estado real de la dependencia simulada, en ambos escenarios. **Nota (Spring Boot 4):** `AutoConfigureMockMvc` requiere agregar explícitamente `spring-boot-webmvc-test` (scope `test`) al `pom.xml` — en Boot 3.x venía incluido en `spring-boot-starter-test`:
+
+```xml
+<!-- dentro de <dependencies> del pom.xml -->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-webmvc-test</artifactId>
+    <scope>test</scope>
+</dependency>
+```
+
+```java
+// src/test/java/com/academia/observabilidad/ActuatorHealthTest.java
+package com.academia.observabilidad;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.web.servlet.MockMvc;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+@SpringBootTest
+@AutoConfigureMockMvc
+class ActuatorHealthTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+    @Autowired
+    private ServicioExterno servicioExterno;
+
+    @Test
+    void healthRespondeUpCuandoLaDependenciaEstaDisponible() throws Exception {
+        servicioExterno.marcarComoDisponible();
+
+        mockMvc.perform(get("/actuator/health"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.status").value("UP"))
+            .andExpect(jsonPath("$.components.servicioExterno.status").value("UP"));
+    }
+
+    @Test
+    void healthRespondeDownCuandoLaDependenciaNoEstaDisponible() throws Exception {
+        servicioExterno.marcarComoNoDisponible();
+
+        mockMvc.perform(get("/actuator/health"))
+            .andExpect(status().isServiceUnavailable())
+            .andExpect(jsonPath("$.status").value("DOWN"))
+            .andExpect(jsonPath("$.components.servicioExterno.status").value("DOWN"));
+
+        servicioExterno.marcarComoDisponible(); // deja el estado limpio para otros tests
+    }
+}
+```
+
+```bash
+mvn test -Dtest=ActuatorHealthTest  # Maven
+./gradlew test --tests ActuatorHealthTest # Gradle (equivalente)
+```
+
+**Resultado esperado:** ambos tests pasan: con la dependencia simulada disponible, `/actuator/health` responde `200` con `status: UP`; al marcarla como no disponible, responde `503 Service Unavailable` con `status: DOWN`, y el componente específico (`servicioExterno`) refleja el mismo estado dentro de `components` — Actuator agrega automáticamente el estado del indicador personalizado al estado general de salud de toda la aplicación.
+
+**Fallo deliberado:** cambia `Health.down()` por `Health.up()` dentro de la rama `else` (invirtiendo la lógica por error: reportar `UP` incluso cuando el servicio NO está disponible) y ejecuta de nuevo `healthRespondeDownCuandoLaDependenciaNoEstaDisponible`. El test FALLA porque `/actuator/health` sigue respondiendo `UP` pese a que `marcarComoNoDisponible()` fue llamado — diagnostica confirmando que un `HealthIndicator` mal implementado no solo no ayuda, sino que activamente esconde un problema real detrás de una señal falsamente positiva, potencialmente peor que no tener ningún health check en absoluto. Revierte el cambio antes de continuar.
+
+**Ejercicios.**
+
+1. Agrega un segundo `HealthIndicator` para una segunda dependencia simulada, y confirma que si SOLO una de las dos está `DOWN`, el estado general (`$.status`) también es `DOWN` (Actuator combina todos los indicadores).
+2. Prueba `management.endpoint.health.show-details=never` en vez de `always` y confirma con un test que `$.components` ya no aparece en la respuesta.
+3. Agrega un `@Component` con nombre distinto (`"basedatos"`) y confirma que aparece bajo esa clave específica en `$.components.basedatos.status`.
+4. Escribe de memoria (sin mirar) un `HealthIndicator` que refleje el estado de un componente simulado, y un test `MockMvc` que confirme `UP` y `DOWN` en ambos escenarios.
+
+**Pista:** el nombre pasado a `@Component("nombre")` es exactamente la clave que aparecerá en `$.components.<nombre>.status` dentro del JSON de `/actuator/health` — Spring lo deriva del nombre del bean, quitando el sufijo `HealthIndicator` si el bean no tiene un nombre explícito.
+
+**Completa el código:** rellena el espacio para reportar un estado saludable:
+
+```java
+public Health health() {
+    return servicioExterno.estaDisponible() ? Health.____().build() : Health.down().build();
+}
+```
+
+**Reto de memoria:** cierra este documento y escribe, solo de memoria, un `HealthIndicator` que dependa del estado de un componente simulado, y un test `MockMvc` que confirme ambos estados posibles. Compara después contra el patrón del Paso 4.
+
+#### Aplica
+
+**Reto abierto.** Define qué dependencias del proyecto son críticas para la salud y cuáles no. Implementa un indicador por dependencia crítica, demuestra con tests que cualquiera de ellas en `DOWN` degrada el estado general y limita la exposición de Actuator a los endpoints necesarios.
+
+**Checklist de salida.**
+
+- [ ] Cada dependencia crítica tiene un indicador con nombre explícito.
+- [ ] Un solo indicador en `DOWN` hace `DOWN` el estado general.
+- [ ] Los escenarios `UP` y `DOWN` están probados con `MockMvc`.
+- [ ] La exposición de Actuator está restringida y documentada.
+- [ ] Los detalles sensibles no se publican en producción.
+
+**Si falla.** Si el componente no aparece, revisa que el bean esté registrado y que su nombre no choque con otro; si siempre responde `UP`, revisa que la lógica no consulte un estado cacheado o invertido.
+
+**Siguiente paso:** el Tema 2 agrega métricas de negocio, no solo estado binario.
+
+**Errores comunes:** exponer todos los endpoints de Actuator públicamente sin restricción, algunos de los cuales revelan configuración interna sensible; escribir un `HealthIndicator` con lógica invertida o incompleta, produciendo una señal falsamente positiva peor que no tener ninguna señal.
+
+**Límites y decisión de uso:** para una dependencia interna cuyo fallo la aplicación ya maneja completamente de forma transparente para el usuario (por ejemplo, con un fallback automático sin degradación visible), agregar un `HealthIndicator` que la marque como crítica podría generar alertas innecesarias por un problema que en realidad no afecta el servicio.
+
+**Fuente oficial:** [Spring Boot Actuator — Health Information](https://docs.spring.io/spring-boot/reference/actuator/endpoints.html#actuator.endpoints.health).
+
+**Transferencia al proyecto integrador:** los health checks personalizados de Actuator son los que expondrá el proyecto integrador de este track (microservicio productivo, Módulo 12) en producción.
+
+### Tema 2: Métricas de negocio con Micrometer · Avanzado · 45 min
+
+**Prerrequisito:** Tema 1 de este módulo.
+
+**Al terminar podrás:** registrar una métrica de negocio custom con Micrometer, y confirmar con un test real que se incrementa correctamente y aparece en `/actuator/metrics`.
+
+#### Aprende
+
+**¿Por qué es importante?** Las métricas técnicas genéricas que Actuator expone automáticamente (uso de CPU, latencia HTTP) no capturan tendencias de negocio; contar cuántos pedidos se crean por minuto le da valor directo al equipo de producto, no solo al de infraestructura.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `MeterRegistry` inyectado | Prerrequisito | el constructor `PedidoService(MeterRegistry registry)` recibe el registro por inyección |
+| Registro del `Counter` | Núcleo | `registry.counter("pedidos.creados")` crea u obtiene el contador por nombre |
+| Incremento del contador | Núcleo | `pedidosCreados.increment()` dentro de `crear(...)` sube el total en 1 |
+| Exposición en Actuator | Diagnóstico | `/actuator/metrics/pedidos.creados` muestra `$.measurements[0].value` |
+| Etiquetas y series distintas | Variante | `registry.counter("pedidos.creados", "region", "sur")` crea una serie separada |
+| Punto de incremento olvidado | Error frecuente | el fallo deliberado borra `increment()` y la aserción del valor `+2` falla |
+| Alta cardinalidad | Límite | usar un ID único como etiqueta genera explosión de series que degrada el monitoreo |
+| Evento sin valor analítico | Decisión | un evento sin impacto en ninguna decisión de negocio no justifica una métrica dedicada |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`MeterRegistry` inyectado (prerrequisito).** `PedidoService(MeterRegistry registry)` recibe por constructor el `MeterRegistry`, la fachada de métricas que Micrometer integra en Spring Boot Actuator. Sin ese registro no hay dónde dar de alta ni acumular métricas, por lo que obtenerlo por inyección es el paso previo a definir cualquier contador de dominio.
+
+**Registro del `Counter` (núcleo).** `registry.counter("pedidos.creados")` obtiene el contador si ya existe o lo crea bajo ese nombre, y se guarda en el campo `pedidosCreados` del servicio. El mecanismo liga un nombre de métrica a un objeto reutilizable, de modo que todas las invocaciones del servicio incrementan la misma serie acumulada desde el arranque.
+
+**Incremento del contador (núcleo).** `pedidosCreados.increment()` dentro de `crear(...)` sube el contador en 1 por cada llamada; el test confirma con el `MeterRegistry` real que tras dos invocaciones el valor es `valorInicial + 2`. El mecanismo es acumulativo: el contador solo refleja negocio real si el incremento se coloca exactamente en el punto donde ocurre el evento.
+
+**Exposición en Actuator (diagnóstico).** La misma cifra acumulada aparece en `/actuator/metrics/pedidos.creados`, y el test la verifica con `jsonPath("$.measurements[0].value")`. Esta es la ruta real que un sistema como Prometheus/Grafana consultaría en producción, por lo que sirve para diagnosticar si una métrica está realmente publicada y no solo registrada en memoria.
+
+**Etiquetas y series distintas (variante).** `registry.counter("pedidos.creados", "region", "sur")` añade una etiqueta y crea una serie de métrica distinta de la que no tiene etiquetas, aunque compartan el nombre base. La pista advierte que son series separadas internamente; el ejercicio 2 confirma que dos regiones se acumulan por separado y son consultables de forma independiente.
+
+**Punto de incremento olvidado (error frecuente).** El fallo deliberado elimina `pedidosCreados.increment();` dejando `crear(...)` vacío, y entonces la aserción `isEqualTo(valorInicial + 2)` falla porque el contador nunca sube. El error es silencioso y común: la métrica existe en el código pero su punto de incremento se olvida en un método concreto, dejando el dashboard sin movimiento sin ningún error visible que lo delate.
+
+**Alta cardinalidad (límite).** Usar un valor único por entidad —como el ID de cada pedido o de cada usuario— como etiqueta genera una explosión de series de métricas distintas que degrada el sistema de monitoreo. Este es el límite de las etiquetas: deben ser de baja cardinalidad (como la región), motivo por el que el ejercicio 3 pide justificar en una frase por qué el ID único sería un error.
+
+**Evento sin valor analítico (decisión).** La sección de límites decide no crear una métrica dedicada para un evento tan infrecuente o de tan bajo valor que ninguna decisión de negocio dependería de observarlo. La decisión reserva las métricas custom para eventos con valor de negocio real, evitando esfuerzo de instrumentación sin retorno operativo.
+
+**Conceptos clave:** métricas custom, valor para el equipo de producto, no solo infraestructura.
+
+Micrometer, la fachada de métricas integrada en Spring Boot Actuator, permite definir métricas custom específicas del dominio:
+
+```java
+class PedidoService {
+    private final Counter pedidosCreados;
+
+    PedidoService(MeterRegistry registry) {
+        this.pedidosCreados = registry.counter("pedidos.creados");
+    }
+
+    void crear(Pedido p) {
+        pedidosCreados.increment();
+    }
+}
+```
+
+Este código registra un contador que se incrementa en cada creación, expuesto a través de `/actuator/metrics/pedidos.creados`, consumible por sistemas como Prometheus/Grafana.
+
+**Analogía:** las métricas técnicas son los indicadores de funcionamiento interno de una fábrica (temperatura de las máquinas); las métricas de negocio custom son el conteo de productos efectivamente terminados y despachados, información que interesa directamente a quienes gestionan el negocio.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+  A["PedidoService.crear(p)"] --> B["pedidosCreados.increment()"]
+  B --> C["MeterRegistry acumula el contador"]
+  C --> D["GET /actuator/metrics/pedidos.creados"]
+```
+
+#### Practica
+
+**Demo paso a paso.** Reutiliza `academia-spring` (o créalo desde una carpeta vacía con `mkdir -p academia-spring` si es tu primera vez) y crea el servicio con la métrica en `src/main/java/com/academia/observabilidad/`:
+
+```bash
+mkdir -p academia-spring/src/main/java/com/academia/observabilidad
+cd academia-spring
+```
+
+```java
+// src/main/java/com/academia/observabilidad/PedidoService.java
+package com.academia.observabilidad;
+
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
+import org.springframework.stereotype.Service;
+
+@Service
+public class PedidoService {
+    private final Counter pedidosCreados;
+
+    public PedidoService(MeterRegistry registry) {
+        this.pedidosCreados = registry.counter("pedidos.creados");
+    }
+
+    public void crear(String descripcion) {
+        pedidosCreados.increment();
+    }
+}
+```
+
+**Explicación línea por línea:** `registry.counter("pedidos.creados")` obtiene (o crea, si no existe) un contador registrado bajo ese nombre en el `MeterRegistry`; `pedidosCreados.increment()` incrementa el contador en 1 cada vez que se llama, acumulando el total desde que la aplicación arrancó.
+
+Confirma con `MockMvc` real que crear pedidos incrementa el contador visible en `/actuator/metrics/pedidos.creados`, usando el `MeterRegistry` real inyectado en el test para verificar el valor exacto además de la respuesta HTTP:
+
+```java
+// src/test/java/com/academia/observabilidad/PedidoServiceMetricaTest.java
+package com.academia.observabilidad;
+
+import io.micrometer.core.instrument.MeterRegistry;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.web.servlet.MockMvc;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@SpringBootTest
+@AutoConfigureMockMvc
+class PedidoServiceMetricaTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+    @Autowired
+    private PedidoService pedidoService;
+    @Autowired
+    private MeterRegistry meterRegistry;
+
+    @Test
+    void crearPedidosIncrementaElContadorRealYApareceEnActuator() throws Exception {
+        double valorInicial = meterRegistry.counter("pedidos.creados").count();
+
+        pedidoService.crear("Comprar leche");
+        pedidoService.crear("Pagar factura");
+
+        assertThat(meterRegistry.counter("pedidos.creados").count()).isEqualTo(valorInicial + 2);
+
+        mockMvc.perform(get("/actuator/metrics/pedidos.creados"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.measurements[0].value").value(valorInicial + 2));
+    }
+}
+```
+
+```bash
+mvn test -Dtest=PedidoServiceMetricaTest # Maven
+./gradlew test --tests PedidoServiceMetricaTest # Gradle (equivalente)
+```
+
+**Resultado esperado:** `BUILD SUCCESS` con el test en verde: el `MeterRegistry` real confirma que el contador se incrementó exactamente en 2 tras dos llamadas a `crear(...)`, y la misma cifra aparece expuesta en `/actuator/metrics/pedidos.creados`, la ruta real que un sistema de monitoreo consultaría en producción.
+
+**Fallo deliberado:** en `PedidoService.crear`, elimina la línea `pedidosCreados.increment();` (dejando el método vacío, olvidando registrar la métrica). Ejecuta de nuevo el test — la aserción `assertThat(meterRegistry.counter("pedidos.creados").count()).isEqualTo(valorInicial + 2)` FALLA porque el contador nunca se incrementó — diagnostica confirmando un problema real y común: una métrica de negocio que existe en el código pero cuyo punto de incremento se olvida en un método específico, dejando el conteo silenciosamente incorrecto sin que ningún error visible lo señale hasta que alguien note que el dashboard "no se mueve". Revierte el cambio antes de continuar.
+
+**Ejercicios.**
+
+1. Agrega una métrica de tipo `Timer` (`registry.timer("pedidos.tiempo.procesamiento")`) que mida cuánto tarda `crear(...)`, y confirma con un test que `count()` refleja el número de invocaciones.
+2. Agrega una etiqueta (`tag`) a la métrica (`registry.counter("pedidos.creados", "region", "sur")`) y confirma con un test que dos regiones distintas se acumulan como series separadas, consultables independientemente.
+3. Documenta en una frase, basándote en los errores comunes del laboratorio, por qué una etiqueta con el ID único de cada pedido (en vez de algo como la región) sería un error de alta cardinalidad.
+4. Escribe de memoria (sin mirar) un servicio con un `Counter` de Micrometer, y un test que confirme su valor exacto tras varias invocaciones. Compara después contra el patrón del Paso 4.
+
+**Pista:** `meterRegistry.counter("nombre")` sin etiquetas y `meterRegistry.counter("nombre", "tag", "valor")` con etiquetas son series de métricas DISTINTAS internamente, aunque compartan el mismo nombre base — ten cuidado de consultar la combinación exacta de nombre y etiquetas que registraste.
+
+**Completa el código:** rellena el espacio para incrementar el contador de negocio:
+
+```java
+public void crear(String descripcion) {
+    pedidosCreados.____();
+}
+```
+
+**Reto de memoria:** cierra este documento y escribe, solo de memoria, un servicio con un `Counter` de Micrometer registrado en el constructor, y un test que confirme su incremento exacto tras dos llamadas. Compara después contra el patrón del Paso 4.
+
+#### Aplica
+
+**Reto abierto.** Elige dos eventos de negocio que el equipo de producto querría contar y registra un contador o temporizador por evento, con etiquetas de baja cardinalidad. Demuestra su valor exacto en tests, límites de exposición en Actuator y una consulta que un sistema de monitoreo podría usar.
+
+**Checklist de salida.**
+
+- [ ] Cada evento de negocio relevante tiene una métrica dedicada.
+- [ ] Las etiquetas son de baja cardinalidad y están justificadas.
+- [ ] El valor exacto se verifica en un test tras varias invocaciones.
+- [ ] La métrica es visible en `/actuator/metrics/<nombre>`.
+- [ ] El README describe qué significa cada métrica para negocio.
+
+**Si falla.** Si el contador no aparece en Actuator, confirma el nombre exacto y que el endpoint `metrics` esté expuesto; si el valor no coincide, revisa si el contador se creó con etiquetas distintas de las que consultas.
+
+**Siguiente paso:** el Tema 3 distingue dos señales de salud con propósitos operativos distintos.
+
+**Errores comunes:** exponer solo métricas técnicas genéricas sin ninguna métrica de negocio custom; usar un valor de alta cardinalidad (como un ID de usuario único) como etiqueta, generando una explosión de series de métricas distintas que degrada el sistema de monitoreo.
+
+**Límites y decisión de uso:** para un evento tan infrecuente o de tan bajo valor analítico que ninguna decisión de negocio dependería de observarlo (un caso extremadamente raro sin impacto operativo), agregar una métrica dedicada puede ser esfuerzo sin retorno; reserva las métricas custom para eventos con valor de negocio real.
+
+**Fuente oficial:** [Micrometer — Application Metrics](https://docs.spring.io/spring-boot/reference/actuator/metrics.html).
+
+**Transferencia al proyecto integrador:** las métricas de negocio con Micrometer que definas aquí son las que monitoreará el proyecto integrador de este track (microservicio productivo, Módulo 12).
+
+### Tema 3: Liveness vs readiness · Intermedio · 30 min
+
+**Prerrequisito:** Temas 1 y 2 de este módulo.
+
+**Al terminar podrás:** configurar endpoints de liveness y readiness separados, y explicar con evidencia real por qué confundirlos causa reinicios innecesarios en un despliegue orquestado.
+
+#### Aprende
+
+**¿Por qué es importante?** Una aplicación podría estar perfectamente viva (sin necesitar reiniciarse) pero temporalmente no lista para recibir tráfico —por ejemplo, durante el arranque mientras inicializa conexiones— un caso donde reiniciar el pod (liveness fallando) sería contraproducente, mientras sacarlo temporalmente de la rotación (readiness fallando) es el comportamiento correcto.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| Habilitar las sondas | Prerrequisito | `management.endpoint.health.probes.enabled=true` y los flags de liveness/readiness |
+| Endpoint de liveness | Núcleo | `/actuator/health/liveness` responde `200`/`UP`: ¿debe reiniciarse el pod? |
+| Endpoint de readiness | Núcleo | `/actuator/health/readiness` responde `503`/`OUT_OF_SERVICE`: ¿recibe tráfico ahora? |
+| `AvailabilityChangeEvent` | Variante | `AvailabilityChangeEvent.publish(publisher, this, ReadinessState.REFUSING_TRAFFIC)` |
+| Independencia de las señales | Diagnóstico | el test confirma que marcar no-listo deja liveness en `UP` |
+| Sonda cruzada en despliegue | Error frecuente | apuntar liveness a `/readiness` provoca reinicios innecesarios en producción |
+| Estado interno sin el evento | Límite | cambiar estado sin `AvailabilityChangeEvent` no actualiza los endpoints de Actuator |
+| Despliegue sin orquestador | Decisión | sin un orquestador que use ambas sondas, un único `/actuator/health` basta |
+
+Cada fila tiene su explicación individual a continuación.
+
+**Habilitar las sondas (prerrequisito).** Las tres propiedades `management.endpoint.health.probes.enabled=true`, `management.health.livenessstate.enabled=true` y `management.health.readinessstate.enabled=true` activan los grupos `liveness` y `readiness` como endpoints separados. Sin ellas los endpoints no existen, por lo que la sección «Si falla» indica confirmar que estén activas cuando readiness no responde.
+
+**Endpoint de liveness (núcleo).** `/actuator/health/liveness` responde a «¿está la aplicación tan rota que debería reiniciarse?»; un fallo dispara el reinicio del contenedor. En el test sigue respondiendo `200` con `UP` incluso tras marcar la aplicación como no lista, lo que demuestra que el proceso está sano y no necesita reinicio aunque no reciba tráfico.
+
+**Endpoint de readiness (núcleo).** `/actuator/health/readiness` responde a «¿está en condiciones de recibir tráfico ahora?»; un fallo saca el pod de la rotación sin reiniciarlo. Tras `POST /test/no-listo` el test lo ve responder `503` con `OUT_OF_SERVICE`, el estado correcto durante una recuperación temporal que no justifica un reinicio.
+
+**`AvailabilityChangeEvent` (variante).** `AvailabilityChangeEvent.publish(publisher, this, ReadinessState.REFUSING_TRAFFIC)` es el mecanismo real de Spring Boot para cambiar readiness sin tocar liveness, y `ReadinessState.ACCEPTING_TRAFFIC` es la variante que lo devuelve a la rotación. Es el mismo mecanismo que se usaría internamente durante un apagado ordenado o la recuperación temporal de una dependencia.
+
+**Independencia de las señales (diagnóstico).** `marcarNoListoAfectaSoloReadinessNoLiveness` comprueba que, tras forzar `REFUSING_TRAFFIC`, readiness cae a `OUT_OF_SERVICE` mientras liveness permanece en `UP`. Esta independencia es la distinción central del Tema y permite diagnosticar que la aplicación está viva pero temporalmente fuera de servicio, no rota.
+
+**Sonda cruzada en despliegue (error frecuente).** El fallo deliberado describe, sin tocar código, apuntar la sonda de liveness de Kubernetes a `/actuator/health/readiness`. Con esa configuración, una caída de readiness durante una recuperación temporal se interpreta como fallo de liveness y Kubernetes reinicia el pod innecesariamente en vez de esperar; es un error de configuración de infraestructura con reinicios reales en producción.
+
+**Estado interno sin el evento (límite).** La pista marca el límite: modificar directamente algún estado interno sin pasar por `AvailabilityChangeEvent` no actualizaría correctamente los endpoints de Actuator. Por eso el checklist exige que el apagado ordenado use el evento de disponibilidad y no un estado interno ad hoc, que quedaría invisible para las sondas.
+
+**Despliegue sin orquestador (decisión).** La sección de límites decide que, en un despliegue sin un orquestador que distinga ambas sondas (por ejemplo, un servidor tradicional sin Kubernetes), la separación liveness/readiness no tiene consumidor que la aproveche. En ese contexto un único `/actuator/health` sigue siendo suficiente, de modo que la distinción se introduce solo cuando hay quien la use.
+
+**Conceptos clave:** ¿debe reiniciarse el pod? vs ¿debe recibir tráfico ahora?
+
+`management.endpoint.health.probes.enabled: true` habilita dos endpoints con propósito distinto: `/actuator/health/liveness` responde "¿está la aplicación en un estado tan roto que debería reiniciarse?" (un fallo dispara un reinicio del contenedor), mientras `/actuator/health/readiness` responde "¿está la aplicación actualmente en condiciones de recibir tráfico?" (un fallo simplemente saca temporalmente al pod de la rotación de balanceo, sin reiniciarlo).
+
+**Analogía:** liveness es verificar si una persona sigue consciente y necesita atención médica de emergencia; readiness es verificar si esa misma persona, consciente y sana, está actualmente disponible para atender clientes en este momento específico.
+
+**Diagrama:**
+
+```text
+┌── liveness: ¿debe reiniciarse el pod? ──────────────┐
+│  UP: el proceso está sano, no necesita reinicio          │
+│  DOWN: algo irrecuperable, Kubernetes reinicia el pod    │
+└──────────────────────────────────────────────┘
+┌── readiness: ¿debe recibir tráfico ahora? ──────────┐
+│  UP: listo, recibe tráfico normalmente                   │
+│  DOWN: sacado temporalmente de la rotación, sin reinicio  │
+└──────────────────────────────────────────────┘
+```
+
+#### Practica
+
+**Demo paso a paso.** Reutiliza `academia-spring` (o créalo desde una carpeta vacía con `mkdir -p academia-spring` si es tu primera vez) y actualiza `src/main/resources/application.properties` para habilitar las sondas separadas:
+
+```bash
+mkdir -p academia-spring/src/main/java/com/academia/observabilidad
+cd academia-spring
+cat >> src/main/resources/application.properties <<'EOF'
+management.endpoint.health.probes.enabled=true
+management.health.livenessstate.enabled=true
+management.health.readinessstate.enabled=true
+EOF
+```
+
+```java
+// src/main/java/com/academia/observabilidad/ControlDisponibilidad.java
+package com.academia.observabilidad;
+
+import org.springframework.boot.availability.AvailabilityChangeEvent;
+import org.springframework.boot.availability.ReadinessState;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+// endpoint de PRUEBA para forzar readiness a REFUSING_TRAFFIC sin afectar liveness
+@RestController
+public class ControlDisponibilidad {
+    private final ApplicationEventPublisher publisher;
+
+    public ControlDisponibilidad(ApplicationEventPublisher publisher) { this.publisher = publisher; }
+
+    @PostMapping("/test/no-listo")
+    public void marcarComoNoListo() {
+        AvailabilityChangeEvent.publish(publisher, this, ReadinessState.REFUSING_TRAFFIC);
+    }
+
+    @PostMapping("/test/listo")
+    public void marcarComoListo() {
+        AvailabilityChangeEvent.publish(publisher, this, ReadinessState.ACCEPTING_TRAFFIC);
+    }
+}
+```
+
+**Explicación línea por línea:** `management.endpoint.health.probes.enabled=true` activa los grupos `liveness` y `readiness` como endpoints separados; `AvailabilityChangeEvent.publish(publisher, this, ReadinessState.REFUSING_TRAFFIC)` es el mecanismo REAL que Spring Boot expone para cambiar el estado de readiness sin afectar liveness — el mismo mecanismo que usarías internamente durante un apagado ordenado o una recuperación temporal de una dependencia.
+
+Confirma con `MockMvc` real que cambiar readiness NO afecta liveness, la distinción central de este Tema:
+
+```java
+// src/test/java/com/academia/observabilidad/LivenessReadinessTest.java
+package com.academia.observabilidad;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.web.servlet.MockMvc;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@SpringBootTest
+@AutoConfigureMockMvc
+class LivenessReadinessTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Test
+    void marcarNoListoAfectaSoloReadinessNoLiveness() throws Exception {
+        mockMvc.perform(post("/test/no-listo"));
+
+        mockMvc.perform(get("/actuator/health/readiness"))
+            .andExpect(status().isServiceUnavailable())
+            .andExpect(jsonPath("$.status").value("OUT_OF_SERVICE"));
+
+        mockMvc.perform(get("/actuator/health/liveness"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.status").value("UP")); // liveness NO se ve afectado
+
+        mockMvc.perform(post("/test/listo")); // deja el estado limpio para otros tests
+    }
+}
+```
+
+```bash
+mvn test -Dtest=LivenessReadinessTest # Maven
+./gradlew test --tests LivenessReadinessTest # Gradle (equivalente)
+```
+
+**Resultado esperado:** el test pasa: tras marcar la aplicación como no lista, `/actuator/health/readiness` responde `503` con `OUT_OF_SERVICE`, mientras `/actuator/health/liveness` sigue respondiendo `200` con `UP` — la aplicación sigue perfectamente viva (no necesita reiniciarse), solo temporalmente fuera de la rotación de tráfico, exactamente el comportamiento que este Tema explica.
+
+**Fallo deliberado:** en un despliegue mal configurado (documenta esto sin modificar código, es un error de configuración de infraestructura, no de la aplicación), apunta la sonda de liveness de Kubernetes hacia `/actuator/health/readiness` en vez de `/actuator/health/liveness`. Con esa configuración incorrecta, el mismo escenario de este test (readiness `DOWN` durante una recuperación temporal) haría que Kubernetes interprete la falla de READINESS como si fuera una falla de LIVENESS, reiniciando el pod innecesariamente en vez de simplemente esperar a que vuelva a estar listo — diagnostica confirmando por qué la distinción de este Tema no es solo conceptual: apuntar la sonda equivocada al endpoint equivocado en la configuración de despliegue produce reinicios reales e innecesarios en producción.
+
+**Ejercicios.**
+
+1. Agrega un test que confirme que, tras `marcarComoListo()`, `/actuator/health/readiness` vuelve a responder `200` con `UP`.
+2. Documenta en una frase, para un escenario de tu elección, cuándo publicarías `LivenessState.BROKEN` (el estado equivalente para liveness) en vez de solo afectar readiness.
+3. Combina este Tema con el Tema 1: haz que `ServicioExternoHealthIndicator` publique automáticamente `REFUSING_TRAFFIC` cuando detecta la dependencia caída, y confirma con un test que readiness refleja ese cambio sin intervención manual.
+4. Escribe de memoria (sin mirar) un test que confirme que cambiar readiness a `REFUSING_TRAFFIC` no afecta el estado de liveness. Compara después contra el patrón del Paso 4.
+
+**Pista:** `AvailabilityChangeEvent` es el mecanismo idiomático de Spring Boot para este propósito; modificar directamente algún estado interno sin pasar por este evento no actualizaría los endpoints de Actuator correctamente.
+
+**Completa el código:** rellena el espacio para publicar el cambio de estado de readiness:
+
+```java
+AvailabilityChangeEvent.publish(publisher, this, ReadinessState.____);
+```
+
+**Reto de memoria:** cierra este documento y escribe, solo de memoria, un test `MockMvc` que confirme que marcar la aplicación como no lista afecta `/actuator/health/readiness` pero no `/actuator/health/liveness`. Compara después contra el patrón del Paso 4.
+
+#### Aplica
+
+**Reto abierto.** Escribe los manifiestos de despliegue que apuntan cada sonda a su endpoint correcto y documenta el comportamiento ante un arranque lento, una dependencia caída y un apagado ordenado. Demuestra con tests que readiness cambia sin alterar liveness y explica en el runbook qué reinicia y qué solo saca de rotación.
+
+**Checklist de salida.**
+
+- [ ] Liveness y readiness son endpoints separados y habilitados.
+- [ ] Un test demuestra que readiness `DOWN` no altera liveness.
+- [ ] Las sondas del despliegue apuntan al endpoint correcto.
+- [ ] El runbook diferencia reinicio de retirada de tráfico.
+- [ ] El apagado ordenado usa el evento de disponibilidad, no estado interno.
+
+**Si falla.** Si readiness no responde, confirma que las tres propiedades están activas y que el endpoint no está bloqueado por seguridad; si apagar readiness también apaga liveness, revisa la configuración de sondas del despliegue, no el código.
+
+**Siguiente paso:** el módulo 8 aborda mensajería y integraciones asíncronas.
+
+**Errores comunes:** usar un único endpoint de salud genérico en Kubernetes en vez de separar liveness de readiness, causando reinicios innecesarios; apuntar por error la sonda de liveness hacia el endpoint de readiness (o viceversa) en la configuración de despliegue.
+
+**Límites y decisión de uso:** para un despliegue que no corre en un orquestador que distinga estas dos sondas (por ejemplo, un servidor tradicional sin Kubernetes ni un mecanismo equivalente), la distinción liveness/readiness no tiene ningún consumidor real que la aproveche; un único endpoint `/actuator/health` sigue siendo suficiente en ese contexto.
+
+**Fuente oficial:** [Spring Boot — Kubernetes Probes](https://docs.spring.io/spring-boot/reference/actuator/kubernetes-probes.html).
+
+**Transferencia al proyecto integrador:** distinguir liveness de readiness es lo que evitará que Kubernetes reinicie innecesariamente el proyecto integrador de este track (microservicio productivo, Módulo 12).
+
+### Tema 4: Tracing distribuido con Micrometer Tracing · Avanzado · 45 min
+
+**Prerrequisito:** Tema 2 de este módulo (métricas con Micrometer).
+
+**Al terminar podrás:** propagar un `traceId` compartido entre un span padre y un span hijo dentro de la misma petición usando `@Observed` y el `Tracer` de Micrometer, y diagnosticar por qué un método anotado `@Observed` puede no generar ningún span nuevo sin ningún error visible.
+
+#### Aprende
+
+**¿Por qué es importante?** Cuando un pedido de RutaFlow falla en producción, "algo salió mal en algún servicio" sin más contexto obliga a revisar logs de varios servicios a ciegas; con tracing distribuido, el mismo `traceId` aparece en los logs de cada servicio que participó en la petición, permitiendo reconstruir la secuencia completa con una sola búsqueda.
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Evidencia |
+|---|---|---|
+| `Tracer.currentSpan()` | Prerrequisito | expone el span activo (`traceId`, `spanId`) en el punto exacto del código donde se lee |
+| `@Observed` crea un span hijo | Núcleo | el span leído DENTRO del método anotado comparte `traceId` con el padre pero tiene su propio `spanId` |
+| `management.observations.annotations.enabled` | Diagnóstico | en `false` (el valor por defecto), `@Observed` no crea ningún span nuevo, SIN ningún error |
+| `spring-boot-starter-aspectj` (Boot 4) | Prerrequisito | el starter que habilita `@Observed` se renombró desde `spring-boot-starter-aop` |
+| `management.tracing.sampling.probability` | Variante | por defecto solo 10% de las peticiones generan traza completa; `1.0` traza el 100% |
+| Mismo `traceId`, distinto `spanId` | Núcleo | la propiedad que hace posible reconstruir una cadena de llamadas como una sola historia |
+| Cuándo el overhead no se justifica | Decisión | para un servicio con una sola operación interna sin llamadas a otros servicios, tracing agrega ceremonia sin beneficio proporcional |
+
+Cada fila tiene su explicación individual a continuación.
+
+**`Tracer.currentSpan()` (prerrequisito).** El bean `Tracer` (de `io.micrometer.tracing`) expone `currentSpan()`, que devuelve el span activo en el hilo actual en ese punto exacto de la ejecución; `span.context().traceId()` y `span.context().spanId()` son los identificadores que Micrometer Tracing gestiona automáticamente. Leer estos valores en dos puntos distintos de una misma petición es el prerrequisito para confirmar, en código, que son el mismo trace pero spans distintos.
+
+**`@Observed` crea un span hijo (núcleo).** `@Observed(name = "greeting.generate", contextualName = "generate-greeting")` sobre un método hace que, cada vez que se invoca A TRAVÉS DEL PROXY de Spring (nunca por auto-invocación directa dentro de la misma clase), se abra una nueva "Observation" que, con el puente de tracing activo, se traduce en un nuevo span hijo del que estaba activo al momento de la llamada. El test confirma esto leyendo `tracer.currentSpan()` DENTRO del método observado: su `spanId` es distinto del `spanId` leído por el llamador, pero su `traceId` es idéntico.
+
+**`management.observations.annotations.enabled` (diagnóstico).** Este es el hallazgo central del tema: la propiedad `management.observations.annotations.enabled` vale `false` POR DEFECTO. Sin ponerla en `true` explícitamente, `@Observed` no produce ningún error ni advertencia — simplemente no crea ningún span nuevo, y el `spanId` leído dentro del método "observado" resulta IDÉNTICO al del llamador, como si la anotación no existiera. Es exactamente el tipo de fallo silencioso que un error de compilación nunca atraparía.
+
+**`spring-boot-starter-aspectj` (Boot 4) (prerrequisito).** `@Observed` funciona vía AOP (un proxy intercepta la llamada al método); ese soporte de AOP requería el starter `spring-boot-starter-aop` en Spring Boot 3.x, renombrado a `spring-boot-starter-aspectj` en Spring Boot 4 (confirmado contra Maven Central: `spring-boot-starter-aop` solo existe hasta la versión `4.0.0-M2`, un milestone previo al lanzamiento de Boot 4). Un proyecto migrado de Boot 3 que todavía declare el starter viejo simplemente no resuelve la dependencia.
+
+**`management.tracing.sampling.probability` (variante).** Por defecto, Spring Boot solo muestrea (genera traza completa) el 10% de las peticiones, para no generar overhead de tracing en el 100% del tráfico de producción sin necesidad. `management.tracing.sampling.probability: 1.0` fuerza el muestreo del 100%, apropiado para un entorno de desarrollo o para depurar un incidente específico, no necesariamente para producción a gran escala.
+
+**Mismo `traceId`, distinto `spanId` (núcleo).** La garantía central que hace útil el tracing distribuido es exactamente esta: un `traceId` constante identifica TODA la cadena de llamadas de una petición (incluso cruzando servicios distintos vía propagación de headers HTTP, fuera del alcance de este demo de un solo proceso), mientras cada `spanId` distinto identifica una UNIDAD DE TRABAJO específica dentro de esa cadena (una llamada a un método, una petición HTTP saliente, una consulta a base de datos). Buscar por `traceId` en los logs reconstruye la historia completa.
+
+**Cuándo el overhead no se justifica (decisión).** Para un servicio interno con una sola operación simple que no llama a ningún otro servicio ni realiza ninguna operación costosa, instrumentar con `@Observed` y tracing agrega ceremonia de configuración sin ningún beneficio diagnóstico proporcional; el tracing se justifica cuando hay una cadena real de llamadas (entre métodos, servicios o ambos) que se vuelve difícil de reconstruir manualmente desde logs aislados.
+
+**Conceptos clave:** `Tracer`, `@Observed`, `traceId` compartido, `spanId` por unidad de trabajo, `management.observations.annotations.enabled`.
+
+`Tracer.currentSpan()` expone el span activo en cualquier punto del código; `@Observed` sobre un método crea un span hijo del span activo al momento de la llamada (vía proxy AOP, requiere `spring-boot-starter-aspectj` y, críticamente, `management.observations.annotations.enabled: true`, que vale `false` por defecto). El span hijo comparte el mismo `traceId` que el padre pero tiene su propio `spanId`, la propiedad que permite reconstruir una cadena completa de llamadas buscando un único `traceId` en los logs.
+
+**Analogía:** un `traceId` es como el número de seguimiento único de un paquete que viaja a través de varias estaciones de distribución; cada `spanId` es el sello específico que cada estación individual le agrega al pasar por ella — el número de seguimiento (traceId) permanece igual en todo el viaje, mientras cada sello (spanId) identifica una etapa específica y distinta de ese mismo viaje.
+
+**Diagrama:**
+
+```mermaid
+sequenceDiagram
+  participant C as Caller (span padre)
+  participant S as GreetingService.greet() (@Observed)
+  C->>C: traceId=ABC, spanId=1 (span padre)
+  C->>S: invoca vía proxy AOP
+  S->>S: traceId=ABC (igual), spanId=2 (nuevo, hijo)
+  S-->>C: retorna
+  Note over C,S: mismo traceId, spanId distinto por unidad de trabajo
+```
+
+#### Practica
+
+**Demo paso a paso.** Desde una carpeta vacía, genera el proyecto:
+
+```bash
+mkdir tracing-demo && cd tracing-demo
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web,actuator -d javaVersion=27 -o app.zip
+unzip -q app.zip
+```
+
+Agrega las dependencias reales de tracing y AOP al `pom.xml` (dentro de `<dependencies>`; sin fijar versión, el BOM de Spring Boot las resuelve):
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-micrometer-tracing-brave</artifactId>
+</dependency>
+<dependency>
+    <groupId>io.micrometer</groupId>
+    <artifactId>micrometer-tracing-bridge-brave</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-aspectj</artifactId>
+</dependency>
+```
+
+Crea `src/main/resources/application.yml`:
+
+```yaml
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+  observations:
+    annotations:
+      enabled: true
+```
+
+Crea `src/main/java/com/academia/tracing/GreetingService.java`:
+
+```java
+package com.academia.tracing;
+
+import io.micrometer.observation.annotation.Observed;
+import io.micrometer.tracing.Tracer;
+import org.springframework.stereotype.Service;
+
+@Service
+public class GreetingService {
+    private final Tracer tracer;
+
+    public GreetingService(Tracer tracer) { this.tracer = tracer; }
+
+    @Observed(name = "greeting.generate", contextualName = "generate-greeting")
+    public SpanInfo greet() {
+        var span = tracer.currentSpan();
+        String traceId = span != null ? span.context().traceId() : "none";
+        String spanId = span != null ? span.context().spanId() : "none";
+        return new SpanInfo("Hello, World!", traceId, spanId);
+    }
+
+    public record SpanInfo(String mensaje, String traceId, String spanId) {}
+}
+```
+
+Crea el test en `src/test/java/com/academia/tracing/GreetingServiceTracingTest.java`:
+
+```java
+package com.academia.tracing;
+
+import io.micrometer.tracing.Span;
+import io.micrometer.tracing.Tracer;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+@SpringBootTest
+class GreetingServiceTracingTest {
+
+    @Autowired
+    private Tracer tracer;
+    @Autowired
+    private GreetingService greetingService;
+
+    @Test
+    void elSpanHijoComparteTraceIdConElPadrePeroTieneSuPropioSpanId() {
+        Span spanPadre = tracer.nextSpan().name("peticion-simulada").start();
+        String traceIdPadre;
+        String spanIdPadre;
+        GreetingService.SpanInfo hijo;
+        try (Tracer.SpanInScope ignored = tracer.withSpan(spanPadre)) {
+            traceIdPadre = spanPadre.context().traceId();
+            spanIdPadre = spanPadre.context().spanId();
+            hijo = greetingService.greet(); // @Observed crea un span HIJO del activo (spanPadre)
+        } finally {
+            spanPadre.end();
+        }
+
+        assertThat(hijo.traceId()).isEqualTo(traceIdPadre); // mismo trace de extremo a extremo
+        assertThat(hijo.spanId()).isNotEqualTo(spanIdPadre); // pero es un span DISTINTO (hijo)
+    }
+}
+```
+
+```bash
+./mvnw test
+```
+
+**Resultado esperado:** el test pasa (verificado con Spring Boot 4.1.1 / Spring Framework 7.0.9 / Micrometer Tracing 1.7.1 sobre JDK 27.0.1): `hijo.traceId()` es idéntico a `traceIdPadre`, pero `hijo.spanId()` es distinto de `spanIdPadre`, confirmando en código que `@Observed` efectivamente crea un span hijo dentro del mismo trace.
+
+**Fallo deliberado:** quita (o cambia a `false`) la propiedad `management.observations.annotations.enabled` de `application.yml` y ejecuta de nuevo el test. La aserción `assertThat(hijo.spanId()).isNotEqualTo(spanIdPadre)` FALLA porque ambos `spanId` resultan IDÉNTICOS: sin esa propiedad en `true` (su valor por defecto es `false`), `@Observed` no crea ningún span nuevo, sin lanzar ningún error ni advertencia. Diagnostica confirmando que una anotación de observabilidad puede estar "presente en el código" pero completamente inactiva por una propiedad de configuración ausente, el tipo de fallo que ningún test de compilación detecta. Restaura la propiedad en `true` antes de continuar.
+
+**Ejercicios.**
+
+1. Agrega una segunda llamada a un método distinto, también `@Observed`, y confirma con un test que las tres unidades de trabajo (padre + dos hijos) comparten el mismo `traceId` pero cada una tiene su propio `spanId`.
+2. Cambia `management.tracing.sampling.probability` a `0.0` y documenta, basándote en la fuente oficial, qué implica ese valor para el muestreo de trazas en producción.
+3. Llama a `greet()` directamente desde OTRO método de la misma clase `GreetingService` (auto-invocación, sin pasar por el proxy de Spring) y confirma que, en ese caso, `@Observed` NO crea ningún span hijo (la auto-invocación no pasa por el proxy AOP).
+4. Escribe de memoria (sin mirar) un servicio con un método `@Observed` y un test que confirme que su span comparte `traceId` pero no `spanId` con un span padre simulado. Compara después contra el patrón del Paso 4.
+
+**Pista:** si un método anotado `@Observed` parece no generar ningún span nuevo, antes de sospechar del código revisa `management.observations.annotations.enabled` — es `false` por defecto y no produce ningún error que lo señale.
+
+**Completa el código:** rellena la propiedad que habilita las anotaciones de observabilidad como `@Observed`:
+
+```yaml
+management:
+  observations:
+    annotations:
+      ____: true
+```
+
+**Reto de memoria:** cierra este documento y escribe, solo de memoria, un método `@Observed`, la propiedad de configuración que lo activa, y un test que confirme `traceId` compartido con `spanId` distinto frente a un span padre simulado.
+
+#### Aplica
+
+**Reto abierto.** Instrumenta con `@Observed` los métodos de negocio clave del flujo de creación de pedidos de RutaFlow (validar, reservar inventario, cobrar, notificar), y escribe un test que confirme que las cuatro operaciones, invocadas en secuencia dentro de una misma petición simulada, comparten un único `traceId` con cuatro `spanId` distintos. Documenta qué consultarías primero en una herramienta de trazas (Zipkin, Tempo) ante un reporte de "el pedido BO-004512 se demoró mucho".
+
+**Checklist de salida.**
+
+- [ ] Un span hijo creado por `@Observed` comparte `traceId` con su span padre.
+- [ ] Ese mismo span hijo tiene un `spanId` distinto del padre.
+- [ ] `management.observations.annotations.enabled: true` está explícito en la configuración (no asumido).
+- [ ] Reprodujiste el fallo silencioso de omitir esa propiedad y entendés por qué no produce ningún error.
+- [ ] Sabés explicar la diferencia entre `traceId` (constante en toda la petición) y `spanId` (por unidad de trabajo).
+
+**Si falla.** Si todos los spans tienen el mismo `spanId` que su padre, revisa `management.observations.annotations.enabled` primero. Si la dependencia `spring-boot-starter-aop` no resuelve, en Spring Boot 4 el starter se renombró a `spring-boot-starter-aspectj`.
+
+**Siguiente paso:** el módulo 8 aborda mensajería asíncrona con Kafka y RabbitMQ.
+
+**Errores comunes:** asumir que agregar `@Observed` es suficiente sin habilitar `management.observations.annotations.enabled`; usar el nombre de starter de Boot 3.x (`spring-boot-starter-aop`) en un proyecto Boot 4; llamar al método observado por auto-invocación dentro de la misma clase, donde el proxy AOP nunca intercepta la llamada.
+
+**Límites y decisión de uso:** para un servicio con una única operación simple sin llamadas a otros servicios ni pasos internos complejos, el tracing agrega configuración y overhead sin un beneficio diagnóstico proporcional; se justifica cuando reconstruir manualmente una cadena de llamadas desde logs aislados ya es costoso o propenso a error.
+
+**Fuente oficial:** [Spring Boot — Tracing](https://docs.spring.io/spring-boot/reference/actuator/tracing.html).
+
+**Transferencia al proyecto integrador:** el `traceId` compartido de este tema es el que permitirá seguir una petición completa a través de los distintos componentes del microservicio productivo (Módulo 12).
+
+## Laboratorio práctico
+
+**Objetivo del laboratorio:** exponer Actuator con al menos una métrica de negocio custom y health checks apropiados.
+
+**Requisitos previos:** Módulos 0-6 completados.
+
+| Paso | Acción | Código | Explicación |
+|---|---|---|---|
+| 1 | Agregar el starter de Actuator | Ver Tema 1 | Expón `/health` y `/metrics` |
+| 2 | Crear un health indicator personalizado | Ver Tema 1 | Verifica un servicio externo real |
+| 3 | Definir una métrica de negocio custom | Ver Tema 2 | Verifica que aparece en `/actuator/metrics` |
+| 4 | Configurar liveness/readiness separados | Ver Tema 3 | Confirmado con `MockMvc`, no solo configurado |
+| 5 | Configurar logging estructurado en JSON | — | Consumible por un sistema de logs centralizado |
+
+**Verificación:** el laboratorio se considera exitoso si `/actuator/metrics` muestra la métrica de negocio custom incrementándose correctamente, y si liveness y readiness responden de forma independiente según el estado real de la aplicación, confirmado con tests reales.
+
+**Errores comunes y soluciones**
+
+- **Exponer todos los endpoints de Actuator públicamente sin restricción.** Configura explícitamente `exposure.include` con solo los endpoints necesarios.
+- **Solo exponer métricas técnicas genéricas.** Agrega métricas de negocio custom con Micrometer para dar valor al equipo de producto.
+- **Usar un único endpoint de salud genérico en Kubernetes.** Separa liveness de readiness para evitar reinicios innecesarios.
+
+## Proyecto de cierre del módulo
+
+**Objetivo:** entregar un servicio observable que distinga salud de negocio, estado de dependencias y disponibilidad para tráfico, con evidencia ejecutada de cada señal.
+
+**Entregables.**
+
+1. `academia-observabilidad` con Actuator y exposición restringida a `health`, `metrics` e `info`.
+2. Al menos dos `HealthIndicator` con nombre explícito y pruebas de `UP` y `DOWN`, incluida la degradación del estado general.
+3. Dos métricas de negocio con etiquetas de baja cardinalidad, verificadas por valor exacto y visibles en `/actuator/metrics`.
+4. Endpoints `liveness` y `readiness` habilitados y una prueba que demuestre que readiness `OUT_OF_SERVICE` no altera liveness.
+5. Manifiesto de despliegue (o documento equivalente) con cada sonda apuntando a su endpoint correcto.
+6. `README.md` con el catálogo de señales, su significado operativo y el procedimiento ante cada una.
+
+**Rúbrica (100 puntos).**
+
+| Criterio | Puntos |
+|---|---:|
+| Health indicators con nombres explícitos y pruebas de ambos estados | 20 |
+| Estado general degradado cuando una dependencia crítica falla | 15 |
+| Métricas de negocio correctas, con cardinalidad justificada | 20 |
+| Liveness y readiness independientes, probados con `MockMvc` | 20 |
+| Sondas del despliegue correctamente apuntadas y documentadas | 10 |
+| Exposición de Actuator limitada y runbook de señales | 15 |
+
+**Criterio de aceptación:** si un health indicator puede reportar `UP` con su dependencia caída, si readiness afecta liveness o si las sondas del despliegue están cruzadas, el módulo no se considera cerrado aunque la rúbrica sume 100.

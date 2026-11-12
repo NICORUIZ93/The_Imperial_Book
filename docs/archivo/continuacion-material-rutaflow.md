@@ -35,3 +35,105 @@ framework y una frontera explícita para JPA/H2.
 - `./scripts/validate.sh` correcto, con las cuatro omisiones PostgreSQL ya documentadas. El nuevo control comprueba origen y coincidencia de código, sin declarar todos los temas ejecutados. Los reportes mantienen los marcadores no detectados; no se relajaron para poner este lote en verde.
 
 La verificación por tema vive en `examples/rutaflow-material/verification.json`. Quedan separadas la prueba técnica, la cobertura de una referencia y la revisión pedagógica con personas principiantes.
+
+## Revisión de continuación — 2026-11-03
+
+Se revisó el prompt maestro recibido como material de referencia y se documentaron
+sus contradicciones, diferencias de conteo y verificaciones citadas que no existen
+en el repositorio en [revision-prompt-academia.md](revision-prompt-academia.md).
+El inventario vigente es 14 rutas, 241 módulos y 1.084 temas; el control
+`validate_requested_master_topics.py` cubre 75 filas en 12 rutas y no demuestra
+la meta de 1.800 ni la cobertura de todos los cursos.
+
+La inspección visual de escritorio encontró que la barra de progreso atravesaba
+el contenido al desplazarse. Se ajustó al borde superior. Se retiraron seis
+binarios Java generados y `clean-architecture/test.sh` ahora compila en una
+carpeta temporal. Las pruebas Node y Java de esos ejemplos habían pasado antes
+de esta anotación.
+
+En esta continuación, Chrome fue cerrado por el entorno antes de completar la
+prueba E2E; no se cuenta como validación E2E. La ejecución anterior de 42 pruebas
+indicada arriba corresponde a la sesión anterior y no valida el cambio CSS de
+esta fecha. No se verificó en esta sesión un viewport móvil con navegador.
+
+## Revisión pedagógica siguiente — 2026-11-03
+
+Se corrigió el perfil editorial de los seis temas que el auditor marcaba como
+no practicables. Android diagnóstico, A/B/shadow, latencia/throughput, Socket.IO,
+tokenización de pagos y Clean Architecture ahora muestran transferencia al
+proyecto correspondiente; cuatro tienen un mapa de flujo que explica límites,
+no una ilustración decorativa. El auditor reconoció rutas `.mjs` y `.cjs`, antes
+omitidas pese a que el material ya las nombraba. Perfil estructural: 1.098/1.098.
+
+La auditoría de sustancia sigue marcando 476 temas para revisión y detecta
+apéndices heredados en 184/245 módulos. Son señales automatizadas para priorizar,
+no una evaluación humana. La suite E2E de 46 pruebas se intentó después del
+rebase; Chrome recibió `SIGKILL` al iniciar, antes de abrir páginas. No se cuenta
+como resultado de navegación ni como inspección visual posterior al ajuste de la
+barra de progreso.
+
+Compilación Angular, 17 pruebas unitarias, `./scripts/validate.sh`, cinco
+laboratorios locales relevantes y `test.sh` de Java pasan. El bundle inicial
+sigue por encima del presupuesto configurado.
+
+## Simplificación para principiantes — 2026-11-03
+
+Se redujo la introducción de Cloud 0: la primera práctica solo requiere la
+terminal; Node.js y Docker aparecen cuando se necesitan. Los temas 1–3 ahora
+explican rutas, carpetas, servidor y respuestas HTTP con frases sencillas,
+comandos visibles para macOS/Linux y PowerShell, y una bitácora con resultados
+reales. El Tema 2 se probó desde un directorio temporal: `/salud` devolvió 200,
+una ruta ausente devolvió 404 y la ampliación `/version` funcionó. El comando de
+creación y lectura de `saludo.txt` también pasó en Bash.
+
+Se amplió la auditoría para aceptar los comandos de terminal usados en estos
+ejemplos y la extensión `.txt`. `./scripts/validate.sh` pasa con 23 pruebas
+unitarias auxiliares (4 omitidas). El perfil editorial marca 1.096/1.098 temas
+practicables (2 pendientes) y la metodología 1.095/1.098 completos (3 pendientes).
+La revisión de navegador sigue pendiente: Chrome es terminado
+por el entorno antes de abrir las páginas.
+
+## Revisión de cursos prioritarios — 2026-11-03
+
+Se cotejó el prompt maestro contra el contenido visible real de Java, Node.js,
+Spring Boot y Flutter. El inventario revela diferencias que la auditoría de siete
+pasos no detecta: Java 91 temas frente a 122 elementos cronometrados, Node 83
+temas frente a 75, Spring Boot 26 módulos/111 temas frente a 26/161, y Flutter
+23 módulos/106 temas frente a 23/155. Las diferencias por módulo quedan en
+`revision-cursos-prioritarios.md`; son candidatos de omisión que requieren cotejo
+individual, no una certificación automática.
+
+Como primera corrección de Java, M12 incorpora lecciones de Prototype y patrones
+estructurales; se ejecutaron ambas demostraciones con JDK 25. En Node M14, la
+lección compuesta sobre mensajería y sagas se acotó a Saga y ahora tiene un
+ejemplo JavaScript completo con fallo de pago y compensaciones. Este lote no cierra
+la revisión: siguen brechas de laboratorio en Java M16/M17/M19/M20, Kafka y RabbitMQ
+por separado y el cotejo manual
+de los módulos existentes frente al inventario prioritario. Java M16/M17 ya tienen un primer laboratorio Spring Boot/JPA y JDBC con H2; seis pruebas pasaron, incluida la medición de 4 consultas N+1 frente a 1 con `@EntityGraph` y rollback de JDBC. Querydsl, caché avanzada, Testcontainers, pools y XA siguen pendientes. Node M14 ahora tiene ejemplos Kafka/Rabbit ejecutables y dos pruebas locales; los brokers no se levantaron por falta de Docker. La consulta de Federation pasó la prueba por curl después de corregir sus comillas. Flutter M16 (FFI) y
+M17 (generación y AST) ya se añadieron con seis temas cada uno; M18 con siete,
+M19–M22 con seis. M21 cubre compras y suscripciones con sandbox y validación servidor;
+M22 cubre anuncios, mediación y consentimiento UMP. Spring Boot M23–M25 añade Modulith,
+GraphQL y Cloud Stream con cuatro temas por módulo; las pruebas con stores, WebSocket y
+brokers reales siguen pendientes de ejecución. Los fragmentos M19 pasaron `flutter analyze` con sus dependencias
+en un proyecto temporal y la regla del M20 pasó `flutter test`; mapas, realtime,
+integración móvil, paneles y firma siguen pendientes de servicios/dispositivos. Falta
+terminar la ejecución por toolchain nativo y hacer el cotejo humano de los cursos existentes.
+
+Los ejemplos Prototype, StructuralPatternsDemo (incluido Flyweight) y las dos
+rutas de la saga Node se ejecutaron con salida esperada. `./scripts/validate.sh`
+terminó correctamente con 23 pruebas Python (4 omitidas), 1.095/1.100 temas
+marcados como practicables y 1.094/1.100 con metodología completa. Build Angular
+y 17 pruebas unitarias pasaron. El build mantiene la advertencia existente del
+bundle inicial: 625,71 kB frente al presupuesto de 600 kB. No se probó Kafka o
+RabbitMQ contra brokers; Docker no está instalado en este entorno.
+
+En esta pasada se simplificaron los temas 4–6 de Cloud 0. El tema de Floci ahora
+enciende, consulta y detiene solo el servicio AWS definido en el Compose del
+proyecto; el siguiente tema enseña a leer los tres nombres y puertos; el tercero
+separa una respuesta local de lo que aún no se ha probado. Se quitaron párrafos
+repetidos y diagramas extensos, y se añadieron comandos y resultados que el alumno
+puede registrar. El archivo JavaScript pasó `node --check` y respondió `200` ante
+un servidor HTTP de prueba local; eso solo verifica el ejemplo de código, no Floci.
+La validación completa y los índices regenerados pasan. No se pudieron ejecutar
+los comandos Docker en este entorno porque el ejecutable `docker` no está
+instalado; esa práctica queda pendiente de ejecución real.

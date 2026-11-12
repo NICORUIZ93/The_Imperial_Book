@@ -708,6 +708,8 @@ Latencia es tiempo por petición; throughput es cantidad completada por unidad d
 
 **Analogía:** abrir más cajas puede despachar más personas por minuto, pero no elimina el tiempo de cada cobro ni la capacidad del almacén. El límite es que nuestra espera asíncrona representa I/O simulado: no es un benchmark de CPU, disco, base de datos ni red real de Internet.
 
+**Relación entre medidas:** `concurrencia ↑ → trabajo en vuelo ↑`; el `throughput` puede crecer hasta saturarse, mientras que la cola hace crecer `p95`. El dibujo no presupone una forma concreta: los datos medidos deciden dónde aparece el límite.
+
 **Diagrama:**
 
 ```mermaid
@@ -777,7 +779,8 @@ node medir.mjs
 #### Paso 6 · Práctica independiente
 Compara concurrencias 1, 2 y 4 con varias repeticiones. Añade un estado HTTP de fallo y cuéntalo por separado. Explica por qué 12 muestras locales no bastan para fijar un SLO de producción y qué medirías al saturar una dependencia.
 
-#### Paso 7 · Cierre
+#### Paso 7 · Cierre y evidencia
+**Evidencia de aprendizaje:** salidas, unidades, errores y condiciones del equipo. **Transferencia al proyecto propio:** mide el endpoint local que el proyecto necesita optimizar, conserva la misma carga para comparar dos cambios y reporta p95, throughput y errores por separado.
 El siguiente paso es un ensayo con carga representativa y un presupuesto de recursos. En el proyecto integrador, guarda las dos líneas JSON en `docs/capacidad.md` y explica qué cambió entre concurrencia 1 y 4. **Errores comunes:** comparar máquinas distintas sin contexto, confundir percentil con máximo y asumir escala lineal para tareas CPU-bound. **Límites y decisión de uso:** no extrapoles esta simulación a una flota real ni prometas una capacidad a partir de una sola ejecución.
 
 **Fuente oficial:** [Node performance hooks](https://nodejs.org/api/perf_hooks.html).

@@ -11,253 +11,181 @@ Spring Data JPA no elimina JDBC: es una capa sobre acceso relacional. En este m�
 
 Usa JDBC cuando el SQL explícito simplifique el caso (por ejemplo, reportes y actualizaciones condicionales), no porque sea automáticamente más rápido. Mide la consulta representativa y conserva el mismo límite de transacción si combinas JDBC con JPA.
 
-### Tema 1: DataSource, JdbcTemplate y DAO · Avanzado · 1 h 40 min
+### Tema 1: DataSource, JdbcTemplate y DAO
 
-**Prerrequisito:** Módulo 16 de este track, JDK 27+ y Maven.
+**Meta:** consultar y guardar un envío con Spring JDBC, convertir la fila en un objeto Java y proteger las entradas sin construir SQL con datos de la petición.
 
-**Al terminar podrás:** consultar e insertar datos con `JdbcTemplate`, proteger parámetros y separar persistencia del servicio.
+**¿Por qué es importante?** El SQL explícito da control sobre consultas y reportes; si se concatena una entrada o se filtra al controlador, aumenta el riesgo de errores y de inyección. Un DAO probado mantiene juntas la consulta y su traducción a objetos.
 
-#### Aprende
+**Evidencia final:** tests `@JdbcTest` para alta, búsqueda, valor ausente, entrada con comillas y ordenamiento permitido.
 
-Un reporte de envíos requiere un `JOIN` y una agregación difícil de expresar como operación de repositorio. SQL directo puede ser más claro, siempre que permanezca probado y parametrizado.
+**Práctica guiada:** sigue los cuatro cambios en el mismo `EnvioJdbcRepository` y deja verde el test que protege cada decisión.
 
-**¿Por qué es importante?** SQL explícito resulta útil para consultas especializadas, pero debe conservar parametrización, pruebas y límites de capa.
+#### Subtema 17.1 · Conecta JdbcTemplate a la base de prueba · 8 min
 
-**Mapa de subtemas críticos**
+**Contexto:** una aplicación necesita obtener conexiones sin abrirlas manualmente en cada método. Spring Boot configura el `DataSource`; `JdbcTemplate` usa esa conexión y libera recursos al terminar.
 
-| Subtema | Papel | Evidencia |
-|---|---|---|
-| `DataSource` autoconfigurado | Prerrequisito | El comando con `dependencies=web` y la dependencia `jdbc`/`h2` dejan un pool listo sin configurar la conexión a mano |
-| `JdbcTemplate` como colaborador inyectado | Núcleo | El constructor `EnvioJdbcRepository(JdbcTemplate jdbc)` recibe el template que abre y libera la conexión |
-| Parámetros `?` para valores | Núcleo | `estadoDe` pasa `referencia` como argumento posicional de `select ... where referencia = ?` |
-| Mapeo de filas a resultado | Variante | El lambda `(rs, row) -> rs.getString("estado")` traduce cada fila y `findFirst()` devuelve `Optional` |
-| Identificadores vía allowlist | Límite | El `ORDER BY` concatena el nombre de columna solo si pertenece a una lista cerrada, nunca como `?` |
-| Separación DAO/servicio y DTO | Decisión | El reporte con `JOIN` mapea a un DTO y el checklist prohíbe devolver filas crudas al controlador |
-| Inyección SQL por concatenación | Error frecuente | El fallo deliberado concatena el valor con comilla y rompe el SQL hasta volver a `?` |
-
-Cada fila tiene su explicación individual a continuación.
-
-**`DataSource` autoconfigurado (prerrequisito).** Spring Boot construye el `DataSource` a partir de la dependencia y las propiedades, de modo que al generar el proyecto con `jdbc` y `h2` ya existe un pool de conexiones. Sin este paso previo no habría conexión que `JdbcTemplate` pudiera obtener ni liberar. El límite es que esta autoconfiguración resuelve la tubería, pero no decide el SQL ni la capa de negocio.
-
-**`JdbcTemplate` como colaborador inyectado (núcleo).** El repositorio recibe `JdbcTemplate` por constructor y lo usa para `query` y `update`; ese objeto obtiene y libera conexiones, prepara statements y traduce excepciones JDBC a la jerarquía de Spring. El mecanismo evita gestionar recursos a mano. La decisión profesional es concentrar su uso en el DAO y no esparcirlo por el servicio o el controlador.
-
-**Parámetros `?` para valores (núcleo).** `estadoDe` y `crear` pasan `referencia` y `estado` como argumentos posicionales que rellenan los `?` del SQL, lo que conserva el valor como dato y no como fragmento ejecutable. El resultado observable es que `crear` devuelve `1` y la búsqueda recupera el estado insertado. El error asociado aparece si el valor se concatena en lugar de parametrizarse.
-
-**Mapeo de filas a resultado (variante).** El lambda `(rs, row) -> rs.getString("estado")` convierte cada fila del `ResultSet` en el tipo que el servicio espera, y `stream().findFirst()` entrega un `Optional` vacío cuando no hay coincidencia. Esta variante del acceso permite que una referencia desconocida retorne vacío en vez de error. El mismo patrón escala al reporte, donde el mapeo produce un DTO en lugar de una entidad gestionada.
-
-**Identificadores vía allowlist (límite).** Un `?` parametriza valores, no nombres de columna o tabla, por lo que el `ORDER BY` solo puede construirse concatenando un identificador validado contra una lista cerrada. El límite es real: pasar un nombre con espacio o punto y coma hace que el SQL falle o acepte un fragmento no pedido. Por eso el nombre de columna nunca viaja como `?` ni directo desde la petición.
-
-**Separación DAO/servicio y DTO (decisión).** El DAO contiene SQL y mapeo, el servicio expresa la operación de negocio, y el reporte con `JOIN` se mapea a un DTO antes de salir del repositorio. Esta decisión de capa evita filtrar filas crudas al controlador, como exige el checklist. La contraparte es no construir un framework DAO genérico sin necesidad real.
-
-**Inyección SQL por concatenación (error frecuente).** El fallo deliberado concatena directamente el valor recibido y prueba una entrada con comilla, lo que rompe el SQL y abre la puerta a inyección. La corrección es volver a pasar el valor como `?` e inspeccionar el test para confirmar que la cadena se conserva como dato. Este error resume por qué la parametrización es obligatoria para valores de usuario.
-
-Spring Boot configura un `DataSource` desde la dependencia y propiedades. `JdbcTemplate` obtiene/libera conexiones, prepara statements y traduce excepciones JDBC a la jerarquía de excepciones de Spring. Un DAO/repository contiene el SQL y mapeo; el servicio expresa la operación de negocio.
-
-`?` parametriza valores, no identificadores SQL. Para filtros opcionales, construye solo fragmentos elegidos de una allowlist y sigue usando parámetros para valores.
-
-**Analogía:** el `DataSource` es la tubería de agua ya conectada a la red (el pool de conexiones); `JdbcTemplate` es el grifo que abres y cierras sin preocuparte de la instalación; y el DAO es el fontanero que sabe exactamente qué grifo abrir para cada tarea, aislando al resto de la casa de los detalles.
-
-#### Practica
-
-Genera una app Spring Boot con `jdbc` y `h2`.
-
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/main/resources/schema.sql` con el contenido de este tema.
+**Hazlo tú:** abre `examples/java-jpa-lab/pom.xml`. El proyecto declara `spring-boot-starter-jdbc`, H2 para ejecución y `spring-boot-starter-jdbc-test` para la prueba slice. Abre luego `examples/java-jpa-lab/src/test/java/academia/pedidos/EnvioJdbcRepositoryTest.java` y ejecuta:
 
 ```bash
-curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -o ejemplo.zip && unzip -o ejemplo.zip -d ejemplo
+cd examples/java-jpa-lab
+./mvnw -Dtest=EnvioJdbcRepositoryTest#insertaYBuscaConParametroYMapeaUnaFila test
 ```
 
-Configura `src/main/resources/schema.sql`:
+**Resultado esperado:** el contexto `@JdbcTest` crea una base H2 aislada para la prueba e inyecta `JdbcTemplate` y `EnvioJdbcRepository`.
 
-```sql
-create table envio (
-  id bigint generated by default as identity primary key,
-  referencia varchar(40) not null unique,
-  estado varchar(20) not null
+**Fallo deliberado:** quita `@Import(EnvioJdbcRepository.class)` y vuelve a ejecutar. **Diagnóstico:** el slice no encuentra el repositorio; vuelve a importar solo el componente que quieres probar.
+
+**Entiende:** `DataSource` administra el origen de conexiones. `JdbcTemplate` evita el código repetido de abrir/cerrar conexiones y traduce errores de JDBC. `@JdbcTest` prepara el segmento de acceso a datos sin levantar una aplicación web completa.
+
+**Cierra:** di qué componente crea las conexiones y cuál ejecuta el SQL.
+
+#### Subtema 17.2 · Pasa valores como parámetros · 8 min
+
+**Contexto:** la referencia del envío llega desde una petición y debe tratarse como valor, aunque contenga comillas.
+
+**Hazlo tú:** abre `examples/java-jpa-lab/src/main/java/academia/pedidos/EnvioJdbcRepository.java`. Observa el `?` y el argumento separado:
+
+```java
+return jdbc.query(
+    "select referencia, estado from envio where referencia = ?",
+    mapper,
+    referencia
 );
 ```
 
-**Ejecuta el ejemplo** (genera el proyecto con Spring Initializr, pega el código y corre las pruebas):
+Ejecuta la prueba de entrada:
 
 ```bash
-curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
-./mvnw test
-```
-Equivalencias Maven/Gradle en el Módulo 1.
-
-Crea `src/main/java/academia/envios/EnvioJdbcRepository.java`:
-
-```java
-@Repository
-public class EnvioJdbcRepository {
-    private final JdbcTemplate jdbc;
-
-    public EnvioJdbcRepository(JdbcTemplate jdbc) { this.jdbc = jdbc; }
-
-    public Optional<String> estadoDe(String referencia) {
-        return jdbc.query(
-            "select estado from envio where referencia = ?",
-            (rs, row) -> rs.getString("estado"),
-            referencia
-        ).stream().findFirst();
-    }
-
-    public int crear(String referencia, String estado) {
-        return jdbc.update(
-            "insert into envio(referencia, estado) values (?, ?)",
-            referencia, estado
-        );
-    }
-}
+./mvnw -Dtest=EnvioJdbcRepositoryTest#entradaConComillasSeTrataComoDato test
 ```
 
-Escribe `@JdbcTest` con `@Import(EnvioJdbcRepository.class)`, crea un registro y valida encontrado/ausente. Ejecuta `./mvnw test -Dtest=EnvioJdbcRepositoryTest`.
+**Resultado esperado:** la búsqueda `"' OR '1'='1"` no devuelve envíos y el conteo sigue en dos.
 
-**Resultado esperado:** insert devuelve `1`, la búsqueda retorna estado y una referencia desconocida retorna vacío. **Fallo deliberado:** concatena el valor en SQL y prueba una entrada con comilla. Corrige usando parámetros; inspecciona el test para asegurar que la cadena se conserva como dato.
+**Fallo deliberado:** concatena `referencia` dentro del SQL y repite. **Diagnóstico:** el test ya no valida que el texto se mantenga como dato separado. Restaura `?` y el argumento.
 
-Agrega un reporte con `JOIN` entre `envio` y `parada`; mapea el resultado a un DTO, no a entidad gestionada. Añade ordenamiento por un nombre de columna que se valida contra allowlist y limita la página.
+**Entiende:** el prepared statement separa el texto SQL de sus valores. El `?` sirve para valores; no parametriza nombres de tabla ni de columna.
 
-**Pista:** pasa un nombre de columna fuera de tu allowlist (por ejemplo, uno con un espacio o un punto y coma) a la construcción del `ORDER BY` y ejecuta el reporte; si no rechazas ese valor antes de concatenarlo, verás que el SQL falla o, peor, que acepta un fragmento que no pediste — por eso el nombre de columna nunca debe pasarse como `?` ni venir directo de un parámetro de la petición sin pasar por la allowlist.
+**Cierra:** identifica cuál parte de `buscar` es SQL fijo y cuál llega desde quien llama.
 
-#### Aplica
+#### Subtema 17.3 · Convierte filas en objetos simples · 8 min
 
-Implementa búsqueda paginada y un reporte de RutaFlow por estado y fecha. Decide si JdbcTemplate, JPA o una combinación expresa mejor cada consulta. Mide tiempos solo con datos representativos; la elección no se basa en que un estilo sea universalmente más rápido.
+**Contexto:** entregar `ResultSet` al servicio o al controlador filtra detalles de JDBC a capas que no los necesitan.
 
-**Checklist de salida.**
-
-- [ ] `EnvioJdbcRepository` consulta por `referencia` con `?` y devuelve `Optional` vacío cuando no existe.
-- [ ] `crear` devuelve `1` y el estado insertado se recupera con `estadoDe`.
-- [ ] El `@JdbcTest` con `@Import(EnvioJdbcRepository.class)` pasa inserción, encontrado y ausente.
-- [ ] Una referencia con comilla se guarda como dato y no altera el SQL.
-- [ ] El reporte con `JOIN` mapea a un DTO y nunca devuelve filas crudas al controlador.
-- [ ] El `ORDER BY` usa un nombre de columna validado contra allowlist y la página está limitada.
-
-**Si falla.** Si la referencia con comilla rompe el SQL, todavía concatenas el valor: pásalo como `?`. Si el reporte devuelve filas crudas, mueve el mapeo a DTO dentro del DAO. Si el orden falla con un nombre válido, revisa la allowlist: el nombre de columna se concatena desde una lista cerrada y nunca viaja como parámetro.
-
-Entrega el repository, el test de slice y la consulta de reporte como incremento del proyecto integrador de RutaFlow. **Cuándo no usarlo:** no disperses SQL en controladores ni construyas un framework DAO genérico sin necesidad.
-
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-
-**Errores comunes:** concatenar directamente un valor recibido del usuario dentro del SQL en lugar de pasarlo como parámetro `?` (abre la puerta a inyección), y dejar que el repository JDBC devuelva filas crudas al controlador en vez de mapearlas a un DTO dentro del DAO.
-
-**Fuente oficial:** [documentación de Spring Boot](https://docs.spring.io/spring-boot/index.html).
-
-### Tema 2: `@Transactional`, rollback y límites de transacción · Avanzado · 1 h 20 min
-
-**Prerrequisito:** Tema 1 de este módulo; continúa con su esquema y repository JDBC.
-
-**Al terminar podrás:** delimitar una operación que inserta un cobro y actualiza un envío, verificando el rollback cuando una escritura falla. Esto cubre el límite transaccional básico con JDBC; el Módulo 13, Tema 1 profundiza en proxies, autoinvocación y propagación.
-
-#### Aprende
-
-El cobro se registra, pero falla la actualización del envío. Sin una transacción, queda dinero contabilizado para un pedido que sigue pendiente.
-
-**¿Por qué es importante?** El límite transaccional protege invariantes de negocio ante errores y concurrencia, no solo ante excepciones esperadas.
-
-**Mapa de subtemas críticos**
-
-| Subtema | Papel | Evidencia |
-|---|---|---|
-| Método público del bean anotado | Prerrequisito | `liquidar` es público en `LiquidacionService` y se invoca desde fuera para que el proxy actúe |
-| Commit atómico de varias escrituras | Núcleo | `insert cobro` y `update envio` dentro de `@Transactional` se confirman juntos o ninguno |
-| Rollback ante unchecked | Núcleo | Forzar el fallo del segundo `update` deja ambas tablas sin cambios |
-| `rollbackFor` para checked | Variante | Una checked exception no revierte salvo `@Transactional(rollbackFor = TuExcepcionChecked.class)` |
-| Límite local de base de datos | Límite | La transacción no abarca HTTP ni Kafka; el checklist prohíbe esperas externas dentro de ella |
-| Deduplicación idempotente | Decisión | `operation_id` con restricción única hace que el segundo intento no duplique el cobro |
-| Self-invocation del proxy | Error frecuente | Mover `@Transactional` a una llamada interna privada muestra que el proxy no se aplica |
-
-Cada fila tiene su explicación individual a continuación.
-
-**Método público del bean anotado (prerrequisito).** `@Transactional` actúa mediante un proxy de Spring que solo intercepta cuando el método gestionado se invoca desde fuera del objeto. Por eso `liquidar` debe ser público en `LiquidacionService` y llamarse desde otro bean. Sin esta condición previa, la anotación no establece ningún límite transaccional.
-
-**Commit atómico de varias escrituras (núcleo).** El método agrupa el `insert` en `cobro` y el `update` de `envio` bajo una misma transacción, de modo que ambos se confirman juntos. El mecanismo garantiza que no quede dinero contabilizado para un pedido que sigue pendiente. El resultado esperado es que ambas escrituras persistan o que ninguna permanezca tras un fallo.
-
-**Rollback ante unchecked (núcleo).** Por defecto, una excepción unchecked dentro del método provoca rollback automático de toda la transacción. Al forzar el fallo del segundo `update` en el test, no queda ningún `cobro` ni el envío cambia de estado. Este comportamiento es la protección base del invariante de negocio.
-
-**`rollbackFor` para checked (variante).** Las excepciones checked no revierten necesariamente: la pista muestra que una checked lanzada deja la fila confirmada pese a la excepción. La variante consiste en declarar `@Transactional(rollbackFor = TuExcepcionChecked.class)` para forzar el rollback también en ese caso. La decisión de qué excepciones revierten debe quedar documentada en la política.
-
-**Límite local de base de datos (límite).** La transacción es un límite local de la base de datos, no una transacción distribuida entre PostgreSQL, Kafka y un servicio HTTP. Mantenerla abierta durante una llamada HTTP o una espera humana extiende indebidamente ese límite. El checklist exige que ninguna transacción abarque HTTP, archivos o espera; para coordinar efectos externos se usa outbox o saga.
-
-**Deduplicación idempotente (decisión).** La liquidación de RutaFlow usa `operation_id` con restricción única para que un segundo envío de la misma operación no duplique el cobro. La decisión combina la restricción en base de datos con una lectura previa dentro de la misma transacción. Si falta la restricción o la lectura queda fuera de la transacción, el segundo intento duplica el cobro.
-
-**Self-invocation del proxy (error frecuente).** El fallo deliberado mueve `@Transactional` a una llamada interna privada y verifica que el proxy no se aplica como se esperaba. Anotar un método privado o invocarlo desde otro método del mismo bean (self-invocation) no activa la interceptación. La corrección es devolver el límite transaccional al método público del bean, invocado desde fuera.
-
-`@Transactional` se aplica mediante infraestructura/proxy de Spring al invocar un método gestionado. Por defecto, las excepciones unchecked provocan rollback; las checked no necesariamente. La anotación no surte el mismo efecto en una llamada interna al mismo objeto (self-invocation), ni debe cubrir llamadas lentas a sistemas externos.
-
-La transacción es un límite local de base de datos, no una transacción distribuida entre PostgreSQL, Kafka y un servicio HTTP.
-
-**Analogía:** `@Transactional` es como el carrito de la compra: vas añadiendo acciones y solo al pasar por caja (commit) se confirman todas juntas; si algo falla, el `rollback` vacía el carrito entero y no se cobra nada a medias. El límite de la transacción es hasta dónde llega ese carrito: no abarca una llamada HTTP a otra tienda.
-
-#### Practica
-
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/main/java/academia/envios/LiquidacionService.java` con el contenido de este tema.
+**Hazlo tú:** encuentra el `RowMapper` en `examples/java-jpa-lab/src/main/java/academia/pedidos/EnvioJdbcRepository.java`. Crea `EnvioRegistro` con `referencia` y `estado`; busca un envío existente y uno ausente con la prueba:
 
 ```bash
-curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -o ejemplo.zip && unzip -o ejemplo.zip -d ejemplo
+./mvnw -Dtest=EnvioJdbcRepositoryTest#insertaYBuscaConParametroYMapeaUnaFila test
 ```
 
-**Crea** el archivo `src/main/java/academia/envios/LiquidacionService.java` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+**Resultado esperado:** `buscar("RT-3")` devuelve `Optional<EnvioRegistro>` y `buscar("RT-404")` devuelve `Optional.empty()`.
 
-En `src/main/java/academia/envios/LiquidacionService.java`, inyecta repository JDBC y declara:
+**Fallo deliberado:** cambia `rs.getString("estado")` por el nombre `"situacion"`. **Diagnóstico:** H2 reporta una columna que no existe al mapear la fila. Restaura `estado`.
 
-```java
-@Service
-public class LiquidacionService {
-    private final JdbcTemplate jdbc;
+**Entiende:** `RowMapper` convierte una fila SQL en un valor Java. `Optional` expresa “puede no haber fila” sin usar `null` como señal escondida.
 
-    public LiquidacionService(JdbcTemplate jdbc) { this.jdbc = jdbc; }
+**Cierra:** explica por qué `EnvioRegistro` puede salir del DAO sin exponer `ResultSet`.
 
-    @Transactional
-    public void liquidar(String referencia) {
-        jdbc.update(
-            "insert into cobro(referencia, importe) values (?, ?)",
-            referencia, 25.00
-        );
-        jdbc.update(
-            "update envio set estado = ? where referencia = ?",
-            "LIQUIDADO", referencia
-        );
-    }
-}
-```
+#### Subtema 17.4 · Valida el ordenamiento dinámico · 10 min
 
-**Ejecuta el ejemplo** (genera el proyecto con Spring Initializr, pega el código y corre las pruebas):
+**Contexto:** los valores de filtro se parametrizan, pero `ORDER BY ?` no sustituye el nombre de una columna. Concatenar directamente lo que escribió el usuario es peligroso.
+
+**Hazlo tú:** revisa `porEstadoOrdenados` en `EnvioJdbcRepository.java`. El método permite solo dos nombres conocidos mediante `switch` y luego usa `estado` como parámetro. Ejecuta:
 
 ```bash
-curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
-./mvnw test
+./mvnw -Dtest=EnvioJdbcRepositoryTest#aceptaSoloColumnasDeOrdenamientoPermitidas test
 ```
-Equivalencias Maven/Gradle en el Módulo 1.
 
-En `@SpringBootTest`, fuerza el segundo paso a fallar (por ejemplo, con una restricción de test) y revisa ambas tablas. Ejecuta `./mvnw test -Dtest=LiquidacionServiceTest`.
+**Resultado esperado:** `referencia` ordena los resultados; `estado; drop table envio` produce `IllegalArgumentException` antes de ejecutar SQL.
 
-**Resultado esperado:** ambas escrituras se confirman juntas, o ninguna permanece tras el fallo. **Fallo deliberado:** mueve `@Transactional` a una llamada interna privada y verifica que no se aplica el proxy como esperabas; devuelve el límite transaccional al método público del bean.
+**Fallo deliberado:** elimina el `switch` y concatena `ordenarPor` directamente. **Diagnóstico:** el test de orden no permitido deja de recibir la excepción del DAO. Restaura la lista permitida.
 
-**Diagrama interactivo:** [Transacción JDBC: commit o rollback](/visuals/temas/spring-boot/modulo-17-tema-2-transacciones.html).
+**Entiende:** una allowlist transforma una opción pública en uno de varios fragmentos SQL escritos por el programa. Para una búsqueda grande, limita filas y diseña índices; elegir JDBC no garantiza que sea más rápido que JPA.
 
-Prueba explícitamente una checked exception y decide si la política requiere `rollbackFor`. Añade un test de carrera con actualización optimista (`@Version`) o una actualización condicional atómica; documenta qué anomalía previenes.
+**Cierra:** en el proyecto integrador de RutaFlow, elige una búsqueda que necesite SQL explícito y documenta filtro, orden válido, límite de página y DTO de salida. Contrasta cuándo usarías JDBC y cuándo un repositorio JPA.
 
-**Pista:** lanza una checked exception (no una `RuntimeException`) dentro del método anotado con `@Transactional` y ejecuta el test; si la fila queda confirmada en la base de datos a pesar de la excepción, es porque Spring solo revierte automáticamente ante excepciones unchecked — necesitas `@Transactional(rollbackFor = TuExcepcionChecked.class)` para forzar el rollback también en ese caso.
+**Fuentes primarias:** [Spring Boot: acceso a datos SQL](https://docs.spring.io/spring-boot/reference/data/sql.html); [Spring Framework: JdbcTemplate](https://docs.spring.io/spring-framework/reference/data-access/jdbc/core.html).
+### Tema 2: `@Transactional`, rollback y límites de transacción
 
-#### Aplica
+**Meta:** mantener juntos el cobro y el cambio de estado, comprobar qué errores provocan rollback y delimitar qué trabajo pertenece a la transacción.
 
-Implementa una liquidación de RutaFlow con deduplicación por `operation_id`. Incluye restricción única, rollback, segundo intento idempotente y una prueba donde una excepción de negocio no deja escrituras parciales.
+**¿Por qué es importante?** Si se guarda el cobro y falla el cambio de estado, el sistema queda con dos versiones distintas de la realidad. La transacción agrupa cambios de una misma base y los confirma o revierte como una unidad.
 
-**Checklist de salida.**
+**Práctica guiada:** modifica el servicio del laboratorio y observa las dos tablas después de cada resultado.
 
-- [ ] `@Transactional` vive en un método público de un bean y se invoca desde fuera del propio objeto.
-- [ ] `liquidar` inserta el cobro y actualiza el envío bajo el mismo commit.
-- [ ] Al forzar el fallo del segundo `update`, no queda ningún `cobro` ni el envío cambia de estado.
-- [ ] Una checked exception no revierte salvo `rollbackFor`, y la política queda documentada.
-- [ ] La deduplicación por `operation_id` usa restricción única y el segundo intento es idempotente.
-- [ ] Ninguna transacción abarca llamadas HTTP, archivos o espera humana.
+#### Subtema 17.5 · Confirma dos cambios como una unidad · 8 min
 
-**Si falla.** Si la segunda escritura falla y el cobro permanece, `@Transactional` no está interceptando: comprueba que el método es público y se invoca desde otro bean. Si una checked exception deja filas confirmadas, añade `rollbackFor` y documenta la política. Si el segundo intento duplica el cobro, falta la restricción única sobre `operation_id` o la lectura previa no forma parte de la misma transacción.
+**Contexto:** una liquidación correcta guarda el importe y cambia el envío a `LIQUIDADO`. El usuario no debe ver solo uno de esos cambios.
 
-Entrega test de rollback, test de repetición y nota sobre el límite transaccional para el proyecto integrador de RutaFlow. **Cuándo no usarlo:** no mantengas una transacción abierta durante HTTP, archivos o espera humana; usa outbox/saga para coordinar efectos externos.
+**Hazlo tú:** abre `examples/java-jpa-lab/src/main/java/academia/pedidos/LiquidacionService.java`. El método público llama a dos sentencias JDBC y está anotado con `@Transactional`. Ejecuta:
 
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+```bash
+cd examples/java-jpa-lab
+./mvnw -Dtest=LiquidacionServiceTest#confirmaCobroYEstadoDentroDeLaMismaTransaccion test
+```
 
-**Errores comunes:** anotar con `@Transactional` un método privado o invocarlo desde otro método del mismo bean (self-invocation) esperando que el proxy de Spring lo intercepte igual, y mantener la transacción abierta mientras se espera una respuesta HTTP o se escribe en Kafka, extendiendo el límite transaccional fuera de la base de datos.
+**Resultado esperado:** `cobro` contiene `27.50` y `envio.estado` vale `LIQUIDADO`.
 
-**Fuente oficial:** [documentación de Spring Boot](https://docs.spring.io/spring-boot/index.html).
+**Fallo deliberado:** cambia la tabla `cobro` por `cobros` en el `INSERT` y repite. **Diagnóstico:** el SQL informa que la tabla no existe; restaura `cobro`.
+
+**Entiende:** Spring intercepta la llamada al método del bean, abre la transacción antes de entrar y confirma al terminar sin excepción. `JdbcTemplate` participa en esa misma conexión transaccional.
+
+**Cierra:** enumera las dos escrituras que deben confirmarse juntas.
+
+#### Subtema 17.6 · Revierte el primer cambio si el segundo falla · 8 min
+
+**Contexto:** el `INSERT` de cobro puede funcionar aunque la referencia del envío no exista. La segunda sentencia debe comprobar cuántas filas cambió.
+
+**Hazlo tú:** abre `examples/java-jpa-lab/src/test/java/academia/pedidos/LiquidacionServiceTest.java`. Ejecuta el test que liquida `RT-404` y consulta el estado de la tabla `cobro`:
+
+```bash
+./mvnw -Dtest=LiquidacionServiceTest#revierteElCobroSiLaActualizacionDelEnvioNoEncuentraFila test
+```
+
+**Resultado esperado:** el método lanza `IllegalStateException` y el conteo de cobros queda en cero.
+
+**Fallo deliberado:** comenta `@Transactional` en `LiquidacionService.liquidar`. **Diagnóstico:** el test encuentra un cobro guardado aunque no exista el envío; vuelve a poner la anotación en el método público.
+
+**Entiende:** por defecto, Spring revierte una transacción si el método deja escapar una excepción `RuntimeException` o `Error`. Capturar la excepción dentro del método y continuar puede permitir que la transacción se confirme.
+
+**Cierra:** explica qué test demuestra que no queda una escritura parcial.
+
+#### Subtema 17.7 · Decide qué excepciones revierten · 8 min
+
+**Contexto:** algunas reglas del negocio usan excepciones comprobadas. La configuración predeterminada no siempre revierte ante ellas.
+
+**Hazlo tú:** abre `examples/java-jpa-lab/src/main/java/academia/pedidos/LiquidacionService.java`. Mira `liquidarConRevisionPendiente` y su `@Transactional(rollbackFor = LiquidacionPendienteException.class)`. Ejecuta:
+
+```bash
+./mvnw -Dtest=LiquidacionServiceTest#rollbackForTambienRevierteUnaExcepcionChecked test
+```
+
+**Resultado esperado:** se propaga `LiquidacionPendienteException`; no queda el cobro y el envío sigue `PENDIENTE`.
+
+**Fallo deliberado:** quita `rollbackFor = LiquidacionPendienteException.class` y corre el test. **Diagnóstico:** la excepción checked se lanza, pero las escrituras permanecen; restaura la regla explícita.
+
+**Entiende:** con la política predeterminada, una checked exception no provoca rollback automáticamente. `rollbackFor` hace explícita la regla del negocio. Verifica qué política define la versión de Spring que usa tu proyecto.
+
+**Cierra:** señala qué excepción debe dejar intacta la base y cuál regla lo decide.
+
+#### Subtema 17.8 · Mantén el límite dentro del bean y la base · 10 min
+
+**Contexto:** `@Transactional` usa un proxy de Spring. Solo las llamadas que pasan por ese proxy reciben el comportamiento declarado; una llamada interna del mismo objeto puede saltárselo.
+
+**Hazlo tú:** abre `examples/java-jpa-lab/src/test/java/academia/pedidos/LiquidacionServiceTest.java` y ejecuta la prueba que verifica el rollback al faltar el envío:
+
+```bash
+./mvnw -Dtest=LiquidacionServiceTest#revierteElCobroSiLaActualizacionDelEnvioNoEncuentraFila test
+```
+
+Compara ese caso con el método público de `examples/java-jpa-lab/src/main/java/academia/pedidos/LiquidacionService.java`, que recibe la llamada y deja escapar el error.
+
+**Resultado esperado:** la prueba verifica cobro y estado desde otra llamada, cuando la transacción del servicio ya terminó.
+
+**Fallo deliberado:** mueve la anotación a un método privado `liquidarInterno` y haz que el público lo invoque dentro del mismo bean. **Diagnóstico:** el test vuelve a encontrar el cobro parcial porque la llamada interna no atraviesa el proxy. Restaura `@Transactional` en el método público llamado desde afuera.
+
+**Entiende:** esta transacción agrupa operaciones en la misma base de datos. No vuelve atómica una llamada HTTP, un mensaje Kafka o la escritura de un archivo. Para coordinar sistemas separados, usa una estrategia como outbox o saga; evita sostener una transacción mientras esperas un servicio remoto.
+
+**Cierra:** en el proyecto integrador de RutaFlow, documenta las tablas que participan, el método público que marca el límite, los errores que revierten y cómo publicarías un evento sin fingir que la transacción abarca Kafka.
+
+**Fuentes primarias:** [Spring Framework: `@Transactional`, proxy y rollback](https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/annotations.html); [Spring Framework: rollback declarativo](https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/rolling-back.html).

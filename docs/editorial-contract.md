@@ -1,4 +1,6 @@
-# Contrato editorial de The Imperial Book
+# Contrato editorial histórico de The Imperial Book
+
+> Este documento describe criterios editoriales transversales. La unidad didáctica vigente es la de cuatro pasos por subtema, definida en [METODOLOGIA-DE-APRENDIZAJE.md](METODOLOGIA-DE-APRENDIZAJE.md); la cobertura de migración está en [atomic-subtopics.md](atomic-subtopics.md).
 
 Este contrato adapta patrones pedagógicos observados en los libros técnicos de la biblioteca local: progresión por capítulos, mapa conceptual, ejemplo acumulativo, síntesis, fallo diagnosticable y práctica aplicada. No autoriza copiar texto, diagramas ni ejercicios de los libros.
 
@@ -42,7 +44,7 @@ Los capítulos avanzan por cuatro niveles y no deben saltarse dependencias:
 
 Un tema no está terminado porque aparezca en el índice. Debe cumplir simultáneamente explicación, código, ubicación, ejecución, resultado, práctica, conexión con el proyecto, modelo mental y límites. La puntuación `rubricScore` es descriptiva: no compensa criterios ausentes. Las plantillas genéricas y las demostraciones clonadas no se aceptan. Los informes generados permanecen como deuda hasta que el Markdown editorial específico cumpla el contrato.
 
-La auditoría automatizada detecta presencia editorial; no ejecuta todos los ejemplos ni acredita aprendizaje. Las pruebas de producto, la metodología de siete pasos y la revisión de código y visuales se informan por separado. CI exige los nueve criterios mediante `audit_topic_learning_quality.py --check --require-practicable`.
+La auditoría automatizada detecta presencia editorial; no ejecuta todos los ejemplos ni acredita aprendizaje. La ejecución, las pruebas de producto, la migración de cuatro pasos y la revisión humana se informan por separado.
 
 ## Aplicación de los prompts de merged.pdf
 

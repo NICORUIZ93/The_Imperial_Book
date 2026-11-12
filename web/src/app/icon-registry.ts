@@ -1,5 +1,5 @@
 import {
-  Apple, Atom, BookOpen, Braces, ChevronDown, ChevronRight, Circle, CircleCheck, CloudCog, Coffee,
+  Activity, Apple, Atom, BookOpen, Braces, ChevronDown, ChevronRight, Circle, CircleCheck, CloudCog, Coffee,
   Command, GitBranch, Layers, Leaf, LucideIconData, Network, Search, Server, Shield, Smartphone, Truck, Wind, X,
 } from 'lucide-angular';
 
@@ -21,6 +21,7 @@ export const TRACK_ICONS: Record<string, LucideIconData> = {
   'apple': Apple,
   'wind': Wind,
   'truck': Truck,
+  'activity': Activity,
 };
 
 export const SHARED_ICONS = {
@@ -32,5 +33,5 @@ export const SHARED_ICONS = {
 export const TRACK_MARKS: Record<string, string> = {
   rutaflow: 'RF', foundations: '</>', cloud: '☁', devops: '∞', javascript: 'JS',
   node: '⬢', angular: 'A', react: '⚛', java: 'J', 'spring-boot': 'S', microservices: 'µS',
-  'kotlin-multiplatform': 'K', android: 'A', ios: '', flutter: 'F',
+  'kotlin-multiplatform': 'K', android: 'A', ios: '', flutter: 'F', 'control-1': 'Σ',
 };

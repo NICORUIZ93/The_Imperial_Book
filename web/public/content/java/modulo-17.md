@@ -1,140 +1,55 @@
 # Módulo 17: JDBC, DAO y transacciones
 
-**Proyecto del módulo:** dos proyectos Maven creados desde carpetas vacías para consultar envíos y liquidar cobros con H2. Escribirás cada DAO, configuración y prueba; cada tema tiene su propio proyecto y no reutiliza archivos del anterior.
-
 ## Aprende construyendo
 
-La meta es comprender qué automatiza después un ORM: separar valores del SQL, acotar el acceso a datos y confirmar varias escrituras como una sola unidad. La seguridad de una consulta y la consistencia de una operación de negocio son propiedades distintas y necesitan pruebas distintas.
+Este módulo construye una capa JDBC pequeña y verificable. El objetivo es entender lo que un ORM automatiza y qué garantías siguen siendo responsabilidad del programa.
 
 ### Dos ejemplos: primero visible, luego real
 
-- **Ejemplo sencillo:** inserta una referencia, consúltala con `PreparedStatement` y comprueba por separado los casos encontrado, ausente y dato hostil.
-- **Caso RutaFlow:** liquida un envío registrando su cobro y cambiando su estado en la misma transacción. Un fallo intermedio no puede dejar un cobro parcial; una clave de idempotencia evita duplicar la operación al reintentar una solicitud.
+- **Ejemplo sencillo:** busca una referencia con `PreparedStatement`, inserta una fila y comprueba encontrado/ausente en H2.
+- **Caso RutaFlow:** liquida un envío bajo una clave de idempotencia. En una sola transacción inserta el movimiento, cambia el estado y registra `operation_id` con restricción `UNIQUE`; dos solicitudes concurrentes con la misma clave deben producir un solo cobro.
 
-> **Alcance de este módulo.** Aquí aprendes JDBC con la profundidad necesaria para
-> usarlo con seguridad desde el track Java: parametrización, DAO y transacciones.
-> El tratamiento *de cero a experto* de acceso a datos —pooling avanzado, batch,
-> `ResultSet` scrollable y actualizable, `RowSet`, `DatabaseMetaData`, procedimientos
-> almacenados, mapeo de tipos avanzados y rendimiento— se desarrolla en el curso
-> separado **[Bases de datos con JDBC](../../../docs/PLAN-CURSO-JDBC-BASES-DATOS.md)**.
-> Este módulo no pretende cubrir ese temario completo.
+No confundas seguridad SQL con consistencia: parametrizar evita que el valor se interprete como SQL; la transacción y la clave única protegen invariantes de negocio y reintentos. Compara ambos niveles en pruebas separadas.
 
-### Tema 1: JDBC, PreparedStatement y DAO · Intermedio · 1 h
+### Tema 1: JDBC, PreparedStatement y DAO
 
-#### Aprende
+#### Paso 1 · Objetivo y preparación
 
-**Prerrequisito:** JDK 27, Maven 3.9 o superior, clases, excepciones y SQL básico. Comprueba `java --version` y `mvn --version`.
+Al finalizar podrás consultar e insertar registros usando `DataSource`, `PreparedStatement` y un DAO con responsabilidades acotadas. Requiere JDK 25+. El ejemplo ejecutable usa H2 y está en `examples/java-jpa-lab/`.
+**Conocimiento previo:** haber seguido el tema anterior de este módulo y tener instalado el entorno del stack.
+#### Paso 2 · Contexto y caso real
 
-**Al terminar podrás:** crear un DAO con `DataSource` y `PreparedStatement`, insertar y consultar registros, y demostrar con una prueba que una referencia hostil se trata como un valor y no como SQL.
+Un proceso importa referencias de envíos que contienen caracteres introducidos por usuarios. Concatenar la referencia dentro del SQL puede alterar la consulta; además, repetir SQL y mapeo en servicios distintos produce lógica inconsistente.
 
-JDBC es la API estándar de Java para ejecutar SQL. `DataSource` proporciona conexiones, normalmente mediante un pool; `PreparedStatement` conserva fija la estructura de la sentencia y enlaza los valores por posición. El DAO encapsula SQL y mapeo para que el servicio no tenga que conocer `Connection` ni `ResultSet`.
+#### Paso 3 · Teoría y modelo mental
 
-**¿Por qué es importante?** Porque concatenar datos introducidos por usuarios permite cambiar el significado de una consulta. Además, repetir SQL y mapeo en varios servicios produce reglas de acceso inconsistentes y dificulta probarlas.
+JDBC es la API estándar para ejecutar SQL desde Java. `DataSource` abstrae la obtención de conexiones y normalmente usa un pool; `PreparedStatement` separa el SQL de sus valores y permite enlazarlos como parámetros. El DAO encapsula SQL y mapeo para que el servicio no conozca `ResultSet`.
 
-**Mapa de subtemas críticos**
+Un parámetro preparado protege valores, no nombres dinámicos de tabla u ordenamiento. Para ordenar por una columna elegida por el usuario, usa una lista permitida explícita.
+**Analogía:** un `PreparedStatement` es como un formulario con casillas fijas donde solo rellenas los huecos: nadie puede "reescribir" las preguntas (por eso frena la inyección SQL). El DAO es la ventanilla única que sabe rellenar ese formulario, de modo que el resto de la app no toca SQL directamente.
+#### Paso 4 · Demostración guiada
 
-| Subtema | Papel | Evidencia |
-|---|---|---|
-| `DataSource` como fuente de conexiones | Prerrequisito | DAO recibe `DataSource`, no `DriverManager` |
-| `PreparedStatement` fija estructura, enlaza valores | Núcleo | `' OR '1'='1` tratado como valor, no SQL |
-| try-with-resources cierra `Connection`/`ResultSet` | Núcleo | Recursos liberados sin fuga |
-| DAO encapsula SQL y mapeo | Núcleo | Servicio sin `Connection`/`ResultSet` |
-| Parámetros protegen valores, no identificadores | Límite | Orden `ASC`/`DESC` por lista permitida |
-| Comprobar `executeUpdate()` | Diagnóstico | `crear` exige exactamente una fila |
-| No crear un DAO genérico | Error frecuente | Consultas reconocibles, no vagas |
+#### Subtema 1.1: Buscar una referencia con parámetro · 10 min
 
-Cada fila tiene su explicación individual a continuación.
+**1. Contexto**
 
-**`DataSource` como fuente de conexiones (prerrequisito).** `DataSource` abstrae de dónde vienen las conexiones, normalmente un pool que las reutiliza. El DAO depende de esta interfaz, no de `DriverManager.getConnection(...)`, así que en producción recibe un pool (HikariCP) y en pruebas un `JdbcDataSource` de H2 sin cambiar su código.
+Una referencia con comillas debe buscarse como dato, no convertirse en parte de la consulta SQL.
 
-**`PreparedStatement` fija estructura y enlaza valores (núcleo).** La sentencia se compila con su forma fija (`... where referencia = ?`) y los valores se envían aparte por posición con `setString`. El motor nunca interpreta el valor como SQL: `' OR '1'='1'` se busca como una referencia literal que no existe, devolviendo vacío en lugar de alterar la condición.
+**2. Hazlo tú**
 
-**try-with-resources cierra recursos (núcleo).** `Connection`, `PreparedStatement` y `ResultSet` son recursos del sistema. Declararlos en `try (...)` garantiza su cierre incluso ante excepción, devolviendo la conexión al pool. Olvidar el cierre agota el pool y bloquea la aplicación bajo carga.
-
-**DAO encapsula SQL y mapeo (núcleo).** El DAO es el único que conoce `Connection`, `PreparedStatement` y `ResultSet`; expone métodos de dominio (`crear`, `buscarEstado`) que devuelven tipos de negocio (`Optional<String>`). El servicio llamante no toca JDBC, lo que concentra las reglas de acceso en un punto comprobable.
-
-**Parámetros protegen valores, no identificadores (límite).** No puedes enlazar con `?` un nombre de tabla, una columna ni `ASC`/`DESC`: el marcador es solo para valores. Cuando el usuario elige el orden, traduces su opción mediante una allowlist (`"fecha" -> "fecha_creacion"`) y rechazas cualquier otra, porque concatenar un identificador reintroduce la inyección.
-
-**Comprobar `executeUpdate()` (diagnóstico).** `executeUpdate()` devuelve cuántas filas afectó. Ignorarlo oculta que un `INSERT` no insertó o un `UPDATE` no encontró la fila. `crear` exige `filas == 1` y lanza si no, convirtiendo un fallo silencioso en un error explícito.
-
-**No crear un DAO genérico (error frecuente).** Una clase `GenericDao.ejecutar(sql, params)` esconde consultas muy distintas tras una firma vaga, dispersa la seguridad y es difícil de probar. Un DAO con métodos nombrados por intención hace visible cada acceso y permite una prueba por consulta.
-
-**Analogía:** un `PreparedStatement` es un formulario con preguntas impresas y casillas vacías: puedes escribir cualquier respuesta en una casilla, pero no reescribir las preguntas. El DAO es la ventanilla que conoce ese formulario para que el resto de la aplicación no lo improvise.
-
-Los parámetros protegen valores, no identificadores. No puedes enlazar con `?` un nombre de tabla, una columna o la dirección `ASC`/`DESC`; cuando el usuario elige un orden, traduce su opción mediante una lista permitida. Un DAO también debe tener consultas reconocibles: evita una clase genérica con operaciones vagas que oculten accesos muy diferentes.
-
-**Cuándo no usarlo:** no construyas una capa DAO manual para ocultar CRUD estándar sin reglas propias; en ese caso, Spring Data puede reducir repetición. Conserva JDBC explícito cuando necesites controlar SQL, mapeo o transacciones con precisión.
-
-#### Practica
-
-Crea una carpeta vacía y todos los archivos del primer proyecto:
-
-```bash
-mkdir ejemplo-jdbc-dao
-cd ejemplo-jdbc-dao
-mkdir -p src/main/java/academia/envios src/test/java/academia/envios
-```
-
-Escribe `pom.xml` sin usar un generador:
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>academia</groupId>
-  <artifactId>jdbc-dao</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <maven.compiler.release>27</maven.compiler.release>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
-  <dependencies>
-    <dependency>
-      <groupId>com.h2database</groupId><artifactId>h2</artifactId><version>2.3.232</version><scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><version>5.11.4</version><scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build><plugins><plugin>
-    <groupId>org.apache.maven.plugins</groupId><artifactId>maven-surefire-plugin</artifactId><version>3.5.2</version>
-  </plugin></plugins></build>
-</project>
-```
-
-Crea `src/main/java/academia/envios/EnvioDao.java`:
+Abre `examples/java-jpa-lab/src/main/java/academia/pedidos/EnvioDao.java`:
 
 ```java
-package academia.envios;
+package academia.pedidos;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Optional;
 import javax.sql.DataSource;
+import java.sql.*;
+import java.util.Optional;
 
 public final class EnvioDao {
     private final DataSource dataSource;
 
-    public EnvioDao(DataSource dataSource) {
-        this.dataSource = dataSource;
-    }
-
-    public void crear(String referencia, String estado) throws SQLException {
-        String sql = "insert into envio(referencia, estado) values (?, ?)";
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, referencia);
-            statement.setString(2, estado);
-            int filas = statement.executeUpdate();
-            if (filas != 1) {
-                throw new SQLException("Se esperaba insertar una fila, filas=" + filas);
-            }
-        }
-    }
+    public EnvioDao(DataSource dataSource) { this.dataSource = dataSource; }
 
     public Optional<String> buscarEstado(String referencia) throws SQLException {
         String sql = "select estado from envio where referencia = ?";
@@ -151,338 +66,251 @@ public final class EnvioDao {
 }
 ```
 
-Crea `src/test/java/academia/envios/EnvioDaoTest.java`:
+Ejecuta el test que comprueba hallado, ausente y texto hostil como valor literal:
+
+```bash
+cd examples/java-jpa-lab
+./mvnw -q -Dtest=EnvioDaoTest#consultaConParametroYDevuelveAusenteSinError test
+```
+
+La prueba crea la tabla `envio` en H2 en memoria antes de ejecutarse.
+
+**Resultado esperado:** encuentra `EN_PREPARACION` para la referencia existente y `Optional.empty()` para una ausente. **Fallo deliberado**: sustituye el `?` por concatenación y prueba una referencia como `' OR '1'='1`; el test debe exhibir por qué no se interpolan datos. **Diagnóstico:** el valor se está mezclando con el texto de la consulta; restaura `PreparedStatement` y confirma que la entrada maliciosa se trata como literal.
+
+**3. Entiende**
+
+El placeholder `?` separa el texto SQL del valor enviado; el DAO mantiene esa consulta fuera del servicio.
+
+**4. Cierra**
+
+Guarda la salida con referencia válida y hostil como literal.
+
+#### Paso 5 · Práctica guiada
+
+Agrega `crear(referencia, estado)` con `executeUpdate()` y comprueba el número de filas afectadas. Extrae el mapeo de filas a un método privado solo cuando haya más de una consulta que realmente lo comparta.
+**Pista:** si `executeUpdate()` devuelve `0`, la fila no se insertó (clave duplicada o `DataSource` equivocado); compara ese conteo contra el `1` esperado antes de asumir que `crear` funcionó.
+
+#### Subtema 1.2: Probar una entrada hostil como dato · 10 min
+
+**1. Contexto**
+
+Una referencia que contiene comillas debe buscarse como un valor literal.
+
+**2. Hazlo tú**
+
+En `examples/java-jpa-lab/src/test/java/academia/pedidos/EnvioDaoTest.java`, ejecuta el caso completo que prueba la referencia `RT-1` y el texto `' OR '1'='1`:
+
+```bash
+cd examples/java-jpa-lab
+./mvnw -Dtest=EnvioDaoTest#consultaConParametroYDevuelveAusenteSinError test
+```
+
+La implementación completa está en `src/main/java/academia/pedidos/EnvioDao.java`: conserva `where referencia = ?` y `statement.setString(1, referencia)`.
+
+**Resultado esperado:** `BUILD SUCCESS`; `RT-1` devuelve `PENDIENTE`, la referencia hostil devuelve `Optional.empty()`.
+
+**Fallo deliberado**: concatena la referencia al SQL. **Resultado del fallo:** el texto hostil puede alterar la condición. **Diagnóstico:** el valor se está interpretando como parte de la consulta; restaura `PreparedStatement`.
+
+**3. Entiende**
+
+Las casillas `?` separan la consulta de los valores que llegan desde el usuario.
+
+**4. Cierra**
+
+Guarda el resultado de entrada válida y de texto hostil.
+
+#### Paso 6 · Práctica independiente
+
+Implementa un DAO con búsqueda paginada y ordenamiento por `fecha_creacion`. El tamaño de página debe tener límite y la columna de orden debe salir de una allowlist (`fecha_creacion`, `referencia`), no del SQL proporcionado por el usuario.
+
+#### Subtema 1.3: Elegir una columna desde una allowlist · 10 min
+
+**1. Contexto**
+
+Los parámetros SQL no sustituyen nombres de columna; limita las opciones antes de formar el ORDER BY.
+
+**2. Hazlo tú**
+
+Crea `examples/java-jpa-lab/OrdenPermitido.java`:
 
 ```java
-package academia.envios;
+import java.util.Map;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Optional;
-import org.h2.jdbcx.JdbcDataSource;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
-class EnvioDaoTest {
-    private EnvioDao dao;
-
-    @BeforeEach
-    void preparar() throws SQLException {
-        JdbcDataSource dataSource = new JdbcDataSource();
-        dataSource.setURL("jdbc:h2:mem:envios;DB_CLOSE_DELAY=-1");
-        try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement()) {
-            statement.execute("drop all objects");
-            statement.execute("create table envio("
-                + "referencia varchar(40) primary key, estado varchar(20) not null)");
-        }
-        dao = new EnvioDao(dataSource);
+public class OrdenPermitido {
+    private static final Map<String, String> COLUMNAS = Map.of(
+        "fecha", "fecha_creacion",
+        "guia", "referencia"
+    );
+    static String consulta(String opcion) {
+        String columna = COLUMNAS.get(opcion);
+        if (columna == null) throw new IllegalArgumentException("Orden no permitida");
+        return "select referencia, estado from envio order by " + columna;
     }
-
-    @Test
-    void encuentraUnaReferenciaExistente() throws SQLException {
-        dao.crear("ENV-1", "EN_PREPARACION");
-        assertEquals(Optional.of("EN_PREPARACION"), dao.buscarEstado("ENV-1"));
-    }
-
-    @Test
-    void distingueAusenteDeDatoHostil() throws SQLException {
-        dao.crear("ENV-1", "EN_PREPARACION");
-        assertEquals(Optional.empty(), dao.buscarEstado("ENV-404"));
-        assertEquals(Optional.empty(), dao.buscarEstado("' OR '1'='1"));
-    }
-
-    @Test
-    void laClaveDuplicadaNoPasaDesapercibida() throws SQLException {
-        dao.crear("ENV-1", "EN_PREPARACION");
-        assertThrows(SQLException.class, () -> dao.crear("ENV-1", "LIQUIDADO"));
+    public static void main(String[] args) {
+        System.out.println(consulta("fecha"));
+        try { consulta("fecha desc; drop table envio"); }
+        catch (IllegalArgumentException e) { System.out.println(e.getMessage()); }
     }
 }
 ```
 
-Ejecuta desde la raíz del proyecto:
+Ejecuta `cd examples/java-jpa-lab && java OrdenPermitido.java`.
 
-```bash
-mvn clean test
-```
+**Resultado esperado:** `select referencia, estado from envio order by fecha_creacion` y `Orden no permitida`.
 
-**Resultado esperado:** tres pruebas en verde y `BUILD SUCCESS`. La referencia `' OR '1'='1` no coincide con ninguna fila y devuelve `Optional.empty()`; no obtiene el estado de `ENV-1`.
+**Fallo deliberado**: concatena directamente `opcion` en el SQL. **Resultado del fallo:** el texto incluye una instrucción que no estaba en las columnas admitidas. **Diagnóstico:** un identificador SQL dinámico debe elegirse de valores escritos por el programa.
 
-**Fallo deliberado:** cambia temporalmente la consulta de `buscarEstado` por `"select estado from envio where referencia = '" + referencia + "'"`, elimina `statement.setString(1, referencia)` y repite las pruebas. El dato hostil altera la condición y el test de ausencia falla. **Corrección:** restaura el marcador `?` y el enlace del parámetro, y vuelve a ejecutar hasta recuperar las tres pruebas en verde.
+**3. Entiende**
 
-#### Aplica
+Pasa datos con `?`; elige nombres de columna con una lista permitida.
 
-Agrega una búsqueda paginada con límite máximo y orden por `fecha_creacion` o `referencia`. Define una lista permitida que convierta la opción externa al identificador SQL; rechaza cualquier otra columna. Añade pruebas para tamaño excesivo, columna desconocida y dos páginas sin duplicados.
+**4. Cierra**
 
-Como ejercicio independiente, extrae el mapeo de una fila a un método privado solo cuando dos consultas reales devuelvan el mismo objeto `Envio`. Incorpora ese record con validación de referencia y estado, sin crear un DAO genérico.
+Guarda la salida segura y el rechazo de la columna inyectada.
 
-**Checklist de salida**
+#### Paso 7 · Cierre y evidencia
 
-- [ ] El proyecto Maven y sus tres archivos se escribieron desde una carpeta vacía.
-- [ ] Todos los valores variables se enlazan mediante `PreparedStatement`.
-- [ ] `crear` comprueba que exactamente una fila fue insertada.
-- [ ] Las pruebas distinguen encontrado, ausente, hostil y clave duplicada.
-- [ ] La consulta concatenada reproduce el fallo y la versión parametrizada lo corrige.
-- [ ] El orden dinámico procede de una lista permitida, no de SQL proporcionado por el usuario.
+Entrega el DAO, el `DataSource` de test y casos para hallado, ausente e input hostil como parte del proyecto integrador de RutaFlow, por ejemplo, para consultar reportes especializados; como siguiente paso agrupa varias escrituras relacionadas en una transacción. Errores comunes: concatenar valores directamente en el SQL en vez de usar `PreparedStatement`, permitir que el nombre de columna o el orden de una consulta provengan directamente de un parámetro del usuario sin una allowlist, y crear un DAO genérico que oculte consultas distintas detrás de operaciones vagas. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/PreparedStatement.html y https://jakarta.ee/specifications/persistence/.
+**¿Por qué es importante?** Porque `PreparedStatement` permite consultas precisas sin sacrificar seguridad frente a datos hostiles, y un DAO con responsabilidades acotadas evita repetir SQL y mapeo inconsistente entre servicios distintos.
+**Evidencia de aprendizaje:** entrega el DAO funcionando contra H2, el caso hallado/ausente, y el fallo deliberado de concatenación SQL corregido con `PreparedStatement`.
+**Conceptos clave:** `DataSource`, `PreparedStatement`, DAO, allowlist de columnas, inyección SQL.
 
-**Proyecto integrador:** crea en RutaFlow un DAO para consultar reportes de envíos con parámetros y orden permitido; conserva las pruebas de dato hostil y ausencia antes de sustituir el acceso manual por un ORM.
+**Cuándo no usarlo:** no crees un DAO genérico que oculte consultas distintas detrás de operaciones vagas; para CRUD estándar, Spring Data puede reducir código repetitivo.
 
-**Errores comunes:** concatenar valores, intentar parametrizar identificadores con `?`, ignorar el resultado de `executeUpdate()` y crear un DAO genérico que esconda consultas diferentes.
+### Tema 2: Transacciones, ACID y aislamiento
 
-Fuentes oficiales revisadas el 2026-11-01: [PreparedStatement, JDK 27](https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/PreparedStatement.html), [DataSource, JDK 27](https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/javax/sql/DataSource.html) y [H2 Database](https://h2database.com/html/main.html).
+#### Paso 1 · Objetivo y preparación
 
-### Tema 2: Transacciones, ACID y aislamiento · Avanzado · 1 h 15 min
+Al finalizar podrás hacer que dos escrituras relacionadas se confirmen juntas o se reviertan juntas. Necesitas el DAO anterior y una base de datos H2 o PostgreSQL.
+**Conocimiento previo:** haber seguido el tema anterior de este módulo y tener instalado el entorno del stack.
+#### Paso 2 · Contexto y caso real
 
-#### Aprende
+Al liquidar un envío se registra un cobro y se actualiza su estado. Si el proceso cae después del cobro pero antes del cambio de estado, el sistema queda inconsistente.
 
-**Prerrequisito:** JDK 27, Maven y comprensión de `DataSource`, `PreparedStatement` y excepciones. Este tema empieza en otra carpeta vacía y vuelve a escribir el DAO necesario.
+#### Paso 3 · Teoría y modelo mental
 
-**Al terminar podrás:** confirmar o revertir juntas dos escrituras relacionadas, probar un fallo intermedio y explicar qué invariante protege la transacción frente a concurrencia y reintentos.
+Una transacción agrupa operaciones bajo propiedades ACID: atomicidad, consistencia, aislamiento y durabilidad. JDBC comienza en autocommit normalmente; `setAutoCommit(false)`, `commit()` y `rollback()` permiten delimitar el trabajo. El aislamiento define qué cambios concurrentes se pueden observar; no asumas que `SERIALIZABLE` es siempre necesario ni gratuito.
 
-Una transacción agrupa operaciones bajo propiedades ACID: atomicidad, consistencia, aislamiento y durabilidad. JDBC suele comenzar con autocommit; `setAutoCommit(false)` delimita la unidad y `commit()` o `rollback()` determina su resultado. Todas las operaciones de esa unidad deben usar la misma conexión.
+La transacción es como una sola operación de caja: o se registran todas las líneas del recibo o se cancela el recibo entero.
+**Analogía:** una transacción es como una transferencia bancaria: o se descuenta de una cuenta y se suma en la otra, o no pasa nada; nunca queda a medias. El aislamiento es la cortina que impide que otro cajero vea el saldo mientras la transferencia está a mitad de camino.
+#### Paso 4 · Demostración guiada
 
-**¿Por qué es importante?** Porque liquidar un envío exige registrar el cobro y cambiar el estado. Si el proceso falla entre ambas escrituras, una base con cobro y sin liquidación deja a la contabilidad y al seguimiento en desacuerdo.
+#### Subtema 2.1: Confirmar dos escrituras juntas · 10 min
 
-**Mapa de subtemas críticos**
+**1. Contexto**
 
-| Subtema | Papel | Evidencia |
-|---|---|---|
-| ACID: atomicidad y durabilidad | Prerrequisito | Cobro y estado se confirman o revierten juntos |
-| `setAutoCommit(false)` + `commit`/`rollback` | Núcleo | Unidad delimitada; fallo intermedio revierte |
-| Una sola conexión para toda la unidad | Núcleo | Dos conexiones rompen el rollback |
-| Aislamiento y qué anomalías evita | Núcleo | Lecturas sucias/no repetibles según nivel |
-| Bloqueo optimista con `version` | Variante | `UPDATE ... WHERE version = ?` detecta pisada |
-| Idempotencia con `UNIQUE` | Diagnóstico | Reintento no duplica cobro |
-| No abrir transacción durante HTTP | Límite | Outbox/saga en vez de transacción larga |
+Cobro y cambio de estado pertenecen a la misma operación de negocio.
 
-Cada fila tiene su explicación individual a continuación.
+**2. Hazlo tú**
 
-**ACID: atomicidad y durabilidad (prerrequisito).** Una transacción agrupa varias operaciones bajo atomicidad (todo o nada), consistencia, aislamiento y durabilidad. En este caso, insertar el cobro y actualizar el estado deben ocurrir ambos o ninguno; un resultado parcial deja contabilidad y seguimiento en desacuerdo.
-
-**`setAutoCommit(false)` + `commit`/`rollback` (núcleo).** JDBC por defecto confirma cada sentencia (autocommit). `setAutoCommit(false)` abre una unidad explícita: las escrituras no son definitivas hasta `commit()`, y `rollback()` las descarta. El patrón es intentar, `commit` al final del `try`, `rollback` en el `catch`.
-
-**Una sola conexión para toda la unidad (núcleo).** El `commit`/`rollback` opera sobre *una* conexión. Si `insertarCobro` usa otra conexión (con su propio autocommit), ese cobro queda confirmado aparte y el `rollback` de la conexión principal no puede deshacerlo. Por eso todos los métodos de la unidad reciben la misma `Connection`.
-
-**Aislamiento y qué anomalías evita (núcleo).** El nivel de aislamiento define qué cambios concurrentes puede ver una transacción: `READ COMMITTED` evita lecturas sucias, `REPEATABLE READ` evita lecturas no repetibles, `SERIALIZABLE` las evita todas al coste de más bloqueo. Subir el nivel no elimina por sí solo las actualizaciones perdidas.
-
-**Bloqueo optimista con `version` (variante).** Para una actualización perdida (dos transacciones leen y escriben la misma fila), una columna `version` y `UPDATE ... SET version=version+1 WHERE id=? AND version=?` detecta que otra operación cambió la fila: si afecta cero filas, hubo conflicto. Es más barato que bloquear pesimistamente cuando la contención es baja.
-
-**Idempotencia con `UNIQUE` (diagnóstico).** Una solicitud puede reintentarse (timeout, reenvío). Una restricción `UNIQUE` sobre `operation_id` hace que el segundo intento con la misma clave falle en la inserción, de modo que no se duplica el cobro. La capa superior distingue "ya aplicado" (clave repetida) de un conflicto real.
-
-**No abrir transacción durante HTTP (límite).** Mantener una transacción JDBC abierta mientras se espera una llamada HTTP externa retiene conexiones y bloqueos durante una latencia impredecible. Coordinar una base local con otros servicios se resuelve con patrones como outbox o saga, no alargando la transacción ni subiendo a `SERIALIZABLE` por defecto.
-
-**Analogía:** una transacción es un recibo de caja con varias líneas: o se entrega el recibo completo o se anula entero. El aislamiento es la cortina que impide que otra caja use una versión a medias del recibo.
-
-El aislamiento define qué cambios concurrentes puede observar una transacción, pero no elimina por sí solo toda actualización perdida. Un bloqueo optimista con `version` detecta que otra operación modificó la fila entre lectura y escritura. Una restricción `UNIQUE` sobre una clave de idempotencia complementa la transacción cuando una solicitud puede repetirse.
-
-**Cuándo no usarlo:** no mantengas una transacción abierta durante llamadas HTTP ni asumas que `SERIALIZABLE` es siempre necesario. Coordinar una base local con otros servicios requiere patrones como outbox o saga, no una transacción JDBC más larga.
-
-#### Practica
-
-Crea el segundo proyecto desde una carpeta vacía:
-
-```bash
-mkdir ejemplo-jdbc-transacciones
-cd ejemplo-jdbc-transacciones
-mkdir -p src/main/java/academia/envios src/test/java/academia/envios
-```
-
-Escribe `pom.xml` sin reutilizar el proyecto anterior:
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>academia</groupId>
-  <artifactId>jdbc-transacciones</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <maven.compiler.release>27</maven.compiler.release>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
-  <dependencies>
-    <dependency>
-      <groupId>com.h2database</groupId><artifactId>h2</artifactId><version>2.3.232</version><scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><version>5.11.4</version><scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build><plugins><plugin>
-    <groupId>org.apache.maven.plugins</groupId><artifactId>maven-surefire-plugin</artifactId><version>3.5.2</version>
-  </plugin></plugins></build>
-</project>
-```
-
-Crea `src/main/java/academia/envios/LiquidacionDao.java`:
+Implementa en `src/main/java/academia/envios/LiquidacionDao.java` una operación que inserta un cobro y actualiza el envío usando **la misma conexión**:
 
 ```java
-package academia.envios;
-
-import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import javax.sql.DataSource;
-
-public final class LiquidacionDao {
-    private final DataSource dataSource;
-
-    public LiquidacionDao(DataSource dataSource) {
-        this.dataSource = dataSource;
-    }
-
-    public void liquidar(String referencia, BigDecimal importe) throws SQLException {
-        try (Connection connection = dataSource.getConnection()) {
-            connection.setAutoCommit(false);
-            try {
-                insertarCobro(connection, referencia, importe);
-                actualizarEstado(connection, referencia, "LIQUIDADO");
-                connection.commit();
-            } catch (SQLException error) {
-                connection.rollback();
-                throw error;
-            }
-        }
-    }
-
-    private void insertarCobro(Connection connection, String referencia, BigDecimal importe)
-            throws SQLException {
-        try (PreparedStatement statement = connection.prepareStatement(
-                "insert into cobro(referencia, importe) values (?, ?)")) {
-            statement.setString(1, referencia);
-            statement.setBigDecimal(2, importe);
-            statement.executeUpdate();
-        }
-    }
-
-    private void actualizarEstado(Connection connection, String referencia, String estado)
-            throws SQLException {
-        try (PreparedStatement statement = connection.prepareStatement(
-                "update envio set estado = ? where referencia = ?")) {
-            statement.setString(1, estado);
-            statement.setString(2, referencia);
-            if (statement.executeUpdate() != 1) {
-                throw new SQLException("El envío no existe o ya no es actualizable");
-            }
-        }
+try (Connection connection = dataSource.getConnection()) {
+    connection.setAutoCommit(false);
+    try {
+        insertarCobro(connection, referencia, importe);
+        actualizarEstado(connection, referencia, "LIQUIDADO");
+        connection.commit();
+    } catch (SQLException error) {
+        connection.rollback();
+        throw error;
     }
 }
 ```
 
-Crea `src/test/java/academia/envios/LiquidacionDaoTest.java`:
-
-```java
-package academia.envios;
-
-import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
-import org.h2.jdbcx.JdbcDataSource;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
-class LiquidacionDaoTest {
-    private JdbcDataSource dataSource;
-    private LiquidacionDao dao;
-
-    @BeforeEach
-    void preparar() throws SQLException {
-        dataSource = new JdbcDataSource();
-        dataSource.setURL("jdbc:h2:mem:liquidaciones;DB_CLOSE_DELAY=-1");
-        try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement()) {
-            statement.execute("drop all objects");
-            statement.execute("create table envio("
-                + "referencia varchar(40) primary key, estado varchar(20) not null)");
-            statement.execute("create table cobro("
-                + "id bigint generated by default as identity primary key,"
-                + "referencia varchar(40) not null, importe decimal(12,2) not null)");
-            statement.execute("insert into envio(referencia, estado) values "
-                + "('ENV-1', 'EN_PREPARACION')");
-        }
-        dao = new LiquidacionDao(dataSource);
-    }
-
-    @Test
-    void confirmaCobroYEstadoJuntos() throws SQLException {
-        dao.liquidar("ENV-1", new BigDecimal("12.50"));
-        assertEquals(1, entero("select count(*) from cobro where referencia = 'ENV-1'"));
-        assertEquals("LIQUIDADO", texto(
-            "select estado from envio where referencia = 'ENV-1'"));
-    }
-
-    @Test
-    void revierteElCobroCuandoFallaLaActualizacion() throws SQLException {
-        assertThrows(SQLException.class,
-            () -> dao.liquidar("ENV-404", new BigDecimal("12.50")));
-        assertEquals(0, entero("select count(*) from cobro"));
-    }
-
-    private int entero(String sql) throws SQLException {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql);
-             var result = statement.executeQuery()) {
-            result.next();
-            return result.getInt(1);
-        }
-    }
-
-    private String texto(String sql) throws SQLException {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql);
-             var result = statement.executeQuery()) {
-            result.next();
-            return result.getString(1);
-        }
-    }
-}
-```
-
-Ejecuta:
+En el mismo laboratorio, ejecuta la prueba que confirma cobro y estado juntos:
 
 ```bash
-mvn clean test
+cd examples/java-jpa-lab
+./mvnw -q -Dtest=EnvioDaoTest#confirmaLasDosEscriturasJuntas test
 ```
 
-**Resultado esperado:** dos pruebas en verde. La liquidación válida deja un cobro y el estado `LIQUIDADO`; la referencia inexistente inserta primero el cobro, falla porque el `UPDATE` afecta cero filas y el `rollback` deja la tabla `cobro` vacía.
+**Resultado esperado:** cobro y estado se guardan juntos. Para observar el rollback cuando falta el envío, ejecuta `./mvnw -q -Dtest=EnvioDaoTest#revierteElCobroSiNoExisteElEnvio test`; debe quedar cero cobros en la tabla.
 
-**Fallo deliberado:** conserva la prueba de referencia inexistente, pero cambia temporalmente `insertarCobro(connection, referencia, importe)` para abrir otra conexión desde `dataSource` con autocommit. El rollback de la conexión original ya no puede deshacer ese cobro y la segunda prueba falla. **Corrección:** vuelve a pasar la misma conexión transaccional a ambos métodos y repite la prueba.
+**Fallo deliberado**: quita connection.rollback() y repite el caso de envío inexistente. **Diagnóstico**: el cobro parcial confirma que una excepción intermedia debe deshacer ambas escrituras.
 
-#### Aplica
+**3. Entiende**
 
-Añade `operation_id varchar(80)` a `cobro` con restricción `UNIQUE` y haz que `liquidar` reciba esa clave. Ejecuta dos solicitudes con el mismo identificador y comprueba que no puede existir un segundo cobro; define cómo la capa superior distingue un reintento ya aplicado de un conflicto real.
+Ambas escrituras deben usar la misma conexión y confirmarse juntas.
 
-Como ejercicio independiente, crea otro proyecto para transferir saldo entre dos cuentas. Valida importe positivo y saldo suficiente, descuenta y acredita en una transacción y prueba cuenta inexistente, fondos insuficientes y fallo entre escrituras. Después reproduce una actualización perdida con dos conexiones y corrígela con una columna `version` y `UPDATE ... WHERE version = ?`.
+**4. Cierra**
 
-**Checklist de salida**
+Conserva el test del commit y el test de rollback.
 
-- [ ] El proyecto de transacciones se creó por separado desde una carpeta vacía.
-- [ ] Las dos escrituras comparten una conexión con autocommit desactivado.
-- [ ] El camino válido confirma cobro y estado; el fallo revierte ambos.
-- [ ] La prueba con dos conexiones demuestra por qué una unidad no puede dividirse.
-- [ ] La clave de idempotencia impide duplicar cobros al reintentar.
-- [ ] El bloqueo optimista y el nivel de aislamiento se justifican con un caso concurrente.
+#### Paso 5 · Práctica guiada
 
-**Proyecto integrador:** implementa la liquidación de RutaFlow con `operation_id` único, cobro y cambio de estado atómicos. Adjunta las pruebas de rollback y reintento antes de aceptar la operación como recuperable.
+Prueba dos operaciones concurrentes que actualizan el mismo saldo. Reproduce una actualización perdida y corrígela con bloqueo optimista (`version`) o con una operación atómica SQL. Compara `READ_COMMITTED` con el aislamiento predeterminado de tu base.
+**Pista:** si ambas transacciones leen el saldo antes de que la otra confirme su escritura, la segunda sobrescribe silenciosamente el cambio de la primera (actualización perdida); agrega una columna `version` y compara su valor en el `UPDATE ... WHERE version = ?` para detectar el conflicto.
 
-**Errores comunes:** usar conexiones distintas dentro de una unidad, omitir la prueba de fallo, mantener la transacción durante una llamada HTTP y suponer que una restricción única sustituye al rollback.
+#### Subtema 2.2: Comprobar que el commit guardó ambos cambios · 10 min
 
-Fuentes oficiales revisadas el 2026-11-01: [Connection, JDK 27](https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/Connection.html), [Transaction Isolation, H2](https://h2database.com/html/advanced.html#transaction_isolation) y [Jakarta Persistence](https://jakarta.ee/specifications/persistence/).
+**1. Contexto**
 
-## Construcción guiada del capítulo
+El test comprueba estado e importe después de cerrar la transacción.
 
-| Evidencia | Proyecto independiente | Orden y resultado |
-|---|---|---|
-| Consulta parametrizada | `ejemplo-jdbc-dao` | `mvn clean test`: encontrado, ausente, hostil y duplicado; la concatenación falla y se corrige |
-| Escritura atómica | `ejemplo-jdbc-transacciones` | `mvn clean test`: cobro y estado se confirman juntos; una referencia inválida revierte el cobro |
-| Reintento seguro | Extensión de liquidación | Dos solicitudes con una `operation_id` producen como máximo un cobro |
+**2. Hazlo tú**
+
+Ejecuta el caso en `examples/java-jpa-lab/src/test/java/academia/pedidos/EnvioDaoTest.java`:
+
+```bash
+cd examples/java-jpa-lab
+./mvnw -Dtest=EnvioDaoTest#confirmaLasDosEscriturasJuntas test
+```
+
+Abre el test para observar las dos comprobaciones: `buscarEstado("RT-1")` y la lectura del importe guardado en `cobro`.
+
+**Resultado esperado:** `BUILD SUCCESS`; estado `LIQUIDADO` e importe `27.50`.
+
+**Fallo deliberado**: quita `connection.commit()`. **Resultado del fallo:** las escrituras se pierden al cerrarse la conexión. **Diagnóstico:** autocommit se desactivó y ninguna orden confirmó el trabajo.
+
+**3. Entiende**
+
+Una transacción manual necesita un commit en el camino correcto.
+
+**4. Cierra**
+
+Guarda la salida de commit y rollback.
+
+#### Paso 6 · Práctica independiente
+
+Construye un caso de transferencia entre dos cuentas: valida importe positivo, descuenta una y acredita la otra de forma atómica. Añade pruebas para saldo insuficiente, cuenta inexistente y fallo entre las dos escrituras. Documenta qué invariantes protege la transacción.
+
+#### Subtema 2.3: Revertir el cobro si no existe el envío · 10 min
+
+**1. Contexto**
+
+Un cobro sin envío válido no debe quedar guardado.
+
+**2. Hazlo tú**
+
+Ejecuta `revierteElCobroSiNoExisteElEnvio` en `examples/java-jpa-lab/src/test/java/academia/pedidos/EnvioDaoTest.java`:
+
+```bash
+cd examples/java-jpa-lab
+./mvnw -Dtest=EnvioDaoTest#revierteElCobroSiNoExisteElEnvio test
+```
+
+El caso completo comprueba que `liquidar("RT-404", ...)` falla y que el conteo de filas en `cobro` es cero.
+
+**Resultado esperado:** `BUILD SUCCESS`; la excepción explica que falta el envío y no queda ningún cobro parcial.
+
+**Fallo deliberado**: elimina `connection.rollback()`. **Resultado del fallo:** el cobro puede quedar escrito antes de detectar que el envío no existe. **Diagnóstico:** el error intermedio debe deshacer todas las operaciones de la conexión.
+
+**3. Entiende**
+
+Rollback conserva la regla de negocio completa aunque el segundo paso falle.
+
+**4. Cierra**
+
+Guarda el error esperado y confirma que la tabla de cobros quedó vacía.
+
+#### Paso 7 · Cierre y evidencia
+
+Entrega la prueba del rollback, el test concurrente y una explicación del aislamiento elegido para el proyecto integrador de RutaFlow: una liquidación no debe actualizar el estado sin registrar su movimiento; con esto cerrás el módulo. Errores comunes: mantener una transacción abierta mientras se hacen llamadas HTTP u otras operaciones lentas, asumir que `SERIALIZABLE` es siempre necesario sin medir el costo de contención, y no probar el escenario de fallo a mitad de transacción, solo el camino feliz. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/Connection.html y https://jakarta.ee/specifications/persistence/.
+**¿Por qué es importante?** Porque las transacciones convierten varias escrituras relacionadas en una sola unidad de negocio recuperable: si el proceso falla a mitad de camino, el `rollback` garantiza que no quede ningún cambio parcial, nunca un estado a medio actualizar.
+**Evidencia de aprendizaje:** entrega el test del rollback sin escrituras parciales tras un fallo intermedio, y el test de actualización concurrente con su corrección (bloqueo optimista o la operación atómica elegida).
+**Conceptos clave:** ACID, `setAutoCommit(false)`, `commit`/`rollback`, nivel de aislamiento, bloqueo optimista.
+
+**Cuándo no usarlo:** no mantengas una transacción abierta mientras haces llamadas HTTP; coordinar una transacción local con otros servicios requiere patrones como outbox o saga.
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.

@@ -1,0 +1,16 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: gateway-pedidos
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: pedidos
+              uri: ${rutaflow.backend.uri:http://localhost:8081}
+              predicates:
+                - Path=/api/pedidos/**
+              filters:
+                - StripPrefix=1

@@ -9,8 +9,8 @@
 Academia en español para estudiar programación, desarrollo de software y cloud local. La
 experiencia oficial es una aplicación Angular con lecciones Markdown.
 
-La academia reúne 15 tracks, 257 módulos y 1184 temas editoriales en formato de
-libro. Esos 15 tracks son Fundamentos + RutaFlow + 13 rutas de especialización.
+La academia reúne 16 tracks, 291 módulos y 1273 temas editoriales en formato de
+libro. Esos 16 tracks son Fundamentos + RutaFlow + 14 rutas de especialización.
 La presencia de criterios editoriales y la completitud de los siete pasos
 se reportan por separado; ninguna métrica automática sustituye la revisión técnica
 ni demuestra por sí sola que un ejemplo se ejecutó.
@@ -21,7 +21,19 @@ ni demuestra por sí sola que un ejemplo se ejecutó.
 - [Registro de revisión pedagógica humana](docs/manual-review-log.md)
 - [Plan total de cambio y estado](docs/PLAN-TOTAL-DE-CAMBIO.md)
 - [Sustancia de las lecciones: repetición, cola y andamiaje](docs/lesson-substance.md)
-- [Continuación de la metodología de siete pasos](docs/CONTINUAR-7-PASOS.md)
+- [Revisión de cobertura de cursos prioritarios](docs/revision-cursos-prioritarios.md)
+- [Temario Java y estado de expansión](docs/java-temario-completo.md)
+- [Temario Spring Boot y estado de expansión](docs/spring-boot-temario-completo.md)
+- [Temario Node.js y estado de expansión](docs/node-temario-completo.md)
+- [Temario Flutter y estado de expansión](docs/flutter-temario-completo.md)
+- [Continuación de la metodología de cuatro pasos](docs/CONTINUAR-7-PASOS.md)
+- [Auditoría estructural de subtemas atómicos](docs/atomic-subtopics.md)
+
+La ruta **Control 1** (`web/public/content/control-1/`) cubre sistemas de control
+desde cero: Laplace, funciones de transferencia, respuesta temporal, estabilidad,
+lugar de las raíces, PID y compensadores. Sus fórmulas se escriben en TeX
+(`\(...\)` en línea y `\[...\]` en bloque) y el visor las renderiza con KaTeX.
+
 - [Guía web](web/README.md)
 - [Mapa compacto del repo](docs/repo-graph.md)
 - [Índice de las 69 páginas e integración de merged.pdf](docs/merged-pdf-review.md)
@@ -198,8 +210,8 @@ El contrato editorial que debe alcanzar cada tema es:
 ## Tracks de la academia
 
 La versión Angular tiene su propio contenido, más amplio, en formato Markdown
-(`web/public/content/<track>/modulo-N.md`), organizado en 15 tracks, 257
-módulos y 1184 temas editoriales visibles. Cada módulo prioriza una secuencia de
+(`web/public/content/<track>/modulo-N.md`), organizado en 16 tracks, 291
+módulos y 1273 temas editoriales visibles. Cada módulo prioriza una secuencia de
 temas prácticos. El sílabo y el estándar de calidad viven en documentos
 centrales; las fuentes específicas permanecen junto al tema que sustentan. No
 existen rutas separadas de cuestionarios, rúbricas o laboratorios repetidos.
@@ -208,18 +220,25 @@ Los conteos se verifican contra los tracks y el Markdown desde
 `scripts/validate_learning_priorities.py`; la validación falla si README vuelve
 a quedar desincronizado. La auditoría de criterios editoriales informa presencia
 estructural detectada por heurísticas, no calidad ni ejecución: el corte
-versionado registra 1170/1184 temas con los nueve criterios detectados. El
+versionado registra 1166/1273 temas con los nueve criterios detectados. El
 criterio de práctica acepta tanto el vocabulario de los siete pasos como una
 sección `#### Practica` con cuerpo accionable. La
-auditoría independiente de metodología registra 901/1184 temas con sus
-marcadores de siete pasos. Los 61 módulos migrados usan la envoltura
-Aprende/Practica/Aplica y 193 conservan el formato anterior; ambos formatos
+auditoría independiente de metodología registra 929/1273 temas con sus
+marcadores de siete pasos. Los 17 módulos migrados usan la envoltura
+Aprende/Practica/Aplica y 249 conservan el formato anterior; ambos formatos
 pueden contener temas cuyos siete pasos se auditan por separado. Ninguno de esos resultados demuestra que las instrucciones sean
 correctas, que los ejemplos se ejecuten o que el tema enseñe de forma efectiva.
 El estado por tema y las señales adicionales están en
 [`docs/seven-step-methodology.md`](docs/seven-step-methodology.md),
 [`docs/editorial-backlog.md`](docs/editorial-backlog.md) y
 [`docs/full-review.md`](docs/full-review.md).
+
+a quedar desincronizado. La auditoría de presencia editorial informa señales,
+no calidad ni ejecución. La auditoría vigente registra **13/1185** temas con
+3–6 subtemas y cuatro pasos completos; **1172 temas siguen pendientes**. Consulta
+los faltantes por track en [`docs/atomic-subtopics.md`](docs/atomic-subtopics.md).
+Las cifras de siete pasos en [`docs/seven-step-methodology.md`](docs/seven-step-methodology.md)
+son un registro histórico del formato anterior.
 
 ## Licencias
 
@@ -248,11 +267,10 @@ por track y módulo. El lector ofrece navegación anterior/siguiente entre temas
 y un glosario contextual accesible para términos técnicos; estas ayudas no se
 contabilizan como sustituto del contenido editorial específico.
 
-Las cifras de presencia editorial no equivalen a la completitud del contrato:
-la auditoría de siete pasos usa otra rúbrica y marcadores heurísticos, y no
-afirma que los ejemplos estén ejecutados ni que los temas sean pedagógicamente
-eficaces. Ambos reportes se deben leer como señales de trabajo editorial, no
-como certificaciones.
+Las señales editoriales no equivalen a completar el contrato vigente. Lee la
+auditoría de cuatro pasos como estado estructural; ejecución, revisión técnica,
+navegación del sitio y revisión pedagógica humana permanecen como evidencias
+independientes.
 
 | Track | Módulos | Enfoque |
 |---|---|---|
@@ -260,17 +278,18 @@ como certificaciones.
 | Cloud Local | 35 | AWS, Azure y GCP en local con Floci |
 | DevOps | 23 | Linux, Git, Docker, CI/CD, Kubernetes, IaC, QA Automation, sistemas distribuidos, servidor propio, DDD, eventos, microservicios y laboratorio Floci |
 | JavaScript | 15 | Lenguaje, DOM, asincronía, rendimiento |
-| Node.js | 15 | Backend, APIs, bases de datos, producción |
+| Node.js | 16 | Backend, APIs, bases de datos, producción |
 | Angular | 17 | Componentes, Signals, routing, SSR, zoneless |
 | React | 15 | Hooks, estado, data fetching, Next.js |
 | Java | 23 | POO, colecciones, concurrencia, JVM moderna, JDBC, JPA, HTTP, Java funcional, APIs compatibles y semántica de objetos |
-| Spring Boot | 24 | REST, JPA, seguridad, Batch, Kafka, microservicios, arquitectura (hexagonal, C4, ADR) y concurrencia avanzada |
+| Spring Boot | 27 | REST, JPA, seguridad, Batch, Kafka/Rabbit, Modulith, GraphQL, Cloud Stream, arquitectura y concurrencia avanzada |
 | Microservicios | 2 | Procesos, red, monolito modular, fronteras ejecutables y sistemas distribuidos; publicación progresiva |
 | Kotlin Multiplatform | 14 | Lógica compartida entre Android e iOS |
 | Android | 19 | Kotlin, Compose, arquitectura, datos, plataforma, privacidad, build y entrega profesional |
 | iOS | 15 | SwiftUI, concurrencia moderna, SwiftData |
-| Flutter | 16 | Widgets, gestión de estado, plataformas nativas |
+| Flutter | 23 | Widgets, gestión de estado, FFI, entrega, operación, compras, suscripciones y monetización móvil |
 | RutaFlow | 8 | Proyecto integrador de entregas, GPS, datos y operación |
+| Control 1 | 23 | Laplace, respuesta temporal, estabilidad, PID y diseño |
 
 ### Ruta recomendada para principiantes
 

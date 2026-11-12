@@ -1,0 +1,10 @@
+spring:
+  cache:
+    type: redis
+    cache-names: tarifas
+    redis:
+      time-to-live: 5m
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}

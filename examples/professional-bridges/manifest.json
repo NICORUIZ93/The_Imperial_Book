@@ -126,7 +126,7 @@
     "title": "Paginación HTTP con validación y un límite de recursos explícito",
     "path": "web/public/content/spring-boot/modulo-2.md",
     "examples": [
-      "examples/professional-bridges/spring-boot/EnviosController.java"
+      "examples/professional-bridges/spring-boot/PaginaTareasDTO.java"
     ]
   },
   {

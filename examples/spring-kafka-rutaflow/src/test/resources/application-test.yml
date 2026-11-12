@@ -4,11 +4,3 @@ spring:
     username: sa
     password:
     driver-class-name: org.h2.Driver
-  kafka:
-    bootstrap-servers: ${spring.embedded.kafka.brokers}
-    consumer:
-      auto-offset-reset: earliest
-
-rutaflow:
-  outbox:
-    initial-delay: 3600000

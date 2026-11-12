@@ -6,27 +6,29 @@ señales detectadas tampoco acredita corrección ni comprensión.
 
 | Métrica | Valor |
 |---|---:|
-| Temas analizados | 1184 |
-| Temas con alguna señal (requiere inspección) | 0 |
-| Módulos con apéndices heredados | 179/257 |
+| Temas analizados | 1273 |
+| Temas con alguna señal (requiere inspección) | 1 |
+| Módulos con apéndices heredados | 170/291 |
 
 ## Señales por tipo
 
 | Código | Temas |
 |---|---:|
+| `cola-tras-cierre` | 1 |
 
 ## Apéndices heredados más frecuentes
 
 | Sección | Módulos |
 |---|---:|
-| ## Construcción guiada del capítulo | 41 |
+| ## Construcción guiada del capítulo | 39 |
 | ## Ruta de proyecto progresivo desde carpeta vacía | 12 |
-| **Errores comunes y soluciones** | 173 |
+| **Errores comunes y soluciones** | 166 |
 
 ## Temas con más señales
 
 | Track / módulo | Tema | Palabras | Cola tras cierre | Códigos |
 |---|---|---:|---:|---|
+| cloud / 0 | Tema 7: Metodología de estudio — teoría, laboratorio y evaluación en cada módulo | 727 | 575 | cola-tras-cierre |
 
 ## Cómo se corrige
 
@@ -36,4 +38,4 @@ señales detectadas tampoco acredita corrección ni comprensión.
 4. `--strict` compara contra `docs/lesson-substance-baseline.json`: ningún
    tema nuevo puede nacer con estas señales sin revisión.
 
-Huella del contenido: `ba3d14a4dd12ede99bcbcd5eebdd9c698e50425b6baa970079530529371e32c3`
+Huella del contenido: `268e55ddaad1badae9504a9c37d38b4bfe8a19023ba87516fa78cb1c0202a07c`

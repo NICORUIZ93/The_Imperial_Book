@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: rutaflow-tarifa-grpc
+  grpc:
+    server:
+      port: 9090

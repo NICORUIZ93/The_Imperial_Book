@@ -1,0 +1,2 @@
+#!/bin/sh
+exec ../spring-cloud-config-discovery-rutaflow/mvnw "$@"

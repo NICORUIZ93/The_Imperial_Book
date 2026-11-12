@@ -55,9 +55,10 @@ const TRACK_SOURCES = {
   ios: 'web/src/app/tracks/ios.track.ts',
   flutter: 'web/src/app/tracks/flutter.track.ts',
   rutaflow: 'web/src/app/tracks/rutaflow.track.ts',
+  'control-1': 'web/src/app/tracks/control-1.track.ts',
 };
 
-const trackIdsInData = [...angularCourseData.matchAll(/id:\s*'([a-z-]+)'/g)].map((m) => m[1]);
+const trackIdsInData = [...angularCourseData.matchAll(/id:\s*'([a-z0-9-]+)'/g)].map((m) => m[1]);
 for (const trackId of Object.keys(TRACK_SOURCES)) {
   if (!trackIdsInData.includes(trackId)) {
     throw new Error(`web/src/app/course-data.ts no registra el track '${trackId}' en TRACKS`);
@@ -123,7 +124,7 @@ const readmeExpiry = readme.match(/La comprobación vence a los (\d+) días/);
 if (!readmeExpiry || Number(readmeExpiry[1]) !== sourceRegistry.maxAgeDays) {
   throw new Error('README desactualizado vs official-sources.json: caducidad');
 }
-const declaredInventory = readme.match(/La academia reúne 15 tracks, (\d+) módulos y (\d+) temas editoriales/);
+const declaredInventory = readme.match(/La academia reúne 16 tracks, (\d+) módulos y (\d+) temas editoriales/);
 if (!declaredInventory) {
   throw new Error('README.md debe declarar el inventario actual de 15 tracks, módulos y temas');
 }
@@ -196,6 +197,9 @@ python3 scripts/validate_requested_master_topics.py
 python3 examples/manim/build_curriculum_scenes.py --check
 python3 scripts/validate_markdown_fences.py
 python3 scripts/audit_topic_learning_quality.py --check --require-practicable --min-practicable 1141
+python3 scripts/audit_atomic_subtopics.py --check
+python3 scripts/build_spring_topic_review.py --check
+python3 scripts/build_priority_temarios.py --check
 python3 scripts/audit_seven_step_methodology.py --check
 python3 scripts/audit_lesson_substance.py --check --strict
 python3 scripts/audit_subtopic_depth.py --check --max-pending 1143

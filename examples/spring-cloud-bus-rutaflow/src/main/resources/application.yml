@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: rutaflow-policy
+  cloud:
+    bus:
+      id: ${spring.application.name}:${server.port}
+  rabbitmq:
+    host: ${RABBIT_HOST:localhost}
+    port: ${RABBIT_PORT:5672}
+    username: ${RABBIT_USER:guest}
+    password: ${RABBIT_PASSWORD:guest}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,busenv,busrefresh
+
+logging:
+  level:
+    root: INFO

@@ -1,0 +1,5301 @@
+{
+  "date": "2026-11-11",
+  "scope": "Lectura técnica asistida y revisión de secuencia por tema; inventario de todos los subtemas. No revisión pedagógica humana ni ejecución individual de 393 ejercicios.",
+  "summary": {
+    "modules": 26,
+    "topics": 111,
+    "subtopics": 393,
+    "subtopicsWithBody": 393,
+    "explicitRepositoryPaths": 169,
+    "missingRepositoryPaths": [],
+    "gradleLaboratories": 50,
+    "gradleBuildFiles": [
+      "examples/archunit-hexagonal-rutaflow/build.gradle",
+      "examples/java-jpa-lab/build.gradle",
+      "examples/rutaflow-material/spring-ai/build.gradle",
+      "examples/spring-amqp-rutaflow/build.gradle",
+      "examples/spring-async-rutaflow/build.gradle",
+      "examples/spring-avro-rutaflow/build.gradle",
+      "examples/spring-batch-rutaflow/build.gradle",
+      "examples/spring-boot-cancel-rutaflow/build.gradle",
+      "examples/spring-boot-hibernate-spatial-rutaflow/build.gradle",
+      "examples/spring-boot-idempotency-rutaflow/build.gradle",
+      "examples/spring-boot-integrador-rutaflow/build.gradle",
+      "examples/spring-boot-jwt-ownership-rutaflow/build.gradle",
+      "examples/spring-boot-layered-jar-rutaflow/build.gradle",
+      "examples/spring-boot-mysql-spatial-rutaflow/build.gradle",
+      "examples/spring-boot-native-rutaflow/build.gradle",
+      "examples/spring-boot-probes-rutaflow/build.gradle",
+      "examples/spring-boot-stomp-rutaflow/build.gradle",
+      "examples/spring-boot-transaction-boundary-rutaflow/build.gradle",
+      "examples/spring-boot-upload-push-rutaflow/build.gradle",
+      "examples/spring-cache-rutaflow/build.gradle",
+      "examples/spring-clean-architecture-rutaflow/build.gradle",
+      "examples/spring-cloud-bus-rutaflow/build.gradle",
+      "examples/spring-cloud-config-discovery-rutaflow/build.gradle",
+      "examples/spring-cloud-contract-rutaflow/build.gradle",
+      "examples/spring-cloud-contract-rutaflow/conductor-producer/build.gradle",
+      "examples/spring-cloud-contract-rutaflow/pedidos-consumer/build.gradle",
+      "examples/spring-ddd-rutaflow/build.gradle",
+      "examples/spring-eventsourcing-rutaflow/build.gradle",
+      "examples/spring-fundamentos-rutaflow/build.gradle",
+      "examples/spring-gateway-rutaflow/build.gradle",
+      "examples/spring-graphql-rutaflow/build.gradle",
+      "examples/spring-grpc-rutaflow/build.gradle",
+      "examples/spring-http-deadline-rutaflow/build.gradle",
+      "examples/spring-kafka-rutaflow/build.gradle",
+      "examples/spring-kafka-streams-rutaflow/build.gradle",
+      "examples/spring-mail-rutaflow/build.gradle",
+      "examples/spring-modulith-rutaflow/build.gradle",
+      "examples/spring-reactor-rutaflow/build.gradle",
+      "examples/spring-resilience-rutaflow/build.gradle",
+      "examples/spring-saga-recovery-rutaflow/build.gradle",
+      "examples/spring-saga-rutaflow/build.gradle",
+      "examples/spring-scheduling-rutaflow/build.gradle",
+      "examples/spring-security-keycloak-rutaflow/build.gradle",
+      "examples/spring-ssrf/build.gradle",
+      "examples/spring-stream-rutaflow/build.gradle",
+      "examples/spring-tareas-rutaflow/build.gradle",
+      "examples/spring-temporal-rutaflow/build.gradle",
+      "examples/spring-token-relay-rutaflow/build.gradle",
+      "examples/spring-tracing-rutaflow/build.gradle",
+      "examples/spring-webclient-rutaflow/build.gradle",
+      "examples/spring-webflux-decision-rutaflow/build.gradle",
+      "examples/testcontainers-singleton-rutaflow/build.gradle"
+    ]
+  },
+  "modules": [
+    {
+      "module": 0,
+      "source": "web/public/content/spring-boot/modulo-0.md",
+      "topics": [
+        {
+          "topic": 1,
+          "title": "Tema 1: Inversión de control y el contenedor de Spring",
+          "line": 37,
+          "review": "Contrato → repositorio → servicio → HTTP. Corregidos reinicio tras crear controller y restauración del ejercicio antes del test siguiente.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 1.1: Declara el contrato y la primera implementación · 10 min",
+              "line": 45,
+              "proseWords": 172,
+              "codeLines": 17,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 1.2: Deja que Spring conecte el servicio · 10 min",
+              "line": 99,
+              "proseWords": 143,
+              "codeLines": 17,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 1.3: Observa el cableado con una petición HTTP · 10 min",
+              "line": 148,
+              "proseWords": 294,
+              "codeLines": 20,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 2,
+          "title": "Tema 2: Inyección por constructor vs por campo",
+          "line": 206,
+          "review": "Contrasta new y repositorio falso con contexto e inyección por campo; ambos tests tienen contenido completo.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 2.1: Prueba la regla sin iniciar Spring · 10 min",
+              "line": 212,
+              "proseWords": 136,
+              "codeLines": 15,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 2.2: Observa la inyección de campo con el contexto · 10 min",
+              "line": 259,
+              "proseWords": 155,
+              "codeLines": 32,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 2.3: Elige la prueba que responde tu pregunta · 10 min",
+              "line": 326,
+              "proseWords": 290,
+              "codeLines": 6,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash",
+                "text"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 3,
+          "title": "Tema 3: Estereotipos, autoconfiguración y scopes",
+          "line": 364,
+          "review": "Estereotipos → árbol de dependencias → prototype/ObjectProvider; no confunde prototype con scope request.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 3.1: Asigna a cada estereotipo un papel claro · 10 min",
+              "line": 372,
+              "proseWords": 176,
+              "codeLines": 6,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 3.2: Inspecciona lo que aporta una dependencia · 10 min",
+              "line": 407,
+              "proseWords": 232,
+              "codeLines": 6,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash",
+                "mermaid"
+              ]
+            },
+            {
+              "heading": "Subtema 3.3: Pide un bean nuevo cuando de verdad lo necesitas · 15 min",
+              "line": 443,
+              "proseWords": 764,
+              "codeLines": 56,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": 1,
+      "source": "web/public/content/spring-boot/modulo-1.md",
+      "topics": [
+        {
+          "topic": 1,
+          "title": "Tema 1: Spring Initializr y starters",
+          "line": 55,
+          "review": "Generación aislada con Boot y paquete fijados; vuelve explícitamente al proyecto acumulativo. Maven original y alternativa Gradle con Wrapper y comandos propios.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 1.1: Genera el proyecto y encuentra sus piezas · 10 min",
+              "line": 61,
+              "proseWords": 215,
+              "codeLines": 12,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 1.2: Conecta el starter web con una ruta · 10 min",
+              "line": 100,
+              "proseWords": 153,
+              "codeLines": 14,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 1.3: Revisa qué agrupa el starter y quién fija versiones · 10 min",
+              "line": 149,
+              "proseWords": 292,
+              "codeLines": 6,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash",
+                "mermaid"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 2,
+          "title": "Tema 2: application.yml vs application.properties",
+          "line": 189,
+          "review": "YAML → Properties → sobrescritura CLI; clean evita recursos antiguos y las claves tienen salida comprobable.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 2.1: Lee una clave desde YAML · 10 min",
+              "line": 197,
+              "proseWords": 134,
+              "codeLines": 25,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "yaml",
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 2.2: Escribe la misma clave en Properties y observa prioridad · 10 min",
+              "line": 257,
+              "proseWords": 163,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "properties"
+              ]
+            },
+            {
+              "heading": "Subtema 2.3: Sobrescribe el archivo desde la terminal · 10 min",
+              "line": 286,
+              "proseWords": 206,
+              "codeLines": 5,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash",
+                "mermaid"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 3,
+          "title": "Tema 3: Perfiles y estructura por capas",
+          "line": 325,
+          "review": "Base → perfil dev → capas. Corregido el resumen que pedía JPA/PostgreSQL antes de enseñarlos.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 3.1: Combina una configuración base con un perfil · 10 min",
+              "line": 331,
+              "proseWords": 144,
+              "codeLines": 30,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "yaml",
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 3.2: Activa el perfil y comprueba el valor aplicado · 10 min",
+              "line": 398,
+              "proseWords": 150,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 3.3: Separa HTTP, regla y acceso a datos · 15 min",
+              "line": 426,
+              "proseWords": 479,
+              "codeLines": 52,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "mermaid"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": 2,
+      "source": "web/public/content/spring-boot/modulo-2.md",
+      "topics": [
+        {
+          "topic": 1,
+          "title": "Tema 1: Por qué DTOs en vez de entidades directamente",
+          "line": 10,
+          "review": "Entidad → DTO → contrato estable. Quitada dependencia anticipada de JWT y detalladas dependencias al continuar M0–M1.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 1.1: Crea una entidad y guárdala en H2 · 10 min",
+              "line": 16,
+              "proseWords": 188,
+              "codeLines": 55,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "xml",
+                "java",
+                "yaml"
+              ]
+            },
+            {
+              "heading": "Subtema 1.2: Devuelve solo el contrato público · 15 min",
+              "line": 113,
+              "proseWords": 145,
+              "codeLines": 60,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 1.3: Cambia el modelo interno sin cambiar la API · 10 min",
+              "line": 218,
+              "proseWords": 257,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 2,
+          "title": "Tema 2: Validación con Bean Validation y ResponseEntity",
+          "line": 252,
+          "review": "Bean Validation → ResponseEntity → casos límite. Corregidas dos continuaciones de línea curl.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 2.1: Rechaza datos inválidos antes de guardar · 10 min",
+              "line": 270,
+              "proseWords": 203,
+              "codeLines": 24,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "xml",
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 2.2: Devuelve 200 o 404 según exista la tarea · 15 min",
+              "line": 334,
+              "proseWords": 213,
+              "codeLines": 11,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 2.3: Comprueba las reglas con casos límite · 10 min",
+              "line": 380,
+              "proseWords": 268,
+              "codeLines": 0,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": []
+            }
+          ]
+        },
+        {
+          "topic": 3,
+          "title": "Tema 3: Manejo centralizado de errores con @ControllerAdvice",
+          "line": 408,
+          "review": "ApiError → excepción de ausencia → comparación HTTP; distingue error previsto de un fallo interno.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 3.1: Da un formato útil al error de validación · 15 min",
+              "line": 427,
+              "proseWords": 189,
+              "codeLines": 46,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 3.2: Convierte un ID ausente en 404 con el mismo formato · 15 min",
+              "line": 513,
+              "proseWords": 182,
+              "codeLines": 23,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 3.3: Sigue el error desde la petición hasta la respuesta · 10 min",
+              "line": 578,
+              "proseWords": 282,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 4,
+          "title": "Tema 4: Lombok y MapStruct sin exponer datos internos",
+          "line": 612,
+          "review": "Lombok → MapStruct → políticas de campos. Procesadores explícitos, versiones fijadas; los fragmentos son cambios sobre clases previas.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 4.1: Genera getters durante la compilación · 10 min",
+              "line": 627,
+              "proseWords": 215,
+              "codeLines": 20,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "xml"
+              ]
+            },
+            {
+              "heading": "Subtema 4.2: Genera el mapeo con MapStruct · 15 min",
+              "line": 686,
+              "proseWords": 209,
+              "codeLines": 63,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "xml",
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 4.3: Haz que cada campo interno nuevo exija una decisión · 10 min",
+              "line": 801,
+              "proseWords": 321,
+              "codeLines": 6,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 5,
+          "title": "Tema 5: OpenAPI con springdoc: el contrato como prueba",
+          "line": 847,
+          "review": "Springdoc 3.2.0 → anotaciones → prueba HTTP del documento. Se incorpora al laboratorio acumulativo que antes no lo ejecutaba.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 5.1: Publica el contrato de tu API · 10 min",
+              "line": 863,
+              "proseWords": 169,
+              "codeLines": 7,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "xml",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 5.2: Describe éxito y errores en cada endpoint · 15 min",
+              "line": 907,
+              "proseWords": 175,
+              "codeLines": 50,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 5.3: Evita cambios silenciosos con una prueba · 15 min",
+              "line": 984,
+              "proseWords": 250,
+              "codeLines": 49,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 6,
+          "title": "Tema 6: Paginación HTTP con validación y un límite de recursos explícito",
+          "line": 1071,
+          "review": "PageRequest → límites → SQL y decisión Page/Slice. Añadido import RequestParam y corregido límite inclusivo 0..1000; referencia ejecutable ampliada.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 6.1: Devuelve una página desde JPA · 15 min",
+              "line": 1087,
+              "proseWords": 200,
+              "codeLines": 42,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 6.2: Rechaza tamaños fuera del contrato · 15 min",
+              "line": 1176,
+              "proseWords": 246,
+              "codeLines": 20,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 6.3: Comprueba el límite y el costo del paginado · 10 min",
+              "line": 1238,
+              "proseWords": 253,
+              "codeLines": 3,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "yaml"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": 3,
+      "source": "web/public/content/spring-boot/modulo-3.md",
+      "topics": [
+        {
+          "topic": 1,
+          "title": "Tema 1: Entidades y repositorios derivados",
+          "line": 9,
+          "review": "Guardar → derivación → JPQL. Añadida instrucción real para instalar starter-data-jpa-test, antes solo mencionado como prerrequisito.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 3.1 · Guardar y recuperar una entidad · 8 min",
+              "line": 23,
+              "proseWords": 247,
+              "codeLines": 29,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "xml",
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 3.2 · Filtrar con el nombre del método · 10 min",
+              "line": 79,
+              "proseWords": 227,
+              "codeLines": 23,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash",
+                "text"
+              ]
+            },
+            {
+              "heading": "Subtema 3.3 · Escribir JPQL cuando ayuda a leer · 10 min",
+              "line": 134,
+              "proseWords": 275,
+              "codeLines": 29,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 2,
+          "title": "Tema 2: El problema N+1 y su corrección",
+          "line": 192,
+          "review": "Conteo N+1 → JOIN FETCH → EntityGraph; consulta perezosa separada conserva el contraste. Referencia ampliada a los tres casos.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 3.4 · Relacionar clientes y pedidos y medir · 12 min",
+              "line": 205,
+              "proseWords": 190,
+              "codeLines": 120,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 3.5 · Cargar la relación con `JOIN FETCH` · 10 min",
+              "line": 367,
+              "proseWords": 163,
+              "codeLines": 26,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 3.6 · Elegir `@EntityGraph` y revisar el límite · 10 min",
+              "line": 420,
+              "proseWords": 258,
+              "codeLines": 31,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 3,
+          "title": "Tema 3: Migraciones con Flyway",
+          "line": 478,
+          "review": "V1 → V2 → duplicado/checksum; pruebas incluyen guardado y versiones aplicadas; SQL H2 no equivale a todos los motores.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 3.7 · Crear el esquema con V1 · 12 min",
+              "line": 491,
+              "proseWords": 238,
+              "codeLines": 56,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "xml",
+                "yaml",
+                "sql",
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 3.8 · Aplicar un cambio nuevo con V2 · 10 min",
+              "line": 584,
+              "proseWords": 173,
+              "codeLines": 9,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "sql",
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 3.9 · Diagnosticar versiones repetidas · 8 min",
+              "line": 620,
+              "proseWords": 283,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "sql",
+                "bash"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": 4,
+      "source": "web/public/content/spring-boot/modulo-4.md",
+      "topics": [
+        {
+          "topic": 1,
+          "title": "Tema 1: SecurityFilterChain moderno",
+          "line": 10,
+          "review": "Cadena Basic → MockMvc → rutas públicas. Añadido starter-webmvc-test antes del primer import modular que lo necesita.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 4.1 · Proteger rutas del backend · 10 min",
+              "line": 25,
+              "proseWords": 170,
+              "codeLines": 37,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "xml",
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 4.2 · Verificar 200, 401 y usuario autenticado · 10 min",
+              "line": 89,
+              "proseWords": 178,
+              "codeLines": 43,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "xml",
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 4.3 · Decidir qué rutas son públicas · 10 min",
+              "line": 164,
+              "proseWords": 300,
+              "codeLines": 30,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 2,
+          "title": "Tema 2: Filtro JWT y autorización por rol",
+          "line": 228,
+          "review": "Firma → filtro → permisos. JWT HS256 local, no proveedor OIDC ni rotación de claves.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 4.4 · Firmar y validar un token · 10 min",
+              "line": 234,
+              "proseWords": 237,
+              "codeLines": 72,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "xml",
+                "properties",
+                "bash",
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 4.5 · Poner el filtro dentro de Spring Security · 10 min",
+              "line": 343,
+              "proseWords": 202,
+              "codeLines": 90,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 4.6 · Probar identidad, rol y firma · 10 min",
+              "line": 460,
+              "proseWords": 289,
+              "codeLines": 46,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "properties",
+                "java"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 3,
+          "title": "Tema 3: CORS y CSRF",
+          "line": 532,
+          "review": "Preflight → DELETE autenticado → método no permitido. Separa CORS, autenticación y CSRF según transporte de credenciales.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 4.7 · Permitir un origen y responder al preflight · 10 min",
+              "line": 547,
+              "proseWords": 211,
+              "codeLines": 66,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 4.8 · Llamar con el JWT y decidir CSRF · 10 min",
+              "line": 642,
+              "proseWords": 256,
+              "codeLines": 11,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 4.9 · Ajustar métodos y detectar configuraciones amplias · 10 min",
+              "line": 674,
+              "proseWords": 207,
+              "codeLines": 7,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 4,
+          "title": "Tema 4: Reducir SSRF en clientes HTTP con InetAddressFilter",
+          "line": 706,
+          "review": "Cliente restringido → servidor loopback → redirects; clasificar metadata IP no demuestra DNS rebinding.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 4.10 · Crear un RestClient con límites · 10 min",
+              "line": 712,
+              "proseWords": 196,
+              "codeLines": 3,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 4.11 · Probar destinos internos con un servidor local · 10 min",
+              "line": 734,
+              "proseWords": 216,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 4.12 · Impedir redirects y definir el límite de protección · 10 min",
+              "line": 754,
+              "proseWords": 282,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 5,
+          "title": "Tema 5: Flujo de login completo — de `/api/auth/login` a una ruta protegida",
+          "line": 782,
+          "review": "Hash → login/token → credenciales rechazadas. Se conservaron las dos pruebas negativas en la referencia acumulativa.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 4.13 · Comparar la contraseña sin guardarla en texto plano · 10 min",
+              "line": 800,
+              "proseWords": 210,
+              "codeLines": 43,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 4.14 · Usar el token en una ruta protegida · 10 min",
+              "line": 877,
+              "proseWords": 198,
+              "codeLines": 61,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "properties",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 4.15 · Rechazar credenciales incorrectas · 10 min",
+              "line": 975,
+              "proseWords": 569,
+              "codeLines": 23,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": 5,
+      "source": "web/public/content/spring-boot/modulo-5.md",
+      "topics": [
+        {
+          "topic": 1,
+          "title": "Tema 1: @ConfigurationProperties tipado",
+          "line": 10,
+          "review": "Record validado → binding tests → JwtService; incluye actualización del constructor del test previo.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 4.16 · Agrupar la configuración JWT existente · 10 min",
+              "line": 23,
+              "proseWords": 238,
+              "codeLines": 20,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "properties"
+              ]
+            },
+            {
+              "heading": "Subtema 4.17 · Probar enlace y límites con un contexto pequeño · 10 min",
+              "line": 74,
+              "proseWords": 155,
+              "codeLines": 47,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 4.18 · Inyectar el record en el JwtService · 10 min",
+              "line": 143,
+              "proseWords": 303,
+              "codeLines": 14,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 2,
+          "title": "Tema 2: Fallar rápido al arranque",
+          "line": 195,
+          "review": "Configuración ausente/vacía → validación → fallo rápido; no afirma que @NotBlank valide fuerza o Base64 de la clave.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 4.19 · Probar el valor obligatorio ausente · 10 min",
+              "line": 208,
+              "proseWords": 133,
+              "codeLines": 11,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 4.20 · Rechazar también un secreto vacío · 10 min",
+              "line": 246,
+              "proseWords": 186,
+              "codeLines": 13,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 4.21 · Quitar la validación y observar el riesgo · 10 min",
+              "line": 288,
+              "proseWords": 254,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 3,
+          "title": "Tema 3: Manejo global de excepciones consistente entre entornos",
+          "line": 316,
+          "review": "Regla 20/21 → handler compartido → borde exacto. Referencia ampliada con controller, excepción y ambos tests.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 4.22 · Lanzar una excepción del dominio · 10 min",
+              "line": 329,
+              "proseWords": 121,
+              "codeLines": 26,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 4.23 · Extender el manejador sin cambiar el formato · 10 min",
+              "line": 377,
+              "proseWords": 163,
+              "codeLines": 40,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 4.24 · Comprobar el borde del límite con MockMvc · 10 min",
+              "line": 441,
+              "proseWords": 389,
+              "codeLines": 10,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": 6,
+      "source": "web/public/content/spring-boot/modulo-6.md",
+      "topics": [
+        {
+          "topic": 1,
+          "title": "Tema 1: Probar un controller con `@WebMvcTest`",
+          "line": 10,
+          "review": "Slice web → validación → mock ausente; addFilters=false limita lo que acredita sobre seguridad.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 6.1 · Recortar la prueba a la web · 10 min",
+              "line": 14,
+              "proseWords": 132,
+              "codeLines": 38,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 6.2 · Ver la validación y el error JSON · 10 min",
+              "line": 75,
+              "proseWords": 154,
+              "codeLines": 9,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 6.3 · Diagnosticar una dependencia que falta · 10 min",
+              "line": 106,
+              "proseWords": 326,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 2,
+          "title": "Tema 2: Probar el repositorio contra PostgreSQL con `@DataJpaTest`",
+          "line": 138,
+          "review": "Propiedades dinámicas → PostgreSQL real → caída accidental a H2. Corregida referencia que apuntaba al test de controller.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 6.4 · Conectar el slice a un PostgreSQL desechable · 10 min",
+              "line": 142,
+              "proseWords": 177,
+              "codeLines": 56,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "xml",
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 6.5 · Comprobar motor y operación del repositorio · 10 min",
+              "line": 226,
+              "proseWords": 168,
+              "codeLines": 18,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 6.6 · Detectar que el test cayó en H2 · 10 min",
+              "line": 269,
+              "proseWords": 277,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 3,
+          "title": "Tema 3: Integrar el flujo con `@SpringBootTest`",
+          "line": 297,
+          "review": "Creación/GET persistido → 401 → servicio sin guardar. Corregida referencia al archivo; añadido el caso anónimo a la referencia.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 6.7 · Crear y consultar con las capas reales · 10 min",
+              "line": 301,
+              "proseWords": 150,
+              "codeLines": 43,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 6.8 · Separar error de autenticación y flujo válido · 10 min",
+              "line": 367,
+              "proseWords": 152,
+              "codeLines": 5,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 6.9 · Ver qué integración detecta el test · 10 min",
+              "line": 394,
+              "proseWords": 321,
+              "codeLines": 3,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": 7,
+      "source": "web/public/content/spring-boot/modulo-7.md",
+      "topics": [
+        {
+          "topic": 1,
+          "title": "Tema 1: Actuator y health checks personalizados",
+          "line": 10,
+          "review": "Indicador → UP/DOWN/401 → falsa salud; la dependencia controlada no es una pasarela real.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 7.1 · Registrar una dependencia y su indicador · 10 min",
+              "line": 14,
+              "proseWords": 142,
+              "codeLines": 37,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "xml",
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 7.2 · Comprobar `UP`, `DOWN` y acceso protegido · 10 min",
+              "line": 79,
+              "proseWords": 135,
+              "codeLines": 58,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "properties",
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 7.3 · Diagnosticar un estado `UP` falso · 10 min",
+              "line": 165,
+              "proseWords": 346,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 2,
+          "title": "Tema 2: Contar operaciones de negocio con Micrometer",
+          "line": 205,
+          "review": "Contador → endpoint/tag → incremento ausente; un contador después de save no es contabilidad transaccional durable.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 7.4 · Registrar un contador en el servicio real · 10 min",
+              "line": 209,
+              "proseWords": 166,
+              "codeLines": 21,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 7.5 · Verificar valor y tag en el endpoint · 10 min",
+              "line": 258,
+              "proseWords": 143,
+              "codeLines": 55,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "properties",
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 7.6 · Detectar un contador que nunca sube · 10 min",
+              "line": 341,
+              "proseWords": 337,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 3,
+          "title": "Tema 3: Liveness y readiness sin reinicios en cadena",
+          "line": 381,
+          "review": "Activación → dependencia solo en readiness → estados; distingue estado de la app y acción del orquestador.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 7.7 · Habilitar las sondas de Spring Boot · 5 min",
+              "line": 385,
+              "proseWords": 239,
+              "codeLines": 4,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "properties",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 7.8 · Revisar la dependencia solo en readiness · 10 min",
+              "line": 411,
+              "proseWords": 394,
+              "codeLines": 13,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "properties",
+                "yaml"
+              ]
+            },
+            {
+              "heading": "Subtema 7.9 · Probar estados distintos y diagnosticar el error · 10 min",
+              "line": 452,
+              "proseWords": 531,
+              "codeLines": 73,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": 8,
+      "source": "web/public/content/spring-boot/modulo-8.md",
+      "topics": [
+        {
+          "topic": 1,
+          "title": "Tema 1: Producers y consumers con Spring Kafka",
+          "line": 8,
+          "review": "Key → dos grupos → partición/orden. Broker embebido real, sin afirmar un clúster de producción.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 1.1: Publica el evento con la clave del envío · 10 min",
+              "line": 15,
+              "proseWords": 193,
+              "codeLines": 21,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "yaml",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 1.2: Conecta dos grupos consumidores · 10 min",
+              "line": 72,
+              "proseWords": 220,
+              "codeLines": 10,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 1.3: Comprueba orden y entrega con un broker · 15 min",
+              "line": 113,
+              "proseWords": 382,
+              "codeLines": 8,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 2,
+          "title": "Tema 2: Dead-letter queue",
+          "line": 160,
+          "review": "Backoff → intentos/DLT → política y replay; tópico destino y particiones identificables.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 2.1: Configura reintentos limitados y DLT · 10 min",
+              "line": 167,
+              "proseWords": 207,
+              "codeLines": 6,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 2.2: Provoca un mensaje inválido y comprueba los intentos · 10 min",
+              "line": 199,
+              "proseWords": 203,
+              "codeLines": 11,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash",
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 2.3: Ajusta la política y atiende los mensajes recuperados · 15 min",
+              "line": 236,
+              "proseWords": 298,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 3,
+          "title": "Tema 3: Transacciones Kafka y SQL: idempotencia y límites de exactly-once",
+          "line": 269,
+          "review": "Idempotencia productor → outbox/inbox SQL → aislamiento Kafka; separa garantías y restricciones concurrentes.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 3.1 · Reintentar el productor sin duplicar registros de Kafka · 10 min",
+              "line": 276,
+              "proseWords": 170,
+              "codeLines": 7,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "yaml",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 3.2 · Guardar envío y evento en la misma transacción SQL · 15 min",
+              "line": 309,
+              "proseWords": 202,
+              "codeLines": 19,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 3.3 · Procesar un `eventId` repetido sin duplicar el efecto · 15 min",
+              "line": 354,
+              "proseWords": 252,
+              "codeLines": 25,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 3.4 · Leer solo registros confirmados de una transacción Kafka · 10 min",
+              "line": 407,
+              "proseWords": 361,
+              "codeLines": 11,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 4,
+          "title": "Tema 4: Rebalanceo de consumer groups y asignación de particiones",
+          "line": 461,
+          "review": "Asignación → callbacks → rebalanceo → membresía estática. Referencias cambiadas del POM al test que demuestra asignación; reinicios estáticos pendientes.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 4.1 · Una partición pertenece a un consumer del grupo · 10 min",
+              "line": 470,
+              "proseWords": 208,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 4.2 · Mantener el estado local con callbacks reales · 10 min",
+              "line": 498,
+              "proseWords": 207,
+              "codeLines": 11,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 4.3 · Ver el rebalanceo al entrar el segundo consumer · 15 min",
+              "line": 542,
+              "proseWords": 251,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 4.4 · Usar membresía estática solo para reinicios breves · 10 min",
+              "line": 575,
+              "proseWords": 313,
+              "codeLines": 6,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "yaml",
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 5,
+          "title": "Tema 5: Kafka frente a RabbitMQ",
+          "line": 618,
+          "review": "Distribución → retención → confirms/ack → selección. Usa Node como comparación explícita; no es una implementación Spring adicional.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 5.1 · Repartir mensajes o dar una copia a cada grupo · 10 min",
+              "line": 628,
+              "proseWords": 240,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 5.2 · Releer historial o conservar mensajes pendientes · 10 min",
+              "line": 657,
+              "proseWords": 263,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 5.3 · Distinguir confirmación de publicación y confirmación de consumo · 10 min",
+              "line": 686,
+              "proseWords": 238,
+              "codeLines": 3,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 5.4 · Elegir por el flujo y comprobar ambos binders · 15 min",
+              "line": 716,
+              "proseWords": 361,
+              "codeLines": 4,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 6,
+          "title": "Tema 6: Spring Cloud Stream y binders de Kafka/RabbitMQ",
+          "line": 756,
+          "review": "Función → binder → rechazo → broker. Test binder no acredita Kafka/Rabbit ni su DLQ.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 6.1 · Recorrer la función y los destinos reales · 10 min",
+              "line": 766,
+              "proseWords": 155,
+              "codeLines": 15,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 6.2 · Cambiar el binder sin cambiar la función · 10 min",
+              "line": 811,
+              "proseWords": 188,
+              "codeLines": 11,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "yaml",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 6.3 · Rechazar una entrada y ubicar la política de reintento · 10 min",
+              "line": 855,
+              "proseWords": 186,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 6.4 · Probar en memoria y después contra el broker · 15 min",
+              "line": 883,
+              "proseWords": 335,
+              "codeLines": 5,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 7,
+          "title": "Tema 7: Kafka Streams con Spring para transformar eventos",
+          "line": 936,
+          "review": "Filtro → ventana → TopologyTestDriver → aplicación. Actualizada referencia Boot 4.1 y enlace oficial de testing Kafka.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 7.1 · Filtrar sin cambiar la clave del pedido · 10 min",
+              "line": 943,
+              "proseWords": 102,
+              "codeLines": 6,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "text",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 7.2 · Contar por estado dentro de una ventana · 15 min",
+              "line": 979,
+              "proseWords": 154,
+              "codeLines": 8,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "text",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 7.3 · Probar la topología sin confundirla con el clúster · 10 min",
+              "line": 1023,
+              "proseWords": 129,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 7.4 · Configurar Spring y el application.id · 15 min",
+              "line": 1049,
+              "proseWords": 250,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 8,
+          "title": "Tema 8: Avro y Schema Registry para contratos de eventos",
+          "line": 1084,
+          "review": "Schema → evolución → serde mock → Registry HTTP. Corregida regla antigua del default de unión para Avro 1.12; Registry desplegado requiere ejecución aparte.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 8.1 · Definir el evento en un archivo Avro · 10 min",
+              "line": 1091,
+              "proseWords": 132,
+              "codeLines": 11,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "json",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 8.2 · Añadir un campo compatible con registros anteriores · 15 min",
+              "line": 1132,
+              "proseWords": 194,
+              "codeLines": 3,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "json",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 8.3 · Serializar usando un Registry de prueba en memoria · 10 min",
+              "line": 1170,
+              "proseWords": 147,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 8.4 · Registrar versiones y consultar compatibilidad real · 15 min",
+              "line": 1196,
+              "proseWords": 288,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 9,
+          "title": "Tema 9: RabbitMQ con Spring AMQP: routing, ack y prefetch",
+          "line": 1230,
+          "review": "Topología → confirm/return → ack/DLQ → prefetch; tests usan dobles y no acreditan medición real del broker.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 9.1 · Declarar exchange, cola, binding y DLQ · 10 min",
+              "line": 1234,
+              "proseWords": 185,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 9.2 · Publicar y distinguir confirm de return · 10 min",
+              "line": 1262,
+              "proseWords": 232,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 9.3 · Confirmar después del trabajo y mandar fallos permanentes a DLQ · 10 min",
+              "line": 1291,
+              "proseWords": 269,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 9.4 · Limitar entregas en vuelo con prefetch · 10 min",
+              "line": 1327,
+              "proseWords": 416,
+              "codeLines": 0,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": 9,
+      "source": "web/public/content/spring-boot/modulo-9.md",
+      "topics": [
+        {
+          "topic": 1,
+          "title": "Tema 1: Mono y Flux",
+          "line": 213,
+          "review": "Cero/uno/secuencia → error → defer → demanda. No confunde evaluación de just con defer.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 1.1 · Elegir entre un resultado y una secuencia · 10 min",
+              "line": 217,
+              "proseWords": 144,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 1.2 · Diferenciar vacío, valor y error · 10 min",
+              "line": 243,
+              "proseWords": 142,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 1.3 · Ver cuándo se calcula un valor · 10 min",
+              "line": 269,
+              "proseWords": 150,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 1.4 · Pedir una secuencia por partes · 10 min",
+              "line": 295,
+              "proseWords": 260,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 2,
+          "title": "Tema 2: WebClient y composición no bloqueante",
+          "line": 328,
+          "review": "Builder → flatMap → HTTP error → timeout. Servidor local y StepVerifier, con tiempos didácticos.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 2.1 · Configurar WebClient para un servicio externo · 10 min",
+              "line": 332,
+              "proseWords": 175,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 2.2 · Encadenar dos llamadas dependientes · 10 min",
+              "line": 360,
+              "proseWords": 148,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 2.3 · Dejar que el estado HTTP llegue como error reactivo · 10 min",
+              "line": 386,
+              "proseWords": 157,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 2.4 · Poner un límite a la espera · 10 min",
+              "line": 412,
+              "proseWords": 260,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 3,
+          "title": "Tema 3: Cuándo WebFlux vale la complejidad, y R2DBC",
+          "line": 445,
+          "review": "Decisión MVC/WebFlux → bloqueo → R2DBC → boundedElastic. No presenta JDBC envuelto en Mono como no bloqueante.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 3.1 · Elegir el modelo por las dependencias · 10 min",
+              "line": 449,
+              "proseWords": 273,
+              "codeLines": 0,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": []
+            },
+            {
+              "heading": "Subtema 3.2 · Ver el bloqueo que Reactor sí puede detectar · 10 min",
+              "line": 477,
+              "proseWords": 159,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 3.3 · Mantener la consulta SQL reactiva con R2DBC · 10 min",
+              "line": 503,
+              "proseWords": 173,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 3.4 · Aislar una operación bloqueante que aún no puedes reemplazar · 10 min",
+              "line": 529,
+              "proseWords": 380,
+              "codeLines": 3,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash",
+                "java"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": 10,
+      "source": "web/public/content/spring-boot/modulo-10.md",
+      "topics": [
+        {
+          "topic": 1,
+          "title": "Tema 1: Config Server y service discovery",
+          "line": 8,
+          "review": "Config por archivos → perfil → SimpleDiscoveryClient; resolución estática no equivale a operar Eureka/Consul.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 1.1: Sirve configuración desde archivos · 15 min",
+              "line": 15,
+              "proseWords": 226,
+              "codeLines": 31,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash",
+                "yaml",
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 1.2: Separa configuración por perfil y diagnostica una app desconocida · 10 min",
+              "line": 92,
+              "proseWords": 192,
+              "codeLines": 5,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "yaml",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 1.3: Resuelve una instancia por nombre lógico · 10 min",
+              "line": 125,
+              "proseWords": 280,
+              "codeLines": 32,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash",
+                "mermaid"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 2,
+          "title": "Tema 2: Spring Cloud Gateway",
+          "line": 202,
+          "review": "Predicado Gateway → StripPrefix → 404 y log del backend. Backend Python es fixture HTTP explícito, no otro microservicio Spring.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 2.1: Crea una ruta para pedidos · 15 min",
+              "line": 211,
+              "proseWords": 191,
+              "codeLines": 23,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "yaml",
+                "python"
+              ]
+            },
+            {
+              "heading": "Subtema 2.2: Cambia el path que recibe el servicio · 10 min",
+              "line": 266,
+              "proseWords": 160,
+              "codeLines": 5,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "yaml",
+                "python"
+              ]
+            },
+            {
+              "heading": "Subtema 2.3: Diagnostica una ruta que no coincide · 10 min",
+              "line": 303,
+              "proseWords": 290,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 3,
+          "title": "Tema 3: Circuit breaker con Resilience4j",
+          "line": 338,
+          "review": "Ventana/fallos → petición bloqueada → HALF_OPEN. Transición forzada prueba recuperación, no temporizador real.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 3.1: Abre el circuito después de cuatro fallos · 10 min",
+              "line": 345,
+              "proseWords": 167,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 3.2: Comprueba que OPEN detiene llamadas reales · 10 min",
+              "line": 367,
+              "proseWords": 149,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 3.3: Prueba recuperación en HALF_OPEN · 10 min",
+              "line": 389,
+              "proseWords": 270,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 4,
+          "title": "Tema 4: OAuth2/OIDC, Keycloak y Token Relay sin perder la frontera de autorización",
+          "line": 424,
+          "review": "Issuer → rol → propiedad → TokenRelay; decoder simulado y login OIDC real están separados. Recorrido navegador/Keycloak pendiente.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 4.1: Valida el emisor del token · 15 min",
+              "line": 432,
+              "proseWords": 258,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 4.2: Separa token válido de permiso de escritura · 10 min",
+              "line": 460,
+              "proseWords": 181,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 4.3: Comprueba que el pedido pertenece al sujeto del token · 10 min",
+              "line": 489,
+              "proseWords": 193,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 4.4: Reenvía el access token desde el Gateway · 10 min",
+              "line": 517,
+              "proseWords": 354,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 5,
+          "title": "Tema 5: HTTP Interfaces, deadlines y descubrimiento según el entorno",
+          "line": 558,
+          "review": "HTTP interface → timeout → discovery → presupuesto; timeout local no constituye deadline extremo a extremo.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 5.1: Declara el contrato HTTP · 10 min",
+              "line": 580,
+              "proseWords": 108,
+              "codeLines": 6,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash",
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 5.2: Corta la espera de una respuesta lenta · 15 min",
+              "line": 616,
+              "proseWords": 131,
+              "codeLines": 3,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash",
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 5.3: Resuelve el nombre del servicio por entorno · 10 min",
+              "line": 647,
+              "proseWords": 163,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 5.4: Ajusta el cliente al presupuesto de la operación · 5 min",
+              "line": 680,
+              "proseWords": 212,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 6,
+          "title": "Tema 6: Spring gRPC, contrato HTTP/2 y evolución segura",
+          "line": 717,
+          "review": "Proto → servicio → TCP → evolución; no acredita compatibilidad entre todas las versiones ni TLS.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 6.1: Define el mensaje y el método remoto · 10 min",
+              "line": 734,
+              "proseWords": 120,
+              "codeLines": 6,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash",
+                "protobuf"
+              ]
+            },
+            {
+              "heading": "Subtema 6.2: Expón la implementación en Spring · 10 min",
+              "line": 770,
+              "proseWords": 130,
+              "codeLines": 7,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 6.3: Llama el stub por el canal · 10 min",
+              "line": 802,
+              "proseWords": 125,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 6.4: Cambia el contrato sin romper datos · 10 min",
+              "line": 830,
+              "proseWords": 290,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 7,
+          "title": "Tema 7: DDD para decidir límites y propiedad de datos",
+          "line": 868,
+          "review": "Agregado → regla → inmutabilidad → decisión de extracción; memoria y sin publicación durable.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 7.1: Encuentra quién es dueño de la regla · 10 min",
+              "line": 887,
+              "proseWords": 130,
+              "codeLines": 4,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 7.2: Prueba la invariante sin infraestructura · 10 min",
+              "line": 918,
+              "proseWords": 103,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 7.3: Evita compartir almacenamiento entre contextos · 5 min",
+              "line": 946,
+              "proseWords": 139,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 7.4: Decide si separar el despliegue · 10 min",
+              "line": 979,
+              "proseWords": 156,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 8,
+          "title": "Tema 8: Orquestar pedidos con Temporal y Spring Boot",
+          "line": 1007,
+          "review": "Workflow/Activity → worker → retry → compensación; entorno Temporal de prueba, efectos externos controlados.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 8.1: Separa el plan de los efectos · 10 min",
+              "line": 1036,
+              "proseWords": 205,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 8.2: Registra Workers y código Spring · 10 min",
+              "line": 1064,
+              "proseWords": 187,
+              "codeLines": 10,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "yaml"
+              ]
+            },
+            {
+              "heading": "Subtema 8.3: Reintenta un error transitorio · 10 min",
+              "line": 1101,
+              "proseWords": 194,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 8.4: Compensa solo lo que ya ocurrió · 15 min",
+              "line": 1129,
+              "proseWords": 386,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 9,
+          "title": "Tema 9: Comprueba módulos antes de separar servicios",
+          "line": 1165,
+          "review": "Fronteras → verify → evento → receptor; se reutiliza el lab de M23. Documentación generada es un cuarto test adicional.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 9.1: Traza las dependencias de paquetes · 10 min",
+              "line": 1173,
+              "proseWords": 133,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 9.2: Haz que la arquitectura falle cuando se cruza un límite · 10 min",
+              "line": 1199,
+              "proseWords": 138,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 9.3: Define el evento público del módulo · 10 min",
+              "line": 1227,
+              "proseWords": 146,
+              "codeLines": 9,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 9.4: Comprueba la interacción entre módulos · 15 min",
+              "line": 1268,
+              "proseWords": 285,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 10,
+          "title": "Tema 10: Spring Cloud Bus para propagar cambios de configuración",
+          "line": 1305,
+          "review": "Broker → dos instancias → busenv → reinicio; la propagación 3→9 se comprobó con RabbitMQ real. Los builds sin tests no acreditan este escenario.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 10.1: Arranca el broker y revisa las dependencias · 8 min",
+              "line": 1309,
+              "proseWords": 185,
+              "codeLines": 3,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 10.2: Levanta dos instancias con identidades distintas · 8 min",
+              "line": 1338,
+              "proseWords": 151,
+              "codeLines": 4,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 10.3: Propaga un valor y refresca el bean · 12 min",
+              "line": 1377,
+              "proseWords": 190,
+              "codeLines": 6,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 10.4: Diagnostica propagación y limita el endpoint · 10 min",
+              "line": 1409,
+              "proseWords": 288,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 11,
+          "title": "Tema 11: Micrometer Tracing entre servicios",
+          "line": 1442,
+          "review": "Jaeger → dos procesos → traza → sampling; referencia snapshot sustituida por versión estable. No mide carga.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 11.1: Arranca Jaeger y conoce el rastro · 8 min",
+              "line": 1446,
+              "proseWords": 131,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 11.2: Sigue una petición HTTP entre procesos · 12 min",
+              "line": 1475,
+              "proseWords": 165,
+              "codeLines": 6,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash",
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 11.3: Encuentra la traza común y un span de negocio · 12 min",
+              "line": 1524,
+              "proseWords": 178,
+              "codeLines": 5,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash",
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 11.4: Ajusta sampling y cuida lo que exportas · 10 min",
+              "line": 1557,
+              "proseWords": 265,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 12,
+          "title": "Tema 12: Contract testing entre productor y consumidor",
+          "line": 1591,
+          "review": "Contrato → prueba generada → stub consumidor → rotura. Maven y Gradle publican stubs; Gradle usó un repositorio local aislado y detectó una mutación.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 12.1: Define la respuesta pública que necesita Pedidos · 8 min",
+              "line": 1595,
+              "proseWords": 133,
+              "codeLines": 7,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "groovy",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 12.2: Ejecuta la prueba que genera el contrato · 10 min",
+              "line": 1632,
+              "proseWords": 116,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 12.3: Usa el stub desde el cliente de Pedidos · 12 min",
+              "line": 1658,
+              "proseWords": 144,
+              "codeLines": 4,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash",
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 12.4: Detecta una rotura y define publicación · 10 min",
+              "line": 1692,
+              "proseWords": 244,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": 11,
+      "source": "web/public/content/spring-boot/modulo-11.md",
+      "topics": [
+        {
+          "topic": 1,
+          "title": "Tema 1: Fat JAR vs capas de Docker",
+          "line": 8,
+          "review": "Inspección JAR → tools/capas → Dockerfile → cambio; reutilización de imagen requiere build y runtime aparte.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 1.1: Mira qué contiene el JAR · 8 min",
+              "line": 23,
+              "proseWords": 137,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 1.2: Pide a Spring Boot el mapa de capas · 10 min",
+              "line": 52,
+              "proseWords": 135,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 1.3: Extrae y copia las capas en el orden correcto · 12 min",
+              "line": 78,
+              "proseWords": 155,
+              "codeLines": 7,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash",
+                "dockerfile"
+              ]
+            },
+            {
+              "heading": "Subtema 1.4: Comprueba qué se reutiliza y diagnostica una capa faltante · 10 min",
+              "line": 122,
+              "proseWords": 250,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 2,
+          "title": "Tema 2: GraalVM native image",
+          "line": 155,
+          "review": "AOT → hint → native compile → comparación. Corregido log del script para funcionar sin target; JVM AOT no es un binario nativo.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 2.1: Distingue AOT de un binario nativo · 10 min",
+              "line": 171,
+              "proseWords": 148,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 2.2: Registra un recurso dinámico para Native Image · 12 min",
+              "line": 199,
+              "proseWords": 153,
+              "codeLines": 6,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 2.3: Construye el ejecutable nativo · 12 min",
+              "line": 232,
+              "proseWords": 183,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 2.4: Ejecuta y compara con JVM · 15 min",
+              "line": 266,
+              "proseWords": 246,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 3,
+          "title": "Tema 3: Health checks para Kubernetes",
+          "line": 298,
+          "review": "Probes → estado → Deployment → fallos; enlace oficial corregido. Kubernetes requiere clúster e imagen disponible.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 3.1: Enciende los probes de Spring · 8 min",
+              "line": 314,
+              "proseWords": 143,
+              "codeLines": 3,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "properties",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 3.2: Distingue vivo de listo para tráfico · 10 min",
+              "line": 347,
+              "proseWords": 126,
+              "codeLines": 5,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 3.3: Conecta Actuator con el Deployment · 12 min",
+              "line": 382,
+              "proseWords": 129,
+              "codeLines": 15,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "yaml",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 3.4: Evita reinicios en cascada · 10 min",
+              "line": 427,
+              "proseWords": 453,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": 12,
+      "source": "web/public/content/spring-boot/modulo-12.md",
+      "topics": [
+        {
+          "topic": 1,
+          "title": "Tema 1: Arquitectura del microservicio integrador",
+          "line": 8,
+          "review": "Capas → Flyway → validación → HTTP/PostgreSQL. Corregidos conteo 5→7 y afirmación de que el lab final aún carecía de JWT.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 12.1.1: Sigue una petición por las capas · 8 min",
+              "line": 16,
+              "proseWords": 176,
+              "codeLines": 4,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash",
+                "text"
+              ]
+            },
+            {
+              "heading": "Subtema 12.1.2: Deja que Flyway cree la tabla · 10 min",
+              "line": 48,
+              "proseWords": 155,
+              "codeLines": 5,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "sql"
+              ]
+            },
+            {
+              "heading": "Subtema 12.1.3: Valida la solicitud antes de guardar · 10 min",
+              "line": 80,
+              "proseWords": 156,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "json"
+              ]
+            },
+            {
+              "heading": "Subtema 12.1.4: Comprueba HTTP y PostgreSQL juntos · 12 min",
+              "line": 112,
+              "proseWords": 287,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 2,
+          "title": "Tema 2: Integra seguridad JWT y observabilidad",
+          "line": 151,
+          "review": "Firma → rol → contador → Actuator. Se analiza configuración existente del laboratorio final, no una etapa inexistente sin seguridad.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 12.2.1: Verifica un JWT firmado · 10 min",
+              "line": 159,
+              "proseWords": 211,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 12.2.2: Distingue identidad de permiso · 10 min",
+              "line": 185,
+              "proseWords": 195,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 12.2.3: Cuenta solo las entregas guardadas · 10 min",
+              "line": 211,
+              "proseWords": 156,
+              "codeLines": 3,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 12.2.4: Consulta la métrica sin abrirla a todos · 10 min",
+              "line": 241,
+              "proseWords": 248,
+              "codeLines": 4,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "text",
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 3,
+          "title": "Tema 3: Cierra el servicio con evidencia y próximos pasos",
+          "line": 285,
+          "review": "Guardia → suite → checklist → siguiente nivel. Corregido cierre prematuro del track; M13–M25 siguen después de este hito.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 12.3.1: Protege la migración con una prueba de configuración · 8 min",
+              "line": 293,
+              "proseWords": 142,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 12.3.2: Comprueba el flujo integrado completo · 10 min",
+              "line": 319,
+              "proseWords": 161,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 12.3.3: Declara lo que todavía falta para desplegar · 8 min",
+              "line": 345,
+              "proseWords": 158,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 12.3.4: Deja una ruta técnica para el siguiente nivel · 8 min",
+              "line": 371,
+              "proseWords": 491,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": 13,
+      "source": "web/public/content/spring-boot/modulo-13.md",
+      "topics": [
+        {
+          "topic": 1,
+          "title": "Tema 1: `@Transactional` funciona en una frontera, no como encantamiento",
+          "line": 10,
+          "review": "Proxy → this → otro bean → contraste; estado transaccional no demuestra por sí solo rollback de escrituras.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 13.1.1: Detecta la transacción al entrar por el proxy · 8 min",
+              "line": 18,
+              "proseWords": 106,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 13.1.2: Observa una llamada interna con `this` · 8 min",
+              "line": 44,
+              "proseWords": 124,
+              "codeLines": 3,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 13.1.3: Corrige el límite extrayendo otro bean · 10 min",
+              "line": 72,
+              "proseWords": 110,
+              "codeLines": 7,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 13.1.4: Comprueba la frontera antes de añadir escrituras · 8 min",
+              "line": 106,
+              "proseWords": 189,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 2,
+          "title": "Tema 2: Recuperación implica duplicación segura",
+          "line": 145,
+          "review": "Unicidad → ON CONFLICT → carrera → inbox. No es API HTTP idempotente completa: faltan payload, principal y respuesta persistida.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 13.2.1: Deja que la base imponga la clave única · 8 min",
+              "line": 153,
+              "proseWords": 122,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 13.2.2: Registra un intento sin lanzar una excepción · 8 min",
+              "line": 179,
+              "proseWords": 155,
+              "codeLines": 3,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "sql"
+              ]
+            },
+            {
+              "heading": "Subtema 13.2.3: Fuerza una carrera entre dos solicitudes · 10 min",
+              "line": 209,
+              "proseWords": 143,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 13.2.4: Separa reintentos HTTP de reenvíos Kafka · 10 min",
+              "line": 235,
+              "proseWords": 286,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 3,
+          "title": "Tema 3: Contratos ejecutables protegen despliegues independientes",
+          "line": 270,
+          "review": "Contrato público → nombre JSON → error → evolución; añadir campo al record requiere actualizar sus constructores.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 13.3.1: Lee la respuesta que recibe la app · 8 min",
+              "line": 274,
+              "proseWords": 109,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 13.3.2: Fija nombres y valores que usa el cliente · 8 min",
+              "line": 293,
+              "proseWords": 119,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 13.3.3: Comprueba el error que ve el consumidor · 8 min",
+              "line": 311,
+              "proseWords": 127,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 13.3.4: Protege cambios entre despliegues · 10 min",
+              "line": 329,
+              "proseWords": 220,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 4,
+          "title": "Tema 4: Observabilidad sirve a un objetivo y a una decisión",
+          "line": 354,
+          "review": "Observation → traza → cardinalidad → objetivo operacional; un SLO necesita medición agregada, no solo una traza.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 13.4.1: Instrumenta el trabajo de negocio · 8 min",
+              "line": 358,
+              "proseWords": 137,
+              "codeLines": 7,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 13.4.2: Sigue una solicitud entre servicios · 10 min",
+              "line": 387,
+              "proseWords": 121,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 13.4.3: Mantén las etiquetas de métricas acotadas · 8 min",
+              "line": 405,
+              "proseWords": 128,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 13.4.4: Convierte la señal en una decisión · 10 min",
+              "line": 424,
+              "proseWords": 893,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": 14,
+      "source": "web/public/content/spring-boot/modulo-14.md",
+      "topics": [
+        {
+          "topic": 1,
+          "title": "Tema 1: CRUD API y contratos",
+          "line": 8,
+          "review": "Estado → DTO → cancelación → repetición. DELETE conserva la fila; el endpoint no implementa borrado físico.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 14.1.1: Modela estados que sí existen · 8 min",
+              "line": 12,
+              "proseWords": 109,
+              "codeLines": 6,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 14.1.2: Devuelve un contrato público pequeño · 8 min",
+              "line": 40,
+              "proseWords": 127,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 14.1.3: Cancela sin destruir el historial · 10 min",
+              "line": 58,
+              "proseWords": 115,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 14.1.4: Repite DELETE sin cambiar el resultado · 8 min",
+              "line": 76,
+              "proseWords": 177,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 2,
+          "title": "Tema 2: MySQL y datos espaciales",
+          "line": 101,
+          "review": "SRID → orden de ejes → EXPLAIN → distancia/ruta. Corregido esquema unix del socket Podman; MySQL del ejemplo está fijado a 8.0.36.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 14.2.1: Guarda puntos con un SRID fijo · 8 min",
+              "line": 105,
+              "proseWords": 143,
+              "codeLines": 8,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "sql",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 14.2.2: Especifica cómo leer latitud y longitud · 10 min",
+              "line": 137,
+              "proseWords": 139,
+              "codeLines": 5,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "sql",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 14.2.3: Comprueba el índice con EXPLAIN · 8 min",
+              "line": 170,
+              "proseWords": 131,
+              "codeLines": 4,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 14.2.4: Separa candidatos cercanos de una ruta · 8 min",
+              "line": 197,
+              "proseWords": 208,
+              "codeLines": 4,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 3,
+          "title": "Tema 3: JPA e Hibernate Spatial",
+          "line": 231,
+          "review": "JTS/SRID → persistencia → versión → conflicto. Usa MySQL real; no migra automáticamente a la versión más reciente.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 14.3.1: Crea un punto Java con el SRID correcto · 8 min",
+              "line": 235,
+              "proseWords": 126,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 14.3.2: Mapea Point al campo de la entidad · 8 min",
+              "line": 256,
+              "proseWords": 129,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 14.3.3: Detecta dos escrituras sobre versiones distintas · 10 min",
+              "line": 274,
+              "proseWords": 129,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 14.3.4: Observa la pérdida si quitas @Version · 8 min",
+              "line": 299,
+              "proseWords": 188,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 4,
+          "title": "Tema 4: JWT Bearer y autorización por roles",
+          "line": 324,
+          "review": "Firma → rol → propiedad → acceso horizontal; dueños en memoria, sin Keycloak en este lab.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 14.4.1: Verifica el Bearer firmado · 8 min",
+              "line": 328,
+              "proseWords": 128,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 14.4.2: Distingue autenticación de rol · 8 min",
+              "line": 347,
+              "proseWords": 112,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 14.4.3: Comprueba que el recurso pertenece al subject · 10 min",
+              "line": 372,
+              "proseWords": 104,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 14.4.4: Reproduce y corrige acceso horizontal · 8 min",
+              "line": 390,
+              "proseWords": 199,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 5,
+          "title": "Tema 5: Tiempo real con STOMP",
+          "line": 414,
+          "review": "Conexión → posición → secuencia → destino erróneo; WebSocket real local, sin broker durable ni permisos por envío.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 14.5.1: Abre la conexión y define destinos · 8 min",
+              "line": 431,
+              "proseWords": 152,
+              "codeLines": 3,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 14.5.2: Suscríbete y recibe una posición · 10 min",
+              "line": 453,
+              "proseWords": 151,
+              "codeLines": 4,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 14.5.3: Evita procesar dos veces la misma secuencia · 8 min",
+              "line": 476,
+              "proseWords": 154,
+              "codeLines": 4,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 14.5.4: Diagnostica destinos y límites de producción · 10 min",
+              "line": 499,
+              "proseWords": 249,
+              "codeLines": 0,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": []
+            }
+          ]
+        },
+        {
+          "topic": 6,
+          "title": "Tema 6: Archivos y notificaciones push",
+          "line": 519,
+          "review": "Límites → imagen decodificada → after-commit → almacenamiento. Push controlado, objetos en memoria y ventana de pérdida declarada.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 14.6.1: Recibe el archivo con límites · 8 min",
+              "line": 545,
+              "proseWords": 158,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 14.6.2: Comprueba el contenido de la imagen · 10 min",
+              "line": 563,
+              "proseWords": 217,
+              "codeLines": 5,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 14.6.3: Notifica solo tras guardar · 10 min",
+              "line": 591,
+              "proseWords": 170,
+              "codeLines": 6,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 14.6.4: Traza el archivo y define qué falta · 8 min",
+              "line": 623,
+              "proseWords": 263,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": 15,
+      "source": "web/public/content/spring-boot/modulo-15.md",
+      "topics": [
+        {
+          "topic": 1,
+          "title": "Tema 1: Backpressure real en WebFlux con reactor-test",
+          "line": 8,
+          "review": "Demanda cero → 3+7 → ilimitada → limitRate; referencias apuntan al test real, no al POM.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 15.1.1: Empieza con cero solicitudes · 8 min",
+              "line": 32,
+              "proseWords": 140,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 15.1.2: Solicita tres y luego siete · 8 min",
+              "line": 55,
+              "proseWords": 137,
+              "codeLines": 7,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 15.1.3: Mira la demanda sin límite · 8 min",
+              "line": 87,
+              "proseWords": 142,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 15.1.4: Observa cómo `limitRate` cambia las tandas · 10 min",
+              "line": 108,
+              "proseWords": 215,
+              "codeLines": 3,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 2,
+          "title": "Tema 2: Contenedores Testcontainers reutilizados entre clases",
+          "line": 134,
+          "review": "Singleton → dos clases → aislamiento → decisión. Corregidas referencias erróneas a idempotencia: el lab correcto es testcontainers-singleton-rutaflow.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 15.2.1: Arranca el singleton una sola vez · 8 min",
+              "line": 149,
+              "proseWords": 128,
+              "codeLines": 5,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 15.2.2: Comprueba la base desde cada clase · 8 min",
+              "line": 171,
+              "proseWords": 146,
+              "codeLines": 7,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 15.2.3: Aísla los datos compartidos · 8 min",
+              "line": 197,
+              "proseWords": 149,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 15.2.4: Decide si conviene compartir · 8 min",
+              "line": 218,
+              "proseWords": 239,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 3,
+          "title": "Tema 3: Arquitectura hexagonal verificada con ArchUnit",
+          "line": 247,
+          "review": "Puerto → reglas bytecode → aplicación → alcance. ArchUnit requiere su propio lab; no es una prueba funcional.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 15.3.1: Ubica el puerto y el adaptador · 8 min",
+              "line": 268,
+              "proseWords": 147,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 15.3.2: Escribe la regla sobre el bytecode · 8 min",
+              "line": 291,
+              "proseWords": 126,
+              "codeLines": 4,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 15.3.3: Protege también el caso de uso · 8 min",
+              "line": 312,
+              "proseWords": 172,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 15.3.4: Decide qué reglas merece mantener · 8 min",
+              "line": 337,
+              "proseWords": 193,
+              "codeLines": 0,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": []
+            }
+          ]
+        },
+        {
+          "topic": 4,
+          "title": "Tema 4: Bulkhead y RateLimiter de Resilience4j",
+          "line": 355,
+          "review": "Concurrencia/ritmo → bulkhead → permisos → límites; no cuota global entre réplicas.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 15.4.1: Separa concurrencia de ritmo · 8 min",
+              "line": 357,
+              "proseWords": 215,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "text"
+              ]
+            },
+            {
+              "heading": "Subtema 15.4.2: Mantén la llamada dentro del Bulkhead · 8 min",
+              "line": 378,
+              "proseWords": 139,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 15.4.3: Cuenta permisos por período · 8 min",
+              "line": 396,
+              "proseWords": 140,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 15.4.4: Decide el límite y observa sus fronteras · 8 min",
+              "line": 414,
+              "proseWords": 248,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 5,
+          "title": "Tema 5: Saga con compensación real",
+          "line": 436,
+          "review": "Pasos → compensación inversa → éxito → recuperación. Participantes en memoria, no saga distribuida durable.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 15.5.1: Dibuja los pasos del pedido · 8 min",
+              "line": 438,
+              "proseWords": 195,
+              "codeLines": 6,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "text",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 15.5.2: Ejecuta y compensa en orden inverso · 8 min",
+              "line": 469,
+              "proseWords": 154,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 15.5.3: Compara fallo y éxito · 8 min",
+              "line": 487,
+              "proseWords": 135,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 15.5.4: Delimita la demo y planea la recuperación · 8 min",
+              "line": 505,
+              "proseWords": 229,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 6,
+          "title": "Tema 6: Event Sourcing con replay real",
+          "line": 528,
+          "review": "Hechos → replay → orden inválido → límites. Event store en memoria; no equivale a Kafka ni outbox.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 15.6.1: Guarda hechos, no solo el estado final · 8 min",
+              "line": 530,
+              "proseWords": 176,
+              "codeLines": 3,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "text",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 15.6.2: Reconstruye el pedido paso a paso · 8 min",
+              "line": 560,
+              "proseWords": 127,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 15.6.3: Rechaza eventos que rompen las reglas · 8 min",
+              "line": 580,
+              "proseWords": 143,
+              "codeLines": 0,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": []
+            },
+            {
+              "heading": "Subtema 15.6.4: Delimita el almacenamiento y la reconstrucción · 8 min",
+              "line": 594,
+              "proseWords": 261,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 7,
+          "title": "Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar",
+          "line": 625,
+          "review": "PENDING → transacción local → reapertura archivo → repetición; recuperación H2 local, no coordinación de bases remotas.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 15.7.1: Conserva el trabajo pendiente · 8 min",
+              "line": 627,
+              "proseWords": 158,
+              "codeLines": 4,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "text",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 15.7.2: Confirma juntos el efecto y su estado · 8 min",
+              "line": 658,
+              "proseWords": 151,
+              "codeLines": 5,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash",
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 15.7.3: Reabre y reintenta sin duplicar · 8 min",
+              "line": 685,
+              "proseWords": 160,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 15.7.4: Define los límites de recuperación · 8 min",
+              "line": 708,
+              "proseWords": 227,
+              "codeLines": 53,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash",
+                "python"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 8,
+          "title": "Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework",
+          "line": 797,
+          "review": "Agregado → puerto → HTTP → corte vertical; seis pruebas en memoria, sin seguridad ni JPA.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 15.8.1: Haz que el agregado proteja la regla · 8 min",
+              "line": 799,
+              "proseWords": 154,
+              "codeLines": 7,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 15.8.2: Conecta el caso de uso a un puerto · 8 min",
+              "line": 830,
+              "proseWords": 131,
+              "codeLines": 5,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "text",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 15.8.3: Usa Spring como adaptador HTTP · 8 min",
+              "line": 857,
+              "proseWords": 131,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 15.8.4: Comprueba el corte vertical y sus límites · 8 min",
+              "line": 875,
+              "proseWords": 241,
+              "codeLines": 55,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash",
+                "java"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": 16,
+      "source": "web/public/content/spring-boot/modulo-16.md",
+      "topics": [
+        {
+          "topic": 1,
+          "title": "Tema 1: Relaciones, lado propietario y ciclo de vida",
+          "line": 14,
+          "review": "FK → ambos lados → cascade → flush/clear; corregido enlace a OneToMany, Hibernate/JPA de lab tienen su propio POM.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 16.1 · Sigue la clave foránea · 8 min",
+              "line": 22,
+              "proseWords": 159,
+              "codeLines": 5,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 16.2 · Mantén los dos lados sincronizados · 8 min",
+              "line": 49,
+              "proseWords": 162,
+              "codeLines": 3,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 16.3 · Decide qué significa guardar y borrar · 10 min",
+              "line": 74,
+              "proseWords": 188,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 16.4 · Verifica y transfiere la decisión · 10 min",
+              "line": 98,
+              "proseWords": 224,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 2,
+          "title": "Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso",
+          "line": 119,
+          "review": "N+1 → EntityGraph → contexto cerrado → decisión; medir SQL y no convertir todo a EAGER.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 16.5 · Cuenta las consultas que dispara la lista · 8 min",
+              "line": 127,
+              "proseWords": 166,
+              "codeLines": 4,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash",
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 16.6 · Pide el cliente que esta pantalla necesita · 8 min",
+              "line": 153,
+              "proseWords": 177,
+              "codeLines": 4,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 16.7 · Reconoce el límite de LAZY y EAGER · 8 min",
+              "line": 181,
+              "proseWords": 183,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 16.8 · Pagina una vista pequeña con DTO · 10 min",
+              "line": 199,
+              "proseWords": 205,
+              "codeLines": 4,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": 17,
+      "source": "web/public/content/spring-boot/modulo-17.md",
+      "topics": [
+        {
+          "topic": 1,
+          "title": "Tema 1: DataSource, JdbcTemplate y DAO",
+          "line": 14,
+          "review": "DataSource/DAO → parámetros → RowMapper → orden allowlist; valores y nombres de columna tienen tratamientos distintos.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 17.1 · Conecta JdbcTemplate a la base de prueba · 8 min",
+              "line": 24,
+              "proseWords": 136,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 17.2 · Pasa valores como parámetros · 8 min",
+              "line": 43,
+              "proseWords": 116,
+              "codeLines": 6,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 17.3 · Convierte filas en objetos simples · 8 min",
+              "line": 71,
+              "proseWords": 106,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 17.4 · Valida el ordenamiento dinámico · 10 min",
+              "line": 89,
+              "proseWords": 174,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 2,
+          "title": "Tema 2: `@Transactional`, rollback y límites de transacción",
+          "line": 108,
+          "review": "Unidad local → rollback runtime → checked/rollbackFor → frontera; no engloba HTTP o Kafka.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 17.5 · Confirma dos cambios como una unidad · 8 min",
+              "line": 116,
+              "proseWords": 111,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 17.6 · Revierte el primer cambio si el segundo falla · 8 min",
+              "line": 135,
+              "proseWords": 124,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 17.7 · Decide qué excepciones revierten · 8 min",
+              "line": 153,
+              "proseWords": 111,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 17.8 · Mantén el límite dentro del bean y la base · 10 min",
+              "line": 171,
+              "proseWords": 219,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": 18,
+      "source": "web/public/content/spring-boot/modulo-18.md",
+      "topics": [
+        {
+          "topic": 1,
+          "title": "Tema 1: SecurityFilterChain y autorización",
+          "line": 14,
+          "review": "Filtro → roles → 401/403 → propiedad; repasa M4/M10 con lab OIDC, no añade un segundo sistema de login.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 18.1 · Define qué rutas acepta el filtro · 8 min",
+              "line": 22,
+              "proseWords": 121,
+              "codeLines": 5,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 18.2 · Traduce un rol del JWT a una autoridad · 8 min",
+              "line": 49,
+              "proseWords": 113,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 18.3 · Distingue identidad de permiso · 8 min",
+              "line": 67,
+              "proseWords": 130,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 18.4 · Autoriza el pedido que pertenece a la persona · 10 min",
+              "line": 85,
+              "proseWords": 186,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 2,
+          "title": "Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP",
+          "line": 106,
+          "review": "DTO → CORS → issuer → SSRF; cambia de lab explícitamente; JWT mock no acredita firma real de Keycloak.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 18.5 · Valida la petición en la entrada · 8 min",
+              "line": 123,
+              "proseWords": 133,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 18.6 · Configura CORS para el origen necesario · 8 min",
+              "line": 147,
+              "proseWords": 134,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 18.7 · Confía en el issuer OIDC, no en un JWT decodificado · 10 min",
+              "line": 166,
+              "proseWords": 181,
+              "codeLines": 3,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 18.8 · Bloquea destinos internos en el cliente saliente · 10 min",
+              "line": 186,
+              "proseWords": 187,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": 19,
+      "source": "web/public/content/spring-boot/modulo-19.md",
+      "topics": [
+        {
+          "topic": 1,
+          "title": "Tema 1: Job, Step, Tasklet y chunk processing",
+          "line": 14,
+          "review": "Job/Step → lectura/proceso → chunk → filas; H2 y tamaño de chunk didáctico.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 19.1 · Separa el Job del trabajo de cada Step · 8 min",
+              "line": 35,
+              "proseWords": 137,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 19.2 · Lee filas y transforma una a la vez · 8 min",
+              "line": 54,
+              "proseWords": 120,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 19.3 · Confirma filas en grupos pequeños · 10 min",
+              "line": 74,
+              "proseWords": 157,
+              "codeLines": 4,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 19.4 · Ejecuta el job y comprueba sus datos · 8 min",
+              "line": 97,
+              "proseWords": 175,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 2,
+          "title": "Tema 2: Reinicio, JobParameters, retry, skip y listeners",
+          "line": 119,
+          "review": "Restart → parámetros → retry/skip → auditoría. Repositorio de job y parámetros estables determinan la instancia.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 19.5 · Reanuda la misma instancia del Job · 10 min",
+              "line": 137,
+              "proseWords": 152,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 19.6 · Usa parámetros estables para identificar el lote · 8 min",
+              "line": 158,
+              "proseWords": 136,
+              "codeLines": 4,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 19.7 · Distingue retry de skip · 10 min",
+              "line": 179,
+              "proseWords": 142,
+              "codeLines": 3,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 19.8 · Deja rastro sin guardar datos sensibles · 8 min",
+              "line": 201,
+              "proseWords": 177,
+              "codeLines": 0,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": 20,
+      "source": "web/public/content/spring-boot/modulo-20.md",
+      "topics": [
+        {
+          "topic": 1,
+          "title": "Tema 1: Scheduling y tareas periódicas",
+          "line": 14,
+          "review": "Intervalo → servicio → registro/manual → réplicas; no prueba reloj ni exclusión distribuida.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 20.1 · Elige cuándo debe volver a correr · 8 min",
+              "line": 31,
+              "proseWords": 128,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 20.2 · Conecta el disparo con el trabajo real · 8 min",
+              "line": 50,
+              "proseWords": 96,
+              "codeLines": 4,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 20.3 · Comprueba la tarea sin dormir en el test · 8 min",
+              "line": 76,
+              "proseWords": 117,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 20.4 · Evita duplicados al desplegar varias réplicas · 10 min",
+              "line": 94,
+              "proseWords": 180,
+              "codeLines": 0,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": []
+            }
+          ]
+        },
+        {
+          "topic": 2,
+          "title": "Tema 2: Eventos locales, eventos transaccionales y mensajería",
+          "line": 110,
+          "review": "Evento local → after-commit → outbox → inbox; no confunde listener local con entrega recuperable.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 20.5 · Sigue el evento dentro de la aplicación · 8 min",
+              "line": 118,
+              "proseWords": 119,
+              "codeLines": 3,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 20.6 · Comprueba qué significa “después del commit” · 8 min",
+              "line": 143,
+              "proseWords": 128,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 20.7 · Guarda el evento junto con el envío · 10 min",
+              "line": 161,
+              "proseWords": 149,
+              "codeLines": 12,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 20.8 · Repite la entrega sin repetir el efecto · 10 min",
+              "line": 193,
+              "proseWords": 170,
+              "codeLines": 5,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 3,
+          "title": "Tema 3: Correo con Spring Mail y entrega recuperable",
+          "line": 219,
+          "review": "Mensaje → SMTP config → outbox → agotamiento. Adaptador controlado; no correo realmente entregado.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 20.9 · Construye el mensaje y revísalo sin enviar correo · 8 min",
+              "line": 227,
+              "proseWords": 107,
+              "codeLines": 7,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 20.10 · Configura SMTP fuera del código · 8 min",
+              "line": 256,
+              "proseWords": 131,
+              "codeLines": 10,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "yaml",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 20.11 · Guarda el envío y la notificación juntos · 10 min",
+              "line": 288,
+              "proseWords": 128,
+              "codeLines": 13,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 20.12 · Limita los reintentos y conserva evidencia útil · 10 min",
+              "line": 323,
+              "proseWords": 170,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 4,
+          "title": "Tema 4: Caché con Spring Cache, Caffeine y Redis",
+          "line": 342,
+          "review": "Lectura → invalidación/put → límites → métricas → Redis. Writer inmediato explícito para lectura entre gestores; costo de bloqueo explicado.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 20.13 · Comprueba qué trabajo ahorra una caché · 7 min",
+              "line": 354,
+              "proseWords": 134,
+              "codeLines": 6,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 20.14 · Invalida o reemplaza la copia al actualizar · 10 min",
+              "line": 384,
+              "proseWords": 188,
+              "codeLines": 12,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 20.15 · Pon un límite de memoria y de antigüedad · 8 min",
+              "line": 418,
+              "proseWords": 120,
+              "codeLines": 7,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "yaml",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 20.16 · Mide las lecturas que realmente evitas · 8 min",
+              "line": 445,
+              "proseWords": 190,
+              "codeLines": 3,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 20.17 · Comprueba una caché compartida en Redis · 12 min",
+              "line": 468,
+              "proseWords": 509,
+              "codeLines": 14,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "yaml",
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 5,
+          "title": "Tema 5: @Async y ejecutores: trabajo en segundo plano con límites",
+          "line": 515,
+          "review": "Proxy → self-call → Future excepcional → rechazo por capacidad. No acredita durabilidad ni propagación de seguridad.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 20.18 · Ejecuta una llamada a través del proxy · 8 min",
+              "line": 533,
+              "proseWords": 189,
+              "codeLines": 6,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 20.19 · Diagnostica la auto-invocación · 8 min",
+              "line": 561,
+              "proseWords": 164,
+              "codeLines": 4,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 20.20 · Observa el error del trabajo · 8 min",
+              "line": 587,
+              "proseWords": 170,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 20.21 · Rechaza trabajo cuando no queda capacidad · 10 min",
+              "line": 605,
+              "proseWords": 337,
+              "codeLines": 6,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "java",
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 6,
+          "title": "Tema 6: Integraciones empresariales, SOAP y fronteras de protocolo",
+          "line": 639,
+          "review": "Sobre → namespace → validación/Fault → decisión de adaptador. Ejemplo complementario Python, no servidor SOAP Spring ni WSDL ejecutado.",
+          "buildRoute": "Python (complemento SOAP)",
+          "subtopics": [
+            {
+              "heading": "Subtema 20.22 · Lee un contrato antes de adaptar el dominio · 7 min",
+              "line": 655,
+              "proseWords": 195,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 20.23 · Separa prefijo de namespace y versión · 7 min",
+              "line": 674,
+              "proseWords": 191,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 20.24 · Rechaza campos vacíos y respuestas Fault · 8 min",
+              "line": 692,
+              "proseWords": 199,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 20.25 · Define garantías del adaptador del proyecto · 8 min",
+              "line": 710,
+              "proseWords": 296,
+              "codeLines": 11,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "markdown",
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 7,
+          "title": "Tema 7: Spring AI: ChatClient y herramientas con autorización fuera del modelo",
+          "line": 752,
+          "review": "ChatClient controlado → callback autorizado → sesiones → esquema. Boot 4.0.9 + AI 2.0.2 compatibles, sin calidad LLM real.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 20.26 · Separa ChatClient del modelo · 9 min",
+              "line": 768,
+              "proseWords": 257,
+              "codeLines": 66,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash",
+                "xml",
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 20.27 · Autoriza antes de consultar el envío · 9 min",
+              "line": 866,
+              "proseWords": 200,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 20.28 · Aísla permisos entre dos sesiones · 9 min",
+              "line": 884,
+              "proseWords": 177,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 20.29 · Revisa qué argumentos puede proponer el modelo · 8 min",
+              "line": 902,
+              "proseWords": 246,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 8,
+          "title": "Tema 8: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar",
+          "line": 926,
+          "review": "Filtro tenant → vacío → límite/IDs → metadato ausente. Recuperación literal, no embeddings ni generación. Corregida numeración T6–T8.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 20.30 · Filtra la empresa antes de construir contexto · 9 min",
+              "line": 934,
+              "proseWords": 232,
+              "codeLines": 47,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash",
+                "java"
+              ]
+            },
+            {
+              "heading": "Subtema 20.31 · Conserva un resultado vacío cuando no hay evidencia · 8 min",
+              "line": 1008,
+              "proseWords": 198,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 20.32 · Limita resultados después de filtrar y conserva IDs · 10 min",
+              "line": 1026,
+              "proseWords": 191,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 20.33 · Excluye documentos sin empresa y delimita la siguiente prueba · 9 min",
+              "line": 1044,
+              "proseWords": 252,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": 21,
+      "source": "web/public/content/spring-boot/modulo-21.md",
+      "topics": [
+        {
+          "topic": 1,
+          "title": "Tema 1: Productor, tópico, key y consumidor",
+          "line": 9,
+          "review": "Publicación → grupos → orden; refuerzo de M8 sobre el mismo lab y sus pruebas.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 1.1 · Publica el evento con la key del envío · 8 min",
+              "line": 16,
+              "proseWords": 130,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 1.2 · Recibe el evento en dos grupos · 8 min",
+              "line": 38,
+              "proseWords": 125,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 1.3 · Comprueba partición y orden · 9 min",
+              "line": 60,
+              "proseWords": 213,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 2,
+          "title": "Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia",
+          "line": 94,
+          "review": "Reintentos/DLT → inbox → rollback conjunto; mantiene diferencia entre entrega y efecto idempotente.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 2.1 · Limita reintentos y guarda en DLT · 10 min",
+              "line": 101,
+              "proseWords": 143,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 2.2 · Evita aplicar el mismo evento dos veces · 10 min",
+              "line": 123,
+              "proseWords": 128,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 2.3 · Revierte inbox y proyección juntas · 10 min",
+              "line": 145,
+              "proseWords": 216,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 3,
+          "title": "Tema 3: Outbox transaccional y flujo de negocio",
+          "line": 179,
+          "review": "Outbox SQL → ACK → replay; dispatcher didáctico sin lease, una sola instancia.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 3.1 · Guarda envío y evento en una transacción · 10 min",
+              "line": 186,
+              "proseWords": 118,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 3.2 · Publica y marca después del ack · 10 min",
+              "line": 208,
+              "proseWords": 113,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 3.3 · Reproduce el envío y comprueba deduplicación · 10 min",
+              "line": 230,
+              "proseWords": 312,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": 22,
+      "source": "web/public/content/spring-boot/modulo-22.md",
+      "topics": [
+        {
+          "topic": 1,
+          "title": "Tema 1: Hexagonal: puertos que hablan el idioma del dominio",
+          "line": 7,
+          "review": "Java completo → ampliar puerto → cancelación independiente; ejercicios sin solución cerrada no son títulos vacíos.",
+          "buildRoute": "javac/Node.js",
+          "subtopics": [
+            {
+              "heading": "Subtema 22.1.1 · Ejecuta el ejemplo completo y reconoce sus límites · 12 min",
+              "line": 24,
+              "proseWords": 240,
+              "codeLines": 65,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash",
+                "java",
+                "text",
+                "mermaid"
+              ]
+            },
+            {
+              "heading": "Subtema 22.1.2 · Amplía una consulta del puerto sin filtrar infraestructura · 10 min",
+              "line": 135,
+              "proseWords": 114,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 22.1.3 · Transfiere la regla a una cancelación independiente · 10 min",
+              "line": 154,
+              "proseWords": 289,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 2,
+          "title": "Tema 2: C4: contexto, contenedores, componentes y código",
+          "line": 183,
+          "review": "Validador → evidencia de relaciones → contenedor hipotético; valida forma C4, no infraestructura real.",
+          "buildRoute": "javac/Node.js",
+          "subtopics": [
+            {
+              "heading": "Subtema 22.2.1 · Ejecuta el ejemplo completo y reconoce sus límites · 12 min",
+              "line": 200,
+              "proseWords": 279,
+              "codeLines": 48,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash",
+                "javascript",
+                "mermaid"
+              ]
+            },
+            {
+              "heading": "Subtema 22.2.2 · Contrasta un contenedor con el código que existiría · 10 min",
+              "line": 298,
+              "proseWords": 127,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 22.2.3 · Añade una relación solo después de justificarla · 10 min",
+              "line": 316,
+              "proseWords": 283,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 3,
+          "title": "Tema 3: ADR: decisiones con contexto, alternativas y consecuencias",
+          "line": 344,
+          "review": "Tres ADR → alternativas → decisión reemplazada; esquema documental no acredita decisión humana.",
+          "buildRoute": "javac/Node.js",
+          "subtopics": [
+            {
+              "heading": "Subtema 22.3.1 · Ejecuta el ejemplo completo y reconoce sus límites · 12 min",
+              "line": 361,
+              "proseWords": 217,
+              "codeLines": 59,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash",
+                "javascript",
+                "markdown",
+                "mermaid"
+              ]
+            },
+            {
+              "heading": "Subtema 22.3.2 · Compara alternativas con condiciones concretas · 10 min",
+              "line": 461,
+              "proseWords": 111,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 22.3.3 · Reemplaza una decisión conservando el historial · 10 min",
+              "line": 479,
+              "proseWords": 299,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": 23,
+      "source": "web/public/content/spring-boot/modulo-23.md",
+      "topics": [
+        {
+          "topic": 1,
+          "title": "Tema 1: módulos y límites entre paquetes",
+          "line": 7,
+          "review": "Modelo modular → contrato público → refactor; wrapper reemplazado por uno autónomo para cumplir los comandos de copia.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 23.1.1 · Reconoce la frontera verificable · 10 min",
+              "line": 25,
+              "proseWords": 93,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 23.1.2 · Publica contratos pequeños · 10 min",
+              "line": 45,
+              "proseWords": 107,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 23.1.3 · Comprueba antes de mover paquetes · 10 min",
+              "line": 65,
+              "proseWords": 192,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 2,
+          "title": "Tema 2: eventos entre módulos sin importar implementación",
+          "line": 91,
+          "review": "Publicación → reacción → durabilidad; H2 y bandeja en memoria, sin recuperación tras reinicio.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 23.2.1 · Publica desde el servicio · 10 min",
+              "line": 109,
+              "proseWords": 75,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 23.2.2 · Reacciona mediante el contrato · 10 min",
+              "line": 129,
+              "proseWords": 100,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 23.2.3 · Separa registro y efecto durable · 10 min",
+              "line": 149,
+              "proseWords": 216,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 3,
+          "title": "Tema 3: documentación generada y mapa de dependencias",
+          "line": 175,
+          "review": "Generación → relación/import → guía; hay .puml/.adoc, no imágenes renderizadas.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 23.3.1 · Genera documentos reproducibles · 10 min",
+              "line": 193,
+              "proseWords": 96,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 23.3.2 · Contrasta una relación con código · 10 min",
+              "line": 213,
+              "proseWords": 113,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 23.3.3 · Versiona la explicación junto al mapa · 10 min",
+              "line": 233,
+              "proseWords": 198,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 4,
+          "title": "Tema 4: pruebas de integración por módulo",
+          "line": 259,
+          "review": "Módulo aislado → flujo → suite; PublishedEvents/Awaitility ejecutables, Scenario explicado pero no implementado.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 23.4.1 · Ejecuta solo Pedidos · 10 min",
+              "line": 277,
+              "proseWords": 104,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 23.4.2 · Contrasta con el test del flujo · 10 min",
+              "line": 297,
+              "proseWords": 121,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 23.4.3 · Cierra la matriz de alcance · 10 min",
+              "line": 317,
+              "proseWords": 193,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": 24,
+      "source": "web/public/content/spring-boot/modulo-24.md",
+      "topics": [
+        {
+          "topic": 1,
+          "title": "Tema 1: schema-first con tipos y consultas",
+          "line": 7,
+          "review": "Schema → campo inválido → ausencia; nullabilidad y errores GraphQL explícitos.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 24.1.1 · Lee el contrato antes del resolver · 10 min",
+              "line": 25,
+              "proseWords": 93,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 24.1.2 · Solicita un campo que no existe · 10 min",
+              "line": 45,
+              "proseWords": 108,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 24.1.3 · Define el contrato de ausencia · 10 min",
+              "line": 65,
+              "proseWords": 194,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 2,
+          "title": "Tema 2: data fetchers, relaciones y problema N+1",
+          "line": 91,
+          "review": "Batch → padres → contador; dos padres en una invocación no prueba consultas SQL ni autorización.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 24.2.1 · Pide datos anidados · 10 min",
+              "line": 109,
+              "proseWords": 103,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 24.2.2 · Relaciona cada resultado con su padre · 10 min",
+              "line": 129,
+              "proseWords": 105,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 24.2.3 · Mide la frontera correcta · 10 min",
+              "line": 149,
+              "proseWords": 243,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 3,
+          "title": "Tema 3: mutations y subscriptions",
+          "line": 178,
+          "review": "Transición → suscripción previa → emisión local; no negocia WebSocket ni garantiza entrega durable.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 24.3.1 · Valida la transición · 10 min",
+              "line": 196,
+              "proseWords": 94,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 24.3.2 · Suscríbete antes de producir el cambio · 10 min",
+              "line": 216,
+              "proseWords": 100,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 24.3.3 · Declara límites del transporte y la emisión · 10 min",
+              "line": 236,
+              "proseWords": 201,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 4,
+          "title": "Tema 4: pruebas GraphQL con GraphQlTester",
+          "line": 262,
+          "review": "Tester → HTTP curl → matriz; servicio y transporte se verifican por separado.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 24.4.1 · Ejecuta la matriz del servicio · 10 min",
+              "line": 280,
+              "proseWords": 100,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 24.4.2 · Comprueba HTTP como otra capa · 10 min",
+              "line": 300,
+              "proseWords": 109,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 24.4.3 · Cierra con errores y alcance explícitos · 10 min",
+              "line": 320,
+              "proseWords": 221,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": 25,
+      "source": "web/public/content/spring-boot/modulo-25.md",
+      "topics": [
+        {
+          "topic": 1,
+          "title": "Tema 1: bindings y destinations",
+          "line": 11,
+          "review": "Función → binding/destino → entrada inválida; test binder en JVM, sin sockets de broker.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 1.1: Transforma un envío en una ruta · 8 min",
+              "line": 16,
+              "proseWords": 113,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 1.2: Conecta la función a destinos · 8 min",
+              "line": 39,
+              "proseWords": 114,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 1.3: Rechaza una entrada incompleta · 9 min",
+              "line": 61,
+              "proseWords": 189,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 2,
+          "title": "Tema 2: binder Kafka y binder RabbitMQ",
+          "line": 95,
+          "review": "Kafka → Rabbit → diferencias; requiere brokers y cliente/cola de observación, prueba manual separada.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 2.1: Publica y consume con Kafka · 10 min",
+              "line": 100,
+              "proseWords": 137,
+              "codeLines": 4,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 2.2: Publica y consume con RabbitMQ · 10 min",
+              "line": 132,
+              "proseWords": 137,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 2.3: Compara lo que realmente cambia · 10 min",
+              "line": 156,
+              "proseWords": 197,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 3,
+          "title": "Tema 3: reintentos, error handler y dead-letter",
+          "line": 191,
+          "review": "Retry Kafka → DLQ Rabbit → dato inválido; replay no repara el dato ni reemplaza idempotencia.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 3.1: Limita los reintentos en Kafka · 10 min",
+              "line": 196,
+              "proseWords": 128,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 3.2: Declara DLQ en RabbitMQ · 10 min",
+              "line": 218,
+              "proseWords": 121,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 3.3: Distingue fallo transitorio de dato inválido · 10 min",
+              "line": 240,
+              "proseWords": 221,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        },
+        {
+          "topic": 4,
+          "title": "Tema 4: test binder y límites de la prueba",
+          "line": 274,
+          "review": "Mapping → error → alcance. Corregida cuenta de dos a tres pruebas del laboratorio; broker real sigue separado.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": [
+            {
+              "heading": "Subtema 4.1: Verifica mapping en memoria · 8 min",
+              "line": 279,
+              "proseWords": 90,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 4.2: Comprueba una entrada inválida · 8 min",
+              "line": 302,
+              "proseWords": 102,
+              "codeLines": 1,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            },
+            {
+              "heading": "Subtema 4.3: Separa prueba local y broker real · 9 min",
+              "line": 324,
+              "proseWords": 276,
+              "codeLines": 2,
+              "hasBodyBeyondHeading": true,
+              "codeLanguages": [
+                "bash"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

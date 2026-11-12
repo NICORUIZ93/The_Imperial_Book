@@ -76,9 +76,9 @@ debe distinguir orden de lectura de dependencia conceptual obligatoria.
 
 ## Límites y estado inicial
 
-El proyecto tiene 14 tracks, 245 módulos y 1100 temas. La auditoría existente de
-siete pasos detecta los marcadores completos en 1100 temas. Esa medición es
-estructural y no acredita comprensión ni revisión técnica completa. El índice,
+El proyecto tiene 14 tracks, 256 módulos y 1.185 temas. La auditoría vigente de
+cuatro pasos detecta 118 temas estructuralmente completos y 1.067 pendientes;
+Java aporta 101 temas conformes. Esa medición no acredita comprensión ni revisión técnica completa. El índice,
 el build y pruebas de navegación de la integración previa están documentados en
 `merged-pdf-review.md`; no se reinterpretan como ejecución de todos los cursos.
 

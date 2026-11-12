@@ -453,3 +453,8 @@
   .lesson-markdown ::ng-deep .lesson-section,
   .lesson-markdown ::ng-deep .topic-card.expanded > .topic-body { animation:none; transition:none; }
 }
+
+// Fórmulas renderizadas con KaTeX (track Control 1).
+.lesson-markdown ::ng-deep .math-display { display:block; margin:18px 0; overflow-x:auto; overflow-y:hidden; text-align:center; }
+.lesson-markdown ::ng-deep .math-inline .katex { font-size:1.05em; }
+.lesson-markdown ::ng-deep .katex-display { margin:0; }

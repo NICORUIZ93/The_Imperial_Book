@@ -1,0 +1,474 @@
+{
+  "date": "2026-11-11",
+  "scope": "26 módulos, dos anchos, primer y último encabezado con teclado; sin ejecutar los ejercicios de las lecciones",
+  "rows": [
+    {
+      "module": 0,
+      "width": 390,
+      "topics": 3,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 1,
+      "width": 390,
+      "topics": 3,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 2,
+      "width": 390,
+      "topics": 6,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 3,
+      "width": 390,
+      "topics": 3,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 4,
+      "width": 390,
+      "topics": 5,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 5,
+      "width": 390,
+      "topics": 3,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 6,
+      "width": 390,
+      "topics": 3,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 7,
+      "width": 390,
+      "topics": 3,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 8,
+      "width": 390,
+      "topics": 9,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 9,
+      "width": 390,
+      "topics": 3,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 10,
+      "width": 390,
+      "topics": 12,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 11,
+      "width": 390,
+      "topics": 3,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 12,
+      "width": 390,
+      "topics": 3,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 13,
+      "width": 390,
+      "topics": 4,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 14,
+      "width": 390,
+      "topics": 6,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 15,
+      "width": 390,
+      "topics": 8,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 16,
+      "width": 390,
+      "topics": 2,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 17,
+      "width": 390,
+      "topics": 2,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 18,
+      "width": 390,
+      "topics": 2,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 19,
+      "width": 390,
+      "topics": 2,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 20,
+      "width": 390,
+      "topics": 8,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 21,
+      "width": 390,
+      "topics": 3,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 22,
+      "width": 390,
+      "topics": 3,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 23,
+      "width": 390,
+      "topics": 4,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 24,
+      "width": 390,
+      "topics": 4,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 25,
+      "width": 390,
+      "topics": 4,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 0,
+      "width": 1366,
+      "topics": 3,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 1,
+      "width": 1366,
+      "topics": 3,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 2,
+      "width": 1366,
+      "topics": 6,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 3,
+      "width": 1366,
+      "topics": 3,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 4,
+      "width": 1366,
+      "topics": 5,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 5,
+      "width": 1366,
+      "topics": 3,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 6,
+      "width": 1366,
+      "topics": 3,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 7,
+      "width": 1366,
+      "topics": 3,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 8,
+      "width": 1366,
+      "topics": 9,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 9,
+      "width": 1366,
+      "topics": 3,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 10,
+      "width": 1366,
+      "topics": 12,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 11,
+      "width": 1366,
+      "topics": 3,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 12,
+      "width": 1366,
+      "topics": 3,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 13,
+      "width": 1366,
+      "topics": 4,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 14,
+      "width": 1366,
+      "topics": 6,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 15,
+      "width": 1366,
+      "topics": 8,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 16,
+      "width": 1366,
+      "topics": 2,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 17,
+      "width": 1366,
+      "topics": 2,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 18,
+      "width": 1366,
+      "topics": 2,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 19,
+      "width": 1366,
+      "topics": 2,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 20,
+      "width": 1366,
+      "topics": 8,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 21,
+      "width": 1366,
+      "topics": 3,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 22,
+      "width": 1366,
+      "topics": 3,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 23,
+      "width": 1366,
+      "topics": 4,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 24,
+      "width": 1366,
+      "topics": 4,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    },
+    {
+      "module": 25,
+      "width": 1366,
+      "topics": 4,
+      "keyboard": true,
+      "overflow": false,
+      "lessonErrors": 0,
+      "errors": []
+    }
+  ]
+}

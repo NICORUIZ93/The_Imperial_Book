@@ -1,88 +1,185 @@
 # Módulo 2: REST APIs con Spring Web
 
-Cada tema declara nivel, duración y una salida verificable. El módulo separa el contrato HTTP (DTOs) de la persistencia interna (entidades), automatiza la validación de entrada y centraliza el manejo de errores: las tres piezas que hacen que una API REST sea predecible para quien la consume.
+Cada tema separa el contrato HTTP (DTOs) de la persistencia interna (entidades), automatiza la validación de entrada y centraliza el manejo de errores — las tres piezas que hacen que una API REST sea predecible para quien la consume.
+
+
+**Referencia ejecutable al terminar los módulos 2–7:** en la raíz del repositorio, abre `examples/spring-tareas-rutaflow/README.md`. Incluye el estado final y pruebas; algunas clases incorporan cambios de módulos posteriores. Construye primero las prácticas de este módulo y usa la referencia para comparar y diagnosticar.
 
 ## Aprende construyendo
 
-### Tema 1: Por qué DTOs en vez de entidades directamente · Intermedio · 30 min
+### Tema 1: Por qué DTOs en vez de entidades directamente
 
-**Prerrequisito:** Módulo 1 (Spring Initializr, perfiles). JDK 27, Maven y un editor.
+La API recibirá una tarea y devolverá una confirmación. La entidad representa cómo guardamos el dato; el DTO (objeto de transferencia) define qué mandamos por HTTP. Necesitas clases Java, constructores y una ruta REST.
 
-**Al terminar podrás:** explicar por qué exponer entidades JPA directamente es riesgoso y separar el contrato HTTP de la persistencia con DTOs.
+**¿Por qué es importante?** Una base de datos puede tener códigos internos que el cliente no debe ver. Si el JSON se arma desde la entidad, cada campo nuevo puede pasar a formar parte del contrato sin que lo hayas decidido.
 
-#### Aprende
+#### Subtema 1.1: Crea una entidad y guárdala en H2 · 10 min
 
-**¿Por qué es importante?** Una API de paquetes recibe datos de clientes externos y no debe exponer columnas internas de la base de datos ni aceptar valores imposibles en la entrada; una frontera explícita entre el contrato público y el modelo interno protege ambos lados de ese cambio.
+**1. Contexto**
 
-**Mapa de subtemas críticos**
+Primero tendrás una tabla pequeña en una base de datos en memoria. H2 permite practicar sin instalar ni configurar un servidor de base de datos.
 
-| Subtema | Papel | Evidencia |
-|---|---|---|
-| Entidad JPA vs DTO como capas distintas | Prerrequisito | `TareaController` recibe `CrearTareaRequest` y devuelve `TareaDTO`, nunca `Tarea` |
-| Método de traducción `from()` | Núcleo | `TareaDTO.from(tarea)` en el cuerpo de `crear` convierte la entidad al contrato |
-| Control de la superficie expuesta | Núcleo | La respuesta `201 Created` solo contiene los campos de `TareaDTO` |
-| DTO de entrada frente a DTO de salida | Variante | `CrearTareaRequest` entra y `TareaDTO` sale como dos tipos separados |
-| Serialización de relaciones `lazy` | Error frecuente | Devolver `Tarea` con `@ManyToOne(fetch = FetchType.LAZY)` produce `LazyInitializationException` |
-| Estabilidad del contrato ante renombres | Diagnóstico | Renombrar un campo de la entidad no cambia la respuesta si el DTO se mantiene |
-| Cuándo omitir el DTO | Decisión | Un proxy de solo lectura sin entidad relacional puede prescindir del DTO |
+**2. Hazlo tú**
 
-Cada fila tiene su explicación individual a continuación.
+Continúa `academia-spring` de M0–M1, con paquete `com.example.demo`. En `<dependencies>` de `pom.xml`, conserva el starter web y agrega:
 
-**Entidad JPA vs DTO como capas distintas (prerrequisito).** El DTO modela el contrato de transporte HTTP mientras que la entidad modela la persistencia interna; por eso `TareaController` nunca toca `Tarea` en su firma pública. Confundir ambas capas es el error que todo el tema busca evitar, porque acopla el formato público al esquema interno. Mantenerlas separadas es la base sobre la que se apoyan el resto de los subtemas.
-
-**Método de traducción `from()` (núcleo).** La línea `TareaDTO.from(tarea)` es el punto único donde la entidad se convierte en contrato, de modo que la decisión de qué exponer queda concentrada y explícita. Si este método no copia un campo interno, ese campo simplemente no sale. Es el mecanismo que hace posible que agregar `costoInterno` a la entidad no filtre nada hacia el cliente.
-
-**Control de la superficie expuesta (núcleo).** La respuesta `201 Created` contiene únicamente los campos declarados en `TareaDTO`, lo que demuestra que el DTO —no la entidad— define lo que ve el cliente. Esto evita filtrar columnas que existen solo por el mapeo relacional. El checklist de salida verifica justamente que ningún endpoint devuelva una entidad directamente.
-
-**DTO de entrada frente a DTO de salida (variante).** El tema usa dos tipos distintos: `CrearTareaRequest` para lo que llega y `TareaDTO` para lo que se devuelve, porque el contrato de creación no tiene por qué coincidir con el de lectura. Esta separación permite, por ejemplo, aceptar campos en la entrada que nunca se devuelven. El reto abierto pide exactamente modelar un segundo DTO para creación.
-
-**Serialización de relaciones `lazy` (error frecuente).** Si el controller devuelve `Tarea` directamente y esta tiene una relación `@ManyToOne(fetch = FetchType.LAZY)`, Jackson intenta serializarla fuera de una sesión de Hibernate activa y lanza `LazyInitializationException`. El fallo deliberado reproduce este error en ejecución, mostrando que exponer entidades no es solo un problema de diseño. Volver al DTO elimina la causa.
-
-**Estabilidad del contrato ante renombres (diagnóstico).** Renombrar un campo de la entidad sin tocar el DTO no altera la respuesta, porque el `from()` sigue mapeando al mismo nombre público. Esto permite diagnosticar rápidamente que un cambio interno no debería romper a los consumidores. El ejercicio 2 pide comprobar justamente que el contrato público no cambia.
-
-**Cuándo omitir el DTO (decisión).** El tema delimita que para una API interna de solo lectura sin persistencia relacional —como un proxy que reenvía datos sin transformarlos— el DTO puede ser innecesario porque no hay una entidad que proteger. Es una decisión profesional: no se trata de aplicar DTOs siempre, sino cuando hay un modelo interno que aislar del contrato público.
-
-**Conceptos clave:** DTO (Data Transfer Object), desacoplar el contrato HTTP de la persistencia, relaciones `lazy`.
-
-Un DTO representa el contrato de transporte hacia/desde el cliente HTTP, mientras que una entidad JPA (Módulo 3) representa el modelo de persistencia interno. Separarlos evita dos problemas concretos. Primero, exponer entidades filtraría detalles internos de la persistencia hacia el contrato público (campos que existen solo por el mapeo relacional, o relaciones que no deberían ser visibles ni modificables desde fuera). Segundo, puede producir errores de serialización con relaciones `lazy`, donde Jackson intentaría serializar una relación que Hibernate todavía no cargó, produciendo una excepción en tiempo de ejecución. Los DTOs son una capa de traducción explícita: renombrar un campo interno no rompe el contrato público si el DTO permanece estable.
-
-**Analogía:** exponer entidades directamente es como mostrar a un cliente externo el inventario interno completo de un almacén, con sus códigos internos de ubicación; un DTO es como un catálogo de cara al público, que puede reorganizarse internamente sin que el catálogo cambie.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-  A["Cliente HTTP"] -->|"CrearTareaRequest DTO"| B["Controller"]
-  B --> C["Tarea (entidad JPA)"]
-  C -->|"TareaDTO.from"| A
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-jpa</artifactId>
+</dependency>
+<dependency>
+    <groupId>com.h2database</groupId>
+    <artifactId>h2</artifactId>
+    <scope>runtime</scope>
+</dependency>
 ```
 
-#### Practica
+Si empiezas directamente aquí, genera en [Spring Initializr](https://start.spring.io/) Java 25, Maven, Boot 4.1.2, paquete `com.example.demo` y capacidades `web`, `data-jpa` y `h2`. Crea `src/main/java/com/example/demo/Tarea.java`:
 
-**Demo paso a paso.** Desde una carpeta vacía, genera el proyecto con `web` y `validation`:
+```java
+package com.example.demo;
 
-```bash
-# descarga el proyecto y ejecuta las pruebas Java con Maven
-mkdir ejemplo-spring-m2
-cd ejemplo-spring-m2
-curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web,validation -d javaVersion=25 -o app.zip
-unzip app.zip
-./mvnw test
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "tareas")
+public class Tarea {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String titulo;
+    private int prioridad;
+
+    @Column(name = "ubicacion_interna")
+    private String ubicacionInterna;
+
+    protected Tarea() {
+    }
+
+    public Tarea(String titulo, int prioridad, String ubicacionInterna) {
+        this.titulo = titulo;
+        this.prioridad = prioridad;
+        this.ubicacionInterna = ubicacionInterna;
+    }
+
+    public Long getId() { return id; }
+    public String getTitulo() { return titulo; }
+    public int getPrioridad() { return prioridad; }
+    public String getUbicacionInterna() { return ubicacionInterna; }
+}
 ```
 
-1. Crea `src/main/java/com/example/demo/TareaController.java` recibiendo y devolviendo DTOs, nunca la entidad `Tarea`:
+Crea `src/main/java/com/example/demo/TareaRepository.java`:
+
+```java
+package com.example.demo;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface TareaRepository extends JpaRepository<Tarea, Long> {
+}
+```
+
+Añade a `src/main/resources/application.yml`:
+
+```yaml
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+```
+
+Desde la carpeta del proyecto, ejecuta `./mvnw test`.
+
+**Resultado esperado:** Maven termina en `BUILD SUCCESS`; Spring encuentra el identificador `id` y configura una base H2 en memoria. `create-drop` crea las tablas al iniciar y las elimina al cerrar: no guardes aquí datos que quieras conservar.
+
+**Fallo deliberado:** quita `@Id` y ejecuta las pruebas. **Diagnóstico:** Hibernate indica que la entidad necesita un identificador; restaura la anotación en `id`.
+
+**3. Entiende**
+
+`@Entity` declara una clase que JPA guarda. `TareaRepository` aprovecha operaciones de Spring Data JPA, como guardar y buscar, sin que escribas SQL para este primer ejemplo.
+
+**4. Cierra**
+
+Conserva entidad y repositorio. Anota cuáles campos sirven al sistema y cuál describe una ubicación interna.
+
+#### Subtema 1.2: Devuelve solo el contrato público · 15 min
+
+**1. Contexto**
+
+El cliente necesita un identificador, título y prioridad. No necesita conocer `ubicacionInterna` ni la forma de la tabla.
+
+**2. Hazlo tú**
+
+Crea `src/main/java/com/example/demo/CrearTareaRequest.java`:
+
+```java
+package com.example.demo;
+
+public record CrearTareaRequest(String titulo, int prioridad) {
+}
+```
+
+Crea `src/main/java/com/example/demo/TareaDTO.java`:
+
+```java
+package com.example.demo;
+
+public record TareaDTO(Long id, String titulo, int prioridad) {
+    public static TareaDTO from(Tarea tarea) {
+        return new TareaDTO(
+                tarea.getId(),
+                tarea.getTitulo(),
+                tarea.getPrioridad());
+    }
+}
+```
+
+Crea `src/main/java/com/example/demo/ServicioTareas.java`:
+
+```java
+package com.example.demo;
+
+import org.springframework.stereotype.Service;
+
+@Service
+public class ServicioTareas {
+    private final TareaRepository repository;
+
+    public ServicioTareas(TareaRepository repository) {
+        this.repository = repository;
+    }
+
+    public TareaDTO crear(CrearTareaRequest request) {
+        Tarea tarea = new Tarea(
+                request.titulo(), request.prioridad(), "BODEGA-A");
+        return TareaDTO.from(repository.save(tarea));
+    }
+}
+```
+
+Crea `src/main/java/com/example/demo/TareaController.java`:
 
 ```java
 package com.example.demo;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/tareas")
 public class TareaController {
-
     private final ServicioTareas servicio;
 
     public TareaController(ServicioTareas servicio) {
@@ -90,125 +187,104 @@ public class TareaController {
     }
 
     @PostMapping
-    public ResponseEntity<TareaDTO> crear(@RequestBody CrearTareaRequest request) {
-        Tarea tarea = servicio.crear(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(TareaDTO.from(tarea));
+    public ResponseEntity<TareaDTO> crear(
+            @RequestBody CrearTareaRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(servicio.crear(request));
     }
 }
 ```
 
-**Explicación línea por línea:** `crear` recibe `CrearTareaRequest` (DTO de entrada, no la entidad) y devuelve `TareaDTO` (DTO de salida); `TareaDTO.from(tarea)` traduce explícitamente la entidad interna hacia el contrato público, controlando qué campos se exponen.
-
-2. Envía una petición real y confirma que la respuesta expone solo los campos del DTO:
+Arranca la aplicación con `./mvnw spring-boot:run`. En otra terminal envía:
 
 ```bash
-curl -i -X POST http://localhost:8080/api/tareas -H 'Content-Type: application/json' -d '{"titulo":"Entregar paquete","prioridad":1}'
+curl -i -X POST http://localhost:8080/api/tareas \
+  -H 'Content-Type: application/json' \
+  -d '{"titulo":"Entregar paquete","prioridad":1}'
 ```
 
-**Resultado esperado:** la respuesta es `201 Created` con un cuerpo JSON que contiene únicamente los campos de `TareaDTO`, sin ningún campo interno de la entidad que no esté mapeado, confirmando que el DTO controla la superficie expuesta.
+**Resultado esperado:** recibes `201 Created` con JSON que incluye `id`, `titulo` y `prioridad`; no incluye `ubicacionInterna`.
 
-**Fallo deliberado:** cambia el controller para devolver la entidad `Tarea` directamente. Si `Tarea` tiene una relación `@ManyToOne(fetch = FetchType.LAZY)`, Jackson intenta serializarla fuera de una sesión de Hibernate activa y produce `LazyInitializationException`. Diagnostica confirmando que exponer entidades directamente no es solo un problema de diseño, sino una fuente real de errores en ejecución.
+**Fallo deliberado:** cambia el tipo de retorno del controller a `Tarea` y devuelve la entidad guardada. **Diagnóstico:** la respuesta JSON ahora incluye `ubicacionInterna`; vuelve a devolver `TareaDTO` para controlar los campos públicos.
 
-**Ejercicios.**
+**3. Entiende**
 
-1. Agrega un campo interno a la entidad `Tarea` (por ejemplo `costoInterno`) y confirma que no aparece en la respuesta porque el DTO no lo mapea.
-2. Renombra un campo de la entidad sin renombrar el DTO y confirma que el contrato público no cambia.
-3. Provoca el fallo de la relación lazy y documenta el stack trace exacto de `LazyInitializationException`.
-4. Escribe de memoria un DTO de entrada, uno de salida y el método `from()` que traduce la entidad.
+`CrearTareaRequest` describe lo que recibimos y `TareaDTO` lo que devolvemos. `TareaDTO.from` realiza la traducción en un lugar visible. La entidad no pasa por la respuesta HTTP.
 
-**Pista:** si un campo de la entidad no debe ser visible externamente, la forma más simple de garantizarlo es que el DTO de salida no lo incluya.
+**4. Cierra**
 
-**Completa el código:** rellena el espacio para traducir la entidad al DTO:
+Guarda la respuesta completa y marca qué campos son parte del contrato. En el último paso comprobarás que añadir un campo interno no cambia el JSON.
 
-```java
-public ResponseEntity<TareaDTO> crear(@RequestBody CrearTareaRequest request) {
-    Tarea tarea = servicio.crear(request);
-    return ResponseEntity.status(HttpStatus.CREATED).body(TareaDTO.____(tarea));
-}
+#### Subtema 1.3: Cambia el modelo interno sin cambiar la API · 10 min
+
+**1. Contexto**
+
+El sistema puede reorganizar sus datos sin pedir a cada cliente HTTP que cambie al mismo tiempo.
+
+**2. Hazlo tú**
+
+Cambia en `src/main/java/com/example/demo/ServicioTareas.java` el valor interno de `"BODEGA-A"` a `"PASILLO-3"`. Vuelve a crear una tarea con el mismo `curl` del subtema anterior.
+
+Archivo concreto para esta comprobación: `src/main/java/com/example/demo/TareaDTO.java`.
+
+Reinicia la aplicación tras cambiar Java y repite la petición. En este módulo todavía no agregaste seguridad ni necesitas un token:
+
+```bash
+curl -i -H 'Content-Type: application/json' -d '{"titulo":"Comprar leche","prioridad":3}' http://localhost:8080/api/tareas
 ```
 
-**Reto de memoria:** cierra este documento y escribe un DTO de entrada, uno de salida y un controller que use ambos sin exponer la entidad.
+**Resultado esperado:** la respuesta conserva los campos `id`, `titulo` y `prioridad`; el cambio interno no aparece.
 
-#### Aplica
+**Fallo deliberado:** agrega `ubicacionInterna` como componente a `TareaDTO` y pásalo desde `TareaDTO.from`. **Diagnóstico:** el JSON expone ahora un dato interno; quítalo del contrato de salida.
 
-**Reto abierto.** Modela una API de envíos con `Envio` (entidad interna con `costoInterno`) y `EnvioRespuesta` (DTO público). Agrega un segundo DTO para creación. Demuestra con dos peticiones que un campo interno nunca sale y que renombrar un campo de la entidad no rompe el contrato.
+**3. Entiende**
 
-**Checklist de salida.**
+El DTO mantiene estable la frontera HTTP aunque cambie la entidad. En este ejercicio no hay relaciones JPA; los errores por serializar relaciones `LAZY` dependen de cómo se carguen y de la configuración de persistencia, y se revisan más adelante con esas relaciones.
 
-- [ ] Ningún endpoint devuelve una entidad JPA directamente.
-- [ ] El DTO de salida documenta qué campos públicos expone.
-- [ ] Un campo interno agregado a la entidad no aparece en la respuesta.
-- [ ] El fallo por serialización lazy está reproducido y explicado.
-- [ ] Los nombres de DTO y entidad se distinguen sin ambigüedad.
+**4. Cierra**
 
-**Si falla.** Si un campo interno aparece en la respuesta, revisa que el controller devuelva el DTO y que Jackson no esté serializando la entidad por otra ruta. Si aparece `LazyInitializationException`, estás devolviendo la entidad: vuelve al DTO.
+**Práctica independiente:** añade un campo interno a `Tarea` sin modificar `TareaDTO`; crea otra tarea y comprueba que el JSON no cambia. En el proyecto integrador, trata cada cambio de DTO como un cambio del contrato que debe revisar quien consuma la API.
 
-**Siguiente paso:** el Tema 2 automatiza la validación de esos DTOs de entrada.
+**Límite:** un DTO extra es útil cuando necesitas controlar nombres, validación o campos expuestos. Un proxy sin transformación ni modelo de persistencia puede reenviar el cuerpo recibido si ese cuerpo ya es el contrato correcto.
 
-**Errores comunes:** devolver entidades JPA directamente; nombrar el DTO igual que la entidad, generando confusión sobre cuál es cuál.
+**Fuentes primarias:** [Spring MVC y cuerpos de petición](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/requestbody.html), [bases SQL y H2 en Spring Boot](https://docs.spring.io/spring-boot/reference/data/sql.html), [conceptos de repositorio en Spring Data](https://docs.spring.io/spring-data/jpa/reference/repositories/core-concepts.html).
 
-**Límites y decisión de uso:** para una API interna de solo lectura sin persistencia relacional (por ejemplo, un proxy que reenvía datos sin transformarlos), el DTO puede ser innecesario si no hay una entidad que proteger.
+### Tema 2: Validación con Bean Validation y ResponseEntity
 
-**Fuente oficial:** [Spring Web MVC](https://docs.spring.io/spring-framework/reference/web/webmvc.html).
+Una petición HTTP puede estar bien escrita como JSON y aun así pedir algo inválido. En este tema agregarás validación al `POST` de tareas y usarás `ResponseEntity` para que el resultado indique qué ocurrió.
 
-**Transferencia al proyecto integrador:** los DTOs que diseñes aquí son los que expondrá la API del microservicio productivo.
+**¿Por qué es importante?** Sin validación, datos imposibles llegan a la lógica y pueden guardarse; un código HTTP incorrecto confunde al cliente sobre el resultado.
 
-### Tema 2: Validación con Bean Validation y ResponseEntity · Intermedio · 25 min
+**Resultado del tema:** un título vacío o una prioridad menor que 1 recibe `400`; crear una tarea recibe `201`; consultar una tarea existente o inexistente recibe `200` o `404`.
 
-**Prerrequisito:** Tema 1 de este módulo.
-
-**Al terminar podrás:** declarar restricciones sobre un DTO de entrada y controlar explícitamente el código de estado HTTP devuelto.
-
-#### Aprende
-
-**¿Por qué es importante?** Una API de paquetes no debe aceptar valores imposibles (un título vacío, una prioridad negativa); validar la entrada en la frontera evita que datos inválidos lleguen siquiera a la lógica de negocio.
-
-**Mapa de subtemas críticos**
-
-| Subtema | Papel | Evidencia |
-|---|---|---|
-| Starter `validation` en el proyecto | Prerrequisito | El proyecto se genera con `-d dependencies=web,validation` |
-| Anotaciones declarativas sobre el DTO | Núcleo | `@NotBlank String titulo` y `@Min(1) int prioridad` en el `record` |
-| Activación con `@Valid` | Núcleo | La firma `crear(@Valid @RequestBody CrearTareaRequest request)` dispara la verificación |
-| Olvidar `@Valid` | Error frecuente | Sin `@Valid`, un `titulo` vacío se persiste y devuelve `201 Created` |
-| Código HTTP explícito con `ResponseEntity` | Variante | `ResponseEntity.status(HttpStatus.CREATED)` fija `201` en vez de un código inferido |
-| Rechazo automático con `400` | Diagnóstico | Un `titulo` vacío devuelve `400 Bad Request` sin código manual |
-| Cuándo la validación es redundante | Decisión | Un mensaje de cola ya validado en origen puede no requerir Bean Validation |
-
-Cada fila tiene su explicación individual a continuación.
-
-**Starter `validation` en el proyecto (prerrequisito).** El proyecto se genera con `dependencies=web,validation`, porque las anotaciones de Bean Validation no se verifican si el starter no está en el classpath. La sección "Si falla" confirma que, si una restricción no actúa, puede faltar precisamente ese starter. Sin esta dependencia las anotaciones quedan inertes aunque estén bien escritas.
-
-**Anotaciones declarativas sobre el DTO (núcleo).** `@NotBlank String titulo` rechaza valores vacíos, nulos o solo con espacios, y `@Min(1) int prioridad` rechaza prioridades menores a 1, todo declarado en el `record` sin código imperativo. Este es el mecanismo central: la restricción vive junto al dato, no dispersa en `if` por cada endpoint. El ejercicio pide agregar `@Email` como una restricción declarativa más.
-
-**Activación con `@Valid` (núcleo).** La anotación `@Valid` en `crear(@Valid @RequestBody CrearTareaRequest request)` es lo que le indica a Spring que verifique las restricciones antes de ejecutar el cuerpo del método; si falla, lanza `MethodArgumentNotValidException`. Sin este disparador las anotaciones del DTO no hacen nada. Es la causa más común de validaciones que "no se aplican".
-
-**Olvidar `@Valid` (error frecuente).** El fallo deliberado quita `@Valid` y envía un `titulo` vacío: la petición llega sin ser rechazada y devuelve `201 Created` con el título vacío persistido. Esto demuestra que las anotaciones por sí solas no verifican nada. El diagnóstico profesional es revisar primero la presencia de `@Valid` en la firma antes de sospechar de las anotaciones.
-
-**Código HTTP explícito con `ResponseEntity` (variante).** `ResponseEntity.status(HttpStatus.CREATED)` fija deliberadamente `201` al crear, en vez de dejar que Spring infiera un código genérico, y permite elegir `404` cuando el recurso no existe. El ejercicio pide cambiarlo por `ResponseEntity.ok()` y documentar qué código cambia. Elegir el estado según el resultado real es parte del contrato de la API.
-
-**Rechazo automático con `400` (diagnóstico).** Una petición con `titulo` vacío devuelve `400 Bad Request` con un detalle legible del campo que falló, sin que el controller escriba ninguna verificación manual. Esto confirma que `@Valid` intercepta la petición antes del cuerpo del método. Si todo devuelve `200`, la pista del tema es revisar que se use `ResponseEntity` con el estado correcto.
-
-**Cuándo la validación es redundante (decisión).** El tema delimita que un DTO que transporta datos ya validados por otra capa —por ejemplo, un mensaje de una cola interna validado en origen— puede no necesitar duplicar la validación con Bean Validation. Es una decisión profesional sobre dónde poner la frontera de confianza. No toda entrada requiere revalidarse si ya fue garantizada aguas arriba.
-
-**Conceptos clave:** anotaciones declarativas (`@NotBlank`, `@Min`), `@Valid`, códigos de estado HTTP explícitos.
-
-Bean Validation declara restricciones sobre los campos del DTO mediante anotaciones (`@NotBlank`, `@Min`, `@Size`, `@Email`), verificadas automáticamente por Spring cuando el parámetro del controller se marca con `@Valid`, sin código imperativo repetido en cada endpoint. Si la validación falla, Spring lanza `MethodArgumentNotValidException` antes de que el cuerpo del método se ejecute. `ResponseEntity` permite controlar el código de estado según el resultado real (`201` al crear, `404` si el recurso no existe), en vez de que Spring infiera un único código genérico.
-
-**Analogía:** Bean Validation es un formulario que rechaza automáticamente cualquier entrada que no cumpla reglas declaradas, sin que un revisor verifique cada regla en cada envío; usar el código HTTP correcto es usar el sello preciso de cada resultado en vez de un sello genérico.
-
-**Diagrama:**
+**Modelo mental:** el DTO es la puerta de entrada; `@Valid` revisa las reglas antes de que el controller guarde la tarea.
 
 ```mermaid
 flowchart LR
-  A["POST /api/tareas"] --> B{"@Valid pasa?"}
-  B -->|no| C["400 + MethodArgumentNotValidException"]
-  B -->|sí| D["201 Created"]
+  A["JSON"] --> B["CrearTareaRequest"]
+  B --> C{"@Valid"}
+  C -->|reglas correctas| D["guardar y responder 201"]
+  C -->|alguna falla| E["responder 400"]
 ```
 
-#### Practica
+#### Subtema 2.1: Rechaza datos inválidos antes de guardar · 10 min
 
-**Demo paso a paso.** Desde una carpeta vacía (o continuando en `ejemplo-spring-m2`, generado en el Tema 1), crea `src/main/java/com/example/demo/CrearTareaRequest.java`:
+**1. Contexto**
+
+El controller del Tema 1 recibe `CrearTareaRequest`, pero todavía acepta un título vacío y prioridad cero. Agrega la dependencia de validación al mismo proyecto.
+
+**2. Hazlo tú**
+
+En `pom.xml`, dentro de `<dependencies>`, añade:
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-validation</artifactId>
+</dependency>
+```
+
+Reemplaza `src/main/java/com/example/demo/CrearTareaRequest.java` por:
 
 ```java
 package com.example.demo;
@@ -217,137 +293,182 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 
 public record CrearTareaRequest(
-    @NotBlank String titulo,
-    @Min(1) int prioridad
-) {}
-```
-
-1. Marca el parámetro del controller con `@Valid`:
-
-```java
-@PostMapping
-public ResponseEntity<TareaDTO> crear(@Valid @RequestBody CrearTareaRequest request) {
-    Tarea tarea = servicio.crear(request);
-    return ResponseEntity.status(HttpStatus.CREATED).body(TareaDTO.from(tarea));
+        @NotBlank String titulo,
+        @Min(1) int prioridad) {
 }
 ```
 
-**Explicación línea por línea:** `@NotBlank` rechaza `titulo` vacío, nulo o solo espacios; `@Min(1)` rechaza `prioridad` menor a 1; `@Valid` le indica a Spring que verifique las restricciones antes de ejecutar el cuerpo del método.
-
-2. Ejecuta las pruebas y confirma que la validación se aplica:
-
-```bash
-# ejecuta las pruebas Java con Maven, incluyendo la petición inválida
-cd ejemplo-spring-m2
-./mvnw test
-```
-
-**Resultado esperado:** una petición con `titulo` vacío devuelve `400 Bad Request` con un detalle legible del campo que falló, sin que el controller escriba ninguna verificación manual, confirmando que `@Valid` intercepta la petición antes del cuerpo del método.
-
-**Fallo deliberado:** quita `@Valid` de la firma y envía la misma petición con `titulo` vacío. La petición llega sin ser rechazada (`201 Created` con un título vacío persistido). Diagnostica confirmando que las anotaciones de Bean Validation por sí solas no verifican nada; sin `@Valid`, Spring las ignora.
-
-**Ejercicios.**
-
-1. Agrega `@Email` a un campo de correo y confirma que un valor sin `@` es rechazado con `400`.
-2. Quita `@Valid` deliberadamente y confirma que la entrada inválida ya no es rechazada.
-3. Cambia `ResponseEntity.status(HttpStatus.CREATED)` por `ResponseEntity.ok()` y documenta qué código cambia.
-4. Escribe de memoria un DTO con dos restricciones distintas y un controller que las verifique con `@Valid`.
-
-**Pista:** si una validación no se aplica, revisa primero si `@Valid` está presente en la firma; es la causa más común.
-
-**Completa el código:** rellena el espacio para que la validación se aplique:
+En `src/main/java/com/example/demo/TareaController.java`, importa `jakarta.validation.Valid` y añade `@Valid` al parámetro del `POST`:
 
 ```java
 @PostMapping
-public ResponseEntity<TareaDTO> crear(@____ @RequestBody CrearTareaRequest request) { ... }
+public ResponseEntity<TareaDTO> crear(
+        @Valid @RequestBody CrearTareaRequest request) {
+    return ResponseEntity.status(HttpStatus.CREATED)
+            .body(servicio.crear(request));
+}
 ```
 
-**Reto de memoria:** cierra este documento y escribe un DTO con `@NotBlank` y `@Min`, y un controller que lo valide con `@Valid` devolviendo el código correcto.
+Desde la carpeta del proyecto ejecuta `./mvnw test` y luego `./mvnw spring-boot:run`. En otra terminal prueba una petición válida y otra inválida:
 
-#### Aplica
+```bash
+curl -i -X POST http://localhost:8080/api/tareas \
+  -H 'Content-Type: application/json'   -d '{"titulo":"Entregar paquete","prioridad":1}'
 
-**Reto abierto.** Diseña el contrato de creación de envíos con al menos cuatro restricciones (texto no vacío, rango numérico, formato de correo y tamaño máximo). Demuestra con `curl` una petición válida, una inválida por cada restricción y el código HTTP de cada caso. Documenta qué error devuelve Spring sin un manejador global.
+curl -i -X POST http://localhost:8080/api/tareas \
+  -H 'Content-Type: application/json'   -d '{"titulo":"   ","prioridad":0}'
+```
 
-**Checklist de salida.**
+**Resultado esperado:** la primera petición responde `201 Created`; la segunda responde `400 Bad Request` y no entra al método `crear`. El cuerpo de error predeterminado puede variar según la configuración; en el Tema 3 definirás un formato propio.
 
-- [ ] Cada restricción tiene una petición que la viola y devuelve `400`.
-- [ ] La petición válida devuelve `201` con el DTO esperado.
-- [ ] El controller no contiene `if` de validación manual.
-- [ ] Se explica qué ocurre al quitar `@Valid`.
-- [ ] Los códigos HTTP elegidos coinciden con el resultado real de la operación.
+**Fallo deliberado:** quita `@Valid` y repite la petición inválida. **Diagnóstico:** las anotaciones describen reglas, pero no se aplican a este parámetro si Spring no inicia la validación; vuelve a poner `@Valid`.
 
-**Si falla.** Si una restricción no actúa, falta `@Valid` o el starter `validation`. Si todo devuelve `200`, revisa que uses `ResponseEntity` con el estado correcto. Si el mensaje de error no es legible, el Tema 3 lo centraliza.
+**3. Entiende**
 
-**Siguiente paso:** el Tema 3 centraliza el manejo de los errores que produce esta validación.
+`@NotBlank` rechaza `null`, `""` y texto compuesto solo por espacios. `@Min(1)` rechaza números menores que 1. `@Valid` pide validar el cuerpo convertido a `CrearTareaRequest` antes de ejecutar el método.
 
-**Errores comunes:** olvidar `@Valid`, dejando las anotaciones sin efecto; devolver siempre `200` sin importar el resultado real.
+**4. Cierra**
 
-**Límites y decisión de uso:** para un DTO que transporta datos ya validados por otra capa (por ejemplo, un mensaje de una cola interna validado en origen), duplicar la validación con Bean Validation puede ser redundante.
+Guarda los dos estados HTTP que observaste y explica qué campo hizo fallar la segunda petición. No dependas del texto del error: su formato aún es responsabilidad del siguiente tema.
 
-**Fuente oficial:** [Bean Validation (Jakarta)](https://jakarta.ee/specifications/bean-validation/).
+#### Subtema 2.2: Devuelve 200 o 404 según exista la tarea · 15 min
 
-**Transferencia al proyecto integrador:** esta validación protege cada endpoint del microservicio productivo.
+**1. Contexto**
 
-### Tema 3: Manejo centralizado de errores con @ControllerAdvice · Intermedio · 30 min
+El código `200` significa que la consulta encontró y devolvió una tarea. `404` significa que el identificador no existe. Un cliente puede decidir qué mostrar mirando el estado, sin interpretar frases internas del servidor.
 
-**Prerrequisito:** Tema 2 de este módulo.
+**2. Hazlo tú**
 
-**Al terminar podrás:** centralizar las excepciones de toda una API en un único lugar, sin repetir try/catch en cada controller.
+En `src/main/java/com/example/demo/ServicioTareas.java`, importa `java.util.Optional` y añade este método a la clase:
 
-#### Aprende
+```java
+public Optional<TareaDTO> buscar(Long id) {
+    return repository.findById(id).map(TareaDTO::from);
+}
+```
 
-**¿Por qué es importante?** Sin manejo centralizado, cada controller de una API con decenas de endpoints repetiría su lógica de traducción de excepciones a respuestas HTTP, arriesgando formatos de error inconsistentes entre endpoints de la misma API.
+En `src/main/java/com/example/demo/TareaController.java`, añade `GetMapping` y `PathVariable` a los imports y agrega este método:
 
-**Mapa de subtemas críticos**
+```java
+@GetMapping("/{id}")
+public ResponseEntity<TareaDTO> buscar(@PathVariable Long id) {
+    return servicio.buscar(id)
+            .map(ResponseEntity::ok)
+            .orElseGet(() -> ResponseEntity.notFound().build());
+}
+```
 
-| Subtema | Papel | Evidencia |
-|---|---|---|
-| Excepción de validación del Tema 2 | Prerrequisito | El handler intercepta `MethodArgumentNotValidException` que produce `@Valid` |
-| Clase `@RestControllerAdvice` global | Núcleo | `GlobalExceptionHandler` se aplica a todos los controllers |
-| Mapeo por tipo con `@ExceptionHandler` | Núcleo | `@ExceptionHandler(RecursoNoEncontradoException.class)` traduce ese tipo a `404` |
-| Formato de error consistente | Variante | Tanto `400` como `404` devuelven la misma estructura `ErrorResponse` |
-| Excepción sin handler | Error frecuente | Quitar el handler deja propagar y Spring devuelve `500` fuera del formato |
-| Captura de `Exception` genérico | Diagnóstico | Capturar y serializar la excepción completa filtra stack traces al cliente |
-| Cuándo un try/catch local basta | Decisión | Un endpoint único con manejo no reutilizable puede resolverlo localmente |
+Reinicia la aplicación. Primero crea una tarea con el `curl` válido del subtema anterior; después consulta el identificador que aparece en su respuesta y luego uno que no exista:
 
-Cada fila tiene su explicación individual a continuación.
+```bash
+curl -i http://localhost:8080/api/tareas/1
+curl -i http://localhost:8080/api/tareas/999
+```
 
-**Excepción de validación del Tema 2 (prerrequisito).** El handler `manejarValidacion` intercepta `MethodArgumentNotValidException`, exactamente la excepción que lanza `@Valid` cuando la entrada no cumple las restricciones del Tema 2. Este tema presupone que esa validación ya existe y produce esa excepción. Por eso la centralización de errores llega después de la validación en la secuencia del módulo.
+**Resultado esperado:** la tarea existente responde `200 OK` con el DTO; el identificador ausente responde `404 Not Found` sin cuerpo. Si el ID generado no es `1`, usa el que devolvió tu petición `POST`.
 
-**Clase `@RestControllerAdvice` global (núcleo).** `@RestControllerAdvice` marca `GlobalExceptionHandler` como manejador aplicado a todos los controllers, de modo que una sola clase concentra la traducción de excepciones de toda la API. Esto evita repetir `try`/`catch` en cada controller. El ejercicio "Completa el código" pide justamente esta anotación para interceptar excepciones de todos los controllers.
+**Fallo deliberado:** cambia `ResponseEntity.notFound().build()` por `ResponseEntity.ok().build()`. **Diagnóstico:** el recurso ausente ahora se anuncia como encontrado (`200`); restaura `404` para que el estado describa el resultado real.
 
-**Mapeo por tipo con `@ExceptionHandler` (núcleo).** Cada método `@ExceptionHandler(Tipo.class)` intercepta un tipo específico lanzado desde cualquier controller; `@ExceptionHandler(RecursoNoEncontradoException.class)` lo traduce a `404` con `ErrorResponse`. El mecanismo es el despacho por tipo de excepción. Agregar un tercer handler para una excepción de negocio nueva, como pide el ejercicio 1, extiende este mapeo sin tocar los controllers.
+**3. Entiende**
 
-**Formato de error consistente (variante).** Tanto un error de validación (`400`) como un recurso no encontrado (`404`) devuelven un cuerpo JSON con la misma estructura `ErrorResponse`, porque todos los handlers construyen ese mismo tipo. Esto garantiza que los consumidores parseen un único formato. El reto abierto pide un contrato de error con `codigo`, `mensaje`, `campo` y `momento` compartido por varias excepciones.
+`Optional<TareaDTO>` representa “hay un valor o no hay valor”. `map(ResponseEntity::ok)` convierte el valor encontrado en una respuesta `200`; `orElseGet` crea la respuesta `404` cuando está vacío. El DTO evita que esta ruta vuelva a exponer la entidad.
 
-**Excepción sin handler (error frecuente).** El fallo deliberado elimina el handler y deja propagar `RecursoNoEncontradoException`: Spring responde con su página genérica (`500 Internal Server Error`) que no sigue el formato `ErrorResponse`. Esto demuestra que, sin un `@ExceptionHandler` explícito, el cliente recibe una respuesta inconsistente con el contrato. La pista aclara que no existe un handler por defecto propio: la excepción cae en el comportamiento genérico de Spring.
+**4. Cierra**
 
-**Captura de `Exception` genérico (diagnóstico).** El tema advierte que capturar `Exception` genérico sin distinguir el tipo real, o serializar la excepción completa, filtra stack traces y rutas internas hacia el cliente. El diagnóstico es revisar el cuerpo del error: si contiene un stack trace, se está serializando la excepción entera. El checklist exige que el cuerpo del error no filtre stack traces ni rutas internas.
+Registra ambos comandos y códigos de respuesta. Di en una frase qué decisión puede tomar el cliente con cada código.
 
-**Cuándo un try/catch local basta (decisión).** El tema delimita que, para un endpoint verdaderamente único con un manejo muy específico y no reutilizable, un `try`/`catch` local puede ser más simple que un handler global de un solo uso. Es una decisión profesional sobre reutilización: centralizar tiene sentido cuando el formato se comparte, no cuando el manejo es irrepetible.
+#### Subtema 2.3: Comprueba las reglas con casos límite · 10 min
 
-**Conceptos clave:** `@RestControllerAdvice`, `@ExceptionHandler`, formato de error consistente.
+**1. Contexto**
 
-`@RestControllerAdvice` centraliza en una única clase el manejo de excepciones que pueden ocurrir en cualquier controller, mapeando cada tipo a una respuesta HTTP consistente mediante métodos anotados con `@ExceptionHandler`, en vez de que cada controller envuelva su lógica en bloques `try`/`catch` repetidos. Este enfoque garantiza que todos los controllers compartan exactamente el mismo formato de error, reduciendo la duplicación.
+Probar solo un ejemplo válido no muestra si las reglas cubren el límite ni si la validación sigue activa.
 
-**Analogía:** `@ControllerAdvice` es un departamento central de atención de reclamos que procesa de forma consistente cualquier problema reportado desde cualquier sucursal, en vez de que cada sucursal improvise su procedimiento.
+**2. Hazlo tú**
 
-**Diagrama:**
+Envía tres `POST` al mismo endpoint: título `"Preparar ruta"` con prioridad `1`, título vacío con prioridad `2`, y título `"Preparar ruta"` con prioridad `0`. Anota el código de cada respuesta. Después restaura cualquier cambio deliberado y vuelve a ejecutar `./mvnw test`.
+
+**Resultado esperado:** solo el primer `POST` crea una tarea (`201`); los otros dos reciben `400`. La ejecución termina en `BUILD SUCCESS`.
+
+**Fallo deliberado:** elimina `@Min(1)` y vuelve a enviar prioridad `0`. **Diagnóstico:** esa petición pasa la regla restante porque `@NotBlank` solo revisa `titulo`; restaura `@Min(1)`.
+
+**3. Entiende**
+
+La validación del DTO protege la frontera de entrada. El código `400` informa que el cliente debe corregir su petición; `201`, `200` y `404` describen resultados distintos. El texto detallado de los errores y la respuesta consistente entre endpoints se agregan con `@RestControllerAdvice` en el Tema 3.
+
+**4. Cierra**
+
+**Evidencia:** conserva los estados HTTP de los tres casos y explica cuál regla se activó. Para practicar por tu cuenta, agrega `@Max(5)` a prioridad y comprueba que `6` se rechaza; todavía no cambies el formato de error.
+
+**Práctica independiente:** agrega `@Max(5)` a `prioridad` en `CrearTareaRequest`, envía prioridad `6` con `curl` y registra el estado HTTP. Explica por qué el controller no crea la tarea.
+
+**Transferencia al proyecto integrador:** aplica estas restricciones a cada DTO de creación de envíos y usa `201` solo cuando la creación se complete; documenta cualquier regla de negocio adicional junto a su prueba.
+
+**Fuentes primarias:** [Spring MVC: validación de argumentos](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-validation.html), [Jakarta Bean Validation](https://jakarta.ee/specifications/bean-validation/).
+
+### Tema 3: Manejo centralizado de errores con @ControllerAdvice
+
+El Tema 2 ya distingue éxito de error, pero la validación y una tarea ausente todavía producen cuerpos distintos. Harás que ambos errores compartan una forma simple y útil para quien llama la API.
+
+**¿Por qué es importante?** Un formato de error constante permite que el cliente muestre una corrección clara sin conocer detalles del servidor.
+
+**Resultado del tema:** errores de validación responden `400` y tareas inexistentes `404`; ambos devuelven JSON con `codigo`, `mensaje` y `campos`.
+
+**Modelo mental:** la excepción explica qué falló; `@RestControllerAdvice` la traduce a una respuesta HTTP que entiende el cliente.
 
 ```mermaid
-flowchart TD
-  A["TareaController"] -->|lanza excepción| C["GlobalExceptionHandler"]
-  B["EnvioController"] -->|lanza excepción| C
-  C -->|mismo formato| D["ErrorResponse consistente"]
+flowchart LR
+  A["petición"] --> B{"qué falló"}
+  B -->|DTO inválido| C["400 + VALIDACION"]
+  B -->|ID no existe| D["404 + TAREA_NO_ENCONTRADA"]
+  C --> E["mismo formato JSON"]
+  D --> E
 ```
 
-#### Practica
+#### Subtema 3.1: Da un formato útil al error de validación · 15 min
 
-**Demo paso a paso.** Desde una carpeta vacía (o continuando en `ejemplo-spring-m2`), crea `src/main/java/com/example/demo/GlobalExceptionHandler.java`:
+**1. Contexto**
+
+La validación del Tema 2 ya devuelve `400`, pero el cliente también debe saber qué campo corregir. Usa mensajes definidos por la API para que no dependan del idioma predeterminado del proveedor de validación.
+
+**2. Hazlo tú**
+
+En `src/main/java/com/example/demo/CrearTareaRequest.java`, escribe mensajes explícitos:
 
 ```java
 package com.example.demo;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+
+public record CrearTareaRequest(
+        @NotBlank(message = "Escribe un título.")
+        String titulo,
+        @Min(value = 1, message = "La prioridad mínima es 1.")
+        int prioridad) {
+}
+```
+
+Crea `src/main/java/com/example/demo/ApiError.java`:
+
+```java
+package com.example.demo;
+
+import java.util.Map;
+
+public record ApiError(
+        String codigo,
+        String mensaje,
+        Map<String, String> campos) {
+}
+```
+
+Crea `src/main/java/com/example/demo/GlobalExceptionHandler.java`:
+
+```java
+package com.example.demo;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -355,425 +476,520 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> manejarValidacion(MethodArgumentNotValidException ex) {
-        return ResponseEntity.badRequest().body(new ErrorResponse(ex.getMessage()));
-    }
+    public ResponseEntity<ApiError> manejarValidacion(
+            MethodArgumentNotValidException ex) {
+        Map<String, String> campos = new LinkedHashMap<>();
+        ex.getBindingResult().getFieldErrors().forEach(error ->
+                campos.putIfAbsent(error.getField(), error.getDefaultMessage()));
 
-    @ExceptionHandler(RecursoNoEncontradoException.class)
-    public ResponseEntity<ErrorResponse> manejarNoEncontrado(RecursoNoEncontradoException ex) {
-        return ResponseEntity.status(404).body(new ErrorResponse(ex.getMessage()));
+        ApiError cuerpo = new ApiError(
+                "VALIDACION",
+                "Revisa los campos indicados.",
+                campos);
+        return ResponseEntity.badRequest().body(cuerpo);
     }
 }
 ```
 
-**Explicación línea por línea:** `@RestControllerAdvice` marca la clase como manejador global aplicado a todos los controllers; cada método `@ExceptionHandler(Tipo.class)` intercepta ese tipo de excepción lanzado desde cualquier controller y lo traduce a una respuesta con un formato (`ErrorResponse`) consistente.
-
-1. Ejecuta las pruebas confirmando que ambos tipos de error usan el mismo formato:
+Desde la carpeta del proyecto ejecuta `./mvnw test`, inicia la app con `./mvnw spring-boot:run` y envía:
 
 ```bash
-# ejecuta las pruebas Java con Maven que verifican el formato de error consistente
-cd ejemplo-spring-m2
-./mvnw test
+curl -i -X POST http://localhost:8080/api/tareas   -H 'Content-Type: application/json'   -d '{"titulo":"   ","prioridad":0}'
 ```
 
-**Resultado esperado:** tanto un error de validación (`400`) como un recurso no encontrado (`404`) devuelven un cuerpo JSON con exactamente la misma estructura `ErrorResponse`, confirmando que el formato es consistente sin que cada controller lo implemente.
+**Resultado esperado:** recibes `400 Bad Request` y un JSON con `"codigo":"VALIDACION"` y `campos` que identifica `titulo` y `prioridad`. El formato ya es parte del contrato de esta API.
 
-**Fallo deliberado:** elimina `GlobalExceptionHandler` y deja que `RecursoNoEncontradoException` se propague sin manejar. Spring devuelve su página de error genérica (`500 Internal Server Error` con un cuerpo que no sigue el formato `ErrorResponse`). Diagnostica confirmando que sin un `@ExceptionHandler` explícito para cada excepción de negocio, el cliente recibe una respuesta inconsistente con el contrato de la API.
+**Fallo deliberado:** cambia el texto de `"VALIDACION"` por `"ERROR"` y repite el comando. **Diagnóstico:** el estado seguirá en 400, pero quien consume la API perderá un código estable para distinguir errores; restaura `"VALIDACION"`.
 
-**Ejercicios.**
+**3. Entiende**
 
-1. Agrega un tercer `@ExceptionHandler` para una excepción de negocio nueva y confirma que reutiliza `ErrorResponse`.
-2. Elimina temporalmente el handler de `RecursoNoEncontradoException` y documenta la respuesta genérica real de Spring.
-3. Compara cuántas líneas requeriría el mismo error con `try`/`catch` repetido en tres controllers frente a un handler centralizado.
-4. Escribe de memoria una clase `@RestControllerAdvice` con dos `@ExceptionHandler` que devuelvan el mismo formato.
+`@RestControllerAdvice` registra manejadores para los controllers y también convierte sus resultados a cuerpo HTTP. `@ExceptionHandler` elige un método según el tipo de excepción. Aquí las reglas detalladas vienen de los errores de campo; el mensaje general es breve.
 
-**Pista:** cada `@ExceptionHandler` maneja un tipo específico; si una excepción no tiene handler, cae en el comportamiento genérico de Spring, no en un handler por defecto tuyo.
+**4. Cierra**
 
-**Completa el código:** rellena el espacio para interceptar excepciones de todos los controllers:
+Guarda la respuesta real y señala qué valor debe corregir la persona. El mismo formato se reutilizará para el error de búsqueda.
+
+#### Subtema 3.2: Convierte un ID ausente en 404 con el mismo formato · 15 min
+
+**1. Contexto**
+
+Si `buscar(id)` encuentra nada, el servicio necesita comunicar esa condición al borde HTTP. Una excepción con nombre explica el motivo mejor que un `null`.
+
+**2. Hazlo tú**
+
+Crea `src/main/java/com/example/demo/TareaNoEncontradaException.java`:
 
 ```java
-@____
-public class GlobalExceptionHandler {
-    @ExceptionHandler(RecursoNoEncontradoException.class)
-    public ResponseEntity<ErrorResponse> manejarNoEncontrado(RecursoNoEncontradoException ex) { ... }
+package com.example.demo;
+
+public class TareaNoEncontradaException extends RuntimeException {
+    public TareaNoEncontradaException(Long id) {
+        super("No existe la tarea " + id + ".");
+    }
 }
 ```
 
-**Reto de memoria:** cierra este documento y escribe un `@RestControllerAdvice` con handlers para una excepción de validación y una de recurso no encontrado.
+En `src/main/java/com/example/demo/ServicioTareas.java`, cambia `buscar` para que devuelva una tarea o lance la excepción:
 
-#### Aplica
+```java
+public TareaDTO buscar(Long id) {
+    return repository.findById(id)
+            .map(TareaDTO::from)
+            .orElseThrow(() -> new TareaNoEncontradaException(id));
+}
+```
 
-**Reto abierto.** Define un contrato de error único para la API de entregas (`codigo`, `mensaje`, `campo`, `momento`) y cúbrelo con handlers para tres excepciones de negocio y una de validación. Comprueba que todos los endpoints devuelven la misma estructura y que ningún stack trace llega al cliente.
+En `src/main/java/com/example/demo/TareaController.java`, reemplaza el método GET anterior por:
 
-**Checklist de salida.**
+```java
+@GetMapping("/{id}")
+public ResponseEntity<TareaDTO> buscar(@PathVariable Long id) {
+    return ResponseEntity.ok(servicio.buscar(id));
+}
+```
 
-- [ ] Los tres errores de negocio comparten exactamente la misma estructura.
-- [ ] El error de validación identifica el campo que falló.
-- [ ] Ningún endpoint devuelve la página genérica de Spring.
-- [ ] No hay `try`/`catch` repetido en los controllers.
-- [ ] El cuerpo del error no filtra stack traces ni rutas internas.
+En `GlobalExceptionHandler`, importa `java.util.Map` y añade este método:
 
-**Si falla.** Si un error sigue devolviendo la página genérica, la excepción no tiene handler o se lanza fuera del ciclo de Spring. Si el formato varía, algún controller está construyendo su propia respuesta de error: elimínala y usa el handler global. Si el cliente recibe un stack trace, estás capturando y serializando la excepción completa.
+```java
+@ExceptionHandler(TareaNoEncontradaException.class)
+public ResponseEntity<ApiError> manejarTareaAusente(
+        TareaNoEncontradaException ex) {
+    ApiError cuerpo = new ApiError(
+            "TAREA_NO_ENCONTRADA", ex.getMessage(), Map.of());
+    return ResponseEntity.status(404).body(cuerpo);
+}
+```
 
-**Siguiente paso:** el Tema 4 reduce el código repetitivo de modelo y DTO con Lombok y MapStruct. El Tema 5 publica el contrato de la API.
+Ejecuta `./mvnw test` y consulta `curl -i http://localhost:8080/api/tareas/999`.
 
-**Errores comunes:** repetir try/catch en cada controller para el mismo tipo de error; capturar `Exception` genérico sin distinguir el tipo real, filtrando detalles internos hacia el cliente.
+**Resultado esperado:** recibes `404 Not Found` con `codigo` igual a `TAREA_NO_ENCONTRADA`, un mensaje entendible y `campos` vacío. `400` y `404` ahora comparten los mismos tres nombres de campo JSON.
 
-**Límites y decisión de uso:** para un endpoint verdaderamente único con un manejo muy específico y no reutilizable, un `try`/`catch` local puede ser más simple que un handler global de un solo uso.
+**Fallo deliberado:** cambia el handler a `ResponseEntity.ok(cuerpo)`. **Diagnóstico:** el texto dice que la tarea no existe mientras HTTP anuncia `200 OK`; restaura `404`.
 
-**Fuente oficial:** [Spring — Exception Handling](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-exceptionhandler.html).
+**3. Entiende**
 
-**Transferencia al proyecto integrador:** este manejo centralizado unifica las respuestas de error del microservicio productivo.
+El servicio lanza una excepción que nombra la situación; el handler la traduce a HTTP. El controller queda corto porque no necesita construir el error a mano. El cuerpo mantiene la misma estructura y el código distingue el motivo.
 
-### Tema 4: Lombok y MapStruct sin exponer datos internos · Intermedio · 40 min
+**4. Cierra**
 
-**Prerrequisito:** Tema 1 de este módulo (DTOs).
+Compara las respuestas de `POST` inválido y `GET` inexistente. Registra sus códigos HTTP, valores de `codigo` y campos presentes.
 
-**Al terminar podrás:** reducir código repetitivo con Lombok, generar el mapeo entre modelo y DTO con MapStruct en tiempo de compilación y hacer que el compilador falle si un campo queda sin mapear.
+#### Subtema 3.3: Sigue el error desde la petición hasta la respuesta · 10 min
 
-#### Aprende
+**1. Contexto**
 
-**¿Por qué es importante?** El backend de entregas tenía clases de 200 líneas de getters y setters y mapeos manuales donde un campo nuevo se olvidaba con frecuencia. Además, un `toString()` generado imprimía el costo interno en los logs. Lombok y MapStruct son estándar de facto en proyectos Spring empresariales: un caso real que encontrarás en casi cualquier código existente.
+Cuando cambia una respuesta de error, comprueba estado y cuerpo: uno puede ser correcto mientras el otro rompe el contrato.
 
-**Mapa de subtemas críticos**
+**2. Hazlo tú**
 
-| Subtema | Papel | Evidencia |
-|---|---|---|
-| Orden de procesadores con `lombok-mapstruct-binding` | Prerrequisito | El `pom.xml` agrega `lombok-mapstruct-binding` junto a los procesadores |
-| Lombok genera código repetitivo | Núcleo | `@Getter`, `@Setter`, `@Builder` permiten `Envio.builder()...build()` |
-| Mapeo generado por `@Mapper` | Núcleo | `EnvioMapper.aRespuesta` produce `EnvioRespuesta[guia=..., destino=..., kilos=...]` |
-| Renombrado de campos con `@Mapping` | Variante | `@Mapping(source = "ciudadDestino", target = "destino")` traduce el nombre |
-| Política `ERROR` para campo sin mapear | Límite | Borrar el `@Mapping` falla con `Unmapped target property: "destino"` |
-| `@Data` en entidades JPA | Error frecuente | `@Data` con relaciones bidireccionales puede causar `StackOverflowError` |
-| Exclusión de datos sensibles del log | Decisión | `@ToString(exclude = "costoInterno")` deja el log sin `4100.50` |
+Con el servidor en marcha, ejecuta los siguientes comandos y compara la estructura JSON:
 
-Cada fila tiene su explicación individual a continuación.
+```bash
+curl -i http://localhost:8080/api/tareas/999
+curl -i -X POST http://localhost:8080/api/tareas   -H 'Content-Type: application/json'   -d '{"titulo":"","prioridad":0}'
+```
 
-**Orden de procesadores con `lombok-mapstruct-binding` (prerrequisito).** Como Lombok y MapStruct son ambos procesadores de anotaciones, Lombok debe correr primero para que los getters existan cuando MapStruct genere el mapeo; de eso se encarga `lombok-mapstruct-binding` en `annotationProcessorPaths`. Sin este binding en el orden correcto, MapStruct no vería los accesores generados. La sección "Si falla" remite a revisar precisamente ese orden.
+Después quita temporalmente `@RestControllerAdvice` de `GlobalExceptionHandler`, reinicia y vuelve a pedir el ID inexistente. Restaura la anotación y vuelve a ejecutar `./mvnw test`.
 
-**Lombok genera código repetitivo (núcleo).** Lombok es un procesador de anotaciones que genera getters, setters, constructores y builder en el bytecode al compilar; por eso la prueba puede escribir `Envio.builder().id(7L)...build()` sin que esos métodos aparezcan en el fuente. Esto elimina las clases de 200 líneas de accesores manuales. El reto de memoria pide escribir una entidad con Lombok de este tipo.
+**Resultado esperado:** con el manejador activo, los dos errores incluyen `codigo`, `mensaje` y `campos`. Sin él, el error de validación conserva su estado `400` pero vuelve al formato predeterminado; la excepción de búsqueda ya no produce nuestro `404` estructurado. Observa el código y cuerpo reales del servidor antes de anotarlos.
 
-**Mapeo generado por `@Mapper` (núcleo).** MapStruct genera la implementación de la interfaz `@Mapper` con código Java normal, sin reflexión, y `componentModel = "spring"` la registra como bean inyectable; `mapper.aRespuesta(envio)` produce `EnvioRespuesta[guia=BO-004512, destino=Bogotá, kilos=3]`. El ejercicio 2 pide abrir `EnvioMapperImpl.java` generado para ver ese código. Es el mecanismo que convierte el modelo interno en contrato público en tiempo de compilación.
+**Fallo deliberado:** captura `Exception.class` y responde `200` con el mensaje de excepción. **Diagnóstico:** se pierden los estados específicos y se puede filtrar información interna; elimina ese handler general y conserva manejadores por caso que no expongan trazas.
 
-**Renombrado de campos con `@Mapping` (variante).** Cuando el nombre del campo interno difiere del público, `@Mapping(source = "ciudadDestino", target = "destino")` indica la correspondencia explícita, y por eso `ciudadDestino` del `Envio` llega como `destino` en `EnvioRespuesta`. Es una variante del mapeo directo por nombre. El reto de memoria pide un mapper con un renombrado de campo de este tipo.
+**3. Entiende**
 
-**Política `ERROR` para campo sin mapear (límite).** Con `unmappedTargetPolicy = ReportingPolicy.ERROR`, borrar el `@Mapping` hace fallar la compilación con `Unmapped target property: "destino"`, porque el DTO tiene un campo que MapStruct no sabe llenar. El fallo deliberado muestra que con la política por defecto (`WARN`) solo habría una advertencia y la API devolvería `destino: null` en producción. Este límite convierte un olvido en un error de compilación, no en un bug silencioso.
+No devuelvas `ex.getStackTrace()` ni mensajes de base de datos a la API. Si el proyecto necesita formato estándar para varias aplicaciones, evalúa RFC 9457 `ProblemDetail`; para este ejercicio, el DTO pequeño deja visibles las piezas del contrato. **Límite:** este manejador sirve para errores previstos; no conviertas fallos inesperados del programa en errores `400`.
 
-**`@Data` en entidades JPA (error frecuente).** El ejercicio 3 investiga por qué `@Data` en entidades JPA con relaciones bidireccionales puede causar `StackOverflowError` en `toString` y `hashCode`, porque genera esos métodos sobre todos los campos incluidas las relaciones, que se recorren mutuamente sin fin. Por eso el tema recomienda no usar `@Data` en entidades. El checklist de salida pide documentar en el README por qué se evitó.
+**4. Cierra**
 
-**Exclusión de datos sensibles del log (decisión).** `@ToString(exclude = "costoInterno")` hace que el log seguro sea `Envio(id=7, guia=BO-004512, ciudadDestino=Bogotá, kilos=3)` sin `4100.50`, evitando filtrar el costo interno hacia los registros. Es una decisión profesional de seguridad: el dato existe en el modelo pero nunca aparece ni en la respuesta ni en el log. La prueba lo verifica con `assertThat(envio.toString()).doesNotContain("4100.50")`.
+**Práctica independiente:** agrega un error `TAREA_DUPLICADA` y define su estado y mensaje sin cambiar el formato. Prueba una petición y registra evidencia del estado y del cuerpo.
 
-**Lombok** es un procesador de anotaciones: `@Getter`, `@Setter`, `@Builder` o `@ToString` generan código en el bytecode al compilar. **MapStruct** genera la implementación de una interfaz `@Mapper` con código Java normal (sin reflexión); `componentModel = "spring"` la registra como bean y `unmappedTargetPolicy = ERROR` convierte un campo sin mapear en error de compilación. Como ambos son procesadores de anotaciones, Lombok debe correr primero: de eso se encarga `lombok-mapstruct-binding`.
+**Transferencia al proyecto integrador:** aplica el mismo esquema a errores previstos del servicio de envíos; documenta los códigos estables y deja detalles internos en los logs del servidor, no en la respuesta pública.
 
-**Analogía:** Lombok es el molde que fabrica las piezas repetidas; MapStruct es la plantilla de traspaso que dice qué dato del formulario interno va en qué casilla del formulario público.
+**Fuentes primarias:** [Spring MVC: manejadores de excepción](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-exceptionhandler.html), [Spring MVC: validación de argumentos](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-validation.html), [RFC 9457: Problem Details](https://www.rfc-editor.org/rfc/rfc9457).
 
-**Diagrama:**
+
+### Tema 4: Lombok y MapStruct sin exponer datos internos
+
+Ya tienes una entidad, un DTO y una API. En este tema reducirás los métodos repetidos y harás el mapeo con código Java que se genera al compilar.
+
+**¿Por qué es importante?** Menos código repetido ayuda a ver la regla importante: qué datos salen de la aplicación. El DTO sigue siendo el contrato público.
+
+**Modelo mental:** Lombok genera métodos de una clase; MapStruct genera una clase mapper a partir de una interfaz.
 
 ```mermaid
 flowchart LR
-    E[Envio con Lombok] --> M[EnvioMapper generado]
-    M --> D[EnvioRespuesta pública]
-    E -. costoInterno .-x D
+  A["Entidad Tarea"] --> B["MapStruct genera mapper"]
+  B --> C["DTO público"]
+  A -. "campo interno" .-> D["queda fuera del DTO"]
 ```
 
-#### Practica
+#### Subtema 4.1: Genera getters durante la compilación · 10 min
 
-**Demo paso a paso.** Desde una carpeta vacía, crea el proyecto y agrega MapStruct:
+**1. Contexto**
 
-```bash
-mkdir lombok-mapstruct && cd lombok-mapstruct
-curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web,lombok -d javaVersion=25 -o app.zip
-unzip -q app.zip
-```
+`Tarea` repite getters escritos a mano. Lombok puede generarlos al compilar; con JDK 23 o posterior hay que registrar el procesador en Maven de forma explícita.
 
-1. Agrega estos fragmentos a `pom.xml`:
+**2. Hazlo tú**
+
+En `pom.xml`, añade la versión a `<properties>`:
 
 ```xml
-<!-- 1) Dentro de <dependencies>: -->
-<dependency>
-  <groupId>org.mapstruct</groupId>
-  <artifactId>mapstruct</artifactId>
-  <version>1.6.3</version>
-</dependency>
+<lombok.version>1.18.48</lombok.version>
+```
 
-<!-- 2) En maven-compiler-plugin, dentro de <annotationProcessorPaths>,
-     junto al path de lombok que ya generó Spring Initializr: -->
+Dentro de `<dependencies>` añade:
+
+```xml
+<dependency>
+    <groupId>org.projectlombok</groupId>
+    <artifactId>lombok</artifactId>
+    <version>${lombok.version}</version>
+    <scope>provided</scope>
+</dependency>
+```
+
+Dentro de `<build><plugins>` añade la configuración al plugin Maven Compiler. Si ya existe ese plugin, agrega solo `<configuration>`:
+
+```xml
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-compiler-plugin</artifactId>
+    <configuration>
+        <annotationProcessorPaths>
+            <path>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+            </path>
+        </annotationProcessorPaths>
+    </configuration>
+</plugin>
+```
+
+En `src/main/java/com/example/demo/Tarea.java` importa `lombok.Getter`, pon `@Getter` sobre la clase y borra solo los cuatro métodos `get...`. Conserva los campos, `@Entity` y los constructores.
+
+$ ./mvnw clean test
+
+**Resultado esperado:** termina en `BUILD SUCCESS`. El servicio y JPA todavía pueden llamar a `getId()`, `getTitulo()` y los demás métodos: Lombok los genera al compilar.
+
+**Fallo deliberado:** quita el path del procesador y ejecuta `./mvnw clean test`. **Diagnóstico:** el compilador no encuentra los getters; en JDK 23+ una dependencia por sí sola no registra automáticamente el procesador. Restáuralo.
+
+**3. Entiende**
+
+`@Getter` crea getters para los campos de la clase. `provided` deja Lombok disponible para compilar sin incluirlo como dependencia de ejecución de la aplicación. No uses `@Data` o `@ToString` a ciegas en entidades: pueden generar setters amplios o imprimir campos internos en logs.
+
+**4. Cierra**
+
+Confirma que desaparecieron los getters escritos a mano y que `clean test` pasa. Más adelante compararás un DTO manual con el mapper generado.
+
+#### Subtema 4.2: Genera el mapeo con MapStruct · 15 min
+
+**1. Contexto**
+
+`TareaDTO.from` copia cada campo con código manual. MapStruct genera esa implementación durante la compilación y Spring puede inyectarla como un bean.
+
+**2. Hazlo tú**
+
+En `pom.xml`, añade esta propiedad:
+
+```xml
+<mapstruct.version>1.6.3</mapstruct.version>
+```
+
+Dentro de `<dependencies>` añade:
+
+```xml
+<dependency>
+    <groupId>org.mapstruct</groupId>
+    <artifactId>mapstruct</artifactId>
+    <version>${mapstruct.version}</version>
+</dependency>
+```
+
+Conserva el procesador Lombok del subtema anterior y agrega estos dos paths al mismo `<annotationProcessorPaths>`:
+
+```xml
 <path>
-  <groupId>org.mapstruct</groupId>
-  <artifactId>mapstruct-processor</artifactId>
-  <version>1.6.3</version>
+    <groupId>org.projectlombok</groupId>
+    <artifactId>lombok-mapstruct-binding</artifactId>
+    <version>0.2.0</version>
 </path>
 <path>
-  <groupId>org.projectlombok</groupId>
-  <artifactId>lombok-mapstruct-binding</artifactId>
-  <version>0.2.0</version>
+    <groupId>org.mapstruct</groupId>
+    <artifactId>mapstruct-processor</artifactId>
+    <version>${mapstruct.version}</version>
 </path>
 ```
 
-2. Crea `src/main/java/com/example/demo/Envio.java`:
+Reemplaza `src/main/java/com/example/demo/TareaDTO.java` por:
 
 ```java
 package com.example.demo;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-
-import java.math.BigDecimal;
-
-// Modelo interno. Lombok genera getters, setters, constructores y builder al compilar.
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-@ToString(exclude = "costoInterno")       // no imprimir datos sensibles en logs
-public class Envio {
-    private Long id;
-    private String guia;
-    private String ciudadDestino;
-    private int kilos;
-    private BigDecimal costoInterno;      // dato interno: NO debe salir en la API
+public record TareaDTO(Long id, String titulo, int prioridad) {
 }
 ```
 
-3. Crea `src/main/java/com/example/demo/EnvioRespuesta.java`:
+Crea `src/main/java/com/example/demo/TareaMapper.java`:
 
 ```java
 package com.example.demo;
 
-// DTO público: lo que ve el cliente de la API
-public record EnvioRespuesta(String guia, String destino, int kilos) {}
-```
-
-4. Crea `src/main/java/com/example/demo/EnvioMapper.java`:
-
-```java
-package com.example.demo;
-
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
-// MapStruct genera la implementación al compilar: código Java normal, sin reflexión
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
-public interface EnvioMapper {
-    @Mapping(source = "ciudadDestino", target = "destino")
-    EnvioRespuesta aRespuesta(Envio envio);
+@Mapper(
+        componentModel = "spring",
+        unmappedTargetPolicy = ReportingPolicy.ERROR)
+public interface TareaMapper {
+    @BeanMapping(ignoreUnmappedSourceProperties = "ubicacionInterna")
+    @Mapping(target = "id", source = "id")
+    @Mapping(target = "titulo", source = "titulo")
+    @Mapping(target = "prioridad", source = "prioridad")
+    TareaDTO toDto(Tarea tarea);
 }
 ```
 
-5. Crea `src/test/java/com/example/demo/EnvioMapperTest.java`:
+Reemplaza `ServicioTareas.java` por esta versión que recibe el mapper por constructor:
 
 ```java
 package com.example.demo;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
+@Service
+public class ServicioTareas {
+    private final TareaRepository repository;
+    private final TareaMapper mapper;
 
-import static org.assertj.core.api.Assertions.assertThat;
+    public ServicioTareas(TareaRepository repository, TareaMapper mapper) {
+        this.repository = repository;
+        this.mapper = mapper;
+    }
 
-@SpringBootTest
-class EnvioMapperTest {
+    public TareaDTO crear(CrearTareaRequest request) {
+        Tarea tarea = new Tarea(
+                request.titulo(), request.prioridad(), "BODEGA-A");
+        return mapper.toDto(repository.save(tarea));
+    }
 
-    @Autowired
-    EnvioMapper mapper;
-
-    @Test
-    void mapeaCamposPublicosYNoExponeElCostoInterno() {
-        Envio envio = Envio.builder()
-                .id(7L).guia("BO-004512").ciudadDestino("Bogotá").kilos(3)
-                .costoInterno(new BigDecimal("4100.50"))
-                .build();
-
-        EnvioRespuesta respuesta = mapper.aRespuesta(envio);
-
-        assertThat(respuesta).isEqualTo(new EnvioRespuesta("BO-004512", "Bogotá", 3));
-        assertThat(envio.toString()).doesNotContain("4100.50");
-        System.out.println("Respuesta: " + respuesta);
-        System.out.println("Log seguro: " + envio);
+    public TareaDTO buscar(Long id) {
+        return repository.findById(id)
+                .map(mapper::toDto)
+                .orElseThrow(() -> new TareaNoEncontradaException(id));
     }
 }
 ```
 
-6. Ejecuta el ejemplo:
+Ejecuta `./mvnw clean test`, inicia la aplicación y crea una tarea con el `curl` del Tema 1.
+
+**Resultado esperado:** la app inicia y responde `201` con `id`, `titulo` y `prioridad`, sin `ubicacionInterna`. Maven genera `target/generated-sources/annotations/com/example/demo/TareaMapperImpl.java`; abre el archivo y observa las llamadas a getters y el `new TareaDTO(...)`. No escribiste esa clase a mano.
+
+**Fallo deliberado:** cambia `target` del mapeo de `titulo` a `nombre` y compila. **Diagnóstico:** no existe una propiedad `nombre` en `TareaDTO`; MapStruct falla al compilar. Restaura `titulo`.
+
+**3. Entiende**
+
+`componentModel = "spring"` registra el mapper para inyección por constructor. Las tres anotaciones `@Mapping` traducen nombres del modelo al DTO; el código generado es Java ordinario, no una conversión por reflexión en cada llamada.
+
+**4. Cierra**
+
+Abre la clase generada y encuentra dónde se copian los tres campos. Comprueba que la entidad aún tiene el dato interno y el DTO no.
+
+#### Subtema 4.3: Haz que cada campo interno nuevo exija una decisión · 10 min
+
+**1. Contexto**
+
+El mapper omite `ubicacionInterna` de forma intencional. Configura una regla para que un campo nuevo de la entidad no pase inadvertido en la revisión.
+
+**2. Hazlo tú**
+
+En `TareaMapper.java`, amplía `@Mapper` y declara que un campo de origen sin decisión debe detener la compilación:
+
+Reemplaza en `TareaMapper.java` la anotación `@Mapper` por esta versión; conserva debajo el método `toDto` y su `@BeanMapping`:
+
+```java
+@Mapper(
+        componentModel = "spring",
+        unmappedTargetPolicy = ReportingPolicy.ERROR,
+        unmappedSourcePolicy = ReportingPolicy.ERROR)
+```
+
+Ejecuta `./mvnw clean test`; después añade temporalmente `private String notaInterna;` a `Tarea` y ejecuta el mismo comando.
+
+**Resultado esperado:** sin el campo nuevo, la compilación pasa. Con `notaInterna`, MapStruct falla indicando que una propiedad de origen no está mapeada. No se filtró en el JSON; el build te obliga a decidir qué hacer con el campo.
+
+**Fallo deliberado:** silencia el diagnóstico con `unmappedSourcePolicy = ReportingPolicy.IGNORE`. **Diagnóstico:** el build vuelve a pasar aunque nadie revisó el dato nuevo. Restaura `ERROR` y decide de forma explícita si el campo se mapea o se omite con `ignoreUnmappedSourceProperties`.
+
+**3. Entiende**
+
+`unmappedTargetPolicy = ERROR` detiene el build si el DTO tiene una propiedad sin origen. `unmappedSourcePolicy = ERROR` hace lo mismo con una propiedad de entidad no contemplada. El mapper documenta una decisión técnica, pero no reemplaza la revisión del DTO como contrato público.
+
+**4. Cierra**
+
+**Práctica independiente:** agrega `private String notaInterna;` de forma permanente a `Tarea.java` y reemplaza la anotación en `TareaMapper.java` por:
+
+```java
+@BeanMapping(ignoreUnmappedSourceProperties = {
+        "ubicacionInterna", "notaInterna"})
+```
+
+Después ejecuta `./mvnw clean test` y el `curl` del Tema 1; comprueba que el JSON sigue sin incluir esos campos.
+
+**Límite:** Lombok y MapStruct son opcionales. Para una clase pequeña, getters escritos a mano y un método `from` suelen ser más fáciles de leer; adopta procesadores si el equipo puede configurar y revisar el código generado.
+
+**Transferencia al proyecto integrador:** conserva el DTO como lista explícita de datos públicos. Antes de añadir un campo de respuesta, identifica el consumidor y actualiza la prueba de contrato.
+
+**Fuentes primarias:** [Lombok: configuración Maven](https://projectlombok.org/setup/maven), [MapStruct 1.6.3: guía de referencia](https://mapstruct.org/documentation/stable/reference/pdf/mapstruct-reference-guide.pdf), [MapStruct: preguntas sobre Lombok](https://mapstruct.org/faq/).
+
+### Tema 5: OpenAPI con springdoc: el contrato como prueba
+
+La API de tareas ya responde con códigos y errores propios. Ahora publicarás ese contrato en OpenAPI y escribirás una prueba que detecte si deja de documentar una respuesta.
+
+**¿Por qué es importante?** Quien integra una API necesita saber qué ruta llamar, qué enviar y cómo se verá cada resultado antes de conectar otra aplicación.
+
+**Modelo mental:** Springdoc lee controllers y anotaciones para dibujar el contrato HTTP; una prueba compara ese documento con lo que el equipo espera ofrecer.
+
+```mermaid
+flowchart LR
+  A["TareaController"] --> B["Springdoc"]
+  B --> C["/v3/api-docs"]
+  C --> D["prueba de contrato"]
+  D -->|rutas y respuestas| E["clientes de la API"]
+```
+
+#### Subtema 5.1: Publica el contrato de tu API · 10 min
+
+**1. Contexto**
+
+No crearás otro backend. Añadirás documentación automática al mismo proyecto de tareas con sus DTOs y respuestas reales.
+
+**2. Hazlo tú**
+
+En `pom.xml`, dentro de `<dependencies>` añade el starter de Spring MVC:
+
+```xml
+<dependency>
+    <groupId>org.springdoc</groupId>
+    <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+    <version>3.2.0</version>
+</dependency>
+```
+
+Desde la raíz del proyecto ejecuta:
 
 ```bash
 ./mvnw test
 ```
 
-**Resultado esperado:**
-
-```text
-Respuesta: EnvioRespuesta[guia=BO-004512, destino=Bogotá, kilos=3]
-Log seguro: Envio(id=7, guia=BO-004512, ciudadDestino=Bogotá, kilos=3)
-...
-[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
-[INFO] BUILD SUCCESS
-```
-
-Las líneas de Maven se resumen: también verás el log de arranque de Spring y la prueba `DemoApplicationTests` que genera Initializr. `costoInterno` no aparece ni en la respuesta ni en el log. Las versiones de MapStruct y del binding son las vigentes al escribir este tema; consulta la documentación si hay una más nueva.
-
-**Fallo deliberado:** borra `@Mapping(source = "ciudadDestino", target = "destino")`. La compilación falla con `Unmapped target property: "destino"` porque el DTO tiene un campo que MapStruct no sabe llenar. Con la política por defecto (`WARN`) solo verías una advertencia y la API devolvería `destino: null` en producción.
-
-**Ejercicios.**
-
-1. Agrega al DTO el campo `estado` y al modelo `estadoActual`, y mapéalos. Ejecuta `./mvnw test` para ver el error de campo sin mapear antes de agregar el `@Mapping`.
-2. Abre `target/generated-sources/annotations/.../EnvioMapperImpl.java` y explica el código que generó MapStruct.
-3. Investiga por qué `@Data` en entidades JPA con relaciones bidireccionales puede causar `StackOverflowError` en `toString` y `hashCode`, y demuéstralo con una prueba mínima.
-4. Agrega un segundo método al mapper que ignore explícitamente un campo y justifica cuándo conviene ignorar frente a excluir en el DTO.
-
-**Pista:** agrega el campo a ambos lados, ejecuta `./mvnw test` para ver el error de campo sin mapear y luego agrega el `@Mapping` correspondiente.
-
-**Reto de memoria:** cierra este documento y escribe de memoria una entidad con Lombok, un DTO `record`, y una interfaz `@Mapper` con una renombrado de campo y política `ERROR`.
-
-#### Aplica
-
-**Reto abierto.** Integra Lombok y MapStruct en la API de entregas. Mapea las entidades a DTOs con política de error y excluye de `toString` los datos personales y el costo interno. Agrega una prueba que falle si un campo nuevo del DTO queda sin mapear y documenta la decisión de no usar `@Data` en entidades JPA.
-
-**Checklist de salida.**
-
-- [ ] El proyecto compila con MapStruct y Lombok en el orden correcto.
-- [ ] Un campo nuevo del DTO sin mapear rompe la compilación.
-- [ ] Ningún `toString` imprime datos sensibles.
-- [ ] La respuesta pública no contiene `costoInterno`.
-- [ ] La prueba del mapper se ejecuta y verifica el contrato público.
-- [ ] El README explica por qué se evitó `@Data` en la entidad.
-
-**Si falla.** Si MapStruct no genera la implementación, revisa `annotationProcessorPaths` y el orden con `lombok-mapstruct-binding`. Si la compilación falla por un campo sin mapear, agrega el `@Mapping` o excluye el campo del DTO conscientemente. Si el `toString` filtra datos, revisa `@ToString(exclude = ...)`.
-
-**Siguiente paso:** el Tema 5 publica y prueba el contrato OpenAPI de la API.
-
-**Errores comunes:** usar `@Data` en una entidad JPA (genera `equals`/`hashCode` sobre todos los campos, incluidas relaciones, y puede producir `StackOverflowError`); dejar la política de MapStruct en `WARN`, de modo que un campo nuevo llega como `null` a producción sin que la compilación avise.
-
-**Límites y decisión de uso:** para DTOs simples, un `record` de Java ya no necesita Lombok; no uses `@Data` en entidades JPA.
-
-**Fuente oficial:** [MapStruct Reference Guide](https://mapstruct.org/documentation/stable/reference/html/), [Project Lombok: features](https://projectlombok.org/features/).
-
-**Transferencia al proyecto integrador:** mapea las entidades de entregas a DTOs con MapStruct y política de error, y excluye de `toString` los datos personales.
-
-### Tema 5: OpenAPI con springdoc: el contrato como prueba · Intermedio · 40 min
-
-**Prerrequisito:** Temas 1 a 3 de este módulo.
-
-**Al terminar podrás:** generar la especificación OpenAPI de tu API, documentar operaciones, parámetros, respuestas y esquemas, y escribir una prueba que falle si el contrato publicado cambia.
-
-#### Aprende
-
-**¿Por qué es importante?** El equipo móvil de RutaFlow descubría los cambios de la API cuando la app fallaba. Un contrato OpenAPI publicado y probado permite a otros equipos generar clientes, probar contra mocks y detectar cambios antes de desplegar.
-
-**Mapa de subtemas críticos**
-
-| Subtema | Papel | Evidencia |
-|---|---|---|
-| Starter springdoc en el classpath | Prerrequisito | El `pom.xml` agrega `springdoc-openapi-starter-webmvc-ui` |
-| Documento generado en `/v3/api-docs` | Núcleo | La prueba lee `http://localhost:puerto/v3/api-docs` y recibe `200` |
-| Anotaciones que enriquecen el contrato | Núcleo | `@Operation`, `@ApiResponse`, `@Parameter`, `@Schema` en `EnvioController` |
-| Swagger UI interactivo | Variante | `swagger-ui.html` ejecuta `GET /api/envios/BO-004512` desde el navegador |
-| Contrato como prueba automatizada | Diagnóstico | La aserción exige `"/api/envios/{guia}"` y `"La guía no existe"` en el documento |
-| Documentación desfasada del comportamiento | Error frecuente | Borrar `@ApiResponse(404)` hace fallar la prueba aunque el endpoint siga dando 404 |
-| Cuándo un contrato formal es burocracia | Decisión | Una API interna de un solo consumidor que cambia a diario puede no necesitarlo |
-
-Cada fila tiene su explicación individual a continuación.
-
-**Starter springdoc en el classpath (prerrequisito).** El `pom.xml` agrega `springdoc-openapi-starter-webmvc-ui` en su línea 3.x compatible con Spring Boot 4; sin él no hay documento ni interfaz. La sección "Si falla" confirma que, si `/v3/api-docs` devuelve 404, springdoc no está en el classpath o la versión no es compatible. Es el prerrequisito sobre el que operan la generación y la prueba de contrato.
-
-**Documento generado en `/v3/api-docs` (núcleo).** springdoc inspecciona los controladores en tiempo de ejecución y publica el documento OpenAPI en `/v3/api-docs`; la prueba lo lee con un `HttpClient` contra el puerto aleatorio y confirma `200`. Este documento es la fuente de verdad del contrato. El mecanismo es la introspección automática de las rutas y tipos reales del controlador.
-
-**Anotaciones que enriquecen el contrato (núcleo).** `@Operation`, `@ApiResponse`, `@Parameter` y `@Schema` agregan la información que el código no expresa por sí solo: resúmenes, ejemplos, valores permitidos y códigos de error. En `EnvioController`, `@Schema(example = "en ruta", allowableValues = {...})` y `@Operation(summary = ...)` enriquecen el documento. El reto de memoria pide escribir un controlador con `@Operation`, dos `@ApiResponse` y un esquema.
-
-**Swagger UI interactivo (variante).** springdoc también publica una interfaz en `swagger-ui.html` donde se puede ejecutar `GET /api/envios/BO-004512` directamente desde el navegador, sin escribir un cliente. Es una variante de consumo del mismo documento OpenAPI. El checklist de salida pide comprobar que Swagger UI abra en el navegador además de que `/v3/api-docs` responda.
-
-**Contrato como prueba automatizada (diagnóstico).** `ContratoOpenApiTest` levanta la app en un puerto aleatorio y asevera que el documento contiene `"/api/envios/{guia}"`, el resumen de la operación, `"La guía no existe"` y `"EstadoEnvio"`, convirtiendo la documentación en un contrato verificable. Esto permite diagnosticar en CI cualquier cambio del contrato. La sección "Si falla" aconseja endurecer la aserción si un cambio pasa inadvertido.
-
-**Documentación desfasada del comportamiento (error frecuente).** El fallo deliberado borra `@ApiResponse(responseCode = "404", description = "La guía no existe")`: el endpoint sigue devolviendo 404, pero el contrato ya no lo documenta y la prueba falla al no encontrar ese texto. Ese desfase entre comportamiento y documentación es exactamente lo que la prueba atrapa. Los errores comunes del tema advierten contra cambiar una anotación sin volver a correr la prueba.
-
-**Cuándo un contrato formal es burocracia (decisión).** El tema delimita que para APIs internas de un solo consumidor que cambian a diario, un contrato formal puede ser burocracia, aunque recomienda documentar igualmente los errores que se devuelven. Es una decisión profesional sobre el costo de mantener el contrato frente a su beneficio. No siempre se justifica el versionado y la prueba de `openapi.json`.
-
-**OpenAPI** es un formato estándar (JSON o YAML) que describe rutas, parámetros, respuestas y esquemas de una API HTTP. **springdoc** inspecciona tus controladores en tiempo de ejecución y publica el documento en `/v3/api-docs` y una interfaz en `/swagger-ui.html`. Las anotaciones `@Operation`, `@ApiResponse`, `@Parameter` y `@Schema` agregan la información que el código no expresa (resúmenes, ejemplos, códigos de error). Probar el documento convierte la documentación en un contrato verificable.
-
-**Analogía:** el contrato OpenAPI es el plano eléctrico de la casa: quien llega a instalar algo no necesita romper paredes para saber dónde están los cables.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-    C[EnvioController con anotaciones] --> S[springdoc]
-    S --> A[/v3/api-docs JSON/]
-    S --> U[swagger-ui.html]
-    A --> T[prueba del contrato]
-    A --> G[clientes generados]
-```
-
-#### Practica
-
-**Demo paso a paso.** Desde una carpeta vacía, crea el proyecto y agrega springdoc:
+Inicia la app con `./mvnw spring-boot:run`. En otra terminal consulta el documento y la interfaz:
 
 ```bash
-mkdir springdoc && cd springdoc
-curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web -d javaVersion=25 -o app.zip
-unzip -q app.zip
+curl -sS http://localhost:8080/v3/api-docs
 ```
 
-1. Agrega este fragmento a `pom.xml`:
+Abre `http://localhost:8080/swagger-ui/index.html` en el navegador.
 
-```xml
-<!-- Dentro de <dependencies>. Usa la línea 3.x de springdoc, compatible con Spring Boot 4 -->
-<dependency>
-  <groupId>org.springdoc</groupId>
-  <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-  <version>3.0.0</version>
-</dependency>
-```
+**Resultado esperado:** la ruta `/v3/api-docs` devuelve JSON OpenAPI con las rutas `/api/tareas` y `/api/tareas/{id}`. Swagger UI muestra esas operaciones; los estados y detalles todavía pueden ser escasos.
 
-2. Crea `src/main/java/com/example/demo/EnvioController.java`:
+**Fallo deliberado:** quita temporalmente la dependencia de springdoc, reinicia y consulta `/v3/api-docs`. **Diagnóstico:** el endpoint devuelve `404` porque la dependencia ya no registra su documentación; restaura el starter `springdoc-openapi-starter-webmvc-ui`.
+
+**3. Entiende**
+
+Springdoc inspecciona mappings y tipos de respuesta al iniciar la aplicación. El documento inicial se infiere del código; las anotaciones que añadas después hacen explícitas las descripciones y los estados relevantes.
+
+**4. Cierra**
+
+Guarda la salida de `/v3/api-docs` y localiza allí ambas rutas. En el paso siguiente documentarás sus respuestas previstas.
+
+#### Subtema 5.2: Describe éxito y errores en cada endpoint · 15 min
+
+**1. Contexto**
+
+Los métodos ya devuelven `201`, `200`, `400` y `404`. Añade descripciones para que quien consulte el contrato sepa qué significan.
+
+**2. Hazlo tú**
+
+Reemplaza `src/main/java/com/example/demo/TareaController.java` por:
 
 ```java
 package com.example.demo;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/envios")
-@Tag(name = "Envíos", description = "Consulta pública del estado de un envío")
-public class EnvioController {
+@RequestMapping("/api/tareas")
+@Tag(name = "Tareas", description = "Crear y consultar tareas")
+public class TareaController {
+    private final ServicioTareas servicio;
 
-    @Schema(description = "Estado público de un envío")
-    public record EstadoEnvio(
-            @Schema(example = "BO-004512") String guia,
-            @Schema(example = "en ruta", allowableValues = {"registrado", "en ruta", "entregado"}) String estado) {}
+    public TareaController(ServicioTareas servicio) {
+        this.servicio = servicio;
+    }
 
-    private final Map<String, String> estados = Map.of("BO-004512", "en ruta");
+    @PostMapping
+    @Operation(summary = "Crear una tarea")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Tarea creada"),
+            @ApiResponse(responseCode = "400", description = "Datos inválidos",
+                    content = @Content(schema = @Schema(implementation = ApiError.class)))})
+    public ResponseEntity<TareaDTO> crear(
+            @Valid @RequestBody CrearTareaRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(servicio.crear(request));
+    }
 
-    @Operation(summary = "Consultar el estado de un envío por guía")
-    @ApiResponse(responseCode = "200", description = "Envío encontrado")
-    @ApiResponse(responseCode = "404", description = "La guía no existe")
-    @GetMapping("/{guia}")
-    public ResponseEntity<EstadoEnvio> estado(
-            @Parameter(description = "Guía con formato XX-000000", example = "BO-004512") @PathVariable String guia) {
-        String estado = estados.get(guia);
-        return estado == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(new EstadoEnvio(guia, estado));
+    @GetMapping("/{id}")
+    @Operation(summary = "Consultar una tarea por ID")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Tarea encontrada"),
+            @ApiResponse(responseCode = "404", description = "Tarea inexistente",
+                    content = @Content(schema = @Schema(implementation = ApiError.class)))})
+    public ResponseEntity<TareaDTO> buscar(@PathVariable Long id) {
+        return ResponseEntity.ok(servicio.buscar(id));
     }
 }
 ```
 
-3. Crea `src/test/java/com/example/demo/ContratoOpenApiTest.java`:
+Arranca la aplicación y vuelve a pedir `/v3/api-docs`. Busca `/api/tareas`, `Crear una tarea` y las respuestas `201` y `400`. Después busca `/api/tareas/{id}`, `Consultar una tarea por ID` y las respuestas `200` y `404`.
+
+**Resultado esperado:** el documento presenta ambas operaciones con sus códigos y descripciones. Las anotaciones describen el comportamiento existente; no cambian la lógica del servicio.
+
+**Fallo deliberado:** cambia la descripción de respuesta de `404` por `200` y vuelve a consultar el documento. **Diagnóstico:** OpenAPI ya no coincide con el handler que devuelve `TAREA_NO_ENCONTRADA`; restaura la descripción `404`.
+
+**3. Entiende**
+
+`@Operation` describe una operación; `@ApiResponse` describe un resultado HTTP; `@Tag` agrupa rutas. El tipo Java ya informa los esquemas de entrada y salida; no copies manualmente el JSON si springdoc puede inferirlo.
+
+**4. Cierra**
+
+Compara cada descripción con el controller y `GlobalExceptionHandler`. Si no corresponde al comportamiento, corrige la anotación o la implementación antes de publicar.
+
+#### Subtema 5.3: Evita cambios silenciosos con una prueba · 15 min
+
+**1. Contexto**
+
+Abrir la interfaz permite explorar la API, pero una persona puede olvidarse de revisar el contrato después de editar una ruta. Una prueba automatizada marca esa diferencia en cada cambio.
+
+**2. Hazlo tú**
+
+Crea `src/test/java/com/example/demo/ContratoOpenApiTest.java`:
 
 ```java
 package com.example.demo;
@@ -791,731 +1007,264 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ContratoOpenApiTest {
-
     @Value("${local.server.port}")
     int puerto;
 
     @Test
-    void elContratoPublicadoDescribeLaOperacionYSusRespuestas() throws Exception {
-        HttpResponse<String> respuesta = HttpClient.newHttpClient().send(
-                HttpRequest.newBuilder(URI.create("http://localhost:" + puerto + "/v3/api-docs")).build(),
-                HttpResponse.BodyHandlers.ofString());
+    void publicaLasRutasYRespuestasQueUsaElBackend() throws Exception {
+        HttpRequest request = HttpRequest.newBuilder(
+                URI.create("http://localhost:" + puerto + "/v3/api-docs"))
+                .GET()
+                .build();
 
-        String contrato = respuesta.body();
-        System.out.println("OpenAPI: " + contrato.length() + " caracteres");
-        assertThat(respuesta.statusCode()).isEqualTo(200);
+        HttpResponse<String> response = HttpClient.newHttpClient().send(
+                request, HttpResponse.BodyHandlers.ofString());
+        String contrato = response.body();
+
+        assertThat(response.statusCode()).isEqualTo(200);
         assertThat(contrato)
-                .contains("\"/api/envios/{guia}\"")
-                .contains("Consultar el estado de un envío por guía")
-                .contains("La guía no existe")
-                .contains("\"EstadoEnvio\"");
+                .contains("/api/tareas")
+                .contains("/api/tareas/{id}")
+                .contains("Crear una tarea")
+                .contains("Consultar una tarea por ID")
+                .contains("Tarea inexistente")
+                .contains("Datos inválidos")
+                .contains("ApiError")
+                .contains("\"200\"")
+                .contains("\"201\"")
+                .contains("\"400\"")
+                .contains("\"404\"");
     }
 }
 ```
 
-4. Ejecuta el ejemplo:
+Desde la raíz ejecuta `./mvnw test`.
 
-```bash
-./mvnw test
-./mvnw spring-boot:run   # luego abre http://localhost:8080/swagger-ui.html
-```
+**Resultado esperado:** Maven termina en `BUILD SUCCESS` y `ContratoOpenApiTest` pasa tras levantar la app en un puerto aleatorio. El tiempo de prueba puede variar.
 
-**Resultado esperado:**
+**Fallo deliberado:** elimina la anotación `@ApiResponse(responseCode = "404", description = "Tarea inexistente")` de `buscar` y ejecuta otra vez `./mvnw test`. **Diagnóstico:** la prueba falla porque falta `Tarea inexistente`; el controller aún devuelve `404`, pero el contrato ya no lo dice. Restaura la anotación.
 
-```text
-OpenAPI: 1234 caracteres
-...
-[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
-[INFO] BUILD SUCCESS
-```
+**3. Entiende**
 
-La prueba levanta la aplicación en un puerto aleatorio y lee el contrato real. El número de caracteres varía. En `swagger-ui.html` puedes ejecutar `GET /api/envios/BO-004512` desde el navegador. La versión de springdoc indicada es la línea 3.x vigente al escribir el tema; revisa la tabla de compatibilidad si usas otra versión de Spring Boot.
+La prueba lee el documento publicado por la aplicación real, no un archivo de ejemplo. Comprueba rutas y mensajes elegidos por el equipo; no asegura que cada descripción sea completa ni que clientes externos ya estén de acuerdo.
 
-**Fallo deliberado:** borra `@ApiResponse(responseCode = "404", description = "La guía no existe")`. La prueba falla porque el contrato ya no contiene `La guía no existe`: el endpoint sigue devolviendo 404, pero el contrato ya no lo documenta. Ese desfase entre comportamiento y documentación es exactamente lo que la prueba debe atrapar.
+**4. Cierra**
 
-**Ejercicios.**
-
-1. Documenta un `POST /api/envios` que reciba un `record` validado con `@NotBlank` y verifica en la prueba que el esquema marca el campo como requerido. **Pista:** springdoc traduce `@NotBlank` a la lista `required`; busca el nombre del campo dentro de esa lista.
-2. Guarda el contrato en `openapi.json` dentro del repositorio y escribe una prueba que lo compare con el contrato actual, para que todo cambio sea explícito en la revisión de código.
-3. Agrega un segundo endpoint con un parámetro opcional y verifica que el contrato lo marca como no requerido.
-4. Documenta un código `400` y comprueba que la prueba falla si lo eliminas.
-
-**Reto de memoria:** cierra este documento y escribe de memoria un controlador con `@Operation`, dos `@ApiResponse` y un esquema, y la aserción mínima que comprobaría su presencia.
-
-#### Aplica
-
-**Reto abierto.** Publica el contrato del backend de entregas y agrega la prueba de contrato al pipeline. El contrato debe cubrir creación, consulta, errores `400`/`404` y los esquemas públicos. Versiona `openapi.json` y demuestra que un cambio de anotación sin actualizar la prueba rompe la compilación o el test.
-
-**Checklist de salida.**
-
-- [ ] `/v3/api-docs` responde y Swagger UI abre en el navegador.
-- [ ] La prueba de contrato verifica rutas, operaciones y códigos de error.
-- [ ] `openapi.json` está versionado y comparado por una prueba.
-- [ ] Quitar una anotación de documentación rompe la prueba.
-- [ ] Los esquemas no exponen campos internos.
-
-**Si falla.** Si `/v3/api-docs` devuelve 404, springdoc no está en el classpath o la versión no es compatible. Si la prueba no conecta, revisa `RANDOM_PORT` y `local.server.port`. Si el contrato cambia y la prueba pasa, la aserción no cubre ese cambio: endurecela.
-
-**Siguiente paso:** el Tema 6 aplica paginación y límites de recursos sobre esta API.
-
-**Errores comunes:** borrar o cambiar una anotación `@ApiResponse`/`@Operation` sin volver a correr la prueba; versionar `openapi.json` sin una prueba que lo compare contra el contrato real.
-
-**Límites y decisión de uso:** para APIs internas de un solo consumidor que cambian a diario, un contrato formal puede ser burocracia; aun así, documenta los errores que devuelves.
-
-**Fuente oficial:** [springdoc-openapi](https://springdoc.org/), [OpenAPI Specification](https://spec.openapis.org/oas/latest.html).
-
-**Transferencia al proyecto integrador:** publica el contrato del backend de entregas y agrega la prueba de contrato al pipeline.
-
-### Tema 6: Paginación HTTP con validación y un límite de recursos explícito · Intermedio · 35 min
-
-**Prerrequisito:** Java, Maven, REST y Bean Validation. JDK 27 y curl; comprueba `java --version`.
-
-**Al terminar podrás:** exponer una colección paginada y rechazar parámetros que exceden el contrato.
-
-#### Aprende
-
-**¿Por qué es importante?** El proyecto integrador muestra envíos en un panel. Devolver toda la colección carga el servidor y el navegador; el cliente no debería poder pedir un millón de elementos porque cambió un parámetro.
-
-**Mapa de subtemas críticos**
-
-| Subtema | Papel | Evidencia |
-|---|---|---|
-| Starter `validation` para validar parámetros | Prerrequisito | El proyecto se genera con `dependencies=web,validation` |
-| Posición y tamaño de página | Núcleo | Los parámetros `page` y `size` con `defaultValue` definen el corte |
-| Corte con `skip`/`limit` | Núcleo | `data.stream().skip(offset).limit(size)` devuelve IDs 1-2 y luego 3-4 |
-| Límite máximo de recursos | Límite | `@Max(100)` sobre `size` rechaza `size=1000000` con `400` |
-| Tamaño inválido que no se degrada a 200 | Error frecuente | `size=0` debe devolver `400`, no una página vacía con `200` |
-| Orden estable con desempate único | Diagnóstico | Datos con el mismo estado exigen un desempate por ID documentado |
-| Offset vs cursor en recorridos grandes | Decisión | El offset puede desplazarse al cambiar los datos; el cursor es la alternativa |
-
-Cada fila tiene su explicación individual a continuación.
-
-**Starter `validation` para validar parámetros (prerrequisito).** El proyecto se genera con `web,validation` porque las anotaciones `@Min`/`@Max` sobre los parámetros del controlador solo actúan si el starter de validación está presente. La sección "Si falla" confirma que, si un valor inválido devuelve 200, falta la validación en el parámetro o el starter. Es el prerrequisito que convierte los límites declarados en rechazos reales.
-
-**Posición y tamaño de página (núcleo).** Una página tiene posición y tamaño: `page` (con `defaultValue = "0"`) y `size` (con `defaultValue = "2"`) definen qué segmento se devuelve. Los `record Envio` y `Pagina` fijan el contrato de respuesta. Este es el mecanismo base de la paginación por offset que el resto de los subtemas restringe y ordena.
-
-**Corte con `skip`/`limit` (núcleo).** El corte se calcula como `data.stream().skip(offset).limit(size)` con `offset = page * size`, de modo que la primera página devuelve los IDs 1 y 2 y la segunda los IDs 3 y 4. `hasNext` se calcula con `offset + items.size() < data.size()`. La colección es en memoria para aislar el contrato HTTP de una consulta JPA real.
-
-**Límite máximo de recursos (límite).** `@Max(100)` sobre `size` y `@Max(1000)` sobre `page` acotan el trabajo solicitado: `size=1000000` produce `400` por validación de método del controlador, impidiendo que un cliente pida un millón de elementos. Este límite explícito protege al servidor antes de calcular el corte. El ejercicio 3 pide hacer ese máximo configurable por propiedad sin recompilar.
-
-**Tamaño inválido que no se degrada a 200 (error frecuente).** El fallo deliberado usa `size=0`, que el servidor debe rechazar con `400`; la pista advierte explícitamente no transformar un tamaño inválido en una respuesta vacía con estado 200. Confundir "inválido" con "página vacía válida" oculta el error al cliente. El checklist exige que los parámetros fuera de rango devuelvan `400`, no una página vacía.
-
-**Orden estable con desempate único (diagnóstico).** Un orden estable requiere un desempate único: ante datos con el mismo estado, sin un criterio adicional como el ID el orden puede variar entre peticiones. La sección "Si falla" diagnostica que, si el orden cambia entre peticiones, falta ese criterio de desempate. El reto abierto pide documentar por qué el orden necesita un desempate único.
-
-**Offset vs cursor en recorridos grandes (decisión).** El tema delimita que la paginación por offset puede desplazarse cuando cambian los datos, y que para recorridos grandes conviene considerar cursor y consistencia explícita. Es una decisión profesional sobre el método de paginación según el tamaño y la volatilidad de los datos. El reto abierto pide indicar cuándo pasarías a cursor.
-
-Una página tiene posición y tamaño. La validación restringe el trabajo solicitado antes de ejecutar la lógica. Un orden estable requiere un desempate único.
-
-**Analogía:** entregar carpetas en lotes permite controlar cuánto trabajo se hace en cada turno.
-
-**Límite:** la paginación por offset puede desplazarse cuando cambian los datos; para recorridos grandes considera cursor y consistencia explícita.
-
-**Diagrama:** [Documentación de Spring Data sobre consultas y paginación](https://docs.spring.io/spring-data/commons/reference/repositories/query-methods-details.html) describe el contrato que se implementa aquí con una colección en memoria.
-
-#### Practica
-
-**Demo paso a paso.** Crea el proyecto desde una carpeta vacía:
-
-```bash
-curl -fsSL 'https://start.spring.io/starter.zip?type=maven-project&language=java&bootVersion=4.0.9&baseDir=pagina-demo&groupId=com.example&artifactId=pagina-demo&packageName=com.example.pagina&javaVersion=25&dependencies=web,validation' -o pagina-demo.zip
-unzip pagina-demo.zip
-cd pagina-demo
-```
-
-Si Initializr ya no ofrece esa versión estable, selecciona una estable compatible con Java 27 en su UI, conserva Web y Validation y registra la versión elegida; no uses una milestone sin declarar el cambio.
-
-1. Crea `src/main/java/com/example/pagina/EnviosController.java`:
+**Práctica independiente:** agrega esta comprobación a `ContratoOpenApiTest.java` para verificar el comportamiento HTTP:
 
 ```java
-package com.example.pagina;
-
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import org.springframework.web.bind.annotation.*;
-import java.util.List;
-import java.util.stream.IntStream;
-
-@RestController
-public class EnviosController {
-    record Envio(int id, String estado) {}
-    record Pagina(List<Envio> items, int page, int size, boolean hasNext) {}
-    private final List<Envio> data = IntStream.rangeClosed(1, 5)
-        .mapToObj(id -> new Envio(id, "creado")).toList();
-
-    @GetMapping("/envios")
-    public Pagina listar(@RequestParam(defaultValue = "0") @Min(0) @Max(1000) int page,
-                         @RequestParam(defaultValue = "2") @Min(1) @Max(100) int size) {
-        // El tamaño se valida antes de calcular el corte.
-        long offset = (long) page * size;
-        var items = data.stream().skip(offset).limit(size).toList();
-        return new Pagina(items, page, size, offset + items.size() < data.size());
-    }
-}
+HttpResponse<String> respuestaAusente = HttpClient.newHttpClient().send(
+        HttpRequest.newBuilder(URI.create(
+                "http://localhost:" + puerto + "/api/tareas/999")).GET().build(),
+        HttpResponse.BodyHandlers.ofString());
+assertThat(respuestaAusente.statusCode()).isEqualTo(404);
 ```
 
-2. Conserva la clase Application generada y ejecuta:
+Compara la prueba de HTTP con `ContratoOpenApiTest`: una revisa lo que hace el servidor y otra lo que publica el contrato.
 
-```bash
-./mvnw spring-boot:run
-```
+**Límite:** una prueba de texto simple ayuda a comenzar; en una API con muchas operaciones, analiza el JSON como estructura o compara una especificación revisada para evitar coincidencias accidentales.
 
-En Windows usa `mvnw.cmd spring-boot:run`. En otra terminal:
+**Transferencia al proyecto integrador:** publica el OpenAPI del backend de envíos y ejecuta la prueba en CI antes de liberar cambios de ruta.
 
-```bash
-curl -i 'http://localhost:8080/envios?page=0&size=2'
-curl -i 'http://localhost:8080/envios?page=1&size=2'
-curl -i 'http://localhost:8080/envios?size=1000000'
-```
+**Fuentes primarias:** [Springdoc: compatibilidad con Spring Boot y guía de uso](https://springdoc.org/), [OpenAPI Specification](https://spec.openapis.org/oas/latest.html).
 
-**Explicación línea por línea:** los `record` definen el contrato de respuesta; los parámetros `page` y `size` llevan `@Min`/`@Max` para rechazar valores fuera de rango; `skip`/`limit` seleccionan el corte. La colección es en memoria para aislar el contrato HTTP, no una consulta JPA.
+### Tema 6: Paginación HTTP con validación y un límite de recursos explícito
 
-**Resultado esperado:** la primera página devuelve los IDs 1 y 2; la segunda, 3 y 4; un tamaño excesivo produce `400` por validación de método del controlador.
+La ruta de tareas aún no permite pedir pocos resultados. Conectarás una página del navegador a una consulta paginada de Spring Data y limitarás el tamaño de cada petición.
 
-**Fallo deliberado:** cambia la llamada a `size=0`. El servidor debe rechazarla con `400`. **Pista:** no transformes un tamaño inválido en respuesta vacía con estado 200; revisa la validación y que el starter Validation esté instalado. Corrige el parámetro y recupera los datos.
+**¿Por qué es importante?** El servidor debe limitar cuánto consulta y envía; el cliente necesita saber si quedan más resultados.
 
-**Ejercicios.**
-
-1. Comprueba la última página, una página posterior al final, un valor negativo y texto en `size`.
-2. Adapta el contrato a un repositorio con `Pageable` y orden por ID, y comprueba que la base aplica límite y orden antes de cargar resultados.
-3. Agrega un tamaño máximo configurable por propiedad y demuestra que el límite cambia sin recompilar.
-4. Mide cuántas filas devuelve una página fuera de rango y documenta si el contrato actual las distingue de una página vacía válida.
-
-**Reto de memoria:** cierra este documento y escribe de memoria un controlador con dos parámetros validados y una respuesta que indique si hay página siguiente.
-
-#### Aplica
-
-**Reto abierto.** Define el contrato de paginación de envíos con `page`, `size`, orden estable y `hasNext`. Demuestra con `curl` los límites superior e inferior, una página fuera de rango y el orden ante datos con el mismo estado. Documenta por qué el orden necesita un desempate único y cuándo pasarías a cursor.
-
-**Checklist de salida.**
-
-- [ ] Parámetros fuera de rango devuelven `400`, no una página vacía.
-- [ ] El orden es determinista con un desempate único documentado.
-- [ ] `hasNext` coincide con la página siguiente real.
-- [ ] El tamaño máximo está documentado y aplicado en servidor.
-- [ ] Se explica la diferencia entre paginar en memoria y paginar en base de datos.
-- [ ] Existe una prueba automatizada para límites y página fuera de rango.
-
-**Si falla.** Si un valor inválido devuelve 200, falta la validación en el parámetro o el starter. Si el orden cambia entre peticiones, falta un criterio de desempate. Si `hasNext` miente, el cálculo usa el tamaño solicitado en vez del tamaño real de la página.
-
-**Siguiente paso:** observar la consulta SQL, el índice y el coste del recuento en el Módulo 3.
-
-**Errores comunes:** cargar todo antes de paginar, aceptar tamaño ilimitado y mezclar resultados sin orden determinista.
-
-**Límites y decisión de uso:** la lista estática no demuestra escalabilidad, concurrencia ni autorización por recurso; esas propiedades se prueban con base de datos real y datos representativos.
-
-**Fuente oficial:** [Spring Data: consultas y paginación](https://docs.spring.io/spring-data/commons/reference/repositories/query-methods-details.html) y [Spring MVC: validación](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-validation.html).
-
-**Transferencia al proyecto integrador:** el panel de envíos del microservicio productivo consumirá este contrato paginado.
-
-### Tema 7: HandlerInterceptor frente a Filter y @ControllerAdvice · Avanzado · 35 min
-
-**Prerrequisito:** Tema 3 de este módulo (`@ControllerAdvice`); Módulo 4 Tema 2 de este track (filtro JWT con `OncePerRequestFilter`).
-
-**Al terminar podrás:** implementar un `HandlerInterceptor` con sus tres métodos (`preHandle`/`postHandle`/`afterCompletion`), confirmar con un test real el orden exacto de ejecución, y diagnosticar por qué devolver `false` desde `preHandle` también impide que `afterCompletion` se ejecute para ese mismo interceptor.
-
-#### Aprende
-
-**¿Por qué es importante?** Un equipo que necesita medir cuánto tarda cada petición HTTP, o registrar en qué controller terminó, tiene al menos tres mecanismos disponibles en Spring MVC (`Filter`, `HandlerInterceptor`, `@ControllerAdvice`) que suenan similares pero operan en capas distintas del pipeline; elegir el mecanismo equivocado produce código que no tiene acceso a la información que necesita (un `Filter` no sabe qué método de controller va a manejar la petición; un `@ControllerAdvice` no puede interceptar ANTES de que el controller se ejecute).
-
-**Mapa de subtemas críticos**
-
-| Subtema | Papel | Evidencia |
-|---|---|---|
-| `preHandle`/`postHandle`/`afterCompletion` | Núcleo | tres métodos que se ejecutan en tres momentos distintos del ciclo de una petición |
-| `preHandle` devuelve `false` corta la cadena | Núcleo | el controller NUNCA se ejecuta; el test confirma `403` sin que el método del controller corra |
-| `afterCompletion` NO se ejecuta si `preHandle` devolvió `false` | Diagnóstico | para ESE interceptor, solo `preHandle` aparece en la secuencia registrada; `afterCompletion` nunca llega |
-| `Filter` vs `HandlerInterceptor`: qué conoce cada uno | Prerrequisito | un `Filter` no conoce el `handler` (método de controller) que atenderá la petición; un `HandlerInterceptor` sí |
-| `@ControllerAdvice` opera después, no antes | Variante | solo intercepta excepciones ya lanzadas por un controller; nunca puede prevenir que el controller se ejecute |
-| `WebMvcConfigurer.addInterceptors` | Prerrequisito | el mecanismo de registro real, sin el cual el interceptor nunca se aplica a ninguna ruta |
-| Cuándo cada capa es la herramienta correcta | Decisión | Filter para preocupaciones independientes de Spring MVC (CORS, compresión); Interceptor para lógica que necesita el handler; ControllerAdvice para traducir excepciones |
-
-Cada fila tiene su explicación individual a continuación.
-
-**`preHandle`/`postHandle`/`afterCompletion` (núcleo).** `HandlerInterceptor` define tres métodos correspondientes a tres momentos: `preHandle` se ejecuta ANTES de que el controller reciba la petición (puede inspeccionar o bloquear); `postHandle` se ejecuta DESPUÉS de que el controller retorna, pero antes de que la respuesta se envíe (puede inspeccionar o modificar el `ModelAndView`); `afterCompletion` se ejecuta SIEMPRE AL FINAL, incluso si ocurrió una excepción, apropiado para limpieza de recursos. El test confirma la secuencia exacta `["preHandle", "postHandle", "afterCompletion"]` para una petición permitida.
-
-**`preHandle` devuelve `false` corta la cadena (núcleo).** Si `preHandle` retorna `false`, Spring MVC detiene inmediatamente el procesamiento: el controller NUNCA recibe la petición, y la respuesta HTTP debe configurarse manualmente dentro del propio `preHandle` (en el demo, `response.setStatus(HttpServletResponse.SC_FORBIDDEN)`) antes de retornar `false`, porque ningún otro componente completará la respuesta.
-
-**`afterCompletion` NO se ejecuta si `preHandle` devolvió `false` (diagnóstico).** Este es el hallazgo contraintuitivo del tema, confirmado con un test real: cuando `preHandle` retorna `false`, Spring MVC NO invoca `afterCompletion` para ESE MISMO interceptor (otros interceptores anteriores en la cadena, si los hay, sí reciben su `afterCompletion`). El test lo confirma: la secuencia registrada para la ruta bloqueada es únicamente `["preHandle"]`, nunca `["preHandle", "afterCompletion"]`. Un desarrollador que asuma que `afterCompletion` es una garantía tipo `finally` incondicional para su propio interceptor construye lógica de limpieza que silenciosamente no se ejecuta en el camino de rechazo.
-
-**`Filter` vs `HandlerInterceptor`: qué conoce cada uno (prerrequisito).** Un `Filter` (como el filtro JWT de `OncePerRequestFilter` del Módulo 4) opera en la capa de Servlet, ANTES de que Spring MVC determine qué controller atenderá la petición; por eso un `Filter` nunca tiene acceso al objeto `handler` (el método específico del controller). Un `HandlerInterceptor` opera DENTRO del `DispatcherServlet` de Spring MVC, después de que el handler ya fue resuelto, por lo que SÍ recibe ese `handler` como parámetro (útil, por ejemplo, para leer anotaciones personalizadas puestas sobre el método del controller).
-
-**`@ControllerAdvice` opera después, no antes (variante).** `@ControllerAdvice` con `@ExceptionHandler` (ya visto en el Tema 3) intercepta EXCEPCIONES que un controller ya lanzó; no tiene ningún mecanismo para ejecutarse ANTES de que el controller corra, ni para bloquear la ejecución del controller por una condición que no sea una excepción. No es un sustituto de `HandlerInterceptor` para lógica de autorización o medición que debe ocurrir antes de que el controller se invoque.
-
-**`WebMvcConfigurer.addInterceptors` (prerrequisito).** Declarar la clase `TiempoRespuestaInterceptor` con `@Component` no es suficiente por sí solo: un `WebMvcConfigurer` debe registrarlo explícitamente con `registry.addInterceptor(interceptor)` dentro de `addInterceptors`, el mecanismo real que lo conecta al pipeline de peticiones. Sin este registro, el interceptor existe como bean pero nunca intercepta ninguna petición.
-
-**Cuándo cada capa es la herramienta correcta (decisión).** Un `Filter` es apropiado para preocupaciones que deberían funcionar incluso sin Spring MVC presente (CORS, compresión, encabezados de seguridad genéricos); un `HandlerInterceptor` es apropiado cuando la lógica necesita conocer qué controller/método específico atenderá la petición (autorización por anotación personalizada, métricas por endpoint); `@ControllerAdvice` es apropiado específicamente para traducir excepciones lanzadas por controllers a respuestas HTTP consistentes.
-
-**Conceptos clave:** `preHandle`/`postHandle`/`afterCompletion`, corte de cadena con `false`, `Filter` vs `HandlerInterceptor`, `WebMvcConfigurer.addInterceptors`.
-
-`HandlerInterceptor.preHandle` se ejecuta antes del controller y puede bloquear la petición retornando `false` (sin que `afterCompletion` llegue a ejecutarse para ese interceptor); `postHandle` se ejecuta después del controller pero antes de completar la respuesta; `afterCompletion` se ejecuta al final, solo si `preHandle` retornó `true`. A diferencia de un `Filter` (capa de Servlet, sin acceso al handler resuelto) y de `@ControllerAdvice` (solo traduce excepciones ya lanzadas), un `HandlerInterceptor` opera dentro del pipeline de Spring MVC con acceso al handler específico, registrado explícitamente vía `WebMvcConfigurer.addInterceptors`.
-
-**Analogía:** un `Filter` es el guardia en la entrada principal del edificio, que revisa a todos antes de que sepan a qué piso o oficina se dirigen; un `HandlerInterceptor` es el recepcionista del piso específico, que ya sabe a qué oficina exacta va cada visitante y puede actuar en consecuencia; `@ControllerAdvice` es el protocolo de emergencia que se activa solo después de que algo salió mal dentro de una oficina, nunca antes de que el visitante entre.
-
-**Diagrama:**
+**Modelo mental:** page indica qué lote pedir; size cuántas filas puede traer ese lote. La base de datos recibe el límite.
 
 ```mermaid
-sequenceDiagram
-  participant F as Filter (capa Servlet)
-  participant D as DispatcherServlet
-  participant I as HandlerInterceptor
-  participant C as Controller
-  F->>D: petición HTTP
-  D->>I: preHandle
-  alt preHandle retorna true
-    I->>C: invoca el handler
-    C-->>I: retorna
-    I->>I: postHandle
-    I->>I: afterCompletion
-  else preHandle retorna false
-    I->>D: respuesta ya configurada (ej. 403)
-    Note over I: postHandle y afterCompletion NUNCA se ejecutan para este interceptor
-  end
-  D-->>F: respuesta HTTP
+flowchart LR
+  A["GET /api/tareas?page=0&size=2"] --> B["PageRequest + orden por ID"]
+  B --> C["SELECT limitado en base de datos"]
+  C --> D["items + total + hasNext"]
+  A -->|size fuera del rango| E["400 + VALIDACION"]
 ```
 
-#### Practica
+#### Subtema 6.1: Devuelve una página desde JPA · 15 min
 
-**Demo paso a paso.** Desde una carpeta vacía, genera el proyecto:
+**1. Contexto**
 
-```bash
-mkdir interceptor-demo && cd interceptor-demo
-curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web -d javaVersion=27 -o app.zip
-unzip -q app.zip
-```
+TareaRepository hereda findAll(Pageable) de JpaRepository. Con eso, la base de datos selecciona las filas de la página; no cargues toda la tabla y la cortes en Java.
 
-Crea `src/main/java/com/academia/interceptor/TiempoRespuestaInterceptor.java`:
+**2. Hazlo tú**
+
+Crea src/main/java/com/example/demo/PaginaTareasDTO.java:
 
 ```java
-package com.academia.interceptor;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.ModelAndView;
+package com.example.demo;
 
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import org.springframework.data.domain.Page;
 
-@Component
-public class TiempoRespuestaInterceptor implements HandlerInterceptor {
-    private final List<String> eventos = new CopyOnWriteArrayList<>();
-
-    @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        eventos.add("preHandle");
-        if ("/bloqueado".equals(request.getRequestURI())) {
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            return false; // corta la cadena: el controller NUNCA se ejecuta
-        }
-        return true;
+public record PaginaTareasDTO(
+        List<TareaDTO> items,
+        int page,
+        int size,
+        long totalElements,
+        int totalPages,
+        boolean hasNext) {
+    public static PaginaTareasDTO from(Page<TareaDTO> resultado) {
+        return new PaginaTareasDTO(
+                resultado.getContent(),
+                resultado.getNumber(),
+                resultado.getSize(),
+                resultado.getTotalElements(),
+                resultado.getTotalPages(),
+                resultado.hasNext());
     }
-
-    @Override
-    public void postHandle(HttpServletRequest request, HttpServletResponse response,
-                            Object handler, ModelAndView modelAndView) {
-        eventos.add("postHandle");
-    }
-
-    @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response,
-                                 Object handler, Exception ex) {
-        eventos.add("afterCompletion");
-    }
-
-    public List<String> getEventos() { return eventos; }
-    public void limpiar() { eventos.clear(); }
 }
 ```
 
-Crea `src/main/java/com/academia/interceptor/WebConfig.java`:
+Añade este método a src/main/java/com/example/demo/ServicioTareas.java:
 
 ```java
-package com.academia.interceptor;
-
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
-@Configuration
-public class WebConfig implements WebMvcConfigurer {
-    private final TiempoRespuestaInterceptor interceptor;
-
-    public WebConfig(TiempoRespuestaInterceptor interceptor) { this.interceptor = interceptor; }
-
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(interceptor);
-    }
+public Page<TareaDTO> listar(int page, int size) {
+    var pageable = PageRequest.of(
+            page, size, Sort.by(Sort.Direction.ASC, "id"));
+    return repository.findAll(pageable).map(mapper::toDto);
 }
 ```
 
-Crea `src/main/java/com/academia/interceptor/SaludoController.java`:
+Importa Page, PageRequest y Sort desde org.springframework.data.domain.
+
+En `src/main/java/com/example/demo/TareaController.java`, importa `Page` y `org.springframework.web.bind.annotation.RequestParam`, y agrega este método:
 
 ```java
-package com.academia.interceptor;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-@RestController
-public class SaludoController {
-    @GetMapping("/saludo")
-    public String saludo() { return "hola"; }
-
-    @GetMapping("/bloqueado")
-    public String bloqueado() { return "nunca deberías ver esto"; }
+@GetMapping
+@Operation(summary = "Listar tareas por página")
+@ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Página de tareas"),
+        @ApiResponse(responseCode = "400", description = "Parámetros inválidos",
+                content = @Content(schema = @Schema(implementation = ApiError.class)))})
+public ResponseEntity<PaginaTareasDTO> listar(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "20") int size) {
+    Page<TareaDTO> resultado = servicio.listar(page, size);
+    return ResponseEntity.ok(PaginaTareasDTO.from(resultado));
 }
 ```
 
-Agrega la dependencia real de testing (Spring Boot 4 requiere `spring-boot-webmvc-test` explícito para `@AutoConfigureMockMvc`) y crea el test en `src/test/java/com/academia/interceptor/TiempoRespuestaInterceptorTest.java`:
-
-```xml
-<!-- dentro de <dependencies> del pom.xml -->
-<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-webmvc-test</artifactId>
-    <scope>test</scope>
-</dependency>
-```
-
-```java
-package com.academia.interceptor;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.test.web.servlet.MockMvc;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-@SpringBootTest
-@AutoConfigureMockMvc
-class TiempoRespuestaInterceptorTest {
-
-    @Autowired
-    private MockMvc mockMvc;
-    @Autowired
-    private TiempoRespuestaInterceptor interceptor;
-
-    @BeforeEach
-    void limpiar() { interceptor.limpiar(); }
-
-    @Test
-    void peticionPermitidaDisparaLosTresMetodosEnOrden() throws Exception {
-        mockMvc.perform(get("/saludo")).andExpect(status().isOk());
-
-        assertThat(interceptor.getEventos()).containsExactly("preHandle", "postHandle", "afterCompletion");
-    }
-
-    @Test
-    void preHandleFalseCortaLaCadenaYElControllerNuncaSeEjecuta() throws Exception {
-        mockMvc.perform(get("/bloqueado")).andExpect(status().isForbidden());
-
-        // postHandle NUNCA se ejecuta porque preHandle devolvió false;
-        // afterCompletion TAMPOCO se ejecuta para ESTE interceptor en ese caso
-        assertThat(interceptor.getEventos()).containsExactly("preHandle");
-    }
-}
-```
+Desde la carpeta del proyecto ejecuta:
 
 ```bash
 ./mvnw test
 ```
 
-**Resultado esperado:** `Tests run: 2, Failures: 0, Errors: 0` (verificado con Spring Boot 4.1.1 / Spring Framework 7.0.9 sobre JDK 27.0.1): el primer test confirma la secuencia completa `["preHandle", "postHandle", "afterCompletion"]` para `/saludo`; el segundo confirma que `/bloqueado` solo registra `["preHandle"]`, nunca llegando al controller ni a `postHandle`/`afterCompletion`.
-
-**Fallo deliberado:** cambia la aserción del segundo test a `containsExactly("preHandle", "afterCompletion")` (asumiendo que `afterCompletion` SÍ se ejecuta como una garantía tipo `finally`) y ejecuta de nuevo. El test FALLA porque la lista real solo contiene `["preHandle"]`. Diagnostica confirmando que `afterCompletion`, pese a su nombre que sugiere "siempre al completar", documentadamente solo se invoca si el `preHandle` del MISMO interceptor retornó `true` — no es una garantía incondicional de limpieza para el interceptor que bloqueó la petición. Restaura la aserción original antes de continuar.
-
-**Ejercicios.**
-
-1. Agrega un segundo `HandlerInterceptor` registrado DESPUÉS del primero en `addInterceptors`, y confirma con un test el orden relativo de ejecución de ambos `preHandle` (en el orden de registro) frente al orden de ambos `afterCompletion` (inverso al de registro).
-2. Lanza una excepción deliberada dentro del controller de `/saludo` y confirma con un test que `afterCompletion` SÍ se ejecuta (recibe la excepción como parámetro `ex`), a diferencia del caso de `preHandle` devolviendo `false`.
-3. Usa el parámetro `handler` de `preHandle` (cástalo a `HandlerMethod`) para leer el nombre del método del controller que atenderá la petición, y documenta por qué un `Filter` no podría hacer esto.
-4. Escribe de memoria (sin mirar) un `HandlerInterceptor` con sus tres métodos, su registro vía `WebMvcConfigurer`, y un test que confirme que `preHandle=false` corta la cadena sin disparar `afterCompletion`. Compara después contra el patrón del Paso 4.
-
-**Pista:** si tu lógica de limpieza en `afterCompletion` parece no ejecutarse en el camino de rechazo, verifica primero si fue TU PROPIO `preHandle` el que devolvió `false` — en ese caso, es el comportamiento documentado, no un bug.
-
-**Completa el código:** rellena el método que se ejecuta DESPUÉS del controller pero ANTES de completar la respuesta:
-
-```java
-@Override
-public void ____(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView mav) { }
-```
-
-**Reto de memoria:** cierra este documento y escribe, solo de memoria, un `HandlerInterceptor` que bloquee una ruta específica devolviendo `false` desde `preHandle`, y un test que confirme que ni el controller ni `afterCompletion` se ejecutaron para esa ruta.
-
-#### Aplica
-
-**Reto abierto.** Implementa un `HandlerInterceptor` para RutaFlow que mida el tiempo de cada petición (diferencia entre `preHandle` y `afterCompletion`) y lo registre solo para peticiones que tardaron más de un umbral configurable, sin bloquear ninguna petición. Contrasta por escrito esta solución con una alternativa basada en `Filter`, explicando qué información del `handler` específico se perdería si se implementara como `Filter` en vez de `HandlerInterceptor`.
-
-**Checklist de salida.**
-
-- [ ] Los tres métodos (`preHandle`/`postHandle`/`afterCompletion`) están implementados y registrados vía `WebMvcConfigurer`.
-- [ ] Un test confirma la secuencia completa para una petición permitida.
-- [ ] Un test confirma que `preHandle=false` impide que el controller, `postHandle` Y `afterCompletion` se ejecuten para ese interceptor.
-- [ ] Podés explicar con precisión la diferencia entre lo que conoce un `Filter` y lo que conoce un `HandlerInterceptor`.
-- [ ] Podés explicar por qué `@ControllerAdvice` no es un sustituto de `HandlerInterceptor` para lógica previa al controller.
-
-**Si falla.** Si el interceptor parece no activarse nunca, confirma que esté registrado en `WebMvcConfigurer.addInterceptors` (ser `@Component` no es suficiente). Si `afterCompletion` no aparece donde se esperaba, confirma si `preHandle` de ese mismo interceptor retornó `false` en ese camino.
-
-**Siguiente paso:** el Tema 8 de este módulo cierra la capa web con negociación de contenido real.
-
-**Errores comunes:** asumir que `afterCompletion` es una garantía tipo `finally` incondicional, cuando documentadamente depende de que `preHandle` haya retornado `true`; usar un `Filter` cuando la lógica necesita el `handler` resuelto; usar `@ControllerAdvice` para intentar bloquear una petición antes de que el controller se ejecute.
-
-**Límites y decisión de uso:** para preocupaciones completamente independientes de Spring MVC (CORS genérico, compresión, logging de bajo nivel de toda petición HTTP sin importar si Spring la resuelve), un `Filter` es más apropiado que un `HandlerInterceptor`, que solo se activa dentro del pipeline de Spring MVC.
-
-**Fuente oficial:** [Spring MVC — Interceptors](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-config/interceptors.html).
-
-**Transferencia al proyecto integrador:** el `HandlerInterceptor` de medición de este tema es el que instrumentará el tiempo de respuesta del microservicio productivo (Módulo 12).
-
-### Tema 8: Negociación de contenido con HttpMessageConverters · Avanzado · 35 min
-
-**Prerrequisito:** Tema 1 de este módulo (DTOs).
-
-**Al terminar podrás:** exponer el mismo endpoint en JSON y XML según la cabecera `Accept` del cliente, confirmar con tests reales ambas representaciones, y diagnosticar un `406 Not Acceptable` cuando el cliente pide un formato que ningún `HttpMessageConverter` registrado soporta.
-
-#### Aprende
-
-**¿Por qué es importante?** Un consumidor externo de la API (un sistema legado que solo habla XML, por ejemplo) no debería forzar que toda la API se reescriba para un formato distinto; la negociación de contenido permite que el MISMO endpoint, con el MISMO código, sirva JSON a unos clientes y XML a otros según lo que cada cliente declare aceptar.
-
-**Mapa de subtemas críticos**
-
-| Subtema | Papel | Evidencia |
-|---|---|---|
-| `produces` declara los formatos soportados | Prerrequisito | `@GetMapping(produces = {APPLICATION_JSON_VALUE, APPLICATION_XML_VALUE})` |
-| `HttpMessageConverter` serializa según `Accept` | Núcleo | el header `Accept: application/xml` produce una respuesta `Content-Type: application/xml` real |
-| Un converter adicional en el classpath se registra solo | Núcleo | agregar `jackson-dataformat-xml` basta para que XML funcione, sin configuración manual |
-| `Accept` no soportado produce 406 | Diagnóstico | pedir `application/pdf` (sin converter registrado) responde `406 Not Acceptable` |
-| Mismo objeto, misma lógica, distinta representación | Variante | el DTO y el controller NO cambian entre ambos formatos; solo cambia qué converter actúa |
-| Cuándo múltiples formatos no se justifican | Decisión | una API interna con un único consumidor conocido no necesita negociar nada |
-
-Cada fila tiene su explicación individual a continuación.
-
-**`produces` declara los formatos soportados (prerrequisito).** `@GetMapping(value = "/tarifas/BO-004512", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})` declara explícitamente qué tipos de contenido este endpoint puede producir. Es el prerrequisito: sin declarar `produces`, Spring MVC no sabría qué formatos ofrecer al negociar con el cliente.
-
-**`HttpMessageConverter` serializa según `Accept` (núcleo).** Spring MVC mantiene una lista de `HttpMessageConverter` registrados (uno por formato: JSON, XML, texto plano, entre otros); al recibir una petición, compara el header `Accept` del cliente contra los `produces` del método y los converters disponibles, y delega la serialización al converter cuyo tipo coincide. El test confirma esto literalmente: `Accept: application/json` produce un `Content-Type: application/json` con el cuerpo JSON; `Accept: application/xml` produce `Content-Type: application/xml` con el mismo objeto serializado como XML.
-
-**Un converter adicional en el classpath se registra solo (núcleo).** Agregar la dependencia `jackson-dataformat-xml` es SUFICIENTE para que Spring Boot autoconfigure un `HttpMessageConverter` capaz de XML, sin ningún `@Bean` manual ni configuración adicional — el mismo patrón de autoconfiguración condicional por classpath que ya se vio en el Módulo 1 (Tema 4), aplicado aquí a converters en vez de a toda una auto-configuración.
-
-**`Accept` no soportado produce 406 (diagnóstico).** El fallo deliberado de este tema pide el endpoint con `Accept: application/pdf`, un formato para el que no hay ningún `HttpMessageConverter` registrado ni declarado en `produces`. La respuesta real es `406 Not Acceptable` (confirmado en el log real: `HttpMediaTypeNotAcceptableException: No acceptable representation`), la señal HTTP estándar de que el servidor no puede satisfacer lo que el cliente dice aceptar.
-
-**Mismo objeto, misma lógica, distinta representación (variante).** El `TarifaDto` y el método del controller son EXACTAMENTE el mismo código para ambos formatos; la diferencia entre la respuesta JSON y XML ocurre enteramente en la capa de serialización (el `HttpMessageConverter` elegido), nunca en la lógica de negocio ni en el controller. Esta separación es lo que hace posible agregar un formato nuevo sin tocar ninguna línea de lógica existente.
-
-**Cuándo múltiples formatos no se justifican (decisión).** Para una API interna con un único consumidor conocido (un frontend propio que siempre habla JSON), declarar soporte para XML u otros formatos agrega una dependencia y una superficie de prueba sin ningún consumidor real que la necesite. La negociación de contenido se justifica cuando existen múltiples consumidores externos con necesidades de formato genuinamente distintas.
-
-**Conceptos clave:** `HttpMessageConverter`, negociación de contenido, header `Accept`, `406 Not Acceptable`.
-
-`produces` en `@GetMapping` declara los formatos que un endpoint puede servir; Spring MVC elige el `HttpMessageConverter` adecuado comparando el header `Accept` del cliente contra esos formatos declarados y los converters realmente registrados. Agregar un converter nuevo al classpath (como `jackson-dataformat-xml` para XML) es suficiente para habilitar un formato adicional, sin cambiar el controller ni el DTO. Si el cliente pide un formato que ningún converter soporta, la respuesta es `406 Not Acceptable`.
-
-**Analogía:** un mismo documento legal traducido simultáneamente a varios idiomas por traductores especializados distintos es como `HttpMessageConverter`: el contenido (el DTO) es el mismo, pero cada traductor (converter) produce la representación en su idioma (formato) específico según lo que el lector (cliente) declaró entender.
-
-**Diagrama:**
-
-```text
-Cliente: Accept: application/xml
-         │
-         ▼
-┌─ Spring MVC compara Accept vs produces ──────┐
-│  JSON converter   -> no coincide             │
-│  XML converter    -> coincide -> se usa      │
-└────────────────────────────────────────────────┘
-         │
-         ▼
-Respuesta: Content-Type: application/xml
-```
-
-#### Practica
-
-**Demo paso a paso.** Desde una carpeta vacía, genera el proyecto y agrega el converter de XML:
+Inicia la aplicación y crea tres tareas distintas con el POST del Tema 1. Después pide dos páginas:
 
 ```bash
-mkdir content-negotiation-demo && cd content-negotiation-demo
-curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web -d javaVersion=27 -o app.zip
-unzip -q app.zip
+curl -i 'http://localhost:8080/api/tareas?page=0&size=2'
+curl -i 'http://localhost:8080/api/tareas?page=1&size=2'
 ```
 
-```xml
-<!-- dentro de <dependencies> del pom.xml -->
-<dependency>
-    <groupId>com.fasterxml.jackson.dataformat</groupId>
-    <artifactId>jackson-dataformat-xml</artifactId>
-</dependency>
-```
+**Resultado esperado:** la primera respuesta incluye dos tareas, page: 0, size: 2 y hasNext: true; la segunda contiene la siguiente tarea y hasNext: false. Ambas incluyen el total. Las páginas ordenan por id ascendente.
 
-Crea `src/main/java/com/academia/negotiation/TarifaDto.java` y `TarifaController.java`:
+**Fallo deliberado:** quita Sort.by(Sort.Direction.ASC, "id") y repite ambas peticiones. **Diagnóstico:** una consulta sin orden no garantiza el mismo orden entre peticiones; restaura el desempate por id.
+
+**3. Entiende**
+
+PageRequest convierte página, tamaño y orden en un Pageable. repository.findAll(pageable) pide una página al repositorio y Page.map convierte cada entidad en DTO. La respuesta propia evita exponer directamente la forma interna de Page.
+
+**4. Cierra**
+
+Guarda los dos cuerpos JSON y comprueba que sus items no se repiten. Anota qué campo indica si el servidor tiene otra página.
+
+#### Subtema 6.2: Rechaza tamaños fuera del contrato · 15 min
+
+**1. Contexto**
+
+Una página de un millón de filas puede consumir memoria y ancho de banda. Define un tamaño entre 1 y 50 y permite índices de página entre 0 y 1000, ambos incluidos, con paginación por offset.
+
+**2. Hazlo tú**
+
+En el método listar de src/main/java/com/example/demo/TareaController.java, añade las restricciones del framework a los parámetros:
 
 ```java
-package com.academia.negotiation;
-
-public record TarifaDto(String id, int monto) {
+public ResponseEntity<PaginaTareasDTO> listar(
+        @RequestParam(defaultValue = "0") @Min(0) @Max(1000) int page,
+        @RequestParam(defaultValue = "20") @Min(1) @Max(50) int size) {
+    Page<TareaDTO> resultado = servicio.listar(page, size);
+    return ResponseEntity.ok(PaginaTareasDTO.from(resultado));
 }
 ```
 
+Importa jakarta.validation.constraints.Min y Max. No agregues @Validated a la clase: Spring MVC valida directamente los parámetros de controller. En src/main/java/com/example/demo/GlobalExceptionHandler.java, importa org.springframework.web.method.annotation.HandlerMethodValidationException y añade este handler:
+
 ```java
-package com.academia.negotiation;
-
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-@RestController
-public class TarifaController {
-    @GetMapping(value = "/tarifas/BO-004512", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public TarifaDto obtener() {
-        return new TarifaDto("BO-004512", 15000);
-    }
+@ExceptionHandler(HandlerMethodValidationException.class)
+public ResponseEntity<ApiError> manejarParametroInvalido(
+        HandlerMethodValidationException ex) {
+    ApiError cuerpo = new ApiError(
+            "VALIDACION",
+            "Usa page entre 0 y 1000, y size entre 1 y 50.",
+            Map.of());
+    return ResponseEntity.badRequest().body(cuerpo);
 }
 ```
 
-Agrega la dependencia real de testing (`spring-boot-webmvc-test`, ver Tema 7) y crea el test en `src/test/java/com/academia/negotiation/ContentNegotiationTest.java`:
-
-```java
-package com.academia.negotiation;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-@SpringBootTest
-@AutoConfigureMockMvc
-class ContentNegotiationTest {
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Test
-    void aceptarJsonDevuelveJson() throws Exception {
-        mockMvc.perform(get("/tarifas/BO-004512").accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().json("{\"id\":\"BO-004512\",\"monto\":15000}"));
-    }
-
-    @Test
-    void aceptarXmlDevuelveXml() throws Exception {
-        mockMvc.perform(get("/tarifas/BO-004512").accept(MediaType.APPLICATION_XML))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_XML))
-                .andExpect(content().string(org.hamcrest.Matchers.containsString("<TarifaDto>")));
-    }
-
-    @Test
-    void aceptarTipoNoSoportadoDevuelve406() throws Exception {
-        mockMvc.perform(get("/tarifas/BO-004512").accept(MediaType.APPLICATION_PDF))
-                .andExpect(status().isNotAcceptable());
-    }
-}
-```
+Ejecuta ./mvnw test y prueba:
 
 ```bash
-./mvnw test
+curl -i 'http://localhost:8080/api/tareas?page=0&size=2'
+curl -i 'http://localhost:8080/api/tareas?size=0'
+curl -i 'http://localhost:8080/api/tareas?size=51'
 ```
 
-**Resultado esperado:** `Tests run: 3, Failures: 0, Errors: 0` (verificado con Spring Boot 4.1.1 / Spring Framework 7.0.9 / jackson-dataformat-xml 2.21.5 sobre JDK 27.0.1): `Accept: application/json` produce JSON real, `Accept: application/xml` produce XML real con el elemento `<TarifaDto>`, y `Accept: application/pdf` produce `406 Not Acceptable` (confirmado en el log real: `HttpMediaTypeNotAcceptableException: No acceptable representation`).
+**Resultado esperado:** tamaño 2 responde 200; 0 y 51 responden 400 con codigo: VALIDACION. El método del controller no recibe los parámetros inválidos. El límite `page=1000` es inclusivo: con página inicial cero permite 1001 índices; se rechaza `page=1001`.
 
-**Fallo deliberado:** quita `jackson-dataformat-xml` del `pom.xml` (dejando solo el starter `web`) y ejecuta de nuevo el test de XML. FALLA: sin ese converter en el classpath, Spring Boot no tiene ningún `HttpMessageConverter` capaz de producir `application/xml`, así que la petición con `Accept: application/xml` ahora también responde `406 Not Acceptable`, aunque el método siga declarando `produces` con ese tipo. Diagnostica confirmando que `produces` declara una INTENCIÓN, pero el converter real debe existir en el classpath para que esa intención se cumpla. Restaura la dependencia antes de continuar.
-
-**Ejercicios.**
-
-1. Agrega un tercer formato (texto plano, `MediaType.TEXT_PLAIN_VALUE`) con un método que devuelva un `String` directamente, y confirma con un test que `Accept: text/plain` lo produce correctamente.
-2. Declara `produces` solo con JSON (quita XML de la lista) sin quitar la dependencia de XML del classpath, y confirma con un test que `Accept: application/xml` ahora responde `406` — el converter está disponible, pero el método no lo ofrece.
-3. Investiga (sin necesidad de implementarlo) qué controla `spring.mvc.contentnegotiation.favor-parameter` y documenta un escenario donde negociar por parámetro de query (`?format=xml`) en vez de por header `Accept` sería preferible.
-4. Escribe de memoria (sin mirar) un endpoint con `produces` para dos formatos, y tres tests que confirmen cada formato soportado más el caso `406`. Compara después contra el patrón del Paso 4.
-
-**Pista:** si un formato declarado en `produces` responde `406` de todas formas, la causa casi siempre es que el converter correspondiente no está en el classpath (como `jackson-dataformat-xml` para XML), no un error en la anotación.
-
-**Completa el código:** rellena el atributo que declara los formatos que un endpoint puede producir:
+En ContratoOpenApiTest.java, añade dos comprobaciones para que el contrato incluya la ruta y el error:
 
 ```java
-@GetMapping(value = "/tarifas/{id}", ____ = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+.contains("Listar tareas por página")
+.contains("Parámetros inválidos");
 ```
 
-**Reto de memoria:** cierra este documento y escribe, solo de memoria, un endpoint con `produces` para JSON y XML, y un test que confirme ambos formatos más el caso `406 Not Acceptable`.
+Ejecuta ./mvnw test y confirma que la prueba OpenAPI sigue pasando.
 
-#### Aplica
+**Fallo deliberado:** cambia @Min(0) de page a @Min(1) y pide page=0. **Diagnóstico:** la página inicial deja de estar permitida y responde 400; restaura @Min(0).
 
-**Reto abierto.** Para el panel de envíos de RutaFlow, diseña un endpoint que sirva el mismo recurso en JSON (para el frontend web) y XML (para un sistema de facturación externo que solo acepta XML). Demuestra con tests reales ambos formatos y el caso `406` para un tercer formato no soportado, y documenta por qué este endpoint específico sí justifica la negociación de contenido mientras otros endpoints internos de RutaFlow no la necesitarían.
+**3. Entiende**
 
-**Checklist de salida.**
+Spring MVC lanza HandlerMethodValidationException cuando falla la validación de parámetros del método. El handler devuelve el mismo formato ApiError que los errores del cuerpo. Un DTO de entrada y parámetros de query son dos puntos distintos de la API, aunque ambos tengan reglas.
 
-- [ ] El mismo endpoint sirve JSON y XML según el header `Accept`, sin duplicar lógica.
-- [ ] Un test confirma el `Content-Type` real de cada formato.
-- [ ] Un test confirma `406 Not Acceptable` para un formato no soportado.
-- [ ] Reprodujiste el caso donde `produces` declara un formato pero el converter real no está en el classpath.
-- [ ] Podés explicar por qué el DTO y el controller no cambian entre formatos.
+**4. Cierra**
 
-**Si falla.** Si un formato declarado en `produces` sigue respondiendo `406`, confirma que el converter correspondiente esté realmente en el classpath (`jackson-dataformat-xml` para XML). Si el XML no tiene la estructura esperada, confirma que el DTO sea serializable sin anotaciones adicionales (un `record` simple funciona por defecto).
+Registra los tres estados HTTP. Comprueba que OpenAPI incluye la ruta de lista; añade la descripción del error 400 si tu documento no la muestra.
 
-**Siguiente paso:** el Módulo 3 profundiza en la persistencia con Spring Data JPA.
+#### Subtema 6.3: Comprueba el límite y el costo del paginado · 10 min
 
-**Errores comunes:** asumir que declarar un formato en `produces` es suficiente sin verificar que el converter correspondiente esté en el classpath; duplicar lógica de negocio por formato en vez de dejar que los converters manejen la serialización.
+**1. Contexto**
 
-**Límites y decisión de uso:** para una API interna con un único consumidor conocido que siempre habla el mismo formato, agregar soporte multi-formato es una dependencia y una superficie de prueba sin beneficio real; se justifica con consumidores externos genuinamente distintos.
+El paginado reduce filas por respuesta, pero Page también calcula el total para devolver totalElements y totalPages. Esa cuenta puede costar en tablas grandes.
 
-**Fuente oficial:** [Spring MVC — Content Negotiation](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-config/content-negotiation.html).
+**2. Hazlo tú**
 
-**Transferencia al proyecto integrador:** si el microservicio productivo necesita servir a un consumidor externo con un formato distinto a JSON, este es el mecanismo que lo habilita sin duplicar el controller.
+Activa temporalmente el registro SQL en src/main/resources/application.yml:
 
-## Laboratorio práctico
+```yaml
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+```
 
-**Objetivo del laboratorio:** construir una API REST con validación de entrada y manejo centralizado de errores.
+Pide page=0&size=2 y observa la consulta SELECT con límite/offset y la consulta de recuento. La sintaxis exacta depende del motor. Desactiva el registro después para no llenar la consola en cada inicio.
 
-**Requisitos previos:** Módulos 0-1 completados.
+**Resultado esperado:** el repositorio pide una cantidad acotada de filas y el recuento de elementos. No se imprime primero toda la tabla para cortar la lista en memoria.
 
-| Paso | Acción | Código | Explicación |
-|---|---|---|---|
-| 1 | Crear GET/POST `/tareas` con DTOs | Ver Tema 1 | No expone la entidad directamente |
-| 2 | Agregar validación con `@Valid` | Ver Tema 2 | `@NotBlank`, `@Min` en el DTO |
-| 3 | Devolver `ResponseEntity` con códigos correctos | Ver Tema 2 | 201 al crear, 404 si no existe |
-| 4 | Crear un `@ControllerAdvice` con `@ExceptionHandler` | Ver Tema 3 | Captura una excepción de negocio, devuelve 400 |
-| 5 | Probar con curl un body inválido | — | Verifica el mensaje de error estructurado |
+**Fallo deliberado:** cambia el tamaño máximo de 50 a 5000 y vuelve a pedir size=51. **Diagnóstico:** la entrada ya no se rechaza, aunque el contrato promete el límite 50; restaura @Max(50) y ejecuta ./mvnw test.
 
-**Verificación:** el laboratorio se considera exitoso si ningún endpoint expone la entidad JPA directamente y si una entrada inválida produce `400` con un mensaje estructurado consistente, sin try/catch repetido en el controller.
+**3. Entiende**
 
-**Errores comunes y soluciones**
+Page es útil si la interfaz necesita total y número de páginas. Para una lista que solo necesita “hay más”, Slice puede evitar contar todas las filas. La paginación por offset puede desplazarse si se insertan datos entre solicitudes; en recorridos grandes o cambiantes, evalúa paginación por cursor.
 
-- **Exponer la entidad JPA directamente en la respuesta HTTP.** Usa siempre un DTO para el contrato de la API.
-- **Olvidar `@Valid` en el parámetro del controller.** Sin él, las anotaciones de Bean Validation no se verifican.
-- **Repetir try/catch en cada controller para el mismo tipo de error.** Centraliza ese manejo en un `@ControllerAdvice`.
+**4. Cierra**
 
-## Proyecto de cierre del módulo
+**Práctica independiente:** cambia el orden por titulo y id, prueba dos páginas y explica por qué un segundo campo único estabiliza empates.
 
-**Objetivo:** entregar una API de entregas con contrato explícito, validación, errores consistentes, mapeo generado, documentación verificable y paginación limitada.
+**Transferencia al proyecto integrador:** pagina el listado de envíos con límites explícitos, orden estable y DTO de respuesta; registra cuándo el total de resultados es necesario para la interfaz.
 
-**Entregables.**
-
-1. Proyecto `entregas-api` con endpoints de creación, consulta y listado de envíos.
-2. DTOs de entrada y salida separados de la entidad interna.
-3. Validación declarativa con al menos cuatro restricciones y pruebas de cada una.
-4. `@RestControllerAdvice` con un formato único de error para validación, recurso ausente y regla de negocio.
-5. MapStruct con `unmappedTargetPolicy = ERROR` y `toString` sin datos sensibles.
-6. Contrato OpenAPI publicado, `openapi.json` versionado y prueba de contrato.
-7. Paginación con límites validados, orden estable y `hasNext`.
-8. `README.md` con comandos `curl`, códigos esperados y decisiones de diseño.
-
-**Rúbrica (100 puntos).**
-
-| Criterio | Puntos |
-|---|---:|
-| Endpoints funcionales y DTOs sin entidades expuestas | 15 |
-| Validación efectiva y códigos HTTP correctos | 15 |
-| Formato de error único y sin fugas internas | 15 |
-| Mapeo con MapStruct en modo estricto y pruebas | 10 |
-| Contrato OpenAPI probado y versionado | 15 |
-| Paginación con límites, orden y pruebas de borde | 15 |
-| README reproducible con `curl` y diagnóstico de fallos | 10 |
-| Historial de commits legible y sin artefactos | 5 |
-
-**Criterio de aceptación:** si algún endpoint expone la entidad, si un body inválido devuelve `200` o si el contrato publicado no está cubierto por una prueba, el proyecto no se cierra aunque la rúbrica sume 100.
+**Fuentes primarias:** [Spring Data: repositorios y paginación](https://docs.spring.io/spring-data/commons/reference/repositories/core-concepts.html), [Spring Data: uso de Pageable y Page](https://docs.spring.io/spring-data/commons/reference/repositories/query-methods-details.html), [Spring MVC: validación de parámetros](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-validation.html).

@@ -26,10 +26,10 @@ RUN_COMMAND = re.compile(
     r"^(?:\s*(?:\$|>|#)\s*)?(?:[\w./-]+\s*&&\s*)*"
     r"(swiftc|kotlinc|npm|npx|pnpm|yarn|node|deno|bun|python3?|pip3?|java|javac|\./gradlew|gradle|mvn|\./mvnw"
     r"|flutter|dart|swift|xcodebuild|docker|docker-compose|kubectl|helm|terraform|tofu|ansible"
-    r"|aws|az|gcloud|curl|git|psql|pg_dump|sqlite3|cargo|dotnet|go|bash|sh|make|floci|ng|adb|pod|xcrun|ssh|scp|rsync|systemctl|journalctl|nginx|certbot|ufw|fail2ban-client|redis-cli|openssl|dig|restic|k6|wrk)\b",
+    r"|aws|az|gcloud|curl|git|psql|pg_dump|sqlite3|cargo|dotnet|go|bash|sh|make|floci|ng|adb|pod|xcrun|ssh|scp|rsync|systemctl|journalctl|nginx|certbot|ufw|fail2ban-client|redis-cli|openssl|dig|restic|k6|wrk|pwd|cd|mkdir|cat|echo|printf|ls|dir|Get-Location|Get-Content|Set-Content)\b",
     re.MULTILINE | re.IGNORECASE,
 )
-FILE_PATH = re.compile(r"(?:src/|lib/|app/|\.github/|[\w-]+\.(?:ts|tsx|js|java|kt|swift|dart|py|tf|ya?ml|json|html|css|sql|sh|properties|kts|conf|service|env|ini|toml|md|cs|csproj))")
+FILE_PATH = re.compile(r"(?:src/|lib/|app/|\.github/|[\w-]+\.(?:ts|tsx|js|mjs|cjs|java|kt|swift|dart|py|tf|ya?ml|json|html|css|sql|sh|properties|kts|conf|service|env|ini|toml|md|txt|cs|csproj))")
 PRACTICE_LEGACY = re.compile(r"(práctica|ejercicio|laboratorio|construcci[oó]n|predice|modifica)", re.IGNORECASE)
 CANONICAL_PRACTICA = re.compile(r"^####\s+Practica\s*$", re.MULTILINE | re.IGNORECASE)
 
@@ -235,7 +235,7 @@ def main() -> None:
     else:
         JSON_REPORT.write_text(json_text, encoding="utf-8"); MD_REPORT.write_text(md_text, encoding="utf-8")
     count = sum(row["topics"] for row in data["summary"].values())
-    if count == 0 or len(data["summary"]) != 15:
+    if count == 0 or len(data["summary"]) != 16:
         raise SystemExit(f"Inventario visible inválido: {count} temas en {len(data['summary'])} tracks")
     practicable = sum(row["practicable"] for row in data["summary"].values())
     generic = sum(row["genericScaffold"] for row in data["summary"].values())

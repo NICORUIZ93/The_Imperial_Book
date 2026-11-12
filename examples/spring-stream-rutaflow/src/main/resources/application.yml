@@ -1,0 +1,13 @@
+spring:
+  cloud:
+    function:
+      definition: planRoute
+    stream:
+      bindings:
+        planRoute-in-0:
+          destination: shipments.created
+          group: route-planner
+          content-type: application/json
+        planRoute-out-0:
+          destination: routes.requested
+          content-type: application/json

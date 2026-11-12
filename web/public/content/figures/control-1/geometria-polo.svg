@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" role="img" aria-label="Geometría de un polo complejo: sigma, omega d, omega n y theta" font-family="IBM Plex Sans, sans-serif" font-size="13.5"><rect x="0" y="0" width="640" height="300" fill="#ffffff"/>
+      <g stroke="#5b6579" stroke-width="1.3"><path d="M40 230H600"></path><path d="M500 20V280"></path></g>
+      <path d="M500 230L260 50" stroke="#2557c7" stroke-width="2.2"></path>
+      <path d="M260 50V230" stroke="#d9480f" stroke-width="1.6" stroke-dasharray="5 4"></path>
+      <path d="M260 230H500" stroke="#1f7a4d" stroke-width="3"></path>
+      <path d="M440 230A60 60 0 0 1 452 194" fill="none" stroke="#16213a" stroke-width="1.3"></path>
+      <g stroke="#d9480f" stroke-width="3"><path d="M251 41L269 59M251 59L269 41"></path></g>
+      <text x="270" y="40" fill="#d9480f" font-weight="600">−σ + jω_d</text>
+      <text x="380" y="252" text-anchor="middle" fill="#1f7a4d" font-weight="600">σ = ζ ωn</text>
+      <text x="250" y="145" text-anchor="end" fill="#d9480f" font-weight="600">ω_d = ωn √(1−ζ²)</text>
+      <text x="395" y="122" fill="#2557c7" font-weight="600">ωn</text>
+      <text x="430" y="212" text-anchor="end" fill="#16213a">θ</text>
+      <text x="40" y="282" fill="#5b6579">ζ = cos θ: a menor ángulo, más amortiguado</text>
+      <text x="594" y="222" text-anchor="end" fill="#5b6579">σ</text><text x="508" y="32" fill="#5b6579">jω</text>
+    </svg>

@@ -49,7 +49,7 @@ export class CourseCatalogComponent {
     { id: 'all', label: 'Todos los cursos' }, { id: 'base', label: 'Desde cero' },
     { id: 'web', label: 'Desarrollo web' }, { id: 'backend', label: 'Backend' },
     { id: 'mobile', label: 'Aplicaciones móviles' }, { id: 'platform', label: 'Cloud y DevOps' },
-    { id: 'project', label: 'Proyecto RutaFlow' },
+    { id: 'project', label: 'Proyecto RutaFlow' }, { id: 'engineering', label: 'Ingeniería' },
   ];
   readonly themeService = inject(ThemeService);
   readonly topicIndex = inject(TopicIndexService);
@@ -59,7 +59,7 @@ export class CourseCatalogComponent {
   constructor(private readonly progressService: ProgressService) {}
 
   readonly cards = computed<TrackCard[]>(() =>
-    [...TRACKS].sort((a, b) => ['foundations', 'javascript', 'java', 'angular', 'react', 'node', 'spring-boot', 'microservices', 'flutter', 'android', 'ios', 'kotlin-multiplatform', 'cloud', 'devops', 'rutaflow'].indexOf(a.id) - ['foundations', 'javascript', 'java', 'angular', 'react', 'node', 'spring-boot', 'microservices', 'flutter', 'android', 'ios', 'kotlin-multiplatform', 'cloud', 'devops', 'rutaflow'].indexOf(b.id)).map(track => ({
+    [...TRACKS].sort((a, b) => ['foundations', 'javascript', 'java', 'angular', 'react', 'node', 'spring-boot', 'microservices', 'flutter', 'android', 'ios', 'kotlin-multiplatform', 'cloud', 'devops', 'rutaflow', 'control-1'].indexOf(a.id) - ['foundations', 'javascript', 'java', 'angular', 'react', 'node', 'spring-boot', 'microservices', 'flutter', 'android', 'ios', 'kotlin-multiplatform', 'cloud', 'devops', 'rutaflow', 'control-1'].indexOf(b.id)).map(track => ({
       id: track.id,
       name: track.name,
       shortName: track.shortName,

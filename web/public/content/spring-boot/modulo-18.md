@@ -11,498 +11,194 @@ El resultado será una API Spring Boot que autentica requests con un proveedor O
 
 El rol permite entrar a una clase de operación; la comprobación de propiedad autoriza el objeto concreto. El caso aplicado no se considera listo solo porque el token tenga firma válida.
 
-### Tema 1: SecurityFilterChain y autorización · Avanzado · 1 h 30 min
+### Tema 1: SecurityFilterChain y autorización
 
-**Prerrequisito:** Módulo 17 de este track, JDK 27+ y Maven.
+**Meta:** crear reglas de acceso explícitas, convertir roles del JWT en authorities de Spring y comprobar que el rol general no sustituye la autorización sobre el pedido concreto.
 
-**Al terminar podrás:** proteger endpoints, distinguir 401 de 403 y probar reglas con MockMvc. Continúa el `SecurityFilterChain` del Módulo 4, Tema 1 con autorización por rol, `@PreAuthorize` y OAuth2 resource server.
+**¿Por qué es importante?** Una firma válida solo demuestra quién emitió el token. Todavía hay que decidir qué acción puede hacer la persona y sobre qué recurso.
 
-#### Aprende
+**Evidencia final:** pruebas HTTP para token ausente, token sin rol, escritura permitida y lectura de pedido propio frente a pedido ajeno.
 
-Un operador autenticado puede consultar envíos, pero solo un rol de administración puede cambiar reglas de tarifas. Autenticación y autorización son decisiones diferentes.
+#### Subtema 18.1 · Define qué rutas acepta el filtro · 8 min
 
-**¿Por qué es importante?** Una política explícita de denegación por defecto evita que un endpoint nuevo quede público por accidente.
+**Contexto:** cuando aparece un endpoint nuevo, no debe quedar accesible por accidente. El laboratorio da acceso solo a las rutas que nombra y niega las demás.
 
-**Mapa de subtemas críticos**
-
-| Subtema | Papel | Evidencia |
-|---|---|---|
-| Autenticación vs. autorización | Prerrequisito | 401 cuando falta/invalida la credencial; 403 cuando se autenticó pero no tiene permiso |
-| Declaración de `SecurityFilterChain` | Núcleo | El `@Bean` que encadena `authorizeHttpRequests(...)` y `.oauth2ResourceServer(...)` |
-| Orden y precedencia de `requestMatchers` | Núcleo | `/health` permitAll antes que `/api/admin/**` hasRole y `/api/**` authenticated |
-| Denegación por defecto `anyRequest().denyAll()` | Límite | El fallo deliberado cambia a `.anyRequest().permitAll()` y los tests de seguridad fallan |
-| Method security con `@PreAuthorize` | Variante | `@EnableMethodSecurity` + `@PreAuthorize("hasRole('ADMIN')")` en método de servicio |
-| Prefijo `ROLE_` y mapeo claim→authority | Error frecuente | Un usuario autenticado entra a la ruta admin si el prefijo no coincide |
-| Validación del token por el resource server | Decisión | Verifica emisor, firma, expiración y audiencia; no aceptar solo por decodificar el payload |
-| Autorización a nivel de objeto (propiedad) | Diagnóstico | `GET /api/envios/{id}` distingue propietario, otro usuario y operador de tenant |
-
-Cada fila tiene su explicación individual a continuación.
-
-**Autenticación vs. autorización (prerrequisito).** Autenticar responde quién eres y autorizar responde a qué puedes acceder; son decisiones separadas. Por eso el tema distingue 401, que indica que falta o no es válida la autenticación, de 403, que significa que te autenticaste pero no tienes permiso. Confundirlas lleva a diagnósticos equivocados, como tratar un problema de permisos como si fuera de credenciales.
-
-**Declaración de `SecurityFilterChain` (núcleo).** El `@Bean SecurityFilterChain api(HttpSecurity http)` declara cómo se procesa cada request: encadena `authorizeHttpRequests(...)` con las reglas y `oauth2ResourceServer(oauth -> oauth.jwt(...))` para validar el bearer token. Un token válido identifica claims y las reglas convierten esos claims en autoridades. Sin este bean no hay política explícita y la cadena por defecto no refleja las reglas del dominio.
-
-**Orden y precedencia de `requestMatchers` (núcleo).** Las reglas se evalúan en el orden declarado: `/health` como `permitAll`, `/api/admin/**` con `hasRole("ADMIN")`, `/api/**` como `authenticated` y el resto `denyAll`. Colocar una regla más general antes que una específica dejaría la específica inalcanzable. El orden mostrado va de la ruta pública a la más restringida y termina cerrando todo lo no declarado.
-
-**Denegación por defecto `anyRequest().denyAll()` (límite).** El `denyAll()` final garantiza que cualquier endpoint no contemplado quede cerrado en lugar de abierto. El fallo deliberado lo demuestra: al cambiarlo a `.anyRequest().permitAll()` los tests de seguridad fallan, y restaurar la denegación los vuelve a pasar. Este límite convierte un olvido de configuración en un error visible en vez de una fuga silenciosa.
-
-**Method security con `@PreAuthorize` (variante).** Además de proteger rutas en la cadena, `@EnableMethodSecurity` habilita anotar métodos de servicio con `@PreAuthorize("hasRole('ADMIN')")`. Es una variante de aplicar la política a nivel de método en lugar de solo por URL. El tema advierte no duplicar en controller y servicio reglas incompatibles, porque dos políticas que se contradicen producen comportamiento ambiguo.
-
-**Prefijo `ROLE_` y mapeo claim→authority (error frecuente).** `hasRole("ADMIN")` espera la autoridad `ROLE_ADMIN`; por eso el test fija `new SimpleGrantedAuthority("ROLE_ADMIN")`. Si un usuario autenticado entra a la ruta admin, el prefijo `ROLE_` o el mapeo del claim del issuer a la autoridad no coinciden. Igualmente, si `@PreAuthorize` se ignora, suele faltar `@EnableMethodSecurity` o el método se invoca desde el mismo bean sin pasar por el proxy.
-
-**Validación del token por el resource server (decisión).** Un JWT firmado no es necesariamente secreto y decodificar su payload no lo valida. El resource server verifica emisor, firma, expiración y audiencia según la configuración del `issuer-uri`, que aquí se inyecta por `OIDC_ISSUER_URI`. La decisión es nunca aceptar un token solo por poder leer su contenido y no guardar tokens reales en el repositorio.
-
-**Autorización a nivel de objeto (propiedad) (diagnóstico).** Un rol general permite entrar a una clase de operación, pero no autoriza automáticamente cualquier objeto. Por eso `GET /api/envios/{id}` debe comprobar además que el recurso pertenece al usuario o tenant, con tests que distingan propietario, otro usuario y operador. El diagnóstico está en el checklist: si dos usuarios del mismo rol ven envíos ajenos, falta la comprobación de propiedad pese a tener token válido.
-
-`SecurityFilterChain` declara cómo procesar requests. Un bearer token válido identifica claims; las reglas convierten claims en autoridades. 401 indica que falta o no es válida la autenticación; 403 significa que se autenticó, pero no tiene permiso.
-
-Un JWT firmado no es necesariamente secreto. El resource server verifica emisor, firma, expiración y audiencia según la configuración; nunca aceptes un token solo por decodificar su payload.
-
-**Analogía:** la `SecurityFilterChain` es el control de acceso de un edificio: una fila de puestos por los que pasa toda visita antes de entrar. La autenticación es el guardia que verifica quién eres; la autorización es la tarjeta que decide a qué pisos te deja subir el ascensor.
-
-#### Practica
-
-Genera una app con `web`, `security`, `oauth2-resource-server` y `validation`.
-
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/main/java/academia/seguridad/SeguridadConfig.java` con el contenido de este tema.
-
-```bash
-curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -o ejemplo.zip && unzip -o ejemplo.zip -d ejemplo
-```
-
-**Crea** el archivo `src/main/java/academia/seguridad/SeguridadConfig.java` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
-
-En `src/main/java/academia/seguridad/SeguridadConfig.java`:
+**Hazlo tú:** abre `examples/spring-security-keycloak-rutaflow/src/main/java/academia/rutaflow/security/ApiSecurity.java`. Observa las reglas:
 
 ```java
-@Configuration
-@EnableMethodSecurity
-public class SeguridadConfig {
-    @Bean
-    SecurityFilterChain api(HttpSecurity http) throws Exception {
-        return http
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/health").permitAll()
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                .requestMatchers("/api/**").authenticated()
-                .anyRequest().denyAll())
-            .oauth2ResourceServer(oauth -> oauth.jwt(Customizer.withDefaults()))
-            .build();
-    }
-}
+.requestMatchers(HttpMethod.POST, "/api/ubicaciones/**")
+    .hasAuthority("ROLE_location:write")
+.requestMatchers(HttpMethod.GET, "/api/pedidos/**").authenticated()
+.anyRequest().denyAll()
 ```
 
-**Ejecuta el ejemplo** (genera el proyecto con Spring Initializr, pega el código y corre las pruebas):
+Desde `examples/spring-security-keycloak-rutaflow`, ejecuta la prueba sin token:
 
 ```bash
-curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
-./mvnw test
-```
-Equivalencias Maven/Gradle en el Módulo 1.
-
-En `src/main/resources/application.yml`, configura `spring.security.oauth2.resourceserver.jwt.issuer-uri: ${OIDC_ISSUER_URI}`. Agrega `/api/envios` y `/api/admin/tarifas`; no guardes tokens reales en el repositorio. En un test con MockMvc puedes fijar authorities sin depender del issuer:
-
-```java
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-
-mockMvc.perform(get("/api/admin/tarifas")
-        .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))))
-    .andExpect(status().isOk());
+./mvnw -Dtest=ApiSecurityTest#sinBearerTokenRecibe401 test
 ```
 
-Prueba además `.with(jwt())` sin autoridad admin (403) y una petición sin `jwt()` (401). Ejecuta `./mvnw test`.
+**Resultado esperado:** `GET /api/pedidos/p-ana` devuelve 401 si no presentas bearer token.
 
-**Resultado esperado:** público 200; request sin credencial 401; usuario autenticado en ruta admin 403; autoridad necesaria 200. **Fallo deliberado:** cambia la regla general a `.anyRequest().permitAll()` y confirma que los tests de seguridad fallan; restaura denegación por defecto.
+**Fallo deliberado:** cambia temporalmente el patrón GET de `"/api/pedidos/**"` a `"/api/pedidos-falsos/**"` y ejecuta `./mvnw -Dtest=ApiSecurityTest#tokenSoloLeePedidosDeSuSubject test`. **Diagnóstico:** la ruta propia cae en `denyAll` y Ana recibe 403 en vez de 200. Restaura el patrón.
 
-Añade `@PreAuthorize` a una operación de negocio. Escribe pruebas para cada rol y revisa el mapeo claim→authority del issuer real. No dupliques en controller y servicio reglas incompatibles.
+**Entiende:** `SecurityFilterChain` hace pasar la petición por las reglas configuradas. `anyRequest().denyAll()` niega rutas que no se declararon; no agrega una ruta pública.
 
-**Pista:** anota con `@PreAuthorize("hasRole('ADMIN')")` un método de servicio y llámalo en un test con `jwt().authorities(new SimpleGrantedAuthority("ROLE_USER"))`; si el método se ejecuta igual, revisa que `@EnableMethodSecurity` esté presente en la configuración y que el prefijo de la autoridad coincida con el que realmente mapeas desde el claim del issuer.
+**Cierra:** di qué regla protege GET y qué regla niega una ruta no descrita.
 
-#### Aplica
+#### Subtema 18.2 · Traduce un rol del JWT a una autoridad · 8 min
 
-Protege `GET /api/envios/{id}` comprobando también que el recurso pertenece al usuario o tenant. Un rol general no autoriza automáticamente cualquier objeto. Diseña tests para owner, otro usuario y operador.
+**Contexto:** Keycloak pone los roles del realm dentro de `realm_access.roles`; Spring Security necesita saber cómo convertirlos a authorities para que `hasAuthority` pueda compararlos.
 
-**Checklist de salida.**
-
-- [ ] `/health` responde 200 sin credencial y `/api/**` responde 401 sin token.
-- [ ] Un JWT válido sin `ROLE_ADMIN` recibe 403 en `/api/admin/tarifas`.
-- [ ] `@EnableMethodSecurity` y `@PreAuthorize` protegen la operación de negocio y los tests por rol pasan.
-- [ ] `GET /api/envios/{id}` distingue propietario, otro usuario y operador de tenant.
-- [ ] La regla general es `denyAll()` y ningún endpoint nuevo queda público por accidente.
-- [ ] El issuer se configura por `OIDC_ISSUER_URI` y no hay tokens reales en el repositorio.
-
-**Si falla.** Si una petición sin credencial devuelve 403 en lugar de 401, el request no se autenticó: revisa que la prueba no adjunte `jwt()`. Si un usuario autenticado entra en la ruta admin, comprueba el prefijo `ROLE_` de la autoridad y el mapeo claim→authority. Si `@PreAuthorize` se ignora, falta `@EnableMethodSecurity` o el método se invoca desde el mismo bean sin pasar por el proxy.
-
-Entrega configuración, matriz de permisos y tests para 401/403/permitido como incremento del proyecto integrador de RutaFlow. **Cuándo no usarlo:** no deshabilites CSRF en una app que autentica con cookies solo porque es HTTP; en APIs stateless con bearer explícito la decisión es distinta. CORS no es autenticación.
-
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-
-**Errores comunes:** cambiar la regla general a `.anyRequest().permitAll()` "para probar más rápido" y olvidar restaurar la denegación por defecto, y duplicar la misma regla de autorización en `@PreAuthorize` del controller y en `SecurityFilterChain`, terminando con dos políticas que se contradicen.
-
-**Fuente oficial:** [documentación de Spring Boot](https://docs.spring.io/spring-boot/index.html).
-
-### Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP · Avanzado · 1 h 20 min
-
-**Prerrequisito:** Tema 1 de este módulo y el entorno del stack instalado (JDK 27+ y Maven).
-
-**Al terminar podrás:** rechazar datos inválidos antes de ejecutar lógica de negocio y configurar de forma deliberada los límites de una API.
-
-#### Aprende
-
-Una solicitud de envío contiene peso negativo y una dirección excesivamente larga. Si se persiste sin validar, el problema se propaga al cálculo y al proceso de entrega.
-
-**¿Por qué es importante?** Validar y limitar la entrada en el borde de la API reduce errores de dominio y superficie de ataque antes de tocar persistencia o servicios externos.
-
-**Mapa de subtemas críticos**
-
-| Subtema | Papel | Evidencia |
-|---|---|---|
-| Restricciones Bean Validation en el DTO | Prerrequisito | `@NotBlank @Size(max = 80)` en `referencia` y `@Positive` en `pesoKg` |
-| Activación con `@Valid` en el controlador | Núcleo | `@Valid @RequestBody CrearEnvioRequest`: válida 201, peso negativo 400 |
-| DTO como contrato HTTP estable | Variante | El `record CrearEnvioRequest` separa el contrato de las entidades internas |
-| CORS y su límite de alcance | Límite | CORS controla orígenes del navegador; no bloquea clientes no-browser |
-| CORS `*` con credenciales | Error frecuente | El navegador rechaza `*` combinado con credenciales |
-| Cliente HTTP y protección SSRF | Núcleo | El test hacia `169.254.169.254` debe bloquearse antes de abrir la conexión |
-| Reintentos por clase de error | Decisión | 4xx fallo funcional, 5xx transitorio, reintento solo en operación idempotente |
-| Cuerpo de error estable (Problem Details) | Diagnóstico | Si el cuerpo cambia entre pruebas, centralizar el formato de error |
-
-Cada fila tiene su explicación individual a continuación.
-
-**Restricciones Bean Validation en el DTO (prerrequisito).** `CrearEnvioRequest` declara las reglas con anotaciones: `@NotBlank @Size(max = 80)` sobre `referencia` y `@Positive` sobre `pesoKg`. Estas restricciones describen qué entrada es aceptable antes de que la lógica de negocio la toque. Son el prerrequisito de cualquier validación: sin ellas declaradas, `@Valid` no tiene qué evaluar.
-
-**Activación con `@Valid` en el controlador (núcleo).** Declarar las restricciones no basta; el controlador recibe `@Valid @RequestBody CrearEnvioRequest request` para que se evalúen en el borde. Una referencia válida responde 201 y un peso negativo responde 400 con cuerpo de error estable. El fallo deliberado lo confirma: al quitar `@Valid`, una entrada inválida alcanza al controlador o servicio, y restaurarlo recupera el 400.
-
-**DTO como contrato HTTP estable (variante).** El `record CrearEnvioRequest` actúa como contrato HTTP, separado de las entidades de persistencia. Esta variante protege el API de cambios internos de las entidades, de modo que modificar un modelo de dominio no rompa a los clientes. Mantener el DTO independiente evita acoplar el formato expuesto a la representación almacenada.
-
-**CORS y su límite de alcance (límite).** CORS controla qué orígenes web pueden leer respuestas desde un navegador, pero no bloquea clientes no-browser. Entender este límite evita tratar CORS como un control de autorización: un cliente que no es navegador ignora la política. CORS no es autenticación; delimita lectura cruzada de orígenes en el contexto del navegador.
-
-**CORS `*` con credenciales (error frecuente).** Un error típico es configurar CORS con origen `*` junto con credenciales habilitadas, combinación que el navegador rechaza y que además expondría la API a cualquier origen. El tema pide usar el origen exacto de desarrollo en lugar del comodín. Si el navegador rechaza CORS, se revisa que el origen sea exacto y que no se combine `*` con credenciales.
-
-**Cliente HTTP y protección SSRF (núcleo).** El `HttpClient` saliente necesita timeout, allowlist de hosts y protección SSRF, sin seguir redirecciones arbitrarias a destinos internos. La prueba apunta el cliente a `http://169.254.169.254/`: si la petición sale sin que la allowlist la rechace, el control de SSRF no está aplicado en el código. El destino debe bloquearse antes de abrir la conexión, no solo estar documentado como riesgo.
-
-**Reintentos por clase de error (decisión).** La decisión de reintentar depende de la clase de respuesta: los 4xx se tratan como fallo funcional y no se reintentan, los 5xx como potencialmente transitorios y solo se reintenta la operación idempotente. El tema advierte no agregar retry a escrituras sin idempotency key, porque repetir una operación no idempotente puede duplicar efectos. Así el reintento se limita a casos donde repetir es seguro.
-
-**Cuerpo de error estable (Problem Details) (diagnóstico).** Las respuestas de error deben usar un cuerpo estable con Problem Details, centralizado en lugar de un texto distinto por endpoint. El diagnóstico aparece cuando el cuerpo de error cambia entre pruebas: la señal es centralizar el formato de error. Un cuerpo consistente permite que los tests comprueben errores sin fijar textos ad hoc por ruta.
-
-Bean Validation declara restricciones de entrada (`@NotBlank`, `@Positive`, `@Size`) y `@Valid` activa su evaluación. DTOs protegen el contrato HTTP de cambios internos de las entidades. CORS controla qué orígenes web pueden leer respuestas desde un navegador; no bloquea clientes no-browser. CSRF importa cuando el navegador adjunta credenciales automáticamente, especialmente cookies.
-
-OAuth 2.0 y OIDC deben delegar emisión/rotación de credenciales a un proveedor confiable. `HttpClient` saliente necesita timeout, allowlist y protección SSRF; no sigas redirecciones arbitrarias a destinos internos.
-
-**Analogía:** validar el DTO es revisar el formulario de aduana antes de dejar pasar la mercancía; CORS es la lista de países desde los que se aceptan envíos; el JWT/OIDC es el pasaporte sellado que acredita al viajero; y el cliente HTTP es el mensajero que lleva y trae esos paquetes entre oficinas.
-
-#### Practica
-
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/main/java/academia/envios/CrearEnvioRequest.java` con el contenido de este tema.
+**Hazlo tú:** revisa `realmRoleAuthorities()` en `examples/spring-security-keycloak-rutaflow/src/main/java/academia/rutaflow/security/ApiSecurity.java`. Sigue el prefijo `ROLE_` y ejecuta la prueba:
 
 ```bash
-curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -o ejemplo.zip && unzip -o ejemplo.zip -d ejemplo
+./mvnw -Dtest=ApiSecurityTest#rolDeEscrituraPermiteGuardarUbicacion test
 ```
 
-En `src/main/java/academia/envios/CrearEnvioRequest.java`:
+**Resultado esperado:** el token de prueba de Ana incluye `location:write`, se convierte a `ROLE_location:write` y el POST devuelve 200.
 
-```java
-public record CrearEnvioRequest(
-    @NotBlank @Size(max = 80) String referencia,
-    @Positive BigDecimal pesoKg
-) {}
-```
+**Fallo deliberado:** cambia el prefijo `ROLE_` por `SCOPE_`. **Diagnóstico:** la authority ya no coincide con `hasAuthority("ROLE_location:write")` y el POST de Ana recibe 403. Restaura `ROLE_`.
 
-**Ejecuta el ejemplo** (genera el proyecto con Spring Initializr, pega el código y corre las pruebas):
+**Entiende:** `JwtAuthenticationConverter` convierte claims en permisos que consume Spring. Los nombres y prefijos deben coincidir exactamente entre conversor y regla.
+
+**Cierra:** escribe la transformación del claim hasta el texto que verifica `hasAuthority`.
+
+#### Subtema 18.3 · Distingue identidad de permiso · 8 min
+
+**Contexto:** una persona puede estar identificada correctamente y aun así no tener permiso para una acción.
+
+**Hazlo tú:** desde `examples/spring-security-keycloak-rutaflow`, compara los dos tests de `ApiSecurityTest.java`:
 
 ```bash
-curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
-./mvnw test
+./mvnw -Dtest=ApiSecurityTest#sinBearerTokenRecibe401+tokenSinRolDeEscrituraRecibe403 test
 ```
-Equivalencias Maven/Gradle en el Módulo 1.
 
-El controlador recibe `@Valid @RequestBody CrearEnvioRequest request`. Ejecuta `./mvnw test` con `MockMvc`: una referencia válida crea 201; peso negativo devuelve 400 con cuerpo de error estable. Configura CORS con origen exacto de desarrollo, no `*` combinado con credenciales.
+**Resultado esperado:** la petición sin token da 401; el token válido de Luis, que carece de `location:write`, da 403. Ana, con el rol correcto, puede pasar el filtro.
 
-**Resultado esperado:** los datos inválidos se rechazan antes de invocar el servicio. **Fallo deliberado:** quita `@Valid`; verifica que una entrada inválida alcanza al controlador/servicio. Restaura la validación y comprueba 400.
+**Fallo deliberado:** cambia `hasAuthority("ROLE_location:write")` por `hasAuthority("ROLE_admin")` y ejecuta `rolDeEscrituraPermiteGuardarUbicacion`. **Diagnóstico:** el token sí autentica a Ana, pero no contiene `ROLE_admin`, así que el test recibe 403. Restaura la regla.
 
-Implementa cliente HTTP de servicio a servicio con timeout y host allowlisted. Trata 4xx como fallo funcional, 5xx como potencialmente transitorio y reintenta solo operación idempotente. Añade una prueba de intento de acceder a `169.254.169.254`; debe ser bloqueado por política de red y aplicación.
+**Entiende:** 401 significa que la petición no tiene autenticación válida; 403 significa que se identificó al usuario y la política le negó la acción. No trates los dos resultados como sinónimos.
 
-**Pista:** apunta el cliente HTTP directamente a `http://169.254.169.254/` en el test y ejecútalo; si la petición sale sin que tu allowlist de hosts la rechace, el control de SSRF no está aplicado en el código del cliente — debe bloquear el destino antes de abrir la conexión, no solo estar documentado como riesgo.
+**Cierra:** explica cuál de las dos respuestas corresponde a token ausente y cuál a rol insuficiente.
 
-#### Aplica
+#### Subtema 18.4 · Autoriza el pedido que pertenece a la persona · 10 min
 
-Entrega una API con Problem Details para errores, validación de campos, límites de payload configurados y CORS específico. Escribe tabla con riesgo, control y prueba para token expirado, payload inválido, usuario ajeno, SSRF y repetición de request.
+**Contexto:** un rol puede permitir consultar pedidos, pero no revela si la persona puede consultar cualquier pedido. La propiedad del recurso es una comprobación separada.
 
-**Checklist de salida.**
+**Hazlo tú:** abre `examples/spring-security-keycloak-rutaflow/src/main/java/academia/rutaflow/security/RutaflowApiController.java` y sigue `jwt.getSubject()` hasta `PedidoOwnership.requireOwner`. Ejecuta:
 
-- [ ] `CrearEnvioRequest` usa `@NotBlank`, `@Size` y `@Positive`, y el controlador recibe `@Valid`.
-- [ ] Una referencia válida responde 201 y un peso negativo responde 400 con cuerpo de error estable.
-- [ ] CORS usa el origen exacto de desarrollo y no combina `*` con credenciales.
-- [ ] El cliente HTTP aplica timeout, allowlist y bloquea `169.254.169.254` antes de abrir la conexión.
-- [ ] Los 4xx se tratan como fallo funcional, los 5xx como transitorios y solo se reintenta lo idempotente.
-- [ ] La entrega incluye la tabla riesgo-control-prueba para token expirado, payload inválido, usuario ajeno, SSRF y repetición.
+```bash
+./mvnw -Dtest=ApiSecurityTest#tokenSoloLeePedidosDeSuSubject test
+```
 
-**Si falla.** Si una entrada inválida alcanza el servicio, falta `@Valid` en el parámetro del controlador. Si el cuerpo de error cambia entre pruebas, centraliza el formato de error en vez de fijar un texto distinto por endpoint. Si el test hacia `169.254.169.254` completa la conexión, la allowlist no se aplica en el cliente: bloquéala antes de abrir la conexión. Si el navegador rechaza CORS, revisa que el origen sea exacto y que no combines `*` con credenciales.
+**Resultado esperado:** Ana recibe 200 para `p-ana` y 403 para `p-luis`; ambos pedidos requieren una identidad válida.
 
-En el proyecto integrador de RutaFlow, estos controles protegen creación de envíos y llamadas a proveedores de geocodificación. **Cuándo no usarlo:** no agregues retry a escrituras sin idempotency key; no uses validación de URL basada solo en regex.
+**Fallo deliberado:** comenta `pedidoOwnership.requireOwner(jwt.getSubject(), id)`. **Diagnóstico:** la prueba deja de recibir 403 al solicitar el pedido ajeno. Restaura la verificación de propietario.
 
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+**Entiende:** el filtro decide si la identidad puede entrar a la operación; el servicio de dominio decide si esa identidad puede ver ese pedido específico. Un rol general no reemplaza esa comprobación.
 
-**Errores comunes:** quitar `@Valid` del parámetro del controlador "para simplificar" y dejar que una entrada inválida llegue al servicio, y configurar CORS con origen `*` junto con credenciales habilitadas, algo que el navegador rechaza y que además expondría la API a cualquier origen.
+**Cierra:** en el proyecto integrador de RutaFlow, prueba dueño, otra persona y recurso inexistente. Anota qué autoridad permite entrar y qué dato del dominio demuestra la propiedad.
 
-**Fuente oficial:** [documentación de Spring Boot](https://docs.spring.io/spring-boot/index.html).
+Las pruebas anteriores usan un `JwtDecoder` simulado: comprueban reglas y ownership, no la firma ni la expiración del token. Para probar el issuer real, el laboratorio incluye Keycloak y su realm local; sigue `examples/spring-security-keycloak-rutaflow/README.md` y ejecuta el recorrido con Docker.
 
-### Tema 3: Levantar tu propio OAuth2 Authorization Server · Experto · 50 min
+**Fuentes primarias:** [Spring Security: autorización de peticiones HTTP](https://docs.spring.io/spring-security/reference/servlet/authorization/authorize-http-requests.html); [Spring Security: Resource Server JWT](https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html).
+### Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP
 
-**Prerrequisito:** Módulo 10 Tema 4 de este track (OAuth2 resource server/client con Keycloak).
+**Meta:** validar datos antes de guardar, limitar qué páginas web leen la API, confiar en un emisor OIDC identificado y filtrar destinos de llamadas HTTP salientes.
 
-**Al terminar podrás:** levantar un `OAuth2AuthorizationServerConfigurer` propio con un cliente `client_credentials` registrado en memoria, y confirmar con una petición real al endpoint `/oauth2/token` que el servidor emite un JWT real, firmado con una clave RSA generada al arrancar.
+**¿Por qué es importante?** Cada frontera recibe datos o identidad de otra parte. Revisar solo el JWT no valida el cuerpo, CORS no autentica, y una llamada saliente también puede alcanzar servicios internos si sigue una URL sin control.
 
-#### Aprende
-
-**¿Por qué es importante?** El Módulo 10 Tema 4 consumió identidad de un proveedor EXTERNO (Keycloak); este tema resuelve el caso inverso: un sistema propio (RutaFlow, por ejemplo) que necesita emitir sus propios tokens para que servicios internos (un worker de facturación, un job batch) se autentiquen entre sí sin un usuario humano de por medio, sin depender de un proveedor de identidad externo.
-
-**Mapa de subtemas críticos**
-
-| Subtema | Papel | Evidencia |
-|---|---|---|
-| `OAuth2AuthorizationServerConfigurer` real | Núcleo | se instancia directamente (`new OAuth2AuthorizationServerConfigurer()`), no vía un método factory estático |
-| `RegisteredClientRepository` en memoria | Prerrequisito | un `RegisteredClient` con `AuthorizationGrantType.CLIENT_CREDENTIALS` registrado sin base de datos |
-| `JWKSource` con clave RSA generada al arrancar | Núcleo | el servidor firma tokens con una clave que cambia en cada reinicio, invalidando tokens previos |
-| `/oauth2/token` responde un JWT real | Núcleo | la petición con `client_secret_basic` real devuelve `access_token`, `token_type: Bearer` y el `scope` pedido |
-| Credenciales inválidas rechazan la petición | Diagnóstico | un secreto incorrecto responde `401`, no un token vacío ni un error genérico |
-| `client_credentials` sin flujo de login | Decisión | sin usuario humano involucrado, no hace falta `UserDetailsService`, formulario de login ni OIDC |
-
-Cada fila tiene su explicación individual a continuación.
-
-**`OAuth2AuthorizationServerConfigurer` real (núcleo).** A diferencia de patrones de ejemplos antiguos que sugieren un método factory estático, la versión real de este configurer (confirmado inspeccionando directamente la clase compilada) se instancia con su constructor normal: `new OAuth2AuthorizationServerConfigurer()`, y se aplica a `HttpSecurity` vía `.with(configurer, customizer)`, el mismo patrón DSL que cualquier otro configurer de Spring Security.
-
-**`RegisteredClientRepository` en memoria (prerrequisito).** `RegisteredClient.withId(...).clientId("machine-client").clientSecret("{noop}secret").clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC).authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS).scope("tarifas.read").build()` declara un cliente completo sin ninguna base de datos; `InMemoryRegisteredClientRepository` lo expone al servidor de autorización. Es el prerrequisito de identidad: sin un cliente registrado, ninguna petición de token puede autenticarse.
-
-**`JWKSource` con clave RSA generada al arrancar (núcleo).** El servidor necesita un par de claves RSA para firmar los JWT que emite; este demo las genera EN MEMORIA al arrancar (`KeyPairGenerator.getInstance("RSA")`), lo que significa que un reinicio del servidor genera una clave distinta e invalida silenciosamente cualquier token emitido con la clave anterior — aceptable para un demo, pero una decisión real de producción necesita persistir o rotar claves deliberadamente.
-
-**`/oauth2/token` responde un JWT real (núcleo).** El test hace una petición POST real a `/oauth2/token` con autenticación HTTP Basic (`client-id:client-secret`) y `grant_type=client_credentials`, y confirma en la respuesta real: `access_token` presente, `token_type` igual a `"Bearer"`, y `scope` igual al pedido (`"tarifas.read"`). No es una respuesta simulada: es el servidor de autorización real emitiendo un token real.
-
-**Credenciales inválidas rechazan la petición (diagnóstico).** El segundo test confirma, con un secreto de cliente incorrecto, que el servidor responde `401 Unauthorized`, no un error distinto ni (peor) un token válido. Es la verificación mínima de que la autenticación del cliente contra el Authorization Server realmente se aplica, no solo se declara.
-
-**`client_credentials` sin flujo de login (decisión).** Porque este escenario es máquina-a-máquina (sin usuario humano), la configuración omite deliberadamente `UserDetailsService`, formulario de login, y el configurer `.oidc(...)`: ninguno de esos mecanismos tiene sentido cuando no hay una persona autenticándose. Agregar esas piezas sin necesitarlas sería complejidad sin propósito.
-
-**Conceptos clave:** `OAuth2AuthorizationServerConfigurer`, `RegisteredClientRepository`, `client_credentials`, `JWKSource`.
-
-Un `OAuth2AuthorizationServerConfigurer` propio (instanciado con su constructor, no un factory estático) convierte una aplicación Spring en un emisor de tokens OAuth2 real. Un `RegisteredClientRepository` (en memoria para este demo) declara qué clientes pueden pedir tokens y con qué grant type; `client_credentials` es el grant apropiado para comunicación máquina-a-máquina sin usuario humano. El servidor firma los tokens con una clave RSA expuesta vía `JWKSource`. El endpoint `/oauth2/token` responde con un JWT real ante credenciales válidas, y `401` ante credenciales inválidas.
-
-**Analogía:** levantar tu propio Authorization Server es como una empresa que decide emitir sus propias credenciales de acceso interno en vez de depender de un servicio externo de verificación de identidad; el cliente `client_credentials` es como un empleado de mantenimiento que se identifica con una credencial de servicio (no una persona con usuario y contraseña) para acceder a un área restringida sin que haya ningún proceso de "inicio de sesión" humano de por medio.
-
-**Diagrama:**
+**Evidencia final:** tests de petición inválida, preflight CORS permitido/rechazado, configuración del issuer documentada y bloqueo de direcciones locales del cliente.
 
 ```mermaid
-sequenceDiagram
-  participant C as Cliente (machine-client)
-  participant AS as Authorization Server propio
-  C->>AS: POST /oauth2/token (Basic auth + grant_type=client_credentials)
-  AS->>AS: valida clientId/clientSecret contra RegisteredClientRepository
-  AS->>AS: firma un JWT con la clave RSA (JWKSource)
-  AS-->>C: access_token, token_type=Bearer, scope
+flowchart LR
+  Web[Web] -->|JSON + token| API[API Spring]
+  API -->|issuer + firma| IdP[Keycloak]
+  API -->|URL externa filtrada| Geo[Servicio externo]
 ```
 
-#### Practica
+**Límite:** CORS decide qué páginas pueden leer respuestas desde el navegador; no valida identidad. El filtro IP limita destinos resueltos, pero no sustituye una lista de hosts permitidos.
 
-**Demo paso a paso.** Desde una carpeta vacía, genera el proyecto:
+#### Subtema 18.5 · Valida la petición en la entrada · 8 min
+
+**Contexto:** una entrega con destinatario vacío no debe llegar al servicio ni quedar guardada en PostgreSQL.
+
+**Hazlo tú:** abre `examples/spring-boot-integrador-rutaflow/src/main/java/academia/rutaflow/integrador/entrega/CrearEntregaRequest.java`:
+
+```java
+public record CrearEntregaRequest(@NotBlank @Size(max = 200) String destinatario) {}
+```
+
+Abre `EntregaController.java` y comprueba que el body lleva `@Valid`. Ejecuta desde `examples/spring-boot-integrador-rutaflow`:
 
 ```bash
-mkdir authserver-demo && cd authserver-demo
-curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=oauth2-authorization-server -d javaVersion=27 -o app.zip
-unzip -q app.zip
+./scripts/verify-integration.sh
 ```
 
-Crea `src/main/java/com/academia/authserver/AuthorizationServerConfig.java`:
+**Resultado esperado:** pasan 7 pruebas con PostgreSQL efímero; destinatario en blanco responde 400 y el conteo de entregas no aumenta.
 
-```java
-package com.academia.authserver;
+**Fallo deliberado:** quita `@Valid` del `@RequestBody` y repite. **Diagnóstico:** el test deja de recibir 400 y la solicitud vacía alcanza el resto del flujo. Restaura `@Valid`.
 
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.interfaces.RSAPrivateKey;
-import java.security.interfaces.RSAPublicKey;
-import java.util.UUID;
+**Entiende:** las anotaciones describen qué valores son válidos; `@Valid` pide a Spring MVC comprobarlas antes de invocar el método. Si la entrada no cumple, no guardes una entidad y luego intentes corregirla.
 
-import com.nimbusds.jose.jwk.JWKSet;
-import com.nimbusds.jose.jwk.RSAKey;
-import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
-import com.nimbusds.jose.jwk.source.JWKSource;
-import com.nimbusds.jose.proc.SecurityContext;
+**Cierra:** anota qué regla rechaza el destinatario y cuál test comprueba que no se persiste. Lleva el mismo contrato al proyecto integrador RutaFlow.
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
-import org.springframework.security.oauth2.core.AuthorizationGrantType;
-import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
-import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
-import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
-import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
-import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
-import org.springframework.security.web.SecurityFilterChain;
+#### Subtema 18.6 · Configura CORS para el origen necesario · 8 min
 
-@Configuration
-@EnableWebSecurity
-public class AuthorizationServerConfig {
+**Contexto:** una aplicación web de desarrollo necesita leer respuestas desde `localhost:4200`; no por eso cualquier sitio debe poder leer la API.
 
-    @Bean
-    @Order(1)
-    public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
-        OAuth2AuthorizationServerConfigurer authorizationServerConfigurer =
-                new OAuth2AuthorizationServerConfigurer();
+**Hazlo tú:** abre `examples/spring-security-keycloak-rutaflow/src/main/java/academia/rutaflow/security/ApiSecurity.java`. La `CorsConfigurationSource` permite un origen, métodos y headers concretos; `ApiSecurityTest` manda una solicitud preflight:
 
-        http
-            .securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
-            .with(authorizationServerConfigurer, (authorizationServer) -> { })
-            .authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated());
-
-        return http.build();
-    }
-
-    @Bean
-    @Order(2)
-    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests((authorize) -> authorize.anyRequest().denyAll());
-        return http.build();
-    }
-
-    @Bean
-    public RegisteredClientRepository registeredClientRepository() {
-        RegisteredClient machineClient = RegisteredClient.withId(UUID.randomUUID().toString())
-                .clientId("machine-client")
-                .clientSecret("{noop}secret") // solo para este demo; en producción usa un PasswordEncoder real
-                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-                .scope("tarifas.read")
-                .build();
-
-        return new InMemoryRegisteredClientRepository(machineClient);
-    }
-
-    @Bean
-    public JWKSource<SecurityContext> jwkSource() {
-        KeyPair keyPair = generateRsaKey();
-        RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
-        RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
-        RSAKey rsaKey = new RSAKey.Builder(publicKey)
-                .privateKey(privateKey)
-                .keyID(UUID.randomUUID().toString())
-                .build();
-        return new ImmutableJWKSet<>(new JWKSet(rsaKey));
-    }
-
-    private static KeyPair generateRsaKey() {
-        try {
-            KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
-            generator.initialize(2048);
-            return generator.generateKeyPair();
-        } catch (Exception ex) {
-            throw new IllegalStateException(ex);
-        }
-    }
-
-    @Bean
-    public AuthorizationServerSettings authorizationServerSettings() {
-        return AuthorizationServerSettings.builder().build();
-    }
-}
+```bash
+cd examples/spring-security-keycloak-rutaflow
+./mvnw -Dtest=ApiSecurityTest#corsPermiteOrigenLocalDeclaradoYRechazaOtroOrigen test
 ```
 
-Agrega las dependencias reales de testing (`spring-boot-webmvc-test` del Módulo 2 Tema 7, más `spring-security-test` para `httpBasic(...)`) y crea el test en `src/test/java/com/academia/authserver/TokenEndpointTest.java`:
+**Resultado esperado:** el preflight de `http://localhost:4200` recibe `Access-Control-Allow-Origin`; `https://sitio-ajeno.example` recibe 403. El header de credenciales no aparece.
 
-```java
-package com.academia.authserver;
+**Fallo deliberado:** cambia el origen permitido a `https://sitio-ajeno.example` y ejecuta el mismo test. **Diagnóstico:** el navegador de desarrollo ya no aparece en `Access-Control-Allow-Origin`, y el test encuentra el origen equivocado. Restaura `http://localhost:4200`.
 
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.test.web.servlet.MockMvc;
+**Entiende:** CORS es una regla del navegador sobre qué origen puede leer una respuesta. No es una barrera para `curl`, no reemplaza autenticación y las solicitudes preflight deben procesarse antes de exigir credenciales.
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+**Cierra:** explica por qué permites un origen y mantienes `allowCredentials=false` en este laboratorio.
 
-@SpringBootTest
-@AutoConfigureMockMvc
-class TokenEndpointTest {
+#### Subtema 18.7 · Confía en el issuer OIDC, no en un JWT decodificado · 10 min
 
-    @Autowired
-    private MockMvc mockMvc;
+**Contexto:** base64 permite leer un payload, pero no verificar quién firmó el JWT ni si sigue vigente. El Resource Server debe consultar las claves del emisor que tu aplicación decidió confiar.
 
-    @Test
-    void elClienteRealObtieneUnAccessTokenConClientCredentials() throws Exception {
-        mockMvc.perform(post("/oauth2/token")
-                        .param("grant_type", "client_credentials")
-                        .param("scope", "tarifas.read")
-                        .with(httpBasic("machine-client", "secret")))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.access_token").exists())
-                .andExpect(jsonPath("$.token_type").value("Bearer"))
-                .andExpect(jsonPath("$.scope").value("tarifas.read"));
-    }
+**Hazlo tú:** abre `examples/spring-security-keycloak-rutaflow/src/main/resources/application.yml`. Localiza `issuer-uri`; debe coincidir exactamente con el `iss` de los tokens del realm. Para recorrer la configuración real, sigue `examples/spring-security-keycloak-rutaflow/README.md`:
 
-    @Test
-    void credencialesInvalidasRechazanLaPeticion() throws Exception {
-        mockMvc.perform(post("/oauth2/token")
-                        .param("grant_type", "client_credentials")
-                        .with(httpBasic("machine-client", "credencial-equivocada")))
-                .andExpect(status().isUnauthorized());
-    }
-}
+```bash
+cd examples/spring-security-keycloak-rutaflow
+docker compose up -d
+curl -fsS http://localhost:8081/realms/rutaflow/.well-known/openid-configuration
 ```
+
+**Resultado esperado:** el documento OIDC publica issuer y `jwks_uri` del realm `rutaflow`. Con un token real de ese issuer, las rutas respetan rol y propietario; al terminar, apaga el servicio con `docker compose down`.
+
+**Fallo deliberado:** cambia temporalmente `issuer-uri` a `http://localhost:8081/realms/otro` y llama con un token de `rutaflow`. **Diagnóstico:** el token no coincide con el issuer configurado y la API responde 401. Restaura la URI.
+
+**Entiende:** `issuer-uri` señala quién emite tokens de confianza. Spring Resource Server descubre las claves públicas y valida firma, expiración e issuer. Los tests `ApiSecurityTest` usan un decoder simulado para probar permisos; por sí solos no verifican firma, expiración ni conexión con Keycloak.
+
+**Cierra:** apunta el issuer y `jwks_uri` de la salida local y distingue esa comprobación del test con token simulado.
+
+#### Subtema 18.8 · Bloquea destinos internos en el cliente saliente · 10 min
+
+**Contexto:** un endpoint que recibe una URL puede ser usado para pedir datos a servicios locales, a rangos privados o al endpoint de metadata. Controla el destino antes de abrir la conexión.
+
+**Hazlo tú:** abre `examples/spring-ssrf/src/main/java/com/academia/SafeClient.java`. Observa timeout, redirecciones deshabilitadas y `InetAddressFilter.externalAddresses()`. Ejecuta desde `examples/spring-ssrf`:
 
 ```bash
 ./mvnw test
 ```
 
-**Resultado esperado:** `Tests run: 2, Failures: 0, Errors: 0` (verificado con Spring Boot 4.1.1 / Spring Security 7.1.1 / Spring Framework 7.0.9 sobre JDK 27.0.1): la petición con credenciales válidas recibe un `access_token` real, `token_type: Bearer` y el `scope` pedido; la petición con secreto incorrecto recibe `401 Unauthorized`.
+**Resultado esperado:** pasan tres pruebas: loopback se bloquea antes de llegar al servidor local, se filtran `169.254.169.254` y rangos internos, y un redirect no alcanza su destino. Un servidor efímero permitido sirve de control positivo.
 
-**Fallo deliberado:** usa el método factory estático `OAuth2AuthorizationServerConfigurer.authorizationServer()` (como sugieren varios tutoriales y ejemplos de versiones anteriores) en vez de `new OAuth2AuthorizationServerConfigurer()`. La compilación FALLA: `cannot find symbol: method authorizationServer()`. Diagnostica confirmando, inspeccionando la clase real compilada (no solo confiando en un tutorial), que esta versión del configurer se instancia con su constructor normal, sin ningún método factory estático — un ejemplo concreto de por qué verificar contra el código real importa más que replicar un patrón de un tutorial sin confirmarlo. Restaura `new OAuth2AuthorizationServerConfigurer()` antes de continuar.
+**Fallo deliberado:** quita `.withInetAddressFilter(allowedAddresses)` de `SafeClient.create` y ejecuta `blocksBeforeRequestAndControlReallyReachesServer`. **Diagnóstico:** la petición local llega al servidor y el test ve un hit en vez de `FilteredHostException`. Restaura el filtro.
 
-**Ejercicios.**
+**Entiende:** el filtro restringe direcciones IP de llamadas que salen de este proceso. No reemplaza una allowlist de hosts ni controles de red; no reintentes escrituras sin clave de idempotencia.
 
-1. Decodifica (sin verificar la firma, solo la carga útil Base64) el `access_token` recibido y documenta qué claims contiene (`scope`, `iss`, `exp`, entre otros).
-2. Registra un segundo `RegisteredClient` con un scope distinto, y confirma con un test que un cliente no puede obtener un token con un scope que no tiene asignado.
-3. Reinicia la aplicación (en un entorno real, no en el test) y documenta por qué un token emitido antes del reinicio deja de ser válido — relacionado con cómo se genera la clave RSA en este demo.
-4. Escribe de memoria (sin mirar) un `RegisteredClient` con grant `client_credentials`, y un test que confirme que el endpoint de token real responde con un JWT. Compara después contra el patrón del Paso 4.
+**Cierra:** para el cliente de geocodificación de RutaFlow, registra hosts permitidos, timeout, política de redirect y la prueba que impide llegar a una IP interna.
 
-**Pista:** si un tutorial o ejemplo usa un método estático que no existe en tu versión, no asumas que el tutorial está mal escrito ni que tu versión está rota: inspecciona la clase real (`javap` sobre el `.class`, o la documentación de la versión exacta que tenés) antes de decidir cuál tiene razón.
-
-**Completa el código:** rellena el grant type apropiado para comunicación máquina-a-máquina sin usuario humano:
-
-```java
-RegisteredClient.withId(UUID.randomUUID().toString())
-    .clientId("machine-client")
-    .authorizationGrantType(AuthorizationGrantType.____)
-    .build();
-```
-
-**Reto de memoria:** cierra este documento y escribe, solo de memoria, un `RegisteredClientRepository` en memoria con un cliente `client_credentials`, y un test que confirme que `/oauth2/token` emite un JWT real. Compara después contra el patrón del Paso 4.
-
-#### Aplica
-
-**Reto abierto.** Para RutaFlow, diseña el esquema de autenticación máquina-a-máquina entre el servicio de facturación y el servicio de entregas: un Authorization Server propio con al menos dos clientes registrados (`facturacion-worker`, `reportes-batch`), cada uno con su propio scope, y demuestra con tests reales que cada cliente solo puede obtener tokens con su scope asignado.
-
-**Checklist de salida.**
-
-- [ ] `/oauth2/token` responde un JWT real con credenciales válidas, confirmado con un test.
-- [ ] Credenciales inválidas responden `401`, no un error genérico ni un token vacío.
-- [ ] Al menos dos clientes con scopes distintos están registrados y diferenciados por test.
-- [ ] Podés explicar por qué este escenario no necesita `UserDetailsService` ni flujo de login.
-- [ ] Entendés la implicación de generar la clave RSA en memoria al arrancar (tokens inválidos tras un reinicio).
-
-**Si falla.** Si la compilación falla con `cannot find symbol: authorizationServer()`, usa `new OAuth2AuthorizationServerConfigurer()` en su lugar (ver el fallo deliberado de este tema). Si el endpoint de token responde `401` con credenciales que parecen correctas, confirma el formato exacto de `clientSecret` (`{noop}secret` para texto plano en un demo, nunca en producción).
-
-**Siguiente paso:** esto cierra el módulo de seguridad avanzada; el proyecto integrador del track aplica estos controles en conjunto.
-
-**Errores comunes:** asumir que un método factory estático de un tutorial siempre existe en la versión real instalada, sin verificarlo contra la clase compilada; usar `client_credentials` para un escenario que en realidad involucra un usuario humano (donde `authorization_code` sería el grant correcto).
-
-**Límites y decisión de uso:** para un sistema con un único cliente conocido y de confianza total (sin necesidad real de rotación de credenciales ni múltiples scopes), un token estático compartido puede ser más simple que levantar un Authorization Server completo; este mecanismo se justifica cuando hay múltiples clientes con necesidades de acceso diferenciadas.
-
-**Fuente oficial:** [Spring Authorization Server — Getting Started](https://docs.spring.io/spring-authorization-server/reference/getting-started.html).
-
-**Transferencia al proyecto integrador:** este Authorization Server propio es el que emitirá credenciales para la comunicación interna entre servicios del microservicio productivo (Módulo 12).
+**Fuentes primarias:** [Spring Framework MVC Validation](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-validation.html); [CORS en Spring Security](https://docs.spring.io/spring-security/reference/servlet/integrations/cors.html); [Spring Security Resource Server JWT](https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html); [Spring Boot HTTP clients y filtros de direcciones](https://docs.spring.io/spring-boot/reference/io/rest-client.html).

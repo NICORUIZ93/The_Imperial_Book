@@ -1,512 +1,612 @@
-# Módulo 16: Mapear y optimizar persistencia con JPA e Hibernate
-
-**Entorno del módulo (verificado):** JDK 27, Maven, **Spring Boot 4.1.1** (trae Hibernate 7.4.5) y H2. Nota importante de Spring Boot 4: el slice de test de JPA cambió de paquete a `org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest` (antes `org.springframework.boot.test.autoconfigure.orm.jpa`). Ese `@DataJpaTest` ya **no** viaja dentro de `spring-boot-starter-test`: vive en el artefacto `spring-boot-starter-data-jpa-test`, que los ejemplos declaran explícitamente con `scope test` **además** de `spring-boot-starter-test`. Todos los ejemplos usan ese import.
-
-**Proyecto del módulo:** aplicaciones Maven creadas desde carpetas vacías para persistir pedidos y pagos, medir las consultas de Hibernate y versionar el esquema. Escribirás cada entidad, configuración y prueba; ningún ejercicio depende de ejemplos o archivos prefabricados.
+# Módulo 16: JPA, Hibernate y FetchType.LAZY vs EAGER
 
 ## Aprende construyendo
 
-La meta no es memorizar anotaciones: es decidir qué datos cargar para cada operación sin producir N+1, errores de sesión cerrada ni respuestas JSON cíclicas.
+En este módulo vas a persistir un modelo pequeño de pedidos y medir las consultas que Hibernate ejecuta. La meta no es memorizar anotaciones: es decidir qué datos cargar para cada operación sin producir N+1, errores de sesión cerrada ni respuestas JSON cíclicas.
 
 ### Dos ejemplos: primero visible, luego real
 
-- **Ejemplo sencillo:** dos clientes y sus pedidos en H2. Comprobarás la clave foránea, cargarás asociaciones dentro de una transacción y observarás el SQL.
-- **Caso RutaFlow:** una pantalla paginada de envíos muestra referencia, estado y última parada. El listado necesita una proyección DTO y el detalle una consulta específica; serializar la entidad completa no es una estrategia de carga.
+- **Ejemplo sencillo:** dos clientes y tres pedidos en H2. Comprueba la clave foránea, carga los pedidos dentro de una transacción y compara el SQL de `LAZY` y `EAGER`.
+- **Caso RutaFlow:** una pantalla paginada de envíos muestra referencia, estado y última parada. No serialices la entidad completa: crea una proyección DTO para el listado, una consulta de detalle con `@EntityGraph` y mide ambas con datos suficientes para que aparezca N+1.
 
-`EAGER` significa que la asociación debe estar disponible, no que Hibernate necesariamente use un único `JOIN`. La evidencia es el número de consultas y filas observado con datos suficientes, no solo una anotación.
+La progresión importa: `EAGER` significa que la asociación debe estar disponible, no que Hibernate necesariamente use un `JOIN`. La evidencia del caso real es una prueba de integración con el número de filas y consultas observado, no solo una anotación en la entidad.
 
-### Tema 1: Entidades y relaciones JPA · Intermedio · 55 min
+### Tema 1: Entidades y relaciones JPA
 
-#### Aprende
+**¿Por qué es importante?** el mapeo conecta objetos con filas; el lado propietario escribe la clave foránea.
 
-**Prerrequisito:** JDK 27, Maven 3.9 o superior, clases, colecciones y SQL básico. Comprueba `java --version` y `mvn --version`.
+#### Subtema 1.1: Guarda una relación de cliente y pedido · 10 min
 
-**Al terminar podrás:** mapear `Cliente` y `Pedido`, mantener sincronizados los dos lados de una relación bidireccional y verificar con una prueba que la clave foránea se persiste correctamente.
+**1. Contexto**
 
-JPA define el contrato de persistencia; Hibernate traduce entidades y operaciones a SQL. `@Entity` identifica una clase persistente, `@Id` su clave y las asociaciones describen referencias entre filas. En una relación bidireccional, `mappedBy` señala el lado inverso; el lado con `@JoinColumn` es propietario y escribe la clave foránea.
+Un pedido debe conservar el ID de su cliente incluso después de cerrar el contexto Java.
 
-**¿Por qué es importante?** Porque modificar solo una colección Java puede dar una impresión falsa: si el lado propietario queda nulo, la base de datos no refleja la relación y puede rechazar la escritura.
+**2. Hazlo tú**
 
-**Mapa de subtemas críticos**
+Abre **examples/java-jpa-lab/src/main/java/academia/pedidos/Cliente.java** y **Pedido.java**. Ejecuta:
 
-| Subtema | Papel | Evidencia |
-|---|---|---|
-| `@Entity`, `@Id`, `@GeneratedValue` | Prerrequisito | Tabla creada y clave generada |
-| Lado propietario (`@JoinColumn`) vs inverso (`mappedBy`) | Núcleo | FK `cliente_id` escrita por `Pedido` |
-| Sincronizar ambos lados en el agregado | Núcleo | `Cliente.agregar` fija colección y referencia |
-| `CascadeType.PERSIST` no implica `REMOVE` | Límite | Borrado de cliente con pedidos falla por FK |
-| `@Enumerated(EnumType.STRING)` | Variante | Estado persistido como texto, no ordinal |
-| Unidireccional cuando solo navegas en un sentido | Decisión | Menos invariantes que mantener |
-| No exponer setters generales | Error frecuente | Agregado sin camino a estado inconsistente |
+~~~bash
+cd examples/java-jpa-lab
+./mvnw -q -Dtest=PedidoJpaLabTest#guardaLosDosLadosYConsultaPorClienteConJpql test
+~~~
 
-Cada fila tiene su explicación individual a continuación.
+**Resultado esperado:** la consulta ordena RT-101 y RT-102; la fila de pedido conserva cliente_id.
 
-**`@Entity`, `@Id`, `@GeneratedValue` (prerrequisito).** `@Entity` marca una clase como persistente y la asocia a una tabla; `@Id` designa la clave primaria; `@GeneratedValue` delega la generación del identificador a la base o al proveedor. Sin estos tres, Hibernate no sabe cómo mapear ni identificar filas.
+**Fallo deliberado:** comenta pedido.asignarCliente(this). **Diagnóstico:** Pedido tiene @JoinColumn y es dueño de la relación; sincroniza ambos lados del objeto.
 
-**Lado propietario vs inverso (núcleo).** En una relación bidireccional, solo un lado escribe la clave foránea: el propietario, el que tiene `@JoinColumn`. El otro lado usa `mappedBy` y es un espejo de lectura. En este modelo `Pedido` es propietario (tiene `cliente_id`) y `Cliente.pedidos` es el inverso. Escribir solo el inverso no toca la FK.
+**3. Entiende**
 
-**Sincronizar ambos lados en el agregado (núcleo).** Como la base solo ve el lado propietario, `Cliente.agregar` debe hacer dos cosas: añadir el pedido a la colección *y* llamar a `pedido.asignarCliente(this)`. Si olvidas lo segundo, la colección Java se ve poblada pero `Pedido.cliente` queda nulo y la inserción falla o deja la FK vacía.
+JPA define el contrato; Hibernate lo implementa. mappedBy indica el lado inverso.
 
-**`CascadeType.PERSIST` no implica `REMOVE` (límite).** `cascade = PERSIST` propaga el `persist` del cliente a sus pedidos nuevos, pero no borra pedidos cuando borras el cliente. Intentar eliminar un cliente con pedidos sin una política explícita produce un error de clave foránea; el borrado en cascada es una decisión de ciclo de vida que se declara aparte (`REMOVE`, `orphanRemoval`) o se resuelve reasignando.
+**4. Cierra**
 
-**`@Enumerated(EnumType.STRING)` (variante).** Un enum persistido sin anotar usa `ORDINAL` (su posición), así que reordenar o insertar valores corrompe datos existentes. `@Enumerated(EnumType.STRING)` guarda el nombre, que es estable frente a cambios en el orden del enum.
+Guarda el test verde y el fallo.
 
-**Unidireccional cuando solo navegas en un sentido (decisión).** No toda relación necesita ser bidireccional. Si solo consultas los pedidos de un cliente y nunca el cliente desde un pedido fuera de la FK, una relación unidireccional elimina el invariante de mantener ambos lados sincronizados y reduce la superficie de error.
+#### Subtema 1.2: Protege la referencia obligatoria · 10 min
 
-**No exponer setters generales (error frecuente).** Si `Pedido` tuviera `setCliente` público, cualquier código podría romper el agregado dejando colección y FK en desacuerdo. Mantener la mutación dentro de métodos del agregado (`agregar`, `asignarCliente` con visibilidad de paquete) impide estados inconsistentes por construcción.
+**1. Contexto**
 
-**Analogía:** dos agendas pueden mostrar una amistad, pero solo una contiene el teléfono oficial. Cambiar la agenda inversa no actualiza el dato que se usa para contactar.
+Un pedido sin referencia no se debe guardar.
 
-`CascadeType.PERSIST` propaga la persistencia desde cliente a pedidos; no implica `REMOVE`. Las cascadas de borrado necesitan una regla de ciclo de vida explícita. Tampoco toda asociación debe ser bidireccional: si solo navegas en una dirección, una relación unidireccional reduce invariantes.
+**2. Hazlo tú**
 
-**Cuándo no usarlo:** evita exponer setters generales, cascadas amplias y relaciones bidireccionales cuando el caso de uso no las requiere.
+En **examples/java-jpa-lab/src/main/java/academia/pedidos/Pedido.java** agrega la validación de referencia y la restricción de columna requerida. Añade un caso válido y otro vacío en **src/test/java/academia/pedidos/PedidoJpaLabTest.java** y ejecuta ./mvnw -q test desde examples/java-jpa-lab.
 
-#### Practica
+**Resultado esperado:** la referencia vacía se rechaza y el pedido válido se persiste.
 
-Crea una carpeta vacía y todos los archivos del proyecto:
+**Fallo deliberado:** valida solo en el controlador. **Diagnóstico:** una tarea o un test podría omitirlo; protege el modelo y la base.
 
-```bash
-mkdir ejemplo-jpa-relaciones
-cd ejemplo-jpa-relaciones
-mkdir -p src/main/java/academia/pedidos src/test/java/academia/pedidos src/test/resources
-```
+**3. Entiende**
 
-Escribe `pom.xml` con Spring Boot, JPA, H2 y pruebas; no uses un generador:
+Validación de objeto y restricción SQL protegen partes distintas del flujo.
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.1</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia</groupId><artifactId>jpa-relaciones</artifactId><version>1.0.0</version>
-  <properties><java.version>27</java.version></properties>
-  <dependencies>
-    <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-data-jpa</artifactId></dependency>
-    <dependency><groupId>com.h2database</groupId><artifactId>h2</artifactId><scope>runtime</scope></dependency>
-    <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-test</artifactId><scope>test</scope></dependency>
-    <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-data-jpa-test</artifactId><scope>test</scope></dependency>
-  </dependencies>
-</project>
-```
+**4. Cierra**
 
-Crea `src/main/java/academia/pedidos/PedidosApplication.java`:
+Registra qué capa rechazó cada caso.
 
-```java
-package academia.pedidos;
+#### Subtema 1.3: Elige la cascada según historial · 10 min
 
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+**1. Contexto**
 
-@SpringBootApplication
-public class PedidosApplication {
-    public static void main(String[] args) {
-        // Las pruebas del laboratorio inician el contexto de persistencia.
-    }
-}
-```
+Al guardar cliente y pedidos nuevos, quieres persistir el agregado; al borrarlo, quizá debas conservar historial.
 
-Crea `src/main/java/academia/pedidos/Cliente.java`:
-
-```java
-package academia.pedidos;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.List;
-
-@Entity
-public class Cliente {
-    @Id @GeneratedValue
-    private Long id;
-    private String nombre;
-
-    @OneToMany(mappedBy = "cliente", cascade = CascadeType.PERSIST)
-    private List<Pedido> pedidos = new ArrayList<>();
-
-    protected Cliente() {}
-
-    public Cliente(String nombre) { this.nombre = nombre; }
-
-    public void agregar(Pedido pedido) {
-        pedidos.add(pedido);
-        pedido.asignarCliente(this);
-    }
+**2. Hazlo tú**
 
-    public Long getId() { return id; }
-    public String getNombre() { return nombre; }
-    public List<Pedido> getPedidos() { return List.copyOf(pedidos); }
-}
-```
-
-Crea `src/main/java/academia/pedidos/Pedido.java`:
+En **Cliente.java** cambia temporalmente CascadeType.PERSIST por CascadeType.ALL. Añade un test de borrado en **PedidoJpaLabTest.java** y ejecuta ./mvnw -q test.
 
-```java
-package academia.pedidos;
+**Resultado esperado:** el test revela cuáles operaciones se propagan al pedido.
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+**Fallo deliberado:** añade REMOVE solo para silenciar una excepción. **Diagnóstico:** decide si el historial debe borrarse, bloquear la operación o reasignarse.
 
-@Entity
-public class Pedido {
-    @Id @GeneratedValue
-    private Long id;
-    private String referencia;
+**3. Entiende**
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "cliente_id", nullable = false)
-    private Cliente cliente;
+CascadeType propaga operaciones JPA; no equivale a ON DELETE de la base.
 
-    protected Pedido() {}
+**4. Cierra**
 
-    public Pedido(String referencia) { this.referencia = referencia; }
-    void asignarCliente(Cliente cliente) { this.cliente = cliente; }
-    public Long getId() { return id; }
-    public String getReferencia() { return referencia; }
-}
-```
+Guarda el test y la política elegida. Fuente: [Jakarta Persistence](https://jakarta.ee/specifications/persistence/).
 
-Escribe `src/test/resources/application.properties`:
+**Comprueba persistencia:** guarda una entidad dentro de una transacción y vuelve a leerla en un contexto nuevo. Así distingues un objeto en memoria de un cambio confirmado en la base. Usa un DTO si la respuesta HTTP no debe exponer asociaciones internas. Elige relaciones según ciclo de vida: una parada puede pertenecer a un envío; una ciudad suele compartirse. No pongas todas las relaciones en `EAGER`; cada caso de uso debe traer lo que necesita. Fuente: https://jakarta.ee/specifications/persistence/.
 
-```properties
-spring.jpa.hibernate.ddl-auto=create-drop
-spring.jpa.show-sql=true
-spring.jpa.properties.hibernate.format_sql=true
-```
+### Tema 2: FetchType.LAZY, EAGER y el problema N+1
 
-Crea `src/test/java/academia/pedidos/RelacionPedidosTest.java`:
+**¿Por qué es importante?** cada pedido puede disparar una consulta adicional al cargar su cliente.
 
-```java
-package academia.pedidos;
+#### Subtema 2.1: Accede a una relación lazy en su contexto · 10 min
 
-import jakarta.persistence.EntityManager;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
-import org.springframework.jdbc.core.JdbcTemplate;
-import static org.assertj.core.api.Assertions.assertThat;
+**1. Contexto**
 
-@DataJpaTest
-class RelacionPedidosTest {
-    @Autowired EntityManager entityManager;
-    @Autowired JdbcTemplate jdbc;
+La pantalla necesita el nombre del cliente al presentar un pedido.
 
-    @Test
-    void guardaPropietarioYClaveForanea() {
-        Cliente cliente = new Cliente("Logística Norte");
-        cliente.agregar(new Pedido("PED-1"));
-        cliente.agregar(new Pedido("PED-2"));
+**2. Hazlo tú**
 
-        entityManager.persist(cliente);
-        entityManager.flush();
-        Long clienteId = cliente.getId();
-        entityManager.clear();
+En **Pedido.java** conserva @ManyToOne(fetch = FetchType.LAZY). En **PedidoJpaLabTest.java** limpia el contexto con entityManager.clear() y lee pedido.getCliente().getNombre() dentro del test. Ejecuta ./mvnw -q test.
 
-        Long total = jdbc.queryForObject(
-            "select count(*) from pedido where cliente_id = ?", Long.class, clienteId);
-        Cliente recuperado = entityManager.find(Cliente.class, clienteId);
-        assertThat(total).isEqualTo(2);
-        assertThat(recuperado.getPedidos()).hasSize(2);
-    }
-}
-```
+**Resultado esperado:** Hibernate carga la asociación mientras la transacción está activa.
 
-Ejecuta desde la raíz:
+**Fallo deliberado:** mueve el acceso después del cierre de sesión. **Diagnóstico:** consulta dentro de la transacción o devuelve un DTO con los campos necesarios.
 
-```bash
-mvn clean test
-```
+**3. Entiende**
 
-**Resultado esperado:** una prueba en verde, `BUILD SUCCESS`, dos sentencias de inserción para pedidos y una consulta que confirma dos filas con el mismo `cliente_id`. El test consulta la columna física, no solamente la colección en memoria.
+LAZY aplaza la carga; no mantiene viva una sesión cerrada.
 
-**Fallo deliberado:** elimina `pedido.asignarCliente(this);` de `Cliente.agregar` y ejecuta otra vez. La colección inversa recibe los pedidos, pero su propietario `Pedido.cliente` queda nulo; la persistencia falla por la asociación obligatoria o deja la clave sin asignar. **Corrección:** restaura la asignación dentro del método del agregado y repite la prueba.
+**4. Cierra**
 
-#### Aplica
+Conserva la prueba dentro y fuera del contexto.
 
-Agrega `EstadoPedido` como enum y persiste `estado` con `@Enumerated(EnumType.STRING)`. Añade una consulta que obtenga los pedidos por `cliente.id`. Después intenta borrar un cliente con pedidos sin `CascadeType.REMOVE`, conserva el error de clave foránea y decide si la regla debe bloquear, reasignar o borrar.
+#### Subtema 2.2: Cuenta las consultas N+1 · 10 min
 
-Como ejercicio independiente, modela `LineaPedido` en este mismo proyecto, con un método `Pedido.agregarLinea` que actualice ambos lados. Escribe otra prueba para la clave foránea y el total de líneas, sin setters públicos que permitan dejar el agregado inconsistente.
+**1. Contexto**
 
-**Checklist de salida**
+Un listado carga N pedidos y luego consulta cada cliente por separado.
 
-- [ ] El proyecto y sus cinco archivos principales se crearon manualmente desde una carpeta vacía.
-- [ ] `Pedido` es el lado propietario mediante `@JoinColumn`.
-- [ ] `Cliente.agregar` sincroniza colección y referencia propietaria.
-- [ ] La prueba confirma dos claves foráneas físicas.
-- [ ] El fallo sin `asignarCliente` se diagnostica y se corrige.
-- [ ] Estado, borrado y líneas nuevas tienen reglas de persistencia explícitas.
+**2. Hazlo tú**
 
-**Proyecto integrador:** modela en el Módulo 13 la relación entre cliente y envío con un método de agregado equivalente y añade su prueba de clave foránea antes de implementar consultas de detalle.
+En **examples/java-jpa-lab/src/test/java/academia/pedidos/PedidoJpaLabTest.java**, ejecuta `./mvnw -q -Dtest=PedidoJpaLabTest#comparaNMasUnoConCargaPorEntityGraph test` desde examples/java-jpa-lab y observa Hibernate Statistics.
 
-**Errores comunes:** actualizar solo el lado inverso, convertir toda relación en bidireccional, añadir `REMOVE` sin una política de ciclo de vida y usar `@Enumerated` sin `EnumType.STRING`.
+**Resultado esperado:** N+1 produce más sentencias que la lectura con EntityGraph.
 
-Fuentes oficiales revisadas el 2026-11-01: [Jakarta Persistence](https://jakarta.ee/specifications/persistence/), [Hibernate ORM](https://hibernate.org/orm/documentation/) y [Java SE 27 Documentation](https://docs.oracle.com/en/java/javase/27/).
+**Fallo deliberado:** prueba con un único pedido. **Diagnóstico:** usa varias filas representativas para hacer visible el crecimiento de consultas.
 
-### Tema 2: FetchType.LAZY, EAGER y el problema N+1 · Avanzado · 1 h
+**3. Entiende**
 
-#### Aprende
+N+1 combina una consulta inicial con consultas repetidas por resultado relacionado.
 
-**Prerrequisito:** JDK 27, Maven y comprensión del lado propietario JPA. Este tema no reutiliza archivos del tema anterior: volverás a escribir el modelo necesario en un proyecto nuevo.
+**4. Cierra**
 
-**Al terminar podrás:** reproducir once consultas para diez clientes, reducirlas a una con `JOIN FETCH` y justificar una estrategia de carga por caso de uso sin confundir `EAGER` con un único join.
+Guarda el contador de ambos caminos.
 
-`LAZY` difiere la asociación hasta acceder a ella; `EAGER` exige disponibilidad al devolver la entidad, pero el proveedor puede usar consultas adicionales. En JPA, `@ManyToOne` y `@OneToOne` son EAGER por defecto; `@OneToMany` y `@ManyToMany` son LAZY. Declara la intención, especialmente `LAZY` en asociaciones to-one.
+#### Subtema 2.3: Elige datos para cada pantalla · 10 min
 
-**¿Por qué es importante?** Porque una pantalla que consulta diez clientes y luego los pedidos de cada uno realiza 1+N viajes. Con más filas, el coste crece silenciosamente aunque cada consulta sea rápida.
+**1. Contexto**
 
-**Mapa de subtemas críticos**
+El listado necesita referencia y estado; el detalle muestra también el cliente.
 
-| Subtema | Papel | Evidencia |
-|---|---|---|
-| Defaults de fetch (to-one EAGER, to-many LAZY) | Prerrequisito | `@ManyToOne` LAZY declarado explícito |
-| El problema N+1 medido | Núcleo | 11 `prepareStatement` para 10 clientes |
-| `JOIN FETCH` resuelve en una consulta | Núcleo | 1 `prepareStatement` + `distinct` |
-| Medir con contexto limpio (`clear()`) | Diagnóstico | Sin `clear` el contador se falsea |
-| `EAGER` ≠ un único join | Límite | SQL con consultas adicionales pese a EAGER |
-| Paginar fetch de colección es en memoria | Límite | Advertencia `firstResult/maxResults` |
-| Proyección DTO para listados | Decisión | `select new ClienteResumen(...)` |
+**2. Hazlo tú**
 
-Cada fila tiene su explicación individual a continuación.
+Compara findAll y findAllWithClienteByOrderByReferenciaAsc en **PedidoRepository.java**. Añade una proyección para listado y ejecuta ./mvnw -q test.
 
-**Defaults de fetch (prerrequisito).** JPA fija por defecto `EAGER` en `@ManyToOne`/`@OneToOne` y `LAZY` en `@OneToMany`/`@ManyToMany`. Esos defaults rara vez coinciden con lo que un caso de uso necesita, por eso se declara la intención explícitamente, sobre todo `LAZY` en asociaciones to-one que de otro modo se cargarían siempre.
+**Resultado esperado:** cada operación carga los campos que muestra.
 
-**El problema N+1 medido (núcleo).** Cargar diez clientes con una consulta y luego acceder a `pedidos` de cada uno dispara una consulta por cliente: 1 + 10 = 11. La métrica `statistics.getPrepareStatementCount()` lo cuantifica. El síntoma es invisible con pocos datos y crece linealmente con las filas.
+**Fallo deliberado:** cambia todo a EAGER. **Diagnóstico:** EAGER no garantiza JOIN; vuelve a contar sentencias y usa un fetch plan por caso.
 
-**`JOIN FETCH` resuelve en una consulta (núcleo).** `select distinct c from Cliente c left join fetch c.pedidos` trae clientes y pedidos en un solo viaje. El `distinct` elimina los clientes duplicados que el join produce al multiplicar filas por pedido. El contador baja de 11 a 1 para la misma vista.
+**3. Entiende**
 
-**Medir con contexto limpio (diagnóstico).** La caché de primer nivel (el `EntityManager`) ya tiene las entidades tras el `flush` de preparación. Sin `entityManager.clear()`, acceder a `pedidos` no genera consultas nuevas y el contador miente. `clear()` antes de medir fuerza que los accesos vayan de verdad a la base.
+La consulta y su fetch plan se eligen según la operación, no para toda la aplicación.
 
-**`EAGER` ≠ un único join (límite).** `EAGER` solo garantiza que la asociación esté disponible al devolver la entidad, no *cómo* se carga. Hibernate puede emitir consultas adicionales (SELECT secundarios) en vez de un join. Por eso la evidencia es el SQL y el conteo observados, no la anotación: poner `EAGER` no cura N+1 ni asegura un join.
+**4. Cierra**
 
-**Paginar un fetch de colección es en memoria (límite).** Al hacer `JOIN FETCH` de una colección y pedir `setMaxResults(5)`, Hibernate avisa `firstResult/maxResults specified with collection fetch; applying in memory`: el join ya multiplicó las filas, así que la paginación se aplica tras traerlas todas, no en la base. Paginar listados exige otra estrategia (DTO o consulta de IDs + datos).
+Anota campos de listado y de detalle.
 
-**Proyección DTO para listados (decisión).** Un listado resumido no necesita entidades completas ni sus colecciones. `select new academia.ClienteResumen(c.nombre, count(p))` agrupado trae exactamente los campos de la vista en una consulta paginable, sin N+1 ni filas duplicadas. La entidad completa se reserva para el detalle, donde `@EntityGraph` carga justo lo necesario.
+**Cuenta consultas:** carga diez envíos y accede a `paradas` de cada uno. Si aparece una consulta por envío, el total crece con la lista: es N+1. Repite con `EntityGraph` o `join fetch` y compara consultas y filas. No pongas todo en `EAGER`: otra pantalla puede no necesitar paradas. Registra el SQL del caso real y decide qué asociaciones leer antes de serializar. Fuentes: https://docs.hibernate.org/orm/6.6/introduction/html_single/ y https://jakarta.ee/specifications/persistence/4.0/apidocs/jakarta.persistence/jakarta/persistence/entitygraph.
 
-**Analogía:** N+1 es pedir la lista de comensales y después caminar a la cocina una vez por cada plato; un pedido conjunto evita los viajes cuando realmente necesitas todos los platos.
+**Comprueba el caso de pantalla:** pide solo los campos que la lista presenta y abre luego un envío para pedir su detalle. Compara ambos SQL; cada vista tiene una necesidad distinta.
 
-El mapeo es un valor por defecto, no un plan universal. `JOIN FETCH`, `@EntityGraph` y proyecciones DTO responden a necesidades distintas. Un fetch de colección multiplica filas y no debe paginarse sin comprobar la advertencia de Hibernate; una lista resumida suele necesitar un DTO en vez de una entidad completa.
+### Tema 3: Relaciones uno a uno, muchos a muchos y herencia
 
-**Cuándo no usarlo:** `EAGER` global no cura `LazyInitializationException`; tampoco uses `JOIN FETCH` de varias colecciones sin medir el producto de filas.
+**¿Por qué es importante?** cardinalidad y herencia cambian claves, restricciones y consultas.
 
-#### Practica
+#### Subtema 3.1: Impide dos perfiles para el mismo cliente · 10 min
 
-Crea otro proyecto desde una carpeta vacía:
+**1. Contexto**
 
-```bash
-mkdir ejemplo-jpa-n-mas-uno
-cd ejemplo-jpa-n-mas-uno
-mkdir -p src/main/java/academia/pedidos src/test/java/academia/pedidos src/test/resources
-```
+Un cliente tiene como máximo un perfil de entrega.
 
-Escribe `pom.xml` completo:
+**2. Hazlo tú**
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-parent</artifactId><version>4.1.1</version><relativePath/></parent>
-  <groupId>academia</groupId><artifactId>jpa-consultas</artifactId><version>1.0.0</version>
-  <properties><java.version>27</java.version></properties>
-  <dependencies>
-    <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-data-jpa</artifactId></dependency>
-    <dependency><groupId>com.h2database</groupId><artifactId>h2</artifactId><scope>runtime</scope></dependency>
-    <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-test</artifactId><scope>test</scope></dependency>
-    <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-data-jpa-test</artifactId><scope>test</scope></dependency>
-  </dependencies>
-</project>
-```
+Crea **examples/java-jpa-lab/src/main/java/academia/pedidos/PerfilEntrega.java** con @OneToOne y una clave cliente_id con restricción única. Agrega test de unicidad en **PedidoJpaLabTest.java** y ejecuta ./mvnw -q test.
 
-Crea `src/main/java/academia/pedidos/ConsultasApplication.java`:
+**Resultado esperado:** la base rechaza el segundo perfil para el mismo cliente.
 
-```java
-package academia.pedidos;
+**Fallo deliberado:** quita la unicidad. **Diagnóstico:** la anotación Java no reemplaza la restricción del esquema.
 
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+**3. Entiende**
 
-@SpringBootApplication
-public class ConsultasApplication {
-    public static void main(String[] args) {
-        // El laboratorio se ejecuta mediante sus pruebas JPA.
-    }
-}
-```
+Uno-a-uno necesita una clave foránea y garantía única.
 
-Crea `src/main/java/academia/pedidos/Cliente.java`:
-
-```java
-package academia.pedidos;
+**4. Cierra**
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.List;
-
-@Entity
-public class Cliente {
-    @Id @GeneratedValue private Long id;
-    private String nombre;
-
-    @OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-    private List<Pedido> pedidos = new ArrayList<>();
-
-    protected Cliente() {}
-    public Cliente(String nombre) { this.nombre = nombre; }
-    public void agregar(Pedido pedido) { pedidos.add(pedido); pedido.asignarCliente(this); }
-    public List<Pedido> getPedidos() { return List.copyOf(pedidos); }
-}
-```
+Guarda el test que intenta duplicar el perfil.
 
-Crea `src/main/java/academia/pedidos/Pedido.java`:
-
-```java
-package academia.pedidos;
+#### Subtema 3.2: Modela una línea como entidad · 10 min
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+**1. Contexto**
 
-@Entity
-public class Pedido {
-    @Id @GeneratedValue private Long id;
-    private String referencia;
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "cliente_id", nullable = false)
-    private Cliente cliente;
+Una línea de pedido guarda producto, cantidad y precio acordado.
 
-    protected Pedido() {}
-    public Pedido(String referencia) { this.referencia = referencia; }
-    void asignarCliente(Cliente cliente) { this.cliente = cliente; }
-}
-```
+**2. Hazlo tú**
 
-Escribe `src/test/resources/application.properties`:
+Crea **LineaPedido.java** con asociaciones ManyToOne a Pedido y Producto, además de cantidad y precioUnitario. Añade una prueba con dos líneas a un pedido y ejecuta ./mvnw -q test.
 
-```properties
-spring.jpa.hibernate.ddl-auto=create-drop
-spring.jpa.show-sql=true
-spring.jpa.properties.hibernate.format_sql=true
-spring.jpa.properties.hibernate.generate_statistics=true
-```
+**Resultado esperado:** cantidad y precio se guardan en la relación entre pedido y producto.
 
-Crea `src/test/java/academia/pedidos/ConsultasPedidoTest.java`:
+**Fallo deliberado:** usa ManyToMany directo y busca dónde guardar cantidad. **Diagnóstico:** convierte la relación en entidad de asociación con sus propios datos.
 
-```java
-package academia.pedidos;
+**3. Entiende**
 
-import jakarta.persistence.EntityManager;
-import java.util.List;
-import org.hibernate.SessionFactory;
-import org.hibernate.stat.Statistics;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
-import static org.assertj.core.api.Assertions.assertThat;
+ManyToMany simple sirve si la tabla intermedia no tiene información de negocio.
 
-@DataJpaTest
-class ConsultasPedidoTest {
-    @Autowired EntityManager entityManager;
-    private Statistics statistics;
+**4. Cierra**
 
-    @BeforeEach
-    void preparar() {
-        for (int i = 1; i <= 10; i++) {
-            Cliente cliente = new Cliente("Cliente " + i);
-            cliente.agregar(new Pedido("PED-" + i + "-A"));
-            cliente.agregar(new Pedido("PED-" + i + "-B"));
-            entityManager.persist(cliente);
-        }
-        entityManager.flush();
-        statistics = entityManager.getEntityManagerFactory()
-            .unwrap(SessionFactory.class).getStatistics();
-    }
+Guarda el pedido y sus dos líneas.
 
-    @Test
-    void accesoLazyRevelaN_Mas_Uno() {
-        entityManager.clear();
-        statistics.clear();
+#### Subtema 3.3: Inspecciona una estrategia de herencia · 10 min
 
-        List<Cliente> clientes = entityManager.createQuery(
-            "select c from Cliente c", Cliente.class).getResultList();
-        clientes.forEach(cliente -> assertThat(cliente.getPedidos()).hasSize(2));
+**1. Contexto**
 
-        assertThat(statistics.getPrepareStatementCount()).isEqualTo(11);
-    }
+Envío nacional e internacional comparten referencia, pero tienen datos específicos.
 
-    @Test
-    void joinFetchCargaLaMismaVistaConUnaConsulta() {
-        entityManager.clear();
-        statistics.clear();
+**2. Hazlo tú**
 
-        List<Cliente> clientes = entityManager.createQuery(
-            "select distinct c from Cliente c left join fetch c.pedidos", Cliente.class)
-            .getResultList();
-        clientes.forEach(cliente -> assertThat(cliente.getPedidos()).hasSize(2));
+Crea **src/main/java/academia/pedidos/Envio.java** y dos subclases; prueba SINGLE_TABLE con discriminador y consulta las filas en un test JPA. Ejecuta `./mvnw -q test`.
 
-        assertThat(clientes).hasSize(10);
-        assertThat(statistics.getPrepareStatementCount()).isEqualTo(1);
-    }
-}
-```
+**Resultado esperado:** ambas variantes se leen desde la tabla común y el discriminador distingue su tipo.
 
-Ejecuta las dos mediciones:
+**Fallo deliberado:** elige la estrategia antes de revisar consultas y columnas. **Diagnóstico:** compara SINGLE_TABLE, JOINED y TABLE_PER_CLASS con el esquema que necesita el caso.
 
-```bash
-mvn clean test
-```
+**3. Entiende**
 
-**Resultado esperado:** dos pruebas en verde. La primera registra 1 consulta de clientes + 10 de colecciones = 11; la segunda registra 1 y conserva diez clientes gracias a `distinct`. Limpiar el contexto antes de medir evita que la caché de primer nivel oculte accesos a la base.
+Cada estrategia intercambia joins, columnas nulas y costo de consultas.
 
-**Fallo deliberado:** elimina `entityManager.clear();` solo en `accesoLazyRevelaN_Mas_Uno` y ejecuta de nuevo. Las entidades y colecciones ya administradas reducen artificialmente las consultas adicionales; el contador ya no representa una solicitud nueva. **Corrección:** restaura `clear()` después de `flush()` y antes de `statistics.clear()`, y vuelve a obtener 11.
+**4. Cierra**
 
-Cambia ahora la consulta optimizada por `JOIN FETCH` y añade `.setMaxResults(5)` en una copia del test. Hibernate puede advertir `firstResult/maxResults specified with collection fetch; applying in memory`: el join multiplicó filas antes de paginar. Retira esa paginación y restaura la medición base.
+Guarda la consulta y el criterio de elección. Fuente: [Jakarta Persistence](https://jakarta.ee/specifications/persistence/).
 
-#### Aplica
+**Elige por datos y propiedad:** muchos-a-muchos funciona si la unión no tiene datos propios. Si guarda fecha, estado o prioridad, crea una entidad intermedia como `AsignacionEnvio`. En asociaciones bidireccionales identifica el lado que escribe la clave foránea y actualiza ambos objetos desde un método de dominio. Antes de elegir herencia, comprueba el SQL y las tablas de cada estrategia. Fuente: https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2.html.
 
-Compara `LAZY` y `EAGER` cambiando temporalmente `Cliente.pedidos` a `FetchType.EAGER`; registra el SQL sin asumir que aparecerá un join y restaura `LAZY`. Implementa una tercera variante con una proyección `ClienteResumen(nombre, totalPedidos)` y una consulta `select new ... count(p)` agrupada. Como ejercicio independiente, construye un detalle con `@EntityGraph` y una lista paginada en dos consultas: primero IDs y después datos. Registra consultas, filas duplicadas y si cada variante permite paginación segura.
+**Verifica propiedad:** persiste ambos lados y consulta la clave foránea generada. En una relación intermedia revisa que sus campos propios puedan guardarse y consultarse.
 
-**Checklist de salida**
+### Tema 4: Ciclo de vida, EntityManager y consultas tipadas
 
-- [ ] El proyecto nuevo contiene diez clientes y veinte pedidos creados por el test.
-- [ ] El contexto se limpia antes de cada medición.
-- [ ] La variante LAZY demuestra once consultas.
-- [ ] `JOIN FETCH` obtiene la misma vista con una consulta.
-- [ ] El experimento sin `clear` se reconoce como medición inválida.
-- [ ] DTO, `@EntityGraph` y paginación se eligen según el caso de uso.
+**¿Por qué es importante?** el estado administrado determina si JPA detecta un cambio.
 
-**Proyecto integrador:** en el Módulo 13, usa un DTO para la lista de envíos y una consulta de detalle para envío con paradas; adjunta los conteos N+1 y optimizados antes de aceptar el cambio.
+#### Subtema 4.1: Separa flush de clear · 10 min
 
-**Errores comunes:** activar EAGER como cura global, medir con la caché de primer nivel poblada, serializar entidades bidireccionales y paginar un fetch de colección en memoria sin advertirlo.
+**1. Contexto**
 
-Fuentes oficiales revisadas el 2026-11-01: [Jakarta Persistence](https://jakarta.ee/specifications/persistence/), [Hibernate ORM: fetching](https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#fetching) y [Java SE 27 Documentation](https://docs.oracle.com/en/java/javase/27/).
+Quieres comprobar datos escritos en la base, no un objeto todavía guardado en memoria.
 
-## Construcción guiada del capítulo
+**2. Hazlo tú**
 
-| Evidencia | Proyecto independiente | Orden y resultado |
-|---|---|---|
-| Integridad del agregado | `ejemplo-jpa-relaciones` | `mvn clean test`: dos pedidos comparten `cliente_id`; el fallo del lado propietario queda corregido |
-| Costo de carga | `ejemplo-jpa-n-mas-uno` | `mvn clean test`: comparación 11 frente a 1 y advertencia de paginación comprendida |
+En **PedidoJpaLabTest.java** guarda un cliente, llama flush(), luego clear() y vuelve a buscarlo. Ejecuta `./mvnw -q -Dtest=PedidoJpaLabTest#guardaLosDosLadosYConsultaPorClienteConJpql test`.
 
-Cierra el laboratorio con una decisión escrita para lista y detalle del Proyecto integrador. No presentes una anotación como prueba de rendimiento: conserva SQL, estadísticas y datos de entrada.
+**Resultado esperado:** find reconstruye las entidades a partir de la base de prueba.
+
+**Fallo deliberado:** asume que persist() ya ejecutó SQL. **Diagnóstico:** JPA puede diferir escrituras; flush sincroniza el contexto.
+
+**3. Entiende**
+
+persist administra, flush sincroniza, clear separa las instancias del contexto.
+
+**4. Cierra**
+
+Anota el estado del objeto después de cada llamada.
+
+#### Subtema 4.2: Consulta entidades con JPQL · 10 min
+
+**1. Contexto**
+
+Operaciones lista pedidos por cliente en orden de referencia.
+
+**2. Hazlo tú**
+
+En **PedidoRepository.java** revisa listarPorCliente y la consulta select p from Pedido p where p.cliente.id = :clienteId order by p.referencia. Ejecuta `./mvnw -q -Dtest=PedidoJpaLabTest#guardaLosDosLadosYConsultaPorClienteConJpql test`.
+
+**Resultado esperado:** devuelve RT-101 y RT-102 en ese orden.
+
+**Fallo deliberado:** usa el nombre SQL de la tabla dentro de JPQL. **Diagnóstico:** JPQL consulta entidades y atributos Java.
+
+**3. Entiende**
+
+Hibernate traduce JPQL al SQL correspondiente al dialecto de base.
+
+**4. Cierra**
+
+Guarda la consulta y el resultado.
+
+#### Subtema 4.3: Reconoce una entidad separada · 10 min
+
+**1. Contexto**
+
+Editar un objeto desconectado no actualiza automáticamente su fila.
+
+**2. Hazlo tú**
+
+En **Pedido.java** agrega un método de dominio cambiarReferencia(String valor). En **PedidoJpaLabTest.java** persiste un pedido, llama entityManager.clear(), cambia la referencia del objeto separado con ese método y vuelve a consultar. Ejecuta ./mvnw -q test.
+
+**Resultado esperado:** la base conserva el dato anterior porque esa instancia ya no está administrada.
+
+**Fallo deliberado:** espera que cualquier objeto Java modificado se guarde. **Diagnóstico:** modifica una entidad administrada dentro de una transacción o evalúa merge con su semántica.
+
+**3. Entiende**
+
+Los estados son nuevo, administrado, separado y eliminado.
+
+**4. Cierra**
+
+Anota en qué estado está cada referencia. Fuente: [EntityManager y Jakarta Persistence](https://jakarta.ee/specifications/persistence/).
+
+**Observa estados:** `persist` pasa la entidad nueva a administrada; al cerrar el contexto queda separada. Si la cambias mientras está administrada, el proveedor puede generar `UPDATE` durante `flush`, aunque no llames a `save` otra vez. Prueba `persist`, `find`, `flush` y `clear`; vuelve a leer para ver qué sobrevivió. En JPQL, enlaza parámetros en vez de concatenar datos de usuario. Fuente: https://jakarta.ee/specifications/platform/11/apidocs/jakarta/persistence/EntityManager.html.
+
+**Resultado esperado:** después de `clear`, una lectura nueva muestra solo los cambios confirmados; si no hubo commit, el cambio no debe tratarse como persistido.
+
+Un test debe abrir una transacción, guardar un envío, llamar `flush()` para enviar SQL y luego `clear()` para quitarlo del contexto. Si lees la misma instancia sin limpiar, podrías estar viendo memoria y no la base. Prueba la consulta tipada con un parámetro que no coincide y explica por qué devuelve una lista vacía.
+
+### Tema 5: Búsquedas dinámicas con Criteria y Querydsl
+
+**¿Por qué es importante?** filtros combinables requieren consultas seguras y mantenibles.
+
+#### Subtema 5.1: Busca por prefijo con Criteria · 10 min
+
+**1. Contexto**
+
+Operaciones quiere encontrar guías cuya referencia comience con RT-.
+
+**2. Hazlo tú**
+
+Abre **examples/java-jpa-lab/src/main/java/academia/pedidos/BusquedaPedido.java** y ejecuta `./mvnw -q -Dtest=PedidoJpaLabTest#entityGraphCargaClienteYCriteriaBuscaPorPrefijo test` desde examples/java-jpa-lab.
+
+**Resultado esperado:** el resultado incluye RT-201 y excluye OT-202.
+
+**Fallo deliberado:** concatena entrada en una cadena JPQL. **Diagnóstico:** usa parámetros ligados o Criteria para separar el valor.
+
+**3. Entiende**
+
+Criteria construye predicados desde la API; es verboso, pero facilita condiciones combinables.
+
+**4. Cierra**
+
+Guarda la salida para prefijo RT- y OT-.
+
+#### Subtema 5.2: Combina filtros opcionales · 10 min
+
+**1. Contexto**
+
+La pantalla permite combinar prefijo y estado; ambos filtros pueden faltar.
+
+**2. Hazlo tú**
+
+En **BusquedaPedido.java** agrega dos filtros opcionales y reúne en una lista solo los Predicate presentes. Añade tests sin filtros y con ambos; ejecuta ./mvnw -q test.
+
+**Resultado esperado:** cada combinación devuelve solo las filas correspondientes.
+
+**Fallo deliberado:** trata una cadena vacía como todas las condiciones. **Diagnóstico:** omite el predicado si ese filtro no se solicitó.
+
+**3. Entiende**
+
+Consulta SQL generada y plan de ejecución cuando el filtro deja de ser pequeño.
+
+**4. Cierra**
+
+Guarda dos combinaciones y su resultado.
+
+#### Subtema 5.3: Prueba Querydsl con Jakarta · 10 min
+
+**1. Contexto**
+
+El equipo quiere consultas legibles con campos revisados por compilador.
+
+**2. Hazlo tú**
+
+En **examples/java-jpa-lab/pom.xml** agrega Querydsl JPA para Jakarta y su procesador, según la guía oficial. Genera Q-types, escribe la consulta de prefijo equivalente a Criteria y ejecuta ./mvnw -q test.
+
+**Resultado esperado:** ambas consultas producen las mismas referencias.
+
+**Fallo deliberado:** copia artefactos antiguos que importan javax.persistence. **Diagnóstico:** elige la variante Jakarta y revisa imports generados.
+
+**3. Entiende**
+
+Querydsl agrega generación de código; úsalo si compensa su costo de configuración.
+
+**4. Cierra**
+
+Registra versión, imports y resultados comparados. Fuente: [Querydsl](https://querydsl.com/).
+
+**Compara consultas:** extrae filtros Criteria en funciones pequeñas como `porCiudad` y pruébalos con y sin valor. Criteria forma parte de Jakarta Persistence; Querydsl requiere plugin y generación de tipos en el build. Confirma que se genere antes de compilar y que CI lo ejecute desde cero. Para una consulta fija y corta, JPQL con parámetros puede ser más legible. Fuente: https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3-2.html.
+
+**Resultado esperado:** quitar un filtro opcional amplía los resultados sin cambiar el orden ni concatenar texto del usuario en la consulta. Registra cuántas filas devolvió cada caso.
+
+Con Querydsl, inspecciona el archivo de tipos generado y confirma que el plugin de generación corre en una copia limpia antes de compilar. Con Criteria, mantén cada filtro opcional en un bloque pequeño y verificable. Si los filtros son fijos y pocos, compara la complejidad con una consulta JPQL parametrizada antes de sumar otra herramienta al build.
+
+### Tema 6: EntityGraph y cachés de persistencia
+
+**¿Por qué es importante?** el fetch plan selecciona asociaciones por operación; caché requiere medir y controlar consistencia.
+
+#### Subtema 6.1: Carga detalle con EntityGraph · 10 min
+
+**1. Contexto**
+
+La vista de pedido necesita mostrar el nombre del cliente.
+
+**2. Hazlo tú**
+
+En **examples/java-jpa-lab/src/main/java/academia/pedidos/PedidoRepository.java** revisa @EntityGraph(attributePaths = "cliente"). Ejecuta `./mvnw -q -Dtest=PedidoJpaLabTest#entityGraphCargaClienteYCriteriaBuscaPorPrefijo test` y `./mvnw -q -Dtest=PedidoJpaLabTest#comparaNMasUnoConCargaPorEntityGraph test` desde examples/java-jpa-lab.
+
+**Resultado esperado:** aparece el cliente y la ruta de detalle reduce consultas observadas.
+
+**Fallo deliberado:** serializa la entidad completa. **Diagnóstico:** expón DTO para evitar ciclos y controlar datos cargados.
+
+**3. Entiende**
+
+EntityGraph expresa asociaciones requeridas; el SQL concreto depende del proveedor.
+
+**4. Cierra**
+
+Guarda consultas y contador antes/después.
+
+#### Subtema 6.2: Observa el caché de primer nivel · 10 min
+
+**1. Contexto**
+
+Dos búsquedas del mismo ID ocurren dentro del mismo EntityManager.
+
+**2. Hazlo tú**
+
+En **PedidoJpaLabTest.java** llama dos veces find para el mismo pedido, compara identidad, llama clear() y busca de nuevo. Ejecuta ./mvnw -q test.
+
+**Resultado esperado:** dentro del mismo contexto se reutiliza instancia; después de clear se carga otra.
+
+**Fallo deliberado:** llamarlo caché distribuido. **Diagnóstico:** el primer nivel vive en el EntityManager y no coordina procesos.
+
+**3. Entiende**
+
+El contexto conserva una identidad por entidad e ID durante la unidad de trabajo.
+
+**4. Cierra**
+
+Guarda la comparación antes y después de clear().
+
+#### Subtema 6.3: Mide antes de activar caché de segundo nivel · 10 min
+
+**1. Contexto**
+
+El catálogo puede leerse muchas veces, pero una tarifa mutable puede quedar obsoleta.
+
+**2. Hazlo tú**
+
+En **examples/java-jpa-lab/pom.xml** habilita un proveedor de caché compatible con la versión fijada de Spring/Hibernate; marca solo el catálogo como cacheable y compara lecturas desde dos EntityManager. Ejecuta ./mvnw -q test.
+
+**Resultado esperado:** la medición indica si se evita SQL bajo esa configuración.
+
+**Fallo deliberado:** asume que la anotación habilita una caché compartida. **Diagnóstico:** comprueba proveedor, estrategia, invalidación y estadísticas.
+
+**3. Entiende**
+
+Caché de segundo nivel es opcional y necesita política de consistencia.
+
+**4. Cierra**
+
+Guarda medición y decisión.
+
+**Distingue herramientas:** `EntityGraph` describe asociaciones deseadas para una operación; no es una caché ni obliga al proveedor a traer solo esos datos. La caché de primer nivel vive en el contexto actual; la de segundo nivel requiere configuración e invalidación. Compara SQL con y sin grafo y repite después de limpiar el contexto para no medir una entidad ya administrada. Fuentes: https://jakarta.ee/specifications/persistence/4.0/apidocs/jakarta.persistence/jakarta/persistence/entitygraph y https://docs.hibernate.org/orm/6.6/introduction/html_single/.
+
+**Comprobación:** compara conteo de consultas en un contexto recién creado y en el mismo contexto. Anota si cambió por el grafo o por una entidad ya administrada.
+
+### Tema 7: Concurrencia, transacciones y propagación
+
+**¿Por qué es importante?** dos operadores pueden cambiar el mismo envío; el sistema debe detectar conflicto y decidir rollback.
+
+#### Subtema 7.1: Detecta una actualización perdida · 10 min
+
+**1. Contexto**
+
+Dos transacciones cargan el mismo pedido y guardan cambios.
+
+**2. Hazlo tú**
+
+En **examples/java-jpa-lab/src/main/java/academia/pedidos/Pedido.java** revisa @Version; crea un test que cargue dos instancias, guarde la primera y después la segunda. Ejecuta ./mvnw -q test.
+
+**Resultado esperado:** la segunda escritura detecta una versión obsoleta.
+
+**Fallo deliberado:** quita @Version. **Diagnóstico:** el cambio puede sobrescribirse sin aviso; restaura control optimista.
+
+**3. Entiende**
+
+La versión se compara al confirmar y detecta conflicto sin mantener lock durante toda la edición.
+
+**4. Cierra**
+
+Guarda versión inicial y conflicto.
+
+#### Subtema 7.2: Revierte un agregado completo · 10 min
+
+**1. Contexto**
+
+Cabecera y líneas del pedido deben persistir juntas.
+
+**2. Hazlo tú**
+
+Crea **CrearPedido.java** con un método @Transactional que guarde cabecera y líneas. Añade test que lance error entre ambas y ejecuta ./mvnw -q test.
+
+**Resultado esperado:** al fallar, ninguna parte queda confirmada.
+
+**Fallo deliberado:** captura el error y devuelve éxito. **Diagnóstico:** la transacción puede confirmar; propaga el error o marca rollback.
+
+**3. Entiende**
+
+El límite transaccional define qué operaciones forman una unidad.
+
+**4. Cierra**
+
+Cuenta filas en caso exitoso y fallido.
+
+#### Subtema 7.3: Compara lock optimista y pesimista · 10 min
+
+**1. Contexto**
+
+Inventario con alta contención puede necesitar bloquear una fila mientras se reserva.
+
+**2. Hazlo tú**
+
+Crea **InventarioRepository.java** con consulta @Lock(LockModeType.PESSIMISTIC_WRITE) dentro de transacción. Compara resultado con @Version y ejecuta ./mvnw -q test.
+
+**Resultado esperado:** puedes explicar si se detecta conflicto al guardar o se espera por lock.
+
+**Fallo deliberado:** bloquea toda consulta. **Diagnóstico:** un lock prolongado reduce concurrencia y puede causar esperas; úsalo solo si el caso y el motor lo justifican.
+
+**3. Entiende**
+
+Optimista valida al confirmar; pesimista bloquea durante operación.
+
+**4. Cierra**
+
+Guarda prueba y decisión. Fuente: [Jakarta Persistence](https://jakarta.ee/specifications/persistence/).
+
+**Prueba la última unidad:** ejecuta dos reservas concurrentes con una unidad disponible; solo una puede confirmarse. `@Version` detecta una escritura cambiada desde la lectura y permite devolver conflicto o reintentar con límite. Mantén las transacciones cortas; no retengas una conexión durante una llamada HTTP. Una transacción agrupa trabajo de base de datos, pero no hace seguro un objeto compartido entre hilos. Fuente: https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3-2.html.
+
+**Resultado esperado:** una reserva confirma, la otra recibe conflicto y la cantidad final permanece en cero; repite el caso para descartar un resultado casual.
+
+Una transacción aplicada por proxy afecta llamadas que atraviesan ese proxy; una llamada interna del mismo objeto puede no iniciar el límite esperado. Prueba el caso desde otro servicio. Evita mantener la transacción abierta mientras llamas un proveedor HTTP: registra la intención, confirma cambios de base y coordina lo externo con un mecanismo adecuado al negocio.
+
+### Tema 8: Migraciones y pruebas JPA con Testcontainers
+
+**¿Por qué es importante?** el esquema de producción debe cambiar con migraciones rastreables y pruebas del motor real.
+
+#### Subtema 8.1: Versiona un cambio de esquema · 10 min
+
+**1. Contexto**
+
+Añadir estado al pedido no debería depender de Hibernate recreando la tabla al iniciar.
+
+**2. Hazlo tú**
+
+Crea V1__crear_tablas.sql y V2__agregar_estado_pedido.sql bajo **examples/java-jpa-lab/src/main/resources/db/migration/**. Configura Flyway en **examples/java-jpa-lab/pom.xml** y ejecuta `./mvnw -q test` desde examples/java-jpa-lab.
+
+**Resultado esperado:** se aplican migraciones en orden y el log informa las versiones.
+
+**Fallo deliberado:** edita V1 tras aplicarla. **Diagnóstico:** Flyway detecta checksum distinto; agrega V3 correctiva.
+
+**3. Entiende**
+
+Migraciones versionadas hacen el cambio revisable; ddl-auto no sustituye historial del esquema productivo.
+
+**4. Cierra**
+
+Guarda el log y secuencia de migraciones.
+
+#### Subtema 8.2: Ejecuta integración contra PostgreSQL · 10 min
+
+**1. Contexto**
+
+H2 puede aceptar SQL que el motor de producción interpreta distinto.
+
+**2. Hazlo tú**
+
+En **examples/java-jpa-lab/pom.xml** fija Flyway mediante el BOM de Spring Boot 4.1.2, agrega org.flywaydb:flyway-database-postgresql, org.postgresql:postgresql:42.7.14 y org.testcontainers:testcontainers-junit-jupiter:2.0.5 y testcontainers-postgresql:2.0.5 en scope test. Crea **src/test/java/academia/pedidos/PedidoPostgresTest.java** con @Testcontainers y PostgreSQLContainer<>("postgres:17.11-alpine3.24"). Ejecuta ./mvnw -q -Dtest=PedidoPostgresTest test con Docker activo.
+
+**Resultado esperado:** migraciones y repositorio corren contra PostgreSQL desechable.
+
+**Fallo deliberado:** usa postgres:latest. **Diagnóstico:** fija imagen/version para impedir cambios silenciosos del motor.
+
+**3. Entiende**
+
+H2 sirve para práctica rápida; Testcontainers comprueba compatibilidad con un motor real.
+
+**4. Cierra**
+
+Guarda imagen, salida de migración y resultado. Fuente: [Testcontainers PostgreSQL](https://java.testcontainers.org/modules/databases/postgres/).
+
+#### Subtema 8.3: Comprueba rollback fuera del contexto viejo · 10 min
+
+**1. Contexto**
+
+Un fallo en una línea no debe dejar la cabecera del pedido a medias.
+
+**2. Hazlo tú**
+
+En **PedidoPostgresTest.java**, fuerza una excepción tras guardar cabecera y antes de completar líneas; abre una transacción nueva para consultar y ejecuta ./mvnw -q -Dtest=PedidoPostgresTest test.
+
+**Resultado esperado:** PostgreSQL confirma que la transacción revirtió el agregado.
+
+**Fallo deliberado:** consulta con el mismo EntityManager que retiene la entidad. **Diagnóstico:** limpia el contexto o lee en otra transacción para ver lo que quedó almacenado.
+
+**3. Entiende**
+
+La prueba del motor real verifica SQL y rollback del proveedor, no solo objetos en memoria.
+
+**4. Cierra**
+
+Guarda migración, error y consulta de comprobación.
+
+---
+**Alcance de la prueba:** el contenedor comprueba PostgreSQL, pero no certifica la configuración productiva. Fija la imagen, aplica migraciones a una base vacía y prueba actualizar desde una versión anterior. No edites un script aplicado: crea otro con versión siguiente para reproducir el cambio. Explica qué tests necesitan Docker y cómo correrlos junto con pruebas rápidas. Fuentes: https://java.testcontainers.org/modules/databases/postgres/ y https://documentation.red-gate.com/flyway/flyway-concepts/migrations.

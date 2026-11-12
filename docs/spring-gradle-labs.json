@@ -1,0 +1,305 @@
+{
+  "gradle": "9.8.2",
+  "projects": [
+    {
+      "project": "examples/spring-amqp-rutaflow",
+      "boot": "4.1.2",
+      "javaRelease": "25",
+      "special": false
+    },
+    {
+      "project": "examples/spring-async-rutaflow",
+      "boot": "4.1.2",
+      "javaRelease": "25",
+      "special": false
+    },
+    {
+      "project": "examples/spring-avro-rutaflow",
+      "boot": null,
+      "javaRelease": "25",
+      "special": false
+    },
+    {
+      "project": "examples/spring-batch-rutaflow",
+      "boot": "4.1.2",
+      "javaRelease": "25",
+      "special": false
+    },
+    {
+      "project": "examples/spring-boot-cancel-rutaflow",
+      "boot": "4.1.2",
+      "javaRelease": "25",
+      "special": false
+    },
+    {
+      "project": "examples/spring-boot-hibernate-spatial-rutaflow",
+      "boot": "4.1.2",
+      "javaRelease": "25",
+      "special": false
+    },
+    {
+      "project": "examples/spring-boot-idempotency-rutaflow",
+      "boot": "4.1.2",
+      "javaRelease": "25",
+      "special": false
+    },
+    {
+      "project": "examples/spring-boot-integrador-rutaflow",
+      "boot": "4.1.2",
+      "javaRelease": "25",
+      "special": false
+    },
+    {
+      "project": "examples/spring-boot-jwt-ownership-rutaflow",
+      "boot": "4.1.2",
+      "javaRelease": "25",
+      "special": false
+    },
+    {
+      "project": "examples/spring-boot-layered-jar-rutaflow",
+      "boot": "4.1.2",
+      "javaRelease": "25",
+      "special": false
+    },
+    {
+      "project": "examples/spring-boot-mysql-spatial-rutaflow",
+      "boot": "4.1.2",
+      "javaRelease": "25",
+      "special": false
+    },
+    {
+      "project": "examples/spring-boot-native-rutaflow",
+      "boot": "4.1.2",
+      "javaRelease": "25",
+      "special": true
+    },
+    {
+      "project": "examples/spring-boot-probes-rutaflow",
+      "boot": "4.1.2",
+      "javaRelease": "25",
+      "special": false
+    },
+    {
+      "project": "examples/spring-boot-stomp-rutaflow",
+      "boot": "4.1.2",
+      "javaRelease": "25",
+      "special": false
+    },
+    {
+      "project": "examples/spring-boot-transaction-boundary-rutaflow",
+      "boot": "4.1.2",
+      "javaRelease": "25",
+      "special": false
+    },
+    {
+      "project": "examples/spring-boot-upload-push-rutaflow",
+      "boot": "4.1.2",
+      "javaRelease": "25",
+      "special": false
+    },
+    {
+      "project": "examples/spring-cache-rutaflow",
+      "boot": "4.1.2",
+      "javaRelease": "25",
+      "special": false
+    },
+    {
+      "project": "examples/spring-clean-architecture-rutaflow",
+      "boot": "4.1.2",
+      "javaRelease": "25",
+      "special": false
+    },
+    {
+      "project": "examples/spring-cloud-bus-rutaflow",
+      "boot": "4.1.2",
+      "javaRelease": "25",
+      "special": false
+    },
+    {
+      "project": "examples/spring-cloud-config-discovery-rutaflow",
+      "boot": "4.1.2",
+      "javaRelease": "25",
+      "special": false
+    },
+    {
+      "project": "examples/spring-cloud-contract-rutaflow",
+      "boot": "4.1.2",
+      "javaRelease": "25",
+      "special": true
+    },
+    {
+      "project": "examples/spring-ddd-rutaflow",
+      "boot": "4.1.2",
+      "javaRelease": "25",
+      "special": false
+    },
+    {
+      "project": "examples/spring-eventsourcing-rutaflow",
+      "boot": "4.1.2",
+      "javaRelease": "21",
+      "special": false
+    },
+    {
+      "project": "examples/spring-fundamentos-rutaflow",
+      "boot": "4.1.2",
+      "javaRelease": "25",
+      "special": false
+    },
+    {
+      "project": "examples/spring-gateway-rutaflow",
+      "boot": "4.1.2",
+      "javaRelease": "25",
+      "special": false
+    },
+    {
+      "project": "examples/spring-graphql-rutaflow",
+      "boot": "4.1.2",
+      "javaRelease": "25",
+      "special": false
+    },
+    {
+      "project": "examples/spring-grpc-rutaflow",
+      "boot": "4.1.2",
+      "javaRelease": "25",
+      "special": true
+    },
+    {
+      "project": "examples/spring-http-deadline-rutaflow",
+      "boot": "4.1.2",
+      "javaRelease": "25",
+      "special": false
+    },
+    {
+      "project": "examples/spring-kafka-rutaflow",
+      "boot": "4.1.2",
+      "javaRelease": "25",
+      "special": false
+    },
+    {
+      "project": "examples/spring-kafka-streams-rutaflow",
+      "boot": "4.1.2",
+      "javaRelease": "25",
+      "special": false
+    },
+    {
+      "project": "examples/spring-mail-rutaflow",
+      "boot": "4.1.2",
+      "javaRelease": "25",
+      "special": false
+    },
+    {
+      "project": "examples/spring-modulith-rutaflow",
+      "boot": "4.1.2",
+      "javaRelease": "25",
+      "special": false
+    },
+    {
+      "project": "examples/spring-reactor-rutaflow",
+      "boot": "4.1.2",
+      "javaRelease": "25",
+      "special": false
+    },
+    {
+      "project": "examples/spring-resilience-rutaflow",
+      "boot": "4.1.2",
+      "javaRelease": "21",
+      "special": false
+    },
+    {
+      "project": "examples/spring-saga-recovery-rutaflow",
+      "boot": "4.1.2",
+      "javaRelease": "21",
+      "special": false
+    },
+    {
+      "project": "examples/spring-saga-rutaflow",
+      "boot": "4.1.2",
+      "javaRelease": "21",
+      "special": false
+    },
+    {
+      "project": "examples/spring-scheduling-rutaflow",
+      "boot": "4.1.2",
+      "javaRelease": "25",
+      "special": false
+    },
+    {
+      "project": "examples/spring-security-keycloak-rutaflow",
+      "boot": "4.1.2",
+      "javaRelease": "21",
+      "special": false
+    },
+    {
+      "project": "examples/spring-ssrf",
+      "boot": "4.1.2",
+      "javaRelease": "25",
+      "special": false
+    },
+    {
+      "project": "examples/spring-stream-rutaflow",
+      "boot": "4.0.9",
+      "javaRelease": "21",
+      "special": false
+    },
+    {
+      "project": "examples/spring-tareas-rutaflow",
+      "boot": "4.1.2",
+      "javaRelease": "25",
+      "special": false
+    },
+    {
+      "project": "examples/spring-temporal-rutaflow",
+      "boot": "4.1.2",
+      "javaRelease": "25",
+      "special": false
+    },
+    {
+      "project": "examples/spring-token-relay-rutaflow",
+      "boot": "4.1.2",
+      "javaRelease": "21",
+      "special": false
+    },
+    {
+      "project": "examples/spring-tracing-rutaflow",
+      "boot": "4.1.2",
+      "javaRelease": "25",
+      "special": false
+    },
+    {
+      "project": "examples/spring-webclient-rutaflow",
+      "boot": "4.1.2",
+      "javaRelease": "25",
+      "special": false
+    },
+    {
+      "project": "examples/spring-webflux-decision-rutaflow",
+      "boot": "4.1.2",
+      "javaRelease": "25",
+      "special": false
+    },
+    {
+      "project": "examples/java-jpa-lab",
+      "boot": "4.1.2",
+      "javaRelease": "25",
+      "special": false
+    },
+    {
+      "project": "examples/archunit-hexagonal-rutaflow",
+      "boot": "4.1.2",
+      "javaRelease": "25",
+      "special": false
+    },
+    {
+      "project": "examples/testcontainers-singleton-rutaflow",
+      "boot": "4.1.2",
+      "javaRelease": "25",
+      "special": false
+    },
+    {
+      "project": "examples/rutaflow-material/spring-ai",
+      "boot": "4.0.9",
+      "javaRelease": "25",
+      "special": false
+    }
+  ]
+}

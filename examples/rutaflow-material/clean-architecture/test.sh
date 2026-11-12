@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-rm -rf build
-mkdir -p build
-javac -d build Main.java
-java -cp build Main
+build_dir="$(mktemp -d)"
+trap 'rm -rf "$build_dir"' EXIT
+javac -d "$build_dir" Main.java
+java -cp "$build_dir" Main

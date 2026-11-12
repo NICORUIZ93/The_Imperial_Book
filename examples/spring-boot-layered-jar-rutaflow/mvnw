@@ -1,0 +1,15 @@
+#!/bin/sh
+set -eu
+ROOT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+WRAPPER_DIR="$ROOT_DIR/.mvn/wrapper"
+WRAPPER_JAR="$WRAPPER_DIR/maven-wrapper.jar"
+PROPERTIES="$WRAPPER_DIR/maven-wrapper.properties"
+if [ ! -f "$WRAPPER_JAR" ]; then
+  DISTRIBUTION_URL="$(sed -n 's/^distributionUrl=//p' "$PROPERTIES")"
+  DISTRIBUTION_NAME="$(basename "$DISTRIBUTION_URL")"
+  DISTRIBUTION_VERSION="$(printf '%s' "$DISTRIBUTION_NAME" | sed 's/-bin.zip$//')"
+  WRAPPER_JAR_URL="https://repo.maven.apache.org/maven2/org/apache/maven/wrapper/maven-wrapper/3.3.2/maven-wrapper-3.3.2.jar"
+  mkdir -p "$WRAPPER_DIR"
+  curl -fsSL "$WRAPPER_JAR_URL" -o "$WRAPPER_JAR"
+fi
+exec java -classpath "$WRAPPER_JAR" -Dmaven.multiModuleProjectDirectory="$ROOT_DIR" org.apache.maven.wrapper.MavenWrapperMain "$@"

@@ -1,610 +1,340 @@
 # Módulo 14: Java en producción — memoria, benchmarks y runtime seguro
 
-El proyecto anterior usa concurrencia y produce un artefacto reproducible. Ahora debes demostrar que los hilos observan estado válido, que las optimizaciones no engañan tus mediciones, que datos hostiles no construyen objetos arbitrarios y que el runtime puede actualizarse y diagnosticarse. Cada experimento se crea desde una carpeta vacía.
+El proyecto anterior usa concurrencia y produce un artefacto reproducible. Para operarlo profesionalmente todavía debes demostrar que los hilos observan estado válido, que las optimizaciones no engañan tus mediciones, que datos hostiles no construyen objetos arbitrarios y que el runtime puede actualizarse y diagnosticarse. Este módulo trabaja esas fronteras con experimentos.
+
 
 ## Aprende construyendo
 
-### Tema 1: Compartir memoria requiere orden y visibilidad · Experto · 60 min
+### Tema 1: Compartir memoria requiere orden y visibilidad
 
-#### Aprende
+**¿Por qué es importante?** varios hilos pueden observar estado compartido en momentos distintos; `volatile` aporta visibilidad, pero no convierte operaciones compuestas en atómicas.
 
-**Prerrequisito:** JDK 27 y el Módulo 5 (concurrencia: hilos, locks, atomics). Comprueba `java --version`.
+#### Subtema 1.1: Detén un hilo con un flag visible · 10 min
 
-**Al terminar podrás:** explicar una relación happens-before, observar un fallo de visibilidad con una espera acotada y corregir una bandera de parada con `volatile` sin confundir visibilidad con atomicidad.
+**1. Contexto**
 
-Un `WorkerControl` con una bandera compartida sin sincronización puede seguir leyendo un valor antiguo aunque otro hilo ya haya escrito `true`. El Java Memory Model no promete visibilidad por intuición: una escritura y una lectura necesitan una relación happens-before.
+Un worker debe terminar cuando el coordinador cambia su estado de ejecución.
 
-**¿Por qué es importante?** Porque estos defectos dependen del JIT, la arquitectura y el timing; pueden desaparecer al añadir logs y reaparecer bajo carga.
+**2. Hazlo tú**
 
-**Mapa de subtemas críticos**
+Crea `src/WorkerControl.java` con `private volatile boolean detenido;`, un método `ejecutar()` que lea el flag en un bucle y `detener()` que lo cambie a `true`. Crea `src/Main.java`, arranca el worker, espera un segundo, llama a `detener()` y espera con `join()`. Ejecuta `javac -d out src/WorkerControl.java src/Main.java` y `java -cp out Main`.
 
-| Subtema | Papel | Evidencia |
-|---|---|---|
-| Carrera de datos y resultado permitido por el JMM | Núcleo | `terminado=false` observado sin `volatile` |
-| `volatile` como relación happens-before write→read | Núcleo | `terminado=true` tras declarar la bandera `volatile` |
-| Otras aristas happens-before (monitor, `start`/`join`) | Núcleo | Explicación con el `join` del ejemplo |
-| `volatile` no da atomicidad en read-modify-write | Límite | Contador `long` que pierde incrementos |
-| `AtomicLong`/`LongAdder` para secuencia leer-sumar-escribir | Variante | Total exacto con `incrementAndGet()` |
-| Publicación segura de colecciones (copia defensiva) | Diagnóstico | `Map.copyOf` antes de publicar por campo `volatile` |
-| Inmutabilidad superficial vs profunda en records | Error frecuente | Componente mutable expuesto por referencia |
+**Resultado esperado:** el worker observa el cambio y termina; el hilo principal continúa después de `join()`.
 
-Cada fila tiene su explicación individual a continuación.
+**Fallo deliberado:** quita `volatile` y repite el experimento. **Diagnóstico:** puede terminar o no según JIT y máquina; una corrida no prueba ausencia de carrera. Restaura `volatile` y razona con el modelo de memoria.
 
-**Carrera de datos y resultado permitido por el JMM (núcleo).** Cuando un hilo escribe `stopped` y otro lo lee sin ninguna arista de sincronización, el JMM no obliga a que la lectura observe la última escritura. El compilador JIT puede izar la lectura fuera del bucle y cachear `false` en un registro, así que el worker gira indefinidamente. No es un bug del hardware: es una ejecución legal del modelo.
+**3. Entiende**
 
-**`volatile` como relación happens-before write→read (núcleo).** Declarar la bandera `volatile` crea una arista: toda escritura `volatile` ocurre-antes de cualquier lectura `volatile` posterior del mismo campo. Eso prohíbe cachear el valor e inserta las barreras de memoria necesarias, por lo que el worker observa `true` y termina.
+Una escritura volatile ocurre antes de una lectura posterior del mismo campo; no asumas que todo acceso compartido obtiene esa garantía.
 
-**Otras aristas happens-before, monitor y `start`/`join` (núcleo).** No solo `volatile` establece orden. Desbloquear un monitor ocurre-antes de bloquearlo de nuevo; lo anterior a `Thread.start()` ocurre-antes del arranque del hilo; y todo lo hecho por un hilo ocurre-antes de que `join()` retorne. Por eso leer `control.iterations` tras `worker.join(500)` es seguro solo si el `join` realmente completó.
+**4. Cierra**
 
-**`volatile` no da atomicidad en read-modify-write (límite).** `counter++` son tres pasos: leer, sumar, escribir. `volatile` garantiza visibilidad de cada paso individual, pero dos hilos pueden leer el mismo valor antiguo y pisar el incremento del otro. El total final queda por debajo del esperado.
+Guarda las dos versiones y explica por qué el test sin volatile no es una prueba determinista.
 
-**`AtomicLong`/`LongAdder` para la secuencia completa (variante).** `AtomicLong.incrementAndGet()` ejecuta la secuencia leer-sumar-escribir como una sola operación atómica (CAS). `LongAdder` reparte el conteo en celdas para reducir contención bajo mucha concurrencia. Cualquiera devuelve el total exacto donde `volatile` fallaba.
+#### Subtema 1.2: Distingue visibilidad de atomicidad · 10 min
 
-**Publicación segura de colecciones (diagnóstico).** Un `volatile` publica de forma segura la *referencia*, pero si la colección referenciada es mutable, otro hilo puede verla a medio modificar. `Map.copyOf(...)` crea una copia inmutable antes de publicarla, de modo que quien lea por el campo `volatile` ve un objeto completo y congelado.
+**1. Contexto**
 
-**Inmutabilidad superficial vs profunda en records (error frecuente).** Un `record` hace finales sus componentes, pero no copia lo que apuntan. Si guardas un `List` mutable recibido por el constructor, quien tenga esa referencia externa puede mutar el estado del record. La copia defensiva en el constructor compacto cierra ese hueco.
+Dos workers incrementan un contador; cada incremento debe conservarse.
 
-**Analogía:** dos pizarras privadas no se sincronizan solas; `volatile` es el protocolo que hace visible la última escritura.
+**2. Hazlo tú**
 
-Escribir y después leer el mismo campo `volatile` establece happens-before. También lo establecen desbloquear y bloquear el mismo monitor, las acciones anteriores a `Thread.start` y la terminación de un hilo antes de que `join` retorne. `volatile` no vuelve atómico `counter++`: para read-modify-write usa `AtomicLong`, `LongAdder` o un lock.
+En `src/ContadorConcurrente.java`, usa `volatile int contador`, lanza dos hilos que ejecuten `contador++` 100000 veces y espera ambos con `join()`. Imprime resultado y compáralo con `AtomicInteger.incrementAndGet()` en la misma carga. Compila con `javac -d out src/ContadorConcurrente.java` y ejecuta `java -cp out ContadorConcurrente` varias veces.
 
-```mermaid
-sequenceDiagram
-    participant A as Hilo A
-    participant M as Memoria coordinada
-    participant B as Hilo B
-    A->>M: construir estado
-    A->>M: write volatile ready=true
-    M-->>B: read volatile ready (happens-before)
-    B->>B: leer estado completo
-```
+**Resultado esperado:** el volatile permite visibilidad, pero puede perder incrementos; `AtomicInteger` mantiene cada incremento indivisible.
 
-Un record tampoco vuelve inmutables sus componentes. Usa `Map.copyOf` u otra copia defensiva antes de publicar colecciones. OpenJDK jcstress permite explorar intercalados, pero una ejecución sin fallo no demuestra corrección.
+**Fallo deliberado:** declara `volatile` como arreglo a la pérdida. **Diagnóstico:** `contador++` lee, suma y escribe en pasos; usa atomicidad o un lock.
 
-#### Practica
+**3. Entiende**
 
-Crea una carpeta vacía `ejemplo-visibilidad-volatile` y dentro un archivo `Visibilidad.java`:
+Visibilidad y atomicidad son garantías distintas. Una prueba puede no manifestar el error en cada ejecución.
 
-```java
-public final class Visibilidad {
-    static final class WorkerControl {
-        private boolean stopped;
-        private long iterations;
+**4. Cierra**
 
-        void stop() {
-            stopped = true;
-        }
+Registra resultados de varias ejecuciones y qué herramienta ofrece la operación atómica.
 
-        void runLoop() {
-            while (!stopped) {
-                iterations++;
-            }
-        }
-    }
+#### Subtema 1.3: Protege un invariante con synchronized · 10 min
 
-    public static void main(String[] args) throws InterruptedException {
-        var control = new WorkerControl();
-        var worker = Thread.ofPlatform().start(control::runLoop);
-        Thread.sleep(1000);
-        control.stop();
-        worker.join(500);
-        System.out.println("terminado=" + !worker.isAlive());
-        System.out.println("iteraciones=" + control.iterations);
-        System.exit(worker.isAlive() ? 1 : 0);
-    }
-}
-```
+**1. Contexto**
 
-Ejecuta desde esa carpeta:
+La cantidad disponible y el número de reservas deben cambiar juntos para no aceptar más pedidos que existencias.
 
-```bash
-java Visibilidad.java
-```
+**2. Hazlo tú**
 
-El `join` acotado y `System.exit` evitan que el experimento quede colgado. En una ejecución observada con JDK 27 se obtuvo `terminado=false`; el JMM permite ese resultado, pero no garantiza que ocurra en todas las máquinas o ejecuciones. No uses `iteraciones` como medición fiable: también hay una carrera de datos.
+Crea `src/Inventario.java` con campos `disponibles` y `reservados`; implementa `reservar()` como método `synchronized` que decrementa uno y aumenta el otro bajo la condición `disponibles > 0`. Lanza varios hilos para reservar y ejecuta `javac -d out src/Inventario.java` y `java -cp out Inventario`.
 
-**Corrección:** cambia la declaración a `private volatile boolean stopped;` y vuelve a ejecutar. El hilo debe terminar y el programa debe mostrar `terminado=true`.
+**Resultado esperado:** al final `disponibles + reservados` mantiene el total inicial y `disponibles` no es negativo.
 
-**Fallo deliberado adicional:** sustituye la bandera por un contador `long` incrementado desde dos threads hasta un millón por thread. El total puede ser menor que dos millones. Añadir `volatile` no corrige la secuencia leer-sumar-escribir; reemplázala por `AtomicLong.incrementAndGet()`.
+**Fallo deliberado:** sincroniza solo la lectura de `disponibles`. **Diagnóstico:** la comprobación y los dos cambios forman una operación; protege el invariante completo bajo el mismo lock.
 
-**Si falla.** Si la versión sin `volatile` termina, no concluyas que sea correcta: has observado otra ejecución permitida. Conserva la explicación happens-before y repite solo si necesitas volver a observar el síntoma.
+**3. Entiende**
 
-#### Aplica
+Un monitor establece exclusión mutua y orden de memoria para el bloque protegido. Evita mezclar locks distintos para el mismo invariante.
 
-Crea `ConfiguracionRuta.java` con un record que reciba un `Map<String, Integer>` y haga una copia defensiva. Publica una instancia mediante un campo `volatile` y escribe dos clases: una actualiza la configuración completa y otra la lee. Añade un contador con `AtomicLong` y explica por qué no usas `volatile` para incrementarlo.
+**4. Cierra**
 
-**Cuándo no usarlo:** `volatile` no protege invariantes compuestos ni secuencias leer-modificar-escribir; usa `AtomicLong`, un lock o una operación atómica que abarque el invariante completo.
+Guarda el invariante antes y después y nombra el lock que lo protege. Fuente: [Java Language Specification, memoria entre hilos](https://docs.oracle.com/javase/specs/jls/se25/html/jls-17.html).
 
-**Checklist de salida**
+### Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo
 
-- [ ] La bandera de parada es `volatile`.
-- [ ] La espera del experimento está acotada.
-- [ ] Una ejecución sin fallo no se presenta como prueba formal.
-- [ ] Los incrementos compuestos usan atomicidad.
-- [ ] Las colecciones publicadas tienen copia defensiva.
-- [ ] Cada mecanismo se relaciona con su garantía happens-before.
+**¿Por qué es importante?** el resultado de una medición puede incluir calentamiento o trabajo que el compilador elimina; usa JMH para organizar las mediciones.
 
-**Proyecto integrador:** revisa el procesador del Módulo 13, enumera su estado compartido y documenta el mecanismo de publicación de cada dato.
+**Preparación:** crea un proyecto Maven con el arquetipo oficial JMH indicado por [OpenJDK JMH](https://openjdk.org/projects/code-tools/jmh/).
 
-**Errores comunes:** marcar todo `volatile`, publicar `this` desde un constructor y confundir inmutabilidad superficial con profunda.
+#### Subtema 2.1: Observa por qué un cronómetro ingenuo engaña · 10 min
 
-Fuentes oficiales revisadas el 2026-11-01: [Java Language Specification, capítulo 17 (Threads and Locks)](https://docs.oracle.com/javase/specs/jls/se27/html/jls-17.html) · [`AtomicLong`](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/atomic/AtomicLong.html) · [`LongAdder`](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/concurrent/atomic/LongAdder.html).
+**1. Contexto**
 
-### Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo · Experto · 65 min
+Una sola llamada cronometrada mezcla inicio de JVM, calentamiento y cálculo.
 
-#### Aprende
+**2. Hazlo tú**
 
-**Prerrequisito:** JDK 27, Maven 3.9 o superior (Módulo 8) y la medición ingenua con `System.nanoTime()`. Comprueba `java --version` y `mvn -version`.
+Crea `src/main/java/Cronometro.java` con un bucle que llame un millón de veces una función `contar(int n)` y mida con `System.nanoTime()`. Ejecuta `mvn package` y `java -cp target/classes Cronometro` cinco veces.
 
-**Al terminar podrás:** construir un benchmark JMH con calentamiento, parámetros y consumo de resultados, y distinguir una operación medida de otra eliminable por el JIT.
+**Resultado esperado:** obtienes duraciones distintas entre arranque y ejecuciones repetidas; no puedes atribuir la diferencia a una mejora del algoritmo.
 
-Una sola llamada a `System.nanoTime()` mezcla carga de clases, compilación, GC y planificación. Si el resultado no se devuelve ni se consume, el JIT puede eliminar el cálculo. JMH organiza warmup, iteraciones y forks.
+**Fallo deliberado:** conserva solo la corrida más rápida. **Diagnóstico:** reporta distribución y repeticiones; no selecciones un dato conveniente.
 
-**¿Por qué es importante?** Porque una medición falsa puede justificar una optimización que empeora el servicio real.
+**3. Entiende**
 
-**Mapa de subtemas críticos**
+Carga de clases, JIT, GC y scheduler afectan un cronómetro casero.
 
-| Subtema | Papel | Evidencia |
-|---|---|---|
-| Dead code elimination del JIT | Prerrequisito | `linearEliminable` con tiempo anormalmente bajo |
-| Consumir resultado: retorno vs `Blackhole` | Núcleo | `linearDevuelto` y `linearConsumido` miden trabajo real |
-| Warmup, forks e iteraciones | Núcleo | Flags `-wi -w -i -r -f` en la ejecución |
-| `@State`, `@Setup` y `@Param` | Núcleo | Setup fuera de la medición, dos tamaños parametrizados |
-| Procesador de anotaciones genera `BenchmarkList` | Diagnóstico | `annotationProcessorPaths` en el POM |
-| `Score` vs `Error` (distribución, no un número) | Decisión | Columnas comparadas en la salida |
-| Microbenchmark ≠ latencia de usuario | Límite | Conclusión contrastada con carga y JFR |
+**4. Cierra**
 
-Cada fila tiene su explicación individual a continuación.
+Guarda las cinco medidas y una limitación del método.
 
-**Dead code elimination del JIT (prerrequisito).** Si un método calcula un valor que nadie lee, el compilador C2 puede eliminar el cálculo completo porque no tiene efectos observables. El benchmark reportaría un tiempo cercano a cero que no mide nada. Entender esto es condición previa para leer cualquier resultado.
+#### Subtema 2.2: Escribe un benchmark consumible por JMH · 10 min
 
-**Consumir el resultado: retorno vs `Blackhole` (núcleo).** Hay dos formas de impedir la eliminación. Un `@Benchmark` que **devuelve** el valor ya lo entrega a JMH, que lo consume por ti. En un método `void` debes pasar el valor a `Blackhole.consume(...)`, que simula un uso opaco al optimizador. Usar las dos a la vez es redundante.
+**1. Contexto**
 
-**Warmup, forks e iteraciones (núcleo).** El warmup deja que el JIT compile el código caliente antes de medir; las iteraciones recogen varias muestras; los forks repiten en JVM nuevas para exponer varianza entre procesos (profile pollution, layout de memoria). Una sola iteración en una sola JVM no es un benchmark, es una anécdota.
+El benchmark debe mantener observable el resultado para que la JVM no elimine el cálculo.
 
-**`@State`, `@Setup` y `@Param` (núcleo).** `@State(Scope.Thread)` da estado por hilo sin compartirlo accidentalmente; `@Setup` prepara los datos *fuera* del tiempo medido para no cronometrar la construcción de la lista; `@Param` ejecuta el mismo benchmark con varios tamaños, revelando cómo escala en lugar de dar un único punto.
+**2. Hazlo tú**
 
-**El procesador de anotaciones genera `BenchmarkList` (diagnóstico).** JMH no usa reflexión en tiempo de ejecución: un annotation processor genera clases y el recurso `META-INF/BenchmarkList` en compilación. Si falta `annotationProcessorPaths` en el POM, el JAR arranca pero no encuentra benchmarks y falla con `Unable to find the resource: /META-INF/BenchmarkList`.
+Crea `src/main/java/BusquedaBenchmark.java` con `@State(Scope.Thread)`, un arreglo preparado en `@Setup`, un método `@Benchmark` que busque un valor y entregue el índice con `Blackhole.consume`. Ejecuta `mvn clean verify` y `java -jar target/benchmarks.jar -wi 2 -i 3 -f 1`.
 
-**`Score` frente a `Error` (decisión).** El resultado no es un número sino una distribución. `Score` es la media y `Error` el intervalo de confianza. Dos implementaciones cuyos intervalos se solapan no son distinguibles con esos datos; decidir solo por el `Score` ignora el ruido de la medición.
+**Resultado esperado:** JMH ejecuta calentamiento e iteraciones y reporta la métrica en lugar de una única duración.
 
-**Microbenchmark ≠ latencia de usuario (límite).** JMH mide una función aislada y caliente. No captura GC bajo carga real, contención entre peticiones, I/O de red ni colas. Una mejora en nanosegundos puede ser irrelevante o incluso negativa en p99; por eso la conclusión se contrasta con carga end-to-end y JFR.
+**Fallo deliberado:** elimina `Blackhole.consume`. **Diagnóstico:** el cálculo puede dejar de ser observable; devuelve el resultado o consúmelo.
 
-**Analogía:** cronometrar a un atleta mientras se ata los zapatos mezcla preparación y carrera.
+**3. Entiende**
 
-Un método `@Benchmark` que **devuelve** el resultado ya lo pone a disposición de JMH. No necesita además `Blackhole`. En un método `void`, consume el resultado con `Blackhole` para que no quede muerto.
+`@State` organiza datos, `@Setup` prepara fuera de la operación medida, `-wi` configura warmup y `-f` forks.
 
-```mermaid
-flowchart LR
-    Q["pregunta"] --> W["workload"] --> JMH["warmup · forks · iteraciones"]
-    JMH --> DIST["distribución y error"]
-    DIST --> JFR["JFR y carga del servicio"] --> USER["impacto de usuario"]
-```
+**4. Cierra**
 
-Un microbenchmark explica una función, no la latencia de usuario. Registra JDK, CPU, SO, flags, forks, error e intervalos; confirma después con carga y JFR.
+Guarda los parámetros, resultado y versión del JDK.
 
-#### Practica
+#### Subtema 2.3: Compara algoritmos con el mismo trabajo · 10 min
 
-Crea `ejemplo-jmh-cronometro/pom.xml` manualmente. Declara el artefacto `search-benchmark`, `maven.compiler.release` en `27`, UTF-8 y la propiedad `jmh.version` en `1.37`. Añade dependencias `jmh-core` y `jmh-generator-annprocess` con esa versión; la segunda usa ámbito `provided`.
+**1. Contexto**
 
-Dentro de `build/plugins`, añade `maven-compiler-plugin` `3.14.1` con esta ruta de procesamiento:
+Quieres elegir entre búsqueda lineal y binaria para listas ordenadas.
 
-```xml
-<configuration>
-  <annotationProcessorPaths>
-    <path>
-      <groupId>org.openjdk.jmh</groupId>
-      <artifactId>jmh-generator-annprocess</artifactId>
-      <version>${jmh.version}</version>
-    </path>
-  </annotationProcessorPaths>
-</configuration>
-```
+**2. Hazlo tú**
 
-Añade `maven-shade-plugin` `3.6.2`, ejecútalo en la fase `package` con el goal `shade`, fija `finalName` a `benchmarks` y configura `ManifestResourceTransformer` con `org.openjdk.jmh.Main` como `mainClass`.
+En `src/main/java/BusquedaBenchmark.java`, añade dos métodos `@Benchmark` que busquen la misma clave en el mismo arreglo ordenado: uno con `Arrays.stream(...).filter(...)` o recorrido lineal, otro con `Arrays.binarySearch`. Ejecuta `java -jar target/benchmarks.jar -wi 3 -i 5 -f 2`.
 
-Crea `src/main/java/academia/bench/SearchBenchmark.java`:
+**Resultado esperado:** JMH entrega medidas separadas de operaciones equivalentes sobre datos preparados.
 
-```java
-package academia.bench;
+**Fallo deliberado:** ordena el arreglo dentro del método binario pero no dentro del lineal. **Diagnóstico:** prepara los datos en `@Setup` para que cada método mida el mismo trabajo.
 
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.IntStream;
-import org.openjdk.jmh.annotations.*;
-import org.openjdk.jmh.infra.Blackhole;
+**3. Entiende**
 
-@State(Scope.Thread)
-@BenchmarkMode(Mode.AverageTime)
-@OutputTimeUnit(TimeUnit.NANOSECONDS)
-public class SearchBenchmark {
-    @Param({"100", "10000"})
-    int size;
-    List<Integer> values;
+Un benchmark compara una pregunta acotada. La carga del servicio real puede cambiar la decisión.
 
-    @Setup
-    public void setup() {
-        values = IntStream.range(0, size).boxed().toList();
-    }
+**4. Cierra**
 
-    @Benchmark
-    public void linearConsumido(Blackhole blackhole) {
-        blackhole.consume(values.indexOf(size - 1));
-    }
+Guarda salida, entorno, parámetros y conclusión provisional. Fuente: [OpenJDK JMH](https://openjdk.org/projects/code-tools/jmh/).
 
-    @Benchmark
-    public int linearDevuelto() {
-        return values.indexOf(size - 1);
-    }
+### Tema 3: Deserializar es permitir construcción y comportamiento
 
-    @Benchmark
-    public void linearEliminable() {
-        int result = values.indexOf(size - 1);
-    }
-}
-```
+**¿Por qué es importante?** datos serializados pueden intentar construir tipos inesperados; limitar la entrada antes de aceptar objetos es más seguro que confiar en su origen.
 
-Compila y ejecuta una medición corta de diagnóstico:
+#### Subtema 3.1: Reconoce por qué evitar datos nativos no confiables · 10 min
 
-```bash
-mvn clean package
-java -jar target/benchmarks.jar -wi 1 -w 1s -i 2 -r 1s -f 1
-```
+**1. Contexto**
 
-**Resultado esperado (verificado con Temurin 27.0.1):** JMH genera `META-INF/BenchmarkList` y ejecuta seis combinaciones: tres métodos por dos tamaños. En una corrida de diagnóstico se obtuvo una tabla como esta (tus números variarán):
+Un servicio recibe archivos de terceros; `ObjectInputStream` puede reconstruir un grafo de objetos y activar comportamiento de clases.
 
-```text
-Benchmark                         (size)  Mode  Cnt     Score   Error  Units
-SearchBenchmark.linearConsumido      100  avgt    2    43,884          ns/op
-SearchBenchmark.linearConsumido    10000  avgt    2  8631,106          ns/op
-SearchBenchmark.linearDevuelto       100  avgt    2    43,531          ns/op
-SearchBenchmark.linearDevuelto     10000  avgt    2  5182,169          ns/op
-SearchBenchmark.linearEliminable     100  avgt    2    35,678          ns/op
-SearchBenchmark.linearEliminable   10000  avgt    2  5251,819          ns/op
-```
+**2. Hazlo tú**
 
-Compara las columnas `Score` y `Error`, no solo una ejecución; con `Cnt 2` el error ni siquiera se calcula, señal de que faltan muestras para una conclusión publicable. Para un resultado publicable aumenta warmups, iteraciones y forks.
+Crea `src/Registro.java` como `record Registro(String guia, String estado) {}` y `src/EntradaJson.java` que convierta JSON con Jackson a ese tipo. Declara un esquema permitido `guia` y `estado`, ejecuta `mvn test` y confirma el rechazo de un campo no esperado según la configuración elegida.
 
-**Fallo deliberado:** `linearEliminable` ya contiene el error de diseño: calcula un resultado local que nadie usa, así que el JIT tiene permiso para eliminarlo. Observa un matiz importante en JDK 27: esta JVM soporta *Compiler Blackholes* y JMH lo avisa explícitamente ("Current JVM experimentally supports Compiler Blackholes"). Por eso, con un tamaño grande, `linearEliminable` puede salir con un tiempo parecido a los otros dos en vez de caer a cero: la máquina a veces no logra eliminar del todo el `indexOf`. Esa aparente normalidad es precisamente la trampa: no debes confiar en que un método sin consumo mida trabajo real, porque en otra JVM, otro JDK o con otro código sí se eliminará. Restaura el consumo devolviendo `result` o pasándolo a `Blackhole` para no depender del azar del optimizador.
+**Resultado esperado:** el programa acepta el DTO esperado y no crea clases arbitrarias a partir de la entrada.
 
-**Si falla.** Si aparece `Unable to find the resource: /META-INF/BenchmarkList`, falta el procesador de anotaciones en la compilación; revisa `annotationProcessorPaths` y vuelve a ejecutar `mvn clean package`.
+**Fallo deliberado:** usa `ObjectInputStream` para datos enviados por usuarios. **Diagnóstico:** no uses serialización nativa como formato de entrada confiable; adopta un formato de datos con contrato y límites.
 
-#### Aplica
+**3. Entiende**
 
-Añade `Collections.binarySearch(values, size - 1)` como cuarto benchmark y el tamaño `1000000`. Ejecuta la configuración completa elegida y documenta el entorno. Escribe una conclusión condicionada a los datos; después contrasta el resultado con una carga del servicio.
+Un DTO JSON también necesita límites de tamaño, esquema y validación; el formato no vuelve seguro cualquier dato automáticamente.
 
-**Cuándo no usarlo:** si dos implementaciones difieren claramente en orden de complejidad, el análisis puede bastar; reserva JMH para una pregunta acotada y confirma cualquier mejora con carga end-to-end y percentiles de usuario.
+**4. Cierra**
 
-**Checklist de salida**
+Guarda caso válido e inválido y el contrato admitido.
 
-- [ ] El proyecto y el POM se crearon manualmente.
-- [ ] El procesador JMH genera la lista de benchmarks.
-- [ ] Cada cálculo se devuelve o se consume.
-- [ ] La preparación queda fuera de la operación medida.
-- [ ] La medición incluye warmup, iteraciones y forks.
-- [ ] La conclusión registra error y entorno.
+#### Subtema 3.2: Filtra un formato legado · 10 min
 
-**Proyecto integrador:** formula una pregunta de optimización del procesador del Módulo 13 y conserva el benchmark que la responde.
+**1. Contexto**
 
-**Errores comunes:** cronometrar una sola llamada, medir setup accidentalmente y extrapolar nanosegundos a latencia de usuario.
+Un sistema antiguo aún debe leer una clase serializada local y controlada.
 
-Fuentes oficiales revisadas el 2026-11-01: [OpenJDK JMH](https://openjdk.org/projects/code-tools/jmh/) · [JMH samples (ejemplos canónicos)](https://github.com/openjdk/jmh/tree/master/jmh-samples/src/main/java/org/openjdk/jmh/samples) · [maven-compiler-plugin: `annotationProcessorPaths`](https://maven.apache.org/plugins/maven-compiler-plugin/compile-mojo.html#annotationProcessorPaths).
+**2. Hazlo tú**
 
-### Tema 3: Deserializar es permitir construcción y comportamiento · Experto · 60 min
+Crea `src/EventoLegacy.java` como una clase `Serializable` sencilla y `src/LeerLegacy.java` con `ObjectInputStream` y `ObjectInputFilter.Config.createFilter("maxdepth=5;maxrefs=100;EventoLegacy;!*")` (ajusta el paquete al ejemplo). Antes de leer, llama `in.setObjectInputFilter(filter)` y después `in.readObject()` dentro del try-with-resources. Ejecuta `mvn test` con datos propios generados localmente.
 
-#### Aprende
+**Resultado esperado:** se admite el tipo permitido y se rechaza cualquier otro.
 
-**Prerrequisito:** JDK 27, records (Módulo 7) e I/O de bytes (`ObjectInputStream`/`ObjectOutputStream`).
+**Fallo deliberado:** elimina `!*` de la regla de rechazo final. **Diagnóstico:** la lista de clases queda abierta; cierra el filtro y prueba con un tipo no permitido.
 
-**Al terminar podrás:** crear una deserialización nativa acotada con `ObjectInputFilter`, aceptar un DTO permitido y rechazar un tipo inesperado antes de usarlo.
+**3. Entiende**
 
-La serialización nativa puede ejecutar callbacks mientras reconstruye un grafo. Para entradas nuevas prefiere JSON con DTO cerrado y validación; conserva `ObjectInputStream` solo en una frontera legacy controlada.
+Un filtro de `ObjectInputFilter` limita clases y complejidad; configura profundidad y referencias conforme al formato real.
 
-**¿Por qué es importante?** Porque los bytes externos se convierten en objetos con memoria y comportamiento dentro del proceso.
+**4. Cierra**
 
-**Mapa de subtemas críticos**
+Guarda prueba permitida y rechazada. Fuente: [filtrado de serialización JDK](https://docs.oracle.com/en/java/javase/25/core/java-serialization-filters.html).
 
-| Subtema | Papel | Evidencia |
-|---|---|---|
-| Deserialización ejecuta construcción, no solo lectura | Prerrequisito | `Unexpected` se materializa sin filtro |
-| Allowlist por patrón terminada en `!*` | Núcleo | `con-filtro=InvalidClassException: REJECTED` |
-| `java.base/*` necesario para tipos internos | Diagnóstico | Lote válido rechazado al quitar esa regla |
-| Límites `maxdepth`/`maxrefs`/`maxbytes` | Núcleo | Payload profundo o enorme rechazado |
-| El filtro no sustituye validación del DTO | Límite | Invariantes validados tras construir |
-| Preferir JSON con DTO cerrado para entradas nuevas | Decisión | Alternativa sin `ObjectInputFilter` |
-| Allowlist, no denylist de gadgets | Error frecuente | Regla positiva mínima en vez de lista negra |
+#### Subtema 3.3: Limita tamaño y valida después de parsear · 10 min
 
-Cada fila tiene su explicación individual a continuación.
+**1. Contexto**
 
-**Deserialización ejecuta construcción, no solo lectura (prerrequisito).** `ObjectInputStream.readObject()` no copia datos pasivos: reconstruye un grafo de objetos invocando mecanismos internos y posibles callbacks (`readObject`, `readResolve`). Antes de que tu código toque nada, los bytes ya han dirigido la creación de instancias. Por eso el control debe ocurrir *durante* la construcción, no después.
+Un cuerpo JSON enorme puede agotar recursos aunque solo declare dos campos.
 
-**Allowlist por patrón terminada en `!*` (núcleo).** `ObjectInputFilter.Config.createFilter(...)` acepta patrones separados por `;`. Un patrón positivo (`academia.dto.ImportBatch`) permite; uno con `!` (`!*`) deniega. El `!*` final cierra la lista: todo lo no permitido explícitamente se rechaza con `InvalidClassException` y status `REJECTED`, antes de instanciar la clase.
+**2. Hazlo tú**
 
-**`java.base/*` necesario para tipos internos (diagnóstico).** Un DTO casi nunca viaja solo: un `List` arrastra `ArrayList` y su array interno `[Ljava.lang.Object;`, todos en el módulo `java.base`. Si tu allowlist no permite `java.base/*`, el filtro rechaza esas clases de apoyo y hasta el lote legítimo falla. El ajuste correcto no es abrir `*`, sino permitir las clases de `java.base` que el grafo realmente usa.
+En `src/main/java/EntradaJson.java`, rechaza entradas mayores a un límite antes de llamar a Jackson, valida `guia` no vacía y añade una prueba para texto grande y otra para campo faltante. Ejecuta `mvn test`.
 
-**Límites `maxdepth`/`maxrefs`/`maxbytes` (núcleo).** Aunque todos los tipos estén permitidos, un atacante puede enviar un grafo muy profundo o muy grande para agotar memoria o pila (denegación de servicio). `maxdepth` acota anidamiento, `maxrefs` el número de referencias y `maxbytes` el tamaño del stream. Son defensa de recursos, complementaria a la de tipos.
+**Resultado esperado:** el programa rechaza contenido demasiado grande y valores que no cumplen el contrato.
 
-**El filtro no sustituye la validación del DTO (límite).** Que el tipo sea `ImportBatch` no garantiza que sus datos sean válidos: la lista podría venir vacía o con códigos en blanco. El filtro controla *qué clase* se construye, no *qué valores* contiene. Los invariantes de negocio se comprueban después, en el constructor compacto o en una validación explícita.
+**Fallo deliberado:** parsea primero un cuerpo sin límite y valida después. **Diagnóstico:** el parser ya pudo consumir memoria; limita bytes antes de construir el objeto.
 
-**Preferir JSON con DTO cerrado para entradas nuevas (decisión).** La serialización nativa acopla el formato al grafo de clases y a su comportamiento. Para una frontera nueva, un parser JSON que mapea a un DTO cerrado no ejecuta callbacks arbitrarios ni reconstruye tipos sorpresa, así que no necesita `ObjectInputFilter`. Reserva `ObjectInputStream` para un borde legacy que no puedas cambiar.
+**3. Entiende**
 
-**Allowlist, no denylist de gadgets (error frecuente).** Mantener una lista negra de "clases peligrosas conocidas" siempre va por detrás: aparece una cadena de gadgets nueva y el filtro no la cubre. Una allowlist positiva, mínima y terminada en `!*` invierte la carga: solo entra lo que declaraste necesario.
+Seguridad requiere límite de entrada, contrato de tipos y validación semántica; cada capa protege un riesgo distinto.
 
-**Analogía:** no es leer una carta, sino aceptar un kit que puede ensamblar máquinas durante el desembalaje.
+**4. Cierra**
 
-Una allowlist restringe tipos; `maxdepth`, `maxrefs` y `maxbytes` limitan complejidad. Después valida invariantes del DTO. El filtro no reemplaza autenticación, límites HTTP ni validación de negocio.
+Conserva los dos tests fallidos y el límite adoptado.
 
-```mermaid
-flowchart LR
-    BYTES["bytes externos"] --> LIMIT["límite de tamaño"] --> PARSER["parser cerrado"]
-    PARSER --> TYPES["tipos permitidos"] --> RULES["invariantes"]
-    BUILD["dependencias y plugins"] --> VERIFY["checksums y SBOM"] --> UPDATE["actualización probada"]
-```
+### Tema 4: El runtime es parte del artefacto y necesita ciclo de vida
 
-#### Practica
+**¿Por qué es importante?** el JDK, los módulos incluidos y el proceso de actualización forman parte de lo que se despliega.
 
-Crea `ejemplo-objectinputfilter/academia/dto/ImportBatch.java`:
+#### Subtema 4.1: Averigua qué módulos necesita el programa · 10 min
 
-```java
-package academia.dto;
+**1. Contexto**
 
-import java.io.Serial;
-import java.io.Serializable;
-import java.util.List;
+Antes de reducir el runtime, necesitas conocer qué módulos usa el JAR.
 
-public record ImportBatch(List<String> items) implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 1L;
-}
-```
+**2. Hazlo tú**
 
-Crea `academia/dto/Unexpected.java` para representar un tipo que nunca debe entrar en este protocolo:
+Desde el directorio del módulo ejecuta `mkdir -p target` y `jar --create --file target/rutas.jar -C out/academia.rutas .`. Después usa `jdeps --multi-release 25 --print-module-deps target/rutas.jar` y guarda la lista de módulos requeridos.
 
-```java
-package academia.dto;
+**Resultado esperado:** obtienes dependencias de módulos del JDK usadas por el artefacto analizado.
 
-import java.io.Serial;
-import java.io.Serializable;
+**Fallo deliberado:** entrega a `jdeps` una carpeta de clases de otro build. **Diagnóstico:** limpia y vuelve a empaquetar el artefacto objetivo antes de analizarlo.
 
-public record Unexpected(String value) implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 1L;
-}
-```
+**3. Entiende**
 
-Crea en la carpeta raíz `FiltroDemo.java`:
+`jdeps` estima dependencias estáticas; reflexión o carga dinámica pueden requerir módulos que no detecta.
 
-```java
-import academia.dto.ImportBatch;
-import academia.dto.Unexpected;
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+**4. Cierra**
 
-public final class FiltroDemo {
-    static byte[] serialize(Object value) throws IOException {
-        var bytes = new ByteArrayOutputStream();
-        try (var output = new ObjectOutputStream(bytes)) {
-            output.writeObject(value);
-        }
-        return bytes.toByteArray();
-    }
+Guarda el comando y su salida junto al hash del JAR.
 
-    static Object read(byte[] bytes, boolean filtered) throws Exception {
-        try (var input = new ObjectInputStream(new ByteArrayInputStream(bytes))) {
-            if (filtered) {
-                input.setObjectInputFilter(ObjectInputFilter.Config.createFilter(
-                        "maxdepth=8;maxrefs=100;maxbytes=4096;"
-                        + "academia.dto.ImportBatch;java.base/*;!*"));
-            }
-            return input.readObject();
-        }
-    }
+#### Subtema 4.2: Construye un runtime mínimo con jlink · 10 min
 
-    public static void main(String[] args) throws Exception {
-        byte[] valid = serialize(new ImportBatch(new ArrayList<>(List.of("RF-1"))));
-        System.out.println("valido=" + read(valid, true));
+**1. Contexto**
 
-        byte[] unexpected = serialize(new Unexpected("tipo inesperado"));
-        System.out.println("sin-filtro=" + read(unexpected, false).getClass().getName());
-        try {
-            System.out.println(read(unexpected, true));
-        } catch (Exception e) {
-            System.out.println("con-filtro=" + e.getClass().getSimpleName()
-                    + ": " + e.getMessage());
-        }
-    }
-}
-```
+Una imagen de producción puede incluir solo los módulos necesarios para arrancar la aplicación.
 
-Compila y ejecuta:
+**2. Hazlo tú**
 
-```bash
-javac -d out academia/dto/ImportBatch.java academia/dto/Unexpected.java FiltroDemo.java
-java -cp out FiltroDemo
-```
+Con un proyecto modular, ejecuta `jlink --add-modules academia.rutas --module-path "$JAVA_HOME/jmods:out" --output runtime-rutas`; luego inicia con `runtime-rutas/bin/java -m academia.rutas/academia.rutas.app.Main`. Comprueba módulos con `runtime-rutas/bin/java --list-modules`.
 
-**Resultado esperado:** primero aparece `valido=ImportBatch[items=[RF-1]]`; después `sin-filtro=academia.dto.Unexpected` y finalmente `con-filtro=InvalidClassException: filter status: REJECTED`. El filtro por sí solo no sustituye la comprobación del DTO ni la validación de sus campos.
+**Resultado esperado:** el runtime personalizado arranca la aplicación y lista sus módulos incluidos.
 
-**Fallo deliberado:** elimina `java.base/*` dejando únicamente el DTO y `!*`. La deserialización del lote válido también será rechazada porque `ArrayList` y su array interno necesitan clases de `java.base`. Restaura la regla y reduce después la allowlist a las clases estrictamente necesarias, incluidos los arrays observados.
+**Fallo deliberado:** omite un módulo que la aplicación realmente necesita. **Diagnóstico:** revisa `jdeps`, el error de resolución y los módulos cargados dinámicamente antes de reconstruir.
 
-**Si falla.** `filter status: REJECTED` indica que debes identificar qué clase o límite rechazó el filtro; no respondas abriendo `!*` a `*`. Ajusta una regla concreta y vuelve a probar el tipo hostil.
+**3. Entiende**
 
-#### Aplica
+`jlink` crea una imagen específica; quien despliega debe reconstruirla ante parches del JDK.
 
-Añade en `ImportBatch` una validación que rechace listas vacías y códigos en blanco. Prueba un lote con más de cien referencias y otro que supere 4096 bytes. Después crea una alternativa JSON con DTO cerrado y documenta por qué ya no necesita `ObjectInputFilter`.
+**4. Cierra**
 
-**Checklist de salida**
+Conserva el tamaño de la imagen y módulos listados. Fuente: [herramientas jlink/jdeps](https://docs.oracle.com/en/java/javase/25/docs/specs/man/jlink.html).
 
-- [ ] El DTO y el programa se escribieron desde cero.
-- [ ] La allowlist termina en `!*`.
-- [ ] Profundidad, referencias y bytes tienen límites.
-- [ ] El DTO válido se deserializa correctamente.
-- [ ] El tipo inesperado se diagnostica sin usarse.
-- [ ] Los invariantes se validan antes de procesar el lote.
+#### Subtema 4.3: Actualiza y valida el runtime como artefacto · 10 min
 
-**Proyecto integrador:** aísla la entrada legacy del procesador detrás de un adaptador y conserva las pruebas hostiles.
+**1. Contexto**
 
-**Errores comunes:** usar una denylist de gadgets, ampliar el filtro hasta aceptar todo y validar solo después de construir un grafo ilimitado.
+Un runtime reducido creado una vez puede quedarse sin parches aunque el JAR de aplicación no cambie.
 
-Fuentes oficiales revisadas el 2026-11-01: [Serialization Filtering](https://docs.oracle.com/en/java/javase/27/core/serialization-filtering1.html) · [`ObjectInputFilter`](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/io/ObjectInputFilter.html).
+**2. Hazlo tú**
 
-### Tema 4: El runtime es parte del artefacto y necesita ciclo de vida · Experto · 60 min
+En `docs/runtime-java.md`, registra versión del JDK, módulos jlink, hash del JAR, comando de construcción y comando de smoke test. Reconstruye `runtime-rutas` con el JDK actualizado y corre `runtime-rutas/bin/java -m academia.rutas/academia.rutas.app.Main`.
 
-#### Aprende
+**Resultado esperado:** el runbook permite reconstruir y comprobar el runtime desde los mismos artefactos.
 
-**Prerrequisito:** JDK 27 con `jdeps` y `jlink`, y JPMS/módulos (Módulo 10); comprueba `java --version`.
+**Fallo deliberado:** actualiza solo la imagen de contenedor base y conserva la carpeta `runtime-rutas` antigua. **Diagnóstico:** la imagen jlink debe reconstruirse con el JDK parcheado.
 
-**Al terminar podrás:** derivar módulos desde un JAR, construir un runtime con `jlink`, ejecutar la aplicación dentro de ese runtime y diagnosticar un módulo ausente.
+**3. Entiende**
 
-Un JAR no define el runtime. `jdeps` descubre dependencias y `jlink` enlaza módulos en una imagen autocontenida. Reduce tamaño y módulos incluidos, pero el equipo debe reconstruirla con cada actualización relevante del JDK.
+El runtime personalizado es un artefacto versionado, no una carpeta desechable que se corrige automáticamente.
 
-**¿Por qué es importante?** Porque seguridad, diagnóstico y memoria dependen del runtime exacto desplegado, no del JDK del portátil.
+**4. Cierra**
 
-**Mapa de subtemas críticos**
+Guarda versión antigua y nueva, smoke test y responsable de actualización.
 
-| Subtema | Papel | Evidencia |
-|---|---|---|
-| `jdeps --print-module-deps` descubre módulos | Prerrequisito | Sale `java.base,java.logging,java.net.http` |
-| `jlink` enlaza una imagen autocontenida | Núcleo | `build/runtime/bin/java -jar app.jar` arranca |
-| Módulo ausente ⇒ fallo en ejecución | Diagnóstico | `NoClassDefFoundError` sin `java.util.logging` |
-| Detección estática no ve reflexión/`ServiceLoader` | Límite | Módulo dinámico declarado tras probar |
-| `-Xmx` no cubre memoria no-heap | Error frecuente | Margen para metaspace, stacks, buffers |
-| Ciclo de vida: reconstruir ante parche del JDK | Decisión | Runbook con versión, canary y rollback |
+---
 
-Cada fila tiene su explicación individual a continuación.
-
-**`jdeps --print-module-deps` descubre los módulos (prerrequisito).** Un JAR no declara qué módulos del JDK necesita. `jdeps` analiza el bytecode y, con `--print-module-deps`, imprime la lista exacta de módulos del sistema que usa el código. Esa lista es la entrada directa para `jlink`; no se adivina a ojo.
-
-**`jlink` enlaza una imagen autocontenida (núcleo).** `jlink` toma esos módulos y produce un runtime completo que incluye su propio `bin/java`. La aplicación corre con ese runtime sin necesitar un JDK instalado en la máquina destino, lo que reduce tamaño y superficie de ataque frente a enviar el JDK entero.
-
-**Un módulo ausente provoca fallo en ejecución (diagnóstico).** Si construyes la imagen sin un módulo que el código realmente usa, no hay error al enlazar: el fallo aparece al ejecutar, típicamente como `NoClassDefFoundError` al cargar la clase de ese módulo. El síntoma apunta directo al módulo que faltó añadir.
-
-**La detección estática no ve reflexión ni `ServiceLoader` (límite).** `jdeps` sigue referencias en el bytecode, pero una clase cargada por `Class.forName(nombre)` o un proveedor descubierto por `ServiceLoader` no aparece como dependencia estática. Esos módulos hay que declararlos a mano tras confirmarlo con una prueba de ejecución; no se resuelve metiendo todos los módulos a ciegas.
-
-**`-Xmx` no cubre la memoria no-heap (error frecuente).** `-Xmx` limita solo el heap. Metaspace, pilas de hilos, buffers directos y memoria nativa quedan fuera. Fijar `-Xmx` igual al límite del contenedor deja a la JVM sin espacio para esas regiones y el orquestador la mata por OOM; hay que dejar margen.
-
-**Ciclo de vida: reconstruir ante un parche del JDK (decisión).** La imagen de `jlink` es inmutable: no recibe parches de seguridad del JDK sola. Cuando sale una actualización relevante hay que reconstruirla, versionarla junto al JAR, promoverla con un canary y mantener un rollback compatible con los datos. El runtime pasa a ser parte del artefacto versionado.
-
-**Analogía:** una caja de herramientas a medida es más liviana, pero no recibe herramientas reparadas hasta que la reconstruyes.
-
-```mermaid
-flowchart LR
-    SRC["fuentes"] --> BUILD["build"] --> JAR["JAR + módulos"] --> RUNTIME["jlink runtime"]
-    RUNTIME --> IMAGE["imagen inmutable"] --> CANARY["canary"] --> PROMOTE["promover o rollback"]
-    PATCH["parche JDK"] --> RUNTIME
-```
-
-`-Xmx` limita heap, no metaspace, stacks, buffers ni memoria nativa. En contenedor deja margen, usa usuario no root y forma exec para recibir señales. Versiona JAR y runtime, y define rollback compatible con los datos.
-
-#### Practica
-
-Crea `ejemplo-jlink-runtime/src/academia/runtime/RuntimeDemo.java`. Construye un `HttpClient` y un `HttpRequest`, pero no envíes tráfico: el objetivo es comprobar módulos, no depender de una red.
-
-```java
-package academia.runtime;
-
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.util.logging.Logger;
-
-public final class RuntimeDemo {
-    private static final Logger LOG = Logger.getLogger(RuntimeDemo.class.getName());
-
-    public static void main(String[] args) {
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder(
-                URI.create("http://127.0.0.1:9/salud")).GET().build();
-        LOG.info(() -> "cliente=" + client.version() + ", destino=" + request.uri());
-    }
-}
-```
-
-Compila, empaqueta y consulta los módulos:
-
-```bash
-export JAVA_HOME="$(/usr/libexec/java_home -v 27)"
-export PATH="$JAVA_HOME/bin:$PATH"
-javac -d classes src/academia/runtime/RuntimeDemo.java
-jar --create --file app.jar --main-class academia.runtime.RuntimeDemo -C classes .
-jdeps --print-module-deps --ignore-missing-deps app.jar
-```
-
-**Resultado esperado:** `java.base,java.logging,java.net.http`. Construye y ejecuta el runtime completo:
-
-```bash
-jlink --add-modules java.base,java.logging,java.net.http \
-  --strip-debug --no-header-files --no-man-pages \
-  --output build/runtime
-build/runtime/bin/java -jar app.jar
-du -sh build/runtime "$JAVA_HOME"
-```
-
-Debe aparecer un log con `cliente=HTTP_2` y el URI local. En el entorno de referencia el runtime ocupó 48 MB frente a 296 MB del JDK; tus cifras pueden variar y debes medirlas en tu máquina.
-
-**Fallo deliberado:** crea otra imagen con `--add-modules java.base,java.net.http --output build/runtime-sin-log` y ejecútala. La aplicación fallará por la ausencia de `java.util.logging`, normalmente con `NoClassDefFoundError`. Reconstruye con los tres módulos indicados por `jdeps`.
-
-**Si falla.** Si `jdeps` no muestra un módulo usado solo mediante reflexión o `ServiceLoader`, la detección estática no basta: declara esa necesidad tras una prueba de ejecución. No añadas todos los módulos para ocultar el diagnóstico.
-
-#### Aplica
-
-Genera el argumento `--add-modules` desde la salida real de `jdeps`, documenta los módulos y compara tamaños. Añade un `Runtime.getRuntime().addShutdownHook(...)` que cierre un recurso con deadline y escribe un runbook para reconstruir el runtime ante un parche del JDK.
-
-**Checklist de salida**
-
-- [ ] El JAR contiene la clase creada manualmente.
-- [ ] `jdeps` identifica los tres módulos.
-- [ ] El runtime personalizado ejecuta el JAR.
-- [ ] El fallo por módulo ausente queda diagnosticado.
-- [ ] Los tamaños se miden en el entorno actual.
-- [ ] El runbook versiona y reconstruye JAR y runtime.
-
-**Proyecto integrador:** empaqueta el procesador del Módulo 13 con su runtime y conserva el artefacto anterior para rollback.
-
-**Errores comunes:** crear la imagen una sola vez, fijar `-Xmx` igual al límite del contenedor y olvidar dependencias dinámicas.
-
-Fuentes oficiales revisadas el 2026-11-01: [jlink](https://docs.oracle.com/en/java/javase/27/docs/specs/man/jlink.html) · [jdeps](https://docs.oracle.com/en/java/javase/27/docs/specs/man/jdeps.html).
 
 ## Revisión oficial de plataforma — octubre de 2026
 
-Para producción, la base recomendada sigue siendo la LTS más reciente, **Java 25 LTS**. El curso exige **JDK 27** para estudiar la evolución de la plataforma sin confundir previews con contratos permanentes. Antes de adoptar una función nueva registra su JEP y estado, compila y prueba en el JDK objetivo y evita publicar artefactos que necesiten `--enable-preview` salvo decisión explícita.
+### Java LTS frente a entregas semestrales
+
+La base de producción recomendada para el curso sigue siendo **Java 25 LTS** (liberada en septiembre de 2025, con soporte bajo NFTC hasta septiembre de 2028, un año después de la próxima LTS); **JDK 27** —liberado el 15 de septiembre de 2026— es la entrega semestral más reciente para estudiar hacia dónde evoluciona la plataforma, sin confundir sus previews con contratos permanentes todavía no finalizados. El set final de JDK 27 incluye nueve JEPs: **G1 como recolector de basura por defecto en todos los entornos** (JEP 523 — G1 ya era el default desde Java 9 en máquinas "server-class", pero en entornos restringidos, con un solo CPU o menos de 1792&nbsp;MB de memoria, la JVM caía a Serial GC; desde JDK 27 usa G1 siempre, salvo que se especifique otro recolector explícitamente), intercambio de claves híbrido poscuántico para TLS 1.3, lazy constants, cabeceras de objeto compactas (compact object headers), redacción de datos en proceso para JFR, una Vector API continuada, codificaciones PEM para objetos criptográficos, coincidencia de patrones con tipos primitivos en `instanceof`/`switch`, y la **séptima ronda de preview** de Structured Concurrency (JEP 533) — que ya fue propuesta como candidata a finalizarse sin cambios adicionales, tras seis rondas previas desde JDK 21. Una preview sigue requiriendo flags explícitos (`--enable-preview`), puede cambiar entre rondas y no debe filtrarse a una API pública estable.
+
+**Aplicación al proyecto:** compila y prueba en 25 y 27, confirma que el recolector por defecto (G1) sigue comportándose igual que antes tras el cambio de JDK 26→27, registra JEP/estado de cada función nueva antes de adoptarla, y evita publicar artefactos que necesiten preview (como Structured Concurrency) salvo decisión explícita y documentada.
+
 
 ## Construcción guiada del capítulo
 
 ### Proyecto: endurecimiento medible del procesador concurrente
 
-Parte del proyecto creado en el Módulo 13 y conserva una copia funcional anterior.
+Parte del proyecto 13 y conserva un tag funcional anterior.
 
-1. Identifica cada estado compartido, su invariante y mecanismo happens-before.
-2. Crea el experimento de visibilidad y corrígelo con el mecanismo mínimo.
-3. Compara `volatile`, `AtomicLong`, `LongAdder` y lock solo donde tengan semántica equivalente.
-4. Escribe benchmarks JMH con forks, warmup, parámetros y resultados consumidos.
-5. Contrasta la optimización bajo carga del servicio y JFR; revierte si no mejora el objetivo.
-6. Sustituye serialización nativa por DTO JSON cerrado; si conservas un caso legacy, aplica filtro y límites.
-7. Prueba tipo no permitido, profundidad, array enorme, payload inválido y secreto ausente.
-8. Fija versiones, registra dependencias y prueba cualquier actualización.
-9. Usa `jdeps` y `jlink`; compara módulos, tamaño y arranque.
-10. Construye el despliegue no root con límite de memoria, healthcheck y JFR habilitable.
-11. Documenta parche JDK, canary, compatibilidad, backup y rollback.
+1. Identifica cada estado compartido, su invariante y mecanismo happens-before. Elimina publicación de colecciones mutables.
+2. Crea un ejemplo defectuoso de visibilidad y un test jcstress con outcomes aceptables/prohibidos; corrige con el mecanismo mínimo.
+3. Compara `volatile`, `AtomicLong`, `LongAdder` y lock únicamente para workloads donde tengan semántica equivalente.
+4. Escribe dos benchmarks JMH: uno ingenuo deliberadamente y otro con forks, warmup, parámetros y resultados consumidos. Explica la diferencia.
+5. Contrasta la optimización elegida bajo carga del servicio y JFR; revierte si no mejora el objetivo.
+6. Sustituye serialización nativa en una entrada por DTO JSON cerrado. Si conservas un caso legacy, aplica filtro y límites.
+7. Prueba tipo no permitido, profundidad, array enorme, JSON extra, payload inválido y secreto ausente.
+8. Genera SBOM, registra procedencia de dependencias y corrige una vulnerabilidad simulada mediante actualización con tests.
+9. Usa `jdeps` y `jlink` para crear runtime mínimo. Compara módulos, tamaño y arranque con JDK completo.
+10. Construye contenedor no root con límite de memoria, healthcheck y JFR habilitable. Fuerza carga, SIGTERM y presión de memoria.
+11. Documenta reconstrucción ante parche JDK, canary, compatibilidad, backup y rollback.
 
-**Verificación:** entrega grafo happens-before, salida JMH con entorno, pruebas hostiles, módulos jlink, tamaños y runbook. La revisión de jcstress, SBOM, contenedor y análisis visual de JFR permanece como revisión manual pendiente si no se ejecuta en el entorno correspondiente.
+**Verificación:** entrega grafo happens-before, resultados jcstress, salida JMH con entorno, JFR antes/después, pruebas hostiles, SBOM, módulos jlink, tamaños y runbook. CI ejecuta unitarias, stress acotado, verificación de dependencias y smoke test del runtime personalizado.
 
 **Errores comunes y soluciones**
 
-- Marcar todo volatile: protege visibilidad, no invariantes compuestos.
-- Confiar en que no falló el stress: justifica con el JMM.
-- Cronometrar un loop: usa JMH y consume resultados.
-- Deserializar sin límites: restringe durante la construcción del grafo.
-- Fijar `-Xmx` igual al límite: deja margen para memoria no heap.
-- Crear jlink una vez: reconstruye ante actualizaciones del JDK.
+- Marcar todo volatile: protege visibilidad, no invariantes compuestos; diseña dueño y atomicidad.
+- Confiar en que no falló el stress: justifica con JMM y usa stress para buscar ejecuciones.
+- Cronometrar un loop: usa JMH y evita trabajo eliminado, constantes y falta de warmup.
+- Deserializar y validar después sin límites: limita antes/durante construcción del grafo.
+- Activar filtro global amplio: usa allowlist contextual y prueba clases y complejidad.
+- Fijar `-Xmx` igual al límite: deja memoria para metaspace, stacks, buffers, JIT y nativa.
+- Crear jlink una vez: versiona y reconstruye runtime ante cada actualización relevante.
 
 <!-- OFFICIAL-TOPIC-ATLAS:START -->
 ## Atlas completo de temas oficiales
 
 Derivado de la [documentación oficial](https://docs.oracle.com/en/java/javase/25/), sus referencias, migraciones y guías de operación. Inventariar no equivale a dominar: cada selección se demuestra con código, prueba, medición y explicación. **Cobertura: 49 temas.**
 
-| Área | Temas que deben poder explicarse y aplicarse | Resultado verificable |
+| Área | Temas que deben poder explicarse y aplicarse | Evidencia práctica |
 |---|---|---|
 | Lenguaje | `tipos y control` · `objetos` · `records` · `sealed types` · `pattern matching` · `genéricos` · `anotaciones` · `JPMS` | tarifas |
 | Biblioteca | `colecciones` · `streams` · `Optional` · `fechas` · `i18n` · `regex` · `NIO.2` · `HTTP Client` · `serialización segura` | tarifas |
@@ -617,3 +347,4 @@ Derivado de la [documentación oficial](https://docs.oracle.com/en/java/javase/2
 
 Para cada tema responde qué problema resuelve, cuál es su modelo mental, cómo falla, cómo se verifica y cuándo no conviene. Elige uno por área e intégralos en un proyecto propio de ampliación. Entrega diagrama, ADR, pruebas de éxito y fallo, una medición, una amenaza y el enlace oficial con versión y fecha. Una API preview se aísla en laboratorio y nunca se presenta como base estable.
 <!-- OFFICIAL-TOPIC-ATLAS:END -->
+

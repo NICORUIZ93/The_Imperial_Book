@@ -2,1437 +2,470 @@
 
 ## Aprende construyendo
 
-Cada tema es un proyecto independiente que comienza en una carpeta vacía. Escribe manualmente todos los archivos indicados, instala las dependencias dentro de ese proyecto y no copies ni importes archivos de otros temas o ejemplos prefabricados de la academia. Las salidas descritas son resultados que debes comprobar en tu entorno; su inclusión en la lección no acredita que los ejemplos se hayan ejecutado por ti.
+Cada tema es independiente y comienza en una carpeta vacía.
 
-### Tema 1: TypeScript en Node.js · Avanzado · 60 min
+### Tema 1: TypeScript en Node.js
 
-#### Aprende
+#### Paso 1 · Objetivo y preparación
 
-**Prerrequisitos:** Node.js 24 LTS, o Node.js 22.18.0 o superior dentro de la línea 22; npm, terminal y TypeScript básico. Comprueba el runtime con `node --version`. Este proyecto no reutiliza ningún archivo.
+Al finalizar podrás ejecutar un archivo `.ts` directamente con `node archivo.ts`, sin paso de compilación previo, usando el soporte nativo de tipos de Node, y explicar qué validaciones NO hace ese soporte. Prerrequisitos: Node.js 24 LTS (o 22.18.0+ en la línea 22, donde el borrado de tipos se habilita por defecto); comprueba `node --version`.
 
-**Al terminar podrás:** ejecutar un archivo `.ts` directamente con `node`, comprobar que el borrado de tipos no valida el programa y añadir `tsc --noEmit` como una verificación independiente antes de aceptar el código.
+#### Paso 2 · Contexto y caso real
 
-**Por qué importa:** quitar la compilación previa acorta el ciclo local de un worker que asigna conductores, pero confundir ejecución con validación permitiría publicar errores de tipos que TypeScript sí puede detectar. Ejecutar y verificar son dos trabajos distintos.
+El equipo quiere escribir el worker que asigna conductores a pedidos directamente en TypeScript, pero el pipeline actual compila con `tsc` a un directorio `dist/` antes de cada ejecución — un paso extra que ralentiza el ciclo de desarrollo local para un script que solo corre una vez por invocación.
 
-Node realiza **type stripping**: elimina en memoria anotaciones como `: string` y `: Pedido` y ejecuta el JavaScript resultante. No compara los argumentos con las interfaces ni produce un diagnóstico de tipos. `tsc --noEmit`, en cambio, analiza el proyecto y reporta incompatibilidades sin escribir JavaScript. El pipeline necesita ambos pasos porque uno demuestra el comportamiento en runtime y el otro una parte de la corrección estática.
+#### Paso 3 · Teoría, modelo mental y analogía
 
-El borrado nativo sirve para sintaxis **borrable**. Una construcción que necesita generar código, como ciertos `enum` o decoradores, exige una transformación real y no debe darse por soportada solo porque el archivo tenga extensión `.ts`.
+Node ejecuta archivos `.ts` directamente eliminando (strip) las anotaciones de tipo del código fuente en memoria, sin verificar que esos tipos sean correctos — es "borrado de tipos" (type stripping), no un compilador: transforma `const x: number = 5` en `const x = 5` y ejecuta el resultado, sin comprobar si `5` realmente encaja con `number` en ningún otro punto del programa. La analogía: quitarle los carteles descriptivos a las cajas de un almacén antes de moverlas, sin revisar si el contenido real coincide con lo que decía cada cartel.
 
-**Analogía:** quitar las etiquetas de las cajas permite moverlas sin leer cada etiqueta, pero no comprueba que el contenido coincida con lo que decían. El chequeo de TypeScript es la inspección separada de esas etiquetas antes de aceptar el envío.
+#### Paso 4 · Demostración guiada desde cero
 
-#### Practica
-
-Desde una carpeta vacía crea `lab-ts-asignacion` y entra en ella:
-
-```bash
-mkdir lab-ts-asignacion
-cd lab-ts-asignacion
-mkdir src
-```
-
-Crea manualmente `package.json`:
-
-```json
-{
-  "name": "lab-ts-asignacion",
-  "version": "1.0.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "start": "node src/demo.ts",
-    "test": "node --test src/asignar.test.ts",
-    "typecheck": "tsc --noEmit"
-  },
-  "devDependencies": {
-    "@types/node": "^24.0.0",
-    "typescript": "^5.9.3"
-  }
-}
-```
-
-Crea `tsconfig.json`:
-
-```json
-{
-  "compilerOptions": {
-    "target": "ES2022",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "strict": true,
-    "noEmit": true,
-    "allowImportingTsExtensions": true,
-    "erasableSyntaxOnly": true
-  },
-  "include": ["src/**/*.ts"]
-}
-```
-
-Crea `src/asignar.ts` con la operación y su contrato:
+Crea `src/asignar.ts`:
 
 ```ts
-export interface Pedido {
-  id: string;
-  conductorId: string | null;
-}
+interface Pedido { id: string; conductorId: string | null; }
 
-export function asignarConductor(pedido: Pedido, conductorId: string): Pedido {
+function asignarConductor(pedido: Pedido, conductorId: string): Pedido {
   return { ...pedido, conductorId };
 }
-```
 
-Crea `src/demo.ts`:
-
-```ts
-import { asignarConductor } from "./asignar.ts";
-
-const resultado = asignarConductor(
-  { id: "p-1", conductorId: null },
-  "c-9",
-);
+const resultado = asignarConductor({ id: "p-1", conductorId: null }, "c-9");
 console.log(resultado);
 ```
 
-Crea `src/asignar.test.ts`:
-
-```ts
-import test from "node:test";
-import assert from "node:assert/strict";
-import { asignarConductor } from "./asignar.ts";
-
-test("asigna el conductor sin mutar el pedido original", () => {
-  const original = { id: "p-1", conductorId: null };
-  const resultado = asignarConductor(original, "c-9");
-
-  assert.deepEqual(resultado, { id: "p-1", conductorId: "c-9" });
-  assert.equal(original.conductorId, null);
-});
-```
-
-Instala las dependencias para crear también el lockfile y ejecuta las tres comprobaciones:
+**Ejecuta el ejemplo** (monta el proyecto Node y córrelo):
 
 ```bash
-npm install
-npm start
-npm test
-npm run typecheck
+mkdir -p ejemplo-node/src
+cd ejemplo-node
+npm init -y
+npm pkg set type=module
+node src/asignar.ts
 ```
 
-**Resultado esperado:** `npm start` imprime `{ id: 'p-1', conductorId: 'c-9' }` sin crear `dist/`; la prueba nativa pasa y TypeScript termina sin errores. No se invoca `ts-node` ni una compilación previa.
 
-**Fallo deliberado y corrección:** en `src/demo.ts` sustituye `"c-9"` por `42`. Ejecuta primero `npm start`: Node imprime `conductorId: 42` porque borra la anotación sin verificarla. Ejecuta después `npm run typecheck`: TypeScript reporta que `number` no es asignable a `string`. Restaura `"c-9"` y repite ambos comandos; la corrección debe quedar confirmada por el chequeo, no solo por una salida aparentemente razonable.
+Ejecuta directamente con `node src/asignar.ts` (sin `tsc`, sin `ts-node`, sin ningún paso de compilación). **Resultado esperado:** Node elimina las anotaciones de tipo (`: Pedido`, `: string`) en memoria y ejecuta el JavaScript resultante, imprimiendo `{ id: 'p-1', conductorId: 'c-9' }`, sin que ningún archivo `.js` compilado se haya generado en disco.
 
-**Práctica guiada:** añade temporalmente a `src/demo.ts` `const invalido = { conductorId: null } satisfies import("./asignar.ts").Pedido;`. `npm run typecheck` debe señalar la propiedad `id` ausente, aunque `npm start` siga ejecutando. Retira esa línea y añade en cambio una prueba que use otro pedido válido; conserva el código final sin errores ignorados.
+#### Paso 5 · Práctica guiada
 
-**Ejercicio independiente:** agrega a `src/asignar.ts` una función `reasignarConductor(pedido, conductorId)` que rechace en runtime un `conductorId` vacío y escribe en `src/asignar.test.ts` un caso para el rechazo y otro para una reasignación válida. Ejecuta `npm test && npm run typecheck` y explica por qué la validación de entrada en runtime sigue siendo necesaria aunque el proyecto pase el chequeo estático.
+Pista: cambia la llamada a `asignarConductor({ id: "p-1", conductorId: null }, 42)` (pasando un número en vez de un string) y ejecuta de nuevo. Ese es el fallo deliberado: `node src/asignar.ts` ejecuta igual, sin ningún error, porque el soporte nativo de Node solo BORRA las anotaciones de tipo, no las VERIFICA; el error de tipos solo lo detectaría `tsc --noEmit` corriendo por separado como un paso de chequeo de tipos.
 
-#### Aplica
+#### Paso 6 · Práctica independiente
 
-**Proyecto de aplicación — normalizador de rutas:** desde otra carpeta vacía llamada `app-ts-rutas`, crea manualmente `package.json`, `tsconfig.json`, `src/ruta.ts`, `src/demo.ts` y `src/ruta.test.ts`. Define una unión `EstadoRuta = "pendiente" | "en_curso" | "entregada"`, una función que avance solo al siguiente estado y pruebas para los dos avances y para el rechazo de una ruta ya entregada. Ejecuta el `.ts` con Node, las pruebas y `tsc --noEmit` dentro de ese proyecto; el resultado debe incluir dos transiciones válidas y un error controlado, sin importar archivos de `lab-ts-asignacion`.
+Corregí el Paso 5 ejecutando `npx tsc --noEmit` sobre el mismo archivo y confirmá que SÍ reporta el error de tipos que la ejecución directa con `node` silenciosamente ignoró; documentá en una frase por qué ambos pasos (ejecución nativa + chequeo de tipos separado) son necesarios en un pipeline de CI real.
 
-**Checklist de salida**
+#### Paso 7 · Cierre y evidencia
 
-- [ ] Creaste el proyecto, la configuración, el código y las pruebas desde una carpeta vacía.
-- [ ] `node` ejecutó los `.ts` sin generar una carpeta `dist/`.
-- [ ] Observaste que un argumento `42` se ejecuta, pero `tsc --noEmit` lo rechaza.
-- [ ] Restauraste el argumento correcto y repetiste ejecución, pruebas y chequeo.
-- [ ] Puedes explicar por qué type stripping no equivale a type checking.
-- [ ] El proyecto de aplicación tiene sus propios archivos y no importa este laboratorio.
+Entregá la ejecución directa del `.ts` del Paso 4, el error de tipos no detectado en ejecución del Paso 5, y el chequeo separado con `tsc --noEmit` del Paso 6; explicá por qué el soporte nativo de tipos de Node acelera el desarrollo local pero no reemplaza un chequeo de tipos explícito en CI. Siguiente paso: aplica GraphQL Federation para componer varios subgrafos de este mismo dominio. Errores comunes: asumir que `node archivo.ts` valida tipos (solo los borra), omitir `tsc --noEmit` en el pipeline de CI confiando solo en la ejecución nativa, y mezclar sintaxis de TypeScript que requiere transformación real (enums con valores computados, decoradores) que el borrado de tipos simple no soporta. Fuentes oficiales: [Node.js — TypeScript](https://nodejs.org/en/learn/typescript/run-natively) y [TypeScript — tsc CLI](https://www.typescriptlang.org/docs/handbook/compiler-options.html).
+
+**¿Por qué es importante?** Ejecutar `.ts` nativamente acelera el ciclo de desarrollo local sin compilación previa, pero como solo borra anotaciones sin verificarlas, un pipeline real todavía necesita `tsc --noEmit` como chequeo de tipos explícito.
+
+**Evidencia de aprendizaje:** entrega la ejecución nativa funcionando, el error de tipos no detectado al pasar un valor incorrecto, y el chequeo separado con `tsc --noEmit` confirmando el error real.
+
+**Conceptos clave:** type stripping, borrado de tipos sin verificación, `node archivo.ts`, `tsc --noEmit` como chequeo separado.
+
+**Diagrama:**
 
 ```mermaid
 flowchart LR
-  Source[Archivo TypeScript] --> Node[Node elimina tipos compatibles]
-  Node --> Runtime[Ejecuta JavaScript]
-  Source --> TSC[tsc --noEmit]
-  TSC --> Types[Detecta errores de tipos]
-  Runtime -. no valida tipos .-> Types
+  F[archivo .ts] --> S["node: strip types (sin verificar)"]
+  S --> E[JavaScript ejecutado]
+  F --> T["tsc --noEmit (verifica, no ejecuta)"]
+  T --> R[errores de tipo reportados]
 ```
 
-**Cuándo usar ejecución nativa:** es útil para herramientas y desarrollo con sintaxis que Node admite sin transformación; mantén `tsc --noEmit` como verificación aparte. Si el proyecto necesita decoradores u otra transformación, o soportar runtimes que no ofrecen esa capacidad, conserva un paso de compilación explícito en lugar de tratar el borrado como compilador.
+Cada worker del proyecto propio que proceses en este track puede escribirse directamente en `.ts` y ejecutarse sin build local; **cuándo no usarlo:** para sintaxis que requiere transformación real (enums con valores computados, decoradores de clase), el borrado de tipos simple no alcanza y sigue siendo necesario `tsc` como compilador completo.
 
-**Proyecto real:** aplica este flujo a un worker propio de asignación de conductores: ejecútalo localmente con Node y bloquea la integración si el chequeo de tipos o las pruebas fallan. Mantén juntos los manifiestos y scripts del proyecto, no dependas de archivos de este tema.
+**Transferencia al proyecto integrador «API operativa de entregas»:** Escribe el worker de asignación de conductores directamente en `.ts` sin paso de build, y corre `tsc --noEmit` en CI como chequeo de tipos separado antes de desplegar.
 
-**Cierre y decisión de uso:** conserva la ejecución nativa para desarrollo local y el chequeo explícito en CI. Para sintaxis que requiere transformación real, configura un compilador compatible en vez de suponer que el borrado simple la admite. Errores comunes: afirmar que `node archivo.ts` valida tipos, omitir `tsc --noEmit` o probar únicamente que el proceso arranca.
+### Tema 2: GraphQL avanzado y Federation
 
-**Fuentes oficiales:** [Node.js — TypeScript](https://nodejs.org/en/learn/typescript/run-natively) y [TypeScript — tsc CLI](https://www.typescriptlang.org/docs/handbook/compiler-options.html).
+#### Paso 1 · Objetivo y preparación
 
-### Tema 2: GraphQL avanzado y Federation · Avanzado · 105 min
+Al finalizar podrás componer dos subgrafos GraphQL independientes (Pedidos y Conductores) en un único supergrafo con Apollo Federation, resolviendo una referencia entre ellos sin que ningún subgrafo conozca los detalles internos del otro. Prerrequisitos: Módulo 5 de este track (bases de datos).
 
-#### Aprende
+#### Paso 2 · Contexto y caso real
 
-**Prerrequisitos:** Node.js LTS, npm, GraphQL básico y Módulo 5 de este track (bases de datos). El laboratorio comienza en una carpeta vacía y usa datos ficticios en memoria.
+El equipo de Pedidos y el equipo de Conductores mantienen cada uno su propio servicio GraphQL; el frontend necesita una consulta que combine datos de ambos (el pedido y el conductor asignado) sin que ninguno de los dos equipos tenga que exponer tablas o endpoints internos del otro.
 
-**Al terminar podrás:** componer dos subgrafos independientes en un gateway, resolver una referencia `Conductor` entre ambos, ejecutar una prueba extremo a extremo con cierre de los tres servidores y explicar los controles que faltan antes de exponer Federation a clientes reales.
+#### Paso 3 · Teoría, modelo mental y analogía
 
-**Por qué importa:** Pedidos y Conductores pueden evolucionar sin compartir tablas, pero el panel necesita una sola consulta. La clave federada define el contrato mínimo entre servicios; si falta o su referencia no se puede resolver, el gateway no puede construir una respuesta fiable.
+Apollo Federation permite que cada subgrafo declare una entidad con una clave (`@key`) y que OTRO subgrafo extienda esa entidad agregando campos propios, sin acceso directo a la base de datos del otro; un gateway compone ambos esquemas en un supergrafo único, resolviendo cada campo contra el subgrafo que lo declaró. La analogía: dos oficinas distintas que comparten únicamente un número de legajo común, cada una completando su propia parte del expediente sin acceso a los archivos internos de la otra.
 
-Apollo Federation declara entidades con `@key`. Conductores es propietario de `Conductor.id` y `Conductor.nombre`, y resuelve referencias mediante `__resolveReference`. Pedidos devuelve una referencia `{ __typename, id }` y aporta `pedidosActivos`. El gateway compone los esquemas y planifica qué subgrafo atiende cada campo; no copia las bases de datos entre equipos.
+#### Paso 4 · Demostración guiada desde cero
+**Monta** el laboratorio completo en una carpeta nueva y revisá `server.mjs`, que orquesta los subgrafos `src/conductores/index.js` y `src/pedidos/index.js` junto con el gateway, antes de ejecutarlo.
 
-**Analogía:** dos oficinas comparten solo un número de legajo. Cada una completa su parte del expediente, pero el número no sustituye la autorización ni permite leer los archivos internos de la otra oficina.
-
-#### Practica
-
-Crea el proyecto desde cero:
-
+Desde la raíz del repositorio prepara una copia independiente del laboratorio completo:
 ```bash
-mkdir lab-federation-entregas
-cd lab-federation-entregas
-```
-
-Crea manualmente `package.json`:
-
-```json
-{
-  "name": "lab-federation-entregas",
-  "version": "1.0.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "start": "node server.mjs",
-    "test": "node --test federation.test.mjs"
-  },
-  "dependencies": {
-    "@apollo/gateway": "^2.11.3",
-    "@apollo/server": "^4.12.2",
-    "@apollo/subgraph": "^2.11.3",
-    "graphql": "^16.11.0",
-    "graphql-tag": "^2.12.6"
-  }
-}
-```
-
-Crea `server.mjs` completo. Incluye esquemas, resolvers, composición, arranque condicionado y cierre:
-
-```js
-import { pathToFileURL } from "node:url";
-import { ApolloServer } from "@apollo/server";
-import { startStandaloneServer } from "@apollo/server/standalone";
-import { ApolloGateway, IntrospectAndCompose } from "@apollo/gateway";
-import { buildSubgraphSchema } from "@apollo/subgraph";
-import gql from "graphql-tag";
-
-const conductores = [{ id: "c-1", nombre: "Ana" }];
-const pedidos = [{ id: "p-1", conductorId: "c-1" }];
-
-export async function startFederation({
-  conductorPort = 4001,
-  pedidoPort = 4002,
-  gatewayPort = 4000,
-} = {}) {
-  const servidores = [];
-
-  try {
-    const conductoresServer = new ApolloServer({
-      schema: buildSubgraphSchema({
-        typeDefs: gql`#graphql
-          type Query { conductor(id: ID!): Conductor }
-          type Conductor @key(fields: "id") {
-            id: ID!
-            nombre: String!
-          }
-        `,
-        resolvers: {
-          Query: {
-            conductor: (_, { id }) =>
-              conductores.find((conductor) => conductor.id === id) ?? null,
-          },
-          Conductor: {
-            __resolveReference: ({ id }) =>
-              conductores.find((conductor) => conductor.id === id) ?? null,
-          },
-        },
-      }),
-    });
-    const { url: conductoresUrl } = await startStandaloneServer(
-      conductoresServer,
-      { listen: { port: conductorPort, host: "127.0.0.1" } },
-    );
-    servidores.push(conductoresServer);
-
-    const pedidosServer = new ApolloServer({
-      schema: buildSubgraphSchema({
-        typeDefs: gql`#graphql
-          type Query { pedido(id: ID!): Pedido }
-          type Pedido { id: ID!, conductor: Conductor }
-          type Conductor @key(fields: "id") {
-            id: ID! @external
-            pedidosActivos: Int!
-          }
-        `,
-        resolvers: {
-          Query: {
-            pedido: (_, { id }) =>
-              pedidos.find((pedido) => pedido.id === id) ?? null,
-          },
-          Pedido: {
-            conductor: (pedido) => ({
-              __typename: "Conductor",
-              id: pedido.conductorId,
-            }),
-          },
-          Conductor: {
-            pedidosActivos: ({ id }) =>
-              pedidos.filter((pedido) => pedido.conductorId === id).length,
-          },
-        },
-      }),
-    });
-    const { url: pedidosUrl } = await startStandaloneServer(pedidosServer, {
-      listen: { port: pedidoPort, host: "127.0.0.1" },
-    });
-    servidores.push(pedidosServer);
-
-    const gateway = new ApolloGateway({
-      supergraphSdl: new IntrospectAndCompose({
-        subgraphs: [
-          { name: "conductores", url: conductoresUrl },
-          { name: "pedidos", url: pedidosUrl },
-        ],
-      }),
-    });
-    const gatewayServer = new ApolloServer({ gateway });
-    const { url } = await startStandaloneServer(gatewayServer, {
-      listen: { port: gatewayPort, host: "127.0.0.1" },
-    });
-    servidores.push(gatewayServer);
-
-    let cierre;
-    return {
-      url,
-      close: () => {
-        cierre ??= Promise.all(
-          [...servidores].reverse().map((servidor) => servidor.stop()),
-        );
-        return cierre;
-      },
-    };
-  } catch (error) {
-    await Promise.allSettled(
-      [...servidores].reverse().map((servidor) => servidor.stop()),
-    );
-    throw error;
-  }
-}
-
-if (
-  process.argv[1]
-  && import.meta.url === pathToFileURL(process.argv[1]).href
-) {
-  const federation = await startFederation();
-  console.log(`Gateway: ${federation.url}`);
-
-  for (const signal of ["SIGINT", "SIGTERM"]) {
-    process.once(signal, async () => {
-      await federation.close();
-    });
-  }
-}
-```
-
-Crea `federation.test.mjs`:
-
-```js
-import test from "node:test";
-import assert from "node:assert/strict";
-import { startFederation } from "./server.mjs";
-
-async function consultar(url, query) {
-  const response = await fetch(url, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ query }),
-  });
-  assert.equal(response.status, 200);
-  return response.json();
-}
-
-test("el gateway combina nombre y pedidos activos y cierra los servidores", async (t) => {
-  const federation = await startFederation({
-    conductorPort: 0,
-    pedidoPort: 0,
-    gatewayPort: 0,
-  });
-  t.after(() => federation.close());
-
-  const resultado = await consultar(
-    federation.url,
-    '{ pedido(id: "p-1") { conductor { nombre pedidosActivos } } }',
-  );
-  assert.deepEqual(resultado.data, {
-    pedido: { conductor: { nombre: "Ana", pedidosActivos: 1 } },
-  });
-});
-
-test("un pedido inexistente devuelve null", async (t) => {
-  const federation = await startFederation({
-    conductorPort: 0,
-    pedidoPort: 0,
-    gatewayPort: 0,
-  });
-  t.after(() => federation.close());
-
-  const resultado = await consultar(
-    federation.url,
-    '{ pedido(id: "no-existe") { id } }',
-  );
-  assert.deepEqual(resultado.data, { pedido: null });
-});
-```
-
-Instala, prueba y arranca:
-
-```bash
-npm install
+cp -R examples/node-federation ejemplo-federation
+cd ejemplo-federation
+npm ci
 npm test
 npm start
 ```
+`server.mjs` crea dos subgrafos en 4001/4002 y el gateway en 4000. Conductores implementa `Conductor.__resolveReference`; Pedidos implementa `Query.pedido` y `pedidosActivos`. Ambos se unen por ID, no por acceso a tablas ajenas. El lockfile fija Apollo Server, Gateway, Subgraph y GraphQL.
 
-Desde otra terminal consulta únicamente el gateway:
-
+Desde otra terminal consulta el gateway:
 ```bash
-curl --fail http://127.0.0.1:4000/ \
-  -H 'content-type: application/json' \
-  --data '{"query":"{ pedido(id: \"p-1\") { conductor { nombre pedidosActivos } } }"}'
+curl --fail http://127.0.0.1:4000/ -H 'content-type: application/json' --data '{"query":"{ pedido(id: \"p-1\") { conductor { nombre pedidosActivos } } }"}'
 ```
+**Resultado esperado:** `{"data":{"pedido":{"conductor":{"nombre":"Ana","pedidosActivos":1}}}}`. Un ID de pedido inexistente devuelve `pedido: null`; `npm test` comprueba ambos casos con puertos efímeros y cierra los tres servidores. Ctrl+C cierra la ejecución interactiva. Es un laboratorio local con datos ficticios, sin autenticación; no lo publiques como servicio real.
 
-**Resultado esperado:** las dos pruebas pasan y liberan sus puertos efímeros. `curl` devuelve `{"data":{"pedido":{"conductor":{"nombre":"Ana","pedidosActivos":1}}}}`. Al terminar la ejecución interactiva, `Ctrl+C` detiene gateway y subgrafos; no deben quedar procesos escuchando en 4000, 4001 o 4002.
+#### Paso 5 · Práctica guiada
 
-**Fallo deliberado y corrección:** quita `@key(fields: "id")` de `Conductor` en el subgrafo propietario de Conductores y ejecuta `npm start`. La composición debe rechazarse con un diagnóstico relacionado con la entidad o su clave; el `catch` cierra cualquier subgrafo que ya hubiera arrancado. Restaura la directiva, repite `npm test` y confirma nuevamente la consulta combinada.
+Pista: quitá la directiva `@key(fields: "id")` del tipo `Conductor` en su subgrafo original, dejando solo la extensión en Pedidos. Ese es el fallo deliberado: la composición del supergrafo falla al arrancar el gateway con un error de validación ("Conductor" no declara una clave resolvable), porque Federation necesita que la entidad ORIGINAL declare explícitamente su clave antes de que cualquier otro subgrafo pueda extenderla.
 
-**Práctica guiada:** añade `zona: String!` a `Conductor`, incorpora `zona: "norte"` al dato de Ana y solicita ese campo junto a `nombre`. Después cambia temporalmente `__resolveReference` para devolver `null`, observa que el campo federado ya no puede completarse y restaura el resolver. No corrijas una referencia rota leyendo desde Pedidos una supuesta base de Conductores.
+#### Paso 6 · Práctica independiente
 
-**Ejercicio independiente:** agrega dentro de este mismo proyecto un tercer subgrafo Facturación, con su propio `ApolloServer`, esquema y resolver, que extienda `Conductor` mediante `id` y aporte `saldoPendiente: Float!`. Registra el subgrafo en `IntrospectAndCompose`, incluye su cierre en `close` y añade una prueba que consulte `nombre`, `pedidosActivos` y `saldoPendiente` en una sola operación. El valor esperado para Ana debe proceder de un dato ficticio definido en Facturación.
+Corregí el Paso 5 restaurando `@key(fields: "id")` en el subgrafo original de Conductores, y agregá un tercer subgrafo (Facturación) que también extienda `Conductor` con un campo propio (`saldoPendiente`), confirmando que Federation soporta múltiples extensiones de la misma entidad desde subgrafos distintos.
 
-**Límites de seguridad:** este laboratorio solo escucha en loopback, no incluye autenticación y no es publicable tal cual. Antes de exponerlo, autentica y autoriza en gateway y subgrafos según el trust boundary, restringe el acceso directo a subgrafos e introspección, limita tamaño, profundidad, coste y tiempo de las consultas, y define registro y métricas sin datos sensibles. Una clave de entidad es un mecanismo de composición, **no** una credencial ni una regla de autorización. Para un dominio pequeño de un solo equipo, un esquema monolítico puede evitar esta operación adicional.
+#### Paso 7 · Cierre y evidencia
 
-#### Aplica
+Entregá la composición funcionando del Paso 4, el error de clave faltante del Paso 5, y la tercera extensión agregada del Paso 6; explicá por qué declarar una clave resolvable en el subgrafo propietario es un requisito, no una opción, para que otros subgrafos puedan extender esa entidad. Siguiente paso: coordina estos mismos servicios con mensajería y sagas para operaciones que cruzan varios de ellos. Errores comunes: extender una entidad sin que su subgrafo propietario declare `@key`, resolver el mismo campo en más de un subgrafo generando ambigüedad, y no versionar el supergrafo compuesto junto con cada subgrafo individual. Fuentes oficiales: [Apollo Federation](https://www.apollographql.com/docs/federation/) y [GraphQL — Federation spec](https://graphql.org/learn/federation/).
 
-**Proyecto de aplicación — catálogo federado de vehículos:** crea otra carpeta vacía, `app-federation-vehiculos`, y escribe allí su `package.json`, `server.mjs` y `federation.test.mjs`. Implementa un subgrafo Vehículos propietario de `Vehiculo @key(fields: "id")` con `matricula`, y otro llamado Mantenimiento que aporte `revisionesPendientes`. Añade una prueba de consulta combinada, otra de ID inexistente y cierre de todos los servidores. Ejecuta únicamente en `127.0.0.1`; el resultado debe mostrar la matrícula y el número de revisiones sin compartir arrays entre los resolvers de ambos dominios.
+**¿Por qué es importante?** Federation permite que equipos independientes mantengan sus propios subgrafos sin acceso directo a los datos internos de otros, mientras el gateway compone un supergrafo único y consistente para el frontend.
 
-**Checklist de salida**
+**Evidencia de aprendizaje:** entrega la composición de dos subgrafos funcionando, el error de clave faltante reproducido y una tercera extensión agregada correctamente.
 
-- [ ] Creaste manualmente manifiesto, esquemas, resolvers, gateway y pruebas.
-- [ ] Conductores declara `@key` y resuelve `__resolveReference`.
-- [ ] Pedidos devuelve una referencia por ID, no una copia de `nombre`.
-- [ ] La consulta combinada y el pedido inexistente tienen pruebas reales.
-- [ ] La composición sin clave falla y vuelve a funcionar al restaurarla.
-- [ ] Las pruebas y las señales cierran gateway y subgrafos.
-- [ ] Reconoces que autenticación, autorización y límites de consulta siguen pendientes fuera del laboratorio.
+**Conceptos clave:** `@key`, `@external`, entidad federada, gateway, supergrafo, subgrafo propietario.
 
-**Cierre:** entrega la composición, el fallo de clave corregido y la extensión independiente. No presentes una respuesta `200` como prueba de seguridad ni uses Federation solo para ocultar acoplamiento entre bases de datos.
+**Diagrama:**
 
 ```mermaid
 flowchart LR
-  Client[Panel] --> Gateway[Gateway compuesto]
-  Gateway --> Orders[Subgrafo de pedidos]
-  Orders -->|conductor ID| Gateway
-  Gateway -->|resolver referencia| Drivers[Subgrafo de conductores]
-  Drivers -->|datos del conductor| Gateway
-  Gateway --> Client
+  G[Gateway] --> C["Subgrafo Conductores (@key id)"]
+  G --> P["Subgrafo Pedidos (extend Conductor)"]
+  C --> R1[nombre]
+  P --> R2[pedidosActivos]
+  G --> M["Respuesta combinada"]
 ```
 
-**Proyecto integrador:** incorpora los subgrafos de pedidos y conductores a un backend propio solo si pertenecen a límites de equipo o despliegue independientes. Mide el coste de resolver referencias y agrega autorización y límites de consulta antes de exponer el gateway a clientes.
+Levantá ambos subgrafos con `node src/conductores/index.js` y `node src/pedidos/index.js`, y el gateway con `npx rover dev`. Esta misma composición es la que usarás para el proyecto propio que integre Pedidos y Conductores como servicios independientes; **cuándo no usarlo:** para un dominio chico con un único equipo y una sola base de datos, Federation agrega infraestructura (gateway, registro de esquemas) sin ningún beneficio frente a un esquema GraphQL monolítico simple.
 
-**Fuentes oficiales:** [Apollo Federation](https://www.apollographql.com/docs/federation/) y [GraphQL — Federation spec](https://graphql.org/learn/federation/).
+**Transferencia al proyecto integrador «API operativa de entregas»:** Divide Conductores y Pedidos en subgrafos Federation propios, cada uno con su propio despliegue, y compón el supergrafo que el panel del operador consulta como si fuera un único servicio.
 
-### Tema 3: Microservicios, Kafka, RabbitMQ y sagas · Avanzado · 105 min
+### Tema 3: Compensar una entrega cuando falla un paso
 
-#### Aprende
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás ejecutar una operación con tres pasos y revertir los que ya se completaron cuando falla el cobro. **Prerrequisitos:** funciones async de Node.js y manejo de errores. Comprueba `node --version`; desde la raíz crea una copia independiente del ejemplo.
 
-**Prerrequisitos:** JavaScript con `async`/`await`, pruebas con Node y Tema 2 de este módulo. Este laboratorio usa llamadas locales para hacer observable la orquestación; no necesita un broker ni archivos anteriores.
+#### Paso 2 · Contexto y caso real
+Una entrega puede crear un pedido, reservar un conductor y cobrar. Si el cobro se rechaza, dejar el pedido abierto y el conductor ocupado confunde al equipo y al cliente. El programa debe saber qué hacer con lo que ya alcanzó a cambiar.
 
-**Al terminar podrás:** implementar la saga `crear pedido → reservar conductor → cobrar`, compensar en orden inverso, repetir operaciones con claves de idempotencia y recuperar una compensación que falla sin confundir el patrón con una transacción exactly-once.
+#### Paso 3 · Teoría y analogía
+Una **saga** es una lista de pasos en la que cada paso tiene una acción para deshacerlo. Es parecido a reservar vuelo y hotel por separado: si la segunda reserva falla, cancelas la primera explícitamente. La base de datos de un servicio no puede deshacer por sí sola un cambio que hizo otro servicio.
 
-**Por qué importa:** tres bases de datos no comparten un `COMMIT`. Si el cobro falla después de reservar un conductor, alguien debe liberar la reserva y cancelar el pedido. Si esa liberación también falla, ocultar el error deja el sistema inconsistente sin una ruta de recuperación.
+El archivo guarda tres estados simples y dos compensaciones: cancelar el pedido y liberar al conductor. `undo.reverse()` las ejecuta en orden inverso. Este ejemplo ayuda a entender la idea; todavía no se conecta a microservicios, Kafka ni RabbitMQ.
 
-Cada paso tiene una transacción local y una compensación de negocio. El coordinador registra los pasos completados y, ante un fallo posterior, ejecuta sus compensaciones del último al primero. Una compensación no borra la historia: cancela, libera o reembolsa el efecto visible.
+#### Paso 4 · Demostración guiada
+Crea una copia independiente en `ejemplo-saga/saga.mjs` desde `examples/node-sagas/saga.mjs`; ese archivo contiene el programa. Revisa estas acciones para ver cómo cada paso registra la compensación que puede revertirlo:
 
-Kafka o RabbitMQ pueden transportar comandos y eventos entre servicios, pero el broker no convierte la secuencia en una transacción global. Reintentos, red de por medio y consumidores reiniciados permiten entregas duplicadas. Por eso cada comando usa una clave estable y el receptor registra su resultado. **No afirmes exactly-once de extremo a extremo:** el laboratorio demuestra idempotencia dentro de un proceso, no atomicidad entre base de datos, broker y proveedor de pagos. En producción hacen falta registros persistentes, restricciones únicas, reconciliación y, según la arquitectura, outbox/inbox.
+```js
+async function createOrder() {
+  state.order = "CREATED";
+  undo.push(async () => { state.order = "CANCELLED"; });
+}
 
-**Analogía:** cancelar un viaje exige cancelar hotel y vuelo en orden controlado. Un comprobante de cancelación evita pagar dos veces la misma gestión, pero no garantiza que ninguna llamada se pierda; si una cancelación falla, debe quedar una tarea pendiente y una alerta.
+async function reserveDriver() {
+  state.driver = "RESERVED";
+  undo.push(async () => { state.driver = "FREE"; });
+}
+```
 
-#### Practica
-
-Crea el proyecto y su manifiesto:
+Ejecuta desde la raíz del proyecto (las órdenes crean la carpeta de práctica y copian el archivo):
 
 ```bash
-mkdir lab-saga-pedidos
-cd lab-saga-pedidos
-mkdir src
+mkdir -p ejemplo-saga
+cp examples/node-sagas/saga.mjs ejemplo-saga/saga.mjs
+node ejemplo-saga/saga.mjs
+node ejemplo-saga/saga.mjs --fail-payment
 ```
 
-Crea `package.json`:
+**Resultado esperado:** la primera ejecución muestra pedido creado, conductor reservado y pago aprobado. La segunda imprime `fallo=Pago rechazado | pedido:CANCELLED,conductor:FREE,pago:DECLINED`: el fallo de cobro activó las dos compensaciones.
 
-```json
-{
-  "name": "lab-saga-pedidos",
-  "version": "1.0.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "demo": "node src/demo.js",
-    "test": "node --test src/saga.test.js"
-  }
-}
-```
+#### Paso 5 · Práctica guiada
+**Pista:** cada compensación debe corresponder a un paso que sí terminó; si el pago no se completó, no agregues una devolución ficticia.
+1. Antes de correr el segundo comando, predice qué estado tendrá el conductor.
+2. Cambia el orden de `undo.reverse()` por `undo` y vuelve a ejecutar. Anota en qué orden se revierten los cambios.
+3. Quita temporalmente la llamada a las compensaciones. El pedido queda `CREATED` y el conductor `RESERVED` después del rechazo. **Ese es el fallo deliberado**; diagnostica qué estado quedó inconsistente y restáurala.
+4. Explica por qué un mensaje de error no cancela automáticamente los pasos previos.
 
-Crea `src/saga.js` con servicios en memoria, claves estables y diario de compensación:
-
-```js
-export function crearLaboratorio({
-  fallarCobro = false,
-  fallosLiberacion = 0,
-} = {}) {
-  const estado = {
-    pedidos: new Map(),
-    reservas: new Map(),
-    cargos: new Map(),
-    sagas: new Map(),
-  };
-  const operaciones = new Map();
-  let liberacionesFallidas = 0;
-
-  async function idempotente(clave, accion) {
-    if (operaciones.has(clave)) return operaciones.get(clave);
-
-    const intento = Promise.resolve().then(accion);
-    operaciones.set(clave, intento);
-    try {
-      return await intento;
-    } catch (error) {
-      operaciones.delete(clave);
-      throw error;
-    }
-  }
-
-  const servicios = {
-    crearPedido: ({ sagaId, pedidoId }) =>
-      idempotente(`${sagaId}:crear-pedido`, () => {
-        estado.pedidos.set(pedidoId, { id: pedidoId, estado: "creado" });
-      }),
-    cancelarPedido: ({ sagaId, pedidoId }) =>
-      idempotente(`${sagaId}:cancelar-pedido`, () => {
-        const pedido = estado.pedidos.get(pedidoId);
-        if (pedido) pedido.estado = "cancelado";
-      }),
-    reservarConductor: ({ sagaId, conductorId }) =>
-      idempotente(`${sagaId}:reservar-conductor`, () => {
-        estado.reservas.set(sagaId, { conductorId, estado: "reservado" });
-      }),
-    liberarConductor: ({ sagaId }) =>
-      idempotente(`${sagaId}:liberar-conductor`, () => {
-        if (liberacionesFallidas < fallosLiberacion) {
-          liberacionesFallidas += 1;
-          throw new Error("liberación temporalmente no disponible");
-        }
-        const reserva = estado.reservas.get(sagaId);
-        if (reserva) reserva.estado = "liberado";
-      }),
-    cobrar: ({ sagaId, montoTotal }) =>
-      idempotente(`${sagaId}:cobrar`, () => {
-        if (fallarCobro) throw new Error("tarjeta rechazada");
-        estado.cargos.set(sagaId, { montoTotal, estado: "cobrado" });
-      }),
-    reembolsar: ({ sagaId }) =>
-      idempotente(`${sagaId}:reembolsar`, () => {
-        const cargo = estado.cargos.get(sagaId);
-        if (cargo) cargo.estado = "reembolsado";
-      }),
-  };
-
-  const pasos = [
-    {
-      nombre: "pedido",
-      ejecutar: servicios.crearPedido,
-      compensar: servicios.cancelarPedido,
-    },
-    {
-      nombre: "conductor",
-      ejecutar: servicios.reservarConductor,
-      compensar: servicios.liberarConductor,
-    },
-    {
-      nombre: "pago",
-      ejecutar: servicios.cobrar,
-      compensar: servicios.reembolsar,
-    },
-  ];
-
-  function vista(sagaId) {
-    const diario = estado.sagas.get(sagaId);
-    return {
-      pedido: estado.pedidos.get(diario.entrada.pedidoId),
-      reserva: estado.reservas.get(sagaId),
-      cargo: estado.cargos.get(sagaId),
-      diario: {
-        estado: diario.estado,
-        error: diario.error,
-        completados: [...diario.completados],
-        compensadas: [...diario.compensadas],
-        pendientes: [...diario.pendientes],
-      },
-    };
-  }
-
-  async function compensarPendientes(sagaId) {
-    const diario = estado.sagas.get(sagaId);
-    if (!diario) throw new Error("saga desconocida");
-
-    const pendientes = [];
-    for (const nombre of diario.pendientes) {
-      const paso = pasos.find((candidato) => candidato.nombre === nombre);
-      try {
-        await paso.compensar(diario.entrada);
-        diario.compensadas.push(nombre);
-      } catch (error) {
-        pendientes.push(nombre);
-        diario.errorCompensacion = error.message;
-      }
-    }
-
-    diario.pendientes = pendientes;
-    diario.estado = pendientes.length
-      ? "compensacion_pendiente"
-      : "compensada";
-
-    if (pendientes.length) {
-      const error = new Error(
-        `Compensaciones pendientes: ${pendientes.join(", ")}`,
-      );
-      error.pendientes = [...pendientes];
-      throw error;
-    }
-    return vista(sagaId);
-  }
-
-  async function ejecutar(entrada) {
-    const previo = estado.sagas.get(entrada.sagaId);
-    if (previo?.estado === "confirmada") return vista(entrada.sagaId);
-
-    const diario = previo ?? {
-      entrada: { ...entrada },
-      estado: "iniciada",
-      completados: [],
-      compensadas: [],
-      pendientes: [],
-    };
-    estado.sagas.set(entrada.sagaId, diario);
-
-    try {
-      for (const paso of pasos) {
-        if (!diario.completados.includes(paso.nombre)) {
-          await paso.ejecutar(diario.entrada);
-          diario.completados.push(paso.nombre);
-        }
-      }
-      diario.estado = "confirmada";
-      return vista(entrada.sagaId);
-    } catch (errorOriginal) {
-      diario.estado = "compensando";
-      diario.error = errorOriginal.message;
-      diario.pendientes = [...diario.completados].reverse();
-
-      try {
-        await compensarPendientes(entrada.sagaId);
-      } catch (errorCompensacion) {
-        errorCompensacion.causaOriginal = errorOriginal;
-        throw errorCompensacion;
-      }
-      throw errorOriginal;
-    }
-  }
-
-  return {
-    estado,
-    ejecutar,
-    vista,
-    reintentarCompensaciones: compensarPendientes,
-  };
-}
-```
-
-Crea `src/saga.test.js`:
-
-```js
-import test from "node:test";
-import assert from "node:assert/strict";
-import { crearLaboratorio } from "./saga.js";
-
-const entrada = {
-  sagaId: "saga-1",
-  pedidoId: "p-1",
-  conductorId: "c-1",
-  montoTotal: 12000,
-};
-
-test("una repetición confirmada no duplica el cargo", async () => {
-  const lab = crearLaboratorio();
-  await lab.ejecutar(entrada);
-  const repetida = await lab.ejecutar(entrada);
-
-  assert.equal(repetida.diario.estado, "confirmada");
-  assert.equal(lab.estado.cargos.size, 1);
-  assert.equal(repetida.cargo.estado, "cobrado");
-});
-
-test("el cobro fallido compensa en orden inverso", async () => {
-  const lab = crearLaboratorio({ fallarCobro: true });
-  await assert.rejects(lab.ejecutar(entrada), /tarjeta rechazada/);
-
-  const resultado = lab.vista("saga-1");
-  assert.deepEqual(resultado.diario.compensadas, ["conductor", "pedido"]);
-  assert.equal(resultado.reserva.estado, "liberado");
-  assert.equal(resultado.pedido.estado, "cancelado");
-});
-
-test("una compensación fallida queda pendiente y puede reintentarse", async () => {
-  const lab = crearLaboratorio({ fallarCobro: true, fallosLiberacion: 1 });
-  await assert.rejects(lab.ejecutar(entrada), /Compensaciones pendientes: conductor/);
-
-  assert.equal(lab.vista("saga-1").reserva.estado, "reservado");
-  assert.equal(lab.vista("saga-1").pedido.estado, "cancelado");
-  assert.deepEqual(lab.vista("saga-1").diario.pendientes, ["conductor"]);
-
-  const recuperada = await lab.reintentarCompensaciones("saga-1");
-  assert.equal(recuperada.reserva.estado, "liberado");
-  assert.equal(recuperada.diario.estado, "compensada");
-});
-```
-
-Crea `src/demo.js`:
-
-```js
-import { crearLaboratorio } from "./saga.js";
-
-const lab = crearLaboratorio({ fallarCobro: true, fallosLiberacion: 1 });
-const entrada = {
-  sagaId: "demo-1",
-  pedidoId: "p-demo",
-  conductorId: "c-demo",
-  montoTotal: 9000,
-};
-
-try {
-  await lab.ejecutar(entrada);
-} catch (error) {
-  console.log("Fallo visible:", error.message);
-  console.log("Estado pendiente:", lab.vista("demo-1"));
-}
-
-console.log("Tras reintentar:", await lab.reintentarCompensaciones("demo-1"));
-```
-
-Ejecuta:
-
-```bash
-npm install
-npm test
-npm run demo
-```
-
-**Resultado esperado:** pasan tres pruebas. La demo muestra primero una compensación pendiente, con reserva todavía `reservado` y pedido `cancelado`; tras el reintento, la reserva queda `liberado` y la saga `compensada`. El cargo nunca se crea porque el cobro fue rechazado.
-
-**Fallo deliberado y corrección:** comenta la llamada a `compensarPendientes` dentro del `catch` de `ejecutar` y ejecuta la segunda prueba. El pedido y la reserva conservan sus efectos y la aserción de orden falla. Restaura la llamada y conserva el bucle que continúa con las demás compensaciones aunque una falle; no basta con capturar el error original.
-
-**Práctica guiada:** ejecuta dos veces la primera prueba y señala la clave `${sagaId}:cobrar`. Cambia temporalmente la clave para incluir `Date.now()`, observa que deja de ser estable y revierte el cambio. Después explica qué ocurriría con esa implementación de memoria si el proceso se reinicia: desaparecen tanto los resultados como el diario, por lo que no es una solución persistente.
-
-**Ejercicio independiente:** añade un contador de intentos de liberación y una prueba con dos fallos consecutivos antes del éxito. El programa debe conservar `conductor` en `pendientes` entre reintentos y generar una señal de alerta cuando se supere un máximo de tres intentos. Documenta dónde persistirías diario, claves y próxima fecha de reintento; no elimines una pendiente solo para obtener una salida verde.
-
-#### Aplica
-
-**Proyecto de aplicación — saga de devolución:** desde una carpeta vacía `app-saga-devolucion`, crea manualmente `package.json`, `src/devolucion.js`, `src/devolucion.test.js` y `src/demo.js`. Implementa `registrar devolución → reintegrar stock → reembolsar`, con claves de idempotencia, compensaciones inversas `retirar stock` y `descartar devolución`, diario y reintento de compensación. Prueba éxito, reembolso rechazado y fallo temporal al retirar stock. El resultado final debe dejar explícito cualquier estado pendiente; no declares exactly-once ni uses un broker simulado como garantía transaccional.
-
-**Checklist de salida**
-
-- [ ] Los tres pasos tienen implementaciones locales ejecutables, no funciones sin definir.
-- [ ] Un cobro rechazado libera conductor y después cancela pedido.
-- [ ] Las claves de idempotencia permanecen estables para una misma saga.
-- [ ] Repetir una saga confirmada no duplica el cargo.
-- [ ] Una compensación fallida queda registrada y no impide intentar las anteriores.
-- [ ] El reintento corrige la compensación pendiente sin borrar su historial.
-- [ ] Explicas por qué memoria, broker o reintentos no ofrecen exactly-once global.
-
-**Cierre:** en producción, cada servicio debe hacer durables su operación y su registro de idempotencia; el coordinador necesita recuperación tras reinicios, backoff, alertas y reconciliación. Errores comunes: compensar en orden directo, ignorar un fallo de compensación, generar una clave nueva en cada reintento o confundir ausencia de duplicados en una prueba con una garantía distribuida.
+#### Paso 6 · Práctica independiente
+Agrega una etapa `notificarCliente` después del cobro. Define qué estado guardarías si falla la notificación y si ese fallo debería cancelar el pedido ya cobrado. Escribe una salida que permita comprobar tu decisión.
 
 ```mermaid
-flowchart LR
-  Create[Crear pedido] --> Reserve[Reservar conductor]
-  Reserve --> Charge[Cobrar]
-  Charge -->|éxito| Done[Confirmar saga]
-  Charge -->|fallo| Release[Compensar reserva]
-  Release --> Cancel[Cancelar pedido]
-  Release -. fallo .-> Pending[Registrar compensación pendiente]
-  Pending --> Retry[Reintentar y auditar]
+sequenceDiagram
+  participant O as Pedido
+  participant D as Conductor
+  participant P as Pago
+  O->>D: reservar
+  D-->>O: reservado
+  O->>P: cobrar
+  P-->>O: rechazo
+  O->>D: compensar y liberar
+  O->>O: cancelar pedido
 ```
 
-**Cuándo usar saga:** úsala cuando un flujo atraviesa servicios que no comparten una transacción y cada paso tiene una compensación de negocio posible. Si las operaciones caben en una única base transaccional, una transacción local es más simple; una compensación no borra efectos externos irreversibles, por lo que debes diseñar estados pendientes y reconciliación.
+#### Paso 7 · Cierre y evidencia
+Entrega las dos salidas del Paso 4, el fallo diagnosticado y tu explicación de cuándo se ejecutan las compensaciones. En un sistema real, cada servicio conserva sus propios datos y el proceso puede reiniciarse a mitad de la operación: harían falta almacenamiento duradero, reintentos, idempotencia y alertas. La demostración actual solo enseña la secuencia en memoria. **Proyecto integrador RutaFlow:** si el flujo pasa a microservicios, persiste el estado de la saga para que sobreviva a reinicios. **Errores comunes:** compensar en orden de avance, dar por hecho que una compensación siempre tendrá éxito y usar este ejemplo en memoria como si fuera persistente. **Fuentes oficiales:** [Node.js: ejecución de programas](https://nodejs.org/en/learn/command-line/run-nodejs-scripts-from-the-command-line) y [patrón Saga](https://microservices.io/patterns/data/saga.html). Próximo paso: escoger un broker para transportar eventos entre servicios.
 
-**Proyecto integrador:** aplica la saga al flujo real de crear entrega, reservar conductor y autorizar pago. Persiste estado e idempotencia en cada servicio y prueba también una compensación fallida, no solo el camino de éxito.
+**Evidencia de aprendizaje:** entrega la salida de éxito, el fallo y la explicación de las dos compensaciones.
 
-**Fuentes oficiales:** [Saga pattern — microservices.io](https://microservices.io/patterns/data/saga.html) y [KafkaJS — Getting started](https://kafka.js.org/docs/getting-started).
+**Idea clave:** una falla no deshace cambios de otros servicios; el diseño debe explicar cómo compensarlos.
+**¿Por qué es importante?** Si no defines la compensación, un pago rechazado puede dejar al conductor reservado y al pedido abierto.
 
-### Tema 4: Serverless multi-cloud · Avanzado · 75 min
+### Tema 4: Serverless multi-cloud
 
-#### Aprende
+#### Paso 1 · Objetivo y preparación
 
-**Prerrequisitos:** JavaScript ESM, funciones `async` y Módulo 4 del track de Cloud (Serverless con Lambda). No necesitas cuentas cloud: los adaptadores se prueban localmente y este tema no despliega ninguna función.
+Al finalizar podrás escribir una función que calcula el costo de un envío y adaptarla para correr sin cambios de lógica en AWS Lambda y en Azure Functions, aislando las diferencias de "handler" de cada proveedor. Prerrequisitos: Módulo 4 del track de Cloud (Serverless con Lambda).
 
-**Al terminar podrás:** aislar el cálculo de tarifa en una función pura, invocarlo desde adaptadores con las firmas de AWS Lambda y Azure Functions y demostrar con pruebas locales que ambos producen el mismo resultado.
+#### Paso 2 · Contexto y caso real
 
-**Por qué importa:** si la fórmula vive dentro del handler de AWS, evaluar otro proveedor obliga a copiar reglas de negocio. La primera divergencia olvidada produce dos precios distintos para el mismo envío.
+El equipo escribió la función de cálculo de costos directamente acoplada a la firma específica del handler de AWS Lambda; cuando la empresa decide evaluar Azure por un acuerdo comercial, migrar esa función obliga a reescribir toda la lógica de negocio mezclada con el código específico de AWS.
 
-La lógica pura recibe datos ya extraídos y devuelve un resultado, sin importar SDK ni objetos de plataforma. Cada adaptador traduce el evento del proveedor a esa entrada y traduce la salida al formato correspondiente. Probar los adaptadores directamente verifica esa traducción local, **no** permisos, empaquetado, triggers, límites, latencia ni despliegue en una nube real.
+#### Paso 3 · Teoría, modelo mental y analogía
 
-**Analogía:** el aparato conserva su mecanismo y solo cambia el adaptador de enchufe. La analogía termina en la interfaz: cada proveedor también tiene configuración, observabilidad y límites operativos que un adaptador no vuelve portables.
+Aislar la lógica de negocio pura (una función normal de JavaScript, sin ningún detalle de un proveedor cloud específico) detrás de un adaptador delgado por proveedor permite migrar o correr en múltiples nubes sin tocar la lógica real, solo el adaptador. La analogía: un electrodoméstico con un enchufe universal removible — el aparato (la lógica) no cambia, solo el adaptador de enchufe según el país (el proveedor cloud).
 
-#### Practica
+#### Paso 4 · Demostración guiada desde cero
 
-Crea el proyecto desde cero:
-
-```bash
-mkdir lab-serverless-tarifas
-cd lab-serverless-tarifas
-mkdir -p src/logica src/aws src/azure test
-```
-
-Crea `package.json`:
-
-```json
-{
-  "name": "lab-serverless-tarifas",
-  "version": "1.0.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "test": "node --test test/adaptadores.test.js"
-  }
-}
-```
-
-Crea `src/logica/calcularCosto.js`:
+Crea `src/logica/calcularCosto.js` (lógica pura, sin ningún import de AWS o Azure):
 
 ```js
 export function calcularCosto({ distanciaKm, pesoKg }) {
-  if (
-    !Number.isFinite(distanciaKm)
-    || !Number.isFinite(pesoKg)
-    || distanciaKm < 0
-    || pesoKg < 0
-  ) {
-    throw new TypeError("distanciaKm y pesoKg deben ser números no negativos");
-  }
   return distanciaKm * 1500 + pesoKg * 200;
 }
 ```
 
-Crea `src/aws/handler.js`:
+**Ejecuta el ejemplo** (monta el proyecto Node y córrelo):
+
+```bash
+npm init -y && npm install
+node index.js
+```
+Para las pruebas: `npm test`.
+
+
+Y dos adaptadores delgados:
 
 ```js
+// src/aws/handler.js
 import { calcularCosto } from "../logica/calcularCosto.js";
-
 export const handler = async (event) => {
   const body = JSON.parse(event.body);
-  return {
-    statusCode: 200,
-    body: JSON.stringify({ costo: calcularCosto(body) }),
-  };
+  return { statusCode: 200, body: JSON.stringify({ costo: calcularCosto(body) }) };
 };
 ```
 
-Crea `src/azure/handler.js`:
-
 ```js
+// src/azure/handler.js
 import { calcularCosto } from "../logica/calcularCosto.js";
-
-export default async function handler(context, req) {
-  context.res = {
-    status: 200,
-    body: { costo: calcularCosto(req.body) },
-  };
+export default async function (context, req) {
+  context.res = { body: { costo: calcularCosto(req.body) } };
 }
 ```
 
-Crea `test/adaptadores.test.js`:
+**Resultado esperado:** la misma función `calcularCosto` (sin ningún cambio) produce el resultado correcto invocada desde el handler de AWS y desde el handler de Azure, confirmando que la lógica de negocio nunca dependió de ningún detalle específico de un proveedor.
 
-```js
-import test from "node:test";
-import assert from "node:assert/strict";
-import { calcularCosto } from "../src/logica/calcularCosto.js";
-import { handler as awsHandler } from "../src/aws/handler.js";
-import azureHandler from "../src/azure/handler.js";
+#### Paso 5 · Práctica guiada
 
-const entrada = { distanciaKm: 10, pesoKg: 2 };
+Pista: movés el cálculo directamente dentro de `src/aws/handler.js`, eliminando `calcularCosto.js` "para simplificar". Ese es el fallo deliberado: al crear el adaptador equivalente de Azure hay que copiar y pegar la misma fórmula, y el día que la fórmula cambie (por ejemplo, un recargo por zona), alguien actualiza un archivo y olvida el otro, dejando ambos proveedores calculando costos distintos para el mismo pedido.
 
-test("la lógica calcula 15400", () => {
-  assert.equal(calcularCosto(entrada), 15400);
-});
+#### Paso 6 · Práctica independiente
 
-test("AWS adapta el evento JSON sin cambiar la fórmula", async () => {
-  const respuesta = await awsHandler({ body: JSON.stringify(entrada) });
-  assert.equal(respuesta.statusCode, 200);
-  assert.deepEqual(JSON.parse(respuesta.body), { costo: 15400 });
-});
+Corregí el Paso 5 extrayendo de nuevo la lógica a `calcularCosto.js`, y agregá un tercer adaptador para GCP Cloud Functions, confirmando que los tres adaptadores producen el mismo resultado sin duplicar la fórmula en ningún lugar.
 
-test("Azure obtiene el mismo costo con su contrato de respuesta", async () => {
-  const context = {};
-  await azureHandler(context, { body: entrada });
-  assert.equal(context.res.status, 200);
-  assert.deepEqual(context.res.body, { costo: 15400 });
-});
-```
+#### Paso 7 · Cierre y evidencia
 
-Instala y ejecuta las pruebas locales:
+Entregá la lógica aislada con dos adaptadores del Paso 4, la duplicación de fórmula del Paso 5, y el tercer adaptador agregado del Paso 6; explicá por qué acoplar lógica de negocio a la firma específica de un handler cloud hace que cada proveedor nuevo duplique esa lógica en vez de reusarla. Siguiente paso: empaqueta la misma lógica en un contenedor productivo para los casos donde no se usa serverless. Errores comunes: mezclar lógica de negocio con el formato específico de evento/respuesta de un proveedor, duplicar la misma fórmula en cada adaptador en vez de extraerla una sola vez, y no probar la lógica pura de forma aislada de ningún handler cloud. Fuentes oficiales: [AWS Lambda — Handler en Node.js](https://docs.aws.amazon.com/lambda/latest/dg/nodejs-handler.html) y [Azure Functions — Node.js](https://learn.microsoft.com/azure/azure-functions/functions-reference-node).
 
-```bash
-npm install
-npm test
-```
+**¿Por qué es importante?** Aislar la lógica de negocio detrás de un adaptador delgado por proveedor permite migrar o correr en múltiples nubes sin duplicar ni reescribir la lógica real en cada una.
 
-**Resultado esperado:** pasan tres pruebas y ambos adaptadores devuelven `15400` para 10 km y 2 kg. No se ha creado un recurso en AWS o Azure ni se ha demostrado un despliegue.
+**Evidencia de aprendizaje:** entrega la lógica aislada funcionando en dos adaptadores, la duplicación de fórmula reproducida y el tercer adaptador agregado sin duplicar lógica.
 
-**Fallo deliberado y corrección:** copia temporalmente la fórmula dentro de cada handler, pero escribe `pesoKg * 250` solo en AWS. Las pruebas de lógica y Azure seguirán esperando `15400`, mientras AWS devolverá `15500` y fallará su contrato. Elimina ambas copias, restaura las importaciones de `calcularCosto` y repite `npm test`; la corrección consiste en tener una sola fuente de verdad, no en cambiar las aserciones para aceptar dos tarifas.
+**Conceptos clave:** adaptador por proveedor, lógica de negocio pura, handler específico de AWS/Azure/GCP, portabilidad multi-cloud.
 
-**Práctica guiada:** invoca la lógica con `{ distanciaKm: -1, pesoKg: 2 }` dentro de una nueva prueba y comprueba `assert.throws`. Añade después pruebas de adaptador para JSON mal formado y para una distancia negativa; decide y documenta un mapeo explícito a respuesta `400` en vez de dejar que cada plataforma produzca un error distinto.
-
-**Ejercicio independiente:** crea manualmente `src/gcp/handler.js` con un adaptador `(req, res)` que use `res.status(200).json({ costo })`, y añade una prueba local con objetos `req` y `res` falsos que registren estado y cuerpo. Comprueba que los tres adaptadores devuelven el mismo costo sin copiar la fórmula. Esta prueba tampoco afirma compatibilidad de empaquetado o despliegue con GCP.
-
-#### Aplica
-
-**Proyecto de aplicación — estimador de almacenamiento:** en otra carpeta vacía `app-serverless-almacen`, crea manualmente el manifiesto, una lógica pura, adaptadores AWS y Azure y un archivo de pruebas. La función debe calcular `GB × meses × precioPorGBMes`, rechazar valores negativos y producir el mismo importe en ambos contratos. Ejecuta pruebas locales de éxito y entrada inválida; entrega las salidas como evidencia de adaptación, no como evidencia de publicación cloud.
-
-**Checklist de salida**
-
-- [ ] La fórmula existe una sola vez y no importa ningún SDK de proveedor.
-- [ ] AWS y Azure tienen adaptadores completos y pruebas locales.
-- [ ] Ambos calculan `15400` para la entrada del laboratorio.
-- [ ] La divergencia deliberada se corrige restaurando la lógica compartida.
-- [ ] Las entradas inválidas tienen comportamiento probado.
-- [ ] El tercer adaptador se prueba con dobles locales sin duplicar reglas.
-- [ ] No afirmas despliegue, trigger o permisos verificados.
-
-**Cierre:** la portabilidad cubre el contrato de entrada y salida de la función, no toda la operación cloud. Antes de desplegar faltan empaquetado, configuración, identidad, secretos, observabilidad, cuotas y pruebas en cada plataforma. Errores comunes: copiar fórmulas, probar solo la lógica pura o presentar una invocación local como publicación.
+**Diagrama:**
 
 ```mermaid
-flowchart LR
-  Input[Request validado] --> Domain[Función pura de tarifa]
-  Domain --> AWS[Adaptador AWS Lambda]
-  Domain --> Azure[Adaptador Azure Functions]
-  AWS --> Tests[Pruebas locales de contrato]
-  Azure --> Tests
-  Tests -->|mismo resultado| Compatible[Comportamiento equivalente]
+flowchart TB
+  L["calcularCosto.js (lógica pura)"] --> A[adaptador AWS]
+  L --> Z[adaptador Azure]
+  L --> G[adaptador GCP]
 ```
 
-**Proyecto integrador:** extrae la tarifa de un servicio propio de entregas y mantenla en una función pura compartida por dos adaptadores. Prueba entradas inválidas y la equivalencia del resultado; registra por separado cualquier coste de despliegue y observabilidad de cada proveedor.
+Esta misma separación lógica/adaptador es la que mantendrá portable el cálculo de costos del proyecto propio frente a cualquier proveedor cloud que el equipo decida evaluar después.
 
-**Fuentes oficiales:** [AWS Lambda — Handler en Node.js](https://docs.aws.amazon.com/lambda/latest/dg/nodejs-handler.html) y [Azure Functions — Node.js](https://learn.microsoft.com/azure/azure-functions/functions-reference-node).
+**Transferencia al proyecto integrador «API operativa de entregas»:** Extrae el cálculo de la tarifa de envío a una función pura, y despliégala primero en AWS Lambda y luego como una Azure Function sin tocar la fórmula, solo el adaptador del handler.
 
-### Tema 5: Docker productivo con Node · Avanzado · 90 min
+### Tema 5: Docker productivo con Node
 
-#### Aprende
+#### Paso 1 · Objetivo y preparación
 
-**Prerrequisitos:** Docker en ejecución, Node.js LTS, npm, `curl` y Módulo 11 de este track (Despliegue y contenedores). El proyecto es nuevo y no reutiliza servidores ni Dockerfiles.
+Al finalizar vas a construir una imagen Docker multi-stage para un servicio Node que corre como usuario no-root y responde correctamente a `SIGTERM` con un apagado ordenado. Prerrequisitos: Módulo 11 de este track (Despliegue y contenedores).
 
-**Al terminar podrás:** construir una imagen multi-stage con `npm ci` y lockfile, ejecutarla como usuario no-root, impedir que archivos locales sensibles entren al contexto y verificar un apagado por `SIGTERM` con espera limitada.
+#### Paso 2 · Contexto y caso real
 
-**Por qué importa:** un despliegue envía señales al proceso, no al framework. Si Node corre como root e ignora `SIGTERM`, aumenta el impacto de una compromiso y una petición de entrega puede cortarse durante una parada rutinaria.
+La imagen actual del servicio de pedidos corre como `root` dentro del contenedor e ignora las señales del sistema operativo durante un despliegue; cuando Kubernetes intenta terminar el pod de forma ordenada, el proceso Node no libera sus conexiones activas y las peticiones en curso se cortan abruptamente.
 
-La etapa de build instala dependencias de forma reproducible; la final copia solo lo necesario. `.dockerignore` reduce el contexto y evita copiar secretos o `node_modules` locales. Al recibir `SIGTERM`, el servidor deja de aceptar conexiones, espera las activas y fuerza el cierre tras un máximo acotado. `docker stop` también tiene su propio límite antes de enviar `SIGKILL`, por lo que ambos tiempos deben coordinarse.
+#### Paso 3 · Teoría, modelo mental y analogía
 
-**Analogía:** al cerrar un restaurante se deja entrar a nadie nuevo y se termina de atender a quienes ya están dentro. La analogía tiene un límite operativo: incluso el cierre amable necesita una hora máxima.
+Un build multi-stage separa la etapa de instalación de dependencias (que necesita herramientas de build) de la imagen final de ejecución (mínima, sin esas herramientas); correr como un usuario no-root limita el daño si el proceso es comprometido; manejar `SIGTERM` explícitamente permite terminar las conexiones en curso antes de salir. La analogía: cerrar un restaurante ordenadamente (dejar de recibir clientes nuevos, pero terminar de atender a los que ya están sentados) frente a apagar las luces de golpe con gente todavía comiendo.
 
-#### Practica
+#### Paso 4 · Demostración guiada desde cero
+**Crea** el archivo `src/servidor.js` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
 
-Crea la estructura desde una carpeta vacía:
-
-```bash
-mkdir lab-docker-cierre
-cd lab-docker-cierre
-mkdir src
-```
-
-Crea `package.json`:
-
-```json
-{
-  "name": "lab-docker-cierre",
-  "version": "1.0.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "start": "node src/servidor.js"
-  }
-}
-```
-
-Crea `src/servidor.js`:
-
-```js
-import { createServer } from "node:http";
-
-const esperar = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-let cerrando = false;
-
-const servidor = createServer(async (req, res) => {
-  if (cerrando) {
-    res.writeHead(503, { "content-type": "application/json" });
-    res.end(JSON.stringify({ error: "Servidor cerrando" }));
-    return;
-  }
-
-  if (req.method === "GET" && req.url === "/salud") {
-    res.writeHead(200, { "content-type": "application/json" });
-    res.end(JSON.stringify({ estado: "ok" }));
-    return;
-  }
-
-  if (req.method === "GET" && req.url === "/lenta") {
-    await esperar(1500);
-    res.writeHead(200, { "content-type": "application/json" });
-    res.end(JSON.stringify({ estado: "completada" }));
-    return;
-  }
-
-  res.writeHead(404, { "content-type": "application/json" });
-  res.end(JSON.stringify({ error: "Ruta no encontrada" }));
-});
-
-servidor.listen(3000, "0.0.0.0", () => {
-  console.log("Servidor listo en puerto 3000");
-});
-
-function apagar(signal) {
-  if (cerrando) return;
-  cerrando = true;
-  console.log(`${signal}: no se aceptan conexiones nuevas`);
-
-  const forzado = setTimeout(() => {
-    console.error("Timeout de apagado: cerrando conexiones restantes");
-    process.exitCode = 1;
-    servidor.closeAllConnections();
-  }, 8000);
-  forzado.unref();
-
-  servidor.close(() => {
-    clearTimeout(forzado);
-    console.log("Conexiones terminadas; cierre completo");
-  });
-  servidor.closeIdleConnections();
-}
-
-process.once("SIGTERM", () => apagar("SIGTERM"));
-process.once("SIGINT", () => apagar("SIGINT"));
-```
 
 Crea `Dockerfile`:
 
 ```dockerfile
 FROM node:24-alpine AS build
 WORKDIR /app
-COPY package.json package-lock.json ./
+COPY package*.json ./
 RUN npm ci --omit=dev
 
 FROM node:24-alpine
-ENV NODE_ENV=production
 RUN addgroup -S app && adduser -S app -G app
 WORKDIR /app
 COPY --from=build /app/node_modules ./node_modules
-COPY package.json package-lock.json ./
-COPY src ./src
+COPY . .
 USER app
-EXPOSE 3000
 CMD ["node", "src/servidor.js"]
 ```
 
-Crea `.dockerignore`:
-
-```dockerignore
-node_modules
-npm-debug.log*
-.git
-.env
-.env.*
-coverage
-dist
-```
-
-Genera el lockfile desde el manifiesto y construye. No copies un lockfile de otro proyecto:
+**Ejecuta el ejemplo** (monta el proyecto Node y córrelo):
 
 ```bash
-npm install
-docker build -t lab-docker-cierre:local .
-docker run -d --name lab-docker-cierre -p 3000:3000 lab-docker-cierre:local
-docker exec lab-docker-cierre whoami
-curl --fail http://127.0.0.1:3000/salud
+npm init -y && npm install
+node index.js
 ```
+Para las pruebas: `npm test`.
 
-**Resultado esperado:** `whoami` imprime `app`, la salud responde `{"estado":"ok"}` y `npm ci` puede resolver el árbol porque `package-lock.json` existe antes del build.
 
-Ahora comprueba el apagado con una petición activa. En una terminal ejecuta:
-
-```bash
-curl --fail http://127.0.0.1:3000/lenta
-```
-
-Mientras esa petición espera, en otra terminal ejecuta:
-
-```bash
-docker stop --time 15 lab-docker-cierre
-docker logs lab-docker-cierre
-docker inspect --format '{{.State.ExitCode}}' lab-docker-cierre
-```
-
-**Resultado esperado:** `curl` recibe `{"estado":"completada"}`; los logs muestran `SIGTERM` y `Conexiones terminadas; cierre completo`, y el código de salida es `0`. No basta con observar que el contenedor desaparece de `docker ps`.
-
-**Fallo deliberado y corrección:** elimina temporalmente los dos registros `process.once(...)` y repite el build, la petición lenta y `docker stop`. Node termina por la señal sin ejecutar el cierre y el cliente puede recibir una conexión cortada en vez del JSON completo. Restaura los handlers, reconstruye la imagen y repite hasta obtener respuesta completa y salida `0`.
-
-**Práctica guiada:** cambia el timeout interno a `1000` ms y la espera de `/lenta` a `3000` ms. Al detener, debes observar el cierre forzado y un código distinto de `0`; restaura después `8000` y `1500`. Comprueba también la necesidad del lockfile: sin `package-lock.json`, `npm ci` falla en vez de resolver silenciosamente versiones nuevas. Recupéralo con `npm install` desde el manifiesto correcto, no copiándolo de otra carpeta.
-
-**Ejercicio independiente:** añade una segunda petición lenta concurrente y prueba que ambas terminan antes del cierre. Escribe una prueba o un script local que arranque el servidor en un puerto libre, realice la petición, envíe `SIGTERM` y compruebe que no acepta una conexión nueva durante el cierre. Conserva el timeout y documenta qué ocurriría si una conexión nunca terminara.
-
-Limpia el laboratorio cuando termines:
-
-```bash
-docker rm lab-docker-cierre
-```
-
-#### Aplica
-
-**Proyecto de aplicación — contenedor de notificaciones:** desde una carpeta vacía `app-docker-notificaciones`, crea manualmente su manifiesto, lockfile, servidor HTTP, `Dockerfile` y `.dockerignore`. Expón `/salud` y `/envio-lento`, ejecuta como un usuario no-root propio y cierra conexiones en un máximo de cinco segundos. Construye con `npm ci`, verifica el usuario y detén el contenedor durante un envío lento; la evidencia debe incluir respuesta completa o cierre forzado explícito, logs y código de salida, sin importar el servidor de este tema.
-
-**Checklist de salida**
-
-- [ ] El lockfile se generó en este proyecto y el build usa `npm ci`.
-- [ ] La imagen final es multi-stage y copia solo los artefactos necesarios.
-- [ ] `docker exec ... whoami` demuestra que el proceso no es root.
-- [ ] `.dockerignore` excluye dependencias locales, VCS y archivos de entorno.
-- [ ] Una petición activa termina antes del cierre cuando está dentro del límite.
-- [ ] El timeout evita una espera indefinida y deja un código de fallo visible.
-- [ ] El fallo sin handler se corrige reconstruyendo y repitiendo la prueba.
-
-**Cierre:** el apagado ordenado no garantiza que toda operación termine; por eso tiene timeout y los clientes necesitan reintentos seguros. Errores comunes: usar `npm install` en el build sin lockfile, copiar `.env`, ejecutar como root, llamar a `process.exit(0)` antes de cerrar conexiones o dejar un apagado sin límite.
-
-```mermaid
-flowchart LR
-  Source[Fuentes y lockfile] --> Build[Etapa de build con dependencias]
-  Build --> Runtime[Imagen runtime mínima]
-  Runtime --> User[Proceso sin root]
-  Config[Secretos y config externos] --> Runtime
-  Runtime --> Stop[Señal y cierre gradual]
-```
-
-**Proyecto integrador:** empaqueta la API de entregas en una imagen propia: conserva solo dependencias runtime, ejecuta sin root, inyecta configuración fuera de la imagen y verifica el cierre con `SIGTERM`. Compara el tamaño y el arranque con el artefacto anterior sin presentar esas métricas como seguridad completa.
-
-**Fuentes oficiales:** [Docker — Multi-stage builds](https://docs.docker.com/build/building/multi-stage/) y [Node.js — Process signal events](https://nodejs.org/api/process.html#signal-events).
-
-### Tema 6: CI/CD y promoción de artefactos · Avanzado · 105 min
-
-#### Aprende
-
-**Prerrequisitos:** Docker con Buildx, Node.js LTS, npm y Tema 5 de este módulo. El laboratorio local no usa un registro ni hace `push`; el workflow se escribe como archivo completo, pero aquí no se afirma haberlo ejecutado en GitHub ni haber publicado una imagen.
-
-**Al terminar podrás:** construir un artefacto OCI una sola vez, calcular y verificar el digest de su manifiesto, copiar ese mismo artefacto entre etapas sin reconstruirlo y redactar un workflow que promueva por `imagen@sha256:...` con aprobaciones de entorno.
-
-**Por qué importa:** reconstruir en dev, staging y producción vuelve a resolver el contexto y puede introducir diferencias aunque el commit sea el mismo. La pregunta operativa no es «¿tienen la misma etiqueta?», sino «¿el digest desplegado es el que pasó las pruebas?».
-
-Una etiqueta como `staging` puede cambiar a qué manifiesto apunta; un digest identifica contenido. **Build once, promote by digest** construye y publica una vez en CI, conserva el digest devuelto y hace que cada entorno use esa referencia inmutable. El lockfile hace más reproducible la instalación, pero no sustituye la promoción del mismo artefacto.
-
-En la práctica local se exporta una imagen a un archivo OCI. Un script calcula SHA-256 sobre el manifiesto y lo compara con el digest declarado en `index.json`. Copiar el mismo archivo a staging y producción evita cualquier push y permite demostrar que ambas etapas conservan exactamente el mismo manifiesto.
-
-**Analogía:** se fabrica un lote y se distribuye el mismo precinto numerado a cada almacén. Volver a fabricar para cada tienda no es «promover» el lote original.
-
-#### Practica
-
-Crea un proyecto nuevo, incluido su propio servicio mínimo:
-
-```bash
-mkdir lab-promocion-digest
-cd lab-promocion-digest
-mkdir -p src scripts .github/workflows
-```
-
-Crea `package.json`:
-
-```json
-{
-  "name": "lab-promocion-digest",
-  "version": "1.0.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "start": "node src/app.js",
-    "test": "node --test src/app.test.js"
-  }
-}
-```
-
-Crea `src/app.js`:
+Y en `src/servidor.js`, el manejo explícito de la señal:
 
 ```js
-console.log(JSON.stringify({ servicio: "pedidos", estado: "listo" }));
-```
-
-Crea `src/app.test.js`:
-
-```js
-import test from "node:test";
-import assert from "node:assert/strict";
-import { spawnSync } from "node:child_process";
-
-test("el artefacto ejecuta el servicio esperado", () => {
-  const resultado = spawnSync(process.execPath, ["src/app.js"], {
-    encoding: "utf8",
-  });
-  assert.equal(resultado.status, 0);
-  assert.deepEqual(JSON.parse(resultado.stdout), {
-    servicio: "pedidos",
-    estado: "listo",
-  });
+const servidor = app.listen(3000);
+process.on("SIGTERM", () => {
+  servidor.close(() => process.exit(0));
 });
 ```
 
-Crea `Dockerfile` y genera después el lockfile que `npm ci` exige:
+**Resultado esperado:** `docker run` del contenedor muestra el proceso corriendo como el usuario `app` (no `root`, verificable con `docker exec <id> whoami`), y al enviar `docker stop` (que envía `SIGTERM`), el servidor termina las conexiones en curso antes de salir con código 0, en vez de cortarse abruptamente.
 
-```dockerfile
-FROM node:24-alpine AS build
-WORKDIR /app
-COPY package.json package-lock.json ./
-RUN npm ci --omit=dev
+#### Paso 5 · Práctica guiada
 
-FROM node:24-alpine
-ENV NODE_ENV=production
-WORKDIR /app
-COPY --from=build /app/node_modules ./node_modules
-COPY package.json package-lock.json ./
-COPY src ./src
-USER node
-CMD ["node", "src/app.js"]
-```
+Pista: quitá el bloque `process.on("SIGTERM", ...)` del servidor y hacé una petición lenta justo antes de `docker stop`. Ese es el fallo deliberado: el proceso termina inmediatamente al recibir `SIGTERM` sin esperar a que la conexión en curso complete, y el cliente de esa petición recibe una conexión cortada abruptamente en vez de una respuesta completa.
 
-Crea `.dockerignore`:
+#### Paso 6 · Práctica independiente
 
-```dockerignore
-node_modules
-.git
-.env
-.env.*
-dist
-staging
-production
-npm-debug.log*
-```
+Corregí el Paso 5 restaurando el manejo de `SIGTERM`, y agregá un timeout máximo de apagado ordenado (por ejemplo, 10 segundos) después del cual el proceso fuerza la salida aunque queden conexiones sin cerrar, documentando por qué un apagado ordenado sin límite de tiempo también es riesgoso.
 
-Crea `scripts/verificar-oci.mjs`:
+#### Paso 7 · Cierre y evidencia
 
-```js
-import { readFile } from "node:fs/promises";
-import { createHash } from "node:crypto";
+Entregá la imagen multi-stage con usuario no-root del Paso 4, la conexión cortada abruptamente del Paso 5, y el timeout de apagado forzado del Paso 6; explicá por qué un contenedor que ignora `SIGTERM` convierte cada despliegue en una fuente de errores para los clientes con peticiones en curso. Siguiente paso: automatiza este mismo build dentro de un pipeline de CI/CD con promoción de artefactos. Errores comunes: correr el proceso como `root` dentro del contenedor, ignorar `SIGTERM` dejando que Kubernetes mate el proceso con `SIGKILL` tras el timeout de gracia, y no limitar con un timeout máximo el apagado ordenado. Fuentes oficiales: [Docker — Multi-stage builds](https://docs.docker.com/build/building/multi-stage/) y [Node.js — Process signal events](https://nodejs.org/api/process.html#signal-events).
 
-const layout = process.argv[2];
-if (!layout) throw new Error("Uso: node scripts/verificar-oci.mjs <layout>");
+**¿Por qué es importante?** Un contenedor que corre como root y no maneja señales de apagado ordenado convierte cada despliegue rutinario en una fuente de errores para los clientes con peticiones en curso.
 
-const index = JSON.parse(
-  await readFile(`${layout}/index.json`, "utf8"),
-);
-const entrada = index.manifests.find(
-  (manifest) =>
-    manifest.mediaType === "application/vnd.oci.image.manifest.v1+json",
-);
-if (!entrada) throw new Error("No hay manifiesto de imagen OCI");
+**Evidencia de aprendizaje:** entrega la imagen multi-stage no-root funcionando, la conexión cortada abruptamente reproducida y el timeout de apagado forzado documentado.
 
-const [algoritmo, esperado] = entrada.digest.split(":");
-if (algoritmo !== "sha256" || !esperado) {
-  throw new Error(`Digest no soportado: ${entrada.digest}`);
-}
+**Conceptos clave:** multi-stage build, usuario no-root, SIGTERM, apagado ordenado (graceful shutdown), timeout de apagado forzado.
 
-const bytes = await readFile(`${layout}/blobs/sha256/${esperado}`);
-const actual = createHash("sha256").update(bytes).digest("hex");
-if (actual !== esperado) {
-  throw new Error(`Digest inválido: esperado ${esperado}, actual ${actual}`);
-}
-
-console.log(entrada.digest);
-```
-
-Crea el workflow completo `.github/workflows/promocion.yml`:
-
-```yaml
-name: Build una vez y promover por digest
-
-on:
-  push:
-    branches: [main]
-  workflow_dispatch:
-
-permissions:
-  contents: read
-  packages: write
-
-env:
-  REGISTRY: ghcr.io
-  IMAGE: ghcr.io/${{ github.repository }}
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    outputs:
-      digest: ${{ steps.imagen.outputs.digest }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: npm
-      - run: npm ci
-      - run: npm test
-      - uses: docker/setup-buildx-action@v3
-      - uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - id: imagen
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          push: true
-          tags: ${{ env.IMAGE }}:${{ github.sha }}
-
-  staging:
-    needs: build
-    runs-on: ubuntu-latest
-    environment: staging
-    steps:
-      - uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Validar el artefacto aprobado por digest
-        env:
-          DIGEST: ${{ needs.build.outputs.digest }}
-        run: |
-          test -n "$DIGEST"
-          REF="${IMAGE}@${DIGEST}"
-          docker pull "$REF"
-          docker run --rm "$REF"
-
-  production:
-    needs: staging
-    runs-on: ubuntu-latest
-    environment: production
-    steps:
-      - uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Promover exactamente el digest validado en staging
-        env:
-          DIGEST: ${{ needs.build.outputs.digest }}
-        run: |
-          test -n "$DIGEST"
-          REF="${IMAGE}@${DIGEST}"
-          docker pull "$REF"
-          docker run --rm "$REF"
-```
-
-El workflow tiene build, pruebas, publicación única y dos entornos que consumen el digest producido por `build`; no contiene un segundo `docker build`. Los jobs de entorno muestran una validación ejecutable del artefacto. Una integración real debe sustituir esa validación por el comando de su plataforma usando **la misma** referencia `IMAGE@DIGEST`, credenciales y reglas de aprobación. Crear el archivo no prueba el workflow: su ejecución, la publicación en GHCR y cualquier despliegue quedan fuera de esta práctica local.
-
-Para la prueba local sin pushes, instala el lockfile, ejecuta las pruebas y construye una única exportación OCI:
-
-```bash
-npm install
-npm test
-mkdir -p dist/oci staging/oci production/oci
-docker buildx build --output type=oci,dest=dist/pedidos.oci.tar .
-tar -xf dist/pedidos.oci.tar -C dist/oci
-DIGEST=$(node scripts/verificar-oci.mjs dist/oci)
-printf 'Artefacto construido: %s\n' "$DIGEST"
-```
-
-Promueve copiando **ese archivo**, no reconstruyendo:
-
-```bash
-cp dist/pedidos.oci.tar staging/pedidos.oci.tar
-cp dist/pedidos.oci.tar production/pedidos.oci.tar
-tar -xf staging/pedidos.oci.tar -C staging/oci
-tar -xf production/pedidos.oci.tar -C production/oci
-STAGING=$(node scripts/verificar-oci.mjs staging/oci)
-PRODUCTION=$(node scripts/verificar-oci.mjs production/oci)
-test "$STAGING" = "$DIGEST"
-test "$PRODUCTION" = "$DIGEST"
-printf 'staging=%s\nproduction=%s\n' "$STAGING" "$PRODUCTION"
-```
-
-**Resultado esperado:** las pruebas pasan y se imprime un único `sha256:` de 64 dígitos hexadecimales para build, staging y producción. Los dos `test` terminan sin salida y con código `0`. No se ejecutó `docker push`, no se publicó en GHCR y no se desplegó en una infraestructura.
-
-**Fallo deliberado y corrección:** cambia temporalmente `estado` a `"divergente"` en `src/app.js` y ejecuta un segundo build con destino `staging/pedidos.oci.tar`; extrae ese archivo en un directorio OCI vacío y calcula su digest. Debe diferir del artefacto original de producción. Esto demuestra de forma determinista que un build nuevo es otro artefacto; incluso sin editar código, reconstruir rompe la cadena de evidencia. Restaura `estado: "listo"`, descarta el build divergente y vuelve a copiar `dist/pedidos.oci.tar` a staging. Extrae de nuevo y repite las comparaciones hasta que los tres digest coincidan.
-
-**Práctica guiada:** modifica una copia de un byte del archivo OCI de staging y vuelve a extraerlo; la verificación debe fallar al comparar el hash del manifiesto o al leer un archivo dañado. Restaura staging desde el artefacto original. Después revisa el workflow y localiza la única acción de build y los dos usos de `${{ needs.build.outputs.digest }}`; no aceptes una promoción basada solo en la etiqueta mutable `latest`.
-
-**Ejercicio independiente:** crea `scripts/comparar-digests.mjs` para recibir dos directorios OCI, verificar ambos y salir con código `1` si los digest difieren. Añade una prueba con dos copias iguales y otra con el build divergente. Explica por qué verificar el manifiesto debe acompañarse en un sistema real de verificación de todos sus blobs y de las firmas o políticas que exija la organización.
-
-#### Aplica
-
-**Proyecto de aplicación — promoción de inventario:** en otra carpeta vacía `app-promocion-inventario`, crea manualmente un CLI Node, su prueba, manifiesto, lockfile, `Dockerfile`, `.dockerignore`, verificador OCI y workflow. Construye localmente una sola exportación OCI, promueve el mismo archivo a `calidad` y `produccion` y compara sus digest sin pushes. El workflow debe probar una vez y consumir `needs.build.outputs.digest` en ambos entornos; entrega los tres digest iguales como evidencia local y deja explícitamente pendiente cualquier ejecución remota o despliegue.
-
-**Checklist de salida**
-
-- [ ] El proyecto local tiene código, prueba, lockfile y archivos de build propios.
-- [ ] Solo existe una construcción del artefacto antes de promoverlo.
-- [ ] El script recalcula SHA-256 y lo compara con el digest OCI declarado.
-- [ ] Staging y producción reciben copias del mismo archivo y muestran el mismo digest.
-- [ ] La práctica local no ejecuta pushes ni afirma despliegues.
-- [ ] El workflow propaga el output `digest` y no reconstruye en los entornos.
-- [ ] La divergencia deliberada se corrige restaurando el artefacto original.
-
-**Cierre:** una etiqueta de commit ayuda a localizar el origen, pero el digest es la referencia que deben consumir y verificar los entornos. Errores comunes: reconstruir por etapa, confiar en `latest`, omitir lockfile, perder el digest entre jobs o marcar producción como verificada sin observar la referencia efectivamente desplegada.
+**Diagrama:**
 
 ```mermaid
 flowchart LR
-  Commit[Commit revisado] --> Checks[npm ci, typecheck y pruebas]
-  Checks --> Build[Construir imagen una vez]
-  Build --> Digest[Registrar digest inmutable]
-  Digest --> Staging[Promover a staging]
-  Staging --> Approval[Aprobación y evidencia]
-  Approval --> Production[Promover el mismo digest]
-  Production --> Rollback[Rollback a digest conocido]
+  B["FROM node:24-alpine AS build"] --> F["FROM node:24-alpine (final)"]
+  F --> U["USER app (no-root)"]
+  U --> SIG["SIGTERM → cierra conexiones → exit 0"]
 ```
 
-**Proyecto integrador:** define un pipeline para la API de entregas que ejecute checks, publique un digest inmutable y promueva ese mismo artefacto entre ambientes con aprobación y rollback documentado. La prueba local del YAML no equivale a una ejecución exitosa de CI ni a un despliegue comprobado.
+Esta misma imagen endurecida es la que empaquetará el servicio del proyecto propio para un despliegue real en Kubernetes.
 
-**Fuentes oficiales:** [GitHub Actions — Environments](https://docs.github.com/actions/deployment/targeting-different-environments/using-environments-for-deployment) y [Docker — Image digests](https://docs.docker.com/engine/reference/commandline/images/#digests).
+**Transferencia al proyecto integrador «API operativa de entregas»:** Construye la imagen multi-stage no-root del servicio de entregas y verifica que, al recibir `SIGTERM` durante un despliegue, termina de responder las peticiones en curso antes de salir, sin cortar a un conductor que está confirmando una entrega en ese momento.
 
-## Laboratorio práctico
+### Tema 6: CI/CD y promoción de artefactos
 
-### Proyecto 14: Plataforma operativa de entregas
+#### Paso 1 · Objetivo y preparación
 
-**Objetivo del laboratorio:** construir desde cero un proyecto independiente que ejecute dominio en TypeScript, componga Pedidos y Conductores, coordine una saga recuperable, pruebe adaptadores serverless localmente y produzca un único artefacto OCI promovible por digest.
+Al finalizar vas a construir una imagen Docker UNA sola vez por commit y promoverla (retaguearla) a través de dev, staging y producción, en vez de reconstruirla en cada etapa. Prerrequisitos: Tema 5 de este módulo.
 
-**Preparación:** crea una carpeta vacía `lab-plataforma-entregas` y entra en ella. Escribe manualmente todos los archivos de este proyecto y genera su propio lockfile. No copies ni importes código de los seis laboratorios anteriores.
+#### Paso 2 · Contexto y caso real
 
-| Archivo o conjunto de archivos | Implementación requerida | Evidencia esperada |
-|---|---|---|
-| `package.json`, `tsconfig.json`, `package-lock.json` | Scripts `test`, `typecheck`, `demo:federation`, `demo:saga` y dependencias declaradas en este proyecto | `npm ci`, `npm test` y `npm run typecheck` terminan correctamente |
-| `src/asignacion/pedido.ts`, `src/asignacion/pedido.test.ts` | Asignación inmutable con tipos borrables y validación de ID vacío en runtime | Una asignación válida, una inválida y un caso estático incorrecto detectado solo por `tsc` |
-| `src/federation/servidor.mjs`, `src/federation/federation.test.mjs` | Subgrafos propios de Pedidos y Conductores, `@key`, `__resolveReference`, gateway y cierre completo | Una consulta combina pedido y conductor; ID inexistente devuelve `null`; los puertos quedan libres |
-| `src/saga/crearPedido.js`, `src/saga/crearPedido.test.js` | Pasos locales, claves estables, diario persistente al menos durante el proceso, compensación inversa y reintento | Cobro fallido deja pedido cancelado y conductor libre; una liberación fallida queda pendiente hasta el reintento |
-| `src/tarifas/calcular.js`, `src/tarifas/aws.js`, `src/tarifas/azure.js`, `src/tarifas/adaptadores.test.js` | Una sola fórmula y dos traducciones de evento/respuesta | Ambos adaptadores producen el mismo importe local; no se declara despliegue cloud |
-| `src/http/servidor.js`, `Dockerfile`, `.dockerignore` | Servicio no-root, `npm ci`, cierre por `SIGTERM` y timeout | Una petición lenta termina antes del cierre o el timeout deja evidencia de fallo; `whoami` no devuelve `root` |
-| `scripts/verificar-oci.mjs`, `.github/workflows/promocion.yml` | Verificación del manifiesto y workflow de build único con entornos por digest | Una exportación OCI local se copia a staging y producción y los tres digest coinciden, sin pushes locales |
+El pipeline actual ejecuta `docker build` por separado en cada etapa (dev, staging, producción); dos builds del mismo commit, ejecutados en momentos distintos, pueden producir binarios ligeramente distintos (una dependencia transitiva se actualizó entre medio), rompiendo la garantía de que "lo que se probó en staging es exactamente lo que llega a producción".
 
-**Recorrido de verificación:** ejecuta primero las pruebas de dominio, Federation, saga y adaptadores; después el chequeo de tipos. Arranca Federation y comprueba su cierre con señal. Construye la imagen, verifica usuario y apagado con una petición activa. Finalmente genera una sola exportación OCI y promueve ese archivo a dos carpetas de entorno. El workflow remoto solo se considera probado si se ejecuta posteriormente con evidencia propia; escribirlo no demuestra publicación ni despliegue.
+#### Paso 3 · Teoría, modelo mental y analogía
 
-**Criterios de aceptación**
+El principio "build once, promote many" construye el artefacto UNA sola vez, lo etiqueta con un identificador inmutable (el hash del commit), y cada etapa posterior simplemente lo re-etiqueta y lo despliega, sin reconstruirlo. La analogía: un mismo lote de producción de una fábrica que se distribuye a distintas tiendas, en vez de fabricar un lote nuevo (con el riesgo de pequeñas variaciones) para cada tienda.
 
-- [ ] Todos los archivos fuente pertenecen al proyecto nuevo y no hay importaciones desde otros temas.
-- [ ] La ejecución nativa de TypeScript y el chequeo estático se reportan como resultados separados.
-- [ ] Federation tiene esquemas y resolvers completos, pruebas y cierre; sus límites de seguridad están documentados.
-- [ ] La saga muestra orden inverso, idempotencia y recuperación de compensación, sin prometer exactly-once.
-- [ ] Los adaptadores serverless tienen resultados locales y ninguna afirmación de despliegue.
-- [ ] Docker usa lockfile, `npm ci`, no-root, `.dockerignore`, `SIGTERM` y timeout.
-- [ ] La promoción conserva el digest; no se reconstruye ni se usan pushes en la práctica local.
+#### Paso 4 · Demostración guiada desde cero
 
-La evidencia de ejecución y la explicación de las decisiones son el cierre del proyecto. Una marca de finalización no sustituye las pruebas, la revisión de seguridad ni la revisión pedagógica humana.
+Crea el workflow de CI:
+
+```yaml
+jobs:
+  build:
+    steps:
+      - run: docker build -t registro/pedidos:${{ github.sha }} .
+      - run: docker push registro/pedidos:${{ github.sha }}
+  promover-a-staging:
+    needs: build
+    steps:
+      - run: docker pull registro/pedidos:${{ github.sha }}
+      - run: docker tag registro/pedidos:${{ github.sha }} registro/pedidos:staging
+      - run: docker push registro/pedidos:staging
+  promover-a-produccion:
+    needs: promover-a-staging
+    steps:
+      - run: docker pull registro/pedidos:${{ github.sha }}
+      - run: docker tag registro/pedidos:${{ github.sha }} registro/pedidos:production
+      - run: docker push registro/pedidos:production
+```
+
+**Ejecuta el ejemplo** (monta el proyecto Node y córrelo):
+
+```bash
+npm init -y && npm install
+node index.js
+```
+Para las pruebas: `npm test`.
+
+
+**Resultado esperado:** la imagen se construye una única vez con el tag inmutable `${{ github.sha }}`; tanto `staging` como `production` son simplemente ese mismo artefacto re-etiquetado, nunca reconstruido, garantizando bit por bit el mismo binario en ambos entornos.
+
+#### Paso 5 · Práctica guiada
+
+Pista: reemplazá los jobs `promover-a-staging` y `promover-a-produccion` por un `docker build` independiente en cada uno. Ese es el fallo deliberado: si una dependencia sin versión fijada (`^4.2.0` en vez de `4.2.1` exacto) publica una nueva versión menor entre el build de staging y el de producción, ambos binarios ya no son idénticos, aunque el código fuente no cambió.
+
+#### Paso 6 · Práctica independiente
+
+Corregí el Paso 5 restaurando el patrón de build único + promoción por re-tag, y agregá un paso de verificación que compare el digest SHA256 de la imagen en staging contra el digest en producción, confirmando que son bit por bit idénticos antes de considerar el despliegue exitoso.
+
+#### Paso 7 · Cierre y evidencia
+
+Entregá el pipeline de build único y promoción del Paso 4, la divergencia de binarios por reconstrucción del Paso 5, y la verificación de digest idéntico del Paso 6; explicá por qué reconstruir en cada etapa rompe la garantía central que la promoción de artefactos existe para dar. Siguiente paso: con esto cierras el módulo avanzado de Node, listo para operar en producción real. Errores comunes: reconstruir la imagen en cada etapa del pipeline en vez de promover el mismo artefacto, fijar dependencias con rangos semánticos abiertos (`^`) en vez de versiones exactas para un build reproducible, y no verificar el digest de la imagen antes de confirmar que staging y producción corren el mismo binario. Fuentes oficiales: [GitHub Actions — Environments](https://docs.github.com/actions/deployment/targeting-different-environments/using-environments-for-deployment) y [Docker — Image digests](https://docs.docker.com/engine/reference/commandline/images/#digests).
+
+**¿Por qué es importante?** Construir una vez y promover el mismo artefacto a través de los entornos es la única forma de garantizar que lo que se validó en staging es exactamente lo mismo que llega a producción.
+
+**Evidencia de aprendizaje:** entrega el pipeline de build único funcionando, la divergencia de binarios por reconstrucción reproducida y la verificación de digest idéntico confirmada.
+
+**Conceptos clave:** build once promote many, tag inmutable por commit, digest de imagen, versiones exactas vs rangos semánticos abiertos.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+  B["docker build (una vez)"] --> T["tag: sha del commit"]
+  T --> S["re-tag: staging"]
+  T --> P["re-tag: production"]
+  S --> D["mismo digest SHA256"]
+  P --> D
+```
+
+Guarda este workflow como `.github/workflows/promocion.yml`; es el mismo patrón que usarás para desplegar el proyecto propio con la garantía de que staging y producción corren bit por bit el mismo artefacto. **Cuándo no usarlo:** para un script interno de un solo uso, sin ambiente de staging real, la ceremonia de promoción por re-tag agrega pasos sin ningún beneficio frente a un build directo.
+
+**Transferencia al proyecto integrador «API operativa de entregas»:** Promueve la misma imagen Docker del servicio de entregas, construida una sola vez, de staging a producción por re-tag, y verifica el digest antes de aceptar el despliegue como válido.
 
 ## Trazabilidad de la auditoría original
 
@@ -1440,3 +473,177 @@ La evidencia de ejecución y la explicación de las decisiones son el cierre del
 - **Docker con Node.js**: imagen reproducible y usuario no root.
 - **CI/CD con Node.js**: pruebas, artefactos y promoción.
 - **Microservicios Avanzado**: eventos, brokers y compensaciones.
+
+### Tema 7: Kafka desde Node: clave, grupo consumidor y offset
+
+**Duración estimada:** 35 min.
+**¿Por qué es importante?** La key mantiene orden por pedido y el grupo registra el avance de cada proyector.
+
+**Prerrequisitos:** Node M0 T2 (módulos) y Node M8 T3 (promesas y workers). Proyecto continuo: RutaFlow produce cambios de pedidos para proyecciones independientes.
+
+#### Subtema 7.1: Envía un evento con la clave del pedido · 10 min
+
+**1. Contexto**
+La clave `pedidoId` mantiene los eventos de un pedido en la misma partición; no evita duplicados.
+
+**2. Hazlo tú**
+Abre `examples/node-messaging/kafka/producer.mjs` y desde `examples/node-messaging/` ejecuta:
+
+```bash
+npm ci
+npm test
+```
+
+**Resultado esperado:** las pruebas locales pasan; el productor crea `eventId`, usa `pedidoId` como `key` y publica JSON en `pedidos`. Estas pruebas no conectan al broker.
+
+**Fallo deliberado:** cambia `key: event.pedidoId` a `key: event.eventId`. **Error esperado:** dos eventos del mismo pedido pueden usar claves distintas. **Diagnóstico:** el identificador único cambia en cada publicación; restaura `pedidoId` para ordenar por pedido.
+
+**3. Entiende**
+Kafka asigna cada clave a una partición. El orden que protege la clave es local a esa partición, no un orden global del tópico.
+
+**4. Cierra**
+Anota el tópico, la key y la partición observada en la práctica con broker.
+
+#### Subtema 7.2: Reparte particiones con un grupo · 10 min
+
+**1. Contexto**
+Las instancias del mismo proyector comparten el trabajo; otro servicio necesita su propio grupo para leer el flujo completo.
+
+**2. Hazlo tú**
+Abre `examples/node-messaging/kafka/consumer.mjs`; levanta Kafka según `examples/node-messaging/README.md` y ejecuta desde `examples/node-messaging/`:
+
+```bash
+npm run kafka:consumer
+```
+
+En otra terminal, desde esa carpeta, ejecuta `npm run kafka:producer`.
+
+**Resultado esperado:** el consumidor imprime `topic`, `partition`, `offset`, `key` y `value` para el evento.
+
+**Fallo deliberado:** cambia `KAFKA_GROUP_ID` para la segunda instancia y compárala con la primera. **Resultado esperado:** ambas pueden leer el evento como grupos independientes. **Diagnóstico:** los grupos son cursores separados; devuelve a las réplicas del mismo proyector el mismo `groupId`.
+
+**3. Entiende**
+Dentro de un grupo, Kafka asigna particiones disponibles a sus miembros. Dos miembros no duplican la lectura de una misma partición mientras la asignación esté estable.
+
+**4. Cierra**
+Registra el `groupId` y cuántas particiones leyó cada instancia.
+
+#### Subtema 7.3: Reconoce redelivery e idempotencia · 15 min
+
+**1. Contexto**
+El offset identifica el avance del grupo; no confirma por sí solo que la base de datos guardó el efecto de negocio.
+
+**2. Hazlo tú**
+Abre `examples/node-messaging/kafka/consumer.mjs` y `examples/spring-kafka-rutaflow/src/main/java/academia/rutaflow/inbox/InboxProcessor.java`. Ejecuta desde `examples/spring-kafka-rutaflow/`:
+
+```bash
+./mvnw -Dtest=EnvioEventPublisherTest#inboxHaceIdempotenteElEfectoDeNegocio test
+```
+
+**Resultado esperado:** al entregar dos veces el mismo `eventId`, una sola proyección queda registrada.
+
+**Fallo deliberado:** quita la deduplicación de `InboxProcessor`. **Resultado esperado:** la prueba falla o la clave única rechaza la segunda escritura. **Diagnóstico:** protege el efecto con `eventId` en la misma transacción que actualiza la proyección.
+
+**3. Entiende**
+En producción una caída entre escribir el efecto y confirmar el offset puede repetir el mensaje. La inbox hace idempotente el cambio de negocio; no vuelve exactly-once a una base externa.
+
+**4. Cierra**
+Guarda la salida del test y explica qué estado comparte Kafka y cuál protege la inbox.
+
+**Hito del tema:**
+
+- [ ] Producer publica con `pedidoId` como key.
+- [ ] Consumer muestra partición y offset.
+- [ ] Distingo réplicas del mismo grupo de dos grupos independientes.
+- [ ] La inbox evita duplicar el efecto al repetir `eventId`.
+
+**Fuentes oficiales:** [Confluent JavaScript client](https://docs.confluent.io/kafka-clients/javascript/current/overview.html) y [Apache Kafka](https://kafka.apache.org/documentation/).
+
+### Tema 8: RabbitMQ desde Node: exchange, cola y confirmaciones
+
+**Duración estimada:** 35 min.
+**¿Por qué es importante?** Las confirmaciones y la DLQ evitan perder trabajo o esconder mensajes que requieren diagnóstico.
+
+**Prerrequisitos:** Node M0 T2 (módulos) y Node M8 T3 (promesas). Proyecto continuo: RutaFlow distribuye tareas para generar etiquetas.
+
+#### Subtema 8.1: Enruta una etiqueta con exchange y binding · 10 min
+
+**1. Contexto**
+RabbitMQ separa el destino lógico (exchange) de la cola que guarda trabajo pendiente.
+
+**2. Hazlo tú**
+Abre `examples/node-messaging/rabbit/topology.mjs` y ejecuta desde `examples/node-messaging/`:
+
+```bash
+npm ci
+npm test
+```
+
+**Resultado esperado:** `topology.test.mjs` comprueba el exchange directo `entregas`, la cola `envios` y el binding `label.ready`.
+
+**Fallo deliberado:** cambia la routing key del binding a `label.created`. **Resultado esperado:** el test compara valores distintos y falla. **Diagnóstico:** el productor publica con `label.ready`; restaura la misma key en el binding.
+
+**3. Entiende**
+El exchange no almacena mensajes. Enruta según tipo y binding key; la cola los conserva para que el worker los reciba.
+
+**4. Cierra**
+Dibuja `producer → exchange → binding → queue` y guarda el test verde.
+
+#### Subtema 8.2: Confirma una publicación y un procesamiento · 10 min
+
+**1. Contexto**
+La confirmación del productor y el `ack` del consumidor hablan de dos etapas diferentes.
+
+**2. Hazlo tú**
+Abre `examples/node-messaging/rabbit/producer.mjs` y `examples/node-messaging/rabbit/worker.mjs`. Desde `examples/node-messaging/` levanta RabbitMQ y corre el worker según `examples/node-messaging/README.md`:
+
+```bash
+docker compose -f compose.rabbit.yaml up -d --wait
+npm run rabbit:worker
+```
+
+En otra terminal ejecuta `npm run rabbit:producer`.
+
+**Resultado esperado:** el productor imprime `confirmado=...`; el worker imprime `procesado=...`. `waitForConfirms()` no prueba que el worker guardó el efecto.
+
+**Fallo deliberado:** confirma el mensaje antes de terminar el efecto en el worker. **Resultado esperado:** si el proceso cae, RabbitMQ no lo vuelve a entregar. **Diagnóstico:** procesa y guarda primero; confirma después con `channel.ack(message)`.
+
+**3. Entiende**
+Publisher confirm muestra aceptación del broker. Consumer ack permite retirar una entrega tras el procesamiento. Ninguno garantiza por sí solo una transacción con tu base de datos.
+
+**4. Cierra**
+Registra dos evidencias separadas: confirm del productor y ack del worker.
+
+#### Subtema 8.3: Rechaza y enruta un mensaje inválido a la DLQ · 15 min
+
+**1. Contexto**
+Un mensaje sin `eventId` no puede deduplicarse ni procesarse con seguridad.
+
+**2. Hazlo tú**
+Abre `examples/node-messaging/rabbit/topology.mjs` y `examples/node-messaging/rabbit/worker.mjs`. Levanta RabbitMQ desde `examples/node-messaging/`:
+
+```bash
+docker compose -f compose.rabbit.yaml up -d --wait
+npm run rabbit:worker
+```
+
+Publica desde la consola local el JSON `{"pedidoId":"p-17"}` en `entregas` con routing key `label.ready`; revisa `envios.dlq` en `http://localhost:15672`.
+
+**Resultado esperado:** el worker registra mensaje inválido y la cola `envios.dlq` lo conserva mediante `entregas.dlx`.
+
+**Fallo deliberado:** cambia `channel.nack(message, false, false)` a `channel.nack(message, false, true)`. **Resultado esperado:** el mensaje vuelve a `envios` y se procesa repetidamente. **Diagnóstico:** el tercer argumento es `requeue`; `true` vuelve a encolar en vez de aplicar dead-letter routing.
+
+**3. Entiende**
+La cola de errores conserva una entrega para diagnóstico. El `Set` de este ejemplo solo vive en memoria; en producción reemplázalo por una inbox persistente con `eventId` único.
+
+**4. Cierra**
+Guarda el mensaje de error y el nombre del exchange y la cola que lo recibieron.
+
+**Hito del tema:**
+
+- [ ] La routing key llega a la cola esperada.
+- [ ] Distingo publisher confirm y consumer ack.
+- [ ] Un mensaje sin `eventId` se enruta a DLQ.
+- [ ] Registro el límite de idempotencia en memoria.
+
+**Fuentes oficiales:** [tutorial de Node.js](https://www.rabbitmq.com/tutorials/tutorial-one-javascript), [confirmaciones, acknowledgements y prefetch](https://www.rabbitmq.com/docs/confirms) y [colas](https://www.rabbitmq.com/docs/queues).

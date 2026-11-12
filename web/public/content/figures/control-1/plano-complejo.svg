@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" role="img" aria-label="Plano complejo con los puntos -3+4j, 2+1j y -3-4j" font-family="IBM Plex Sans, sans-serif" font-size="13"><rect x="0" y="0" width="640" height="300" fill="#ffffff"/>
+      <g stroke="#dde2ea"><path d="M80 30V270M140 30V270M200 30V270M260 30V270M380 30V270M440 30V270M500 30V270M560 30V270"></path><path d="M40 30H600M40 60H600M40 90H600M40 120H600M40 180H600M40 210H600M40 240H600M40 270H600"></path></g>
+      <g stroke="#5b6579" stroke-width="1.4"><path d="M40 150H600"></path><path d="M320 20V280"></path></g>
+      <text x="596" y="142" text-anchor="end" fill="#5b6579">σ (real)</text><text x="328" y="30" fill="#5b6579">jω (imag.)</text>
+      <path d="M320 150L140 30" stroke="#2557c7" stroke-width="1.6" stroke-dasharray="5 4"></path>
+      <circle cx="140" cy="30" r="6" fill="#2557c7"></circle><text x="150" y="48" fill="#2557c7" font-weight="600">−3 + 4j</text>
+      <circle cx="140" cy="270" r="6" fill="#d9480f"></circle><text x="150" y="266" fill="#d9480f" font-weight="600">−3 − 4j (conjugado)</text>
+      <circle cx="440" cy="120" r="6" fill="#1f7a4d"></circle><text x="450" y="114" fill="#1f7a4d" font-weight="600">2 + 1j</text>
+      <text x="226" y="84" fill="#2557c7">|s| = 5</text>
+      <g fill="#5b6579" font-size="11.5"><text x="140" y="166" text-anchor="middle">−3</text><text x="440" y="166" text-anchor="middle">2</text><text x="312" y="34" text-anchor="end">4</text><text x="312" y="274" text-anchor="end">−4</text></g>
+    </svg>

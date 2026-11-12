@@ -583,6 +583,8 @@ shadow es dejar que una segunda cocina prepare una copia que nadie come. El
 límite es que un hash local no corrige sesgos de selección, consentimiento,
 privacidad, tamaño de muestra ni métricas mal elegidas.
 
+**Mapa de tráfico:** `usuario → asignación A/B → variante estable o candidata`; `petición → estable → respuesta entregada`; `└→ shadow → solo comparación, sin respuesta al usuario`. Canary cambia el porcentaje de tráfico que llega a la candidata durante el despliegue.
+
 **Diagrama:**
 
 ```mermaid
@@ -732,6 +734,11 @@ reenviar `POST` con efectos, copiar credenciales o ignorar el timeout de la
 versión shadow. **Límites y decisión de uso:** el laboratorio no implementa
 consentimiento, análisis estadístico, balanceadores, service mesh ni garantías
 de aislamiento; demuestra la frontera conceptual y un contrato local.
+
+**Transferencia al proyecto integrador DevOps:** antes de habilitar tráfico real,
+documenta la métrica primaria, la regla de asignación y el criterio de detener el
+experimento; para shadow, limita la copia a operaciones de solo lectura y
+verifica que su salida nunca reemplace la respuesta estable.
 
 **Fuente oficial:** [Kubernetes Deployment strategies](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy) y [Google SRE: canarying releases](https://sre.google/workbook/canarying-releases/).
 

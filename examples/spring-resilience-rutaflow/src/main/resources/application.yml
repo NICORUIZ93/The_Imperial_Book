@@ -1,0 +1,8 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: pedidos-resilientes
+rutaflow:
+  catalog:
+    uri: ${RUTAFLOW_PEDIDOS_URI:http://localhost:8081/pedidos/1}
