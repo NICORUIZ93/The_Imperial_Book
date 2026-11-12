@@ -12298,7 +12298,7 @@
       "module": 1,
       "title": "Tema 1: Spring Initializr y starters",
       "file": "web/public/content/spring-boot/modulo-1.md",
-      "line": 10,
+      "line": 55,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -12311,7 +12311,7 @@
       "module": 1,
       "title": "Tema 2: application.yml vs application.properties",
       "file": "web/public/content/spring-boot/modulo-1.md",
-      "line": 144,
+      "line": 189,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -12324,7 +12324,7 @@
       "module": 1,
       "title": "Tema 3: Perfiles y estructura por capas",
       "file": "web/public/content/spring-boot/modulo-1.md",
-      "line": 280,
+      "line": 325,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -12467,7 +12467,7 @@
       "module": 10,
       "title": "Tema 11: Micrometer Tracing entre servicios",
       "file": "web/public/content/spring-boot/modulo-10.md",
-      "line": 1438,
+      "line": 1442,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -12480,7 +12480,7 @@
       "module": 10,
       "title": "Tema 12: Contract testing entre productor y consumidor",
       "file": "web/public/content/spring-boot/modulo-10.md",
-      "line": 1587,
+      "line": 1591,
       "signals": [
         "demostracion-no-delimitada"
       ],

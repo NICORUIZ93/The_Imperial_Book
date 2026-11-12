@@ -109,6 +109,10 @@ fallos y omisiones; no sustituye los escenarios con broker, navegador o clúster
 No traduzcas literalmente plugins Maven a una línea de dependencias Gradle.
 La matriz de ejecución es `spring-gradle-verification.json`; consulta sus límites
 antes de marcar una práctica como comprobada.
+La tanda consolidada registra 50 builds correctos, 214 pruebas registradas, una
+omitida y cinco laboratorios sin tests. Cloud Bus se probó además con dos procesos
+Gradle y RabbitMQ: ambos cambiaron de 3 a 9. Sigue el arranque de Podman descrito
+en el README de ese laboratorio si Compose falla por permisos del volumen.
 
 ## Referencias primarias
 

@@ -21,8 +21,9 @@ Esta revisión encontró y corrigió fallos que el conteo de marcadores no detec
 - **¿Está con Gradle?** La revisión inicial solo comprobaba Maven. La ampliación
   posterior agrega builds Groovy y wrappers Gradle 9.8.2 a los 50 proyectos raíz
   del inventario `spring-gradle-labs.json`, incluyendo contratos multi-módulo.
-  Consulta [la guía Gradle](SPRING-BOOT-GRADLE.md) y la ejecución registrada en
-  `spring-gradle-verification.json`. Las fuentes y pruebas son compartidas;
+  Consulta [la guía Gradle](SPRING-BOOT-GRADLE.md) y la ejecución de 50 builds,
+  214 pruebas registradas (una omitida) y cinco proyectos sin tests en
+  [el reporte](spring-gradle-verification.json). Las fuentes y pruebas son compartidas;
   M22 sigue usando Java directo/Node y el complemento SOAP de M20, Python.
   Esta ampliación no acredita todos los ejercicios ni escenarios de producción.
 - **¿Está actualizada?** La base usa Boot 4.1.2 y Java 25. Se contrastaron sus APIs
@@ -56,7 +57,8 @@ Lombok/MapStruct con políticas explícitas, los tres casos N+1 y más casos neg
 AOT se comprueba por separado como JVM con metadata, sin afirmar binario nativo.
 
 Estas ejecuciones se suman al registro previo de 47 proyectos Maven, cuyo alcance
-está en `spring-boot-lab-verification.json`. No equivalen a ejecutar por separado
+está en `spring-boot-lab-verification.json`, y al posterior registro Gradle de 50
+proyectos. No equivalen a ejecutar por separado
 cada uno de los 393 ejercicios ni todas sus mutaciones. No se repite aquí la
 suite completa de navegador; el cierre anterior con Archify sigue incompleto.
 El control de enlaces HTTP tampoco equivale a validar cada afirmación de una página.
@@ -66,7 +68,7 @@ El control de enlaces HTTP tampoco equivale a validar cada afirmación de una p�
 | Comprobación | Referencia y resultado |
 |---|---|
 | Base Boot | [Requisitos Boot](https://docs.spring.io/spring-boot/system-requirements.html): 4.1.2 admite Java 25 y Maven; los labs fijan sus versiones |
-| Gradle y JVM | [Compatibilidad Gradle](https://docs.gradle.org/current/userguide/compatibility.html): Java 25 requiere Gradle 9.1+ para ejecutar Gradle; esto no migra el curso |
+| Gradle y JVM | [Compatibilidad Gradle](https://docs.gradle.org/current/userguide/compatibility.html): Java 25 requiere Gradle 9.1+; los 50 proyectos de la alternativa usan wrapper 9.8.2 |
 | Cloud | [Matriz Spring Cloud](https://spring.io/projects/spring-cloud/): 2025.1.2+ admite Boot 4.1; los labs usan 2025.1.4 |
 | IA | [Spring AI](https://docs.spring.io/spring-ai/reference/getting-started.html): AI 2.0.x admite Boot 4.0.x y 4.1.x; el ejemplo conserva 4.0.9/2.0.2 |
 | OpenAPI | [Springdoc](https://springdoc.org/): referencia y starter 3.2.0 de la línea Boot 4; endpoint probado en la referencia acumulativa |

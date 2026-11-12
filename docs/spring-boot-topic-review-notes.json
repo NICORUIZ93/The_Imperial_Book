@@ -70,9 +70,9 @@
     "Agregado → regla → inmutabilidad → decisión de extracción; memoria y sin publicación durable.",
     "Workflow/Activity → worker → retry → compensación; entorno Temporal de prueba, efectos externos controlados.",
     "Fronteras → verify → evento → receptor; se reutiliza el lab de M23. Documentación generada es un cuarto test adicional.",
-    "Broker → dos instancias → busenv → reinicio; script específico necesario, Maven con cero tests no acredita propagación.",
+    "Broker → dos instancias → busenv → reinicio; la propagación 3→9 se comprobó con RabbitMQ real. Los builds sin tests no acreditan este escenario.",
     "Jaeger → dos procesos → traza → sampling; referencia snapshot sustituida por versión estable. No mide carga.",
-    "Contrato → prueba generada → stub consumidor → rotura. Multi-módulo Maven y alternativa Gradle generan la prueba y el artefacto stubs; el recorrido Gradle usa repositorio aislado."
+    "Contrato → prueba generada → stub consumidor → rotura. Maven y Gradle publican stubs; Gradle usó un repositorio local aislado y detectó una mutación."
   ],
   "11": [
     "Inspección JAR → tools/capas → Dockerfile → cambio; reutilización de imagen requiere build y runtime aparte.",

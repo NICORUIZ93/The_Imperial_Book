@@ -26,7 +26,7 @@ def input_digest(folder):
         relative = file.relative_to(folder)
         if any(part in {'build', 'target', '.gradle', '.git'} for part in relative.parts):
             continue
-        if relative.parts[0] in {'src', 'gradle'} or file.name in {'build.gradle', 'settings.gradle', 'gradle.properties', 'gradlew', 'gradlew.bat', 'pom.xml'}:
+        if 'src' in relative.parts[:-1] or 'gradle' in relative.parts[:-1] or file.name in {'build.gradle', 'settings.gradle', 'gradle.properties', 'gradlew', 'gradlew.bat', 'pom.xml'}:
             files.append(file)
     digest = hashlib.sha256()
     for file in sorted(files):

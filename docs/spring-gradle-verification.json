@@ -1,0 +1,966 @@
+{
+  "date": "2026-11-12",
+  "gradle": "9.8.2",
+  "scope": "Compilación y pruebas Gradle de 50 proyectos raíz. Cero tests significa compilación, no validación funcional.",
+  "provenance": {
+    "bulkReport": "spring-gradle-initial-verification.json",
+    "bulkProjects": 48,
+    "specialReport": "spring-gradle-special-verification.json",
+    "specialProjects": 2,
+    "sourceDigest": "SHA-256 de fuentes y archivos de build calculado al consolidar; el informe bulk no lo registró durante la ejecución."
+  },
+  "summary": {
+    "tests": 214,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 1,
+    "projects": 50,
+    "projectsWithTests": 45,
+    "projectsWithoutTests": 5
+  },
+  "additionalChecks": [
+    {
+      "scenario": "fundamentos bootRun HTTP",
+      "command": "./gradlew bootRun --args='--server.port=18092 --spring.profiles.active=dev'",
+      "observed": "GET /perfil respondió banner=Desarrollo; entorno=compartido",
+      "limit": "Una instancia local."
+    },
+    {
+      "scenario": "Gradle Redis real",
+      "command": "REDIS_PORT=16379 ./gradlew test -PredisIntegration --tests '*RedisTarifaTest'",
+      "observed": "BUILD SUCCESSFUL contra Redis 7.4 Alpine efímero",
+      "limit": "Prueba dirigida adicional; la suite base incluye una prueba Redis omitida."
+    },
+    {
+      "scenario": "Layered JAR Gradle",
+      "command": "./gradlew bootJar; java -Djarmode=tools -jar build/libs/<jar>.jar list-layers",
+      "observed": "Cuatro capas listadas y extraídas",
+      "limit": "No construye una imagen de contenedor."
+    },
+    {
+      "scenario": "AOT Gradle sobre JVM",
+      "command": "./scripts/verify-gradle-aot.sh",
+      "observed": "processAot, bootJar, metadata y dos endpoints HTTP correctos",
+      "limit": "No ejecuta nativeCompile ni binario nativo."
+    },
+    {
+      "scenario": "Mutación contrato Gradle",
+      "command": "./gradlew clean :conductor-producer:contractTest en copia temporal con campo JSON renombrado",
+      "observed": "La prueba de contrato generada falló; la copia se descartó",
+      "limit": "Una mutación específica; no equivale a prueba de todas las incompatibilidades."
+    },
+    {
+      "scenario": "Cloud Bus real con Gradle",
+      "command": "podman run --rm -d --tmpfs /var/lib/rabbitmq:rw,size=256m -p 5672:5672 rabbitmq:4-management; dos ./gradlew bootRun en 18081/18082; INSTANCE_A_URL=http://localhost:18081 INSTANCE_B_URL=http://localhost:18082 ./scripts/verify-bus.sh",
+      "observed": "Ambas instancias respondieron maxPedidos=3 antes y maxPedidos=9 después de busenv y busrefresh",
+      "limit": "Broker efímero local; no demuestra almacenamiento duradero, seguridad ni red productiva."
+    }
+  ],
+  "notVerified": [
+    "Token Relay con login real y Keycloak",
+    "nativeCompile",
+    "todos los ejercicios independientes y su diagnóstico",
+    "revisión pedagógica con estudiante"
+  ],
+  "results": [
+    {
+      "project": "examples/spring-amqp-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 11.2,
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "a033d1ae01f77464ae1826375fc0782f10b8a40c41cc6957c3b070cb2b2d69cf"
+    },
+    {
+      "project": "examples/spring-async-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 7.1,
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "f69c45f47b40a46caf60793105f56f99443d4397ffb22796684fc65df8a100ff"
+    },
+    {
+      "project": "examples/spring-avro-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 9.4,
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "39c97976d9a16c13b93724847819a3a12d44aa1495abd4d45df3c632740c8455"
+    },
+    {
+      "project": "examples/spring-batch-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 9.5,
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "81ce174f01d535951f35d508bc29d7bfd7573908087e60507645be8e3229fbf9"
+    },
+    {
+      "project": "examples/spring-boot-cancel-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 12.5,
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "2b82cb881c8ce7b71de92a52e051c353148728cf7f948ab10a10c48fdb38a46e"
+    },
+    {
+      "project": "examples/spring-boot-hibernate-spatial-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 22.9,
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "d4e93242fd9d3e632b61535426a81fb528922357fb7299924f0052bbebe8b6d1"
+    },
+    {
+      "project": "examples/spring-boot-idempotency-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 11.9,
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "0b08113c44fc6f96d2226e00a882b3f58e3c4a7d4d1fd6edea0b2aa582a5e1ac"
+    },
+    {
+      "project": "examples/spring-boot-integrador-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 18.1,
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "0ae711de39332bc7669ffbe1e8057b33ae3b10311c7c1f28054d2858083ea65f"
+    },
+    {
+      "project": "examples/spring-boot-jwt-ownership-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 10.2,
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "78a566160932c579c06679da72d83851ec69166f7dd520e36f75c67ceb9e64b0"
+    },
+    {
+      "project": "examples/spring-boot-layered-jar-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 6.9,
+      "tests": 0,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "c9b4850966ce0179aad8b74bd1c4dd9495b5122c5d6947f5222e88780dd3dded"
+    },
+    {
+      "project": "examples/spring-boot-mysql-spatial-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 17.9,
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "525853de4f7b547a132db8d98acf6aa8832be6e15c03bdb4a7582fc419c790e5"
+    },
+    {
+      "project": "examples/spring-boot-native-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 7.6,
+      "tests": 0,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "b21ab8e4290e908ab2046904ce7321db71f786b31fbf6ccb615d235e52e36afc"
+    },
+    {
+      "project": "examples/spring-boot-probes-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 8.8,
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "e6c79ed8b039ccd01760259b546a5b1a50d517052424397af28e769f58f6301e"
+    },
+    {
+      "project": "examples/spring-boot-stomp-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 11.1,
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "0ac3752b5b4c4b667fb2620c68ce814a91d650fb8313d784301a70ff54751112"
+    },
+    {
+      "project": "examples/spring-boot-transaction-boundary-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 11.0,
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "d9e1e62af0ed374e65210f4474fc07e75cbe8ab6ec19cb089aebb0d2aa6387fb"
+    },
+    {
+      "project": "examples/spring-boot-upload-push-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 12.0,
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "2b67d3328db7ee7f28bbcd32112d955c87accdfbd7546de32d3fe50e23de1fbc"
+    },
+    {
+      "project": "examples/spring-cache-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 12.2,
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 1,
+      "sourceSha256": "dccaa59c99c1f21977aea6e40a31b382dfdb0152b7e3419b749bd31b110d7aab"
+    },
+    {
+      "project": "examples/spring-clean-architecture-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 14.2,
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "b46a0a8393fadf6f94154281e034c41ede49be0651940277bd1c014e1693a863"
+    },
+    {
+      "project": "examples/spring-cloud-bus-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 15.6,
+      "tests": 0,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "e6be80aa8a656bd4e79afdf5eabe66e61f09a57dc482ff72f56c1de08277a6a2"
+    },
+    {
+      "project": "examples/spring-cloud-config-discovery-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 18.2,
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "ae0bb231c2b6f2805263d77a8edc88ae2923ccfa78c369e6c0cd9f89a6031451"
+    },
+    {
+      "project": "examples/spring-cloud-contract-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "verifyContracts"
+      ],
+      "exitCode": 0,
+      "seconds": 13.6,
+      "sourceSha256": "d4fa9df2ae40962663bdf2d096571e5ab12bd4d153f59bb88f2fbe818f172790",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-ddd-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 10.6,
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "b0b6287bbab0baf4bd77707519d1b3cd640a0cbcdaff48e4417774cf3cab2195"
+    },
+    {
+      "project": "examples/spring-eventsourcing-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 24.2,
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "11cd3e6399b2a4caa9906c6ed43a85d7f138050fd85cf821dc5bf87ad968be27"
+    },
+    {
+      "project": "examples/spring-fundamentos-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 8.1,
+      "sourceSha256": "c29020bdc2b590003858916aa7e8c61bdc2dc2c38ad1f45b276edbbeb2c0b048",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-gateway-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 34.3,
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "422dbbec3bb8f239cd433109431c3c00c1f4907ae1074ea4a71ecb99f5ccdeea"
+    },
+    {
+      "project": "examples/spring-graphql-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 22.8,
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "a083a99095d0347f41532f7f50191ccfe8e311da6454e302cb0f9b61bbe230e6"
+    },
+    {
+      "project": "examples/spring-grpc-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 33.0,
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "37ac5013ae01d4847d882ad28ff4718d9df35e00d06b9578e5464ae25f2f8872"
+    },
+    {
+      "project": "examples/spring-http-deadline-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 17.6,
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "d1ae8832a6e40508910500957ca3bead31d1d600a7e3f88aa25caaad24f17623"
+    },
+    {
+      "project": "examples/spring-kafka-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 35.8,
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "88802a77f7ed0f3cb22f6a402b255ccf48d9a95e4d25ac325b8b22156a4bddac"
+    },
+    {
+      "project": "examples/spring-kafka-streams-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 15.8,
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "0f7ae80d79c67480c6200ea8290759ec4cef140f71fcfc9d3c12efd49f94dab7"
+    },
+    {
+      "project": "examples/spring-mail-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 10.4,
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "85d10c1d3433a88ed8673f8f3c20f54ae73298fd5578ea0a91c491464e4cf4fd"
+    },
+    {
+      "project": "examples/spring-modulith-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 18.4,
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "2db7be8c4a924944d3403f190a2d658cb5aff8149f8defbda6eb1e946e0d7bd0"
+    },
+    {
+      "project": "examples/spring-reactor-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 17.1,
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "1ff1b80de8ee4495cfa6af5fdc91135a5c9f11f527d14a21022ccf2fe0e3ed1a"
+    },
+    {
+      "project": "examples/spring-resilience-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 21.0,
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "3fd8a0d0ec460f909a2b1ca7bd88add8720ddf9ca281cd8b643e594df25d0873"
+    },
+    {
+      "project": "examples/spring-saga-recovery-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 16.3,
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "057b1128c9ff0635f545e9385cee44c06cb1c77bf1143fb419588bb982dd1289"
+    },
+    {
+      "project": "examples/spring-saga-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 16.8,
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "8c322ab7c283fcf7213266b9670db07722ac738dea1ef9635f2a372c41af32f4"
+    },
+    {
+      "project": "examples/spring-scheduling-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 16.1,
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "bc589162068c12b2e45ab2b38f502b6bcc979874942977900a572c23a79ea45b"
+    },
+    {
+      "project": "examples/spring-security-keycloak-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 15.7,
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "b1997ef6999d88f61c9f02e05602cbb32186565592abbdca9604c49341aea3b1"
+    },
+    {
+      "project": "examples/spring-ssrf",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 19.7,
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "7e8ca09589463f35255f6b1443e5344f68de9bdaf3ceee9d3795d160478c2d1f"
+    },
+    {
+      "project": "examples/spring-stream-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 41.1,
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "cf26ee2e1a0d0054e0c2b1f6304ed1321d8494c14838779ae23107f730baf972"
+    },
+    {
+      "project": "examples/spring-tareas-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 36.5,
+      "tests": 43,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "2fe1751a0cc152ebfb5b9d8eefac5a212ed598f83e67d547d8cf15e4b0c8025c"
+    },
+    {
+      "project": "examples/spring-temporal-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 23.7,
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "60a16f01033125a33402b48fad9b2534925688574c0c300c5871665d3aebf426"
+    },
+    {
+      "project": "examples/spring-token-relay-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 14.1,
+      "tests": 0,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "e60a1d7882f5c717132fbeb5705f5464204d4b01e1c86db3834f601f0594a7ea"
+    },
+    {
+      "project": "examples/spring-tracing-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 13.6,
+      "tests": 0,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "6858d00d750d9e43f5e7a893de44c827b8f8f9c4d18c505745d314f95316c69f"
+    },
+    {
+      "project": "examples/spring-webclient-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 19.1,
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "d6b633a52cddb5443fd180282d622d8ef2d6983479a1c88211620dad45c5dc38"
+    },
+    {
+      "project": "examples/spring-webflux-decision-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 21.3,
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "da3ae633ca0129abe0ca42aa974bf787cc2ec1585278bcc1f960b2a0a36252f2"
+    },
+    {
+      "project": "examples/java-jpa-lab",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 18.6,
+      "tests": 15,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "baa79e1c15e6a7c8a5d831485e7caca102269ebfa54c18e8f80138a733f16c00"
+    },
+    {
+      "project": "examples/archunit-hexagonal-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 11.4,
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "b9b0e15d03facd8fb0efe3307bd0aa69dd832fa0fe45671c6983d24760ca55b1"
+    },
+    {
+      "project": "examples/testcontainers-singleton-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 16.1,
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "c1a653993c3afd8919e93a77748f71349120d4a3c58dd19679f3a66ccfb67ce6"
+    },
+    {
+      "project": "examples/rutaflow-material/spring-ai",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 12.6,
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "41e4a19cc4a27bc91e0f17518b69051773088ee9ff467d3c10bc1355f2bd1200"
+    }
+  ]
+}

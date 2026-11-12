@@ -1323,6 +1323,7 @@ docker compose ps
 ```
 
 **Resultado esperado:** el contenedor `rabbitmq` aparece como `healthy`. Si usas Podman, los mismos comandos funcionan con `podman compose` si tienes el proveedor Compose instalado.
+Si Podman Compose muestra `Error when reading /var/lib/rabbitmq/.erlang.cookie: eacces`, consulta el arranque efímero `podman run --tmpfs` del README del laboratorio; verifica `rabbitmq-diagnostics -q ping` antes de continuar. Ese caso corresponde al volumen del broker, no al código de Spring.
 
 **Fallo deliberado:** cambia el puerto publicado `5672:5672` a `5673:5672` sin cambiar la aplicación. **Diagnóstico:** la app intenta conectar a `localhost:5672`; el broker solo está publicado en `5673`. Restaura `5672:5672` o configura `RABBIT_PORT=5673`.
 
@@ -1351,6 +1352,8 @@ En dos terminales, desde la carpeta del laboratorio, ejecuta:
 ```bash
 ./mvnw spring-boot:run -Dspring-boot.run.arguments='--server.port=8082'
 ```
+
+Con Gradle usa las mismas fuentes y `./gradlew bootRun --args='--server.port=8081'` en la primera terminal; en la segunda cambia el puerto a `8082`.
 
 En una tercera terminal lee el límite inicial:
 
@@ -1391,6 +1394,7 @@ curl -s http://localhost:8082/config
 ```
 
 **Resultado esperado:** ambos POST responden `204`; las dos lecturas devuelven `{"maxPedidos":9}`.
+Si el primer POST devuelve 500 con `Connection refused` en el log, RabbitMQ no está accesible en el puerto configurado. Recupera el broker y repite desde dos instancias que aún respondan `3`.
 
 **Fallo deliberado:** quita `@RefreshScope` y repite en una ejecución limpia. **Diagnóstico:** el valor nuevo llega al Environment, pero el bean existente conserva el valor anterior. Restaura la anotación y reinicia ambas instancias.
 

@@ -18,11 +18,14 @@ Esta revisión encontró y corrigió fallos que el conteo de marcadores no detec
   corte integrador. M16–M21 refuerzan temas previos con otros casos; la numeración
   no significa que todas las carpetas se fusionen automáticamente. Se aclararon
   esas transiciones, reinicios, dependencias y estados de partida.
-- **¿Está con Gradle?** No. La ruta comprobada utiliza Maven. No hay laboratorios
-  Spring de este curso con `build.gradle(.kts)` y `gradlew` mantenidos/verificados.
-  M22 usa Java directo/Node y el complemento SOAP de M20 usa Python. Una mención a
-  Gradle en una explicación no constituye una implementación. Migrar todo requiere
-  traducir BOM, procesadores, contratos, perfiles y plugins, y ejecutar sus builds.
+- **¿Está con Gradle?** La revisión inicial solo comprobaba Maven. La ampliación
+  posterior agrega builds Groovy y wrappers Gradle 9.8.2 a los 50 proyectos raíz
+  del inventario `spring-gradle-labs.json`, incluyendo contratos multi-módulo.
+  Consulta [la guía Gradle](SPRING-BOOT-GRADLE.md) y la ejecución de 50 builds,
+  214 pruebas registradas (una omitida) y cinco proyectos sin tests en
+  [el reporte](spring-gradle-verification.json). Las fuentes y pruebas son compartidas;
+  M22 sigue usando Java directo/Node y el complemento SOAP de M20, Python.
+  Esta ampliación no acredita todos los ejercicios ni escenarios de producción.
 - **¿Está actualizada?** La base usa Boot 4.1.2 y Java 25. Se contrastaron sus APIs
   y matrices de compatibilidad con fuentes primarias; se corrigieron tres enlaces
   404, una referencia snapshot y una regla antigua de Avro. Hay versiones fijadas
@@ -54,7 +57,8 @@ Lombok/MapStruct con políticas explícitas, los tres casos N+1 y más casos neg
 AOT se comprueba por separado como JVM con metadata, sin afirmar binario nativo.
 
 Estas ejecuciones se suman al registro previo de 47 proyectos Maven, cuyo alcance
-está en `spring-boot-lab-verification.json`. No equivalen a ejecutar por separado
+está en `spring-boot-lab-verification.json`, y al posterior registro Gradle de 50
+proyectos. No equivalen a ejecutar por separado
 cada uno de los 393 ejercicios ni todas sus mutaciones. No se repite aquí la
 suite completa de navegador; el cierre anterior con Archify sigue incompleto.
 El control de enlaces HTTP tampoco equivale a validar cada afirmación de una página.
@@ -64,7 +68,7 @@ El control de enlaces HTTP tampoco equivale a validar cada afirmación de una p�
 | Comprobación | Referencia y resultado |
 |---|---|
 | Base Boot | [Requisitos Boot](https://docs.spring.io/spring-boot/system-requirements.html): 4.1.2 admite Java 25 y Maven; los labs fijan sus versiones |
-| Gradle y JVM | [Compatibilidad Gradle](https://docs.gradle.org/current/userguide/compatibility.html): Java 25 requiere Gradle 9.1+ para ejecutar Gradle; esto no migra el curso |
+| Gradle y JVM | [Compatibilidad Gradle](https://docs.gradle.org/current/userguide/compatibility.html): Java 25 requiere Gradle 9.1+; los 50 proyectos de la alternativa usan wrapper 9.8.2 |
 | Cloud | [Matriz Spring Cloud](https://spring.io/projects/spring-cloud/): 2025.1.2+ admite Boot 4.1; los labs usan 2025.1.4 |
 | IA | [Spring AI](https://docs.spring.io/spring-ai/reference/getting-started.html): AI 2.0.x admite Boot 4.0.x y 4.1.x; el ejemplo conserva 4.0.9/2.0.2 |
 | OpenAPI | [Springdoc](https://springdoc.org/): referencia y starter 3.2.0 de la línea Boot 4; endpoint probado en la referencia acumulativa |
@@ -89,9 +93,9 @@ revisión; el script no las genera a partir de palabras clave.
 | 0.1 | [Tema 1: Inversión de control y el contenedor de Spring](../web/public/content/spring-boot/modulo-0.md#L37) | 3 | Contrato → repositorio → servicio → HTTP. Corregidos reinicio tras crear controller y restauración del ejercicio antes del test siguiente. |
 | 0.2 | [Tema 2: Inyección por constructor vs por campo](../web/public/content/spring-boot/modulo-0.md#L206) | 3 | Contrasta new y repositorio falso con contexto e inyección por campo; ambos tests tienen contenido completo. |
 | 0.3 | [Tema 3: Estereotipos, autoconfiguración y scopes](../web/public/content/spring-boot/modulo-0.md#L364) | 3 | Estereotipos → árbol de dependencias → prototype/ObjectProvider; no confunde prototype con scope request. |
-| 1.1 | [Tema 1: Spring Initializr y starters](../web/public/content/spring-boot/modulo-1.md#L10) | 3 | Generación aislada con Boot y paquete fijados; vuelve explícitamente al proyecto acumulativo. Maven, sin build Gradle. |
-| 1.2 | [Tema 2: application.yml vs application.properties](../web/public/content/spring-boot/modulo-1.md#L144) | 3 | YAML → Properties → sobrescritura CLI; clean evita recursos antiguos y las claves tienen salida comprobable. |
-| 1.3 | [Tema 3: Perfiles y estructura por capas](../web/public/content/spring-boot/modulo-1.md#L280) | 3 | Base → perfil dev → capas. Corregido el resumen que pedía JPA/PostgreSQL antes de enseñarlos. |
+| 1.1 | [Tema 1: Spring Initializr y starters](../web/public/content/spring-boot/modulo-1.md#L55) | 3 | Generación aislada con Boot y paquete fijados; vuelve explícitamente al proyecto acumulativo. Maven original y alternativa Gradle con Wrapper y comandos propios. |
+| 1.2 | [Tema 2: application.yml vs application.properties](../web/public/content/spring-boot/modulo-1.md#L189) | 3 | YAML → Properties → sobrescritura CLI; clean evita recursos antiguos y las claves tienen salida comprobable. |
+| 1.3 | [Tema 3: Perfiles y estructura por capas](../web/public/content/spring-boot/modulo-1.md#L325) | 3 | Base → perfil dev → capas. Corregido el resumen que pedía JPA/PostgreSQL antes de enseñarlos. |
 | 2.1 | [Tema 1: Por qué DTOs en vez de entidades directamente](../web/public/content/spring-boot/modulo-2.md#L10) | 3 | Entidad → DTO → contrato estable. Quitada dependencia anticipada de JWT y detalladas dependencias al continuar M0–M1. |
 | 2.2 | [Tema 2: Validación con Bean Validation y ResponseEntity](../web/public/content/spring-boot/modulo-2.md#L252) | 3 | Bean Validation → ResponseEntity → casos límite. Corregidas dos continuaciones de línea curl. |
 | 2.3 | [Tema 3: Manejo centralizado de errores con @ControllerAdvice](../web/public/content/spring-boot/modulo-2.md#L408) | 3 | ApiError → excepción de ausencia → comparación HTTP; distingue error previsto de un fallo interno. |
@@ -136,9 +140,9 @@ revisión; el script no las genera a partir de palabras clave.
 | 10.7 | [Tema 7: DDD para decidir límites y propiedad de datos](../web/public/content/spring-boot/modulo-10.md#L868) | 4 | Agregado → regla → inmutabilidad → decisión de extracción; memoria y sin publicación durable. |
 | 10.8 | [Tema 8: Orquestar pedidos con Temporal y Spring Boot](../web/public/content/spring-boot/modulo-10.md#L1007) | 4 | Workflow/Activity → worker → retry → compensación; entorno Temporal de prueba, efectos externos controlados. |
 | 10.9 | [Tema 9: Comprueba módulos antes de separar servicios](../web/public/content/spring-boot/modulo-10.md#L1165) | 4 | Fronteras → verify → evento → receptor; se reutiliza el lab de M23. Documentación generada es un cuarto test adicional. |
-| 10.10 | [Tema 10: Spring Cloud Bus para propagar cambios de configuración](../web/public/content/spring-boot/modulo-10.md#L1305) | 4 | Broker → dos instancias → busenv → reinicio; script específico necesario, Maven con cero tests no acredita propagación. |
-| 10.11 | [Tema 11: Micrometer Tracing entre servicios](../web/public/content/spring-boot/modulo-10.md#L1438) | 4 | Jaeger → dos procesos → traza → sampling; referencia snapshot sustituida por versión estable. No mide carga. |
-| 10.12 | [Tema 12: Contract testing entre productor y consumidor](../web/public/content/spring-boot/modulo-10.md#L1587) | 4 | Contrato → prueba generada → stub consumidor → rotura. Multi-módulo Maven y artefacto stubs explícitos, sin receta Gradle. |
+| 10.10 | [Tema 10: Spring Cloud Bus para propagar cambios de configuración](../web/public/content/spring-boot/modulo-10.md#L1305) | 4 | Broker → dos instancias → busenv → reinicio; la propagación 3→9 se comprobó con RabbitMQ real. Los builds sin tests no acreditan este escenario. |
+| 10.11 | [Tema 11: Micrometer Tracing entre servicios](../web/public/content/spring-boot/modulo-10.md#L1442) | 4 | Jaeger → dos procesos → traza → sampling; referencia snapshot sustituida por versión estable. No mide carga. |
+| 10.12 | [Tema 12: Contract testing entre productor y consumidor](../web/public/content/spring-boot/modulo-10.md#L1591) | 4 | Contrato → prueba generada → stub consumidor → rotura. Maven y Gradle publican stubs; Gradle usó un repositorio local aislado y detectó una mutación. |
 | 11.1 | [Tema 1: Fat JAR vs capas de Docker](../web/public/content/spring-boot/modulo-11.md#L8) | 4 | Inspección JAR → tools/capas → Dockerfile → cambio; reutilización de imagen requiere build y runtime aparte. |
 | 11.2 | [Tema 2: GraalVM native image](../web/public/content/spring-boot/modulo-11.md#L155) | 4 | AOT → hint → native compile → comparación. Corregido log del script para funcionar sin target; JVM AOT no es un binario nativo. |
 | 11.3 | [Tema 3: Health checks para Kubernetes](../web/public/content/spring-boot/modulo-11.md#L298) | 4 | Probes → estado → Deployment → fallos; enlace oficial corregido. Kubernetes requiere clúster e imagen disponible. |

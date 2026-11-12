@@ -1,0 +1,42 @@
+{
+  "date": "2026-11-12",
+  "gradle": "9.8.2",
+  "scope": "Gradle classes/tests; cero tests es compilaci\u00f3n. No ejecuta todos los ejercicios, infraestructura distribuida ni nativeCompile.",
+  "results": [
+    {
+      "project": "examples/spring-fundamentos-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "classes",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 8.1,
+      "sourceSha256": "c29020bdc2b590003858916aa7e8c61bdc2dc2c38ad1f45b276edbbeb2c0b048",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "project": "examples/spring-cloud-contract-rutaflow",
+      "command": [
+        "./gradlew",
+        "--no-daemon",
+        "--console=plain",
+        "clean",
+        "verifyContracts"
+      ],
+      "exitCode": 0,
+      "seconds": 13.6,
+      "sourceSha256": "1417274a7adc2d0a54812a037f1fa4b5c91a96ce57bc55a71905b00a28a38c17",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ]
+}

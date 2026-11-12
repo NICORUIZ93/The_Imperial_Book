@@ -1,8 +1,8 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-11-11 19:22 UTC
+Generated: 2026-11-12 15:16 UTC
 Root: `The_Imperial_Book`
-Indexed files: 1389
+Indexed files: 1396
 Import edges: 60
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -16,19 +16,19 @@ For automated lookups, use `docs/repo-graph.json`.
 ## Project Shape
 
 - `angular-app`: 59 files
-- `automation-script`: 37 files
+- `automation-script`: 38 files
 - `course-content`: 262 files
-- `documentation`: 66 files
-- `example`: 903 files
+- `documentation`: 67 files
+- `example`: 904 files
 - `local-infra`: 1 files
-- `project-file`: 61 files
+- `project-file`: 65 files
 
 ## File Types
 
-- `.md`: 393
+- `.md`: 394
 - `.java`: 366
-- `.py`: 165
-- `.json`: 76
+- `.py`: 166
+- `.json`: 80
 - `.ts`: 66
 - `.js`: 54
 - `.html`: 38
@@ -39,7 +39,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `.go`: 24
 - `.swift`: 20
 - `.yaml`: 17
-- `.sh`: 16
+- `.sh`: 17
 - `.kt`: 13
 - `.scss`: 8
 - `.jsx`: 6
@@ -198,7 +198,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `scripts/fix_lessons.py` (114 lines) - symbols: safe_print, iter_text_check_files, find_text_quality_issues, main; imports: ast, glob, os, re
 - `scripts/prepare_study_diagram.py` (39 lines) - symbols: main; imports: argparse, hashlib, json, pathlib
 - `scripts/start.sh` (10 lines)
-- ... 19 more files
+- ... 20 more files
 
 ### course-content
 
@@ -231,7 +231,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `CONTRIBUTING.md` (31 lines) - headings: # Contribuir a The Imperial Book, ## Antes de abrir un cambio, ## Licencias
 - `README.md` (308 lines) - headings: # The_Imperial_Book, ## Como empezar, ## Levantar Floci, # 1. Levantar todos los servicios
 - `docs/CONTINUAR-7-PASOS.md` (26 lines) - headings: # Migración a cuatro pasos y subtemas atómicos, ## Formato que se aplica, ## Estado de migración
-- `docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md` (1906 lines) - headings: # Continuidad: expansión Java y academia, ## Encargo y razón, ## Fuentes de verdad y rutas, ## Contrato de cada tema
+- `docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md` (1927 lines) - headings: # Continuidad: expansión Java y academia, ## Encargo y razón, ## Fuentes de verdad y rutas, ## Contrato de cada tema
 - `docs/ESTANDAR-DE-CODIGO.md` (56 lines) - headings: # Estándar transversal de código y diseño, ## Prioridades, ## Clean Code con criterio, ## SOLID cuando aporta valor
 - `docs/MATRIZ-CURRICULAR.md` (73 lines) - headings: # Matriz curricular auditable, ## Progresión de competencia, ## Cobertura por módulo, ## Método de evaluación
 - `docs/METODOLOGIA-DE-APRENDIZAJE.md` (67 lines) - headings: # Metodología Aprende construyendo, ## Estructura de tema y subtema, ### Hito al final de cada tema, ### Ruta del proyecto
@@ -241,8 +241,8 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/RUNBOOKS-CLOUD.md` (1633 lines) - headings: # Cloud Runbooks — Troubleshooting Operacional, ## Runbook 1: DynamoDB Throttling, ### Síntomas, ### Diagnosis
 - `docs/RUNBOOKS-DEVOPS.md` (1409 lines) - headings: # DevOps Runbooks — Troubleshooting Operacional, ## Runbook 1: Docker Image Build Failures, ### Síntomas, ### Diagnosis
 - `docs/SKILLS-VISUALES-Y-ESTUDIO.md` (94 lines) - headings: # Skills para visuales y estudio desde cero, ## Selección y uso, ## Recorrido que debe comprobarse, ## Cómo usar las skills en una revisión
-- `docs/SPRING-BOOT-CIERRE.md` (120 lines) - headings: # Spring Boot: cierre editorial y verificación, ## Qué significa el avance, ## Metodología aplicada, ## Cambios de cierre
-- ... 48 more files
+- `docs/SPRING-BOOT-CIERRE.md` (140 lines) - headings: # Spring Boot: cierre editorial y verificación, ## Qué significa el avance, ## Metodología aplicada, ## Cambios de cierre
+- ... 49 more files
 
 ### example
 
@@ -264,7 +264,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `examples/archify/temas/cloud/modulo-22-tema-5-edge-routes.review-2/modulo-22-tema-5-edge-routes.finalize.json` (1012 lines)
 - `examples/archify/temas/foundations/modulo-12-tema-10-lazo-p.workflow.json` (183 lines)
 - `examples/archify/temas/foundations/modulo-12-tema-17-plc-scan.workflow.json` (189 lines)
-- ... 885 more files
+- ... 886 more files
 
 ### local-infra
 
@@ -290,4 +290,4 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/official-sources.json` (195 lines)
 - `docs/official-topic-atlas.json` (175 lines)
 - `docs/prerequisite-graph.json` (13043 lines)
-- ... 43 more files
+- ... 47 more files

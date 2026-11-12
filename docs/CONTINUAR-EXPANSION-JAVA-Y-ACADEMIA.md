@@ -1895,7 +1895,7 @@ uno. La matriz `docs/SPRING-BOOT-REVISION-TEMA-POR-TEMA.md` documenta los 111 te
 y el JSON enumera 393 subtemas con cuerpo. Se corrigieron dependencias anticipadas,
 comandos, imports, referencias al lab equivocado y cuentas antiguas. Modulith
 ahora se copia con wrapper autónomo; el script AOT no requiere target previo.
-Se mantienen separados Maven verificado, Gradle sin implementar, versiones
+En ese momento se mantenían separados Maven verificado, Gradle sin implementar, versiones
 compatibles y versiones de infraestructura fijadas (MySQL 8.0.36).
 Las comprobaciones dirigidas sumaron 57 JUnit correctas, con M0–M1 en una referencia
 nueva y M2–M7 ampliado a 43 pruebas, incluyendo OpenAPI, paginación y más casos
@@ -1903,3 +1903,24 @@ negativos. Fuente de evidencia: `docs/spring-boot-topic-review-execution.json`.
 No afirmar que se ejecutaron individualmente todos los ejercicios o todos sus
 fallos deliberados. Se contrastaron fuentes primarias y se registraron respuestas
 HTTP de enlaces sin interpretar 200 como validación semántica.
+
+### Gradle y Cloud Bus · 12 de noviembre de 2026
+
+La alternativa Gradle ya dispone de wrapper y build en 50 laboratorios raíz.
+`docs/spring-gradle-verification.json` consolida 50 builds correctos, 214 tests
+registrados, 213 ejecutados sin fallos y uno omitido; cinco proyectos no tienen
+tests. Contratos incluye prueba generada y consumidor de stubs; una mutación de
+campo JSON falló en una copia temporal. Redis, capas, AOT sobre JVM y HTTP de
+fundamentos tienen comprobaciones dirigidas, con los límites del reporte.
+
+Cloud Bus se ejecutó con RabbitMQ 4 efímero y dos procesos Gradle: las respuestas
+de ambos cambiaron de `maxPedidos=3` a `maxPedidos=9` tras `busenv` y
+`busrefresh`. El primer intento mostró HTTP 500 porque Podman Compose dejó
+ilegible `.erlang.cookie` del broker; el arranque con `podman run --tmpfs` sí
+funcionó. El README y M10 T10 explican cómo diagnosticarlo. No se probaron
+persistencia de configuración, seguridad de los endpoints ni despliegue real.
+Sigue pendiente el login Keycloak/Token Relay de extremo a extremo; los builds
+sin tests de ese gateway no sirven como evidencia del flujo. El puerto 8081
+estaba ocupado por `kafka-ui-dev-real` de otro proyecto y se respetó. Se eligió
+18083, pero la descarga de `quay.io/keycloak/keycloak:26.8.1` no terminó tras
+más de diez minutos y se canceló; no se ejecutó el realm ni el navegador.

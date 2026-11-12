@@ -61,6 +61,16 @@ La prueba Redis es opcional y aparece omitida en la ejecución predeterminada.
 Su ejecución adicional se registra por separado, sin alterar retrospectivamente
 los resultados de esa tanda.
 
+La alternativa Gradle se incorporó después de esa tanda Maven. El
+[reporte Gradle](spring-gradle-verification.json) registra 50 proyectos raíz con
+build correcto: 214 pruebas registradas, 213 ejecutadas sin fallos y una omitida.
+Cinco proyectos no tienen tests; su build acredita compilación, no funcionamiento
+distribuido. Se verificaron además el contrato productor/consumidor y una mutación
+detectada, Redis real, capas y AOT sobre JVM. La
+[guía Gradle](SPRING-BOOT-GRADLE.md) da los comandos de estudio. Los hashes de
+fuente de la tanda principal se calcularon al consolidar el reporte, pues el
+ejecutor inicial no los guardaba durante la corrida.
+
 El recorrido de navegador está en `spring-boot-browser-review.json`: 26 módulos
 por dos anchos (390 y 1366 px), primer y último encabezado operados con teclado,
 ausencia de errores de página, de carga de lección y de desbordamiento horizontal.
@@ -95,9 +105,19 @@ aplicaciones y retiró su contenedor Jaeger al terminar.
 El build Angular termina con una advertencia por superar el presupuesto inicial
 (aproximadamente 645 kB frente a 600 kB). No bloquea el build; optimizar el paquete
 sigue siendo una mejora pendiente. Los ejemplos de IA usan modelo controlado;
-no prueban calidad de un LLM externo. Token Relay, Cloud Bus, compilación nativa,
+no prueban calidad de un LLM externo. Token Relay, compilación nativa,
 carga, recuperación distribuida y despliegue requieren sus verificaciones
 específicas; una compilación común no las sustituye.
+
+**Verificación posterior de Cloud Bus (12 de noviembre):** con RabbitMQ 4
+efímero y dos procesos Gradle en los puertos 18081/18082, `verify-bus.sh`
+observó `{"maxPedidos":3}` en ambos, publicó `busenv` y `busrefresh`, y observó
+`{"maxPedidos":9}` en ambos. El primer intento falló con HTTP 500: Podman Compose
+creó un volumen de RabbitMQ cuyo archivo `.erlang.cookie` no se podía leer.
+El README y M10 T10 documentan el diagnóstico y un arranque efímero probado con
+`podman run --tmpfs`. El broker y las aplicaciones se detuvieron al terminar.
+Token Relay, compilación nativa, carga, recuperación distribuida y despliegue
+mantienen sus límites específicos.
 
 Las propuestas extraídas de las imágenes de Descargas ya están registradas en
 `revision-imagenes-descargas-2026-11-10.md`. JWT frente a sesiones y una migración
