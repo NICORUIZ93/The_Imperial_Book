@@ -2,10 +2,10 @@
 
 > Las señales automáticas no prueban profundidad ni ausencia de ella. Un tema sólo queda revisado mediante el registro humano con mapa de subtemas críticos, evidencia y fuentes.
 
-- Temas inventariados: 1273
+- Temas inventariados: 1311
 - Revisados humanamente para subtemas: 146
-- Pendientes: 1127
-- Candidatos prioritarios por señales: 1009
+- Pendientes: 1165
+- Candidatos prioritarios por señales: 1019
 
 ## Cobertura por track
 
@@ -14,7 +14,7 @@
 | android | 74 | 0 | 74 |
 | angular | 71 | 71 | 0 |
 | cloud | 156 | 0 | 156 |
-| control-1 | 32 | 0 | 32 |
+| control-1 | 70 | 0 | 70 |
 | devops | 129 | 0 | 129 |
 | flutter | 106 | 63 | 43 |
 | foundations | 100 | 0 | 100 |
@@ -247,11 +247,21 @@
 - `cloud/modulo-9` — Tema 3: Archivos adjuntos en S3 y procesamiento en segundo plano con SQS — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `cloud/modulo-9` — Tema 4: API Gateway e IAM de mínimo privilegio para el proyecto — lista conceptos clave sin mapa interno verificable
 - `cloud/modulo-9` — Tema 5: Documentación de la API y guía de despliegue — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `control-1/modulo-18` — Tema 2: Ventajas y desventajas (punto 4 del Parcial 1) — título agrupa varios conceptos
-- `control-1/modulo-2` — Tema 3: Valor final y valor inicial — título agrupa varios conceptos
+- `control-1/modulo-1` — Tema 4: Forma polar, fórmula de Euler y evaluación de G(jω) — título agrupa varios conceptos
+- `control-1/modulo-12` — Tema 2: Simulador: mueve ζ y ωn — título agrupa varios conceptos
+- `control-1/modulo-14` — Tema 2: Tipo de sistema y constantes — título agrupa varios conceptos
+- `control-1/modulo-17` — Tema 2: Reglas de construcción (con su porqué) — título agrupa varios conceptos
+- `control-1/modulo-18` — Tema 3: Cada acción, con números — título agrupa varios conceptos
+- `control-1/modulo-18` — Tema 4: Ventajas y desventajas (punto 4 del Parcial 1) — título agrupa varios conceptos
+- `control-1/modulo-19` — Tema 3: Implementación con op-amps — título agrupa varios conceptos
+- `control-1/modulo-2` — Tema 4: Valor final y valor inicial — título agrupa varios conceptos
+- `control-1/modulo-20` — Tema 2: Decibeles y la escala logarítmica — título agrupa varios conceptos
 - `control-1/modulo-22` — Tema 1: Simulacro con solución — título agrupa varios conceptos
 - `control-1/modulo-3` — Tema 1: Caso 1: polos reales distintos — título agrupa varios conceptos
 - `control-1/modulo-3` — Tema 2: Caso 2: polos repetidos — título agrupa varios conceptos
+- `control-1/modulo-3` — Tema 3: Caso 3: polos complejos (completar el cuadrado) — título agrupa varios conceptos
+- `control-1/modulo-6` — Tema 4: Referencia y perturbación juntas — título agrupa varios conceptos
+- `control-1/modulo-7` — Tema 2: Circuitos pasivos: divisor de voltaje — título agrupa varios conceptos
 - `devops/modulo-0` — Tema 1: Sistema de archivos y permisos (chmod/chown) — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `devops/modulo-0` — Tema 2: Procesos, señales y jobs en segundo plano — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `devops/modulo-0` — Tema 3: Pipes, redirección y filtros (grep, awk, sed) — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable

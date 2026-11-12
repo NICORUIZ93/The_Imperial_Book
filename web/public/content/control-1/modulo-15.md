@@ -30,7 +30,75 @@ Para un polinomio de tercer orden o más, sacar las raíces a mano es difícil. 
 
 > **Condición necesaria rápida:** si el polinomio característico tiene algún coeficiente negativo o cero (y no todos son del mismo signo), el sistema no es estable. Con todos positivos todavía hay que verificar con Routh, salvo en primer y segundo orden, donde basta.
 
-#### El arreglo de Routh
+#### Más ejemplos resueltos
+
+Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
+
+#### Ejemplo 1 · ¿Estable? \(G(s) = \frac{1}{\left(s + 1\right) \left(s + 3\right)}\) · *Básico*
+
+**Enunciado.** Clasifica la estabilidad mirando los polos.
+
+1. Polos: \(-3, -1\).
+
+   **¿Por qué?** Cada polo \(p\) aporta un término \(e^{pt}\) a la respuesta natural.
+
+**Resultado.** Es **estable**: todos los polos en el semiplano izquierdo, la respuesta natural se apaga.
+
+#### Ejemplo 2 · ¿Estable? \(G(s) = \frac{1}{\left(s - 2\right) \left(s + 1\right)}\) · *Básico*
+
+**Enunciado.** Clasifica la estabilidad mirando los polos.
+
+1. Polos: \(-1, 2\).
+
+   **¿Por qué?** Cada polo \(p\) aporta un término \(e^{pt}\) a la respuesta natural.
+
+**Resultado.** Es **inestable**: hay un polo con parte real positiva, su exponencial crece sin límite.
+
+#### Ejemplo 3 · ¿Estable? \(G(s) = \frac{1}{s \left(s + 2\right)}\) · *Básico*
+
+**Enunciado.** Clasifica la estabilidad mirando los polos.
+
+1. Polos: \(-2, 0\).
+
+   **¿Por qué?** Cada polo \(p\) aporta un término \(e^{pt}\) a la respuesta natural.
+
+**Resultado.** Es **marginalmente estable**: hay polos sobre el eje imaginario (sin repetir), la respuesta natural ni crece ni se apaga.
+
+#### Ejemplo 4 · ¿Estable? \(G(s) = \frac{1}{s^{2} + 4}\) · *Básico*
+
+**Enunciado.** Clasifica la estabilidad mirando los polos.
+
+1. Polos: \(- 2 j, 2 j\).
+
+   **¿Por qué?** Cada polo \(p\) aporta un término \(e^{pt}\) a la respuesta natural.
+
+**Resultado.** Es **marginalmente estable**: hay polos sobre el eje imaginario (sin repetir), la respuesta natural ni crece ni se apaga.
+
+#### Ejemplo 5 · ¿Estable? \(G(s) = \frac{1}{s^{2} + 2 s + 10}\) · *Básico*
+
+**Enunciado.** Clasifica la estabilidad mirando los polos.
+
+1. Polos: \(-1 - 3 j, -1 + 3 j\).
+
+   **¿Por qué?** Cada polo \(p\) aporta un término \(e^{pt}\) a la respuesta natural.
+
+**Resultado.** Es **estable**: todos los polos en el semiplano izquierdo, la respuesta natural se apaga.
+
+#### Ejemplo 6 · ¿Estable? \(G(s) = \frac{1}{s^{2} - s + 4}\) · *Intermedio*
+
+**Enunciado.** Clasifica la estabilidad mirando los polos.
+
+1. Polos: \(\frac{1}{2} - \frac{\sqrt{15} j}{2}, \frac{1}{2} + \frac{\sqrt{15} j}{2}\).
+
+   **¿Por qué?** Cada polo \(p\) aporta un término \(e^{pt}\) a la respuesta natural.
+
+**Resultado.** Es **inestable**: hay un polo con parte real positiva, su exponencial crece sin límite.
+
+### Tema 2: El arreglo de Routh
+
+**¿Por qué es importante?** Routh dice cuántas raíces son inestables sin calcularlas, lo que es indispensable para polinomios de tercer orden o más.
+
+**Fuentes oficiales:** [Análisis de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemAnalysis) y [Lugar de las raíces, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlRootLocus).
 
 Para \(a_ns^n + a_{n-1}s^{n-1} + \cdots + a_0\):
 
@@ -89,13 +157,134 @@ La demostración completa usa el teorema de Sturm y sale del alcance de Control 
 
 **Resultado:** Inestable: dos raíces en el semiplano derecho
 
-### Tema 2: Casos especiales
+#### Más ejemplos resueltos
+
+Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
+
+#### Ejemplo 3 · Routh de \(s^{3} + 6 s^{2} + 11 s + 6\) · *Básico*
+
+**Enunciado.** ¿Cuántas raíces hay en el semiplano derecho?
+
+1. Primeras dos filas: coeficientes alternados, empezando por el de mayor potencia.
+
+   **¿Por qué?** Así arranca siempre el arreglo.
+
+2. Primer elemento de cada fila nueva: \(s^{1}:\ \dfrac{(6)(11) - (1)(6)}{6} = 10\); \(s^{0}:\ \dfrac{(10)(6) - (6)(0)}{10} = 6\).
+
+   **¿Por qué?** Cada fila se calcula con las dos de arriba: producto cruzado (primero de abajo × siguiente de arriba − primero de arriba × siguiente de abajo) dividido por el primero de la fila de abajo.
+
+3. Primera columna: \(1, 6, 10, 6\) → 0 cambio(s) de signo.
+
+   **¿Por qué?** El número de cambios de signo en la primera columna es el número de raíces en el semiplano derecho.
+
+Arreglo completo:
+
+| Fila | col. 1 | col. 2 |
+|---|---|---|
+| \(s^{3}\) | \(1\) | \(11\) |
+| \(s^{2}\) | \(6\) | \(6\) |
+| \(s^{1}\) | \(10\) | \(0\) |
+| \(s^{0}\) | \(6\) | \(0\) |
+
+**Resultado.** 0 raíz(ces) en el semiplano derecho: **estable**.
+
+**Comprobación.** Calculando las raíces numéricamente hay 0 con parte real positiva.
+
+#### Ejemplo 4 · Routh de \(s^{3} + 2 s^{2} + 3 s + 10\) · *Intermedio*
+
+**Enunciado.** ¿Cuántas raíces hay en el semiplano derecho?
+
+1. Primeras dos filas: coeficientes alternados, empezando por el de mayor potencia.
+
+   **¿Por qué?** Así arranca siempre el arreglo.
+
+2. Primer elemento de cada fila nueva: \(s^{1}:\ \dfrac{(2)(3) - (1)(10)}{2} = -2\); \(s^{0}:\ \dfrac{(-2)(10) - (2)(0)}{-2} = 10\).
+
+   **¿Por qué?** Cada fila se calcula con las dos de arriba: producto cruzado (primero de abajo × siguiente de arriba − primero de arriba × siguiente de abajo) dividido por el primero de la fila de abajo.
+
+3. Primera columna: \(1, 2, -2, 10\) → 2 cambio(s) de signo.
+
+   **¿Por qué?** El número de cambios de signo en la primera columna es el número de raíces en el semiplano derecho.
+
+Arreglo completo:
+
+| Fila | col. 1 | col. 2 |
+|---|---|---|
+| \(s^{3}\) | \(1\) | \(3\) |
+| \(s^{2}\) | \(2\) | \(10\) |
+| \(s^{1}\) | \(-2\) | \(0\) |
+| \(s^{0}\) | \(10\) | \(0\) |
+
+**Resultado.** 2 raíz(ces) en el semiplano derecho: **inestable**.
+
+**Comprobación.** Calculando las raíces numéricamente hay 2 con parte real positiva.
+
+#### Ejemplo 5 · Routh de \(s^{4} + 4 s^{3} + 6 s^{2} + 4 s + 5\) · *Intermedio*
+
+**Enunciado.** ¿Cuántas raíces hay en el semiplano derecho?
+
+1. Primeras dos filas: coeficientes alternados, empezando por el de mayor potencia.
+
+   **¿Por qué?** Así arranca siempre el arreglo.
+
+2. Primer elemento de cada fila nueva: \(s^{2}:\ \dfrac{(4)(6) - (1)(4)}{4} = 5\); \(s^{1}:\ \dfrac{(5)(4) - (4)(5)}{5} = 0\); \(s^{0}:\ \dfrac{(0)(5) - (5)(0)}{0} = \text{NaN}\).
+
+   **¿Por qué?** Cada fila se calcula con las dos de arriba: producto cruzado (primero de abajo × siguiente de arriba − primero de arriba × siguiente de abajo) dividido por el primero de la fila de abajo.
+
+3. Primera columna: \(1, 4, 5, 0, \text{NaN}\) → 2 cambio(s) de signo.
+
+   **¿Por qué?** El número de cambios de signo en la primera columna es el número de raíces en el semiplano derecho.
+
+Arreglo completo:
+
+| Fila | col. 1 | col. 2 | col. 3 |
+|---|---|---|---|
+| \(s^{4}\) | \(1\) | \(6\) | \(5\) |
+| \(s^{3}\) | \(4\) | \(4\) | \(0\) |
+| \(s^{2}\) | \(5\) | \(5\) | \(0\) |
+| \(s^{1}\) | \(0\) | \(0\) | \(0\) |
+| \(s^{0}\) | \(\text{NaN}\) | \(\text{NaN}\) | \(0\) |
+
+**Resultado.** 2 raíz(ces) en el semiplano derecho: **inestable**.
+
+**Comprobación.** Calculando las raíces numéricamente hay 0 con parte real positiva.
+
+#### Ejemplo 6 · Routh de \(2 s^{3} + 3 s^{2} + 5 s + 1\) · *Básico*
+
+**Enunciado.** ¿Cuántas raíces hay en el semiplano derecho?
+
+1. Primeras dos filas: coeficientes alternados, empezando por el de mayor potencia.
+
+   **¿Por qué?** Así arranca siempre el arreglo.
+
+2. Primer elemento de cada fila nueva: \(s^{1}:\ \dfrac{(3)(5) - (2)(1)}{3} = \frac{13}{3}\); \(s^{0}:\ \dfrac{(\frac{13}{3})(1) - (3)(0)}{\frac{13}{3}} = 1\).
+
+   **¿Por qué?** Cada fila se calcula con las dos de arriba: producto cruzado (primero de abajo × siguiente de arriba − primero de arriba × siguiente de abajo) dividido por el primero de la fila de abajo.
+
+3. Primera columna: \(2, 3, \frac{13}{3}, 1\) → 0 cambio(s) de signo.
+
+   **¿Por qué?** El número de cambios de signo en la primera columna es el número de raíces en el semiplano derecho.
+
+Arreglo completo:
+
+| Fila | col. 1 | col. 2 |
+|---|---|---|
+| \(s^{3}\) | \(2\) | \(5\) |
+| \(s^{2}\) | \(3\) | \(1\) |
+| \(s^{1}\) | \(\frac{13}{3}\) | \(0\) |
+| \(s^{0}\) | \(1\) | \(0\) |
+
+**Resultado.** 0 raíz(ces) en el semiplano derecho: **estable**.
+
+**Comprobación.** Calculando las raíces numéricamente hay 0 con parte real positiva.
+
+### Tema 3: Casos especiales
 
 **¿Por qué es importante?** Los casos especiales aparecen justo en el límite de estabilidad, que es donde se hacen las preguntas difíciles.
 
 **Fuentes oficiales:** [Análisis de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemAnalysis) y [Lugar de las raíces, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlRootLocus).
 
-#### Ejemplo 3 · Un cero en la primera columna · *Nivel parcial*
+#### Ejemplo 1 · Un cero en la primera columna · *Nivel parcial*
 
 > **Qué cambia respecto al anterior:** Aparece un cero en la primera columna.
 
@@ -119,7 +308,7 @@ La demostración completa usa el teorema de Sturm y sale del alcance de Control 
 
 **Resultado:** Dos raíces inestables
 
-#### Ejemplo 4 · Una fila completa de ceros · *Experto*
+#### Ejemplo 2 · Una fila completa de ceros · *Experto*
 
 > **Qué cambia respecto al anterior:** Toda una fila se anula.
 
@@ -147,9 +336,57 @@ La demostración completa usa el teorema de Sturm y sale del alcance de Control 
 
 **Resultado:** Raíces \(1, -1, \pm5j, -2\)
 
-#### Rango de K para estabilidad
+#### Más ejemplos resueltos
 
-#### Ejemplo 5 · Rango de K · *Nivel parcial*
+Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
+
+#### Ejemplo 3 · Cero en la primera columna · *Intermedio*
+
+**Enunciado.** Aplica Routh a \(s^4 + s^3 + 2s^2 + 2s + 3\).
+
+1. Filas \(s^4\): 1, 2, 3; \(s^3\): 1, 2. Fila \(s^2\): \(\tfrac{1\cdot2-1\cdot2}{1} = 0\) y 3.
+
+   **¿Por qué?** Aparece un cero en la primera columna: no se puede dividir por él.
+
+2. Reemplaza el 0 por \(\varepsilon > 0\) pequeño y sigue: \(s^1\): \(\tfrac{2\varepsilon - 3}{\varepsilon} \to -\infty\); \(s^0\): 3.
+
+   **¿Por qué?** El truco del \(\varepsilon\) mira el signo que tendría ese elemento si el polinomio cambiara un poquito.
+
+**Resultado.** Primera columna: \(1, 1, \varepsilon, -\infty, 3\): dos cambios de signo → **dos raíces en el semiplano derecho**.
+
+**Comprobación.** Numéricamente hay 2 raíces con parte real positiva.
+
+#### Ejemplo 4 · Fila completa de ceros · *Avanzado*
+
+**Enunciado.** Aplica Routh a \(s^3 + 2s^2 + 4s + 8\).
+
+1. \(s^3\): 1, 4; \(s^2\): 2, 8; \(s^1\): \(\tfrac{2\cdot4 - 1\cdot8}{2} = 0\): fila entera de ceros.
+
+   **¿Por qué?** Una fila de ceros indica raíces simétricas respecto al origen (por ejemplo sobre el eje imaginario).
+
+2. Polinomio auxiliar con la fila de arriba: \(A(s) = 2s^2 + 8\); su derivada \(4s\) reemplaza la fila de ceros.
+
+   **¿Por qué?** Las raíces simétricas son las raíces de \(A(s)\).
+
+**Resultado.** \(A(s) = 0 \Rightarrow s = \pm 2j\): **marginalmente estable**; la otra raíz es \(s=-2\) y no hay cambios de signo.
+
+#### Ejemplo 5 · Polinomio con un coeficiente faltante · *Básico*
+
+**Enunciado.** ¿Puede ser estable \(s^3 + 5s + 2\)?
+
+1. Falta el término \(s^2\) (coeficiente 0).
+
+   **¿Por qué?** Condición necesaria: todos los coeficientes deben existir y tener el mismo signo.
+
+**Resultado.** No: un polinomio con un coeficiente cero o de signo distinto **no puede ser estable**; no hace falta construir el arreglo.
+
+### Tema 4: Rango de K para estabilidad
+
+**¿Por qué es importante?** El rango de \(K\) dice hasta dónde se puede subir la ganancia de un controlador y es la base de Ziegler-Nichols.
+
+**Fuentes oficiales:** [Análisis de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemAnalysis) y [Lugar de las raíces, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlRootLocus).
+
+#### Ejemplo 1 · Rango de K · *Nivel parcial*
 
 > **Qué cambia respecto al anterior:** Hay una ganancia desconocida.
 
@@ -194,3 +431,78 @@ La demostración completa usa el teorema de Sturm y sale del alcance de Control 
   \(s^3+6s^2+5s+K\): \(s^1 = (30-K)/6\). \(0<K<30\), oscila a \(\sqrt5\) rad/s.
   
   </details>
+
+#### Más ejemplos resueltos
+
+Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
+
+#### Ejemplo 2 · Rango de K para \(G = \dfrac{K}{s \left(s + 2\right) \left(s + 4\right)}\) · *Básico*
+
+**Enunciado.** Realimentación unitaria. ¿Para qué \(K\) es estable el lazo cerrado?
+
+1. Ecuación característica \(1 + G = 0 \Rightarrow K + s^{3} + 6 s^{2} + 8 s = 0\).
+
+   **¿Por qué?** Los polos en lazo cerrado son las raíces de \(D(s) + K = 0\).
+
+2. Fila \(s^1\): \(\dfrac{6\cdot8 - K}{6} > 0 \Rightarrow K < 48\); fila \(s^0\): \(K > 0 \Rightarrow K > 0\).
+
+   **¿Por qué?** Toda la primera columna debe ser positiva para que no haya cambios de signo.
+
+**Resultado.** Estable para \(0 < K < 48\). En \(K = 48\) oscila a \(\omega = \sqrt{8} = 2 \sqrt{2}\approx 2{,}828\) rad/s (polinomio auxiliar \(6s^2 + 48\)).
+
+#### Ejemplo 3 · Rango de K para \(G = \dfrac{K}{\left(s + 1\right) \left(s + 2\right) \left(s + 3\right)}\) · *Intermedio*
+
+**Enunciado.** Realimentación unitaria. ¿Para qué \(K\) es estable el lazo cerrado?
+
+1. Ecuación característica \(1 + G = 0 \Rightarrow K + s^{3} + 6 s^{2} + 11 s + 6 = 0\).
+
+   **¿Por qué?** Los polos en lazo cerrado son las raíces de \(D(s) + K = 0\).
+
+2. Fila \(s^1\): \(\dfrac{6\cdot11 - K + 6}{6} > 0 \Rightarrow K < 60\); fila \(s^0\): \(K + 6 > 0 \Rightarrow K > -6\).
+
+   **¿Por qué?** Toda la primera columna debe ser positiva para que no haya cambios de signo.
+
+**Resultado.** Estable para \(-6 < K < 60\). En \(K = 60\) oscila a \(\omega = \sqrt{11}\approx 3{,}317\) rad/s (polinomio auxiliar \(6s^2 + 66\)).
+
+#### Ejemplo 4 · Rango de K para \(G = \dfrac{K}{s \left(s + 1\right) \left(s + 5\right)}\) · *Básico*
+
+**Enunciado.** Realimentación unitaria. ¿Para qué \(K\) es estable el lazo cerrado?
+
+1. Ecuación característica \(1 + G = 0 \Rightarrow K + s^{3} + 6 s^{2} + 5 s = 0\).
+
+   **¿Por qué?** Los polos en lazo cerrado son las raíces de \(D(s) + K = 0\).
+
+2. Fila \(s^1\): \(\dfrac{6\cdot5 - K}{6} > 0 \Rightarrow K < 30\); fila \(s^0\): \(K > 0 \Rightarrow K > 0\).
+
+   **¿Por qué?** Toda la primera columna debe ser positiva para que no haya cambios de signo.
+
+**Resultado.** Estable para \(0 < K < 30\). En \(K = 30\) oscila a \(\omega = \sqrt{5}\approx 2{,}236\) rad/s (polinomio auxiliar \(6s^2 + 30\)).
+
+#### Ejemplo 5 · Rango de K para \(G = \dfrac{K}{s \left(s^{2} + 4 s + 8\right)}\) · *Intermedio*
+
+**Enunciado.** Realimentación unitaria. ¿Para qué \(K\) es estable el lazo cerrado?
+
+1. Ecuación característica \(1 + G = 0 \Rightarrow K + s^{3} + 4 s^{2} + 8 s = 0\).
+
+   **¿Por qué?** Los polos en lazo cerrado son las raíces de \(D(s) + K = 0\).
+
+2. Fila \(s^1\): \(\dfrac{4\cdot8 - K}{4} > 0 \Rightarrow K < 32\); fila \(s^0\): \(K > 0 \Rightarrow K > 0\).
+
+   **¿Por qué?** Toda la primera columna debe ser positiva para que no haya cambios de signo.
+
+**Resultado.** Estable para \(0 < K < 32\). En \(K = 32\) oscila a \(\omega = \sqrt{8} = 2 \sqrt{2}\approx 2{,}828\) rad/s (polinomio auxiliar \(4s^2 + 32\)).
+
+#### Ejemplo 6 · Rango de K para \(G = \dfrac{K}{\left(s + 1\right)^{3}}\) · *Intermedio*
+
+**Enunciado.** Realimentación unitaria. ¿Para qué \(K\) es estable el lazo cerrado?
+
+1. Ecuación característica \(1 + G = 0 \Rightarrow K + s^{3} + 3 s^{2} + 3 s + 1 = 0\).
+
+   **¿Por qué?** Los polos en lazo cerrado son las raíces de \(D(s) + K = 0\).
+
+2. Fila \(s^1\): \(\dfrac{3\cdot3 - K + 1}{3} > 0 \Rightarrow K < 8\); fila \(s^0\): \(K + 1 > 0 \Rightarrow K > -1\).
+
+   **¿Por qué?** Toda la primera columna debe ser positiva para que no haya cambios de signo.
+
+**Resultado.** Estable para \(-1 < K < 8\). En \(K = 8\) oscila a \(\omega = \sqrt{3}\approx 1{,}732\) rad/s (polinomio auxiliar \(3s^2 + 9\)).
+

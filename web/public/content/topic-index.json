@@ -1364,14 +1364,26 @@
         "fragment": "tema-1-que-es-un-numero-complejo"
       },
       {
+        "title": "Operaciones",
+        "fragment": "tema-2-operaciones"
+      },
+      {
         "title": "Raíces de s²+bs+c",
-        "fragment": "tema-2-raices-de-s-bs-c"
+        "fragment": "tema-3-raices-de-s-bs-c"
+      },
+      {
+        "title": "Forma polar, fórmula de Euler y evaluación de G(jω)",
+        "fragment": "tema-4-forma-polar-formula-de-euler-y-evaluacion-de-g-j"
       }
     ],
     "10": [
       {
         "title": "La forma de estado",
         "fragment": "tema-1-la-forma-de-estado"
+      },
+      {
+        "title": "De estados a función de transferencia",
+        "fragment": "tema-2-de-estados-a-funcion-de-transferencia"
       }
     ],
     "11": [
@@ -1380,26 +1392,62 @@
         "fragment": "tema-1-forma-estandar"
       },
       {
+        "title": "Respuestas",
+        "fragment": "tema-2-respuestas"
+      },
+      {
         "title": "Retardo o tiempo muerto",
-        "fragment": "tema-2-retardo-o-tiempo-muerto"
+        "fragment": "tema-3-retardo-o-tiempo-muerto"
+      },
+      {
+        "title": "Identificación desde una gráfica",
+        "fragment": "tema-4-identificacion-desde-una-grafica"
       }
     ],
     "12": [
       {
         "title": "Forma estándar",
         "fragment": "tema-1-forma-estandar"
+      },
+      {
+        "title": "Simulador: mueve ζ y ωn",
+        "fragment": "tema-2-simulador-mueve-y-n"
+      },
+      {
+        "title": "Los cuatro casos según ζ",
+        "fragment": "tema-3-los-cuatro-casos-segun"
+      },
+      {
+        "title": "Fórmulas del caso subamortiguado",
+        "fragment": "tema-4-formulas-del-caso-subamortiguado"
+      },
+      {
+        "title": "De las especificaciones a la función de transferencia",
+        "fragment": "tema-5-de-las-especificaciones-a-la-funcion-de-transferencia"
       }
     ],
     "13": [
       {
         "title": "Polos dominantes",
         "fragment": "tema-1-polos-dominantes"
+      },
+      {
+        "title": "Efecto de un cero",
+        "fragment": "tema-2-efecto-de-un-cero"
+      },
+      {
+        "title": "Cero de fase no mínima",
+        "fragment": "tema-3-cero-de-fase-no-minima"
       }
     ],
     "14": [
       {
         "title": "Fórmula general",
         "fragment": "tema-1-formula-general"
+      },
+      {
+        "title": "Tipo de sistema y constantes",
+        "fragment": "tema-2-tipo-de-sistema-y-constantes"
       }
     ],
     "15": [
@@ -1408,20 +1456,44 @@
         "fragment": "tema-1-que-es-estabilidad"
       },
       {
+        "title": "El arreglo de Routh",
+        "fragment": "tema-2-el-arreglo-de-routh"
+      },
+      {
         "title": "Casos especiales",
-        "fragment": "tema-2-casos-especiales"
+        "fragment": "tema-3-casos-especiales"
+      },
+      {
+        "title": "Rango de K para estabilidad",
+        "fragment": "tema-4-rango-de-k-para-estabilidad"
       }
     ],
     "16": [
       {
         "title": "Geometría de un polo",
         "fragment": "tema-1-geometria-de-un-polo"
+      },
+      {
+        "title": "Estabilidad",
+        "fragment": "tema-2-estabilidad"
+      },
+      {
+        "title": "La zona de diseño",
+        "fragment": "tema-3-la-zona-de-diseno"
       }
     ],
     "17": [
       {
         "title": "Las dos condiciones",
         "fragment": "tema-1-las-dos-condiciones"
+      },
+      {
+        "title": "Reglas de construcción (con su porqué)",
+        "fragment": "tema-2-reglas-de-construccion-con-su-porque"
+      },
+      {
+        "title": "Elegir K desde el lugar de las raíces",
+        "fragment": "tema-3-elegir-k-desde-el-lugar-de-las-raices"
       }
     ],
     "18": [
@@ -1430,14 +1502,34 @@
         "fragment": "tema-1-la-idea"
       },
       {
+        "title": "Error en estado estacionario",
+        "fragment": "tema-2-error-en-estado-estacionario"
+      },
+      {
+        "title": "Cada acción, con números",
+        "fragment": "tema-3-cada-accion-con-numeros"
+      },
+      {
         "title": "Ventajas y desventajas (punto 4 del Parcial 1)",
-        "fragment": "tema-2-ventajas-y-desventajas-punto-4-del-parcial-1"
+        "fragment": "tema-4-ventajas-y-desventajas-punto-4-del-parcial-1"
+      },
+      {
+        "title": "Sintonía de Ziegler-Nichols",
+        "fragment": "tema-5-sintonia-de-ziegler-nichols"
       }
     ],
     "19": [
       {
         "title": "Diseño de un adelanto",
         "fragment": "tema-1-diseno-de-un-adelanto"
+      },
+      {
+        "title": "Diseño de un atraso",
+        "fragment": "tema-2-diseno-de-un-atraso"
+      },
+      {
+        "title": "Implementación con op-amps",
+        "fragment": "tema-3-implementacion-con-op-amps"
       }
     ],
     "2": [
@@ -1446,18 +1538,34 @@
         "fragment": "tema-1-la-idea"
       },
       {
+        "title": "La tabla",
+        "fragment": "tema-2-la-tabla"
+      },
+      {
         "title": "Propiedades",
-        "fragment": "tema-2-propiedades"
+        "fragment": "tema-3-propiedades"
       },
       {
         "title": "Valor final y valor inicial",
-        "fragment": "tema-3-valor-final-y-valor-inicial"
+        "fragment": "tema-4-valor-final-y-valor-inicial"
       }
     ],
     "20": [
       {
         "title": "Qué es la respuesta en frecuencia",
         "fragment": "tema-1-que-es-la-respuesta-en-frecuencia"
+      },
+      {
+        "title": "Decibeles y la escala logarítmica",
+        "fragment": "tema-2-decibeles-y-la-escala-logaritmica"
+      },
+      {
+        "title": "Los bloques básicos",
+        "fragment": "tema-3-los-bloques-basicos"
+      },
+      {
+        "title": "Márgenes de estabilidad",
+        "fragment": "tema-4-margenes-de-estabilidad"
       }
     ],
     "21": [
@@ -1480,6 +1588,14 @@
       {
         "title": "Caso 2: polos repetidos",
         "fragment": "tema-2-caso-2-polos-repetidos"
+      },
+      {
+        "title": "Caso 3: polos complejos (completar el cuadrado)",
+        "fragment": "tema-3-caso-3-polos-complejos-completar-el-cuadrado"
+      },
+      {
+        "title": "Resolver una ecuación diferencial completa",
+        "fragment": "tema-4-resolver-una-ecuacion-diferencial-completa"
       }
     ],
     "4": [
@@ -1494,14 +1610,30 @@
         "fragment": "tema-1-que-es-un-sistema-de-control"
       },
       {
+        "title": "Los elementos",
+        "fragment": "tema-2-los-elementos"
+      },
+      {
         "title": "Álgebra de bloques",
-        "fragment": "tema-2-algebra-de-bloques"
+        "fragment": "tema-3-algebra-de-bloques"
       }
     ],
     "6": [
       {
         "title": "Reglas para mover bloques",
         "fragment": "tema-1-reglas-para-mover-bloques"
+      },
+      {
+        "title": "Grafos de flujo de señal",
+        "fragment": "tema-2-grafos-de-flujo-de-senal"
+      },
+      {
+        "title": "Regla de Mason",
+        "fragment": "tema-3-regla-de-mason"
+      },
+      {
+        "title": "Referencia y perturbación juntas",
+        "fragment": "tema-4-referencia-y-perturbacion-juntas"
       }
     ],
     "7": [
@@ -1510,14 +1642,34 @@
         "fragment": "tema-1-impedancias"
       },
       {
+        "title": "Circuitos pasivos: divisor de voltaje",
+        "fragment": "tema-2-circuitos-pasivos-divisor-de-voltaje"
+      },
+      {
         "title": "El op-amp inversor",
-        "fragment": "tema-2-el-op-amp-inversor"
+        "fragment": "tema-3-el-op-amp-inversor"
       }
     ],
     "8": [
       {
         "title": "Mecánico de traslación",
         "fragment": "tema-1-mecanico-de-traslacion"
+      },
+      {
+        "title": "Mecánico de rotación",
+        "fragment": "tema-2-mecanico-de-rotacion"
+      },
+      {
+        "title": "Motor DC (electromecánico)",
+        "fragment": "tema-3-motor-dc-electromecanico"
+      },
+      {
+        "title": "Sistemas térmicos e hidráulicos",
+        "fragment": "tema-4-sistemas-termicos-e-hidraulicos"
+      },
+      {
+        "title": "Analogías",
+        "fragment": "tema-5-analogias"
       }
     ],
     "9": [

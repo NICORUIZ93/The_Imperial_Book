@@ -65,7 +65,85 @@ Con impedancias en Laplace, un circuito se resuelve como si solo tuviera resiste
 
 **Resultado:** Serie \(\dfrac{2(s+1)}{s}\); paralelo \(\dfrac{2}{s+1}\)
 
-#### Circuitos pasivos: divisor de voltaje
+#### Más ejemplos resueltos
+
+Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
+
+#### Ejemplo 2 · Impedancia de una resistencia de 2 kΩ en serie con una bobina de 0,5 H · *Básico*
+
+**Enunciado.** Halla la impedancia equivalente \(Z(s)\) de una resistencia de 2 kΩ en serie con una bobina de 0,5 H.
+
+1. Cada elemento: \(Z_R = R\), \(Z_L = Ls\), \(Z_C = \dfrac{1}{Cs}\).
+
+   **¿Por qué?** Salen de transformar \(v = Ri\), \(v = L\,di/dt\) e \(i = C\,dv/dt\) con condiciones iniciales cero.
+
+2. En serie las impedancias se suman.
+
+   **¿Por qué?** Por los elementos circula la misma corriente y los voltajes se suman.
+
+**Resultado.** \(Z(s) = \frac{s}{2} + 2000\).
+
+#### Ejemplo 3 · Impedancia de una resistencia de 1 kΩ en paralelo con un capacitor de 1 µF · *Intermedio*
+
+**Enunciado.** Halla la impedancia equivalente \(Z(s)\) de una resistencia de 1 kΩ en paralelo con un capacitor de 1 µF.
+
+1. Cada elemento: \(Z_R = R\), \(Z_L = Ls\), \(Z_C = \dfrac{1}{Cs}\).
+
+   **¿Por qué?** Salen de transformar \(v = Ri\), \(v = L\,di/dt\) e \(i = C\,dv/dt\) con condiciones iniciales cero.
+
+2. En paralelo: \(Z = \dfrac{Z_1Z_2}{Z_1+Z_2}\).
+
+   **¿Por qué?** Igual que resistencias en paralelo.
+
+**Resultado.** \(Z(s) = \frac{1000000}{s + 1000}\).
+
+#### Ejemplo 4 · Impedancia de un capacitor de 10 µF en serie con una resistencia de 100 Ω · *Básico*
+
+**Enunciado.** Halla la impedancia equivalente \(Z(s)\) de un capacitor de 10 µF en serie con una resistencia de 100 Ω.
+
+1. Cada elemento: \(Z_R = R\), \(Z_L = Ls\), \(Z_C = \dfrac{1}{Cs}\).
+
+   **¿Por qué?** Salen de transformar \(v = Ri\), \(v = L\,di/dt\) e \(i = C\,dv/dt\) con condiciones iniciales cero.
+
+2. En serie las impedancias se suman.
+
+   **¿Por qué?** Por los elementos circula la misma corriente y los voltajes se suman.
+
+**Resultado.** \(Z(s) = 100 + \frac{100000}{s}\).
+
+#### Ejemplo 5 · Impedancia de R, L y C en serie (R = 10 Ω, L = 0,1 H, C = 1 mF) · *Intermedio*
+
+**Enunciado.** Halla la impedancia equivalente \(Z(s)\) de R, L y C en serie (R = 10 Ω, L = 0,1 H, C = 1 mF).
+
+1. Cada elemento: \(Z_R = R\), \(Z_L = Ls\), \(Z_C = \dfrac{1}{Cs}\).
+
+   **¿Por qué?** Salen de transformar \(v = Ri\), \(v = L\,di/dt\) e \(i = C\,dv/dt\) con condiciones iniciales cero.
+
+2. En serie las impedancias se suman.
+
+   **¿Por qué?** Por los elementos circula la misma corriente y los voltajes se suman.
+
+**Resultado.** \(Z(s) = \frac{s}{10} + 10 + \frac{1000}{s}\).
+
+#### Ejemplo 6 · Impedancia de una bobina de 1 H en paralelo con un capacitor de 0,25 F · *Avanzado*
+
+**Enunciado.** Halla la impedancia equivalente \(Z(s)\) de una bobina de 1 H en paralelo con un capacitor de 0,25 F.
+
+1. Cada elemento: \(Z_R = R\), \(Z_L = Ls\), \(Z_C = \dfrac{1}{Cs}\).
+
+   **¿Por qué?** Salen de transformar \(v = Ri\), \(v = L\,di/dt\) e \(i = C\,dv/dt\) con condiciones iniciales cero.
+
+2. En paralelo: \(Z = \dfrac{Z_1Z_2}{Z_1+Z_2}\).
+
+   **¿Por qué?** Igual que resistencias en paralelo.
+
+**Resultado.** \(Z(s) = \frac{4 s}{s^{2} + 4}\).
+
+### Tema 2: Circuitos pasivos: divisor de voltaje
+
+**¿Por qué es importante?** El divisor de voltaje en Laplace da la función de transferencia de los circuitos RC y RLC en una línea.
+
+**Fuentes oficiales:** [Modelado de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemModeling).
 
 \[\frac{V_o}{V_i} = \frac{Z_{\text{salida}}}{Z_{\text{total}}}\]
 
@@ -75,7 +153,7 @@ En serie circula una sola corriente \(I = V_i/Z_{total}\). El voltaje de salida 
 
 ∎
 
-#### Ejemplo 2 · RC pasa-bajas · *Básico*
+#### Ejemplo 1 · RC pasa-bajas · *Básico*
 
 **Enunciado.** \(R = 10\) kΩ en serie, \(C = 100\) µF a tierra, salida en \(C\).
 
@@ -93,7 +171,7 @@ En serie circula una sola corriente \(I = V_i/Z_{total}\). El voltaje de salida 
 
 **Resultado:** \(G = \dfrac{1}{s+1}\): primer orden con \(\tau = 1\) s
 
-#### Ejemplo 3 · RC pasa-altas · *Básico*
+#### Ejemplo 2 · RC pasa-altas · *Básico*
 
 > **Qué cambia respecto al anterior:** Cambia dónde se toma la salida.
 
@@ -109,7 +187,7 @@ En serie circula una sola corriente \(I = V_i/Z_{total}\). El voltaje de salida 
 
 **Resultado:** \(G = \dfrac{s}{s+1}\): \(G(0) = 0\), bloquea la continua
 
-#### Ejemplo 4 · RLC serie · *Intermedio*
+#### Ejemplo 3 · RLC serie · *Intermedio*
 
 > **Qué cambia respecto al anterior:** Se agrega una bobina: aparece \(s^2\).
 
@@ -133,7 +211,41 @@ En serie circula una sola corriente \(I = V_i/Z_{total}\). El voltaje de salida 
 
 **Resultado:** \(G = \dfrac{5}{s^2+2s+5}\): segundo orden, polos \(-1\pm2j\)
 
-### Tema 2: El op-amp inversor
+#### Más ejemplos resueltos
+
+Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
+
+#### Ejemplo 4 · Divisor de voltaje: RC pasa bajas (R = 10 kΩ, C = 10 µF) · *Básico*
+
+**Enunciado.** Halla \(V_o(s)/V_i(s)\).
+
+1. \(\dfrac{V_o}{V_i} = \dfrac{Z_{\text{salida}}}{Z_{\text{total}}}\).
+
+   **¿Por qué?** Es el divisor de voltaje de siempre, pero con impedancias.
+
+**Resultado.** \(G(s) = \frac{1}{\frac{s}{10} + 1}\); ganancia DC \(1\).
+
+#### Ejemplo 5 · Divisor de voltaje: RC pasa altas (R = 1 kΩ, C = 1 mF) · *Intermedio*
+
+**Enunciado.** Halla \(V_o(s)/V_i(s)\).
+
+1. \(\dfrac{V_o}{V_i} = \dfrac{Z_{\text{salida}}}{Z_{\text{total}}}\).
+
+   **¿Por qué?** Es el divisor de voltaje de siempre, pero con impedancias.
+
+**Resultado.** \(G(s) = \frac{s}{s + 1}\); ganancia DC \(0\).
+
+#### Ejemplo 6 · Divisor de voltaje: RLC con salida en el capacitor (R = 2 Ω, L = 1 H, C = 0,5 F) · *Intermedio*
+
+**Enunciado.** Halla \(V_o(s)/V_i(s)\).
+
+1. \(\dfrac{V_o}{V_i} = \dfrac{Z_{\text{salida}}}{Z_{\text{total}}}\).
+
+   **¿Por qué?** Es el divisor de voltaje de siempre, pero con impedancias.
+
+**Resultado.** \(G(s) = \frac{2}{s^{2} + 2 s + 2}\); ganancia DC \(1\).
+
+### Tema 3: El op-amp inversor
 
 **¿Por qué es importante?** Los controladores P, I, D, PI y PD se construyen con op-amps; saber leer el circuito te dice qué acción implementa.
 
@@ -182,7 +294,7 @@ Entonces la corriente que llega por \(Z_i\) es la misma que sale por \(Z_f\): \(
 4. Aplica \(G_k = -Z_f/Z_i\). Dividir por una fracción es multiplicar por su inversa.
 5. Multiplica las etapas: \(G = G_1 G_2\cdots\). Dos signos menos se cancelan.
 
-#### Ejemplo 5 · Proporcional e integrador · *Básico*
+#### Ejemplo 1 · Proporcional e integrador · *Básico*
 
 **Enunciado.** (a) \(Z_i = 10\) kΩ, \(Z_f = 47\) kΩ. (b) \(Z_i = 100\) kΩ, \(Z_f = 10\) µF.
 
@@ -196,7 +308,7 @@ Entonces la corriente que llega por \(Z_i\) es la misma que sale por \(Z_f\): \(
 
 **Resultado:** (a) \(-4{,}7\) (P); (b) \(-\dfrac1s\) (I)
 
-#### Ejemplo 6 · PI · *Intermedio*
+#### Ejemplo 2 · PI · *Intermedio*
 
 > **Qué cambia respecto al anterior:** \(Z_f\) es ahora una combinación R+C.
 
@@ -216,7 +328,7 @@ Entonces la corriente que llega por \(Z_i\) es la misma que sale por \(Z_f\): \(
 
 **Resultado:** PI con \(K_p = 10\) y \(K_i = 10\)
 
-#### Ejemplo 7 · Paralelo a la entrada · *Intermedio*
+#### Ejemplo 3 · Paralelo a la entrada · *Intermedio*
 
 > **Qué cambia respecto al anterior:** Ahora es \(Z_i\) la que tiene dos componentes.
 
@@ -232,7 +344,7 @@ Entonces la corriente que llega por \(Z_i\) es la misma que sale por \(Z_f\): \(
 
 **Resultado:** \(-\left[\dfrac{C_1}{C_2} + \dfrac{1}{sR_1C_2}\right]\): un PI. Es la etapa 1 del Parcial 1
 
-#### Ejemplo 8 · Dos etapas en cascada · *Nivel parcial*
+#### Ejemplo 4 · Dos etapas en cascada · *Nivel parcial*
 
 > **Qué cambia respecto al anterior:** Hay dos op-amps: se multiplican.
 
@@ -259,7 +371,41 @@ Entonces la corriente que llega por \(Z_i\) es la misma que sale por \(Z_f\): \(
 - Olvidar el signo menos de cada etapa inversora.
 - Dejar fracciones dentro de fracciones sin simplificar.
 
-#### Práctica
+#### Más ejemplos resueltos
+
+Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
+
+#### Ejemplo 5 · Controlador PI con op-amp inversor · *Intermedio*
+
+**Enunciado.** Con \(Z_i = R_1\) y \(Z_f = R_2 + \tfrac{1}{Cs}\), halla \(V_o/V_i\).
+
+1. Inversor: \(\dfrac{V_o}{V_i} = -\dfrac{Z_f}{Z_i}\).
+
+   **¿Por qué?** La entrada inversora es tierra virtual y no entra corriente al op-amp: la corriente de \(Z_i\) pasa toda por \(Z_f\).
+
+**Resultado.** \(-\dfrac{R_2}{R_1} - \dfrac{1}{R_1Cs}\): proporcional + integral. El signo menos se corrige con un segundo inversor de ganancia −1.
+
+#### Ejemplo 6 · Controlador PD con op-amp inversor · *Intermedio*
+
+**Enunciado.** Con \(Z_i = R_1 \parallel \tfrac{1}{Cs}\) y \(Z_f = R_2\), halla \(V_o/V_i\).
+
+1. Inversor: \(\dfrac{V_o}{V_i} = -\dfrac{Z_f}{Z_i}\).
+
+   **¿Por qué?** La entrada inversora es tierra virtual y no entra corriente al op-amp: la corriente de \(Z_i\) pasa toda por \(Z_f\).
+
+**Resultado.** \(-\dfrac{R_2}{R_1} - R_2Cs\): proporcional + derivativo. El signo menos se corrige con un segundo inversor de ganancia −1.
+
+#### Ejemplo 7 · Controlador Integrador con op-amp inversor · *Básico*
+
+**Enunciado.** Con \(Z_i = R\) y \(Z_f = \tfrac{1}{Cs}\), halla \(V_o/V_i\).
+
+1. Inversor: \(\dfrac{V_o}{V_i} = -\dfrac{Z_f}{Z_i}\).
+
+   **¿Por qué?** La entrada inversora es tierra virtual y no entra corriente al op-amp: la corriente de \(Z_i\) pasa toda por \(Z_f\).
+
+**Resultado.** \(-\dfrac{1}{RCs}\): integral pura. El signo menos se corrige con un segundo inversor de ganancia −1.
+
+#### Práctica para resolver sola o solo
 
 - **1.**RL: \(V_i\), \(L\) en serie, salida en \(R\).
   
@@ -292,3 +438,4 @@ Entonces la corriente que llega por \(Z_i\) es la misma que sale por \(Z_f\): \(
   \(\dfrac{1}{0{,}05s^2+0{,}3s+1} = \dfrac{20}{s^2+6s+20}\).
   
   </details>
+

@@ -26,7 +26,99 @@ Después de que pasa el transitorio, ¿la salida llega exactamente a la referenc
 
 ∎
 
-#### Tipo de sistema y constantes
+#### Más ejemplos resueltos
+
+Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
+
+#### Ejemplo 1 · Error final de \(\frac{10}{s + 2}\) ante escalón · *Básico*
+
+**Enunciado.** Realimentación unitaria. Halla \(e_{ss}\).
+
+1. \(E(s) = \dfrac{R(s)}{1+G(s)} = \frac{s + 2}{s \left(s + 12\right)}\).
+
+   **¿Por qué?** Con realimentación unitaria \(E = R - Y = R/(1+G)\).
+
+2. Lazo cerrado estable: sí.
+
+   **¿Por qué?** El teorema del valor final solo se puede usar si el lazo cerrado es estable.
+
+**Resultado.** \(e_{ss} = \lim_{s\to0} sE(s) = \frac{1}{6}\).
+
+#### Ejemplo 2 · Error final de \(\frac{10}{s \left(s + 2\right)}\) ante escalón · *Básico*
+
+**Enunciado.** Realimentación unitaria. Halla \(e_{ss}\).
+
+1. \(E(s) = \dfrac{R(s)}{1+G(s)} = \frac{s + 2}{s \left(s + 2\right) + 10}\).
+
+   **¿Por qué?** Con realimentación unitaria \(E = R - Y = R/(1+G)\).
+
+2. Lazo cerrado estable: sí.
+
+   **¿Por qué?** El teorema del valor final solo se puede usar si el lazo cerrado es estable.
+
+**Resultado.** \(e_{ss} = \lim_{s\to0} sE(s) = 0\).
+
+#### Ejemplo 3 · Error final de \(\frac{10}{s \left(s + 2\right)}\) ante rampa · *Intermedio*
+
+**Enunciado.** Realimentación unitaria. Halla \(e_{ss}\).
+
+1. \(E(s) = \dfrac{R(s)}{1+G(s)} = \frac{s + 2}{s \left(s \left(s + 2\right) + 10\right)}\).
+
+   **¿Por qué?** Con realimentación unitaria \(E = R - Y = R/(1+G)\).
+
+2. Lazo cerrado estable: sí.
+
+   **¿Por qué?** El teorema del valor final solo se puede usar si el lazo cerrado es estable.
+
+**Resultado.** \(e_{ss} = \lim_{s\to0} sE(s) = \frac{1}{5}\).
+
+#### Ejemplo 4 · Error final de \(\frac{5}{s + 1}\) ante rampa · *Intermedio*
+
+**Enunciado.** Realimentación unitaria. Halla \(e_{ss}\).
+
+1. \(E(s) = \dfrac{R(s)}{1+G(s)} = \frac{s + 1}{s^{2} \left(s + 6\right)}\).
+
+   **¿Por qué?** Con realimentación unitaria \(E = R - Y = R/(1+G)\).
+
+2. Lazo cerrado estable: sí.
+
+   **¿Por qué?** El teorema del valor final solo se puede usar si el lazo cerrado es estable.
+
+**Resultado.** \(e_{ss} = \lim_{s\to0} sE(s) = \infty\).
+
+#### Ejemplo 5 · Error final de \(\frac{20}{s^{2} \left(s + 5\right)}\) ante parábola · *Avanzado*
+
+**Enunciado.** Realimentación unitaria. Halla \(e_{ss}\).
+
+1. \(E(s) = \dfrac{R(s)}{1+G(s)} = \frac{s + 5}{s \left(s^{2} \left(s + 5\right) + 20\right)}\).
+
+   **¿Por qué?** Con realimentación unitaria \(E = R - Y = R/(1+G)\).
+
+2. Lazo cerrado estable: no.
+
+   **¿Por qué?** El teorema del valor final solo se puede usar si el lazo cerrado es estable.
+
+**Resultado.** \(e_{ss} = \lim_{s\to0} sE(s) = \frac{1}{4}\).
+
+#### Ejemplo 6 · Error final de \(\frac{8}{\left(s + 1\right) \left(s + 4\right)}\) ante escalón de amplitud 3 · *Básico*
+
+**Enunciado.** Realimentación unitaria. Halla \(e_{ss}\).
+
+1. \(E(s) = \dfrac{R(s)}{1+G(s)} = \frac{3 \left(s + 1\right) \left(s + 4\right)}{s \left(\left(s + 1\right) \left(s + 4\right) + 8\right)}\).
+
+   **¿Por qué?** Con realimentación unitaria \(E = R - Y = R/(1+G)\).
+
+2. Lazo cerrado estable: sí.
+
+   **¿Por qué?** El teorema del valor final solo se puede usar si el lazo cerrado es estable.
+
+**Resultado.** \(e_{ss} = \lim_{s\to0} sE(s) = 1\).
+
+### Tema 2: Tipo de sistema y constantes
+
+**¿Por qué es importante?** El tipo de sistema y las constantes \(K_p\), \(K_v\), \(K_a\) te dicen el error sin simular y orientan qué acción de control agregar.
+
+**Fuentes oficiales:** [Controladores PID, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlPID) y [Análisis de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemAnalysis).
 
 Escribe \(G(s) = \dfrac{K(s+z_1)\cdots}{s^N(s+p_1)\cdots}\). El **tipo** es \(N\): cuántos integradores puros tiene.
 
@@ -140,3 +232,64 @@ Escribe \(G(s) = \dfrac{K(s+z_1)\cdots}{s^N(s+p_1)\cdots}\). El **tipo** es \(N\
   \(K_v = 20/5 = 4\): \(e = 0{,}25\).
   
   </details>
+
+#### Más ejemplos resueltos
+
+Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
+
+#### Ejemplo 5 · Tipo y constantes de \(\frac{50}{\left(s + 2\right) \left(s + 5\right)}\) · *Básico*
+
+**Enunciado.** Halla el tipo, \(K_p\), \(K_v\), \(K_a\) y los errores ante escalón, rampa y parábola.
+
+1. Integradores (factores \(s\) en el denominador): 0 → **tipo 0**.
+
+   **¿Por qué?** El tipo es el número de polos en el origen de \(G\).
+
+2. \(K_p = 5,\ K_v = 0,\ K_a = 0\).
+
+   **¿Por qué?** \(K_p = \lim G\), \(K_v = \lim sG\), \(K_a = \lim s^2G\) cuando \(s\to0\).
+
+**Resultado.** Escalón: \(e = \frac{1}{6}\); rampa: \(e = \infty\); parábola: \(e = \infty\).
+
+#### Ejemplo 6 · Tipo y constantes de \(\frac{12}{s \left(s + 3\right)}\) · *Básico*
+
+**Enunciado.** Halla el tipo, \(K_p\), \(K_v\), \(K_a\) y los errores ante escalón, rampa y parábola.
+
+1. Integradores (factores \(s\) en el denominador): 1 → **tipo 1**.
+
+   **¿Por qué?** El tipo es el número de polos en el origen de \(G\).
+
+2. \(K_p = \infty,\ K_v = 4,\ K_a = 0\).
+
+   **¿Por qué?** \(K_p = \lim G\), \(K_v = \lim sG\), \(K_a = \lim s^2G\) cuando \(s\to0\).
+
+**Resultado.** Escalón: \(e = 0\); rampa: \(e = \frac{1}{4}\); parábola: \(e = \infty\).
+
+#### Ejemplo 7 · Tipo y constantes de \(\frac{30 s + 30}{s^{2} \left(s + 6\right)}\) · *Intermedio*
+
+**Enunciado.** Halla el tipo, \(K_p\), \(K_v\), \(K_a\) y los errores ante escalón, rampa y parábola.
+
+1. Integradores (factores \(s\) en el denominador): 2 → **tipo 2**.
+
+   **¿Por qué?** El tipo es el número de polos en el origen de \(G\).
+
+2. \(K_p = \infty,\ K_v = \infty,\ K_a = 5\).
+
+   **¿Por qué?** \(K_p = \lim G\), \(K_v = \lim sG\), \(K_a = \lim s^2G\) cuando \(s\to0\).
+
+**Resultado.** Escalón: \(e = 0\); rampa: \(e = 0\); parábola: \(e = \frac{1}{5}\).
+
+#### Ejemplo 8 · Tipo y constantes de \(\frac{100}{s \left(s + 4\right) \left(s + 10\right)}\) · *Intermedio*
+
+**Enunciado.** Halla el tipo, \(K_p\), \(K_v\), \(K_a\) y los errores ante escalón, rampa y parábola.
+
+1. Integradores (factores \(s\) en el denominador): 1 → **tipo 1**.
+
+   **¿Por qué?** El tipo es el número de polos en el origen de \(G\).
+
+2. \(K_p = \infty,\ K_v = \frac{5}{2},\ K_a = 0\).
+
+   **¿Por qué?** \(K_p = \lim G\), \(K_v = \lim sG\), \(K_a = \lim s^2G\) cuando \(s\to0\).
+
+**Resultado.** Escalón: \(e = 0\); rampa: \(e = \frac{2}{5}\); parábola: \(e = \infty\).
+

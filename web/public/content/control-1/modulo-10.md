@@ -50,7 +50,71 @@ Otra forma de describir sistemas, con matrices y ecuaciones de primer orden. Es 
 
 **Resultado:** Las matrices de arriba, con \(D = 0\)
 
-#### De estados a función de transferencia
+#### Más ejemplos resueltos
+
+Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
+
+#### Ejemplo 2 · Forma canónica de \(\frac{1}{s^{2} + 3 s + 2}\) · *Básico*
+
+**Enunciado.** Escribe una representación en espacio de estados.
+
+1. Elige \(x_1 = y\), \(x_2 = \dot y\), …: cada estado es la derivada del anterior.
+
+   **¿Por qué?** Así una ecuación de orden \(n\) se vuelve \(n\) ecuaciones de primer orden.
+
+2. \(A = \left[\begin{matrix}0 & 1\\-2 & -3\end{matrix}\right],\ B = \left[\begin{matrix}0\\1\end{matrix}\right],\ C = \left[\begin{matrix}1 & 0\end{matrix}\right]\).
+
+   **¿Por qué?** La última fila de \(A\) son los coeficientes del denominador con signo cambiado.
+
+**Resultado.** Comprobación: \(C(sI-A)^{-1}B = \frac{1}{s^{2} + 3 s + 2}\); valores propios de \(A\): \(-1, -2\), que son los polos.
+
+#### Ejemplo 3 · Forma canónica de \(\frac{1}{s^{2} + 4 s + 8}\) · *Básico*
+
+**Enunciado.** Escribe una representación en espacio de estados.
+
+1. Elige \(x_1 = y\), \(x_2 = \dot y\), …: cada estado es la derivada del anterior.
+
+   **¿Por qué?** Así una ecuación de orden \(n\) se vuelve \(n\) ecuaciones de primer orden.
+
+2. \(A = \left[\begin{matrix}0 & 1\\-8 & -4\end{matrix}\right],\ B = \left[\begin{matrix}0\\1\end{matrix}\right],\ C = \left[\begin{matrix}1 & 0\end{matrix}\right]\).
+
+   **¿Por qué?** La última fila de \(A\) son los coeficientes del denominador con signo cambiado.
+
+**Resultado.** Comprobación: \(C(sI-A)^{-1}B = \frac{1}{s^{2} + 4 s + 8}\); valores propios de \(A\): \(-2 - 2 j, -2 + 2 j\), que son los polos.
+
+#### Ejemplo 4 · Forma canónica de \(\frac{1}{s^{3} + 6 s^{2} + 11 s + 6}\) · *Intermedio*
+
+**Enunciado.** Escribe una representación en espacio de estados.
+
+1. Elige \(x_1 = y\), \(x_2 = \dot y\), …: cada estado es la derivada del anterior.
+
+   **¿Por qué?** Así una ecuación de orden \(n\) se vuelve \(n\) ecuaciones de primer orden.
+
+2. \(A = \left[\begin{matrix}0 & 1 & 0\\0 & 0 & 1\\-6 & -11 & -6\end{matrix}\right],\ B = \left[\begin{matrix}0\\0\\1\end{matrix}\right],\ C = \left[\begin{matrix}1 & 0 & 0\end{matrix}\right]\).
+
+   **¿Por qué?** La última fila de \(A\) son los coeficientes del denominador con signo cambiado.
+
+**Resultado.** Comprobación: \(C(sI-A)^{-1}B = \frac{1}{s^{3} + 6 s^{2} + 11 s + 6}\); valores propios de \(A\): \(-1, -2, -3\), que son los polos.
+
+#### Ejemplo 5 · Forma canónica de \(\frac{1}{s^{2} + 9}\) · *Intermedio*
+
+**Enunciado.** Escribe una representación en espacio de estados.
+
+1. Elige \(x_1 = y\), \(x_2 = \dot y\), …: cada estado es la derivada del anterior.
+
+   **¿Por qué?** Así una ecuación de orden \(n\) se vuelve \(n\) ecuaciones de primer orden.
+
+2. \(A = \left[\begin{matrix}0 & 1\\-9 & 0\end{matrix}\right],\ B = \left[\begin{matrix}0\\1\end{matrix}\right],\ C = \left[\begin{matrix}1 & 0\end{matrix}\right]\).
+
+   **¿Por qué?** La última fila de \(A\) son los coeficientes del denominador con signo cambiado.
+
+**Resultado.** Comprobación: \(C(sI-A)^{-1}B = \frac{1}{s^{2} + 9}\); valores propios de \(A\): \(- 3 j, 3 j\), que son los polos.
+
+### Tema 2: De estados a función de transferencia
+
+**¿Por qué es importante?** Pasar de matrices a \(G(s)\) muestra que las dos descripciones son equivalentes y que los polos son los valores propios de \(A\).
+
+**Fuentes oficiales:** [Espacio de estados, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlStateSpace).
 
 \[G(s) = C\,(sI - A)^{-1}B + D\]
 
@@ -63,7 +127,7 @@ Otra forma de describir sistemas, con matrices y ecuaciones de primer orden. Es 
 
 ∎
 
-#### Ejemplo 2 · De vuelta a G(s) · *Experto*
+#### Ejemplo 1 · De vuelta a G(s) · *Experto*
 
 > **Qué cambia respecto al anterior:** Se hace el camino inverso.
 
@@ -87,7 +151,7 @@ Otra forma de describir sistemas, con matrices y ecuaciones de primer orden. Es 
 
 **Resultado:** \(G = \dfrac{4}{s^2+3s+2}\), la misma de capítulo 5
 
-#### Ejemplo 3 · Masa-resorte en estados · *Experto*
+#### Ejemplo 2 · Masa-resorte en estados · *Experto*
 
 > **Qué cambia respecto al anterior:** Con letras físicas.
 
@@ -102,3 +166,50 @@ Otra forma de describir sistemas, con matrices y ecuaciones de primer orden. Es 
    **¿Por qué?** Se despeja la aceleración.
 
 **Resultado:** \(A = \begin{bmatrix}0 & 1\\ -k/m & -b/m\end{bmatrix}\), \(B = \begin{bmatrix}0\\ 1/m\end{bmatrix}\)
+
+#### Más ejemplos resueltos
+
+Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
+
+#### Ejemplo 3 · De matrices a función de transferencia · *Intermedio*
+
+**Enunciado.** Con \(A = \left[\begin{matrix}0 & 1\\-5 & -2\end{matrix}\right],\ B = \left[\begin{matrix}0\\1\end{matrix}\right],\ C = \left[\begin{matrix}1 & 0\end{matrix}\right],\ D=0\), halla \(G(s)\).
+
+1. \(sI - A = \left[\begin{matrix}s & -1\\5 & s + 2\end{matrix}\right]\) y \(\det(sI-A) = s^{2} + 2 s + 5\).
+
+   **¿Por qué?** El determinante es el denominador: sus raíces son los polos.
+
+2. \((sI-A)^{-1} = \dfrac{1}{\det}\,\text{adj}(sI-A)\).
+
+   **¿Por qué?** Para 2×2: se intercambian los de la diagonal y se cambia el signo de los otros dos.
+
+**Resultado.** \(G(s) = C(sI-A)^{-1}B = \frac{1}{s^{2} + 2 s + 5}\).
+
+#### Ejemplo 4 · De matrices a función de transferencia · *Intermedio*
+
+**Enunciado.** Con \(A = \left[\begin{matrix}-1 & 0\\1 & -3\end{matrix}\right],\ B = \left[\begin{matrix}1\\0\end{matrix}\right],\ C = \left[\begin{matrix}0 & 1\end{matrix}\right],\ D=0\), halla \(G(s)\).
+
+1. \(sI - A = \left[\begin{matrix}s + 1 & 0\\-1 & s + 3\end{matrix}\right]\) y \(\det(sI-A) = \left(s + 1\right) \left(s + 3\right)\).
+
+   **¿Por qué?** El determinante es el denominador: sus raíces son los polos.
+
+2. \((sI-A)^{-1} = \dfrac{1}{\det}\,\text{adj}(sI-A)\).
+
+   **¿Por qué?** Para 2×2: se intercambian los de la diagonal y se cambia el signo de los otros dos.
+
+**Resultado.** \(G(s) = C(sI-A)^{-1}B = \frac{1}{s^{2} + 4 s + 3}\).
+
+#### Ejemplo 5 · De matrices a función de transferencia · *Avanzado*
+
+**Enunciado.** Con \(A = \left[\begin{matrix}-2 & 1\\0 & -4\end{matrix}\right],\ B = \left[\begin{matrix}0\\2\end{matrix}\right],\ C = \left[\begin{matrix}1 & 1\end{matrix}\right],\ D=0\), halla \(G(s)\).
+
+1. \(sI - A = \left[\begin{matrix}s + 2 & -1\\0 & s + 4\end{matrix}\right]\) y \(\det(sI-A) = \left(s + 2\right) \left(s + 4\right)\).
+
+   **¿Por qué?** El determinante es el denominador: sus raíces son los polos.
+
+2. \((sI-A)^{-1} = \dfrac{1}{\det}\,\text{adj}(sI-A)\).
+
+   **¿Por qué?** Para 2×2: se intercambian los de la diagonal y se cambia el signo de los otros dos.
+
+**Resultado.** \(G(s) = C(sI-A)^{-1}B = \frac{2 \left(s + 3\right)}{s^{2} + 6 s + 8}\).
+

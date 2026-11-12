@@ -2,14 +2,14 @@
 
 > Auditoría estructural. Un encabezado o criterio detectado no demuestra que el ejemplo se haya ejecutado ni que la explicación sea pedagógicamente suficiente.
 
-Temas conformes a cuatro pasos: **215/1273**. Tracks inventariados: **16**.
+Temas conformes a cuatro pasos: **215/1311**. Tracks inventariados: **16**.
 
 | Track | Temas conformes | Temas inventariados | Subtemas detectados | Subtemas con estructura completa |
 |---|---:|---:|---:|---:|
 | android | 0 | 74 | 0 | 0 |
 | angular | 0 | 71 | 0 | 0 |
 | cloud | 0 | 156 | 0 | 0 |
-| control-1 | 0 | 32 | 0 | 0 |
+| control-1 | 0 | 70 | 0 | 0 |
 | devops | 0 | 129 | 0 | 0 |
 | flutter | 1 | 106 | 3 | 3 |
 | foundations | 0 | 100 | 0 | 0 |
@@ -339,35 +339,73 @@ Temas conformes a cuatro pasos: **215/1273**. Tracks inventariados: **16**.
 
 - M0 ### Tema 1: Cómo está armado cada capítulo: tiene 0 subtemas
 - M1 ### Tema 1: ¿Qué es un número complejo?: tiene 0 subtemas
-- M1 ### Tema 2: Raíces de s²+bs+c: tiene 0 subtemas
+- M1 ### Tema 2: Operaciones: tiene 0 subtemas
+- M1 ### Tema 3: Raíces de s²+bs+c: tiene 0 subtemas
+- M1 ### Tema 4: Forma polar, fórmula de Euler y evaluación de G(jω): tiene 0 subtemas
 - M10 ### Tema 1: La forma de estado: tiene 0 subtemas
+- M10 ### Tema 2: De estados a función de transferencia: tiene 0 subtemas
 - M11 ### Tema 1: Forma estándar: tiene 0 subtemas
-- M11 ### Tema 2: Retardo o tiempo muerto: tiene 0 subtemas
+- M11 ### Tema 2: Respuestas: tiene 0 subtemas
+- M11 ### Tema 3: Retardo o tiempo muerto: tiene 0 subtemas
+- M11 ### Tema 4: Identificación desde una gráfica: tiene 0 subtemas
 - M12 ### Tema 1: Forma estándar: tiene 0 subtemas
+- M12 ### Tema 2: Simulador: mueve ζ y ωn: tiene 0 subtemas
+- M12 ### Tema 3: Los cuatro casos según ζ: tiene 0 subtemas
+- M12 ### Tema 4: Fórmulas del caso subamortiguado: tiene 0 subtemas
+- M12 ### Tema 5: De las especificaciones a la función de transferencia: tiene 0 subtemas
 - M13 ### Tema 1: Polos dominantes: tiene 0 subtemas
+- M13 ### Tema 2: Efecto de un cero: tiene 0 subtemas
+- M13 ### Tema 3: Cero de fase no mínima: tiene 0 subtemas
 - M14 ### Tema 1: Fórmula general: tiene 0 subtemas
+- M14 ### Tema 2: Tipo de sistema y constantes: tiene 0 subtemas
 - M15 ### Tema 1: Qué es estabilidad: tiene 0 subtemas
-- M15 ### Tema 2: Casos especiales: tiene 0 subtemas
+- M15 ### Tema 2: El arreglo de Routh: tiene 0 subtemas
+- M15 ### Tema 3: Casos especiales: tiene 0 subtemas
+- M15 ### Tema 4: Rango de K para estabilidad: tiene 0 subtemas
 - M16 ### Tema 1: Geometría de un polo: tiene 0 subtemas
+- M16 ### Tema 2: Estabilidad: tiene 0 subtemas
+- M16 ### Tema 3: La zona de diseño: tiene 0 subtemas
 - M17 ### Tema 1: Las dos condiciones: tiene 0 subtemas
+- M17 ### Tema 2: Reglas de construcción (con su porqué): tiene 0 subtemas
+- M17 ### Tema 3: Elegir K desde el lugar de las raíces: tiene 0 subtemas
 - M18 ### Tema 1: La idea: tiene 0 subtemas
-- M18 ### Tema 2: Ventajas y desventajas (punto 4 del Parcial 1): tiene 0 subtemas
+- M18 ### Tema 2: Error en estado estacionario: tiene 0 subtemas
+- M18 ### Tema 3: Cada acción, con números: tiene 0 subtemas
+- M18 ### Tema 4: Ventajas y desventajas (punto 4 del Parcial 1): tiene 0 subtemas
+- M18 ### Tema 5: Sintonía de Ziegler-Nichols: tiene 0 subtemas
 - M19 ### Tema 1: Diseño de un adelanto: tiene 0 subtemas
+- M19 ### Tema 2: Diseño de un atraso: tiene 0 subtemas
+- M19 ### Tema 3: Implementación con op-amps: tiene 0 subtemas
 - M2 ### Tema 1: La idea: tiene 0 subtemas
-- M2 ### Tema 2: Propiedades: tiene 0 subtemas
-- M2 ### Tema 3: Valor final y valor inicial: tiene 0 subtemas
+- M2 ### Tema 2: La tabla: tiene 0 subtemas
+- M2 ### Tema 3: Propiedades: tiene 0 subtemas
+- M2 ### Tema 4: Valor final y valor inicial: tiene 0 subtemas
 - M20 ### Tema 1: Qué es la respuesta en frecuencia: tiene 0 subtemas
+- M20 ### Tema 2: Decibeles y la escala logarítmica: tiene 0 subtemas
+- M20 ### Tema 3: Los bloques básicos: tiene 0 subtemas
+- M20 ### Tema 4: Márgenes de estabilidad: tiene 0 subtemas
 - M21 ### Tema 1: Parcial 1: tiene 0 subtemas
 - M22 ### Tema 1: Simulacro con solución: tiene 0 subtemas
 - M3 ### Tema 1: Caso 1: polos reales distintos: tiene 0 subtemas
 - M3 ### Tema 2: Caso 2: polos repetidos: tiene 0 subtemas
+- M3 ### Tema 3: Caso 3: polos complejos (completar el cuadrado): tiene 0 subtemas
+- M3 ### Tema 4: Resolver una ecuación diferencial completa: tiene 0 subtemas
 - M4 ### Tema 1: Qué es la función de transferencia: tiene 0 subtemas
 - M5 ### Tema 1: ¿Qué es un sistema de control?: tiene 0 subtemas
-- M5 ### Tema 2: Álgebra de bloques: tiene 0 subtemas
+- M5 ### Tema 2: Los elementos: tiene 0 subtemas
+- M5 ### Tema 3: Álgebra de bloques: tiene 0 subtemas
 - M6 ### Tema 1: Reglas para mover bloques: tiene 0 subtemas
+- M6 ### Tema 2: Grafos de flujo de señal: tiene 0 subtemas
+- M6 ### Tema 3: Regla de Mason: tiene 0 subtemas
+- M6 ### Tema 4: Referencia y perturbación juntas: tiene 0 subtemas
 - M7 ### Tema 1: Impedancias: tiene 0 subtemas
-- M7 ### Tema 2: El op-amp inversor: tiene 0 subtemas
+- M7 ### Tema 2: Circuitos pasivos: divisor de voltaje: tiene 0 subtemas
+- M7 ### Tema 3: El op-amp inversor: tiene 0 subtemas
 - M8 ### Tema 1: Mecánico de traslación: tiene 0 subtemas
+- M8 ### Tema 2: Mecánico de rotación: tiene 0 subtemas
+- M8 ### Tema 3: Motor DC (electromecánico): tiene 0 subtemas
+- M8 ### Tema 4: Sistemas térmicos e hidráulicos: tiene 0 subtemas
+- M8 ### Tema 5: Analogías: tiene 0 subtemas
 - M9 ### Tema 1: La idea: tiene 0 subtemas
 
 ### devops

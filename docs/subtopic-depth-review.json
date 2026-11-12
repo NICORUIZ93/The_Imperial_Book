@@ -1,9 +1,9 @@
 {
   "summary": {
-    "topics": 1273,
+    "topics": 1311,
     "reviewed": 146,
-    "pending": 1127,
-    "priorityCandidates": 1009,
+    "pending": 1165,
+    "priorityCandidates": 1019,
     "byTrack": {
       "android": {
         "topics": 74,
@@ -21,9 +21,9 @@
         "pending": 156
       },
       "control-1": {
-        "topics": 32,
+        "topics": 70,
         "reviewed": 0,
-        "pending": 32
+        "pending": 70
       },
       "devops": {
         "topics": 129,
@@ -5466,30 +5466,76 @@
       "topic": "Tema 1: ¿Qué es un número complejo?",
       "status": "pending",
       "semanticHeadings": [
-        "Operaciones",
-        "Forma polar y fórmula de Euler",
-        "Ejemplo 1 · Sumar dos complejos · *Básico*",
-        "Ejemplo 2 · Multiplicar dos complejos · *Básico*",
-        "Ejemplo 3 · Multiplicar por el conjugado · *Básico*",
-        "Ejemplo 4 · Dividir · *Intermedio*",
-        "Ejemplo 5 · Magnitud y ángulo · *Intermedio*"
+        "Más ejemplos resueltos",
+        "Ejemplo 1 · Pasar \\(3 + 4 j\\) a forma polar · *Básico*",
+        "Ejemplo 2 · Pasar \\(-2 + 2 j\\) a forma polar · *Básico*",
+        "Ejemplo 3 · Pasar \\(-1 - \\sqrt{3} j\\) a forma polar · *Intermedio*",
+        "Ejemplo 4 · Pasar \\(5 - 12 j\\) a forma polar · *Intermedio*",
+        "Ejemplo 5 · Pasar \\(-4\\) a forma polar · *Básico*",
+        "Ejemplo 6 · Pasar \\(3 j\\) a forma polar · *Básico*"
       ],
       "prioritySignals": [],
       "review": null
     },
     {
-      "id": "control-1/modulo-1::Tema 2: Raíces de s²+bs+c",
+      "id": "control-1/modulo-1::Tema 2: Operaciones",
       "track": "control-1",
       "module": 1,
-      "topic": "Tema 2: Raíces de s²+bs+c",
+      "topic": "Tema 2: Operaciones",
       "status": "pending",
       "semanticHeadings": [
-        "Ejemplo 6 · Raíces reales · *Básico*",
-        "Ejemplo 7 · Raíces complejas · *Básico*",
-        "Ejemplo 8 · El atajo · *Intermedio*",
-        "Ejemplo 9 · Del polo al polinomio · *Nivel parcial*"
+        "Forma polar y fórmula de Euler",
+        "Ejemplo 1 · Sumar dos complejos · *Básico*",
+        "Ejemplo 2 · Multiplicar dos complejos · *Básico*",
+        "Ejemplo 3 · Multiplicar por el conjugado · *Básico*",
+        "Ejemplo 4 · Dividir · *Intermedio*",
+        "Ejemplo 5 · Magnitud y ángulo · *Intermedio*",
+        "Más ejemplos resueltos",
+        "Ejemplo 6 · Dividir multiplicando por el conjugado · *Intermedio*",
+        "Ejemplo 7 · Multiplicar y dividir en forma polar · *Intermedio*",
+        "Ejemplo 8 · Potencia de un complejo · *Intermedio*"
       ],
       "prioritySignals": [],
+      "review": null
+    },
+    {
+      "id": "control-1/modulo-1::Tema 3: Raíces de s²+bs+c",
+      "track": "control-1",
+      "module": 1,
+      "topic": "Tema 3: Raíces de s²+bs+c",
+      "status": "pending",
+      "semanticHeadings": [
+        "Ejemplo 1 · Raíces reales · *Básico*",
+        "Ejemplo 2 · Raíces complejas · *Básico*",
+        "Ejemplo 3 · El atajo · *Intermedio*",
+        "Ejemplo 4 · Del polo al polinomio · *Nivel parcial*",
+        "Más ejemplos resueltos",
+        "Ejemplo 5 · Raíces de \\(s^{2} + 4 s + 13\\) · *Básico*",
+        "Ejemplo 6 · Raíces de \\(s^{2} + 6 s + 9\\) · *Básico*",
+        "Ejemplo 7 · Raíces de \\(s^{2} + 2 s - 3\\) · *Básico*",
+        "Ejemplo 8 · Raíces de \\(s^{2} + \\frac{4 s}{5} + 4\\) · *Intermedio*"
+      ],
+      "prioritySignals": [],
+      "review": null
+    },
+    {
+      "id": "control-1/modulo-1::Tema 4: Forma polar, fórmula de Euler y evaluación de G(jω)",
+      "track": "control-1",
+      "module": 1,
+      "topic": "Tema 4: Forma polar, fórmula de Euler y evaluación de G(jω)",
+      "status": "pending",
+      "semanticHeadings": [
+        "Ejemplos resueltos",
+        "Ejemplo 1 · Magnitud y fase de \\(G(s) = \\frac{10}{s + 2}\\) en \\(\\omega = 2\\) · *Básico*",
+        "Ejemplo 2 · Magnitud y fase de \\(G(s) = \\frac{5}{s + 1}\\) en \\(\\omega = 1\\) · *Básico*",
+        "Ejemplo 3 · Magnitud y fase de \\(G(s) = \\frac{4}{s \\left(s + 2\\right)}\\) en \\(\\omega = 2\\) · *Intermedio*",
+        "Ejemplo 4 · Magnitud y fase de \\(G(s) = \\frac{25}{s^{2} + 4 s + 25}\\) en \\(\\omega = 5\\) · *Intermedio*",
+        "Ejemplo 5 · Magnitud y fase de \\(G(s) = \\frac{s + 1}{s + 10}\\) en \\(\\omega = 1\\) · *Intermedio*",
+        "Ejemplo 6 · Magnitud y fase de \\(G(s) = \\frac{100}{\\left(s + 1\\right) \\left(s + 10\\right)}\\) en \\(\\omega = 3\\) · *Avanzado*"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos"
+      ],
       "review": null
     },
     {
@@ -5500,9 +5546,28 @@
       "status": "pending",
       "semanticHeadings": [
         "Ejemplo 1 · A espacio de estados · *Experto*",
-        "De estados a función de transferencia",
-        "Ejemplo 2 · De vuelta a G(s) · *Experto*",
-        "Ejemplo 3 · Masa-resorte en estados · *Experto*"
+        "Más ejemplos resueltos",
+        "Ejemplo 2 · Forma canónica de \\(\\frac{1}{s^{2} + 3 s + 2}\\) · *Básico*",
+        "Ejemplo 3 · Forma canónica de \\(\\frac{1}{s^{2} + 4 s + 8}\\) · *Básico*",
+        "Ejemplo 4 · Forma canónica de \\(\\frac{1}{s^{3} + 6 s^{2} + 11 s + 6}\\) · *Intermedio*",
+        "Ejemplo 5 · Forma canónica de \\(\\frac{1}{s^{2} + 9}\\) · *Intermedio*"
+      ],
+      "prioritySignals": [],
+      "review": null
+    },
+    {
+      "id": "control-1/modulo-10::Tema 2: De estados a función de transferencia",
+      "track": "control-1",
+      "module": 10,
+      "topic": "Tema 2: De estados a función de transferencia",
+      "status": "pending",
+      "semanticHeadings": [
+        "Ejemplo 1 · De vuelta a G(s) · *Experto*",
+        "Ejemplo 2 · Masa-resorte en estados · *Experto*",
+        "Más ejemplos resueltos",
+        "Ejemplo 3 · De matrices a función de transferencia · *Intermedio*",
+        "Ejemplo 4 · De matrices a función de transferencia · *Intermedio*",
+        "Ejemplo 5 · De matrices a función de transferencia · *Avanzado*"
       ],
       "prioritySignals": [],
       "review": null
@@ -5514,26 +5579,66 @@
       "topic": "Tema 1: Forma estándar",
       "status": "pending",
       "semanticHeadings": [
-        "Respuestas",
-        "Ejemplo 1 · Ya en forma estándar · *Básico*",
-        "Ejemplo 2 · Primero hay que llevarlo a la forma estándar · *Básico*",
-        "Ejemplo 3 · Escalón de amplitud 4 · *Intermedio*",
-        "Ejemplo 4 · Rampa · *Intermedio*"
+        "Más ejemplos resueltos",
+        "Ejemplo 1 · Leer K y τ de \\(\\frac{5}{2 s + 1}\\) · *Básico*",
+        "Ejemplo 2 · Leer K y τ de \\(\\frac{6}{2 s + 4}\\) · *Básico*",
+        "Ejemplo 3 · Leer K y τ de \\(\\frac{10}{s + 5}\\) · *Básico*",
+        "Ejemplo 4 · Leer K y τ de \\(\\frac{3}{\\frac{s}{2} + 3}\\) · *Intermedio*",
+        "Ejemplo 5 · Leer K y τ de \\(\\frac{8}{4 s + 2}\\) · *Intermedio*",
+        "Ejemplo 6 · Leer K y τ de \\(\\frac{1}{s + \\frac{1}{10}}\\) · *Intermedio*"
       ],
       "prioritySignals": [],
       "review": null
     },
     {
-      "id": "control-1/modulo-11::Tema 2: Retardo o tiempo muerto",
+      "id": "control-1/modulo-11::Tema 2: Respuestas",
       "track": "control-1",
       "module": 11,
-      "topic": "Tema 2: Retardo o tiempo muerto",
+      "topic": "Tema 2: Respuestas",
       "status": "pending",
       "semanticHeadings": [
-        "Ejemplo 5 · Escalón con retardo · *Intermedio*",
-        "Ejemplo 6 · Impulso con retardo (como el Parcial 1) · *Nivel parcial*",
-        "Identificación desde una gráfica",
-        "Ejemplo 7 · Identificar desde una gráfica · *Nivel parcial*"
+        "Ejemplo 1 · Ya en forma estándar · *Básico*",
+        "Ejemplo 2 · Primero hay que llevarlo a la forma estándar · *Básico*",
+        "Ejemplo 3 · Escalón de amplitud 4 · *Intermedio*",
+        "Ejemplo 4 · Rampa · *Intermedio*",
+        "Más ejemplos resueltos",
+        "Ejemplo 5 · Respuesta de \\(\\frac{4}{2 s + 1}\\) a un escalón de amplitud 3 · *Básico*",
+        "Ejemplo 6 · Respuesta de \\(\\frac{5}{s + 5}\\) a un impulso unitario · *Básico*",
+        "Ejemplo 7 · Respuesta de \\(\\frac{2}{s + 2}\\) a un rampa unitaria · *Intermedio*"
+      ],
+      "prioritySignals": [],
+      "review": null
+    },
+    {
+      "id": "control-1/modulo-11::Tema 3: Retardo o tiempo muerto",
+      "track": "control-1",
+      "module": 11,
+      "topic": "Tema 3: Retardo o tiempo muerto",
+      "status": "pending",
+      "semanticHeadings": [
+        "Ejemplo 1 · Escalón con retardo · *Intermedio*",
+        "Ejemplo 2 · Impulso con retardo (como el Parcial 1) · *Nivel parcial*",
+        "Más ejemplos resueltos",
+        "Ejemplo 3 · Escalón en \\(\\dfrac{2e^{-1s}}{5s+1}\\) · *Básico*",
+        "Ejemplo 4 · Escalón en \\(\\dfrac{\\frac{1}{2}e^{-3s}}{10s+1}\\) · *Intermedio*",
+        "Ejemplo 5 · Escalón en \\(\\dfrac{4e^{-\\frac{1}{2}s}}{2s+1}\\) · *Intermedio*"
+      ],
+      "prioritySignals": [],
+      "review": null
+    },
+    {
+      "id": "control-1/modulo-11::Tema 4: Identificación desde una gráfica",
+      "track": "control-1",
+      "module": 11,
+      "topic": "Tema 4: Identificación desde una gráfica",
+      "status": "pending",
+      "semanticHeadings": [
+        "Ejemplo 1 · Identificar desde una gráfica · *Nivel parcial*",
+        "Más ejemplos resueltos",
+        "Ejemplo 2 · Identificar el modelo: valor final 10, 63 % en t = 4 s · *Básico*",
+        "Ejemplo 3 · Identificar el modelo: valor final 2,5, 63 % en t = 12 s · *Básico*",
+        "Ejemplo 4 · Identificar el modelo: valor final 50, 63 % en t = 0,8 s · *Intermedio*",
+        "Ejemplo 5 · Identificar el modelo: valor final 3, 63 % en t = 9 s, retardo 2 s · *Intermedio*"
       ],
       "prioritySignals": [],
       "review": null
@@ -5546,16 +5651,88 @@
       "status": "pending",
       "semanticHeadings": [
         "Ejemplo 1 · Leer los parámetros · *Básico*",
-        "Simulador: mueve ζ y ωn",
-        "Los cuatro casos según ζ",
-        "Fórmulas del caso subamortiguado",
-        "Ejemplo 2 · Todas las especificaciones · *Básico*",
-        "Ejemplo 3 · Impulso · *Básico*",
-        "Ejemplo 4 · Sobreamortiguado · *Intermedio*",
-        "Ejemplo 5 · Críticamente amortiguado · *Intermedio*",
-        "Ejemplo 6 · De la gráfica a G(s) · *Nivel parcial*",
-        "Ejemplo 7 · De especificaciones a G(s) · *Nivel parcial*",
-        "Ejemplo 8 · Elegir la ganancia · *Nivel parcial*"
+        "Más ejemplos resueltos",
+        "Ejemplo 2 · Leer K, ωn y ζ de \\(\\frac{16}{s^{2} + 4 s + 16}\\) · *Básico*",
+        "Ejemplo 3 · Leer K, ωn y ζ de \\(\\frac{50}{s^{2} + 6 s + 25}\\) · *Básico*",
+        "Ejemplo 4 · Leer K, ωn y ζ de \\(\\frac{9}{2 s^{2} + 3 s + 18}\\) · *Intermedio*",
+        "Ejemplo 5 · Leer K, ωn y ζ de \\(\\frac{4}{s^{2} + s + 4}\\) · *Básico*",
+        "Ejemplo 6 · Leer K, ωn y ζ de \\(\\frac{100}{s^{2} + 20 s + 100}\\) · *Intermedio*"
+      ],
+      "prioritySignals": [],
+      "review": null
+    },
+    {
+      "id": "control-1/modulo-12::Tema 2: Simulador: mueve ζ y ωn",
+      "track": "control-1",
+      "module": 12,
+      "topic": "Tema 2: Simulador: mueve ζ y ωn",
+      "status": "pending",
+      "semanticHeadings": [
+        "Más ejemplos resueltos",
+        "Ejemplo 1 · Predice antes de mover el simulador: ζ = 0,1, ωn = 2 · *Básico*",
+        "Ejemplo 2 · Predice antes de mover el simulador: ζ = 0,5, ωn = 2 · *Básico*",
+        "Ejemplo 3 · Predice antes de mover el simulador: ζ = 0,9, ωn = 2 · *Básico*",
+        "Ejemplo 4 · Predice antes de mover el simulador: ζ = 0,3, ωn = 1 · *Básico*",
+        "Ejemplo 5 · Predice antes de mover el simulador: ζ = 0,3, ωn = 4 · *Básico*"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos"
+      ],
+      "review": null
+    },
+    {
+      "id": "control-1/modulo-12::Tema 3: Los cuatro casos según ζ",
+      "track": "control-1",
+      "module": 12,
+      "topic": "Tema 3: Los cuatro casos según ζ",
+      "status": "pending",
+      "semanticHeadings": [
+        "Más ejemplos resueltos",
+        "Ejemplo 1 · Clasificar \\(\\frac{9}{s^{2} + 2 s + 9}\\) · *Básico*",
+        "Ejemplo 2 · Clasificar \\(\\frac{9}{s^{2} + 6 s + 9}\\) · *Básico*",
+        "Ejemplo 3 · Clasificar \\(\\frac{9}{s^{2} + 10 s + 9}\\) · *Básico*",
+        "Ejemplo 4 · Clasificar \\(\\frac{9}{s^{2} + 9}\\) · *Básico*",
+        "Ejemplo 5 · Clasificar \\(\\frac{4}{s^{2} + 5 s + 4}\\) · *Intermedio*",
+        "Ejemplo 6 · Clasificar \\(\\frac{25}{s^{2} + 4 s + 25}\\) · *Intermedio*"
+      ],
+      "prioritySignals": [],
+      "review": null
+    },
+    {
+      "id": "control-1/modulo-12::Tema 4: Fórmulas del caso subamortiguado",
+      "track": "control-1",
+      "module": 12,
+      "topic": "Tema 4: Fórmulas del caso subamortiguado",
+      "status": "pending",
+      "semanticHeadings": [
+        "Ejemplo 1 · Todas las especificaciones · *Básico*",
+        "Ejemplo 2 · Impulso · *Básico*",
+        "Ejemplo 3 · Sobreamortiguado · *Intermedio*",
+        "Ejemplo 4 · Críticamente amortiguado · *Intermedio*",
+        "Ejemplo 5 · De la gráfica a G(s) · *Nivel parcial*",
+        "Ejemplo 6 · De especificaciones a G(s) · *Nivel parcial*",
+        "Ejemplo 7 · Elegir la ganancia · *Nivel parcial*",
+        "Más ejemplos resueltos",
+        "Ejemplo 8 · Especificaciones con ζ = 0,6 y ωn = 5 · *Básico*",
+        "Ejemplo 9 · Especificaciones con ζ = 0,25 y ωn = 10 · *Intermedio*",
+        "Ejemplo 10 · Especificaciones con ζ = 0,7 y ωn = 1,5 · *Intermedio*"
+      ],
+      "prioritySignals": [],
+      "review": null
+    },
+    {
+      "id": "control-1/modulo-12::Tema 5: De las especificaciones a la función de transferencia",
+      "track": "control-1",
+      "module": 12,
+      "topic": "Tema 5: De las especificaciones a la función de transferencia",
+      "status": "pending",
+      "semanticHeadings": [
+        "Ejemplos resueltos",
+        "Ejemplo 1 · De especificaciones a G(s): Mp = 10 %, ts = 2 s, K = 1 · *Intermedio*",
+        "Ejemplo 2 · De especificaciones a G(s): Mp = 5 %, ts = 4 s, K = 1 · *Intermedio*",
+        "Ejemplo 3 · De especificaciones a G(s): Mp = 20 %, ts = 1 s, K = 2 · *Intermedio*",
+        "Ejemplo 4 · De especificaciones a G(s): Mp = 16,3 %, ts = 0,8 s, K = 1 · *Avanzado*",
+        "Ejemplo 5 · De especificaciones a G(s): Mp = 30 %, ts = 3 s, K = 5 · *Avanzado*"
       ],
       "prioritySignals": [],
       "review": null
@@ -5568,9 +5745,46 @@
       "status": "pending",
       "semanticHeadings": [
         "Ejemplo 1 · Aproximar por polos dominantes · *Nivel parcial*",
-        "Efecto de un cero",
-        "Cero de fase no mínima",
-        "Ejemplo 2 · Cero en el semiplano derecho · *Experto*"
+        "Más ejemplos resueltos",
+        "Ejemplo 2 · ¿Es dominante el par complejo si el tercer polo está en −20? · *Básico*",
+        "Ejemplo 3 · ¿Es dominante el par complejo si el tercer polo está en −10? · *Intermedio*",
+        "Ejemplo 4 · ¿Es dominante el par complejo si el tercer polo está en −4? · *Intermedio*",
+        "Ejemplo 5 · ¿Es dominante el par complejo si el tercer polo está en −50? · *Básico*",
+        "Ejemplo 6 · ¿Es dominante el par complejo si el tercer polo está en −3? · *Avanzado*"
+      ],
+      "prioritySignals": [],
+      "review": null
+    },
+    {
+      "id": "control-1/modulo-13::Tema 2: Efecto de un cero",
+      "track": "control-1",
+      "module": 13,
+      "topic": "Tema 2: Efecto de un cero",
+      "status": "pending",
+      "semanticHeadings": [
+        "Más ejemplos resueltos",
+        "Ejemplo 1 · Efecto de un cero en s = −10 · *Básico*",
+        "Ejemplo 2 · Efecto de un cero en s = −2 · *Intermedio*",
+        "Ejemplo 3 · Efecto de un cero en s = −1 · *Intermedio*",
+        "Ejemplo 4 · Efecto de un cero en s = −0,5 · *Avanzado*",
+        "Ejemplo 5 · Efecto de un cero en s = −5 · *Básico*"
+      ],
+      "prioritySignals": [],
+      "review": null
+    },
+    {
+      "id": "control-1/modulo-13::Tema 3: Cero de fase no mínima",
+      "track": "control-1",
+      "module": 13,
+      "topic": "Tema 3: Cero de fase no mínima",
+      "status": "pending",
+      "semanticHeadings": [
+        "Ejemplo 1 · Cero en el semiplano derecho · *Experto*",
+        "Más ejemplos resueltos",
+        "Ejemplo 2 · Respuesta inversa con cero en s = +1 · *Intermedio*",
+        "Ejemplo 3 · Respuesta inversa con cero en s = +2 · *Intermedio*",
+        "Ejemplo 4 · Respuesta inversa con cero en s = +3 · *Intermedio*",
+        "Ejemplo 5 · Respuesta inversa con cero en s = +4 · *Avanzado*"
       ],
       "prioritySignals": [],
       "review": null
@@ -5582,13 +5796,37 @@
       "topic": "Tema 1: Fórmula general",
       "status": "pending",
       "semanticHeadings": [
-        "Tipo de sistema y constantes",
+        "Más ejemplos resueltos",
+        "Ejemplo 1 · Error final de \\(\\frac{10}{s + 2}\\) ante escalón · *Básico*",
+        "Ejemplo 2 · Error final de \\(\\frac{10}{s \\left(s + 2\\right)}\\) ante escalón · *Básico*",
+        "Ejemplo 3 · Error final de \\(\\frac{10}{s \\left(s + 2\\right)}\\) ante rampa · *Intermedio*",
+        "Ejemplo 4 · Error final de \\(\\frac{5}{s + 1}\\) ante rampa · *Intermedio*",
+        "Ejemplo 5 · Error final de \\(\\frac{20}{s^{2} \\left(s + 5\\right)}\\) ante parábola · *Avanzado*",
+        "Ejemplo 6 · Error final de \\(\\frac{8}{\\left(s + 1\\right) \\left(s + 4\\right)}\\) ante escalón de amplitud 3 · *Básico*"
+      ],
+      "prioritySignals": [],
+      "review": null
+    },
+    {
+      "id": "control-1/modulo-14::Tema 2: Tipo de sistema y constantes",
+      "track": "control-1",
+      "module": 14,
+      "topic": "Tema 2: Tipo de sistema y constantes",
+      "status": "pending",
+      "semanticHeadings": [
         "Ejemplo 1 · Tipo 0 con escalón · *Básico*",
         "Ejemplo 2 · Tipo 1 con rampa · *Intermedio*",
         "Ejemplo 3 · Tipo 2 con parábola · *Intermedio*",
-        "Ejemplo 4 · Diseñar K para un error · *Nivel parcial*"
+        "Ejemplo 4 · Diseñar K para un error · *Nivel parcial*",
+        "Más ejemplos resueltos",
+        "Ejemplo 5 · Tipo y constantes de \\(\\frac{50}{\\left(s + 2\\right) \\left(s + 5\\right)}\\) · *Básico*",
+        "Ejemplo 6 · Tipo y constantes de \\(\\frac{12}{s \\left(s + 3\\right)}\\) · *Básico*",
+        "Ejemplo 7 · Tipo y constantes de \\(\\frac{30 s + 30}{s^{2} \\left(s + 6\\right)}\\) · *Intermedio*",
+        "Ejemplo 8 · Tipo y constantes de \\(\\frac{100}{s \\left(s + 4\\right) \\left(s + 10\\right)}\\) · *Intermedio*"
       ],
-      "prioritySignals": [],
+      "prioritySignals": [
+        "título agrupa varios conceptos"
+      ],
       "review": null
     },
     {
@@ -5598,24 +5836,66 @@
       "topic": "Tema 1: Qué es estabilidad",
       "status": "pending",
       "semanticHeadings": [
-        "El arreglo de Routh",
-        "Ejemplo 1 · Estable · *Básico*",
-        "Ejemplo 2 · Inestable con coeficientes positivos · *Intermedio*"
+        "Más ejemplos resueltos",
+        "Ejemplo 1 · ¿Estable? \\(G(s) = \\frac{1}{\\left(s + 1\\right) \\left(s + 3\\right)}\\) · *Básico*",
+        "Ejemplo 2 · ¿Estable? \\(G(s) = \\frac{1}{\\left(s - 2\\right) \\left(s + 1\\right)}\\) · *Básico*",
+        "Ejemplo 3 · ¿Estable? \\(G(s) = \\frac{1}{s \\left(s + 2\\right)}\\) · *Básico*",
+        "Ejemplo 4 · ¿Estable? \\(G(s) = \\frac{1}{s^{2} + 4}\\) · *Básico*",
+        "Ejemplo 5 · ¿Estable? \\(G(s) = \\frac{1}{s^{2} + 2 s + 10}\\) · *Básico*",
+        "Ejemplo 6 · ¿Estable? \\(G(s) = \\frac{1}{s^{2} - s + 4}\\) · *Intermedio*"
       ],
       "prioritySignals": [],
       "review": null
     },
     {
-      "id": "control-1/modulo-15::Tema 2: Casos especiales",
+      "id": "control-1/modulo-15::Tema 2: El arreglo de Routh",
       "track": "control-1",
       "module": 15,
-      "topic": "Tema 2: Casos especiales",
+      "topic": "Tema 2: El arreglo de Routh",
       "status": "pending",
       "semanticHeadings": [
-        "Ejemplo 3 · Un cero en la primera columna · *Nivel parcial*",
-        "Ejemplo 4 · Una fila completa de ceros · *Experto*",
-        "Rango de K para estabilidad",
-        "Ejemplo 5 · Rango de K · *Nivel parcial*"
+        "Ejemplo 1 · Estable · *Básico*",
+        "Ejemplo 2 · Inestable con coeficientes positivos · *Intermedio*",
+        "Más ejemplos resueltos",
+        "Ejemplo 3 · Routh de \\(s^{3} + 6 s^{2} + 11 s + 6\\) · *Básico*",
+        "Ejemplo 4 · Routh de \\(s^{3} + 2 s^{2} + 3 s + 10\\) · *Intermedio*",
+        "Ejemplo 5 · Routh de \\(s^{4} + 4 s^{3} + 6 s^{2} + 4 s + 5\\) · *Intermedio*",
+        "Ejemplo 6 · Routh de \\(2 s^{3} + 3 s^{2} + 5 s + 1\\) · *Básico*"
+      ],
+      "prioritySignals": [],
+      "review": null
+    },
+    {
+      "id": "control-1/modulo-15::Tema 3: Casos especiales",
+      "track": "control-1",
+      "module": 15,
+      "topic": "Tema 3: Casos especiales",
+      "status": "pending",
+      "semanticHeadings": [
+        "Ejemplo 1 · Un cero en la primera columna · *Nivel parcial*",
+        "Ejemplo 2 · Una fila completa de ceros · *Experto*",
+        "Más ejemplos resueltos",
+        "Ejemplo 3 · Cero en la primera columna · *Intermedio*",
+        "Ejemplo 4 · Fila completa de ceros · *Avanzado*",
+        "Ejemplo 5 · Polinomio con un coeficiente faltante · *Básico*"
+      ],
+      "prioritySignals": [],
+      "review": null
+    },
+    {
+      "id": "control-1/modulo-15::Tema 4: Rango de K para estabilidad",
+      "track": "control-1",
+      "module": 15,
+      "topic": "Tema 4: Rango de K para estabilidad",
+      "status": "pending",
+      "semanticHeadings": [
+        "Ejemplo 1 · Rango de K · *Nivel parcial*",
+        "Más ejemplos resueltos",
+        "Ejemplo 2 · Rango de K para \\(G = \\dfrac{K}{s \\left(s + 2\\right) \\left(s + 4\\right)}\\) · *Básico*",
+        "Ejemplo 3 · Rango de K para \\(G = \\dfrac{K}{\\left(s + 1\\right) \\left(s + 2\\right) \\left(s + 3\\right)}\\) · *Intermedio*",
+        "Ejemplo 4 · Rango de K para \\(G = \\dfrac{K}{s \\left(s + 1\\right) \\left(s + 5\\right)}\\) · *Básico*",
+        "Ejemplo 5 · Rango de K para \\(G = \\dfrac{K}{s \\left(s^{2} + 4 s + 8\\right)}\\) · *Intermedio*",
+        "Ejemplo 6 · Rango de K para \\(G = \\dfrac{K}{\\left(s + 1\\right)^{3}}\\) · *Intermedio*"
       ],
       "prioritySignals": [],
       "review": null
@@ -5627,14 +5907,51 @@
       "topic": "Tema 1: Geometría de un polo",
       "status": "pending",
       "semanticHeadings": [
-        "Estabilidad",
+        "Más ejemplos resueltos",
+        "Ejemplo 1 · Leer el polo \\(-2 \\pm j2\\) · *Básico*",
+        "Ejemplo 2 · Leer el polo \\(-1 \\pm j3\\) · *Básico*",
+        "Ejemplo 3 · Leer el polo \\(-3 \\pm j4\\) · *Básico*",
+        "Ejemplo 4 · Leer el polo \\(-4 \\pm j3\\) · *Intermedio*",
+        "Ejemplo 5 · Leer el polo \\(-0{,}5 \\pm j2\\) · *Intermedio*",
+        "Ejemplo 6 · Leer el polo \\(-5 \\pm j8{,}66\\) · *Intermedio*"
+      ],
+      "prioritySignals": [],
+      "review": null
+    },
+    {
+      "id": "control-1/modulo-16::Tema 2: Estabilidad",
+      "track": "control-1",
+      "module": 16,
+      "topic": "Tema 2: Estabilidad",
+      "status": "pending",
+      "semanticHeadings": [
         "Ejemplo 1 · Clasificar por estabilidad · *Básico*",
         "Ejemplo 2 · Leer todo desde el polo · *Intermedio*",
-        "La zona de diseño",
-        "Ejemplo 3 · Zona desde especificaciones · *Intermedio*",
-        "Ejemplo 4 · Tres especificaciones · *Intermedio*",
-        "Ejemplo 5 · ¿Cumple un candidato? · *Nivel parcial*",
-        "Ejemplo 6 · De polos a G(s) y su zona (Parcial 2) · *Nivel parcial*"
+        "Más ejemplos resueltos",
+        "Ejemplo 3 · Estabilidad por la posición de los polos: \\(-3\\), \\(-1 \\pm 2j\\) · *Básico*",
+        "Ejemplo 4 · Estabilidad por la posición de los polos: \\(2\\), \\(-5\\) · *Básico*",
+        "Ejemplo 5 · Estabilidad por la posición de los polos: \\(\\pm 4j\\), \\(-1\\) · *Intermedio*",
+        "Ejemplo 6 · Estabilidad por la posición de los polos: \\(0\\), \\(0\\), \\(-2\\) · *Intermedio*"
+      ],
+      "prioritySignals": [],
+      "review": null
+    },
+    {
+      "id": "control-1/modulo-16::Tema 3: La zona de diseño",
+      "track": "control-1",
+      "module": 16,
+      "topic": "Tema 3: La zona de diseño",
+      "status": "pending",
+      "semanticHeadings": [
+        "Ejemplo 1 · Zona desde especificaciones · *Intermedio*",
+        "Ejemplo 2 · Tres especificaciones · *Intermedio*",
+        "Ejemplo 3 · ¿Cumple un candidato? · *Nivel parcial*",
+        "Ejemplo 4 · De polos a G(s) y su zona (Parcial 2) · *Nivel parcial*",
+        "Más ejemplos resueltos",
+        "Ejemplo 5 · Zona de diseño: Mp ≤ 10 %, ts ≤ 2 s; ¿sirve \\(-3 \\pm j3\\)? · *Intermedio*",
+        "Ejemplo 6 · Zona de diseño: Mp ≤ 5 %, ts ≤ 1 s; ¿sirve \\(-5 \\pm j4\\)? · *Intermedio*",
+        "Ejemplo 7 · Zona de diseño: Mp ≤ 20 %, ts ≤ 4 s; ¿sirve \\(-1{,}5 \\pm j2\\)? · *Intermedio*",
+        "Ejemplo 8 · Zona de diseño: Mp ≤ 15 %, ts ≤ 0,5 s; ¿sirve \\(-8 \\pm j6\\)? · *Avanzado*"
       ],
       "prioritySignals": [],
       "review": null
@@ -5646,10 +5963,51 @@
       "topic": "Tema 1: Las dos condiciones",
       "status": "pending",
       "semanticHeadings": [
-        "Reglas de construcción (con su porqué)",
+        "Más ejemplos resueltos",
+        "Ejemplo 1 · ¿Está \\(-2+2j\\) en el lugar de \\(K\\,/(s(s+4))\\)? · *Básico*",
+        "Ejemplo 2 · ¿Está \\(-1+1j\\) en el lugar de \\(K\\,/(s(s+4))\\)? · *Básico*",
+        "Ejemplo 3 · ¿Está \\(-2+3j\\) en el lugar de \\(K\\,/((s+1)(s+3))\\)? · *Básico*",
+        "Ejemplo 4 · ¿Está \\(-0{,}5+1j\\) en el lugar de \\(K\\,/(s(s+2)(s+4))\\)? · *Intermedio*",
+        "Ejemplo 5 · ¿Está \\(-3+1{,}732j\\) en el lugar de \\(K\\,(s+3)/(s(s+1))\\)? · *Intermedio*",
+        "Ejemplo 6 · ¿Está \\(-3+4j\\) en el lugar de \\(K\\,/(s(s+6))\\)? · *Básico*"
+      ],
+      "prioritySignals": [],
+      "review": null
+    },
+    {
+      "id": "control-1/modulo-17::Tema 2: Reglas de construcción (con su porqué)",
+      "track": "control-1",
+      "module": 17,
+      "topic": "Tema 2: Reglas de construcción (con su porqué)",
+      "status": "pending",
+      "semanticHeadings": [
         "Ejemplo 1 · Dos polos · *Básico*",
         "Ejemplo 2 · Tres polos · *Nivel parcial*",
-        "Ejemplo 3 · Con un cero · *Nivel parcial*"
+        "Ejemplo 3 · Con un cero · *Nivel parcial*",
+        "Más ejemplos resueltos",
+        "Ejemplo 4 · Reglas del lugar de \\(K\\frac{1}{s \\left(s + 1\\right) \\left(s + 5\\right)}\\) · *Intermedio*",
+        "Ejemplo 5 · Reglas del lugar de \\(K\\frac{1}{s \\left(s + 3\\right) \\left(s + 6\\right)}\\) · *Intermedio*",
+        "Ejemplo 6 · Reglas del lugar de \\(K\\frac{s + 2}{s \\left(s + 1\\right) \\left(s + 6\\right)}\\) · *Avanzado*",
+        "Ejemplo 7 · Reglas del lugar de \\(K\\frac{1}{\\left(s + 1\\right) \\left(s + 2\\right) \\left(s + 4\\right)}\\) · *Intermedio*"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos"
+      ],
+      "review": null
+    },
+    {
+      "id": "control-1/modulo-17::Tema 3: Elegir K desde el lugar de las raíces",
+      "track": "control-1",
+      "module": 17,
+      "topic": "Tema 3: Elegir K desde el lugar de las raíces",
+      "status": "pending",
+      "semanticHeadings": [
+        "Ejemplos resueltos",
+        "Ejemplo 1 · Elegir K para ζ = 0,5 en \\(\\dfrac{K}{s(s+4)}\\) · *Básico*",
+        "Ejemplo 2 · Elegir K para ζ = 0,6 en \\(\\dfrac{K}{s(s+6)}\\) · *Básico*",
+        "Ejemplo 3 · Elegir K para ζ = 0,707 en \\(\\dfrac{K}{s(s+2)}\\) · *Intermedio*",
+        "Ejemplo 4 · Elegir K para ζ = 0,4 en \\(\\dfrac{K}{s(s+10)}\\) · *Intermedio*",
+        "Ejemplo 5 · Elegir K para ζ = 0,8 en \\(\\dfrac{K}{s(s+5)}\\) · *Intermedio*"
       ],
       "prioritySignals": [],
       "review": null
@@ -5661,8 +6019,40 @@
       "topic": "Tema 1: La idea",
       "status": "pending",
       "semanticHeadings": [
-        "Error en estado estacionario",
-        "Cada acción, con números",
+        "Más ejemplos resueltos",
+        "Ejemplo 1 · ¿Qué mira la acción Proporcional (P)? · *Básico*",
+        "Ejemplo 2 · ¿Qué mira la acción Integral (I)? · *Básico*",
+        "Ejemplo 3 · ¿Qué mira la acción Derivativa (D)? · *Básico*",
+        "Ejemplo 4 · La ducha como PID · *Básico*",
+        "Ejemplo 5 · Leer un PID escrito en s · *Intermedio*"
+      ],
+      "prioritySignals": [],
+      "review": null
+    },
+    {
+      "id": "control-1/modulo-18::Tema 2: Error en estado estacionario",
+      "track": "control-1",
+      "module": 18,
+      "topic": "Tema 2: Error en estado estacionario",
+      "status": "pending",
+      "semanticHeadings": [
+        "Más ejemplos resueltos",
+        "Ejemplo 1 · Error ante escalón con P con Kp = 4 · *Básico*",
+        "Ejemplo 2 · Error ante escalón con P con Kp = 18 · *Básico*",
+        "Ejemplo 3 · Error ante escalón con PI · *Intermedio*",
+        "Ejemplo 4 · Error ante escalón con P con Kp = 98 · *Básico*",
+        "Ejemplo 5 · Error ante escalón con PI con Ki = 5 · *Intermedio*"
+      ],
+      "prioritySignals": [],
+      "review": null
+    },
+    {
+      "id": "control-1/modulo-18::Tema 3: Cada acción, con números",
+      "track": "control-1",
+      "module": 18,
+      "topic": "Tema 3: Cada acción, con números",
+      "status": "pending",
+      "semanticHeadings": [
         "ON/OFF (dos posiciones)",
         "Proporcional: C(s) = Kp",
         "Ejemplo 1 · El P deja error · *Básico*",
@@ -5670,30 +6060,56 @@
         "Integral: C(s) = Ki/s",
         "Ejemplo 3 · El PI quita el error · *Intermedio*",
         "Derivativa: C(s) = Kd s",
-        "Ejemplo 4 · El D amortigua · *Nivel parcial*"
-      ],
-      "prioritySignals": [],
-      "review": null
-    },
-    {
-      "id": "control-1/modulo-18::Tema 2: Ventajas y desventajas (punto 4 del Parcial 1)",
-      "track": "control-1",
-      "module": 18,
-      "topic": "Tema 2: Ventajas y desventajas (punto 4 del Parcial 1)",
-      "status": "pending",
-      "semanticHeadings": [
-        "Efecto de subir cada ganancia",
-        "Ejemplo 5 · Error ante rampa · *Intermedio*",
-        "Sintonía de Ziegler-Nichols",
-        "Método 1: ganancia crítica (lazo cerrado)",
-        "Ejemplo 6 · PID por ganancia crítica · *Nivel parcial*",
-        "Método 2: curva de reacción (lazo abierto)",
-        "Ejemplo 7 · PID por curva de reacción · *Intermedio*",
-        "Detalles de implementación real"
+        "Ejemplo 4 · El D amortigua · *Nivel parcial*",
+        "Más ejemplos resueltos",
+        "Ejemplo 5 · Efecto de P (Kp = 8) sobre \\(P = \\frac{1}{s \\left(s + 4\\right)}\\) · *Intermedio*",
+        "Ejemplo 6 · Efecto de P (Kp = 20) sobre \\(P = \\frac{1}{s \\left(s + 4\\right)}\\) · *Intermedio*",
+        "Ejemplo 7 · Efecto de PD (Kp = 20, Kd = 4) sobre \\(P = \\frac{1}{s \\left(s + 4\\right)}\\) · *Intermedio*"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
       ],
+      "review": null
+    },
+    {
+      "id": "control-1/modulo-18::Tema 4: Ventajas y desventajas (punto 4 del Parcial 1)",
+      "track": "control-1",
+      "module": 18,
+      "topic": "Tema 4: Ventajas y desventajas (punto 4 del Parcial 1)",
+      "status": "pending",
+      "semanticHeadings": [
+        "Efecto de subir cada ganancia",
+        "Ejemplo 1 · Error ante rampa · *Intermedio*",
+        "Más ejemplos resueltos",
+        "Ejemplo 2 · Elegir controlador: Horno industrial lento, sin ruido en el senso… · *Intermedio*",
+        "Ejemplo 3 · Elegir controlador: Posición de un motor que oscila demasiado con… · *Intermedio*",
+        "Ejemplo 4 · Elegir controlador: Medición de flujo muy ruidosa.… · *Intermedio*",
+        "Ejemplo 5 · Elegir controlador: Brazo que debe llegar rápido, sin sobrepico y… · *Intermedio*"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos"
+      ],
+      "review": null
+    },
+    {
+      "id": "control-1/modulo-18::Tema 5: Sintonía de Ziegler-Nichols",
+      "track": "control-1",
+      "module": 18,
+      "topic": "Tema 5: Sintonía de Ziegler-Nichols",
+      "status": "pending",
+      "semanticHeadings": [
+        "Método 1: ganancia crítica (lazo cerrado)",
+        "Ejemplo 1 · PID por ganancia crítica · *Nivel parcial*",
+        "Método 2: curva de reacción (lazo abierto)",
+        "Ejemplo 2 · PID por curva de reacción · *Intermedio*",
+        "Detalles de implementación real",
+        "Más ejemplos resueltos",
+        "Ejemplo 3 · Ziegler-Nichols por oscilación: Ku = 10, Pu = 2 s · *Básico*",
+        "Ejemplo 4 · Ziegler-Nichols por oscilación: Ku = 4,8, Pu = 1,2 s · *Intermedio*",
+        "Ejemplo 5 · Ziegler-Nichols por oscilación: Ku = 25, Pu = 0,5 s · *Intermedio*",
+        "Ejemplo 6 · Obtener Ku y Pu con Routh · *Avanzado*"
+      ],
+      "prioritySignals": [],
       "review": null
     },
     {
@@ -5704,11 +6120,49 @@
       "status": "pending",
       "semanticHeadings": [
         "Ejemplo 1 · Adelanto: el doble de rápido · *Experto*",
-        "Diseño de un atraso",
-        "Ejemplo 2 · Atraso: diez veces menos error · *Experto*",
-        "Implementación con op-amps"
+        "Más ejemplos resueltos",
+        "Ejemplo 2 · Adelanto que aporta 30° de fase · *Básico*",
+        "Ejemplo 3 · Adelanto que aporta 45° de fase · *Intermedio*",
+        "Ejemplo 4 · Adelanto que aporta 55° de fase · *Intermedio*",
+        "Ejemplo 5 · Adelanto que aporta 20° de fase · *Básico*"
       ],
       "prioritySignals": [],
+      "review": null
+    },
+    {
+      "id": "control-1/modulo-19::Tema 2: Diseño de un atraso",
+      "track": "control-1",
+      "module": 19,
+      "topic": "Tema 2: Diseño de un atraso",
+      "status": "pending",
+      "semanticHeadings": [
+        "Ejemplo 1 · Atraso: diez veces menos error · *Experto*",
+        "Más ejemplos resueltos",
+        "Ejemplo 2 · Atraso para subir Kv de 2 a 20 · *Básico*",
+        "Ejemplo 3 · Atraso para subir Kv de 5 a 50 · *Intermedio*",
+        "Ejemplo 4 · Atraso para subir Kv de 1 a 8 · *Intermedio*",
+        "Ejemplo 5 · Atraso para subir Kv de 10 a 40 · *Básico*"
+      ],
+      "prioritySignals": [],
+      "review": null
+    },
+    {
+      "id": "control-1/modulo-19::Tema 3: Implementación con op-amps",
+      "track": "control-1",
+      "module": 19,
+      "topic": "Tema 3: Implementación con op-amps",
+      "status": "pending",
+      "semanticHeadings": [
+        "Más ejemplos resueltos",
+        "Ejemplo 1 · Compensador con op-amps: R1 = 100 kΩ, C1 = 1 µF, R2 = 10 kΩ, C2 = 1 µF · *Intermedio*",
+        "Ejemplo 2 · Compensador con op-amps: R1 = 10 kΩ, C1 = 10 µF, R2 = 1 kΩ, C2 = 10 µF · *Intermedio*",
+        "Ejemplo 3 · Compensador con op-amps: R1 = 1 kΩ, C1 = 1 µF, R2 = 10 kΩ, C2 = 1 µF · *Intermedio*",
+        "Ejemplo 4 · Compensador con op-amps: R1 = 220 kΩ, C1 = 1 µF, R2 = 22 kΩ, C2 = 0,47 µF · *Avanzado*",
+        "Ejemplo 5 · Compensador con op-amps: R1 = 47 kΩ, C1 = 2,2 µF, R2 = 4,7 kΩ, C2 = 2,2 µF · *Intermedio*"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos"
+      ],
       "review": null
     },
     {
@@ -5719,39 +6173,71 @@
       "status": "pending",
       "semanticHeadings": [
         "Ejemplo 1 · Calcular una transformada con la definición · *Básico*",
-        "La tabla"
+        "Más ejemplos resueltos",
+        "Ejemplo 2 · \\(\\mathcal{L}\\{1\\}\\) con la definición · *Básico*",
+        "Ejemplo 3 · \\(\\mathcal{L}\\{e^{- 3 t}\\}\\) con la definición · *Básico*",
+        "Ejemplo 4 · \\(\\mathcal{L}\\{t\\}\\) con la definición · *Intermedio*",
+        "Ejemplo 5 · \\(\\mathcal{L}\\{5 e^{2 t}\\}\\) con la definición · *Intermedio*"
       ],
       "prioritySignals": [],
       "review": null
     },
     {
-      "id": "control-1/modulo-2::Tema 2: Propiedades",
+      "id": "control-1/modulo-2::Tema 2: La tabla",
       "track": "control-1",
       "module": 2,
-      "topic": "Tema 2: Propiedades",
+      "topic": "Tema 2: La tabla",
       "status": "pending",
       "semanticHeadings": [
-        "Ejemplo 2 · Una constante · *Básico*",
-        "Ejemplo 3 · Suma de términos · *Básico*",
-        "Ejemplo 4 · Un seno · *Básico*",
-        "Ejemplo 5 · Seno multiplicado por exponencial · *Intermedio*",
-        "Ejemplo 6 · Coseno amortiguado con constante · *Intermedio*",
-        "Ejemplo 7 · Retardo · *Intermedio*",
-        "Ejemplo 8 · Multiplicar por t · *Intermedio*"
+        "Más ejemplos resueltos",
+        "Ejemplo 1 · Transformada de \\(3 e^{- 2 t}\\) con la tabla · *Básico*",
+        "Ejemplo 2 · Transformada de \\(4 \\sin{\\left(5 t \\right)}\\) con la tabla · *Básico*",
+        "Ejemplo 3 · Transformada de \\(2 \\cos{\\left(3 t \\right)}\\) con la tabla · *Básico*",
+        "Ejemplo 4 · Transformada de \\(t^{2}\\) con la tabla · *Básico*",
+        "Ejemplo 5 · Transformada de \\(- 2 t + 7 + e^{- t}\\) con la tabla · *Intermedio*",
+        "Ejemplo 6 · Transformada de \\(t e^{- 4 t}\\) con la tabla · *Intermedio*",
+        "Ejemplo 7 · Transformada de \\(e^{- t} \\cos{\\left(2 t \\right)}\\) con la tabla · *Intermedio*"
       ],
       "prioritySignals": [],
       "review": null
     },
     {
-      "id": "control-1/modulo-2::Tema 3: Valor final y valor inicial",
+      "id": "control-1/modulo-2::Tema 3: Propiedades",
       "track": "control-1",
       "module": 2,
-      "topic": "Tema 3: Valor final y valor inicial",
+      "topic": "Tema 3: Propiedades",
       "status": "pending",
       "semanticHeadings": [
-        "Ejemplo 9 · Valor final de primer orden · *Básico*",
-        "Ejemplo 10 · Valor final e inicial de segundo orden · *Nivel parcial*",
-        "Ejemplo 11 · Cuándo no se puede usar · *Intermedio*"
+        "Ejemplo 1 · Una constante · *Básico*",
+        "Ejemplo 2 · Suma de términos · *Básico*",
+        "Ejemplo 3 · Un seno · *Básico*",
+        "Ejemplo 4 · Seno multiplicado por exponencial · *Intermedio*",
+        "Ejemplo 5 · Coseno amortiguado con constante · *Intermedio*",
+        "Ejemplo 6 · Retardo · *Intermedio*",
+        "Ejemplo 7 · Multiplicar por t · *Intermedio*",
+        "Más ejemplos resueltos",
+        "Ejemplo 8 · Transformar una EDO con condiciones iniciales · *Intermedio*",
+        "Ejemplo 9 · Desplazamiento en s · *Intermedio*",
+        "Ejemplo 10 · Integral de una señal · *Básico*"
+      ],
+      "prioritySignals": [],
+      "review": null
+    },
+    {
+      "id": "control-1/modulo-2::Tema 4: Valor final y valor inicial",
+      "track": "control-1",
+      "module": 2,
+      "topic": "Tema 4: Valor final y valor inicial",
+      "status": "pending",
+      "semanticHeadings": [
+        "Ejemplo 1 · Valor final de primer orden · *Básico*",
+        "Ejemplo 2 · Valor final e inicial de segundo orden · *Nivel parcial*",
+        "Ejemplo 3 · Cuándo no se puede usar · *Intermedio*",
+        "Más ejemplos resueltos",
+        "Ejemplo 4 · Valor final de \\(\\frac{10}{s \\left(s + 5\\right)}\\) · *Básico*",
+        "Ejemplo 5 · Valor final de \\(\\frac{2 s + 8}{s \\left(s^{2} + 4 s + 8\\right)}\\) · *Intermedio*",
+        "Ejemplo 6 · Valor final de \\(\\frac{3}{s \\left(s - 1\\right)}\\) · *Intermedio*",
+        "Ejemplo 7 · Valor final de \\(\\frac{5}{s \\left(s^{2} + 9\\right)}\\) · *Avanzado*"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
@@ -5765,11 +6251,72 @@
       "topic": "Tema 1: Qué es la respuesta en frecuencia",
       "status": "pending",
       "semanticHeadings": [
-        "Decibeles y la escala logarítmica",
-        "Los bloques básicos",
-        "Márgenes de estabilidad",
+        "Más ejemplos resueltos",
+        "Ejemplo 1 · Salida de \\(\\frac{10}{s + 10}\\) ante \\(1\\sin(10t)\\) · *Básico*",
+        "Ejemplo 2 · Salida de \\(\\frac{5}{s + 1}\\) ante \\(2\\sin(t)\\) · *Básico*",
+        "Ejemplo 3 · Salida de \\(\\frac{100}{s^{2} + 2 s + 100}\\) ante \\(1\\sin(10t)\\) · *Intermedio*",
+        "Ejemplo 4 · Salida de \\(\\frac{1}{s + 2}\\) ante \\(4\\sin(2t)\\) · *Básico*",
+        "Ejemplo 5 · Salida de \\(\\frac{50}{\\left(s + 1\\right) \\left(s + 10\\right)}\\) ante \\(1\\sin(5t)\\) · *Intermedio*"
+      ],
+      "prioritySignals": [],
+      "review": null
+    },
+    {
+      "id": "control-1/modulo-20::Tema 2: Decibeles y la escala logarítmica",
+      "track": "control-1",
+      "module": 20,
+      "topic": "Tema 2: Decibeles y la escala logarítmica",
+      "status": "pending",
+      "semanticHeadings": [
+        "Más ejemplos resueltos",
+        "Ejemplo 1 · Pasar 10 a decibeles · *Básico*",
+        "Ejemplo 2 · Pasar 100 a decibeles · *Básico*",
+        "Ejemplo 3 · Pasar 0,1 a decibeles · *Básico*",
+        "Ejemplo 4 · Pasar 2 a decibeles · *Básico*",
+        "Ejemplo 5 · Pasar 0,5 a decibeles · *Básico*",
+        "Ejemplo 6 · Pasar 50 a decibeles · *Intermedio*",
+        "Ejemplo 7 · De -6 dB a magnitud · *Básico*",
+        "Ejemplo 8 · De 34 dB a magnitud · *Intermedio*",
+        "Ejemplo 9 · Ganancia total de dos bloques en serie · *Intermedio*",
+        "Ejemplo 10 · Leer una pendiente de −40 dB/década · *Intermedio*"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos"
+      ],
+      "review": null
+    },
+    {
+      "id": "control-1/modulo-20::Tema 3: Los bloques básicos",
+      "track": "control-1",
+      "module": 20,
+      "topic": "Tema 3: Los bloques básicos",
+      "status": "pending",
+      "semanticHeadings": [
+        "Más ejemplos resueltos",
+        "Ejemplo 1 · Bode asintótico de Constante \\(K = 20\\) · *Básico*",
+        "Ejemplo 2 · Bode asintótico de Integrador \\(1/s\\) · *Básico*",
+        "Ejemplo 3 · Bode asintótico de Polo simple \\(\\dfrac{1}{s/5 + 1}\\) · *Básico*",
+        "Ejemplo 4 · Bode asintótico de Cero simple \\(s/2 + 1\\) · *Básico*",
+        "Ejemplo 5 · Bode asintótico de Polos complejos \\(\\dfrac{100}{s^2 + 4s + 100}\\) · *Intermedio*",
+        "Ejemplo 6 · Bode asintótico de Producto \\(\\dfrac{10}{s(s/10 + 1)}\\) · *Intermedio*"
+      ],
+      "prioritySignals": [],
+      "review": null
+    },
+    {
+      "id": "control-1/modulo-20::Tema 4: Márgenes de estabilidad",
+      "track": "control-1",
+      "module": 20,
+      "topic": "Tema 4: Márgenes de estabilidad",
+      "status": "pending",
+      "semanticHeadings": [
         "Ejemplo 1 · Un polo simple · *Básico*",
-        "Ejemplo 2 · Bode y margen de fase · *Experto*"
+        "Ejemplo 2 · Bode y margen de fase · *Experto*",
+        "Más ejemplos resueltos",
+        "Ejemplo 3 · Márgenes de \\(\\frac{10}{s^{3} + 3 s^{2} + 2 s}\\) · *Intermedio*",
+        "Ejemplo 4 · Márgenes de \\(\\frac{40}{s^{3} + 6 s^{2} + 8 s}\\) · *Intermedio*",
+        "Ejemplo 5 · Márgenes de \\(\\frac{5}{s^{3} + 3 s^{2} + 3 s + 1}\\) · *Intermedio*",
+        "Ejemplo 6 · Márgenes de \\(\\frac{100}{s^{3} + 15 s^{2} + 50 s}\\) · *Avanzado*"
       ],
       "prioritySignals": [],
       "review": null
@@ -5822,7 +6369,12 @@
       "semanticHeadings": [
         "Ejemplo 1 · Dos factores, numerador constante · *Básico*",
         "Ejemplo 2 · Numerador con s · *Básico*",
-        "Ejemplo 3 · Tres factores · *Intermedio*"
+        "Ejemplo 3 · Tres factores · *Intermedio*",
+        "Más ejemplos resueltos",
+        "Ejemplo 4 · Polos reales distintos: \\(\\frac{10}{\\left(s + 1\\right) \\left(s + 4\\right)}\\) · *Básico*",
+        "Ejemplo 5 · Polos reales distintos: \\(\\frac{s + 5}{s \\left(s + 2\\right) \\left(s + 3\\right)}\\) · *Intermedio*",
+        "Ejemplo 6 · Polos reales distintos: \\(\\frac{4}{s^{2} + 5 s + 4}\\) · *Básico*",
+        "Ejemplo 7 · Polos reales distintos: \\(\\frac{2 s + 1}{s \\left(s + 1\\right)}\\) · *Básico*"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
@@ -5836,16 +6388,56 @@
       "topic": "Tema 2: Caso 2: polos repetidos",
       "status": "pending",
       "semanticHeadings": [
-        "Ejemplo 4 · Polo repetido · *Intermedio*",
-        "Caso 3: polos complejos (completar el cuadrado)",
-        "Ejemplo 5 · Seno puro · *Básico*",
-        "Ejemplo 6 · Seno amortiguado (completar el cuadrado) · *Básico*",
-        "Ejemplo 7 · Seno y coseno juntos · *Intermedio*",
-        "Ejemplo 8 · Escalón en un sistema de segundo orden · *Nivel parcial*"
+        "Ejemplo 1 · Polo repetido · *Intermedio*",
+        "Más ejemplos resueltos",
+        "Ejemplo 2 · Polo repetido: \\(\\frac{1}{s \\left(s + 1\\right)^{2}}\\) · *Intermedio*",
+        "Ejemplo 3 · Polo repetido: \\(\\frac{s + 3}{\\left(s + 1\\right)^{2}}\\) · *Básico*",
+        "Ejemplo 4 · Polo repetido: \\(\\frac{4}{s^{2} \\left(s + 2\\right)}\\) · *Intermedio*",
+        "Ejemplo 5 · Polo repetido: \\(\\frac{9}{s \\left(s + 3\\right)^{2}}\\) · *Intermedio*",
+        "Ejemplo 6 · Polo repetido: \\(\\frac{2}{\\left(s + 2\\right)^{3}}\\) · *Básico*"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
       ],
+      "review": null
+    },
+    {
+      "id": "control-1/modulo-3::Tema 3: Caso 3: polos complejos (completar el cuadrado)",
+      "track": "control-1",
+      "module": 3,
+      "topic": "Tema 3: Caso 3: polos complejos (completar el cuadrado)",
+      "status": "pending",
+      "semanticHeadings": [
+        "Ejemplo 1 · Seno puro · *Básico*",
+        "Ejemplo 2 · Seno amortiguado (completar el cuadrado) · *Básico*",
+        "Ejemplo 3 · Seno y coseno juntos · *Intermedio*",
+        "Ejemplo 4 · Escalón en un sistema de segundo orden · *Nivel parcial*",
+        "Más ejemplos resueltos",
+        "Ejemplo 5 · Polos complejos: \\(\\frac{5}{s^{2} + 2 s + 5}\\) · *Básico*",
+        "Ejemplo 6 · Polos complejos: \\(\\frac{s + 3}{s^{2} + 4 s + 13}\\) · *Intermedio*",
+        "Ejemplo 7 · Polos complejos: \\(\\frac{2 s + 1}{s^{2} + 6 s + 25}\\) · *Intermedio*",
+        "Ejemplo 8 · Escalón en un sistema con polos complejos · *Avanzado*"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos"
+      ],
+      "review": null
+    },
+    {
+      "id": "control-1/modulo-3::Tema 4: Resolver una ecuación diferencial completa",
+      "track": "control-1",
+      "module": 3,
+      "topic": "Tema 4: Resolver una ecuación diferencial completa",
+      "status": "pending",
+      "semanticHeadings": [
+        "Ejemplos resueltos",
+        "Ejemplo 1 · Resolver \\(y'+2y=4\\) · *Básico*",
+        "Ejemplo 2 · Resolver \\(y''+5y'+6y=6\\) · *Intermedio*",
+        "Ejemplo 3 · Resolver \\(y''+2y'+5y=0\\) · *Intermedio*",
+        "Ejemplo 4 · Resolver \\(y''+4y=8\\) · *Intermedio*",
+        "Ejemplo 5 · Resolver \\(y'+3y=e^{- t}\\) · *Avanzado*"
+      ],
+      "prioritySignals": [],
       "review": null
     },
     {
@@ -5859,7 +6451,13 @@
         "Ejemplo 2 · Con condición inicial · *Básico*",
         "Ejemplo 3 · Segundo orden · *Intermedio*",
         "Ejemplo 4 · Un sistema físico · *Intermedio*",
-        "Ejemplo 5 · Resolver completa · *Nivel parcial*"
+        "Ejemplo 5 · Resolver completa · *Nivel parcial*",
+        "Más ejemplos resueltos",
+        "Ejemplo 6 · De la ecuación a \\(G(s)\\) · *Básico*",
+        "Ejemplo 7 · De la ecuación a \\(G(s)\\) · *Intermedio*",
+        "Ejemplo 8 · De la ecuación a \\(G(s)\\) · *Intermedio*",
+        "Ejemplo 9 · De la ecuación a \\(G(s)\\) · *Intermedio*",
+        "Ejemplo 10 · Respuesta de \\(\\frac{4}{s + 2}\\) a un escalón unitario · *Intermedio*"
       ],
       "prioritySignals": [],
       "review": null
@@ -5871,26 +6469,53 @@
       "topic": "Tema 1: ¿Qué es un sistema de control?",
       "status": "pending",
       "semanticHeadings": [
-        "Los elementos",
-        "Cinco sistemas listos para el punto 1",
-        "Ejemplo 1 · Describir un sistema (como en el punto 1) · *Básico*"
+        "Más ejemplos resueltos",
+        "Ejemplo 1 · ¿Lazo abierto o cerrado? Tostadora con temporizador · *Básico*",
+        "Ejemplo 2 · ¿Lazo abierto o cerrado? Termostato de una nevera · *Básico*",
+        "Ejemplo 3 · ¿Lazo abierto o cerrado? Control de crucero de un carro · *Básico*",
+        "Ejemplo 4 · ¿Lazo abierto o cerrado? Semáforo de tiempo fijo · *Básico*",
+        "Ejemplo 5 · ¿Lazo abierto o cerrado? Riego por goteo con sensor de humedad · *Básico*",
+        "Ejemplo 6 · ¿Lazo abierto o cerrado? Lavadora que llena el tambor por tiempo · *Básico*"
       ],
       "prioritySignals": [],
       "review": null
     },
     {
-      "id": "control-1/modulo-5::Tema 2: Álgebra de bloques",
+      "id": "control-1/modulo-5::Tema 2: Los elementos",
       "track": "control-1",
       "module": 5,
-      "topic": "Tema 2: Álgebra de bloques",
+      "topic": "Tema 2: Los elementos",
       "status": "pending",
       "semanticHeadings": [
-        "Ejemplo 2 · Serie · *Básico*",
-        "Ejemplo 3 · Paralelo · *Básico*",
-        "Ejemplo 4 · Realimentación unitaria · *Básico*",
-        "Ejemplo 5 · Lazo con ganancia K · *Intermedio*",
-        "Ejemplo 6 · Sensor con dinámica · *Intermedio*",
-        "Ejemplo 7 · Lazo dentro de otro lazo · *Nivel parcial*"
+        "Cinco sistemas listos para el punto 1",
+        "Ejemplo 1 · Describir un sistema (como en el punto 1) · *Básico*",
+        "Más ejemplos resueltos",
+        "Ejemplo 2 · Elementos del lazo: horno eléctrico de panadería · *Básico*",
+        "Ejemplo 3 · Elementos del lazo: nivel de un tanque de agua · *Básico*",
+        "Ejemplo 4 · Elementos del lazo: velocidad de un motor dc · *Básico*",
+        "Ejemplo 5 · Elementos del lazo: posición de un brazo robótico · *Básico*",
+        "Ejemplo 6 · Elementos del lazo: iluminación automática · *Básico*"
+      ],
+      "prioritySignals": [],
+      "review": null
+    },
+    {
+      "id": "control-1/modulo-5::Tema 3: Álgebra de bloques",
+      "track": "control-1",
+      "module": 5,
+      "topic": "Tema 3: Álgebra de bloques",
+      "status": "pending",
+      "semanticHeadings": [
+        "Ejemplo 1 · Serie · *Básico*",
+        "Ejemplo 2 · Paralelo · *Básico*",
+        "Ejemplo 3 · Realimentación unitaria · *Básico*",
+        "Ejemplo 4 · Lazo con ganancia K · *Intermedio*",
+        "Ejemplo 5 · Sensor con dinámica · *Intermedio*",
+        "Ejemplo 6 · Lazo dentro de otro lazo · *Nivel parcial*",
+        "Más ejemplos resueltos",
+        "Ejemplo 7 · Lazo con \\(G = \\frac{10}{s + 1}\\) y \\(H = 1\\) · *Básico*",
+        "Ejemplo 8 · Lazo con \\(G = \\frac{5}{s \\left(s + 2\\right)}\\) y \\(H = 2\\) · *Intermedio*",
+        "Ejemplo 9 · Lazo con \\(G = \\frac{4}{s + 3}\\) y \\(H = \\frac{1}{s + 1}\\) · *Intermedio*"
       ],
       "prioritySignals": [],
       "review": null
@@ -5903,15 +6528,67 @@
       "status": "pending",
       "semanticHeadings": [
         "Ejemplo 1 · Lazos entrelazados por reducción · *Intermedio*",
-        "Grafos de flujo de señal",
-        "Regla de Mason",
-        "Ejemplo 2 · El mismo sistema con Mason · *Intermedio*",
-        "Ejemplo 3 · Lazos que no se tocan · *Nivel parcial*",
-        "Ejemplo 4 · Dos trayectorias · *Nivel parcial*",
-        "Referencia y perturbación juntas",
-        "Ejemplo 5 · Referencia y perturbación · *Nivel parcial*"
+        "Más ejemplos resueltos",
+        "Ejemplo 2 · Mover un punto de suma hacia la izquierda · *Intermedio*",
+        "Ejemplo 3 · Mover un punto de toma hacia adelante · *Intermedio*",
+        "Ejemplo 4 · Mover un sumador hacia la derecha · *Intermedio*",
+        "Ejemplo 5 · Lazo menor dentro de un lazo mayor · *Intermedio*"
       ],
       "prioritySignals": [],
+      "review": null
+    },
+    {
+      "id": "control-1/modulo-6::Tema 2: Grafos de flujo de señal",
+      "track": "control-1",
+      "module": 6,
+      "topic": "Tema 2: Grafos de flujo de señal",
+      "status": "pending",
+      "semanticHeadings": [
+        "Más ejemplos resueltos",
+        "Ejemplo 1 · Dibujar el grafo: \\(x_2 = 3x_1 - x_3\\), \\(x_3 = 2x_2\\) · *Intermedio*",
+        "Ejemplo 2 · Dibujar el grafo: Lazo \\(G\\) con realimentación \\(H\\) · *Intermedio*",
+        "Ejemplo 3 · Dibujar el grafo: Dos bloques en serie con realimentación de cada uno · *Intermedio*",
+        "Ejemplo 4 · Dibujar el grafo: Entrada con perturbación · *Intermedio*",
+        "Ejemplo 5 · Dibujar el grafo: Ecuaciones de un circuito RC en cascada · *Intermedio*"
+      ],
+      "prioritySignals": [],
+      "review": null
+    },
+    {
+      "id": "control-1/modulo-6::Tema 3: Regla de Mason",
+      "track": "control-1",
+      "module": 6,
+      "topic": "Tema 3: Regla de Mason",
+      "status": "pending",
+      "semanticHeadings": [
+        "Ejemplo 1 · El mismo sistema con Mason · *Intermedio*",
+        "Ejemplo 2 · Lazos que no se tocan · *Nivel parcial*",
+        "Ejemplo 3 · Dos trayectorias · *Nivel parcial*",
+        "Más ejemplos resueltos",
+        "Ejemplo 4 · Mason con dos lazos que se tocan · *Intermedio*",
+        "Ejemplo 5 · Mason con dos lazos que no se tocan · *Avanzado*",
+        "Ejemplo 6 · Mason con dos caminos directos · *Avanzado*"
+      ],
+      "prioritySignals": [],
+      "review": null
+    },
+    {
+      "id": "control-1/modulo-6::Tema 4: Referencia y perturbación juntas",
+      "track": "control-1",
+      "module": 6,
+      "topic": "Tema 4: Referencia y perturbación juntas",
+      "status": "pending",
+      "semanticHeadings": [
+        "Ejemplo 1 · Referencia y perturbación · *Nivel parcial*",
+        "Más ejemplos resueltos",
+        "Ejemplo 2 · Referencia y perturbación con \\(C = 10\\), \\(P = \\frac{1}{s + 1}\\) · *Básico*",
+        "Ejemplo 3 · Referencia y perturbación con \\(C = 5\\), \\(P = \\frac{2}{s \\left(s + 4\\right)}\\) · *Intermedio*",
+        "Ejemplo 4 · Referencia y perturbación con \\(C = 2 + \\frac{1}{s}\\), \\(P = \\frac{1}{s + 2}\\) · *Intermedio*",
+        "Ejemplo 5 · Referencia y perturbación con \\(C = 20\\), \\(P = \\frac{1}{s + 5}\\) · *Básico*"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos"
+      ],
       "review": null
     },
     {
@@ -5922,26 +6599,52 @@
       "status": "pending",
       "semanticHeadings": [
         "Ejemplo 1 · Combinar impedancias · *Básico*",
-        "Circuitos pasivos: divisor de voltaje",
-        "Ejemplo 2 · RC pasa-bajas · *Básico*",
-        "Ejemplo 3 · RC pasa-altas · *Básico*",
-        "Ejemplo 4 · RLC serie · *Intermedio*"
+        "Más ejemplos resueltos",
+        "Ejemplo 2 · Impedancia de una resistencia de 2 kΩ en serie con una bobina de 0,5 H · *Básico*",
+        "Ejemplo 3 · Impedancia de una resistencia de 1 kΩ en paralelo con un capacitor de 1 µF · *Intermedio*",
+        "Ejemplo 4 · Impedancia de un capacitor de 10 µF en serie con una resistencia de 100 Ω · *Básico*",
+        "Ejemplo 5 · Impedancia de R, L y C en serie (R = 10 Ω, L = 0,1 H, C = 1 mF) · *Intermedio*",
+        "Ejemplo 6 · Impedancia de una bobina de 1 H en paralelo con un capacitor de 0,25 F · *Avanzado*"
       ],
       "prioritySignals": [],
       "review": null
     },
     {
-      "id": "control-1/modulo-7::Tema 2: El op-amp inversor",
+      "id": "control-1/modulo-7::Tema 2: Circuitos pasivos: divisor de voltaje",
       "track": "control-1",
       "module": 7,
-      "topic": "Tema 2: El op-amp inversor",
+      "topic": "Tema 2: Circuitos pasivos: divisor de voltaje",
+      "status": "pending",
+      "semanticHeadings": [
+        "Ejemplo 1 · RC pasa-bajas · *Básico*",
+        "Ejemplo 2 · RC pasa-altas · *Básico*",
+        "Ejemplo 3 · RLC serie · *Intermedio*",
+        "Más ejemplos resueltos",
+        "Ejemplo 4 · Divisor de voltaje: RC pasa bajas (R = 10 kΩ, C = 10 µF) · *Básico*",
+        "Ejemplo 5 · Divisor de voltaje: RC pasa altas (R = 1 kΩ, C = 1 mF) · *Intermedio*",
+        "Ejemplo 6 · Divisor de voltaje: RLC con salida en el capacitor (R = 2 Ω, L = 1 H, C = 0,5 F) · *Intermedio*"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos"
+      ],
+      "review": null
+    },
+    {
+      "id": "control-1/modulo-7::Tema 3: El op-amp inversor",
+      "track": "control-1",
+      "module": 7,
+      "topic": "Tema 3: El op-amp inversor",
       "status": "pending",
       "semanticHeadings": [
         "Configuraciones típicas",
-        "Ejemplo 5 · Proporcional e integrador · *Básico*",
-        "Ejemplo 6 · PI · *Intermedio*",
-        "Ejemplo 7 · Paralelo a la entrada · *Intermedio*",
-        "Ejemplo 8 · Dos etapas en cascada · *Nivel parcial*"
+        "Ejemplo 1 · Proporcional e integrador · *Básico*",
+        "Ejemplo 2 · PI · *Intermedio*",
+        "Ejemplo 3 · Paralelo a la entrada · *Intermedio*",
+        "Ejemplo 4 · Dos etapas en cascada · *Nivel parcial*",
+        "Más ejemplos resueltos",
+        "Ejemplo 5 · Controlador PI con op-amp inversor · *Intermedio*",
+        "Ejemplo 6 · Controlador PD con op-amp inversor · *Intermedio*",
+        "Ejemplo 7 · Controlador Integrador con op-amp inversor · *Básico*"
       ],
       "prioritySignals": [],
       "review": null
@@ -5954,12 +6657,79 @@
       "status": "pending",
       "semanticHeadings": [
         "Ejemplo 1 · Suspensión · *Intermedio*",
-        "Mecánico de rotación",
-        "Motor DC (electromecánico)",
-        "Ejemplo 2 · Motor DC con valores · *Nivel parcial*",
-        "Sistemas térmicos e hidráulicos",
-        "Ejemplo 3 · Tanque · *Intermedio*",
-        "Analogías"
+        "Más ejemplos resueltos",
+        "Ejemplo 2 · Masa-resorte-amortiguador: M = 1, B = 4, K = 20 · *Básico*",
+        "Ejemplo 3 · Masa-resorte-amortiguador: M = 2, B = 8, K = 50 · *Intermedio*",
+        "Ejemplo 4 · Masa-resorte-amortiguador: M = 0,5, B = 1, K = 8 · *Intermedio*",
+        "Ejemplo 5 · Dos masas acopladas · *Avanzado*"
+      ],
+      "prioritySignals": [],
+      "review": null
+    },
+    {
+      "id": "control-1/modulo-8::Tema 2: Mecánico de rotación",
+      "track": "control-1",
+      "module": 8,
+      "topic": "Tema 2: Mecánico de rotación",
+      "status": "pending",
+      "semanticHeadings": [
+        "Más ejemplos resueltos",
+        "Ejemplo 1 · Eje con J = 0,1 kg·m², B = 1 N·m·s, K = 0 N·m/rad · *Básico*",
+        "Ejemplo 2 · Eje con J = 0,5 kg·m², B = 2 N·m·s, K = 10 N·m/rad · *Intermedio*",
+        "Ejemplo 3 · Eje con J = 1 kg·m², B = 3 N·m·s, K = 0 N·m/rad · *Básico*",
+        "Ejemplo 4 · Eje con J = 2 kg·m², B = 1 N·m·s, K = 8 N·m/rad · *Intermedio*",
+        "Ejemplo 5 · Engranajes · *Intermedio*"
+      ],
+      "prioritySignals": [],
+      "review": null
+    },
+    {
+      "id": "control-1/modulo-8::Tema 3: Motor DC (electromecánico)",
+      "track": "control-1",
+      "module": 8,
+      "topic": "Tema 3: Motor DC (electromecánico)",
+      "status": "pending",
+      "semanticHeadings": [
+        "Ejemplo 1 · Motor DC con valores · *Nivel parcial*",
+        "Más ejemplos resueltos",
+        "Ejemplo 2 · Motor DC (inductancia despreciable): Ra = 1 Ω, K = 0,1, J = 0,01, B = 0,001 · *Intermedio*",
+        "Ejemplo 3 · Motor DC (inductancia despreciable): Ra = 2 Ω, K = 0,5, J = 0,05, B = 0,01 · *Intermedio*",
+        "Ejemplo 4 · Motor DC (inductancia despreciable): Ra = 0,5 Ω, K = 0,05, J = 0,001, B = 0 · *Avanzado*",
+        "Ejemplo 5 · Motor DC (inductancia despreciable): Ra = 4 Ω, K = 0,2, J = 0,02, B = 0,005 · *Intermedio*"
+      ],
+      "prioritySignals": [],
+      "review": null
+    },
+    {
+      "id": "control-1/modulo-8::Tema 4: Sistemas térmicos e hidráulicos",
+      "track": "control-1",
+      "module": 8,
+      "topic": "Tema 4: Sistemas térmicos e hidráulicos",
+      "status": "pending",
+      "semanticHeadings": [
+        "Ejemplo 1 · Tanque · *Intermedio*",
+        "Más ejemplos resueltos",
+        "Ejemplo 2 · Horno con resistencia térmica · *Básico*",
+        "Ejemplo 3 · Tanque con salida libre (linealizado) · *Intermedio*",
+        "Ejemplo 4 · Dos tanques en cascada (no interactuantes) · *Avanzado*",
+        "Ejemplo 5 · Termómetro como sistema de primer orden · *Básico*"
+      ],
+      "prioritySignals": [],
+      "review": null
+    },
+    {
+      "id": "control-1/modulo-8::Tema 5: Analogías",
+      "track": "control-1",
+      "module": 8,
+      "topic": "Tema 5: Analogías",
+      "status": "pending",
+      "semanticHeadings": [
+        "Más ejemplos resueltos",
+        "Ejemplo 1 · Analogía fuerza–voltaje: Masa \\(M\\) · *Básico*",
+        "Ejemplo 2 · Analogía fuerza–voltaje: Amortiguador \\(B\\) · *Básico*",
+        "Ejemplo 3 · Analogía fuerza–voltaje: Resorte \\(K\\) · *Básico*",
+        "Ejemplo 4 · Del RLC serie a la masa-resorte · *Intermedio*",
+        "Ejemplo 5 · Elegir el análogo eléctrico de un eje · *Intermedio*"
       ],
       "prioritySignals": [],
       "review": null
@@ -5972,7 +6742,12 @@
       "status": "pending",
       "semanticHeadings": [
         "Ejemplo 1 · Tanque con salida libre · *Experto*",
-        "Ejemplo 2 · Péndulo · *Experto*"
+        "Ejemplo 2 · Péndulo · *Experto*",
+        "Más ejemplos resueltos",
+        "Ejemplo 3 · Linealizar \\(\\sin{\\left(x \\right)}\\) en \\(0\\) · *Básico*",
+        "Ejemplo 4 · Linealizar \\(\\sin{\\left(x \\right)}\\) en \\(\\pi\\) · *Intermedio*",
+        "Ejemplo 5 · Linealizar \\(\\sqrt{x}\\) en \\(4\\) · *Intermedio*",
+        "Ejemplo 6 · Linealizar \\(x^{2}\\) en \\(3\\) · *Básico*"
       ],
       "prioritySignals": [],
       "review": null

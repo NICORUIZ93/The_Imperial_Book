@@ -69,3 +69,64 @@ Todo lo que ves en este curso supone sistemas lineales. Los reales casi nunca lo
    **¿Por qué?** Oscila sin amortiguamiento: no hay fricción en el modelo.
 
 **Resultado:** Oscilador con \(\omega_n = \sqrt{g/L}\). Si se linealiza en \(\theta_0 = \pi\) (invertido), aparece un polo positivo: inestable
+
+#### Más ejemplos resueltos
+
+Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
+
+#### Ejemplo 3 · Linealizar \(\sin{\left(x \right)}\) en \(0\) · *Básico*
+
+**Enunciado.** Linealiza \(\sin{\left(x \right)}\) alrededor de \(x_0 = 0\) (péndulo cerca de la vertical inferior).
+
+1. Valor en el punto: \(f(x_0) = 0\).
+
+   **¿Por qué?** La aproximación lineal pasa por el punto de operación.
+
+2. Pendiente: \(f'(x_0) = 1\).
+
+   **¿Por qué?** La recta tangente es la mejor aproximación lineal cerca del punto (Taylor de primer orden).
+
+**Resultado.** \(f(x) \approx 0 + 1\,\delta x\), con \(\delta x = x - x_0\) pequeño.
+
+#### Ejemplo 4 · Linealizar \(\sin{\left(x \right)}\) en \(\pi\) · *Intermedio*
+
+**Enunciado.** Linealiza \(\sin{\left(x \right)}\) alrededor de \(x_0 = \pi\) (péndulo invertido (cerca de la vertical superior)).
+
+1. Valor en el punto: \(f(x_0) = 0\).
+
+   **¿Por qué?** La aproximación lineal pasa por el punto de operación.
+
+2. Pendiente: \(f'(x_0) = -1\).
+
+   **¿Por qué?** La recta tangente es la mejor aproximación lineal cerca del punto (Taylor de primer orden).
+
+**Resultado.** \(f(x) \approx 0 + -1\,\delta x\), con \(\delta x = x - x_0\) pequeño.
+
+#### Ejemplo 5 · Linealizar \(\sqrt{x}\) en \(4\) · *Intermedio*
+
+**Enunciado.** Linealiza \(\sqrt{x}\) alrededor de \(x_0 = 4\) (salida de un tanque \(q = k\sqrt{h}\) con \(h_0 = 4\)).
+
+1. Valor en el punto: \(f(x_0) = 2\).
+
+   **¿Por qué?** La aproximación lineal pasa por el punto de operación.
+
+2. Pendiente: \(f'(x_0) = \frac{1}{4}\).
+
+   **¿Por qué?** La recta tangente es la mejor aproximación lineal cerca del punto (Taylor de primer orden).
+
+**Resultado.** \(f(x) \approx 2 + \frac{1}{4}\,\delta x\), con \(\delta x = x - x_0\) pequeño.
+
+#### Ejemplo 6 · Linealizar \(x^{2}\) en \(3\) · *Básico*
+
+**Enunciado.** Linealiza \(x^{2}\) alrededor de \(x_0 = 3\) (potencia en una resistencia \(P = v^2/R\) con \(v_0 = 3\)).
+
+1. Valor en el punto: \(f(x_0) = 9\).
+
+   **¿Por qué?** La aproximación lineal pasa por el punto de operación.
+
+2. Pendiente: \(f'(x_0) = 6\).
+
+   **¿Por qué?** La recta tangente es la mejor aproximación lineal cerca del punto (Taylor de primer orden).
+
+**Resultado.** \(f(x) \approx 9 + 6\,\delta x\), con \(\delta x = x - x_0\) pequeño.
+

@@ -26,7 +26,99 @@ El sistema más simple: un tanque que se llena, un condensador que se carga o un
 1. Haz que el término independiente del denominador sea 1: divide arriba y abajo por él.
 2. Ejemplo: \(\dfrac{10}{s+5} = \dfrac{10/5}{s/5+1} = \dfrac{2}{0{,}2s+1}\). Entonces \(K=2\) y \(\tau=0{,}2\) s.
 
-#### Respuestas
+#### Más ejemplos resueltos
+
+Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
+
+#### Ejemplo 1 · Leer K y τ de \(\frac{5}{2 s + 1}\) · *Básico*
+
+**Enunciado.** Escribe \(G(s) = \frac{5}{2 s + 1}\) en la forma \(\dfrac{K}{\tau s + 1}\).
+
+1. Divide numerador y denominador por el término independiente del denominador (\(1\)).
+
+   **¿Por qué?** La forma estándar exige que el denominador termine en "+1"; así \(K\) y \(\tau\) se leen directamente.
+
+2. \(G(s) = \dfrac{5}{2s + 1}\).
+
+   **¿Por qué?** Es la misma función, solo reescrita.
+
+**Resultado.** \(K = 5\) (valor final ante un escalón unitario) y \(\tau = 2\,\text{s}\); \(t_s \approx 4\tau = 8\,\text{s}\); polo en \(s = -1/\tau = - \frac{1}{2}\).
+
+#### Ejemplo 2 · Leer K y τ de \(\frac{6}{2 s + 4}\) · *Básico*
+
+**Enunciado.** Escribe \(G(s) = \frac{6}{2 s + 4}\) en la forma \(\dfrac{K}{\tau s + 1}\).
+
+1. Divide numerador y denominador por el término independiente del denominador (\(2\)).
+
+   **¿Por qué?** La forma estándar exige que el denominador termine en "+1"; así \(K\) y \(\tau\) se leen directamente.
+
+2. \(G(s) = \dfrac{\frac{3}{2}}{\frac{1}{2}s + 1}\).
+
+   **¿Por qué?** Es la misma función, solo reescrita.
+
+**Resultado.** \(K = \frac{3}{2}\) (valor final ante un escalón unitario) y \(\tau = \frac{1}{2}\,\text{s}\); \(t_s \approx 4\tau = 2\,\text{s}\); polo en \(s = -1/\tau = -2\).
+
+#### Ejemplo 3 · Leer K y τ de \(\frac{10}{s + 5}\) · *Básico*
+
+**Enunciado.** Escribe \(G(s) = \frac{10}{s + 5}\) en la forma \(\dfrac{K}{\tau s + 1}\).
+
+1. Divide numerador y denominador por el término independiente del denominador (\(5\)).
+
+   **¿Por qué?** La forma estándar exige que el denominador termine en "+1"; así \(K\) y \(\tau\) se leen directamente.
+
+2. \(G(s) = \dfrac{2}{\frac{1}{5}s + 1}\).
+
+   **¿Por qué?** Es la misma función, solo reescrita.
+
+**Resultado.** \(K = 2\) (valor final ante un escalón unitario) y \(\tau = \frac{1}{5}\,\text{s}\); \(t_s \approx 4\tau = 0{,}8\,\text{s}\); polo en \(s = -1/\tau = -5\).
+
+#### Ejemplo 4 · Leer K y τ de \(\frac{3}{\frac{s}{2} + 3}\) · *Intermedio*
+
+**Enunciado.** Escribe \(G(s) = \frac{3}{\frac{s}{2} + 3}\) en la forma \(\dfrac{K}{\tau s + 1}\).
+
+1. Divide numerador y denominador por el término independiente del denominador (\(6\)).
+
+   **¿Por qué?** La forma estándar exige que el denominador termine en "+1"; así \(K\) y \(\tau\) se leen directamente.
+
+2. \(G(s) = \dfrac{1}{\frac{1}{6}s + 1}\).
+
+   **¿Por qué?** Es la misma función, solo reescrita.
+
+**Resultado.** \(K = 1\) (valor final ante un escalón unitario) y \(\tau = \frac{1}{6}\,\text{s}\); \(t_s \approx 4\tau = 0{,}667\,\text{s}\); polo en \(s = -1/\tau = -6\).
+
+#### Ejemplo 5 · Leer K y τ de \(\frac{8}{4 s + 2}\) · *Intermedio*
+
+**Enunciado.** Escribe \(G(s) = \frac{8}{4 s + 2}\) en la forma \(\dfrac{K}{\tau s + 1}\).
+
+1. Divide numerador y denominador por el término independiente del denominador (\(1\)).
+
+   **¿Por qué?** La forma estándar exige que el denominador termine en "+1"; así \(K\) y \(\tau\) se leen directamente.
+
+2. \(G(s) = \dfrac{4}{2s + 1}\).
+
+   **¿Por qué?** Es la misma función, solo reescrita.
+
+**Resultado.** \(K = 4\) (valor final ante un escalón unitario) y \(\tau = 2\,\text{s}\); \(t_s \approx 4\tau = 8\,\text{s}\); polo en \(s = -1/\tau = - \frac{1}{2}\).
+
+#### Ejemplo 6 · Leer K y τ de \(\frac{1}{s + \frac{1}{10}}\) · *Intermedio*
+
+**Enunciado.** Escribe \(G(s) = \frac{1}{s + \frac{1}{10}}\) en la forma \(\dfrac{K}{\tau s + 1}\).
+
+1. Divide numerador y denominador por el término independiente del denominador (\(1\)).
+
+   **¿Por qué?** La forma estándar exige que el denominador termine en "+1"; así \(K\) y \(\tau\) se leen directamente.
+
+2. \(G(s) = \dfrac{10}{10s + 1}\).
+
+   **¿Por qué?** Es la misma función, solo reescrita.
+
+**Resultado.** \(K = 10\) (valor final ante un escalón unitario) y \(\tau = 10\,\text{s}\); \(t_s \approx 4\tau = 40\,\text{s}\); polo en \(s = -1/\tau = - \frac{1}{10}\).
+
+### Tema 2: Respuestas
+
+**¿Por qué es importante?** Las respuestas al impulso, al escalón y a la rampa son las que se piden en los exámenes y las que se miden en el laboratorio.
+
+**Fuentes oficiales:** [Análisis de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemAnalysis).
 
 | Entrada | \(Y(s)\) | \(y(t)\) |
 |---|---|---|
@@ -142,7 +234,55 @@ El sistema más simple: un tanque que se llena, un condensador que se carga o un
 
 **Resultado:** La salida sigue a la rampa con 1 unidad de atraso (\(=\tau\))
 
-### Tema 2: Retardo o tiempo muerto
+#### Más ejemplos resueltos
+
+Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
+
+#### Ejemplo 5 · Respuesta de \(\frac{4}{2 s + 1}\) a un escalón de amplitud 3 · *Básico*
+
+**Enunciado.** Halla \(y(t)\) y descríbela.
+
+1. \(Y(s) = \frac{12}{s \left(2 s + 1\right)}\).
+
+   **¿Por qué?** Salida = función de transferencia × transformada de la entrada.
+
+2. Fracciones parciales: \(- \frac{24}{2 s + 1} + \frac{12}{s}\).
+
+   **¿Por qué?** Para invertir con la tabla.
+
+**Resultado.** \(y(t) = 12 - 12 e^{- \frac{t}{2}}\).
+
+#### Ejemplo 6 · Respuesta de \(\frac{5}{s + 5}\) a un impulso unitario · *Básico*
+
+**Enunciado.** Halla \(y(t)\) y descríbela.
+
+1. \(Y(s) = \frac{5}{s + 5}\).
+
+   **¿Por qué?** Salida = función de transferencia × transformada de la entrada.
+
+2. Fracciones parciales: \(\frac{5}{s + 5}\).
+
+   **¿Por qué?** Para invertir con la tabla.
+
+**Resultado.** \(y(t) = 5 e^{- 5 t}\).
+
+#### Ejemplo 7 · Respuesta de \(\frac{2}{s + 2}\) a un rampa unitaria · *Intermedio*
+
+**Enunciado.** Halla \(y(t)\) y descríbela.
+
+1. \(Y(s) = \frac{2}{s^{2} \left(s + 2\right)}\).
+
+   **¿Por qué?** Salida = función de transferencia × transformada de la entrada.
+
+2. Fracciones parciales: \(\frac{1}{2 \left(s + 2\right)} - \frac{1}{2 s} + \frac{1}{s^{2}}\).
+
+   **¿Por qué?** Para invertir con la tabla.
+
+**Resultado.** \(y(t) = t - \frac{1}{2} + \frac{e^{- 2 t}}{2}\).
+
+**Comprobación.** Para \(t\) grande \(y \approx t - 0{,}5\): sigue la rampa con un atraso constante igual a \(\tau = 0{,}5\) s.
+
+### Tema 3: Retardo o tiempo muerto
 
 **¿Por qué es importante?** El retardo aparece en procesos reales (bandas, tuberías, hornos) y en el punto 3 del Parcial 1.
 
@@ -156,7 +296,7 @@ Un factor \(e^{-Ts}\) significa que la misma respuesta empieza \(T\) segundos ta
 2. Cambia cada \(t\) por \((t-T)\).
 3. Multiplica por \(u(t-T)\): la salida es cero antes de \(T\).
 
-#### Ejemplo 5 · Escalón con retardo · *Intermedio*
+#### Ejemplo 1 · Escalón con retardo · *Intermedio*
 
 > **Qué cambia respecto al anterior:** Aparece un retardo.
 
@@ -172,7 +312,7 @@ Un factor \(e^{-Ts}\) significa que la misma respuesta empieza \(T\) segundos ta
 
 **Resultado:** \(y(t) = 2\left(1-e^{-(t-1{,}5)/4}\right)u(t-1{,}5)\)
 
-#### Ejemplo 6 · Impulso con retardo (como el Parcial 1) · *Nivel parcial*
+#### Ejemplo 2 · Impulso con retardo (como el Parcial 1) · *Nivel parcial*
 
 > **Qué cambia respecto al anterior:** Impulso en lugar de escalón.
 
@@ -192,7 +332,57 @@ Un factor \(e^{-Ts}\) significa que la misma respuesta empieza \(T\) segundos ta
 
 **Resultado:** Vale 0 hasta \(t = 2\) s, salta a 0,8 y decae
 
-#### Identificación desde una gráfica
+#### Más ejemplos resueltos
+
+Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
+
+#### Ejemplo 3 · Escalón en \(\dfrac{2e^{-1s}}{5s+1}\) · *Básico*
+
+**Enunciado.** Halla \(y(t)\) ante un escalón unitario y los tiempos característicos.
+
+1. Sin retardo: \(y_0(t) = 2(1 - e^{-t/5})\).
+
+   **¿Por qué?** Respuesta estándar de primer orden.
+
+2. El factor \(e^{-1s}\) desplaza la respuesta \(1\) s a la derecha.
+
+   **¿Por qué?** Propiedad del retardo: \(e^{-Ts}F(s) \to f(t-T)u(t-T)\).
+
+**Resultado.** \(y(t) = 2\left(1 - e^{-(t-1)/5}\right)u(t-1)\): no se mueve hasta \(t=1\), llega al 63 % en \(t = 6\) s y se establece en \(\approx 21\) s.
+
+#### Ejemplo 4 · Escalón en \(\dfrac{\frac{1}{2}e^{-3s}}{10s+1}\) · *Intermedio*
+
+**Enunciado.** Halla \(y(t)\) ante un escalón unitario y los tiempos característicos.
+
+1. Sin retardo: \(y_0(t) = \frac{1}{2}(1 - e^{-t/10})\).
+
+   **¿Por qué?** Respuesta estándar de primer orden.
+
+2. El factor \(e^{-3s}\) desplaza la respuesta \(3\) s a la derecha.
+
+   **¿Por qué?** Propiedad del retardo: \(e^{-Ts}F(s) \to f(t-T)u(t-T)\).
+
+**Resultado.** \(y(t) = \frac{1}{2}\left(1 - e^{-(t-3)/10}\right)u(t-3)\): no se mueve hasta \(t=3\), llega al 63 % en \(t = 13\) s y se establece en \(\approx 43\) s.
+
+#### Ejemplo 5 · Escalón en \(\dfrac{4e^{-\frac{1}{2}s}}{2s+1}\) · *Intermedio*
+
+**Enunciado.** Halla \(y(t)\) ante un escalón unitario y los tiempos característicos.
+
+1. Sin retardo: \(y_0(t) = 4(1 - e^{-t/2})\).
+
+   **¿Por qué?** Respuesta estándar de primer orden.
+
+2. El factor \(e^{-\frac{1}{2}s}\) desplaza la respuesta \(\frac{1}{2}\) s a la derecha.
+
+   **¿Por qué?** Propiedad del retardo: \(e^{-Ts}F(s) \to f(t-T)u(t-T)\).
+
+**Resultado.** \(y(t) = 4\left(1 - e^{-(t-\frac{1}{2})/2}\right)u(t-\frac{1}{2})\): no se mueve hasta \(t=\frac{1}{2}\), llega al 63 % en \(t = 2{,}5\) s y se establece en \(\approx 8{,}5\) s.
+
+### Tema 4: Identificación desde una gráfica
+
+**¿Por qué es importante?** Identificar \(K\), \(\tau\) y el retardo desde una curva es como se modela una planta real a partir de un experimento.
+
+**Fuentes oficiales:** [Análisis de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemAnalysis).
 
 **Procedimiento**
 
@@ -200,7 +390,7 @@ Un factor \(e^{-Ts}\) significa que la misma respuesta empieza \(T\) segundos ta
 2. Calcula el 63,2 % del valor final y busca en qué tiempo la curva llega ahí. Ese tiempo es \(\tau\), medido desde que empieza a subir.
 3. Si la curva tarda en arrancar, ese tiempo es el retardo \(T\).
 
-#### Ejemplo 7 · Identificar desde una gráfica · *Nivel parcial*
+#### Ejemplo 1 · Identificar desde una gráfica · *Nivel parcial*
 
 > **Qué cambia respecto al anterior:** Se hace el camino inverso: de la curva a \(G\).
 
@@ -227,7 +417,67 @@ Un factor \(e^{-Ts}\) significa que la misma respuesta empieza \(T\) segundos ta
 - Con retardo, olvidar el \(u(t-T)\): la salida no existe antes de \(T\).
 - Medir \(\tau\) desde \(t=0\) cuando la curva tiene retardo.
 
-#### Práctica
+#### Más ejemplos resueltos
+
+Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
+
+#### Ejemplo 2 · Identificar el modelo: valor final 10, 63 % en t = 4 s · *Básico*
+
+**Enunciado.** Ante un escalón unitario la salida llega a 10 y alcanza 6,32 en 4 s. Encuentra el modelo.
+
+1. Ganancia: \(K = \dfrac{y(\infty)}{\text{escalón}} = 10\).
+
+   **¿Por qué?** En régimen permanente \(G(0) = K\).
+
+2. 6,32 es el 63,2 % del final: es el punto de una constante de tiempo. Así \(\tau = 4\) s.
+
+   **¿Por qué?** En primer orden \(y(\tau) = K(1-e^{-1}) \approx 0{,}632K\).
+
+**Resultado.** \(G(s) = \dfrac{10}{4s+1}\).
+
+#### Ejemplo 3 · Identificar el modelo: valor final 2,5, 63 % en t = 12 s · *Básico*
+
+**Enunciado.** Ante un escalón unitario la salida llega a 2,5 y alcanza 1,58 en 12 s. Encuentra el modelo.
+
+1. Ganancia: \(K = \dfrac{y(\infty)}{\text{escalón}} = 2{,}5\).
+
+   **¿Por qué?** En régimen permanente \(G(0) = K\).
+
+2. 1,58 es el 63,2 % del final: es el punto de una constante de tiempo. Así \(\tau = 12\) s.
+
+   **¿Por qué?** En primer orden \(y(\tau) = K(1-e^{-1}) \approx 0{,}632K\).
+
+**Resultado.** \(G(s) = \dfrac{2{,}5}{12s+1}\).
+
+#### Ejemplo 4 · Identificar el modelo: valor final 50, 63 % en t = 0,8 s · *Intermedio*
+
+**Enunciado.** Ante un escalón unitario la salida llega a 50 y alcanza 31,6 en 0,8 s. Encuentra el modelo.
+
+1. Ganancia: \(K = \dfrac{y(\infty)}{\text{escalón}} = 50\).
+
+   **¿Por qué?** En régimen permanente \(G(0) = K\).
+
+2. 31,6 es el 63,2 % del final: es el punto de una constante de tiempo. Así \(\tau = 0{,}8\) s.
+
+   **¿Por qué?** En primer orden \(y(\tau) = K(1-e^{-1}) \approx 0{,}632K\).
+
+**Resultado.** \(G(s) = \dfrac{50}{0{,}8s+1}\).
+
+#### Ejemplo 5 · Identificar el modelo: valor final 3, 63 % en t = 9 s, retardo 2 s · *Intermedio*
+
+**Enunciado.** Ante un escalón unitario la salida llega a 3 y alcanza 1,9 en 9 s; no reacciona antes de 2 s. Encuentra el modelo.
+
+1. Ganancia: \(K = \dfrac{y(\infty)}{\text{escalón}} = 3\).
+
+   **¿Por qué?** En régimen permanente \(G(0) = K\).
+
+2. 1,9 es el 63,3 % del final: es el punto de una constante de tiempo. Se resta el retardo: \(\tau = 9-2 = 7\) s.
+
+   **¿Por qué?** En primer orden \(y(\tau) = K(1-e^{-1}) \approx 0{,}632K\).
+
+**Resultado.** \(G(s) = \dfrac{3e^{-2s}}{7s+1}\).
+
+#### Práctica para resolver sola o solo
 
 - **1.**Impulso y escalón de \(\dfrac{8}{4s+2}\).
   
@@ -260,3 +510,4 @@ Un factor \(e^{-Ts}\) significa que la misma respuesta empieza \(T\) segundos ta
   \(2e^{-(t-1)/3}u(t-1)\).
   
   </details>
+

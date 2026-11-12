@@ -29,7 +29,135 @@ Piénsalo como un punto en un plano: \(\sigma\) es la coordenada horizontal y \(
 
 *Cada complejo es un punto. El conjugado es el reflejo respecto al eje horizontal. La distancia al origen es la magnitud.*
 
-#### Operaciones
+#### Más ejemplos resueltos
+
+Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
+
+#### Ejemplo 1 · Pasar \(3 + 4 j\) a forma polar · *Básico*
+
+**Enunciado.** Escribe \(z = 3 + 4 j\) como magnitud y ángulo.
+
+1. Parte real \(a = 3\), parte imaginaria \(b = 4\).
+
+   **¿Por qué?** La forma rectangular \(a + jb\) da directamente las dos coordenadas del punto en el plano.
+
+2. Magnitud: \(|z| = \sqrt{a^2+b^2} = \sqrt{9+16} = 5\).
+
+   **¿Por qué?** La magnitud es la distancia del origen al punto: Pitágoras con catetos \(a\) y \(b\).
+
+3. Ángulo de referencia \(\arctan\left|\tfrac{b}{a}\right| = 53{,}1^\circ\); el punto está en el primer cuadrante, así que \(\theta = 53{,}1^\circ\).
+
+   **¿Por qué?** La calculadora devuelve \(\arctan(b/a)\) solo entre −90° y 90°. Hay que mirar los signos de \(a\) y \(b\) para ubicar el cuadrante; olvidar esto es el error más común.
+
+**Resultado.** \(z = 5\,\angle\,53{,}1^\circ\).
+
+**Comprobación.** \(|z|\cos\theta = 3\) y \(|z|\sin\theta = 4\) devuelven \(a\) y \(b\).
+
+#### Ejemplo 2 · Pasar \(-2 + 2 j\) a forma polar · *Básico*
+
+**Enunciado.** Escribe \(z = -2 + 2 j\) como magnitud y ángulo.
+
+1. Parte real \(a = -2\), parte imaginaria \(b = 2\).
+
+   **¿Por qué?** La forma rectangular \(a + jb\) da directamente las dos coordenadas del punto en el plano.
+
+2. Magnitud: \(|z| = \sqrt{a^2+b^2} = \sqrt{4+4} = 2 \sqrt{2}\) \(\approx 2{,}828\).
+
+   **¿Por qué?** La magnitud es la distancia del origen al punto: Pitágoras con catetos \(a\) y \(b\).
+
+3. Ángulo de referencia \(\arctan\left|\tfrac{b}{a}\right| = 45^\circ\); el punto está en el segundo cuadrante, así que \(\theta = 135^\circ\).
+
+   **¿Por qué?** La calculadora devuelve \(\arctan(b/a)\) solo entre −90° y 90°. Hay que mirar los signos de \(a\) y \(b\) para ubicar el cuadrante; olvidar esto es el error más común.
+
+**Resultado.** \(z = 2 \sqrt{2}\,\angle\,135^\circ\).
+
+**Comprobación.** \(|z|\cos\theta = -2\) y \(|z|\sin\theta = 2\) devuelven \(a\) y \(b\).
+
+#### Ejemplo 3 · Pasar \(-1 - \sqrt{3} j\) a forma polar · *Intermedio*
+
+**Enunciado.** Escribe \(z = -1 - \sqrt{3} j\) como magnitud y ángulo.
+
+1. Parte real \(a = -1\), parte imaginaria \(b = - \sqrt{3}\).
+
+   **¿Por qué?** La forma rectangular \(a + jb\) da directamente las dos coordenadas del punto en el plano.
+
+2. Magnitud: \(|z| = \sqrt{a^2+b^2} = \sqrt{1+3} = 2\).
+
+   **¿Por qué?** La magnitud es la distancia del origen al punto: Pitágoras con catetos \(a\) y \(b\).
+
+3. Ángulo de referencia \(\arctan\left|\tfrac{b}{a}\right| = 60^\circ\); el punto está en el tercer cuadrante, así que \(\theta = -120^\circ\).
+
+   **¿Por qué?** La calculadora devuelve \(\arctan(b/a)\) solo entre −90° y 90°. Hay que mirar los signos de \(a\) y \(b\) para ubicar el cuadrante; olvidar esto es el error más común.
+
+**Resultado.** \(z = 2\,\angle\,-120^\circ\).
+
+**Comprobación.** \(|z|\cos\theta = -1\) y \(|z|\sin\theta = -1{,}732\) devuelven \(a\) y \(b\).
+
+#### Ejemplo 4 · Pasar \(5 - 12 j\) a forma polar · *Intermedio*
+
+**Enunciado.** Escribe \(z = 5 - 12 j\) como magnitud y ángulo.
+
+1. Parte real \(a = 5\), parte imaginaria \(b = -12\).
+
+   **¿Por qué?** La forma rectangular \(a + jb\) da directamente las dos coordenadas del punto en el plano.
+
+2. Magnitud: \(|z| = \sqrt{a^2+b^2} = \sqrt{25+144} = 13\).
+
+   **¿Por qué?** La magnitud es la distancia del origen al punto: Pitágoras con catetos \(a\) y \(b\).
+
+3. Ángulo de referencia \(\arctan\left|\tfrac{b}{a}\right| = 67{,}4^\circ\); el punto está en el cuarto cuadrante, así que \(\theta = -67{,}4^\circ\).
+
+   **¿Por qué?** La calculadora devuelve \(\arctan(b/a)\) solo entre −90° y 90°. Hay que mirar los signos de \(a\) y \(b\) para ubicar el cuadrante; olvidar esto es el error más común.
+
+**Resultado.** \(z = 13\,\angle\,-67{,}4^\circ\).
+
+**Comprobación.** \(|z|\cos\theta = 5\) y \(|z|\sin\theta = -12\) devuelven \(a\) y \(b\).
+
+#### Ejemplo 5 · Pasar \(-4\) a forma polar · *Básico*
+
+**Enunciado.** Escribe \(z = -4\) como magnitud y ángulo.
+
+1. Parte real \(a = -4\), parte imaginaria \(b = 0\).
+
+   **¿Por qué?** La forma rectangular \(a + jb\) da directamente las dos coordenadas del punto en el plano.
+
+2. Magnitud: \(|z| = \sqrt{a^2+b^2} = \sqrt{16+0} = 4\).
+
+   **¿Por qué?** La magnitud es la distancia del origen al punto: Pitágoras con catetos \(a\) y \(b\).
+
+3. El punto está sobre un eje: el ángulo es \(180^\circ\).
+
+   **¿Por qué?** El punto está sobre un eje, así que el ángulo se lee sin calculadora: 0°, 90°, 180° o −90°.
+
+**Resultado.** \(z = 4\,\angle\,180^\circ\).
+
+**Comprobación.** \(|z|\cos\theta = -4\) y \(|z|\sin\theta = 0\) devuelven \(a\) y \(b\).
+
+#### Ejemplo 6 · Pasar \(3 j\) a forma polar · *Básico*
+
+**Enunciado.** Escribe \(z = 3 j\) como magnitud y ángulo.
+
+1. Parte real \(a = 0\), parte imaginaria \(b = 3\).
+
+   **¿Por qué?** La forma rectangular \(a + jb\) da directamente las dos coordenadas del punto en el plano.
+
+2. Magnitud: \(|z| = \sqrt{a^2+b^2} = \sqrt{0+9} = 3\).
+
+   **¿Por qué?** La magnitud es la distancia del origen al punto: Pitágoras con catetos \(a\) y \(b\).
+
+3. El punto está sobre un eje: el ángulo es \(90^\circ\).
+
+   **¿Por qué?** El punto está sobre un eje, así que el ángulo se lee sin calculadora: 0°, 90°, 180° o −90°.
+
+**Resultado.** \(z = 3\,\angle\,90^\circ\).
+
+**Comprobación.** \(|z|\cos\theta = 0\) y \(|z|\sin\theta = 3\) devuelven \(a\) y \(b\).
+
+### Tema 2: Operaciones
+
+**¿Por qué es importante?** Multiplicar conjugados y dividir complejos aparece en cada cálculo de polos, ángulos y respuestas en frecuencia.
+
+**Fuentes oficiales:** [Ecuaciones diferenciales y Laplace, MIT OpenCourseWare 18.03SC](https://ocw.mit.edu/courses/18-03sc-differential-equations-fall-2011/).
 
 - Suma y restaReal con real, imaginaria con imaginaria.
   
@@ -199,7 +327,53 @@ Dos consecuencias que usarás en Laplace (capítulo 3):
 
 **Resultado:** \(|s| = 5\); \(\theta = 53{,}13°\) desde el eje real negativo
 
-### Tema 2: Raíces de s²+bs+c
+#### Más ejemplos resueltos
+
+Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
+
+#### Ejemplo 6 · Dividir multiplicando por el conjugado · *Intermedio*
+
+**Enunciado.** Calcula \(\dfrac{2 + 3 j}{1 - j}\).
+
+1. Multiplica arriba y abajo por el conjugado \(1 + j\).
+
+   **¿Por qué?** El producto de un número por su conjugado es real: \((a+jb)(a-jb)=a^2+b^2\). Así desaparece la \(j\) del denominador.
+
+2. Numerador: \((2 + 3 j)(1 + j) = -1 + 5 j\); denominador: \(2\).
+
+   **¿Por qué?** Se usa \(j^2=-1\) al expandir.
+
+**Resultado.** \(- \frac{1}{2} + \frac{5 j}{2}\).
+
+#### Ejemplo 7 · Multiplicar y dividir en forma polar · *Intermedio*
+
+**Enunciado.** Con \(z_1 = 4\angle 30^\circ\) y \(z_2 = 2\angle 75^\circ\), calcula \(z_1z_2\) y \(z_1/z_2\).
+
+1. Producto: multiplica magnitudes y suma ángulos: \(4\cdot2\,\angle(30^\circ+75^\circ) = 8\angle105^\circ\).
+
+   **¿Por qué?** Por Euler, \(r_1e^{j\theta_1}\,r_2e^{j\theta_2} = r_1r_2e^{j(\theta_1+\theta_2)}\): los exponentes se suman.
+
+2. Cociente: divide magnitudes y resta ángulos: \(\tfrac42\,\angle(30^\circ-75^\circ) = 2\angle-45^\circ\).
+
+   **¿Por qué?** Dividir exponenciales resta los exponentes.
+
+**Resultado.** \(z_1z_2 = 8\angle105^\circ\) y \(z_1/z_2 = 2\angle-45^\circ = \sqrt2 - j\sqrt2\).
+
+#### Ejemplo 8 · Potencia de un complejo · *Intermedio*
+
+**Enunciado.** Calcula \((1+j)^6\) sin expandir el binomio.
+
+1. Pasa a polar: \(|1+j| = \sqrt2\), ángulo 45°.
+
+   **¿Por qué?** En polar las potencias son fáciles: magnitud a la potencia y ángulo multiplicado.
+
+2. \((\sqrt2)^6 = 8\) y \(6\cdot45^\circ = 270^\circ\).
+
+   **¿Por qué?** Regla de De Moivre: \((re^{j\theta})^n = r^ne^{jn\theta}\).
+
+**Resultado.** \(8\angle270^\circ = - 8 j\).
+
+### Tema 3: Raíces de s²+bs+c
 
 **¿Por qué es importante?** Las raíces de \(s^2+bs+c\) son los polos de un sistema de segundo orden: de ellas sale si el sistema oscila o no.
 
@@ -236,7 +410,7 @@ Sea \(P(s)\) un polinomio con coeficientes reales y \(p\) una raíz: \(P(p) = 0\
 2. Parte imaginaria: \(\sqrt{c - b^2/4}\).
 3. Raíces: \(-\tfrac{b}{2} \pm j\sqrt{c-\tfrac{b^2}{4}}\).
 
-#### Ejemplo 6 · Raíces reales · *Básico*
+#### Ejemplo 1 · Raíces reales · *Básico*
 
 **Enunciado.** Halla las raíces de \(s^2+5s+6\).
 
@@ -258,7 +432,7 @@ Sea \(P(s)\) un polinomio con coeficientes reales y \(p\) una raíz: \(P(p) = 0\
 
 **Resultado:** \(s = -2\) y \(s = -3\)
 
-#### Ejemplo 7 · Raíces complejas · *Básico*
+#### Ejemplo 2 · Raíces complejas · *Básico*
 
 > **Qué cambia respecto al anterior:** Ahora \(\Delta\) es negativo.
 
@@ -278,7 +452,7 @@ Sea \(P(s)\) un polinomio con coeficientes reales y \(p\) una raíz: \(P(p) = 0\
 
 **Resultado:** \(s = -2 \pm 3j\)
 
-#### Ejemplo 8 · El atajo · *Intermedio*
+#### Ejemplo 3 · El atajo · *Intermedio*
 
 > **Qué cambia respecto al anterior:** El mismo resultado del Ejemplo 7 con menos cuentas.
 
@@ -294,7 +468,7 @@ Sea \(P(s)\) un polinomio con coeficientes reales y \(p\) una raíz: \(P(p) = 0\
 
 **Resultado:** \(s = -1 \pm 6j\). Es el denominador del punto 3(ii) del Parcial 1
 
-#### Ejemplo 9 · Del polo al polinomio · *Nivel parcial*
+#### Ejemplo 4 · Del polo al polinomio · *Nivel parcial*
 
 > **Qué cambia respecto al anterior:** Se hace el camino inverso: de las raíces al polinomio.
 
@@ -324,7 +498,67 @@ Sea \(P(s)\) un polinomio con coeficientes reales y \(p\) una raíz: \(P(p) = 0\
 - Equivocar el signo del factor: el polo \(-3\) da el factor \((s+3)\), no \((s-3)\).
 - Dar el ángulo sin revisar el cuadrante cuando la parte real es negativa.
 
-#### Práctica
+#### Más ejemplos resueltos
+
+Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
+
+#### Ejemplo 5 · Raíces de \(s^{2} + 4 s + 13\) · *Básico*
+
+**Enunciado.** Halla las raíces de \(s^{2} + 4 s + 13=0\) y di qué comportamiento producen como polos.
+
+1. Discriminante \(\Delta = b^2-4c = 16-52=-36\).
+
+   **¿Por qué?** El signo del discriminante decide si las raíces son reales distintas, repetidas o complejas.
+
+2. \(s = \dfrac{-b \pm \sqrt{\Delta}}{2}\) da \(-2 - 3 j, -2 + 3 j\).
+
+   **¿Por qué?** Es la fórmula cuadrática con coeficiente principal 1.
+
+**Resultado.** Hay polos complejos \(-2{,}0\pm j3\): la parte real da el decaimiento \(e^{-2{,}0t}\) y la imaginaria la frecuencia de oscilación.
+
+#### Ejemplo 6 · Raíces de \(s^{2} + 6 s + 9\) · *Básico*
+
+**Enunciado.** Halla las raíces de \(s^{2} + 6 s + 9=0\) y di qué comportamiento producen como polos.
+
+1. Discriminante \(\Delta = b^2-4c = 36-36=0\).
+
+   **¿Por qué?** El signo del discriminante decide si las raíces son reales distintas, repetidas o complejas.
+
+2. \(s = \dfrac{-b \pm \sqrt{\Delta}}{2}\) da \(-3\).
+
+   **¿Por qué?** Es la fórmula cuadrática con coeficiente principal 1.
+
+**Resultado.** Hay un polo doble: respuesta crítica, la más rápida sin oscilar.
+
+#### Ejemplo 7 · Raíces de \(s^{2} + 2 s - 3\) · *Básico*
+
+**Enunciado.** Halla las raíces de \(s^{2} + 2 s - 3=0\) y di qué comportamiento producen como polos.
+
+1. Discriminante \(\Delta = b^2-4c = 4--12=16\).
+
+   **¿Por qué?** El signo del discriminante decide si las raíces son reales distintas, repetidas o complejas.
+
+2. \(s = \dfrac{-b \pm \sqrt{\Delta}}{2}\) da \(-3, 1\).
+
+   **¿Por qué?** Es la fórmula cuadrática con coeficiente principal 1.
+
+**Resultado.** Hay dos polos reales distintos: respuesta con dos exponenciales, sin oscilar; uno es positivo, así que el sistema sería **inestable**.
+
+#### Ejemplo 8 · Raíces de \(s^{2} + \frac{4 s}{5} + 4\) · *Intermedio*
+
+**Enunciado.** Halla las raíces de \(s^{2} + \frac{4 s}{5} + 4=0\) y di qué comportamiento producen como polos.
+
+1. Discriminante \(\Delta = b^2-4c = \frac{16}{25}-16=- \frac{384}{25}\).
+
+   **¿Por qué?** El signo del discriminante decide si las raíces son reales distintas, repetidas o complejas.
+
+2. \(s = \dfrac{-b \pm \sqrt{\Delta}}{2}\) da \(- \frac{2}{5} - \frac{4 \sqrt{6} j}{5}, - \frac{2}{5} + \frac{4 \sqrt{6} j}{5}\).
+
+   **¿Por qué?** Es la fórmula cuadrática con coeficiente principal 1.
+
+**Resultado.** Hay polos complejos \(- \frac{2}{5}\pm j\frac{4 \sqrt{6}}{5}\): la parte real da el decaimiento \(e^{- \frac{2}{5}t}\) y la imaginaria la frecuencia de oscilación.
+
+#### Práctica para resolver sola o solo
 
 - **1.**Calcula \((3-2j)(4+j)\).
   
@@ -357,3 +591,116 @@ Sea \(P(s)\) un polinomio con coeficientes reales y \(p\) una raíz: \(P(p) = 0\
   \(|s|=5\), \(\theta = \arctan(3/4) = 36{,}87°\).
   
   </details>
+
+### Tema 4: Forma polar, fórmula de Euler y evaluación de G(jω)
+
+**¿Por qué es importante?** Escribir un complejo como magnitud y ángulo convierte productos y cocientes en operaciones simples, y es exactamente lo que se hace al evaluar \(G(j\omega)\) en respuesta en frecuencia.
+
+**Fuentes oficiales:** [Ecuaciones diferenciales y Laplace, MIT OpenCourseWare 18.03SC](https://ocw.mit.edu/courses/18-03sc-differential-equations-fall-2011/).
+
+La fórmula de Euler dice \(e^{j\theta} = \cos\theta + j\sin\theta\). Por eso todo complejo se puede escribir como \(z = r e^{j\theta} = r\angle\theta\), con \(r = |z|\) y \(\theta\) su ángulo.
+
+**Qué ganamos:** al multiplicar dos complejos en polar se multiplican las magnitudes y se **suman** los ángulos; al dividir se dividen magnitudes y se **restan** ángulos. Esto es lo que hace manejable una función de transferencia evaluada en \(s = j\omega\).
+
+**Receta para \(G(j\omega)\):** (1) cambia cada \(s\) por \(j\omega\); (2) calcula magnitud y ángulo de cada factor del numerador y del denominador; (3) magnitud total = producto de magnitudes de arriba / producto de magnitudes de abajo; (4) fase total = suma de ángulos de arriba − suma de ángulos de abajo.
+
+**Error típico:** calcular el ángulo con \(\arctan(b/a)\) sin mirar el cuadrante. Un factor como \(-1 + j\) tiene 135°, no −45°.
+
+#### Ejemplos resueltos
+
+#### Ejemplo 1 · Magnitud y fase de \(G(s) = \frac{10}{s + 2}\) en \(\omega = 2\) · *Básico*
+
+**Enunciado.** Calcula \(|G(j2)|\) y \(\angle G(j2)\).
+
+1. Sustituye \(s = j2\): \(G(j2) = \frac{10}{j_{2} + 2}\).
+
+   **¿Por qué?** Una entrada senoidal \(\sin\omega t\) "ve" al sistema evaluado en \(s = j\omega\).
+
+2. Magnitud = |numerador| / |denominador| y fase = ángulo del numerador − ángulo del denominador.
+
+   **¿Por qué?** En polar, dividir complejos divide magnitudes y resta ángulos (fórmula de Euler).
+
+**Resultado.** \(|G| \approx 3{,}536\) (\(10{,}97\,\text{dB}\)) y \(\angle G \approx -45^\circ\).
+
+**Comprobación.** Forma rectangular: \(G(j2) \approx 2{,}5-2{,}5j\).
+
+#### Ejemplo 2 · Magnitud y fase de \(G(s) = \frac{5}{s + 1}\) en \(\omega = 1\) · *Básico*
+
+**Enunciado.** Calcula \(|G(j1)|\) y \(\angle G(j1)\).
+
+1. Sustituye \(s = j1\): \(G(j1) = \frac{5}{j_{1} + 1}\).
+
+   **¿Por qué?** Una entrada senoidal \(\sin\omega t\) "ve" al sistema evaluado en \(s = j\omega\).
+
+2. Magnitud = |numerador| / |denominador| y fase = ángulo del numerador − ángulo del denominador.
+
+   **¿Por qué?** En polar, dividir complejos divide magnitudes y resta ángulos (fórmula de Euler).
+
+**Resultado.** \(|G| \approx 3{,}536\) (\(10{,}97\,\text{dB}\)) y \(\angle G \approx -45^\circ\).
+
+**Comprobación.** Forma rectangular: \(G(j1) \approx 2{,}5-2{,}5j\).
+
+#### Ejemplo 3 · Magnitud y fase de \(G(s) = \frac{4}{s \left(s + 2\right)}\) en \(\omega = 2\) · *Intermedio*
+
+**Enunciado.** Calcula \(|G(j2)|\) y \(\angle G(j2)\).
+
+1. Sustituye \(s = j2\): \(G(j2) = \frac{4}{j_{2} \left(j_{2} + 2\right)}\).
+
+   **¿Por qué?** Una entrada senoidal \(\sin\omega t\) "ve" al sistema evaluado en \(s = j\omega\).
+
+2. Magnitud = |numerador| / |denominador| y fase = ángulo del numerador − ángulo del denominador.
+
+   **¿Por qué?** En polar, dividir complejos divide magnitudes y resta ángulos (fórmula de Euler).
+
+**Resultado.** \(|G| \approx 0{,}707\) (\(-3{,}01\,\text{dB}\)) y \(\angle G \approx -135^\circ\).
+
+**Comprobación.** Forma rectangular: \(G(j2) \approx -0{,}5-0{,}5j\).
+
+#### Ejemplo 4 · Magnitud y fase de \(G(s) = \frac{25}{s^{2} + 4 s + 25}\) en \(\omega = 5\) · *Intermedio*
+
+**Enunciado.** Calcula \(|G(j5)|\) y \(\angle G(j5)\).
+
+1. Sustituye \(s = j5\): \(G(j5) = \frac{25}{j_{5}^{2} + 4 j_{5} + 25}\).
+
+   **¿Por qué?** Una entrada senoidal \(\sin\omega t\) "ve" al sistema evaluado en \(s = j\omega\).
+
+2. Magnitud = |numerador| / |denominador| y fase = ángulo del numerador − ángulo del denominador.
+
+   **¿Por qué?** En polar, dividir complejos divide magnitudes y resta ángulos (fórmula de Euler).
+
+**Resultado.** \(|G| \approx 1{,}25\) (\(1{,}94\,\text{dB}\)) y \(\angle G \approx -90^\circ\).
+
+**Comprobación.** Forma rectangular: \(G(j5) \approx 0-1{,}25j\).
+
+#### Ejemplo 5 · Magnitud y fase de \(G(s) = \frac{s + 1}{s + 10}\) en \(\omega = 1\) · *Intermedio*
+
+**Enunciado.** Calcula \(|G(j1)|\) y \(\angle G(j1)\).
+
+1. Sustituye \(s = j1\): \(G(j1) = \frac{j_{1} + 1}{j_{1} + 10}\).
+
+   **¿Por qué?** Una entrada senoidal \(\sin\omega t\) "ve" al sistema evaluado en \(s = j\omega\).
+
+2. Magnitud = |numerador| / |denominador| y fase = ángulo del numerador − ángulo del denominador.
+
+   **¿Por qué?** En polar, dividir complejos divide magnitudes y resta ángulos (fórmula de Euler).
+
+**Resultado.** \(|G| \approx 0{,}141\) (\(-17{,}03\,\text{dB}\)) y \(\angle G \approx 39{,}3^\circ\).
+
+**Comprobación.** Forma rectangular: \(G(j1) \approx 0{,}109+0{,}089j\).
+
+#### Ejemplo 6 · Magnitud y fase de \(G(s) = \frac{100}{\left(s + 1\right) \left(s + 10\right)}\) en \(\omega = 3\) · *Avanzado*
+
+**Enunciado.** Calcula \(|G(j3)|\) y \(\angle G(j3)\).
+
+1. Sustituye \(s = j3\): \(G(j3) = \frac{100}{\left(j_{3} + 1\right) \left(j_{3} + 10\right)}\).
+
+   **¿Por qué?** Una entrada senoidal \(\sin\omega t\) "ve" al sistema evaluado en \(s = j\omega\).
+
+2. Magnitud = |numerador| / |denominador| y fase = ángulo del numerador − ángulo del denominador.
+
+   **¿Por qué?** En polar, dividir complejos divide magnitudes y resta ángulos (fórmula de Euler).
+
+**Resultado.** \(|G| \approx 3{,}029\) (\(9{,}63\,\text{dB}\)) y \(\angle G \approx -88{,}3^\circ\).
+
+**Comprobación.** Forma rectangular: \(G(j3) \approx 0{,}092-3{,}028j\).
+

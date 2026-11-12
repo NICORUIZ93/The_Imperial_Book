@@ -161,7 +161,81 @@ Todo sistema físico se describe con una ecuación diferencial. Laplace la convi
 - Dejar \(G(s)\) sin simplificar, por ejemplo \(\dfrac{12}{2s+6}\) en lugar de \(\dfrac{6}{s+3}\): así es fácil equivocar el polo.
 - Olvidar la condición inicial cuando el ejercicio la da.
 
-#### Práctica
+#### Más ejemplos resueltos
+
+Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
+
+#### Ejemplo 6 · De la ecuación a \(G(s)\) · *Básico*
+
+**Enunciado.** Halla \(G(s)=Y(s)/U(s)\) para \(y' + 3y = 5u\) (condiciones iniciales nulas).
+
+1. Transforma con condiciones iniciales cero: cada derivada se vuelve una potencia de \(s\).
+
+   **¿Por qué?** La función de transferencia se define así: solo relaciona entrada y salida, sin la "memoria" del estado inicial.
+
+2. \((s + 3)Y(s) = (5)U(s)\).
+
+   **¿Por qué?** Se factoriza \(Y\) a la izquierda y \(U\) a la derecha.
+
+**Resultado.** \(G(s) = \frac{5}{s + 3}\); ceros \(\text{ninguno}\), polos \(-3\), ganancia DC \(G(0) = \frac{5}{3}\).
+
+#### Ejemplo 7 · De la ecuación a \(G(s)\) · *Intermedio*
+
+**Enunciado.** Halla \(G(s)=Y(s)/U(s)\) para \(y'' + 4y' + 3y = 2u' + 6u\) (condiciones iniciales nulas).
+
+1. Transforma con condiciones iniciales cero: cada derivada se vuelve una potencia de \(s\).
+
+   **¿Por qué?** La función de transferencia se define así: solo relaciona entrada y salida, sin la "memoria" del estado inicial.
+
+2. \((s^{2} + 4 s + 3)Y(s) = (2 s + 6)U(s)\).
+
+   **¿Por qué?** Se factoriza \(Y\) a la izquierda y \(U\) a la derecha.
+
+**Resultado.** \(G(s) = \frac{2 s + 6}{s^{2} + 4 s + 3}\); ceros \(-3\), polos \(-3, -1\), ganancia DC \(G(0) = 2\).
+
+#### Ejemplo 8 · De la ecuación a \(G(s)\) · *Intermedio*
+
+**Enunciado.** Halla \(G(s)=Y(s)/U(s)\) para \(y'' + 2y' + 10y = 10u\) (condiciones iniciales nulas).
+
+1. Transforma con condiciones iniciales cero: cada derivada se vuelve una potencia de \(s\).
+
+   **¿Por qué?** La función de transferencia se define así: solo relaciona entrada y salida, sin la "memoria" del estado inicial.
+
+2. \((s^{2} + 2 s + 10)Y(s) = (10)U(s)\).
+
+   **¿Por qué?** Se factoriza \(Y\) a la izquierda y \(U\) a la derecha.
+
+**Resultado.** \(G(s) = \frac{10}{s^{2} + 2 s + 10}\); ceros \(\text{ninguno}\), polos \(-1 - 3 j, -1 + 3 j\), ganancia DC \(G(0) = 1\).
+
+#### Ejemplo 9 · De la ecuación a \(G(s)\) · *Intermedio*
+
+**Enunciado.** Halla \(G(s)=Y(s)/U(s)\) para \(2y'' + 7y' + 3y = u'\) (condiciones iniciales nulas).
+
+1. Transforma con condiciones iniciales cero: cada derivada se vuelve una potencia de \(s\).
+
+   **¿Por qué?** La función de transferencia se define así: solo relaciona entrada y salida, sin la "memoria" del estado inicial.
+
+2. \((2 s^{2} + 7 s + 3)Y(s) = (s)U(s)\).
+
+   **¿Por qué?** Se factoriza \(Y\) a la izquierda y \(U\) a la derecha.
+
+**Resultado.** \(G(s) = \frac{s}{2 s^{2} + 7 s + 3}\); ceros \(0\), polos \(-3, - \frac{1}{2}\), ganancia DC \(G(0) = 0\).
+
+#### Ejemplo 10 · Respuesta de \(\frac{4}{s + 2}\) a un escalón unitario · *Intermedio*
+
+**Enunciado.** Calcula la salida de \(G(s) = \frac{4}{s + 2}\) ante un escalón unitario.
+
+1. \(Y(s) = G(s)U(s) = \frac{4}{s \left(s + 2\right)}\).
+
+   **¿Por qué?** Con condiciones iniciales nulas, la salida en \(s\) es el producto.
+
+2. Fracciones parciales: \(- \frac{2}{s + 2} + \frac{2}{s}\).
+
+   **¿Por qué?** Para invertir con la tabla.
+
+**Resultado.** \(y(t) = 2 - 2 e^{- 2 t}\).
+
+#### Práctica para resolver sola o solo
 
 - **1.**\(G(s)\) de \(5\dot y + y = 3u\).
   
@@ -186,3 +260,4 @@ Todo sistema físico se describe con una ecuación diferencial. Laplace la convi
   \(Y = \dfrac{8}{s(s+4)}\): \(y = 2(1-e^{-4t})\).
   
   </details>
+

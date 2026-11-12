@@ -27,7 +27,73 @@ El controlador decide cuánta acción aplicar según el error. Aquí verás qué
 
 *\(T_i = K_p/K_i\) es el tiempo integral y \(T_d = K_d/K_p\) el tiempo derivativo.*
 
-#### Error en estado estacionario
+#### Más ejemplos resueltos
+
+Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
+
+#### Ejemplo 1 · ¿Qué mira la acción Proporcional (P)? · *Básico*
+
+**Enunciado.** Explica con una frase qué información usa la acción proporcional (p).
+
+1. Mira el error de ahora.
+
+   **¿Por qué?** Un error grande produce una acción grande; si el error es cero, la acción es cero.
+
+**Resultado.** Por eso proporcional se escribe \(K_pe(t)\).
+
+#### Ejemplo 2 · ¿Qué mira la acción Integral (I)? · *Básico*
+
+**Enunciado.** Explica con una frase qué información usa la acción integral (i).
+
+1. Mira la suma de todos los errores pasados.
+
+   **¿Por qué?** Mientras quede error, la integral sigue creciendo y empuja hasta eliminarlo.
+
+**Resultado.** Por eso integral se escribe \(K_i\int_0^t e\,d\tau\).
+
+#### Ejemplo 3 · ¿Qué mira la acción Derivativa (D)? · *Básico*
+
+**Enunciado.** Explica con una frase qué información usa la acción derivativa (d).
+
+1. Mira qué tan rápido cambia el error.
+
+   **¿Por qué?** Frena antes de llegar si el error está cayendo rápido: anticipa y amortigua.
+
+**Resultado.** Por eso derivativa se escribe \(K_d\,de/dt\).
+
+#### Ejemplo 4 · La ducha como PID · *Básico*
+
+**Enunciado.** Ajustas el agua de la ducha. ¿Qué haces como P, como I y como D?
+
+1. P: si está muy fría, giras mucho la llave; si está casi bien, poco.
+
+   **¿Por qué?** Acción proporcional al error de temperatura.
+
+2. I: si después de un rato sigue un poco fría, sigues girando de a poquito hasta que queda bien.
+
+   **¿Por qué?** Acumulas el error que persiste.
+
+3. D: si notas que se está calentando muy rápido, dejas de girar antes de llegar.
+
+   **¿Por qué?** Reaccionas a la velocidad de cambio para no pasarte.
+
+**Resultado.** Las tres acciones juntas son un PID humano.
+
+#### Ejemplo 5 · Leer un PID escrito en s · *Intermedio*
+
+**Enunciado.** Interpreta \(C(s) = 4 + \dfrac{2}{s} + 0{,}5s\).
+
+1. \(K_p = 4\), \(K_i = 2\), \(K_d = 0{,}5\).
+
+   **¿Por qué?** Cada término de \(C(s)\) es una acción: constante, \(1/s\) (integra) y \(s\) (deriva).
+
+**Resultado.** Forma estándar: \(C(s) = K_p\left(1 + \dfrac{1}{T_is} + T_ds\right)\) con \(T_i = K_p/K_i = 2\) s y \(T_d = K_d/K_p = 0{,}125\) s.
+
+### Tema 2: Error en estado estacionario
+
+**¿Por qué es importante?** El error estacionario muestra con números por qué la acción integral es necesaria en la mayoría de procesos.
+
+**Fuentes oficiales:** [Controladores PID, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlPID).
 
 Con realimentación unitaria, el error final ante un escalón unitario depende de cuántos integradores (polos en \(s=0\)) tiene \(C(s)G(s)\). A ese número se le llama **tipo** del sistema.
 
@@ -54,7 +120,65 @@ Un ruido senoidal \(n(t) = a\sin\omega t\) tiene derivada \(a\omega\cos\omega t\
 
 ∎
 
-#### Cada acción, con números
+#### Más ejemplos resueltos
+
+Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
+
+#### Ejemplo 1 · Error ante escalón con P con Kp = 4 · *Básico*
+
+**Enunciado.** Planta \(P = \frac{1}{s + 2}\), realimentación unitaria, \(C = 4\). Halla el error final ante un escalón.
+
+1. \(e_{ss} = \lim_{s\to0} \dfrac{1}{1 + C(s)P(s)}\).
+
+   **¿Por qué?** Valor final del error con realimentación unitaria.
+
+**Resultado.** \(e_{ss} = \frac{1}{3}\) (33,3 %): con solo P siempre queda error; subir \(K_p\) lo reduce pero no lo anula.
+
+#### Ejemplo 2 · Error ante escalón con P con Kp = 18 · *Básico*
+
+**Enunciado.** Planta \(P = \frac{1}{s + 2}\), realimentación unitaria, \(C = 18\). Halla el error final ante un escalón.
+
+1. \(e_{ss} = \lim_{s\to0} \dfrac{1}{1 + C(s)P(s)}\).
+
+   **¿Por qué?** Valor final del error con realimentación unitaria.
+
+**Resultado.** \(e_{ss} = \frac{1}{10}\) (10 %): con solo P siempre queda error; subir \(K_p\) lo reduce pero no lo anula.
+
+#### Ejemplo 3 · Error ante escalón con PI · *Intermedio*
+
+**Enunciado.** Planta \(P = \frac{1}{s + 2}\), realimentación unitaria, \(C = 4 + \frac{2}{s}\). Halla el error final ante un escalón.
+
+1. \(e_{ss} = \lim_{s\to0} \dfrac{1}{1 + C(s)P(s)}\).
+
+   **¿Por qué?** Valor final del error con realimentación unitaria.
+
+**Resultado.** \(e_{ss} = 0\) = 0: la integral lo elimina.
+
+#### Ejemplo 4 · Error ante escalón con P con Kp = 98 · *Básico*
+
+**Enunciado.** Planta \(P = \frac{1}{s + 2}\), realimentación unitaria, \(C = 98\). Halla el error final ante un escalón.
+
+1. \(e_{ss} = \lim_{s\to0} \dfrac{1}{1 + C(s)P(s)}\).
+
+   **¿Por qué?** Valor final del error con realimentación unitaria.
+
+**Resultado.** \(e_{ss} = \frac{1}{50}\) (2 %): con solo P siempre queda error; subir \(K_p\) lo reduce pero no lo anula.
+
+#### Ejemplo 5 · Error ante escalón con PI con Ki = 5 · *Intermedio*
+
+**Enunciado.** Planta \(P = \frac{1}{s + 2}\), realimentación unitaria, \(C = 1 + \frac{5}{s}\). Halla el error final ante un escalón.
+
+1. \(e_{ss} = \lim_{s\to0} \dfrac{1}{1 + C(s)P(s)}\).
+
+   **¿Por qué?** Valor final del error con realimentación unitaria.
+
+**Resultado.** \(e_{ss} = 0\) = 0: la integral lo elimina.
+
+### Tema 3: Cada acción, con números
+
+**¿Por qué es importante?** Ver el efecto de cada acción con un ejemplo numérico te da argumentos reales para el punto 4 del Parcial 1.
+
+**Fuentes oficiales:** [Controladores PID, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlPID).
 
 #### ON/OFF (dos posiciones)
 
@@ -152,7 +276,53 @@ El actuador solo está prendido o apagado. Se usa con histéresis para que no co
 
 **Resultado:** La D convierte una oscilación eterna en una respuesta amortiguada
 
-### Tema 2: Ventajas y desventajas (punto 4 del Parcial 1)
+#### Más ejemplos resueltos
+
+Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
+
+#### Ejemplo 5 · Efecto de P (Kp = 8) sobre \(P = \frac{1}{s \left(s + 4\right)}\) · *Intermedio*
+
+**Enunciado.** Halla \(\zeta\), \(\omega_n\) y el sobrepico del lazo cerrado.
+
+1. Ecuación característica: \(s \left(s + 4\right) + 8 = 0\).
+
+   **¿Por qué?** Denominador de \(CP/(1+CP)\).
+
+2. \(\omega_n \approx 2{,}828,\ \zeta \approx 0{,}707\).
+
+   **¿Por qué?** Comparando con la forma estándar.
+
+**Resultado.** \(M_p \approx 4{,}3\,\%\). Subir \(K_p\) acelera pero aumenta el sobrepico.
+
+#### Ejemplo 6 · Efecto de P (Kp = 20) sobre \(P = \frac{1}{s \left(s + 4\right)}\) · *Intermedio*
+
+**Enunciado.** Halla \(\zeta\), \(\omega_n\) y el sobrepico del lazo cerrado.
+
+1. Ecuación característica: \(s \left(s + 4\right) + 20 = 0\).
+
+   **¿Por qué?** Denominador de \(CP/(1+CP)\).
+
+2. \(\omega_n \approx 4{,}472,\ \zeta \approx 0{,}447\).
+
+   **¿Por qué?** Comparando con la forma estándar.
+
+**Resultado.** \(M_p \approx 20{,}8\,\%\). Subir \(K_p\) acelera pero aumenta el sobrepico.
+
+#### Ejemplo 7 · Efecto de PD (Kp = 20, Kd = 4) sobre \(P = \frac{1}{s \left(s + 4\right)}\) · *Intermedio*
+
+**Enunciado.** Halla \(\zeta\), \(\omega_n\) y el sobrepico del lazo cerrado.
+
+1. Ecuación característica: \(s^{2} + 8 s + 20 = 0\).
+
+   **¿Por qué?** Denominador de \(CP/(1+CP)\).
+
+2. \(\omega_n \approx 4{,}472,\ \zeta \approx 0{,}894\).
+
+   **¿Por qué?** Comparando con la forma estándar.
+
+**Resultado.** \(M_p \approx 0{,}2\,\%\). La derivada aumenta el amortiguamiento y quita casi todo el sobrepico sin perder velocidad.
+
+### Tema 4: Ventajas y desventajas (punto 4 del Parcial 1)
 
 **¿Por qué es importante?** Las ventajas y desventajas son la pregunta teórica más repetida de los parciales.
 
@@ -176,7 +346,7 @@ El actuador solo está prendido o apagado. Se usa con histéresis para que no co
 | \(K_i\) | Baja | Sube | Sube | Se elimina | Empeora |
 | \(K_d\) | Poco cambio | Baja | Baja | No cambia | Mejora si \(K_d\) es pequeño |
 
-#### Ejemplo 5 · Error ante rampa · *Intermedio*
+#### Ejemplo 1 · Error ante rampa · *Intermedio*
 
 **Enunciado.** \(CG = \dfrac{4}{s(s+2)}\). Error ante escalón y ante rampa.
 
@@ -190,7 +360,55 @@ El actuador solo está prendido o apagado. Se usa con histéresis para que no co
 
 **Resultado:** Escalón 0; rampa 0,5
 
-#### Sintonía de Ziegler-Nichols
+#### Más ejemplos resueltos
+
+Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
+
+#### Ejemplo 2 · Elegir controlador: Horno industrial lento, sin ruido en el senso… · *Intermedio*
+
+**Enunciado.** Horno industrial lento, sin ruido en el sensor; se exige error cero. ¿Qué controlador eliges?
+
+1. Elección: **PI**.
+
+   **¿Por qué?** La integral elimina el error; el proceso es lento y no necesita la anticipación de D.
+
+**Resultado.** PI, justificado por la ventaja que aporta y la desventaja que se evita.
+
+#### Ejemplo 3 · Elegir controlador: Posición de un motor que oscila demasiado con… · *Intermedio*
+
+**Enunciado.** Posición de un motor que oscila demasiado con solo P. ¿Qué controlador eliges?
+
+1. Elección: **PD**.
+
+   **¿Por qué?** La derivada agrega amortiguamiento; un motor ya tiene un integrador natural (posición), así que el error al escalón ya es cero.
+
+**Resultado.** PD, justificado por la ventaja que aporta y la desventaja que se evita.
+
+#### Ejemplo 4 · Elegir controlador: Medición de flujo muy ruidosa.… · *Intermedio*
+
+**Enunciado.** Medición de flujo muy ruidosa. ¿Qué controlador eliges?
+
+1. Elección: **PI (sin D)**.
+
+   **¿Por qué?** La derivada amplifica el ruido de alta frecuencia; se evita o se filtra.
+
+**Resultado.** PI (sin D), justificado por la ventaja que aporta y la desventaja que se evita.
+
+#### Ejemplo 5 · Elegir controlador: Brazo que debe llegar rápido, sin sobrepico y… · *Intermedio*
+
+**Enunciado.** Brazo que debe llegar rápido, sin sobrepico y sin error. ¿Qué controlador eliges?
+
+1. Elección: **PID**.
+
+   **¿Por qué?** Se necesita la rapidez de P, la exactitud de I y el amortiguamiento de D.
+
+**Resultado.** PID, justificado por la ventaja que aporta y la desventaja que se evita.
+
+### Tema 5: Sintonía de Ziegler-Nichols
+
+**¿Por qué es importante?** Ziegler-Nichols es el método práctico para sintonizar un PID cuando no hay un modelo exacto.
+
+**Fuentes oficiales:** [Controladores PID, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlPID).
 
 > **Idea clave.** Cuando no tienes un modelo exacto, Ziegler-Nichols da valores iniciales de \(K_p\), \(T_i\) y \(T_d\) a partir de un experimento. Después se ajustan a mano.
 
@@ -208,7 +426,7 @@ El actuador solo está prendido o apagado. Se usa con histéresis para que no co
 | PI | \(0{,}45K_{cr}\) | \(P_{cr}/1{,}2\) | — |
 | PID | \(0{,}6K_{cr}\) | \(0{,}5P_{cr}\) | \(0{,}125P_{cr}\) |
 
-#### Ejemplo 6 · PID por ganancia crítica · *Nivel parcial*
+#### Ejemplo 1 · PID por ganancia crítica · *Nivel parcial*
 
 **Enunciado.** Planta \(\dfrac{1}{s(s+1)(s+5)}\).
 
@@ -236,7 +454,7 @@ Se aplica un escalón a la planta sin controlador y se ajusta la curva a \(\dfra
 | PI | \(0{,}9\dfrac{T}{KL}\) | \(L/0{,}3\) | — |
 | PID | \(1{,}2\dfrac{T}{KL}\) | \(2L\) | \(0{,}5L\) |
 
-#### Ejemplo 7 · PID por curva de reacción · *Intermedio*
+#### Ejemplo 2 · PID por curva de reacción · *Intermedio*
 
 > **Qué cambia respecto al anterior:** Se usa un experimento en lazo abierto en vez de Routh.
 
@@ -264,7 +482,55 @@ Se aplica un escalón a la planta sin controlador y se ajusta la curva a \(\dfra
 - Proponer un controlador solo D.
 - Listar ventajas sin explicar el porqué (por ejemplo: “elimina el error porque agrega un integrador”).
 
-#### Práctica
+#### Más ejemplos resueltos
+
+Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
+
+#### Ejemplo 3 · Ziegler-Nichols por oscilación: Ku = 10, Pu = 2 s · *Básico*
+
+**Enunciado.** Calcula las ganancias P, PI y PID.
+
+1. Tabla: P → \(K_p = 0{,}5K_u\); PI → \(0{,}45K_u\), \(T_i = P_u/1{,}2\); PID → \(0{,}6K_u\), \(T_i = P_u/2\), \(T_d = P_u/8\).
+
+   **¿Por qué?** Son las reglas empíricas de Ziegler-Nichols para el método de la ganancia crítica.
+
+**Resultado.** P: \(K_p = 5\). PI: \(K_p = 4{,}5,\ T_i = 1{,}667\) s. PID: \(K_p = 6,\ T_i = 1,\ T_d = 0{,}25\) s, es decir \(K_i = 6,\ K_d = 1{,}5\).
+
+#### Ejemplo 4 · Ziegler-Nichols por oscilación: Ku = 4,8, Pu = 1,2 s · *Intermedio*
+
+**Enunciado.** Calcula las ganancias P, PI y PID.
+
+1. Tabla: P → \(K_p = 0{,}5K_u\); PI → \(0{,}45K_u\), \(T_i = P_u/1{,}2\); PID → \(0{,}6K_u\), \(T_i = P_u/2\), \(T_d = P_u/8\).
+
+   **¿Por qué?** Son las reglas empíricas de Ziegler-Nichols para el método de la ganancia crítica.
+
+**Resultado.** P: \(K_p = 2{,}4\). PI: \(K_p = 2{,}16,\ T_i = 1\) s. PID: \(K_p = 2{,}88,\ T_i = 0{,}6,\ T_d = 0{,}15\) s, es decir \(K_i = 4{,}8,\ K_d = 0{,}432\).
+
+#### Ejemplo 5 · Ziegler-Nichols por oscilación: Ku = 25, Pu = 0,5 s · *Intermedio*
+
+**Enunciado.** Calcula las ganancias P, PI y PID.
+
+1. Tabla: P → \(K_p = 0{,}5K_u\); PI → \(0{,}45K_u\), \(T_i = P_u/1{,}2\); PID → \(0{,}6K_u\), \(T_i = P_u/2\), \(T_d = P_u/8\).
+
+   **¿Por qué?** Son las reglas empíricas de Ziegler-Nichols para el método de la ganancia crítica.
+
+**Resultado.** P: \(K_p = 12{,}5\). PI: \(K_p = 11{,}25,\ T_i = 0{,}417\) s. PID: \(K_p = 15,\ T_i = 0{,}25,\ T_d = 0{,}062\) s, es decir \(K_i = 60,\ K_d = 0{,}938\).
+
+#### Ejemplo 6 · Obtener Ku y Pu con Routh · *Avanzado*
+
+**Enunciado.** Planta \(\dfrac{1}{(s+1)^3}\) con control P. Halla \(K_u\), \(P_u\) y el PID de Ziegler-Nichols.
+
+1. \((s+1)^3 + K = s^3 + 3s^2 + 3s + 1 + K\). Fila \(s^1\): \(9 - (1+K) = 0 \Rightarrow K_u = 8\).
+
+   **¿Por qué?** La ganancia crítica es la que pone el lazo justo al borde de la estabilidad.
+
+2. Polinomio auxiliar \(3s^2 + 9 = 0 \Rightarrow \omega = \sqrt3\); \(P_u = 2\pi/\sqrt3 \approx 3{,}63\) s.
+
+   **¿Por qué?** El periodo de la oscilación sostenida.
+
+**Resultado.** PID: \(K_p = 4{,}8\), \(T_i \approx 1{,}81\) s, \(T_d \approx 0{,}45\) s.
+
+#### Práctica para resolver sola o solo
 
 - **1.**Planta \(\dfrac{2}{s+4}\) con P de \(K_p = 6\). Error ante escalón.
   
@@ -289,3 +555,4 @@ Se aplica un escalón a la planta sin controlador y se ajusta la curva a \(\dfra
   \(2\left(1 + \dfrac{1}{4s} + 0{,}5s\right) = 2 + \dfrac{0{,}5}{s} + s\).
   
   </details>
+

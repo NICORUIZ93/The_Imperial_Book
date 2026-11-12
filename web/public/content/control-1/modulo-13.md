@@ -54,7 +54,85 @@ Las fórmulas de \(M_p\), \(t_p\) y \(t_s\) son exactas solo para el segundo ord
 
 *Azul: sistema de tercer orden exacto. Naranja: aproximación de segundo orden. Casi coinciden.*
 
-#### Efecto de un cero
+#### Más ejemplos resueltos
+
+Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
+
+#### Ejemplo 2 · ¿Es dominante el par complejo si el tercer polo está en −20? · *Básico*
+
+**Enunciado.** \(G(s) = \frac{100}{\left(s + 20\right) \left(s^{2} + 2 s + 5\right)}\). ¿Se puede aproximar por el par \(-1\pm2j\)?
+
+1. Parte real del par: −1. Tercer polo: \(-20\), 20 veces más a la izquierda.
+
+   **¿Por qué?** La regla práctica pide que el polo lejano esté al menos 5 veces más a la izquierda: su exponencial se apaga mucho antes.
+
+2. Aproximación (conservando la ganancia DC): \(G(s) \approx \dfrac{5}{s^2+2s+5}\).
+
+   **¿Por qué?** Se quita el factor \((s+p)\) y se divide la ganancia por \(p\) para que \(G(0)\) no cambie.
+
+**Resultado.** La aproximación es **buena**: \(M_p \approx 20{,}8\,\%\) y \(t_s \approx 4\) s.
+
+#### Ejemplo 3 · ¿Es dominante el par complejo si el tercer polo está en −10? · *Intermedio*
+
+**Enunciado.** \(G(s) = \frac{50}{\left(s + 10\right) \left(s^{2} + 2 s + 5\right)}\). ¿Se puede aproximar por el par \(-1\pm2j\)?
+
+1. Parte real del par: −1. Tercer polo: \(-10\), 10 veces más a la izquierda.
+
+   **¿Por qué?** La regla práctica pide que el polo lejano esté al menos 5 veces más a la izquierda: su exponencial se apaga mucho antes.
+
+2. Aproximación (conservando la ganancia DC): \(G(s) \approx \dfrac{5}{s^2+2s+5}\).
+
+   **¿Por qué?** Se quita el factor \((s+p)\) y se divide la ganancia por \(p\) para que \(G(0)\) no cambie.
+
+**Resultado.** La aproximación es **buena**: \(M_p \approx 20{,}8\,\%\) y \(t_s \approx 4\) s.
+
+#### Ejemplo 4 · ¿Es dominante el par complejo si el tercer polo está en −4? · *Intermedio*
+
+**Enunciado.** \(G(s) = \frac{20}{\left(s + 4\right) \left(s^{2} + 2 s + 5\right)}\). ¿Se puede aproximar por el par \(-1\pm2j\)?
+
+1. Parte real del par: −1. Tercer polo: \(-4\), 4 veces más a la izquierda.
+
+   **¿Por qué?** La regla práctica pide que el polo lejano esté al menos 5 veces más a la izquierda: su exponencial se apaga mucho antes.
+
+2. Aproximación (conservando la ganancia DC): \(G(s) \approx \dfrac{5}{s^2+2s+5}\).
+
+   **¿Por qué?** Se quita el factor \((s+p)\) y se divide la ganancia por \(p\) para que \(G(0)\) no cambie.
+
+**Resultado.** La aproximación **no es confiable**: el tercer polo está cerca y vuelve la respuesta más lenta y con menos sobrepico que lo que predicen las fórmulas.
+
+#### Ejemplo 5 · ¿Es dominante el par complejo si el tercer polo está en −50? · *Básico*
+
+**Enunciado.** \(G(s) = \frac{250}{\left(s + 50\right) \left(s^{2} + 2 s + 5\right)}\). ¿Se puede aproximar por el par \(-1\pm2j\)?
+
+1. Parte real del par: −1. Tercer polo: \(-50\), 50 veces más a la izquierda.
+
+   **¿Por qué?** La regla práctica pide que el polo lejano esté al menos 5 veces más a la izquierda: su exponencial se apaga mucho antes.
+
+2. Aproximación (conservando la ganancia DC): \(G(s) \approx \dfrac{5}{s^2+2s+5}\).
+
+   **¿Por qué?** Se quita el factor \((s+p)\) y se divide la ganancia por \(p\) para que \(G(0)\) no cambie.
+
+**Resultado.** La aproximación es **buena**: \(M_p \approx 20{,}8\,\%\) y \(t_s \approx 4\) s.
+
+#### Ejemplo 6 · ¿Es dominante el par complejo si el tercer polo está en −3? · *Avanzado*
+
+**Enunciado.** \(G(s) = \frac{15}{\left(s + 3\right) \left(s^{2} + 2 s + 5\right)}\). ¿Se puede aproximar por el par \(-1\pm2j\)?
+
+1. Parte real del par: −1. Tercer polo: \(-3\), 3 veces más a la izquierda.
+
+   **¿Por qué?** La regla práctica pide que el polo lejano esté al menos 5 veces más a la izquierda: su exponencial se apaga mucho antes.
+
+2. Aproximación (conservando la ganancia DC): \(G(s) \approx \dfrac{5}{s^2+2s+5}\).
+
+   **¿Por qué?** Se quita el factor \((s+p)\) y se divide la ganancia por \(p\) para que \(G(0)\) no cambie.
+
+**Resultado.** La aproximación **no es confiable**: el tercer polo está cerca y vuelve la respuesta más lenta y con menos sobrepico que lo que predicen las fórmulas.
+
+### Tema 2: Efecto de un cero
+
+**¿Por qué es importante?** Un cero cambia el sobrepico aunque los polos sean los mismos; ignorarlo lleva a diseños que se pasan.
+
+**Fuentes oficiales:** [Análisis de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemAnalysis).
 
 Un cero en \(-a\) se puede escribir como \(G_z = \left(1 + \dfrac{s}{a}\right)G_0\), donde \(G_0\) es el sistema sin cero.
 
@@ -75,11 +153,89 @@ Un cero en \(-a\) se puede escribir como \(G_z = \left(1 + \dfrac{s}{a}\right)G_
 
 *Mismos polos, distinto cero. Cuanto más cerca del origen, más sobrepico.*
 
-#### Cero de fase no mínima
+#### Más ejemplos resueltos
+
+Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
+
+#### Ejemplo 1 · Efecto de un cero en s = −10 · *Básico*
+
+**Enunciado.** \(G(s) = \frac{\frac{2 s}{5} + 4}{s^{2} + 2 s + 4}\) tiene los mismos polos que \(\dfrac{4}{s^2+2s+4}\) (\(\zeta = 0{,}5\), \(M_p = 16{,}3\,\%\)). ¿Qué sobrepico tiene?
+
+1. La respuesta con cero es la sin cero más una fracción de su derivada: \(y = y_0 + \tfrac1a\dot y_0\).
+
+   **¿Por qué?** Multiplicar por \((s+a)/a\) en \(s\) suma \(1/a\) veces la derivada en el tiempo.
+
+2. Cuanto más cerca del origen está el cero (más pequeño \(a\)), más pesa la derivada, que es grande al principio.
+
+   **¿Por qué?** Por eso un cero cercano aumenta el sobrepico y adelanta el pico.
+
+**Resultado.** Sobrepico ≈ 16,7 % (casi igual al de los polos solos).
+
+#### Ejemplo 2 · Efecto de un cero en s = −2 · *Intermedio*
+
+**Enunciado.** \(G(s) = \frac{2 s + 4}{s^{2} + 2 s + 4}\) tiene los mismos polos que \(\dfrac{4}{s^2+2s+4}\) (\(\zeta = 0{,}5\), \(M_p = 16{,}3\,\%\)). ¿Qué sobrepico tiene?
+
+1. La respuesta con cero es la sin cero más una fracción de su derivada: \(y = y_0 + \tfrac1a\dot y_0\).
+
+   **¿Por qué?** Multiplicar por \((s+a)/a\) en \(s\) suma \(1/a\) veces la derivada en el tiempo.
+
+2. Cuanto más cerca del origen está el cero (más pequeño \(a\)), más pesa la derivada, que es grande al principio.
+
+   **¿Por qué?** Por eso un cero cercano aumenta el sobrepico y adelanta el pico.
+
+**Resultado.** Sobrepico ≈ 29,8 % (mayor que el 16,3 % de los polos solos).
+
+#### Ejemplo 3 · Efecto de un cero en s = −1 · *Intermedio*
+
+**Enunciado.** \(G(s) = \frac{4 s + 4}{s^{2} + 2 s + 4}\) tiene los mismos polos que \(\dfrac{4}{s^2+2s+4}\) (\(\zeta = 0{,}5\), \(M_p = 16{,}3\,\%\)). ¿Qué sobrepico tiene?
+
+1. La respuesta con cero es la sin cero más una fracción de su derivada: \(y = y_0 + \tfrac1a\dot y_0\).
+
+   **¿Por qué?** Multiplicar por \((s+a)/a\) en \(s\) suma \(1/a\) veces la derivada en el tiempo.
+
+2. Cuanto más cerca del origen está el cero (más pequeño \(a\)), más pesa la derivada, que es grande al principio.
+
+   **¿Por qué?** Por eso un cero cercano aumenta el sobrepico y adelanta el pico.
+
+**Resultado.** Sobrepico ≈ 69,9 % (mayor que el 16,3 % de los polos solos).
+
+#### Ejemplo 4 · Efecto de un cero en s = −0,5 · *Avanzado*
+
+**Enunciado.** \(G(s) = \frac{8 s + 4}{s^{2} + 2 s + 4}\) tiene los mismos polos que \(\dfrac{4}{s^2+2s+4}\) (\(\zeta = 0{,}5\), \(M_p = 16{,}3\,\%\)). ¿Qué sobrepico tiene?
+
+1. La respuesta con cero es la sin cero más una fracción de su derivada: \(y = y_0 + \tfrac1a\dot y_0\).
+
+   **¿Por qué?** Multiplicar por \((s+a)/a\) en \(s\) suma \(1/a\) veces la derivada en el tiempo.
+
+2. Cuanto más cerca del origen está el cero (más pequeño \(a\)), más pesa la derivada, que es grande al principio.
+
+   **¿Por qué?** Por eso un cero cercano aumenta el sobrepico y adelanta el pico.
+
+**Resultado.** Sobrepico ≈ 171,2 % (mayor que el 16,3 % de los polos solos).
+
+#### Ejemplo 5 · Efecto de un cero en s = −5 · *Básico*
+
+**Enunciado.** \(G(s) = \frac{\frac{4 s}{5} + 4}{s^{2} + 2 s + 4}\) tiene los mismos polos que \(\dfrac{4}{s^2+2s+4}\) (\(\zeta = 0{,}5\), \(M_p = 16{,}3\,\%\)). ¿Qué sobrepico tiene?
+
+1. La respuesta con cero es la sin cero más una fracción de su derivada: \(y = y_0 + \tfrac1a\dot y_0\).
+
+   **¿Por qué?** Multiplicar por \((s+a)/a\) en \(s\) suma \(1/a\) veces la derivada en el tiempo.
+
+2. Cuanto más cerca del origen está el cero (más pequeño \(a\)), más pesa la derivada, que es grande al principio.
+
+   **¿Por qué?** Por eso un cero cercano aumenta el sobrepico y adelanta el pico.
+
+**Resultado.** Sobrepico ≈ 18 % (casi igual al de los polos solos).
+
+### Tema 3: Cero de fase no mínima
+
+**¿Por qué es importante?** Los ceros de fase no mínima explican respuestas que primero van al revés y limitan qué tan rápido se puede controlar.
+
+**Fuentes oficiales:** [Análisis de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemAnalysis).
 
 Si el cero está en el semiplano derecho (\(a<0\)), la derivada entra con signo menos: la salida primero se va en la dirección contraria. Se llama **respuesta inversa**.
 
-#### Ejemplo 2 · Cero en el semiplano derecho · *Experto*
+#### Ejemplo 1 · Cero en el semiplano derecho · *Experto*
 
 > **Qué cambia respecto al anterior:** El cero está a la derecha.
 
@@ -98,3 +254,64 @@ Si el cero está en el semiplano derecho (\(a<0\)), la derivada entra con signo 
    **¿Por qué?** Por eso la salida primero se va en la dirección contraria.
 
 **Resultado:** Respuesta inversa: baja a −0,75, sube, se pasa (28,6 %) y termina en 1
+
+#### Más ejemplos resueltos
+
+Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
+
+#### Ejemplo 2 · Respuesta inversa con cero en s = +1 · *Intermedio*
+
+**Enunciado.** \(G(s) = \frac{2 - 2 s}{\left(s + 1\right) \left(s + 2\right)}\). Describe el comienzo de la respuesta al escalón.
+
+1. Valor final \(G(0) = 1\): positivo.
+
+   **¿Por qué?** Teorema del valor final.
+
+2. Pendiente inicial \(\dot y(0^+) = \lim_{s\to\infty} s\cdot sY(s) = -2\): negativa.
+
+   **¿Por qué?** Valor inicial aplicado a la derivada.
+
+**Resultado.** Primero baja y luego sube hasta 1: \(y(t) = 1 - 4 e^{- t} + 3 e^{- 2 t}\). Es la firma de un cero de fase no mínima.
+
+#### Ejemplo 3 · Respuesta inversa con cero en s = +2 · *Intermedio*
+
+**Enunciado.** \(G(s) = \frac{4 - 2 s}{\left(s + 2\right) \left(2 s + 2\right)}\). Describe el comienzo de la respuesta al escalón.
+
+1. Valor final \(G(0) = 1\): positivo.
+
+   **¿Por qué?** Teorema del valor final.
+
+2. Pendiente inicial \(\dot y(0^+) = \lim_{s\to\infty} s\cdot sY(s) = -1\): negativa.
+
+   **¿Por qué?** Valor inicial aplicado a la derivada.
+
+**Resultado.** Primero baja y luego sube hasta 1: \(y(t) = 1 - 3 e^{- t} + 2 e^{- 2 t}\). Es la firma de un cero de fase no mínima.
+
+#### Ejemplo 4 · Respuesta inversa con cero en s = +3 · *Intermedio*
+
+**Enunciado.** \(G(s) = \frac{6 - 2 s}{\left(s + 2\right) \left(3 s + 3\right)}\). Describe el comienzo de la respuesta al escalón.
+
+1. Valor final \(G(0) = 1\): positivo.
+
+   **¿Por qué?** Teorema del valor final.
+
+2. Pendiente inicial \(\dot y(0^+) = \lim_{s\to\infty} s\cdot sY(s) = - \frac{2}{3}\): negativa.
+
+   **¿Por qué?** Valor inicial aplicado a la derivada.
+
+**Resultado.** Primero baja y luego sube hasta 1: \(y(t) = 1 - \frac{8 e^{- t}}{3} + \frac{5 e^{- 2 t}}{3}\). Es la firma de un cero de fase no mínima.
+
+#### Ejemplo 5 · Respuesta inversa con cero en s = +4 · *Avanzado*
+
+**Enunciado.** \(G(s) = \frac{8 - 2 s}{\left(s + 2\right) \left(4 s + 4\right)}\). Describe el comienzo de la respuesta al escalón.
+
+1. Valor final \(G(0) = 1\): positivo.
+
+   **¿Por qué?** Teorema del valor final.
+
+2. Pendiente inicial \(\dot y(0^+) = \lim_{s\to\infty} s\cdot sY(s) = - \frac{1}{2}\): negativa.
+
+   **¿Por qué?** Valor inicial aplicado a la derivada.
+
+**Resultado.** Primero baja y luego sube hasta 1: \(y(t) = 1 - \frac{5 e^{- t}}{2} + \frac{3 e^{- 2 t}}{2}\). Es la firma de un cero de fase no mínima.
+

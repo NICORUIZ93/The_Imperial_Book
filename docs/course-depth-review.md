@@ -24,7 +24,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 
 ## Registro tema por tema
 
-Revisión humana firmada: 0/1273 temas. Pre-lectura registrada sin firma: 14. La pre-lectura no acredita ejecución, comprensión ni calidad pedagógica; consulta `docs/manual-review-log.md`.
+Revisión humana firmada: 0/1311 temas. Pre-lectura registrada sin firma: 14. La pre-lectura no acredita ejecución, comprensión ni calidad pedagógica; consulta `docs/manual-review-log.md`.
 Los laboratorios nuevos tienen una verificación técnica separada; la ejecución correcta tampoco demuestra comprensión.
 
 | Curso / módulo | Tema | Señales para revisar |
@@ -332,35 +332,73 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | cloud / 9 | [Tema 5: Documentación de la API y guía de despliegue](../web/public/content/cloud/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
 | control-1 / 0 | [Tema 1: Cómo está armado cada capítulo](../web/public/content/control-1/modulo-0.md) | demostracion-no-delimitada |
 | control-1 / 1 | [Tema 1: ¿Qué es un número complejo?](../web/public/content/control-1/modulo-1.md) | demostracion-no-delimitada |
-| control-1 / 1 | [Tema 2: Raíces de s²+bs+c](../web/public/content/control-1/modulo-1.md) | demostracion-no-delimitada |
+| control-1 / 1 | [Tema 2: Operaciones](../web/public/content/control-1/modulo-1.md) | demostracion-no-delimitada |
+| control-1 / 1 | [Tema 3: Raíces de s²+bs+c](../web/public/content/control-1/modulo-1.md) | demostracion-no-delimitada |
+| control-1 / 1 | [Tema 4: Forma polar, fórmula de Euler y evaluación de G(jω)](../web/public/content/control-1/modulo-1.md) | demostracion-no-delimitada |
 | control-1 / 10 | [Tema 1: La forma de estado](../web/public/content/control-1/modulo-10.md) | demostracion-no-delimitada |
+| control-1 / 10 | [Tema 2: De estados a función de transferencia](../web/public/content/control-1/modulo-10.md) | demostracion-no-delimitada |
 | control-1 / 11 | [Tema 1: Forma estándar](../web/public/content/control-1/modulo-11.md) | demostracion-no-delimitada |
-| control-1 / 11 | [Tema 2: Retardo o tiempo muerto](../web/public/content/control-1/modulo-11.md) | demostracion-no-delimitada |
+| control-1 / 11 | [Tema 2: Respuestas](../web/public/content/control-1/modulo-11.md) | demostracion-no-delimitada |
+| control-1 / 11 | [Tema 3: Retardo o tiempo muerto](../web/public/content/control-1/modulo-11.md) | demostracion-no-delimitada |
+| control-1 / 11 | [Tema 4: Identificación desde una gráfica](../web/public/content/control-1/modulo-11.md) | demostracion-no-delimitada |
 | control-1 / 12 | [Tema 1: Forma estándar](../web/public/content/control-1/modulo-12.md) | demostracion-no-delimitada |
+| control-1 / 12 | [Tema 2: Simulador: mueve ζ y ωn](../web/public/content/control-1/modulo-12.md) | demostracion-no-delimitada |
+| control-1 / 12 | [Tema 3: Los cuatro casos según ζ](../web/public/content/control-1/modulo-12.md) | demostracion-no-delimitada |
+| control-1 / 12 | [Tema 4: Fórmulas del caso subamortiguado](../web/public/content/control-1/modulo-12.md) | demostracion-no-delimitada |
+| control-1 / 12 | [Tema 5: De las especificaciones a la función de transferencia](../web/public/content/control-1/modulo-12.md) | demostracion-no-delimitada |
 | control-1 / 13 | [Tema 1: Polos dominantes](../web/public/content/control-1/modulo-13.md) | demostracion-no-delimitada |
+| control-1 / 13 | [Tema 2: Efecto de un cero](../web/public/content/control-1/modulo-13.md) | demostracion-no-delimitada |
+| control-1 / 13 | [Tema 3: Cero de fase no mínima](../web/public/content/control-1/modulo-13.md) | demostracion-no-delimitada |
 | control-1 / 14 | [Tema 1: Fórmula general](../web/public/content/control-1/modulo-14.md) | demostracion-no-delimitada |
+| control-1 / 14 | [Tema 2: Tipo de sistema y constantes](../web/public/content/control-1/modulo-14.md) | demostracion-no-delimitada |
 | control-1 / 15 | [Tema 1: Qué es estabilidad](../web/public/content/control-1/modulo-15.md) | demostracion-no-delimitada |
-| control-1 / 15 | [Tema 2: Casos especiales](../web/public/content/control-1/modulo-15.md) | demostracion-no-delimitada |
+| control-1 / 15 | [Tema 2: El arreglo de Routh](../web/public/content/control-1/modulo-15.md) | demostracion-no-delimitada |
+| control-1 / 15 | [Tema 3: Casos especiales](../web/public/content/control-1/modulo-15.md) | demostracion-no-delimitada |
+| control-1 / 15 | [Tema 4: Rango de K para estabilidad](../web/public/content/control-1/modulo-15.md) | demostracion-no-delimitada |
 | control-1 / 16 | [Tema 1: Geometría de un polo](../web/public/content/control-1/modulo-16.md) | demostracion-no-delimitada |
+| control-1 / 16 | [Tema 2: Estabilidad](../web/public/content/control-1/modulo-16.md) | demostracion-no-delimitada |
+| control-1 / 16 | [Tema 3: La zona de diseño](../web/public/content/control-1/modulo-16.md) | demostracion-no-delimitada |
 | control-1 / 17 | [Tema 1: Las dos condiciones](../web/public/content/control-1/modulo-17.md) | demostracion-no-delimitada |
+| control-1 / 17 | [Tema 2: Reglas de construcción (con su porqué)](../web/public/content/control-1/modulo-17.md) | demostracion-no-delimitada |
+| control-1 / 17 | [Tema 3: Elegir K desde el lugar de las raíces](../web/public/content/control-1/modulo-17.md) | demostracion-no-delimitada |
 | control-1 / 18 | [Tema 1: La idea](../web/public/content/control-1/modulo-18.md) | demostracion-no-delimitada |
-| control-1 / 18 | [Tema 2: Ventajas y desventajas (punto 4 del Parcial 1)](../web/public/content/control-1/modulo-18.md) | demostracion-no-delimitada |
+| control-1 / 18 | [Tema 2: Error en estado estacionario](../web/public/content/control-1/modulo-18.md) | demostracion-no-delimitada |
+| control-1 / 18 | [Tema 3: Cada acción, con números](../web/public/content/control-1/modulo-18.md) | demostracion-no-delimitada |
+| control-1 / 18 | [Tema 4: Ventajas y desventajas (punto 4 del Parcial 1)](../web/public/content/control-1/modulo-18.md) | demostracion-no-delimitada |
+| control-1 / 18 | [Tema 5: Sintonía de Ziegler-Nichols](../web/public/content/control-1/modulo-18.md) | demostracion-no-delimitada |
 | control-1 / 19 | [Tema 1: Diseño de un adelanto](../web/public/content/control-1/modulo-19.md) | demostracion-no-delimitada |
+| control-1 / 19 | [Tema 2: Diseño de un atraso](../web/public/content/control-1/modulo-19.md) | demostracion-no-delimitada |
+| control-1 / 19 | [Tema 3: Implementación con op-amps](../web/public/content/control-1/modulo-19.md) | demostracion-no-delimitada |
 | control-1 / 2 | [Tema 1: La idea](../web/public/content/control-1/modulo-2.md) | demostracion-no-delimitada |
-| control-1 / 2 | [Tema 2: Propiedades](../web/public/content/control-1/modulo-2.md) | demostracion-no-delimitada |
-| control-1 / 2 | [Tema 3: Valor final y valor inicial](../web/public/content/control-1/modulo-2.md) | demostracion-no-delimitada |
+| control-1 / 2 | [Tema 2: La tabla](../web/public/content/control-1/modulo-2.md) | demostracion-no-delimitada |
+| control-1 / 2 | [Tema 3: Propiedades](../web/public/content/control-1/modulo-2.md) | demostracion-no-delimitada |
+| control-1 / 2 | [Tema 4: Valor final y valor inicial](../web/public/content/control-1/modulo-2.md) | demostracion-no-delimitada |
 | control-1 / 20 | [Tema 1: Qué es la respuesta en frecuencia](../web/public/content/control-1/modulo-20.md) | demostracion-no-delimitada |
+| control-1 / 20 | [Tema 2: Decibeles y la escala logarítmica](../web/public/content/control-1/modulo-20.md) | demostracion-no-delimitada |
+| control-1 / 20 | [Tema 3: Los bloques básicos](../web/public/content/control-1/modulo-20.md) | demostracion-no-delimitada |
+| control-1 / 20 | [Tema 4: Márgenes de estabilidad](../web/public/content/control-1/modulo-20.md) | demostracion-no-delimitada |
 | control-1 / 21 | [Tema 1: Parcial 1](../web/public/content/control-1/modulo-21.md) | demostracion-no-delimitada |
 | control-1 / 22 | [Tema 1: Simulacro con solución](../web/public/content/control-1/modulo-22.md) | demostracion-no-delimitada |
 | control-1 / 3 | [Tema 1: Caso 1: polos reales distintos](../web/public/content/control-1/modulo-3.md) | demostracion-no-delimitada |
 | control-1 / 3 | [Tema 2: Caso 2: polos repetidos](../web/public/content/control-1/modulo-3.md) | demostracion-no-delimitada |
+| control-1 / 3 | [Tema 3: Caso 3: polos complejos (completar el cuadrado)](../web/public/content/control-1/modulo-3.md) | demostracion-no-delimitada |
+| control-1 / 3 | [Tema 4: Resolver una ecuación diferencial completa](../web/public/content/control-1/modulo-3.md) | demostracion-no-delimitada |
 | control-1 / 4 | [Tema 1: Qué es la función de transferencia](../web/public/content/control-1/modulo-4.md) | demostracion-no-delimitada |
 | control-1 / 5 | [Tema 1: ¿Qué es un sistema de control?](../web/public/content/control-1/modulo-5.md) | demostracion-no-delimitada |
-| control-1 / 5 | [Tema 2: Álgebra de bloques](../web/public/content/control-1/modulo-5.md) | demostracion-no-delimitada |
+| control-1 / 5 | [Tema 2: Los elementos](../web/public/content/control-1/modulo-5.md) | demostracion-no-delimitada |
+| control-1 / 5 | [Tema 3: Álgebra de bloques](../web/public/content/control-1/modulo-5.md) | demostracion-no-delimitada |
 | control-1 / 6 | [Tema 1: Reglas para mover bloques](../web/public/content/control-1/modulo-6.md) | demostracion-no-delimitada |
+| control-1 / 6 | [Tema 2: Grafos de flujo de señal](../web/public/content/control-1/modulo-6.md) | demostracion-no-delimitada |
+| control-1 / 6 | [Tema 3: Regla de Mason](../web/public/content/control-1/modulo-6.md) | demostracion-no-delimitada |
+| control-1 / 6 | [Tema 4: Referencia y perturbación juntas](../web/public/content/control-1/modulo-6.md) | demostracion-no-delimitada |
 | control-1 / 7 | [Tema 1: Impedancias](../web/public/content/control-1/modulo-7.md) | demostracion-no-delimitada |
-| control-1 / 7 | [Tema 2: El op-amp inversor](../web/public/content/control-1/modulo-7.md) | demostracion-no-delimitada |
+| control-1 / 7 | [Tema 2: Circuitos pasivos: divisor de voltaje](../web/public/content/control-1/modulo-7.md) | demostracion-no-delimitada |
+| control-1 / 7 | [Tema 3: El op-amp inversor](../web/public/content/control-1/modulo-7.md) | demostracion-no-delimitada |
 | control-1 / 8 | [Tema 1: Mecánico de traslación](../web/public/content/control-1/modulo-8.md) | demostracion-no-delimitada |
+| control-1 / 8 | [Tema 2: Mecánico de rotación](../web/public/content/control-1/modulo-8.md) | demostracion-no-delimitada |
+| control-1 / 8 | [Tema 3: Motor DC (electromecánico)](../web/public/content/control-1/modulo-8.md) | demostracion-no-delimitada |
+| control-1 / 8 | [Tema 4: Sistemas térmicos e hidráulicos](../web/public/content/control-1/modulo-8.md) | demostracion-no-delimitada |
+| control-1 / 8 | [Tema 5: Analogías](../web/public/content/control-1/modulo-8.md) | demostracion-no-delimitada |
 | control-1 / 9 | [Tema 1: La idea](../web/public/content/control-1/modulo-9.md) | demostracion-no-delimitada |
 | devops / 0 | [Tema 1: Sistema de archivos y permisos (chmod/chown)](../web/public/content/devops/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 0 | [Tema 2: Procesos, señales y jobs en segundo plano](../web/public/content/devops/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |

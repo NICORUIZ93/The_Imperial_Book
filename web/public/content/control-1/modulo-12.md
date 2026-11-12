@@ -54,7 +54,109 @@ Es el tema más preguntado de los dos parciales. Un RLC, una masa con resorte o 
 
 **Resultado:** \(K = 10\), \(\omega_n = 6{,}08\), \(\zeta = 0{,}164\): subamortiguado
 
-#### Simulador: mueve ζ y ωn
+#### Más ejemplos resueltos
+
+Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
+
+#### Ejemplo 2 · Leer K, ωn y ζ de \(\frac{16}{s^{2} + 4 s + 16}\) · *Básico*
+
+**Enunciado.** Identifica los parámetros de segundo orden.
+
+1. \(\omega_n^2 = 16\), así \(\omega_n = 4\).
+
+   **¿Por qué?** El término independiente del denominador es \(\omega_n^2\).
+
+2. \(2\zeta\omega_n = 4\), así \(\zeta = \frac{1}{2}\).
+
+   **¿Por qué?** El coeficiente de \(s\) es \(2\zeta\omega_n\).
+
+3. \(K = \dfrac{\text{numerador}}{\omega_n^2\cdot a_2} = 1\).
+
+   **¿Por qué?** La ganancia DC es \(G(0)\).
+
+**Resultado.** \(K = 1,\ \omega_n = 4\,\text{rad/s},\ \zeta = 0{,}5\): sistema subamortiguado (oscila).
+
+#### Ejemplo 3 · Leer K, ωn y ζ de \(\frac{50}{s^{2} + 6 s + 25}\) · *Básico*
+
+**Enunciado.** Identifica los parámetros de segundo orden.
+
+1. \(\omega_n^2 = 25\), así \(\omega_n = 5\).
+
+   **¿Por qué?** El término independiente del denominador es \(\omega_n^2\).
+
+2. \(2\zeta\omega_n = 6\), así \(\zeta = \frac{3}{5}\).
+
+   **¿Por qué?** El coeficiente de \(s\) es \(2\zeta\omega_n\).
+
+3. \(K = \dfrac{\text{numerador}}{\omega_n^2\cdot a_2} = 2\).
+
+   **¿Por qué?** La ganancia DC es \(G(0)\).
+
+**Resultado.** \(K = 2,\ \omega_n = 5\,\text{rad/s},\ \zeta = 0{,}6\): sistema subamortiguado (oscila).
+
+#### Ejemplo 4 · Leer K, ωn y ζ de \(\frac{9}{2 s^{2} + 3 s + 18}\) · *Intermedio*
+
+**Enunciado.** Identifica los parámetros de segundo orden.
+
+1. Divide todo por \(2\) para que \(s^2\) tenga coeficiente 1.
+
+   **¿Por qué?** La forma estándar \(\dfrac{K\omega_n^2}{s^2+2\zeta\omega_ns+\omega_n^2}\) tiene \(s^2\) "solo".
+
+2. \(\omega_n^2 = 9\), así \(\omega_n = 3\).
+
+   **¿Por qué?** El término independiente del denominador es \(\omega_n^2\).
+
+3. \(2\zeta\omega_n = \frac{3}{2}\), así \(\zeta = \frac{1}{4}\).
+
+   **¿Por qué?** El coeficiente de \(s\) es \(2\zeta\omega_n\).
+
+4. \(K = \dfrac{\text{numerador}}{\omega_n^2\cdot a_2} = \frac{1}{2}\).
+
+   **¿Por qué?** La ganancia DC es \(G(0)\).
+
+**Resultado.** \(K = \frac{1}{2},\ \omega_n = 3\,\text{rad/s},\ \zeta = 0{,}25\): sistema subamortiguado (oscila).
+
+#### Ejemplo 5 · Leer K, ωn y ζ de \(\frac{4}{s^{2} + s + 4}\) · *Básico*
+
+**Enunciado.** Identifica los parámetros de segundo orden.
+
+1. \(\omega_n^2 = 4\), así \(\omega_n = 2\).
+
+   **¿Por qué?** El término independiente del denominador es \(\omega_n^2\).
+
+2. \(2\zeta\omega_n = 1\), así \(\zeta = \frac{1}{4}\).
+
+   **¿Por qué?** El coeficiente de \(s\) es \(2\zeta\omega_n\).
+
+3. \(K = \dfrac{\text{numerador}}{\omega_n^2\cdot a_2} = 1\).
+
+   **¿Por qué?** La ganancia DC es \(G(0)\).
+
+**Resultado.** \(K = 1,\ \omega_n = 2\,\text{rad/s},\ \zeta = 0{,}25\): sistema subamortiguado (oscila).
+
+#### Ejemplo 6 · Leer K, ωn y ζ de \(\frac{100}{s^{2} + 20 s + 100}\) · *Intermedio*
+
+**Enunciado.** Identifica los parámetros de segundo orden.
+
+1. \(\omega_n^2 = 100\), así \(\omega_n = 10\).
+
+   **¿Por qué?** El término independiente del denominador es \(\omega_n^2\).
+
+2. \(2\zeta\omega_n = 20\), así \(\zeta = 1\).
+
+   **¿Por qué?** El coeficiente de \(s\) es \(2\zeta\omega_n\).
+
+3. \(K = \dfrac{\text{numerador}}{\omega_n^2\cdot a_2} = 1\).
+
+   **¿Por qué?** La ganancia DC es \(G(0)\).
+
+**Resultado.** \(K = 1,\ \omega_n = 10\,\text{rad/s},\ \zeta = 1\): sistema críticamente amortiguado.
+
+### Tema 2: Simulador: mueve ζ y ωn
+
+**¿Por qué es importante?** Mover \(\zeta\) y \(\omega_n\) en el simulador te da la intuición de qué hace cada parámetro antes de usar las fórmulas.
+
+**Fuentes oficiales:** [Análisis de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemAnalysis).
 
 Prueba esto: deja \(\omega_n = 2\) y mueve \(\zeta\) desde 0,05 hasta 1,5. Luego deja \(\zeta = 0{,}3\) y sube \(\omega_n\). Observa qué cambia en la curva y en los polos.
 
@@ -64,7 +166,85 @@ control-1-segundo-orden
 
 *Respuesta al escalón unitario (arriba) y polos en el plano s (abajo).*
 
-#### Los cuatro casos según ζ
+#### Más ejemplos resueltos
+
+Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
+
+#### Ejemplo 1 · Predice antes de mover el simulador: ζ = 0,1, ωn = 2 · *Básico*
+
+**Enunciado.** Pon estos valores en el simulador. Antes, predice el sobrepico y el tiempo de establecimiento; después compara con la curva.
+
+1. \(M_p = e^{-\zeta\pi/\sqrt{1-\zeta^2}} \approx 72{,}9\,\%\).
+
+   **¿Por qué?** El sobrepico depende solo de \(\zeta\).
+
+2. \(t_s \approx \dfrac{4}{\zeta\omega_n} = 20\,\text{s}\) y \(t_p = \dfrac{\pi}{\omega_d} = 1{,}58\,\text{s}\).
+
+   **¿Por qué?** Los tiempos dependen de \(\omega_n\): duplicar \(\omega_n\) hace todo el doble de rápido sin cambiar la forma.
+
+**Resultado.** Si la curva del simulador coincide, entendiste qué controla cada parámetro: \(\zeta\) la forma, \(\omega_n\) la escala de tiempo.
+
+#### Ejemplo 2 · Predice antes de mover el simulador: ζ = 0,5, ωn = 2 · *Básico*
+
+**Enunciado.** Pon estos valores en el simulador. Antes, predice el sobrepico y el tiempo de establecimiento; después compara con la curva.
+
+1. \(M_p = e^{-\zeta\pi/\sqrt{1-\zeta^2}} \approx 16{,}3\,\%\).
+
+   **¿Por qué?** El sobrepico depende solo de \(\zeta\).
+
+2. \(t_s \approx \dfrac{4}{\zeta\omega_n} = 4\,\text{s}\) y \(t_p = \dfrac{\pi}{\omega_d} = 1{,}81\,\text{s}\).
+
+   **¿Por qué?** Los tiempos dependen de \(\omega_n\): duplicar \(\omega_n\) hace todo el doble de rápido sin cambiar la forma.
+
+**Resultado.** Si la curva del simulador coincide, entendiste qué controla cada parámetro: \(\zeta\) la forma, \(\omega_n\) la escala de tiempo.
+
+#### Ejemplo 3 · Predice antes de mover el simulador: ζ = 0,9, ωn = 2 · *Básico*
+
+**Enunciado.** Pon estos valores en el simulador. Antes, predice el sobrepico y el tiempo de establecimiento; después compara con la curva.
+
+1. \(M_p = e^{-\zeta\pi/\sqrt{1-\zeta^2}} \approx 0{,}2\,\%\).
+
+   **¿Por qué?** El sobrepico depende solo de \(\zeta\).
+
+2. \(t_s \approx \dfrac{4}{\zeta\omega_n} = 2{,}22\,\text{s}\) y \(t_p = \dfrac{\pi}{\omega_d} = 3{,}6\,\text{s}\).
+
+   **¿Por qué?** Los tiempos dependen de \(\omega_n\): duplicar \(\omega_n\) hace todo el doble de rápido sin cambiar la forma.
+
+**Resultado.** Si la curva del simulador coincide, entendiste qué controla cada parámetro: \(\zeta\) la forma, \(\omega_n\) la escala de tiempo.
+
+#### Ejemplo 4 · Predice antes de mover el simulador: ζ = 0,3, ωn = 1 · *Básico*
+
+**Enunciado.** Pon estos valores en el simulador. Antes, predice el sobrepico y el tiempo de establecimiento; después compara con la curva.
+
+1. \(M_p = e^{-\zeta\pi/\sqrt{1-\zeta^2}} \approx 37{,}2\,\%\).
+
+   **¿Por qué?** El sobrepico depende solo de \(\zeta\).
+
+2. \(t_s \approx \dfrac{4}{\zeta\omega_n} = 13{,}33\,\text{s}\) y \(t_p = \dfrac{\pi}{\omega_d} = 3{,}29\,\text{s}\).
+
+   **¿Por qué?** Los tiempos dependen de \(\omega_n\): duplicar \(\omega_n\) hace todo el doble de rápido sin cambiar la forma.
+
+**Resultado.** Si la curva del simulador coincide, entendiste qué controla cada parámetro: \(\zeta\) la forma, \(\omega_n\) la escala de tiempo.
+
+#### Ejemplo 5 · Predice antes de mover el simulador: ζ = 0,3, ωn = 4 · *Básico*
+
+**Enunciado.** Pon estos valores en el simulador. Antes, predice el sobrepico y el tiempo de establecimiento; después compara con la curva.
+
+1. \(M_p = e^{-\zeta\pi/\sqrt{1-\zeta^2}} \approx 37{,}2\,\%\).
+
+   **¿Por qué?** El sobrepico depende solo de \(\zeta\).
+
+2. \(t_s \approx \dfrac{4}{\zeta\omega_n} = 3{,}33\,\text{s}\) y \(t_p = \dfrac{\pi}{\omega_d} = 0{,}82\,\text{s}\).
+
+   **¿Por qué?** Los tiempos dependen de \(\omega_n\): duplicar \(\omega_n\) hace todo el doble de rápido sin cambiar la forma.
+
+**Resultado.** Si la curva del simulador coincide, entendiste qué controla cada parámetro: \(\zeta\) la forma, \(\omega_n\) la escala de tiempo.
+
+### Tema 3: Los cuatro casos según ζ
+
+**¿Por qué es importante?** Clasificar el sistema por \(\zeta\) te dice de inmediato si va a oscilar y qué método usar para resolverlo.
+
+**Fuentes oficiales:** [Análisis de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemAnalysis).
 
 | \(\zeta\) | Caso | Polos | Respuesta al escalón |
 |---|---|---|---|
@@ -77,7 +257,99 @@ control-1-segundo-orden
 
 *Misma \(\omega_n = 2\) y \(K = 1\) con \(\zeta = 0{,}2\), \(0{,}5\), \(1\) y \(2\). A menor \(\zeta\), más sobrepico.*
 
-#### Fórmulas del caso subamortiguado
+#### Más ejemplos resueltos
+
+Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
+
+#### Ejemplo 1 · Clasificar \(\frac{9}{s^{2} + 2 s + 9}\) · *Básico*
+
+**Enunciado.** Di qué caso es según \(\zeta\) y cómo será su respuesta al escalón.
+
+1. \(\omega_n = 3\), \(\zeta = \dfrac{2}{2\cdot3} = \frac{1}{3}\).
+
+   **¿Por qué?** Se compara con \(s^2 + 2\zeta\omega_ns + \omega_n^2\).
+
+2. Polos: \(-1 - 2 \sqrt{2} j, -1 + 2 \sqrt{2} j\).
+
+   **¿Por qué?** Los polos confirman la clasificación: complejos ↔ oscila, reales ↔ no oscila.
+
+**Resultado.** Caso **subamortiguado**: oscila mientras se acerca al valor final.
+
+#### Ejemplo 2 · Clasificar \(\frac{9}{s^{2} + 6 s + 9}\) · *Básico*
+
+**Enunciado.** Di qué caso es según \(\zeta\) y cómo será su respuesta al escalón.
+
+1. \(\omega_n = 3\), \(\zeta = \dfrac{6}{2\cdot3} = 1\).
+
+   **¿Por qué?** Se compara con \(s^2 + 2\zeta\omega_ns + \omega_n^2\).
+
+2. Polos: \(-3\).
+
+   **¿Por qué?** Los polos confirman la clasificación: complejos ↔ oscila, reales ↔ no oscila.
+
+**Resultado.** Caso **críticamente amortiguado**: llega lo más rápido posible sin sobrepasar.
+
+#### Ejemplo 3 · Clasificar \(\frac{9}{s^{2} + 10 s + 9}\) · *Básico*
+
+**Enunciado.** Di qué caso es según \(\zeta\) y cómo será su respuesta al escalón.
+
+1. \(\omega_n = 3\), \(\zeta = \dfrac{10}{2\cdot3} = \frac{5}{3}\).
+
+   **¿Por qué?** Se compara con \(s^2 + 2\zeta\omega_ns + \omega_n^2\).
+
+2. Polos: \(-9, -1\).
+
+   **¿Por qué?** Los polos confirman la clasificación: complejos ↔ oscila, reales ↔ no oscila.
+
+**Resultado.** Caso **sobreamortiguado**: sube lento, sin oscilar (dos exponenciales).
+
+#### Ejemplo 4 · Clasificar \(\frac{9}{s^{2} + 9}\) · *Básico*
+
+**Enunciado.** Di qué caso es según \(\zeta\) y cómo será su respuesta al escalón.
+
+1. \(\omega_n = 3\), \(\zeta = \dfrac{0}{2\cdot3} = 0\).
+
+   **¿Por qué?** Se compara con \(s^2 + 2\zeta\omega_ns + \omega_n^2\).
+
+2. Polos: \(- 3 j, 3 j\).
+
+   **¿Por qué?** Los polos confirman la clasificación: complejos ↔ oscila, reales ↔ no oscila.
+
+**Resultado.** Caso **no amortiguado**: oscila para siempre sin decaer (polos sobre el eje imaginario).
+
+#### Ejemplo 5 · Clasificar \(\frac{4}{s^{2} + 5 s + 4}\) · *Intermedio*
+
+**Enunciado.** Di qué caso es según \(\zeta\) y cómo será su respuesta al escalón.
+
+1. \(\omega_n = 2\), \(\zeta = \dfrac{5}{2\cdot2} = \frac{5}{4}\).
+
+   **¿Por qué?** Se compara con \(s^2 + 2\zeta\omega_ns + \omega_n^2\).
+
+2. Polos: \(-4, -1\).
+
+   **¿Por qué?** Los polos confirman la clasificación: complejos ↔ oscila, reales ↔ no oscila.
+
+**Resultado.** Caso **sobreamortiguado**: sube lento, sin oscilar (dos exponenciales).
+
+#### Ejemplo 6 · Clasificar \(\frac{25}{s^{2} + 4 s + 25}\) · *Intermedio*
+
+**Enunciado.** Di qué caso es según \(\zeta\) y cómo será su respuesta al escalón.
+
+1. \(\omega_n = 5\), \(\zeta = \dfrac{4}{2\cdot5} = \frac{2}{5}\).
+
+   **¿Por qué?** Se compara con \(s^2 + 2\zeta\omega_ns + \omega_n^2\).
+
+2. Polos: \(-2 - \sqrt{21} j, -2 + \sqrt{21} j\).
+
+   **¿Por qué?** Los polos confirman la clasificación: complejos ↔ oscila, reales ↔ no oscila.
+
+**Resultado.** Caso **subamortiguado**: oscila mientras se acerca al valor final.
+
+### Tema 4: Fórmulas del caso subamortiguado
+
+**¿Por qué es importante?** Las fórmulas de \(M_p\), \(t_p\), \(t_s\) y \(t_r\) son las especificaciones con las que se diseña un controlador.
+
+**Fuentes oficiales:** [Análisis de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemAnalysis).
 
 *Polos*
 
@@ -159,7 +431,7 @@ Raíces de \(s^2 + 2\zeta\omega_ns + \omega_n^2\) con la fórmula cuadrática: \
 |---|---|---|---|---|---|---|---|---|
 | \(M_p\) | 72,9 % | 52,7 % | 37,2 % | 25,4 % | 16,3 % | 9,5 % | 4,6 % | 1,5 % |
 
-#### Ejemplo 2 · Todas las especificaciones · *Básico*
+#### Ejemplo 1 · Todas las especificaciones · *Básico*
 
 > **Qué cambia respecto al anterior:** Ahora se calculan todas las especificaciones.
 
@@ -191,7 +463,7 @@ Raíces de \(s^2 + 2\zeta\omega_ns + \omega_n^2\) con la fórmula cuadrática: \
 
 **Resultado:** \(M_p = 9{,}5\,\%\), \(t_p = 0{,}785\) s, \(t_s = 1{,}33\) s
 
-#### Ejemplo 3 · Impulso · *Básico*
+#### Ejemplo 2 · Impulso · *Básico*
 
 > **Qué cambia respecto al anterior:** La entrada es un impulso, no un escalón.
 
@@ -207,7 +479,7 @@ Raíces de \(s^2 + 2\zeta\omega_ns + \omega_n^2\) con la fórmula cuadrática: \
 
 **Resultado:** \(y(t) = 2{,}5\,e^{-2t}\sin4t\)
 
-#### Ejemplo 4 · Sobreamortiguado · *Intermedio*
+#### Ejemplo 3 · Sobreamortiguado · *Intermedio*
 
 > **Qué cambia respecto al anterior:** \(\zeta\) es mayor que 1.
 
@@ -227,7 +499,7 @@ Raíces de \(s^2 + 2\zeta\omega_ns + \omega_n^2\) con la fórmula cuadrática: \
 
 **Resultado:** \(y(t) = 1 - 3e^{-2t} + 2e^{-3t}\): sube sin pasarse
 
-#### Ejemplo 5 · Críticamente amortiguado · *Intermedio*
+#### Ejemplo 4 · Críticamente amortiguado · *Intermedio*
 
 > **Qué cambia respecto al anterior:** \(\zeta\) es exactamente 1.
 
@@ -243,7 +515,7 @@ Raíces de \(s^2 + 2\zeta\omega_ns + \omega_n^2\) con la fórmula cuadrática: \
 
 **Resultado:** \(y(t) = 1 - e^{-3t} - 3te^{-3t}\)
 
-#### Ejemplo 6 · De la gráfica a G(s) · *Nivel parcial*
+#### Ejemplo 5 · De la gráfica a G(s) · *Nivel parcial*
 
 > **Qué cambia respecto al anterior:** Se hace al revés: de la curva a \(G\).
 
@@ -271,7 +543,7 @@ Raíces de \(s^2 + 2\zeta\omega_ns + \omega_n^2\) con la fórmula cuadrática: \
 
 **Resultado:** \(G = \dfrac{2(11{,}79)}{s^2+2{,}77s+11{,}79} = \dfrac{23{,}58}{s^2+2{,}77s+11{,}79}\)
 
-#### Ejemplo 7 · De especificaciones a G(s) · *Nivel parcial*
+#### Ejemplo 6 · De especificaciones a G(s) · *Nivel parcial*
 
 > **Qué cambia respecto al anterior:** En vez de una gráfica, nos dan las especificaciones.
 
@@ -291,7 +563,7 @@ Raíces de \(s^2 + 2\zeta\omega_ns + \omega_n^2\) con la fórmula cuadrática: \
 
 **Resultado:** \(G = \dfrac{11{,}45}{s^2+4s+11{,}45}\)
 
-#### Ejemplo 8 · Elegir la ganancia · *Nivel parcial*
+#### Ejemplo 7 · Elegir la ganancia · *Nivel parcial*
 
 > **Qué cambia respecto al anterior:** \(K\) es incógnita y está dentro de un lazo.
 
@@ -320,7 +592,65 @@ Raíces de \(s^2 + 2\zeta\omega_ns + \omega_n^2\) con la fórmula cuadrática: \
 - Usar \(M_p\) en porcentaje dentro del logaritmo: debe ir en decimal (0,25, no 25).
 - Calcular \(M_p\) con el valor máximo dividido por la amplitud del escalón, en vez de por el valor final.
 
-#### Práctica
+#### Más ejemplos resueltos
+
+Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
+
+#### Ejemplo 8 · Especificaciones con ζ = 0,6 y ωn = 5 · *Básico*
+
+**Enunciado.** Calcula \(M_p\), \(t_p\), \(t_s\) (2 %) y \(t_r\).
+
+1. \(\omega_d = \omega_n\sqrt{1-\zeta^2} = 4\) y \(\sigma = \zeta\omega_n = 3\).
+
+   **¿Por qué?** Son la parte imaginaria y la parte real (con signo cambiado) de los polos.
+
+2. \(M_p = 9{,}5\,\%\), \(t_p = \pi/\omega_d = 0{,}785\,\text{s}\).
+
+   **¿Por qué?** Fórmulas demostradas en este tema.
+
+3. \(t_s = 4/\sigma = 1{,}333\,\text{s}\), \(t_r = (\pi - \arccos\zeta)/\omega_d = 0{,}554\,\text{s}\).
+
+   **¿Por qué?** \(\arccos\zeta\) es el ángulo \(\theta\) del polo, en radianes.
+
+**Resultado.** \(M_p \approx 9{,}5\,\%,\ t_p \approx 0{,}79,\ t_s \approx 1{,}33,\ t_r \approx 0{,}55\) s.
+
+#### Ejemplo 9 · Especificaciones con ζ = 0,25 y ωn = 10 · *Intermedio*
+
+**Enunciado.** Calcula \(M_p\), \(t_p\), \(t_s\) (2 %) y \(t_r\).
+
+1. \(\omega_d = \omega_n\sqrt{1-\zeta^2} = 9{,}682\) y \(\sigma = \zeta\omega_n = 2{,}5\).
+
+   **¿Por qué?** Son la parte imaginaria y la parte real (con signo cambiado) de los polos.
+
+2. \(M_p = 44{,}4\,\%\), \(t_p = \pi/\omega_d = 0{,}324\,\text{s}\).
+
+   **¿Por qué?** Fórmulas demostradas en este tema.
+
+3. \(t_s = 4/\sigma = 1{,}6\,\text{s}\), \(t_r = (\pi - \arccos\zeta)/\omega_d = 0{,}188\,\text{s}\).
+
+   **¿Por qué?** \(\arccos\zeta\) es el ángulo \(\theta\) del polo, en radianes.
+
+**Resultado.** \(M_p \approx 44{,}4\,\%,\ t_p \approx 0{,}32,\ t_s \approx 1{,}6,\ t_r \approx 0{,}19\) s.
+
+#### Ejemplo 10 · Especificaciones con ζ = 0,7 y ωn = 1,5 · *Intermedio*
+
+**Enunciado.** Calcula \(M_p\), \(t_p\), \(t_s\) (2 %) y \(t_r\).
+
+1. \(\omega_d = \omega_n\sqrt{1-\zeta^2} = 1{,}071\) y \(\sigma = \zeta\omega_n = 1{,}05\).
+
+   **¿Por qué?** Son la parte imaginaria y la parte real (con signo cambiado) de los polos.
+
+2. \(M_p = 4{,}6\,\%\), \(t_p = \pi/\omega_d = 2{,}933\,\text{s}\).
+
+   **¿Por qué?** Fórmulas demostradas en este tema.
+
+3. \(t_s = 4/\sigma = 3{,}81\,\text{s}\), \(t_r = (\pi - \arccos\zeta)/\omega_d = 2{,}19\,\text{s}\).
+
+   **¿Por qué?** \(\arccos\zeta\) es el ángulo \(\theta\) del polo, en radianes.
+
+**Resultado.** \(M_p \approx 4{,}6\,\%,\ t_p \approx 2{,}93,\ t_s \approx 3{,}81,\ t_r \approx 2{,}19\) s.
+
+#### Práctica para resolver sola o solo
 
 - **1.**\(M_p\), \(t_p\), \(t_s\) de \(\dfrac{100}{s^2+10s+100}\).
   
@@ -353,3 +683,124 @@ Raíces de \(s^2 + 2\zeta\omega_ns + \omega_n^2\) con la fórmula cuadrática: \
   \(\omega_n = 4\), \(\zeta = 1\): críticamente amortiguado.
   
   </details>
+
+### Tema 5: De las especificaciones a la función de transferencia
+
+**¿Por qué es importante?** Los parciales piden el camino inverso: dan el sobrepico y el tiempo de establecimiento y preguntan por \(\zeta\), \(\omega_n\), los polos o la \(G(s)\) que los cumple. Es la base de todo el diseño de controladores.
+
+**Fuentes oficiales:** [Análisis de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemAnalysis).
+
+El camino inverso usa las mismas fórmulas, despejadas:
+
+1. **Del sobrepico sale \(\zeta\):** \(\zeta = \dfrac{-\ln M_p}{\sqrt{\pi^2 + \ln^2M_p}}\) (con \(M_p\) en fracción, no en porcentaje).
+
+2. **Del tiempo de establecimiento sale \(\sigma\):** \(\sigma = \zeta\omega_n = 4/t_s\) (criterio del 2 %) o \(3/t_s\) (5 %).
+
+3. **Con los dos sale \(\omega_n = \sigma/\zeta\)** y los polos \(-\sigma \pm j\omega_n\sqrt{1-\zeta^2}\).
+
+4. **Se arma** \(G(s) = \dfrac{K\omega_n^2}{s^2 + 2\zeta\omega_ns + \omega_n^2}\) con la ganancia pedida.
+
+Si dan el tiempo pico en vez del de establecimiento, se usa \(\omega_d = \pi/t_p\) y \(\omega_n = \omega_d/\sqrt{1-\zeta^2}\). Siempre conviene comprobar al final recalculando las especificaciones con los valores obtenidos.
+
+#### Ejemplos resueltos
+
+#### Ejemplo 1 · De especificaciones a G(s): Mp = 10 %, ts = 2 s, K = 1 · *Intermedio*
+
+**Enunciado.** Encuentra un sistema de segundo orden con sobrepico 10 %, tiempo de establecimiento (2 %) 2 s y ganancia DC 1.
+
+1. \(\zeta = \dfrac{-\ln M_p}{\sqrt{\pi^2 + \ln^2 M_p}} = \dfrac{2{,}303}{\sqrt{\pi^2+5{,}302}} \approx 0{,}591\).
+
+   **¿Por qué?** Se despeja \(\zeta\) de la fórmula del sobrepico (demostración 4).
+
+2. \(\sigma = \zeta\omega_n = 4/t_s = 2\), así \(\omega_n = \sigma/\zeta \approx 3{,}383\).
+
+   **¿Por qué?** El tiempo de establecimiento fija la parte real de los polos.
+
+3. \(2\zeta\omega_n \approx 4,\ \omega_n^2 \approx 11{,}446\).
+
+   **¿Por qué?** Son los coeficientes del denominador estándar.
+
+**Resultado.** \(G(s) \approx \dfrac{11{,}446}{s^2 + 4s + 11{,}446}\); polos \(-2\pm j2{,}729\).
+
+**Comprobación.** Con esos valores, \(M_p = 10\,\%\) y \(t_s = 2\) s.
+
+#### Ejemplo 2 · De especificaciones a G(s): Mp = 5 %, ts = 4 s, K = 1 · *Intermedio*
+
+**Enunciado.** Encuentra un sistema de segundo orden con sobrepico 5 %, tiempo de establecimiento (2 %) 4 s y ganancia DC 1.
+
+1. \(\zeta = \dfrac{-\ln M_p}{\sqrt{\pi^2 + \ln^2 M_p}} = \dfrac{2{,}996}{\sqrt{\pi^2+8{,}974}} \approx 0{,}69\).
+
+   **¿Por qué?** Se despeja \(\zeta\) de la fórmula del sobrepico (demostración 4).
+
+2. \(\sigma = \zeta\omega_n = 4/t_s = 1\), así \(\omega_n = \sigma/\zeta \approx 1{,}449\).
+
+   **¿Por qué?** El tiempo de establecimiento fija la parte real de los polos.
+
+3. \(2\zeta\omega_n \approx 2,\ \omega_n^2 \approx 2{,}1\).
+
+   **¿Por qué?** Son los coeficientes del denominador estándar.
+
+**Resultado.** \(G(s) \approx \dfrac{2{,}1}{s^2 + 2s + 2{,}1}\); polos \(-1\pm j1{,}049\).
+
+**Comprobación.** Con esos valores, \(M_p = 5\,\%\) y \(t_s = 4\) s.
+
+#### Ejemplo 3 · De especificaciones a G(s): Mp = 20 %, ts = 1 s, K = 2 · *Intermedio*
+
+**Enunciado.** Encuentra un sistema de segundo orden con sobrepico 20 %, tiempo de establecimiento (2 %) 1 s y ganancia DC 2.
+
+1. \(\zeta = \dfrac{-\ln M_p}{\sqrt{\pi^2 + \ln^2 M_p}} = \dfrac{1{,}609}{\sqrt{\pi^2+2{,}59}} \approx 0{,}456\).
+
+   **¿Por qué?** Se despeja \(\zeta\) de la fórmula del sobrepico (demostración 4).
+
+2. \(\sigma = \zeta\omega_n = 4/t_s = 4\), así \(\omega_n = \sigma/\zeta \approx 8{,}773\).
+
+   **¿Por qué?** El tiempo de establecimiento fija la parte real de los polos.
+
+3. \(2\zeta\omega_n \approx 8,\ \omega_n^2 \approx 76{,}964\).
+
+   **¿Por qué?** Son los coeficientes del denominador estándar.
+
+**Resultado.** \(G(s) \approx \dfrac{153{,}927}{s^2 + 8s + 76{,}964}\); polos \(-4\pm j7{,}808\).
+
+**Comprobación.** Con esos valores, \(M_p = 20\,\%\) y \(t_s = 1\) s.
+
+#### Ejemplo 4 · De especificaciones a G(s): Mp = 16,3 %, ts = 0,8 s, K = 1 · *Avanzado*
+
+**Enunciado.** Encuentra un sistema de segundo orden con sobrepico 16,3 %, tiempo de establecimiento (2 %) 0,8 s y ganancia DC 1.
+
+1. \(\zeta = \dfrac{-\ln M_p}{\sqrt{\pi^2 + \ln^2 M_p}} = \dfrac{1{,}814}{\sqrt{\pi^2+3{,}291}} \approx 0{,}5\).
+
+   **¿Por qué?** Se despeja \(\zeta\) de la fórmula del sobrepico (demostración 4).
+
+2. \(\sigma = \zeta\omega_n = 4/t_s = 5\), así \(\omega_n = \sigma/\zeta \approx 9{,}999\).
+
+   **¿Por qué?** El tiempo de establecimiento fija la parte real de los polos.
+
+3. \(2\zeta\omega_n \approx 10,\ \omega_n^2 \approx 99{,}983\).
+
+   **¿Por qué?** Son los coeficientes del denominador estándar.
+
+**Resultado.** \(G(s) \approx \dfrac{99{,}983}{s^2 + 10s + 99{,}983}\); polos \(-5\pm j8{,}659\).
+
+**Comprobación.** Con esos valores, \(M_p = 16{,}3\,\%\) y \(t_s = 0{,}8\) s.
+
+#### Ejemplo 5 · De especificaciones a G(s): Mp = 30 %, ts = 3 s, K = 5 · *Avanzado*
+
+**Enunciado.** Encuentra un sistema de segundo orden con sobrepico 30 %, tiempo de establecimiento (2 %) 3 s y ganancia DC 5.
+
+1. \(\zeta = \dfrac{-\ln M_p}{\sqrt{\pi^2 + \ln^2 M_p}} = \dfrac{1{,}204}{\sqrt{\pi^2+1{,}45}} \approx 0{,}358\).
+
+   **¿Por qué?** Se despeja \(\zeta\) de la fórmula del sobrepico (demostración 4).
+
+2. \(\sigma = \zeta\omega_n = 4/t_s = 1{,}333\), así \(\omega_n = \sigma/\zeta \approx 3{,}726\).
+
+   **¿Por qué?** El tiempo de establecimiento fija la parte real de los polos.
+
+3. \(2\zeta\omega_n \approx 2{,}667,\ \omega_n^2 \approx 13{,}882\).
+
+   **¿Por qué?** Son los coeficientes del denominador estándar.
+
+**Resultado.** \(G(s) \approx \dfrac{69{,}411}{s^2 + 2{,}667s + 13{,}882}\); polos \(-1{,}333\pm j3{,}479\).
+
+**Comprobación.** Con esos valores, \(M_p = 30\,\%\) y \(t_s = 3\) s.
+

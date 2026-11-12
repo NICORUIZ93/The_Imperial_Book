@@ -3,14 +3,14 @@
   "totals": {
     "tracks": 15,
     "modules": 291,
-    "topics": 1273,
-    "topicsWithSignals": 327,
+    "topics": 1311,
+    "topicsWithSignals": 365,
     "newLaboratories": 26
   },
   "humanPedagogicalReview": {
     "reviewed": 0,
     "preRead": 14,
-    "total": 1273,
+    "total": 1311,
     "date": "2026-10-31",
     "responsible": "persona revisora pendiente; pre-lectura de agente registrada",
     "evidence": "docs/manual-review-log.md"
@@ -3733,9 +3733,37 @@
     {
       "track": "control-1",
       "module": 1,
-      "title": "Tema 2: Raíces de s²+bs+c",
+      "title": "Tema 2: Operaciones",
       "file": "web/public/content/control-1/modulo-1.md",
-      "line": 202,
+      "line": 156,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "control-1",
+      "module": 1,
+      "title": "Tema 3: Raíces de s²+bs+c",
+      "file": "web/public/content/control-1/modulo-1.md",
+      "line": 376,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "control-1",
+      "module": 1,
+      "title": "Tema 4: Forma polar, fórmula de Euler y evaluación de G(jω)",
+      "file": "web/public/content/control-1/modulo-1.md",
+      "line": 595,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -3760,6 +3788,20 @@
     },
     {
       "track": "control-1",
+      "module": 10,
+      "title": "Tema 2: De estados a función de transferencia",
+      "file": "web/public/content/control-1/modulo-10.md",
+      "line": 113,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "control-1",
       "module": 11,
       "title": "Tema 1: Forma estándar",
       "file": "web/public/content/control-1/modulo-11.md",
@@ -3775,9 +3817,37 @@
     {
       "track": "control-1",
       "module": 11,
-      "title": "Tema 2: Retardo o tiempo muerto",
+      "title": "Tema 2: Respuestas",
       "file": "web/public/content/control-1/modulo-11.md",
-      "line": 145,
+      "line": 117,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "control-1",
+      "module": 11,
+      "title": "Tema 3: Retardo o tiempo muerto",
+      "file": "web/public/content/control-1/modulo-11.md",
+      "line": 285,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "control-1",
+      "module": 11,
+      "title": "Tema 4: Identificación desde una gráfica",
+      "file": "web/public/content/control-1/modulo-11.md",
+      "line": 381,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -3802,6 +3872,62 @@
     },
     {
       "track": "control-1",
+      "module": 12,
+      "title": "Tema 2: Simulador: mueve ζ y ωn",
+      "file": "web/public/content/control-1/modulo-12.md",
+      "line": 155,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "control-1",
+      "module": 12,
+      "title": "Tema 3: Los cuatro casos según ζ",
+      "file": "web/public/content/control-1/modulo-12.md",
+      "line": 243,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "control-1",
+      "module": 12,
+      "title": "Tema 4: Fórmulas del caso subamortiguado",
+      "file": "web/public/content/control-1/modulo-12.md",
+      "line": 348,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "control-1",
+      "module": 12,
+      "title": "Tema 5: De las especificaciones a la función de transferencia",
+      "file": "web/public/content/control-1/modulo-12.md",
+      "line": 687,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "control-1",
       "module": 13,
       "title": "Tema 1: Polos dominantes",
       "file": "web/public/content/control-1/modulo-13.md",
@@ -3816,10 +3942,52 @@
     },
     {
       "track": "control-1",
+      "module": 13,
+      "title": "Tema 2: Efecto de un cero",
+      "file": "web/public/content/control-1/modulo-13.md",
+      "line": 131,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "control-1",
+      "module": 13,
+      "title": "Tema 3: Cero de fase no mínima",
+      "file": "web/public/content/control-1/modulo-13.md",
+      "line": 230,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "control-1",
       "module": 14,
       "title": "Tema 1: Fórmula general",
       "file": "web/public/content/control-1/modulo-14.md",
       "line": 13,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "control-1",
+      "module": 14,
+      "title": "Tema 2: Tipo de sistema y constantes",
+      "file": "web/public/content/control-1/modulo-14.md",
+      "line": 117,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -3845,9 +4013,37 @@
     {
       "track": "control-1",
       "module": 15,
-      "title": "Tema 2: Casos especiales",
+      "title": "Tema 2: El arreglo de Routh",
       "file": "web/public/content/control-1/modulo-15.md",
-      "line": 92,
+      "line": 97,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "control-1",
+      "module": 15,
+      "title": "Tema 3: Casos especiales",
+      "file": "web/public/content/control-1/modulo-15.md",
+      "line": 281,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "control-1",
+      "module": 15,
+      "title": "Tema 4: Rango de K para estabilidad",
+      "file": "web/public/content/control-1/modulo-15.md",
+      "line": 383,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -3872,10 +4068,66 @@
     },
     {
       "track": "control-1",
+      "module": 16,
+      "title": "Tema 2: Estabilidad",
+      "file": "web/public/content/control-1/modulo-16.md",
+      "line": 119,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "control-1",
+      "module": 16,
+      "title": "Tema 3: La zona de diseño",
+      "file": "web/public/content/control-1/modulo-16.md",
+      "line": 219,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "control-1",
       "module": 17,
       "title": "Tema 1: Las dos condiciones",
       "file": "web/public/content/control-1/modulo-17.md",
       "line": 14,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "control-1",
+      "module": 17,
+      "title": "Tema 2: Reglas de construcción (con su porqué)",
+      "file": "web/public/content/control-1/modulo-17.md",
+      "line": 110,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "control-1",
+      "module": 17,
+      "title": "Tema 3: Elegir K desde el lugar de las raíces",
+      "file": "web/public/content/control-1/modulo-17.md",
+      "line": 308,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -3901,9 +4153,51 @@
     {
       "track": "control-1",
       "module": 18,
-      "title": "Tema 2: Ventajas y desventajas (punto 4 del Parcial 1)",
+      "title": "Tema 2: Error en estado estacionario",
       "file": "web/public/content/control-1/modulo-18.md",
-      "line": 155,
+      "line": 92,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "control-1",
+      "module": 18,
+      "title": "Tema 3: Cada acción, con números",
+      "file": "web/public/content/control-1/modulo-18.md",
+      "line": 177,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "control-1",
+      "module": 18,
+      "title": "Tema 4: Ventajas y desventajas (punto 4 del Parcial 1)",
+      "file": "web/public/content/control-1/modulo-18.md",
+      "line": 325,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "control-1",
+      "module": 18,
+      "title": "Tema 5: Sintonía de Ziegler-Nichols",
+      "file": "web/public/content/control-1/modulo-18.md",
+      "line": 407,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -3928,6 +4222,34 @@
     },
     {
       "track": "control-1",
+      "module": 19,
+      "title": "Tema 2: Diseño de un atraso",
+      "file": "web/public/content/control-1/modulo-19.md",
+      "line": 107,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "control-1",
+      "module": 19,
+      "title": "Tema 3: Implementación con op-amps",
+      "file": "web/public/content/control-1/modulo-19.md",
+      "line": 201,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "control-1",
       "module": 2,
       "title": "Tema 1: La idea",
       "file": "web/public/content/control-1/modulo-2.md",
@@ -3943,9 +4265,9 @@
     {
       "track": "control-1",
       "module": 2,
-      "title": "Tema 2: Propiedades",
+      "title": "Tema 2: La tabla",
       "file": "web/public/content/control-1/modulo-2.md",
-      "line": 103,
+      "line": 117,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -3957,9 +4279,23 @@
     {
       "track": "control-1",
       "module": 2,
-      "title": "Tema 3: Valor final y valor inicial",
+      "title": "Tema 3: Propiedades",
       "file": "web/public/content/control-1/modulo-2.md",
-      "line": 286,
+      "line": 253,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "control-1",
+      "module": 2,
+      "title": "Tema 4: Valor final y valor inicial",
+      "file": "web/public/content/control-1/modulo-2.md",
+      "line": 484,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -3974,6 +4310,48 @@
       "title": "Tema 1: Qué es la respuesta en frecuencia",
       "file": "web/public/content/control-1/modulo-20.md",
       "line": 13,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "control-1",
+      "module": 20,
+      "title": "Tema 2: Decibeles y la escala logarítmica",
+      "file": "web/public/content/control-1/modulo-20.md",
+      "line": 86,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "control-1",
+      "module": 20,
+      "title": "Tema 3: Los bloques básicos",
+      "file": "web/public/content/control-1/modulo-20.md",
+      "line": 198,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "control-1",
+      "module": 20,
+      "title": "Tema 4: Márgenes de estabilidad",
+      "file": "web/public/content/control-1/modulo-20.md",
+      "line": 285,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -4029,7 +4407,35 @@
       "module": 3,
       "title": "Tema 2: Caso 2: polos repetidos",
       "file": "web/public/content/control-1/modulo-3.md",
-      "line": 112,
+      "line": 216,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "control-1",
+      "module": 3,
+      "title": "Tema 3: Caso 3: polos complejos (completar el cuadrado)",
+      "file": "web/public/content/control-1/modulo-3.md",
+      "line": 370,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "control-1",
+      "module": 3,
+      "title": "Tema 4: Resolver una ecuación diferencial completa",
+      "file": "web/public/content/control-1/modulo-3.md",
+      "line": 611,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -4069,9 +4475,23 @@
     {
       "track": "control-1",
       "module": 5,
-      "title": "Tema 2: Álgebra de bloques",
+      "title": "Tema 2: Los elementos",
       "file": "web/public/content/control-1/modulo-5.md",
-      "line": 77,
+      "line": 116,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "control-1",
+      "module": 5,
+      "title": "Tema 3: Álgebra de bloques",
+      "file": "web/public/content/control-1/modulo-5.md",
+      "line": 263,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -4086,6 +4506,48 @@
       "title": "Tema 1: Reglas para mover bloques",
       "file": "web/public/content/control-1/modulo-6.md",
       "line": 14,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "control-1",
+      "module": 6,
+      "title": "Tema 2: Grafos de flujo de señal",
+      "file": "web/public/content/control-1/modulo-6.md",
+      "line": 92,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "control-1",
+      "module": 6,
+      "title": "Tema 3: Regla de Mason",
+      "file": "web/public/content/control-1/modulo-6.md",
+      "line": 178,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "control-1",
+      "module": 6,
+      "title": "Tema 4: Referencia y perturbación juntas",
+      "file": "web/public/content/control-1/modulo-6.md",
+      "line": 322,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -4111,9 +4573,23 @@
     {
       "track": "control-1",
       "module": 7,
-      "title": "Tema 2: El op-amp inversor",
+      "title": "Tema 2: Circuitos pasivos: divisor de voltaje",
       "file": "web/public/content/control-1/modulo-7.md",
-      "line": 136,
+      "line": 142,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "control-1",
+      "module": 7,
+      "title": "Tema 3: El op-amp inversor",
+      "file": "web/public/content/control-1/modulo-7.md",
+      "line": 248,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -4128,6 +4604,62 @@
       "title": "Tema 1: Mecánico de traslación",
       "file": "web/public/content/control-1/modulo-8.md",
       "line": 14,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "control-1",
+      "module": 8,
+      "title": "Tema 2: Mecánico de rotación",
+      "file": "web/public/content/control-1/modulo-8.md",
+      "line": 121,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "control-1",
+      "module": 8,
+      "title": "Tema 3: Motor DC (electromecánico)",
+      "file": "web/public/content/control-1/modulo-8.md",
+      "line": 201,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "control-1",
+      "module": 8,
+      "title": "Tema 4: Sistemas térmicos e hidráulicos",
+      "file": "web/public/content/control-1/modulo-8.md",
+      "line": 309,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "control-1",
+      "module": 8,
+      "title": "Tema 5: Analogías",
+      "file": "web/public/content/control-1/modulo-8.md",
+      "line": 390,
       "signals": [
         "demostracion-no-delimitada"
       ],

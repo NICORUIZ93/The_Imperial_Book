@@ -8,16 +8,16 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 
 | Criterio | Cubierto | Pendiente |
 |---|---:|---:|
-| Explicación | 1273 | 0 |
-| Código | 1204 | 69 |
-| Ruta | 1241 | 32 |
-| Ejecución | 1183 | 90 |
-| Resultado | 1247 | 26 |
-| Modificación | 1210 | 63 |
-| Conexión con un proyecto | 1177 | 96 |
-| Modelo mental | 1273 | 0 |
-| Límites | 1217 | 56 |
-| **Perfil de criterios detectado** | **1166** | **107** |
+| Explicación | 1311 | 0 |
+| Código | 1204 | 107 |
+| Ruta | 1241 | 70 |
+| Ejecución | 1183 | 128 |
+| Resultado | 1248 | 63 |
+| Modificación | 1212 | 99 |
+| Conexión con un proyecto | 1177 | 134 |
+| Modelo mental | 1311 | 0 |
+| Límites | 1228 | 83 |
+| **Perfil de criterios detectado** | **1166** | **145** |
 
 ## Prioridad por track
 
@@ -26,7 +26,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | android | 74 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | angular | 71 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | cloud | 156 | 0 | 0 | 0 | 2 | 0 | 0 | 1 |
-| control-1 | 32 | 30 | 32 | 32 | 24 | 15 | 32 | 14 |
+| control-1 | 70 | 68 | 70 | 70 | 61 | 51 | 70 | 41 |
 | devops | 129 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | flutter | 106 | 0 | 0 | 0 | 0 | 0 | 1 | 1 |
 | foundations | 100 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -46,35 +46,73 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 - [cloud · módulo 0](../web/public/content/cloud/modulo-0.md) · Tema 5: Servicios que emula Floci — AWS, Azure y GCP: resultado, límites.
 - [control-1 · módulo 0](../web/public/content/control-1/modulo-0.md) · Tema 1: Cómo está armado cada capítulo: código, ruta, ejecución, conexión con un proyecto.
 - [control-1 · módulo 1](../web/public/content/control-1/modulo-1.md) · Tema 1: ¿Qué es un número complejo?: código, ruta, ejecución, resultado, modificación, conexión con un proyecto.
-- [control-1 · módulo 1](../web/public/content/control-1/modulo-1.md) · Tema 2: Raíces de s²+bs+c: código, ruta, ejecución, conexión con un proyecto.
+- [control-1 · módulo 1](../web/public/content/control-1/modulo-1.md) · Tema 2: Operaciones: código, ruta, ejecución, resultado, modificación, conexión con un proyecto.
+- [control-1 · módulo 1](../web/public/content/control-1/modulo-1.md) · Tema 3: Raíces de s²+bs+c: código, ruta, ejecución, conexión con un proyecto.
+- [control-1 · módulo 1](../web/public/content/control-1/modulo-1.md) · Tema 4: Forma polar, fórmula de Euler y evaluación de G(jω): código, ruta, ejecución, resultado, modificación, conexión con un proyecto.
 - [control-1 · módulo 10](../web/public/content/control-1/modulo-10.md) · Tema 1: La forma de estado: código, ruta, ejecución, resultado, modificación, conexión con un proyecto, límites.
+- [control-1 · módulo 10](../web/public/content/control-1/modulo-10.md) · Tema 2: De estados a función de transferencia: código, ruta, ejecución, resultado, modificación, conexión con un proyecto, límites.
 - [control-1 · módulo 11](../web/public/content/control-1/modulo-11.md) · Tema 1: Forma estándar: código, ruta, ejecución, resultado, modificación, conexión con un proyecto, límites.
-- [control-1 · módulo 11](../web/public/content/control-1/modulo-11.md) · Tema 2: Retardo o tiempo muerto: código, ruta, ejecución, resultado, conexión con un proyecto, límites.
-- [control-1 · módulo 12](../web/public/content/control-1/modulo-12.md) · Tema 1: Forma estándar: ruta, ejecución, resultado, conexión con un proyecto.
+- [control-1 · módulo 11](../web/public/content/control-1/modulo-11.md) · Tema 2: Respuestas: código, ruta, ejecución, resultado, conexión con un proyecto, límites.
+- [control-1 · módulo 11](../web/public/content/control-1/modulo-11.md) · Tema 3: Retardo o tiempo muerto: código, ruta, ejecución, resultado, modificación, conexión con un proyecto, límites.
+- [control-1 · módulo 11](../web/public/content/control-1/modulo-11.md) · Tema 4: Identificación desde una gráfica: código, ruta, ejecución, resultado, conexión con un proyecto, límites.
+- [control-1 · módulo 12](../web/public/content/control-1/modulo-12.md) · Tema 1: Forma estándar: código, ruta, ejecución, resultado, modificación, conexión con un proyecto, límites.
+- [control-1 · módulo 12](../web/public/content/control-1/modulo-12.md) · Tema 2: Simulador: mueve ζ y ωn: ruta, ejecución, resultado, conexión con un proyecto, límites.
+- [control-1 · módulo 12](../web/public/content/control-1/modulo-12.md) · Tema 3: Los cuatro casos según ζ: código, ruta, ejecución, resultado, modificación, conexión con un proyecto, límites.
+- [control-1 · módulo 12](../web/public/content/control-1/modulo-12.md) · Tema 4: Fórmulas del caso subamortiguado: código, ruta, ejecución, resultado, conexión con un proyecto.
+- [control-1 · módulo 12](../web/public/content/control-1/modulo-12.md) · Tema 5: De las especificaciones a la función de transferencia: código, ruta, ejecución, resultado, modificación, conexión con un proyecto, límites.
 - [control-1 · módulo 13](../web/public/content/control-1/modulo-13.md) · Tema 1: Polos dominantes: código, ruta, ejecución, resultado, conexión con un proyecto.
-- [control-1 · módulo 14](../web/public/content/control-1/modulo-14.md) · Tema 1: Fórmula general: código, ruta, ejecución, modificación, conexión con un proyecto, límites.
+- [control-1 · módulo 13](../web/public/content/control-1/modulo-13.md) · Tema 2: Efecto de un cero: código, ruta, ejecución, resultado, modificación, conexión con un proyecto, límites.
+- [control-1 · módulo 13](../web/public/content/control-1/modulo-13.md) · Tema 3: Cero de fase no mínima: código, ruta, ejecución, resultado, modificación, conexión con un proyecto, límites.
+- [control-1 · módulo 14](../web/public/content/control-1/modulo-14.md) · Tema 1: Fórmula general: código, ruta, ejecución, resultado, modificación, conexión con un proyecto, límites.
+- [control-1 · módulo 14](../web/public/content/control-1/modulo-14.md) · Tema 2: Tipo de sistema y constantes: código, ruta, ejecución, modificación, conexión con un proyecto, límites.
 - [control-1 · módulo 15](../web/public/content/control-1/modulo-15.md) · Tema 1: Qué es estabilidad: código, ruta, ejecución, modificación, conexión con un proyecto.
-- [control-1 · módulo 15](../web/public/content/control-1/modulo-15.md) · Tema 2: Casos especiales: código, ruta, ejecución, resultado, modificación, conexión con un proyecto.
-- [control-1 · módulo 16](../web/public/content/control-1/modulo-16.md) · Tema 1: Geometría de un polo: código, ruta, ejecución, conexión con un proyecto.
-- [control-1 · módulo 17](../web/public/content/control-1/modulo-17.md) · Tema 1: Las dos condiciones: ruta, ejecución, resultado, conexión con un proyecto, límites.
-- [control-1 · módulo 18](../web/public/content/control-1/modulo-18.md) · Tema 1: La idea: código, ruta, ejecución, resultado, conexión con un proyecto, límites.
-- [control-1 · módulo 18](../web/public/content/control-1/modulo-18.md) · Tema 2: Ventajas y desventajas (punto 4 del Parcial 1): código, ruta, ejecución, resultado, conexión con un proyecto.
+- [control-1 · módulo 15](../web/public/content/control-1/modulo-15.md) · Tema 2: El arreglo de Routh: código, ruta, ejecución, modificación, conexión con un proyecto, límites.
+- [control-1 · módulo 15](../web/public/content/control-1/modulo-15.md) · Tema 3: Casos especiales: código, ruta, ejecución, resultado, modificación, conexión con un proyecto.
+- [control-1 · módulo 15](../web/public/content/control-1/modulo-15.md) · Tema 4: Rango de K para estabilidad: código, ruta, ejecución, resultado, modificación, conexión con un proyecto.
+- [control-1 · módulo 16](../web/public/content/control-1/modulo-16.md) · Tema 1: Geometría de un polo: código, ruta, ejecución, resultado, modificación, conexión con un proyecto, límites.
+- [control-1 · módulo 16](../web/public/content/control-1/modulo-16.md) · Tema 2: Estabilidad: código, ruta, ejecución, resultado, modificación, conexión con un proyecto.
+- [control-1 · módulo 16](../web/public/content/control-1/modulo-16.md) · Tema 3: La zona de diseño: código, ruta, ejecución, conexión con un proyecto.
+- [control-1 · módulo 17](../web/public/content/control-1/modulo-17.md) · Tema 1: Las dos condiciones: código, ruta, ejecución, resultado, modificación, conexión con un proyecto, límites.
+- [control-1 · módulo 17](../web/public/content/control-1/modulo-17.md) · Tema 2: Reglas de construcción (con su porqué): ruta, ejecución, resultado, conexión con un proyecto, límites.
+- [control-1 · módulo 17](../web/public/content/control-1/modulo-17.md) · Tema 3: Elegir K desde el lugar de las raíces: código, ruta, ejecución, resultado, modificación, conexión con un proyecto, límites.
+- [control-1 · módulo 18](../web/public/content/control-1/modulo-18.md) · Tema 1: La idea: código, ruta, ejecución, resultado, modificación, conexión con un proyecto, límites.
+- [control-1 · módulo 18](../web/public/content/control-1/modulo-18.md) · Tema 2: Error en estado estacionario: código, ruta, ejecución, resultado, conexión con un proyecto, límites.
+- [control-1 · módulo 18](../web/public/content/control-1/modulo-18.md) · Tema 3: Cada acción, con números: código, ruta, ejecución, resultado, modificación, conexión con un proyecto, límites.
+- [control-1 · módulo 18](../web/public/content/control-1/modulo-18.md) · Tema 4: Ventajas y desventajas (punto 4 del Parcial 1): código, ruta, ejecución, resultado, modificación, conexión con un proyecto, límites.
+- [control-1 · módulo 18](../web/public/content/control-1/modulo-18.md) · Tema 5: Sintonía de Ziegler-Nichols: código, ruta, ejecución, resultado, conexión con un proyecto.
 - [control-1 · módulo 19](../web/public/content/control-1/modulo-19.md) · Tema 1: Diseño de un adelanto: código, ruta, ejecución, modificación, conexión con un proyecto, límites.
+- [control-1 · módulo 19](../web/public/content/control-1/modulo-19.md) · Tema 2: Diseño de un atraso: código, ruta, ejecución, resultado, modificación, conexión con un proyecto, límites.
+- [control-1 · módulo 19](../web/public/content/control-1/modulo-19.md) · Tema 3: Implementación con op-amps: código, ruta, ejecución, resultado, modificación, conexión con un proyecto, límites.
 - [control-1 · módulo 2](../web/public/content/control-1/modulo-2.md) · Tema 1: La idea: código, ruta, ejecución, resultado, modificación, conexión con un proyecto.
-- [control-1 · módulo 2](../web/public/content/control-1/modulo-2.md) · Tema 2: Propiedades: código, ruta, ejecución, resultado, modificación, conexión con un proyecto.
-- [control-1 · módulo 2](../web/public/content/control-1/modulo-2.md) · Tema 3: Valor final y valor inicial: código, ruta, ejecución, conexión con un proyecto.
-- [control-1 · módulo 20](../web/public/content/control-1/modulo-20.md) · Tema 1: Qué es la respuesta en frecuencia: código, ruta, ejecución, resultado, conexión con un proyecto, límites.
+- [control-1 · módulo 2](../web/public/content/control-1/modulo-2.md) · Tema 2: La tabla: código, ruta, ejecución, resultado, modificación, conexión con un proyecto.
+- [control-1 · módulo 2](../web/public/content/control-1/modulo-2.md) · Tema 3: Propiedades: código, ruta, ejecución, resultado, modificación, conexión con un proyecto.
+- [control-1 · módulo 2](../web/public/content/control-1/modulo-2.md) · Tema 4: Valor final y valor inicial: código, ruta, ejecución, conexión con un proyecto.
+- [control-1 · módulo 20](../web/public/content/control-1/modulo-20.md) · Tema 1: Qué es la respuesta en frecuencia: código, ruta, ejecución, resultado, modificación, conexión con un proyecto, límites.
+- [control-1 · módulo 20](../web/public/content/control-1/modulo-20.md) · Tema 2: Decibeles y la escala logarítmica: código, ruta, ejecución, resultado, modificación, conexión con un proyecto, límites.
+- [control-1 · módulo 20](../web/public/content/control-1/modulo-20.md) · Tema 3: Los bloques básicos: código, ruta, ejecución, resultado, modificación, conexión con un proyecto, límites.
+- [control-1 · módulo 20](../web/public/content/control-1/modulo-20.md) · Tema 4: Márgenes de estabilidad: código, ruta, ejecución, resultado, conexión con un proyecto, límites.
 - [control-1 · módulo 21](../web/public/content/control-1/modulo-21.md) · Tema 1: Parcial 1: código, ruta, ejecución, resultado, modificación, conexión con un proyecto.
 - [control-1 · módulo 22](../web/public/content/control-1/modulo-22.md) · Tema 1: Simulacro con solución: código, ruta, ejecución, resultado, modificación, conexión con un proyecto, límites.
 - [control-1 · módulo 3](../web/public/content/control-1/modulo-3.md) · Tema 1: Caso 1: polos reales distintos: código, ruta, ejecución, resultado, modificación, conexión con un proyecto.
-- [control-1 · módulo 3](../web/public/content/control-1/modulo-3.md) · Tema 2: Caso 2: polos repetidos: código, ruta, ejecución, resultado, conexión con un proyecto.
+- [control-1 · módulo 3](../web/public/content/control-1/modulo-3.md) · Tema 2: Caso 2: polos repetidos: código, ruta, ejecución, resultado, modificación, conexión con un proyecto.
+- [control-1 · módulo 3](../web/public/content/control-1/modulo-3.md) · Tema 3: Caso 3: polos complejos (completar el cuadrado): código, ruta, ejecución, resultado, conexión con un proyecto.
+- [control-1 · módulo 3](../web/public/content/control-1/modulo-3.md) · Tema 4: Resolver una ecuación diferencial completa: código, ruta, ejecución, resultado, modificación, conexión con un proyecto.
 - [control-1 · módulo 4](../web/public/content/control-1/modulo-4.md) · Tema 1: Qué es la función de transferencia: código, ruta, ejecución, resultado, conexión con un proyecto.
 - [control-1 · módulo 5](../web/public/content/control-1/modulo-5.md) · Tema 1: ¿Qué es un sistema de control?: código, ruta, ejecución, resultado, modificación, conexión con un proyecto.
-- [control-1 · módulo 5](../web/public/content/control-1/modulo-5.md) · Tema 2: Álgebra de bloques: código, ruta, ejecución, resultado, conexión con un proyecto, límites.
-- [control-1 · módulo 6](../web/public/content/control-1/modulo-6.md) · Tema 1: Reglas para mover bloques: código, ruta, ejecución, conexión con un proyecto, límites.
+- [control-1 · módulo 5](../web/public/content/control-1/modulo-5.md) · Tema 2: Los elementos: código, ruta, ejecución, resultado, modificación, conexión con un proyecto.
+- [control-1 · módulo 5](../web/public/content/control-1/modulo-5.md) · Tema 3: Álgebra de bloques: código, ruta, ejecución, resultado, conexión con un proyecto, límites.
+- [control-1 · módulo 6](../web/public/content/control-1/modulo-6.md) · Tema 1: Reglas para mover bloques: código, ruta, ejecución, resultado, modificación, conexión con un proyecto, límites.
+- [control-1 · módulo 6](../web/public/content/control-1/modulo-6.md) · Tema 2: Grafos de flujo de señal: código, ruta, ejecución, resultado, modificación, conexión con un proyecto, límites.
+- [control-1 · módulo 6](../web/public/content/control-1/modulo-6.md) · Tema 3: Regla de Mason: código, ruta, ejecución, modificación, conexión con un proyecto, límites.
+- [control-1 · módulo 6](../web/public/content/control-1/modulo-6.md) · Tema 4: Referencia y perturbación juntas: código, ruta, ejecución, resultado, conexión con un proyecto.
 - [control-1 · módulo 7](../web/public/content/control-1/modulo-7.md) · Tema 1: Impedancias: código, ruta, ejecución, resultado, modificación, conexión con un proyecto, límites.
-- [control-1 · módulo 7](../web/public/content/control-1/modulo-7.md) · Tema 2: El op-amp inversor: código, ruta, ejecución, resultado, conexión con un proyecto.
-- [control-1 · módulo 8](../web/public/content/control-1/modulo-8.md) · Tema 1: Mecánico de traslación: código, ruta, ejecución, resultado, conexión con un proyecto, límites.
+- [control-1 · módulo 7](../web/public/content/control-1/modulo-7.md) · Tema 2: Circuitos pasivos: divisor de voltaje: código, ruta, ejecución, resultado, modificación, conexión con un proyecto, límites.
+- [control-1 · módulo 7](../web/public/content/control-1/modulo-7.md) · Tema 3: El op-amp inversor: código, ruta, ejecución, resultado, conexión con un proyecto.
+- [control-1 · módulo 8](../web/public/content/control-1/modulo-8.md) · Tema 1: Mecánico de traslación: código, ruta, ejecución, resultado, modificación, conexión con un proyecto.
+- [control-1 · módulo 8](../web/public/content/control-1/modulo-8.md) · Tema 2: Mecánico de rotación: código, ruta, ejecución, resultado, modificación, conexión con un proyecto.
+- [control-1 · módulo 8](../web/public/content/control-1/modulo-8.md) · Tema 3: Motor DC (electromecánico): código, ruta, ejecución, resultado, modificación, conexión con un proyecto, límites.
+- [control-1 · módulo 8](../web/public/content/control-1/modulo-8.md) · Tema 4: Sistemas térmicos e hidráulicos: código, ruta, ejecución, resultado, modificación, conexión con un proyecto, límites.
+- [control-1 · módulo 8](../web/public/content/control-1/modulo-8.md) · Tema 5: Analogías: código, ruta, ejecución, resultado, conexión con un proyecto, límites.
 - [control-1 · módulo 9](../web/public/content/control-1/modulo-9.md) · Tema 1: La idea: código, ruta, ejecución, resultado, modificación, conexión con un proyecto, límites.
 - [flutter · módulo 19](../web/public/content/flutter/modulo-19.md) · Tema 1: estado de la jornada con Riverpod: conexión con un proyecto, límites.
 - [java · módulo 0](../web/public/content/java/modulo-0.md) · Tema 1: Del código fuente a la JVM: conexión con un proyecto, límites.

@@ -109,6 +109,110 @@ Si el denominador se factoriza en factores distintos \((s+a)(s+b)\cdots\), cada 
 
 **Resultado:** \(y(t) = 1 - \tfrac53e^{-2t} + \tfrac23e^{-5t}\)
 
+#### Más ejemplos resueltos
+
+Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
+
+#### Ejemplo 4 · Polos reales distintos: \(\frac{10}{\left(s + 1\right) \left(s + 4\right)}\) · *Básico*
+
+**Enunciado.** Halla \(y(t)\) si \(Y(s) = \frac{10}{\left(s + 1\right) \left(s + 4\right)}\).
+
+1. Factoriza el denominador: \(\left(s + 1\right) \left(s + 4\right)\). Polos: \(-1, -4\).
+
+   **¿Por qué?** Son reales y distintos, así que hay una fracción con constante por cada polo (caso 1).
+
+2. Coeficiente de \(\tfrac{1}{s + 1}\): tapa \((s + 1)\) y evalúa lo que queda en \(s=-1\): \(\frac{10}{s + 4}\big|_{s=-1} = \frac{10}{3}\).
+
+   **¿Por qué?** \(s=-1\) es el valor que anula el factor tapado; los demás términos se hacen cero.
+
+3. Coeficiente de \(\tfrac{1}{s + 4}\): tapa \((s + 4)\) y evalúa lo que queda en \(s=-4\): \(\frac{10}{s + 1}\big|_{s=-4} = - \frac{10}{3}\).
+
+   **¿Por qué?** \(s=-4\) es el valor que anula el factor tapado; los demás términos se hacen cero.
+
+4. Queda \(\frac{10}{\left(s + 1\right) \left(s + 4\right)} = \frac{10}{3 \left(s + 1\right)} + - \frac{10}{3 \left(s + 4\right)}\); con la tabla, \(\tfrac{A}{s+a}\to Ae^{-at}\).
+
+   **¿Por qué?** Cada fracción es una exponencial; el polo en \(s=0\) da una constante.
+
+**Resultado.** \(y(t) = \frac{\left(10 e^{3 t} - 10\right) e^{- 4 t}}{3}\).
+
+**Comprobación.** \(y(0) = 0\) y el valor inicial \(\lim_{s\to\infty}sY(s) = 0\) coinciden.
+
+#### Ejemplo 5 · Polos reales distintos: \(\frac{s + 5}{s \left(s + 2\right) \left(s + 3\right)}\) · *Intermedio*
+
+**Enunciado.** Halla \(y(t)\) si \(Y(s) = \frac{s + 5}{s \left(s + 2\right) \left(s + 3\right)}\).
+
+1. Factoriza el denominador: \(s \left(s + 2\right) \left(s + 3\right)\). Polos: \(0, -2, -3\).
+
+   **¿Por qué?** Son reales y distintos, así que hay una fracción con constante por cada polo (caso 1).
+
+2. Coeficiente de \(\tfrac{1}{s}\): tapa \((s)\) y evalúa lo que queda en \(s=0\): \(\frac{s + 5}{\left(s + 2\right) \left(s + 3\right)}\big|_{s=0} = \frac{5}{6}\).
+
+   **¿Por qué?** \(s=0\) es el valor que anula el factor tapado; los demás términos se hacen cero.
+
+3. Coeficiente de \(\tfrac{1}{s + 2}\): tapa \((s + 2)\) y evalúa lo que queda en \(s=-2\): \(\frac{s + 5}{s \left(s + 3\right)}\big|_{s=-2} = - \frac{3}{2}\).
+
+   **¿Por qué?** \(s=-2\) es el valor que anula el factor tapado; los demás términos se hacen cero.
+
+4. Coeficiente de \(\tfrac{1}{s + 3}\): tapa \((s + 3)\) y evalúa lo que queda en \(s=-3\): \(\frac{s + 5}{s \left(s + 2\right)}\big|_{s=-3} = \frac{2}{3}\).
+
+   **¿Por qué?** \(s=-3\) es el valor que anula el factor tapado; los demás términos se hacen cero.
+
+5. Queda \(\frac{s + 5}{s \left(s + 2\right) \left(s + 3\right)} = \frac{5}{6 s} + - \frac{3}{2 \left(s + 2\right)} + \frac{2}{3 \left(s + 3\right)}\); con la tabla, \(\tfrac{A}{s+a}\to Ae^{-at}\).
+
+   **¿Por qué?** Cada fracción es una exponencial; el polo en \(s=0\) da una constante.
+
+**Resultado.** \(y(t) = \frac{\left(5 e^{3 t} - 9 e^{t} + 4\right) e^{- 3 t}}{6}\).
+
+**Comprobación.** \(y(0) = 0\) y el valor inicial \(\lim_{s\to\infty}sY(s) = 0\) coinciden.
+
+#### Ejemplo 6 · Polos reales distintos: \(\frac{4}{s^{2} + 5 s + 4}\) · *Básico*
+
+**Enunciado.** Halla \(y(t)\) si \(Y(s) = \frac{4}{s^{2} + 5 s + 4}\).
+
+1. Factoriza el denominador: \(\left(s + 1\right) \left(s + 4\right)\). Polos: \(-1, -4\).
+
+   **¿Por qué?** Son reales y distintos, así que hay una fracción con constante por cada polo (caso 1).
+
+2. Coeficiente de \(\tfrac{1}{s + 1}\): tapa \((s + 1)\) y evalúa lo que queda en \(s=-1\): \(\frac{4}{s + 4}\big|_{s=-1} = \frac{4}{3}\).
+
+   **¿Por qué?** \(s=-1\) es el valor que anula el factor tapado; los demás términos se hacen cero.
+
+3. Coeficiente de \(\tfrac{1}{s + 4}\): tapa \((s + 4)\) y evalúa lo que queda en \(s=-4\): \(\frac{4}{s + 1}\big|_{s=-4} = - \frac{4}{3}\).
+
+   **¿Por qué?** \(s=-4\) es el valor que anula el factor tapado; los demás términos se hacen cero.
+
+4. Queda \(\frac{4}{s^{2} + 5 s + 4} = \frac{4}{3 \left(s + 1\right)} + - \frac{4}{3 \left(s + 4\right)}\); con la tabla, \(\tfrac{A}{s+a}\to Ae^{-at}\).
+
+   **¿Por qué?** Cada fracción es una exponencial; el polo en \(s=0\) da una constante.
+
+**Resultado.** \(y(t) = \frac{\left(4 e^{3 t} - 4\right) e^{- 4 t}}{3}\).
+
+**Comprobación.** \(y(0) = 0\) y el valor inicial \(\lim_{s\to\infty}sY(s) = 0\) coinciden.
+
+#### Ejemplo 7 · Polos reales distintos: \(\frac{2 s + 1}{s \left(s + 1\right)}\) · *Básico*
+
+**Enunciado.** Halla \(y(t)\) si \(Y(s) = \frac{2 s + 1}{s \left(s + 1\right)}\).
+
+1. Factoriza el denominador: \(s \left(s + 1\right)\). Polos: \(0, -1\).
+
+   **¿Por qué?** Son reales y distintos, así que hay una fracción con constante por cada polo (caso 1).
+
+2. Coeficiente de \(\tfrac{1}{s}\): tapa \((s)\) y evalúa lo que queda en \(s=0\): \(\frac{2 s + 1}{s + 1}\big|_{s=0} = 1\).
+
+   **¿Por qué?** \(s=0\) es el valor que anula el factor tapado; los demás términos se hacen cero.
+
+3. Coeficiente de \(\tfrac{1}{s + 1}\): tapa \((s + 1)\) y evalúa lo que queda en \(s=-1\): \(2 + \frac{1}{s}\big|_{s=-1} = 1\).
+
+   **¿Por qué?** \(s=-1\) es el valor que anula el factor tapado; los demás términos se hacen cero.
+
+4. Queda \(\frac{2 s + 1}{s \left(s + 1\right)} = \frac{1}{s} + \frac{1}{s + 1}\); con la tabla, \(\tfrac{A}{s+a}\to Ae^{-at}\).
+
+   **¿Por qué?** Cada fracción es una exponencial; el polo en \(s=0\) da una constante.
+
+**Resultado.** \(y(t) = 1 + e^{- t}\).
+
+**Comprobación.** \(y(0) = 2\) y el valor inicial \(\lim_{s\to\infty}sY(s) = 2\) coinciden.
+
 ### Tema 2: Caso 2: polos repetidos
 
 **¿Por qué es importante?** Los polos repetidos aparecen en los sistemas críticamente amortiguados y necesitan un tratamiento distinto.
@@ -131,7 +235,7 @@ Un factor \((s+a)^2\) aporta dos fracciones:
 
 ∎
 
-#### Ejemplo 4 · Polo repetido · *Intermedio*
+#### Ejemplo 1 · Polo repetido · *Intermedio*
 
 > **Qué cambia respecto al anterior:** Ahora hay un factor repetido.
 
@@ -159,7 +263,115 @@ Un factor \((s+a)^2\) aporta dos fracciones:
 
 **Resultado:** \(y(t) = 1 - e^{-t} - te^{-t}\)
 
-#### Caso 3: polos complejos (completar el cuadrado)
+#### Más ejemplos resueltos
+
+Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
+
+#### Ejemplo 2 · Polo repetido: \(\frac{1}{s \left(s + 1\right)^{2}}\) · *Intermedio*
+
+**Enunciado.** Halla \(y(t)\) si \(Y(s) = \frac{1}{s \left(s + 1\right)^{2}}\).
+
+1. Polos: \(-1\ (\text{multiplicidad } 2)\), \(0\).
+
+   **¿Por qué?** Un polo de multiplicidad \(k\) necesita \(k\) fracciones: una por cada potencia del factor, de 1 hasta \(k\).
+
+2. Plantea y resuelve los coeficientes (tapado para la potencia más alta; derivando o igualando coeficientes para las otras): \(\frac{1}{s \left(s + 1\right)^{2}} = - \frac{1}{s + 1} - \frac{1}{\left(s + 1\right)^{2}} + \frac{1}{s}\).
+
+   **¿Por qué?** El tapado solo da el coeficiente de la potencia más alta; los otros salen de derivar o de comparar coeficientes.
+
+3. Tabla: \(\tfrac{1}{(s+a)^2}\to te^{-at}\) y \(\tfrac{2}{(s+a)^3}\to t^2e^{-at}\).
+
+   **¿Por qué?** La potencia del factor repetido se convierte en potencia de \(t\) (propiedad de multiplicar por \(t\)).
+
+**Resultado.** \(y(t) = \left(- t + e^{t} - 1\right) e^{- t}\).
+
+**Comprobación.** \(y(0) = 0\), igual al valor inicial \(0\).
+
+#### Ejemplo 3 · Polo repetido: \(\frac{s + 3}{\left(s + 1\right)^{2}}\) · *Básico*
+
+**Enunciado.** Halla \(y(t)\) si \(Y(s) = \frac{s + 3}{\left(s + 1\right)^{2}}\).
+
+1. Polos: \(-1\ (\text{multiplicidad } 2)\).
+
+   **¿Por qué?** Un polo de multiplicidad \(k\) necesita \(k\) fracciones: una por cada potencia del factor, de 1 hasta \(k\).
+
+2. Plantea y resuelve los coeficientes (tapado para la potencia más alta; derivando o igualando coeficientes para las otras): \(\frac{s + 3}{\left(s + 1\right)^{2}} = \frac{1}{s + 1} + \frac{2}{\left(s + 1\right)^{2}}\).
+
+   **¿Por qué?** El tapado solo da el coeficiente de la potencia más alta; los otros salen de derivar o de comparar coeficientes.
+
+3. Tabla: \(\tfrac{1}{(s+a)^2}\to te^{-at}\) y \(\tfrac{2}{(s+a)^3}\to t^2e^{-at}\).
+
+   **¿Por qué?** La potencia del factor repetido se convierte en potencia de \(t\) (propiedad de multiplicar por \(t\)).
+
+**Resultado.** \(y(t) = \left(2 t + 1\right) e^{- t}\).
+
+**Comprobación.** \(y(0) = 1\), igual al valor inicial \(1\).
+
+#### Ejemplo 4 · Polo repetido: \(\frac{4}{s^{2} \left(s + 2\right)}\) · *Intermedio*
+
+**Enunciado.** Halla \(y(t)\) si \(Y(s) = \frac{4}{s^{2} \left(s + 2\right)}\).
+
+1. Polos: \(-2\), \(0\ (\text{multiplicidad } 2)\).
+
+   **¿Por qué?** Un polo de multiplicidad \(k\) necesita \(k\) fracciones: una por cada potencia del factor, de 1 hasta \(k\).
+
+2. Plantea y resuelve los coeficientes (tapado para la potencia más alta; derivando o igualando coeficientes para las otras): \(\frac{4}{s^{2} \left(s + 2\right)} = \frac{1}{s + 2} - \frac{1}{s} + \frac{2}{s^{2}}\).
+
+   **¿Por qué?** El tapado solo da el coeficiente de la potencia más alta; los otros salen de derivar o de comparar coeficientes.
+
+3. Tabla: \(\tfrac{1}{(s+a)^2}\to te^{-at}\) y \(\tfrac{2}{(s+a)^3}\to t^2e^{-at}\).
+
+   **¿Por qué?** La potencia del factor repetido se convierte en potencia de \(t\) (propiedad de multiplicar por \(t\)).
+
+**Resultado.** \(y(t) = 2 t - 1 + e^{- 2 t}\).
+
+**Comprobación.** \(y(0) = 0\), igual al valor inicial \(0\).
+
+#### Ejemplo 5 · Polo repetido: \(\frac{9}{s \left(s + 3\right)^{2}}\) · *Intermedio*
+
+**Enunciado.** Halla \(y(t)\) si \(Y(s) = \frac{9}{s \left(s + 3\right)^{2}}\).
+
+1. Polos: \(-3\ (\text{multiplicidad } 2)\), \(0\).
+
+   **¿Por qué?** Un polo de multiplicidad \(k\) necesita \(k\) fracciones: una por cada potencia del factor, de 1 hasta \(k\).
+
+2. Plantea y resuelve los coeficientes (tapado para la potencia más alta; derivando o igualando coeficientes para las otras): \(\frac{9}{s \left(s + 3\right)^{2}} = - \frac{1}{s + 3} - \frac{3}{\left(s + 3\right)^{2}} + \frac{1}{s}\).
+
+   **¿Por qué?** El tapado solo da el coeficiente de la potencia más alta; los otros salen de derivar o de comparar coeficientes.
+
+3. Tabla: \(\tfrac{1}{(s+a)^2}\to te^{-at}\) y \(\tfrac{2}{(s+a)^3}\to t^2e^{-at}\).
+
+   **¿Por qué?** La potencia del factor repetido se convierte en potencia de \(t\) (propiedad de multiplicar por \(t\)).
+
+**Resultado.** \(y(t) = \left(- 3 t + e^{3 t} - 1\right) e^{- 3 t}\).
+
+**Comprobación.** \(y(0) = 0\), igual al valor inicial \(0\).
+
+#### Ejemplo 6 · Polo repetido: \(\frac{2}{\left(s + 2\right)^{3}}\) · *Básico*
+
+**Enunciado.** Halla \(y(t)\) si \(Y(s) = \frac{2}{\left(s + 2\right)^{3}}\).
+
+1. Polos: \(-2\ (\text{multiplicidad } 3)\).
+
+   **¿Por qué?** Un polo de multiplicidad \(k\) necesita \(k\) fracciones: una por cada potencia del factor, de 1 hasta \(k\).
+
+2. Plantea y resuelve los coeficientes (tapado para la potencia más alta; derivando o igualando coeficientes para las otras): \(\frac{2}{\left(s + 2\right)^{3}} = \frac{2}{\left(s + 2\right)^{3}}\).
+
+   **¿Por qué?** El tapado solo da el coeficiente de la potencia más alta; los otros salen de derivar o de comparar coeficientes.
+
+3. Tabla: \(\tfrac{1}{(s+a)^2}\to te^{-at}\) y \(\tfrac{2}{(s+a)^3}\to t^2e^{-at}\).
+
+   **¿Por qué?** La potencia del factor repetido se convierte en potencia de \(t\) (propiedad de multiplicar por \(t\)).
+
+**Resultado.** \(y(t) = t^{2} e^{- 2 t}\).
+
+**Comprobación.** \(y(0) = 0\), igual al valor inicial \(0\).
+
+### Tema 3: Caso 3: polos complejos (completar el cuadrado)
+
+**¿Por qué es importante?** Completar el cuadrado es exactamente lo que pedía el punto 3 del Parcial 1 y la base de la respuesta de segundo orden.
+
+**Fuentes oficiales:** [Ecuaciones diferenciales y Laplace, MIT OpenCourseWare 18.03SC](https://ocw.mit.edu/courses/18-03sc-differential-equations-fall-2011/).
 
 Si el factor \(s^2+bs+c\) tiene raíces complejas, no lo partas con números complejos. Escríbelo como \((s+a)^2+\omega^2\) y ajusta el numerador para que coincida con las formas seno y coseno de la tabla.
 
@@ -176,7 +388,7 @@ Con fracciones complejas tendrías \(\dfrac{M}{s+a-j\omega} + \dfrac{\bar M}{s+a
 
 ∎
 
-#### Ejemplo 5 · Seno puro · *Básico*
+#### Ejemplo 1 · Seno puro · *Básico*
 
 **Enunciado.** Inversa de \(\dfrac{6}{s^2+9}\).
 
@@ -194,7 +406,7 @@ Con fracciones complejas tendrías \(\dfrac{M}{s+a-j\omega} + \dfrac{\bar M}{s+a
 
 **Resultado:** \(y(t) = 2\sin3t\)
 
-#### Ejemplo 6 · Seno amortiguado (completar el cuadrado) · *Básico*
+#### Ejemplo 2 · Seno amortiguado (completar el cuadrado) · *Básico*
 
 > **Qué cambia respecto al anterior:** El denominador tiene un término en \(s\): hay que completar el cuadrado.
 
@@ -218,7 +430,7 @@ Con fracciones complejas tendrías \(\dfrac{M}{s+a-j\omega} + \dfrac{\bar M}{s+a
 
 **Resultado:** \(y(t) = 61{,}67\,e^{-t}\sin6t\)
 
-#### Ejemplo 7 · Seno y coseno juntos · *Intermedio*
+#### Ejemplo 3 · Seno y coseno juntos · *Intermedio*
 
 > **Qué cambia respecto al anterior:** El numerador tiene \(s\): aparecen seno y coseno.
 
@@ -242,7 +454,7 @@ Con fracciones complejas tendrías \(\dfrac{M}{s+a-j\omega} + \dfrac{\bar M}{s+a
 
 **Resultado:** \(y(t) = e^{-t}(\cos2t + \sin2t)\)
 
-#### Ejemplo 8 · Escalón en un sistema de segundo orden · *Nivel parcial*
+#### Ejemplo 4 · Escalón en un sistema de segundo orden · *Nivel parcial*
 
 > **Qué cambia respecto al anterior:** Se combina el Ejemplo 1 (polo en cero) con el Ejemplo 7 (polos complejos).
 
@@ -278,7 +490,91 @@ Con fracciones complejas tendrías \(\dfrac{M}{s+a-j\omega} + \dfrac{\bar M}{s+a
 - En el caso complejo, poner \(\omega\) en vez de dividir por \(\omega\) el término del seno.
 - No comprobar \(y(0) = 0\): es una forma rápida de detectar errores de signo.
 
-#### Práctica
+#### Más ejemplos resueltos
+
+Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
+
+#### Ejemplo 5 · Polos complejos: \(\frac{5}{s^{2} + 2 s + 5}\) · *Básico*
+
+**Enunciado.** Halla \(y(t)\) si \(Y(s) = \frac{5}{s^{2} + 2 s + 5}\).
+
+1. El discriminante \(2^2-4\cdot5 = -16\) es negativo: polos complejos. Completa el cuadrado: \(s^{2} + 2 s + 5 = (s+1)^2 + 4\).
+
+   **¿Por qué?** Con polos complejos no se parte en factores reales; se escribe el denominador como \((s+a)^2+\omega^2\) para usar las filas de seno y coseno amortiguados.
+
+2. Reescribe el numerador en términos de \((s+1)\): \(5 = 5\).
+
+   **¿Por qué?** El coseno amortiguado necesita \((s+a)\) arriba y el seno amortiguado necesita \(\omega\) arriba; por eso se reorganiza el numerador así.
+
+3. Multiplica y divide el término constante por \(\omega = 2\): \(0\tfrac{s+1}{(s+1)^2+4} + \frac{5}{2}\tfrac{2}{(s+1)^2+4}\).
+
+   **¿Por qué?** Así cada pieza coincide exactamente con una fila de la tabla.
+
+**Resultado.** \(y(t) = \frac{5 e^{- t} \sin{\left(2 t \right)}}{2}\): oscila a \(2\,\text{rad/s}\) y se apaga como \(e^{-1t}\).
+
+**Comprobación.** \(y(0) = 0\), igual a \(\lim_{s\to\infty}sY(s) = 0\).
+
+#### Ejemplo 6 · Polos complejos: \(\frac{s + 3}{s^{2} + 4 s + 13}\) · *Intermedio*
+
+**Enunciado.** Halla \(y(t)\) si \(Y(s) = \frac{s + 3}{s^{2} + 4 s + 13}\).
+
+1. El discriminante \(4^2-4\cdot13 = -36\) es negativo: polos complejos. Completa el cuadrado: \(s^{2} + 4 s + 13 = (s+2)^2 + 9\).
+
+   **¿Por qué?** Con polos complejos no se parte en factores reales; se escribe el denominador como \((s+a)^2+\omega^2\) para usar las filas de seno y coseno amortiguados.
+
+2. Reescribe el numerador en términos de \((s+2)\): \(s + 3 = 1(s+2) + 1\).
+
+   **¿Por qué?** El coseno amortiguado necesita \((s+a)\) arriba y el seno amortiguado necesita \(\omega\) arriba; por eso se reorganiza el numerador así.
+
+3. Multiplica y divide el término constante por \(\omega = 3\): \(1\tfrac{s+2}{(s+2)^2+9} + \frac{1}{3}\tfrac{3}{(s+2)^2+9}\).
+
+   **¿Por qué?** Así cada pieza coincide exactamente con una fila de la tabla.
+
+**Resultado.** \(y(t) = \left(\frac{\sin{\left(3 t \right)}}{3} + \cos{\left(3 t \right)}\right) e^{- 2 t}\): oscila a \(3\,\text{rad/s}\) y se apaga como \(e^{-2t}\).
+
+**Comprobación.** \(y(0) = 1\), igual a \(\lim_{s\to\infty}sY(s) = 1\).
+
+#### Ejemplo 7 · Polos complejos: \(\frac{2 s + 1}{s^{2} + 6 s + 25}\) · *Intermedio*
+
+**Enunciado.** Halla \(y(t)\) si \(Y(s) = \frac{2 s + 1}{s^{2} + 6 s + 25}\).
+
+1. El discriminante \(6^2-4\cdot25 = -64\) es negativo: polos complejos. Completa el cuadrado: \(s^{2} + 6 s + 25 = (s+3)^2 + 16\).
+
+   **¿Por qué?** Con polos complejos no se parte en factores reales; se escribe el denominador como \((s+a)^2+\omega^2\) para usar las filas de seno y coseno amortiguados.
+
+2. Reescribe el numerador en términos de \((s+3)\): \(2 s + 1 = 2(s+3) + -5\).
+
+   **¿Por qué?** El coseno amortiguado necesita \((s+a)\) arriba y el seno amortiguado necesita \(\omega\) arriba; por eso se reorganiza el numerador así.
+
+3. Multiplica y divide el término constante por \(\omega = 4\): \(2\tfrac{s+3}{(s+3)^2+16} + - \frac{5}{4}\tfrac{4}{(s+3)^2+16}\).
+
+   **¿Por qué?** Así cada pieza coincide exactamente con una fila de la tabla.
+
+**Resultado.** \(y(t) = \frac{\left(- 5 \sin{\left(4 t \right)} + 8 \cos{\left(4 t \right)}\right) e^{- 3 t}}{4}\): oscila a \(4\,\text{rad/s}\) y se apaga como \(e^{-3t}\).
+
+**Comprobación.** \(y(0) = 2\), igual a \(\lim_{s\to\infty}sY(s) = 2\).
+
+#### Ejemplo 8 · Escalón en un sistema con polos complejos · *Avanzado*
+
+**Enunciado.** Halla \(y(t)\) si \(Y(s) = \frac{10}{s \left(s^{2} + 2 s + 10\right)}\) (respuesta al escalón).
+
+1. Plantea \(\tfrac{A}{s} + \tfrac{Bs+C}{s^2+2s+10}\). Tapado en \(s=0\): \(A = \tfrac{10}{10} = 1\).
+
+   **¿Por qué?** El polo real se resuelve con tapado y el par complejo necesita un numerador de primer grado.
+
+2. Igualando coeficientes: \(B=-1,\ C=-2\), es decir \(- \frac{s + 2}{s^{2} + 2 s + 10} + \frac{1}{s}\).
+
+   **¿Por qué?** Se multiplica todo por el denominador común y se comparan potencias de \(s\).
+
+3. Completa el cuadrado \(s^2+2s+10 = (s+1)^2+9\) y reescribe \(-(s+2) = -(s+1) - \tfrac13\cdot3\).
+
+   **¿Por qué?** Para tener coseno y seno amortiguados.
+
+**Resultado.** \(y(t) = \left(e^{t} - \frac{\sin{\left(3 t \right)}}{3} - \cos{\left(3 t \right)}\right) e^{- t}\).
+
+**Comprobación.** \(y(0)=0\) y \(y(\infty)=1\) (valor final \(\lim sY = 1\)).
+
+#### Práctica para resolver sola o solo
 
 - **1.**Inversa de \(\dfrac{6}{s(s+3)}\).
   
@@ -311,3 +607,124 @@ Con fracciones complejas tendrías \(\dfrac{M}{s+a-j\omega} + \dfrac{\bar M}{s+a
   \((s+2)^2+16\): \(\dfrac{20}{4}e^{-2t}\sin 4t = 5e^{-2t}\sin4t\).
   
   </details>
+
+### Tema 4: Resolver una ecuación diferencial completa
+
+**¿Por qué es importante?** Es el uso más directo de todo el capítulo: transformar, despejar, partir en fracciones e invertir. Así se resuelve cualquier sistema lineal con entrada y condiciones iniciales.
+
+**Fuentes oficiales:** [Ecuaciones diferenciales y Laplace, MIT OpenCourseWare 18.03SC](https://ocw.mit.edu/courses/18-03sc-differential-equations-fall-2011/).
+
+El procedimiento siempre es el mismo:
+
+1. **Transforma** la ecuación completa: las derivadas con \(\mathcal{L}\{y'\} = sY - y(0)\) y \(\mathcal{L}\{y''\} = s^2Y - sy(0) - y'(0)\); la entrada con la tabla.
+
+2. **Despeja** \(Y(s)\). Quedará una fracción cuyo denominador tiene los polos del sistema y los polos de la entrada.
+
+3. **Parte en fracciones** (caso 1, 2 o 3 según los factores).
+
+4. **Invierte** con la tabla y **comprueba** \(y(0)\) y, si existe, \(y(\infty)\).
+
+Los polos del sistema producen la parte transitoria (la que se apaga si el sistema es estable) y los polos de la entrada producen la parte forzada (la que queda).
+
+#### Ejemplos resueltos
+
+#### Ejemplo 1 · Resolver \(y'+2y=4\) · *Básico*
+
+**Enunciado.** Resuelve \(y'+2y = 4 u(t)\) con \(y(0)=0\).
+
+1. Transforma cada término con la propiedad de la derivada y la entrada con la tabla.
+
+   **¿Por qué?** Así la ecuación diferencial se vuelve una ecuación algebraica en \(Y(s)\).
+
+2. Despeja: \(Y(s) = \frac{4}{s \left(s + 2\right)}\).
+
+   **¿Por qué?** Las condiciones iniciales quedan en el numerador; la entrada aporta sus propios polos.
+
+3. Fracciones parciales: \(- \frac{2}{s + 2} + \frac{2}{s}\).
+
+   **¿Por qué?** Así cada pieza está en la tabla.
+
+**Resultado.** \(y(t) = 2 - 2 e^{- 2 t}\).
+
+**Comprobación.** \(y(0) = 0\) coincide con la condición inicial.
+
+#### Ejemplo 2 · Resolver \(y''+5y'+6y=6\) · *Intermedio*
+
+**Enunciado.** Resuelve \(y''+5y'+6y = 6 u(t)\) con \(y(0)=0, y'(0)=0\).
+
+1. Transforma cada término con la propiedad de la derivada y la entrada con la tabla.
+
+   **¿Por qué?** Así la ecuación diferencial se vuelve una ecuación algebraica en \(Y(s)\).
+
+2. Despeja: \(Y(s) = \frac{6}{s \left(s^{2} + 5 s + 6\right)}\).
+
+   **¿Por qué?** Las condiciones iniciales quedan en el numerador; la entrada aporta sus propios polos.
+
+3. Fracciones parciales: \(\frac{2}{s + 3} - \frac{3}{s + 2} + \frac{1}{s}\).
+
+   **¿Por qué?** Así cada pieza está en la tabla.
+
+**Resultado.** \(y(t) = 1 - 3 e^{- 2 t} + 2 e^{- 3 t}\).
+
+**Comprobación.** \(y(0) = 0\) coincide con la condición inicial.
+
+#### Ejemplo 3 · Resolver \(y''+2y'+5y=0\) · *Intermedio*
+
+**Enunciado.** Resuelve \(y''+2y'+5y = 0\) con \(y(0)=1, y'(0)=0\).
+
+1. Transforma cada término con la propiedad de la derivada y la entrada con la tabla.
+
+   **¿Por qué?** Así la ecuación diferencial se vuelve una ecuación algebraica en \(Y(s)\).
+
+2. Despeja: \(Y(s) = \frac{s + 2}{s^{2} + 2 s + 5}\).
+
+   **¿Por qué?** Las condiciones iniciales quedan en el numerador; la entrada aporta sus propios polos.
+
+3. Fracciones parciales: \(\frac{s + 2}{s^{2} + 2 s + 5}\).
+
+   **¿Por qué?** Así cada pieza está en la tabla.
+
+**Resultado.** \(y(t) = \left(\frac{\sin{\left(2 t \right)}}{2} + \cos{\left(2 t \right)}\right) e^{- t}\).
+
+**Comprobación.** \(y(0) = 1\) coincide con la condición inicial.
+
+#### Ejemplo 4 · Resolver \(y''+4y=8\) · *Intermedio*
+
+**Enunciado.** Resuelve \(y''+4y = 8 u(t)\) con \(y(0)=0, y'(0)=0\).
+
+1. Transforma cada término con la propiedad de la derivada y la entrada con la tabla.
+
+   **¿Por qué?** Así la ecuación diferencial se vuelve una ecuación algebraica en \(Y(s)\).
+
+2. Despeja: \(Y(s) = \frac{8}{s \left(s^{2} + 4\right)}\).
+
+   **¿Por qué?** Las condiciones iniciales quedan en el numerador; la entrada aporta sus propios polos.
+
+3. Fracciones parciales: \(- \frac{2 s}{s^{2} + 4} + \frac{2}{s}\).
+
+   **¿Por qué?** Así cada pieza está en la tabla.
+
+**Resultado.** \(y(t) = 4 \sin^{2}{\left(t \right)}\).
+
+**Comprobación.** \(y(0) = 0\) coincide con la condición inicial.
+
+#### Ejemplo 5 · Resolver \(y'+3y=e^{- t}\) · *Avanzado*
+
+**Enunciado.** Resuelve \(y'+3y = e^{- t}\) con \(y(0)=2\).
+
+1. Transforma cada término con la propiedad de la derivada y la entrada con la tabla.
+
+   **¿Por qué?** Así la ecuación diferencial se vuelve una ecuación algebraica en \(Y(s)\).
+
+2. Despeja: \(Y(s) = \frac{2 s + 3}{\left(s + 1\right) \left(s + 3\right)}\).
+
+   **¿Por qué?** Las condiciones iniciales quedan en el numerador; la entrada aporta sus propios polos.
+
+3. Fracciones parciales: \(\frac{3}{2 \left(s + 3\right)} + \frac{1}{2 \left(s + 1\right)}\).
+
+   **¿Por qué?** Así cada pieza está en la tabla.
+
+**Resultado.** \(y(t) = \frac{\left(e^{2 t} + 3\right) e^{- 3 t}}{2}\).
+
+**Comprobación.** \(y(0) = 2\) coincide con la condición inicial.
+

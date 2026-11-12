@@ -60,7 +60,55 @@ Cuando subir la ganancia no basta (capítulo 15, Ejemplo 4), se agrega un compen
 
 **Resultado:** \(G_c = 4\dfrac{s+2}{s+4}\): \(t_s\) pasa de 4 s a 2 s
 
-#### Diseño de un atraso
+#### Más ejemplos resueltos
+
+Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
+
+#### Ejemplo 2 · Adelanto que aporta 30° de fase · *Básico*
+
+**Enunciado.** Halla la relación \(\alpha\) de un compensador \(\dfrac{s + 1/T}{s + 1/(\alpha T)}\) para aportar 30°.
+
+1. \(\alpha = \dfrac{1 - \sin\phi_m}{1 + \sin\phi_m} = \dfrac{1 - 0{,}5}{1 + 0{,}5} \approx 0{,}333\).
+
+   **¿Por qué?** Fórmula de la fase máxima de un adelanto.
+
+**Resultado.** El polo queda 3 veces más lejos que el cero. La fase máxima ocurre en \(\omega_m = 1/(T\sqrt{\alpha})\).
+
+#### Ejemplo 3 · Adelanto que aporta 45° de fase · *Intermedio*
+
+**Enunciado.** Halla la relación \(\alpha\) de un compensador \(\dfrac{s + 1/T}{s + 1/(\alpha T)}\) para aportar 45°.
+
+1. \(\alpha = \dfrac{1 - \sin\phi_m}{1 + \sin\phi_m} = \dfrac{1 - 0{,}707}{1 + 0{,}707} \approx 0{,}172\).
+
+   **¿Por qué?** Fórmula de la fase máxima de un adelanto.
+
+**Resultado.** El polo queda 5,83 veces más lejos que el cero. La fase máxima ocurre en \(\omega_m = 1/(T\sqrt{\alpha})\).
+
+#### Ejemplo 4 · Adelanto que aporta 55° de fase · *Intermedio*
+
+**Enunciado.** Halla la relación \(\alpha\) de un compensador \(\dfrac{s + 1/T}{s + 1/(\alpha T)}\) para aportar 55°.
+
+1. \(\alpha = \dfrac{1 - \sin\phi_m}{1 + \sin\phi_m} = \dfrac{1 - 0{,}819}{1 + 0{,}819} \approx 0{,}099\).
+
+   **¿Por qué?** Fórmula de la fase máxima de un adelanto.
+
+**Resultado.** El polo queda 10,06 veces más lejos que el cero. La fase máxima ocurre en \(\omega_m = 1/(T\sqrt{\alpha})\).
+
+#### Ejemplo 5 · Adelanto que aporta 20° de fase · *Básico*
+
+**Enunciado.** Halla la relación \(\alpha\) de un compensador \(\dfrac{s + 1/T}{s + 1/(\alpha T)}\) para aportar 20°.
+
+1. \(\alpha = \dfrac{1 - \sin\phi_m}{1 + \sin\phi_m} = \dfrac{1 - 0{,}342}{1 + 0{,}342} \approx 0{,}49\).
+
+   **¿Por qué?** Fórmula de la fase máxima de un adelanto.
+
+**Resultado.** El polo queda 2,04 veces más lejos que el cero. La fase máxima ocurre en \(\omega_m = 1/(T\sqrt{\alpha})\).
+
+### Tema 2: Diseño de un atraso
+
+**¿Por qué es importante?** El atraso reduce el error final sin dañar el transitorio, algo que la ganancia sola no puede lograr.
+
+**Fuentes oficiales:** [Lugar de las raíces, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlRootLocus) y [Respuesta en frecuencia, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlFrequency).
 
 #### Demostración · el atraso multiplica el error sin mover los polos
 
@@ -70,7 +118,7 @@ Cuando subir la ganancia no basta (capítulo 15, Ejemplo 4), se agrega un compen
 
 ∎
 
-#### Ejemplo 2 · Atraso: diez veces menos error · *Experto*
+#### Ejemplo 1 · Atraso: diez veces menos error · *Experto*
 
 > **Qué cambia respecto al anterior:** Ahora se busca menos error, no más velocidad.
 
@@ -90,7 +138,71 @@ Cuando subir la ganancia no basta (capítulo 15, Ejemplo 4), se agrega un compen
 
 **Resultado:** \(G_c = \dfrac{s+0{,}1}{s+0{,}01}\): \(K_v = 20\), error ante rampa 0,05
 
-#### Implementación con op-amps
+#### Más ejemplos resueltos
+
+Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
+
+#### Ejemplo 2 · Atraso para subir Kv de 2 a 20 · *Básico*
+
+**Enunciado.** Diseña el cero y el polo del atraso sin mover los polos dominantes.
+
+1. \(\beta = K_{v,\text{nuevo}}/K_{v,\text{actual}} = 10\).
+
+   **¿Por qué?** El atraso multiplica la ganancia en bajas frecuencias por \(\beta\) (relación cero/polo).
+
+2. Elige el cero cerca del origen, por ejemplo \(z = 0{,}1\), y el polo en \(p = z/\beta = 0{,}01\).
+
+   **¿Por qué?** El par cero-polo muy pegado al origen casi no cambia el ángulo en los polos dominantes.
+
+**Resultado.** \(C(s) = \dfrac{s + 0{,}1}{s + 0{,}01}\): el error ante rampa baja 10 veces y la respuesta transitoria casi no cambia.
+
+#### Ejemplo 3 · Atraso para subir Kv de 5 a 50 · *Intermedio*
+
+**Enunciado.** Diseña el cero y el polo del atraso sin mover los polos dominantes.
+
+1. \(\beta = K_{v,\text{nuevo}}/K_{v,\text{actual}} = 10\).
+
+   **¿Por qué?** El atraso multiplica la ganancia en bajas frecuencias por \(\beta\) (relación cero/polo).
+
+2. Elige el cero cerca del origen, por ejemplo \(z = 0{,}1\), y el polo en \(p = z/\beta = 0{,}01\).
+
+   **¿Por qué?** El par cero-polo muy pegado al origen casi no cambia el ángulo en los polos dominantes.
+
+**Resultado.** \(C(s) = \dfrac{s + 0{,}1}{s + 0{,}01}\): el error ante rampa baja 10 veces y la respuesta transitoria casi no cambia.
+
+#### Ejemplo 4 · Atraso para subir Kv de 1 a 8 · *Intermedio*
+
+**Enunciado.** Diseña el cero y el polo del atraso sin mover los polos dominantes.
+
+1. \(\beta = K_{v,\text{nuevo}}/K_{v,\text{actual}} = 8\).
+
+   **¿Por qué?** El atraso multiplica la ganancia en bajas frecuencias por \(\beta\) (relación cero/polo).
+
+2. Elige el cero cerca del origen, por ejemplo \(z = 0{,}1\), y el polo en \(p = z/\beta = 0{,}013\).
+
+   **¿Por qué?** El par cero-polo muy pegado al origen casi no cambia el ángulo en los polos dominantes.
+
+**Resultado.** \(C(s) = \dfrac{s + 0{,}1}{s + 0{,}013}\): el error ante rampa baja 8 veces y la respuesta transitoria casi no cambia.
+
+#### Ejemplo 5 · Atraso para subir Kv de 10 a 40 · *Básico*
+
+**Enunciado.** Diseña el cero y el polo del atraso sin mover los polos dominantes.
+
+1. \(\beta = K_{v,\text{nuevo}}/K_{v,\text{actual}} = 4\).
+
+   **¿Por qué?** El atraso multiplica la ganancia en bajas frecuencias por \(\beta\) (relación cero/polo).
+
+2. Elige el cero cerca del origen, por ejemplo \(z = 0{,}1\), y el polo en \(p = z/\beta = 0{,}025\).
+
+   **¿Por qué?** El par cero-polo muy pegado al origen casi no cambia el ángulo en los polos dominantes.
+
+**Resultado.** \(C(s) = \dfrac{s + 0{,}1}{s + 0{,}025}\): el error ante rampa baja 4 veces y la respuesta transitoria casi no cambia.
+
+### Tema 3: Implementación con op-amps
+
+**¿Por qué es importante?** Implementar el compensador con op-amps conecta el diseño en papel con un circuito real.
+
+**Fuentes oficiales:** [Lugar de las raíces, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlRootLocus) y [Respuesta en frecuencia, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlFrequency).
 
 Dos inversores en cascada: el primero con \(Z_i = R_1\parallel C_1\) y \(Z_f = R_2\parallel C_2\); el segundo con \(R_3\) y \(R_4\) para corregir el signo y la ganancia.
 
@@ -103,3 +215,78 @@ Dos inversores en cascada: el primero con \(Z_i = R_1\parallel C_1\) y \(Z_f = R
 Con capítulo 8: \(Z_i = \dfrac{R_1}{1+sR_1C_1}\), \(Z_f = \dfrac{R_2}{1+sR_2C_2}\). La primera etapa da \(-\dfrac{R_2}{R_1}\cdot\dfrac{1+sR_1C_1}{1+sR_2C_2}\), y la segunda \(-R_4/R_3\). El producto quita el signo. Para la segunda forma, saca \(R_1C_1\) y \(R_2C_2\) como factor común.
 
 ∎
+
+#### Más ejemplos resueltos
+
+Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
+
+#### Ejemplo 1 · Compensador con op-amps: R1 = 100 kΩ, C1 = 1 µF, R2 = 10 kΩ, C2 = 1 µF · *Intermedio*
+
+**Enunciado.** Con la red \(R_1\parallel C_1\) a la entrada y \(R_2\parallel C_2\) en realimentación (más un inversor), halla cero, polo y tipo.
+
+1. \(\dfrac{V_o}{V_i} = \dfrac{R_2}{R_1}\dfrac{R_1C_1s + 1}{R_2C_2s + 1} = \dfrac{C_1}{C_2}\dfrac{s + 1/(R_1C_1)}{s + 1/(R_2C_2)}\).
+
+   **¿Por qué?** Inversor con impedancias en paralelo y un segundo inversor para quitar el signo.
+
+2. Cero en \(-10\), polo en \(-100\).
+
+   **¿Por qué?** Cero más cerca del origen que el polo → adelanto; al revés → atraso.
+
+**Resultado.** Es un **adelanto** con ganancia de alta frecuencia \(1\).
+
+#### Ejemplo 2 · Compensador con op-amps: R1 = 10 kΩ, C1 = 10 µF, R2 = 1 kΩ, C2 = 10 µF · *Intermedio*
+
+**Enunciado.** Con la red \(R_1\parallel C_1\) a la entrada y \(R_2\parallel C_2\) en realimentación (más un inversor), halla cero, polo y tipo.
+
+1. \(\dfrac{V_o}{V_i} = \dfrac{R_2}{R_1}\dfrac{R_1C_1s + 1}{R_2C_2s + 1} = \dfrac{C_1}{C_2}\dfrac{s + 1/(R_1C_1)}{s + 1/(R_2C_2)}\).
+
+   **¿Por qué?** Inversor con impedancias en paralelo y un segundo inversor para quitar el signo.
+
+2. Cero en \(-10\), polo en \(-100\).
+
+   **¿Por qué?** Cero más cerca del origen que el polo → adelanto; al revés → atraso.
+
+**Resultado.** Es un **adelanto** con ganancia de alta frecuencia \(1\).
+
+#### Ejemplo 3 · Compensador con op-amps: R1 = 1 kΩ, C1 = 1 µF, R2 = 10 kΩ, C2 = 1 µF · *Intermedio*
+
+**Enunciado.** Con la red \(R_1\parallel C_1\) a la entrada y \(R_2\parallel C_2\) en realimentación (más un inversor), halla cero, polo y tipo.
+
+1. \(\dfrac{V_o}{V_i} = \dfrac{R_2}{R_1}\dfrac{R_1C_1s + 1}{R_2C_2s + 1} = \dfrac{C_1}{C_2}\dfrac{s + 1/(R_1C_1)}{s + 1/(R_2C_2)}\).
+
+   **¿Por qué?** Inversor con impedancias en paralelo y un segundo inversor para quitar el signo.
+
+2. Cero en \(-1000\), polo en \(-100\).
+
+   **¿Por qué?** Cero más cerca del origen que el polo → adelanto; al revés → atraso.
+
+**Resultado.** Es un **atraso** con ganancia de alta frecuencia \(1\).
+
+#### Ejemplo 4 · Compensador con op-amps: R1 = 220 kΩ, C1 = 1 µF, R2 = 22 kΩ, C2 = 0,47 µF · *Avanzado*
+
+**Enunciado.** Con la red \(R_1\parallel C_1\) a la entrada y \(R_2\parallel C_2\) en realimentación (más un inversor), halla cero, polo y tipo.
+
+1. \(\dfrac{V_o}{V_i} = \dfrac{R_2}{R_1}\dfrac{R_1C_1s + 1}{R_2C_2s + 1} = \dfrac{C_1}{C_2}\dfrac{s + 1/(R_1C_1)}{s + 1/(R_2C_2)}\).
+
+   **¿Por qué?** Inversor con impedancias en paralelo y un segundo inversor para quitar el signo.
+
+2. Cero en \(-4{,}545\), polo en \(-96{,}712\).
+
+   **¿Por qué?** Cero más cerca del origen que el polo → adelanto; al revés → atraso.
+
+**Resultado.** Es un **adelanto** con ganancia de alta frecuencia \(2{,}128\).
+
+#### Ejemplo 5 · Compensador con op-amps: R1 = 47 kΩ, C1 = 2,2 µF, R2 = 4,7 kΩ, C2 = 2,2 µF · *Intermedio*
+
+**Enunciado.** Con la red \(R_1\parallel C_1\) a la entrada y \(R_2\parallel C_2\) en realimentación (más un inversor), halla cero, polo y tipo.
+
+1. \(\dfrac{V_o}{V_i} = \dfrac{R_2}{R_1}\dfrac{R_1C_1s + 1}{R_2C_2s + 1} = \dfrac{C_1}{C_2}\dfrac{s + 1/(R_1C_1)}{s + 1/(R_2C_2)}\).
+
+   **¿Por qué?** Inversor con impedancias en paralelo y un segundo inversor para quitar el signo.
+
+2. Cero en \(-9{,}671\), polo en \(-96{,}712\).
+
+   **¿Por qué?** Cero más cerca del origen que el polo → adelanto; al revés → atraso.
+
+**Resultado.** Es un **adelanto** con ganancia de alta frecuencia \(1\).
+
